@@ -5574,3 +5574,224 @@ def test_bq_dataset_policy_remove_command_remove_user_not_found(mocker):
     assert result.readable_output == f"The provided email {email} wasn't found in access list of the dataset {dataset_id}."
     mock_datasets.patch.assert_not_called()
     mock_debug.assert_called_with(f"[GCP] Email {email} not found in access list for dataset {dataset_id}")
+
+
+def test_get_credentials_marketplace_service_account(mocker):
+    """
+    Given:
+        - Integration params with a valid service account JSON in credentials.password.
+    When:
+        - get_credentials is called (marketplace path).
+    Then:
+        - google_service_account.Credentials.from_service_account_info is called with the
+          parsed JSON and the cloud-platform scope.
+        - The returned credentials object is the mock service account credentials.
+    """
+    from GCP import get_credentials
+
+    sa_info = {
+        "type": "service_account",
+        "project_id": "my-project",
+        "private_key_id": "key-id",
+        "private_key": "-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA\n-----END RSA PRIVATE KEY-----\n",
+        "client_email": "sa@my-project.iam.gserviceaccount.com",
+        "client_id": "123456789",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+    }
+    params = {"credentials": {"password": json.dumps(sa_info)}}
+    args: dict = {}
+
+    mock_creds = MagicMock()
+    mock_from_sa = mocker.patch(
+        "GCP.google_service_account.Credentials.from_service_account_info",
+        return_value=mock_creds,
+    )
+
+    result = get_credentials(args, params)
+
+    mock_from_sa.assert_called_once_with(
+        sa_info,
+        scopes=["https://www.googleapis.com/auth/cloud-platform"],
+    )
+    assert result is mock_creds
+
+
+def test_get_credentials_marketplace_propagates_project_id(mocker):
+    """
+    Given:
+        - Integration params with a service account JSON that contains project_id.
+        - args dict does NOT contain project_id.
+    When:
+        - get_credentials is called.
+    Then:
+        - args['project_id'] is set to the project_id from the service account JSON.
+    """
+    from GCP import get_credentials
+
+    sa_info = {
+        "type": "service_account",
+        "project_id": "sa-project-id",
+        "private_key": "key",
+        "client_email": "sa@sa-project-id.iam.gserviceaccount.com",
+    }
+    params = {"credentials": {"password": json.dumps(sa_info)}}
+    args: dict = {}
+
+    mocker.patch(
+        "GCP.google_service_account.Credentials.from_service_account_info",
+        return_value=MagicMock(),
+    )
+
+    get_credentials(args, params)
+
+    assert args["project_id"] == "sa-project-id"
+
+
+def test_get_credentials_marketplace_invalid_json_raises():
+    """
+    Given:
+        - Integration params with an invalid (non-JSON) string in credentials.password.
+    When:
+        - get_credentials is called.
+    Then:
+        - DemistoException is raised with a message about invalid JSON format.
+    """
+    from GCP import get_credentials
+    from CommonServerPython import DemistoException
+
+    params = {"credentials": {"password": "not-valid-json"}}
+    args: dict = {}
+
+    with pytest.raises(DemistoException, match="Invalid Service Account JSON format"):
+        get_credentials(args, params)
+
+
+def test_get_credentials_marketplace_missing_credentials_raises(mocker):
+    """
+    Given:
+        - Integration params with no credentials (empty password) and no project_id in args.
+        - No connector ID in context (not Cortex Cloud).
+    When:
+        - get_credentials is called.
+    Then:
+        - DemistoException is raised indicating project_id is missing.
+    """
+    from GCP import get_credentials
+    from CommonServerPython import DemistoException
+
+    params: dict = {}
+    args: dict = {}
+
+    # Simulate CTS call failing (no connector context)
+    mocker.patch("GCP.get_cloud_credentials", side_effect=Exception("no connector"))
+
+    with pytest.raises(DemistoException, match="Missing required parameter 'project_id'"):
+        get_credentials(args, params)
+
+
+def test_get_credentials_cortex_cloud_token_path(mocker):
+    """
+    Given:
+        - No service account JSON in params (Cortex Cloud path).
+        - project_id is provided in args.
+        - get_cloud_credentials returns a valid access_token.
+    When:
+        - get_credentials is called.
+    Then:
+        - get_cloud_credentials is called with GCP cloud type and the project_id.
+        - A Credentials object is returned with the token.
+    """
+    from GCP import get_credentials
+    from google.oauth2.credentials import Credentials
+
+    params: dict = {}
+    args = {"project_id": "my-gcp-project"}
+
+    mock_creds_data = {"access_token": "ya29.test-token"}
+    mocker.patch("GCP.get_cloud_credentials", return_value=mock_creds_data)
+
+    result = get_credentials(args, params)
+
+    assert isinstance(result, Credentials)
+    assert result.token == "ya29.test-token"
+
+
+def test_test_module_marketplace_returns_ok(mocker):
+    """
+    Given:
+        - Valid GCP credentials (marketplace service account).
+        - params contains a valid project_id.
+        - Resource Manager testIamPermissions call succeeds.
+    When:
+        - test_module is called.
+    Then:
+        - Returns "ok".
+        - testIamPermissions is called with the correct project resource and permission.
+    """
+    from GCP import test_module
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    params = {"project_id": "my-project-123"}
+
+    mock_rm = MagicMock()
+    mock_rm.projects.return_value.testIamPermissions.return_value.execute.return_value = {
+        "permissions": ["resourcemanager.projects.get"]
+    }
+    mocker.patch("GCP.GCPServices.RESOURCE_MANAGER.build", return_value=mock_rm)
+
+    result = test_module(creds, params)
+
+    assert result == "ok"
+    mock_rm.projects.return_value.testIamPermissions.assert_called_once_with(
+        resource="projects/my-project-123",
+        body={"permissions": ["resourcemanager.projects.get"]},
+    )
+
+
+def test_test_module_marketplace_missing_project_id_raises():
+    """
+    Given:
+        - params does not contain project_id.
+    When:
+        - test_module is called.
+    Then:
+        - DemistoException is raised with a message about missing project_id.
+    """
+    from GCP import test_module
+    from CommonServerPython import DemistoException
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    params: dict = {}
+
+    with pytest.raises(DemistoException, match="Missing required parameter 'project_id'"):
+        test_module(creds, params)
+
+
+def test_test_module_marketplace_api_failure_raises(mocker):
+    """
+    Given:
+        - Valid params with project_id.
+        - Resource Manager testIamPermissions call raises an exception.
+    When:
+        - test_module is called.
+    Then:
+        - DemistoException is raised with a message about the failure.
+    """
+    from GCP import test_module
+    from CommonServerPython import DemistoException
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    params = {"project_id": "my-project-123"}
+
+    mock_rm = MagicMock()
+    mock_rm.projects.return_value.testIamPermissions.return_value.execute.side_effect = Exception(
+        "403 Permission denied"
+    )
+    mocker.patch("GCP.GCPServices.RESOURCE_MANAGER.build", return_value=mock_rm)
+
+    with pytest.raises(DemistoException, match="Failed to connect to GCP project 'my-project-123'"):
+        test_module(creds, params)

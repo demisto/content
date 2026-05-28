@@ -6,11 +6,19 @@ sectionorder:
 - Collect
 configuration:
 - displaypassword: Service Account Private Key file content (JSON).
+  display: Service Account Private Key (JSON)
   name: credentials
   required: false
   type: 9
   hiddenusername: true
   section: Connect
+  additionalinfo: "Required for Cortex XSOAR and Cortex XSIAM. Paste the full contents of a GCP Service Account private key JSON file. Not required on Cortex Cloud (platform), where authentication is handled automatically via the cloud connector."
+- display: GCP Project ID
+  name: project_id
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: "Required for Cortex XSOAR and Cortex XSIAM. The GCP project ID to authenticate against when testing the integration (e.g. my-project-123). Not required on Cortex Cloud (platform)."
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -27,7 +35,7 @@ name: GCP
 display: Google Cloud Platform
 category: Cloud Services
 provider: Google
-description: Cloud integrations are installed from the Data Sources page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select GCP, then in Advanced Settings > Security Capabilities, enable "Automation".
+description: "Manage and secure Google Cloud Platform resources. On Cortex Cloud, authentication is handled automatically via the cloud connector. On Cortex XSOAR and Cortex XSIAM, configure a GCP Service Account private key JSON and a default GCP Project ID."
 script:
   commands:
   - name: gcp-compute-firewall-patch

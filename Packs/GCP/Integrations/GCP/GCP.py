@@ -2534,80 +2534,125 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
     return None
 
 
-def test_module(creds: Credentials, args: dict[str, Any]) -> str:
+def test_module(creds: Credentials, params: dict[str, Any]) -> str:
     """
-    Tests connectivity to GCP and checks for required permissions.
+    Tests connectivity to GCP by calling the Resource Manager API.
 
-    This function is used for the integration's test button functionality.
-    It verifies connectivity and basic permissions.
+    Used for the integration's test button on both Cortex Cloud (platform) and
+    Cortex XSOAR / Cortex XSIAM (marketplace) deployments.
+
+    On marketplace, ``project_id`` is read from the integration parameter
+    ``project_id`` (set by the user in the instance configuration).  On
+    Cortex Cloud the COOC health-check path is taken instead (see ``main``),
+    so this function is only reached for marketplace deployments.
 
     Args:
         creds (Credentials): GCP credentials to test.
-        args (dict[str, Any]): Command arguments with 'project_id'.
+        params (dict[str, Any]): Integration parameters containing 'project_id'.
 
     Returns:
-        str: "ok" if test is successful.
+        str: "ok" if the test is successful.
 
     Raises:
-        DemistoException: If the test fails for any reason.
+        DemistoException: If credentials are invalid or the API call fails.
     """
-    project_id = args.get("project_id")
+    project_id = params.get("project_id", "").strip()
     if not project_id:
-        raise DemistoException("Missing required parameter 'project_id'")
+        raise DemistoException(
+            "Missing required parameter 'project_id'. "
+            "Please set the 'GCP Project ID' field in the integration configuration."
+        )
 
     try:
-        check_required_permissions(creds, project_id)
+        # Use Resource Manager to verify credentials are valid and the project exists.
+        # testIamPermissions is a lightweight call that validates both auth and project access.
+        resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+        resource_manager.projects().testIamPermissions(  # pylint: disable=E1101
+            resource=f"projects/{project_id}", body={"permissions": ["resourcemanager.projects.get"]}
+        ).execute()
+        demisto.debug(f"[GCP test_module] Successfully authenticated against project {project_id}")
         return "ok"
     except Exception as e:
-        demisto.debug(f"Test module failed: {str(e)}")
-        raise DemistoException(f"Failed to connect to GCP: {str(e)}")
+        demisto.debug(f"[GCP test_module] Test failed: {str(e)}")
+        raise DemistoException(f"Failed to connect to GCP project '{project_id}': {str(e)}")
 
 
 def get_credentials(args: dict, params: dict) -> Credentials:
     """
-    Helper function to get and validate GCP credentials from either service account or token.
+    Retrieve GCP credentials for the current execution context.
+
+    Authentication priority:
+
+    1. **Marketplace (Cortex XSOAR / Cortex XSIAM)**: Service Account private
+       key JSON supplied via the *credentials* integration parameter
+       (``credentials.password``).  The JSON is parsed and used to build a
+       ``google.oauth2.service_account.Credentials`` object with the
+       ``cloud-platform`` scope.  If the JSON contains a ``project_id`` field
+       and no ``project_id`` was provided in ``args``, the service-account
+       project is used as a fallback so commands that require it still work.
+
+    2. **Cortex Cloud (platform)**: Token-based authentication via CTS
+       (``get_cloud_credentials``).  ``project_id`` must be present in ``args``
+       because it identifies which GCP project to fetch a token for.
 
     Args:
-        args: Command arguments
-        params: Integration parameters
+        args (dict): Command arguments (may contain ``project_id``).
+        params (dict): Integration configuration parameters.
 
     Returns:
-        Credentials: Authenticated GCP credentials object
+        Credentials: Authenticated GCP credentials object.
 
     Raises:
-        DemistoException: If credentials cannot be retrieved or are invalid
+        DemistoException: If credentials cannot be retrieved or are invalid.
     """
+    creds_param = params.get("credentials") or {}
+    password = creds_param.get("password", "").strip()
 
-    # Set up credentials - first try service account, then token-based auth
-    if (credentials := params.get("credentials")) and (password := credentials.get("password")):
+    if password:
+        # --- Marketplace path: service account JSON key ---
         try:
             service_account_info = json.loads(password)
-            creds = google_service_account.Credentials.from_service_account_info(service_account_info)
-            # If project_id wasn't provided in args, try to get it from service account
-            if not args.get("project_id") and "project_id" in service_account_info:
-                args["project_id"] = service_account_info.get("project_id")
-            demisto.debug("Using service account credentials")
-            return creds
         except json.JSONDecodeError as e:
-            raise DemistoException(f"Invalid service account JSON format: {str(e)}")
+            raise DemistoException(
+                f"Invalid Service Account JSON format in the 'credentials' parameter: {str(e)}"
+            )
+        try:
+            creds = google_service_account.Credentials.from_service_account_info(
+                service_account_info,
+                scopes=["https://www.googleapis.com/auth/cloud-platform"],
+            )
         except Exception as e:
-            demisto.debug(f"Error creating service account credentials: {str(e)}")
+            raise DemistoException(f"Failed to build GCP credentials from service account JSON: {str(e)}")
 
-    # Fall back to token-based authentication for COOC
+        # Propagate project_id from the service account JSON when not set in args
+        if not args.get("project_id") and service_account_info.get("project_id"):
+            args["project_id"] = service_account_info["project_id"]
+            demisto.debug(
+                f"[GCP get_credentials] project_id not in args; "
+                f"using project from service account: {args['project_id']}"
+            )
+
+        demisto.debug("[GCP get_credentials] Using service account credentials (marketplace path)")
+        return creds
+
+    # --- Cortex Cloud path: CTS token-based authentication ---
     project_id = args.get("project_id")
     if not project_id:
-        raise DemistoException("Missing required parameter 'project_id'")
+        raise DemistoException(
+            "Missing required parameter 'project_id'. "
+            "On Cortex Cloud, provide it as a command argument. "
+            "On Cortex XSOAR/XSIAM, supply a Service Account JSON key in the integration credentials."
+        )
     try:
         credential_data = get_cloud_credentials(CloudTypes.GCP.value, project_id)
         token = credential_data.get("access_token")
         if not token:
-            raise DemistoException("Failed to retrieve GCP access token - token is missing from credentials")
-
+            raise DemistoException("Failed to retrieve GCP access token — token is missing from CTS credentials")
         creds = Credentials(token=token)
-        demisto.debug(f"{project_id}: Using token-based credentials")
+        demisto.debug(f"[GCP get_credentials] {project_id}: Using CTS token-based credentials (Cortex Cloud path)")
         return creds
     except Exception as e:
-        raise DemistoException(f"Failed to authenticate with GCP: {str(e)}")
+        raise DemistoException(f"Failed to authenticate with GCP via CTS: {str(e)}")
 
 
 def gcp_compute_network_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -2939,8 +2984,16 @@ def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
 
-    This function processes the incoming command, sets up the appropriate credentials,
-    and routes the execution to the corresponding handler function.
+    Routing logic for ``test-module``:
+
+    - **Cortex Cloud (platform)**: ``get_connector_id()`` returns a connector ID
+      → delegates to ``run_health_check_for_accounts`` (COOC health check).
+    - **Cortex XSOAR / Cortex XSIAM (marketplace)**: no connector ID
+      → calls ``test_module`` directly with the integration ``params`` so it
+      can read ``project_id`` from the instance configuration.
+
+    All other commands retrieve credentials via ``get_credentials`` and dispatch
+    to the appropriate handler.
     """
     command = demisto.command()
     args = demisto.args()
@@ -2948,7 +3001,7 @@ def main():  # pragma: no cover
 
     try:
         command_map: dict[str, Callable[[Any, dict], Any]] = {
-            "test-module": test_module,
+            "test-module": lambda creds, _args: test_module(creds, params),
             # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
             "gcp-compute-firewall-insert": compute_firewall_insert,
@@ -3017,7 +3070,8 @@ def main():  # pragma: no cover
         }
 
         if command == "test-module" and (connector_id := get_connector_id()):
-            demisto.debug(f"Running health check for connector ID: {connector_id}")
+            # Cortex Cloud path: delegate to COOC health check
+            demisto.debug(f"[GCP main] Running health check for connector ID: {connector_id}")
             return_results(run_health_check_for_accounts(connector_id, CloudTypes.GCP.value, health_check))
 
         elif command in command_map:
