@@ -102,11 +102,14 @@ class TestLoadDefault:
     def test_default_yaml_loads(self) -> None:
         cfg = load_config()
         assert isinstance(cfg, WorkflowConfig)
-        # The bundled YAML has 15 steps and 3 identity columns
-        # (16 minus the removed `shadowed command test passes`
-        # checkpoint, which the new `Shadowed Integration Commands`
-        # data column replaced).
-        assert len(cfg.steps) == 15
+        # The bundled YAML has 13 steps and 3 identity columns.
+        # Schema_version=2 (2026-05) removed the standalone
+        # ``wrote/checked code`` and ``auth parity test passes``
+        # checkpoints — the former was redundant with the
+        # precommit/validate/unit-tests gate, and the latter is now
+        # enforced *inside* ``set-auth`` (see
+        # ``set_integration_auth`` and ``connectus/check_auth_parity.py``).
+        assert len(cfg.steps) == 13
         assert len(cfg.identity_columns) == 3
         # Markers match the expected sentinels.
         assert cfg.markers.check == "✅"

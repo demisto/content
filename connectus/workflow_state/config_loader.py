@@ -30,7 +30,7 @@ from workflow_state.validators import (
 )
 
 
-SUPPORTED_SCHEMA_VERSIONS = (1,)
+SUPPORTED_SCHEMA_VERSIONS = (1, 2)
 _VALID_STEP_KINDS = {"data", "checkpoint", "flag"}
 _VALID_INTERACTION_KINDS = {"flag_auto_na_target"}
 

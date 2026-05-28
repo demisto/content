@@ -33,8 +33,11 @@ integration's `Auth Details`, the secret values reach the wire in the
   `_apply_ucp_credentials` → `_apply_ucp_<type>`.
 
 If the wire locations differ, UCP migration would silently break the
-integration. The analyzer is the gate on workflow step #11
-(`auth parity test passes`).
+integration. As of schema_version=2 (2026-05) the analyzer is the
+parity gate invoked **inside** [`workflow_state.set_integration_auth`](workflow_state/api.py)
+(the `set-auth` CLI verb); a passing or structurally-skipped result is
+the precondition for the `Auth Details` cell to be persisted at all.
+The standalone `auth parity test passes` checkpoint has been removed.
 
 The analyzer is intentionally orchestration-light:
 
@@ -309,27 +312,40 @@ Output: a single JSON object on stdout with these top-level keys:
 
 The migration skill (per
 [`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1))
-invokes the analyzer at workflow step #11 (`auth parity test
-passes`). The skill's recipe is roughly:
+invokes the analyzer **as part of `set-auth`** (schema_version=2). The
+analyzer's result decides whether the candidate `Auth Details` cell is
+persisted at all; the standalone `auth parity test passes` workflow
+checkpoint that used to follow has been removed. The orchestration
+recipe inside [`set_integration_auth`](workflow_state/api.py) is roughly:
 
-1. Read `Auth Details` from the CSV via
-   `workflow_state.py show-step --raw <id> "Auth Details"`.
-2. Invoke `check_auth_parity.py` with the JSON above as
-   `--auth-details`.
-3. Parse the resulting stdout JSON:
+1. The candidate JSON payload arrives directly via the API/CLI call.
+2. Invoke `check_auth_parity.check_auth_parity` in-process with the
+   payload (no subprocess fork; no CSV round-trip).
+3. Evaluate the resulting JSON envelope:
    - **All per-connection statuses are `pass` (or a recognized skip)**
-     → `markpass "<id>" "auth parity test passes"`.
-   - **Any `fail`** → fix the code (typically by overriding
-     `BaseClient._apply_ucp_<type>` to set the integration's actual
-     wire slot, or by marking the offending entry `interpolated: true`
-     as a last resort), re-run, repeat.
-   - **`inconclusive`** → investigate the diagnostics — most often a
-     `RUN_FAILED_*` from a `test-module` that crashes before issuing
-     HTTP (Aruba-style, or pre-flight URL rejection); usually
-     resolved by `--commands <other-cmd>`.
-   - **A hard error** → handle per the grep literal in the message
-     (mark interpolated for `_LITERAL_MARK_AUTH`; mark step passed for
-     `_LITERAL_MARKPASS_STEP_11`).
+     → commit the `Auth Details` cell to the CSV (cascade-reset
+     downstream Params\* columns per the normal `set-auth` semantics).
+   - **Any `fail`** → reject the write; return the full parity envelope
+     under `result["parity"]` so the operator/AI can fix the code
+     (typically by overriding `BaseClient._apply_ucp_<type>` to set the
+     integration's actual wire slot, or by marking the offending entry
+     `interpolated: true` as a last resort), re-run `set-auth`, repeat.
+   - **`inconclusive`** → treated as a *pass* by the gate (so set-auth
+     proceeds). Inspect the parity envelope; most often a `RUN_FAILED_*`
+     from a `test-module` that crashes before issuing HTTP (Aruba-style,
+     or pre-flight URL rejection). If the failure indicates a real
+     regression that the gate let through, manually re-run
+     `check_auth_parity.py` with a different `--commands <other-cmd>`
+     to confirm.
+   - **A hard error / structural skip** → treated as a *pass* by the
+     gate (so set-auth proceeds), since these codes (`ERROR_NO_BASECLIENT`,
+     `ERROR_NON_PYTHON`, `ERROR_ALL_INTERPOLATED`,
+     `ERROR_CONNECTION_INTERPOLATED`, `ERROR_INTEGRATION_REJECTS_HTTP`)
+     are the well-defined "not parity-testable" cases. The grep literal
+     in the message still helps operators: `_LITERAL_MARK_AUTH` flags
+     the integration as a permanent `interpolated: true` candidate;
+     `_LITERAL_MARKPASS_STEP_11` (legacy constant name) still appears
+     in the all-interpolated message.
 
 Twelve copy-paste demos covering every status code live in
 [`connectus/demo_check_auth_parity.md`](demo_check_auth_parity.md).

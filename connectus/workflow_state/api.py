@@ -541,7 +541,44 @@ def skip_integration_step(integration_id: str, step_name: str) -> dict:
     }
 
 
-def set_integration_auth(integration_id: str, auth_detail_json: str) -> dict:
+def set_integration_auth(
+    integration_id: str,
+    auth_detail_json: str,
+    *,
+    skip_parity: bool | None = None,
+    parity_timeout: int = 60,
+) -> dict:
+    """Commit the ``Auth Details`` cell, gated on a passing parity test.
+
+    Schema-validates the JSON payload, then runs
+    :func:`connectus.check_auth_parity.check_auth_parity` against the
+    integration's source tree using the *candidate* payload. The CSV is
+    only written when parity passes or structurally short-circuits.
+
+    Args:
+        integration_id: Logical integration id (CSV ``Integration ID``).
+        auth_detail_json: Raw JSON string for the ``Auth Details`` cell.
+        skip_parity: If ``True``, bypass the parity gate entirely. When
+            ``None`` (the default), the env var ``CONNECTUS_SKIP_AUTH_PARITY``
+            is consulted — set it to ``1`` to bypass. **Bypass is intended
+            for tests and one-off escape hatches; the normal workflow
+            requires parity to pass.**
+        parity_timeout: Per-command wall-clock timeout for the parity run
+            (seconds). Defaults to 60s.
+
+    Returns:
+        On success::
+
+            {
+              "message": "Set 'Auth Details' for ...",
+              "current_step": "<next step>",
+              "parity": {<full check_auth_parity result>}  # or {"skipped": "..."}
+            }
+
+        On failure (parity blocked OR schema error OR not-found)::
+
+            {"error": "<message>", "parity": {...}}  # parity present iff it ran
+    """
     cfg = get_config()
     schema_errors = validate_auth_detail(auth_detail_json)
     if schema_errors:
@@ -556,11 +593,44 @@ def set_integration_auth(integration_id: str, auth_detail_json: str) -> dict:
         return {"error": f"Integration '{integration_id}' not found."}
 
     row = rows[idx]
+
+    # ----- Parity gate ------------------------------------------------------
+    if skip_parity is None:
+        skip_parity = os.environ.get("CONNECTUS_SKIP_AUTH_PARITY", "").strip() == "1"
+
+    parity_payload: dict = {}
+    if skip_parity:
+        parity_payload = {"skipped": "CONNECTUS_SKIP_AUTH_PARITY=1 (parity gate bypassed)"}
+    else:
+        parity_payload = _run_auth_parity_for_set_auth(
+            integration_id=row.get("Integration ID", integration_id),
+            auth_detail_json=auth_detail_json,
+            timeout=parity_timeout,
+        )
+        gate = _evaluate_parity_for_set_auth(parity_payload)
+        if not gate["allow"]:
+            return {
+                "error": (
+                    f"Auth Details rejected — parity gate failed for "
+                    f"'{row.get('Integration ID', integration_id)}': "
+                    f"{gate['reason']}\n\n"
+                    f"Re-run `python3 connectus/check_auth_parity.py "
+                    f"<integration_path> --integration-id "
+                    f"'{integration_id}' --auth-details '<json>'` "
+                    f"directly to inspect the full diff, then re-derive "
+                    f"the Auth Details JSON before calling set-auth "
+                    f"again. To bypass the gate (e.g. in a test), set "
+                    f"CONNECTUS_SKIP_AUTH_PARITY=1."
+                ),
+                "parity": parity_payload,
+            }
+
+    # ----- Persist (parity passed or was bypassed) --------------------------
     target = cfg.step_by_name["Auth Details"]
     try:
         cleared, _ = apply_step_action(row, target, auth_detail_json, verb="set-auth")
     except WorkflowError as e:
-        return {"error": e.message}
+        return {"error": e.message, "parity": parity_payload}
     save_csv(rows)
     cur = current_step(row)
     return {
@@ -569,6 +639,172 @@ def set_integration_auth(integration_id: str, auth_detail_json: str) -> dict:
             + (f" Cleared: {cleared}" if cleared else "")
         ),
         "current_step": cur.name if cur else None,
+        "parity": parity_payload,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Auth-parity gate (in-process, called by set_integration_auth)
+# ---------------------------------------------------------------------------
+
+# Exit codes from check_auth_parity that we treat as "structural skip" — the
+# integration is not parity-testable, but that's a known, accepted state
+# (same semantics as the historical 'N/A markpass' on the removed
+# `auth parity test passes` checkpoint). We allow set-auth to proceed.
+_PARITY_STRUCTURAL_SKIP_CODES = {
+    "ERROR_NON_PYTHON",
+    "ERROR_NO_BASECLIENT",
+    "ERROR_ALL_INTERPOLATED",
+    "ERROR_CONNECTION_INTERPOLATED",
+    "ERROR_INTEGRATION_REJECTS_HTTP",
+}
+
+# Per-connection statuses that count as "passing" for the gate. `pass` is the
+# obvious one; `inconclusive` (analyzer couldn't reach a request — e.g.
+# test-module returned early without an HTTP call) is permissive on purpose
+# so we don't block on unrelated runtime failures. The `skipped_*` statuses
+# (signed, mtls, passthrough) are per-connection structural skips and also
+# count as passing.
+_PARITY_OK_STATUSES = {
+    "pass",
+    "inconclusive",
+    "skipped_signed",
+    "skipped_mtls",
+    "skipped_passthrough",
+}
+
+
+def _run_auth_parity_for_set_auth(
+    integration_id: str,
+    auth_detail_json: str,
+    timeout: int,
+) -> dict:
+    """Invoke ``check_auth_parity.check_auth_parity`` against a candidate payload.
+
+    The candidate ``Auth Details`` JSON is NOT yet persisted to the CSV —
+    we pass it directly to the analyzer and decide based on the result
+    whether the write should happen. Returns the analyzer's result
+    envelope unchanged on success; returns a synthesized error envelope
+    (with ``error.code``) on infrastructure failures (missing file path,
+    crash inside the analyzer, etc.).
+    """
+    # Resolve the integration's directory on disk.
+    files_info = get_integration_files(integration_id)
+    if "error" in files_info:
+        return {
+            "error": {
+                "code": "ERROR_FILES_LOOKUP",
+                "message": files_info["error"],
+                "exit_code": 2,
+            },
+        }
+    directory_rel = files_info.get("directory") or ""
+    abs_dir = os.path.join(BASE_DIR, directory_rel) if directory_rel else BASE_DIR
+
+    # Lazy import — check_auth_parity has a heavy top-level (importlib,
+    # docker, capture proxy) and we don't want to pay for it on every
+    # workflow_state call. Only set-auth needs it.
+    try:
+        from check_auth_parity import check_auth_parity as _check_auth_parity
+        import check_command_params as _ccp  # noqa: F401  # DockerConfig source
+    except Exception as exc:  # noqa: BLE001 — defensive
+        return {
+            "error": {
+                "code": "ERROR_PARITY_IMPORT",
+                "message": (
+                    f"Could not import check_auth_parity for the set-auth "
+                    f"parity gate: {type(exc).__name__}: {exc}. Set "
+                    f"CONNECTUS_SKIP_AUTH_PARITY=1 to bypass, or fix the "
+                    f"import path."
+                ),
+                "exit_code": 3,
+            },
+        }
+
+    try:
+        candidate = json.loads(auth_detail_json)
+    except json.JSONDecodeError as exc:
+        # Shouldn't happen — validate_auth_detail() ran above — but be defensive.
+        return {
+            "error": {
+                "code": "ERROR_AUTH_NOT_JSON",
+                "message": f"Auth Details is not valid JSON: {exc}",
+                "exit_code": 2,
+            },
+        }
+
+    docker_cfg = _ccp.DockerConfig(
+        mode="auto",
+        default_image=None,
+        use_integration_docker=True,
+    )
+
+    try:
+        from pathlib import Path
+        return _check_auth_parity(
+            integration_path=Path(abs_dir).resolve(),
+            integration_id=integration_id,
+            auth_details=candidate,
+            param_defaults={},  # set-auth wipes this column anyway
+            commands_filter=None,
+            connection_filter=None,
+            timeout=timeout,
+            docker_cfg=docker_cfg,
+        )
+    except Exception as exc:  # noqa: BLE001 — top-level guard
+        return {
+            "error": {
+                "code": "ERROR_PARITY_UNHANDLED",
+                "message": f"check_auth_parity raised: {type(exc).__name__}: {exc}",
+                "exit_code": 3,
+            },
+        }
+
+
+def _evaluate_parity_for_set_auth(result: dict) -> dict:
+    """Decide whether a check_auth_parity result clears the set-auth gate.
+
+    Returns ``{"allow": bool, "reason": str}``. ``reason`` is the
+    human-readable explanation when ``allow=False`` (and a short
+    summary when ``allow=True``, for logging).
+    """
+    error = result.get("error")
+    if isinstance(error, dict):
+        code = str(error.get("code") or "")
+        msg = str(error.get("message") or "")
+        if code in _PARITY_STRUCTURAL_SKIP_CODES:
+            return {
+                "allow": True,
+                "reason": f"structural skip ({code}): {msg}",
+            }
+        return {
+            "allow": False,
+            "reason": f"parity errored ({code or 'unknown'}): {msg}",
+        }
+
+    auth_parity = result.get("auth_parity")
+    if not isinstance(auth_parity, dict) or not auth_parity:
+        # No connections evaluated (e.g. empty auth_types). Allow —
+        # NoneRequired flows have nothing to test.
+        return {"allow": True, "reason": "no connections evaluated"}
+
+    failing = []
+    for conn_name, conn_block in auth_parity.items():
+        status = (conn_block or {}).get("status")
+        if status not in _PARITY_OK_STATUSES:
+            failing.append((conn_name, status))
+
+    if failing:
+        details = ", ".join(f"{n}={s!r}" for n, s in failing)
+        return {
+            "allow": False,
+            "reason": f"{len(failing)} connection(s) did not pass: {details}",
+        }
+
+    statuses = sorted({(b or {}).get("status") for b in auth_parity.values()})
+    return {
+        "allow": True,
+        "reason": f"all {len(auth_parity)} connection(s) ok: {statuses}",
     }
 
 

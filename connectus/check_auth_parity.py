@@ -72,8 +72,15 @@ EXIT_INTEGRATION_REJECTS_HTTP = 14
 
 # Parseable substrings the migration skill greps for. Do NOT reword.
 _LITERAL_MARK_AUTH = "Mark its auth as interpolated"
+# Historical name — schema_version=2 (2026-05) removed the standalone
+# "auth parity test passes" checkpoint and folded the parity check into
+# set-auth itself. This message is now surfaced by set-auth's parity
+# gate (it short-circuits the same way as before) but no longer points
+# at a separate workflow step. The constant name is preserved for
+# backward compatibility with the test suite.
 _LITERAL_MARKPASS_STEP_11 = (
-    "Step #11 (auth parity test passes) is effectively migrated — markpass."
+    "Auth parity gate inside set-auth: structurally skipped — re-run "
+    "set-auth to commit the Auth Details cell."
 )
 
 _SENTINEL_PREFIX = "__AUTHPARITY__"

@@ -1482,7 +1482,7 @@ Usage examples:
   python3 connectus/workflow_state.py next
   python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
   python3 connectus/workflow_state.py set-auth "Cisco Spark" '<json>'
-  python3 connectus/workflow_state.py markpass "Cisco Spark" "wrote/checked code"
+  python3 connectus/workflow_state.py markpass "Cisco Spark" "write tests"
 """
 
 

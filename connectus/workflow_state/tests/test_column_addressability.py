@@ -29,11 +29,11 @@ from workflow_state.config_loader import _reset_config_for_testing
 
 # ---------------------------------------------------------------------------
 # Schema canaries — these encode the expected column positions in the
-# bundled YAML (3 identity columns + 15 steps). If the YAML shifts, fix
+# bundled YAML (3 identity columns + 13 steps). If the YAML shifts, fix
 # these numbers in lock-step with the column references below.
 # ---------------------------------------------------------------------------
 
-_EXPECTED_TOTAL_COLS = 18
+_EXPECTED_TOTAL_COLS = 16
 _COL_INTEGRATION_ID = 1          # identity (allowed for show-step)
 _COL_AUTH_DETAILS = 5            # step #2 → CSV column 5
 _COL_GENERATED_MANIFEST = 10     # step #7 → CSV column 10 (first checkpoint, after Params for test with default in code + Shadowed Integration Commands + Params to Capabilities)
@@ -141,7 +141,7 @@ def test_show_step_no_raw_still_decorates(temp_csv: Path, capsys) -> None:
 # ---------------------------------------------------------------------------
 
 def test_markpass_resolves_checkpoint_by_number(temp_csv: Path, capsys) -> None:
-    """markpass <id> 8 → 'generated manifest' (first checkpoint)."""
+    """markpass <id> 10 → 'generated manifest' (first checkpoint)."""
     wf_cli.cmd_markpass(["TestInt", str(_COL_GENERATED_MANIFEST)])
     out = capsys.readouterr().out
     assert "generated manifest" in out

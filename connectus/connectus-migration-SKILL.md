@@ -7,17 +7,19 @@ description: This skill should be used when migrating integrations to connectus
 
 ## Overview
 
-> _The workflow now has 15 steps (2026-05Q4): the new `Shadowed Integration Commands` data column replaced the old `shadowed command test passes` checkpoint, so the data-column count went from 5 to 6 and the checkpoint count went from 10 to 9. The per-profile `verify_connection_skip` boolean inside each `auth_types[]` entry of `Auth Details` remains the replacement signal (see §A.5 below) for the historical `verify button placement` step removed in 2026-05Q3._
+> _The workflow now has 13 steps (2026-05, schema_version=2): the standalone `wrote/checked code` and `auth parity test passes` checkpoints were removed (see breaking-change note below). Earlier 2026-05Q4 change: the new `Shadowed Integration Commands` data column replaced the old `shadowed command test passes` checkpoint. The per-profile `verify_connection_skip` boolean inside each `auth_types[]` entry of `Auth Details` remains the replacement signal (see §A.5 below) for the historical `verify button placement` step removed in 2026-05Q3._
 
 This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs platform. Each integration follows a workflow tracked in [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) via the [`connectus/workflow_state.py`](workflow_state.py) CLI tool.
 
 The CSV has two kinds of columns:
 
 - **Identity / metadata** (3): `Integration ID`, `Integration File Path`, `Connector ID`.
-- **Workflow columns** (15, managed by the state machine — CSV total is 18):
+- **Workflow columns** (13, managed by the state machine — CSV total is 16):
   - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Shadowed Integration Commands`, `Params to Capabilities` (6).
   - **Workflow flag**: _(none)_
-  - **Workflow checkpoints** (9, sequential ✅): `generated manifest`, `run manifest make validate`, `wrote/checked code`, `write tests`, `precommit/validate/unit tests passed`, `auth parity test passes`, `param parity test passes`, `code reviewed`, `code merged`.
+  - **Workflow checkpoints** (7, sequential ✅): `generated manifest`, `run manifest make validate`, `write tests`, `precommit/validate/unit tests passed`, `param parity test passes`, `code reviewed`, `code merged`.
+
+> _Schema_version=2 (2026-05) breaking change: the standalone `wrote/checked code` and `auth parity test passes` checkpoints were removed. Code authorship/review was redundant with the downstream `precommit/validate/unit tests passed` gate; auth parity is now enforced **inside `set-auth`** itself — the candidate `Auth Details` JSON is run through [`check_auth_parity.py`](check_auth_parity.py) before the cell is committed, and the write is rejected unless parity passes or short-circuits structurally (`NO_BASECLIENT` / `NON_PYTHON` / `ALL_INTERPOLATED` / `CONNECTION_INTERPOLATED` / `INTEGRATION_REJECTS_HTTP`). A successful `set-auth` therefore *means* "parity has been verified"; see [§1.12 Auth-parity gate inside `set-auth`](#112-auth-parity-gate-inside-set-auth)._
 
 Authentication classification is the **prerequisite for everything**: you must set `Auth Details` with `set-auth` before the workflow can meaningfully begin (setting it also resets the workflow). The Validate Auth Classification procedure below is run before invoking `set-auth`.
 
@@ -27,7 +29,7 @@ The skill supports three top-level invocation styles. Pick the matching flow bas
 
 | User phrase (examples) | Action |
 |---|---|
-| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 15-step procedure for that one integration. |
+| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 13-step procedure for that one integration. |
 | "migrate everything assigned to me" / "what's next for me" / "continue my work" / "keep going" | [Assignee batch flow](#assignee-batch-flow) — enumerate the user's in-progress + assigned integrations and walk them one by one. |
 | "migrate connector `<connector_id>`" / "work on connector `<connector_id>`" / "do the whole `<connector>` connector" | [Connector batch flow](#connector-batch-flow) — enumerate that connector's integrations and walk them one by one (with ownership disambiguation up front). |
 
@@ -153,7 +155,7 @@ which is then applied verbatim).
 
 | # | CLI verb | Column written | What to show before asking |
 |---|---|---|---|
-| 1 | `set-auth` | `Auth Details` | The full JSON payload; a concise bullet list of source-code evidence per `auth_types[]` entry (which YML param + which code site justifies the type); the `other_connection` list. Note that this call resets the workflow + wipes the downstream Params\* columns. |
+| 1 | `set-auth` | `Auth Details` | The full JSON payload; a concise bullet list of source-code evidence per `auth_types[]` entry (which YML param + which code site justifies the type); the `other_connection` list. Note that this call resets the workflow + wipes the downstream Params\* columns AND runs the auth-parity test on the candidate payload — the cell is **rejected** unless parity passes or short-circuits structurally (see [§1.12 Auth-parity gate inside `set-auth`](#112-auth-parity-gate-inside-set-auth)). If the gate fails, treat the printed diff as the next problem to solve (most often: a non-standard auth header that needs a `_apply_ucp_<type>` override on the integration's `Client`, or a multi-auth integration with a startup validator that needs `is_ucp_enabled()` gating) — see the same §1.12 for the troubleshooting playbook. |
 | 2 | `set-params-to-commands` | `Params to Commands` | The full JSON payload; the analyzer's per-command findings vs. the final list (call out any commands where you overrode the analyzer); the auth-ignore set pulled from `auth-params`. |
 | 3 | `set-param-defaults` | `Params for test with default in code` | The full JSON payload AND, for each entry, a one-line attribution: **(a)** *param `foo`: code fallback added — was `params.get("foo")`, now `params.get("foo") or "<yml default>"`, default sourced from YML `defaultvalue`.* **(b)** *param `foo`: NO YML default; proposed default `<value>` — please confirm/edit/skip before the code edit is applied.* **(c)** *param `foo`: code already supplies fallback `<existing default>`; recorded for the cell, no code edit.* Branch (b) is the only sub-confirmation that pauses the workflow per-param (within the same outer pause-before-`set-param-defaults` step). The skill MUST collect all branch-(b) confirmations before applying any `.py` edits, AND before calling `set-param-defaults`. If any branch-(b) param is rejected, drop it from the JSON and skip its code edit. |
 | 4 | `set-params-to-capabilities` | `Params to Capabilities` | The full JSON payload from the mapping helper; any `MANUAL_COMMAND_TO_CAPABILITY_JSON` overrides applied and why. |
@@ -255,8 +257,9 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 7. ☐ Extract the **connection-adjacent** YML params (URL, proxy, insecure, port, host, region, …) into the sorted `other_connection` list — see [1.2.5](#125-building-the-other_connection-list)
 8. ☐ Sanity-check against [Known Misclassification Patterns](#16-known-misclassification-patterns) and the [Decision Tree](#19-decision-tree-for-auth-type)
 9. ☐ Run the [Pre-flight self-check](#111-pre-flight-self-check)
-10. ☐ Apply via `set-auth` (this validates the JSON schema and resets the workflow) — see [1.10](#110-applying-corrections)
-11. ☐ Re-run `status` to confirm the value was stored as intended
+10. ☐ Apply via `set-auth` (this validates the JSON schema, **runs the auth-parity test on the candidate payload**, and on success resets the workflow) — see [1.10](#110-applying-corrections)
+11. ☐ If `set-auth` rejects the cell with a parity-gate failure, apply the troubleshooting playbook in [§1.12](#112-auth-parity-gate-inside-set-auth) (UCP header override, startup-validator gating, `interpolated: true` fallback, etc.) and re-run
+12. ☐ Re-run `status` to confirm the value was stored as intended
 
 The current CSV value, if any, is informational only — show it to the user for context but derive the new value entirely from the source code:
 
@@ -1052,6 +1055,182 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 
 ---
 
+#### 1.12 Auth-parity gate inside `set-auth`
+
+`set-auth` is no longer a pure CSV write. As of schema_version=2 (2026-05), the call invokes [`check_auth_parity.check_auth_parity`](check_auth_parity.py) against the **candidate** `Auth Details` payload before the cell is committed. The result is evaluated as follows:
+
+| Analyzer outcome | Gate decision | What happens |
+|---|---|---|
+| All connections return `status: "pass"` (or per-connection `skipped_signed` / `skipped_mtls` / `skipped_passthrough` / `inconclusive`) | **Allow** | The cell is written; downstream Params\* columns are wiped per the normal cascade. |
+| `auth_types` is empty (NoneRequired) | **Allow** | No connections to test. The cell is written. |
+| Hard error: `ERROR_NO_BASECLIENT` (11), `ERROR_NON_PYTHON` (10), `ERROR_ALL_INTERPOLATED` (12), `ERROR_CONNECTION_INTERPOLATED` (13), `ERROR_INTEGRATION_REJECTS_HTTP` (14) | **Allow (structural skip)** | The integration cannot be parity-tested for a known, accepted reason. Same semantics as the historical "N/A markpass" on the removed `auth parity test passes` checkpoint. The cell is written. |
+| Any connection returns `status: "fail"` | **Block** | The cell is NOT written. The row is left untouched. The skill should apply the troubleshooting playbook below and re-run `set-auth`. |
+| Infrastructure failure (`ERROR_FILES_LOOKUP`, `ERROR_PARITY_IMPORT`, `ERROR_PARITY_UNHANDLED`, etc.) | **Block** | The cell is NOT written. Inspect the error and fix the prerequisite (missing `Integration File Path`, broken import path, etc.) before re-running. |
+
+When the gate blocks, the api/CLI returns the full analyzer envelope under `result["parity"]` so the skill can attribute the failure to a specific connection / sentinel.
+
+> **Escape hatch (tests only).** Set the env var `CONNECTUS_SKIP_AUTH_PARITY=1` to bypass the gate entirely. This is for unit tests and one-off debugging — do **not** use it as part of the normal migration workflow.
+
+##### Troubleshooting playbook — when the parity gate blocks
+
+The two failure modes you will encounter in practice are (a) the integration uses a non-standard auth header and the default UCP injection writes the secret into the wrong slot, and (b) the integration has a startup-time auth validator that raises before the `Client` is constructed and the parity tool never reaches the request-emission stage. Both have well-defined fixes.
+
+###### A. UCP support for integrations using non-standard auth headers
+
+When UCP is enabled, [`BaseClient._http_request`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:10200) auto-injects credentials via [`_inject_ucp_credentials`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9919) → `_apply_ucp_credentials` → `_apply_ucp_<type>`. The defaults assume vendors use the standard `Authorization` header:
+
+- [`_apply_ucp_api_key`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9855) → writes `Authorization: Bearer <key>`.
+- [`_apply_ucp_plain`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9881) → sets `ctx.auth = (username, password)` (a tuple consumed by `requests` as HTTP Basic Auth, equivalent to `Authorization: Basic <base64(user:pass)>`).
+- [`_apply_ucp_oauth2`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9836) → writes `Authorization: <token_type> <access_token>` (default token type `Bearer`).
+
+**The problem.** Many vendors do NOT use `Authorization`. APIVoid uses `X-API-Key`; some vendors use `Apikey`; some carry the secret in a custom query parameter; signed-request schemes (HMAC, AWS SigV4) write into multiple headers at once. For any such integration, the default UCP injection writes the secret into the **wrong** header. The integration's own code reads from the ORIGINAL header — which is empty under UCP because the user-facing params were stripped from `demisto.params()`. Net result: **the outbound request goes out unauthenticated**, but no exception is raised at the injection layer.
+
+**Detection.** This manifests as the auth parity result reporting `MISSING_IN_NEW` for the secret's role-tagged sentinel. The old run's `locations` show the secret at the integration's actual header (e.g. `header:x-api-key`); the new run's `locations` are empty.
+
+**Fix.** Override the appropriate `_apply_ucp_<type>` method on the integration's `Client` class (the `BaseClient` subclass). The override receives the UCP credentials dict and a request-context object with mutable `.headers`, `.params`, `.auth`, `.data`, `.json_data` attributes, and is expected to write the secret into the slot the integration's own request code actually reads from.
+
+**Worked example — APIVoid.** APIVoid's `Client.__init__` constructs `headers = {"X-API-Key": apikey, ...}`. To make UCP route the credential into the same slot, add `_apply_ucp_api_key`:
+
+```python
+class Client(BaseClient):
+    def __init__(self, base_url, apikey, verify, proxy):
+        headers = {"X-API-Key": apikey, "Content-Type": "application/json"}
+        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
+
+    def _apply_ucp_api_key(self, credentials: dict, ctx: Any) -> None:
+        """
+        UCP override: write the API key into the non-standard ``X-API-Key`` header
+        instead of the default ``Authorization: Bearer ...``.
+        """
+        api_key_data = credentials.get("api_key", credentials)
+        ctx.headers["X-API-Key"] = api_key_data.get("key", "")
+```
+
+**Sibling overrides for other auth types.** The same pattern applies to the other two `_apply_ucp_*` methods. The `credentials` argument is the dict returned by the UCP shape (see [`auth_parity_test_design.md`](auth_parity_test_design.md:1) §2.5 for the per-type shapes); `ctx` has mutable `.headers`, `.params`, `.auth`, `.data`, `.json_data` attributes.
+
+- **`Plain` with custom header(s)** — override [`_apply_ucp_plain`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9881):
+
+  ```python
+  def _apply_ucp_plain(self, credentials: dict, ctx: Any) -> None:
+      plain_data = credentials.get("plain", credentials)
+      # Example: vendor wants username + password in two separate custom headers
+      ctx.headers["X-Vendor-User"] = plain_data.get("username", "")
+      ctx.headers["X-Vendor-Pass"] = plain_data.get("password", "")
+      # — OR — preserve Basic Auth but use HTTPBasicAuth for additional flexibility:
+      # from requests.auth import HTTPBasicAuth
+      # ctx.auth = HTTPBasicAuth(plain_data.get("username", ""), plain_data.get("password", ""))
+  ```
+
+- **`OAuth2*` with non-`Authorization: Bearer`** — override [`_apply_ucp_oauth2`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9836):
+
+  ```python
+  def _apply_ucp_oauth2(self, credentials: dict, ctx: Any) -> None:
+      oauth2_data = credentials.get("oauth2", credentials)
+      ctx.headers["X-Auth-Token"] = oauth2_data.get("access_token", "")
+  ```
+
+**Cross-reference to CSP source** for the default implementations and the entry point — read these when you need to confirm exactly what defaults you are replacing:
+
+- [`_apply_ucp_api_key`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9855) (default writes `Authorization: Bearer <key>`; docstring shows the canonical override at lines 9865–9870).
+- [`_apply_ucp_plain`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9881) (default sets `ctx.auth = (username, password)` for `requests` Basic Auth).
+- [`_apply_ucp_oauth2`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9836) (default writes `Authorization: <token_type> <access_token>`).
+- [`_inject_ucp_credentials`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9919) — the per-request entry point invoked from `BaseClient._http_request`.
+- [`_http_request`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:10200) — the UCP block inside the HTTP request loop.
+
+**Cheat sheet — when you need the override:**
+
+- **YOU NEED IT** if the integration's existing code reads the secret from a non-`Authorization` header. Grep the integration's `Client.__init__` for the `headers={...}` dict it passes to `super().__init__` — anything other than `Authorization: Bearer <...>` (for APIKey / OAuth2) or `Authorization: Basic <...>` / `HTTPBasicAuth(...)` (for Plain) means UCP's default writes to the wrong slot.
+- **YOU PROBABLY DON'T NEED IT** if the integration sends `Authorization: Bearer <token>` for APIKey / OAuth2, or uses `HTTPBasicAuth(user, pass)` (or the equivalent `auth=(user, pass)` tuple) for Plain — the defaults already cover these.
+- **The parity gate inside `set-auth` will surface `MISSING_IN_NEW`** for the relevant role-tagged sentinel if you forgot the override. Use the rejected `set-auth` payload + `result["parity"]` as the regression catch — apply the override, then re-run `set-auth` with the same payload to confirm the diff goes green.
+
+###### B. Multi-auth integrations with startup-time auth-combo validation
+
+Some integrations (Jira V3 is the canonical example) gate `main()` on a `validate_auth_params()` / `check_credentials()` / `assert_auth()` helper that runs **before** the `Client` is constructed. The helper inspects `demisto.params()` and raises `DemistoException` / `return_error` if some required combination of auth fields is empty. Under UCP this is a precondition that fires before any HTTP call.
+
+**Detection — grep recipe.** Look for a validator function whose body raises before any client is built:
+
+```bash
+grep -nE "def (validate_auth|check_credentials|assert_auth)" Packs/<Pack>/Integrations/<Name>/<Name>.py
+# then read its body — if it ends in `raise DemistoException(...)` / `return_error(...)`
+# AND it is called from `main()` BEFORE the Client constructor, this section applies.
+```
+
+**Why it breaks under UCP.** `demisto.params()` is intentionally empty for auth fields under UCP — UCP supplies the secrets per-request via `getUCPCredentials`, not via `params`. The startup validator sees nothing in `params`, concludes no auth was configured, and raises before any HTTP call. The parity tool never reaches the request-emission stage.
+
+**Detection from the parity-gate output.** Identical-shape `RUN_FAILED_OLD` + `RUN_FAILED_NEW` (or `MISSING_IN_BOTH`) errors across **every** auth profile in a multi-profile (exclusive-OR) configuration; the `stderr_excerpt` contains phrases like *"are mandatory"*, *"must be provided together"*, or *"the required parameters were not provided"*.
+
+**TWO valid fixes.**
+
+**Option A — Gate the validator under UCP** (preferred when the integration is going to be a first-class UCP citizen and you want continued parity coverage):
+
+```python
+# BEFORE
+validate_auth_params(username, api_key, client_id, client_secret, pat)
+
+# AFTER
+if not is_ucp_enabled():
+    validate_auth_params(username, api_key, client_id, client_secret, pat)
+```
+
+Import `is_ucp_enabled` from `CommonServerPython` — it is already exported via `from CommonServerPython import *`. Worked example: [`Packs/Jira/Integrations/JiraV3/JiraV3.py:4857`](Packs/Jira/Integrations/JiraV3/JiraV3.py:4857).
+
+**Option B — Mark every `auth_types[]` entry as `interpolated: true`:**
+
+No code change. Re-classify `Auth Details` so that every `auth_types[]` entry carries `"interpolated": true`. The parity gate's `ERROR_ALL_INTERPOLATED` structural-skip code fires, `set-auth` is allowed through, the workflow advances, and the integration's existing startup validator stays in place untouched. This is the **simpler, faster path** when the integration's UCP behavior is not the migration's first priority.
+
+**When to pick A vs B.**
+
+- Pick **A** if this integration is queued to be migrated to UCP soon AND you want parity coverage to catch the next round of UCP-related bugs (e.g., non-standard auth header overrides — see the previous sub-section).
+- Pick **B** if the integration is queued for later, or if its UCP wiring is genuinely complex (multi-auth combined with per-`Client`-construction header building, conditional flags computed from `params` at init, etc.). Re-visit when the integration is actually prioritized.
+
+**Completeness note if you pick A.** Gating the validator is necessary but **not sufficient** for a fully UCP-aware multi-auth integration. If the `Client.__init__` computes flags from params (e.g., Jira's `is_basic_auth = bool(username and api_key)`), those flags will be `False` under UCP and the `Client`'s branching will pick the wrong path at request time. The `Client` itself needs to consult `get_ucp_credentials()` per-request to pick the right header style — see sub-section A above for the per-request override pattern. **For multi-auth integrations, Option A may require BOTH the startup gate AND the `Client` UCP-awareness override.** This is the principal reason Option B (`interpolated: true`) is often the pragmatic choice.
+
+###### C. Structural-skip gate ordering and the boto3 / AWS family
+
+The parity tool's structural-skip gates fire in a **fixed order** — the first one matched wins, and downstream gates are never evaluated. The order is:
+
+1. `ERROR_NON_PYTHON` (exit 10)
+2. `ERROR_NO_BASECLIENT` (exit 11)
+3. `ERROR_ALL_INTERPOLATED` (exit 12)
+4. `ERROR_CONNECTION_INTERPOLATED` (exit 13)
+5. `ERROR_INTEGRATION_REJECTS_HTTP` (exit 14)
+6. Per-connection skips inside the run: `skipped_signed`, `skipped_mtls`, `skipped_passthrough`.
+
+**Boto3 / AWS integrations always trip `ERROR_NO_BASECLIENT` first**, NOT `skipped_signed`. They use `boto3.Session.client()` directly rather than subclassing `BaseClient`, so gate #2 catches them before gate #6 is even reached. The `skipped_signed` path conceptually exists for boto3 but is structurally unreachable for it — `skipped_signed` only fires for integrations that DO subclass `BaseClient` AND ALSO import `hmac` (or another signed-request module).
+
+**Required action for boto3 / AWS integrations: classify with `interpolated: true` on every `auth_types[]` entry. There is no code-change alternative.** Same reasoning as the feed framework (§1.9.1): no `BaseClient` → no UCP injection → no parity testing possible without re-architecting the integration onto `BaseClient`, which is out of scope.
+
+**Detection during classification:** grep the integration's `.py` for `import boto3|from boto3|import botocore|from botocore|AWSApiModule`. If any match, mark `interpolated: true` up front on every `auth_types[]` entry — `set-auth` will then short-circuit via `ERROR_ALL_INTERPOLATED` and proceed without ever attempting the parity run.
+
+###### D. Permanent `interpolated: true` candidates (no parity testing possible)
+
+Three categories of integrations are permanent `interpolated: true` candidates — the parity tool will short-circuit on them, and that is the **correct** outcome (not a bug to chase):
+
+1. **Legacy HTTP layer / no `BaseClient` subclass** — short-circuits with `ERROR_NO_BASECLIENT`. Example: CrowdStrike Falcon.
+2. **Feed-framework integrations** (any `*FeedApiModule` import) — short-circuits with `ERROR_NO_BASECLIENT`. See §1.9.1.
+3. **`boto3` / `botocore` / `AWSApiModule` integrations** — short-circuits with `ERROR_NO_BASECLIENT` (see sub-section C above).
+
+For all three, the fix is to classify with `interpolated: true` on every `auth_types[]` entry. Do **not** attempt to refactor the integration onto `BaseClient` just to make the parity tool reachable — that is out of scope for the migration.
+
+###### E. Sentinel grammar (for grepping diagnostics)
+
+Parity sentinels encode both the XSOAR path AND the **role** the secret plays, in the form `__AUTHPARITY__<connection>__<xsoar_path>__<role>__<uuid8>` — e.g. `__AUTHPARITY__credentials__credentials.password__key__86ad7936`. Diff messages can be grepped by role, which makes "missing-in-new on the `key` sentinel of `credentials`" trivially attributable to a missing `_apply_ucp_api_key` override (sub-section A above). See [`auth_parity_test_design.md`](auth_parity_test_design.md:1) §2.3 for the full sentinel grammar.
+
+##### Manual re-runs of `check_auth_parity.py` (for debugging only)
+
+The parity gate inside `set-auth` is the canonical entry point. If you want to inspect the analyzer's output without committing the cell — for instance, while iterating on a UCP override — you can run it directly:
+
+```bash
+AUTH='{"auth_types":[...]}'  # the candidate payload
+python3 connectus/check_auth_parity.py Packs/<PackName>/Integrations/<IntegrationName> \
+    --integration-id "<id>" \
+    --auth-details "$AUTH"
+```
+
+The same JSON envelope is what `set-auth` evaluates internally. Once the manual run goes green, re-run `set-auth` with the same payload.
+
+---
+
 #### Auth Type Reference
 
 See [`connectus/Readme.md`](Readme.md:19) for the full Auth Type definitions and §1.2.6 below for the canonical UCP profile-type field shapes.
@@ -1367,7 +1546,7 @@ The skill ONLY needs to:
       --integration-id "<Integration ID>"
   ```
 
-  Same applies to any other `demisto-sdk` invocation made from the agent (Step 5 `validate`, Step 8 `pre-commit`). When in doubt, set the env var. The directory does not need to exist beforehand — `demisto-sdk` creates it on first write.
+  Same applies to any other `demisto-sdk` invocation made from the agent (Step 5 `validate`, Step 7 `pre-commit`). When in doubt, set the env var. The directory does not need to exist beforehand — `demisto-sdk` creates it on first write.
 
 ### 9. Runtime expectations
 
@@ -1676,7 +1855,7 @@ immediately.
 # 1. Params to Commands cell (already set in Step 2)
 python3 connectus/workflow_state.py show-step "<Integration ID>" "Params to Commands"
 
-# 2. Params for test with default in code cell (just set in Step 4a)
+# 2. Params for test with default in code cell (just set in Step 3a)
 python3 connectus/workflow_state.py show-step "<Integration ID>" "Params for test with default in code"
 
 # 3. Integration YML path
@@ -1761,138 +1940,18 @@ If it fails, fix the issues. To reset:
 python3 connectus/workflow_state.py fail "<Integration ID>" "run manifest make validate"
 ```
 
-### Step 6: `wrote/checked code`
+### Step 6: `write tests`
 
-> _If Step 3a populated `Params for test with default in code`, the `or "<default>"` code edits from that step should already be in place. Inspect the integration's `.py` and verify the diff before marking this step._
-
-Write or check the Python/JavaScript/PowerShell integration code. Follow patterns in `Templates/Integrations/` and the project's [`AGENTS.md`](../AGENTS.md) rules:
-
-- Import `demistomock as demisto` at the top
-- Import `from CommonServerPython import *`
-- Use `demisto.params()` for configuration, `demisto.args()` for command arguments
-- Use `CommandResults` with `return_results()`
-- Use `return_error()` for user-facing errors
-- Use `demisto.debug()` / `demisto.info()` for logging, never `print()`
-
-#### UCP support for integrations using non-standard auth headers
-
-When UCP is enabled, [`BaseClient._http_request`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:10200) auto-injects credentials via [`_inject_ucp_credentials`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9919) → `_apply_ucp_credentials` → `_apply_ucp_<type>`. The defaults assume vendors use the standard `Authorization` header:
-
-- [`_apply_ucp_api_key`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9855) → writes `Authorization: Bearer <key>`.
-- [`_apply_ucp_plain`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9881) → sets `ctx.auth = (username, password)` (a tuple consumed by `requests` as HTTP Basic Auth, equivalent to `Authorization: Basic <base64(user:pass)>`).
-- [`_apply_ucp_oauth2`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9836) → writes `Authorization: <token_type> <access_token>` (default token type `Bearer`).
-
-**The problem.** Many vendors do NOT use `Authorization`. APIVoid uses `X-API-Key`; some vendors use `Apikey`; some carry the secret in a custom query parameter; signed-request schemes (HMAC, AWS SigV4) write into multiple headers at once. For any such integration, the default UCP injection writes the secret into the **wrong** header. The integration's own code reads from the ORIGINAL header — which is empty under UCP because the user-facing params were stripped from `demisto.params()`. Net result: **the outbound request goes out unauthenticated**, but no exception is raised at the injection layer.
-
-**Detection.** This manifests as the auth parity tool (Step 9) reporting `MISSING_IN_NEW` for the secret's role-tagged sentinel. The old run's `locations` show the secret at the integration's actual header (e.g. `header:x-api-key`); the new run's `locations` are empty.
-
-**Fix.** Override the appropriate `_apply_ucp_<type>` method on the integration's `Client` class (the `BaseClient` subclass). The override receives the UCP credentials dict and a request-context object with mutable `.headers`, `.params`, `.auth`, `.data`, `.json_data` attributes, and is expected to write the secret into the slot the integration's own request code actually reads from.
-
-**Worked example — APIVoid.** APIVoid's `Client.__init__` constructs `headers = {"X-API-Key": apikey, ...}`. To make UCP route the credential into the same slot, add `_apply_ucp_api_key`:
-
-```python
-class Client(BaseClient):
-    def __init__(self, base_url, apikey, verify, proxy):
-        headers = {"X-API-Key": apikey, "Content-Type": "application/json"}
-        super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
-
-    def _apply_ucp_api_key(self, credentials: dict, ctx: Any) -> None:
-        """
-        UCP override: write the API key into the non-standard ``X-API-Key`` header
-        instead of the default ``Authorization: Bearer ...``.
-        """
-        api_key_data = credentials.get("api_key", credentials)
-        ctx.headers["X-API-Key"] = api_key_data.get("key", "")
-```
-
-**Sibling overrides for other auth types.** The same pattern applies to the other two `_apply_ucp_*` methods. The `credentials` argument is the dict returned by the UCP shape (see [`auth_parity_test_design.md`](auth_parity_test_design.md:1) §2.5 for the per-type shapes); `ctx` has mutable `.headers`, `.params`, `.auth`, `.data`, `.json_data` attributes.
-
-- **`Plain` with custom header(s)** — override [`_apply_ucp_plain`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9881):
-
-  ```python
-  def _apply_ucp_plain(self, credentials: dict, ctx: Any) -> None:
-      plain_data = credentials.get("plain", credentials)
-      # Example: vendor wants username + password in two separate custom headers
-      ctx.headers["X-Vendor-User"] = plain_data.get("username", "")
-      ctx.headers["X-Vendor-Pass"] = plain_data.get("password", "")
-      # — OR — preserve Basic Auth but use HTTPBasicAuth for additional flexibility:
-      # from requests.auth import HTTPBasicAuth
-      # ctx.auth = HTTPBasicAuth(plain_data.get("username", ""), plain_data.get("password", ""))
-  ```
-
-- **`OAuth2*` with non-`Authorization: Bearer`** — override [`_apply_ucp_oauth2`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9836):
-
-  ```python
-  def _apply_ucp_oauth2(self, credentials: dict, ctx: Any) -> None:
-      oauth2_data = credentials.get("oauth2", credentials)
-      ctx.headers["X-Auth-Token"] = oauth2_data.get("access_token", "")
-  ```
-
-**Cross-reference to CSP source** for the default implementations and the entry point — read these when you need to confirm exactly what defaults you are replacing:
-
-- [`_apply_ucp_api_key`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9855) (default writes `Authorization: Bearer <key>`; docstring shows the canonical override at lines 9865–9870).
-- [`_apply_ucp_plain`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9881) (default sets `ctx.auth = (username, password)` for `requests` Basic Auth).
-- [`_apply_ucp_oauth2`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9836) (default writes `Authorization: <token_type> <access_token>`).
-- [`_inject_ucp_credentials`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:9919) — the per-request entry point invoked from `BaseClient._http_request`.
-- [`_http_request`](Packs/Base/Scripts/CommonServerPython/CommonServerPython.py:10200) — the UCP block inside the HTTP request loop.
-
-**Cheat sheet — when you need the override:**
-
-- **YOU NEED IT** if the integration's existing code reads the secret from a non-`Authorization` header. Grep the integration's `Client.__init__` for the `headers={...}` dict it passes to `super().__init__` — anything other than `Authorization: Bearer <...>` (for APIKey / OAuth2) or `Authorization: Basic <...>` / `HTTPBasicAuth(...)` (for Plain) means UCP's default writes to the wrong slot.
-- **YOU PROBABLY DON'T NEED IT** if the integration sends `Authorization: Bearer <token>` for APIKey / OAuth2, or uses `HTTPBasicAuth(user, pass)` (or the equivalent `auth=(user, pass)` tuple) for Plain — the defaults already cover these.
-- **The auth parity tool (Step 9) will surface `MISSING_IN_NEW`** for the relevant role-tagged sentinel if you forgot the override. Use it as the regression catch.
-
-**Test it.** Run the auth parity tool per the Step 9 procedure after applying the override. The new run should now route the sentinel into the integration's actual header (matching the old run's location set), and the parity check passes.
-
-#### Multi-auth integrations with startup-time auth-combo validation
-
-Some integrations (Jira V3 is the canonical example) gate `main()` on a `validate_auth_params()` / `check_credentials()` / `assert_auth()` helper that runs **before** the `Client` is constructed. The helper inspects `demisto.params()` and raises `DemistoException` / `return_error` if some required combination of auth fields is empty. Under UCP this is a precondition that fires before any HTTP call.
-
-**Detection — grep recipe.** Look for a validator function whose body raises before any client is built:
-
-```bash
-grep -nE "def (validate_auth|check_credentials|assert_auth)" Packs/<Pack>/Integrations/<Name>/<Name>.py
-# then read its body — if it ends in `raise DemistoException(...)` / `return_error(...)`
-# AND it is called from `main()` BEFORE the Client constructor, this section applies.
-```
-
-**Why it breaks under UCP.** `demisto.params()` is intentionally empty for auth fields under UCP — UCP supplies the secrets per-request via `getUCPCredentials`, not via `params`. The startup validator sees nothing in `params`, concludes no auth was configured, and raises before any HTTP call. The parity tool never reaches the request-emission stage.
-
-**Detection from the parity tool.** Identical-shape `RUN_FAILED_OLD` + `RUN_FAILED_NEW` (or `MISSING_IN_BOTH`) errors across **every** auth profile in a multi-profile (exclusive-OR) configuration; the `stderr_excerpt` contains phrases like *"are mandatory"*, *"must be provided together"*, or *"the required parameters were not provided"*.
-
-**TWO valid fixes.**
-
-**Option A — Gate the validator under UCP** (preferred when the integration is going to be a first-class UCP citizen and you want continued parity coverage):
-
-```python
-# BEFORE
-validate_auth_params(username, api_key, client_id, client_secret, pat)
-
-# AFTER
-if not is_ucp_enabled():
-    validate_auth_params(username, api_key, client_id, client_secret, pat)
-```
-
-Import `is_ucp_enabled` from `CommonServerPython` — it is already exported via `from CommonServerPython import *`. Worked example: [`Packs/Jira/Integrations/JiraV3/JiraV3.py:4857`](Packs/Jira/Integrations/JiraV3/JiraV3.py:4857).
-
-**Option B — Mark every `auth_types[]` entry as `interpolated: true`:**
-
-No code change. Re-classify `Auth Details` so that every `auth_types[]` entry carries `"interpolated": true`. The auth-parity test step is auto-N/A'd, the workflow advances, and the integration's existing startup validator stays in place untouched. This is the **simpler, faster path** when the integration's UCP behavior is not the migration's first priority.
-
-**When to pick A vs B.**
-
-- Pick **A** if this integration is queued to be migrated to UCP soon AND you want parity coverage to catch the next round of UCP-related bugs (e.g., non-standard auth header overrides — see the previous sub-section).
-- Pick **B** if the integration is queued for later, or if its UCP wiring is genuinely complex (multi-auth combined with per-`Client`-construction header building, conditional flags computed from `params` at init, etc.). Re-visit when the integration is actually prioritized.
-
-**Completeness note if you pick A.** Gating the validator is necessary but **not sufficient** for a fully UCP-aware multi-auth integration. If the `Client.__init__` computes flags from params (e.g., Jira's `is_basic_auth = bool(username and api_key)`), those flags will be `False` under UCP and the `Client`'s branching will pick the wrong path at request time. The `Client` itself needs to consult `get_ucp_credentials()` per-request to pick the right header style — see the existing "UCP support for integrations using non-standard auth headers" sub-section above for the per-request override pattern. **For multi-auth integrations, Option A may require BOTH the startup gate AND the `Client` UCP-awareness override.** This is the principal reason Option B (`interpolated: true`) is often the pragmatic choice.
-
-When code is written/checked:
-
-```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "wrote/checked code"
-```
-
-### Step 7: `write tests`
+> **Note on code editing:** the standalone `wrote/checked code` checkpoint was removed in schema_version=2 (2026-05) — code authorship/review was always redundant with the downstream `precommit/validate/unit tests passed` gate. Any code edits driven by the parity gate (UCP `_apply_ucp_*` overrides, `is_ucp_enabled()` startup-validator gating, etc.) happen during Step 1 / §1.12 *before* `set-auth` accepts the cell. The `or "<default>"` code edits driven by Step 3a's `Params for test with default in code` cell happen during that step. By the time you reach Step 6, both classes of edits should already be in place; inspect the integration's `.py` and verify before writing tests against it.
+>
+> When writing code, follow patterns in `Templates/Integrations/` and the project's [`AGENTS.md`](../AGENTS.md) rules:
+>
+> - Import `demistomock as demisto` at the top
+> - Import `from CommonServerPython import *`
+> - Use `demisto.params()` for configuration, `demisto.args()` for command arguments
+> - Use `CommandResults` with `return_results()`
+> - Use `return_error()` for user-facing errors
+> - Use `demisto.debug()` / `demisto.info()` for logging, never `print()`
 
 Write unit tests for the integration:
 
@@ -1900,7 +1959,7 @@ Write unit tests for the integration:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "write tests"
 ```
 
-### Step 8: `precommit/validate/unit tests passed`
+### Step 7: `precommit/validate/unit tests passed`
 
 Run pre-commit, validate, and unit tests via demisto-sdk pre-commit (Docker):
 
@@ -1914,90 +1973,7 @@ When everything passes (Yuval decides which checks may be skipped):
 python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
 ```
 
-### Step 9: `auth parity test passes`
-
-> **Scope note:** the parity tool is **not** applicable to every integration in the pipeline. Three categories of integrations are valid permanent `interpolated: true` candidates — the parity tool will structurally short-circuit on them, and that is the **correct** outcome (not a bug to chase):
->
-> 1. **Legacy HTTP layer / no `BaseClient` subclass** — short-circuits with `ERROR_NO_BASECLIENT` (exit 11). Example: CrowdStrike Falcon.
-> 2. **Feed-framework integrations** (any `*FeedApiModule` import) — short-circuits with `ERROR_NO_BASECLIENT`. See §1.9.1.
-> 3. **`boto3` / `botocore` / `AWSApiModule` integrations** — short-circuits with `ERROR_NO_BASECLIENT`. See the gate-ordering paragraph below.
->
-> For all three, the fix is to classify with `interpolated: true` on every `auth_types[]` entry. Do **not** attempt to refactor the integration onto `BaseClient` just to make the parity tool reachable — that is out of scope for the migration.
-
-> **Schema change (2026-05):** the historical `requires auth parity test`
-> gate flag was removed. `auth parity test passes` is now **unconditional** —
-> there is no longer a setter that auto-N/A's it. If you decide the
-> test is not applicable, mark it `markpass` with the `N/A` sentinel via
-> the standard markpass machinery (see CLI help).
->
-> **Sentinel format note (2026-05):** parity sentinels now encode both the
-> XSOAR path AND the **role** the secret plays, in the form
-> `__AUTHPARITY__<connection>__<xsoar_path>__<role>__<uuid8>` — e.g.
-> `__AUTHPARITY__credentials__credentials.password__key__86ad7936`.
-> Diff messages can be grepped by role, which makes
-> "missing-in-new on the `key` sentinel of `credentials`" trivially
-> attributable to a missing `_apply_ucp_api_key` override (see §Step 6
-> "UCP support for integrations using non-standard auth headers"). See
-> [`auth_parity_test_design.md`](auth_parity_test_design.md:1) §2.3 for
-> the full sentinel grammar.
-
-Run the auth parity test to verify authentication works identically.
-The analyzer is **stateless** — the skill is the layer that reads the
-relevant pipeline cells via `workflow_state.py show-step --raw` and
-passes them as CLI flags. The analyzer does NOT shell out to
-`workflow_state.py` or read the CSV itself.
-
-Invocation pattern (replace `<id>` with the Integration ID and the
-path with the integration's directory):
-
-```bash
-AUTH=$(python3 connectus/workflow_state.py show-step --raw "<id>" "Auth Details")
-DEFAULTS=$(python3 connectus/workflow_state.py show-step --raw "<id>" "Params for test with default in code")
-python3 connectus/check_auth_parity.py Packs/<PackName>/Integrations/<IntegrationName> \
-    --integration-id "<id>" \
-    --auth-details "$AUTH" \
-    --param-defaults "${DEFAULTS:-{}}"
-```
-
-Flag notes:
-
-- `--auth-details` is **required** (mutually exclusive with
-  `--auth-details-file <path>` if you'd rather pass the JSON via a
-  file). Pass `'-'` to read from stdin. Empty input is a hard error
-  (exit 2) — the orchestrator must always provide a value.
-- `--param-defaults` is optional; absence and empty input both default
-  to `{}`. The shell substitution `${DEFAULTS:-{}}` covers the
-  common "cell unset" case.
-- `--display-name "<Human Name>"` optionally overrides the
-  `integration` field in the output JSON; otherwise falls back to YML
-  `display`, then to `--integration-id`.
-- All other flags (`--commands`, `--connection`, `--timeout`,
-  `--docker*`) are unchanged.
-
-When it passes:
-
-```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "auth parity test passes"
-```
-
-#### Structural-skip gate ordering and the boto3 / AWS family
-
-The parity tool's structural-skip gates fire in a **fixed order** — the first one matched wins, and downstream gates are never evaluated. The order is:
-
-1. `ERROR_NON_PYTHON` (exit 10)
-2. `ERROR_NO_BASECLIENT` (exit 11)
-3. `ERROR_ALL_INTERPOLATED` (exit 12)
-4. `ERROR_CONNECTION_INTERPOLATED` (exit 13)
-5. `ERROR_INTEGRATION_REJECTS_HTTP` (exit 14)
-6. Per-connection skips inside the run: `skipped_signed`, `skipped_mtls`, `skipped_passthrough`.
-
-**Boto3 / AWS integrations always trip `ERROR_NO_BASECLIENT` first**, NOT `skipped_signed`. They use `boto3.Session.client()` directly rather than subclassing `BaseClient`, so gate #2 catches them before gate #6 is even reached. The `skipped_signed` path conceptually exists for boto3 but is structurally unreachable for it — `skipped_signed` only fires for integrations that DO subclass `BaseClient` AND ALSO import `hmac` (or another signed-request module). That's an unusual combination — examples might include some custom HMAC-based vendor APIs that wrap their signing on top of a `BaseClient` subclass.
-
-**Required action for boto3 / AWS integrations: classify with `interpolated: true` on every `auth_types[]` entry. There is no code-change alternative.** Same reasoning as the feed framework (§1.9.1): no `BaseClient` → no UCP injection → no parity testing possible without re-architecting the integration onto `BaseClient`, which is out of scope.
-
-**Detection during classification:** grep the integration's `.py` for `import boto3|from boto3|import botocore|from botocore|AWSApiModule`. If any match, mark `interpolated: true` up front on every `auth_types[]` entry and skip the parity-test reasoning entirely — the gate will short-circuit regardless.
-
-### Step 10: `param parity test passes`
+### Step 8: `param parity test passes`
 
 Run the parameter parity test to verify the ConnectUs integration's parameters match the original:
 
@@ -2005,7 +1981,7 @@ Run the parameter parity test to verify the ConnectUs integration's parameters m
 python3 connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
 ```
 
-### Step 11: `code reviewed`
+### Step 9: `code reviewed`
 
 After code review is complete:
 
@@ -2013,13 +1989,27 @@ After code review is complete:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "code reviewed"
 ```
 
-### Step 12: `code merged`
+### Step 10: `code merged`
 
 After the code is merged to the branch:
 
 ```bash
 python3 connectus/workflow_state.py markpass "<Integration ID>" "code merged"
 ```
+
+<!--
+The historical Step 6 (`wrote/checked code`), Step 9 (`auth parity test passes`),
+Step 10 (`param parity test passes`), Step 11 (`code reviewed`), and Step 12
+(`code merged`) sections were consolidated/renumbered in schema_version=2
+(2026-05). The auth-parity playbook moved to §1.12 (Auth-parity gate inside
+`set-auth`); the rest of the per-step content collapsed into Steps 6-10 above.
+
+Historical UCP-override + multi-auth troubleshooting content that used to live
+under the old Step 6 was relocated to §1.12 (sub-sections A-E). The old
+"Step 9: auth parity test passes" section was deleted outright — parity is now
+enforced inside `set-auth`. The old duplicate Step 7/8/10/11/12 stubs were also
+deleted; the renumbered versions appear as the canonical Steps 6-10 above.
+-->
 
 ## Error Recovery Commands
 

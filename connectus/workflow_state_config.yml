@@ -5,7 +5,7 @@
 # to change for declarative edits (adding/removing/reordering steps,
 # changing descriptions, toggling optional, etc.).
 
-schema_version: 1
+schema_version: 2
 
 # Identity / metadata columns — present in the CSV but NOT part of the
 # 15-step workflow. Never cleared by cascade reset. Order matters: this
@@ -40,10 +40,19 @@ markers:
     - "N/A"
 
 # Cross-step interactions that don't fit the linear cascade model.
-# Currently empty: the historical ``requires auth parity test`` flag and
-# its ``flag_auto_na_target`` interaction were removed in 2026-05 (see
-# §11 decisions log). All checkpoints, including ``auth parity test
-# passes``, are now unconditional.
+# Currently empty:
+#  - The historical ``requires auth parity test`` flag and its
+#    ``flag_auto_na_target`` interaction were removed in 2026-05.
+#  - The standalone ``auth parity test passes`` checkpoint was removed
+#    in schema_version=2 (2026-05). Parity is now enforced *inside*
+#    ``set-auth`` (see ``connectus/check_auth_parity.py`` and the
+#    ``set_integration_auth`` API): the Auth Details cell cannot be
+#    committed unless the parity test passes or structurally short-
+#    circuits (NO_BASECLIENT / NON_PYTHON / ALL_INTERPOLATED / etc.).
+#  - The standalone ``wrote/checked code`` checkpoint was removed in
+#    schema_version=2 (2026-05) — code authorship was redundant with
+#    ``precommit/validate/unit tests passed`` and never carried its
+#    own gating logic.
 step_interactions: []
 
 # The unified ordered sequence. Order in this list IS the step index
@@ -61,7 +70,7 @@ steps:
     optional: false
     setter: set-auth
     json_schema: {"validator": "auth_details"}
-    description: "Record the auth classification JSON (validated against the Auth Details schema)."
+    description: "Record the auth classification JSON (validated against the Auth Details schema). On commit, set-auth invokes connectus/check_auth_parity.py with this payload; the cell is rejected unless parity passes or structurally short-circuits (NO_BASECLIENT / NON_PYTHON / ALL_INTERPOLATED / CONNECTION_INTERPOLATED / INTEGRATION_REJECTS_HTTP)."
 
   - name: "Params to Commands"
     kind: data
@@ -108,12 +117,6 @@ steps:
     setter: null
     description: "Run `make validate` on the generated manifest."
 
-  - name: "wrote/checked code"
-    kind: checkpoint
-    optional: false
-    setter: null
-    description: "Write or review the integration source code."
-
   - name: "write tests"
     kind: checkpoint
     optional: false
@@ -125,12 +128,6 @@ steps:
     optional: false
     setter: null
     description: "Run pre-commit, validate, and unit tests via demisto-sdk pre-commit."
-
-  - name: "auth parity test passes"
-    kind: checkpoint
-    optional: false
-    setter: null
-    description: "Run the auth-parity test (mandatory; mark explicitly with markpass)."
 
   - name: "param parity test passes"
     kind: checkpoint
