@@ -18,7 +18,7 @@ PRODUCT = "Security IP"
 
 DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE = 5000
 MAX_EVENTS_PER_PAGE = 10000
-DEFAULT_FIRST_FETCH = "3 hours"
+DEFAULT_FIRST_FETCH = "5 minutes"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 # Per Menlo docs: Admin-UI-generated tokens use the v2 endpoint; legacy CSV-based tokens use v1.
@@ -358,7 +358,7 @@ def _fetch_log_type_task(
         client: Thread-safe API client (ContentClient/httpx).
         log_type_ui: UI log type name (e.g. "web", "safemail").
         last_run: Copy of the current last_run state dict.
-        first_fetch_time: Human-readable first fetch time (e.g. "3 hours").
+        first_fetch_time: Human-readable first fetch time (e.g. "5 minutes").
         end_epoch: Fetch end time as epoch seconds (read-only).
         end_timestamp: Fetch end time as ISO 8601 string (read-only).
         max_events_per_fetch_per_type: Maximum events to fetch for this log type.
@@ -447,7 +447,7 @@ def fetch_events(
         client: Thread-safe API client.
         last_run: Last run dict from demisto.getLastRun().
         log_types: Selected log type UI names.
-        first_fetch_time: Human-readable first fetch time (e.g. "3 hours").
+        first_fetch_time: Human-readable first fetch time (e.g. "5 minutes").
         max_events_per_fetch_per_type: Maximum events per log type per cycle.
 
     Returns:
