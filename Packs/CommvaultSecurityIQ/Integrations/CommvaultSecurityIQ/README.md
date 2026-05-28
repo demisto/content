@@ -26,7 +26,7 @@ This integration was integrated and tested with version 6.9.0 of CommvaultSecuri
 
 ##### Note :- Set Mapper (incoming) to "Commvault Suspicious File Activity Mapper"
 
-##### Note :- When using `Forwarding Rule = Webhook`, you must set **Webhook Listener Credentials** (username + password). The Commvault Cloud webhook sender must be configured to present these same credentials using HTTP Basic Auth. To use a custom header API token instead of Basic Auth, set the username to `_header:<HeaderName>` (for example, `_header:X-Commvault-Token`) and put the token in the password field
+**Note:** When using `Forwarding Rule = Webhook`, you must set **Webhook Listener Credentials** (username + password). The Commvault Cloud webhook sender must be configured to present these same credentials to Cortex using HTTP Basic Auth. To use a custom header API token instead of Basic Auth, set the username to `_header:<HeaderName>` (for example, `_header:X-Commvault-Token`) and put the token in the password field.
 
 ## Commands
 
