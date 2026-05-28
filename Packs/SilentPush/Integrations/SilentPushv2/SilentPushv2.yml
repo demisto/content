@@ -55,7 +55,7 @@ script:
       default: false
     - name: feed_description
       isArray: false
-      description: URL for the screenshot.
+      description: Detailed info about the feed.
       required: false
       secret: false
       default: false
@@ -90,7 +90,7 @@ script:
     arguments:
     - name: feed_uuid
       isArray: false
-      description: Never return query metadata, even if original request did include metadata.
+      description: The feed uuid that is returned when creating it.
       required: false
       secret: false
       default: false
@@ -113,7 +113,7 @@ script:
     arguments:
     - name: feed_uuid
       isArray: false
-      description: UUID of the feed.
+      description: The feed uuid that is returned when creating it.
       required: true
       secret: false
       default: false
@@ -136,7 +136,7 @@ script:
     arguments:
     - name: feed_uuid
       isArray: false
-      description: UUID of the feed.
+      description: The feed uuid that is returned when creating it.
       required: true
       secret: false
       default: false
@@ -1721,7 +1721,7 @@ script:
       default: false
     - name: verbose
       isArray: false
-      description: eturn ips, dates, timeline, (and asns if asn=1), 0 (default) = do not include, 1 = include all data
+      description: return ips, dates, timeline, (and asns if asn=1), 0 (default) = do not include, 1 = include all data
       required: false
       secret: false
       default: false
@@ -1744,6 +1744,9 @@ script:
     - contextPath: SilentPush.IPdiversityLookup.ip_diversity_groups
       description: The number of unique IP groups associated with the domain.
       type: Number
+    - contextPath: SilentPush.IPdiversityLookup.timeline
+      description: timeline of {ip, first_seen, last_seen}.
+      type: Unknown
   - deprecated: false
     description: Search for IP Diversity patterns, with optional name server and domain name pattern matching.
     name: silentpush-ip-diversity-patterns
@@ -1989,6 +1992,9 @@ script:
     - contextPath: SilentPush.IPDiversityPatterns.ip_diversity_groups
       description: The number of unique IP groups associated with the domain.
       type: Number
+    - contextPath: SilentPush.IPDiversityPatterns.timeline
+      description: timeline of {ip, first_seen, last_seen}.
+      type: Unknown
   - deprecated: false
     description: This command get domain information along with Silent Push risk score and live whois information for multiple domains.
     name: silentpush-list-domain-information
@@ -3264,6 +3270,9 @@ script:
     - contextPath: SilentPush.IPDiversityPatterns.ip_diversity_groups
       description: The number of unique IP groups associated with the domain.
       type: Number
+    - contextPath: SilentPush.IPDiversityPatterns.timeline
+      description: timeline of {ip, first_seen, last_seen}.
+      type: Unknown
   - deprecated: false
     description: This command search Silent Push scan data repositories using SPQL queries.
     name: silentpush-search-scan-data

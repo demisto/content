@@ -1,11 +1,3 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-Pytest Unit Tests: all funcion names must start with "test_"
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import uuid
 import json
 from requests import Response
@@ -42,6 +34,7 @@ from SilentPushv2 import (
     run_threat_check_command,
     add_feed_tags_command,
     whois_command,
+    retry_job_command,
 )
 from CommonServerPython import DemistoException, EntryType, tableToMarkdown
 
@@ -484,9 +477,7 @@ def test_ipdiversity_lookup_command(mock_client, mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.$Lookup"
     assert result.outputs_key_field == "query"
-    assert result.outputs["qtype"] == "A"
-    assert result.outputs["query"] == "example.com"
-    assert result.outputs["records"] == mock_response.get("response").get("records")
+    assert result.outputs == mock_response.get("response").get("records")
     assert result.readable_output == "Mocked Markdown Table"
 
 
@@ -743,3 +734,33 @@ def test_get_data_exports_command(mock_client):
     assert isinstance(result, dict)
     assert result["File"] == "iofa_report"
     assert result["Type"] == EntryType.ENTRY_INFO_FILE
+
+
+def test_retry_job_command(mock_client, mocker):
+    args = {"job_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"}
+    mock_response = {
+        "response": {
+            "domain_certificates": [
+                {
+                    "certificate_id": "123",
+                    "issuer": "Example Issuer",
+                    "valid_from": "2023-01-01",
+                    "valid_to": "2024-01-01",
+                },
+                {
+                    "certificate_id": "456",
+                    "issuer": "Another Issuer",
+                    "valid_from": "2022-01-01",
+                    "valid_to": "2023-01-01",
+                },
+            ],
+            "metadata": {"total": 2},
+        }
+    }
+    mock_client._http_request.return_value = mock_response
+    result = retry_job_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.RetryJob"
+    assert result.outputs_key_field == "job_id"
+    assert result.outputs == mock_response.get("response")
+    assert result.readable_output == f"# Job Results for {args.get('job_id')}\nMocked Readable Output"

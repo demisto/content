@@ -187,7 +187,7 @@ IP_DIVERSITY_LOOKUP_INPUTS = [
     InputArgument(name="timeline",
                   description="include timeline of {ip, first_seen, last_seen} (+asn if asn=1), 0 (default) = do not include, 1 = include timeline"),
     InputArgument(name="verbose",
-                  description="eturn ips, dates, timeline, (and asns if asn=1), 0 (default) = do not include, 1 = include all data"),
+                  description="return ips, dates, timeline, (and asns if asn=1), 0 (default) = do not include, 1 = include all data"),
     InputArgument(name="scope",
                   description="exact or near match results by qtype, *scope=live is automatically set when timeline=1 or verbose=1. " +
                               "*for qtype = a: host - exact match (default when qtype=a), domain - match all hosts in this domain (domain extracted from {query}), " +
@@ -286,13 +286,13 @@ ADD_FEED_INPUTS = [
     InputArgument(name="type", description="Feed Type.", required=True),
     InputArgument(name="category", description="Feed Category.", required=False),
     InputArgument(name="vendor", description="Vendor.", required=False),
-    InputArgument(name="feed_description", description="URL for the screenshot.", required=False),
+    InputArgument(name="feed_description", description="Detailed info about the feed.", required=False),
     InputArgument(name="tags", description="Tags that should be attached with the feed.", required=False),
 ]
 ADD_FEED_TAGS_INPUTS = [
     InputArgument(
         name="feed_uuid",
-        description="Never return query metadata, even if original request did include metadata.",
+        description="The feed uuid that is returned when creating it.",
     ),
     InputArgument(
         name="tags",
@@ -300,11 +300,11 @@ ADD_FEED_TAGS_INPUTS = [
     ),
 ]
 ADD_INDICATORS_INPUTS = [
-    InputArgument(name="feed_uuid", description="UUID of the feed.", required=True),
+    InputArgument(name="feed_uuid", description="The feed uuid that is returned when creating it.", required=True),
     InputArgument(name="indicators", description="Indicators for the feed.", required=True),
 ]
 ADD_INDICATOR_TAGS_INPUTS = [
-    InputArgument(name="feed_uuid", description="UUID of the feed.", required=True),
+    InputArgument(name="feed_uuid", description="The feed uuid that is returned when creating it.", required=True),
     InputArgument(name="indicator_name", description="The name of the indicator to tag.", required=True),
     InputArgument(name="tags", description="Tags to be added to the indicator.", required=True),
 ]
@@ -417,6 +417,11 @@ SEARCH_DOMAIN_OUTPUTS = IP_DIVERSITY_LOOKUP_OUTPUTS = IP_DIVERSITY_PATTERNS_OUTP
         name="ip_diversity_groups",
         output_type=int,
         description="The number of unique IP groups associated with the domain.",
+    ),
+    OutputArgument(
+        name="timeline",
+        output_type=dict,
+        description="timeline of {ip, first_seen, last_seen}.",
     ),
 ]
 LIST_DOMAIN_OUTPUTS = [
@@ -1370,11 +1375,6 @@ metadata_collector = YMLMetadataCollector(
 class Client(BaseClient):
     """
     Client class to interact with the SilentPush API.
-
-    This Client implements API calls and does not contain any XSOAR logic.
-    It should only perform requests and return data.
-    It inherits from BaseClient defined in CommonServerPython.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
     def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False):
@@ -2218,11 +2218,7 @@ def ip_diversity_lookup_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix="SilentPush.$Lookup",
         outputs_key_field="query",
-        outputs={
-            "qtype": args.get("qtype"),
-            "query": args.get("query"),
-            "records": raw_response.get("response", {}).get("records", [])
-        },
+        outputs=raw_response.get("response", {}).get("records", []),
         readable_output=readable_output,
         raw_response=raw_response,
     )
