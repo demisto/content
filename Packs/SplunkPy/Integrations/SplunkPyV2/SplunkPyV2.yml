@@ -67,6 +67,42 @@ configuration:
   type: 0
   section: Collect
   required: false
+- display: Event types to fetch
+  name: fetch_event_types
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: Finding
+  options:
+  - Finding
+  - Investigation
+  additionalinfo: Select the Splunk event types to ingest. Default is `Finding`.
+- display: First fetch timestamp (Investigations)
+  name: investigations_first_fetch
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: 10 minutes
+  additionalinfo: The relative time interval to look back during the initial investigation fetch (for example, 12 hours, 7 days, 3 months).
+- display: Investigations fetch query
+  name: investigations_fetch_query
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: |
+    | rest "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true&FETCH_FILTER_PLACEHOLDER"
+  additionalinfo: The SPL query used when "Investigation" is selected for "Event types to fetch". The query must include the `FETCH_FILTER_PLACEHOLDER` token. Do not modify or remove this token. For more information on customizing the query (for example, adding the filter &status=New), see the integration documentation under "Fetching investigation events".
+- display: Maximum investigations per fetch
+  name: investigations_max_fetch
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: '50'
+  additionalinfo: The maximum number of investigations to fetch per cycle. Limited to 100 by the Splunk investigations endpoint.
 - display: Extract Fields - CSV fields that will be parsed out of raw finding events
   name: extractFields
   type: 0
@@ -106,7 +142,7 @@ configuration:
   advanced: true
   additionalinfo: "A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident (Example: Resolved,False-Positive)."
   required: false
-- additionalinfo: When selected, Splunk Finding Events with a status that is marked as "End Status" will close the Cortex XSOAR incident.
+- additionalinfo: When selected, automatically close the Cortex XSOAR incident when the Splunk ES event (Finding or Investigation) is marked as 'End Status'.
   defaultvalue: 'false'
   display: Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)
   name: close_end_status_statuses
@@ -117,7 +153,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-- display: Close Mirrored Splunk Finding Events (Outgoing Mirroring)
+- display: Close Mirrored Splunk ES Events (Outgoing Mirroring)
   name: close_finding
   type: 8
   section: Collect
@@ -125,7 +161,7 @@ configuration:
   hidden:
   - marketplacev2
   - platform
-  additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Finding Event in Splunk.
+  additionalinfo: When selected, automatically close the corresponding Splunk ES event (Finding or Investigation) when the Cortex XSOAR incident is closed.
   defaultvalue: 'false'
   required: false
 - display: Trust any certificate (not secure)
@@ -296,7 +332,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: Run queries on Splunk and fetch Finding Events (Splunk ES 8.2+).
+description: Run queries on Splunk and fetch Splunk ES Findings and Investigations (Splunk ES 8.2+).
 display: SplunkPy v2
 name: SplunkPy v2
 script:
@@ -431,6 +467,58 @@ script:
     description: Updates existing finding events in Splunk ES.
     execution: true
     name: splunk-finding-event-edit
+  - arguments:
+    - description: A comma-separated list of investigation IDs.
+      name: event_ids
+      required: true
+      isArray: true
+    - description: The Splunk user to assign to the investigations.
+      name: owner
+    - description: The note to add to the investigation.
+      name: note
+    - name: disposition
+      auto: PREDEFINED
+      predefined:
+      - Unassigned
+      - True Positive - Suspicious Activity
+      - Benign Positive - Suspicious But Expected
+      - False Positive - Incorrect Analytic Logic
+      - False Positive - Inaccurate Data
+      - Other
+      - Undetermined
+      description: The disposition to set for the investigation. To use a custom disposition not available in the dropdown, provide the numerical ID using the format disposition:# (for example, disposition:12).
+    - auto: PREDEFINED
+      description: The investigation status.
+      name: status
+      predefined:
+      - New
+      - Unassigned
+      - In progress
+      - Pending
+      - Resolved
+      - Closed
+    - auto: PREDEFINED
+      description: 'The investigation urgency. Possible values: "critical", "high", "medium", "low", and "informational".'
+      name: urgency
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - informational
+    - description: Updated name for the investigation.
+      name: name
+    - description: Updated description for the investigation.
+      name: description
+    - description: Comma-separated list of finding IDs to add (append) to the investigation. Only allowed when exactly one investigation ID is provided in `event_ids`.
+      name: findings
+      isArray: true
+    - description: The list of times for findings added to the investigation. Value can be in relative, ISO, or epoch time. Ignored when `findings` is not provided. Only allowed when exactly one investigation ID is provided in `event_ids`.
+      name: finding_times
+      isArray: true
+    description: Updates existing investigations in Splunk ES. Supports updating fields such as owner, status, urgency, disposition, name, and description, adding a note, and appending finding IDs to the investigation. Note that `findings` (and `finding_times`) can only be used when exactly one investigation ID is provided in `event_ids`.
+    execution: true
+    name: splunk-update-investigation
   - arguments:
     - description: The Splunk search language string to execute. For example :"index=* | head 3".
       name: query
