@@ -1682,7 +1682,7 @@ Retrieves active logged-in sessions for an endpoint.
 
 #### Human Readable Output
 
->### Active sessions for endpoint ENDPOINT_ID
+>### Active sessions for endpoint 6942a43afe8d4e463ca5c197
 >
 >|Username|ConnectionType|StartTime|UserSID|DomainSID|OrganizationalUnitDN|MemberOfSIDs|
 >|---|---|---|---|---|---|---|
@@ -1720,3 +1720,36 @@ Creates an endpoint memory dump task and returns the download URL when it become
 | GravityZone.EndpointMemoryDump.ErrorCode | String | The memory dump task error code, if available. |
 | GravityZone.EndpointMemoryDump.Error | String | The memory dump task error message, if available. |
 | GravityZone.EndpointMemoryDump.DownloadURL | String | The memory dump download URL when task is completed successfully. |
+
+#### Command example
+
+```!gz-endpoint-create-memory-dump id=6942a43afe8d4e463ca5c197 password="*****" path=C:\\test2```
+
+#### Context Example
+
+```json
+{
+    "GravityZone": {
+        "EndpointMemoryDump": {
+            "TaskID": "6836f4a01a2b3c4d5e6f7a8b",
+            "TaskType": "CreateMemoryDump",
+            "Status": "Processed",
+            "EndpointID": "6942a43afe8d4e463ca5c197",
+            "Hostname": "bdvm",
+            "StartDate": "2026-05-25T10:00:00Z",
+            "EndDate": "2026-05-25T10:01:00Z",
+            "ErrorCode": "Success",
+            "Error": "Success",
+            "DownloadURL": "https://example.com/memory-dump.zip"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Memory dump for endpoint 6942a43afe8d4e463ca5c197
+>
+>|EndpointID|Hostname|StartDate|EndDate|Error|DownloadURL|
+>|---|---|---|---|---|---|
+>| 6942a43afe8d4e463ca5c197 | bdvm | 2026-05-25T10:00:00Z | 2026-05-25T10:01:00Z | Success | https://example.com/memory-dump.zip |
