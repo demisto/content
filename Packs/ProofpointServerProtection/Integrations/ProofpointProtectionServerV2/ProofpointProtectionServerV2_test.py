@@ -73,6 +73,72 @@ def test_list_quarantined_messages(requests_mock, client):
     assert result.outputs == api_response.get("records")
 
 
+def test_list_quarantined_messages_multiple_folders_comma_separated(requests_mock, client):
+    """
+    Given:
+        - Recipient and a comma-separated list of folder names
+    When:
+        - Running list quarantined messages command
+    Then:
+        - Verify each folder is queried sequentially (two HTTP requests made)
+        - Verify results from all folders are aggregated into a single output
+    """
+    recipient = "john@doe.com"
+    args = {"recipient": recipient, "folder_name": "SSN Bulk,SSN High Probability"}
+    api_response = load_test_data("./test_data/quarantined_messages_response.json")
+    # Register a catch-all matcher so both folder requests are handled
+    matcher = re.compile(SERVER_URL + r"/quarantine\?")
+    requests_mock.get(matcher, json=api_response)
+    result = list_quarantined_messages(client=client, args=args)
+    # Two folders → two HTTP requests
+    assert len(requests_mock.request_history) == 2
+    # Records from both responses are aggregated
+    expected_records = api_response.get("records", []) * 2
+    assert result.outputs == expected_records
+
+
+def test_list_quarantined_messages_multiple_folders_json_array(requests_mock, client):
+    """
+    Given:
+        - Recipient and a JSON-array string of folder names (as passed by XSOAR engine)
+    When:
+        - Running list quarantined messages command
+    Then:
+        - Verify each folder is queried sequentially (three HTTP requests made)
+        - Verify results from all folders are aggregated into a single output
+    """
+    recipient = "john@doe.com"
+    args = {
+        "recipient": recipient,
+        "folder_name": '["SSN Bulk","SSN High Probability","RIF"]',
+    }
+    api_response = load_test_data("./test_data/quarantined_messages_response.json")
+    matcher = re.compile(SERVER_URL + r"/quarantine\?")
+    requests_mock.get(matcher, json=api_response)
+    result = list_quarantined_messages(client=client, args=args)
+    # Three folders → three HTTP requests
+    assert len(requests_mock.request_history) == 3
+    expected_records = api_response.get("records", []) * 3
+    assert result.outputs == expected_records
+
+
+def test_list_quarantined_messages_multiple_folders_no_results(requests_mock, client):
+    """
+    Given:
+        - Recipient and multiple folder names where all folders return no records
+    When:
+        - Running list quarantined messages command
+    Then:
+        - Verify "No results found." is returned
+    """
+    recipient = "john@doe.com"
+    args = {"recipient": recipient, "folder_name": "Empty Folder 1,Empty Folder 2"}
+    matcher = re.compile(SERVER_URL + r"/quarantine\?")
+    requests_mock.get(matcher, json={"count": 0, "records": []})
+    result = list_quarantined_messages(client=client, args=args)
+    assert result.readable_output == "No results found."
+
+
 def test_release_message(requests_mock, client):
     """
     Given:
