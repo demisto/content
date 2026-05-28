@@ -28,19 +28,19 @@ BASE_BACKOFF_SECONDS = 2
 EVENT_TYPES = ["message", "maillog", "audit"]
 DEFAULT_GET_EVENTS_LIMIT = 10
 DATE_FILTER_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
-# Disable keepalive ping-timeout enforcement (do not require pong replies). The Proofpoint Logstream
-# server may not always respond promptly to keepalive pings, which previously caused the client to
-# close the connection with `1011 (internal error) keepalive ping timeout` and led to cascading
-# reconnect failures (e.g. `[Errno 104] Connection reset by peer`). Pings are still sent at the
-# `websockets` library's default interval; we just don't tear the connection down if a pong is late.
-PING_TIMEOUT = None
-CLOSE_TIMEOUT = 60  # Timeout for closing the connection in seconds
+# - PING_INTERVAL: how often keep-alive pings are sent.
+# - PING_TIMEOUT:  None disables pong-reply enforcement (prevents 1011 "keepalive ping timeout"
+#                  closures while a large >1MB message is being received/processed).
+# - OPEN_TIMEOUT / CLOSE_TIMEOUT: handshake timeouts.
+# - MAX_MESSAGE_SIZE: None disables the websockets library default 1 MiB cap so Proofpoint
+#                     payloads larger than 1MB (which previously caused the connection to be
+#                     torn down by the server with code 1011) are accepted normally.
+PING_INTERVAL = 60  # Interval between keepalive pings in seconds
+PING_TIMEOUT: float | None = None  # Disable pong-reply timeout to tolerate large/slow messages
+OPEN_TIMEOUT = 10  # Timeout for opening the WebSocket connection in seconds
+CLOSE_TIMEOUT = 10  # Timeout for closing the connection in seconds
+MAX_MESSAGE_SIZE: int | None = None  # Disable the 1 MiB default size limit on incoming messages
 RECEIVE_TIMEOUT = 1  # Timeout for receiving events in seconds
-# Disable the incoming message size limit. The `websockets` library defaults to 1 MiB (1048576),
-# which silently dropped large Proofpoint Logstream messages and caused partial log ingestion in
-# the XSIAM tenant. Setting this to `None` removes the limit, matching Proofpoint's reference
-# logstream-client implementation.
-MAX_MESSAGE_SIZE = None
 
 
 class EventConnection:
@@ -69,16 +69,27 @@ class EventConnection:
         """
         Establish a new WebSocket connection.
 
-        Note: `max_size` is explicitly set to `MAX_MESSAGE_SIZE` (None) to remove the
-        `websockets` library default 1 MiB incoming-message size cap, which was causing
-        Proofpoint Logstream messages larger than 1 MB to be rejected and the connection
-        to be torn down. See the bundled `logstream-client` reference implementation.
+        Parameters are aligned with Proofpoint's official reference client
+        (see ``logstream-client.ini`` ``[Websocket]`` section):
+
+        * ``max_size=None`` disables the websockets library's default 1 MiB cap on incoming
+          frames. Proofpoint may emit messages larger than 1MB; without this the server tears
+          the connection down with code 1011 (internal error) and the client subsequently
+          fails to re-establish the TLS session ("[Errno 104] Connection reset by peer").
+        * ``ping_timeout=None`` disables pong-reply enforcement, preventing the keep-alive
+          watchdog from killing the socket while a large message is being received/decoded.
+        * ``ping_interval``, ``open_timeout`` and ``close_timeout`` mirror the reference
+          client defaults.
+        * ``user_agent_header`` identifies this integration in Proofpoint's server-side
+          logs, matching the reference client's behavior.
         """
         return connect(
             self.url,
             additional_headers=self.headers,
-            ping_timeout=PING_TIMEOUT,
+            open_timeout=OPEN_TIMEOUT,
             close_timeout=CLOSE_TIMEOUT,
+            ping_interval=PING_INTERVAL,
+            ping_timeout=PING_TIMEOUT,
             max_size=MAX_MESSAGE_SIZE,
         )
 
