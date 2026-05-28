@@ -12,3 +12,9 @@ dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+supportedModules:
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security

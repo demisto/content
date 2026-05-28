@@ -1062,3 +1062,9 @@ description: This playbooks searches for different indicators (IP,IPV6,File hash
 marketplaces:
 - xsoar
 # Should not appear in marketplacev2
+supportedModules:
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security
