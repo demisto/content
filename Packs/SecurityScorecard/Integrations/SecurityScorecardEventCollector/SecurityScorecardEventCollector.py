@@ -529,6 +529,39 @@ def _safe_enrich_events(
 # =================================
 
 
+def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
+    """Parse and validate integration parameters.
+
+    Args:
+        params: Raw integration parameters from demisto.params().
+
+    Returns:
+        Dictionary with parsed parameters: base_url, api_token,
+        scorecard_identifier, verify, proxy.
+
+    Raises:
+        DemistoException: If required parameters are missing.
+    """
+    base_url = params.get("url", "https://api.securityscorecard.io").rstrip("/")
+    api_token = params.get("api_token", {}).get("password", "")
+    scorecard_identifier = params.get("scorecard_identifier", "").strip()
+    verify = not argToBoolean(params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
+
+    if not api_token:
+        raise DemistoException("API Token is required.")
+    if not scorecard_identifier:
+        raise DemistoException("Scorecard Identifier is required.")
+
+    return {
+        "base_url": base_url,
+        "api_token": api_token,
+        "scorecard_identifier": scorecard_identifier,
+        "verify": verify,
+        "proxy": proxy,
+    }
+
+
 def main() -> None:
     """Main entry point for SecurityScorecard Event Collector integration."""
     demisto.debug(f"{INTEGRATION_NAME} integration started.")
@@ -536,23 +569,14 @@ def main() -> None:
     params = demisto.params()
 
     try:
-        base_url = params.get("url", "https://api.securityscorecard.io").rstrip("/")
-        api_token = params.get("api_token", {}).get("password", "")
-        scorecard_identifier = params.get("scorecard_identifier", "").strip()
-        verify = not argToBoolean(params.get("insecure", False))
-        proxy = argToBoolean(params.get("proxy", False))
-
-        if not api_token:
-            raise DemistoException("API Token is required.")
-        if not scorecard_identifier:
-            raise DemistoException("Scorecard Identifier is required.")
+        parsed = parse_integration_params(params)
 
         client = Client(
-            base_url=base_url,
-            api_token=api_token,
-            scorecard_identifier=scorecard_identifier,
-            verify=verify,
-            proxy=proxy,
+            base_url=parsed["base_url"],
+            api_token=parsed["api_token"],
+            scorecard_identifier=parsed["scorecard_identifier"],
+            verify=parsed["verify"],
+            proxy=parsed["proxy"],
         )
 
         if command == "test-module":
