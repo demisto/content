@@ -2555,3 +2555,10 @@ script:
 fromversion: 5.0.0
 tests:
 - nexpose_test
+supportedModules:
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security
+- exposure_management

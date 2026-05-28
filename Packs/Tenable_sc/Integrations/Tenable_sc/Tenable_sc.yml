@@ -2493,3 +2493,7 @@ script:
 tests:
 - tenable-sc-test
 fromversion: 5.0.0
+supportedModules:
+- agentix
+- xsiam
+- exposure_management
