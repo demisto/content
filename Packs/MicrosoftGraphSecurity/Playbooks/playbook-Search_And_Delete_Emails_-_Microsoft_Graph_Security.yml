@@ -477,10 +477,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: f3b76db3-c57f-4fca-891b-167c29f67839
+    taskid: 6005b1c6-1caf-4750-833a-e40fc3e977c1
     type: regular
     task:
-      id: f3b76db3-c57f-4fca-891b-167c29f67839
+      id: 6005b1c6-1caf-4750-833a-e40fc3e977c1
       version: -1
       name: List eDiscovery searches in case
       description: Get a list of eDiscoverySearch resources from an eDiscovery case.
@@ -495,7 +495,7 @@ tasks:
       all_results:
         simple: "true"
       case_id:
-        simple: ${MsGraph.eDiscoveryCase.CaseId}
+        simple: ${ResolvedCaseId}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -514,10 +514,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: a6da48dc-3164-49aa-87db-4aaec172be9b
+    taskid: 347752aa-64dd-4cb9-b174-ee01c86ed291
     type: condition
     task:
-      id: a6da48dc-3164-49aa-87db-4aaec172be9b
+      id: 347752aa-64dd-4cb9-b174-ee01c86ed291
       version: -1
       name: 'Does a matching eDiscovery search already exist? '
       description: Checks whether an existing eDiscovery search with the specified name was found in the case.
@@ -613,10 +613,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: f837e198-90d0-4fe5-853b-70febd8b7911
+    taskid: 51bd5c63-cef4-4c93-8fc0-20016576ec7c
     type: regular
     task:
-      id: f837e198-90d0-4fe5-853b-70febd8b7911
+      id: 51bd5c63-cef4-4c93-8fc0-20016576ec7c
       version: -1
       name: Delete existing search
       description: Delete an eDiscoverySearch object.
@@ -629,7 +629,7 @@ tasks:
       - "16"
     scriptarguments:
       case_id:
-        simple: ${MsGraph.eDiscoveryCase.CaseId}
+        simple: ${ResolvedCaseId}
       search_id:
         simple: ${ExistingSearchID}
     separatecontext: false
@@ -699,10 +699,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ca61b7a6-d4bd-4206-8a2c-744f0366e4c1
+    taskid: ca8bed28-4c84-47e2-806f-b4916c07e757
     type: regular
     task:
-      id: ca61b7a6-d4bd-4206-8a2c-744f0366e4c1
+      id: ca8bed28-4c84-47e2-806f-b4916c07e757
       version: -1
       name: Create eDiscovery search
       description: Create a new eDiscoverySearch object.
@@ -715,7 +715,7 @@ tasks:
       - "60"
     scriptarguments:
       case_id:
-        simple: ${MsGraph.eDiscoveryCase.CaseId}
+        simple: ${ResolvedCaseId}
       content_query:
         simple: ${ContentQuery}
       data_source_scopes:
@@ -742,10 +742,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 24e9faef-506d-4df3-8ada-aa2107dbe932
+    taskid: 51f0b4ca-c19f-4103-b388-31259f61120e
     type: regular
     task:
-      id: 24e9faef-506d-4df3-8ada-aa2107dbe932
+      id: 51f0b4ca-c19f-4103-b388-31259f61120e
       version: -1
       name: Run estimate statistics
       description: Starts an eDiscovery estimate statistics operation in Microsoft Purview. The operation calculates the size and number of items matching the search query.
@@ -758,9 +758,9 @@ tasks:
       - "30"
     scriptarguments:
       case_id:
-        simple: ${MsGraph.eDiscoveryCase.CaseId}
+        simple: ${ResolvedCaseId}
       search_id:
-        simple: ${MsGraph.eDiscoverySearch.SearchId}
+        simple: ${ResolvedSearchId}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -872,10 +872,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 96bac542-774f-458a-8224-8a3322f1754d
+    taskid: d1411a16-4909-4ddd-972c-6542288d5283
     type: regular
     task:
-      id: 96bac542-774f-458a-8224-8a3322f1754d
+      id: d1411a16-4909-4ddd-972c-6542288d5283
       version: -1
       name: Start export task
       description: Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate (https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate).
@@ -892,7 +892,7 @@ tasks:
       additional_options:
         simple: advancedIndexing
       case_id:
-        simple: ${MsGraph.eDiscoveryCase.CaseId}
+        simple: ${ResolvedCaseId}
       display_name:
         simple: XSOAR-Export-${incident.id}
       export_criteria:
@@ -900,7 +900,7 @@ tasks:
       export_format:
         simple: ${inputs.export_format}
       search_id:
-        simple: ${MsGraph.eDiscoverySearch.SearchId}
+        simple: ${ResolvedSearchId}
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -920,10 +920,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: cbc0af3c-d378-446d-91c0-b455162c983d
+    taskid: 9a3b0f81-8d6a-452e-b77d-a4c2d981c6a2
     type: regular
     task:
-      id: cbc0af3c-d378-446d-91c0-b455162c983d
+      id: 9a3b0f81-8d6a-452e-b77d-a4c2d981c6a2
       version: -1
       name: Download export file
       description: Get a list of the caseOperation objects and their properties, or retrieve a specific operation by ID. When operation_id is provided, you can set download_file=true to download the export report (if available).
@@ -938,7 +938,7 @@ tasks:
       - "62"
     scriptarguments:
       case_id:
-        simple: ${MsGraph.eDiscoveryCase.CaseId}
+        simple: ${ResolvedCaseId}
       download_file:
         simple: "true"
       operation_id:
@@ -1027,10 +1027,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 0a3b2c32-3eb7-43c4-9c37-72eafe16a651
+    taskid: 32ec426e-0287-4df0-aba0-76ab957a2994
     type: regular
     task:
-      id: 0a3b2c32-3eb7-43c4-9c37-72eafe16a651
+      id: 32ec426e-0287-4df0-aba0-76ab957a2994
       version: -1
       name: Permanently delete matched emails
       description: |-
@@ -1054,13 +1054,13 @@ tasks:
       - "33"
     scriptarguments:
       case_id:
-        simple: ${MsGraph.eDiscoveryCase.CaseId}
+        simple: ${ResolvedCaseId}
       purge_areas:
         simple: mailboxes
       purge_type:
         simple: permanentlyDelete
       search_id:
-        simple: ${MsGraph.eDiscoverySearch.SearchId}
+        simple: ${ResolvedSearchId}
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -1080,10 +1080,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 68963d83-9521-435d-967a-3c300a92462e
+    taskid: 6a7babf6-b24b-4622-bbed-821267861b16
     type: regular
     task:
-      id: 68963d83-9521-435d-967a-3c300a92462e
+      id: 6a7babf6-b24b-4622-bbed-821267861b16
       version: -1
       name: Move matched emails to recoverable items
       description: |-
@@ -1107,13 +1107,13 @@ tasks:
       - "33"
     scriptarguments:
       case_id:
-        simple: ${MsGraph.eDiscoveryCase.CaseId}
+        simple: ${ResolvedCaseId}
       purge_areas:
         simple: mailboxes
       purge_type:
         simple: recoverable
       search_id:
-        simple: ${MsGraph.eDiscoverySearch.SearchId}
+        simple: ${ResolvedSearchId}
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -1189,10 +1189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: a876aa6f-b1ef-4710-9276-83c9cf4c6ba6
+    taskid: 4da86785-6f2e-44b5-aab5-4ddf760fe0fb
     type: regular
     task:
-      id: a876aa6f-b1ef-4710-9276-83c9cf4c6ba6
+      id: 4da86785-6f2e-44b5-aab5-4ddf760fe0fb
       version: -1
       name: Delete eDiscovery search
       description: Delete an eDiscoverySearch object.
@@ -1205,9 +1205,9 @@ tasks:
       - "2"
     scriptarguments:
       case_id:
-        simple: ${MsGraph.eDiscoveryCase.CaseId}
+        simple: ${ResolvedCaseId}
       search_id:
-        simple: ${MsGraph.eDiscoverySearch.SearchId}
+        simple: ${ResolvedSearchId}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1261,10 +1261,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 64c14229-83ca-4c03-ae14-f660dc64517e
+    taskid: 6302ccd6-f04f-4548-b37f-4bab41ff8b2b
     type: regular
     task:
-      id: 64c14229-83ca-4c03-ae14-f660dc64517e
+      id: 6302ccd6-f04f-4548-b37f-4bab41ff8b2b
       version: -1
       name: Wait for estimate statistics to complete
       description: Retrieves the most recent eDiscovery estimate statistics operation for a given search in Microsoft Purview. Use this command after running 'msg-run-estimate-statistics' to check the results.
@@ -1279,9 +1279,9 @@ tasks:
       - "34"
     scriptarguments:
       case_id:
-        simple: ${MsGraph.eDiscoveryCase.CaseId}
+        simple: ${ResolvedCaseId}
       search_id:
-        simple: ${MsGraph.eDiscoverySearch.SearchId}
+        simple: ${ResolvedSearchId}
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -1861,10 +1861,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 4386ec01-1ada-420c-a33d-3cd1155f0eae
+    taskid: e34a31af-d9f5-41a2-9a45-173ebc4f66a1
     type: regular
     task:
-      id: 4386ec01-1ada-420c-a33d-3cd1155f0eae
+      id: e34a31af-d9f5-41a2-9a45-173ebc4f66a1
       version: -1
       name: Store found case ID
       description: Set a value in context under the key you entered.
@@ -1877,7 +1877,7 @@ tasks:
       - "7"
     scriptarguments:
       key:
-        simple: MsGraph.eDiscoveryCase.CaseId
+        simple: ResolvedCaseId
       value:
         complex:
           root: MsGraph.eDiscoveryCase
@@ -2121,10 +2121,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 650d1a69-fb93-4dd2-824f-cc544cd67925
+    taskid: 77d9ff54-9db1-4286-8d0d-b3bddeb5dc25
     type: regular
     task:
-      id: 650d1a69-fb93-4dd2-824f-cc544cd67925
+      id: 77d9ff54-9db1-4286-8d0d-b3bddeb5dc25
       version: -1
       name: Save resolved search name
       description: Set a value in context under the key you entered.
@@ -2145,7 +2145,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 365,
+          "x": 367.5,
           "y": 2670
         }
       }
@@ -2282,10 +2282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 6c92b496-19da-4a83-ab01-ff8b2eec9c10
+    taskid: 5fb1b974-2985-480f-a50c-a96272c7cb35
     type: regular
     task:
-      id: 6c92b496-19da-4a83-ab01-ff8b2eec9c10
+      id: 5fb1b974-2985-480f-a50c-a96272c7cb35
       version: -1
       name: Store newly created search ID
       description: Set a value in context under the key you entered.
@@ -2298,7 +2298,7 @@ tasks:
       - "64"
     scriptarguments:
       key:
-        simple: MsGraph.eDiscoverySearch.SearchId
+        simple: ResolvedSearchId
       value:
         simple: ${ExistingSearchID}
     separatecontext: false
@@ -2319,10 +2319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 98de5b3d-4935-47d6-9edb-20f48b576adf
+    taskid: d68a2d28-3c84-4439-91bb-38d5a3da3e62
     type: regular
     task:
-      id: 98de5b3d-4935-47d6-9edb-20f48b576adf
+      id: d68a2d28-3c84-4439-91bb-38d5a3da3e62
       version: -1
       name: Store newly created case ID
       description: Set a value in context under the key you entered.
@@ -2335,7 +2335,7 @@ tasks:
       - "7"
     scriptarguments:
       key:
-        simple: MsGraph.eDiscoveryCase.CaseId
+        simple: ResolvedCaseId
       value:
         complex:
           root: MsGraph.eDiscoveryCase
@@ -2368,10 +2368,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 2e248804-90d1-44c9-95f6-ec6f3e1e6e7d
+    taskid: b953f91e-607a-4ab9-8d0a-5bb2fcb89f82
     type: regular
     task:
-      id: 2e248804-90d1-44c9-95f6-ec6f3e1e6e7d
+      id: b953f91e-607a-4ab9-8d0a-5bb2fcb89f82
       version: -1
       name: Store found search ID
       description: Set a value in context under the key you entered.
@@ -2384,7 +2384,7 @@ tasks:
       - "64"
     scriptarguments:
       key:
-        simple: MsGraph.eDiscoverySearch.SearchId
+        simple: ResolvedSearchId
       value:
         complex:
           root: MsGraph.eDiscoverySearch
@@ -2639,5 +2639,5 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-dirtyInputs: true
-fromversion: 6.10.0
+tests:
+- MSG-ediscovery-tpb
