@@ -204,7 +204,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: inputs.case
+              simple: ${inputs.case}
+              iscontext: true
     continueonerrortype: ""
     view: |-
       {
