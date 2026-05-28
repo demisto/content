@@ -12,7 +12,7 @@ import cv2 as cv
 
 
 # Site-specific allowlist for safe pickle loading — extends the shared base with classes this site needs.
-_ALLOWED_CLASSES: set[tuple[str, str]] = _BASE_PICKLE_ALLOWED_CLASSES | {
+_ALLOWED_CLASSES: set[tuple[str, str]] = BASE_PICKLE_ALLOWED_CLASSES | {
     # The Model class (defined in this script)
     ("__main__", "Model"),
     # Scikit-learn pipeline and estimators

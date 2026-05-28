@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 
 
 # Site-specific allowlist for safe pickle loading — extends the shared base with classes this site needs.
-_ALLOWED_CLASSES = _BASE_PICKLE_ALLOWED_CLASSES | {
+_ALLOWED_CLASSES = BASE_PICKLE_ALLOWED_CLASSES | {
     # Pandas internals (legacy BlockManager-based format)
     ("pandas.core.internals.managers", "BlockManager"),
     ("pandas.core.internals.blocks", "IntBlock"),

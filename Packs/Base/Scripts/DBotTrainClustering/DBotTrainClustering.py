@@ -20,7 +20,7 @@ from CommonServerUserPython import *
 
 
 # Site-specific allowlist for safe pickle loading — extends the shared base with classes this site needs.
-_ALLOWED_CLASSES: set[tuple[str, str]] = _BASE_PICKLE_ALLOWED_CLASSES | {
+_ALLOWED_CLASSES: set[tuple[str, str]] = BASE_PICKLE_ALLOWED_CLASSES | {
     # Custom schema classes (defined in this script)
     ("__main__", "PostProcessing"),
     ("__main__", "Clustering"),

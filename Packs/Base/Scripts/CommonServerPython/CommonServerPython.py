@@ -13963,7 +13963,7 @@ def invalidate_ucp_credentials(method_unique_id):
 
 # Common (module, class) pairs shared by all ML-model loading sites.
 # Each script extends this base with its own site-specific entries via set union.
-_BASE_PICKLE_ALLOWED_CLASSES = {
+BASE_PICKLE_ALLOWED_CLASSES = {
     # Numpy
     ("numpy.core.multiarray", "_reconstruct"),
     ("numpy", "ndarray"),
