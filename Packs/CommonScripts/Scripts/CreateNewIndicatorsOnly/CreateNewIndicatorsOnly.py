@@ -15,6 +15,36 @@ MAX_FIND_INDICATOR_RETRIES = 10
 SLEEP_TIME = 2
 
 
+def find_existing_indicators_by_value(indicator_values: list[str]) -> dict[str, dict[str, Any]]:
+    """
+    Searches for existing indicators by their values using a single batched query.
+
+    Args:
+        indicator_values: List of indicator values to search for.
+
+    Returns:
+        A case-insensitive dictionary mapping indicator values to their indicator objects.
+    """
+    escaped_normalized_indicators = {indicator_value.replace('"', r"\"") for indicator_value in indicator_values}
+    if not escaped_normalized_indicators:
+        return {}
+
+    query = " or ".join(f'value:"{indicator_value}"' for indicator_value in escaped_normalized_indicators)
+    demisto.debug(f"Searching for existing indicators with query: {query}")
+
+    searcher = IndicatorsSearcher(query=query)
+    existing_indicators_by_value: dict[str, dict[str, Any]] = {}
+
+    for page_result in searcher:
+        for indicator in page_result.get("iocs") or []:
+            indicator_value = indicator.get(KEY_VALUE)
+            if indicator_value:
+                existing_indicators_by_value.setdefault(str(indicator_value).casefold(), indicator)
+
+    demisto.debug(f"Found {len(existing_indicators_by_value)} existing indicators")
+    return existing_indicators_by_value
+
+
 def associate_indicator_to_incident(indicator_value: Any) -> None:
     """
     Associate an indicator to this incident. Raise an exception if an error occurs.
@@ -59,24 +89,29 @@ def normalize_indicator_value(indicator_value: Any) -> str:
 
 
 def add_new_indicator(
-    indicator_value: Any, create_new_indicator_args: dict[str, Any], associate_to_incident: bool = False
+    indicator_value: Any,
+    create_new_indicator_args: dict[str, Any],
+    associate_to_incident: bool = False,
+    existing_indicators_by_value: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     indicator_value = normalize_indicator_value(indicator_value)
-    escaped_indicator_value = indicator_value.replace('"', r"\"")
+    existing_indicators_by_value = existing_indicators_by_value or {}
 
-    if indicators := execute_command("findIndicators", {"value": escaped_indicator_value}):
-        indicator = indicators[0]
+    if indicator := existing_indicators_by_value.get(indicator_value.casefold()):
         indicator[KEY_CREATION_STATUS] = STATUS_EXISTING
 
         # findIndicators might find an indicator with different letter case.
         # Unfortunately associate_indicator_to_incident does not ignore case
         # and as a result in some cases is unable to associate indicator.
         indicator_value = indicator[KEY_VALUE]
+
     else:
         args = dict(create_new_indicator_args, value=indicator_value)
         indicator = execute_command("createNewIndicator", args)
+
         if isinstance(indicator, dict):
             indicator[KEY_CREATION_STATUS] = STATUS_NEW
+
         elif isinstance(indicator, str):
             # createNewIndicator has been successfully done, but the indicator
             # wasn't created for some reasons.
@@ -90,8 +125,9 @@ def add_new_indicator(
                 "indicator_type": args.get("type", "Unknown"),
                 KEY_CREATION_STATUS: STATUS_UNAVAILABLE,
             }
+
         else:
-            raise DemistoException(f"Unknown response from createNewIndicator: str{indicator_value}")
+            raise DemistoException(f"Unknown response from createNewIndicator: {indicator!r}")
 
     if indicator[KEY_CREATION_STATUS] != STATUS_UNAVAILABLE and associate_to_incident:
         demisto.debug(f"Associating {indicator_value} to incident.")
@@ -101,11 +137,22 @@ def add_new_indicator(
 
 
 def add_new_indicators(
-    indicator_values: list[Any] | None, create_new_indicator_args: dict[str, Any], associate_to_incident: bool = False
+    indicator_values: list[Any] | None,
+    create_new_indicator_args: dict[str, Any],
+    associate_to_incident: bool = False,
 ) -> list[dict[str, Any]]:
+    normalized_indicator_values = [normalize_indicator_value(indicator_value) for indicator_value in indicator_values or []]
+
+    existing_indicators_by_value = find_existing_indicators_by_value(normalized_indicator_values)
+
     return [
-        add_new_indicator(indicator_value, create_new_indicator_args, associate_to_incident)
-        for indicator_value in indicator_values or []
+        add_new_indicator(
+            indicator_value,
+            create_new_indicator_args,
+            associate_to_incident,
+            existing_indicators_by_value,
+        )
+        for indicator_value in normalized_indicator_values
     ]
 
 
