@@ -57,6 +57,7 @@ LOOPBACK_DAYS = 1
 
 POLL_TIMEOUT = 1200
 POLL_INTERVAL = 10
+MEMORY_DUMP_POLL_TIMEOUT = 7200
 
 FETCH_LIMIT = 50
 
@@ -2869,7 +2870,7 @@ def gz_endpoint_users_loggedin_command(client: Client, args: dict[str, Any]) -> 
 
 @polling_function(
     name="gz-poll-endpoint-memory-dump-status",
-    timeout=POLL_TIMEOUT,
+    timeout=MEMORY_DUMP_POLL_TIMEOUT,
     interval=POLL_INTERVAL,
     requires_polling_arg=False,
 )
