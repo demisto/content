@@ -69,4 +69,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Search And Delete Emails - Microsoft Graph Security ](../doc_files/Microsoft_Graph_Security_-_Search_And_Delete_Emails.png)
+![Search And Delete Emails - Microsoft Graph Security ](../doc_files/Search_And_Delete_Emails_-_Microsoft_Graph_Security.png.png)
