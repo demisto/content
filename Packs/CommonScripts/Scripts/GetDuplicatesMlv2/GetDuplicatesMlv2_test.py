@@ -86,23 +86,3 @@ def test_safe_pickle_loads_blocks_malicious_payload():
         safe_pickle_loads(malicious_pickle, _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES)
 
 
-def test_validate_pickle_opcodes_blocks_inst():
-    """Verify INST opcode is blocked."""
-    import pytest
-    from CommonServerPython import UnsafePickleError, validate_pickle_opcodes
-
-    # INST opcode is 'i' (0x69) -- protocol 0 class instantiation
-    inst_payload = b"(ios\nsystem\nS'echo pwned'\n."
-    with pytest.raises(UnsafePickleError, match="INST"):
-        validate_pickle_opcodes(inst_payload)
-
-
-def test_validate_pickle_opcodes_allows_legitimate_opcodes():
-    """Verify that a normal pickle payload passes opcode validation without error."""
-    import pickle
-    from CommonServerPython import validate_pickle_opcodes
-
-    legitimate_data = {"key": "value", "list": [1, 2, 3]}
-    payload = pickle.dumps(legitimate_data)
-    # Should not raise
-    validate_pickle_opcodes(payload)

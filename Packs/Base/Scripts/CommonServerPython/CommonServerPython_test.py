@@ -44,7 +44,8 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
                                 censor_request_logs, safe_sleep, get_server_config, b64_decode,
                                 get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD,
-                                execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version, ExecutionTimeout, is_ip_address_internal
+                                execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version, ExecutionTimeout, is_ip_address_internal,
+                                safe_pickle_loads, UnsafePickleError
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -13412,3 +13413,88 @@ class TestUcpEdgeCases:
         result2 = CommonServerPython.get_ucp_credentials(method_unique_id='expiry-method')
         assert result2['oauth2']['access_token'] == 'fresh-token'
         assert call_count['count'] == 2
+
+
+# === Safe Pickle Loading Tests ===
+
+
+class TestSafePickleLoads:
+    """Tests for safe_pickle_loads, validate_pickle_opcodes, and RestrictedUnpickler."""
+
+    def test_legitimate_data_loads_successfully(self):
+        """Verify that a legitimate pickle payload with allowed types loads successfully."""
+        import pickle as _pickle
+        allowed_classes = {
+            ("builtins", "dict"), ("builtins", "list"), ("builtins", "tuple"),
+            ("builtins", "str"), ("builtins", "int"), ("builtins", "float"),
+            ("builtins", "bool"), ("builtins", "bytes"),
+        }
+        safe_module_prefixes = set()  # type: set
+
+        legitimate_data = {"key": "value", "numbers": [1, 2, 3], "nested": {"a": True}}
+        payload = _pickle.dumps(legitimate_data)
+        result = safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
+        assert result == legitimate_data
+
+    def test_blocks_malicious_payload(self):
+        """Verify that a payload trying to execute os.system is blocked.
+
+        The malicious payload may be caught by either Layer 1 (RestrictedUnpickler
+        raising pickle.UnpicklingError) or Layer 2 (opcode validator raising
+        UnsafePickleError). Both are acceptable — the key is that it never executes.
+        """
+        import pickle as _pickle
+        allowed_classes = {("builtins", "dict")}
+        safe_module_prefixes = set()  # type: set
+
+        malicious_pickle = (
+            b"\x80\x04\x95\x1e\x00\x00\x00\x00\x00\x00\x00"
+            b"\x8c\x02os\x8c\x06system\x93\x8c\x0becho pwned\x85R."
+        )
+        with pytest.raises((UnsafePickleError, _pickle.UnpicklingError)):
+            safe_pickle_loads(malicious_pickle, allowed_classes, safe_module_prefixes)
+
+    def test_blocks_unauthorized_module(self):
+        """Verify that a class from an unauthorized module is blocked by Layer 1."""
+        import pickle as _pickle
+        allowed_classes = {("builtins", "dict")}
+        safe_module_prefixes = set()  # type: set
+
+        # Pickle a set — ("builtins", "set") is NOT in allowed_classes
+        payload = _pickle.dumps({1, 2, 3})
+        with pytest.raises(_pickle.UnpicklingError, match="Blocked unauthorized class"):
+            safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
+
+    def test_safe_module_prefix_allows_submodules(self):
+        """Verify that safe_module_prefixes allows any submodule of the prefix."""
+        import pickle as _pickle
+        allowed_classes = {("builtins", "dict"), ("builtins", "list")}
+        safe_module_prefixes = {"collections"}
+
+        from collections import OrderedDict
+        payload = _pickle.dumps(OrderedDict([("a", 1), ("b", 2)]))
+        result = safe_pickle_loads(payload, allowed_classes, safe_module_prefixes)
+        assert result == OrderedDict([("a", 1), ("b", 2)])
+
+
+class TestValidatePickleOpcodes:
+    """Tests for the Layer 2 opcode validator."""
+
+    def test_blocks_inst_opcode(self):
+        """Verify INST opcode is blocked."""
+        inst_payload = b"(ios\nsystem\nS'echo pwned'\n."
+        with pytest.raises(UnsafePickleError, match="INST"):
+            validate_pickle_opcodes(inst_payload)
+
+    def test_allows_legitimate_opcodes(self):
+        """Verify that a normal pickle payload passes opcode validation without error."""
+        import pickle as _pickle
+        legitimate_data = {"key": "value", "list": [1, 2, 3]}
+        payload = _pickle.dumps(legitimate_data)
+        # Should not raise
+        validate_pickle_opcodes(payload)
+
+    def test_blocks_malformed_payload(self):
+        """Verify that a malformed pickle payload is rejected."""
+        with pytest.raises(UnsafePickleError, match="Invalid or malformed"):
+            validate_pickle_opcodes(b"\xff\xfe\xfd\xfc")

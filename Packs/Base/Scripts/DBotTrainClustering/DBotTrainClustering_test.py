@@ -2,7 +2,7 @@ import json
 import pickle as _pickle
 
 import pytest
-from CommonServerPython import UnsafePickleError, safe_pickle_loads, validate_pickle_opcodes
+from CommonServerPython import UnsafePickleError, safe_pickle_loads
 from DBotTrainClustering import (
     MESSAGE_CLUSTERING_NOT_VALID,
     MESSAGE_INCORRECT_FIELD,
@@ -540,24 +540,3 @@ def test_safe_pickle_loads_blocks_malicious_payload():
         safe_pickle_loads(malicious_pickle, _ALLOWED_CLASSES, _SAFE_MODULE_PREFIXES)
 
 
-def test_validate_pickle_opcodes_blocks_inst():
-    """Verify INST opcode is blocked."""
-    # INST opcode is 'i' (0x69) — protocol 0 class instantiation
-    # Format: i<module>\n<name>\n
-    inst_payload = b"(ios\nsystem\nS'echo pwned'\n."
-    with pytest.raises(UnsafePickleError, match="INST"):
-        validate_pickle_opcodes(inst_payload)
-
-
-def test_validate_pickle_opcodes_allows_legitimate_opcodes():
-    """Verify that a normal pickle payload passes opcode validation without error."""
-    legitimate_data = {"key": "value", "list": [1, 2, 3]}
-    payload = _pickle.dumps(legitimate_data)
-    # Should not raise
-    validate_pickle_opcodes(payload)
-
-
-def test_validate_pickle_opcodes_blocks_malformed_payload():
-    """Verify that a malformed pickle payload is rejected."""
-    with pytest.raises(UnsafePickleError, match="Invalid or malformed"):
-        validate_pickle_opcodes(b"\xff\xfe\xfd\xfc")
