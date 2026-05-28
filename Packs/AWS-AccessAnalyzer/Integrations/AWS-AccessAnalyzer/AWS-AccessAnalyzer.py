@@ -167,9 +167,8 @@ def get_findings(aws_client, args):
     return json.loads(json.dumps(response, cls=DatetimeEncoder))
 
 
-def get_earliest_fetch_time():
+def get_earliest_fetch_time(params):
     last_run = demisto.getLastRun()
-    params = demisto.params()
     earliest_fetch_time = last_run and last_run.get("time")
     demisto.debug(f"{last_run=}")
     # Handle first time fetch, fetch incidents retroactively
@@ -179,8 +178,7 @@ def get_earliest_fetch_time():
     return earliest_fetch_time
 
 
-def fetch_incidents(aws_client):
-    params = demisto.params()
+def fetch_incidents(aws_client, params):
     findings_args = {
         "roleArn": params.get("roleArn"),
         "region": params.get("region"),
@@ -190,7 +188,7 @@ def fetch_incidents(aws_client):
         "maxResults": int(params.get("max_fetch", 25)),
     }
 
-    latest_finding_time = earliest_fetch_time = get_earliest_fetch_time()
+    latest_finding_time = earliest_fetch_time = get_earliest_fetch_time(params)
     incidents: list = []
     should_stop_fetch = False
 
@@ -234,8 +232,8 @@ def main():
     aws_access_key_id = params.get("credentials", {}).get("identifier") or params.get("access_key")
     aws_secret_access_key = params.get("credentials", {}).get("password") or params.get("secret_key")
     verify_certificate = not params.get("insecure", True)
-    timeout = demisto.params().get("timeout")
-    retries = demisto.params().get("retries", 5)
+    timeout = params.get("timeout")
+    retries = params.get("retries", 5)
     validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key)
 
     aws_client = AWSClient(
@@ -265,7 +263,7 @@ def main():
     }
     try:
         if command == "fetch-incidents":
-            fetch_incidents(aws_client)
+            fetch_incidents(aws_client, params)
         else:
             return_results(commands[command](aws_client, args))
     except Exception as e:
