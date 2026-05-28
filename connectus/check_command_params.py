@@ -1826,6 +1826,635 @@ def _call_passes_params(call: ast.Call, candidates: set[str]) -> bool:
     return False
 
 
+# --------------------------------------------------------------------------
+# Fix B — confidence-tier attribution helpers
+# --------------------------------------------------------------------------
+#
+# Module-level def-use index, attributed reachability walk, and
+# pre-dispatch attribution. These feed the per-command attribution
+# assembler in :func:`_build_attributions`. The design is documented
+# in :doc:`plans/check-command-params-splunkpy-diagnosis.md` §4.B.
+
+
+# Sentinel emitted into ``module_const_to_params`` to mark "the
+# constant's RHS contains a ``params.get(<non-literal>)`` call". Lets
+# the attribution layer flip the source from ``module_const_referenced``
+# (0.5) to ``module_const_hedged`` (0.1) without losing the constant.
+_NON_LITERAL_PARAM_KEY = "<non-literal>"
+
+
+def _is_dynamic_dispatch_node(node: ast.AST) -> bool:
+    """True when ``node`` looks like dynamic dispatch into a handler.
+
+    Used as a reachability-uncertainty signal: any pattern like
+    ``globals()[name]()``, ``getattr(obj, name)()``, or
+    ``command_map[name]()`` means the analyzer can't statically
+    enumerate which function actually runs. Triggers the
+    ``module_const_hedged`` downgrade in :func:`_build_attributions`.
+    """
+    if not isinstance(node, ast.Call):
+        return False
+    func = node.func
+    # Subscript on a Name/Call value: ``command_map[name]()`` or
+    # ``globals()[name]()``.
+    if isinstance(func, ast.Subscript):
+        return True
+    # ``getattr(...)()`` chained pattern.
+    if isinstance(func, ast.Call):
+        inner = func.func
+        if isinstance(inner, ast.Name) and inner.id == "getattr":
+            return True
+        if (
+            isinstance(inner, ast.Attribute)
+            and inner.attr == "getattr"
+        ):
+            return True
+    return False
+
+
+def _params_get_arg_is_string_literal(call: ast.Call) -> bool:
+    """True if ``call`` is ``<receiver>.get(<string literal>, ...)``.
+
+    Used to detect the non-literal-key form
+    ``params.get(some_var)`` — that branch must hedge the entire
+    binding because the analyzer can't tell which YML param the read
+    targets.
+    """
+    func = call.func
+    if not (isinstance(func, ast.Attribute) and func.attr == "get"):
+        return False
+    if not call.args:
+        return False
+    arg0 = call.args[0]
+    return isinstance(arg0, ast.Constant) and isinstance(arg0.value, str)
+
+
+def _expr_contains_params_get_call(
+    expr: ast.AST, params_vars: set[str]
+) -> tuple[bool, bool]:
+    """Return ``(has_params_get, has_non_literal_key)`` for ``expr``.
+
+    Walks ``expr`` looking for ``<receiver>.get(...)`` calls where the
+    receiver is a known params source (a Name in ``params_vars`` OR
+    chained ``demisto.params()``). Used to recognize module-level
+    constants whose RHS reads params.
+    """
+    has_params_get = False
+    has_non_literal = False
+    for sub in ast.walk(expr):
+        if not isinstance(sub, ast.Call):
+            continue
+        func = sub.func
+        if not (isinstance(func, ast.Attribute) and func.attr == "get"):
+            continue
+        receiver = func.value
+        is_params_receiver = (
+            isinstance(receiver, ast.Name) and receiver.id in params_vars
+        ) or _is_demisto_params_call(receiver)
+        if not is_params_receiver:
+            continue
+        has_params_get = True
+        if not _params_get_arg_is_string_literal(sub):
+            has_non_literal = True
+    # Also count direct subscript reads of params (e.g.
+    # ``PARAMS["foo"]``) as params_get for purposes of "the RHS
+    # touches params". Non-literal keys (PARAMS[var]) hedge the same
+    # way.
+    for sub in ast.walk(expr):
+        if not isinstance(sub, ast.Subscript):
+            continue
+        receiver = sub.value
+        is_params_receiver = (
+            isinstance(receiver, ast.Name) and receiver.id in params_vars
+        ) or _is_demisto_params_call(receiver)
+        if not is_params_receiver:
+            continue
+        has_params_get = True
+        sl = sub.slice
+        if not (isinstance(sl, ast.Constant) and isinstance(sl.value, str)):
+            has_non_literal = True
+    return has_params_get, has_non_literal
+
+
+def _build_module_const_index(
+    tree: ast.Module,
+    params_vars: set[str],
+    aliases: dict[str, str],
+) -> tuple[dict[str, set[str]], set[str]]:
+    """Walk module-scope assignments to build the def-use index for Fix B.
+
+    Returns ``(module_const_to_params, hedged_constants)``.
+
+    * ``module_const_to_params[NAME]`` is the set of YML param names
+      whose ``params.get("X")`` reads appear in the RHS of any
+      module-level assignment to ``NAME``. Repeated assignments to the
+      same NAME union.
+    * ``hedged_constants`` contains every NAME whose RHS ever
+      contained a ``params.get(<non-literal>)`` (or
+      ``PARAMS[var]``) — those constants get
+      ``module_const_hedged`` (0.1) instead of
+      ``module_const_referenced`` (0.5).
+
+    Handled shapes:
+
+    * ``NAME = expr`` (single-target Assign).
+    * ``NAME: T = expr`` (AnnAssign).
+    * Tuple unpacking ``A, B = ..., ...`` (best-effort positional).
+    * Wrapped exprs ``int(params.get("X"))``, or-chains, etc. —
+      handled by walking the entire RHS expression.
+
+    Skipped shapes:
+
+    * ``NAME = demisto.params()`` (that's a params-var alias, not a
+      const). Excluded via :func:`_is_demisto_params_assign`.
+    """
+    out: dict[str, set[str]] = {}
+    hedged: set[str] = set()
+    if not isinstance(tree, ast.Module):
+        return out, hedged
+
+    def _ingest(name: str, rhs: ast.AST) -> None:
+        params = _collect_param_reads_in_expr(rhs, params_vars, aliases)
+        has_get, non_literal = _expr_contains_params_get_call(
+            rhs, params_vars
+        )
+        if not has_get and not params:
+            # RHS touches no params — skip (don't pollute the index).
+            return
+        bucket = out.setdefault(name, set())
+        bucket |= params
+        if non_literal:
+            bucket.add(_NON_LITERAL_PARAM_KEY)
+            hedged.add(name)
+
+    for stmt in tree.body:
+        # Skip the ``NAME = demisto.params()`` aliasing pattern — it's a
+        # params-var binding, not a const definition.
+        if _is_demisto_params_assign(stmt) is not None:
+            continue
+        if isinstance(stmt, ast.Assign):
+            # Tuple unpacking: best-effort positional binding.
+            if (
+                len(stmt.targets) == 1
+                and isinstance(stmt.targets[0], (ast.Tuple, ast.List))
+                and isinstance(stmt.value, (ast.Tuple, ast.List))
+                and len(stmt.targets[0].elts) == len(stmt.value.elts)
+            ):
+                for tgt, val in zip(stmt.targets[0].elts, stmt.value.elts):
+                    if isinstance(tgt, ast.Name):
+                        _ingest(tgt.id, val)
+                continue
+            # Single-target Name = RHS.
+            if (
+                len(stmt.targets) == 1
+                and isinstance(stmt.targets[0], ast.Name)
+            ):
+                _ingest(stmt.targets[0].id, stmt.value)
+                continue
+            # Chained ``A = B = RHS``: attribute the same RHS to every
+            # Name target, ignore non-Name targets.
+            if all(isinstance(t, ast.Name) for t in stmt.targets):
+                for tgt in stmt.targets:
+                    if isinstance(tgt, ast.Name):
+                        _ingest(tgt.id, stmt.value)
+                continue
+        if (
+            isinstance(stmt, ast.AnnAssign)
+            and isinstance(stmt.target, ast.Name)
+            and stmt.value is not None
+        ):
+            _ingest(stmt.target.id, stmt.value)
+    return out, hedged
+
+
+def _trace_with_attribution(
+    fn: ast.FunctionDef,
+    func_map: dict[str, ast.FunctionDef | ast.ClassDef],
+    aliases: dict[str, str],
+    max_depth: int,
+    current_depth: int,
+    visited: set[str],
+    module_params_vars: set[str] | None,
+    out_evidence: list[tuple[str, ParamSourceEvidence]],
+    out_referenced_consts: set[str],
+) -> bool:
+    """Walk ``fn`` recursively, recording per-tier attribution evidence.
+
+    Sibling to :func:`trace_params_in_function` (kept separate for
+    backward compatibility — see the completion summary's "B.4 choice"
+    note). Mutates the two ``out_*`` accumulators in place.
+
+    Returns ``walk_uncertain``: True iff any branch hit an unresolved
+    call target, a dynamic-dispatch construct (``globals()[x]()``,
+    ``getattr(self, cmd)()``, ``command_map[cmd]()``), a
+    non-literal-key ``params.get(var)`` call, or the depth budget.
+
+    ``current_depth`` is the depth at which ``fn`` was entered relative
+    to the handler: the handler itself is depth 0, its direct callees
+    are depth 1, etc. The ``source`` label written into the evidence
+    list is ``"handler_body"`` for depth 0 and ``"helper"`` for
+    depth >= 1 (with ``call_graph_depth`` set on the latter).
+    """
+    if fn.name in visited:
+        return False
+    visited.add(fn.name)
+
+    sig_params = {a.arg for a in fn.args.args} | {
+        a.arg for a in fn.args.kwonlyargs
+    }
+    candidates = (sig_params & PARAMS_VAR_ALIASES) or {"params"}
+    if module_params_vars:
+        candidates = candidates | module_params_vars
+
+    # Collect direct param reads inside fn.
+    visitor = _ParamAccessVisitor(candidates, aliases)
+    visitor.visit(fn)
+    for param_name in sorted(visitor.found):
+        if current_depth == 0:
+            source = "handler_body"
+            confidence = TIER_CONFIDENCE["handler_body"]
+            evidence_msg = (
+                f"params read in handler {fn.name!r}"
+            )
+            depth: int | None = None
+        else:
+            source = "helper"
+            confidence = helper_confidence(current_depth)
+            evidence_msg = (
+                f"params.get() reached at helper depth="
+                f"{current_depth} via {fn.name!r}"
+            )
+            depth = current_depth
+        out_evidence.append(
+            (
+                param_name,
+                ParamSourceEvidence(
+                    source=source,
+                    confidence=confidence,
+                    evidence=evidence_msg,
+                    call_graph_depth=depth,
+                ),
+            )
+        )
+
+    # Record every Name reference in the function body for the
+    # module-const reachability test ("if NAME in referenced_const_names
+    # then the command's code path touches that constant").
+    for sub in ast.walk(fn):
+        if isinstance(sub, ast.Name):
+            out_referenced_consts.add(sub.id)
+
+    walk_uncertain = False
+
+    # Detect non-literal-key params.get(...) anywhere in this function.
+    for sub in ast.walk(fn):
+        if isinstance(sub, ast.Call):
+            func = sub.func
+            if (
+                isinstance(func, ast.Attribute)
+                and func.attr == "get"
+                and (
+                    (
+                        isinstance(func.value, ast.Name)
+                        and func.value.id in candidates
+                    )
+                    or _is_demisto_params_call(func.value)
+                )
+                and sub.args
+                and not (
+                    isinstance(sub.args[0], ast.Constant)
+                    and isinstance(sub.args[0].value, str)
+                )
+            ):
+                walk_uncertain = True
+                break
+
+    # Detect dynamic-dispatch call shapes anywhere in this function.
+    if not walk_uncertain:
+        for sub in ast.walk(fn):
+            if _is_dynamic_dispatch_node(sub):
+                walk_uncertain = True
+                break
+
+    # Recurse into resolvable callees, applying the same recursion
+    # gate as :func:`trace_params_in_function`. Depth budget is the
+    # number of additional callee-frames we can descend from
+    # current_depth; when it hits 0 we mark uncertain (the budget cut
+    # the walk short).
+    if current_depth >= max_depth:
+        # No budget for further descent. Any reachable callee from
+        # here is unanalyzed; flag uncertain only if at least one
+        # call site exists (we don't penalise leaf helpers).
+        for call in _iter_calls(fn.body):
+            target_fn = _resolve_call_target(call, func_map)
+            if target_fn is not None and target_fn.name not in visited:
+                # Would have descended but budget is exhausted.
+                walk_uncertain = True
+                break
+        return walk_uncertain
+
+    for call in _iter_calls(fn.body):
+        target_fn = _resolve_call_target(call, func_map)
+        if target_fn is None:
+            # Unresolved target (built-in, dynamic dispatch already
+            # caught above, or an attribute on an instance whose
+            # class is in another module). Only flag uncertain when
+            # the call looks like a real direct call — Attribute
+            # calls on receiver objects are extremely common
+            # (``client.get_thing()``) and would over-flag everything.
+            # Treat unresolved bare Name calls and unresolved
+            # Attribute calls whose name isn't a known built-in
+            # as uncertainty signals.
+            if isinstance(call.func, ast.Name):
+                walk_uncertain = True
+            continue
+        if not (
+            _call_passes_params(call, candidates)
+            or _function_reads_params_directly(target_fn, module_params_vars)
+        ):
+            continue
+        sub_uncertain = _trace_with_attribution(
+            target_fn,
+            func_map,
+            aliases,
+            max_depth=max_depth,
+            current_depth=current_depth + 1,
+            visited=visited,
+            module_params_vars=module_params_vars,
+            out_evidence=out_evidence,
+            out_referenced_consts=out_referenced_consts,
+        )
+        if sub_uncertain:
+            walk_uncertain = True
+
+    return walk_uncertain
+
+
+def _find_dispatch_anchor_line(main_fn: ast.FunctionDef) -> int:
+    """Return the line below which ``main()`` is considered post-dispatch.
+
+    Mirrors :func:`find_command_dispatch_line` but is explicit about
+    the fallback semantics: if no dispatch construct is identified,
+    treat ALL of ``main()`` as pre-dispatch (conservative — every
+    params.get() seen gets ``pre_dispatch_main`` attribution).
+    """
+    line = find_command_dispatch_line(main_fn)
+    if line == 10**9:
+        return 10**9
+    return line
+
+
+def _collect_pre_dispatch_attribution(
+    main_fn: ast.FunctionDef,
+    func_map: dict[str, ast.FunctionDef | ast.ClassDef],
+    params_vars: set[str],
+    module_params_vars: set[str] | None,
+    aliases: dict[str, str],
+) -> dict[str, str]:
+    """Find params read in ``main()`` pre-dispatch, including via constructors.
+
+    Returns ``{param_name: evidence_str}``. Each YML param read in
+    ``main()`` above the dispatch site, OR inside a constructor
+    invoked by a pre-dispatch Call (resolved via
+    :func:`_resolve_call_target` + Fix A's class-to-``__init__`` step),
+    is attributed to every command as ``pre_dispatch_main``.
+    """
+    dispatch_line = _find_dispatch_anchor_line(main_fn)
+    pre_stmts = _iter_pre_dispatch_stmts(main_fn.body, dispatch_line)
+
+    out: dict[str, str] = {}
+
+    # 1) Direct reads in main()'s own pre-dispatch statements.
+    for stmt in pre_stmts:
+        for param in _collect_param_reads_in_expr(stmt, params_vars, aliases):
+            out.setdefault(
+                param, "params.get() in main() before dispatch"
+            )
+
+    # 2) Reads inside __init__ for each constructor invoked
+    #    pre-dispatch. Walks the Call list in pre-dispatch statements
+    #    (using _iter_calls), resolves to a FunctionDef (which for a
+    #    ClassDef target is its __init__ via Fix A), and runs the
+    #    param visitor on that __init__ body. Doesn't recurse
+    #    further — keeping the surface tight for the pre-dispatch
+    #    tier specifically.
+    seen_ctors: set[str] = set()
+    for call in _iter_calls(pre_stmts):
+        target_fn = _resolve_call_target(call, func_map)
+        if target_fn is None:
+            continue
+        if target_fn.name != "__init__":
+            # Only the constructor body counts here. Non-constructor
+            # callees inside main() pre-dispatch are walked
+            # elsewhere via the binding-narrowing machinery.
+            continue
+        # Resolve the class name for the evidence string. The call
+        # site's func.id (Name) is the class name.
+        cls_name = (
+            call.func.id if isinstance(call.func, ast.Name) else "<class>"
+        )
+        key = f"{cls_name}.__init__"
+        if key in seen_ctors:
+            continue
+        seen_ctors.add(key)
+        sig_params = {a.arg for a in target_fn.args.args} | {
+            a.arg for a in target_fn.args.kwonlyargs
+        }
+        candidates = (sig_params & PARAMS_VAR_ALIASES) or {"params"}
+        if module_params_vars:
+            candidates = candidates | module_params_vars
+        visitor = _ParamAccessVisitor(candidates, aliases)
+        visitor.visit(target_fn)
+        for param in visitor.found:
+            out.setdefault(
+                param,
+                f"params.get() in {cls_name}.__init__ called from "
+                f"main() before dispatch",
+            )
+
+    return out
+
+
+def _build_attributions(
+    handler_evidence: list[tuple[str, ParamSourceEvidence]],
+    pre_dispatch_evidence: dict[str, str],
+    module_const_to_params: dict[str, set[str]],
+    hedged_constants: set[str],
+    referenced_const_names: set[str],
+    walk_uncertain: bool,
+    captured: set[str],
+    dynamic_confirmed_no_execution: bool = False,
+) -> list[ParamAttribution]:
+    """Compose per-(command, param) attributions from every evidence source.
+
+    Merge by ``param``: same param from multiple sources → single
+    :class:`ParamAttribution` whose ``by_source`` collects all entries
+    keyed by source label and whose ``rollup_confidence`` is the
+    ``max`` over confidences (Q2(a)).
+
+    Source assembly:
+
+    1. **Handler / helper** evidence from the per-command attributed
+       walk (B.4). Already labelled ``handler_body`` /``helper`` with
+       the right confidence and depth.
+    2. **Module-level constants** referenced by the command's
+       reachable code: emits ``module_const_referenced`` (0.5) for
+       each YML param the constant binds, OR ``module_const_hedged``
+       (0.1) when the constant was bound to a non-literal-key
+       ``params.get(var)`` OR when ``walk_uncertain`` is True for this
+       command's static walk.
+    3. **Pre-dispatch main()** evidence (B.5): every param goes in at
+       ``pre_dispatch_main`` (0.2) — OR
+       ``pre_dispatch_main_dynamic_disproven`` (0.1) if Fix C wired
+       the ``dynamic_confirmed_no_execution`` flag True for this
+       command (Q3 downgrade hook; gated off today).
+    4. **Dynamic capture** evidence: each captured param folds in as
+       ``dynamic_capture`` (1.0).
+    """
+    # by_param[param][source] = ParamSourceEvidence (one per source).
+    by_param: dict[str, dict[str, ParamSourceEvidence]] = {}
+
+    def _add(param: str, evidence: ParamSourceEvidence) -> None:
+        bucket = by_param.setdefault(param, {})
+        existing = bucket.get(evidence.source)
+        # When the same source fires twice for the same param (e.g. a
+        # helper read at depth 1 and again at depth 2), keep the
+        # higher-confidence (lower-depth) entry — matches the
+        # "minimum depth at which the read was first seen" rule from
+        # §4.B.3 and matches the Q2(a) max-rollup semantics for the
+        # sub-source as well.
+        if existing is None or evidence.confidence > existing.confidence:
+            bucket[evidence.source] = evidence
+
+    # 1) Handler-body and helper evidence: one entry per (param,
+    #    source). Multiple helper hits for the same (param, source)
+    #    pair merge to the highest-confidence (shallowest-depth) one
+    #    via _add()'s prior-vs-new comparison above.
+    for param, ev in handler_evidence:
+        _add(param, ev)
+
+    # 2) Module-level constants.
+    for const_name, params_set in module_const_to_params.items():
+        if const_name not in referenced_const_names:
+            continue
+        # Drop the non-literal sentinel before iterating — it's only
+        # a hedge marker.
+        real_params = {
+            p for p in params_set if p != _NON_LITERAL_PARAM_KEY
+        }
+        if not real_params:
+            continue
+        const_is_hedged = const_name in hedged_constants
+        # Hedge when: the const itself is hedged (non-literal RHS), OR
+        # the command's static walk is uncertain.
+        hedged_now = const_is_hedged or walk_uncertain
+        for param in real_params:
+            if hedged_now:
+                source = "module_const_hedged"
+                confidence = TIER_CONFIDENCE["module_const_hedged"]
+                reason = (
+                    "uncertain walk"
+                    if (walk_uncertain and not const_is_hedged)
+                    else "non-literal key in binding"
+                )
+                evidence_msg = (
+                    f"NAME={const_name} referenced in handler "
+                    f"(hedged: {reason})"
+                )
+            else:
+                source = "module_const_referenced"
+                confidence = TIER_CONFIDENCE["module_const_referenced"]
+                evidence_msg = (
+                    f"NAME={const_name} referenced in handler"
+                )
+            _add(
+                param,
+                ParamSourceEvidence(
+                    source=source,
+                    confidence=confidence,
+                    evidence=evidence_msg,
+                ),
+            )
+
+    # 3) Pre-dispatch main(): every param fans out to this command.
+    if dynamic_confirmed_no_execution:
+        pre_source = "pre_dispatch_main_dynamic_disproven"
+        pre_conf = TIER_CONFIDENCE[
+            "pre_dispatch_main_dynamic_disproven"
+        ]
+    else:
+        pre_source = "pre_dispatch_main"
+        pre_conf = TIER_CONFIDENCE["pre_dispatch_main"]
+    for param, evidence_msg in pre_dispatch_evidence.items():
+        _add(
+            param,
+            ParamSourceEvidence(
+                source=pre_source,
+                confidence=pre_conf,
+                evidence=evidence_msg,
+            ),
+        )
+
+    # 4) Dynamic capture: authoritative, fold in last.
+    for param in captured:
+        _add(
+            param,
+            ParamSourceEvidence(
+                source="dynamic_capture",
+                confidence=TIER_CONFIDENCE["dynamic_capture"],
+                evidence="observed in dynamic capture",
+            ),
+        )
+
+    attributions: list[ParamAttribution] = []
+    for param in sorted(by_param):
+        sources = by_param[param]
+        rollup = max(ev.confidence for ev in sources.values())
+        attributions.append(
+            ParamAttribution(
+                param=param,
+                by_source=sources,
+                rollup_confidence=rollup,
+            )
+        )
+    return attributions
+
+
+def _filter_attributions_by_min_confidence(
+    attributions: list[ParamAttribution], min_confidence: float
+) -> list[ParamAttribution]:
+    """Drop ``by_source`` rows whose confidence is below ``min_confidence``.
+
+    If a :class:`ParamAttribution` loses all of its sources after
+    filtering, it is dropped entirely. Otherwise ``rollup_confidence``
+    is recomputed over the surviving sources. ``min_confidence`` of
+    0.0 (the default) is a no-op (no rows ever fall below).
+
+    See B.8's CLI flag description: this implements the "filter
+    sub-threshold tiers from attributions[*].by_source" semantics.
+    """
+    if min_confidence <= 0.0:
+        return attributions
+    out: list[ParamAttribution] = []
+    for attr in attributions:
+        kept = {
+            src: ev
+            for src, ev in attr.by_source.items()
+            if ev.confidence >= min_confidence
+        }
+        if not kept:
+            continue
+        rollup = max(ev.confidence for ev in kept.values())
+        out.append(
+            ParamAttribution(
+                param=attr.param,
+                by_source=kept,
+                rollup_confidence=rollup,
+            )
+        )
+    return out
+
+
 def analyze_static(
     py_source: str,
     command: str,
@@ -2043,6 +2672,145 @@ def analyze_static(
             )
 
     return scope_1, scope_2
+
+
+def analyze_static_attributions(
+    py_source: str,
+    command: str,
+    captured: set[str] | None = None,
+    dynamic_confirmed_no_execution: bool = False,
+    language: str | None = None,
+    integration_name: str = "",
+    call_graph_depth: int = 3,
+) -> tuple[set[str], set[str], list[ParamAttribution]]:
+    """Run :func:`analyze_static` plus build the Fix B per-command attributions.
+
+    Returns ``(scope_1, scope_2, attributions)``. ``scope_1``/``scope_2``
+    are identical to :func:`analyze_static` for backward compatibility.
+    ``attributions`` is the per-param confidence-tier breakdown
+    (always populated; never filtered here — headline filtering lives
+    in :func:`analyze_integration`).
+
+    ``captured`` is the dynamic-phase captured set for this command
+    (or ``None`` / empty in static-only mode); folded in as
+    ``dynamic_capture`` sources at confidence 1.0.
+
+    ``dynamic_confirmed_no_execution`` gates the Q3 downgrade hook:
+    when True, ``pre_dispatch_main`` (0.2) is replaced by
+    ``pre_dispatch_main_dynamic_disproven`` (0.1) for every param on
+    this command. Defaults False; Fix C populates the flag.
+
+    Verbose mode is off here — the breadcrumbs come from
+    :func:`analyze_static` proper, which the caller invokes
+    separately. Calling this function is otherwise self-contained.
+    """
+    scope_1, scope_2 = analyze_static(
+        py_source,
+        command,
+        language=language,
+        integration_name=integration_name,
+        verbose=False,
+        call_graph_depth=call_graph_depth,
+    )
+    captured = captured or set()
+    if language and language.lower() not in {"python", "python2", "python3"}:
+        return scope_1, scope_2, []
+    if not py_source:
+        return scope_1, scope_2, []
+
+    try:
+        tree = ast.parse(py_source)
+    except SyntaxError:
+        # analyze_static already raised at this point in real use;
+        # keep the safety net so unit tests with broken source don't
+        # crash before scope_1/scope_2 short-circuit returns.
+        return scope_1, scope_2, []
+    if not isinstance(tree, ast.Module):
+        return scope_1, scope_2, []
+    func_map = build_function_map(tree)
+    main_fn = find_main(func_map)
+    if main_fn is None:
+        # No main(): we can still fold dynamic-only captures into
+        # attributions, but everything else is empty.
+        attributions = _build_attributions(
+            handler_evidence=[],
+            pre_dispatch_evidence={},
+            module_const_to_params={},
+            hedged_constants=set(),
+            referenced_const_names=set(),
+            walk_uncertain=False,
+            captured=captured,
+            dynamic_confirmed_no_execution=dynamic_confirmed_no_execution,
+        )
+        return scope_1, scope_2, attributions
+    aliases = find_pydantic_aliases(tree)
+    params_var = find_params_var(main_fn) or "params"
+    module_params_vars = find_module_level_params_vars(tree)
+    params_vars = {params_var} | PARAMS_VAR_ALIASES | module_params_vars
+
+    # B.3 — module-level def-use index.
+    module_const_to_params, hedged_constants = _build_module_const_index(
+        tree, params_vars, aliases
+    )
+
+    # B.4 — per-command attributed reachability walk over every
+    # resolved handler. Visited set is shared across handlers for the
+    # same command (multiple dispatch sites for the same command name
+    # behave like one). Walk_uncertain ORs across handlers.
+    handler_evidence: list[tuple[str, ParamSourceEvidence]] = []
+    referenced_consts: set[str] = set()
+    walk_uncertain = False
+    handler_calls = find_command_handler_calls(main_fn, command)
+    visited_handlers: set[str] = set()
+    for call in handler_calls:
+        target = _resolve_call_target(call, func_map)
+        if target is None:
+            # Unresolved handler is itself uncertainty.
+            walk_uncertain = True
+            continue
+        if target.name in visited_handlers:
+            continue
+        sub_uncertain = _trace_with_attribution(
+            target,
+            func_map,
+            aliases,
+            max_depth=call_graph_depth,
+            current_depth=0,
+            visited=visited_handlers,
+            module_params_vars=module_params_vars,
+            out_evidence=handler_evidence,
+            out_referenced_consts=referenced_consts,
+        )
+        if sub_uncertain:
+            walk_uncertain = True
+
+    # If no dispatch site was identified at all, the analyzer can't
+    # prove anything about which module-level constants this command
+    # reaches — hedge.
+    if not handler_calls:
+        walk_uncertain = True
+
+    # B.5 — pre-dispatch main() walk (including constructors).
+    pre_dispatch_evidence = _collect_pre_dispatch_attribution(
+        main_fn,
+        func_map,
+        params_vars,
+        module_params_vars,
+        aliases,
+    )
+
+    # B.6 — assemble.
+    attributions = _build_attributions(
+        handler_evidence=handler_evidence,
+        pre_dispatch_evidence=pre_dispatch_evidence,
+        module_const_to_params=module_const_to_params,
+        hedged_constants=hedged_constants,
+        referenced_const_names=referenced_consts,
+        walk_uncertain=walk_uncertain,
+        captured=captured,
+        dynamic_confirmed_no_execution=dynamic_confirmed_no_execution,
+    )
+    return scope_1, scope_2, attributions
 
 
 # --------------------------------------------------------------------------
@@ -3397,6 +4165,96 @@ def extract_missing_module(stderr: str) -> tuple[str, str] | None:
 LIMITATION_CAPTURE_PROXY_BYPASSED = "capture_proxy_bypassed"
 
 
+# --------------------------------------------------------------------------
+# Fix B — confidence-tier attribution
+# --------------------------------------------------------------------------
+#
+# Per-(command, param) confidence values. The diagnosis report's §4.B.1
+# tier table is the source of truth; this constant is the single
+# in-code home of those numbers so the calibration pass (§4.B.7) can
+# adjust them in one place.
+#
+# Authoritative tiers (`dynamic_capture`, `handler_body`) are 1.0.
+# Helper tiers decay with call-graph depth per Q1(b) step-decay:
+# depth=1 -> 0.8, depth=2 -> 0.7, depth=3 -> 0.5, depth>=4 -> 0.3.
+# Module-level constant attribution: ``module_const_referenced`` (0.5)
+# when the command's reachable AST references the constant, else
+# ``module_const_hedged`` (0.1) when the walk hit uncertainty.
+# ``pre_dispatch_main`` (0.2) fans out to every command. The
+# ``pre_dispatch_main_dynamic_disproven`` (0.1) tier is the Q3
+# downgrade target reserved for Fix C wiring; today the downgrade
+# hook is present but gated on a flag that defaults to False.
+TIER_CONFIDENCE: dict[str, float] = {
+    "dynamic_capture": 1.0,
+    "handler_body": 1.0,
+    "helper_depth_1": 0.8,
+    "helper_depth_2": 0.7,
+    "helper_depth_3": 0.5,
+    "helper_depth_4_plus": 0.3,
+    "module_const_referenced": 0.5,
+    "pre_dispatch_main": 0.2,
+    "pre_dispatch_main_dynamic_disproven": 0.1,
+    "module_const_hedged": 0.1,
+}
+
+
+def helper_confidence(depth: int) -> float:
+    """Confidence for a ``helper`` source at the given call-graph depth.
+
+    Implements the Q1(b) step-decay schedule from the diagnosis report:
+    depth=1 -> 0.8, depth=2 -> 0.7, depth=3 -> 0.5, depth>=4 -> 0.3.
+    A depth of 0 is treated as the depth-1 tier (a helper IS at depth-1
+    relative to the handler that called it); callers should never pass
+    a negative depth.
+    """
+    if depth <= 1:
+        return TIER_CONFIDENCE["helper_depth_1"]
+    if depth == 2:
+        return TIER_CONFIDENCE["helper_depth_2"]
+    if depth == 3:
+        return TIER_CONFIDENCE["helper_depth_3"]
+    return TIER_CONFIDENCE["helper_depth_4_plus"]
+
+
+@dataclass(frozen=True)
+class ParamSourceEvidence:
+    """One piece of evidence that a command uses a YML param.
+
+    ``source`` is one of the keys in :data:`TIER_CONFIDENCE` (minus the
+    ``_depth_N`` suffix — for helper sources we use ``"helper"`` here
+    and carry the depth separately in ``call_graph_depth``).
+
+    ``evidence`` is a short human-readable "why" string used by both
+    the JSON debug payload and the calibration pass.
+
+    ``call_graph_depth`` is set only for ``helper`` and (the Fix C
+    extension) ``pre_dispatch_main`` constructor-derived rows; for all
+    other sources it is ``None``.
+    """
+
+    source: str
+    confidence: float
+    evidence: str
+    call_graph_depth: int | None = None
+
+
+@dataclass(frozen=True)
+class ParamAttribution:
+    """Per-(command, param) attribution row.
+
+    ``by_source`` is keyed by source label (so the same param reached
+    via ``handler_body`` AND ``module_const_referenced`` has two
+    entries, not one). ``rollup_confidence`` is ``max()`` over the
+    confidences of every entry in ``by_source`` per Q2(a). Both fields
+    are always populated; ``rollup_confidence`` is recomputed by the
+    builder rather than left for downstream consumers to derive.
+    """
+
+    param: str
+    by_source: dict[str, ParamSourceEvidence]
+    rollup_confidence: float
+
+
 @dataclass
 class CommandDiagnostic:
     """Per-command outcome metadata surfaced in the JSON ``diagnostics`` field.
@@ -3419,6 +4277,11 @@ class CommandDiagnostic:
     honour the proxy env vars). Callers should treat the per-command
     param list as the static union and verify manually if narrowing
     was expected.
+
+    Fix B: ``attributions`` carries the per-param confidence-tier
+    breakdown computed by :func:`analyze_static`. Always populated
+    when static analysis ran; consumers that only need the headline
+    list can ignore it.
     """
 
     status: str
@@ -3429,6 +4292,14 @@ class CommandDiagnostic:
     scope_1_narrowed: bool = False
     scope_1_dropped: list[str] = field(default_factory=list)
     limitation: str | None = None
+    attributions: list[ParamAttribution] = field(default_factory=list)
+    # Fix C hook (gated to False today): when Fix C wires this up, set
+    # True to downgrade ``pre_dispatch_main`` (0.2) to
+    # ``pre_dispatch_main_dynamic_disproven`` (0.1) for this command.
+    # The downgrade logic in :func:`_build_attributions` reads this
+    # flag at attribution-build time. Today the flag is always False
+    # for every command; Fix C populates it.
+    dynamic_confirmed_no_execution: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         """Render the diagnostic as a plain dict for JSON serialization."""
@@ -3457,6 +4328,33 @@ class CommandDiagnostic:
             out["scope_1_dropped"] = self.scope_1_dropped
         if self.limitation is not None:
             out["limitation"] = self.limitation
+        # Fix B: serialize attributions when present. Each
+        # ParamAttribution becomes ``{param, rollup_confidence,
+        # by_source: {<source>: {confidence, evidence,
+        # call_graph_depth?}, ...}}``. Always emit when populated —
+        # the headline filter lives on the ``commands`` payload, not
+        # here. ``--show-sources`` / opt-in surfacing is the consumer
+        # layer's call.
+        if self.attributions:
+            out["attributions"] = [
+                {
+                    "param": attr.param,
+                    "rollup_confidence": attr.rollup_confidence,
+                    "by_source": {
+                        src: {
+                            k: v
+                            for k, v in {
+                                "confidence": ev.confidence,
+                                "evidence": ev.evidence,
+                                "call_graph_depth": ev.call_graph_depth,
+                            }.items()
+                            if v is not None
+                        }
+                        for src, ev in attr.by_source.items()
+                    },
+                }
+                for attr in self.attributions
+            ]
         return out
 
 
@@ -3736,6 +4634,8 @@ def analyze_integration(
     seed_overrides: dict[str, str] | None = None,
     with_diagnostics: bool = False,
     call_graph_depth: int = 3,
+    min_confidence: float = 0.0,
+    headline_min_confidence: float = 0.5,
 ) -> dict[str, Any]:
     """Run the full analysis pipeline for one integration.
 
@@ -3933,6 +4833,45 @@ def analyze_integration(
             seed_overrides=seed_overrides,
         )
 
+    # Fix B (B.6): for every command, build the per-(command, param)
+    # attribution payload and attach it to the diagnostic. Always do
+    # this — the headline list filter at ``headline_min_confidence``
+    # consumes it, and the full ``attributions`` payload is emitted
+    # under ``--with-diagnostics`` for the calling agent. Static-only
+    # mode synthesizes a CommandDiagnostic per command (with status
+    # ``ok_no_capture``) so the attribution field has a home — the
+    # static-mode diagnostic is discarded at output time (the
+    # ``diagnostics`` block is suppressed when ``static_only``).
+    for cmd in commands:
+        diag = diagnostics.get(cmd)
+        if diag is None:
+            diag = CommandDiagnostic(status="ok_no_capture")
+            diagnostics[cmd] = diag
+        _scope_1, _scope_2, attributions = analyze_static_attributions(
+            py_source,
+            cmd,
+            captured=dynamic_results.get(cmd, set()),
+            dynamic_confirmed_no_execution=diag.dynamic_confirmed_no_execution,
+            language=language,
+            integration_name=integration_name,
+            call_graph_depth=call_graph_depth,
+        )
+        # Drop ignored / out-of-YML attributions for the diagnostic too —
+        # the attribution rows must mirror the headline list's name
+        # universe to avoid confusing the calling agent with rows for
+        # params that can't appear in the headline.
+        attributions = [
+            attr for attr in attributions
+            if attr.param in all_param_names and attr.param not in ignore
+        ]
+        # Apply --min-confidence to the per-source breakdown (drops
+        # sub-threshold sources; whole row dropped when all sources
+        # fall). The default of 0.0 is a no-op.
+        attributions = _filter_attributions_by_min_confidence(
+            attributions, min_confidence
+        )
+        diag.attributions = attributions
+
     out_commands: dict[str, list[str]] = {}
     for cmd in commands:
         merged_set = _merge_command_params(
@@ -3941,10 +4880,37 @@ def analyze_integration(
             dynamic_results[cmd],
             diagnostics.get(cmd),
         )
-        out_commands[cmd] = sorted(
-            name for name in all_param_names
-            if name in merged_set and name not in ignore
-        )
+        # Fix B (B.7): filter the headline list by
+        # ``headline_min_confidence`` over the per-param
+        # ``rollup_confidence``. Params that pass the threshold are
+        # kept; params present in ``merged_set`` but absent from
+        # ``attributions`` (or below threshold) are dropped. Params
+        # IN ``attributions`` but not in the static/dynamic merged
+        # set are also kept (since the attribution layer is the
+        # source of truth for confidence-based reachability now);
+        # this captures the dynamic_capture-only and
+        # module_const_referenced-only cases that the legacy merged
+        # set might miss.
+        diag = diagnostics[cmd]
+        attr_by_param = {attr.param: attr for attr in diag.attributions}
+        in_headline: set[str] = set()
+        for name in all_param_names:
+            if name in ignore:
+                continue
+            attr = attr_by_param.get(name)
+            if attr is not None and attr.rollup_confidence >= headline_min_confidence:
+                in_headline.add(name)
+                continue
+            # Backstop: keep params from the legacy static merge that
+            # were captured by dynamic_capture but somehow missed
+            # the attribution rebuild (shouldn't happen — defensive).
+            if name in merged_set and attr is None:
+                # No attribution row was built for this name. This
+                # only happens for non-Python integrations (static
+                # analysis returns empty everything) or when py_source
+                # is absent. Fall back to the legacy merge.
+                in_headline.add(name)
+        out_commands[cmd] = sorted(in_headline)
 
     # Apply structural-limitation tags to every command's diagnostic.
     # We do this here (post-merge) because:
@@ -4476,6 +5442,42 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
             "through helper functions (default: 3, max: 5)."
         ),
     )
+    # Fix B: --min-confidence filters sub-threshold sources out of the
+    # per-param structured `attributions[*].by_source` payload. A row
+    # whose only source(s) fall below this threshold is dropped from
+    # `attributions` entirely. Default 0.0 = no-op (every tier
+    # emitted). Independent of --headline-min-confidence (which
+    # filters the flat list ONLY).
+    parser.add_argument(
+        "--min-confidence",
+        type=float,
+        default=0.0,
+        metavar="FLOAT",
+        help=(
+            "Filter sub-threshold tiers from the per-param "
+            "attributions[*].by_source structured output (range "
+            "[0.0, 1.0]; default 0.0 = no filtering). Independent of "
+            "--headline-min-confidence (which filters the flat "
+            "headline list instead)."
+        ),
+    )
+    # Fix B: --headline-min-confidence is the consumer-facing filter
+    # on the flat `commands[cmd]` list. Default 0.5 keeps
+    # `module_const_referenced` (0.5) and above; suppresses
+    # `pre_dispatch_main` (0.2) and `module_const_hedged` (0.1) by
+    # default so the migration pipeline doesn't drown in 0.1 noise.
+    parser.add_argument(
+        "--headline-min-confidence",
+        type=float,
+        default=0.5,
+        metavar="FLOAT",
+        help=(
+            "Filter the flat per-command headline list "
+            "(commands[cmd]) by rollup_confidence (range [0.0, 1.0]; "
+            "default 0.5 keeps handler_body/helper_depth_{1,2}/"
+            "module_const_referenced and above)."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -4564,6 +5566,21 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 2
+    # Fix B: validate confidence-tier filter thresholds.
+    if not 0.0 <= args.min_confidence <= 1.0:
+        print(
+            f"ERROR: --min-confidence must be in [0.0, 1.0]; got "
+            f"{args.min_confidence}",
+            file=sys.stderr,
+        )
+        return 2
+    if not 0.0 <= args.headline_min_confidence <= 1.0:
+        print(
+            f"ERROR: --headline-min-confidence must be in [0.0, 1.0]; "
+            f"got {args.headline_min_confidence}",
+            file=sys.stderr,
+        )
+        return 2
     docker_cfg = DockerConfig(
         mode=args.docker,
         default_image=args.docker_image,
@@ -4588,6 +5605,8 @@ def main(argv: list[str] | None = None) -> int:
             seed_overrides=seed_overrides,
             with_diagnostics=args.with_diagnostics,
             call_graph_depth=args.call_graph_depth,
+            min_confidence=args.min_confidence,
+            headline_min_confidence=args.headline_min_confidence,
         )
     except FileNotFoundError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

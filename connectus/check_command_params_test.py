@@ -3319,3 +3319,493 @@ class TestFixA_CallGraphDepth:
         # consumes 5 budget steps to reach lvl6). The param at the
         # deepest reachable level MUST appear.
         assert "p6" in scope_2
+
+
+# =============================================================================
+# Fix B — confidence-tier attribution system
+# =============================================================================
+
+
+def _attribution_for(
+    attributions: list[ccp.ParamAttribution], param: str
+) -> ccp.ParamAttribution | None:
+    for attr in attributions:
+        if attr.param == param:
+            return attr
+    return None
+
+
+class TestFixB_ConfidenceTiers:
+    """Fix B: per-(command, param) confidence-tier attribution system."""
+
+    def test_handler_body_attribution_confidence_1(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            def handler(params):
+                return params.get("X")
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                if command == "do-thing":
+                    handler(params)
+            '''
+        ).lstrip()
+        _s1, _s2, attributions = ccp.analyze_static_attributions(
+            src, command="do-thing"
+        )
+        attr = _attribution_for(attributions, "X")
+        assert attr is not None, "X should be attributed"
+        assert "handler_body" in attr.by_source
+        assert attr.by_source["handler_body"].confidence == 1.0
+        assert attr.rollup_confidence == 1.0
+
+    def test_helper_depth_1_confidence_0_8(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            def leaf(params):
+                return params.get("X")
+
+            def handler(params):
+                return leaf(params)
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                if command == "do-thing":
+                    handler(params)
+            '''
+        ).lstrip()
+        _s1, _s2, attributions = ccp.analyze_static_attributions(
+            src, command="do-thing"
+        )
+        attr = _attribution_for(attributions, "X")
+        assert attr is not None
+        assert "helper" in attr.by_source
+        assert attr.by_source["helper"].confidence == 0.8
+        assert attr.by_source["helper"].call_graph_depth == 1
+
+    def test_helper_depth_3_confidence_0_5(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            def leaf(params):
+                return params.get("X")
+
+            def mid(params):
+                return leaf(params)
+
+            def wrapper(params):
+                return mid(params)
+
+            def handler(params):
+                return wrapper(params)
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                if command == "do-thing":
+                    handler(params)
+            '''
+        ).lstrip()
+        _s1, _s2, attributions = ccp.analyze_static_attributions(
+            src, command="do-thing"
+        )
+        attr = _attribution_for(attributions, "X")
+        assert attr is not None
+        assert "helper" in attr.by_source
+        assert attr.by_source["helper"].confidence == 0.5
+        assert attr.by_source["helper"].call_graph_depth == 3
+
+    def test_module_const_referenced_attributed_0_5(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            FETCH = demisto.params().get("max_fetch")
+
+            def handler_a():
+                return FETCH
+
+            def handler_b():
+                return 1
+
+            def main():
+                command = demisto.command()
+                if command == "A":
+                    handler_a()
+                elif command == "B":
+                    handler_b()
+            '''
+        ).lstrip()
+        _s1, _s2, a_attrs = ccp.analyze_static_attributions(src, "A")
+        _s1, _s2, b_attrs = ccp.analyze_static_attributions(src, "B")
+        attr_a = _attribution_for(a_attrs, "max_fetch")
+        assert attr_a is not None, "A should have max_fetch via module_const_referenced"
+        assert "module_const_referenced" in attr_a.by_source
+        assert attr_a.by_source["module_const_referenced"].confidence == 0.5
+        # B does not reference FETCH; max_fetch must not appear
+        # from the module_const_referenced tier on B.
+        attr_b = _attribution_for(b_attrs, "max_fetch")
+        if attr_b is not None:
+            assert "module_const_referenced" not in attr_b.by_source
+
+    def test_module_const_hedged_when_walk_uncertain(self) -> None:
+        # handler_a *references* FETCH directly (so the const is
+        # reachable in the AST) AND uses dynamic dispatch
+        # (globals()[name]() pattern) which sets walk_uncertain.
+        # The combination MUST flip the constant's attribution to
+        # ``module_const_hedged`` instead of ``module_const_referenced``.
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            FETCH = demisto.params().get("max_fetch")
+
+            def handler_a():
+                _ = FETCH  # direct reference to const
+                fn = globals()["something"]
+                return fn()
+
+            def main():
+                command = demisto.command()
+                if command == "A":
+                    handler_a()
+            '''
+        ).lstrip()
+        _s1, _s2, attrs = ccp.analyze_static_attributions(src, "A")
+        attr = _attribution_for(attrs, "max_fetch")
+        assert attr is not None
+        assert "module_const_hedged" in attr.by_source
+        assert attr.by_source["module_const_hedged"].confidence == 0.1
+        assert "module_const_referenced" not in attr.by_source
+
+    def test_module_const_hedged_when_binding_non_literal(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            VAR = "max_fetch"
+            KEY = demisto.params().get(VAR)
+
+            def handler_a():
+                return KEY
+
+            def main():
+                command = demisto.command()
+                if command == "A":
+                    handler_a()
+            '''
+        ).lstrip()
+        _s1, _s2, attrs = ccp.analyze_static_attributions(src, "A")
+        # The non-literal-key params.get(VAR) creates a hedged
+        # constant. KEY is referenced in handler_a, so the
+        # attribution surfaces as module_const_hedged with no real
+        # param name attached (because we can't know what VAR is).
+        # The sentinel _NON_LITERAL_PARAM_KEY isn't surfaced as a
+        # YML param. But the constant is in hedged_constants so any
+        # *known* literal also bound to KEY (none here) would be
+        # hedged. This test simply asserts that KEY is in
+        # hedged_constants and no module_const_referenced row exists.
+        attr = _attribution_for(attrs, "max_fetch")
+        # There's no literal binding to max_fetch via KEY, so no
+        # max_fetch attribution should appear via module_const_*.
+        if attr is not None:
+            assert "module_const_referenced" not in attr.by_source
+        # Direct check on the index helper:
+        tree = ast.parse(src)
+        const_index, hedged = ccp._build_module_const_index(
+            tree, {"params", "PARAMS"}, {}
+        )
+        assert "KEY" in hedged
+
+    def test_pre_dispatch_main_attributed_to_all_commands(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            def handler_a():
+                return None
+
+            def handler_b():
+                return None
+
+            def main():
+                params = demisto.params()
+                _ = params.get("Y")  # pre-dispatch read
+                command = demisto.command()
+                if command == "A":
+                    handler_a()
+                elif command == "B":
+                    handler_b()
+            '''
+        ).lstrip()
+        _s1, _s2, a_attrs = ccp.analyze_static_attributions(src, "A")
+        _s1, _s2, b_attrs = ccp.analyze_static_attributions(src, "B")
+        for attrs, label in [(a_attrs, "A"), (b_attrs, "B")]:
+            attr = _attribution_for(attrs, "Y")
+            assert attr is not None, f"Y missing on command {label}"
+            assert "pre_dispatch_main" in attr.by_source
+            assert attr.by_source["pre_dispatch_main"].confidence == 0.2
+
+    def test_pre_dispatch_constructor_arg_attributed(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            class UserMappingObject:
+                def __init__(self, params):
+                    self.z = params.get("Z")
+
+            def handler_a(mapper):
+                return mapper
+
+            def main():
+                params = demisto.params()
+                mapper = UserMappingObject(params)
+                command = demisto.command()
+                if command == "A":
+                    handler_a(mapper)
+            '''
+        ).lstrip()
+        _s1, _s2, attrs = ccp.analyze_static_attributions(src, "A")
+        attr = _attribution_for(attrs, "Z")
+        assert attr is not None
+        assert "pre_dispatch_main" in attr.by_source
+        evidence_text = attr.by_source["pre_dispatch_main"].evidence
+        assert "UserMappingObject" in evidence_text
+        assert "__init__" in evidence_text
+
+    def test_multi_source_rollup_takes_max(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            CONST = demisto.params().get("X")
+
+            def handler(params):
+                # direct handler-body read AND uses CONST
+                _ = CONST
+                return params.get("X")
+
+            def main():
+                params = demisto.params()
+                command = demisto.command()
+                if command == "A":
+                    handler(params)
+            '''
+        ).lstrip()
+        _s1, _s2, attrs = ccp.analyze_static_attributions(src, "A")
+        attr = _attribution_for(attrs, "X")
+        assert attr is not None
+        # handler_body 1.0 + module_const_referenced 0.5 → rollup 1.0
+        assert "handler_body" in attr.by_source
+        assert "module_const_referenced" in attr.by_source
+        assert attr.rollup_confidence == 1.0
+
+    def test_dynamic_capture_folded_in(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            def handler():
+                return None
+
+            def main():
+                command = demisto.command()
+                if command == "A":
+                    handler()
+            '''
+        ).lstrip()
+        _s1, _s2, attrs = ccp.analyze_static_attributions(
+            src, command="A", captured={"A"}
+        )
+        attr = _attribution_for(attrs, "A")
+        assert attr is not None
+        assert "dynamic_capture" in attr.by_source
+        assert attr.by_source["dynamic_capture"].confidence == 1.0
+        assert attr.rollup_confidence == 1.0
+
+    def test_headline_filter_drops_below_threshold(
+        self, tmp_path: Path
+    ) -> None:
+        # End-to-end: create a tiny integration on disk, run
+        # analyze_integration with headline_min_confidence=0.5, and
+        # confirm that pre_dispatch_main-only params (0.2) and
+        # module_const_hedged-only params (0.1) are dropped from
+        # commands[cmd] but remain in attributions.
+        integ_dir = tmp_path / "TinyInt"
+        integ_dir.mkdir()
+        # Pre-dispatch reads "preflight"; handler reads "real".
+        py = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            def handler(params):
+                return params.get("real")
+
+            def main():
+                params = demisto.params()
+                _ = params.get("preflight")
+                command = demisto.command()
+                if command == "do-thing":
+                    handler(params)
+            '''
+        ).lstrip()
+        (integ_dir / "TinyInt.py").write_text(py)
+        (integ_dir / "TinyInt.yml").write_text(
+            "commonfields:\n  id: TinyInt\nname: TinyInt\n"
+            "display: TinyInt\nscript:\n  type: python\n  subtype: python3\n"
+            "  commands:\n    - name: do-thing\n      description: x\n"
+            "configuration:\n"
+            "  - name: real\n    display: Real\n    type: 0\n"
+            "  - name: preflight\n    display: Preflight\n    type: 0\n"
+        )
+        result = ccp.analyze_integration(
+            integration_path=integ_dir,
+            commands_filter=None,
+            static_only=True,
+            ignore=set(),
+            timeout=30,
+            docker_cfg=None,
+            with_diagnostics=True,
+            headline_min_confidence=0.5,
+        )
+        # Headline drops 0.2 preflight, keeps 1.0 real.
+        assert result["commands"]["do-thing"] == ["real"]
+        # diagnostics is suppressed under static_only by design — so
+        # we can't assert on the in-result attributions field. Instead
+        # we call analyze_static_attributions directly to confirm
+        # the structured payload still contains preflight.
+        _s1, _s2, attrs = ccp.analyze_static_attributions(
+            py, command="do-thing"
+        )
+        attr = _attribution_for(attrs, "preflight")
+        assert attr is not None
+        assert "pre_dispatch_main" in attr.by_source
+
+    def test_q3_downgrade_hook_is_present_but_inactive(self) -> None:
+        # Confirm the hook exists (so Fix C can flip the flag) but is
+        # off by default — pre_dispatch_main stays at 0.2.
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            def handler():
+                return None
+
+            def main():
+                params = demisto.params()
+                _ = params.get("Y")
+                command = demisto.command()
+                if command == "A":
+                    handler()
+            '''
+        ).lstrip()
+        # Default: dynamic_confirmed_no_execution = False.
+        _s1, _s2, attrs = ccp.analyze_static_attributions(src, "A")
+        attr = _attribution_for(attrs, "Y")
+        assert attr is not None
+        assert "pre_dispatch_main" in attr.by_source
+        assert (
+            attr.by_source["pre_dispatch_main"].confidence == 0.2
+        )
+        assert "pre_dispatch_main_dynamic_disproven" not in attr.by_source
+        # Hook works when explicitly flipped.
+        _s1, _s2, attrs_off = ccp.analyze_static_attributions(
+            src, "A", dynamic_confirmed_no_execution=True
+        )
+        attr_off = _attribution_for(attrs_off, "Y")
+        assert attr_off is not None
+        assert (
+            "pre_dispatch_main_dynamic_disproven" in attr_off.by_source
+        )
+        assert (
+            attr_off.by_source[
+                "pre_dispatch_main_dynamic_disproven"
+            ].confidence == 0.1
+        )
+
+    def test_splunkpy_style_no_fanout_when_certain(self) -> None:
+        # SplunkPy-shape mini-integration: 4 module constants, 3
+        # commands each referencing exactly 1 constant via a helper.
+        # Each command's attributions must contain exactly 1
+        # module_const_referenced row, not 4 (the pre-Fix-B
+        # fan-out bug).
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+
+            params = demisto.params()
+            FETCH_LIMIT = params.get("max_fetch")
+            REPLACE_FLAG = params.get("replaceKeys")
+            FIRST_FETCH = params.get("first_fetch")
+            ENABLED = params.get("enabled_enrichments")
+
+            def handler_a(params_arg):
+                return FETCH_LIMIT
+
+            def handler_b(params_arg):
+                return REPLACE_FLAG
+
+            def handler_c(params_arg):
+                return FIRST_FETCH
+
+            def main():
+                command = demisto.command()
+                if command == "fetch":
+                    handler_a(params)
+                elif command == "replace":
+                    handler_b(params)
+                elif command == "first":
+                    handler_c(params)
+            '''
+        ).lstrip()
+
+        def _module_const_refs(attrs: list[ccp.ParamAttribution]) -> set[str]:
+            out = set()
+            for a in attrs:
+                if "module_const_referenced" in a.by_source:
+                    out.add(a.param)
+            return out
+
+        _, _, fetch_attrs = ccp.analyze_static_attributions(src, "fetch")
+        _, _, replace_attrs = ccp.analyze_static_attributions(src, "replace")
+        _, _, first_attrs = ccp.analyze_static_attributions(src, "first")
+        assert _module_const_refs(fetch_attrs) == {"max_fetch"}
+        assert _module_const_refs(replace_attrs) == {"replaceKeys"}
+        assert _module_const_refs(first_attrs) == {"first_fetch"}
+        # ENABLED is referenced by nobody, so it must not surface.
+        for attrs in (fetch_attrs, replace_attrs, first_attrs):
+            attr = _attribution_for(attrs, "enabled_enrichments")
+            if attr is not None:
+                assert "module_const_referenced" not in attr.by_source
+
+    def test_dataclasses_serialize_via_asdict(self) -> None:
+        # Fix B.9: confirm asdict() on the new dataclasses produces
+        # JSON-friendly output (no enum / custom types in the way).
+        import dataclasses as _dc
+        import json as _json
+
+        ev = ccp.ParamSourceEvidence(
+            source="helper",
+            confidence=0.7,
+            evidence="params.get() reached at depth=2 via foo",
+            call_graph_depth=2,
+        )
+        attr = ccp.ParamAttribution(
+            param="X",
+            by_source={"helper": ev},
+            rollup_confidence=0.7,
+        )
+        d = _dc.asdict(attr)
+        assert d["param"] == "X"
+        assert d["rollup_confidence"] == 0.7
+        assert d["by_source"]["helper"]["confidence"] == 0.7
+        # Round-trip via JSON to confirm everything serializes.
+        _json.dumps(d)
