@@ -446,7 +446,7 @@ Terminates a process on an endpoint by process ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The endpoint ID. | Required |
-| pid | The ID of the processs to kill. | Required |
+| pid | The ID of the process to kill. | Required |
 
 #### Context Output
 
@@ -1619,3 +1619,104 @@ To set up the mirroring:
     | Both | Synchronizes status changes bidirectionally between Cortex XSOAR and GravityZone incidents. |
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
+### gz-endpoint-users-loggedin
+
+***
+Retrieves active logged-in sessions for an endpoint.
+
+#### Base Command
+
+`gz-endpoint-users-loggedin`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the endpoint. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GravityZone.Endpoint.ID | String | The endpoint ID. |
+| GravityZone.Endpoint.Hostname | String | The endpoint hostname. |
+| GravityZone.Endpoint.ActiveSessions.Username | String | The logged-in username. |
+| GravityZone.Endpoint.ActiveSessions.ConnectionType | String | The connection type for the session. |
+| GravityZone.Endpoint.ActiveSessions.StartTime | Date | The session start time, if available. |
+| GravityZone.Endpoint.ActiveSessions.UserSID | String | The user SID for the session, if available. |
+| GravityZone.Endpoint.ActiveSessions.DomainSID | String | The domain SID for the session, if available. |
+| GravityZone.Endpoint.ActiveSessions.OrganizationalUnitDN | String | The organizational unit distinguished name, if available. |
+| GravityZone.Endpoint.ActiveSessions.MemberOfSIDs | Unknown | The list of group SIDs for the session user, if available. |
+
+#### Command example
+
+```!gz-endpoint-users-loggedin id=6942a43afe8d4e463ca5c197```
+
+#### Context Example
+
+```json
+{
+    "GravityZone": {
+        "Endpoint": {
+            "ID": "6942a43afe8d4e463ca5c197",
+            "Hostname": "bdvm",
+            "ActiveSessions": [
+                {
+                    "Username": "user@example.com",
+                    "ConnectionType": "local",
+                    "StartTime": "2021-05-19T10:37:56Z",
+                    "UserSID": "S-1-5-21-1111111111-1111111111-1111111111-1001",
+                    "DomainSID": "S-1-5-21-1111111111-1111111111-1111111111",
+                    "OrganizationalUnitDN": "OU=Users,DC=example,DC=com",
+                    "MemberOfSIDs": [
+                        "S-1-5-32-544",
+                        "S-1-5-32-545"
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Active sessions for endpoint ENDPOINT_ID
+>
+>|Username|ConnectionType|StartTime|UserSID|DomainSID|OrganizationalUnitDN|MemberOfSIDs|
+>|---|---|---|---|---|---|---|
+>| TESTDOMAIN\\full.user | local | 2021-05-19T10:37:56Z | S-1-2-25-33 | S-1-23-131231 | OU=office,OU=Developers,OU=Users,DC=microsoft,DC=com | S-1-5-32-450 |
+>| basic.user | remote | 2021-05-19T11:00:00Z |  |  |  |  |
+
+### gz-endpoint-create-memory-dump
+
+***
+Creates an endpoint memory dump task and returns the download URL when it becomes available.
+
+#### Base Command
+
+`gz-endpoint-create-memory-dump`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the endpoint. | Required |
+| path | The destination folder path on the endpoint where the memory dump archive is created. | Required |
+| password | Password used to encrypt the memory dump archive. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GravityZone.EndpointMemoryDump.TaskID | String | The task ID. |
+| GravityZone.EndpointMemoryDump.TaskType | String | The task type. |
+| GravityZone.EndpointMemoryDump.Status | String | The task status. |
+| GravityZone.EndpointMemoryDump.EndpointID | String | The endpoint ID. |
+| GravityZone.EndpointMemoryDump.Hostname | String | The endpoint hostname. |
+| GravityZone.EndpointMemoryDump.StartDate | Date | The memory dump task start date for the endpoint. |
+| GravityZone.EndpointMemoryDump.EndDate | Date | The memory dump task end date for the endpoint. |
+| GravityZone.EndpointMemoryDump.ErrorCode | String | The memory dump task error code, if available. |
+| GravityZone.EndpointMemoryDump.Error | String | The memory dump task error message, if available. |
+| GravityZone.EndpointMemoryDump.DownloadURL | String | The memory dump download URL when task is completed successfully. |
