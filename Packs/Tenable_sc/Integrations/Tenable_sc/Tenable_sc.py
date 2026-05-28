@@ -1,7 +1,6 @@
 import functools
 import json
 import re
-import traceback
 import time
 from datetime import datetime
 from typing import Any
@@ -3258,9 +3257,7 @@ def test_module(client: Client, args: dict[str, Any], params: dict[str, Any]):
         try:
             assets_fetch_interval_int = int(assets_fetch_interval)
         except ValueError:
-            raise DemistoException(
-                f"Invalid assets fetch interval value: '{assets_fetch_interval}'. Must be a numeric value."
-            )
+            raise DemistoException(f"Invalid assets fetch interval value: '{assets_fetch_interval}'. Must be a numeric value.")
         if assets_fetch_interval_int < MIN_ASSETS_INTERVAL:
             raise DemistoException(f"Assets fetch interval must be at least {MIN_ASSETS_INTERVAL} minutes (1 hour).")
         client.get_users()
