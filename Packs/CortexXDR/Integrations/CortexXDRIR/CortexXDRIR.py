@@ -250,7 +250,7 @@ class Client(CoreClient):
         """
         last_one_day, _ = parse_date_range(first_fetch_time, TIME_FORMAT)
         try:
-            self.list_users()
+            self.get_incidents(lte_creation_time=last_one_day, limit=1)
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the XDR server when the client clock is not in sync to the server

@@ -4,3 +4,5 @@ name: CiscoFirepower Modeling Rule
 rules: ''
 schema: ''
 tags: CiscoFirepower
+supportedModules:
+- xsiam

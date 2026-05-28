@@ -831,3 +831,46 @@ def test_enrich_events_with_mailbox_details_field_transformation(mocker: MockerF
     assert mitigation["sender_ip"] == "192.168.1.1"
     assert mitigation["reported_by"] == "reporter@example.com"
     assert mitigation["spf_result"] == "pass"
+
+
+@pytest.mark.parametrize("all_incident", [True, False])
+def test_fetch_events_no_events_returned(mocker: MockerFixture, all_incident: bool):
+    """
+    Given: No incidents are available from the API (get_incident_ids returns an empty list).
+    When: Running the fetch-events command via main().
+    Then:
+        - send_events_to_xsiam is called with an empty events list.
+        - setLastRun is called with last_id=-1, the original first_fetch timestamp, and empty last_timestamp_ids.
+    """
+    import IronscalesEventCollector
+
+    first_fetch_str = "2025-01-01T00:00:00+00:00"
+
+    mocker.patch.object(Client, "get_jwt_token", return_value="mock_token")
+    mocker.patch.object(Client, "get_incident_ids", return_value=[])
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "max_fetch": "10",
+            "first_fetch": first_fetch_str,
+            "url": "test_url",
+            "collect_all_events": all_incident,
+        },
+    )
+
+    mock_send = mocker.patch.object(IronscalesEventCollector, "send_events_to_xsiam")
+    mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    main()
+
+    # Verify send_events_to_xsiam was called with an empty list
+    mock_send.assert_called_once_with([], vendor="ironscales", product="ironscales")
+
+    # Verify setLastRun preserves the first_fetch time and resets IDs
+    last_run_call = mock_set_last_run.call_args[0][0]
+    assert last_run_call["last_id"] == -1
+    assert last_run_call["last_incident_time"] == first_fetch_str
+    assert last_run_call["last_timestamp_ids"] == []

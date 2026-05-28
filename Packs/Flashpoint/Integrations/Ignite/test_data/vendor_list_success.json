@@ -1,0 +1,17 @@
+{
+    "total": 4,
+    "next": "https://api.flashpoint.io/vulnerability-intelligence/v1/vendors?from=0&size=2",
+    "previous": null,
+    "size": 2,
+    "from": 0,
+    "results": [
+        {
+            "id": 1001,
+            "name": "Vendor Alpha"
+        },
+        {
+            "id": 1002,
+            "name": "Vendor Beta"
+        }
+    ]
+}

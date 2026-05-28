@@ -4,3 +4,5 @@ name: Admin By Request Modeling Rule
 rules: ''
 schema: ''
 tags: 'Admin By Request'
+supportedModules:
+- xsiam
