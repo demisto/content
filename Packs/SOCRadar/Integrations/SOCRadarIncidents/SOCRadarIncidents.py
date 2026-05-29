@@ -409,6 +409,9 @@ def fetch_incidents(
 
         if include_company_id:
             custom_fields["socradarcompanyid"] = client.socradar_company_id
+            demisto.debug(f"[SOCRadar] Added company_id to incident: {client.socradar_company_id}")
+
+        demisto.debug(f"[SOCRadar] CustomFields keys: {list(custom_fields.keys())}")
 
         incident = {
             "name": incident_name,
@@ -538,6 +541,7 @@ def main() -> None:
                 max_results = MAX_INCIDENTS_TO_FETCH
 
             include_company_id = argToBoolean(demisto.params().get("include_company_id", False))
+            demisto.debug(f"[SOCRadar] include_company_id={include_company_id}, socradar_company_id={socradar_company_id}")
 
             next_run, incidents = fetch_incidents(
                 client=client,
