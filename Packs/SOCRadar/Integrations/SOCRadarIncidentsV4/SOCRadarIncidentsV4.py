@@ -516,6 +516,8 @@ def alarm_to_incident(
                 compliance_parts.append(f"{name} ({control}): {desc}")
 
     compliance_str = "\n".join(compliance_parts)
+    if len(compliance_str) > 3072:
+        compliance_str = compliance_str[:3072] + "\n... (truncated)"
 
     # Build incident content string from content dict
     incident_content = ""
