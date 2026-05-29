@@ -443,6 +443,7 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
         incident_name += f" - {alarm_sub_type}"
     incident_name += f" [{alarm_asset}]"
 
+    # Build related entities string
     related_entities = alarm.get("alarm_related_entities", [])
     if not isinstance(related_entities, list):
         related_entities = []
@@ -454,6 +455,67 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
             value = entity.get("value", "")
             if key and value:
                 entity_info.append(f"{key}: {value}")
+
+    related_entities_str = "\n".join(entity_info)
+
+    # Build related assets string
+    related_assets = alarm.get("alarm_related_assets", [])
+    if not isinstance(related_assets, list):
+        related_assets = []
+
+    asset_info = []
+    for asset in related_assets:
+        if isinstance(asset, dict):
+            asset_key = asset.get("key", "")
+            asset_value = asset.get("value", "")
+            if asset_key and asset_value:
+                if isinstance(asset_value, list):
+                    asset_value = [str(v) for v in asset_value if v]
+                    if asset_value:
+                        asset_info.append(f"{asset_key}: {' || '.join(asset_value)}")
+                else:
+                    asset_info.append(f"{asset_key}: {asset_value}")
+
+    related_assets_str = "\n".join(asset_info)
+
+    # Extract fields from alarm_type_details
+    alarm_mitigation = alarm_type_details.get("alarm_default_mitigation_plan", "")
+    alarm_response = alarm.get("alarm_response", "")
+    alarm_detection_analysis = alarm_type_details.get("alarm_detection_and_analysis", "")
+    alarm_post_incident = alarm_type_details.get("alarm_post_incident_analysis", "")
+
+    # Build compliance string from compliance list
+    compliance_list = alarm_type_details.get("alarm_compliance_list", [])
+    if not isinstance(compliance_list, list):
+        compliance_list = []
+
+    compliance_parts = []
+    for item in compliance_list:
+        if isinstance(item, dict):
+            name = item.get("name", "")
+            control = item.get("control_item", "")
+            desc = item.get("description", "")
+            if name and control:
+                compliance_parts.append(f"{name} ({control}): {desc}")
+
+    compliance_str = "\n".join(compliance_parts)
+
+    # Build incident content string from content dict
+    incident_content = ""
+    if show_content and content:
+        try:
+            content_parts = format_value(content)
+            incident_content = "\n".join(content_parts)
+        except Exception as e:
+            incident_content = f"Content parsing error: {str(e)}"
+
+    # Build incident link
+    incident_link = ""
+    if company_id and alarm_id:
+        incident_link = (
+            f"https://platform.socradar.com/app/company/{company_id}"
+            f"/alarm-management?tab=approved&field=alarmId&operator=equals&value={alarm_id}"
+        )
 
     alarm_text = alarm.get("alarm_text", "")
 
@@ -473,7 +535,7 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
     if entity_info:
         details_parts.append("\n Related Entities:")
         for info in entity_info:
-            # FIX: Replaced Unicode bullet '•' (U+2022) with ASCII dash '-'.
+            # FIX: Replaced Unicode bullet with ASCII dash.
             # XSOAR uses Latin-1 encoding for HTTP responses which cannot
             # encode U+2022, causing 'latin-1 codec can't encode character' error.
             details_parts.append(f"  - {info}")
@@ -508,6 +570,15 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
             "socradarasset": alarm_asset,
             "socradaralarmtype": alarm_main_type,
             "socradartags": tags_str,
+            "socradarmitigation": alarm_mitigation,
+            "socradarresponse": alarm_response,
+            "socradardetectionandanalysis": alarm_detection_analysis,
+            "socradarpostincidentanalysis": alarm_post_incident,
+            "socradarcompliance": compliance_str,
+            "socradarrelatedassets": related_assets_str,
+            "socradarrelatedentities": related_entities_str,
+            "socradarincidentlink": incident_link,
+            "socradarincidentcontent": incident_content,
         },
     }
 
