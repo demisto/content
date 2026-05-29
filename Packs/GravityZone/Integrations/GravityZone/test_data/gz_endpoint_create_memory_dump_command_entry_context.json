@@ -1,5 +1,5 @@
 {
-    "GravityZone.EndpointMemoryDump(val.EndpointID && val.EndpointID == obj.EndpointID)": {
+    "GravityZone.MemoryDump(val.EndpointID && val.EndpointID == obj.EndpointID)": {
         "TaskID": "TASK_ID",
         "TaskType": "CreateMemoryDump",
         "Status": "Processed",

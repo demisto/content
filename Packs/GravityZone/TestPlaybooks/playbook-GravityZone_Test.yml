@@ -952,6 +952,8 @@ tasks:
         simple: C:\\dumps\\
       password:
         simple: StrongPass123!
+      polling:
+        simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-

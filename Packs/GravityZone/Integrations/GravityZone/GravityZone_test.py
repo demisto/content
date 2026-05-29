@@ -1,5 +1,6 @@
 import json
 import os
+from typing import cast
 from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
@@ -344,7 +345,7 @@ def test_gz_endpoint_create_memory_dump_command(mock_demisto, requests_mock):
     """
 
     # Prepare
-    from GravityZone import gz_endpoint_create_memory_dump_command, gz_poll_endpoint_memory_dump_status_command
+    from GravityZone import gz_endpoint_create_memory_dump_command, gz_endpoint_memory_dump_status_command
 
     mock_demisto.command.return_value = "gz-endpoint-create-memory-dump"
     mock_demisto.params.return_value = {}
@@ -361,8 +362,54 @@ def test_gz_endpoint_create_memory_dump_command(mock_demisto, requests_mock):
     assert_command_mocked_data(
         "gz-endpoint-create-memory-dump",
         command_response,
-        polling_func=gz_poll_endpoint_memory_dump_status_command,
+        polling_func=gz_endpoint_memory_dump_status_command,
         client=client,
+    )
+
+
+@patch("GravityZone.demisto")
+def test_gz_endpoint_create_memory_dump_command_no_polling(mock_demisto, requests_mock):
+    from GravityZone import gz_endpoint_create_memory_dump_command
+    from CommonServerPython import CommandResults
+
+    mock_demisto.command.return_value = "gz-endpoint-create-memory-dump"
+    mock_demisto.params.return_value = {}
+    load_api_mocked_data(requests_mock, "gz-endpoint-create-memory-dump")
+    client = get_client()
+
+    command_response = cast(
+        CommandResults,
+        gz_endpoint_create_memory_dump_command(
+            client=client,
+            args={"id": "ENDPOINT_ID", "path": "C:\\dumps\\", "password": "ComplexPass123!", "polling": "false"},
+        ),
+    )
+
+    assert getattr(command_response, "scheduled_command", None) is None
+    context = command_response.to_context()
+    output = context["EntryContext"]["GravityZone.MemoryDump(val.EndpointID && val.EndpointID == obj.EndpointID)"]
+
+    assert output["TaskID"] == "TASK_ID"
+    assert output["TaskType"] == "CreateMemoryDump"
+    assert output["Status"] == "Pending"
+    assert output["EndpointID"] == "ENDPOINT_ID"
+    assert output["EndDate"] == ""
+    assert output["ErrorCode"] == ""
+    assert output["Error"] == ""
+    assert output["DownloadURL"] == ""
+
+
+@patch("GravityZone.check_endpoint_memory_dump_status")
+def test_gz_endpoint_memory_dump_status_command_defaults_polling_true(mock_check_status):
+    from GravityZone import gz_endpoint_memory_dump_status_command
+
+    client = object()
+
+    gz_endpoint_memory_dump_status_command({"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"}, client)
+
+    mock_check_status.assert_called_once_with(
+        {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID", "polling": True},
+        client,
     )
 
 
@@ -514,7 +561,7 @@ def test_extract_memory_dump_task_id_raises_on_invalid_result():
     from GravityZone import _extract_memory_dump_task_id
 
     with pytest.raises(Exception, match="createMemoryDumpTask response is missing task ID"):
-        _extract_memory_dump_task_id({"taskId": "TASK_ID"})
+        _extract_memory_dump_task_id({})
 
 
 def test_build_memory_dump_results_outputs_download_url_on_success():
@@ -538,7 +585,7 @@ def test_build_memory_dump_results_outputs_download_url_on_success():
 
     result = _build_memory_dump_results(task_output, "TASK_ID", "endpoint-1")
 
-    assert result.outputs_prefix == "GravityZone.EndpointMemoryDump"
+    assert result.outputs_prefix == "GravityZone.MemoryDump"
     assert result.outputs_key_field == "EndpointID"
     assert result.outputs == {
         "TaskID": "TASK_ID",
@@ -558,16 +605,13 @@ def test_build_memory_dump_results_omits_download_url_when_unavailable():
     from GravityZone import _build_memory_dump_results
 
     task_output = {
-        "status": 3,
+        "status": 1,
         "subtasks": [
             {
                 "endpointId": "endpoint-1",
                 "endpointName": "host-1",
-                "status": 4,
+                "status": 1,
                 "startDate": "2026-05-25T10:00:00",
-                "endDate": "2026-05-25T10:01:00",
-                "errorCode": "InvalidPath",
-                "errorMessage": "Destination path does not exist",
             }
         ],
     }
@@ -577,13 +621,13 @@ def test_build_memory_dump_results_omits_download_url_when_unavailable():
     assert result.outputs == {
         "TaskID": "TASK_ID",
         "TaskType": "CreateMemoryDump",
-        "Status": "Processed",
+        "Status": "Pending",
         "EndpointID": "endpoint-1",
         "Hostname": "host-1",
         "StartDate": "2026-05-25T10:00:00Z",
-        "EndDate": "2026-05-25T10:01:00Z",
-        "ErrorCode": "InvalidPath",
-        "Error": "Destination path does not exist",
+        "EndDate": "",
+        "ErrorCode": "",
+        "Error": "",
         "DownloadURL": "",
     }
 

@@ -216,7 +216,7 @@ script:
       type: Unknown
 
   - name: gz-endpoint-create-memory-dump
-    description: Creates an endpoint memory dump task and returns the download URL when it becomes available.
+    description: Creates an endpoint memory dump task. When polling is true (default), waits for completion and returns the download URL. When polling is false, returns the task ID immediately.
     polling: true
     arguments:
     - name: id
@@ -237,35 +237,41 @@ script:
       required: true
       secret: true
       default: false
+    - name: polling
+      isArray: false
+      description: Whether to continue polling until the memory dump task is completed. If false, returns the task ID immediately.
+      required: false
+      secret: false
+      default: true
     outputs:
-    - contextPath: GravityZone.EndpointMemoryDump.TaskID
+    - contextPath: GravityZone.MemoryDump.TaskID
       description: The task ID.
       type: String
-    - contextPath: GravityZone.EndpointMemoryDump.TaskType
+    - contextPath: GravityZone.MemoryDump.TaskType
       description: The task type.
       type: String
-    - contextPath: GravityZone.EndpointMemoryDump.Status
+    - contextPath: GravityZone.MemoryDump.Status
       description: The task status.
       type: String
-    - contextPath: GravityZone.EndpointMemoryDump.EndpointID
+    - contextPath: GravityZone.MemoryDump.EndpointID
       description: The endpoint ID.
       type: String
-    - contextPath: GravityZone.EndpointMemoryDump.Hostname
+    - contextPath: GravityZone.MemoryDump.Hostname
       description: The endpoint hostname.
       type: String
-    - contextPath: GravityZone.EndpointMemoryDump.StartDate
+    - contextPath: GravityZone.MemoryDump.StartDate
       description: The memory dump task start date for the endpoint.
       type: Date
-    - contextPath: GravityZone.EndpointMemoryDump.EndDate
+    - contextPath: GravityZone.MemoryDump.EndDate
       description: The memory dump task end date for the endpoint.
       type: Date
-    - contextPath: GravityZone.EndpointMemoryDump.ErrorCode
+    - contextPath: GravityZone.MemoryDump.ErrorCode
       description: The memory dump task error code, if available.
       type: String
-    - contextPath: GravityZone.EndpointMemoryDump.Error
+    - contextPath: GravityZone.MemoryDump.Error
       description: The memory dump task error message, if available.
       type: String
-    - contextPath: GravityZone.EndpointMemoryDump.DownloadURL
+    - contextPath: GravityZone.MemoryDump.DownloadURL
       description: The memory dump download URL when task is completed successfully.
       type: String
 
@@ -1042,8 +1048,8 @@ script:
       secret: false
       default: false
     outputs: []
-  - name: gz-poll-endpoint-memory-dump-status
-    description: Checks endpoint memory dump task status. This command is not intended for direct use.
+  - name: gz-endpoint-memory-dump-status
+    description: Checks endpoint memory dump task status using a task ID returned by gz-endpoint-create-memory-dump. This command is intended for direct use.
     polling: true
     arguments:
     - name: task_id
@@ -1058,6 +1064,12 @@ script:
       required: true
       secret: false
       default: false
+    - name: polling
+      isArray: false
+      description: Whether to continue polling until the memory dump task is completed.
+      required: false
+      secret: false
+      default: true
     outputs: []
   - name: get-modified-remote-data
     description: Retrieves incidents that were modified since the last data sync. This command is intended for debugging purposes.

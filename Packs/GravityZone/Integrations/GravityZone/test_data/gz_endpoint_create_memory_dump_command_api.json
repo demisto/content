@@ -17,7 +17,26 @@
     "response": {
       "id": 1,
       "jsonrpc": "2.0",
-      "result": "TASK_ID"
+      "result": {
+        "name": "Create memory dump 2026-05-25",
+        "taskId": "TASK_ID",
+        "startDate": "2026-05-25T10:00:00",
+        "status": 1,
+        "type": 91,
+        "hasMoreSubtasks": false,
+        "subtasks": [
+          {
+            "endpointId": "ENDPOINT_ID",
+            "endpointName": "ENDPOINT_NAME",
+            "status": 1,
+            "startDate": "2026-05-25T10:00:00",
+            "endDate": "",
+            "errorCode": "",
+            "errorMessage": ""
+          }
+        ],
+        "totalTargetsCount": 1
+      }
     }
   },
   {

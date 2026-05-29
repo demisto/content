@@ -123,6 +123,9 @@ ENDPOINTS_PER_PAGE = 100
 LIVE_SEARCH_PER_PAGE = 100
 INCIDENTS_PER_PAGE = 100
 
+MEMORY_DUMP_STATUS_PROCESSED = "Processed"
+MEMORY_DUMP_STATUS_PENDING = "Pending"
+
 """ CLIENT CLASS """
 
 
@@ -1971,21 +1974,34 @@ def _extract_memory_dump_summary(task_output: dict[str, Any], endpoint_id: str) 
     return resolved_endpoint_id, resolved_hostname, (processed_subtask or fallback_subtask), download_url
 
 
-def _build_memory_dump_results(task_output: dict[str, Any], task_id: str, endpoint_id: str) -> CommandResults:
+def _build_memory_dump_results(
+    task_output: dict[str, Any],
+    task_id: str,
+    endpoint_id: str,
+    readable_headers: list[str] | None = None,
+) -> CommandResults:
     """Build endpoint-scoped command results for memory dump status polling."""
     endpoint_id, endpoint_hostname, memory_dump_subtask, download_url = _extract_memory_dump_summary(task_output, endpoint_id)
+    status = MEMORY_DUMP_STATUS_PROCESSED if task_output.get("status") == TASK_STATUS_PROCESSED else MEMORY_DUMP_STATUS_PENDING
+    subtask_end_date = memory_dump_subtask.get("endDate")
+    subtask_error_code = memory_dump_subtask.get("errorCode")
+    subtask_error = memory_dump_subtask.get("errorMessage")
 
     endpoint_output = generate_task_output(
         task_id=task_id,
         task_type=COMMAND_CREATE_MEMORY_DUMP,
         endpoint_id=endpoint_id,
-        status="Processed",
-        end_date=memory_dump_subtask.get("endDate"),
+        status=status,
+        end_date=subtask_end_date,
         host_name=endpoint_hostname,
-        error_code=memory_dump_subtask.get("errorCode"),
-        error=memory_dump_subtask.get("errorMessage"),
+        error_code=subtask_error_code,
+        error=subtask_error,
         start_date=memory_dump_subtask.get("startDate"),
     )
+    if status == MEMORY_DUMP_STATUS_PENDING:
+        endpoint_output["EndDate"] = f"{subtask_end_date}Z" if subtask_end_date else ""
+        endpoint_output["ErrorCode"] = subtask_error_code or ""
+        endpoint_output["Error"] = subtask_error or ""
     endpoint_output["DownloadURL"] = download_url
 
     return CommandResults(
@@ -1993,16 +2009,21 @@ def _build_memory_dump_results(task_output: dict[str, Any], task_id: str, endpoi
         readable_output=tableToMarkdown(
             f"Memory dump for endpoint {endpoint_id}",
             [endpoint_output],
-            headers=TASK_OUTPUT_HEADERS + ["DownloadURL"],
+            headers=readable_headers if readable_headers is not None else TASK_OUTPUT_HEADERS + ["DownloadURL"],
         ),
         outputs=endpoint_output,
-        outputs_prefix="GravityZone.EndpointMemoryDump",
+        outputs_prefix="GravityZone.MemoryDump",
         outputs_key_field="EndpointID",
         entry_type=EntryType.NOTE,
     )
 
 
 def _extract_memory_dump_task_id(task_data: Any) -> str:
+    if isinstance(task_data, dict):
+        task_id = task_data.get("taskId")
+        if isinstance(task_id, str) and task_id:
+            return task_id
+
     if not isinstance(task_data, str) or not task_data:
         raise DemistoException("createMemoryDumpTask response is missing task ID.")
 
@@ -2869,10 +2890,10 @@ def gz_endpoint_users_loggedin_command(client: Client, args: dict[str, Any]) -> 
 
 
 @polling_function(
-    name="gz-poll-endpoint-memory-dump-status",
+    name="gz-endpoint-memory-dump-status",
     timeout=MEMORY_DUMP_POLL_TIMEOUT,
     interval=POLL_INTERVAL,
-    requires_polling_arg=False,
+    requires_polling_arg=True,
 )
 def check_endpoint_memory_dump_status(args: dict[str, Any], client: Client) -> PollResult:
     task_id = args.get("task_id", "")
@@ -2901,20 +2922,38 @@ def check_endpoint_memory_dump_status(args: dict[str, Any], client: Client) -> P
     )
 
 
-def gz_poll_endpoint_memory_dump_status_command(args: dict[str, Any], client: Client) -> PollResult:
+def gz_endpoint_memory_dump_status_command(args: dict[str, Any], client: Client) -> PollResult:
+    if "polling" not in args:
+        args = {**args, "polling": True}
     return check_endpoint_memory_dump_status(args, client)
 
 
 @logger
-def gz_endpoint_create_memory_dump_command(client: Client, args: dict[str, Any]) -> PollResult:
+def gz_endpoint_create_memory_dump_command(client: Client, args: dict[str, Any]) -> PollResult | CommandResults:
     endpoint_id = args.get("id", "")
     path = args.get("path", "")
     password = args.get("password", "")
+    polling = argToBoolean(args.get("polling", True))
 
     task_response = client.start_create_memory_dump_on_endpoint(endpoint_id, path, password)
     task_id = _extract_memory_dump_task_id(task_response)
 
-    return check_endpoint_memory_dump_status({"task_id": task_id, "endpoint_id": endpoint_id}, client)
+    if polling:
+        return check_endpoint_memory_dump_status(
+            {
+                "task_id": task_id,
+                "endpoint_id": endpoint_id,
+                "polling": True,
+            },
+            client,
+        )
+
+    task_output = (
+        task_response
+        if isinstance(task_response, dict)
+        else {"taskId": task_id, "status": TASK_STATUS_PENDING, "subtasks": [{"endpointId": endpoint_id}]}
+    )
+    return _build_memory_dump_results(task_output, task_id, endpoint_id, readable_headers=["TaskID", "EndpointID"])
 
 
 def main():
@@ -2944,7 +2983,7 @@ def main():
             "gz-poll-investigation-activity-status": gz_poll_investigation_activity_status_command,
             "gz-poll-live-search-status": gz_poll_live_search_status_command,
             "gz-poll-endpoint-users-loggedin-status": gz_poll_endpoint_users_loggedin_status_command,
-            "gz-poll-endpoint-memory-dump-status": gz_poll_endpoint_memory_dump_status_command,
+            "gz-endpoint-memory-dump-status": gz_endpoint_memory_dump_status_command,
             ### GravityZone Endpoint Commands ###
             "gz-endpoint-list": gz_endpoint_list_command,
             "gz-endpoint-get": gz_endpoint_get_command,
@@ -2977,7 +3016,7 @@ def main():
             "gz-poll-investigation-activity-status",
             "gz-poll-live-search-status",
             "gz-poll-endpoint-users-loggedin-status",
-            "gz-poll-endpoint-memory-dump-status",
+            "gz-endpoint-memory-dump-status",
         ]
 
         if command in command_function_map:
