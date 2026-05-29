@@ -107,6 +107,55 @@ configuration:
   required: false
   section: Collect
   additionalinfo: Comma-separated list of alarm sub types to exclude (e.g., "Impersonating Domain,Stolen Credential")
+- display: Include Mitigation
+  name: include_mitigation
+  type: 8
+  required: false
+  defaultvalue: "true"
+  section: Collect
+  additionalinfo: If enabled, the default mitigation plan will be included in incident custom fields.
+- display: Include Response
+  name: include_response
+  type: 8
+  required: false
+  defaultvalue: "true"
+  section: Collect
+  additionalinfo: If enabled, response action steps will be included in incident custom fields.
+- display: Include Detection And Analysis
+  name: include_detection_and_analysis
+  type: 8
+  required: false
+  defaultvalue: "true"
+  section: Collect
+  additionalinfo: If enabled, detection and analysis guidance will be included in incident custom fields.
+- display: Include Post Incident Analysis
+  name: include_post_incident_analysis
+  type: 8
+  required: false
+  defaultvalue: "true"
+  section: Collect
+  additionalinfo: If enabled, post-incident analysis recommendations will be included in incident custom fields.
+- display: Include Compliance
+  name: include_compliance
+  type: 8
+  required: false
+  defaultvalue: "true"
+  section: Collect
+  additionalinfo: If enabled, related compliance frameworks (GDPR, ISO 27001, NIST, PCI DSS, etc.) will be included in incident custom fields.
+- display: Include Related Assets
+  name: include_related_assets
+  type: 8
+  required: false
+  defaultvalue: "true"
+  section: Collect
+  additionalinfo: If enabled, related assets will be included in incident custom fields.
+- display: Include Related Entities
+  name: include_related_entities
+  type: 8
+  required: false
+  defaultvalue: "true"
+  section: Collect
+  additionalinfo: If enabled, related entities (domains, CVEs, IPs, etc.) will be included in incident custom fields.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

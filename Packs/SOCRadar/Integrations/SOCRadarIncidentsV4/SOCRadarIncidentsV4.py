@@ -397,7 +397,17 @@ def format_value(value, indent=0):
 # FIX: Added show_content parameter. Previously the function referenced a
 # variable 'show_content' that was never defined in scope, causing a NameError
 # at runtime. Now it is explicitly passed in from the YAML checkbox parameter.
-def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[str, Any]:
+def alarm_to_incident(
+    alarm: dict[str, Any],
+    show_content: bool = True,
+    include_mitigation: bool = True,
+    include_response: bool = True,
+    include_detection_and_analysis: bool = True,
+    include_post_incident_analysis: bool = True,
+    include_compliance: bool = True,
+    include_related_assets: bool = True,
+    include_related_entities: bool = True,
+) -> dict[str, Any]:
     """
     Convert SOCRadar alarm to Demisto incident
 
@@ -405,6 +415,13 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
         alarm: Raw alarm dict from the SOCRadar API
         show_content: Whether to include full alarm content in incident details
                       (controlled by the show_content checkbox in YAML config)
+        include_mitigation: Whether to include mitigation plan in custom fields
+        include_response: Whether to include response steps in custom fields
+        include_detection_and_analysis: Whether to include detection & analysis in custom fields
+        include_post_incident_analysis: Whether to include post-incident analysis in custom fields
+        include_compliance: Whether to include compliance frameworks in custom fields
+        include_related_assets: Whether to include related assets in custom fields
+        include_related_entities: Whether to include related entities in custom fields
 
     IMPORTANT: The 'content' field structure varies by alarm type:
     - Impersonating Domain: has dns_information, whois_information, domain_status
@@ -557,6 +574,31 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
 
     full_details = "\n".join(details_parts)
 
+    custom_fields: dict[str, Any] = {
+        "socradaralarmid": str(alarm_id) if alarm_id else "unknown",
+        "socradarstatus": alarm_status,
+        "socradarasset": alarm_asset,
+        "socradaralarmtype": alarm_main_type,
+        "socradartags": tags_str,
+        "socradarincidentlink": incident_link,
+        "socradarincidentcontent": incident_content,
+    }
+
+    if include_mitigation and alarm_mitigation:
+        custom_fields["socradarmitigation"] = alarm_mitigation
+    if include_response and alarm_response:
+        custom_fields["socradarresponse"] = alarm_response
+    if include_detection_and_analysis and alarm_detection_analysis:
+        custom_fields["socradardetectionandanalysis"] = alarm_detection_analysis
+    if include_post_incident_analysis and alarm_post_incident:
+        custom_fields["socradarpostincidentanalysis"] = alarm_post_incident
+    if include_compliance and compliance_str:
+        custom_fields["socradarcompliance"] = compliance_str
+    if include_related_assets and related_assets_str:
+        custom_fields["socradarrelatedassets"] = related_assets_str
+    if include_related_entities and related_entities_str:
+        custom_fields["socradarrelatedentities"] = related_entities_str
+
     incident = {
         "name": incident_name,
         "occurred": (occurred_time.isoformat() + "Z" if occurred_time else datetime.now().isoformat() + "Z"),
@@ -564,22 +606,7 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
         "severity": convert_to_demisto_severity(alarm_risk_level),
         "details": full_details,
         "dbotMirrorId": str(alarm_id) if alarm_id else None,
-        "CustomFields": {
-            "socradaralarmid": str(alarm_id) if alarm_id else "unknown",
-            "socradarstatus": alarm_status,
-            "socradarasset": alarm_asset,
-            "socradaralarmtype": alarm_main_type,
-            "socradartags": tags_str,
-            "socradarmitigation": alarm_mitigation,
-            "socradarresponse": alarm_response,
-            "socradardetectionandanalysis": alarm_detection_analysis,
-            "socradarpostincidentanalysis": alarm_post_incident,
-            "socradarcompliance": compliance_str,
-            "socradarrelatedassets": related_assets_str,
-            "socradarrelatedentities": related_entities_str,
-            "socradarincidentlink": incident_link,
-            "socradarincidentcontent": incident_content,
-        },
+        "CustomFields": custom_fields,
     }
 
     demisto.debug(f"[SOCRadar] Created incident: Alarm {alarm_id} - {alarm_main_type} (Risk: {alarm_risk_level})")
@@ -596,6 +623,13 @@ def fetch_incidents(
     first_fetch_time: str,
     fetch_interval_minutes: int = 1,
     show_content: bool = True,
+    include_mitigation: bool = True,
+    include_response: bool = True,
+    include_detection_and_analysis: bool = True,
+    include_post_incident_analysis: bool = True,
+    include_compliance: bool = True,
+    include_related_assets: bool = True,
+    include_related_entities: bool = True,
     status: list[str] | None = None,
     severities: list[str] | None = None,
     alarm_main_types: list[str] | None = None,
@@ -733,7 +767,17 @@ def fetch_incidents(
                     continue
                 if total_incidents_created < max_results:
                     # FIX: Pass show_content parameter to alarm_to_incident
-                    incident = alarm_to_incident(alarm, show_content=show_content)
+                    incident = alarm_to_incident(
+                        alarm,
+                        show_content=show_content,
+                        include_mitigation=include_mitigation,
+                        include_response=include_response,
+                        include_detection_and_analysis=include_detection_and_analysis,
+                        include_post_incident_analysis=include_post_incident_analysis,
+                        include_compliance=include_compliance,
+                        include_related_assets=include_related_assets,
+                        include_related_entities=include_related_entities,
+                    )
                     page_incidents.append(incident)
                     total_incidents_created += 1
                     last_alarm_ids.add(alarm.get("alarm_id"))
@@ -1094,6 +1138,14 @@ def main() -> None:
             if isinstance(show_content, str):
                 show_content = show_content.lower() in ("true", "1", "yes")
 
+            include_mitigation = argToBoolean(params.get("include_mitigation", True))
+            include_response = argToBoolean(params.get("include_response", True))
+            include_detection_and_analysis = argToBoolean(params.get("include_detection_and_analysis", True))
+            include_post_incident_analysis = argToBoolean(params.get("include_post_incident_analysis", True))
+            include_compliance = argToBoolean(params.get("include_compliance", True))
+            include_related_assets = argToBoolean(params.get("include_related_assets", True))
+            include_related_entities = argToBoolean(params.get("include_related_entities", True))
+
             alarm_type_ids_str = params.get("alarm_type_ids", "")
             alarm_type_ids = None
             if alarm_type_ids_str:
@@ -1149,6 +1201,13 @@ def main() -> None:
                 first_fetch_time=params.get("first_fetch", "3 days"),
                 fetch_interval_minutes=fetch_interval_minutes,
                 show_content=show_content,
+                include_mitigation=include_mitigation,
+                include_response=include_response,
+                include_detection_and_analysis=include_detection_and_analysis,
+                include_post_incident_analysis=include_post_incident_analysis,
+                include_compliance=include_compliance,
+                include_related_assets=include_related_assets,
+                include_related_entities=include_related_entities,
                 status=argToList(params.get("status")),
                 severities=argToList(params.get("severities")),
                 alarm_main_types=argToList(params.get("alarm_main_types")),
