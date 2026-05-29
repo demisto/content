@@ -94,6 +94,13 @@ configuration:
   type: 0
   section: Collect
   required: false
+- display: Include Company ID
+  name: include_company_id
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: If enabled, the SOCRadar Company ID configured in this instance will be stored as a custom field on each fetched incident. Useful for multi-tenant environments to identify which company an incident belongs to.
 - display: Incident type
   name: incidentType
   type: 13

@@ -278,6 +278,7 @@ def fetch_incidents(
     severity: List[str],
     incident_main_type: Optional[str],
     incident_sub_type: Optional[str],
+    include_company_id: bool = False,
 ) -> tuple[dict[str, int], List[dict]]:
     """
     :type client: ``Client``
@@ -397,19 +398,24 @@ def fetch_incidents(
 
         incident_link = f"https://platform.socradar.com/company/{client.socradar_company_id}/incidents/{alert.get('id', '')}"
 
+        custom_fields: dict[str, Any] = {
+            "socradarincidentassets": alert_assets,
+            "socradarmitigation": alert.get("alarm_mitigation", ""),
+            "socradarrelatedassets": alert_related_assets,
+            "socradarrelatedentities": alert_related_entities,
+            "incidentlink": incident_link,
+            "socradarincidentcontent": incident_content,
+        }
+
+        if include_company_id:
+            custom_fields["socradarcompanyid"] = client.socradar_company_id
+
         incident = {
             "name": incident_name,
             "occurred": timestamp_to_datestring(incident_created_time * 1000, is_utc=True),
             "rawJSON": json.dumps(alert),
             "severity": convert_to_demisto_severity(alert.get("alarm_risk_level", "UNKNOWN")),
-            "CustomFields": {
-                "socradarincidentassets": alert_assets,
-                "socradarmitigation": alert.get("alarm_mitigation", ""),
-                "socradarrelatedassets": alert_related_assets,
-                "socradarrelatedentities": alert_related_entities,
-                "incidentlink": incident_link,
-                "socradarincidentcontent": incident_content,
-            },
+            "CustomFields": custom_fields,
         }
 
         incidents.append(incident)
@@ -527,6 +533,8 @@ def main() -> None:
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
 
+            include_company_id = argToBoolean(demisto.params().get("include_company_id", False))
+
             next_run, incidents = fetch_incidents(
                 client=client,
                 max_results=max_results,
@@ -537,6 +545,7 @@ def main() -> None:
                 severity=severity,
                 incident_main_type=incident_main_type,
                 incident_sub_type=incident_sub_type,
+                include_company_id=include_company_id,
             )
 
             demisto.setLastRun(next_run)

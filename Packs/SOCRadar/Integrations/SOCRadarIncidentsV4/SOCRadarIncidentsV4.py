@@ -400,13 +400,15 @@ def format_value(value, indent=0):
 def alarm_to_incident(
     alarm: dict[str, Any],
     show_content: bool = True,
-    include_mitigation: bool = True,
-    include_response: bool = True,
-    include_detection_and_analysis: bool = True,
-    include_post_incident_analysis: bool = True,
-    include_compliance: bool = True,
-    include_related_assets: bool = True,
-    include_related_entities: bool = True,
+    include_mitigation: bool = False,
+    include_response: bool = False,
+    include_detection_and_analysis: bool = False,
+    include_post_incident_analysis: bool = False,
+    include_compliance: bool = False,
+    include_related_assets: bool = False,
+    include_related_entities: bool = False,
+    include_company_id: bool = False,
+    configured_company_id: str = "",
 ) -> dict[str, Any]:
     """
     Convert SOCRadar alarm to Demisto incident
@@ -422,6 +424,8 @@ def alarm_to_incident(
         include_compliance: Whether to include compliance frameworks in custom fields
         include_related_assets: Whether to include related assets in custom fields
         include_related_entities: Whether to include related entities in custom fields
+        include_company_id: Whether to include company ID in custom fields
+        configured_company_id: Company ID from integration configuration (fallback when alarm has no company_id)
 
     IMPORTANT: The 'content' field structure varies by alarm type:
     - Impersonating Domain: has dns_information, whois_information, domain_status
@@ -431,7 +435,7 @@ def alarm_to_incident(
 
     We safely extract common fields and include full content in rawJSON.
     """
-    company_id = alarm.get("company_id")
+    company_id = alarm.get("company_id") or configured_company_id
     alarm_id = alarm.get("alarm_id")
     alarm_risk_level = alarm.get("alarm_risk_level", "UNKNOWN")
     alarm_asset = alarm.get("alarm_asset", "N/A")
@@ -600,6 +604,8 @@ def alarm_to_incident(
         custom_fields["socradarrelatedassets"] = related_assets_str
     if include_related_entities and related_entities_str:
         custom_fields["socradarrelatedentities"] = related_entities_str
+    if include_company_id:
+        custom_fields["socradarcompanyid"] = str(company_id) if company_id else ""
 
     incident = {
         "name": incident_name,
@@ -625,13 +631,15 @@ def fetch_incidents(
     first_fetch_time: str,
     fetch_interval_minutes: int = 1,
     show_content: bool = True,
-    include_mitigation: bool = True,
-    include_response: bool = True,
-    include_detection_and_analysis: bool = True,
-    include_post_incident_analysis: bool = True,
-    include_compliance: bool = True,
-    include_related_assets: bool = True,
-    include_related_entities: bool = True,
+    include_mitigation: bool = False,
+    include_response: bool = False,
+    include_detection_and_analysis: bool = False,
+    include_post_incident_analysis: bool = False,
+    include_compliance: bool = False,
+    include_related_assets: bool = False,
+    include_related_entities: bool = False,
+    include_company_id: bool = False,
+    configured_company_id: str = "",
     status: list[str] | None = None,
     severities: list[str] | None = None,
     alarm_main_types: list[str] | None = None,
@@ -779,6 +787,8 @@ def fetch_incidents(
                         include_compliance=include_compliance,
                         include_related_assets=include_related_assets,
                         include_related_entities=include_related_entities,
+                        include_company_id=include_company_id,
+                        configured_company_id=configured_company_id,
                     )
                     page_incidents.append(incident)
                     total_incidents_created += 1
@@ -1105,7 +1115,7 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
 def main() -> None:
     """Main execution function"""
     params = demisto.params()
-    api_key = params.get("apikey")
+    api_key = params.get("apikey", {}).get("password")
     company_id = params.get("company_id")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -1140,13 +1150,14 @@ def main() -> None:
             if isinstance(show_content, str):
                 show_content = show_content.lower() in ("true", "1", "yes")
 
-            include_mitigation = argToBoolean(params.get("include_mitigation", True))
-            include_response = argToBoolean(params.get("include_response", True))
-            include_detection_and_analysis = argToBoolean(params.get("include_detection_and_analysis", True))
-            include_post_incident_analysis = argToBoolean(params.get("include_post_incident_analysis", True))
-            include_compliance = argToBoolean(params.get("include_compliance", True))
-            include_related_assets = argToBoolean(params.get("include_related_assets", True))
-            include_related_entities = argToBoolean(params.get("include_related_entities", True))
+            include_mitigation = argToBoolean(params.get("include_mitigation", False))
+            include_response = argToBoolean(params.get("include_response", False))
+            include_detection_and_analysis = argToBoolean(params.get("include_detection_and_analysis", False))
+            include_post_incident_analysis = argToBoolean(params.get("include_post_incident_analysis", False))
+            include_compliance = argToBoolean(params.get("include_compliance", False))
+            include_related_assets = argToBoolean(params.get("include_related_assets", False))
+            include_related_entities = argToBoolean(params.get("include_related_entities", False))
+            include_company_id = argToBoolean(params.get("include_company_id", False))
 
             alarm_type_ids_str = params.get("alarm_type_ids", "")
             alarm_type_ids = None
@@ -1210,6 +1221,8 @@ def main() -> None:
                 include_compliance=include_compliance,
                 include_related_assets=include_related_assets,
                 include_related_entities=include_related_entities,
+                include_company_id=include_company_id,
+                configured_company_id=company_id or "",
                 status=argToList(params.get("status")),
                 severities=argToList(params.get("severities")),
                 alarm_main_types=argToList(params.get("alarm_main_types")),
