@@ -8,10 +8,11 @@ sectionorder:
 - Collect
 configuration:
 - additionalinfo: The API Key to use for connection to SOCRadar
-  display: API Key
+  displaypassword: API Key
   name: apikey
   required: true
-  type: 4
+  type: 9
+  hiddenusername: true
   section: Connect
 - display: Fetch incidents
   name: isFetch

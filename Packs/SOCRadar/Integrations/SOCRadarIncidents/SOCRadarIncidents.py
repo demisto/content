@@ -483,7 +483,7 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get("apikey")
+    api_key = demisto.params().get("apikey", {}).get("password")
     socradar_company_id = demisto.params().get("socradar_company_id")
 
     base_url = SOCRADAR_API_ENDPOINT
