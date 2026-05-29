@@ -48,6 +48,7 @@ configuration:
   - Low
   - Medium
   - High
+  - Critical
   type: 16
   section: Collect
   required: false

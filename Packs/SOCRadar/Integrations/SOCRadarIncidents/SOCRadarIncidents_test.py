@@ -277,6 +277,7 @@ CONVERT_DEMISTO_SEVERITY_INPUTS = [
     ("LOW", IncidentSeverity.LOW),
     ("MEDIUM", IncidentSeverity.MEDIUM),
     ("HIGH", IncidentSeverity.HIGH),
+    ("CRITICAL", IncidentSeverity.CRITICAL),
     ("UNKNOWN", IncidentSeverity.UNKNOWN),
 ]
 

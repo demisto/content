@@ -15,7 +15,7 @@ urllib3.disable_warnings()  # noqa # pylint: disable=no-member
 
 """ CONSTANTS """
 SOCRADAR_API_ENDPOINT = "https://platform.socradar.com/api"
-SOCRADAR_SEVERITIES = ["Unknown", "Info", "Low", "Medium", "High"]
+SOCRADAR_SEVERITIES = ["Unknown", "Info", "Low", "Medium", "High", "Critical"]
 EXCLUDED_INCIDENT_FIELDS = ("extra_info", "alarm_notification_texts")
 MAX_INCIDENTS_TO_FETCH = 500
 
@@ -42,7 +42,7 @@ def parse_int_or_raise(str_to_parse: Any, error_msg=None) -> int:
 def convert_to_demisto_severity(severity: str) -> Union[int, float]:
     """Maps SOCRadar severity to Cortex XSOAR severity
 
-    Converts the SOCRadar alert severity level ('INFO', 'LOW', 'MEDIUM', 'HIGH') to Cortex XSOAR incident severity
+    Converts the SOCRadar alert severity level ('INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL') to Cortex XSOAR incident severity
     (1 to 4) for mapping.
 
     :type severity: ``str``
@@ -57,6 +57,7 @@ def convert_to_demisto_severity(severity: str) -> Union[int, float]:
         "LOW": IncidentSeverity.LOW,
         "MEDIUM": IncidentSeverity.MEDIUM,
         "HIGH": IncidentSeverity.HIGH,
+        "CRITICAL": IncidentSeverity.CRITICAL,
         "UNKNOWN": IncidentSeverity.UNKNOWN,
     }[severity]
 
