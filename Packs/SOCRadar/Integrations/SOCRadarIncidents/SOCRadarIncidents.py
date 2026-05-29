@@ -489,7 +489,11 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get("apikey", {}).get("password")
+    api_key_param = demisto.params().get("apikey")
+    if isinstance(api_key_param, dict):
+        api_key = api_key_param.get("password", "")
+    else:
+        api_key = api_key_param
     socradar_company_id = demisto.params().get("socradar_company_id")
 
     base_url = SOCRADAR_API_ENDPOINT

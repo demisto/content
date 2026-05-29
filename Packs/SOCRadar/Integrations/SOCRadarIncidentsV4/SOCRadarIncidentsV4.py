@@ -1115,7 +1115,11 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
 def main() -> None:
     """Main execution function"""
     params = demisto.params()
-    api_key = params.get("apikey", {}).get("password")
+    api_key_param = params.get("apikey")
+    if isinstance(api_key_param, dict):
+        api_key = api_key_param.get("password", "")
+    else:
+        api_key = api_key_param
     company_id = params.get("company_id")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
