@@ -1455,9 +1455,6 @@ class Client(BaseClient):
         url_suffix = f"{url_path}/{qtype}/{query}"
         url_suffix += ('/' + args.get("answer")) if both else ""
         raw_response = self._http_request(method="GET", url_suffix=url_suffix, params=args)
-        has_job = self.response_has_job(raw_response)
-        if has_job is not False:
-            return self.format_job_command_response(has_job, raw_response), None
         if raw_response.get("error"):
             raise DemistoException(f"API Error: {raw_response.get('error')}")
         records = raw_response.get("response", {}).get("records", [])
@@ -1472,9 +1469,6 @@ class Client(BaseClient):
         if len(list(payload.values())[0]) > 100:
             raise ValueError("Maximum of 100 values can be submitted in a single request.")
         raw_response = self._http_request(method="POST", url_suffix=url_suffix, data=payload)
-        has_job = self.response_has_job(raw_response)
-        if has_job is not False:
-            return self.format_job_command_response(has_job, raw_response), None
         response = raw_response.get("response", []) or []
         markdown = "# Information Results\n"
         markdown += self.get_markdown(response)
@@ -1488,9 +1482,6 @@ class Client(BaseClient):
         params = {"explain": args.get("explain"), "limit": args.get("limit")}
         remove_nulls_from_dictionary(params)
         response = self._http_request(method="GET", url_suffix=url_suffix, params=params)
-        has_job = self.response_has_job(response)
-        if has_job is not False:
-            return self.format_job_command_response(has_job, response), None
         reputation_data = response.get("response", {}).get(response_field, [])
         if reputation_data and all(isinstance(item, dict) for item in reputation_data):
             all_headers = set()
@@ -1909,6 +1900,19 @@ def test_module(client: Client) -> str:
         raise e
 
 
+def jobify(command):
+    def wrapper(client: Client, args: dict):
+        command_result = command(client, args)
+        has_job = client.response_has_job(command_result.raw_response)
+        if has_job is not False:
+            return client.format_job_command_response(
+                has_job, command_result.raw_response
+            )
+        return command_result
+
+    return wrapper
+
+
 @metadata_collector.command(
     command_name="silentpush-get-nameserver-reputation",
     inputs_list=NAMESERVER_REPUTATION_INPUTS,
@@ -1917,6 +1921,7 @@ def test_module(client: Client) -> str:
     description="This command retrieves historical reputation data for a specified nameserver,"
                 "including reputation scores and optional detailed calculation information.",
 )
+@jobify
 def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResults:
     """
     Command handler for retrieving nameserver reputation.
@@ -1950,6 +1955,7 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
     outputs_list=SUBNET_REPUTATION_OUTPUTS,
     description="This command retrieves the reputation history for a specific subnet.",
 )
+@jobify
 def get_subnet_reputation_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves the reputation history of a given subnet.
@@ -1988,6 +1994,7 @@ def get_subnet_reputation_command(client: Client, args: dict) -> CommandResults:
     outputs_list=IPV4_REPUTATION_OUTPUTS,
     description="This command retrieves the reputation information for an IPv4.",
 )
+@jobify
 def get_ipv4_reputation_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the reputation data for a given IPv4 address from the client.
@@ -2021,6 +2028,7 @@ def get_ipv4_reputation_command(client: Client, args: dict[str, Any]) -> Command
     outputs_list=ASNS_DOMAIN_OUTPUTS,
     description="This command retrieves Autonomous System Numbers (ASNs) associated with a domain.",
 )
+@jobify
 def get_asns_for_domain_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves Autonomous System Numbers (ASNs) for the specified domain.
@@ -2035,9 +2043,6 @@ def get_asns_for_domain_command(client: Client, args: dict) -> CommandResults:
         raise DemistoException("Domain is a required parameter.")
     url_suffix = f"{ASNS_DOMAIN}/{domain}"
     raw_response = client._http_request(method="GET", url_suffix=url_suffix)
-    has_job = client.response_has_job(raw_response)
-    if has_job is not False:
-        return client.format_job_command_response(has_job, raw_response)
     records = raw_response.get("response", {}).get("records", [])
     if not records or "domain_asns" not in records[0]:
         readable_output = f"No ASNs found for domain: {domain}"
@@ -2062,6 +2067,7 @@ def get_asns_for_domain_command(client: Client, args: dict) -> CommandResults:
     outputs_list=FORWARD_PADNS_OUTPUTS,
     description="This command performs a forward PADNS lookup using various filtering parameters.",
 )
+@jobify
 def forward_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     """
     Command function to perform a forward PADNS lookup.
@@ -2096,6 +2102,7 @@ def forward_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     outputs_list=REVERSE_PADNS_OUTPUTS,
     description="This command retrieve reverse Passive DNS data for specific DNS record types.",
 )
+@jobify
 def reverse_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     """
     Command function to perform reverse PADNS lookup.
@@ -2131,6 +2138,7 @@ def reverse_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     outputs_list=PADNS_OUTPUTS,
     description="This command searches passive DNS data for records matching both query and answer.",
 )
+@jobify
 def multi_conditional_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     """
     Command function to perform reverse PADNS lookup.
@@ -2169,6 +2177,7 @@ def multi_conditional_padns_lookup_command(client: Client, args: dict) -> Comman
     description="This command queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density "
                 "information.",
 )
+@jobify
 def density_lookup_command(client: Client, args: dict) -> CommandResults:
     """
     Command function to perform a density lookup on the SilentPush API.
@@ -2203,6 +2212,7 @@ def density_lookup_command(client: Client, args: dict) -> CommandResults:
     outputs_list=IP_DIVERSITY_LOOKUP_OUTPUTS,
     description="Get IP diversity (number of IP addresses pointed to over time) for the query to qtype.",
 )
+@jobify
 def ip_diversity_lookup_command(client: Client, args: dict) -> CommandResults:
     """
     Command function to perform a IP diversity lookup on the SilentPush API.
@@ -2231,6 +2241,7 @@ def ip_diversity_lookup_command(client: Client, args: dict) -> CommandResults:
     outputs_list=IP_DIVERSITY_PATTERNS_OUTPUTS,
     description="Search for IP Diversity patterns, with optional name server and domain name pattern matching.",
 )
+@jobify
 def ip_diversity_patterns_command(client: Client, args: dict) -> CommandResults:
     """
     Command to Search for IP Diversity patterns, with optional name server and domain name pattern matching.
@@ -2260,9 +2271,6 @@ def ip_diversity_patterns_command(client: Client, args: dict) -> CommandResults:
         raise DemistoException(f"At least one of {minimum_parameters_keys} is required.")
     remove_nulls_from_dictionary(args)
     raw_response = client._http_request("GET", IP_DIVERSITY_PATTERNS, params=args)
-    has_job = client.response_has_job(raw_response)
-    if has_job is not False:
-        return client.format_job_command_response(has_job, raw_response)
     records = raw_response.get("response", {}).get("records", [])
     readable_output = tableToMarkdown("IP Diversity Patterns Results", records)
     return CommandResults(
@@ -2281,6 +2289,7 @@ def ip_diversity_patterns_command(client: Client, args: dict) -> CommandResults:
     outputs_list=SEARCH_DOMAIN_OUTPUTS,
     description="This command search for domains with optional filters.",
 )
+@jobify
 def search_domains_command(client: Client, args: dict) -> CommandResults:
     """
     Command to search for domains based on various filter parameters.
@@ -2294,9 +2303,6 @@ def search_domains_command(client: Client, args: dict) -> CommandResults:
     """
     remove_nulls_from_dictionary(args)
     raw_response = client._http_request("GET", SEARCH_DOMAIN, params=args)
-    has_job = client.response_has_job(raw_response)
-    if has_job is not False:
-        return client.format_job_command_response(has_job, raw_response)
     records = raw_response.get("response", {}).get("records", [])
     if not records:
         readable_output = "No domains found."
@@ -2319,6 +2325,7 @@ def search_domains_command(client: Client, args: dict) -> CommandResults:
     outputs_list=ENRICHMENT_OUTPUTS,
     description="This command enriches IPs or Domains in a bulk",
 )
+@jobify
 def bulk_enrich_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Handle bulk-enrich command execution.
@@ -2335,9 +2342,6 @@ def bulk_enrich_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if len(values) > 100:
         raise ValueError("Maximum of 100 IoCs can be submitted in a single request.")
     response = client.fetch_bulk_info(values, resource)
-    has_job = client.response_has_job(response)
-    if has_job is not False:
-        return client.format_job_command_response(has_job, response)
     if resource == ResourceType.DOMAIN:
         markdown = "# Domain Information Results\n"
     else:
@@ -2360,6 +2364,7 @@ def bulk_enrich_command(client: Client, args: dict[str, Any]) -> CommandResults:
     description="This command get domain information along with Silent Push risk score "
                 "and live whois information for multiple domains.",
 )
+@jobify
 def list_domain_information_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Handle the list-domain-information command execution.
@@ -2393,6 +2398,7 @@ def list_domain_information_command(client: Client, args: dict[str, Any]) -> Com
     outputs_list=LIST_IP_OUTPUTS,
     description="This command get IP4 information along with Silent Push risk score "
 )
+@jobify
 def list_ip4_information_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Handle the list-ip4-information command execution.
@@ -2426,6 +2432,7 @@ def list_ip4_information_command(client: Client, args: dict[str, Any]) -> Comman
     outputs_list=LIST_IP_OUTPUTS,
     description="This command get IP6 information along with Silent Push risk score "
 )
+@jobify
 def list_ip6_information_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Handle the list-ip6-information command execution.
@@ -2459,6 +2466,7 @@ def list_ip6_information_command(client: Client, args: dict[str, Any]) -> Comman
     outputs_list=WHOIS_OUTPUTS,
     description="This command get Whois information"
 )
+@jobify
 def whois_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Handle the whois command execution.
@@ -2472,9 +2480,6 @@ def whois_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     raw_response = client._http_request(method="GET", url_suffix=f"{WHOIS}/{args.get('domain')}")
     response = raw_response.get("response", {}).get("whois", [{}])[0]
-    has_job = client.response_has_job(response)
-    if has_job is not False:
-        return client.format_job_command_response(has_job, response)
     headers = list(response.keys())
     readable_output = tableToMarkdown(f"Whois Results for {args.get('domain')}", [response], headers=headers, removeNull=True)
     return CommandResults(
@@ -2493,6 +2498,7 @@ def whois_command(client: Client, args: dict[str, Any]) -> CommandResults:
     outputs_list=DOMAIN_CERTIFICATE_OUTPUTS,
     description="This command get certificate data collected from domain scanning.",
 )
+@jobify
 def get_domain_certificates_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves SSL/TLS certificates for a given domain.
@@ -2530,20 +2536,8 @@ def get_domain_certificates_command(client: Client, args: dict[str, Any]) -> Com
     }
     remove_nulls_from_dictionary(params)
     raw_response = client._http_request(method="GET", url_suffix=f"{DOMAIN_CERTIFICATE}/{domain}/?max_wait=2", params=params)
-    has_job = client.response_has_job(raw_response)
-    response = raw_response
-    if has_job is not False:
-        return client.format_job_command_response(has_job, response)
-    certificates = response.get("response", {}).get("domain_certificates", [])
-    metadata = response.get("response", {}).get("metadata", {})
-    if not certificates:
-        return CommandResults(
-            readable_output=f"No certificates found for domain: {domain}",
-            outputs_prefix="SilentPush.Certificate",
-            outputs_key_field="domain",
-            outputs={"domain": domain, "certificates": [], "metadata": metadata},
-            raw_response=response,
-        )
+    certificates = raw_response.get("response", {}).get("domain_certificates", [])
+    metadata = raw_response.get("response", {}).get("metadata", {})
     markdown = [f"# SSL/TLS Certificate Information for Domain: {domain}\n"]
     for cert in certificates:
         cert_info = client.format_certificate_info(cert)
@@ -2553,7 +2547,7 @@ def get_domain_certificates_command(client: Client, args: dict[str, Any]) -> Com
         outputs_key_field="domain",
         outputs={"domain": domain, "certificates": certificates, "metadata": metadata},
         readable_output="\n".join(markdown),
-        raw_response=response,
+        raw_response=raw_response,
     )
 
 
@@ -2564,6 +2558,7 @@ def get_domain_certificates_command(client: Client, args: dict[str, Any]) -> Com
     outputs_list=ENRICHMENT_OUTPUTS,
     description="This command retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6).",
 )
+@jobify
 def get_enrichment_data_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieve enrichment data for a specific resource and value.
@@ -2586,9 +2581,6 @@ def get_enrichment_data_command(client: Client, args: dict) -> CommandResults:
     enrichment_data = client.get_enrichment_data(
         resource=ResourceType(resource), value=value, explain=explain, scan_data=scan_data
     )
-    has_job = client.response_has_job(enrichment_data)
-    if has_job is not False:
-        return client.format_job_command_response(has_job, enrichment_data)
     if not enrichment_data:
         return CommandResults(
             readable_output=f"No enrichment data found for resource: {value}",
@@ -2615,6 +2607,7 @@ def get_enrichment_data_command(client: Client, args: dict) -> CommandResults:
     outputs_list=SEARCH_SCAN_OUTPUTS,
     description="This command search Silent Push scan data repositories using SPQL queries.",
 )
+@jobify
 def search_scan_data_command(client: Client, args: dict) -> CommandResults:
     """
     Search scan data command handler.
@@ -2629,9 +2622,6 @@ def search_scan_data_command(client: Client, args: dict) -> CommandResults:
     if not query:
         raise ValueError("Query parameter is required")
     raw_response = client.search_scan_data(query, args)
-    has_job = client.response_has_job(raw_response)
-    if has_job is not False:
-        return client.format_job_command_response(has_job, raw_response)
     scan_data = raw_response.get("response", {}).get("records", [])
     if not scan_data:
         return CommandResults(readable_output="No scan data records found", outputs_prefix="SilentPush.ScanData", outputs=None)
@@ -2654,6 +2644,7 @@ def search_scan_data_command(client: Client, args: dict) -> CommandResults:
     outputs_list=LIVE_SCAN_URL_OUTPUTS,
     description="This command scan a URL to retrieve hosting metadata.",
 )
+@jobify
 def live_url_scan_command(client: Client, args: dict) -> CommandResults:
     """
     Command handler for live URL scan command.
@@ -2674,9 +2665,6 @@ def live_url_scan_command(client: Client, args: dict) -> CommandResults:
     if validation_errors:
         raise DemistoException(validation_errors)
     raw_response = client.live_url_scan(url, platform, os, browser, region)
-    has_job = client.response_has_job(raw_response)
-    if has_job is not False:
-        return client.format_job_command_response(has_job, raw_response)
     readable_output = client.get_markdown(raw_response)
     return CommandResults(
         outputs_prefix="SilentPush.URLScan",

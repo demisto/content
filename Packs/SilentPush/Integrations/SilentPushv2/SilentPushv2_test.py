@@ -313,6 +313,9 @@ def test_get_domain_certificates_command_job_status(mock_client, mocker):
         job_details,
         removeNull=True
     )
+    mock_client._http_request.return_value = {
+        "job_status": job_details
+    }
     mock_client.format_job_command_response.return_value = CommandResults(
         outputs_prefix="SilentPush.Job",
         outputs_key_field="job_id",
