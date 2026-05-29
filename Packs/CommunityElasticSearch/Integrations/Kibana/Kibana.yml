@@ -220,7 +220,7 @@ script:
     - description: Alert ID to assign user to. Find with "kibana-list-detection-alerts".
       name: alert_id
       required: true
-    description: Used to assign an alert in Kibana to a user via user ID input.
+    description: Assigns an alert in Kibana to a user via user ID input.
     name: kibana-alert-assign
   - arguments:
     - auto: PREDEFINED
@@ -230,7 +230,7 @@ script:
       - open
       - closed
       required: true
-    description: Used to search for detection alerts in Kibana.
+    description: Searches for detection alerts in Kibana.
     name: kibana-detection-alerts-list
     outputs:
     - contextPath: Kibana.DetectionAlerts.bhe.windows.security_id
@@ -242,40 +242,40 @@ script:
     - contextPath: Kibana.DetectionAlerts.kibana.alert.uuid
       description: ID of the detection alert.
     - contextPath: Kibana.DetectionAlerts.kibana.alert.rule.name
-      description: Rule name associated with the detection alert.
+      description: The rule name associated with the detection alert.
   - arguments:
-    - description: Alert ID to update the note on. Find with "kibana-list-detection-alerts".
+    - description: The alert ID to update the note on. Find it with the kibana-list-detection-alerts command.
       name: alert_id
       required: true
     - description: The note text to add to the alert.
       name: note
       required: true
-    description: Add note to an alert in Kibana.
+    description: Adds a note to an alert in Kibana.
     name: kibana-alert-note-add
   - arguments: []
-    description: Get the health status of Kibana alerting framework.
+    description: Retrieves the health status of the Kibana alerting framework.
     name: kibana-alerting-health-get
     outputs:
     - contextPath: Kibana.AlertingFrameworkHealth.alerting_framework_health.decryption_health.status
       description: Whether Kibana can successfully decrypt encrypted alert data.
     - contextPath: Kibana.AlertingFrameworkHealth.alerting_framework_health.execution_health.status
-      description: Identify if rules are running on time or failing.
+      description: Whether rules are running on time or failing.
     - contextPath: Kibana.AlertingFrameworkHealth.alerting_framework_health.read_health.status
-      description: Ability to successfully retrieve rule configurations from internal Kibana indices.
+      description: Whether rule configurations can be successfully retrieved from internal Kibana indices.
   - arguments:
-    - description: Rule ID to disable. Find rule ID with "kibana-search-rule-details".
+    - description: The rule ID to disable. Find the rule ID with the kibana-search-rule-details command.
       name: rule_id
       required: true
-    description: Disable a detection alerting rule. Clears associated alerts from active alerts page.
+    description: Disables a detection alerting rule. Clears associated alerts from the active alerts page.
     name: kibana-alert-rule-disable
   - arguments:
-    - description: Rule ID to enable. Find rule ID with "kibana-search-rule-details".
+    - description: The rule ID to enable. Find the rule ID with the kibana-search-rule-details command.
       name: rule_id
       required: true
-    description: 'Used to enable a rule used for detection alerting. '
+    description: 'Enables a rule used for detection alerting.'
     name: kibana-alert-rule-enable
   - arguments: []
-    description: Get a list of all exception list containers.
+    description: Retrieves a list of all exception list containers.
     name: kibana-exception-lists-get
     outputs:
     - contextPath: Kibana.ExceptionLists.name
@@ -288,11 +288,11 @@ script:
     - description: Describes the value list.
       name: description
       required: true
-    - description: Value list's name.
+    - description: The value list's name.
       name: name
       required: true
     - auto: PREDEFINED
-      description: Elasticsearch data type the list container holds.
+      description: The Elasticsearch data type the list container holds.
       name: data_type
       predefined:
       - keyword
@@ -300,10 +300,10 @@ script:
       - ip_range
       - text
       required: true
-    - description: Value list's identifier.
+    - description: The value list's identifier.
       name: list_id
       required: true
-    description: Used to create a value list in Kibana.
+    description: Creates a value list in Kibana.
     name: kibana-value-list-create
   - arguments: []
     description: Find all value lists in Kibana Detection Rules menu.
@@ -316,31 +316,31 @@ script:
     - contextPath: Kibana.ValueLists.description
       description: The description of the Value List.
   - arguments:
-    - description: Value list ID to import values to. Find with "kibana-get-value-lists".
+    - description: The value list ID to import values to. Find it with the kibana-get-value-lists command.
       name: list_id
       required: true
-    - description: Entries of the IOC file to import to Kibana in python string format.
+    - description: The IOC file entries to import to Kibana in Python string format.  
       name: file_content
       required: true
-    description: Import value list items from a TXT or CSV file.
+    description: Imports value list items from a TXT or CSV file.
     name: kibana-value-list-items-import
   - arguments:
-    - description: Value list ID to update. Find with "kibana-get-value-lists".
+    - description: The value list ID to update. Find it with the kibana-get-value-lists command.
       name: list_id
       required: true
-    - description: Item to add to the specified value list.
+    - description: The item to add to the specified value list.
       name: new_value_list_item
       required: true
-    description: Create a value list item and associate it with the specified value list.
+    description: Creates a value list item and associates it with the specified value list.
     name: kibana-value-list-item-create
   - arguments:
-    - description: Value list ID to retrieve values for. Find with "kibana-get-value-lists".
+    - description: The value list ID to retrieve values for. Find it with the kibana-get-value-lists command.
       name: list_id
       required: true
     - defaultValue: '100'
-      description: Size of results to return.
+      description: The size of results to return.
       name: result_size
-    description: Used to display entries in an input value list.
+    description: Displays entries in an input value list.
     name: kibana-value-list-items-get
     outputs:
     - contextPath: Kibana.ValueListItems.value
@@ -350,16 +350,16 @@ script:
     - contextPath: Kibana.ValueListItems.list_id
       description: The list ID of the value list.
   - arguments:
-    - description: Value list entry ID to delete. Find with "kibana-get-value-list-items".
+    - description: The value list entry ID to delete. Find it with the kibana-get-value-list-items command.  
       name: item_id
       required: true
-    - description: Value list ID to delete value from. Find with "kibana-get-value-lists".
+    - description: The value list ID to delete the value from. Find it with the kibana-get-value-lists command.
       name: list_id
       required: true
-    description: Used to delete a value list item given the item ID as input.
+    description: Deletes a value list item, given the item ID and list ID as input.
     name: kibana-value-list-item-delete
   - arguments:
-    - description: Value list ID to delete. Find with "kibana-get-value-lists".
+    - description: The value list ID to delete. Find it with the kibana-get-value-lists command.
       name: list_id
       required: true
     description: Deletes a value list given the list ID as input.
