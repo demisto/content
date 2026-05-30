@@ -162,9 +162,16 @@ class Client(BaseClient):
 
                 data_obj = response.get("data", {})
 
-                alarms = data_obj.get("alarms", [])
-                total_pages = data_obj.get("total_pages", 1)
-                total_records = data_obj.get("total_records", len(alarms))
+                # When include_total_records is false, API returns data as a list
+                # instead of a dict with "alarms", "total_pages", "total_records" keys.
+                if isinstance(data_obj, list):
+                    alarms = data_obj
+                    total_pages = 1
+                    total_records = len(alarms)
+                else:
+                    alarms = data_obj.get("alarms", [])
+                    total_pages = data_obj.get("total_pages", 1)
+                    total_records = data_obj.get("total_records", len(alarms))
 
                 demisto.debug(f"[SOCRadar] Received {len(alarms)} alarms from page {page}")
                 demisto.debug(f"[SOCRadar] Total records: {total_records}, Total pages: {total_pages}")
