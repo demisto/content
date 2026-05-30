@@ -411,7 +411,7 @@ def fetch_incidents(
         }
 
         if include_company_id:
-            alert["socradar_company_id"] = client.socradar_company_id
+            alert["company_id"] = client.socradar_company_id
             custom_fields["socradarcompanyid"] = client.socradar_company_id
             demisto.debug(f"[SOCRadar] Added company_id to incident: {client.socradar_company_id}")
 
