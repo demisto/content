@@ -721,7 +721,7 @@ def fetch_incidents(
 
     if last_fetch_str:
         try:
-            start_datetime = datetime.fromisoformat(last_fetch_str) - timedelta(minutes=fetch_interval_minutes)
+            start_datetime = datetime.fromisoformat(last_fetch_str)
             demisto.debug(f"[SOCRadar] Subsequent fetch: Using last_fetch datetime {start_datetime.isoformat()}")
         except Exception:
             start_datetime = current_time - timedelta(minutes=fetch_interval_minutes)
