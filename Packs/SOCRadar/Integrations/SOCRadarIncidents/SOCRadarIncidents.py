@@ -365,20 +365,23 @@ def fetch_incidents(
         if last_fetch and incident_created_time <= last_fetch:
             continue
 
-        incident_content = alert.get("alarm_notification_texts", {}).get("alarm_text", "")
+        alarm_texts = alert.get("alarm_notification_texts") or {}
+        alarm_type_details = alert.get("alarm_type_details") or {}
+        alarm_title = alarm_texts.get("alarm_title") or alarm_type_details.get("alarm_generic_title", "")
+        incident_content = alarm_texts.get("alarm_text", "")
         alert = {
             **{key: value for key, value in alert.items() if key not in EXCLUDED_INCIDENT_FIELDS},
-            "alarm_notification_texts": {"alarm_title": alert.get("alarm_notification_texts", {}).get("alarm_title", "")},
+            "alarm_notification_texts": {"alarm_title": alarm_title},
         }
 
-        incident_name = f"{alert.get('alarm_notification_texts', {}).get('alarm_title', '')} - [#{alert.get('id', '')}]"
+        incident_name = f"{alarm_title} - [#{alert.get('id', '')}]"
 
-        alert_assets = " || ".join(alert.get("alarm_assets", []))
+        alert_assets = " || ".join(alert.get("alarm_assets") or [])
         alert_related_assets = ""
-        for related_asset_dict in alert.get("alarm_related_assets", []):
+        for related_asset_dict in (alert.get("alarm_related_assets") or []):
             related_asset_key, related_asset_value_list = (
                 related_asset_dict.get("key"),
-                related_asset_dict.get("value", []),
+                related_asset_dict.get("value") or [],
             )
             related_asset_value_list: List[str] = list(filter(None, related_asset_value_list))
             if related_asset_key and related_asset_value_list:
@@ -386,10 +389,10 @@ def fetch_incidents(
                 alert_related_assets += f"{related_asset_key}: {' || '.join(related_asset_value_list)}\n"
 
         alert_related_entities = ""
-        for related_entity_dict in alert.get("alarm_related_entities", []):
+        for related_entity_dict in (alert.get("alarm_related_entities") or []):
             related_entity_key, related_entity_value_list = (
                 related_entity_dict.get("key"),
-                related_entity_dict.get("value", []),
+                related_entity_dict.get("value") or [],
             )
             related_entity_value_list: List[str] = list(filter(None, related_entity_value_list))
             if related_entity_key and related_entity_value_list:
@@ -408,6 +411,7 @@ def fetch_incidents(
         }
 
         if include_company_id:
+            alert["socradar_company_id"] = client.socradar_company_id
             custom_fields["socradarcompanyid"] = client.socradar_company_id
             demisto.debug(f"[SOCRadar] Added company_id to incident: {client.socradar_company_id}")
 
