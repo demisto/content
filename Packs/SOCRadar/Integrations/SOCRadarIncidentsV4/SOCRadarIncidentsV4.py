@@ -76,6 +76,7 @@ class Client(BaseClient):
         # hardcoded to "true" and test_fetch_command passed it as a kwarg which
         # caused a TypeError since search_incidents did not accept it.
         include_total_records: bool = True,
+        include_company_id: bool = False,
     ) -> dict[str, Any]:
         """
         Search incidents from SOCRadar API
@@ -94,6 +95,7 @@ class Client(BaseClient):
             limit: Number of results per page (max 100)
             page: Page number for pagination
             include_total_records: Whether to request total record counts from the API
+            include_company_id: Whether to request company_id in alarm data from the API
 
         API Response Structure:
         {
@@ -134,6 +136,8 @@ class Client(BaseClient):
             params["excluded_alarm_main_types"] = excluded_alarm_main_types
         if excluded_alarm_sub_types:
             params["excluded_alarm_sub_types"] = excluded_alarm_sub_types
+        if include_company_id:
+            params["include_company_id"] = "true"
 
         url_suffix = f"/company/{self.company_id}/incidents/v4"
 
@@ -758,6 +762,7 @@ def fetch_incidents(
                 end_date=end_date,
                 limit=per_page,
                 page=current_page,
+                include_company_id=include_company_id,
             )
 
             alarms = response.get("data", [])
