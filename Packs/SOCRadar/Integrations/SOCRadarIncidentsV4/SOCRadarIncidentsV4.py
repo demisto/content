@@ -510,10 +510,14 @@ def alarm_to_incident(
 
     related_assets_str = "\n".join(asset_info)
 
-    # Extract fields from alarm_type_details
+    # Extract fields - promote mitigation and detection_and_analysis to top-level like alarm_response
     alarm_mitigation = alarm_type_details.get("alarm_default_mitigation_plan", "")
     alarm_response = alarm.get("alarm_response", "")
     alarm_detection_analysis = alarm_type_details.get("alarm_detection_and_analysis", "")
+    if alarm_mitigation:
+        alarm["alarm_mitigation"] = alarm_mitigation
+    if alarm_detection_analysis:
+        alarm["alarm_detection_and_analysis"] = alarm_detection_analysis
     alarm_post_incident = alarm_type_details.get("alarm_post_incident_analysis", "")
 
     # Build compliance string from compliance list
