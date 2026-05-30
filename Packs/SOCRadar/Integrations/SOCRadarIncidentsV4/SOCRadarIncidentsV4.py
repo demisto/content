@@ -605,6 +605,7 @@ def alarm_to_incident(
     if include_related_entities and related_entities_str:
         custom_fields["socradarrelatedentities"] = related_entities_str
     if include_company_id:
+        alarm["socradar_company_id"] = str(company_id) if company_id else ""
         custom_fields["socradarcompanyid"] = str(company_id) if company_id else ""
 
     incident = {
