@@ -510,15 +510,21 @@ def alarm_to_incident(
 
     related_assets_str = "\n".join(asset_info)
 
-    # Extract fields - promote mitigation and detection_and_analysis to top-level like alarm_response
+    # Extract enrichment fields from alarm_type_details
     alarm_mitigation = alarm_type_details.get("alarm_default_mitigation_plan", "")
     alarm_response = alarm.get("alarm_response", "")
     alarm_detection_analysis = alarm_type_details.get("alarm_detection_and_analysis", "")
-    if alarm_mitigation:
-        alarm["alarm_mitigation"] = alarm_mitigation
-    if alarm_detection_analysis:
-        alarm["alarm_detection_and_analysis"] = alarm_detection_analysis
     alarm_post_incident = alarm_type_details.get("alarm_post_incident_analysis", "")
+
+    # Promote to top-level rawJSON only when include is enabled
+    if include_mitigation and alarm_mitigation:
+        alarm["alarm_mitigation"] = alarm_mitigation
+    if include_response and alarm_response:
+        alarm["alarm_response_plan"] = alarm_response
+    if include_detection_and_analysis and alarm_detection_analysis:
+        alarm["alarm_detection_and_analysis"] = alarm_detection_analysis
+    if include_post_incident_analysis and alarm_post_incident:
+        alarm["alarm_post_incident_analysis"] = alarm_post_incident
 
     # Build compliance string from compliance list
     compliance_list = alarm_type_details.get("alarm_compliance_list", [])
