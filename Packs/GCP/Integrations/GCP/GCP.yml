@@ -1918,6 +1918,7 @@ script:
     description: Removes a specified IAM role binding from a GCP project.
     arguments:
     - name: project_id
+      description: GCP project ID.
       required: false
       required:platform: true
     - name: member
@@ -2098,6 +2099,7 @@ script:
       The instance must be stopped before the service account can be changed.
     arguments:
     - name: project_id
+      description: GCP project ID.
       required: false
       required:platform: true
     - name: zone
@@ -2188,6 +2190,7 @@ script:
       The instance must be stopped before the service account can be changed.
     arguments:
     - name: project_id
+      description: GCP project ID.
       required: false
       required:platform: true
       isArray: false
@@ -2305,6 +2308,7 @@ script:
     description: Starts an instance that was stopped using the instances().stop method.
     arguments:
     - name: project_id
+      description: GCP project ID.
       required: false
       required:platform: true
     - name: zone
@@ -2997,6 +3001,7 @@ script:
     description: Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
     arguments:
     - name: project_id
+      description: GCP project ID.
       required: false
       required:platform: true
     - name: zone
