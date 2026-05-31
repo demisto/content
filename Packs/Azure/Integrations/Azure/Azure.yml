@@ -8459,9 +8459,6 @@ script:
     - contextPath: Azure.Storage.BlobServices.properties.changeFeed
       description: The blob service properties for change feed events.
       type: Unknown
-    - contextPath: Azure.Storage.BlobServices.properties.automaticSnapshotPolicyEnabled
-      description: Deprecated in favor of isVersioningEnabled property.
-      type: Boolean
     - contextPath: Azure.Storage.BlobServices.properties.containerDeleteRetentionPolicy
       description: The blob service properties for container soft delete.
       type: Unknown
