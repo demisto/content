@@ -1950,6 +1950,8 @@ script:
       name: core-enable-scanners
       description: Enable or disable scanners with the specified configuration.
     - name: core-create-appsec-policy
+      toversion: 8.14.0
+      deprecated: true
       description: Creates a new AppSec policy in Cortex Platform with defined conditions, scope, and triggers for application security governance.
       arguments:
         - name: policy_name
