@@ -1,12 +1,12 @@
 {
     "action": "script",
-    "enabled": true,
+    "enabled": false,
     "id": "gib_rule",
     "index": 0,
     "itemVersion": "",
     "linkTo": "oldest",
     "locked": false,
-    "name": "gib_rule",
+    "name": "GIB Rule",
     "newEventFilters": [
         [
             {
@@ -80,7 +80,7 @@
             }
         ]
     ],
-    "scriptName": "",
+    "scriptName": "GIBIncidentUpdate",
     "searchClosed": false,
     "system": false,
     "toServerVersion": "",
