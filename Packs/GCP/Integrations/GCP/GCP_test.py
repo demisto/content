@@ -1337,6 +1337,7 @@ def test_iam_project_policy_binding_remove(mocker):
 #     # Check readable output
 #     assert "Membership member789ghi was deleted from group 01abc123def456" in result.readable_output
 
+
 def test_health_check_successful(mocker):
     """
     Given: Valid GCP credentials and a project with accessible services
@@ -5542,9 +5543,7 @@ def test_test_module_marketplace_api_failure_raises(mocker):
     params = {"project_id": "my-project-123"}
 
     mock_rm = MagicMock()
-    mock_rm.projects.return_value.testIamPermissions.return_value.execute.side_effect = Exception(
-        "403 Permission denied"
-    )
+    mock_rm.projects.return_value.testIamPermissions.return_value.execute.side_effect = Exception("403 Permission denied")
     mocker.patch("GCP.GCPServices.RESOURCE_MANAGER.build", return_value=mock_rm)
 
     with pytest.raises(DemistoException, match="Failed to connect to GCP project 'my-project-123'"):

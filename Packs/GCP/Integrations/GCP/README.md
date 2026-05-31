@@ -3,11 +3,12 @@ This integration was integrated and tested with version v1 (Compute, Storage, Co
 
 ## Configure Google Cloud Platform in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Service Account Private Key file content (JSON). | False |
-| Use system proxy settings | False |
-| Trust any certificate (not secure) | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Service Account Private Key file content (JSON). | Required for Cortex XSOAR and Cortex XSIAM. Paste the full contents of a GCP Service Account private key JSON file. Not required on Cortex Cloud \(platform\), where authentication is handled automatically via the cloud connector. | False |
+| GCP Project ID | Required for Cortex XSOAR and Cortex XSIAM. The GCP project ID to authenticate against when testing the integration \(e.g. my-project-123\). Not required on Cortex Cloud \(platform\). | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
 ## Commands
 
@@ -27,7 +28,7 @@ Updates the specified firewall rule with the data included in the request.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | resource_name | Name of the firewall rule to update. | Required |
 | description | An optional description of this resource, which you provide when you create the resource. | Optional |
 | network | URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used. | Optional |
@@ -84,13 +85,15 @@ Removes an entity from a bucket's Access Control List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | resource_name | Name of the GCS bucket. | Required |
 | entity | Entity to remove from the Access Control List.<br/>Common entity formats are:<br/>*user:&lt;userId or email&gt;<br/>* group:&lt;groupId or email&gt;<br/>*allUsers<br/>* allAuthenticatedUsers<br/>For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource . Default is allUsers. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+### gcp-compute-subnet-update
 
 ### gcp-compute-subnet-update
 
@@ -105,7 +108,7 @@ Enables flow logs or Private Google Access on a subnet.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | region | GCP region. | Required |
 | resource_name | Subnet name. | Required |
 | enable_flow_logs | Enable VPC Flow Logs. Possible values are: true, false. | Optional |
@@ -140,7 +143,7 @@ Configures security settings for GKE clusters, including access controls and vis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | region | GCP region. | Required |
 | resource_name | Name of the GKE cluster. | Required |
 | enable_intra_node_visibility | Enable intra-node visibility. Possible values are: true, false. | Optional |
@@ -189,7 +192,7 @@ Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | resource_name | Name of the bucket. | Required |
 | enable_versioning | Enable versioning. Possible values are: true, false. | Optional |
 | enable_uniform_access | Enable uniform bucket-level access. Possible values are: true, false. | Optional |
@@ -236,7 +239,7 @@ Removes a specified IAM role binding from a GCP project.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | member | Member to remove (e.g., user:test@example.com). | Required |
 | role | Role to remove (e.g., roles/viewer). | Required |
 
@@ -257,7 +260,7 @@ Sets the service account for a GCP Compute Engine VM instance. The instance must
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the VM instance. | Required |
 | service_account_email | Email of the service account. | Required |
@@ -303,7 +306,7 @@ Removes the service account associated with a GCP Compute Engine VM instance. Th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the VM instance. | Required |
 
@@ -347,7 +350,7 @@ Starts an instance that was stopped using the instances().stop method.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the instance resource to start. | Required |
 
@@ -391,7 +394,7 @@ Stops a running instance, shutting it down cleanly, and allows you to restart th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the instance resource to stop. | Required |
 
@@ -435,7 +438,7 @@ Retrieves the list of instances in the specified zone.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | zone | The name of the zone for this request. | Required |
 | filters | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance. | Optional |
 | limit | The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
@@ -508,7 +511,7 @@ Sets labels on an instance.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | instance | Name of the instance resource to return. | Required |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | zone | The name of the zone for this request. | Required |
 | labels | An object containing a list of "key": value pairs, without spaces. Example: key=abc,value=123;key=ABC,value=321. | Required |
 | label_fingerprint | Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels. | Required |
@@ -553,7 +556,7 @@ Returns the specified Instance resource. To get a list of available instances, m
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | zone | The name of the zone for this request. | Required |
 | instance | Name of the instance resource to return. | Required |
 
@@ -625,6 +628,8 @@ Returns the specified Instance resource. To get a list of available instances, m
 
 ### gcp-storage-bucket-list
 
+### gcp-storage-bucket-list
+
 ***
 Retrieves the list of buckets in the project associated with the client.
 
@@ -636,7 +641,7 @@ Retrieves the list of buckets in the project associated with the client.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | limit | Maximum number of buckets to return. | Optional |
 | prefix | Filter results to buckets whose names begin with this prefix. | Optional |
 | page_token | Token for pagination. | Optional |
@@ -660,9 +665,8 @@ Retrieves the list of buckets in the project associated with the client.
 | GCP.Storage.Bucket.timeUpdated | Date | The time the bucket was last updated. |
 | GCP.Storage.Bucket.selfLink | String | The link to the bucket resource on the GCP API. |
 
-#### Example
-
-``` !gcp-storage-bucket-list project_id="my-project" limit="10" prefix="logs-" ```
+***
+Retrieves information about a specific bucket. Required Permissions: storage.buckets.get.
 
 ### gcp-storage-bucket-get
 
@@ -677,7 +681,7 @@ Retrieves information about a specific bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | bucket_name | Name of the bucket to retrieve. | Required |
 
 #### Context Output
@@ -712,7 +716,7 @@ Retrieves the list of objects in a bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | bucket_name | Name of the bucket to list objects from. | Required |
 | prefix | Filter results to objects whose names begin with this prefix. | Optional |
 | delimiter | Delimiter to use for grouping objects. For example delimiter="/" Returns results in a directory-like mode, with / being a common value for the delimiter. | Optional |
@@ -742,9 +746,9 @@ Retrieves the list of objects in a bucket.
 | GCP.Storage.BucketObject.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
 | GCP.Storage.BucketObject.updated | Date | The time when the object was last modified. |
 
-#### Example
+#### Base Command
 
-``` !gcp-storage-bucket-objects-list project_id="my-project" bucket_name="my-bucket" prefix="reports/" delimiter="/" limit="50" ```
+`gcp-storage-bucket-policy-list`
 
 ### gcp-storage-bucket-policy-list
 
@@ -759,7 +763,7 @@ Retrieves the IAM policy for a bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | bucket_name | Name of the bucket to retrieve IAM policy from. | Required |
 | requested_policy_version | The IAM policy version to be returned. If the optionsRequestedPolicyVersion is for an older version that doesn't support part of the requested IAM policy, the request fails. Required to be 3 or greater for buckets with IAM Conditions. | Optional |
 
@@ -772,9 +776,10 @@ Retrieves the IAM policy for a bucket.
 | GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
 | GCP.Storage.BucketPolicy.resourceId | String | Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME. |
 
-#### Example
+#### Usage
 
-``` !gcp-storage-bucket-policy-list project_id="my-project" bucket_name="my-bucket" requested_policy_version="3" ```
+- **add=false**: Replaces the entire bucket IAM policy with the JSON provided in `policy`.
+- **add=true**: Reads the current bucket policy (getIamPolicy), merges the provided `bindings` per role (deduplicates members), and updates the bucket policy (setIamPolicy) while preserving other top-level fields.
 
 ### gcp-storage-bucket-policy-set
 
@@ -785,40 +790,14 @@ Sets the IAM policy for a bucket.
 
 `gcp-storage-bucket-policy-set`
 
-#### Usage
-
-- **add=false**: Replaces the entire bucket IAM policy with the JSON provided in `policy`.
-- **add=true**: Reads the current bucket policy (getIamPolicy), merges the provided `bindings` per role (deduplicates members), and updates the bucket policy (setIamPolicy) while preserving other top-level fields.
-
-> Warning: Use this command with extreme caution. Running it without explicitly merging (i.e., with `add=false`) will overwrite the bucket's existing IAM policy with the provided `policy`. If you intend to keep current bindings and add new ones, use `add=true`.
-
-#### Policy structure
-
-- **bindings**: Array of binding objects. Each binding:
-  - **role**: String. For example, `roles/storage.objectViewer`, `roles/storage.admin`.
-  - **members**: Array of strings. Allowed formats:
-    - `user:<email>` (e.g., `user:alice@example.com`)
-    - `group:<email>`
-    - `serviceAccount:<email>`
-    - `domain:<domain>` (e.g., `domain:example.com`)
-    - `allUsers` | `allAuthenticatedUsers`
-- **version**: Number. Required to be `3` or greater if any binding includes `condition`.
-- **etag**: String. Recommended for replace flow (`add=false`) to avoid overwriting concurrent updates.
-- Optional fields like `kind`, `resourceId` may appear in responses but are not required in requests.
-
-Notes:
-
-- For `add=true` (merge), only a valid `bindings` array is required; other top-level fields are taken from the existing policy.
-- For `add=false` (replace), the provided object becomes the entire policy on the bucket.
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | bucket_name | Name of the bucket to set IAM policy on. | Required |
 | policy | JSON string representing the IAM policy to set. | Required |
-| add | When true, merges the provided policy bindings into the current bucket policy (per role, deduplicating members) by first calling getIamPolicy and then setIamPolicy with the merged result. When false, replaces the entire policy with the provided JSON via setIamPolicy.<br/>. Possible values are: true, false. Default is false.  | Optional |
+| add | When true, merges the provided policy bindings into the current bucket policy (per role, deduplicating members) by first calling getIamPolicy and then setIamPolicy with the merged result. When false, replaces the entire policy with the provided JSON via setIamPolicy.<br/>. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -827,29 +806,6 @@ Notes:
 | GCP.Storage.BucketPolicy.version | Number | IAM policy version after update. |
 | GCP.Storage.BucketPolicy.etag | String | ETag of the updated IAM policy. |
 | GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
-
-#### Examples
-
-- Replace entire policy (`add=false`):
-
-``` !gcp-storage-bucket-policy-set project_id="my-project" bucket_name="my-bucket-name" add="false" policy=`{"kind": "storage#policy", "resourceId": "projects/_/buckets/my-bucket-name", "version": 1, "etag": "CAY=", "bindings":[{"role":"roles/storage.objectViewer","members":["allUsers"]}]}` ```
-
-- Merge bindings into existing policy (`add=true`):
-
-``` !gcp-storage-bucket-policy-set project_id="my-project" bucket_name="my-bucket-name" add="true" policy=`{"bindings":[{"role":"roles/storage.objectViewer","members":["user:alice@example.com"]}]}` ```
-
-### gcp-storage-bucket-object-policy-list
-
-***
-Retrieves the IAM policy for a specific object in a bucket.
-
-#### Base Command
-
-`gcp-storage-bucket-object-policy-list`
-
-> Note: If Uniform Bucket-Level Access (UBLA) is enabled on the bucket, object-level ACLs are not available. In that case, this command returns the bucket-level IAM policy under `GCP.Storage.BucketObjectPolicy`.
-
-#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -873,7 +829,7 @@ Retrieves the IAM policy for a specific object in a bucket.
 ### gcp-storage-bucket-object-policy-set
 
 ***
-Sets the IAM policy for a specific object in a bucket.
+Sets the IAM policy for a specific object in a bucket. Required Permissions: storage.objects.setIamPolicy.
 
 #### Base Command
 
@@ -887,6 +843,55 @@ Sets the IAM policy for a specific object in a bucket.
 | --- | --- | --- |
 | project_id | GCP project ID. | Required |
 | bucket_name | Name of the bucket containing the object. | Required |
+
+### gcp-storage-bucket-object-policy-list
+
+***
+Retrieves the IAM policy for a specific object in a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-object-policy-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Optional |
+| bucket_name | Name of the bucket containing the object. | Required |
+| object_name | Name of the object to retrieve IAM policy from. | Required |
+| generation | Generation of the object. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObjectPolicy.bucketName | String | Name of the bucket containing the object. |
+| GCP.Storage.BucketObjectPolicy.objectName | String | Name of the object. |
+| GCP.Storage.BucketObjectPolicy.bindings | List | List of role bindings for the object. |
+
+| denied | DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443. | Optional |
+| source_ranges | Comma-separated CIDRs for INGRESS. | Optional |
+| destination_ranges | Comma-separated CIDRs for EGRESS. | Optional |
+| source_tags | Comma-separated instance tags to match as source. | Optional |
+| target_tags | Comma-separated tags to apply this rule to. | Optional |
+| source_service_accounts | Comma-separated service accounts for source. | Optional |
+
+### gcp-storage-bucket-object-policy-set
+
+***
+Sets the IAM policy for a specific object in a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-object-policy-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Optional |
+| bucket_name | Name of the bucket containing the object. | Required |
 | object_name | Name of the object to set IAM policy on. | Required |
 | policy | JSON string representing the IAM policy to set. | Required |
 | generation | Generation of the object. | Optional |
@@ -899,67 +904,11 @@ Sets the IAM policy for a specific object in a bucket.
 | GCP.Storage.BucketObjectPolicy.etag | String | ETag of the updated IAM policy. |
 | GCP.Storage.BucketObjectPolicy.bindings | Unknown | List of role bindings for the object. |
 
-### gcp-compute-firewall-insert
-
-***
-Creates a new firewall rule in the specified project.
-
-#### Base Command
-
-`gcp-compute-firewall-insert`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
-| resource_name | Name of the firewall rule to create. | Required |
-| description | An optional description for the firewall rule. | Optional |
-| network | URL of the network, e.g., global/networks/default. | Optional |
-| priority | Priority 0-65535. Default 1000. | Optional |
-| direction | Direction of traffic to which this firewall applies. Default INGRESS. Possible values are: INGRESS, EGRESS. Default is INGRESS. | Optional |
-| allowed | ALLOW rules in tuples, e.g., ipprotocol=tcp,ports=443;ipprotocol=tcp,ports=80. | Optional |
-| denied | DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443. | Optional |
-| source_ranges | Comma-separated CIDRs for INGRESS. | Optional |
-| destination_ranges | Comma-separated CIDRs for EGRESS. | Optional |
-| source_tags | Comma-separated instance tags to match as source. | Optional |
-| target_tags | Comma-separated tags to apply this rule to. | Optional |
-| source_service_accounts | Comma-separated service accounts for source. | Optional |
-| target_service_accounts | Comma-separated service accounts to target. | Optional |
-| log_config_enable | Enable firewall logging. Possible values are: true, false. | Optional |
-| disabled | Whether this firewall rule is disabled. Possible values are: true, false. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.Compute.Operations.id | String | Unique identifier for the operation resource, defined by the server. |
-| GCP.Compute.Operations.name | String | Name of the operation resource. |
-| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
-| GCP.Compute.Operations.operationType | String | Type of operation, such as insert, update, or delete. |
-| GCP.Compute.Operations.status | String | Current status of the operation. |
-| GCP.Compute.Operations.progress | Number | Progress of the operation as a percentage between 0 and 100. |
-| GCP.Compute.Operations.targetId | String | Unique target ID of the resource affected by the operation. |
-| GCP.Compute.Operations.targetLink | String | URL of the target resource modified by the operation. |
-| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
-| GCP.Compute.Operations.insertTime | Date | The time when the operation resource was created. |
-| GCP.Compute.Operations.startTime | Date | The time when the operation started running. |
-| GCP.Compute.Operations.user | String | The user account that performed the operation. |
-
-### gcp-compute-firewall-list
-
-***
-Lists firewall rules in the specified project.
-
-#### Base Command
-
-`gcp-compute-firewall-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
 | page_token | Token for pagination. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
@@ -996,7 +945,7 @@ Retrieves a specific firewall rule by name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | resource_name | Firewall rule name. | Required |
 
 #### Context Output
@@ -1024,7 +973,7 @@ Lists snapshots in the specified project.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
 | page_token | Token for pagination. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
@@ -1070,7 +1019,7 @@ Retrieves details for a specific snapshot.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | resource_name | Snapshot name. | Required |
 
 #### Context Output
@@ -1113,7 +1062,7 @@ Aggregated list of instances across all zones; can be filtered by internal or ex
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | ip_address | The IP address to search for. | Required |
 | match_external | If true, match against external NAT IPs; otherwise internal NIC IPs. Possible values are: true, false. | Optional |
 | limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
@@ -1142,7 +1091,7 @@ Adds a network tag to a VM instance (merges with existing tags).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | zone | Zone of the VM (e.g., us-central1-a). | Required |
 | resource_name | Instance name. | Required |
 | tag | Tag to add. | Required |
@@ -1170,7 +1119,7 @@ Adds a network tag to a VM instance (merges with existing tags).
 ### gcp-compute-image-get
 
 ***
-Returns the specified image. Gets a list of available images by making a list() request.
+Returns the specified image. Gets a list of available images by making a list() request. Required Permissions: compute.images.get.
 
 ##### Base Command
 
@@ -1223,74 +1172,131 @@ Returns the specified image. Gets a list of available images by making a list() 
 | GCP.Compute.Images.guestOsFeatures | string | A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. |
 | GCP.Compute.Images.guestOsFeatures.type | string | The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. |
 | GCP.Compute.Images.licenseCodes | string | Integer license codes indicating which licenses are attached to this image. |
+
+### gcp-compute-image-get
+
+***
+Returns the specified image.
+
+#### Base Command
+
+`gcp-compute-image-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID for this request. | Optional |
+| image | Name of the image resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Images.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Images.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
+| GCP.Compute.Images.name | string | Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression \[a-z\]\(\[-a-z0-9\]\*\[a-z0-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
+| GCP.Compute.Images.description | string | An optional description of this resource. |
+| GCP.Compute.Images.sourceType | string | The type of the image used to create this disk. The default and only value is RAW. |
+| GCP.Compute.Images.rawDisk | string | The parameters of the raw disk image. |
+| GCP.Compute.Images.rawDisk.source | string | The full Google Cloud Storage URL where the disk image is stored. You must provide either this property or the sourceDisk property but not both. |
+| GCP.Compute.Images.rawDisk.sha1Checksum | string | An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created. |
+| GCP.Compute.Images.rawDisk.containerType | string | The format used to encode and transmit the block device, which should be TAR. This is just a container and transmission format and not a runtime format. Provided by the client when the disk image is created. |
+| GCP.Compute.Images.deprecated | string | The deprecation status associated with this image. |
+| GCP.Compute.Images.deprecated.state | string | The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
+| GCP.Compute.Images.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource. |
+| GCP.Compute.Images.deprecated.deprecated | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED. This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Images.deprecated.obsolete | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Images.deprecated.deleted | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Images.status | string | The status of the image. An image can be used to create other resources, such as instances, only after the image has been successfully created and the status is set to READY. Possible values are FAILED, PENDING, or READY. |
+| GCP.Compute.Images.archiveSizeBytes | string | Size of the image tar.gz archive stored in Google Cloud Storage \(in bytes\). |
+| GCP.Compute.Images.diskSizeGb | string | Size of the image when restored onto a persistent disk \(in GB\). |
+| GCP.Compute.Images.sourceDisk | string | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values: https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk , projects/project/zones/zone/disks/disk , zones/zone/disks/disk. |
+| GCP.Compute.Images.sourceDiskId | string | The ID value of the disk used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given disk name. |
+| GCP.Compute.Images.licenses | string | Any applicable license URI. |
+| GCP.Compute.Images.family | string | The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated. The name of the image family must comply with RFC1035. |
+| GCP.Compute.Images.imageEncryptionKey | string | Encrypts the image using a customer-supplied encryption key. After you encrypt an image with a customer-supplied key, you must provide the same key if you use the image later \(e.g. to create a disk from the image\). Customer-supplied encryption keys do not protect access to metadata of the disk. If you do not provide an encryption key when creating the image, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the image later. |
+| GCP.Compute.Images.imageEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.imageEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.imageEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.sourceDiskEncryptionKey | string | The customer-supplied encryption key of the source disk. Required if the source disk is protected by a customer-supplied encryption key. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.Images.labels | string | Labels to apply to this image. These can be later modified by the setLabels method. |
+| GCP.Compute.Images.labelFingerprint | string | A fingerprint for the labels being applied to this image, which is essentially a hash of the labels used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels, otherwise the request will fail with error 412 conditionNotMet. |
+| GCP.Compute.Images.guestOsFeatures | string | A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. |
+| GCP.Compute.Images.guestOsFeatures.type | string | The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. |
+| GCP.Compute.Images.licenseCodes | string | Integer license codes indicating which licenses are attached to this image. |
 | GCP.Compute.Images.sourceImage | string | URL of the source image used to create this image. This can be a full or valid partial URL. |
 | GCP.Compute.Images.sourceImageId | string | The ID value of the image used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given image name. |
-| GCP.Compute.Images.sourceImageEncryptionKey | string | The customer\-supplied encryption key of the source image. Required if the source image is protected by a customer\-supplied encryption key. |
-| GCP.Compute.Images.sourceImageEncryptionKey.rawKey | string | Specifies a 256\-bit customer\-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.sourceImageEncryptionKey | string | The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key. |
+| GCP.Compute.Images.sourceImageEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
 | GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceImageEncryptionKey.sha256 | string |  The RFC 4648 base64 encoded SHA\-256 hash of the customer\-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.sourceImageEncryptionKey.sha256 | string |  The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
 | GCP.Compute.Images.sourceSnapshot | string | URL of the source snapshot used to create this image. This can be a full or valid partial URL. |
 | GCP.Compute.Images.sourceSnapshotId | string |  The ID value of the snapshot used to create this image. This value may be used to determine whether the snapshot was taken from the current or a previous instance of a given snapshot name. |
-| GCP.Compute.Images.sourceSnapshotEncryptionKey | string | The customer\-supplied encryption key of the source snapshot. Required if the source snapshot is protected by a customer\-supplied encryption key. |
-| GCP.Compute.Images.sourceSnapshotEncryptionKey.rawKey | string | Specifies a 256\-bit customer\-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey | string | The customer-supplied encryption key of the source snapshot. Required if the source snapshot is protected by a customer-supplied encryption key. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
 | GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA\-256 hash of the customer\-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
 | GCP.Compute.Images.kind | string | Type of the resource. Always compute\#image for images. |
 
 ### gcp-compute-instance-group-get
 
 ***
-Returns the specified instance group. Gets a list of available instance groups by making a list() request.
+Returns the specified instance group.
 
-##### Base Command
+#### Base Command
 
 `gcp-compute-instance-group-get`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | instance_group | The name of the instance group. | Required |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
 | zone | The name of the zone where the instance group is located. | Required |
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Compute.InstanceGroups.id | string | The unique identifier for the resource. This identifier is defined by the server. |
 | GCP.Compute.InstanceGroups.creationTimestamp | string | The creation timestamp for this instance group in RFC3339 text format. |
-| GCP.Compute.InstanceGroups.name | string | The name of the instance group. The name must be 1\-63 characters long, and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.name | string | The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035. |
 | GCP.Compute.InstanceGroups.description | string | An optional description of this resource. |
 | GCP.Compute.InstanceGroups.namedPorts | string | Assigns a name to a port number. |
-| GCP.Compute.InstanceGroups.namedPorts.name | string | The name for this named port. The name must be 1\-63 characters long, and comply with RFC1035. |
-| GCP.Compute.InstanceGroups.namedPorts.port | string | The port number, which can be a value between 1 and 42. |
+| GCP.Compute.InstanceGroups.namedPorts.name | string | The name for this named port. The name must be 1-63 characters long, and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.namedPorts.port | string | The port number, which can be a value between 1 and 65535. |
 | GCP.Compute.InstanceGroups.network | string | The URL of the network to which all instances in the instance group belong. |
 | GCP.Compute.InstanceGroups.fingerprint | string | The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently. |
 | GCP.Compute.InstanceGroups.zone | string | The URL of the zone where the instance group is located \(for zonal resources\). |
 | GCP.Compute.InstanceGroups.selfLink | string | The URL for this instance group. The server generates this URL. |
 | GCP.Compute.InstanceGroups.size | string | The total number of instances in the instance group. |
 | GCP.Compute.InstanceGroups.region | string | The URL of the region where the instance group is located \(for regional resources\). |
-| GCP.Compute.InstanceGroups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong |
-| GCP.Compute.InstanceGroups.kind | string |  The resource type, which is always compute\#instanceGroup for instance groups. |
+| GCP.Compute.InstanceGroups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong. |
+| GCP.Compute.InstanceGroups.kind | string |  The resource type, which is always compute\#instance_group for instance groups. |
 
 ### gcp-compute-region-get
 
 ***
-Returns the specified Region resource. Gets a list of available regions by making a list() request.
+Returns the specified Region resource.
 
-##### Base Command
+#### Base Command
 
 `gcp-compute-region-get`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
 | region | Name of the region resource to return. | Required |
+| project_id | GCP project ID. | Optional |
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -1304,33 +1310,33 @@ Returns the specified Region resource. Gets a list of available regions by makin
 | GCP.Compute.Regions.quotas.metric | string | Name of the quota metric. |
 | GCP.Compute.Regions.quotas.limit | string | Quota limit for this metric. |
 | GCP.Compute.Regions.quotas.usage | string |  Current usage of this metric. |
-| GCP.Compute.Regions.quotas.owner | string | Owning resource. This is the resource on which this quota is applied. |
+| GCP.Compute.Regions.quotas.owner | string | Owning resource. The resource to which this quota applies. |
 | GCP.Compute.Regions.deprecated | string | The deprecation status associated with this region. |
 | GCP.Compute.Regions.deprecated.state | string | The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
 | GCP.Compute.Regions.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource. |
 | GCP.Compute.Regions.deprecated.deprecated | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED. This is only informational and the status will not change unless the client explicitly changes it. |
 | GCP.Compute.Regions.deprecated.obsolete | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. This is only informational and the status will not change unless the client explicitly changes it. |
 | GCP.Compute.Regions.deprecated.deleted | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. This is only informational and the status will not change unless the client explicitly changes it. |
-| GCP.Compute.Regions.selfLink | string | Server\-defined URL for the resource. |
+| GCP.Compute.Regions.selfLink | string | Server-defined URL for the resource. |
 | GCP.Compute.Regions.kind | string | Type of the resource. Always compute\#region for regions. |
 
 ### gcp-compute-zone-get
 
 ***
-Returns the specified Zone resource. Gets a list of available zones by making a list() request.
+Returns the specified Zone resource.
 
-##### Base Command
+#### Base Command
 
 `gcp-compute-zone-get`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
 | zone | Name of the zone resource to return. | Required |
+| project_id | GCP project ID. | Optional |
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -1346,7 +1352,7 @@ Returns the specified Zone resource. Gets a list of available zones by making a 
 | GCP.Compute.Zones.deprecated.obsolete | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. This is only informational and the status will not change unless the client explicitly changes it. |
 | GCP.Compute.Zones.deprecated.deleted | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. This is only informational and the status will not change unless the client explicitly changes it. |
 | GCP.Compute.Zones.region | string | Full URL reference to the region which hosts the zone. |
-| GCP.Compute.Zones.selfLink | string | Server\-defined URL for the resource. |
+| GCP.Compute.Zones.selfLink | string | Server-defined URL for the resource. |
 | GCP.Compute.Zones.availableCpuPlatforms | string | Available cpu/platform selections for the zone. Do not use field = 7 or field = 11. Next available field = 14. |
 | GCP.Compute.Zones.kind | string | Type of the resource. Always compute\#zone for zones. |
 
@@ -1355,41 +1361,41 @@ Returns the specified Zone resource. Gets a list of available zones by making a 
 ***
 Retrieves the list of networks available to the specified project.
 
-##### Base Command
+#### Base Command
 
 `gcp-compute-networks-list`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
-| limit | The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 50, inclusive. (Default: 50) | Optional |
+| project_id | GCP project ID. | Optional |
+| limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 50, inclusive. Default is 50. | Optional |
 | filters | A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;.  For example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance. | Optional |
-| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using orderBy=&quot;creationTimestamp desc&quot;. This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. | Optional |
-| page_token | Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. | Optional |
+| page_token | Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Compute.Networks.id | string | The unique identifier for the resource. This identifier is defined by the server. |
 | GCP.Compute.Networks.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
-| GCP.Compute.Networks.name | string | Name of the resource. Provided by the client when the resource is created. The name must be 1\-63 characters long, and comply with RFC1035. Specifically, the name must be 1\-63 characters long and match the regular expression \[a\-z\]\(\[\-a\-z0\-9\]\*\[a\-z0\-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
+| GCP.Compute.Networks.name | string | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression \[a-z\]\(\[-a-z0-9\]\*\[a-z0-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
 | GCP.Compute.Networks.description | string | An optional description of this resource. |
 | GCP.Compute.Networks.gatewayIPv4 | string | The gateway address for default routing out of the network. This value is read only and is selected by GCP. |
-| GCP.Compute.Networks.selfLink | string | Server\-defined URL for the resource. |
-| GCP.Compute.Networks.autoCreateSubnetworks | boolean | When set to true, the VPC network is created in &quot;auto&quot; mode. When set to false, the VPC network is created in &quot;custom&quot; mode. |
-| GCP.Compute.Networks.subnetworks | string | Server\-defined fully\-qualified URLs for all subnetworks in this VPC network. |
+| GCP.Compute.Networks.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.Networks.autoCreateSubnetworks | boolean | When set to true, the VPC network is created in "auto" mode. When set to false, the VPC network is created in "custom" mode. |
+| GCP.Compute.Networks.subnetworks | string | Server-defined fully-qualified URLs for all subnetworks in this VPC network. |
 | GCP.Compute.Networks.peerings | string |  A list of network peerings for the resource. |
-| GCP.Compute.Networks.peerings.name | string | Name of this peering. Provided by the client when the peering is created. The name must comply with RFC1035. Specifically, the name must be 1\-63 characters long and match regular expression \[a\-z\]\(\[\-a\-z0\-9\]\*\[a\-z0\-9\]\)? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
+| GCP.Compute.Networks.peerings.name | string | Name of this peering. Provided by the client when the peering is created. The name must comply with RFC1035. Specifically, the name must be 1-63 characters long and match regular expression \[a-z\]\(\[-a-z0-9\]\*\[a-z0-9\]\)? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
 | GCP.Compute.Networks.peerings.network | string | The URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network. |
 | GCP.Compute.Networks.peerings.state | string | State for the peering. |
 | GCP.Compute.Networks.peerings.stateDetails | string | Details about the current state of the peering. |
-| GCP.Compute.Networks.peerings.autoCreateRoutes | boolean | This field will be deprecated soon. Prefer using exchangeSubnetRoutes instead. Indicates whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network. |
-| GCP.Compute.Networks.peerings.exchangeSubnetRoutes | boolean | Whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the peering state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network. |
-| GCP.Compute.Networks.routingConfig | string | The network\-level routing configuration for this network. Used by Cloud Router to determine what type of network\-wide routing behavior to enforce. |
-| GCP.Compute.Networks.routingConfig.routingMode | string | The network\-wide routing mode to use. If set to REGIONAL, this networks cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this networks cloud routers will advertise routes with all subnets of this network, across regions. |
+| GCP.Compute.Networks.peerings.autoCreateRoutes | boolean | This field will be deprecated soon. Prefer using exchangeSubnetRoutes instead. Indicates whether full mesh connectivity is created and managed automatically. When set to true, Google Compute Engine automatically creates and manages the routes between two networks while the state is ACTIVE. If set to false, the user must manually create routes to direct packets to the peer network. |
+| GCP.Compute.Networks.peerings.exchangeSubnetRoutes | boolean | Whether full mesh connectivity is created and managed automatically. When set to true, Google Compute Engine automatically creates and manages the routes between two networks while the peering state is ACTIVE. If set to false, the user must manually create routes to send packets to the peer network. |
+| GCP.Compute.Networks.routingConfig | string | The network-level routing configuration for this network. Used by Cloud Router to determine what type of network-wide routing behavior to enforce. |
+| GCP.Compute.Networks.routingConfig.routingMode | string | Specifies the network-wide routing mode. If set to REGIONAL, the network’s cloud routers advertise routes only for subnets in the same region as the router. If set to GLOBAL, cloud routers advertise routes for all subnets in the network across all regions. |
 | GCP.Compute.Networks.kind | string | Type of the resource. Always compute\#network for networks. |
 
 ### gcp-compute-network-insert
@@ -1397,32 +1403,32 @@ Retrieves the list of networks available to the specified project.
 ***
 Creates a network in the specified project using the data included in the request.
 
-##### Base Command
+#### Base Command
 
 `gcp-compute-network-insert`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required |
-| project_id | GCP project ID. | Required |
+| project_id | GCP project ID. | Optional |
+| name | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required |
 | description | An optional description of this resource. | Optional |
-| auto_create_sub_networks | When set to true, the VPC network is created in &quot;auto&quot; mode. When set to false, the VPC network is created in &quot;custom&quot; mode.  An auto mode VPC network starts with one subnet per region. Each subnet has a predetermined range as described in Auto mode VPC network IP ranges. | Optional |
-| routing_config_routing_mode | The network-wide routing mode to use. If set to REGIONAL, this network&#x27;s cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this network&#x27;s cloud routers will advertise routes with all subnets of this network, across regions. | Optional |
+| auto_create_sub_networks | When set to true, the VPC network is created in "auto" mode. When set to false, the VPC network is created in "custom" mode. An auto mode VPC network starts with one subnet per region. Each subnet has a predetermined range as described in Auto mode VPC network IP ranges. Possible values are: true, false. | Optional |
+| routing_config_routing_mode | The network-wide routing mode to use. If set to REGIONAL, this network's cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this network's cloud routers will advertise routes with all subnets of this network, across regions. Possible values are: REGIONAL, GLOBAL. | Optional |
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
 | GCP.Compute.Operations.name | string | Name of the resource. |
-| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per\-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
 | GCP.Compute.Operations.clientOperationId | string | The value of requestId if you provided it in the request. Not present otherwise. |
 | GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. |
 | GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from. |
-| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource |
-| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. |
 | GCP.Compute.Operations.statusMessage | string | An optional textual description of the current status of the operation. |
 | GCP.Compute.Operations.user | string | User who requested the operation for example EMAILADDRESS. |
 | GCP.Compute.Operations.progress | number | An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses. |
@@ -1431,13 +1437,18 @@ Creates a network in the specified project using the data included in the reques
 | GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format. |
 | GCP.Compute.Operations.error | string | If errors are generated during processing of the operation, this field will be populated. |
 | GCP.Compute.Operations.error.errors | string | The array of errors encountered while processing this operation. |
+| GCP.Compute.Operations.error.errors | string | The error type identifier for this error. |
+| GCP.Compute.Operations.error.errors | string | Indicates the field in the request that caused the error. This property is optional. |
+| GCP.Compute.Operations.error.errors | string | An optional, human-readable error message. |
 | GCP.Compute.Operations.warnings | string | If warning messages are generated during processing of the operation, this field will be populated. |
-| GCP.Compute.Operations.warnings.code | string | A warning code, if applicable. For example, Compute Engine returns NO\_RESULTS\_ON\_PAGE if there are no results in the response. |
-| GCP.Compute.Operations.warnings.message | string | A human\-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.code | string | A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | string | A human-readable description of the warning code. |
 | GCP.Compute.Operations.warnings.data | string | Metadata about this warning in key: value format. |
+| GCP.Compute.Operations.warnings.data | string | A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings \(for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding\). |
+| GCP.Compute.Operations.warnings.data | string | A warning data value corresponding to the key. |
 | GCP.Compute.Operations.httpErrorStatusCode | number | If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found. |
 | GCP.Compute.Operations.httpErrorMessage | string | If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND. |
-| GCP.Compute.Operations.selfLink | string | Server\-defined URL for the resource. |
+| GCP.Compute.Operations.selfLink | string | Server-defined URL for the resource. |
 | GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
 | GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
@@ -1447,39 +1458,41 @@ Creates a network in the specified project using the data included in the reques
 ***
 Returns the specified network.
 
-##### Base Command
+#### Base Command
 
 `gcp-compute-network-get`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | GCP project ID. | Required |
 | network | Name of the network to return. | Required |
+| project_id | GCP project ID. | Optional |
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Compute.Networks.id | string | The unique identifier for the resource. This identifier is defined by the server. |
 | GCP.Compute.Networks.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
-| GCP.Compute.Networks.name | string | Name of the resource. Provided by the client when the resource is created. The name must be 1\-63 characters long, and comply with RFC1035. Specifically, the name must be 1\-63 characters long and match the regular expression \[a\-z\]\(\[\-a\-z0\-9\]\*\[a\-z0\-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
+| GCP.Compute.Networks.name | string | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression \[a-z\]\(\[-a-z0-9\]\*\[a-z0-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
 | GCP.Compute.Networks.description | string | An optional description of this resource. |
 | GCP.Compute.Networks.gatewayIPv4 | string | The gateway address for default routing out of the network. This value is read only and is selected by GCP. |
-| GCP.Compute.Networks.selfLink | string | Server\-defined URL for the resource. |
-| GCP.Compute.Networks.autoCreateSubnetworks | boolean | When set to true, the VPC network is created in &quot;auto&quot; mode. When set to false, the VPC network is created in &quot;custom&quot; mode. |
-| GCP.Compute.Networks.subnetworks | string | Server\-defined fully\-qualified URLs for all subnetworks in this VPC network. |
+| GCP.Compute.Networks.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.Networks.autoCreateSubnetworks | boolean | When set to true, the VPC network is created in "auto" mode. When set to false, the VPC network is created in "custom" mode. |
+| GCP.Compute.Networks.subnetworks | string | Server-defined fully-qualified URLs for all subnetworks in this VPC network. |
 | GCP.Compute.Networks.peerings | string |  A list of network peerings for the resource. |
-| GCP.Compute.Networks.peerings.name | string | Name of this peering. Provided by the client when the peering is created. The name must comply with RFC1035. Specifically, the name must be 1\-63 characters long and match regular expression \[a\-z\]\(\[\-a\-z0\-9\]\*\[a\-z0\-9\]\)? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
+| GCP.Compute.Networks.peerings.name | string | Name of this peering. Provided by the client when the peering is created. The name must comply with RFC1035. Specifically, the name must be 1-63 characters long and match regular expression \[a-z\]\(\[-a-z0-9\]\*\[a-z0-9\]\)? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
 | GCP.Compute.Networks.peerings.network | string | The URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network. |
 | GCP.Compute.Networks.peerings.state | string | State for the peering. |
 | GCP.Compute.Networks.peerings.stateDetails | string | Details about the current state of the peering. |
 | GCP.Compute.Networks.peerings.autoCreateRoutes | boolean | This field will be deprecated soon. Prefer using exchangeSubnetRoutes instead. Indicates whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network. |
 | GCP.Compute.Networks.peerings.exchangeSubnetRoutes | boolean | Whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the peering state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network. |
-| GCP.Compute.Networks.routingConfig | string | The network\-level routing configuration for this network. Used by Cloud Router to determine what type of network\-wide routing behavior to enforce. |
-| GCP.Compute.Networks.routingConfig.routingMode | string | The network\-wide routing mode to use. If set to REGIONAL, this networks cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this networks cloud routers will advertise routes with all subnets of this network, across regions. |
+| GCP.Compute.Networks.routingConfig | string | The network-level routing configuration for this network. Used by Cloud Router to determine what type of network-wide routing behavior to enforce. |
+| GCP.Compute.Networks.routingConfig.routingMode | string | The network-wide routing mode to use. If set to REGIONAL, this networks cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this networks cloud routers will advertise routes with all subnets of this network, across regions. |
 | GCP.Compute.Networks.kind | string | Type of the resource. Always compute\#network for networks. |
+
+| GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
 
 ### gcp-bq-dataset-policy-remove
 
@@ -1494,7 +1507,7 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. | Required |
+| project_id | The GCP project ID. | Optional |
 | dataset_id | The dataset ID of the requested dataset. | Required |
 | email | The email address to remove from the dataset access list. | Required |
 

@@ -2321,6 +2321,7 @@ def validate_limit(limit):
             f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
         )
 
+
 def health_check(shared_creds: dict, project_id: str, connector_id: str) -> HealthCheckError | list[HealthCheckError] | None:
     """Tests connectivity to GCP.
     This function is specifically used for COOC health checks
@@ -2381,8 +2382,7 @@ def test_module(creds: Credentials, params: dict[str, Any]) -> str:
     project_id = params.get("project_id", "").strip()
     if not project_id:
         raise DemistoException(
-            "Missing required parameter 'project_id'. "
-            "Please set the 'GCP Project ID' field in the integration configuration."
+            "Missing required parameter 'project_id'. " "Please set the 'GCP Project ID' field in the integration configuration."
         )
 
     try:
@@ -2438,8 +2438,7 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         if not args.get("project_id") and service_account_info.get("project_id"):
             args["project_id"] = service_account_info["project_id"]
             demisto.debug(
-                f"[GCP get_credentials] project_id not in args; "
-                f"using project from service account: {args['project_id']}"
+                f"[GCP get_credentials] project_id not in args; " f"using project from service account: {args['project_id']}"
             )
 
         demisto.debug("[GCP get_credentials] Using service account credentials (marketplace path)")
