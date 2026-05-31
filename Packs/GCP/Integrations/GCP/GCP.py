@@ -2366,16 +2366,7 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
 
 
 def test_module(creds: Credentials, params: dict[str, Any]) -> str:
-    """
-    Tests connectivity to GCP by calling the Resource Manager API.
-
-    Used for the integration's test button on both Cortex Cloud (platform) and
-    Cortex XSOAR / Cortex XSIAM (marketplace) deployments.
-
-    On marketplace, ``project_id`` is read from the integration parameter
-    ``project_id`` (set by the user in the instance configuration).  On
-    Cortex Cloud the COOC health-check path is taken instead (see ``main``),
-    so this function is only reached for marketplace deployments.
+    """Tests connectivity to GCP using the Resource Manager API.
 
     Args:
         creds (Credentials): GCP credentials to test.
@@ -2395,8 +2386,6 @@ def test_module(creds: Credentials, params: dict[str, Any]) -> str:
         )
 
     try:
-        # Use Resource Manager to verify credentials are valid and the project exists.
-        # testIamPermissions is a lightweight call that validates both auth and project access.
         resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
         resource_manager.projects().testIamPermissions(  # pylint: disable=E1101
             resource=f"projects/{project_id}", body={"permissions": ["resourcemanager.projects.get"]}
@@ -2827,7 +2816,6 @@ def main():  # pragma: no cover
     All other commands retrieve credentials via ``get_credentials`` and dispatch
     to the appropriate handler.
     """
-    demisto.debug("[GCP] INIT")
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
