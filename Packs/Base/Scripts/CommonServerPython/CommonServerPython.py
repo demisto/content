@@ -607,6 +607,54 @@ class ErrorTypes(object):
     RETRY_ERROR = "RetryError"
 
 
+class ContentErrorCode(object):
+    """Error codes for content standardized errors.
+
+    Provides a unified taxonomy covering argument validation, resource lookup,
+    API/network issues (aligned with :class:`ErrorTypes`), data parsing,
+    permissions, and execution failures.  Used by :class:`ContentError` and
+    its subclasses so that LLM agents can programmatically distinguish error
+    categories and decide whether to retry, fix an argument, or escalate.
+    """
+
+    # ── Argument Errors ──────────────────────────────────────────────
+    MISSING_ARGUMENT = "MISSING_ARGUMENT"
+    INVALID_ARGUMENT = "INVALID_ARGUMENT"
+    EXTRA_ARGUMENT = "EXTRA_ARGUMENT"
+    CONFLICTING_ARGUMENTS = "CONFLICTING_ARGS"
+
+    # ── Resource Errors ──────────────────────────────────────────────
+    RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
+    CONFLICT = "CONFLICT"
+
+    # ── API / Network Errors (aligned with existing ErrorTypes) ──────
+    API_ERROR = "API_ERROR"
+    AUTH_ERROR = ErrorTypes.AUTH_ERROR            # 'AuthError'
+    QUOTA_ERROR = ErrorTypes.QUOTA_ERROR          # 'QuotaError'
+    SERVICE_ERROR = ErrorTypes.SERVICE_ERROR      # 'ServiceError'
+    CONNECTION_ERROR = ErrorTypes.CONNECTION_ERROR  # 'ConnectionError'
+    PROXY_ERROR = ErrorTypes.PROXY_ERROR          # 'ProxyError'
+    SSL_ERROR = ErrorTypes.SSL_ERROR              # 'SSLError'
+    TIMEOUT_ERROR = ErrorTypes.TIMEOUT_ERROR      # 'TimeoutError'
+
+    # ── Data Errors ──────────────────────────────────────────────────
+    PARSE_ERROR = "PARSE_ERROR"
+
+    # ── Permission Errors ────────────────────────────────────────────
+    PERMISSION_ERROR = "PERMISSION_ERROR"
+
+    # ── Execution Errors ─────────────────────────────────────────────
+    EXECUTION_ERROR = "EXECUTION_ERROR"
+    UNSUPPORTED_COMMAND = "UNSUPPORTED_COMMAND"
+    INTERNAL_ERROR = "INTERNAL_ERROR"
+
+
+# Key used inside the ``ExtendedPayload`` dict of an error entry to carry
+# the content error type.  Defined as a module-level constant so the name
+# can be changed in one place.
+CONTENT_ERROR_TYPE_KEY = 'content_error_type'
+
+
 class FeedIndicatorType(object):
     """Type of Indicator (Reputations), used in TIM integrations"""
     Account = "Account"
@@ -1392,6 +1440,71 @@ def is_error(execute_command_result):
 
 
 isError = is_error
+
+
+def get_content_error_type(execute_command_result):
+    """Extract the content error type from an ``executeCommand`` result.
+
+    Looks inside the ``ExtendedPayload`` dict of error entries for the
+    :data:`CONTENT_ERROR_TYPE_KEY` field.
+
+    :type execute_command_result: ``dict`` or ``list``
+    :param execute_command_result: Result of ``demisto.executeCommand()``.
+
+    :rtype: ``str`` or ``None``
+    :return: The content error type string, or *None* if not present.
+    """
+    if isinstance(execute_command_result, dict):
+        extended = execute_command_result.get('ExtendedPayload') or {}
+        return extended.get(CONTENT_ERROR_TYPE_KEY)
+
+    if isinstance(execute_command_result, list):
+        for entry in execute_command_result:
+            if isinstance(entry, dict) and entry.get('Type') == entryTypes['error']:
+                extended = entry.get('ExtendedPayload') or {}
+                error_type = extended.get(CONTENT_ERROR_TYPE_KEY)
+                if error_type:
+                    return error_type
+    return None
+
+
+def _classify_error_message(message):
+    """Classify an error message into a :class:`ContentErrorCode` value.
+
+    Uses text heuristics to detect common error patterns — including
+    server-generated errors (e.g. ``"Unsupported Command"``) that have
+    no ``ExtendedPayload``.
+
+    :type message: ``str``
+    :param message: The error message to classify.
+
+    :rtype: ``str`` or ``None``
+    :return: A :class:`ContentErrorCode` value, or *None* if unrecognised.
+    """
+    if not message:
+        return None
+    msg = message.lower()
+    if 'unsupported command' in msg:
+        return ContentErrorCode.UNSUPPORTED_COMMAND
+    if 'no integration instance' in msg or 'verify you have proper integration' in msg:
+        return ContentErrorCode.EXECUTION_ERROR
+    if any(kw in msg for kw in ('unauthorized', 'authentication failed', 'invalid credentials')):
+        return ContentErrorCode.AUTH_ERROR
+    if any(kw in msg for kw in ('rate limit', 'quota exceeded', 'too many requests')):
+        return ContentErrorCode.QUOTA_ERROR
+    if any(kw in msg for kw in ('timed out', 'timeout', 'request timeout')):
+        return ContentErrorCode.TIMEOUT_ERROR
+    if any(kw in msg for kw in ('connection error', 'connection refused', 'unreachable', 'connect timeout')):
+        return ContentErrorCode.CONNECTION_ERROR
+    if any(kw in msg for kw in ('permission denied', 'forbidden', 'insufficient permissions')):
+        return ContentErrorCode.PERMISSION_ERROR
+    if 'not found' in msg:
+        return ContentErrorCode.RESOURCE_NOT_FOUND
+    if any(kw in msg for kw in ('ssl', 'certificate verify')):
+        return ContentErrorCode.SSL_ERROR
+    if 'proxy' in msg:
+        return ContentErrorCode.PROXY_ERROR
+    return None
 
 
 def FormatADTimestamp(ts):
@@ -8070,7 +8183,9 @@ def return_error(message, error='', outputs=None):
         :param message: The message to return to the entry (required)
 
         :type error: ``str`` or Exception
-        :param error: The raw error message to log (optional)
+        :param error: The raw error message to log (optional).
+            When *error* is a :class:`ContentError`, its ``error_code`` is
+            automatically attached to the error entry via ``ExtendedPayload``.
 
         :type outputs: ``dict or None``
         :param outputs: the outputs that will be returned to playbook/investigation context (optional)
@@ -8107,12 +8222,30 @@ def return_error(message, error='', outputs=None):
             half_length = MAX_ERROR_MESSAGE_LENGTH // 2
             message = message[:half_length] + "...This error body was truncated..." + message[half_length * (-1):]
 
-        demisto.results({
+        error_entry = {
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
             'Contents': message,
             'EntryContext': outputs,
-        })
+        }
+
+        # Attach the content error type inside ExtendedPayload so LLM
+        # agents can classify the failure without parsing the human-readable
+        # Contents string.
+        # Priority: error param → current exception → text heuristic.
+        _error_type = None
+        if isinstance(error, ContentError):
+            _error_type = error.error_code
+        if not _error_type:
+            exc = sys.exc_info()[1]
+            if exc and isinstance(exc, ContentError):
+                _error_type = exc.error_code
+        if not _error_type:
+            _error_type = _classify_error_message(message)
+        if _error_type:
+            error_entry['ExtendedPayload'] = {CONTENT_ERROR_TYPE_KEY: _error_type}
+
+        demisto.results(error_entry)
         sys.exit(0)
 
 
@@ -8601,6 +8734,15 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
     if is_error(res):
         error_message = get_error(res)
         if fail_on_error:
+            content_error_type = get_content_error_type(res)
+            if not content_error_type:
+                content_error_type = _classify_error_message(error_message)
+            if content_error_type:
+                raise ContentExecutionError(
+                    'Failed to execute {}. Error details:\n{}'.format(command, error_message),
+                    error_code=content_error_type,
+                    details={"command": command, "raw_error": error_message},
+                )
             raise DemistoException('Failed to execute {}. Error details:\n{}'.format(command, error_message))
         else:
             return False, error_message
@@ -10931,6 +11073,323 @@ class UcpException(DemistoException):
         super(UcpException, self).__init__(
             message or self.DEFAULT_MESSAGE, exception=exception, res=res, error_type=error_type, *args
         )
+
+
+# ── Agentix Standardized Error Hierarchy ─────────────────────────────
+#
+# These exceptions provide structured error information (error_code,
+# details dict) that ``return_error`` serializes via ``ExtendedPayload``
+# so that LLM agents can programmatically distinguish error categories
+# and decide whether to retry, fix an argument, or escalate.
+#
+# Hierarchy:
+#   DemistoException
+#     └── ContentError  (base – carries error_code + details)
+#           ├── ContentMissingArgError
+#           ├── ContentInvalidArgError
+#           ├── ContentExtraArgError
+#           ├── ContentConflictingArgsError
+#           ├── ContentResourceNotFoundError
+#           ├── ContentConflictError
+#           ├── ContentApiError
+#           │     ├── ContentAuthError
+#           │     ├── ContentRateLimitError
+#           │     ├── ContentTimeoutError
+#           │     └── ContentConnectionError
+#           ├── ContentParseError
+#           ├── ContentPermissionError
+#           └── ContentExecutionError
+
+
+class ContentError(DemistoException):
+    """Base exception for all content standardized errors.
+
+    Carries structured error information including ``error_code`` and
+    ``details`` that are attached to the error entry via ``ExtendedPayload``
+    for LLM agent consumption.
+
+    :type message: ``str``
+    :param message: Human-readable error description.
+
+    :type error_code: ``str``
+    :param error_code: Machine-readable code from :class:`ContentErrorCode`.
+
+    :type details: ``dict``
+    :param details: Arbitrary key/value pairs providing context about the error.
+    """
+
+    error_code = ContentErrorCode.INTERNAL_ERROR  # type: str
+
+    def __init__(self, message, *, error_code=None, details=None, **kwargs):
+        self.error_code = error_code or self.__class__.error_code
+        self.details = details or {}
+        super().__init__(message, error_type=self.error_code, **kwargs)
+
+
+class ContentMissingArgError(ContentError):
+    """Raised when a required argument is not provided.
+
+    :type arg_name: ``str``
+    :param arg_name: Name of the missing argument.
+
+    :type message: ``str``
+    :param message: Optional custom message (auto-generated if omitted).
+    """
+
+    error_code = ContentErrorCode.MISSING_ARGUMENT
+
+    def __init__(self, arg_name, message=None):
+        self.arg_name = arg_name
+        super().__init__(
+            message or f"Required argument '{arg_name}' was not provided.",
+            details={"argument": arg_name},
+        )
+
+
+class ContentInvalidArgError(ContentError):
+    """Raised when an argument has an invalid value.
+
+    :type arg_name: ``str``
+    :param arg_name: Name of the invalid argument.
+
+    :type value: ``any``
+    :param value: The invalid value that was provided.
+
+    :type reason: ``str``
+    :param reason: Explanation of why the value is invalid.
+
+    :type allowed_values: ``list``
+    :param allowed_values: List of acceptable values, if applicable.
+    """
+
+    error_code = ContentErrorCode.INVALID_ARGUMENT
+
+    def __init__(self, arg_name, *, value=None, reason=None, allowed_values=None):
+        self.arg_name = arg_name
+        parts = [f"Invalid value for argument '{arg_name}'"]
+        if value is not None:
+            parts.append(f": got '{value}'")
+        if reason:
+            parts.append(f". {reason}")
+        if allowed_values:
+            parts.append(f". Allowed values: {', '.join(str(v) for v in allowed_values)}")
+
+        details = {"argument": arg_name}
+        if value is not None:
+            details["value"] = str(value)
+        if allowed_values:
+            details["allowed_values"] = [str(v) for v in allowed_values]
+
+        super().__init__("".join(parts), details=details)
+
+
+class ContentExtraArgError(ContentError):
+    """Raised when unexpected arguments are provided.
+
+    :type arg_names: ``list``
+    :param arg_names: Names of the unexpected arguments.
+    """
+
+    error_code = ContentErrorCode.EXTRA_ARGUMENT
+
+    def __init__(self, arg_names):
+        self.arg_names = list(arg_names)
+        super().__init__(
+            f"Unexpected argument(s): {', '.join(self.arg_names)}",
+            details={"arguments": self.arg_names},
+        )
+
+
+class ContentConflictingArgsError(ContentError):
+    """Raised when arguments contradict each other.
+
+    :type message: ``str``
+    :param message: Description of the conflict.
+
+    :type arguments: ``list``
+    :param arguments: Names of the conflicting arguments.
+    """
+
+    error_code = ContentErrorCode.CONFLICTING_ARGUMENTS
+
+    def __init__(self, message, *, arguments=None):
+        super().__init__(message, details={"arguments": arguments or []})
+
+
+class ContentResourceNotFoundError(ContentError):
+    """Raised when a requested resource is not found.
+
+    :type resource_type: ``str``
+    :param resource_type: Type of resource (e.g. "endpoint", "incident").
+
+    :type identifier: ``any``
+    :param identifier: The identifier that was looked up.
+
+    :type message: ``str``
+    :param message: Optional custom message (auto-generated if omitted).
+    """
+
+    error_code = ContentErrorCode.RESOURCE_NOT_FOUND
+
+    def __init__(self, resource_type, identifier=None, message=None):
+        self.resource_type = resource_type
+        self.identifier = identifier
+        msg = message or (
+            f"{resource_type} '{identifier}' not found" if identifier
+            else f"{resource_type} not found"
+        )
+        super().__init__(msg, details={
+            "resource_type": resource_type,
+            "identifier": str(identifier) if identifier else None,
+        })
+
+
+class ContentConflictError(ContentError):
+    """Raised when there is a resource state conflict (e.g. already exists)."""
+
+    error_code = ContentErrorCode.CONFLICT
+
+
+class ContentApiError(ContentError):
+    """Raised when an external API returns an error.
+
+    Uses :class:`ErrorTypes` values as sub-types for finer classification.
+    Automatically classifies by HTTP status code when ``api_error_type``
+    is not provided:
+
+    - 401/403 → ``AUTH_ERROR``
+    - 429 → ``QUOTA_ERROR``
+    - 5xx → ``SERVICE_ERROR``
+
+    :type message: ``str``
+    :param message: Human-readable error description.
+
+    :type status_code: ``int``
+    :param status_code: HTTP status code from the API response.
+
+    :type api_error_type: ``str``
+    :param api_error_type: An :class:`ErrorTypes` value for explicit classification.
+
+    :type response_body: ``str``
+    :param response_body: Truncated response body (max 500 chars).
+    """
+
+    error_code = ContentErrorCode.API_ERROR
+
+    _ERROR_TYPE_TO_CODE = {
+        ErrorTypes.AUTH_ERROR: ContentErrorCode.AUTH_ERROR,
+        ErrorTypes.QUOTA_ERROR: ContentErrorCode.QUOTA_ERROR,
+        ErrorTypes.SERVICE_ERROR: ContentErrorCode.SERVICE_ERROR,
+        ErrorTypes.CONNECTION_ERROR: ContentErrorCode.CONNECTION_ERROR,
+        ErrorTypes.PROXY_ERROR: ContentErrorCode.PROXY_ERROR,
+        ErrorTypes.SSL_ERROR: ContentErrorCode.SSL_ERROR,
+        ErrorTypes.TIMEOUT_ERROR: ContentErrorCode.TIMEOUT_ERROR,
+    }
+
+    def __init__(self, message, *, status_code=None, api_error_type=None, response_body=None):
+        details = {}  # type: dict
+        if status_code:
+            details["status_code"] = status_code
+        if api_error_type:
+            details["api_error_type"] = api_error_type
+        if response_body:
+            details["response_body"] = str(response_body)[:500]
+
+        # Auto-classify based on status code if api_error_type not provided
+        if not api_error_type and status_code:
+            if status_code in (401, 403):
+                self.error_code = ContentErrorCode.AUTH_ERROR
+                details["api_error_type"] = ErrorTypes.AUTH_ERROR
+            elif status_code == 429:
+                self.error_code = ContentErrorCode.QUOTA_ERROR
+                details["api_error_type"] = ErrorTypes.QUOTA_ERROR
+            elif status_code >= 500:
+                self.error_code = ContentErrorCode.SERVICE_ERROR
+                details["api_error_type"] = ErrorTypes.SERVICE_ERROR
+        elif api_error_type:
+            self.error_code = self._ERROR_TYPE_TO_CODE.get(api_error_type, ContentErrorCode.API_ERROR)
+
+        super().__init__(message, details=details)
+
+
+class ContentAuthError(ContentApiError):
+    """Raised when authentication fails (401/403)."""
+
+    error_code = ContentErrorCode.AUTH_ERROR
+
+    def __init__(self, message=None, **kwargs):
+        super().__init__(
+            message or "Authentication failed. Check your credentials or API key.",
+            api_error_type=ErrorTypes.AUTH_ERROR,
+            **kwargs,
+        )
+
+
+class ContentRateLimitError(ContentApiError):
+    """Raised when API rate limit is exceeded (429).
+
+    :type retry_after: ``int``
+    :param retry_after: Seconds to wait before retrying, if known.
+    """
+
+    error_code = ContentErrorCode.QUOTA_ERROR
+
+    def __init__(self, message=None, *, retry_after=None, **kwargs):
+        details_extra = {}
+        if retry_after:
+            details_extra["retry_after_seconds"] = retry_after
+        super().__init__(
+            message or "API rate limit exceeded. Please retry later.",
+            api_error_type=ErrorTypes.QUOTA_ERROR,
+            **kwargs,
+        )
+        self.details.update(details_extra)
+
+
+class ContentTimeoutError(ContentApiError):
+    """Raised when an API request times out."""
+
+    error_code = ContentErrorCode.TIMEOUT_ERROR
+
+    def __init__(self, message=None, **kwargs):
+        super().__init__(
+            message or "The request timed out. Please try again.",
+            api_error_type=ErrorTypes.TIMEOUT_ERROR,
+            **kwargs,
+        )
+
+
+class ContentConnectionError(ContentApiError):
+    """Raised when unable to connect to the service."""
+
+    error_code = ContentErrorCode.CONNECTION_ERROR
+
+    def __init__(self, message=None, **kwargs):
+        super().__init__(
+            message or "Unable to connect to the service. Check network connectivity.",
+            api_error_type=ErrorTypes.CONNECTION_ERROR,
+            **kwargs,
+        )
+
+
+class ContentParseError(ContentError):
+    """Raised when response data cannot be parsed."""
+
+    error_code = ContentErrorCode.PARSE_ERROR
+
+
+class ContentPermissionError(ContentError):
+    """Raised when the user lacks required permissions."""
+
+    error_code = ContentErrorCode.PERMISSION_ERROR
+
+
+class ContentExecutionError(ContentError):
+    """Raised when a command or script execution fails."""
+
+    error_code = ContentErrorCode.EXECUTION_ERROR
+
+
 class GetRemoteDataArgs:
     """get-remote-data args parser
     :type args: ``dict``
