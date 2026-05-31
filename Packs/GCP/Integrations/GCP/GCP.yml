@@ -42,7 +42,8 @@ script:
     description: Updates the specified firewall rule with the data included in the request.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: resource_name
       required: true
@@ -154,7 +155,8 @@ script:
     description: Creates a new firewall rule in the specified project.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: resource_name
       required: true
@@ -241,7 +243,8 @@ script:
     description: Lists firewall rules in the specified project.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: limit
       defaultValue: '50'
@@ -298,7 +301,8 @@ script:
     description: Retrieves a specific firewall rule by name.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: resource_name
       required: true
@@ -329,7 +333,8 @@ script:
     description: Lists snapshots in the specified project.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: limit
       defaultValue: '50'
@@ -412,7 +417,8 @@ script:
     description: Retrieves details for a specific snapshot.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: resource_name
       required: true
@@ -488,7 +494,8 @@ script:
     description: Aggregated list of instances across all zones; can be filtered by internal or external IP.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: ip_address
       required: true
@@ -524,7 +531,8 @@ script:
     description: Adds a network tag to a VM instance (merges with existing tags).
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: zone
       required: true
@@ -681,7 +689,8 @@ script:
     description: Removes an entity from a bucket's Access Control List.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: resource_name
       required: true
@@ -782,7 +791,8 @@ script:
     description: Enables flow logs or Private Google Access on a subnet.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: region
       required: true
@@ -985,7 +995,8 @@ script:
     description: Configures security settings for GKE clusters, including access controls and visibility.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: region
       required: true
@@ -1306,7 +1317,8 @@ script:
     description: Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings such as versioning and Uniform Bucket-Level Access (UBLA).
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: resource_name
       required: true
@@ -1604,7 +1616,8 @@ script:
     description: Retrieves the list of buckets in the project associated with the client.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: limit
       required: false
@@ -1662,7 +1675,8 @@ script:
     description: Retrieves information about a specific bucket.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: bucket_name
       required: true
@@ -1714,7 +1728,8 @@ script:
     description: Retrieves the list of objects in a bucket.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: bucket_name
       required: true
@@ -1790,7 +1805,8 @@ script:
     description: Retrieves the IAM policy for a bucket.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: bucket_name
       required: true
@@ -1816,7 +1832,8 @@ script:
     description: Sets the IAM policy for a bucket.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: bucket_name
       required: true
@@ -1846,7 +1863,8 @@ script:
     description: Retrieves the IAM policy for a specific object in a bucket.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: bucket_name
       required: true
@@ -1871,7 +1889,8 @@ script:
     description: Sets the IAM policy for a specific object in a bucket.
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - name: bucket_name
       required: true
@@ -1899,8 +1918,8 @@ script:
     description: Removes a specified IAM role binding from a GCP project.
     arguments:
     - name: project_id
-      description: GCP project ID.
-      required: true
+      required: false
+      required:platform: true
     - name: member
       description: Member to remove (e.g., user:test@example.com).
       required: true
@@ -1913,7 +1932,8 @@ script:
     description: "Removes an email from the BigQuery dataset policy. Required Permissions: bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy."
     arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: The GCP project ID.
     - name: dataset_id
       required: true
@@ -2078,8 +2098,8 @@ script:
       The instance must be stopped before the service account can be changed.
     arguments:
     - name: project_id
-      description: GCP project ID.
-      required: true
+      required: false
+      required:platform: true
     - name: zone
       description: The name of the zone for this request.
       required: true
@@ -2168,8 +2188,8 @@ script:
       The instance must be stopped before the service account can be changed.
     arguments:
     - name: project_id
-      description: GCP project ID.
-      required: true
+      required: false
+      required:platform: true
       isArray: false
     - name: zone
       description: The name of the zone for this request.
@@ -2285,8 +2305,8 @@ script:
     description: Starts an instance that was stopped using the instances().stop method.
     arguments:
     - name: project_id
-      description: GCP project ID.
-      required: true
+      required: false
+      required:platform: true
     - name: zone
       description: The name of the zone for this request.
       required: true
@@ -2369,7 +2389,8 @@ script:
       required: true
     - description: GCP project ID.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     description: Returns the specified network.
     name: gcp-compute-network-get
     outputs:
@@ -2432,7 +2453,8 @@ script:
   - arguments:
     - description: Project ID for this request.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     - description: Name of the image resource to return.
       name: image
       required: true
@@ -2594,7 +2616,8 @@ script:
       required: true
     - description: GCP project ID.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     description: Returns the specified Region resource.
     name: gcp-compute-region-get
     outputs:
@@ -2663,7 +2686,8 @@ script:
       required: true
     - description: GCP project ID.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the zone where the instance group is located.
       name: zone
       required: true
@@ -2723,7 +2747,8 @@ script:
       required: true
     - description: GCP project ID.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     description: Returns the specified Zone resource.
     name: gcp-compute-zone-get
     outputs:
@@ -2777,7 +2802,8 @@ script:
   - arguments:
     - description: GCP project ID.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     - defaultValue: '50'
       description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 50, inclusive.'
       name: limit
@@ -2850,7 +2876,8 @@ script:
   - arguments:
     - description: GCP project ID.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     - description: Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
       name: name
       required: true
@@ -2970,8 +2997,8 @@ script:
     description: Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
     arguments:
     - name: project_id
-      description: GCP project ID.
-      required: true
+      required: false
+      required:platform: true
     - name: zone
       description: The name of the zone for this request.
       required: true
@@ -3047,7 +3074,8 @@ script:
       type: string
   - arguments:
     - name: project_id
-      required: true
+      required: false
+      required:platform: true
       description: GCP project ID.
     - description: The name of the zone for this request.
       name: zone
@@ -3208,7 +3236,8 @@ script:
   - arguments:
     - description: GCP project ID.
       name: project_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the zone for this request.
       name: zone
       required: true
@@ -3407,7 +3436,8 @@ script:
         required: true
       - description: GCP project ID.
         name: project_id
-        required: true
+        required: false
+        required:platform: true
       - description: The name of the zone for this request.
         name: zone
         required: true
