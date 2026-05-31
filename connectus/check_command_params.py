@@ -312,6 +312,52 @@ from capture_proxy import CaptureProxy  # noqa: E402
 
 PARAMS_VAR_ALIASES = {"params", "integration_params", "config", "PARAMS"}
 URL_PARAM_NAMES = {"url", "server", "base_url", "host", "endpoint"}
+
+
+# Change 1: verdict labels emitted on ParamAttribution to power the
+# consumer-side AI triage rule "review everything except provably 0%
+# and provably 100%". Three values:
+#
+# * ``proven_used`` — rollup_confidence == 1.0 AND at least one source
+#   is in {dynamic_capture, handler_body}. The "100% from the script"
+#   case.
+# * ``proven_unused`` — NO sources fired AND the analyzer is confident
+#   in its reachability walk (high-quality analysis_status, no
+#   walk_uncertain, no dynamic dispatch hit). The "provably 0%" case.
+# * ``needs_review`` — everything else: any rollup in (0.0, 1.0)
+#   exclusive, OR a silent zero where the walk WAS uncertain.
+VERDICT_PROVEN_USED = "proven_used"
+VERDICT_PROVEN_UNUSED = "proven_unused"
+VERDICT_NEEDS_REVIEW = "needs_review"
+
+
+# Change 1: analysis_status labels emitted on CommandDiagnostic. Each
+# command gets exactly one status describing what reachability path
+# the analyzer was able to use. Consumers gate the ``proven_unused``
+# verdict on this status being one of the "high-quality" values
+# (analyzed_handler_body / analyzed_via_helper_chain /
+# analyzed_module_scope / analyzed_dict_dispatch).
+ANALYSIS_STATUS_HANDLER_BODY = "analyzed_handler_body"
+ANALYSIS_STATUS_HELPER_CHAIN = "analyzed_via_helper_chain"
+ANALYSIS_STATUS_MODULE_SCOPE = "analyzed_module_scope"
+ANALYSIS_STATUS_DICT_DISPATCH = "analyzed_dict_dispatch"
+ANALYSIS_STATUS_HANDLER_NOT_FOUND = "handler_not_found"
+ANALYSIS_STATUS_DISPATCH_UNRESOLVED = "dispatch_unresolved"
+ANALYSIS_STATUS_MODULE_SCOPE_BLIND = "module_scope_dispatch_blind"
+ANALYSIS_STATUS_DICT_DISPATCH_BLIND = "dict_dispatch_blind"
+ANALYSIS_STATUS_SCATTERED_TRUNCATED = "scattered_dispatch_window_truncated"
+
+# The set of statuses that are "high-quality enough" for a no-evidence
+# param to be labelled proven_unused. Anything outside this set
+# downgrades silent-zero to ``needs_review`` (the AI must triage).
+_HIGH_QUALITY_ANALYSIS_STATUSES = frozenset(
+    {
+        ANALYSIS_STATUS_HANDLER_BODY,
+        ANALYSIS_STATUS_HELPER_CHAIN,
+        ANALYSIS_STATUS_MODULE_SCOPE,
+        ANALYSIS_STATUS_DICT_DISPATCH,
+    }
+)
 SENTINEL_PREFIX = "SENTINEL_PARAM_"
 DEFAULT_DYNAMIC_TIMEOUT_S = 30
 COMMON_SERVER_SENTINEL = "class DemistoException"
@@ -2275,6 +2321,40 @@ def _collect_pre_dispatch_attribution(
     return out
 
 
+def _classify_verdict(
+    by_source: dict[str, ParamSourceEvidence],
+    rollup_confidence: float,
+    analysis_status: str,
+    walk_uncertain: bool,
+) -> str:
+    """Assign one of {proven_used, proven_unused, needs_review} per Change 1.
+
+    Rules (verbatim from the task spec):
+
+    * ``proven_used`` ↔ ``rollup_confidence == 1.0`` AND at least one
+      source ∈ {dynamic_capture, handler_body}. The "100% from the
+      script" case.
+    * ``proven_unused`` ↔ NO sources fired AND the analyzer's
+      reachability walk is confident:
+      ``analysis_status`` in ``_HIGH_QUALITY_ANALYSIS_STATUSES``
+      AND ``walk_uncertain`` is False.
+    * ``needs_review`` ↔ everything else (rollup ∈ (0.0, 1.0)
+      exclusive, OR silent zero where analyzer wasn't confident).
+    """
+    if rollup_confidence >= 1.0 and any(
+        src in {"dynamic_capture", "handler_body"} for src in by_source
+    ):
+        return VERDICT_PROVEN_USED
+    if not by_source:
+        if (
+            analysis_status in _HIGH_QUALITY_ANALYSIS_STATUSES
+            and not walk_uncertain
+        ):
+            return VERDICT_PROVEN_UNUSED
+        return VERDICT_NEEDS_REVIEW
+    return VERDICT_NEEDS_REVIEW
+
+
 def _build_attributions(
     handler_evidence: list[tuple[str, ParamSourceEvidence]],
     pre_dispatch_evidence: dict[str, str],
@@ -2284,6 +2364,9 @@ def _build_attributions(
     walk_uncertain: bool,
     captured: set[str],
     dynamic_confirmed_no_execution: bool = False,
+    yml_param_names: set[str] | None = None,
+    analysis_status: str = ANALYSIS_STATUS_DISPATCH_UNRESOLVED,
+    emit_proven_unused: bool = True,
 ) -> list[ParamAttribution]:
     """Compose per-(command, param) attributions from every evidence source.
 
@@ -2410,13 +2493,42 @@ def _build_attributions(
     for param in sorted(by_param):
         sources = by_param[param]
         rollup = max(ev.confidence for ev in sources.values())
+        verdict = _classify_verdict(
+            sources, rollup, analysis_status, walk_uncertain
+        )
         attributions.append(
             ParamAttribution(
                 param=param,
                 by_source=sources,
                 rollup_confidence=rollup,
+                verdict=verdict,
             )
         )
+
+    # Change 1: synthesize silent-zero rows for every YML-declared
+    # param that received NO positive evidence. The verdict on each
+    # row tells the consumer's AI whether to skip (``proven_unused``)
+    # or review (``needs_review``). When ``emit_proven_unused`` is
+    # False, suppress the proven_unused rows only — needs_review
+    # rows (where the analyzer wasn't confident) still get emitted
+    # so the AI knows it must triage them.
+    if yml_param_names:
+        attributed = {attr.param for attr in attributions}
+        silent_zero_params = sorted(yml_param_names - attributed)
+        for param in silent_zero_params:
+            verdict = _classify_verdict(
+                {}, 0.0, analysis_status, walk_uncertain
+            )
+            if verdict == VERDICT_PROVEN_UNUSED and not emit_proven_unused:
+                continue
+            attributions.append(
+                ParamAttribution(
+                    param=param,
+                    by_source={},
+                    rollup_confidence=0.0,
+                    verdict=verdict,
+                )
+            )
     return attributions
 
 
@@ -2682,6 +2794,8 @@ def analyze_static_attributions(
     language: str | None = None,
     integration_name: str = "",
     call_graph_depth: int = 3,
+    yml_param_names: set[str] | None = None,
+    emit_proven_unused: bool = True,
 ) -> tuple[set[str], set[str], list[ParamAttribution]]:
     """Run :func:`analyze_static` plus build the Fix B per-command attributions.
 
@@ -2704,6 +2818,106 @@ def analyze_static_attributions(
     :func:`analyze_static` proper, which the caller invokes
     separately. Calling this function is otherwise self-contained.
     """
+    scope_1, scope_2, attributions, _status = analyze_static_attributions_with_status(
+        py_source,
+        command,
+        captured=captured,
+        dynamic_confirmed_no_execution=dynamic_confirmed_no_execution,
+        language=language,
+        integration_name=integration_name,
+        call_graph_depth=call_graph_depth,
+        yml_param_names=yml_param_names,
+        emit_proven_unused=emit_proven_unused,
+    )
+    return scope_1, scope_2, attributions
+
+
+def find_module_scope_dispatch(tree: ast.Module) -> list[ast.stmt] | None:
+    """Change 2 stub — returns None for now.
+
+    The real implementation lands in the next commit; until then no
+    integration-without-main() can resolve dispatch via the
+    module-scope path. This stub keeps the call site
+    forward-compatible with the verdict layer (Change 1).
+    """
+    return None
+
+
+def _synth_main_from_module(body: list[ast.stmt]) -> ast.FunctionDef:
+    """Change 2 stub — construct a fake FunctionDef wrapping ``body``.
+
+    The real implementation will be flushed out in Change 2's commit;
+    this minimal version is enough for any code path that exercises
+    the no-main fallback today (none, until Change 2 lands).
+    """
+    fn = ast.FunctionDef(
+        name="main",
+        args=ast.arguments(
+            posonlyargs=[],
+            args=[],
+            vararg=None,
+            kwonlyargs=[],
+            kw_defaults=[],
+            kwarg=None,
+            defaults=[],
+        ),
+        body=list(body) if body else [ast.Pass(lineno=1, col_offset=0)],
+        decorator_list=[],
+        returns=None,
+        type_comment=None,
+    )
+    fn.lineno = 1
+    fn.col_offset = 0
+    return fn
+
+
+def extract_dict_dispatch_map(
+    main_fn: ast.FunctionDef,
+) -> tuple[dict[str, str] | None, bool]:
+    """Change 3 stub — returns ``(None, False)`` for now.
+
+    The real implementation walks a ``commands = {...}`` literal in
+    main_fn and returns a ``{command-name: handler-function-name}``
+    map (or ``None`` if no such literal is present), plus a
+    ``dict_blind`` flag set when the dict contains non-literal keys
+    or values. The stub keeps the call site forward-compatible.
+    """
+    return None, False
+
+
+def _detect_scattered_truncated(
+    main_fn: ast.FunctionDef, command: str
+) -> bool:
+    """Change 4 stub — returns False for now.
+
+    The real implementation will detect when
+    :func:`find_command_dispatch_line` skipped past at least one
+    early-return guard when computing the pre-dispatch window for
+    this command.
+    """
+    return False
+
+
+def analyze_static_attributions_with_status(
+    py_source: str,
+    command: str,
+    captured: set[str] | None = None,
+    dynamic_confirmed_no_execution: bool = False,
+    language: str | None = None,
+    integration_name: str = "",
+    call_graph_depth: int = 3,
+    yml_param_names: set[str] | None = None,
+    emit_proven_unused: bool = True,
+) -> tuple[set[str], set[str], list[ParamAttribution], str]:
+    """Same as :func:`analyze_static_attributions` plus per-command analysis_status.
+
+    Change 1: returns a 4-tuple ``(scope_1, scope_2, attributions,
+    analysis_status)`` where ``analysis_status`` is one of the
+    ``ANALYSIS_STATUS_*`` constants. The 3-tuple
+    :func:`analyze_static_attributions` is a thin wrapper that drops
+    the status (kept for backward compatibility with the existing
+    test suite and the validator runner).
+    """
     scope_1, scope_2 = analyze_static(
         py_source,
         command,
@@ -2714,9 +2928,11 @@ def analyze_static_attributions(
     )
     captured = captured or set()
     if language and language.lower() not in {"python", "python2", "python3"}:
-        return scope_1, scope_2, []
+        # Non-Python: skip static analysis entirely; analysis_status is
+        # dispatch_unresolved (we never even parsed an AST).
+        return scope_1, scope_2, [], ANALYSIS_STATUS_DISPATCH_UNRESOLVED
     if not py_source:
-        return scope_1, scope_2, []
+        return scope_1, scope_2, [], ANALYSIS_STATUS_DISPATCH_UNRESOLVED
 
     try:
         tree = ast.parse(py_source)
@@ -2724,25 +2940,47 @@ def analyze_static_attributions(
         # analyze_static already raised at this point in real use;
         # keep the safety net so unit tests with broken source don't
         # crash before scope_1/scope_2 short-circuit returns.
-        return scope_1, scope_2, []
+        return scope_1, scope_2, [], ANALYSIS_STATUS_DISPATCH_UNRESOLVED
     if not isinstance(tree, ast.Module):
-        return scope_1, scope_2, []
+        return scope_1, scope_2, [], ANALYSIS_STATUS_DISPATCH_UNRESOLVED
     func_map = build_function_map(tree)
     main_fn = find_main(func_map)
+    # Change 2 hook: when find_main() returns None we'll fall back to
+    # module-scope dispatch detection (find_module_scope_dispatch) in
+    # the next commit. For now, the no-main path produces an empty
+    # attribution set with dispatch_unresolved status.
+    used_module_scope = False
+    used_dict_dispatch = False
+    used_scattered_truncated = False
     if main_fn is None:
-        # No main(): we can still fold dynamic-only captures into
-        # attributions, but everything else is empty.
-        attributions = _build_attributions(
-            handler_evidence=[],
-            pre_dispatch_evidence={},
-            module_const_to_params={},
-            hedged_constants=set(),
-            referenced_const_names=set(),
-            walk_uncertain=False,
-            captured=captured,
-            dynamic_confirmed_no_execution=dynamic_confirmed_no_execution,
-        )
-        return scope_1, scope_2, attributions
+        # Change 2: module-scope dispatch fallback.
+        module_dispatch_body = find_module_scope_dispatch(tree)
+        if module_dispatch_body is None:
+            # No main() and no module-scope dispatch construct: we
+            # cannot resolve any handler — mark blind for every
+            # command.
+            status = ANALYSIS_STATUS_MODULE_SCOPE_BLIND
+            attributions = _build_attributions(
+                handler_evidence=[],
+                pre_dispatch_evidence={},
+                module_const_to_params={},
+                hedged_constants=set(),
+                referenced_const_names=set(),
+                walk_uncertain=True,
+                captured=captured,
+                dynamic_confirmed_no_execution=dynamic_confirmed_no_execution,
+                yml_param_names=yml_param_names,
+                analysis_status=status,
+                emit_proven_unused=emit_proven_unused,
+            )
+            return scope_1, scope_2, attributions, status
+        # Synthesize a function-like wrapper so the rest of the
+        # pipeline can treat module-scope dispatch identically to
+        # main()-scope dispatch. We use a FunctionDef whose body is
+        # the dispatch region; lineno is set to 1 so the
+        # dispatch-line filter behaves the same way.
+        main_fn = _synth_main_from_module(module_dispatch_body)
+        used_module_scope = True
     aliases = find_pydantic_aliases(tree)
     params_var = find_params_var(main_fn) or "params"
     module_params_vars = find_module_level_params_vars(tree)
@@ -2753,6 +2991,13 @@ def analyze_static_attributions(
         tree, params_vars, aliases
     )
 
+    # Change 3: dict-dispatch table preference. If a top-level
+    # ``commands = {...}`` literal is present in main() and contains
+    # only string-keyed Name handlers, use it as the primary handler
+    # resolver. dict_dispatch_blind is emitted when a dict literal IS
+    # present but contains non-literal entries (comprehensions etc.).
+    dict_map, dict_blind = extract_dict_dispatch_map(main_fn)
+
     # B.4 — per-command attributed reachability walk over every
     # resolved handler. Visited set is shared across handlers for the
     # same command (multiple dispatch sites for the same command name
@@ -2760,35 +3005,78 @@ def analyze_static_attributions(
     handler_evidence: list[tuple[str, ParamSourceEvidence]] = []
     referenced_consts: set[str] = set()
     walk_uncertain = False
-    handler_calls = find_command_handler_calls(main_fn, command)
     visited_handlers: set[str] = set()
-    for call in handler_calls:
-        target = _resolve_call_target(call, func_map)
-        if target is None:
-            # Unresolved handler is itself uncertainty.
-            walk_uncertain = True
-            continue
-        if target.name in visited_handlers:
-            continue
-        sub_uncertain = _trace_with_attribution(
-            target,
-            func_map,
-            aliases,
-            max_depth=call_graph_depth,
-            current_depth=0,
-            visited=visited_handlers,
-            module_params_vars=module_params_vars,
-            out_evidence=handler_evidence,
-            out_referenced_consts=referenced_consts,
-        )
-        if sub_uncertain:
-            walk_uncertain = True
+    handler_resolved = False
+    helper_chain_seen = False
 
-    # If no dispatch site was identified at all, the analyzer can't
-    # prove anything about which module-level constants this command
-    # reaches — hedge.
-    if not handler_calls:
-        walk_uncertain = True
+    if dict_map is not None and command in dict_map:
+        # Change 3: resolve handler via the dispatch dict map.
+        handler_name = dict_map[command]
+        target = func_map.get(handler_name)
+        if isinstance(target, ast.FunctionDef):
+            used_dict_dispatch = True
+            handler_resolved = True
+            sub_uncertain = _trace_with_attribution(
+                target,
+                func_map,
+                aliases,
+                max_depth=call_graph_depth,
+                current_depth=0,
+                visited=visited_handlers,
+                module_params_vars=module_params_vars,
+                out_evidence=handler_evidence,
+                out_referenced_consts=referenced_consts,
+            )
+            if sub_uncertain:
+                walk_uncertain = True
+            # Detect helper-chain attribution for status downgrade.
+            if any(
+                ev.source == "helper"
+                for _p, ev in handler_evidence
+            ):
+                helper_chain_seen = True
+
+    # If dict-dispatch didn't fire (or the command wasn't in the dict),
+    # fall through to the legacy resolution path.
+    handler_calls = find_command_handler_calls(main_fn, command)
+    # Change 4 detection: if the dispatch_line returned by
+    # find_command_dispatch_line() is past at least one early-return
+    # guard, mark this command's status as
+    # scattered_dispatch_window_truncated (informational; the actual
+    # dispatch-line shift is done inside find_command_dispatch_line
+    # itself per Change 4).
+    used_scattered_truncated = _detect_scattered_truncated(main_fn, command)
+
+    if not used_dict_dispatch:
+        for call in handler_calls:
+            target = _resolve_call_target(call, func_map)
+            if target is None:
+                # Unresolved handler is itself uncertainty.
+                walk_uncertain = True
+                continue
+            if target.name in visited_handlers:
+                continue
+            handler_resolved = True
+            sub_uncertain = _trace_with_attribution(
+                target,
+                func_map,
+                aliases,
+                max_depth=call_graph_depth,
+                current_depth=0,
+                visited=visited_handlers,
+                module_params_vars=module_params_vars,
+                out_evidence=handler_evidence,
+                out_referenced_consts=referenced_consts,
+            )
+            if sub_uncertain:
+                walk_uncertain = True
+        # If no dispatch site was identified at all, the analyzer can't
+        # prove anything about which module-level constants this command
+        # reaches — hedge.
+        if not handler_calls:
+            walk_uncertain = True
+        if any(ev.source == "helper" for _p, ev in handler_evidence):
+            helper_chain_seen = True
 
     # B.5 — pre-dispatch main() walk (including constructors).
     pre_dispatch_evidence = _collect_pre_dispatch_attribution(
@@ -2798,6 +3086,46 @@ def analyze_static_attributions(
         module_params_vars,
         aliases,
     )
+
+    # Change 1: determine analysis_status from observed states. Order
+    # of precedence is high-quality → low-quality:
+    #   dict_dispatch_blind > module_scope_blind > handler_not_found
+    #   > dispatch_unresolved > scattered_dispatch_window_truncated
+    #   > analyzed_dict_dispatch > analyzed_module_scope
+    #   > analyzed_via_helper_chain > analyzed_handler_body
+    if dict_blind and not handler_resolved:
+        analysis_status = ANALYSIS_STATUS_DICT_DISPATCH_BLIND
+    elif used_dict_dispatch and handler_resolved:
+        analysis_status = ANALYSIS_STATUS_DICT_DISPATCH
+    elif used_module_scope and handler_resolved:
+        analysis_status = ANALYSIS_STATUS_MODULE_SCOPE
+    elif handler_calls and not handler_resolved:
+        # We found a dispatch site that matched the command but
+        # couldn't resolve the handler function (e.g. handler is
+        # imported / dynamic / undefined).
+        analysis_status = ANALYSIS_STATUS_HANDLER_NOT_FOUND
+    elif not handler_calls and not used_dict_dispatch:
+        # Dispatch never matched this command at all.
+        analysis_status = ANALYSIS_STATUS_DISPATCH_UNRESOLVED
+    elif used_scattered_truncated:
+        analysis_status = ANALYSIS_STATUS_SCATTERED_TRUNCATED
+    elif helper_chain_seen:
+        analysis_status = ANALYSIS_STATUS_HELPER_CHAIN
+    else:
+        analysis_status = ANALYSIS_STATUS_HANDLER_BODY
+
+    # Change 4 special-case: when the dispatch window was truncated
+    # by early-return guards AND the analyzer DID resolve a handler
+    # for this command via the legacy path (i.e. this command lives
+    # after the guard), surface the scattered_truncated tag so the AI
+    # knows to double-check it.
+    if (
+        used_scattered_truncated
+        and handler_resolved
+        and not used_dict_dispatch
+        and not used_module_scope
+    ):
+        analysis_status = ANALYSIS_STATUS_SCATTERED_TRUNCATED
 
     # B.6 — assemble.
     attributions = _build_attributions(
@@ -2809,8 +3137,11 @@ def analyze_static_attributions(
         walk_uncertain=walk_uncertain,
         captured=captured,
         dynamic_confirmed_no_execution=dynamic_confirmed_no_execution,
+        yml_param_names=yml_param_names,
+        analysis_status=analysis_status,
+        emit_proven_unused=emit_proven_unused,
     )
-    return scope_1, scope_2, attributions
+    return scope_1, scope_2, attributions, analysis_status
 
 
 # --------------------------------------------------------------------------
@@ -4248,11 +4579,19 @@ class ParamAttribution:
     confidences of every entry in ``by_source`` per Q2(a). Both fields
     are always populated; ``rollup_confidence`` is recomputed by the
     builder rather than left for downstream consumers to derive.
+
+    Change 1: ``verdict`` is the consumer-side triage label
+    (``proven_used`` / ``proven_unused`` / ``needs_review``). Always
+    set by the builder — the consumer's AI uses ``needs_review`` as
+    its review queue. Defaults to ``needs_review`` for backward
+    compatibility with code paths that build ParamAttribution
+    instances directly without going through the verdict layer.
     """
 
     param: str
     by_source: dict[str, ParamSourceEvidence]
     rollup_confidence: float
+    verdict: str = VERDICT_NEEDS_REVIEW
 
 
 @dataclass
@@ -4300,12 +4639,24 @@ class CommandDiagnostic:
     # flag at attribution-build time. Today the flag is always False
     # for every command; Fix C populates it.
     dynamic_confirmed_no_execution: bool = False
+    # Change 1: which reachability path produced these attributions
+    # for this command. One of the ANALYSIS_STATUS_* constants above.
+    # Required — every command must get a label. Defaults to
+    # ``dispatch_unresolved`` so static-only test paths that build a
+    # CommandDiagnostic without going through the analyzer pipeline
+    # don't crash (the analyzer pipeline always assigns one
+    # explicitly).
+    analysis_status: str = ANALYSIS_STATUS_DISPATCH_UNRESOLVED
 
     def to_dict(self) -> dict[str, Any]:
         """Render the diagnostic as a plain dict for JSON serialization."""
         out: dict[str, Any] = {
             "status": self.status,
             "captured_requests": self.captured_requests,
+            # Change 1: analysis_status is always present in the
+            # serialized payload — the consumer's AI uses it together
+            # with each attribution's verdict to triage.
+            "analysis_status": self.analysis_status,
         }
         if self.failure_excerpt and self.status not in {"ok", "ok_no_capture"}:
             out["failure_excerpt"] = self.failure_excerpt[:500]
@@ -4340,6 +4691,9 @@ class CommandDiagnostic:
                 {
                     "param": attr.param,
                     "rollup_confidence": attr.rollup_confidence,
+                    # Change 1: verdict surfaced for the consumer's
+                    # AI triage filter.
+                    "verdict": attr.verdict,
                     "by_source": {
                         src: {
                             k: v
@@ -4636,6 +4990,7 @@ def analyze_integration(
     call_graph_depth: int = 3,
     min_confidence: float = 0.0,
     headline_min_confidence: float = 0.5,
+    emit_proven_unused: bool = True,
 ) -> dict[str, Any]:
     """Run the full analysis pipeline for one integration.
 
@@ -4842,12 +5197,22 @@ def analyze_integration(
     # ``ok_no_capture``) so the attribution field has a home — the
     # static-mode diagnostic is discarded at output time (the
     # ``diagnostics`` block is suppressed when ``static_only``).
+    # Change 1: build the set of YML-declared params (minus ignored)
+    # once so we can pass it to
+    # analyze_static_attributions_with_status for silent-zero row
+    # synthesis (the proven_unused / needs_review verdicts).
+    yml_param_name_set = set(all_param_names) - ignore
     for cmd in commands:
         diag = diagnostics.get(cmd)
         if diag is None:
             diag = CommandDiagnostic(status="ok_no_capture")
             diagnostics[cmd] = diag
-        _scope_1, _scope_2, attributions = analyze_static_attributions(
+        (
+            _scope_1,
+            _scope_2,
+            attributions,
+            analysis_status,
+        ) = analyze_static_attributions_with_status(
             py_source,
             cmd,
             captured=dynamic_results.get(cmd, set()),
@@ -4855,7 +5220,12 @@ def analyze_integration(
             language=language,
             integration_name=integration_name,
             call_graph_depth=call_graph_depth,
+            yml_param_names=yml_param_name_set,
+            emit_proven_unused=emit_proven_unused,
         )
+        # Change 1: surface the per-command analysis_status on the
+        # diagnostic so the consumer's AI can gate its triage on it.
+        diag.analysis_status = analysis_status
         # Drop ignored / out-of-YML attributions for the diagnostic too —
         # the attribution rows must mirror the headline list's name
         # universe to avoid confusing the calling agent with rows for
@@ -5478,6 +5848,33 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
             "module_const_referenced and above)."
         ),
     )
+    # Change 1: --emit-proven-unused controls whether attribution
+    # rows with verdict=='proven_unused' are included in the
+    # structured payload. Default True per the task spec — the
+    # consumer's AI consumes the full rowset so it can mechanically
+    # skip the proven_unused entries and review the rest. The flat
+    # headline list is unaffected (proven_unused rows have
+    # rollup_confidence=0.0 and are below any headline threshold).
+    parser.add_argument(
+        "--emit-proven-unused",
+        dest="emit_proven_unused",
+        action="store_true",
+        default=True,
+        help=(
+            "Include attribution rows with verdict=='proven_unused' "
+            "in the structured per-command attributions payload "
+            "(default True; pass --no-emit-proven-unused to exclude)."
+        ),
+    )
+    parser.add_argument(
+        "--no-emit-proven-unused",
+        dest="emit_proven_unused",
+        action="store_false",
+        help=(
+            "Suppress attribution rows with verdict=='proven_unused' "
+            "from the structured payload."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -5607,6 +6004,7 @@ def main(argv: list[str] | None = None) -> int:
             call_graph_depth=args.call_graph_depth,
             min_confidence=args.min_confidence,
             headline_min_confidence=args.headline_min_confidence,
+            emit_proven_unused=args.emit_proven_unused,
         )
     except FileNotFoundError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

@@ -858,7 +858,15 @@ class TestMergeCommandParams:
 class TestCommandDiagnostic:
     def test_minimal_to_dict(self) -> None:
         d = ccp.CommandDiagnostic(status="ok", captured_requests=5)
-        assert d.to_dict() == {"status": "ok", "captured_requests": 5}
+        # Updated per Changes 1-4: analysis_status is now always
+        # present in the serialized payload (defaults to
+        # ``dispatch_unresolved`` when the diagnostic was created
+        # without going through the analyzer pipeline).
+        assert d.to_dict() == {
+            "status": "ok",
+            "captured_requests": 5,
+            "analysis_status": "dispatch_unresolved",
+        }
 
     def test_failure_excerpt_only_for_non_ok(self) -> None:
         d = ccp.CommandDiagnostic(
