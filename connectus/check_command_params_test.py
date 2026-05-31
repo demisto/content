@@ -3817,3 +3817,360 @@ class TestFixB_ConfidenceTiers:
         assert d["by_source"]["helper"]["confidence"] == 0.7
         # Round-trip via JSON to confirm everything serializes.
         _json.dumps(d)
+
+
+# =============================================================================
+# Changes 1-4: Verdicts + dispatch-pattern coverage
+# =============================================================================
+
+
+class TestVerdictsAndDispatchPatterns:
+    """End-to-end coverage for the four coordinated improvements.
+
+    Each test wires a minimal synthetic integration source through
+    :func:`ccp.analyze_static_attributions_with_status` and asserts
+    on the per-command ``analysis_status`` + per-param ``verdict``
+    output. The tests live in their own class so the broader fixture
+    set doesn't leak in.
+    """
+
+    YML_PARAMS = {"X", "Y", "Z", "Q", "url"}
+
+    # --- Helpers ----------------------------------------------------------
+
+    @staticmethod
+    def _attr_by_param(
+        attrs: list, name: str
+    ):  # type: ignore[no-untyped-def]
+        for a in attrs:
+            if a.param == name:
+                return a
+        return None
+
+    # --- 1. proven_used --------------------------------------------------
+
+    def test_proven_used_when_handler_body_attributes_with_conf_1(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+            def do_thing_command():
+                params = demisto.params()
+                return params.get("X")
+            def main():
+                params = demisto.params()
+                if demisto.command() == "do-thing":
+                    do_thing_command()
+            '''
+        ).lstrip()
+        _s1, _s2, attrs, status = ccp.analyze_static_attributions_with_status(
+            src, "do-thing", yml_param_names=self.YML_PARAMS
+        )
+        assert status == ccp.ANALYSIS_STATUS_HANDLER_BODY
+        attr = self._attr_by_param(attrs, "X")
+        assert attr is not None
+        assert attr.rollup_confidence == 1.0
+        assert attr.verdict == ccp.VERDICT_PROVEN_USED
+
+    # --- 2. proven_unused ------------------------------------------------
+
+    def test_proven_unused_when_yml_declares_param_not_referenced(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+            def do_thing_command():
+                params = demisto.params()
+                return params.get("X")
+            def main():
+                params = demisto.params()
+                if demisto.command() == "do-thing":
+                    do_thing_command()
+            '''
+        ).lstrip()
+        _s1, _s2, attrs, status = ccp.analyze_static_attributions_with_status(
+            src, "do-thing", yml_param_names=self.YML_PARAMS
+        )
+        # Y is YML-declared but never referenced anywhere reachable.
+        assert status == ccp.ANALYSIS_STATUS_HANDLER_BODY
+        attr_y = self._attr_by_param(attrs, "Y")
+        assert attr_y is not None
+        assert attr_y.verdict == ccp.VERDICT_PROVEN_UNUSED
+        assert attr_y.rollup_confidence == 0.0
+        assert attr_y.by_source == {}
+
+    # --- 3. needs_review (helper only) -----------------------------------
+
+    def test_needs_review_when_helper_attribution_only(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+            def helper(params):
+                return params.get("X")
+            def do_thing_command(params):
+                return helper(params)
+            def main():
+                params = demisto.params()
+                if demisto.command() == "do-thing":
+                    do_thing_command(params)
+            '''
+        ).lstrip()
+        _s1, _s2, attrs, status = ccp.analyze_static_attributions_with_status(
+            src, "do-thing", yml_param_names=self.YML_PARAMS
+        )
+        assert status == ccp.ANALYSIS_STATUS_HELPER_CHAIN
+        attr = self._attr_by_param(attrs, "X")
+        assert attr is not None
+        # Helper at depth 1 gives confidence 0.8 < 1.0 → needs_review.
+        assert 0.0 < attr.rollup_confidence < 1.0
+        assert attr.verdict == ccp.VERDICT_NEEDS_REVIEW
+
+    # --- 4. needs_review (module_const_hedged only) ----------------------
+
+    def test_needs_review_when_module_const_hedged_only(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+            params = demisto.params()
+            KEY = params.get("X")
+            def do_thing_command():
+                # Dynamic dispatch makes the walk uncertain.
+                getattr(__import__("os"), "name")
+                return KEY
+            def main():
+                if demisto.command() == "do-thing":
+                    do_thing_command()
+            '''
+        ).lstrip()
+        _s1, _s2, attrs, status = ccp.analyze_static_attributions_with_status(
+            src, "do-thing", yml_param_names=self.YML_PARAMS
+        )
+        attr = self._attr_by_param(attrs, "X")
+        # The dynamic-dispatch shape forces walk_uncertain, hedging
+        # the module-const attribution to 0.1.
+        assert attr is not None
+        assert attr.verdict == ccp.VERDICT_NEEDS_REVIEW
+
+    # --- 5. walk_uncertain prevents proven_unused ------------------------
+
+    def test_no_proven_unused_when_walk_uncertain(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+            def do_thing_command():
+                # Dynamic dispatch — analyzer cannot prove what's used.
+                cmd = "do_other"
+                globals()[cmd]()
+            def do_other():
+                pass
+            def main():
+                if demisto.command() == "do-thing":
+                    do_thing_command()
+            '''
+        ).lstrip()
+        _s1, _s2, attrs, status = ccp.analyze_static_attributions_with_status(
+            src, "do-thing", yml_param_names=self.YML_PARAMS
+        )
+        # No positive evidence for Y, but walk is uncertain — must
+        # NOT be proven_unused.
+        attr_y = self._attr_by_param(attrs, "Y")
+        assert attr_y is not None
+        assert attr_y.verdict == ccp.VERDICT_NEEDS_REVIEW
+        assert attr_y.rollup_confidence == 0.0
+
+    # --- 6. module-scope dispatch detected -------------------------------
+
+    def test_module_scope_dispatch_detected(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+            def ip_command():
+                params = demisto.params()
+                return params.get("X")
+            if demisto.command() == "ip":
+                ip_command()
+            elif demisto.command() == "search":
+                pass
+            '''
+        ).lstrip()
+        _s1, _s2, attrs, status = ccp.analyze_static_attributions_with_status(
+            src, "ip", yml_param_names=self.YML_PARAMS
+        )
+        assert status == ccp.ANALYSIS_STATUS_MODULE_SCOPE
+        attr = self._attr_by_param(attrs, "X")
+        assert attr is not None
+        assert attr.rollup_confidence == 1.0
+        assert attr.verdict == ccp.VERDICT_PROVEN_USED
+
+    # --- 7. dict-dispatch resolves handler ------------------------------
+
+    def test_dict_dispatch_extracts_handler_map(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+            def handler_a():
+                params = demisto.params()
+                return params.get("X")
+            def handler_b():
+                params = demisto.params()
+                return params.get("Y")
+            def main():
+                commands = {"cmd-a": handler_a, "cmd-b": handler_b}
+                command = demisto.command()
+                if command in commands:
+                    commands[command]()
+            '''
+        ).lstrip()
+        # cmd-a should resolve handler_a → params.get("X")
+        _s1, _s2, attrs_a, status_a = ccp.analyze_static_attributions_with_status(
+            src, "cmd-a", yml_param_names=self.YML_PARAMS
+        )
+        assert status_a == ccp.ANALYSIS_STATUS_DICT_DISPATCH
+        x_attr = self._attr_by_param(attrs_a, "X")
+        assert x_attr is not None
+        assert x_attr.verdict == ccp.VERDICT_PROVEN_USED
+
+        _s1, _s2, attrs_b, status_b = ccp.analyze_static_attributions_with_status(
+            src, "cmd-b", yml_param_names=self.YML_PARAMS
+        )
+        assert status_b == ccp.ANALYSIS_STATUS_DICT_DISPATCH
+        y_attr = self._attr_by_param(attrs_b, "Y")
+        assert y_attr is not None
+        assert y_attr.verdict == ccp.VERDICT_PROVEN_USED
+
+    # --- 8. scattered-dispatch guard skip --------------------------------
+
+    def test_scattered_dispatch_skips_early_return_guard(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+            def guard_handler():
+                pass
+            def real_command():
+                pass
+            def main():
+                command = demisto.command()
+                if command == "guard":
+                    guard_handler()
+                    return
+                params = demisto.params()
+                z = params.get("Z")  # this lives after the guard
+                if command == "real":
+                    real_command()
+            '''
+        ).lstrip()
+        # 'real' command should see Z via pre_dispatch_main AND get
+        # the scattered_truncated tag.
+        _s1, _s2, attrs, status = ccp.analyze_static_attributions_with_status(
+            src, "real", yml_param_names=self.YML_PARAMS
+        )
+        assert status == ccp.ANALYSIS_STATUS_SCATTERED_TRUNCATED
+        z_attr = self._attr_by_param(attrs, "Z")
+        assert z_attr is not None
+        assert "pre_dispatch_main" in z_attr.by_source
+
+    # --- 9. guard's own command still resolves ---------------------------
+
+    def test_scattered_dispatch_guard_command_still_resolves(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+            def guard_handler():
+                params = demisto.params()
+                return params.get("Q")
+            def main():
+                command = demisto.command()
+                if command == "guard":
+                    guard_handler()
+                    return
+                params = demisto.params()
+                z = params.get("Z")
+                if command == "real":
+                    pass
+            '''
+        ).lstrip()
+        _s1, _s2, attrs, _status = ccp.analyze_static_attributions_with_status(
+            src, "guard", yml_param_names=self.YML_PARAMS
+        )
+        q_attr = self._attr_by_param(attrs, "Q")
+        assert q_attr is not None
+        # Q reads inside the guard's handler body — must attribute.
+        assert "handler_body" in q_attr.by_source
+        assert q_attr.verdict == ccp.VERDICT_PROVEN_USED
+
+    # --- 10. handler_not_found status ------------------------------------
+
+    def test_handler_not_found_status_when_dispatch_resolves_but_handler_undefined(
+        self,
+    ) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+            from some_module import imported_handler
+            def main():
+                if demisto.command() == "x":
+                    imported_handler()
+            '''
+        ).lstrip()
+        _s1, _s2, _attrs, status = ccp.analyze_static_attributions_with_status(
+            src, "x", yml_param_names=self.YML_PARAMS
+        )
+        assert status == ccp.ANALYSIS_STATUS_HANDLER_NOT_FOUND
+
+    # --- 11. verdict / analysis_status serialize in to_dict --------------
+
+    def test_verdict_serializes_in_to_dict(self) -> None:
+        diag = ccp.CommandDiagnostic(status="ok", captured_requests=1)
+        diag.analysis_status = ccp.ANALYSIS_STATUS_HANDLER_BODY
+        diag.attributions = [
+            ccp.ParamAttribution(
+                param="X",
+                by_source={
+                    "handler_body": ccp.ParamSourceEvidence(
+                        source="handler_body", confidence=1.0, evidence="test"
+                    )
+                },
+                rollup_confidence=1.0,
+                verdict=ccp.VERDICT_PROVEN_USED,
+            )
+        ]
+        d = diag.to_dict()
+        assert d["analysis_status"] == ccp.ANALYSIS_STATUS_HANDLER_BODY
+        assert d["attributions"][0]["verdict"] == ccp.VERDICT_PROVEN_USED
+
+    # --- 12. --emit-proven-unused filter ---------------------------------
+
+    def test_emit_proven_unused_flag_filters_when_false(self) -> None:
+        src = textwrap.dedent(
+            '''
+            import demistomock as demisto
+            def do_thing_command():
+                params = demisto.params()
+                return params.get("X")
+            def main():
+                if demisto.command() == "do-thing":
+                    do_thing_command()
+            '''
+        ).lstrip()
+        # With emit_proven_unused=True (default), the proven_unused
+        # row for Y is included.
+        _s1, _s2, attrs_on, _ = ccp.analyze_static_attributions_with_status(
+            src,
+            "do-thing",
+            yml_param_names=self.YML_PARAMS,
+            emit_proven_unused=True,
+        )
+        assert any(
+            a.param == "Y" and a.verdict == ccp.VERDICT_PROVEN_UNUSED
+            for a in attrs_on
+        )
+        # With emit_proven_unused=False, Y is excluded entirely (it
+        # had no positive evidence AND would have been proven_unused).
+        _s1, _s2, attrs_off, _ = ccp.analyze_static_attributions_with_status(
+            src,
+            "do-thing",
+            yml_param_names=self.YML_PARAMS,
+            emit_proven_unused=False,
+        )
+        assert not any(
+            a.param == "Y" and a.verdict == ccp.VERDICT_PROVEN_UNUSED
+            for a in attrs_off
+        )
