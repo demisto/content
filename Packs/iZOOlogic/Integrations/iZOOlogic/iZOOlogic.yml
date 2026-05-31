@@ -188,7 +188,7 @@ script:
       - critical threat
       - redirect to whitelist
     - name: case_type
-      description: The desired case type for processing.
+      description: The preferred case type for processing. All new incidents are initially created as "Reported Incident" and may be reclassified during review.
       defaultValue: incident
       auto: PREDEFINED
       predefined:

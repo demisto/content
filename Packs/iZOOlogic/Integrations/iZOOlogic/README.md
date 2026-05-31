@@ -86,7 +86,7 @@ Creates a new security incident in iZOOlogic.
 | incident_type | The type of incident. Possible values are: brand abuse, phishing, malware, pharming, smishing, vishing, mobile apps, social media, other, email, executive. | Required |
 | brand_code | The brand identifier associated with the incident. | Required |
 | threat_type | The threat level. Possible values are: low threat, moderate threat, substantial threat, high threat, critical threat, redirect to whitelist. Default is moderate threat. | Optional |
-| case_type | The desired case type for processing. Possible values are: incident, brand abuse monitoring, domain monitoring, social media monitoring, mobile app monitoring, executive monitoring. Default is incident. | Optional |
+| case_type | The preferred case type for processing. All new incidents are initially created as "Reported Incident" and may be reclassified during review. Possible values are: incident, brand abuse monitoring, domain monitoring, social media monitoring, mobile app monitoring, executive monitoring. Default is incident. | Optional |
 | comment | The comments about the incident (max 2500 characters). | Optional |
 | executive_name | The executive name. Required for executive-related incidents (max 2500 characters). | Optional |
 | client_code | The client identifier for validation and access control. | Optional |
