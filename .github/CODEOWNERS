@@ -124,7 +124,6 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/AzureSentinel/ @Shellyber
 /Packs/MicrosoftDefenderAdvancedThreatProtection @Shellyber @noydavidi
 /Packs/MicrosoftCloudAppSecurity @Shellyber @noydavidi
-/Packs/AzureSecurityCenter/Integrations/MicrosoftDefenderForCloudEventCollector @Shellyber @noydavidi
 /Packs/FeedAzureADConnectHealth @Shellyber @noydavidi
 /Packs/AzureRiskyUsers @Shellyber @noydavidi
 /Packs/MicrosoftGraphListener @Shellyber @noydavidi
