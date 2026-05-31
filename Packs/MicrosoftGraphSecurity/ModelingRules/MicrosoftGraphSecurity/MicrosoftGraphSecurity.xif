@@ -1,19 +1,24 @@
 [MODEL: dataset=msft_graph_security_alerts_raw]
 filter _reporting_device_name in ("https://graph.microsoft.com/beta/security/alerts_v2", "https://graph.microsoft.com/v1.0/security/alerts_v2")
-| alter 
-    alertEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "alertEvidence", "@element", null)), ""),
-    analyzedMessageEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null)), ""),
-    analyzedMessageEvidence2_json = arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null)),
-    cloudApplicationEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "cloudApplicationEvidence", "@element", null)), ""),
-    deviceEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "deviceEvidence", "@element", null)), ""),
-    fileEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "fileEvidence", "@element", null)), ""),
-    ipEvidence_json = arraymap(evidence -> [], if("@element" ~= "ipEvidence", "@element", null)),
-    mailboxEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "mailboxEvidence", "@element", null)), ""),
-    processEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "processEvidence", "@element", null)), ""),
-    registryKeyEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "registryKeyEvidence", "@element", null)), ""),
-    registryValueEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "registryValueEvidence", "@element", null)), ""),
-    urlEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "urlEvidence", "@element", null)), ""),
-    userEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "userEvidence", "@element", null)), "")
+| alter
+    alertEvidence_json            = arrayindex(arrayfilter(evidence -> [], "@element" ~= "alertEvidence"), 0),
+    analyzedMessageEvidence_json  = arrayindex(arrayfilter(evidence -> [], "@element" ~= "analyzedMessageEvidence"), 0),
+    analyzedMessageEvidence2_json = arrayfilter(evidence -> [], "@element" ~= "analyzedMessageEvidence"),
+    cloudApplicationEvidence_json = arrayindex(arrayfilter(evidence -> [], "@element" ~= "cloudApplicationEvidence"), 0),
+    deviceEvidence_json           = arrayindex(arrayfilter(evidence -> [], "@element" ~= "deviceEvidence"), 0),
+    fileEvidence_json             = arrayindex(arrayfilter(evidence -> [], "@element" ~= "fileEvidence"), 0),
+    ipEvidence_json               = arrayfilter(evidence -> [], "@element" ~= "ipEvidence"),
+    mailboxEvidence_json          = arrayindex(arrayfilter(evidence -> [], "@element" ~= "mailboxEvidence"), 0),
+    registryKeyEvidence_json      = arrayindex(arrayfilter(evidence -> [], "@element" ~= "registryKeyEvidence"), 0),
+    registryValueEvidence_json    = arrayindex(arrayfilter(evidence -> [], "@element" ~= "registryValueEvidence"), 0),
+    urlEvidence_json              = arrayindex(arrayfilter(evidence -> [], "@element" ~= "urlEvidence"), 0),
+    userEvidence_json             = arrayindex(arrayfilter(evidence -> [], "@element" ~= "userEvidence"), 0),
+    // processEvidence: prefer evidence tagged with an attacker-side role when present
+    processEvidence_json = coalesce(
+        arrayindex(arrayfilter(arrayfilter(evidence -> [], "@element" ~= "processEvidence"),
+            arraystring(json_extract_array("@element", "$.roles"), ",") ~= "Source|Initiated|Likely"), 0),
+        arrayindex(arrayfilter(evidence -> [], "@element" ~= "processEvidence"), 0)
+    )
 | alter
 // userEvidence Fields
     userEvidence_userAccount_accountName = json_extract_scalar(userEvidence_json, "$.userAccount.accountName"),
