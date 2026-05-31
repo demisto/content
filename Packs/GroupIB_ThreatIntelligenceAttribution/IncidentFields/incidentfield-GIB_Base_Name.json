@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Compromised Masked Card"
+    ],
+    "caseInsensitive": false,
+    "cliName": "gibbasename",
+    "closeForm": false,
+    "content": true,
+    "description": "Base name of the masked card record in Group-IB",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibbasename",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Base Name",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB Compromised Masked Card"
+    ]
+}
