@@ -2444,17 +2444,10 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         try:
             service_account_info = json.loads(password)
         except json.JSONDecodeError:
-            # Some XSOAR versions or copy-paste methods produce a double-encoded string
-            # where the password field contains escaped JSON (e.g. {\"type\": ...} with
-            # literal backslashes). Try to unescape it by parsing as a JSON string first.
-            try:
-                service_account_info = json.loads(json.loads(f'"{password}"'))
-            except (json.JSONDecodeError, ValueError) as e:
-                raise DemistoException(
-                    "Invalid Service Account JSON format in the 'credentials' parameter. "
-                    "Please paste the raw contents of the downloaded JSON key file "
-                    f"(without escaping). Error: {str(e)}"
-                )
+            raise DemistoException(
+                "Invalid Service Account JSON format in the 'credentials' parameter. "
+                "Please paste the raw contents of the downloaded JSON key file."
+            )
         try:
             creds = google_service_account.Credentials.from_service_account_info(
                 service_account_info,
