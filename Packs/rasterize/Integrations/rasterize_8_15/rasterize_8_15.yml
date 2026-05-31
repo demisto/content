@@ -78,7 +78,7 @@ configuration:
   display: Lightweight
   required: false
   defaultvalue: "false"
-  defaultvalue:platfrom: "true"
+  defaultvalue:platform: "true"
   type: 8
   hidden: true
   section: Connect
