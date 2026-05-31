@@ -2642,5 +2642,5 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+- No tests
 fromversion: 6.10.0
