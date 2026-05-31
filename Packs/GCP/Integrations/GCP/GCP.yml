@@ -31,7 +31,7 @@ description: Cloud integrations are installed from the Data Sources page. To con
 script:
   commands:
   - name: gcp-compute-firewall-patch
-    description: Updates the specified firewall rule with the data included in the request.
+    description: "Updates a specific firewall rule with the data included in the request. Required permissions: compute.firewalls.update, compute.firewalls.get, compute.firewalls.list, compute.networks.updatePolicy, compute.networks.list."
     arguments:
     - name: project_id
       required: true
@@ -143,7 +143,7 @@ script:
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
   - name: gcp-compute-firewall-insert
-    description: Creates a new firewall rule in the specified project.
+    description: "Creates a new firewall rule in a specific project. Required permission: compute.firewalls.create."
     arguments:
     - name: project_id
       required: true
@@ -230,7 +230,7 @@ script:
       description: The user account that performed the operation.
       type: String
   - name: gcp-compute-firewall-list
-    description: Lists firewall rules in the specified project.
+    description: "Lists the firewall rules in a specific project. Required permission: compute.firewalls.list."
     arguments:
     - name: project_id
       required: true
@@ -287,7 +287,7 @@ script:
       description: Next page token for pagination.
       type: String
   - name: gcp-compute-firewall-get
-    description: Retrieves a specific firewall rule by name.
+    description: "Retrieves a specific firewall rule by name. Required permission: compute.firewalls.get."
     arguments:
     - name: project_id
       required: true
@@ -318,7 +318,7 @@ script:
       description: Target instance tags.
       type: Unknown
   - name: gcp-compute-snapshots-list
-    description: Lists snapshots in the specified project.
+    description: "Lists snapshots in a specific project. Required permission: compute.snapshots.list."
     arguments:
     - name: project_id
       required: true
@@ -401,7 +401,7 @@ script:
       description: Next page token for pagination.
       type: String
   - name: gcp-compute-snapshot-get
-    description: Retrieves details for a specific snapshot.
+    description: "Retrieves details for a specific snapshot. Required permission: compute.snapshots.get."
     arguments:
     - name: project_id
       required: true
@@ -477,7 +477,7 @@ script:
       description: List of storage locations for the snapshot.
       type: Unknown
   - name: gcp-compute-instances-aggregated-list-by-ip
-    description: Aggregated list of instances across all zones; can be filtered by internal or external IP.
+    description: "Returns an aggregated list of instances across all zones that can be filtered by internal or external IP. Required permission: cloudasset.assets.searchAllResources."
     arguments:
     - name: project_id
       required: true
@@ -513,7 +513,7 @@ script:
       description: Network interfaces of the instance.
       type: Unknown
   - name: gcp-compute-network-tag-set
-    description: Adds a network tag to a VM instance (merges with existing tags).
+    description: "Adds a network tag to a VM instance (merges with existing tags). Required permission: compute.instances.setTags."
     arguments:
     - name: project_id
       required: true
@@ -578,7 +578,7 @@ script:
       description: Type of the resource (e.g., compute#operation).
       type: string
   - name: gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action
-    description: Disables default GCP firewall rule which is overly permissive (except HTTP and HTTPS).
+    description: "Disables a default GCP firewall rule that is overly permissive (except HTTP and HTTPS). Required permissions: compute.firewalls.update, compute.firewalls.get, compute.firewalls.list, compute.networks.updatePolicy, compute.networks.list."
     prettyname: Disable GCP Firewall Rule
     quickaction: true
     hidden: true
@@ -670,7 +670,7 @@ script:
         type: string
 
   - name: gcp-storage-bucket-policy-delete
-    description: Removes an entity from a bucket's Access Control List.
+    description: "Removes an entity from a bucket's Access Control List. Required permissions: storage.buckets.getIamPolicy, storage.buckets.setIamPolicy."
     arguments:
     - name: project_id
       required: true
@@ -686,7 +686,7 @@ script:
       description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
 
   - name: gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action
-    description: Revoke 'allUsers' permission access in GCP Storage buckets.
+    description: "Revokes 'allUsers' permission access in GCP storage buckets. Required permissions: storage.buckets.getIamPolicy, storage.buckets.setIamPolicy."
     prettyname: Remove GCP Bucket AllUsers Access
     quickaction: true
     hidden: true
@@ -714,7 +714,7 @@ script:
         description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
 
   - name: gcp-storage-bucket-policy-delete-remove-AllAuthenticatedUser-access-quick-action
-    description: Revokes 'allAuthenticatedUsers' permission access in GCP Storage buckets.
+    description: "Revokes 'allAuthenticatedUsers' permission access in GCP storage buckets. Required permissions: storage.buckets.getIamPolicy, storage.buckets.setIamPolicy."
     prettyname: Remove GCP Bucket AllAuthenticatedUser Access
     quickaction: true
     hidden: true
@@ -742,7 +742,7 @@ script:
         description: "Entity to remove from the Access Control List.\nCommon entity formats are:\n* user:<userId or email>\n* group:<groupId or email>\n* allUsers\n* allAuthenticatedUsers\nFor more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource "
 
   - name: gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action
-    description: Revokes 'allUsers' and 'allAuthenticatedUsers' permissions access in a GCP Storage bucket.
+    description: "Revokes 'allUsers' and 'allAuthenticatedUsers' permissions access in a GCP storage bucket. Required permissions: storage.buckets.getIamPolicy, storage.buckets.setIamPolicy."
     prettyname: Make GCP Bucket Private
     quickaction: true
     hidden: true
@@ -771,7 +771,7 @@ script:
 
 
   - name: gcp-compute-subnet-update
-    description: Enables flow logs or Private Google Access on a subnet.
+    description: "Enables flow logs or Private Google Access on a subnet. Required permissions: compute.subnetworks.setPrivateIpGoogleAccess, compute.subnetworks.update, compute.subnetworks.get, compute.subnetworks.list."
     arguments:
     - name: project_id
       required: true
@@ -832,7 +832,7 @@ script:
       type: String
 
   - name: gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action
-    description: Enables VPC Flow Logs on a GCP subnet.
+    description: "Enables VPC Flow Logs on a GCP subnet. Required permissions: compute.subnetworks.setPrivateIpGoogleAccess, compute.subnetworks.update, compute.subnetworks.get, compute.subnetworks.list."
     prettyname: Enable GCP Subnet Flow Logs
     quickaction: true
     hidden: true
@@ -903,7 +903,7 @@ script:
         type: String
 
   - name: gcp-compute-enable-private-ip-access-on-subnet-quick-action
-    description: Enables Private Google Access on a GCP subnet.
+    description: "Enables Private Google Access on a GCP subnet. Required permissions: compute.subnetworks.setPrivateIpGoogleAccess, compute.subnetworks.update, compute.subnetworks.get, compute.subnetworks.list."
     prettyname: Enable Private IP Access on Subnet
     quickaction: true
     hidden: true
@@ -974,7 +974,7 @@ script:
         type: String
 
   - name: gcp-container-cluster-security-update
-    description: Configures security settings for GKE clusters, including access controls and visibility.
+    description: "Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
     arguments:
     - name: project_id
       required: true
@@ -1079,7 +1079,7 @@ script:
       type: String
 
   - name: gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action
-    description: Enables intra-node visibility on a GKE cluster for enhanced network monitoring.
+    description: "Enables intra-node visibility on a GKE cluster for enhanced network monitoring. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
     prettyname: Enable GKE Cluster Intra-Node Visibility
     quickaction: true
     hidden: true
@@ -1189,7 +1189,7 @@ script:
         type: String
 
   - name: gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action
-    description: Enables Master Authorized Networks on a GKE cluster to restrict API server access.
+    description: "Enables Master Authorized Networks on a GKE cluster to restrict API server access. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
     prettyname: Enable Master Authorized Networks on GKE
     quickaction: true
     hidden: true
@@ -1295,7 +1295,7 @@ script:
         type: String
 
   - name: gcp-storage-bucket-metadata-update
-    description: Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings such as versioning and Uniform Bucket-Level Access (UBLA).
+    description: "Updates Google Cloud Storage (GCS) bucket metadata, including settings such as versioning and Uniform Bucket-Level Access (UBLA). Required permission: storage.buckets.update."
     arguments:
     - name: project_id
       required: true
@@ -1392,7 +1392,7 @@ script:
       type: String
 
   - name: gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action
-    description: Enables versioning on a GCP Storage bucket to preserve object versions.
+    description: "Enables versioning on a GCP storage bucket to preserve object versions. Required permission: storage.buckets.update."
     prettyname: Enable GCP Bucket Versioning
     quickaction: true
     hidden: true
@@ -1495,7 +1495,7 @@ script:
         type: String
 
   - name: gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action
-    description: Enables uniform bucket-level access on a GCP Storage bucket for enhanced security.
+    description: "Enables uniform bucket-level access on a GCP storage bucket for enhanced security. Required permission: storage.buckets.update."
     prettyname: Set GCP Bucket Access to Uniform
     quickaction: true
     hidden: true
@@ -1593,7 +1593,7 @@ script:
         description: The path to the custom 404 page for the bucket website.
         type: String
   - name: gcp-storage-bucket-list
-    description: Retrieves the list of buckets in the project associated with the client.
+    description: "Retrieves the list of buckets in the project associated with the client. Required permission: storage.buckets.list."
     arguments:
     - name: project_id
       required: true
@@ -1651,7 +1651,7 @@ script:
         description: The link to the bucket resource on the GCP API.
         type: String
   - name: gcp-storage-bucket-get
-    description: Retrieves information about a specific bucket.
+    description: "Retrieves information about a specific bucket. Required permission: storage.buckets.get."
     arguments:
     - name: project_id
       required: true
@@ -1703,7 +1703,7 @@ script:
         description: The link to the bucket resource on the GCP API.
         type: String
   - name: gcp-storage-bucket-objects-list
-    description: Retrieves the list of objects in a bucket.
+    description: "Retrieves the list of objects in a bucket. Required permission: storage.objects.list."
     arguments:
     - name: project_id
       required: true
@@ -1779,7 +1779,7 @@ script:
       description: The time when the object was last modified.
       type: Date
   - name: gcp-storage-bucket-policy-list
-    description: Retrieves the IAM policy for a bucket.
+    description: "Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.getIamPolicy, storage.buckets.get."
     arguments:
     - name: project_id
       required: true
@@ -1805,7 +1805,7 @@ script:
       description: Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME.
       type: String
   - name: gcp-storage-bucket-policy-set
-    description: Sets the IAM policy for a bucket.
+    description: "Sets the IAM policy for a bucket. Required permission: storage.buckets.setIamPolicy."
     arguments:
     - name: project_id
       required: true
@@ -1835,7 +1835,7 @@ script:
       description: List of role bindings for the bucket.
       type: List
   - name: gcp-storage-bucket-object-policy-list
-    description: Retrieves the IAM policy for a specific object in a bucket.
+    description: "Retrieves the IAM policy for a specific object in a bucket. Required permission: storage.objects.getIamPolicy."
     arguments:
     - name: project_id
       required: true
@@ -1860,7 +1860,7 @@ script:
       description: List of role bindings for the object.
       type: List
   - name: gcp-storage-bucket-object-policy-set
-    description: Sets the IAM policy for a specific object in a bucket.
+    description: "Sets the IAM policy for a specific object in a bucket. Required permission: storage.objects.setIamPolicy."
     arguments:
     - name: project_id
       required: true
@@ -1888,7 +1888,7 @@ script:
       description: List of role bindings for the object.
       type: Unknown  
   - name: gcp-iam-project-policy-binding-remove
-    description: Removes a specified IAM role binding from a GCP project.
+    description: "Removes a specified IAM role binding from a GCP project. Required permissions: resourcemanager.projects.getIamPolicy, resourcemanager.projects.setIamPolicy."
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -1901,6 +1901,127 @@ script:
       description: Role to remove (e.g., roles/viewer).
       required: true
     outputs: []
+  - name: gcp-bq-dataset-policy-remove
+    description: "Removes an email from the BigQuery dataset policy. Required Permissions: bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy."
+    arguments:
+    - name: project_id
+      required: true
+      description: The GCP project ID.
+    - name: dataset_id
+      required: true
+      description: The dataset ID of the requested dataset.
+    - name: email
+      description: The email address to remove from the dataset access list.
+      required: true
+    outputs:
+      - contextPath: GCP.BigQuery.Datasets.kind
+        description: The resource type.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.etag
+        description: A hash of the resource.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.id
+        description: The fully-qualified unique name of the dataset in the format projectId:datasetId.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.selfLink
+        description: A URL that can be used to access the resource again.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.datasetReference
+        description: A reference that identifies the dataset.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.friendlyName
+        description: A descriptive name for the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.description
+        description: A user-friendly description of the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.defaultTableExpirationMs
+        description: The default lifetime of all tables in the dataset, in milliseconds.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.defaultPartitionExpirationMs
+        description: The default partition expiration, in milliseconds.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.labels
+        description: The labels associated with this dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.role
+        description: The role assigned to the entity.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.userByEmail
+        description: An email address of a user to grant access to.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.groupByEmail
+        description: An email address of a group to grant access to.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.domain
+        description: A domain to grant access to.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.specialGroup
+        description: A special group to grant access to.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.iamMember
+        description: A type of member that appears in the IAM Policy that isn't a user, group, domain, or special group.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.access.view
+        description: A view from a different dataset to grant access to.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.access.routine
+        description: A routine from a different dataset to grant access to.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.access.dataset
+        description: A grant authorizing access to this dataset for all resources of a particular type.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.access.condition
+        description: The binding condition.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.creationTime
+        description: The time since the epoch the dataset was created, in milliseconds.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.lastModifiedTime
+        description: The time since the epoch the dataset was last modified, in milliseconds.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.location
+        description: The geographic location where the dataset resides.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.defaultEncryptionConfiguration
+        description: The default encryption configuration for all tables in the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.type
+        description: The type of the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.linkedDatasetSource
+        description: The source dataset reference when the dataset is of type LINKED.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.linkedDatasetMetadata
+        description: Metadata about the LinkedDataset.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.externalDatasetReference
+        description: Reference to a read-only external dataset defined in data catalogs outside of BigQuery.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.externalCatalogDatasetOptions
+        description: Options defining open source compatible datasets in the BigQuery catalog. Contains metadata of the open source database, schema, or namespace of the current dataset.
+        type: Unknown
+      - contextPath: GCP.BigQuery.Datasets.isCaseInsensitive
+        description: True if the dataset and its table names are case-insensitive.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.defaultCollation
+        description: The default collation specification of future tables created in the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.defaultRoundingMode
+        description: The default rounding mode specification of new tables created within this dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.maxTimeTravelHours
+        description: The time travel window in hours.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.resourceTags
+        description: The tags attached to this dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.storageBillingModel
+        description: The billing model that will be applied to the dataset.
+        type: String
+      - contextPath: GCP.BigQuery.Datasets.catalogSource
+        description: The origin of the dataset.
+        type: String
 
 # The command is currently unsupported.
 #  - name: gcp-iam-project-deny-policy-create
@@ -1946,7 +2067,7 @@ script:
   - name: gcp-compute-instance-service-account-set
     description: >
       Sets the service account for a GCP Compute Engine VM instance.
-      The instance must be stopped before the service account can be changed.
+      The instance must be stopped before the service account can be changed. Required permissions: compute.instances.setServiceAccount, compute.instances.get.
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -2036,7 +2157,7 @@ script:
   - name: gcp-compute-instance-service-account-remove
     description: >
       Removes the service account associated with a GCP Compute Engine VM instance.
-      The instance must be stopped before the service account can be changed.
+      The instance must be stopped before the service account can be changed. Required permissions: compute.instances.setServiceAccount, compute.instances.get.
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -2153,7 +2274,7 @@ script:
 
 
   - name: gcp-compute-instance-start
-    description: Starts an instance that was stopped using the instances().stop method.
+    description: "Starts an instance that was stopped using the instances().stop method. Required permission: compute.instances.start."
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -2241,7 +2362,7 @@ script:
     - description: GCP project ID.
       name: project_id
       required: true
-    description: Returns the specified network.
+    description: "Returns the specified network. Required permission: compute.networks.get."
     name: gcp-compute-network-get
     outputs:
     - contextPath: GCP.Compute.Networks.id
@@ -2307,7 +2428,7 @@ script:
     - description: Name of the image resource to return.
       name: image
       required: true
-    description: Returns the specified image.
+    description: "Returns a specific image. Required permission: compute.images.get."
     name: gcp-compute-image-get
     outputs:
     - contextPath: GCP.Compute.Images.id
@@ -2466,7 +2587,7 @@ script:
     - description: GCP project ID.
       name: project_id
       required: true
-    description: Returns the specified Region resource.
+    description: "Returns a specific region resource. Required permission: compute.regions.get."
     name: gcp-compute-region-get
     outputs:
     - contextPath: GCP.Compute.Regions.id
@@ -2538,7 +2659,7 @@ script:
     - description: The name of the zone where the instance group is located.
       name: zone
       required: true
-    description: Returns the specified instance group.
+    description: "Returns a specific instance group. Required permission: compute.instanceGroups.get."
     name: gcp-compute-instance-group-get
     outputs:
     - contextPath: GCP.Compute.InstanceGroups.id
@@ -2595,7 +2716,7 @@ script:
     - description: GCP project ID.
       name: project_id
       required: true
-    description: Returns the specified Zone resource.
+    description: "Returns a specific zone resource. Required permission: compute.zones.get."
     name: gcp-compute-zone-get
     outputs:
     - contextPath: GCP.Compute.Zones.id
@@ -2658,7 +2779,7 @@ script:
       name: order_by
     - description: Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
       name: page_token
-    description: Retrieves the list of networks available to the specified project.
+    description: "Retrieves a list of networks available for the specified project. Required permission: compute.networks.list."
     name: gcp-compute-networks-list
     outputs:
     - contextPath: GCP.Compute.Networks.id
@@ -2739,7 +2860,7 @@ script:
       predefined:
       - REGIONAL
       - GLOBAL
-    description: Creates a network in the specified project using the data included in the request.
+    description: "Creates a network in the specified project using the data included in the request. Required permission: compute.networks.create."
     name: gcp-compute-network-insert
     outputs:
     - contextPath: GCP.Compute.Operations.id
@@ -2838,7 +2959,7 @@ script:
 
 
   - name: gcp-compute-instance-stop
-    description: Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
+    description: "Stops and cleanly shuts down a running instance, allowing you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using such as persistent disks and static IP addresses will continue to be charged until they are deleted. Required permission: compute.instances.stop."
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -2932,7 +3053,7 @@ script:
       name: order_by
     - description: Specifies a page token. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
       name: page_token
-    description: Retrieves the list of instances in the specified zone.
+    description: "Retrieves the list of instances in the specified zone. Required permission: compute.instances.list."
     name: gcp-compute-instances-list
     outputs:
       - contextPath: GCP.Compute.Instances.kind
@@ -3086,7 +3207,7 @@ script:
     - description: Name of the instance resource to return.
       name: instance
       required: true
-    description: Returns the specified Instance resource. To get a list of available instances, make a list() request.
+    description: "Returns a specific instance resource. To get a list of available instances, make a list() request. Required permission: compute.instances.get."
     name: gcp-compute-instance-get
     outputs:
       - contextPath: GCP.Compute.Instances.id
@@ -3295,7 +3416,7 @@ script:
         predefined:
           - 'true'
           - 'false'
-    description: Sets labels on an instance.
+    description: "Sets labels on an instance. Required permission: compute.instances.setLabels."
     name: gcp-compute-instance-labels-set
     outputs:
       - contextPath: GCP.Compute.Operations.id
@@ -4064,7 +4185,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/googleapi-python3:1.0.0.6911241
+  dockerimage: demisto/googleapi-python3:1.0.0.8516410
 fromversion: 8.11.0
 supportsquickactions: true
 isCloudProviderIntegration: true
