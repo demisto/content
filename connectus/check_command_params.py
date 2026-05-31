@@ -904,11 +904,69 @@ def find_module_level_params_vars(tree: ast.AST) -> set[str]:
 
 
 def find_command_dispatch_line(main_fn: ast.FunctionDef) -> int:
-    """Return the line number of the first command-dispatch construct."""
+    """Return the line number of the first command-dispatch construct.
+
+    Change 4: an ``if command == "X":`` block whose body ends in an
+    unconditional early-return (``return`` / ``raise`` / ``sys.exit(...)``)
+    is treated as a **guard**, not the real dispatcher. The real
+    dispatch site is the first dispatch construct that does NOT end
+    in early-return. This fixes the SplunkPy v2 ``splunk-parse-raw``
+    case where the early-return guard at the top of ``main()`` was
+    mistakenly anchoring the pre-dispatch window, hiding every
+    subsequent setup statement (mapper construction, etc.) from
+    pre-dispatch attribution.
+
+    The skip is order-preserving — we walk the function body in
+    source order (via ``ast.walk`` which is preorder DFS over the
+    AST), iterating dispatch nodes and returning the first one that
+    is NOT a guard. Multiple consecutive guards are skipped in a
+    single pass.
+    """
     for node in ast.walk(main_fn):
-        if _is_dispatch_node(node):
-            return getattr(node, "lineno", 10**9)
+        if not _is_dispatch_node(node):
+            continue
+        # An ``If`` dispatch node that is itself a guard (body ends
+        # in early-return) does not anchor pre-dispatch — keep
+        # looking. ``Match`` blocks and ``commands = {...}`` literals
+        # are never guards in this sense; they always anchor.
+        if isinstance(node, ast.If) and _is_early_return_guard(node):
+            continue
+        return getattr(node, "lineno", 10**9)
     return 10**9  # no dispatch found -> entire function is "pre-dispatch"
+
+
+def _is_early_return_guard(if_node: ast.If) -> bool:
+    """Change 4: is ``if_node`` an early-return guard?
+
+    Returns True when ``if_node`` is an ``if command == "..."`` /
+    ``elif`` block whose body ends in an unconditional early-return
+    statement: ``return``, ``raise``, or ``sys.exit(...)``.
+
+    The check is intentionally shallow — it only inspects the LAST
+    statement of the immediate ``If.body`` (not nested branches);
+    that's enough to catch the SplunkPy v2 ``splunk-parse-raw``
+    shape AND any sibling guards that follow the same idiom.
+
+    NOTE: this helper takes only an ``ast.If`` (the dispatch detector
+    has already narrowed via ``_is_dispatch_node``); it does NOT
+    re-verify that the test is a command-comparison.
+    """
+    if not if_node.body:
+        return False
+    last = if_node.body[-1]
+    if isinstance(last, ast.Return):
+        return True
+    if isinstance(last, ast.Raise):
+        return True
+    if isinstance(last, ast.Expr) and isinstance(last.value, ast.Call):
+        call = last.value
+        # ``sys.exit(...)`` is the canonical hard-exit form. We also
+        # accept bare ``exit(...)`` even though it's discouraged.
+        if isinstance(call.func, ast.Attribute) and call.func.attr == "exit":
+            return True
+        if isinstance(call.func, ast.Name) and call.func.id == "exit":
+            return True
+    return False
 
 
 def _is_dispatch_node(node: ast.AST) -> bool:
@@ -3055,13 +3113,29 @@ def extract_dict_dispatch_map(
 def _detect_scattered_truncated(
     main_fn: ast.FunctionDef, command: str
 ) -> bool:
-    """Change 4 stub — returns False for now.
+    """Change 4: True iff at least one early-return guard exists in main().
 
-    The real implementation will detect when
-    :func:`find_command_dispatch_line` skipped past at least one
-    early-return guard when computing the pre-dispatch window for
-    this command.
+    The analyzer marks every post-guard command's ``analysis_status``
+    as ``scattered_dispatch_window_truncated`` when this function
+    returns True AND the command's handler was resolved (which means
+    the command sits AFTER the guard — so its setup statements
+    inside the now-larger pre-dispatch window need a human/AI
+    double-check). The guard command itself still resolves normally
+    (its handler IS the guard body) so the AI sees the
+    scattered-truncated tag for the post-guard commands only.
+
+    Detection: walk ``main_fn`` for any dispatch ``If`` whose body
+    ends in an early-return (per :func:`_is_early_return_guard`).
     """
+    if main_fn is None:
+        return False
+    for node in ast.walk(main_fn):
+        if (
+            isinstance(node, ast.If)
+            and _is_dispatch_node(node)
+            and _is_early_return_guard(node)
+        ):
+            return True
     return False
 
 
