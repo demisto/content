@@ -504,6 +504,34 @@ def test_get_timezone_offset():
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("mmm-dd-yyyy"))
     assert offset == timedelta(minutes=-300)
 
+    full_response = {"sys_created_on": {"display_value": "07-Dec-2022 00:38:52", "value": "2022-12-06 19:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd-MMM-yyyy"))
+    assert offset == timedelta(minutes=-300)
+
+    full_response = {"sys_created_on": {"display_value": "07-Dec-2022 00:38:52 AM", "value": "2022-12-06 19:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd-MMM-yyyy"))
+    assert offset == timedelta(minutes=-300)
+
+    full_response = {"sys_created_on": {"display_value": "12-Mar-2026 11:40:52", "value": "2026-03-12 06:10:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd-MMM-yyyy"))
+    assert offset == timedelta(minutes=-330)
+
+    full_response = {"sys_created_on": {"display_value": "08/19/26 15:38:52", "value": "2026-08-19 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("MM/dd/yy"))
+    assert offset == timedelta(minutes=-120)
+
+    full_response = {"sys_created_on": {"display_value": "19/08/26 15:38:52", "value": "2026-08-19 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("dd/MM/yy"))
+    assert offset == timedelta(minutes=-120)
+
+    full_response = {"sys_created_on": {"display_value": "2022/12/07 05:38:52", "value": "2022-12-07 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("yyyy/MM/dd"))
+    assert offset == timedelta(minutes=480)
+
+    full_response = {"sys_created_on": {"display_value": "2022.12.07 05:38:52", "value": "2022-12-07 13:38:52"}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get("yyyy.MM.dd"))
+    assert offset == timedelta(minutes=480)
+
 
 def test_get_ticket_notes_command_success(mocker):
     """
