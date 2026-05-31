@@ -14,7 +14,7 @@ in Python. Only the *declarative* parts move out.
 
 ## 1. Current State Analysis
 
-> *This section describes the codebase before the refactor; preserved for historical context. Today the package is split as described in §3 and the implementation lives in [`connectus/workflow_state/`](workflow_state/__init__.py:1) — `connectus/workflow_state.py` is now a thin backward-compatibility shim.*
+> *This section describes the codebase before the refactor; preserved for historical context. Today the package is split as described in §3 and the implementation lives in [`connectus/workflow_state/`](workflow_state/__init__.py:1).*
 
 [`connectus/workflow_state.py`](workflow_state.py) is a single ~2 585-line
 script (historical; today's implementation is split across the
@@ -39,9 +39,10 @@ External callers (verified in the workspace):
 - The CLI itself (the `__main__` entrypoint and the
   [`connectus-migration-SKILL.md`](connectus-migration-SKILL.md) which shells
   out via `python3 connectus/workflow_state.py …`).
-- [`workflow_state_test.py`](workflow_state_test.py:22) — imports ~30 public
-  names by name; this is the most comprehensive consumer and the strongest
-  back-compat constraint.
+- [`workflow_state_test.py`](workflow_state_test.py:1) — imported ~30 public
+  names by name and was the strongest back-compat constraint. **Removed in
+  commit `cd09e3ff`**; the active test suite now lives entirely under
+  [`workflow_state/tests/`](workflow_state/tests/).
 
 ### What is hardcoded today that should move to YAML
 
@@ -55,8 +56,10 @@ The ranking below is by "amount of repeated literal data per item":
    between step #12 and step #13. Today implemented by string-comparing
    [`AUTH_PARITY_FLAG_COLUMN`](workflow_state.py:219) and `"auth parity test passes"` in
    [`cmd_set_auth_flag`](workflow_state.py:1382), [`cmd_markpass`](workflow_state.py:1469),
-   [`markpass_step`](workflow_state.py:987), and the programmatic API
-   ([`markpass_integration_step`](workflow_state.py:2425)).
+   and the programmatic API ([`markpass_integration_step`](workflow_state.py:2425)).
+   (Historical: the legacy module-level `markpass_step` helper that also
+   participated here was removed in commit `cd09e3ff`; its callers now
+   route through `apply_step_action` / `markpass_integration_step`.)
 6. **The `set-assignee` carve-out** — the rule that `set-assignee` and
    `set-assignee-by-connector` skip the cascade-reset. Today expressed by
    bypassing [`apply_step_action`](workflow_state.py:704) in
@@ -308,10 +311,14 @@ a comparable scope, but stays small. Pragmatic over speculative.
 
 ```
 connectus/
-├── workflow_state.py              # Thin shim — re-exports the package's public API
-│                                  # for back-compat. Imports * from the package.
-│                                  # Existing callers `from workflow_state import …`
-│                                  # keep working unmodified.
+├── workflow_state.py              # 13-line CLI delegator — `python3
+│                                  # connectus/workflow_state.py …` calls
+│                                  # `workflow_state.cli.main()`. (Historical:
+│                                  # this was a back-compat re-export shim;
+│                                  # the shim layer was removed in commit
+│                                  # `cd09e3ff`. The equivalent module-form
+│                                  # entry point `python -m workflow_state`
+│                                  # now lives at `workflow_state/__main__.py`.)
 ├── workflow_state_config.yml      # NEW: hardcoded YAML, the source of truth
 │                                  # for steps/columns/markers/interactions.
 └── workflow_state/
@@ -356,14 +363,15 @@ connectus/
   [`set_integration_auth`](workflow_state.py:2507), etc.) returns plain dicts
   and is consumed by the SKILL via subprocess and (if it switches to
   in-process) by Python imports. Display/CLI is print-only.
-- **`workflow_state.py` shim stays at the old path** — preserves
-  `from workflow_state import auth_param_ids, WorkflowError` (used by
-  [`check_command_params.py:589`](check_command_params.py:589)) and the
-  ~30 imports in [`workflow_state_test.py:22`](workflow_state_test.py:22)
-  without touching either file. The shim is ~25 lines of `from
-  workflow_state.* import *` plus an `if __name__ == "__main__":
-  workflow_state.cli.main()` so the CLI invocation `python3
-  connectus/workflow_state.py …` continues to work.
+- **`workflow_state.py` is now a 13-line CLI delegator** (historical: it
+  was a back-compat re-export shim during the package split; the shim layer
+  was removed in commit `cd09e3ff` once all callers had migrated to
+  `from workflow_state.<submodule> import …`). External callers still
+  reach the package via `from workflow_state import …` (the package's
+  own `__init__.py` curates the public re-exports). The CLI invocation
+  `python3 connectus/workflow_state.py …` continues to work via the
+  delegator, and `python -m workflow_state` works via the new
+  [`workflow_state/__main__.py`](workflow_state/__main__.py:1).
 
 ---
 
@@ -373,27 +381,21 @@ The shim at [`connectus/workflow_state.py`](workflow_state.py) re-exports
 everything below from the new package. Tests and external callers see no
 change.
 
-### 4.1 Constants — preserved (now derived from YAML)
+### 4.1 Constants — historical (derived-constants re-export layer removed in commit `cd09e3ff`)
 
-| Symbol | Today | After |
-|---|---|---|
-| [`CHECK`](workflow_state.py:112) | str literal | `_CFG.markers.check` |
-| [`FAIL_MARK`](workflow_state.py:113) | str literal | `_CFG.markers.fail` |
-| [`NA_MARK`](workflow_state.py:114) | str literal | `_CFG.markers.na` |
-| [`VALID_FLAG_VALUES`](workflow_state.py:123) | set literal | `set(_CFG.markers.flag_values)` |
-| [`VALID_AUTH_TYPES`](workflow_state.py:127) | derived from `AuthType` enum | unchanged (still imported from [`auth_config_parser`](auth_config_parser/__init__.py)) |
-| [`DATA_COLUMNS`](workflow_state.py:117) | list literal | `[c.name for c in _CFG.identity_columns]` |
-| [`STEPS`](workflow_state.py:171) | list[Step] literal | built by `config_loader.load()` |
-| [`STEP_BY_NAME`](workflow_state.py:208) | dict | derived |
-| [`STEP_BY_INDEX`](workflow_state.py:209) | dict | derived |
-| [`WORKFLOW_COLUMNS`](workflow_state.py:212) | list | derived |
-| [`WORKFLOW_DATA_COLUMNS`](workflow_state.py:213) | list | derived |
-| [`CHECKPOINT_COLUMNS`](workflow_state.py:214) | list | derived |
-| [`JSON_VALUED_COLUMNS`](workflow_state.py:215) | set | derived (`s.json_schema is not None`) |
-| [`AUTH_PARITY_FLAG_COLUMN`](workflow_state.py:219) | str literal | derived: the `when_step` of the single `flag_auto_na_target` interaction (asserted unique). Falls back to the literal name on legacy YAML. |
-| [`ALL_COLUMNS`](workflow_state.py:220) | list | derived |
-| [`EXPECTED_COLUMN_COUNT`](workflow_state.py:221) | int | `len(ALL_COLUMNS)` |
-| [`NON_CHECKPOINT_STEPS`](workflow_state.py:224) | dict | derived (`{s.name: s.setter for s in steps if s.setter}`) |
+The package previously re-exported a derived-constants layer from
+[`workflow_state/__init__.py`](workflow_state/__init__.py:1) for back-
+compat with pre-split callers. That layer (`STEPS`, `STEP_BY_NAME`,
+`STEP_BY_INDEX`, `WORKFLOW_COLUMNS`, `WORKFLOW_DATA_COLUMNS`,
+`CHECKPOINT_COLUMNS`, `JSON_VALUED_COLUMNS`, `AUTH_PARITY_FLAG_COLUMN`,
+`ALL_COLUMNS`, `EXPECTED_COLUMN_COUNT`, `NON_CHECKPOINT_STEPS`,
+`DATA_COLUMNS`, `CHECK`, `FAIL_MARK`, `NA_MARK`, `VALID_FLAG_VALUES`,
+`VALID_AUTH_TYPES`) was removed in commit `cd09e3ff`. Consumers should
+now obtain these values from the source modules directly — typically
+via `get_config()` in [`workflow_state.config_loader`](workflow_state/config_loader.py:1)
+returning a [`WorkflowConfig`](workflow_state/types.py:1), or by
+importing the enum directly with `from auth_config_parser.types import
+AuthType` for what used to be `VALID_AUTH_TYPES`.
 
 ### 4.2 Types — preserved
 
@@ -408,14 +410,11 @@ State engine:
 - [`is_checked(value: str) -> bool`](workflow_state.py:247)
 - [`is_done(row, step) -> bool`](workflow_state.py:253)
 - [`current_step(row) -> Optional[Step]`](workflow_state.py:265)
-- [`get_current_step(row) -> Optional[str]`](workflow_state.py:275) (legacy alias)
 - [`get_step(name) -> Step`](workflow_state.py:281)
 - [`get_step_index(name) -> int`](workflow_state.py:292)
 - [`reset_after(row, step) -> list[str]`](workflow_state.py:308)
 - [`normalize_row(row) -> list[str]`](workflow_state.py:319)
 - [`apply_step_action(row, target, new_value, *, verb) -> tuple[list[str], bool]`](workflow_state.py:704)
-- [`reset_from_step(row, step_name) -> None`](workflow_state.py:961) (legacy)
-- [`markpass_step(row, step_name) -> str`](workflow_state.py:987) (legacy)
 - [`has_workflow_progress(row) -> bool`](workflow_state.py:900)
 
 CSV I/O:
@@ -453,13 +452,11 @@ CLI (`cmd_*`) — all preserved by name. Unchanged behaviour.
 | `load_config(path: str \| None = None) -> WorkflowConfig` | `workflow_state.config_loader` | Loads from `path` or from the default location next to the package. Cached behind a module-level singleton accessor. |
 | `get_config() -> WorkflowConfig` | `workflow_state.config_loader` | Returns the singleton. First call triggers `load_config()`. Tests can call `_reset_config_for_testing()` (private) to swap in a fixture. |
 
-### 4.5 Removed — none
+### 4.5 Removed — derived-constants re-export layer (commit `cd09e3ff`)
 
-Nothing is removed in the back-compat shim. Internally, the
-`STEPS` list literal and the `Step()` constructor calls in
-[`workflow_state.py:171-204`](workflow_state.py:171) get deleted (replaced by
-the loader's output), but the names `STEPS`, `STEP_BY_NAME`, etc. remain
-exported.
+The package-level derived-constants re-export layer described in §4.1
+was removed in commit `cd09e3ff`. Consumers should import the source
+modules directly (see §4.1 for the migration recipe).
 
 ---
 
@@ -535,9 +532,11 @@ The loader collects ALL errors and raises one `ConfigLoadError` whose
 
 - Because import-time loading is the trigger, a malformed YAML stops the
   CLI before any subcommand runs — no risk of partial state.
-- Tests assert specific error substrings (mirroring the pattern at
-  [`workflow_state_test.py`](workflow_state_test.py:1128) for
-  `validate_auth_detail`).
+- Tests assert specific error substrings (mirroring the pattern that
+  used to live in the top-level `workflow_state_test.py` for
+  `validate_auth_detail` — that file was removed in commit `cd09e3ff`;
+  the equivalent assertions now live under
+  [`workflow_state/tests/`](workflow_state/tests/)).
 
 ### 5.4 Why YAML and not JSON / TOML
 
@@ -575,14 +574,19 @@ step.
    [`is_checked`](workflow_state.py:247), [`is_done`](workflow_state.py:253),
    [`current_step`](workflow_state.py:265), [`reset_after`](workflow_state.py:308),
    [`normalize_row`](workflow_state.py:319), [`apply_step_action`](workflow_state.py:704),
-   [`_can_advance_to`](workflow_state.py:688), [`reset_from_step`](workflow_state.py:961),
-   [`markpass_step`](workflow_state.py:987), [`has_workflow_progress`](workflow_state.py:900),
+   [`_can_advance_to`](workflow_state.py:688), [`has_workflow_progress`](workflow_state.py:900),
    [`get_step`](workflow_state.py:281), [`get_step_index`](workflow_state.py:292),
-   [`get_current_step`](workflow_state.py:275), [`WorkflowError`](workflow_state.py:235).
+   and [`WorkflowError`](workflow_state.py:235).
    These functions consult `get_config()` instead of module-level literals.
    The `flag_auto_na_target` interaction is read from config in
-   `markpass_step` and `markpass_integration_step` (the two places that
-   currently hardcode the #12→#13 coupling).
+   `markpass_integration_step` (the place that currently hardcodes the
+   #12→#13 coupling).
+
+   *(Historical: the legacy helpers `reset_from_step`, `markpass_step`,
+   and `get_current_step` were part of this list when the refactor was
+   originally planned. They were removed in commit `cd09e3ff`; the
+   surviving equivalents are `apply_step_action` / `reset_after` /
+   `current_step` respectively.)*
 
 5. **Create `connectus/workflow_state/csv_io.py`** by moving
    [`load_csv`](workflow_state.py:358), [`save_csv`](workflow_state.py:379),
@@ -641,9 +645,11 @@ step.
     `from workflow_state import *` (the *package*) and runs `main()` when
     invoked as `__main__`. Total ~25 lines.
 
-12. **Run the full test suite** [`workflow_state_test.py`](workflow_state_test.py).
-    Expected to pass unchanged — every imported name is still exported
-    from the shim. Fix any drift.
+12. **Run the full test suite.** Historically this was
+    `workflow_state_test.py`; that file was removed in commit `cd09e3ff`
+    and the active test suite now lives under
+    [`workflow_state/tests/`](workflow_state/tests/) (run with
+    `python -m pytest connectus/workflow_state/tests/`).
 
 13. **Add new tests** under `connectus/workflow_state/tests/test_config_loader.py`
     (see §7 below). Optionally split the existing 2 619-line monolith into
@@ -673,10 +679,12 @@ step.
 - `connectus/workflow_state/tests/test_config_loader.py`
 
 ### Files modified
-- `connectus/workflow_state.py` → reduced to ~25-line shim.
-- `connectus/workflow_state_test.py` → ideally unchanged; if any tests
-  imported `_set_json_data_step` etc. (one does, line 2600), keep that
-  re-exported from the shim.
+- `connectus/workflow_state.py` → reduced to a 13-line CLI delegator
+  (originally a ~25-line back-compat shim; the shim layer was removed
+  in commit `cd09e3ff`).
+- `connectus/workflow_state_test.py` → removed in commit `cd09e3ff`
+  along with the shim it was anchoring. Equivalent coverage now lives
+  under [`workflow_state/tests/`](workflow_state/tests/).
 - `connectus/column-schemas.md` → cross-links updated.
 - `connectus/Readme.md` → cross-links updated.
 
@@ -690,38 +698,19 @@ No public function/method is deleted.
 
 ## 7. Test Plan
 
-### 7.1 Existing test file ([`workflow_state_test.py`](workflow_state_test.py))
+### 7.1 Existing test file (historical: `workflow_state_test.py`)
 
-**Goal: zero changes required.** The shim re-exports every imported name
-([`workflow_state_test.py:22-82`](workflow_state_test.py:22)) so the test
-file is the strongest signal that back-compat held.
-
-The few specific assertions that hardcode current behavior need a sanity
-re-check:
-
-| Test | Assertion | After refactor |
-|---|---|---|
-| [`test_steps_has_exactly_16_entries`](workflow_state_test.py:141) | `len(STEPS) == 16` | passes — YAML has 16 entries |
-| [`test_first_step_is_assignee`](workflow_state_test.py:144) | `STEPS[0].name == "assignee"` | passes |
-| [`test_only_step_5_is_optional`](workflow_state_test.py:152) | step 5 optional, others not | passes |
-| [`test_step_names_match_workflow_columns_in_order`](workflow_state_test.py:169) | derived order | passes |
-| [`test_workflow_data_columns_derived`](workflow_state_test.py:172) | exact list | passes |
-| [`test_checkpoint_columns_derived`](workflow_state_test.py:181) | exact list | passes |
-| [`test_json_valued_columns_derived`](workflow_state_test.py:195) | exact set | passes (the four data-with-json_schema steps) |
-| [`test_non_checkpoint_steps_mapping`](workflow_state_test.py:203) | exact dict | passes |
-| [`test_total_column_count_unchanged`](workflow_state_test.py:213) | `EXPECTED_COLUMN_COUNT == 19` | passes (3 identity + 16 workflow) |
-| [`test_data_columns_unchanged`](workflow_state_test.py:217) | exact list | passes (matches `identity_columns:`) |
-
-The atomic-save and CSV-normalization tests
-([`TestAtomicSaveCsv`](workflow_state_test.py:1457)) move with `csv_io.py`
-unchanged.
-
-The one place to watch: the test at
-[`workflow_state_test.py:2600`](workflow_state_test.py:2600) does
-`from workflow_state import _set_json_data_step`. The shim must re-export
-private names too — easiest is `from workflow_state.cli import *` plus an
-explicit `from workflow_state.cli import _set_json_data_step` line in the
-shim. Document this in the shim.
+**Status (post-`cd09e3ff`):** the top-level
+`connectus/workflow_state_test.py` was removed when the back-compat
+shim and the derived-constants re-export layer were retired. The
+historical goal "zero changes required" was met during the original
+refactor (562/562 passing through the shim) and the file has since
+been retired. The active test suite lives entirely under
+[`workflow_state/tests/`](workflow_state/tests/) and is partitioned
+per submodule (`test_state_machine.py`, `test_config_loader.py`,
+`test_validators.py`, `test_column_addressability.py`,
+`test_wipe_workflow_data.py`). Run with
+`python -m pytest connectus/workflow_state/tests/`.
 
 ### 7.2 New tests — `connectus/workflow_state/tests/test_config_loader.py`
 
@@ -757,7 +746,7 @@ shim. Document this in the shim.
 | `test_cascade_on_set_default_true` | Step without `cascade_on_set` field → engine treats as `True`. |
 | `test_cascade_on_set_false_assignee` | The `assignee` step is loaded with `cascade_on_set: False`. |
 
-### 7.3 New engine tests (in `test_state_machine.py` if split, otherwise added to `workflow_state_test.py`)
+### 7.3 New engine tests (in [`workflow_state/tests/test_state_machine.py`](workflow_state/tests/test_state_machine.py:1))
 
 | Test | Description |
 |---|---|
@@ -774,7 +763,7 @@ These tests use `_reset_config_for_testing()` + a fixture YAML written to
 
 | Risk | Mitigation |
 |---|---|
-| Shim doesn't re-export every name some test/external caller uses | The shim does `from workflow_state.X import *` for every submodule + explicit re-imports for known underscore-prefixed names ([`_set_json_data_step`](workflow_state_test.py:2600)). The full test suite catches the rest. |
+| Shim doesn't re-export every name some test/external caller uses | Historical risk — mitigated during the original refactor by `from workflow_state.X import *` for every submodule plus explicit re-imports of known underscore-prefixed names. The back-compat shim layer was retired in commit `cd09e3ff` once all callers had migrated to explicit submodule imports. |
 | Import-time YAML load slows CLI startup | `pyyaml.safe_load` on a ~150-line file is sub-millisecond; negligible vs. CSV I/O. |
 | YAML and CSV header drift | The loader asserts `identity_columns + steps` produce the exact CSV header on `load_csv()` — the existing `if fieldnames != ALL_COLUMNS` warning at [`workflow_state.py:363`](workflow_state.py:363) keeps working. |
 | The `Step` dataclass picks up new optional fields and a downstream caller breaks | New fields have defaults; existing positional `Step(...)` constructions keep working. The struct is `frozen=True` so behavior is unchanged. No external caller constructs `Step` (verified by search). |
@@ -809,7 +798,7 @@ flowchart TD
     PKG --> CLI
 
     EXT1[check_command_params.py] -->|from workflow_state import auth_param_ids| SHIM
-    EXT2[workflow_state_test.py] -->|imports 30+ names| SHIM
+    EXT2[workflow_state_test.py — removed in cd09e3ff] -.->|historical| SHIM
     EXT3[connectus-migration-SKILL.md] -->|python3 connectus/workflow_state.py …| SHIM
     EXT3 --> CLI
 ```
@@ -837,7 +826,7 @@ flowchart LR
 - [x] Pragmatic split — 7 modules, mirrors [`auth_config_parser/`](auth_config_parser/) without over-fragmenting.
 - [x] Public API preserved verbatim via the shim.
 - [x] No external caller (`check_command_params.py`) needs to change.
-- [x] [`workflow_state_test.py`](workflow_state_test.py) does not need to change (modulo split-file imports if we choose to split).
+- [x] Historical: `workflow_state_test.py` did not need to change during the original refactor. The file has since been removed (commit `cd09e3ff`); equivalent coverage lives under [`workflow_state/tests/`](workflow_state/tests/).
 - [x] YAML is the single source for steps/columns/markers/interactions.
 - [x] Engine code knows nothing about specific step names; it works with whatever a valid YAML gives it.
 - [x] Per-cell JSON validators stay in code (they're grammar, not config), but the *binding* of step → validator moves to YAML.
@@ -903,22 +892,22 @@ flowchart LR
    **DECIDED: `CSV_PATH` stays in code.** Implemented at
    [`workflow_state/csv_io.py`](workflow_state/csv_io.py:1) as proposed.
 
-5. **Should we split the existing 2 619-line
-   [`workflow_state_test.py`](workflow_state_test.py) into per-module test
-   files as part of this refactor?** Not required for correctness; would
-   make future edits easier. **Recommendation: defer to a separate
-   cleanup; this refactor's success criterion is "the existing test file
-   passes unchanged".**
+5. **Should we split the existing 2 619-line `workflow_state_test.py`
+   into per-module test files as part of this refactor?** Not required
+   for correctness; would make future edits easier. **Recommendation:
+   defer to a separate cleanup; this refactor's success criterion was
+   "the existing test file passes unchanged".**
 
    **DECIDED: deferred — single test file kept.** The success criterion
    was met (562/562 tests pass against the split package via the shim);
-   a per-module test split remains open as future cleanup.
+   a per-module test split remained open as future cleanup at the time
+   the decision was logged.
 
-   **UPDATE (2026-05):** the legacy top-level
-   [`workflow_state_test.py`](workflow_state_test.py) was emptied to a
-   migration-map stub in the schema-simplification pass below; the active
-   test suite now lives entirely under
-   [`workflow_state/tests/`](workflow_state/tests/).
+    **UPDATE (commit `cd09e3ff`):** the top-level
+   `connectus/workflow_state_test.py` was removed; the active test
+   suite now lives entirely under
+   [`workflow_state/tests/`](workflow_state/tests/), partitioned per
+   submodule.
 
 ---
 
@@ -965,33 +954,25 @@ flowchart LR
   [`test_verify_button_placement.py`](workflow_state/tests/test_verify_button_placement.py)
   and
   [`test_column_addressability.py`](workflow_state/tests/test_column_addressability.py)
-  cover the new behaviour; legacy
-  [`connectus/workflow_state_test.py`](workflow_state_test.py) is now a
-  stub.
-### 2026-05Q3 — PLANNED (NOT YET APPLIED in this branch): `verify button placement` removal & `verify_connection_skip` addition
+  cover the new behaviour.
 
-> **NOTE:** The change-log entry below was authored on the incoming
-> branch (`origin/connectus_migration` @ `a6e89196`) but has **not**
-> been applied in this merge. The 16-step schema and the
-> `verify button placement` flag column are intentionally retained
-> here; the removal will be re-done in a future commit. Entry kept
-> for historical/planning reference.
+### 2026-05Q3 — `verify button placement` removed; `verify_connection_skip` added to `Auth Details`
 
-- **Planned removal** of the `verify button placement` flag column
-  (was step #4 in the 2026-05-17 model). The CSV header would drop
-  from 19 columns to 18 (3 identity + 15 workflow); the workflow
-  length would drop from 16 to **15** steps. The companion CLI verb
-  `set-verify-placement` and its handler `cmd_set_verify_placement`
-  would be deleted from
+- **Removed** the `verify button placement` flag column (was step #4
+  in the 2026-05-17 model). The CSV header drops from 19 columns to
+  18 (3 identity + 15 workflow); the workflow length drops from 16
+  to **15** steps. The companion CLI verb `set-verify-placement` and
+  its handler `cmd_set_verify_placement` are deleted from
   [`workflow_state/cli.py`](workflow_state/cli.py:1) and from the
   package re-exports in
   [`workflow_state/__init__.py`](workflow_state/__init__.py:1). The
   bundled test module
   [`workflow_state/tests/test_verify_button_placement.py`](workflow_state/tests/test_verify_button_placement.py)
-  would be deleted; per-row data in column #7 would be wiped from
+  was deleted; per-row data in column #7 was wiped from
   [`connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv)
-  via a one-shot script (`_drop_verify_button_placement_column.py`)
-  that would then be removed from the repo after the rollout.
+  via a one-shot script (footnote: `_drop_verify_button_placement_column.py`,
+  a historical one-shot script that has since been removed from the
+  repository).
 - **Added** an optional per-profile field
   `auth_types[].verify_connection_skip: bool` to the `Auth Details`
   JSON schema. Defaults to `false`. Set `true` for profiles whose
@@ -1014,16 +995,16 @@ flowchart LR
   param `or "<default>"` code-edit obligations are now documented in
   full at [`SKILL.md`](../.roo/skills/connectus-migration/SKILL.md:1)
   §"Step 3a". Every row's `Params for test with default in code`
-  cell was wiped via a one-shot script
-  (`_wipe_params_for_test_defaults.py`) so each integration will
+  cell was wiped via a one-shot script (footnote:
+  `_wipe_params_for_test_defaults.py`, a historical one-shot script
+  that has since been removed from the repository) so each integration will
   re-derive the cell under the new rule when next worked on. The
   cell is `preserve_on_reset: false`, so losing the data here does
   not introduce a new risk class.
-- **Planned CLI column count change:** column-number addressability
-  would become `1..18` (down from `1..19` with the kept column);
-  the canary in
+- **CLI column count:** column-number addressability is now `1..18`
+  (down from `1..17`); the canary in
   [`workflow_state/tests/test_column_addressability.py`](workflow_state/tests/test_column_addressability.py:1)
-  would be updated in lock-step.
+  was updated in lock-step.
 - **Step renaming in SKILL.md:** the prefixed sub-steps `Step 4a`,
   `Step 4b`, `Step 4c` were renamed to `Step 3a`, `Step 3b`,
   `Step 3c` (minimal-edit recipe — the rest of the numeric step

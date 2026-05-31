@@ -2,9 +2,9 @@
 
 Verifies that for each non-interpolated connection declared in an
 integration's ``Auth Details``, secret values land in the **same
-wire location** whether they are supplied the legacy way (via
+wire location** whether they are supplied the non-UCP way (via
 ``demisto.params()`` → integration code → ``BaseClient``) or the
-new way (UCP credential injection through
+UCP way (credential injection through
 ``demisto.getUCPCredentials()`` — and the
 ``CommonServerPython.get_ucp_credentials()`` wrapper that delegates
 to it).
@@ -72,8 +72,9 @@ EXIT_INTEGRATION_REJECTS_HTTP = 14
 
 # Parseable substrings the migration skill greps for. Do NOT reword.
 _LITERAL_MARK_AUTH = "Mark its auth as interpolated"
-_LITERAL_MARKPASS_STEP_11 = (
-    "Step #11 (auth parity test passes) is effectively migrated — markpass."
+_LITERAL_PARITY_GATE_SKIPPED = (
+    "Auth parity gate inside set-auth: structurally skipped — re-run "
+    "set-auth to commit the Auth Details cell."
 )
 
 _SENTINEL_PREFIX = "__AUTHPARITY__"
@@ -805,7 +806,7 @@ def _msg_all_interpolated() -> str:
     return (
         f"All auth types are interpolated. Auth parity test is not "
         f"applicable — interpolated connections are handled by "
-        f"infrastructure, not integration code. {_LITERAL_MARKPASS_STEP_11}"
+        f"infrastructure, not integration code. {_LITERAL_PARITY_GATE_SKIPPED}"
     )
 
 
@@ -1046,26 +1047,34 @@ def _seed_proxy_env(
 
 def _build_base_params(
     yml_data: dict[str, Any],
-    param_defaults: dict[str, Any] | None = None,
+    seed_overrides: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build a baseline ``demisto.params()`` dict for the integration.
 
-    Per design §2.4 the value precedence for a non-auth required YML
-    param is:
+    Value precedence for a non-auth YML param is:
 
-    1. The ``Params for test with default in code`` cell — values are
-       used **verbatim** (any JSON type the cell allows).
+    1. A per-invocation ``--seed-param NAME=VALUE`` override (when
+       supplied) — wins for the named param, taking effect inside the
+       type-aware placeholder pass below. For YML ``type:9``
+       (credentials) widgets, the dotted-leaf form
+       ``NAME.identifier=<v>`` / ``NAME.password=<v>`` is supported.
     2. A type-aware placeholder from
-       :func:`check_command_params.build_param_values` — fallback only
-       for params not covered by the cell.
+       :func:`check_command_params.build_param_values` — sentinels for
+       most params, plus cert/PEM/thumbprint coercion for the
+       Microsoft cert-thumbprint slot.
 
     Auth params are overlaid by :func:`build_old_params` or omitted
     entirely in the new run. The proxy URL is a placeholder that
     :func:`_seed_url_params` overwrites once the proxy is up.
 
-    ``param_defaults`` keys that do not correspond to a visible YML
-    param are ignored (the cell is treated as a hint set, not a strict
-    schema — stray keys must not crash the analyzer).
+    ``seed_overrides`` keys that don't correspond to a visible YML
+    param (or that target a wrong-type parent on the dotted-leaf form)
+    surface as ``[seed] WARNING`` lines from the sibling analyzer's
+    own validation. Flat ``NAME=VALUE`` on a ``type:9`` credentials
+    parent raises ``ValueError`` from
+    :func:`check_command_params.build_param_values` (the analyzer
+    cannot produce a sensible runtime value for the param) — callers
+    surface that as a CLI exit-2 error.
     """
     yml_params = _ccp.get_yml_params(yml_data)
     values, _, _ = _ccp.build_param_values(
@@ -1073,12 +1082,8 @@ def _build_base_params(
         proxy_url="http://127.0.0.1:0",
         ignore=set(),
         coerce_certs=True,
-        seed_overrides=None,
+        seed_overrides=seed_overrides,
     )
-    if param_defaults:
-        for name, override in param_defaults.items():
-            if name in values:
-                values[name] = override
     return values
 
 
@@ -1112,7 +1117,7 @@ def run_old(
     proxy: CaptureProxy,
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
-    param_defaults: dict[str, Any] | None = None,
+    seed_overrides: dict[str, Any] | None = None,
     integration_id: str | None = None,
 ) -> RunResult:
     """Execute the integration with sentinels seeded into ``demisto.params()``.
@@ -1120,7 +1125,7 @@ def run_old(
     UCP is forced **off** via on-disk patches injected into the child
     process bootstrap (§2.7.3).
     """
-    base = _build_base_params(yml_data, param_defaults=param_defaults)
+    base = _build_base_params(yml_data, seed_overrides=seed_overrides)
     params = build_old_params(sentinel_map, connection_name, base)
     return _execute_run(
         integration_path=integration_path,
@@ -1146,7 +1151,7 @@ def run_new(
     proxy: CaptureProxy,
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
-    param_defaults: dict[str, Any] | None = None,
+    seed_overrides: dict[str, Any] | None = None,
     integration_id: str | None = None,
 ) -> RunResult:
     """Execute the integration with ``xsoar_param_map`` keys omitted and UCP on.
@@ -1160,7 +1165,7 @@ def run_new(
     selectors that decide whether the integration takes the UCP code
     path at all.
     """
-    base = _build_base_params(yml_data, param_defaults=param_defaults)
+    base = _build_base_params(yml_data, seed_overrides=seed_overrides)
     # The new run omits every XSOAR path that the connection's
     # xsoar_param_map names — i.e. every key the old run seeded with a
     # sentinel — so the integration is forced down the UCP injection
@@ -1311,11 +1316,11 @@ _UCP_PATCH_TEMPLATE = textwrap.dedent(
     against a hypothetical future where some integration's
     import-time code flips that flag.
 
-    When ``AUTH_PARITY_UCP_ENABLED`` is "0" (old / legacy run), we do
+    When ``AUTH_PARITY_UCP_ENABLED`` is "0" (non-UCP run), we do
     NOT install ``demisto.getUCPCredentials`` at all — it stays
     whatever ``demistomock`` provides natively (or raises
-    AttributeError), so legacy-path code that accidentally tries UCP
-    fails the same way it would in real legacy execution.
+    AttributeError), so non-UCP-path code that accidentally tries UCP
+    fails the same way it would in real non-UCP execution.
     """
     import os as _os
     import json as _json
@@ -1594,7 +1599,7 @@ def check_connection_parity(
     sentinel_map: SentinelMap,
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
-    param_defaults: dict[str, Any] | None = None,
+    seed_overrides: dict[str, Any] | None = None,
     integration_id: str | None = None,
 ) -> dict[str, Any]:
     """Run old + new for each command, collect diffs, classify status."""
@@ -1613,7 +1618,7 @@ def check_connection_parity(
             sentinel_map=sentinel_map,
             timeout=timeout,
             docker_cfg=docker_cfg,
-            param_defaults=param_defaults,
+            seed_overrides=seed_overrides,
             integration_id=integration_id,
         )
         commands_block[command] = {"status": cmd_block["status"]}
@@ -1640,7 +1645,7 @@ def _run_one_command(
     sentinel_map: SentinelMap,
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
-    param_defaults: dict[str, Any] | None = None,
+    seed_overrides: dict[str, Any] | None = None,
     integration_id: str | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Run old + new for one command — isolated per-command exception handling."""
@@ -1652,7 +1657,7 @@ def _run_one_command(
             old = run_old(
                 integration_path, yml_data, command, sentinel_map,
                 entry.name, proxy, timeout, docker_cfg,
-                param_defaults=param_defaults,
+                seed_overrides=seed_overrides,
                 integration_id=integration_id,
             )
         except Exception as exc:  # noqa: BLE001 — per-command isolation
@@ -1661,7 +1666,7 @@ def _run_one_command(
             new = run_new(
                 integration_path, yml_data, command, sentinel_map,
                 entry.name, entry, proxy, timeout, docker_cfg,
-                param_defaults=param_defaults,
+                seed_overrides=seed_overrides,
                 integration_id=integration_id,
             )
         except Exception as exc:  # noqa: BLE001 — per-command isolation
@@ -1697,10 +1702,15 @@ def _install_oauth_if_relevant(proxy: CaptureProxy, entry: AuthEntry) -> list[st
 # The orchestrator (the connectus-migration skill) reads the relevant
 # pipeline cells once via ``workflow_state.py show-step --raw`` and
 # passes their values in as CLI flags (``--auth-details`` /
-# ``--auth-details-file`` and ``--param-defaults`` /
-# ``--param-defaults-file``). There is no ``show-step`` shell-out and
-# no import of ``workflow_state`` anywhere in this file — the analyzer
-# does not know about ``connectus-migration-pipeline.csv``.
+# ``--auth-details-file``). Per-param value seeding for params the
+# automatic placeholder generator misses (cert-thumbprint format
+# validators, JWT secrets with format validation, OIDC issuer URLs,
+# etc.) is supplied via repeatable ``--seed-param NAME=VALUE`` flags
+# at the CLI; the analyzer does NOT consult the workflow_state
+# ``Params for test with default in code`` cell. There is no
+# ``show-step`` shell-out and no import of ``workflow_state`` anywhere
+# in this file — the analyzer does not know about
+# ``connectus-migration-pipeline.csv``.
 
 
 def _select_commands(
@@ -1719,12 +1729,12 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
     integration_path: Path,
     integration_id: str,
     auth_details: Any,
-    param_defaults: dict[str, Any],
     commands_filter: list[str] | None,
     connection_filter: str | None,
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
     display_name_override: str | None = None,
+    seed_overrides: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """End-to-end orchestrator for one integration. Returns the §5.2 JSON.
 
@@ -1739,9 +1749,6 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
             matching the column schema, ``None`` (treated as
             "no auth"), or anything that
             :func:`validate_auth_details` will reject if malformed.
-        param_defaults: Parsed ``Params for test with default in code``
-            cell — a dict of ``param_id -> default_value``. Empty dict
-            for integrations with no overrides.
         commands_filter: Optional explicit command list (else the
             analyzer picks one per §1).
         connection_filter: Optional ``auth_types[].name`` to restrict
@@ -1751,6 +1758,15 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
         display_name_override: Optional human-readable name for the
             ``integration`` field. Falls back to ``yml['display']`` and
             then to ``integration_id``.
+        seed_overrides: Optional per-param seed-value overrides
+            (``{name: value}``), forwarded to
+            :func:`check_command_params.build_param_values` for the
+            type-aware placeholder pass. Use for params whose
+            auto-generated placeholder trips a format validator the
+            analyzer cannot sentinel itself (cert thumbprints, JWT
+            secrets with format validation, OIDC issuer URLs, etc.).
+            For YML ``type:9`` credentials widgets, the dotted-leaf
+            form ``NAME.identifier`` / ``NAME.password`` is supported.
     """
     yml_path, py_path = _ccp.find_integration_files(integration_path)
     yml_data = _ccp.load_yml(yml_path)
@@ -1795,13 +1811,13 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
         connection_filter=connection_filter,
         timeout=timeout,
         docker_cfg=docker_cfg,
-        param_defaults=param_defaults,
+        seed_overrides=seed_overrides,
     )
 
 
 def _empty_details() -> AuthDetails:
     """Return an empty ``AuthDetails`` for integrations with no Auth Details cell."""
-    return AuthDetails(auth_types=[])
+    return AuthDetails(auth_types=[], other_connection=[])
 
 
 def _check_interpolation_hard_errors(
@@ -1835,7 +1851,7 @@ def _run_all_connections(
     connection_filter: str | None,
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
-    param_defaults: dict[str, Any] | None = None,
+    seed_overrides: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Iterate over auth entries, collect per-connection results."""
     auth_parity: dict[str, Any] = {}
@@ -1853,7 +1869,7 @@ def _run_all_connections(
             sentinel_map=sentinels,
             timeout=timeout,
             docker_cfg=docker_cfg,
-            param_defaults=param_defaults,
+            seed_overrides=seed_overrides,
             integration_id=display,
         )
         auth_parity[entry.name] = {
@@ -1890,7 +1906,7 @@ def _connection_rejects_http(diagnostics: dict[str, Any]) -> bool:
 
 def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Auth Parity Test — verify legacy vs UCP secret placement parity.",
+        description="Auth Parity Test — verify non-UCP vs UCP secret placement parity.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("integration_path", help="Path to the integration directory.")
@@ -1899,8 +1915,8 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
         help=(
             "Integration ID. Used as an identifier in the output JSON and "
             "in log messages. NOT used to look up workflow state — the "
-            "orchestrator passes the cells in via --auth-details / "
-            "--param-defaults below."
+            "orchestrator passes the Auth Details cell in via "
+            "--auth-details / --auth-details-file below."
         ),
     )
 
@@ -1925,23 +1941,35 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
         ),
     )
 
-    # Params for test with default in code cell — optional; defaults
-    # to {} when neither flag is supplied.
-    defaults_group = parser.add_mutually_exclusive_group()
-    defaults_group.add_argument(
-        "--param-defaults", default=None,
+    # Per-param seed-value overrides — repeatable escape hatch for
+    # params whose auto-generated placeholder trips a format validator
+    # the analyzer's own coercion (cert/key/thumbprint) cannot
+    # anticipate (e.g. JWT secrets with format validation, OIDC issuer
+    # URLs, custom hex/regex-validated tokens).
+    parser.add_argument(
+        "--seed-param",
+        action="append",
+        default=None,
+        metavar="NAME=VALUE",
         help=(
-            "Raw JSON of the 'Params for test with default in code' cell. "
-            "Pass '-' to read from stdin. Mutually exclusive with "
-            "--param-defaults-file. Empty input is treated as '{}'."
-        ),
-    )
-    defaults_group.add_argument(
-        "--param-defaults-file", default=None,
-        help=(
-            "Path to a file whose contents are the raw JSON of the "
-            "'Params for test with default in code' cell. Mutually "
-            "exclusive with --param-defaults. Empty file is treated as '{}'."
+            "Explicitly seed YML param NAME with VALUE for the parity "
+            "run's baseline params, overriding the YML defaultvalue, "
+            "the cert/key/thumbprint auto-coercion, and the generic "
+            "SENTINEL_PARAM_<name> string. Repeatable: pass once per "
+            "param. Use this when the analyzer's automatic seeding "
+            "still trips a format validator at module load (cert "
+            "thumbprints, JWT secrets with format validation, OIDC "
+            "issuer URLs, etc.). For YML type:9 (credentials) widgets, "
+            "use the dotted-leaf form NAME.identifier=<v> / "
+            "NAME.password=<v> (either leaf may be omitted; omitted "
+            "leaves keep their default sentinel). Flat NAME=VALUE on a "
+            "credentials widget is rejected with exit code 2. Stray "
+            "dotted-leaf overrides (unknown parent, wrong-type parent, "
+            "leaf not in {identifier, password}) surface as "
+            "[seed] WARNING lines on stderr and do NOT abort the run. "
+            "The skill (connectus/connectus-migration-SKILL.md §1.12) "
+            "documents the recovery loop. Mirrors the same flag on "
+            "check_command_params.py verbatim."
         ),
     )
 
@@ -2028,28 +2056,6 @@ def _parse_auth_details_input(args: argparse.Namespace) -> Any:
         sys.exit(2)
 
 
-def _parse_param_defaults_input(args: argparse.Namespace) -> dict[str, Any]:
-    """Read + JSON-parse the Param Defaults input; '{}' if empty/missing."""
-    text = _read_cell_input(
-        args.param_defaults, args.param_defaults_file,
-        cell_name="param-defaults", required=False,
-    )
-    if not text:
-        return {}
-    try:
-        parsed = json.loads(text)
-    except json.JSONDecodeError as exc:
-        sys.stderr.write(f"error: --param-defaults is not valid JSON: {exc}\n")
-        sys.exit(2)
-    if not isinstance(parsed, dict):
-        sys.stderr.write(
-            f"error: --param-defaults must be a JSON object, got "
-            f"{type(parsed).__name__}\n"
-        )
-        sys.exit(2)
-    return parsed
-
-
 def _exit_code_for(result: dict[str, Any]) -> int:
     """Pick the process exit code from the result envelope."""
     error = result.get("error")
@@ -2059,7 +2065,12 @@ def _exit_code_for(result: dict[str, Any]) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """CLI entry point — emits a single JSON object on stdout."""
+    """CLI entry point — emits a single JSON object on stdout.
+
+    Per-param seed-value overrides may be supplied via repeatable
+    ``--seed-param NAME=VALUE``; see :func:`check_auth_parity` for the
+    semantics and the dotted-leaf rules for ``type:9`` credentials.
+    """
     args = _parse_args(argv if argv is not None else sys.argv[1:])
     integration_path = Path(args.integration_path).resolve()
     if not integration_path.is_dir():
@@ -2075,12 +2086,19 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write("\n")
         return 2
 
-    # Parse injected cells from the CLI. These call sys.exit(2) on
-    # bad input — by design, since the orchestrator should pass valid
-    # cell values (the workflow_state validators already vetted them
-    # at write time).
+    # Parse the injected Auth Details cell. Calls sys.exit(2) on bad
+    # input — by design, since the orchestrator should pass valid cell
+    # values (the workflow_state validators already vetted them at
+    # write time).
     auth_details = _parse_auth_details_input(args)
-    param_defaults = _parse_param_defaults_input(args)
+
+    # Parse repeatable --seed-param NAME=VALUE flags (mirrors the same
+    # parser/validation in check_command_params.py).
+    try:
+        seed_overrides = _ccp.parse_seed_overrides(args.seed_param)
+    except ValueError as exc:
+        sys.stderr.write(f"error: {exc}\n")
+        return 2
 
     docker_cfg = _ccp.DockerConfig(
         mode=args.docker, default_image=args.docker_image,
@@ -2091,13 +2109,29 @@ def main(argv: list[str] | None = None) -> int:
             integration_path=integration_path,
             integration_id=args.integration_id,
             auth_details=auth_details,
-            param_defaults=param_defaults,
             commands_filter=args.commands,
             connection_filter=args.connection,
             timeout=args.timeout,
             docker_cfg=docker_cfg,
             display_name_override=args.display_name,
+            seed_overrides=seed_overrides,
         )
+    except ValueError as exc:
+        # build_param_values raises ValueError for operator-input
+        # misuse (specifically: flat NAME=VALUE on a type=9 credentials
+        # widget). Surface as a CLI-arg error (rc=2).
+        sys.stderr.write(f"error: {exc}\n")
+        result = {
+            "integration": args.display_name or args.integration_id,
+            "error": {
+                "code": "ERROR_SEED_PARAM_INVALID",
+                "message": f"{exc}",
+                "exit_code": 2,
+            },
+        }
+        json.dump(result, sys.stdout, indent=2, sort_keys=True, default=str)
+        sys.stdout.write("\n")
+        return 2
     except Exception as exc:  # noqa: BLE001 — top-level guard
         import traceback
         traceback.print_exc(file=sys.stderr)

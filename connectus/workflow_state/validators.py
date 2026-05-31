@@ -26,14 +26,11 @@ from auth_config_parser import (
 def validate_auth_detail(value: str) -> list[str]:
     """Validate Auth Details JSON shape. Returns list of errors ([] = valid).
 
-    Backward-compatible wrapper that delegates to
-    :func:`auth_config_parser.validate_auth_details`.
-
-    The schema rules (including the per-``type`` role-enum table that
-    constrains the values of ``auth_types[].xsoar_param_map``) live in
-    ``connectus/column-schemas.md`` § "Auth Details". The legacy
-    ``xsoar_params`` key (pre-2026-05) is hard-rejected by the
-    delegated validator with a migration-help error.
+    Thin wrapper that delegates to
+    :func:`auth_config_parser.validate_auth_details`. The schema rules
+    (including the per-``type`` role-enum table that constrains the
+    values of ``auth_types[].xsoar_param_map``) live in
+    ``connectus/column-schemas.md`` § "Auth Details".
     """
     return _pkg_validate_auth_details(value)
 
@@ -270,7 +267,7 @@ def validate_params_to_capabilities(value: str) -> list[str]:
 # Allowed characters in a renamed command name. Mirrors the convention used
 # elsewhere in the migration: letters, digits, dot, underscore,
 # hyphen. The original command name has no shape check beyond non-empty
-# string (some legacy XSOAR commands use mixed case / underscores).
+# string (some XSOAR commands use mixed case / underscores).
 _SHADOWED_COMMAND_RENAMED_RE = re.compile(r"^[A-Za-z0-9._-]+$")
 
 
@@ -380,6 +377,77 @@ def auth_param_sources(auth_detail: dict) -> dict[str, list[str]]:
     except AuthConfigParseError:
         return {}
     return _pkg_auth_param_ids_with_sources(details)
+
+
+def validate_seed_overrides_no_auth_overlap(
+    seed_overrides: dict,
+    candidate_auth_details: dict,
+) -> list[str]:
+    """Reject ``set-auth --seed-param`` keys that overlap with the
+    candidate Auth Details.
+
+    The parity gate's seed-overrides are a per-invocation escape hatch
+    for params whose auto-generated placeholder trips a format
+    validator the analyzer cannot sentinel itself (cert thumbprints,
+    JWT secrets, OIDC issuer URLs, etc.). A seed-override key MUST
+    NOT name a param that is already declared in the candidate
+    ``Auth Details``, because such a param is supplied via UCP
+    credential injection (not via ``demisto.params()``) in the new
+    run anyway — the seed value would be silently discarded by the
+    UCP injection seam, masking real auth-routing bugs.
+
+    Projection rules (mirror ``auth_config_parser.auth_param_ids``):
+    the auth-param set is built by projecting
+    ``auth_types[].xsoar_param_map`` keys, collapsing dotted leaves to
+    the segment before the first ``.``, and unioning with every
+    ``other_connection`` entry.
+
+    Override-key collapsing: for ``type:9`` credentials, the dotted
+    form ``creds.password`` and ``creds.identifier`` collapse to
+    ``creds`` for the overlap check (mirroring the projection rule).
+    Flat keys are checked verbatim.
+
+    Args:
+        seed_overrides: The parsed ``{name: value}`` dict (from the
+            ``--seed-param NAME=VALUE`` CLI parser).
+        candidate_auth_details: The Auth Details JSON the operator is
+            about to commit (NOT the persisted cell — ``set-auth`` is
+            writing a NEW cell).
+
+    Returns:
+        A list of human-readable error strings, one per offending
+        seed-override key, in the same shape and phrasing as
+        :func:`workflow_state.api._check_params_to_commands_overlap`.
+        Empty list means no overlap.
+    """
+    if not seed_overrides:
+        return []
+    sources = auth_param_sources(candidate_auth_details) if candidate_auth_details else {}
+    if not sources:
+        return []
+    errors: list[str] = []
+    seen: set[str] = set()
+    for raw_key in seed_overrides:
+        # Collapse dotted-leaf form to the parent param id (matches
+        # how the auth-param projection collapses xsoar_param_map
+        # dotted keys to their parent).
+        param_id = raw_key.split(".", 1)[0] if "." in raw_key else raw_key
+        if param_id in seen:
+            continue
+        seen.add(param_id)
+        srcs = sources.get(param_id)
+        if not srcs:
+            continue
+        for src in srcs:
+            errors.append(
+                f"--seed-param {raw_key!r} overlaps with {src}; "
+                f"param {param_id!r} is supplied via UCP credential "
+                f"injection (not demisto.params()) in the new run, so "
+                f"the seed value would be silently discarded. Remove "
+                f"the override (the analyzer will not consult it for "
+                f"auth params) and re-run set-auth."
+            )
+    return errors
 
 
 # ---------------------------------------------------------------------------

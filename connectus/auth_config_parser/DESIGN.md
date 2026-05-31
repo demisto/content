@@ -55,7 +55,7 @@ connectus/auth_config_parser/
 ├── __init__.py          # Public API re-exports
 ├── types.py             # AuthType enum, AuthEntry, AuthDetails
 ├── exceptions.py        # AuthConfigParseError
-├── parser.py            # parse_auth_details() + legacy-key error helpers
+├── parser.py            # parse_auth_details()
 ├── validator.py         # validate_auth_details()
 ├── utils.py             # project_xsoar_param_to_yml_id, auth_param_ids[_with_sources]
 ├── demo.py              # Hand-run sanity script exercising 4 real integrations
@@ -90,11 +90,6 @@ trip naturally.
 | `Passthrough` | none — catch-all for browser-flow OAuth, Device Code, ROPC, Managed Identity, mTLS-only, multi-secret packages, custom signing | any non-empty string |
 | `NoneRequired` | none — used when the integration has no auth at all (no entry in `auth_types[]`) | n/a |
 
-The pre-2026-05 `OAuth2AuthCode` value was removed (Authorization
-Code flows now classify as `Passthrough`) and `Other` was renamed to
-`Passthrough`. There is **no backward-compat alias** — payloads using
-the old names are rejected by `validate_auth_details`.
-
 #### `AuthEntry` (frozen dataclass)
 
 One row in `auth_types[]`: one self-contained, mutually-exclusive UCP
@@ -121,7 +116,7 @@ The fully parsed Auth Details JSON object.
 | Field | Type | Notes |
 |---|---|---|
 | `auth_types` | `list[AuthEntry]` | Sorted by `(type, name)` ascending. Length encodes the inter-profile relation (see table below). |
-| `other_connection` | `list[str] \| None` | Optional. Sorted, unique, non-empty YML param ids that are connection-adjacent but not auth secrets (URL, proxy, insecure, port, host, region, …). `None` when the key was absent (legacy rows). |
+| `other_connection` | `list[str]` | Required. Sorted, unique, non-empty YML param ids that are connection-adjacent but not auth secrets (URL, proxy, insecure, port, host, region, …). May be `[]`. |
 
 Derived `@property` accessors:
 
@@ -152,19 +147,6 @@ instance. Structural parsing only — does NOT cross-reference
 validator). On any error, raises `AuthConfigParseError` with the
 collected `errors` list attached.
 
-Hard-rejection rules — the parser bails immediately with a migration-
-help error when it sees:
-
-- The legacy `config` key at the top level (helper:
-  [`_legacy_config_key_error()`](parser.py:78)).
-- The legacy `xsoar_params` key inside any `auth_types[]` entry
-  (helper: [`_legacy_xsoar_params_error(index)`](parser.py:55)).
-
-Both error messages quote the offending key, explain why it was
-removed, and point at
-[`connectus/column-schemas.md`](../column-schemas.md:1) for the new
-shape.
-
 #### Internal helpers
 
 - `_VALID_AUTH_TYPE_VALUES` ([`parser.py:28`](parser.py:28)) —
@@ -173,8 +155,7 @@ shape.
   per-type allowed role-value set. Only present for the types that
   have a fixed canonical role list (`APIKey`, `Plain`); for the
   others (`OAuth2*`, `Passthrough`), any non-empty string is
-  accepted. Aliased to `_ROLE_ENUM_BY_TYPE` for the validator's
-  back-compat import.
+  accepted. Aliased to `_ROLE_ENUM_BY_TYPE` for the validator.
 - `_parse_auth_entry(index, raw_dict)` ([`parser.py:106`](parser.py:106))
   — per-entry helper. Returns `(entry_or_none, errors)` and is reused
   by `parse_auth_details`.
@@ -187,12 +168,8 @@ Returns the list of error strings (empty = valid). Never raises.
 Performs ALL validation the package does on Auth Details, including:
 
 - JSON parsing (string input).
-- Required top-level key: `auth_types` (a list).
-- Hard-rejection of the legacy `config` key — short-circuits and
-  returns ONLY this error so the migration message isn't drowned
-  out by downstream complaints.
-- Hard-rejection of the legacy `xsoar_params` key inside
-  `auth_types[]` entries.
+- Required top-level keys: `auth_types` (a list) and
+  `other_connection` (a list).
 - Per-entry shape: `type` enum, `name` string-non-empty +
   unique-within-row, `xsoar_param_map` non-empty
   `dict[str, str]` with non-empty keys and non-empty role values,
@@ -286,10 +263,6 @@ prints both validation and parse output for each sample.
                                               and set-params-to-commands)
 ```
 
-Both `parse_auth_details` and `validate_auth_details` short-circuit
-with the migration-help message the moment they see the legacy
-`config` key, so consumers never have to special-case it themselves.
-
 ---
 
 ## 5. Error model
@@ -308,27 +281,16 @@ contracts because the two call sites need different things:
 `set-auth` validates first; if `validate_auth_details` returns `[]`,
 it then calls `parse_auth_details` and is guaranteed it will succeed.
 
-### 5.1 Legacy-key short-circuit
-
-Both functions short-circuit on the legacy `config` key with a single
-migration-help error. The validator returns immediately so downstream
-checks don't pile on additional complaints; the parser raises
-immediately for the same reason. The legacy `xsoar_params` key inside
-an entry does NOT short-circuit — it suppresses only the
-"`xsoar_param_map` missing" error for that one entry so the migration
-message is visible.
-
-### 5.2 Notable error strings (stable contract)
+### 5.1 Notable error strings (stable contract)
 
 The CLI grep-tests and the migration skill depend on these
 substrings being present:
 
-- `"'config': the 'config' expression key was removed in the 2026-05 schema simplification"` (legacy `config`)
-- `"legacy key 'xsoar_params' is no longer supported"` (legacy `xsoar_params`)
 - `"Missing required key: auth_types"`
+- `"Missing required key: other_connection"`
 - `"'auth_types' must be a list"`
 - `"missing 'type'"` / `"missing 'name'"` / `"missing 'xsoar_param_map'"`
-- `"invalid type '<X>'"` (covers legacy `OAuth2AuthCode` / `Other`)
+- `"invalid type '<X>'"`
 - `"duplicate 'name' '<X>'"`
 - `"'interpolated' must be a bool"`
 - `"auth_types must be sorted by (type, name)"`
@@ -357,10 +319,7 @@ Coverage areas:
 - `auth_types[]` entry parsing: every per-entry shape rule, OAuth2
   variants, `interpolated` defaulting, role values for `APIKey` and
   `Plain`.
-- `other_connection` optional/list-of-strings handling.
-- **Legacy-key rejection (2026-05):** `xsoar_params` and `config`
-  payloads must raise `AuthConfigParseError` with the migration-help
-  substrings.
+- `other_connection` required list-of-strings handling.
 - Round-trip examples from real integration rows.
 
 ### 6.2 `test_validator.py`
@@ -373,10 +332,6 @@ Coverage areas:
   form).
 - Name uniqueness + sort-order check.
 - `other_connection` duplicate / sort / non-string detection.
-- **Legacy-key rejection (2026-05):** every `config` variant
-  short-circuits to a single error containing the migration-help
-  substring; the legacy `OAuth2AuthCode` / `Other` enum names raise
-  `"invalid type '…'"`.
 
 ### 6.3 `test_utils.py`
 
@@ -385,49 +340,11 @@ Coverage areas:
 - `project_xsoar_param_to_yml_id`: bare ids, dotted ids, empty
   string, non-string input (graceful empty-string return).
 - `auth_param_ids`: dedup across entries and `other_connection`, no
-  entries → empty set, no `other_connection` → only the auth ids.
+  entries → empty set, empty `other_connection` → only the auth ids.
 - `auth_param_ids_with_sources`: descriptor format, dedup across
   dotted forms collapsing to one bare id, `other_connection`
   contributing its own descriptor.
 
 ---
 
-## Appendix A — Historical design notes
 
-The pre-2026-05 schema carried these now-removed concepts:
-
-- **`AuthDetails.config: ConfigExpression`** — top-level expression
-  field describing the relationship between profiles using
-  `REQUIRED(name1, name2)` / `OPTIONAL(name)` / `CHOICE(a, b)`
-  clauses joined by `+`, plus the literal `NoneRequired` for the
-  no-auth case.
-- **`ConfigExpression`, `ConfigClause`, `ClauseOperator`** —
-  dataclasses + enum modeling the parsed config grammar. Exported
-  from `types.py`.
-- **`parse_config(expr: str) → ConfigExpression`** — parsed the
-  grammar. Exported from `parser.py`.
-- **`validate_config(expr: str) → list[str]`** — grammar validator,
-  including cross-referencing operand names against
-  `auth_types[].name`. Exported from `validator.py`.
-- **`AuthType.OAuth2AuthCode`** — explicit enum value for the
-  Authorization Code (browser-redirect) flow.
-- **`AuthType.Other`** — explicit catch-all.
-
-All of the above are gone in 2026-05. The motivations for removal,
-in one sentence each:
-
-- `config` carried no information beyond what `auth_types`'s length
-  already encodes (the only inter-profile relation is exclusive OR),
-  so it was pure ceremony.
-- `OAuth2AuthCode` and `Other` collapsed into `Passthrough`:
-  Authorization Code's user-facing config lives on the profile rather
-  than in `metadata.auth.parameter` so it had no canonical field
-  shape for the classifier to pin to, and `Other` was redundant with
-  `Passthrough` once `OAuth2AuthCode` joined it.
-
-For the actual removed code, see the git history at the parent of
-the 2026-05 simplification commits. The validator/parser of the
-current package hard-reject any payload still using these legacy
-keys with a migration-help error pointing at
-[`column-schemas.md`](../column-schemas.md:1) §"Migration from
-`config`".

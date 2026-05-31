@@ -665,7 +665,7 @@ class TestHardErrors:
         )
         assert rc == cap.EXIT_ALL_INTERPOLATED
         assert payload["error"]["code"] == cap.ERROR_ALL_INTERPOLATED
-        assert cap._LITERAL_MARKPASS_STEP_11 in payload["error"]["message"]
+        assert cap._LITERAL_PARITY_GATE_SKIPPED in payload["error"]["message"]
 
     def test_error_connection_interpolated(self, tmp_path: Path) -> None:
         pack = _make_python_integration(tmp_path)
@@ -747,15 +747,22 @@ class TestDetection:
 
 
 # --------------------------------------------------------------------------
-# _build_base_params precedence (design §2.4)
+# _build_base_params precedence — per-invocation --seed-param overrides
 # --------------------------------------------------------------------------
 
 
 class TestBuildBaseParamsPrecedence:
-    """Per design §2.4: ``Params for test with default in code`` values must
-    win over the type-aware placeholders for the same param key. Keys
-    absent from the cell still get a placeholder; keys in the cell that
-    don't exist as YML params are silently ignored.
+    """Per-invocation ``--seed-param NAME=VALUE`` overrides must win over
+    the type-aware placeholders for the same param key. Keys absent
+    from the overrides dict still get a placeholder; stray keys (no
+    matching YML param) are silently dropped at the
+    ``build_param_values`` level (the stray-key WARNING surfaces one
+    layer up inside ``analyze_integration``, not here).
+
+    The overrides flow through
+    :func:`check_command_params.build_param_values` via the
+    ``seed_overrides`` kwarg — there is no longer a second-pass overlay
+    in :func:`_build_base_params`.
     """
 
     _YML = {
@@ -767,48 +774,58 @@ class TestBuildBaseParamsPrecedence:
         ],
     }
 
-    def test_cell_value_beats_placeholder_for_same_key(self) -> None:
-        """Column wins for keys that are also visible YML params."""
-        baseline = cap._build_base_params(self._YML, param_defaults=None)
+    def test_seed_override_beats_placeholder_for_same_key(self) -> None:
+        """Operator override wins for keys that are also visible YML params."""
+        baseline = cap._build_base_params(self._YML, seed_overrides=None)
         # Sanity: the placeholder code produced *some* value for fetch_limit.
         assert "fetch_limit" in baseline
         placeholder_value = baseline["fetch_limit"]
 
         with_overrides = cap._build_base_params(
             self._YML,
-            param_defaults={"fetch_limit": 50, "first_fetch": "3 days"},
+            seed_overrides={
+                "fetch_limit": "50-real-value",
+                "first_fetch": "3 days back",
+            },
         )
-        assert with_overrides["fetch_limit"] == 50
-        assert with_overrides["first_fetch"] == "3 days"
-        # The override is verbatim — including non-string JSON types.
-        assert isinstance(with_overrides["fetch_limit"], int)
+        # Values >=4 chars are used verbatim as ad-hoc traceable
+        # sentinels (mirroring check_command_params.py's behavior).
+        assert with_overrides["fetch_limit"] == "50-real-value"
+        assert with_overrides["first_fetch"] == "3 days back"
         # The override truly displaced the placeholder.
         assert with_overrides["fetch_limit"] != placeholder_value
 
-    def test_keys_absent_from_cell_keep_placeholders(self) -> None:
-        """Params not in the cell still get a type-aware placeholder."""
-        baseline = cap._build_base_params(self._YML, param_defaults=None)
+    def test_keys_absent_from_overrides_keep_placeholders(self) -> None:
+        """Params not in seed_overrides still get a type-aware placeholder."""
+        baseline = cap._build_base_params(self._YML, seed_overrides=None)
         with_partial = cap._build_base_params(
-            self._YML, param_defaults={"fetch_limit": 99}
+            self._YML, seed_overrides={"fetch_limit": "99-real-value"}
         )
-        # ``first_fetch`` was NOT in the cell — placeholder is preserved.
+        # ``first_fetch`` was NOT overridden — placeholder is preserved.
         assert with_partial["first_fetch"] == baseline["first_fetch"]
-        # ``isFetchEvents`` was NOT in the cell — placeholder is preserved.
+        # ``isFetchEvents`` was NOT overridden — placeholder is preserved.
         assert with_partial.get("isFetchEvents") == baseline.get("isFetchEvents")
 
-    def test_stray_keys_in_cell_are_ignored(self) -> None:
-        """Cell keys that don't map to a visible YML param are dropped."""
+    def test_stray_keys_are_silently_ignored_at_this_layer(self) -> None:
+        """Stray seed-override keys are dropped (no exception) — the
+        ``[seed] WARNING`` is surfaced one layer up inside
+        :func:`check_command_params.analyze_integration`, not by
+        :func:`build_param_values` itself, so this layer is silent.
+        """
         result = cap._build_base_params(
             self._YML,
-            param_defaults={"fetch_limit": 7, "this_param_does_not_exist": "oops"},
+            seed_overrides={
+                "fetch_limit": "7-real-value",
+                "this_param_does_not_exist": "oops",
+            },
         )
-        assert result["fetch_limit"] == 7
+        assert result["fetch_limit"] == "7-real-value"
         assert "this_param_does_not_exist" not in result
 
-    def test_empty_or_none_cell_is_a_noop(self) -> None:
+    def test_empty_or_none_overrides_is_a_noop(self) -> None:
         """``None`` and ``{}`` both leave the placeholder baseline intact."""
-        baseline = cap._build_base_params(self._YML, param_defaults=None)
-        empty = cap._build_base_params(self._YML, param_defaults={})
+        baseline = cap._build_base_params(self._YML, seed_overrides=None)
+        empty = cap._build_base_params(self._YML, seed_overrides={})
         assert empty == baseline
 
 

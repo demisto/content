@@ -1132,11 +1132,15 @@ should be read alongside it.
 
 > **Status (2026-05 rewrite).** This document was rewritten to match the
 > current implementation after the auth-schema simplification. The pre-
-> 2026-05 design carried a `config` expression in `Auth Details`, the
-> `OAuth2AuthCode` and `Other` enum members, a per-row `requires auth
-> parity test` flag column, and a planned cell-lookup model where the
-> analyzer read `Auth Details` directly from the workflow CSV. All of
-> those were removed. See
+> 2026-05 design carried a `config` expression in `Auth Details`, a
+> richer `AuthType` enum (additional members for browser-redirect
+> Authorization Code and a catch-all `Other` that was renamed to
+> `Passthrough`), a per-row `requires auth parity test` flag column,
+> and a planned cell-lookup model where the analyzer read `Auth Details`
+> directly from the workflow CSV. All of those were removed. The
+> surviving `AuthType` enum members are `OAuth2ClientCreds`, `OAuth2JWT`,
+> `APIKey`, `Plain`, `Passthrough`, `NoneRequired` — see
+> [`auth_config_parser/types.py`](auth_config_parser/types.py:11). See
 > [Appendix A — Historical design notes](#appendix-a--historical-design-notes)
 > for the short version of what changed. The canonical Auth Details
 > schema lives at [`column-schemas.md`](column-schemas.md:1).
@@ -1149,17 +1153,20 @@ Verify that for **each non-interpolated `auth_types[]` profile** in an
 integration's `Auth Details`, the secret values reach the wire in the
 **same location** whether they were supplied via:
 
-- the **legacy path** — `demisto.params()` → integration code →
+- the **non-UCP path** — `demisto.params()` → integration code →
   `BaseClient.__init__` → `BaseClient._http_request`; or
-- the **new path** — UCP credential injection via
+- the **UCP path** — credential injection via
   `demisto.getUCPCredentials()` (and the
   `CommonServerPython.get_ucp_credentials()` wrapper that delegates to
   it) → `BaseClient._inject_ucp_credentials` →
   `_apply_ucp_credentials` → `_apply_ucp_<type>`.
 
 If the wire locations differ, UCP migration would silently break the
-integration. The analyzer is the gate on workflow step #11
-(`auth parity test passes`).
+integration. As of schema_version=2 (2026-05) the analyzer is the
+parity gate invoked **inside** [`workflow_state.set_integration_auth`](workflow_state/api.py)
+(the `set-auth` CLI verb); a passing or structurally-skipped result is
+the precondition for the `Auth Details` cell to be persisted at all.
+The standalone `auth parity test passes` checkpoint has been removed.
 
 The analyzer is intentionally orchestration-light:
 
@@ -1265,7 +1272,7 @@ The mock callable itself is built by
 `method_unique_id` argument the real `getUCPCredentials` takes —
 there is exactly one connection in scope per parity run.
 
-For the legacy old-side seeding, [`build_old_params`](check_auth_parity.py:389)
+For the non-UCP-side seeding, [`build_old_params`](check_auth_parity.py:389)
 deep-copies the base param dict and writes each sentinel into the
 exact XSOAR path the integration would normally read from. Dotted
 paths (`credentials.password`) expand into nested dicts.
@@ -1381,8 +1388,8 @@ Hard-error checks fire in this order inside
 1. `ERROR_NON_PYTHON` — YML-level check first (cheapest).
 2. `ERROR_NO_BASECLIENT` — Python-source grep.
 3. `validate_auth_details` — short-circuits with `ValueError` on any
-   schema problem (including the legacy `config` key). The wrapping
-   `try` in `main()` converts this to `ERROR_UNHANDLED` (exit 3).
+   schema problem. The wrapping `try` in `main()` converts this to
+   `ERROR_UNHANDLED` (exit 3).
 4. `ERROR_ALL_INTERPOLATED` / `ERROR_CONNECTION_INTERPOLATED` — only
    after the schema is known valid.
 5. Per-connection skip codes (`skipped_*`) — emitted per entry, never
@@ -1398,7 +1405,7 @@ Hard-error checks fire in this order inside
 python3 connectus/check_auth_parity.py <integration_path> \
     --integration-id <id> \
     --auth-details '<json>' | --auth-details-file <path> \
-    [--param-defaults '<json>' | --param-defaults-file <path>] \
+    [--seed-param NAME=VALUE [--seed-param NAME=VALUE ...]] \
     [--display-name <human name>] \
     [--commands <cmd> [<cmd> ...]] \
     [--connection <auth_types[].name>] \
@@ -1414,10 +1421,58 @@ in the CSV — passing the cell value at the CLI keeps the analyzer
 stateless and re-runnable outside the pipeline. Empty input is an
 exit-2 error; pass `-` to read from stdin.
 
-`--param-defaults` is optional and defaults to `{}`. (The pre-2026-05
-`Params for test with default in code` CSV column that used to feed
-this flag was removed. Operators needing specific defaults pass an
-inline JSON object.)
+### Per-param seed-value overrides (`--seed-param NAME=VALUE`)
+
+Repeatable per-invocation escape hatch for params whose
+auto-generated placeholder trips a format validator the analyzer
+cannot sentinel itself — cert-thumbprint hex validators in
+`MicrosoftClient`, JWT secrets with format validation, OIDC issuer
+URLs, custom regex-validated tokens, etc.
+
+The auto-coercion in [`check_command_params.build_param_values`](check_command_params.py:1)
+already covers the common cases (cert / thumbprint / private_key for
+the Microsoft slot via case-insensitive substring match on the param
+name). `--seed-param` is the override hatch for everything else.
+
+Value-precedence for a non-auth YML param is:
+
+1. The per-invocation `--seed-param NAME=VALUE` override (when
+   supplied) — wins for the named param, taking effect inside the
+   type-aware placeholder pass below.
+2. [`_ccp.build_param_values()`](check_command_params.py:1) auto-generated
+   placeholder — sentinels for non-cert params, cert/PEM/thumbprint
+   coercion for the Microsoft slot.
+
+Dotted-leaf rule for YML `type:9` credentials widgets:
+
+- `--seed-param creds.identifier=<value>` sets the identifier leaf.
+- `--seed-param creds.password=<value>` sets the password leaf.
+- Either leaf may be omitted; omitted leaves keep their default
+  sentinel.
+- **Flat `--seed-param creds=<value>` on a `type:9` widget is rejected
+  with exit code 2** and an actionable error pointing at the
+  dotted-leaf form.
+- Stray dotted-leaf overrides (unknown parent, wrong-type parent,
+  leaf not in `{identifier, password}`) surface as `[seed] WARNING`
+  lines on stderr and do **NOT** abort the run.
+
+Values ≥4 chars long act as ad-hoc traceable sentinels — they appear
+verbatim in captured HTTP, exactly the same as the auto-generated
+sentinels do, so post-hoc attribution still works.
+
+The skill's auth-parity playbook (`connectus/connectus-migration-SKILL.md`
+§1.12) documents the recovery loop.
+
+> The pre-2026-05 `--param-defaults` / `--param-defaults-file` flags
+> were removed in this revision. They never produced useful semantics
+> at the parity-gate layer (the cell value was hard-coded to `{}` by
+> `set-auth` anyway). Per-param value overrides now come from
+> `--seed-param NAME=VALUE` at every layer — the standalone analyzer
+> CLI, the in-process `check_auth_parity()` API, and the `set-auth`
+> verb that wraps it. The persisted `Params for test with default in
+> code` CSV column still exists, is still set during Step 3a, and is
+> still consumed downstream by the Step 3b manifest generator — but
+> the parity gate no longer reads it.
 
 Output: a single JSON object on stdout with these top-level keys:
 
@@ -1434,27 +1489,40 @@ Output: a single JSON object on stdout with these top-level keys:
 
 The migration skill (per
 [`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1))
-invokes the analyzer at workflow step #11 (`auth parity test
-passes`). The skill's recipe is roughly:
+invokes the analyzer **as part of `set-auth`** (schema_version=2). The
+analyzer's result decides whether the candidate `Auth Details` cell is
+persisted at all; the standalone `auth parity test passes` workflow
+checkpoint that used to follow has been removed. The orchestration
+recipe inside [`set_integration_auth`](workflow_state/api.py) is roughly:
 
-1. Read `Auth Details` from the CSV via
-   `workflow_state.py show-step --raw <id> "Auth Details"`.
-2. Invoke `check_auth_parity.py` with the JSON above as
-   `--auth-details`.
-3. Parse the resulting stdout JSON:
+1. The candidate JSON payload arrives directly via the API/CLI call.
+2. Invoke `check_auth_parity.check_auth_parity` in-process with the
+   payload (no subprocess fork; no CSV round-trip).
+3. Evaluate the resulting JSON envelope:
    - **All per-connection statuses are `pass` (or a recognized skip)**
-     → `markpass "<id>" "auth parity test passes"`.
-   - **Any `fail`** → fix the code (typically by overriding
-     `BaseClient._apply_ucp_<type>` to set the integration's actual
-     wire slot, or by marking the offending entry `interpolated: true`
-     as a last resort), re-run, repeat.
-   - **`inconclusive`** → investigate the diagnostics — most often a
-     `RUN_FAILED_*` from a `test-module` that crashes before issuing
-     HTTP (Aruba-style, or pre-flight URL rejection); usually
-     resolved by `--commands <other-cmd>`.
-   - **A hard error** → handle per the grep literal in the message
-     (mark interpolated for `_LITERAL_MARK_AUTH`; mark step passed for
-     `_LITERAL_MARKPASS_STEP_11`).
+     → commit the `Auth Details` cell to the CSV (cascade-reset
+     downstream Params\* columns per the normal `set-auth` semantics).
+   - **Any `fail`** → reject the write; return the full parity envelope
+     under `result["parity"]` so the operator/AI can fix the code
+     (typically by overriding `BaseClient._apply_ucp_<type>` to set the
+     integration's actual wire slot, or by marking the offending entry
+     `interpolated: true` as a last resort), re-run `set-auth`, repeat.
+   - **`inconclusive`** → treated as a *pass* by the gate (so set-auth
+     proceeds). Inspect the parity envelope; most often a `RUN_FAILED_*`
+     from a `test-module` that crashes before issuing HTTP (Aruba-style,
+     or pre-flight URL rejection). If the failure indicates a real
+     regression that the gate let through, manually re-run
+     `check_auth_parity.py` with a different `--commands <other-cmd>`
+     to confirm.
+   - **A hard error / structural skip** → treated as a *pass* by the
+     gate (so set-auth proceeds), since these codes (`ERROR_NO_BASECLIENT`,
+     `ERROR_NON_PYTHON`, `ERROR_ALL_INTERPOLATED`,
+     `ERROR_CONNECTION_INTERPOLATED`, `ERROR_INTEGRATION_REJECTS_HTTP`)
+     are the well-defined "not parity-testable" cases. The grep literal
+     in the message still helps operators: `_LITERAL_MARK_AUTH` flags
+     the integration as a permanent `interpolated: true` candidate;
+     `_LITERAL_PARITY_GATE_SKIPPED` still appears in the
+     all-interpolated message.
 
 Twelve copy-paste demos covering every status code live in
 [`connectus/demo_check_auth_parity.md`](demo_check_auth_parity.md).
@@ -1492,12 +1560,13 @@ The pre-2026-05 design carried these now-removed concepts:
   clauses). The analyzer originally parsed it via
   `parse_config()`. Removed because the only inter-profile relation
   is exclusive-OR, fully encoded by `len(auth_types)`.
-- **`AuthType.OAuth2AuthCode`** — explicit enum for browser-redirect
-  Authorization Code flow. Folded into `Passthrough` because the
-  user-facing config lives on the profile rather than in
-  `metadata.auth.parameter`, so it has no canonical field shape.
-- **`AuthType.Other`** — renamed to `Passthrough` (no back-compat
-  alias).
+- **`AuthType.Passthrough`** (formerly two members: an explicit
+  enum for browser-redirect OAuth Authorization Code flow, and a
+  catch-all `Other`). Both pre-2026-05 members were folded into
+  the single `Passthrough` value with no back-compat alias —
+  Authorization Code has no canonical field shape (the user-facing
+  config lives on the profile rather than in
+  `metadata.auth.parameter`) and `Other` was simply renamed.
 - **`requires auth parity test` flag column** in the pipeline CSV —
   removed in 2026-05; the analyzer is now unconditional.
 - **`skipped_other_type`** per-connection status — renamed to

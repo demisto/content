@@ -43,7 +43,7 @@ def _auth_other_connection_summary(raw: str) -> str:
     if not isinstance(parsed, dict):
         return "(invalid Auth Details object)"
     if "other_connection" not in parsed:
-        return "(not set — re-run set-auth)"
+        return "(missing — re-run set-auth)"
     oc = parsed["other_connection"]
     if not isinstance(oc, list):
         return f"(malformed: expected list, got {type(oc).__name__})"
@@ -156,7 +156,7 @@ def format_step_value(row: dict[str, str], step_name: str) -> str:
                 and "other_connection" not in parsed
             ):
                 pretty += (
-                    "\n\n  other_connection: (not set — re-run set-auth)"
+                    "\n\n  other_connection: (missing — re-run set-auth)"
                 )
             return f"{header}\n{pretty}"
         except json.JSONDecodeError:

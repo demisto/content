@@ -19,6 +19,39 @@ as an opaque `inconclusive` with empty captures.
 
 ---
 
+# Per-param value seeding via `--seed-param`
+
+By default the harness auto-generates a `SENTINEL_PARAM_<name>` value
+for every YML param so it can grep for them on the wire. When such an
+auto-generated value trips a format validator at module import or in
+`Client.__init__` (cert thumbprints, JWT secrets with format checks,
+OIDC issuer URLs, enum-value selectors like Case 5's
+`authentication_type`), both runs crash before any HTTP request and
+the connection lands as `inconclusive`. The fix is to pin a real value
+with `--seed-param`:
+
+- **Repeatable:** each `--seed-param NAME=VALUE` appends to a dict;
+  pass it multiple times for multiple params.
+- **Traceable sentinel:** any value ≥4 characters appears verbatim in
+  the captured HTTP, so a seeded value still acts as a grep target.
+- **Dotted-leaf for `type: 9` credentials:** use
+  `--seed-param creds.identifier=<value>` and
+  `--seed-param creds.password=<value>` to seed each leaf
+  independently.
+- **Flat-on-`type: 9` is rejected:** a flat
+  `--seed-param creds=<value>` against a `type: 9` widget exits with
+  code `2` and an actionable error pointing at the dotted-leaf form.
+  Stray dotted-leaf overrides against non-`type: 9` params surface as
+  `[seed] WARNING` lines on stderr (non-fatal).
+
+Auto-coerced params (cert / thumbprint / private_key) usually don't
+need `--seed-param` — built-in coercion handles them. The flag is for
+the auto-coercion's blind spots. See
+[`connectus/connectus-migration-SKILL.md`](connectus/connectus-migration-SKILL.md:1)
+§1.12 for the full skill-level worked-examples doc.
+
+---
+
 # PASS cases (zero code changes)
 
 ## Case 1 — PASS: APIKey, Bearer header (Tavily)
@@ -127,19 +160,31 @@ diagnostically but not a sustainable production classification without
 the code change below.
 
 ```bash
+# Basic Auth run
 env -u ALL_PROXY -u all_proxy -u FTP_PROXY -u ftp_proxy \
 python3 connectus/check_auth_parity.py \
     Packs/TeamCymru/Integrations/TeamCymruScout \
     --integration-id "Team Cymru Scout" \
+    --connection basic_auth \
+    --seed-param authentication_type='Basic Auth' \
+    --auth-details '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_param_map":{"api_key.password":"key"}},{"type":"Plain","name":"basic_auth","xsoar_param_map":{"basic_auth.identifier":"username","basic_auth.password":"password"}}],"other_connection":["authentication_type","insecure","proxy"]}'
+
+# API Key run
+env -u ALL_PROXY -u all_proxy -u FTP_PROXY -u ftp_proxy \
+python3 connectus/check_auth_parity.py \
+    Packs/TeamCymru/Integrations/TeamCymruScout \
+    --integration-id "Team Cymru Scout" \
+    --connection api_key \
+    --seed-param authentication_type='API Key' \
     --auth-details '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_param_map":{"api_key.password":"key"}},{"type":"Plain","name":"basic_auth","xsoar_param_map":{"basic_auth.identifier":"username","basic_auth.password":"password"}}],"other_connection":["authentication_type","insecure","proxy"]}'
 ```
 
 The harness runs each `auth_types[]` entry independently. You will
 likely need to pin the in-code selector per-run so the integration's
 branching exercises the right path; pass `--connection basic_auth
---param-defaults '{"authentication_type":"Basic Auth"}'` for the Plain
-run and `--connection api_key --param-defaults '{"authentication_type":"API Key"}'`
-for the APIKey run. Without the pin, one of the two will trip
+--seed-param authentication_type='Basic Auth'` for the Plain run and
+`--connection api_key --seed-param authentication_type='API Key'` for
+the APIKey run. Without the pin, one of the two will trip
 [`validate_params`](Packs/TeamCymru/Integrations/TeamCymruScout/TeamCymruScout.py:246)
 on the wrong-cred slot being empty and yield `inconclusive` instead of
 the expected pass/fail.

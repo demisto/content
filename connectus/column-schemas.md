@@ -35,12 +35,9 @@ Per-integration authentication classification. One JSON object per row.
 }
 ```
 
-The only required top-level key is `auth_types` (a list).
-`other_connection` is optional (defaults to absent for legacy rows; new
-writes should always include it as either a list or `[]`). The
-historical `config` expression field was removed in the 2026-05 schema
-simplification (see [Migration from `config`](#migration-from-config)
-below for the migration story).
+The required top-level keys are `auth_types` (a list) and
+`other_connection` (a list — use `[]` when the integration has no
+connection-adjacent non-auth params).
 
 ### Profile model — one entry = one mutually-exclusive way to authenticate
 
@@ -104,8 +101,6 @@ sorted by `(type, name)` ascending.
   | `Plain` | `"username"`, `"password"` |
   | `OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough` | any non-empty string (enum **deliberately undefined for now** — will be narrowed in a future PR). Typical illustrative values: `"client_id"`, `"client_secret"`, `"access_token"`, `"credentials_file"`, `"subject_email"`. |
   | `NoneRequired` | n/a (no entries in `auth_types[]` at all) |
-
-  > **Enum history (2026-05).** The previous `"OAuth2AuthCode"` value was removed (Authorization Code flows are now classified as `"Passthrough"`), and the previous `"Other"` value was renamed to `"Passthrough"`. There is no backward-compatibility alias in [`auth_config_parser/types.py`](auth_config_parser/types.py:1) — payloads using either old name are rejected by `set-auth`.
 
   See [`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1)
   §1.2.6 "Authentication Profile Types — Fields Reference" for the
@@ -210,62 +205,6 @@ ONLY `<id>.password`. See Example 1 below.
 - `NoneRequired` integrations have **no** `auth_types[]` entries
   (the array is `[]`), so the map requirement is moot for them — see
   Example 5.
-
-### Migration from `xsoar_params`
-
-The pre-2026-05 shape — `auth_types[].xsoar_params: list[str]` — is
-**gone**. `set-auth` rejects any payload that still contains
-`xsoar_params` (the validator returns a migration-help error pointing
-at this section). To re-classify a legacy row:
-
-1. Look up the YML param ids that were in the old `xsoar_params`
-   array.
-2. Pick a `type` from the table above and assign each XSOAR field
-   path a role from that type's allowed set.
-3. Write the new payload using one of the 5 canonical examples below
-   as a template.
-4. Re-run `set-auth`. The cascade reset wipes downstream artifacts
-   exactly as it did before — the schema change does not alter reset
-   semantics.
-
-### Migration from `config`
-
-The pre-2026-05 `config` expression field was **removed** in the
-schema simplification. Its grammar
-(`REQUIRED(...)` / `OPTIONAL(...)` / `CHOICE(...)` / `+`-joining /
-`NoneRequired`) carried no information beyond what `auth_types[]`
-already encodes (the **only** legal inter-profile relation is
-exclusive-OR, and that is fully derivable from the list's length).
-`set-auth` now **hard-rejects** any payload that still contains a
-`config` key with a migration-help error pointing here.
-
-To re-classify a legacy row:
-
-1. **Drop the `config` key entirely.** No replacement is needed.
-2. **Re-shape `auth_types[]` to fit the new profile model.** Apply
-   the rules:
-   - **`REQUIRED(<name>)`** (single operand) → the integration has a
-     single profile; keep just one entry in `auth_types[]`.
-   - **`REQUIRED(a, b, …)` (multi-arg AND) → REJECTED in the new
-     model.** AND-ed secrets within one auth flow live inside a
-     single profile's `xsoar_param_map`. Merge the entries into one
-     `Passthrough` profile (if the combined shape doesn't fit a
-     canonical profile) and put every leaf in its map. See
-     [`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1)
-     §1.2.2a for the multi-secret rule.
-   - **`CHOICE(a, b, …)`** → keep all entries; the OR is now implicit
-     (length ≥ 2).
-   - **`REQUIRED(a) + OPTIONAL(b)`** → mostly meant "two separate
-     ways to authenticate". Rewrite as exclusive-OR between two
-     profiles (`auth_types == [a, b]`).
-   - **`OPTIONAL(...)`** → also gone. The "optional add-on" pattern
-     should be re-expressed as either: (a) a separate alternative
-     profile (if the option is large enough to be its own auth
-     flow), or (b) extra leaves inside the existing profile's
-     `xsoar_param_map` (if the option is just an additional
-     auth-handshake field).
-   - **`NoneRequired`** → `auth_types: []` with no `config` key.
-3. Re-run `set-auth`. The cascade reset still applies.
 
 ### Canonical worked examples
 
@@ -490,7 +429,7 @@ on-disk JSON value is `"Passthrough"`).
 - **`metadata.auth.parameter` fields:**
   - `api_key` — token (`input`, `mask: true`).
 - **Classification:** `APIKey`. **Single static secret only.** Bearer tokens, custom `X-API-Key` headers, query-param keys, and single-secret HMAC signing all fit.
-- **Multi-key NOT supported.** Datadog (`api_key`+`application_key`), AWS (`access_key`+`secret_key`), Akamai EdgeGrid (3 tokens), GitHub App (`app_id`+`private_key`+`installation_id`) — these are all `Passthrough` because the `api_key` profile only exposes one `api_key` field. The legacy `application_key` slot is not part of the canonical profile.
+- **Multi-key NOT supported.** Datadog (`api_key`+`application_key`), AWS (`access_key`+`secret_key`), Akamai EdgeGrid (3 tokens), GitHub App (`app_id`+`private_key`+`installation_id`) — these are all `Passthrough` because the `api_key` profile only exposes one `api_key` field.
 
 #### 5. `Passthrough` (catch-all)
 
@@ -725,7 +664,7 @@ shadowed commands were detected for this integration.
 
 Where:
 
-- `<original_command_name>` is a non-empty string (matches the legacy
+- `<original_command_name>` is a non-empty string (matches the
   XSOAR command name; case / underscores allowed).
 - `<original>-<brand>` is a non-empty string drawn from
   `^[A-Za-z0-9._-]+$`, and MUST equal the literal prefix

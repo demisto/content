@@ -1823,7 +1823,7 @@ def _map_type_0(yml_param: dict) -> dict:
 
 
 def _map_type_1(yml_param: dict) -> dict:
-    """XSOAR type 1 — Hidden short text (legacy) → connectus `input` with mask."""
+    """XSOAR type 1 — Hidden short text → connectus `input` with mask."""
     field = {"id": yml_param["name"], "field_type": "input", "options": {"mask": True}}
     _apply_common_field_metadata(field, yml_param)
     return field

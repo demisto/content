@@ -17,6 +17,7 @@ from workflow_state.api import (
     _check_params_to_commands_overlap,
     auth_param_ids,
     get_integration_files,
+    set_integration_auth,
     test_module_params,
 )
 from workflow_state.config_loader import get_config
@@ -251,8 +252,134 @@ def _set_json_data_step(args: list[str], step_name: str, setter_cmd: str) -> Non
         print(f"  🎉 All {len(cfg.steps)} steps complete!")
 
 
+def _parse_seed_param_flags(args: list[str]) -> tuple[list[str], dict[str, str]]:
+    """Extract repeatable ``--seed-param NAME=VALUE`` flags from ``args``.
+
+    Returns ``(remaining_args, seed_overrides_dict)``. The dotted-leaf
+    rules (``NAME.identifier`` / ``NAME.password`` for YML type:9
+    credentials; flat ``NAME=VALUE`` on a type:9 widget rejected with
+    exit code 2) are NOT enforced here — they fire inside
+    :func:`check_command_params.build_param_values` once the YML param
+    types are known. This parser only handles the surface CLI shape:
+    repeatable flag, ``NAME=VALUE`` payload, duplicate-NAME rejection.
+
+    Exits with code 2 on malformed input (missing ``=``, empty NAME,
+    duplicate NAME) — same shape as ``check_command_params.py``.
+    """
+    remaining: list[str] = []
+    raw_pairs: list[str] = []
+    it = iter(args)
+    for arg in it:
+        if arg == "--seed-param":
+            value = next(it, None)
+            if value is None:
+                print(
+                    "ERROR: --seed-param requires a NAME=VALUE argument",
+                    file=sys.stderr,
+                )
+                sys.exit(2)
+            raw_pairs.append(value)
+        elif arg.startswith("--seed-param="):
+            raw_pairs.append(arg[len("--seed-param="):])
+        else:
+            remaining.append(arg)
+    seed_overrides: dict[str, str] = {}
+    for entry in raw_pairs:
+        if "=" not in entry:
+            print(
+                f"ERROR: --seed-param entry missing '=' separator: "
+                f"{entry!r}; expected NAME=VALUE",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        name, _, value = entry.partition("=")
+        name = name.strip()
+        if not name:
+            print(
+                f"ERROR: --seed-param entry has empty NAME: {entry!r}; "
+                f"expected NAME=VALUE",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        if name in seed_overrides:
+            print(
+                f"ERROR: --seed-param NAME={name!r} supplied more than once",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        seed_overrides[name] = value
+    return remaining, seed_overrides
+
+
 def cmd_set_auth(args: list[str]) -> None:
-    _set_json_data_step(args, "Auth Details", "set-auth")
+    """Set the ``Auth Details`` cell via the parity-gated API.
+
+    Supports repeatable ``--seed-param NAME=VALUE`` flags that are
+    forwarded to the parity gate's analyzer for params whose
+    auto-generated placeholder trips a format validator the analyzer
+    cannot sentinel itself (cert thumbprints, JWT secrets with format
+    validation, OIDC issuer URLs, etc.). Seed-overrides are NEVER
+    persisted to the CSV — they only flow through to the parity gate
+    for this single ``set-auth`` invocation.
+
+    Overlap with the candidate ``Auth Details`` is hard-rejected
+    before the parity gate runs (see
+    :func:`workflow_state.validators.validate_seed_overrides_no_auth_overlap`).
+    """
+    args, seed_overrides = _parse_seed_param_flags(args)
+    if len(args) < 2:
+        print("Usage: workflow_state.py set-auth <integration_id> '<json>' "
+              "[--seed-param NAME=VALUE ...]")
+        print("  The value must be valid JSON (see connectus/column-schemas.md).")
+        sys.exit(1)
+
+    name = args[0]
+    raw = " ".join(args[1:])
+
+    # Schema validation (same shape as _set_json_data_step) — defensive
+    # JSON-parse here so we can give a clean CLI error before the API
+    # rejects with the same error.
+    try:
+        json.loads(raw)
+    except json.JSONDecodeError as e:
+        print("ERROR: 'Auth Details' must be valid JSON.")
+        print(f"  Got: {raw}")
+        print(f"  Parse error: {e}")
+        print(f"  Example: workflow_state.py set-auth \"{name}\" '{{}}'")
+        sys.exit(1)
+
+    result = set_integration_auth(
+        name,
+        raw,
+        seed_overrides=seed_overrides or None,
+    )
+    error = result.get("error")
+    if error:
+        # Unwrap dict-shaped error envelopes (e.g. ERROR_SEED_AUTH_OVERLAP).
+        if isinstance(error, dict):
+            msg = error.get("message") or str(error)
+            print(f"ERROR: {msg}")
+            sys.exit(int(error.get("exit_code") or 1))
+        print(f"ERROR: {error}")
+        sys.exit(1)
+
+    msg = result.get("message")
+    if msg:
+        print(msg)
+    cur_step = result.get("current_step")
+    if cur_step:
+        cfg = get_config()
+        target = cfg.step_by_name.get(cur_step)
+        if target is not None:
+            print(f"  Current step: #{target.index} {cur_step}")
+        else:
+            print(f"  Current step: {cur_step}")
+    elif msg:
+        # current_step is None and we got a success message → workflow
+        # is fully complete (mirrors _set_json_data_step's all-done
+        # branch).
+        cfg = get_config()
+        print(f"  🎉 All {len(cfg.steps)} steps complete!")
 
 
 def cmd_set_params_to_commands(args: list[str]) -> None:
@@ -1482,7 +1609,7 @@ Usage examples:
   python3 connectus/workflow_state.py next
   python3 connectus/workflow_state.py set-assignee "Cisco Spark" "John Doe"
   python3 connectus/workflow_state.py set-auth "Cisco Spark" '<json>'
-  python3 connectus/workflow_state.py markpass "Cisco Spark" "wrote/checked code"
+  python3 connectus/workflow_state.py markpass "Cisco Spark" "write tests"
 """
 
 
@@ -1538,9 +1665,8 @@ def main() -> None:
     COMMANDS[command](args)
 
 
-# Re-exports for back-compat: tests and external callers can import
-# `validate_auth_detail` / `validate_params_to_commands` from the module
-# (both were CLI-side names in the legacy file).
+# Re-exports so tests and external callers can import
+# `validate_auth_detail` / `validate_params_to_commands` from this module.
 __all__ = sorted({
     *COMMANDS.keys(),
     "main",

@@ -22,7 +22,7 @@ under ``Packs/``, this script:
 The four integrations were chosen to exercise distinct auth shapes:
 
 * **AbnormalSecurityEventCollector** -- single API token (APIKey).
-* **Akamai_WAF** -- EdgeGrid multi-secret + interpolated legacy params
+* **Akamai_WAF** -- EdgeGrid multi-secret + interpolated plaintext params
   (Plain with ``interpolated=true`` on the human-facing fields).
 * **Okta_v2** -- CHOICE between APIKey or OAuth2-JWT (private key).
 * **SAPBTP** -- CHOICE between Plain client-credentials or Plain
@@ -92,9 +92,9 @@ SAMPLES: list[dict] = [
         "yaml_path": "Packs/Akamai_WAF/Integrations/Akamai_WAF/Akamai_WAF.yml",
         "notes": (
             "EdgeGrid auth requires THREE secrets: clientToken + "
-            "accessToken + clientSecret. The YAML keeps both the legacy "
+            "accessToken + clientSecret. The YAML keeps both the "
             "plaintext fields (`clientToken`/...) and the encrypted "
-            "`credentials_*` variants. The legacy fields are marked "
+            "`credentials_*` variants. The plaintext fields are marked "
             "interpolated=true to reflect that the platform templates "
             "their values at runtime from the encrypted siblings."
         ),
@@ -102,7 +102,7 @@ SAMPLES: list[dict] = [
             "auth_types": [
                 {
                     "type": "Plain",
-                    "name": "edgegrid_legacy",
+                    "name": "edgegrid_plaintext",
                     "xsoar_param_map": {
                         # EdgeGrid bundles three secrets; the role
                         # strings are deliberately illustrative —

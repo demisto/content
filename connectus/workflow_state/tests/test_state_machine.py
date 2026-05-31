@@ -177,7 +177,7 @@ class TestResetAfter:
         assert preserved == []
 
     def test_reset_after_default_ignores_preserve_flag(self, tmp_path) -> None:
-        """Default ``respect_preserve=False`` keeps legacy set-auth cascade behaviour:
+        """Default ``respect_preserve=False`` matches the set-auth cascade behaviour:
         every later step is wiped regardless of preserve_on_reset."""
         cfg = _write_and_load(tmp_path, _PRESERVE_FIXTURE_YAML)
         row = {
@@ -188,7 +188,7 @@ class TestResetAfter:
             "delta": "✅",
         }
         cleared, preserved = reset_after(row, cfg.step_by_name["alpha"])
-        # Legacy default: beta is wiped despite preserve_on_reset.
+        # Default: beta is wiped despite preserve_on_reset.
         assert row["beta"] == ""
         assert row["gamma"] == ""
         assert row["delta"] == ""
@@ -251,7 +251,7 @@ class TestPreserveOnResetIntegration:
         self, tmp_path
     ) -> None:
         """The set-auth cascade goes through apply_step_action, which calls
-        reset_after with the legacy default (respect_preserve=False). Even
+        reset_after with the default (respect_preserve=False). Even
         a preserve_on_reset=true column gets wiped — by design (auth changes
         invalidate downstream artifacts)."""
         cfg = _write_and_load(tmp_path, _PRESERVE_FIXTURE_YAML)

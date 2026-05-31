@@ -100,15 +100,16 @@ class TestAuthParamIds:
         result = auth_param_ids(details)
         assert result == {"host", "port"}
 
-    def test_auth_param_ids_no_other_connection(self) -> None:
-        """Legacy None → only auth_types ids."""
+    def test_auth_param_ids_empty_other_connection(self) -> None:
+        """Empty other_connection → only auth_types ids."""
         details = parse_auth_details({
             "auth_types": [
                 {"type": "APIKey", "name": "api_key",
                  "xsoar_param_map": {"api_key": "key"}}
             ],
+            "other_connection": [],
         })
-        assert details.other_connection is None
+        assert details.other_connection == []
         result = auth_param_ids(details)
         assert result == {"api_key"}
 
@@ -238,13 +239,14 @@ class TestAuthParamIdsWithSources:
         assert sources["proxy"] == ["other_connection"]
         assert sources["url"] == ["other_connection"]
 
-    def test_auth_param_ids_with_sources_no_other_connection(self) -> None:
-        """Legacy None other_connection → only auth_types sources."""
+    def test_auth_param_ids_with_sources_empty_other_connection(self) -> None:
+        """Empty other_connection → only auth_types sources."""
         details = parse_auth_details({
             "auth_types": [
                 {"type": "APIKey", "name": "api_key",
                  "xsoar_param_map": {"api_key": "key"}}
             ],
+            "other_connection": [],
         })
         sources = auth_param_ids_with_sources(details)
         assert "api_key" in sources
@@ -297,9 +299,7 @@ class TestAuthParamIdsWithSources:
         sources = auth_param_ids_with_sources(details)
         assert "credentials" in sources
         descriptor = sources["credentials"][0]
-        # New-shape field name (not legacy ``xsoar_params=``).
         assert "xsoar_param_map={" in descriptor
-        assert "xsoar_params=" not in descriptor
         # The full map (keys + role values) is quoted verbatim.
         assert "'credentials.password': 'key'" in descriptor
         # The entry-level name is also quoted.
