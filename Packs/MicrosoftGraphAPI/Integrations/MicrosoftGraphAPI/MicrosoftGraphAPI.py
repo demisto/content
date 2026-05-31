@@ -29,7 +29,6 @@ class MsGraphClient:
         client_args = {
             "base_url": azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"),
             "auth_id": app_id,
-            "scope": Scopes.graph,
             "enc_key": app_secret,
             "tenant_id": tenant_id,
             "verify": verify,
