@@ -1014,3 +1014,81 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### msgraph-get-sensitivity-label
+
+***
+Retrieves the sensitivity label currently assigned to a drive item. Returns the label ID, display name, and protection state regardless of whether the label has encryption enabled.
+
+#### Base Command
+
+`msgraph-get-sensitivity-label`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required |
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exist, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exist, configure the 'Entra ID Users' integration and use the msgraph-user-list command. | Required |
+| item_id | The ID of the drive item to read the sensitivity label from. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraphFiles.SensitivityLabel.itemId | String | The ID of the drive item the label was retrieved from. |
+| MsGraphFiles.SensitivityLabel.id | String | The GUID of the sensitivity label assigned to the drive item, or empty string when no label is assigned. |
+| MsGraphFiles.SensitivityLabel.displayName | String | The human-readable display name of the assigned sensitivity label, or empty string when no label is assigned. |
+| MsGraphFiles.SensitivityLabel.protectionEnabled | Boolean | True if the assigned label has encryption/protection settings; false for classification-only labels. Defaults to false when no label is assigned. |
+
+#### Command example
+
+```!msgraph-get-sensitivity-label object_type=drives object_type_id=b!example item_id=01EXAMPLE```
+
+#### Human Readable Output
+
+>### Sensitivity Label
+>
+>|Item Id|Display Name|Id|Protection Enabled|
+>|---|---|---|---|
+>| 01EXAMPLE | Confidential | 08973045-2fd6-4014-9177-9f2a3e55c29e | false |
+
+### msgraph-assign-sensitivity-label
+
+***
+Assigns a sensitivity label to a drive item. Microsoft Graph treats this call as a long-running operation and returns the operation status URL in the Location response header; poll that URL to track completion. HTTP error responses from Microsoft Graph are surfaced verbatim as a command error.
+
+#### Base Command
+
+`msgraph-assign-sensitivity-label`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The MS Graph resource. Possible values are: drives, groups, sites, users. | Required |
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.<br/>For resource type 'group': To get a list of all groups that exist, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': To get a list of all users that exist, configure the 'Entra ID Users' integration and use the msgraph-user-list command. | Required |
+| item_id | The ID of the drive item to assign the sensitivity label to. | Required |
+| sensitivity_label_id | The GUID of the sensitivity label to assign. Pass an empty string to remove the existing sensitivity label from the drive item. Retrieve label GUIDs from the Microsoft Purview compliance portal or via the PowerShell `Get-Label` cmdlet. | Required |
+| assignment_method | Assignment method recorded on Microsoft Graph.<br/>standard: a user-driven assignment.<br/>privileged: overrides existing user-applied labels.<br/>auto: recorded as a system-driven assignment. Possible values are: standard, privileged, auto. | Optional |
+| justification_text | Free-text justification recorded with the assignment. Required by Microsoft Graph when downgrading or replacing a user-assigned label. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraphFiles.AssignedSensitivityLabel.itemId | String | The ID of the drive item the label was assigned to. |
+| MsGraphFiles.AssignedSensitivityLabel.sensitivityLabelId | String | The GUID of the sensitivity label that was assigned. Empty string indicates the existing label was removed. |
+| MsGraphFiles.AssignedSensitivityLabel.location | String | URL returned in the Microsoft Graph Location response header. Microsoft Graph treats assignSensitivityLabel as a long-running operation; poll this URL to track the operation's completion status. |
+
+#### Command example
+
+```!msgraph-assign-sensitivity-label object_type=drives object_type_id=b!example item_id=01EXAMPLE sensitivity_label_id=08973045-2fd6-4014-9177-9f2a3e55c29e```
+
+#### Human Readable Output
+
+>### Assigned Sensitivity Label
+>
+>|Item Id|Sensitivity Label Id|Location|
+>|---|---|---|
+>| 01EXAMPLE | 08973045-2fd6-4014-9177-9f2a3e55c29e | https://contoso.sharepoint.com/_api/v2.0/monitor/MyMonitorJobId |
