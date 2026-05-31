@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 provider: Commvault
 commonfields:
   id: CommvaultSecurityIQ
@@ -91,6 +94,7 @@ configuration:
   displaypassword: Webhook Listener Password
   additionalinfo: The username and password used to authenticate inbound webhook requests. Required when the Forwarding Rule is set to Webhook. Use `_header:<HeaderName>` as the username for custom-header API tokens.
   type: 9
+  section: Connect
   required: false
 description: Commvault Cloud provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
 display: Commvault Cloud
@@ -163,7 +167,7 @@ script:
     - contextPath: CommvaultSecurityIQ.AddEntityToCleanroom
       description: Response indicating whether successfully added the VM to the recovery point or not.
       type: string
-  dockerimage: demisto/commvault:1.0.0.117880
+  dockerimage: demisto/commvault:1.0.0.9311457
   feed: false
   isfetch: true
   longRunning: true
