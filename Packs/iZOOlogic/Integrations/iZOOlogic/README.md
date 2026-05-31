@@ -10,33 +10,32 @@ Fetches and manages threat incidents from iZOOlogic, enabling automated ingestio
 | Trust any certificate (not secure) | Whether to trust any certificate \(not secure\). | False |
 | Use system proxy settings | Whether to use the system proxy settings. | False |
 | Fetch incidents | Whether to fetch incidents from iZOOlogic. | False |
-| First fetch timestamp | The time range for the initial fetch \(e.g., "1 day", "3 days"\). Subsequent fetches use the last run timestamp. | False |
 | Fetch incident types | A comma-separated list of incident types to fetch from iZOOlogic. | True |
-| Maximum Incidents Per Fetch Per Type | The maximum number of incidents to fetch per type per fetch cycle. | True |
-| Incident type |  | False |
+| Maximum incidents per fetch per type | The maximum number of incidents to fetch per type per fetch cycle. | True |
 
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### izoologic-get-incidents
+### izoologic-get-events
 
 ***
-Gets incidents from iZOOlogic. Use this command for development and debugging only, as it may exceed API rate limits.
+Gets events from iZOOlogic. Use this command for development and debugging only, as it may exceed API rate limits.
 
 #### Base Command
 
-`izoologic-get-incidents`
+`izoologic-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of incidents to return per type. Default is 50. | Optional |
-| start_time | The time to filter incidents detected at or after. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z"). | Optional |
-| end_time | The time to filter incidents detected at or before. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional |
-| incident_type | Filter by incident type(s). If not specified, uses the types configured in the integration parameters. Possible values are: brand abuse, phishing, malware, pharming, smishing, vishing, mobile apps, social media, other, email. | Optional |
+| limit | The maximum number of events to return per type. Default is 50. | Optional |
+| start_time | The time to filter events detected at or after. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z"). | Optional |
+| end_time | The time to filter events detected at or before. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional |
+| event_type | Filter by event type(s). If not specified, uses the types configured in the integration parameters. Possible values are: brand abuse, phishing, malware, pharming, smishing, vishing, mobile apps, social media, other, email. | Optional |
+| should_push_events | Whether to push the fetched events to XSIAM. Use with caution as it may create duplicate events. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -57,13 +56,13 @@ Gets incidents from iZOOlogic. Use this command for development and debugging on
 
 #### Command example
 
-```!izoologic-get-incidents limit=3```
+```!izoologic-get-events limit=3```
 
 #### Human Readable Output
 
->### iZOOlogic Incidents
+>### iZOOlogic Events
 >
->|incidentID|incidentType|subIncidentType|brand|url|status|statusCode|threatType|detectionDate|createdOn|closedOn|detectedBy|
+>|Incident ID|Incident Type|Sub Incident Type|Brand|Url|Status|Status Code|Threat Type|Detection Date|Created On|Closed On|Detected By|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| uVJxla1s1 | Brand Abuse - Fake Website | Fake Website | TVS Motor | https://tvsmotor.com.mt | Waiting | 17 | Substantial Threat | 1760941801 | 1769509374 |  | Reported By iZOOLogic |
 >| 1JrJzZBip | Phishing |  | TVS Credit | https://tvs-credit.dev.veefin.in | Closed | 16 | High Threat | 1769792260 | 1769792260 | 1770180062 | Reported By iZOOLogic |
