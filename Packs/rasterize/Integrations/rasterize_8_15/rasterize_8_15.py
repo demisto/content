@@ -2016,6 +2016,8 @@ def main():  # pragma: no cover
 
     demisto.debug(f"Command being called is {command}")
     demisto.debug(f"Using performance params: {MAX_CHROMES_COUNT=}, {MAX_CHROME_TABS_COUNT=}, {MAX_RASTERIZATIONS_COUNT=}")
+    demisto.debug(f"Lightweight param value: {demisto.params().get('lightweight')!r}")
+    demisto.debug(f"URL argument value (type reflects isArray): {demisto.args().get('url')!r}")
 
     threading.excepthook = excepthook_recv_loop
 

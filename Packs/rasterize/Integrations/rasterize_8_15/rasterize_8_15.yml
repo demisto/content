@@ -78,23 +78,10 @@ configuration:
   display: Lightweight
   required: false
   defaultvalue: "false"
+  defaultvalue:platfrom: "true"
   type: 8
   hidden: true
   section: Connect
-  supportedModules:
-  - xsiam
-- name: lightweight
-  display: Lightweight
-  required: false
-  defaultvalue: "true"
-  type: 8
-  hidden: true
-  section: Connect
-  supportedModules:
-  - agentix
-  - edr
-  - cloud
-  - cloud_runtime_security
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
 display: Rasterize
 name: Rasterize
@@ -136,6 +123,7 @@ script:
       description: The name the file will be saved as.
       name: file_name
       isArray: true
+      isArray:platform: false
     - auto: PREDEFINED
       defaultValue: "False"
       description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
@@ -379,6 +367,7 @@ script:
       name: url
       required: true
       isArray: true
+      isArray:platform: false
     - description: Time in seconds to wait before extracting content.
       name: wait_time
     - description: Maximum time to wait for a page to load (in seconds).
