@@ -108,7 +108,7 @@ Creates a new security incident in iZOOlogic.
 
 >### iZOOlogic - New Incident Created
 >
->|reportedIncidentId|statusCode|statusDescription|caseType|caseTypeDescription|
+>|Reported Incident Id|Status Code|Status Description|Case Type|Case Type Description|
 >|---|---|---|---|---|
 >| ycB2E7gPQ | 1 | Under Review | 9 | Reported Incident |
 
@@ -159,6 +159,6 @@ Fetches incidents from iZOOlogic based on specified filters including date range
 
 >### iZOOlogic Incidents
 >
->|incidentID|incidentType|brand|url|status|statusCode|threatType|detectionDate|createdOn|detectedBy|
+>|Incident ID|Incident Type|Brand|Url|Status|Status Code|Threat Type|Detection Date|Created On|Detected By|
 >|---|---|---|---|---|---|---|---|---|---|
 >| abc123 | Phishing | ExampleBrand | https://example.com | Active | 1 | High Threat | 1700000000 | 1700000200 | Reported By iZOOLogic |

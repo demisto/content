@@ -1124,6 +1124,7 @@ def create_incident_command(client: Client, args: dict[str, Any]) -> CommandResu
             "caseType",
             "caseTypeDescription",
         ],
+        headerTransform=string_to_table_header,
         removeNull=True,
     )
 
@@ -1222,6 +1223,7 @@ def search_incidents_command(client: Client, args: dict[str, Any]) -> CommandRes
             "closedOn",
             "detectedBy",
         ],
+        headerTransform=string_to_table_header,
         removeNull=True,
     )
 
