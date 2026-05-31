@@ -24,5 +24,6 @@
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
     },
+    "layout": "Cloud Threat Response Incident",
     "fromVersion": "6.10.0"
 }
