@@ -2398,22 +2398,11 @@ def test_module(creds: Credentials, params: dict[str, Any]) -> str:
 
 
 def get_credentials(args: dict, params: dict) -> Credentials:
-    """
-    Retrieve GCP credentials for the current execution context.
+    """Returns GCP credentials based on the deployment type.
 
-    Authentication priority:
-
-    1. **Marketplace (Cortex XSOAR / Cortex XSIAM)**: Service Account private
-       key JSON supplied via the *credentials* integration parameter
-       (``credentials.password``).  The JSON is parsed and used to build a
-       ``google.oauth2.service_account.Credentials`` object with the
-       ``cloud-platform`` scope.  If the JSON contains a ``project_id`` field
-       and no ``project_id`` was provided in ``args``, the service-account
-       project is used as a fallback so commands that require it still work.
-
-    2. **Cortex Cloud (platform)**: Token-based authentication via CTS
-       (``get_cloud_credentials``).  ``project_id`` must be present in ``args``
-       because it identifies which GCP project to fetch a token for.
+    - Marketplace (Cortex XSOAR/Cortex XSIAM): builds credentials from the service account JSON key
+      in ``credentials.password``. Propagates ``project_id`` from the JSON if not in args.
+    - Cortex Cloud (platform): fetches a short-lived token from CTS via ``get_cloud_credentials``.
 
     Args:
         args (dict): Command arguments (may contain ``project_id``).
