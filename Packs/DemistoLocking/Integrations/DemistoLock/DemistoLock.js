@@ -61,8 +61,9 @@ switch (command) {
             // check if a lock already exists in the integration context
             [lock, version] = getLock();
 
+            versionString = version;
             if (typeof version === "object") {
-                versionString = JSON.stringify(version)
+                versionString = JSON.stringify(version);
             }
             logDebug('Task guid: ' + guid + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + versionString);
 
