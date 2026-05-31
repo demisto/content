@@ -182,7 +182,9 @@ class TabLifecycleManager:
                 patterns = [{"urlPattern": f"*{pat}*", "requestStage": "Request"} for pat in BLOCKED_URLS]
                 self.tab.Fetch.enable(patterns=patterns)
             except Exception as ex:
-                demisto.info(f"TabLifecycleManager, __enter__, {self.chrome_port=}, failed to enable Fetch interception due to {ex}")
+                demisto.info(
+                    f"TabLifecycleManager, __enter__, {self.chrome_port=}, failed to enable Fetch interception due to {ex}"
+                )
                 raise ex
 
         return self.tab
