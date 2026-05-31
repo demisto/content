@@ -80,9 +80,11 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkInterfaces/read": [
         "azure-nsg-network-interfaces-list",
         "azure-vm-network-interface-details-get",
+        "azure-vn-network-interface-update",
         "azure-vn-network-interfaces-list",
         "azure-vn-network-interface-get",
     ],
+    "Microsoft.Network/networkInterfaces/write": ["azure-vn-network-interface-update"],
     "Microsoft.Network/publicIPAddresses/read": [
         "azure-nsg-public-ip-addresses-list",
         "azure-vm-public-ip-details-get",
@@ -92,6 +94,31 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": [
         "azure-storage-blob-containers-update",
         "azure-storage-blob-container-update",
+        "azure-storage-container-create",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action": ["azure-storage-container-public-access-block"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/read": ["azure-storage-container-property-get"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/delete": ["azure-storage-container-delete"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
+        "azure-storage-container-blob-create",
+        "azure-storage-blob-create",
+        "azure-storage-container-blob-property-set",
+        "azure-storage-blob-property-set",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
+        "azure-storage-container-blob-get",
+        "azure-storage-blob-get",
+        "azure-storage-container-blob-property-get",
+        "azure-storage-blob-property-get",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
+        "azure-storage-container-blob-tag-get",
+        "azure-storage-blob-tag-get",
+        "azure-storage-container-blob-tag-set",
+    ],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": [
+        "azure-storage-container-blob-tag-set",
+        "azure-storage-blob-tag-set",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
@@ -173,6 +200,8 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
+        "azure-webapp-set-webapp-to-https-only-quick-action",
+        "azure-webapp-enable-client-cert-quick-action",
         "azure-appservice-webapp-update",
         "azure-appservice-webapp-update-quick-action",
     ],
@@ -180,6 +209,8 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-webapp-update",
         "azure-webapp-assign-managed-identity-quick-action",
         "azure-webapp-update-assign-managed-identity-quick-action",
+        "azure-webapp-set-webapp-to-https-only-quick-action",
+        "azure-webapp-enable-client-cert-quick-action",
         "azure-appservice-webapp-update",
         "azure-appservice-webapp-update-quick-action",
     ],
@@ -215,7 +246,12 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-disable-public-n-private-access-vm-disk-quick-action",
         "azure-compute-disk-update-data-access-ad-quick-action",
     ],
-    "Microsoft.Compute/virtualMachines/read": ["azure-vm-instance-details-get", "azure-compute-vm-get"],
+    "Microsoft.Compute/virtualMachines/read": [
+        "azure-vm-instance-details-get",
+        "azure-vm-instance-start",
+        "azure-vm-instance-power-off",
+        "azure-compute-vm-get",
+    ],
     "Microsoft.Compute/virtualMachines/start/action": ["azure-vm-instance-start", "azure-compute-vm-start"],
     "Microsoft.Compute/virtualMachines/poweroff/action": ["azure-vm-instance-power-off", "azure-compute-vm-power-off"],
     "Microsoft.ContainerRegistry/registries/read": [
@@ -238,47 +274,57 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-cr-disable-public-private-access-quick-action",
         "azure-cr-disable-anonymous-pull-quick-action",
     ],
-    "Microsoft.KeyVault/vaults/read": ["azure-key-vault-update", "azure-keyvault-vault-update"],
-    "Microsoft.KeyVault/vaults/write": ["azure-key-vault-update", "azure-keyvault-vault-update"],
+    "Microsoft.KeyVault/vaults/read": [
+        "azure-key-vault-update",
+        "azure-key-vault-purge-and-soft-delete-enable-quick-action",
+        "azure-keyvault-vault-update",
+    ],
+    "Microsoft.KeyVault/vaults/write": [
+        "azure-key-vault-update",
+        "azure-key-vault-purge-and-soft-delete-enable-quick-action",
+        "azure-keyvault-vault-update",
+    ],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/read": [
         "azure-sql-db-threat-policy-update",
+        "azure-sql-db-threat-policy-update-quick-action",
         "azure-sqldb-security-alert-policy-update",
     ],
     "Microsoft.Sql/servers/databases/securityAlertPolicies/write": [
         "azure-sql-db-threat-policy-update",
+        "azure-sql-db-threat-policy-update-quick-action",
         "azure-sqldb-security-alert-policy-update",
     ],
-    "Microsoft.DocumentDB/databaseAccounts/read": ["azure-cosmos-db-update", "azure-cosmosdb-db-account-update"],
-    "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update", "azure-cosmosdb-db-account-update"],
-    "Microsoft.Sql/servers/databases/transparentDataEncryption/read": ["azure-sql-db-transparent-data-encryption-set"],
-    "Microsoft.Sql/servers/databases/transparentDataEncryption/write": ["azure-sql-db-transparent-data-encryption-set"],
-    "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
+    "Microsoft.DocumentDB/databaseAccounts/read": [
+        "azure-cosmos-db-update",
+        "azure-cosmos-db-disable-key-quick-action",
+        "azure-cosmosdb-db-account-update",
+    ],
+    "Microsoft.DocumentDB/databaseAccounts/write": [
+        "azure-cosmos-db-update",
+        "azure-cosmos-db-disable-key-quick-action",
+        "azure-cosmosdb-db-account-update",
+    ],
+    "Microsoft.Sql/servers/databases/transparentDataEncryption/read": [
+        "azure-sql-db-transparent-data-encryption-set",
+        "azure-sql-db-transparent-data-encryption-enable-tde-quick-action",
+    ],
+    "Microsoft.Sql/servers/databases/transparentDataEncryption/write": [
+        "azure-sql-db-transparent-data-encryption-set",
+        "azure-sql-db-transparent-data-encryption-enable-tde-quick-action",
+    ],
     "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
     "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
     "Microsoft.CostManagement/forecast/read": ["azure-billing-forecast-list"],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read": [
-        "azure-storage-container-blob-property-get",
-        "azure-storage-blob-property-get",
-        "azure-storage-container-blob-get",
-        "azure-storage-blob-get",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read": [
-        "azure-storage-container-blob-tag-get",
-        "azure-storage-blob-tag-get",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write": [
-        "azure-storage-container-blob-create",
-        "azure-storage-blob-create",
-        "azure-storage-container-blob-property-set",
-        "azure-storage-blob-property-set",
-    ],
-    "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write": [
-        "azure-storage-container-blob-tag-set",
-        "azure-storage-blob-tag-set",
-    ],
+    "Microsoft.Network/networkSecurityGroups/write": ["create_network_security_group"],
+    "Microsoft.Network/virtualNetworks/subnets/join/action": ["azure-vn-network-interface-update"],
+    "Microsoft.Network/publicIPAddresses/join/action": ["azure-vn-network-interface-update"],
+    "Microsoft.Network/networkSecurityGroups/join/action": ["azure-vn-network-interface-update"],
+    "Microsoft.Network/loadBalancers/backendAddressPools/join/action": ["azure-vn-network-interface-update"],
+    "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list", "azure-rm-resource-groups-list"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
+    "create_network_security_group": ["Microsoft.Network/networkSecurityGroups/write"],
     "acr_update": ["Microsoft.ContainerRegistry/registries/read", "Microsoft.ContainerRegistry/registries/write"],
     "cosmos_db_update": ["Microsoft.DocumentDB/databaseAccounts/read", "Microsoft.DocumentDB/databaseAccounts/write"],
     "disk-update": ["Microsoft.Compute/disks/read", "Microsoft.Compute/disks/write"],
@@ -319,13 +365,36 @@ API_FUNCTION_TO_PERMISSIONS = {
         "Microsoft.Storage/storageAccounts/blobServices/read",
         "Microsoft.Storage/storageAccounts/blobServices/write",
     ],
+    "storage_container_create_blob_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
+    "get_storage_container_properties_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/read"],
+    "create_storage_container_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/write"],
+    "delete_storage_container_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/delete"],
+    "storage_container_blob_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
+    "storage_container_blob_tag_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read"],
+    "storage_container_blob_tags_set_request": [
+        "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read",
+        "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write",
+    ],
+    "storage_container_blob_property_get_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"],
+    "storage_container_blob_properties_set_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"],
+    "storage_container_block_public_access_request": ["Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action"],
+    "get_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
     "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
     "webapp_update": ["Microsoft.Web/sites/read", "Microsoft.Web/sites/write"],
-    "start_vm_request": ["Microsoft.Compute/virtualMachines/start/action"],
-    "poweroff_vm_request": ["Microsoft.Compute/virtualMachines/poweroff/action"],
+    "start_vm_request": ["Microsoft.Compute/virtualMachines/read", "Microsoft.Compute/virtualMachines/start/action"],
+    "poweroff_vm_request": ["Microsoft.Compute/virtualMachines/read", "Microsoft.Compute/virtualMachines/poweroff/action"],
     "get_vm_request": ["Microsoft.Compute/virtualMachines/read"],
+    "list_vm_request": ["Microsoft.Compute/virtualMachines/read"],
     "get_network_interface_request": ["Microsoft.Network/networkInterfaces/read"],
+    "update_network_interface_request": [
+        "Microsoft.Network/networkInterfaces/read",
+        "Microsoft.Network/networkInterfaces/write",
+        "Microsoft.Network/virtualNetworks/subnets/join/action",
+        "Microsoft.Network/publicIPAddresses/join/action",
+        "Microsoft.Network/networkSecurityGroups/join/action",
+        "Microsoft.Network/loadBalancers/backendAddressPools/join/action",
+    ],
     "get_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "list_security_rules": ["Microsoft.Network/networkSecurityGroups/securityRules/read"],
@@ -1952,6 +2021,44 @@ class AzureClient:
             method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
         )
 
+    def create_network_security_group(
+        self, subscription_id: str, resource_group_name: str, security_group_name: str, location: str
+    ):
+        """
+        Create or update a network security group.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group name.
+            security_group_name: The name of the network security group.
+            location: The location of the network security group.
+
+        Return:
+            A dictionary containing the network security group information.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/create-or-update?view=rest-virtualnetwork-2024-05-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/networkSecurityGroups/{security_group_name}"
+        )
+        json_data = {
+            "location": location,
+        }
+        params = {"api-version": "2025-05-01"}
+        try:
+            return self.http_request(method="PUT", full_url=full_url, json_data=remove_empty_elements(json_data), params=params)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=security_group_name,
+                resource_type="Security Group",
+                api_function_name="create_network_security_group",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
     def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
         """
         List all network security groups in a specific resource group.
@@ -2218,6 +2325,46 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
+    def list_vm_request(self, subscription_id: str, resource_group_name: str, next_token: str):
+        """
+        Lists all the virtual machines in the specified resource group.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the virtual machine.
+            next_token (str): The URI to fetch the next page of results.
+
+        Returns:
+            The list of virtual machines.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/list?view=rest-compute-2025-04-01&tabs=HTTP
+        """
+        if not next_token:
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Compute/"
+                f"virtualMachines"
+            )
+            parameters = {
+                "api-version": "2025-04-01",
+            }
+        else:
+            demisto.debug(f"using {next_token=} for retrieving the next page of results.")
+            full_url = next_token
+            parameters = {}
+        try:
+            demisto.debug(f"[Azure] {parameters=}")
+            return self.http_request(method="GET", full_url=full_url, params=parameters)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}",
+                resource_type="Virtual Machines",
+                api_function_name="list_vm_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
     def validate_provisioning_state(self, subscription_id, resource_group, vm_name):
         """
         Ensure that the provisioning state of a VM is 'Succeeded'
@@ -2301,6 +2448,53 @@ class AzureClient:
                 resource_name=f"{resource_group_name}/{interface_name}",
                 resource_type="Network Interfaces",
                 api_function_name="get_network_interface_request",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def update_network_interface_request(
+        self,
+        subscription_id: str,
+        resource_group_name: str,
+        interface_name: str,
+        network_interface_data: dict,
+    ):
+        """
+        Creates or updates a network interface.
+
+        This method uses PUT to update the network interface. The caller should first
+        retrieve the current network interface using get_network_interface_request,
+        modify the desired properties, and then pass the full object to this method.
+
+        Args:
+            subscription_id (str): The ID of the Azure subscription.
+            resource_group_name (str): The name of the resource group containing the network interface.
+            interface_name (str): The name of the network interface.
+            network_interface_data (dict): The full network interface object with updated properties.
+
+        Returns:
+            The updated network interface object.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces/create-or-update
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/"
+            f"networkInterfaces/{interface_name}"
+        )
+        try:
+            return self.http_request(
+                method="PUT",
+                full_url=full_url,
+                params={"api-version": "2023-05-01"},
+                json_data=network_interface_data,
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{resource_group_name}/{interface_name}",
+                resource_type="Network Interfaces",
+                api_function_name="update_network_interface_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -2640,6 +2834,60 @@ def remove_query_param_from_url(url: str, param: str) -> str:
     qs.pop(param, None)
     new_query = urlencode(qs, doseq=True)
     return urlunparse(parsed._replace(query=new_query))
+
+
+def update_nic_properties(args: dict, params: dict, properties: dict):
+    """
+    Updates the properties dictionary of a Network Interface Card (NIC) based on the provided arguments.
+
+    Args:
+        args (dict): The arguments provided to the command.
+        params (dict): The integration parameters.
+        properties (dict): The current properties of the NIC to be updated.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    remove_network_security_group = arg_to_bool_or_none(args.get("remove_network_security_group"))
+
+    properties["enableIPForwarding"] = (
+        argToBoolean(args.get("enable_ip_forwarding"))
+        if args.get("enable_ip_forwarding") is not None
+        else properties.get("enableIPForwarding")
+    )
+    properties["enableAcceleratedNetworking"] = (
+        argToBoolean(args.get("enable_accelerate_networking"))
+        if args.get("enable_accelerate_networking") is not None
+        else properties.get("enableAcceleratedNetworking")
+    )
+    properties["auxiliaryMode"] = args.get("auxiliary_mode") or properties.get("auxiliaryMode")
+    properties["auxiliarySku"] = args.get("auxiliary_sku") or properties.get("auxiliarySku")
+    properties["nicType"] = args.get("nic_type") or properties.get("nicType")
+    nsg_prefix = (
+        f"/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network"
+        f"/networkSecurityGroups/"
+    )
+    properties["networkSecurityGroup"] = {
+        "id": f'{nsg_prefix}{args.get("network_security_group_name")}'
+        if args.get("network_security_group_name")
+        else properties.get("networkSecurityGroup", {}).get("id")
+    }
+
+    internal_dns_name_label = args.get("internal_dns_name_label")
+    dns_servers = args.get("dns_servers")
+    dns_arr = [internal_dns_name_label, dns_servers]
+
+    if "dnsSettings" not in properties and any(x is not None for x in dns_arr):
+        properties["dnsSettings"] = {}
+
+    if internal_dns_name_label:
+        properties["dnsSettings"]["internalDnsNameLabel"] = internal_dns_name_label
+
+    if dns_servers:
+        properties["dnsSettings"]["dnsServers"] = argToList(dns_servers)
+
+    if remove_network_security_group:
+        demisto.debug(f"Removing the network security group {properties.get('networkSecurityGroup')}")
+        properties.pop("networkSecurityGroup", None)
 
 
 """ COMMAND FUNCTIONS """
@@ -3916,6 +4164,49 @@ def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: D
     )
 
 
+def nsg_security_group_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    This command will create a network security group.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        CommandResults: The network security group that was created.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    security_group_name = args.get("security_group_name", "")
+    location = args.get("location", "")
+
+    response = client.create_network_security_group(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        security_group_name=security_group_name,
+        location=location,
+    )
+    demisto.debug(f"Created network security group {response=}")
+
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+    response["etag"] = response.get("etag", "")[3:-1]
+
+    hr = tableToMarkdown(
+        name=f"The network security group {security_group_name} was created successfully",
+        t=response,
+        removeNull=True,
+        headers=["name", "id", "location", "type"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.SecurityGroups",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=hr,
+        raw_response=response,
+    )
+
+
 def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
         List all network security groups.
@@ -4487,6 +4778,50 @@ def get_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, 
     )
 
 
+def list_vm_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Lists all virtual machines in a resource group.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: A CommandResults object containing the list of Virtual Machines.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    next_token = args.get("next_token", "")
+    demisto.debug(f"[Azure] args being sent to list_vm_request {subscription_id=} {resource_group_name=}")
+
+    response = client.list_vm_request(subscription_id, resource_group_name, next_token)
+
+    demisto.debug(f"[Azure] list_vm_request response={response} end response.")
+
+    vms_list = response.get("value", [])
+
+    if not vms_list:
+        return CommandResults(readable_output="No Virtual Machines found.")
+
+    outputs = {
+        "Azure.Compute.VirtualMachines(val.id && val.id == obj.id)": vms_list,
+        "Azure.Compute(true)": {"VirtualMachinesNextToken": response.get("nextLink")},
+    }
+
+    title = "The list of Virtual Machines"
+    headers = ["name", "id", "location"]
+    human_readable = tableToMarkdown(title, vms_list, headers=headers, removeNull=True, headerTransform=pascalToSpace)
+
+    demisto.debug(f"[Azure] list_vm_request {human_readable=}")
+
+    return CommandResults(
+        outputs=outputs,
+        readable_output=human_readable,
+        raw_response=response,
+    )
+
+
 def get_network_interface_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]):
     """
     Retrieves details for a specific Azure Network Interface (NIC).
@@ -4556,6 +4891,101 @@ def get_network_interface_command(client: AzureClient, params: dict[str, Any], a
     return CommandResults(
         outputs_prefix=outputs_prefix,
         outputs_key_field="name",
+        outputs=response,
+        readable_output=human_readable,
+        raw_response=response,
+    )
+
+
+def network_interface_update_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Updates a specific Azure Network Interface (NIC).
+    This function retrieves the current network interface configuration, updates the specified
+    properties based on user arguments, and sends the full updated object back to Azure.
+
+    Args:
+        client (AzureClient): The authenticated Azure client used to make API requests.
+        params (dict): Integration or instance-level parameters containing default values.
+        args (dict): Command arguments including:
+            - network_interface_name: Name of the network interface to update (required)
+            - subscription_id: Azure subscription ID
+            - resource_group_name: Resource group containing the network interface
+            - location: The location of the network security group.
+            - enable_ip_forwarding: Enable or disable IP forwarding (true/false)
+            - enable_accelerate_networking: If the network interface is configured for accelerated networking.
+            - auxiliary_mode: Auxiliary mode of Network Interface resource.
+            - auxiliary_sku: Auxiliary sku of Network Interface resource.
+            - dns_servers: Comma-separated list of DNS server IP addresses
+            - internal_dns_name_label: Internal DNS name label for the network interface
+            - network_security_group_name: The name of the network security group.
+            - remove_network_security_group: Whether to remove the property networkSecurityGroup from the network interface.
+            - nic_type: Type of Network Interface resource.
+
+    Returns:
+        CommandResults: A CommandResults object containing the updated Network Interface configuration details.
+    """
+    subscription_id = get_from_args_or_params(args=args, params=params, key="subscription_id")
+    resource_group_name = get_from_args_or_params(args=args, params=params, key="resource_group_name")
+    network_interface_name = args.get("network_interface_name", "")
+    location = args.get("location", "")
+    remove_network_security_group = arg_to_bool_or_none(args.get("remove_network_security_group"))
+
+    if args.get("network_security_group_name") and remove_network_security_group:
+        raise DemistoException("The remove_network_security_group option cannot be used with network_security_group_name.")
+
+    demisto.debug(f"[Azure] Get the current state of the network interface {network_interface_name}")
+
+    # Get the current network interface configuration
+    nic = client.get_network_interface_request(subscription_id, resource_group_name, network_interface_name)
+    demisto.debug(f"[Azure] Current network interface: {nic}")
+
+    # Update properties based on user arguments
+    properties = nic.get("properties", {})
+    update_nic_properties(args, params, properties)
+
+    nic["properties"] = remove_empty_elements(properties)
+    nic["location"] = location or nic["location"]
+
+    demisto.debug(f"[Azure] Updating the network interface {network_interface_name}: {nic}")
+
+    # Send the updated network interface
+    response = client.update_network_interface_request(
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+        interface_name=network_interface_name,
+        network_interface_data=nic,
+    )
+
+    # Clean up etag format
+    response["etag"] = response.get("etag", "")[3:-1]
+    for ip_configuration in response.get("properties", {}).get("ipConfigurations", []):
+        ip_configuration["etag"] = ip_configuration.get("etag", "")[3:-1]
+
+    updated_properties = response.get("properties", {})
+
+    human_readable_output = {
+        "Name": network_interface_name.lower(),
+        "ID": response.get("id"),
+        "Location": response.get("location"),
+        "NetworkSecurityGroup": updated_properties.get("networkSecurityGroup", {}).get("name")
+        if updated_properties.get("networkSecurityGroup")
+        else None,
+    }
+
+    title = f'Successfully Updated Network Interface "{network_interface_name.lower()}"'
+    table_headers = [
+        "Name",
+        "ID",
+        "Location",
+        "NetworkSecurityGroup",
+    ]
+    human_readable = tableToMarkdown(
+        name=title, t=human_readable_output, headers=table_headers, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.VirtualNetworks.NetworkInterfaces",
+        outputs_key_field="id",
         outputs=response,
         readable_output=human_readable,
         raw_response=response,
@@ -5091,19 +5521,26 @@ def main():  # pragma: no cover
             "azure-disk-update": disk_update_command,
             "azure-compute-disk-update": disk_update_command,
             "azure-webapp-update": webapp_update_command,
+            "azure-webapp-set-webapp-to-https-only-quick-action": webapp_update_command,
+            "azure-webapp-enable-client-cert-quick-action": webapp_update_command,
             "azure-appservice-webapp-update": webapp_update_command,
             "azure-acr-update": acr_update_command,
             "azure-cr-registry-update": acr_update_command,
             "azure-key-vault-update": update_key_vault_command,
-            "azure-keyvault-vault-update": update_key_vault_command,
+            "azure-key-vault-purge-and-soft-delete-enable-quick-action": update_key_vault_command,
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
+            "azure-sql-db-threat-policy-update-quick-action": sql_db_threat_policy_update_command,
+            "azure-keyvault-vault-update": update_key_vault_command,
             "azure-sqldb-security-alert-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
+            "azure-sql-db-transparent-data-encryption-enable-tde-quick-action": sql_db_tde_set_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
+            "azure-cosmos-db-disable-key-quick-action": cosmosdb_update_command,
             "azure-cosmosdb-db-account-update": cosmosdb_update_command,
             "azure-nsg-security-groups-list": nsg_security_groups_list_command,
             "azure-vn-security-groups-list": nsg_security_groups_list_command,
             "azure-nsg-security-rule-get": nsg_security_rule_get_command,
+            "azure-vn-security-group-create": nsg_security_group_create_command,
             "azure-vn-security-rule-get": nsg_security_rule_get_command,
             "azure-nsg-security-rules-list": nsg_security_rules_list_command,
             "azure-vn-security-rules-list": nsg_security_rules_list_command,
@@ -5122,8 +5559,10 @@ def main():  # pragma: no cover
             "azure-vm-instance-power-off": poweroff_vm_command,
             "azure-compute-vm-power-off": poweroff_vm_command,
             "azure-vm-instance-details-get": get_vm_command,
-            "azure-compute-vm-get": get_vm_command,
+            "azure-compute-vm-list": list_vm_command,
             "azure-vm-network-interface-details-get": get_network_interface_command,
+            "azure-vn-network-interface-update": network_interface_update_command,
+            "azure-compute-vm-get": get_vm_command,
             "azure-vn-network-interface-get": get_network_interface_command,
             "azure-vm-public-ip-details-get": get_public_ip_details_command,
             "azure-vn-public-ip-address-get": get_public_ip_details_command,
