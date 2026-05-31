@@ -23,6 +23,7 @@ Make sure the toggle at the bottom is switched on.
 | Fetch incidents |  | False |
 | Maximum number of incidents per fetch | Default value is 50. | False |
 | First fetch timestamp | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default value is 60 minutes. | False |
+| Fetch Lookback Window (minutes) | The number of minutes to look back during each fetch to capture late-indexed incidents. Default value is 0. | False |
 | DLP Regions | Possible values: `US` (United States), `EU` (European Union), `AP` (Asia-Pacific), `UK` (United Kingdom), `CA` (Canada), `AU` (Australia), `IN` (India), `JP` (Japan), `BR` (Brazil), `PAR` (Paris), `SUI` (Switzerland). | False |
 | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
 | Bot Message | The message to send to the user to ask for feedback. | False |
@@ -58,6 +59,18 @@ Fetches DLP reports associated with a report ID.
 | DLP.Report.DataPatternMatches.HighConfidenceFrequency | unknown | The number of high confidence occurrences. |
 | DLP.Report.DataPatternMatches.MediumConfidenceFrequency | unknown | The number of medium confidence occurrences. |
 | DLP.Report.DataPatternMatches.LowConfidenceFrequency | unknown | The number of low confidence occurrences. |
+| DLP.Report.DataPatternMatches.MatchedConfidenceLevel | String | The matched confidence level of the data pattern \(e.g., "high", "medium", "low"\). Only present for patterns that matched. |
+| DLP.Report.DataProfiles.Name | String | The name of the data profile. |
+| DLP.Report.DataProfiles.Id | Number | The ID of the data profile. |
+| DLP.Report.DataProfiles.Version | Number | The version of the data profile. |
+| DLP.Report.DataProfiles.IsTriggered | Boolean | Whether the data profile was triggered. |
+| DLP.Report.DataProfiles.DataPatterns.Id | String | The data pattern ID within the profile. |
+| DLP.Report.DataProfiles.DataPatterns.IsMatched | Boolean | Whether the data pattern matched. |
+| DLP.Report.DataProfiles.DataPatterns.ConfidenceLevel | String | The confidence level configured for the pattern. |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceCount | Number | The number of occurrences detected. |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceOperatorType | String | The occurrence operator type \(e.g., "more_than_equal_to", "between"\). |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceLow | Number | The low bound for "between" operator type. |
+| DLP.Report.DataProfiles.DataPatterns.OccurrenceHigh | Number | The high bound for "between" operator type. |
 
 ### pan-dlp-update-incident
 

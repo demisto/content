@@ -80,6 +80,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 description: A search engine used for searching Internet-connected devices.
 display: Shodan v2
 name: Shodan_v2
@@ -503,5 +505,3 @@ script:
 tests:
 - Test-Shodan_v2
 fromversion: 5.0.0
-supportedModules:
-- xsiam

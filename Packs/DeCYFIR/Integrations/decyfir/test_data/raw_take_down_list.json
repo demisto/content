@@ -1,0 +1,36 @@
+[
+	{
+		"url_status_updated_by": "",
+		"ticket_details": "API-Request",
+		"url_status": "",
+		"sub_category": "Domain Impersonation",
+		"on_hold_by_client": false,
+		"modified_date": "2026-04-23T10:42:37.236",
+		"created_by": "API-User",
+		"ticket_name": "T00001",
+		"domain": "acme.net",
+		"modified_by": "API-User",
+		"on_hold_by_external": false,
+		"created_date": "2026-04-23T10:42:37.236",
+		"org_name": "acme Tech",
+		"category": "impersonation",
+		"status": "Takedown Requested"
+	},
+	{
+		"url_status_updated_by": "",
+		"ticket_details": "API-Request",
+		"url_status": "",
+		"sub_category": "Domain Impersonation",
+		"on_hold_by_client": false,
+		"modified_date": "2026-04-22T13:54:22.419",
+		"created_by": "API-User",
+		"ticket_name": "T00002",
+		"domain": "acme1.net",
+		"modified_by": "API-User",
+		"on_hold_by_external": false,
+		"created_date": "2026-04-22T13:54:22.419",
+		"org_name": "acme Tech",
+		"category": "impersonation",
+		"status": "Takedown Requested"
+	}
+]

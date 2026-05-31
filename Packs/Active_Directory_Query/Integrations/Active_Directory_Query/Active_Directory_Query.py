@@ -8,6 +8,7 @@ from ldap3 import (
     ALL_ATTRIBUTES,
     AUTO_BIND_NO_TLS,
     AUTO_BIND_TLS_BEFORE_BIND,
+    BASE,
     NTLM,
     SUBTREE,
     Connection,
@@ -282,14 +283,39 @@ def group_entry(group_object, custom_attributes):
     return group
 
 
-def base_dn_verified(base_dn):
-    # search AD with a simple query to test base DN is configured correctly
+def base_dn_verified(base_dn: str) -> bool:
+    """
+    Verifies the base DN is configured correctly.
+    Uses BASE scope, size limit of 1, and 'no attributes' OID for maximum performance.
+
+    This function performs an optimized LDAP search that only checks if the base DN entry itself exists,
+    rather than searching the entire directory tree. This reduces the complexity from O(n) to O(1).
+
+    Args:
+        base_dn: The base DN to verify (e.g., 'dc=example,dc=com')
+
+    Returns:
+        bool: True if the base DN is valid and accessible, False otherwise
+    """
+    assert connection is not None
     try:
-        search("(objectClass=*)", base_dn, size_limit=1)
+        # Optimized search with three performance improvements:
+        # 1. search_scope=BASE: Only looks at the DN itself (O(1) complexity)
+        # 2. size_limit=1: Safety guard to ensure only one record is processed
+        # 3. attributes=['1.1']: Special OID meaning 'return no attributes' (minimal data transfer)
+        success = connection.search(
+            search_base=base_dn, search_filter="(objectClass=*)", search_scope=BASE, size_limit=1, attributes=["1.1"]
+        )
+
+        if not success:
+            demisto.info(f"Base DN verification failed. Result: {connection.result}")
+            return False
+
+        return True
+
     except Exception as e:
-        demisto.info(str(e))
+        demisto.error(f"Error during Base DN verification: {e}\n{traceback.format_exc()}")
         return False
-    return True
 
 
 def generate_unique_cn(default_base_dn, cn):
@@ -1801,7 +1827,7 @@ def main():
     server_ip = params.get("server_ip")
     username = params.get("credentials")["identifier"]
     password = params.get("credentials")["password"]
-    default_base_dn = params.get("base_dn")
+    default_base_dn = params.get("base_dn", "")
     secure_connection = params.get("secure_connection")
     ssl_version = params.get("ssl_version", "None")
     default_page_size = int(params.get("page_size"))
@@ -1813,6 +1839,7 @@ def main():
     create_if_not_exists = params.get("create-if-not-exists")
     mapper_in = params.get("mapper-in", DEFAULT_INCOMING_MAPPER)
     mapper_out = params.get("mapper-out", DEFAULT_OUTGOING_MAPPER)
+    verify_base_dn = params.get("verify_base_dn", True) or command == "test-module"
 
     if port:
         # port was configured, cast to int
@@ -1859,16 +1886,17 @@ def main():
 
         demisto.info(f"Established connection with AD LDAP server.\nLDAP Connection Details: {connection}")
 
-        if not base_dn_verified(default_base_dn):
-            message = (
-                f"Failed to verify the base DN configured for the instance.\n"
-                f"Last connection result: {json.dumps(connection.result)}\n"
-                f"Last error from LDAP server: {json.dumps(connection.last_error)}"
-            )
-            return_error(message)
-            return None
-
-        demisto.info(f'Verified base DN "{default_base_dn}"')
+        if verify_base_dn:
+            demisto.info(f'Starting to verify base DN "{default_base_dn}"')
+            if not base_dn_verified(default_base_dn):
+                message = (
+                    f"Failed to verify the base DN configured for the instance.\n"
+                    f"Last connection result: {json.dumps(connection.result)}\n"
+                    f"Last error from LDAP server: {json.dumps(connection.last_error)}"
+                )
+                return_error(message)
+                return None
+            demisto.info(f'Verified base DN "{default_base_dn}"')
 
         """ COMMAND EXECUTION """
 
