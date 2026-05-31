@@ -17,7 +17,8 @@ from iZOOlogic import (
     get_current_unix_timestamp,
     snap_to_day_boundary_utc,
     parse_date,
-    create_incidents,
+    add_time_to_events,
+    create_events,
     filter_by_ids,
     validate_date_range,
     resolve_type_codes,
@@ -26,11 +27,9 @@ from iZOOlogic import (
     _filter_and_dedup,
     _compute_new_state,
     _fetch_for_type,
-    _fetch_single_window,
-    _generate_windows,
     test_module as izoologic_test_module,
-    get_incidents_command,
-    fetch_incidents_command,
+    get_events_command,
+    fetch_events_command,
     main,
 )
 
@@ -57,20 +56,20 @@ def mock_support_multithreading(mocker: MockerFixture):
 
 
 @pytest.fixture
-def incidents_result() -> dict:
+def events_result() -> dict:
     """The 'result' object from the API response."""
-    return load_test_data("incidents_response.json")["result"]
+    return load_test_data("events_response.json")["result"]
 
 
 @pytest.fixture
-def incidents_result_with_pagination() -> dict:
+def events_result_with_pagination() -> dict:
     """The 'result' object with pagination token."""
-    return load_test_data("incidents_response_with_pagination.json")["result"]
+    return load_test_data("events_response_with_pagination.json")["result"]
 
 
 @pytest.fixture
 def empty_result() -> dict:
-    """The 'result' object with no incidents."""
+    """The 'result' object with no events."""
     return load_test_data("empty_response.json")["result"]
 
 
@@ -95,7 +94,7 @@ def valid_params() -> dict:
         "url": "https://api.izoologic.com/",
         "api_key": {"password": "test-key"},
         "secret_key": {"password": "test-secret"},
-        "incident_types_filter": ["phishing", "malware"],
+        "events_types_filter": ["phishing", "malware"],
         "max_fetch": "5000",
     }
 
@@ -311,40 +310,49 @@ class TestSnapToDayBoundaryUtc:
 
 # endregion
 
-# region Create Incidents Tests
+# region Add Time To Events / Create Events Tests
 
 
-class TestCreateIncidents:
-    @pytest.mark.parametrize(
-        "raw, expected_name, expected_occurred",
-        [
-            (
-                [{"incidentID": "abc", "incidentType": "Phishing", "createdOn": "100"}],
-                "iZOOlogic - Phishing - abc",
-                "1970-01-01T00:01:40+00:00",
-            ),
-            (
-                [{"incidentID": "1"}],
-                "iZOOlogic - Unknown - 1",
-                "",
-            ),
-        ],
-    )
-    def test_create_incidents(self, raw: list, expected_name: str, expected_occurred: str):
-        incidents = create_incidents(raw)
-        assert len(incidents) == 1
-        assert incidents[0]["name"] == expected_name
-        assert incidents[0]["occurred"] == expected_occurred
+class TestAddTimeToEvents:
+    def test_adds_time_and_source_log_type(self):
+        events = [{"incidentID": "abc", "incidentType": "Phishing", "createdOn": "100"}]
+        add_time_to_events(events)
+        assert events[0]["_time"] == "1970-01-01T00:01:40Z"
+        assert events[0]["source_log_type"] == "Phishing"
 
-    def test_empty(self):
-        assert create_incidents([]) == []
+    def test_missing_created_on(self):
+        events = [{"incidentID": "1"}]
+        add_time_to_events(events)
+        assert "_time" not in events[0]
+        assert events[0]["source_log_type"] == "Unknown"
 
-    def test_rawjson_contains_original_data(self):
-        raw = [{"incidentID": "abc", "incidentType": "Phishing", "createdOn": "100", "extra": "data"}]
-        incidents = create_incidents(raw)
-        parsed = json.loads(incidents[0]["rawJSON"])
-        assert parsed["incidentID"] == "abc"
-        assert parsed["extra"] == "data"
+    def test_empty_list(self):
+        events: list[dict] = []
+        add_time_to_events(events)
+        assert events == []
+
+    def test_multiple_events(self):
+        events = [
+            {"incidentID": "1", "incidentType": "Phishing", "createdOn": "100"},
+            {"incidentID": "2", "incidentType": "Malware", "createdOn": "200"},
+        ]
+        add_time_to_events(events)
+        assert events[0]["_time"] == "1970-01-01T00:01:40Z"
+        assert events[0]["source_log_type"] == "Phishing"
+        assert events[1]["_time"] == "1970-01-01T00:03:20Z"
+        assert events[1]["source_log_type"] == "Malware"
+
+
+class TestCreateEvents:
+    def test_create_events_calls_send_events_to_xsiam(self, mocker: MockerFixture):
+        mock_send = mocker.patch("iZOOlogic.send_events_to_xsiam")
+        events = [{"incidentID": "abc", "incidentType": "Phishing", "createdOn": "100"}]
+        create_events(events)
+        mock_send.assert_called_once()
+        sent_events = mock_send.call_args[1]["events"]
+        assert len(sent_events) == 1
+        assert sent_events[0]["_time"] == "1970-01-01T00:01:40Z"
+        assert sent_events[0]["source_log_type"] == "Phishing"
 
 
 # endregion
@@ -375,7 +383,7 @@ class TestFilterByIds:
 class TestValidateApiResponse:
     def test_success_response(self):
         """Successful response returns the 'result' object."""
-        response = load_test_data("incidents_response.json")
+        response = load_test_data("events_response.json")
         result = _validate_api_response(response)
         assert "incidents" in result
         assert len(result["incidents"]) == 3
@@ -463,7 +471,7 @@ class TestResolveTypeCodes:
         ],
     )
     def test_invalid_type_raises(self, type_names: list[str]):
-        with pytest.raises(DemistoException, match="Invalid incident type"):
+        with pytest.raises(DemistoException, match="Invalid event type"):
             resolve_type_codes(type_names)
 
 
@@ -476,9 +484,8 @@ class TestParseIntegrationParams:
     def test_valid_params(self, valid_params: dict):
         config = parse_integration_params(valid_params)
         assert config["base_url"] == "https://api.izoologic.com"
-        assert config["incident_type_codes"] == [2, 3]
+        assert config["event_type_codes"] == [2, 3]
         assert config["max_fetch"] == 5000
-        assert "first_fetch_ts" in config
 
     @pytest.mark.parametrize(
         "override, error_match",
@@ -494,20 +501,9 @@ class TestParseIntegrationParams:
             parse_integration_params({**valid_params, **override})
 
     def test_no_filter_defaults_to_all(self, valid_params: dict):
-        del valid_params["incident_types_filter"]
+        del valid_params["events_types_filter"]
         config = parse_integration_params(valid_params)
-        assert len(config["incident_type_codes"]) == 10
-
-    def test_first_fetch_default(self, valid_params: dict):
-        """first_fetch_ts should be set from default when not provided."""
-        config = parse_integration_params(valid_params)
-        assert config["first_fetch_ts"]  # Should be a non-empty Unix timestamp string
-
-    def test_first_fetch_custom(self, valid_params: dict):
-        """first_fetch_ts should be set from the provided first_fetch param."""
-        valid_params["first_fetch"] = "3 days"
-        config = parse_integration_params(valid_params)
-        assert config["first_fetch_ts"]  # Should be a non-empty Unix timestamp string
+        assert len(config["event_type_codes"]) == 10
 
     def test_trailing_slash_stripped(self, valid_params: dict):
         valid_params["url"] = "https://api.izoologic.com///"
@@ -531,25 +527,25 @@ class TestParseIntegrationParams:
 
 
 class TestClient:
-    def test_fetch_incidents_page_full_body(self, mocker: MockerFixture, mock_client: Client):
-        """Test that fetch_incidents_page sends correct body with all params."""
-        full_resp = load_test_data("incidents_response.json")
+    def test_fetch_events_page_full_body(self, mocker: MockerFixture, mock_client: Client):
+        """Test that fetch_events_page sends correct body with all params."""
+        full_resp = load_test_data("events_response.json")
         mock_req = mocker.patch.object(mock_client, "_http_request", return_value=full_resp)
-        mock_client.fetch_incidents_page("1700000000", "1700100000", incident_type=2, page_token="tok")
+        mock_client.fetch_events_page("1700000000", "1700100000", event_type=2, page_token="tok")
         body = mock_req.call_args.kwargs["json_data"]
         assert body == {"fromdate": "1700000000", "todate": "1700100000", "incidenttype": 2, "token": "tok"}
 
-    def test_fetch_incidents_page_minimal_body(self, mocker: MockerFixture, mock_client: Client):
-        """Without incident_type and page_token, body only has dates."""
-        full_resp = load_test_data("incidents_response.json")
+    def test_fetch_events_page_minimal_body(self, mocker: MockerFixture, mock_client: Client):
+        """Without events_type and page_token, body only has dates."""
+        full_resp = load_test_data("events_response.json")
         mock_req = mocker.patch.object(mock_client, "_http_request", return_value=full_resp)
-        mock_client.fetch_incidents_page("1700000000", "1700100000")
+        mock_client.fetch_events_page("1700000000", "1700100000")
         body = mock_req.call_args.kwargs["json_data"]
         assert body == {"fromdate": "1700000000", "todate": "1700100000"}
 
-    def test_fetch_incidents_page_returns_result(self, mocker: MockerFixture, mock_client: Client):
-        mocker.patch.object(mock_client, "_http_request", return_value=load_test_data("incidents_response.json"))
-        result = mock_client.fetch_incidents_page("1700000000", "1700100000")
+    def test_fetch_events_page_returns_result(self, mocker: MockerFixture, mock_client: Client):
+        mocker.patch.object(mock_client, "_http_request", return_value=load_test_data("events_response.json"))
+        result = mock_client.fetch_events_page("1700000000", "1700100000")
         assert "incidents" in result
         assert "success" not in result  # _validate_api_response strips the wrapper
 
@@ -560,22 +556,22 @@ class TestClient:
 
 
 class TestTestModule:
-    def test_success(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+    def test_success(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         assert izoologic_test_module(mock_client) == "ok"
 
     def test_success_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
         """Empty result still proves connectivity — test passes."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=empty_result)
         assert izoologic_test_module(mock_client) == "ok"
 
     @pytest.mark.parametrize("error_msg", ["401 Unauthorized", "403 Forbidden", "unauthorized"])
     def test_auth_failure(self, mocker: MockerFixture, mock_client: Client, error_msg: str):
-        mocker.patch.object(mock_client, "fetch_incidents_page", side_effect=DemistoException(error_msg))
+        mocker.patch.object(mock_client, "fetch_events_page", side_effect=DemistoException(error_msg))
         assert "Authorization Error" in izoologic_test_module(mock_client)
 
     def test_other_error_raises(self, mocker: MockerFixture, mock_client: Client):
-        mocker.patch.object(mock_client, "fetch_incidents_page", side_effect=DemistoException("timeout"))
+        mocker.patch.object(mock_client, "fetch_events_page", side_effect=DemistoException("timeout"))
         with pytest.raises(DemistoException, match="timeout"):
             izoologic_test_module(mock_client)
 
@@ -586,36 +582,36 @@ class TestTestModule:
 
 
 class TestFetchAllPages:
-    def test_single_page(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
-        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", incident_type=2)
+    def test_single_page(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", event_type=2)
         assert len(results) == 3
 
     def test_multi_page(
         self,
         mocker: MockerFixture,
         mock_client: Client,
-        incidents_result_with_pagination: dict,
-        incidents_result: dict,
+        events_result_with_pagination: dict,
+        events_result: dict,
     ):
         """Exhausts all pages until nextPage is null."""
         mocker.patch.object(
             mock_client,
-            "fetch_incidents_page",
-            side_effect=[incidents_result_with_pagination, incidents_result],
+            "fetch_events_page",
+            side_effect=[events_result_with_pagination, events_result],
         )
-        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", incident_type=2)
-        # Page 1: 2 incidents (with pagination), Page 2: 3 incidents (no pagination)
+        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", event_type=2)
+        # Page 1: 2 events (with pagination), Page 2: 3 events (no pagination)
         assert len(results) == 5
 
     def test_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
-        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", incident_type=2)
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=empty_result)
+        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", event_type=2)
         assert results == []
 
-    def test_no_incident_type(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """Works without incident_type filter."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+    def test_no_event_type(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Works without event_type filter."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         results = _fetch_all_pages(mock_client, "1700000000", "1700100000")
         assert len(results) == 3
 
@@ -665,13 +661,13 @@ class TestComputeNewState:
     @pytest.mark.parametrize(
         "consumed, expected_created_on, expected_ids",
         [
-            # Single incident at max
+            # Single event at max
             (
                 [{"incidentID": "a", "createdOn": "100"}, {"incidentID": "b", "createdOn": "200"}],
                 "200",
                 ["b"],
             ),
-            # Multiple incidents at max timestamp
+            # Multiple events at max timestamp
             (
                 [
                     {"incidentID": "a", "createdOn": "100"},
@@ -681,7 +677,7 @@ class TestComputeNewState:
                 "200",
                 ["b", "c"],
             ),
-            # Single incident
+            # Single event
             (
                 [{"incidentID": "x", "createdOn": "500"}],
                 "500",
@@ -706,95 +702,95 @@ class TestComputeNewState:
 
 
 class TestFetchForType:
-    def test_first_fetch(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """First fetch with empty state — all incidents consumed, sorted ascending."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+    def test_first_fetch(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """First fetch with empty state — all events consumed, sorted ascending."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
 
-        type_key, cortex_incidents, state = _fetch_for_type(mock_client, 2, {}, 10000)
+        type_key, cortex_events, state = _fetch_for_type(mock_client, 2, {}, 10000)
 
         assert type_key == "2"
-        assert len(cortex_incidents) == 3
+        assert len(cortex_events) == 3
         # State should have last_created_on = max createdOn (ascending sort, last consumed)
         assert state["last_created_on"] == "1700000200"
-        # Only the incident at max createdOn should be in last_ids
+        # Only the event at max createdOn should be in last_ids
         assert state["last_ids"] == ["abc123"]
 
-    def test_ascending_sort(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """Verify incidents are returned sorted ascending by createdOn."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+    def test_ascending_sort(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Verify events are returned sorted ascending by createdOn."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
 
-        _, cortex_incidents, _ = _fetch_for_type(mock_client, 2, {}, 10000)
+        _, consumed_events, _ = _fetch_for_type(mock_client, 2, {}, 10000)
 
-        created_ons = [json.loads(i["rawJSON"])["createdOn"] for i in cortex_incidents]
+        created_ons = [e["createdOn"] for e in consumed_events]
         assert created_ons == ["1700000000", "1700000100", "1700000200"]
 
-    def test_slice_to_max_fetch(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """When max_fetch < total incidents, slice to max_fetch (oldest first)."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+    def test_slice_to_max_fetch(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """When max_fetch < total events, slice to max_fetch (oldest first)."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
 
-        _, cortex_incidents, state = _fetch_for_type(mock_client, 2, {}, 2)
+        _, consumed_events, state = _fetch_for_type(mock_client, 2, {}, 2)
 
-        assert len(cortex_incidents) == 2
+        assert len(consumed_events) == 2
         # Should consume the 2 oldest (ascending sort)
-        ids = [json.loads(i["rawJSON"])["incidentID"] for i in cortex_incidents]
+        ids = [e["incidentID"] for e in consumed_events]
         assert ids == ["ghi789", "def456"]
         # last_created_on = createdOn of the last consumed (def456 = 1700000100)
         assert state["last_created_on"] == "1700000100"
         assert state["last_ids"] == ["def456"]
 
-    def test_time_filter(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """Incidents with createdOn < last_created_on are discarded."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+    def test_time_filter(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Events with createdOn < last_created_on are discarded."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1700100000")
 
         type_state = {"last_created_on": "1700000100", "last_ids": []}
-        _, cortex_incidents, state = _fetch_for_type(mock_client, 2, type_state, 10000)
+        _, consumed_events, state = _fetch_for_type(mock_client, 2, type_state, 10000)
 
         # ghi789 (createdOn=1700000000) should be filtered out
-        ids = [json.loads(i["rawJSON"])["incidentID"] for i in cortex_incidents]
+        ids = [e["incidentID"] for e in consumed_events]
         assert "ghi789" not in ids
-        assert len(cortex_incidents) == 2
+        assert len(consumed_events) == 2
 
-    def test_dedup_at_boundary(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """Incidents with createdOn == last_created_on and matching IDs are removed."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+    def test_dedup_at_boundary(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Events with createdOn == last_created_on and matching IDs are removed."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1700100000")
 
         type_state = {"last_created_on": "1700000100", "last_ids": ["def456"]}
-        _, cortex_incidents, _ = _fetch_for_type(mock_client, 2, type_state, 10000)
+        _, consumed_events, _ = _fetch_for_type(mock_client, 2, type_state, 10000)
 
-        ids = [json.loads(i["rawJSON"])["incidentID"] for i in cortex_incidents]
+        ids = [e["incidentID"] for e in consumed_events]
         assert "def456" not in ids
         assert "ghi789" not in ids  # Filtered by time
         assert ids == ["abc123"]
 
     def test_empty_response_advances_cursor(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
-        """When no incidents are returned, cursor advances to to_date."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
+        """When no events are returned, cursor advances to to_date."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=empty_result)
         mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1700100000")
         # Mock date_to_unix_timestamp so DEFAULT_FROM_TIME doesn't resolve to "now"
         mocker.patch("iZOOlogic.date_to_unix_timestamp", return_value="1700000000")
 
-        type_key, cortex_incidents, state = _fetch_for_type(mock_client, 2, {}, 10000)
+        type_key, cortex_events, state = _fetch_for_type(mock_client, 2, {}, 10000)
 
-        assert cortex_incidents == []
+        assert cortex_events == []
         assert state["last_created_on"] == "1700100000"
         assert state["last_ids"] == []
 
-    def test_all_filtered_out_advances_cursor(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """When all incidents are filtered/deduped out, cursor advances to to_date."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+    def test_all_filtered_out_advances_cursor(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """When all events are filtered/deduped out, cursor advances to to_date."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1700100000")
 
         type_state = {"last_created_on": "1700000200", "last_ids": ["abc123"]}
-        _, cortex_incidents, state = _fetch_for_type(mock_client, 2, type_state, 10000)
+        _, cortex_events, state = _fetch_for_type(mock_client, 2, type_state, 10000)
 
-        assert cortex_incidents == []
+        assert cortex_events == []
         assert state["last_created_on"] == "1700100000"
         assert state["last_ids"] == []
 
     def test_state_update_with_multiple_same_timestamp(self, mocker: MockerFixture, mock_client: Client):
-        """When multiple incidents share the max createdOn, all their IDs are in last_ids."""
+        """When multiple events share the max createdOn, all their IDs are in last_ids."""
         mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1000")
         # Mock date_to_unix_timestamp so DEFAULT_FROM_TIME doesn't resolve to "now"
         mocker.patch("iZOOlogic.date_to_unix_timestamp", return_value="100")
@@ -806,53 +802,50 @@ class TestFetchForType:
             ],
             "nextPage": None,
         }
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=result)
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=result)
 
         _, _, state = _fetch_for_type(mock_client, 2, {}, 10000)
 
         assert state["last_created_on"] == "200"
         assert set(state["last_ids"]) == {"a", "b"}
 
-    def test_large_date_range_splits_into_windows(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
-        """When date range exceeds 31 days, it is split into multiple windows."""
+    def test_large_date_range_raises(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
+        """When date range exceeds 31 days, validate_date_range raises."""
         mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1703000000")
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=empty_result)
 
-        # last_created_on is >31 days before to_date → should split into 2 windows
+        # last_created_on is >31 days before to_date → should raise
         type_state = {"last_created_on": "1700000000", "last_ids": ["old"]}
-        type_key, cortex_incidents, state = _fetch_for_type(mock_client, 2, type_state, 10000)
-
-        assert cortex_incidents == []
-        # State should be advanced to to_date (cursor moved forward through empty windows)
-        assert state["last_created_on"] == "1703000000"
+        with pytest.raises(DemistoException, match="exceeds the maximum"):
+            _fetch_for_type(mock_client, 2, type_state, 10000)
 
 
 # endregion
 
-# region Get Incidents Command Tests
+# region Get Events Command Tests
 
 
-class TestGetIncidentsCommand:
-    def test_basic(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
-        result = get_incidents_command(mock_client, {"limit": "10"}, [2])
+class TestGetEventsCommand:
+    def test_basic(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        result = get_events_command(mock_client, {"limit": "10"}, [2])
         assert isinstance(result, CommandResults)
         assert result.outputs_prefix == "iZOOlogic.Incident"
 
-    def test_slices_to_limit(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """Test that get-incidents slices results to the limit per type."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
-        result = get_incidents_command(mock_client, {"limit": "2"}, [2])
+    def test_slices_to_limit(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Test that get-events slices results to the limit per type."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        result = get_events_command(mock_client, {"limit": "2"}, [2])
         assert len(result.outputs) <= 2  # type: ignore[arg-type]
 
     def test_invalid_limit(self, mocker: MockerFixture, mock_client: Client):
         with pytest.raises(DemistoException, match="Invalid limit value"):
-            get_incidents_command(mock_client, {"limit": "-5"}, [2])
+            get_events_command(mock_client, {"limit": "-5"}, [2])
 
     def test_inverted_date_range_raises(self, mocker: MockerFixture, mock_client: Client):
         """end_time before start_time (different days) should raise."""
         with pytest.raises(DemistoException, match="is before"):
-            get_incidents_command(
+            get_events_command(
                 mock_client,
                 {
                     "limit": "10",
@@ -863,9 +856,9 @@ class TestGetIncidentsCommand:
             )
 
     def test_date_range_exceeds_31_days_raises(self, mocker: MockerFixture, mock_client: Client):
-        """get_incidents_command should reject date ranges exceeding 31 days."""
+        """get_events_command should reject date ranges exceeding 31 days."""
         with pytest.raises(DemistoException, match="exceeds the maximum"):
-            get_incidents_command(
+            get_events_command(
                 mock_client,
                 {
                     "limit": "10",
@@ -875,47 +868,48 @@ class TestGetIncidentsCommand:
                 [2],
             )
 
-    def test_incident_type_arg_overrides_default(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """When incident_type is provided in args, it overrides default_type_codes."""
-        mock_fetch = mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
-        get_incidents_command(mock_client, {"limit": "10", "incident_type": "malware"}, [2])
+    def test_event_type_arg_overrides_default(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """When event_type is provided in args, it overrides default_type_codes."""
+        mock_fetch = mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        get_events_command(mock_client, {"limit": "10", "event_type": "malware"}, [2])
         # Should call with type_code=3 (malware), not 2 (phishing)
         call_body = mock_fetch.call_args.kwargs
-        assert call_body.get("incident_type") == 3
+        assert call_body.get("event_type") == 3
 
-    def test_multiple_types(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """Fetches incidents for each type code — API called once per type."""
-        mock_fetch = mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
-        result = get_incidents_command(mock_client, {"limit": "10"}, [2, 3])
-        # Verify fetch_incidents_page was called for each type
-        called_types = [call.kwargs["incident_type"] for call in mock_fetch.call_args_list]
+    def test_multiple_types(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Fetches events for each type code — API called once per type."""
+        mock_fetch = mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        result = get_events_command(mock_client, {"limit": "10"}, [2, 3])
+        # Verify fetch_events_page was called for each type
+        called_types = [call.kwargs["event_type"] for call in mock_fetch.call_args_list]
         assert 2 in called_types
         assert 3 in called_types
         assert isinstance(result.outputs, list)
 
-    def test_outputs_key_field(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+    def test_outputs_key_field(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
         """Verify outputs_key_field is set correctly."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
-        result = get_incidents_command(mock_client, {"limit": "10"}, [2])
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        result = get_events_command(mock_client, {"limit": "10"}, [2])
         assert result.outputs_key_field == "incidentID"
 
 
 # endregion
 
-# region Fetch Incidents Command Tests (async)
+# region Fetch Events Command Tests (async)
 
 
-class TestFetchIncidentsCommand:
-    def test_first_fetch(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+class TestFetchEventsCommand:
+    def test_first_fetch(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_incidents = mocker.patch.object(demisto, "incidents")
+        mock_send = mocker.patch("iZOOlogic.send_events_to_xsiam")
         mock_set = mocker.patch.object(demisto, "setLastRun")
 
-        asyncio.run(fetch_incidents_command(mock_client, 10000, [2]))
+        asyncio.run(fetch_events_command(mock_client, 10000, [2]))
 
-        created = mock_incidents.call_args[0][0]
-        assert len(created) == 3
+        mock_send.assert_called_once()
+        sent_events = mock_send.call_args[1]["events"]
+        assert len(sent_events) == 3
         last_run = mock_set.call_args[0][0]
         assert "2" in last_run
         assert last_run["2"]["last_created_on"] == "1700000200"
@@ -925,67 +919,68 @@ class TestFetchIncidentsCommand:
         self,
         mocker: MockerFixture,
         mock_client: Client,
-        incidents_result: dict,
+        events_result: dict,
         empty_result: dict,
     ):
         """Test that multiple types are fetched (concurrently via asyncio.to_thread)."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", side_effect=[incidents_result, empty_result])
+        mocker.patch.object(mock_client, "fetch_events_page", side_effect=[events_result, empty_result])
         mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_incidents = mocker.patch.object(demisto, "incidents")
+        mock_send = mocker.patch("iZOOlogic.send_events_to_xsiam")
         mock_set = mocker.patch.object(demisto, "setLastRun")
 
-        asyncio.run(fetch_incidents_command(mock_client, 10000, [2, 3]))
+        asyncio.run(fetch_events_command(mock_client, 10000, [2, 3]))
 
-        created = mock_incidents.call_args[0][0]
-        assert len(created) == 3
+        mock_send.assert_called_once()
+        sent_events = mock_send.call_args[1]["events"]
+        assert len(sent_events) == 3
         last_run = mock_set.call_args[0][0]
         assert "2" in last_run
         assert "3" in last_run
 
     def test_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=empty_result)
         mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_incidents = mocker.patch.object(demisto, "incidents")
+        mock_send = mocker.patch("iZOOlogic.send_events_to_xsiam")
         mocker.patch.object(demisto, "setLastRun")
 
-        asyncio.run(fetch_incidents_command(mock_client, 10000, [2]))
-        mock_incidents.assert_called_once_with([])
+        asyncio.run(fetch_events_command(mock_client, 10000, [2]))
+        mock_send.assert_not_called()
 
     def test_exception_in_one_type_does_not_block_others(
         self,
         mocker: MockerFixture,
         mock_client: Client,
-        incidents_result: dict,
+        events_result: dict,
     ):
         """If one type raises an exception, other types still succeed."""
 
-        def side_effect(client, type_code, type_state, max_fetch, first_fetch_ts=""):
+        def side_effect(client, type_code, type_state, max_fetch):
             if type_code == 3:
                 raise DemistoException("API error for type 3")
-            return _fetch_for_type(client, type_code, type_state, max_fetch, first_fetch_ts)
+            return _fetch_for_type(client, type_code, type_state, max_fetch)
 
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mocker.patch("iZOOlogic._fetch_for_type", side_effect=side_effect)
-        mocker.patch.object(demisto, "incidents")
+        mocker.patch("iZOOlogic.send_events_to_xsiam")
         mock_set = mocker.patch.object(demisto, "setLastRun")
         mocker.patch.object(demisto, "error")
 
-        asyncio.run(fetch_incidents_command(mock_client, 10000, [2, 3]))
+        asyncio.run(fetch_events_command(mock_client, 10000, [2, 3]))
 
         # Type 2 should still succeed, type 3 error is logged
         last_run = mock_set.call_args[0][0]
         assert "2" in last_run
 
-    def test_preserves_existing_last_run_keys(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+    def test_preserves_existing_last_run_keys(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
         """Existing last_run keys for other types are preserved."""
         existing_last_run = {"5": {"last_created_on": "999", "last_ids": ["old"]}}
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         mocker.patch.object(demisto, "getLastRun", return_value=existing_last_run)
-        mocker.patch.object(demisto, "incidents")
+        mocker.patch("iZOOlogic.send_events_to_xsiam")
         mock_set = mocker.patch.object(demisto, "setLastRun")
 
-        asyncio.run(fetch_incidents_command(mock_client, 10000, [2]))
+        asyncio.run(fetch_events_command(mock_client, 10000, [2]))
 
         last_run = mock_set.call_args[0][0]
         assert "5" in last_run  # Preserved
@@ -998,7 +993,7 @@ class TestFetchIncidentsCommand:
 
 
 class TestMain:
-    @pytest.mark.parametrize("command", ["test-module", "fetch-incidents", "izoologic-get-incidents"])
+    @pytest.mark.parametrize("command", ["test-module", "fetch-events", "izoologic-get-events"])
     def test_main_dispatches(self, mocker: MockerFixture, command: str):
         mocker.patch("ContentClientApiModule.support_multithreading")
         mocker.patch.object(demisto, "command", return_value=command)
@@ -1010,18 +1005,18 @@ class TestMain:
                 "api_key": {"password": "k"},
                 "secret_key": {"password": "s"},
                 "max_fetch": "1000",
-                "incident_types_filter": ["phishing"],
+                "event_types_filter": ["phishing"],
             },
         )
         mocker.patch.object(demisto, "args", return_value={"limit": "10"})
         mock_func = mocker.MagicMock(return_value="ok")
         COMMAND_MAP[command] = mock_func
         mocker.patch("iZOOlogic.return_results")
-        if command == "fetch-incidents":
-            # fetch_incidents_command is async, mock asyncio.run
+        if command == "fetch-events":
+            # fetch_events_command is async, mock asyncio.run
             mocker.patch("iZOOlogic.asyncio.run")
         main()
-        if command != "fetch-incidents":
+        if command != "fetch-events":
             mock_func.assert_called_once()
 
     def test_main_unknown_command(self, mocker: MockerFixture):
@@ -1067,161 +1062,5 @@ class TestMain:
 
 
 # endregion
-
-# region Window Splitting Tests
-
-
-class TestGenerateWindows:
-    """Tests for _generate_windows — splitting date ranges into ≤31-day windows."""
-
-    def test_single_window_within_31_days(self):
-        """Range ≤31 days should produce a single window."""
-        from_ts = 1700000000  # ~Nov 14, 2023
-        to_ts = from_ts + (30 * 86400)  # 30 days later
-        windows = _generate_windows(from_ts, to_ts)
-        assert len(windows) == 1
-        assert windows[0] == (str(from_ts), str(to_ts))
-
-    def test_exactly_31_days(self):
-        """Range of exactly 31 days should produce a single window."""
-        from_ts = 1700000000
-        to_ts = from_ts + (31 * 86400)
-        windows = _generate_windows(from_ts, to_ts)
-        assert len(windows) == 1
-        assert windows[0] == (str(from_ts), str(to_ts))
-
-    def test_two_windows_for_45_days(self):
-        """45-day range should produce 2 windows: 31 days + 14 days."""
-        from_ts = 1700000000
-        to_ts = from_ts + (45 * 86400)
-        windows = _generate_windows(from_ts, to_ts)
-        assert len(windows) == 2
-        mid = from_ts + (31 * 86400)
-        assert windows[0] == (str(from_ts), str(mid))
-        assert windows[1] == (str(mid), str(to_ts))
-
-    def test_three_windows_for_90_days(self):
-        """90-day range should produce 3 windows."""
-        from_ts = 1700000000
-        to_ts = from_ts + (90 * 86400)
-        windows = _generate_windows(from_ts, to_ts)
-        assert len(windows) == 3
-
-    def test_empty_range(self):
-        """from_ts == to_ts should produce no windows."""
-        windows = _generate_windows(1700000000, 1700000000)
-        assert len(windows) == 0
-
-
-class TestFetchSingleWindow:
-    """Tests for _fetch_single_window — fetching within a single ≤31-day window."""
-
-    def test_returns_incidents_and_state(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """Should return incidents and updated state for a window with data."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
-
-        cortex_incidents, state = _fetch_single_window(
-            mock_client,
-            2,
-            "1700000000",
-            "1700100000",
-            None,
-            [],
-            10000,
-        )
-
-        assert len(cortex_incidents) == 3
-        assert state["last_created_on"] == "1700000200"
-
-    def test_empty_window_advances_cursor(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
-        """Empty window should advance cursor to window end."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=empty_result)
-
-        cortex_incidents, state = _fetch_single_window(
-            mock_client,
-            2,
-            "1700000000",
-            "1700100000",
-            None,
-            [],
-            10000,
-        )
-
-        assert len(cortex_incidents) == 0
-        assert state["last_created_on"] == "1700100000"
-
-
-class TestMultiWindowFetch:
-    """Tests for _fetch_for_type with multi-window (>31 day) date ranges."""
-
-    def test_multi_window_persists_per_window_and_returns_empty(
-        self,
-        mocker: MockerFixture,
-        mock_client: Client,
-    ):
-        """Multi-window fetch should persist incidents/state per window and return empty lists."""
-        window1_incidents = load_test_data("incidents_response_window1.json")["result"]["incidents"]
-        window2_incidents = load_test_data("incidents_response_window2.json")["result"]["incidents"]
-
-        # Mock _fetch_all_pages directly to return different incidents per window
-        mocker.patch(
-            "iZOOlogic._fetch_all_pages",
-            side_effect=[window1_incidents, window2_incidents],
-        )
-
-        # Fix "now" to Dec 19, 2023 so the test data timestamps fall within the windows:
-        # Window 1 data: createdOn=1700000100 (~Nov 14, 2023)
-        # Window 2 data: createdOn=1702678400 (~Dec 15, 2023)
-        fixed_now = 1703000000  # ~Dec 19, 2023
-        mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value=str(fixed_now))
-        first_fetch_ts = str(fixed_now - (45 * 86400))  # ~Nov 4, 2023
-
-        mock_incidents = mocker.patch.object(demisto, "incidents")
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_set_lr = mocker.patch.object(demisto, "setLastRun")
-
-        type_key, cortex_incidents, state = _fetch_for_type(
-            mock_client,
-            2,
-            {},
-            10000,
-            first_fetch_ts,
-        )
-
-        # Multi-window: returns empty incidents (already persisted per-window)
-        assert type_key == "2"
-        assert cortex_incidents == []
-        # State should be updated to the latest window's state
-        assert "last_created_on" in state
-
-        # 45 days = 2 windows, both with unique data → 2 calls each
-        assert mock_incidents.call_count == 2
-        assert mock_set_lr.call_count == 2
-        # Verify setLastRun was called with the type key
-        for call in mock_set_lr.call_args_list:
-            last_run_arg = call[0][0]
-            assert "2" in last_run_arg
-
-    def test_single_window_returns_incidents_normally(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """Single-window fetch should return incidents normally without per-window persistence."""
-        mocker.patch.object(mock_client, "fetch_incidents_page", return_value=incidents_result)
-
-        mock_incidents = mocker.patch.object(demisto, "incidents")
-        mock_set_lr = mocker.patch.object(demisto, "setLastRun")
-
-        type_key, cortex_incidents, state = _fetch_for_type(
-            mock_client,
-            2,
-            {},
-            10000,
-        )
-
-        # Single window: incidents returned normally for fetch_incidents_command to handle
-        assert len(cortex_incidents) == 3
-        assert state["last_created_on"] == "1700000200"
-        # demisto.incidents/setLastRun should NOT have been called inside _fetch_for_type
-        mock_incidents.assert_not_called()
-        mock_set_lr.assert_not_called()
-
 
 # endregion

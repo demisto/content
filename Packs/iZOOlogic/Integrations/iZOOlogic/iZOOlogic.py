@@ -1,5 +1,4 @@
 import asyncio
-import json
 import threading
 import traceback
 from datetime import datetime, UTC
@@ -12,7 +11,7 @@ from ContentClientApiModule import *
 
 """
 iZOOlogic
-Integration for fetching threat incidents from the iZOOlogic API.
+Integration for fetching threat events from the iZOOlogic API.
 """
 
 # region Constants and helpers
@@ -26,7 +25,7 @@ class ApiPaths:
     """Centralized iZOOlogic API endpoint paths."""
 
     AUTHENTICATE = "/api/Token/Authenticate"
-    FETCH_INCIDENTS = "/api/ThreatManagement/FetchIncidents"
+    FETCH_EVENTS = "/api/ThreatManagement/FetchIncidents"
 
 
 class Config:
@@ -46,12 +45,8 @@ class Config:
 # API error codes
 NO_DATA_FOUND_ERROR_CODE = "iZOO2011"
 
-# Lock for thread-safe access to demisto.getLastRun/setLastRun
-# during multi-window fetches where concurrent threads may update last_run.
-_last_run_lock = threading.Lock()
-
-# Mapping of incident type display names to API integer codes
-INCIDENT_TYPE_CODES: dict[str, int] = {
+# Mapping of event type display names to API integer codes
+EVENT_TYPE_CODES: dict[str, int] = {
     "brand abuse": 1,
     "phishing": 2,
     "malware": 3,
@@ -152,55 +147,61 @@ def parse_date(date_string: str) -> datetime:
     return parsed_datetime
 
 
-def create_incidents(raw_incidents: list[dict]) -> list[dict]:
-    """Convert API incidents to Cortex incident format.
+def add_time_to_events(events: list[dict]) -> None:
+    """Add _time and source_log_type fields to events for XSIAM ingestion.
 
-    Each incident includes a name, occurred timestamp, and the full raw data as rawJSON.
-
-    Args:
-        raw_incidents: List of incident dictionaries from the API.
-
-    Returns:
-        List of Cortex incident dictionaries.
-    """
-    incidents: list[dict] = []
-    for raw in raw_incidents:
-        incident_type = raw.get("incidentType", "Unknown")
-        incident_id = raw.get("incidentID", "Unknown")
-        created_on = raw.get("createdOn", "")
-
-        occurred_iso = datetime.fromtimestamp(int(created_on), tz=UTC).isoformat() if created_on else ""
-
-        incident = {
-            "name": f"iZOOlogic - {incident_type} - {incident_id}",
-            "occurred": occurred_iso,
-            "rawJSON": json.dumps(raw),
-        }
-        incidents.append(incident)
-
-    demisto.debug(f"[Convert] Converted {len(incidents)} raw incidents to Cortex incidents")
-    return incidents
-
-
-def filter_by_ids(raw_incidents: list[dict], ids_to_skip: list[str]) -> list[dict]:
-    """Filter out incidents whose IDs are in the given skip set.
+    Converts the ``createdOn`` Unix timestamp to ISO 8601 format and sets it as ``_time``.
+    Also sets ``source_log_type`` to the event type for each event.
 
     Args:
-        raw_incidents: List of incident dictionaries from the API.
-        ids_to_skip: List of incident IDs to filter out.
+        events: List of event dictionaries from the API. Modified in place.
+    """
+    for event in events:
+        created_on = event.get("createdOn", "")
+        if created_on:
+            try:
+                dt = datetime.fromtimestamp(int(created_on), tz=UTC)
+                event["_time"] = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+            except (ValueError, TypeError, OSError):
+                demisto.debug(f"[Time] Failed to parse createdOn: {created_on}")
+
+        event["source_log_type"] = event.get("incidentType", "Unknown")
+
+
+def create_events(events: list[dict]) -> None:
+    """Format events and send them to XSIAM.
+
+    Args:
+        events: List of raw event dictionaries from the API.
+    """
+    demisto.debug(f"[Create Events] Formatting and sending {len(events)} XSIAM events.")
+    add_time_to_events(events)
+    send_events_to_xsiam(
+        events=events,
+        vendor=INTEGRATION_NAME,
+        product=INTEGRATION_NAME,
+    )
+
+
+def filter_by_ids(raw_events: list[dict], ids_to_skip: list[str]) -> list[dict]:
+    """Filter out events whose IDs are in the given skip set.
+
+    Args:
+        raw_events: List of event dictionaries from the API.
+        ids_to_skip: List of event IDs to filter out.
 
     Returns:
-        List of incidents not in the skip set.
+        List of events not in the skip set.
     """
-    if not raw_incidents or not ids_to_skip:
-        return raw_incidents
+    if not raw_events or not ids_to_skip:
+        return raw_events
 
     skip_set = set(ids_to_skip)
-    filtered = [inc for inc in raw_incidents if inc.get("incidentID") not in skip_set]
+    filtered = [inc for inc in raw_events if inc.get("incidentID") not in skip_set]
 
-    skipped = len(raw_incidents) - len(filtered)
+    skipped = len(raw_events) - len(filtered)
     if skipped > 0:
-        demisto.debug(f"[Filter] Skipped {skipped} incidents by ID. {len(filtered)} remain.")
+        demisto.debug(f"[Filter] Skipped {skipped} events by ID. {len(filtered)} remain.")
 
     return filtered
 
@@ -268,20 +269,15 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
 
-    # Parse and validate incident types filter — default to all types if none specified
-    incident_types_filter = argToList(params.get("incident_types_filter"))
-    incident_type_codes = (
-        resolve_type_codes(incident_types_filter) if incident_types_filter else list(INCIDENT_TYPE_CODES.values())
-    )
+    # Parse and validate event types filter — default to all types if none specified
+    event_types_filter = argToList(params.get("events_types_filter"))
+    event_type_codes = resolve_type_codes(event_types_filter) if event_types_filter else list(EVENT_TYPE_CODES.values())
 
     max_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH_PER_TYPE))
     if max_fetch <= 0:
         raise DemistoException(f"Invalid max_fetch value: {params.get('max_fetch')}. Must be a positive integer.")
 
-    first_fetch = params.get("first_fetch", Config.DEFAULT_FROM_TIME)
-    first_fetch_ts = date_to_unix_timestamp(first_fetch)
-
-    demisto.debug(f"[Config] URL: {base_url}, first_fetch: {first_fetch} ({first_fetch_ts})")
+    demisto.debug(f"[Config] URL: {base_url}")
 
     return {
         "base_url": base_url,
@@ -289,9 +285,8 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "secret_key": secret_key,
         "verify": verify_certificate,
         "proxy": proxy,
-        "incident_type_codes": incident_type_codes,
+        "event_type_codes": event_type_codes,
         "max_fetch": max_fetch,
-        "first_fetch_ts": first_fetch_ts,
     }
 
 
@@ -303,7 +298,7 @@ def validate_date_range(from_date: str, to_date: str) -> None:
     2. The span must not exceed ``Config.MAX_DATE_RANGE_DAYS`` (31 days).
 
     Note: same-day cases where ``to_date == from_date`` after snapping to midnight
-    are handled separately by callers (e.g. ``get_incidents_command``).
+    are handled separately by callers (e.g. ``get_events_command``).
 
     Args:
         from_date: Start date as Unix timestamp string.
@@ -329,10 +324,10 @@ def validate_date_range(from_date: str, to_date: str) -> None:
 
 
 def resolve_type_codes(type_names: list[str]) -> list[int]:
-    """Resolve incident type display names to API codes.
+    """Resolve event type display names to API codes.
 
     Args:
-        type_names: List of incident type display names (e.g., ['phishing', 'malware']).
+        type_names: List of event type display names (e.g., ['phishing', 'malware']).
 
     Returns:
         List of API integer codes.
@@ -342,9 +337,9 @@ def resolve_type_codes(type_names: list[str]) -> list[int]:
     """
     codes: list[int] = []
     for name in type_names:
-        code = INCIDENT_TYPE_CODES.get(name.lower().strip())
+        code = EVENT_TYPE_CODES.get(name.lower().strip())
         if code is None:
-            raise DemistoException(f"Invalid incident type: '{name}'. Valid types: {list(INCIDENT_TYPE_CODES.keys())}")
+            raise DemistoException(f"Invalid event type: '{name}'. Valid types: {list(EVENT_TYPE_CODES.keys())}")
         codes.append(code)
     return codes
 
@@ -481,14 +476,14 @@ class Client(ContentClient):
             client_name="iZOOlogic",
         )
 
-    def fetch_incidents_page(
+    def fetch_events_page(
         self,
         from_date: str,
         to_date: str,
-        incident_type: int | None = None,
+        event_type: int | None = None,
         page_token: str | None = None,
     ) -> dict[str, Any]:
-        """Fetch a single page of incidents from the iZOOlogic API.
+        """Fetch a single page of events from the iZOOlogic API.
 
         The API uses day-level filtering: ``fromdate`` is rounded up to the
         next UTC midnight (inclusive), ``todate`` is floored to its UTC
@@ -499,28 +494,28 @@ class Client(ContentClient):
             from_date: Start date as Unix timestamp string (must be midnight UTC
                 to avoid the round-up skipping the intended day).
             to_date: End date as Unix timestamp string (floored to its day by the API).
-            incident_type: Optional incident type code to filter by.
+            event_type: Optional event type code to filter by.
             page_token: Pagination token for retrieving the next page.
 
         Returns:
-            The 'result' object from the API response containing incidents and pagination info.
+            The 'result' object from the API response containing events and pagination info.
         """
         body: dict[str, Any] = {
             "fromdate": from_date,
             "todate": to_date,
         }
 
-        if incident_type is not None:
-            body["incidenttype"] = incident_type
+        if event_type is not None:
+            body["incidenttype"] = event_type
 
         if page_token:
             body["token"] = page_token
 
-        demisto.debug(f"[API Fetch] Fetching incidents | Params: {body}")
+        demisto.debug(f"[API Fetch] Fetching events | Params: {body}")
 
         response = self._http_request(
             method="POST",
-            url_suffix=ApiPaths.FETCH_INCIDENTS,
+            url_suffix=ApiPaths.FETCH_EVENTS,
             json_data=body,
         )
 
@@ -536,10 +531,10 @@ class Client(ContentClient):
 
 
 def test_module(client: Client) -> str:
-    """Test API connectivity by authenticating and fetching incidents.
+    """Test API connectivity by authenticating and fetching events.
 
     Uses _fetch_all_pages with midnight UTC of today as fromdate.
-    An empty result (no incidents) still proves connectivity — the test passes.
+    An empty result (no events) still proves connectivity — the test passes.
 
     Args:
         client: The iZOOlogic client.
@@ -569,74 +564,74 @@ def _fetch_all_pages(
     client: Client,
     from_date: str,
     to_date: str,
-    incident_type: int | None = None,
+    event_type: int | None = None,
 ) -> list[dict]:
-    """Fetch ALL pages of incidents until pagination is exhausted.
+    """Fetch ALL pages of events until pagination is exhausted.
 
     Loops through all pages using opaque nextPage tokens until nextPage is null
     or the API returns an empty page. No max_results cap — fetches everything
     in the time window.
 
-    Used by all commands: test_module, get_incidents_command, and fetch_incidents_command.
+    Used by all commands: test_module, get_events_command, and fetch_events_command.
 
     Args:
         client: The iZOOlogic client.
         from_date: Start date as Unix timestamp string (must be midnight UTC).
         to_date: End date as Unix timestamp string.
-        incident_type: Optional incident type code.
+        event_type: Optional event type code.
 
     Returns:
-        List of ALL raw incident dictionaries from all pages.
+        List of ALL raw event dictionaries from all pages.
     """
-    all_incidents: list[dict] = []
+    all_events: list[dict] = []
     page_token: str | None = None
     page_count = 0
 
     while True:
-        result_obj = client.fetch_incidents_page(
+        result_obj = client.fetch_events_page(
             from_date=from_date,
             to_date=to_date,
-            incident_type=incident_type,
+            event_type=event_type,
             page_token=page_token,
         )
 
-        page_incidents = result_obj.get("incidents") or []
-        if not page_incidents:
+        page_events = result_obj.get("incidents") or []
+        if not page_events:
             break
 
-        all_incidents.extend(page_incidents)
+        all_events.extend(page_events)
         page_count += 1
         demisto.debug(
-            f"[FetchAll] Type {incident_type or 'all'} | Page {page_count}: "
-            f"+{len(page_incidents)} incidents (total: {len(all_incidents)})"
+            f"[FetchAll] Type {event_type or 'all'} | Page {page_count}: "
+            f"+{len(page_events)} events (total: {len(all_events)})"
         )
 
         page_token = result_obj.get("nextPage")
         if not page_token:
             break
 
-    demisto.debug(
-        f"[FetchAll] Type {incident_type or 'all'} | Done: {len(all_incidents)} incidents " f"across {page_count} pages"
-    )
-    return all_incidents
+    demisto.debug(f"[FetchAll] Type {event_type or 'all'} | Done: {len(all_events)} events " f"across {page_count} pages")
+    return all_events
 
 
-def get_incidents_command(
+def get_events_command(
     client: Client,
     args: dict,
     default_type_codes: list[int],
 ) -> CommandResults:
-    """Manual command to get incidents for debugging/development.
+    """Manual command to get events for debugging/development.
 
     Args:
         client: The iZOOlogic client.
         args: Command arguments.
-        default_type_codes: Default incident type codes from integration config.
+        default_type_codes: Default event type codes from integration config.
 
     Returns:
-        CommandResults with the retrieved incidents.
+        CommandResults with the retrieved events.
     """
-    demisto.debug("[Command] izoologic-get-incidents triggered")
+    demisto.debug("[Command] izoologic-get-events triggered")
+
+    should_push_events = argToBoolean(args.get("should_push_events", False))
 
     limit = arg_to_number(args.get("limit", Config.DEFAULT_LIMIT))
     if not limit or limit <= 0:
@@ -646,9 +641,9 @@ def get_incidents_command(
     start_time_input = args.get("start_time", Config.DEFAULT_FROM_TIME)
     end_time_input = args.get("end_time")
 
-    # Use incident_type from command args if provided, otherwise fall back to config
-    incident_type_arg = argToList(args.get("incident_type"))
-    type_codes = resolve_type_codes(incident_type_arg) if incident_type_arg else default_type_codes
+    # Use event_type from command args if provided, otherwise fall back to config
+    event_type_arg = argToList(args.get("event_type"))
+    type_codes = resolve_type_codes(event_type_arg) if event_type_arg else default_type_codes
 
     from_ts = date_to_unix_timestamp(start_time_input)
     from_date = snap_to_day_boundary_utc(from_ts, "start")
@@ -667,77 +662,99 @@ def get_incidents_command(
         f"[Command Params] From: {from_date} (requested: {from_ts}), To: {to_date}, Limit: {limit}, Types: {type_codes}"
     )
 
-    all_incidents: list[dict] = []
+    all_events: list[dict] = []
     for type_code in type_codes:
-        type_incidents = _fetch_all_pages(
+        type_events = _fetch_all_pages(
             client,
             from_date=from_date,
             to_date=to_date,
-            incident_type=type_code,
+            event_type=type_code,
         )
-        # Client-side filter: the API returns all incidents in the
+        # Client-side filter: the API returns all events in the
         # [ceil(fromdate)_day, floor(todate)_day] day range, so discard
-        # incidents outside the precise requested timestamp range.
-        type_incidents = [inc for inc in type_incidents if int(from_ts) <= int(inc.get("createdOn", "0")) <= int(to_date)]
-        all_incidents.extend(type_incidents[:limit])
+        # events outside the precise requested timestamp range.
+        type_events = [e for e in type_events if int(from_ts) <= int(e.get("createdOn", "0")) <= int(to_date)]
+        all_events.extend(type_events[:limit])
 
-    demisto.debug(f"[Command Result] Total incidents retrieved: {len(all_incidents)} (limit per type: {limit})")
+    demisto.debug(f"[Command Result] Total events retrieved: {len(all_events)} (limit per type: {limit})")
 
-    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Incidents", all_incidents, removeNull=True)
+    if should_push_events and all_events:
+        create_events(list(all_events))
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Events",
+        all_events,
+        headers=[
+            "incidentID",
+            "incidentType",
+            "subIncidentType",
+            "brand",
+            "url",
+            "status",
+            "statusCode",
+            "threatType",
+            "detectionDate",
+            "createdOn",
+            "closedOn",
+            "detectedBy",
+        ],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="iZOOlogic.Incident",
         outputs_key_field="incidentID",
-        outputs=all_incidents,
+        outputs=all_events,
     )
 
 
 def _filter_and_dedup(
-    raw_incidents: list[dict],
+    raw_events: list[dict],
     last_created_on: str | None,
     last_ids: list[str],
     type_key: str,
 ) -> list[dict]:
-    """Filter out already-seen incidents and deduplicate by ID.
+    """Filter out already-seen events and deduplicate by ID.
 
     Steps:
-    1. Discard incidents with ``createdOn`` strictly before ``last_created_on``.
-    2. For incidents at exactly ``last_created_on``, remove those in ``last_ids``.
+    1. Discard events with ``createdOn`` strictly before ``last_created_on``.
+    2. For events at exactly ``last_created_on``, remove those in ``last_ids``.
 
     Args:
-        raw_incidents: Raw incidents from the API.
-        last_created_on: Timestamp of the last consumed incident (or None on first run).
+        raw_events: Raw events from the API.
+        last_created_on: Timestamp of the last consumed event (or None on first run).
         last_ids: IDs already consumed at ``last_created_on``.
         type_key: Type key string used for debug logging.
 
     Returns:
-        Filtered and deduplicated list of incidents.
+        Filtered and deduplicated list of events.
     """
     if last_created_on:
         threshold = int(last_created_on)
-        before_count = len(raw_incidents)
-        raw_incidents = [inc for inc in raw_incidents if int(inc.get("createdOn", "0")) >= threshold]
-        demisto.debug(f"[Fetch] Type {type_key}: Time filter (>= {threshold}): {before_count} -> {len(raw_incidents)}")
+        before_count = len(raw_events)
+        raw_events = [inc for inc in raw_events if int(inc.get("createdOn", "0")) >= threshold]
+        demisto.debug(f"[Fetch] Type {type_key}: Time filter (>= {threshold}): {before_count} -> {len(raw_events)}")
 
     if last_ids and last_created_on:
-        raw_incidents = filter_by_ids(raw_incidents, last_ids)
+        raw_events = filter_by_ids(raw_events, last_ids)
 
-    return raw_incidents
+    return raw_events
 
 
 def _compute_new_state(
     consumed: list[dict],
     type_key: str,
 ) -> dict:
-    """Compute the new last_run state from consumed incidents.
+    """Compute the new last_run state from consumed events.
 
     Sets ``last_created_on`` to the maximum ``createdOn`` among the consumed
-    incidents and collects all incident IDs at that timestamp into ``last_ids``
+    events and collects all event IDs at that timestamp into ``last_ids``
     for deduplication on the next run.
 
     Args:
-        consumed: Incidents to consume (already sorted ascending and sliced to max_fetch).
+        consumed: Events to consume (already sorted ascending and sliced to max_fetch).
         type_key: Type key string used for debug logging.
 
     Returns:
@@ -747,7 +764,7 @@ def _compute_new_state(
     new_last_ids = [inc.get("incidentID", "") for inc in consumed if inc.get("createdOn") == max_created_on]
 
     demisto.debug(
-        f"[Fetch] Type {type_key}: {len(consumed)} incidents consumed. "
+        f"[Fetch] Type {type_key}: {len(consumed)} events consumed. "
         f"New last_created_on={max_created_on}, dedup IDs={new_last_ids}."
     )
 
@@ -757,104 +774,31 @@ def _compute_new_state(
     }
 
 
-def _fetch_single_window(
-    client: Client,
-    type_code: int,
-    from_date: str,
-    to_date: str,
-    last_created_on: str | None,
-    last_ids: list[str],
-    max_fetch_per_type: int,
-) -> tuple[list[dict], dict]:
-    """Fetch incidents for a single type within a single ≤31-day window.
-
-    Args:
-        client: The iZOOlogic client.
-        type_code: Incident type code.
-        from_date: Start date as Unix timestamp string (midnight UTC).
-        to_date: End date as Unix timestamp string.
-        last_created_on: Timestamp of the last consumed incident (for dedup).
-        last_ids: IDs already consumed at last_created_on (for dedup).
-        max_fetch_per_type: Maximum incidents to return.
-
-    Returns:
-        Tuple of (cortex_incidents, updated_state).
-    """
-    type_key = str(type_code)
-
-    raw_incidents = _fetch_all_pages(client, from_date, to_date, type_code)
-
-    if not raw_incidents:
-        demisto.debug(f"[Fetch] Type {type_key}: No incidents in window {from_date}-{to_date}.")
-        return [], {"last_created_on": to_date, "last_ids": []}
-
-    raw_incidents = _filter_and_dedup(raw_incidents, last_created_on, last_ids, type_key)
-
-    if not raw_incidents:
-        demisto.debug(f"[Fetch] Type {type_key}: All incidents filtered out in window {from_date}-{to_date}.")
-        return [], {"last_created_on": to_date, "last_ids": []}
-
-    raw_incidents.sort(key=lambda inc: int(inc.get("createdOn", "0")))
-    consumed = raw_incidents[:max_fetch_per_type]
-    demisto.debug(f"[Fetch] Type {type_key}: Window {from_date}-{to_date}: consuming {len(consumed)} incidents")
-
-    updated_state = _compute_new_state(consumed, type_key)
-    cortex_incidents = create_incidents(consumed)
-    return cortex_incidents, updated_state
-
-
-def _generate_windows(from_ts: int, to_ts: int, window_days: int = Config.MAX_DATE_RANGE_DAYS) -> list[tuple[str, str]]:
-    """Split a date range into ≤window_days windows.
-
-    Args:
-        from_ts: Start Unix timestamp (int).
-        to_ts: End Unix timestamp (int).
-        window_days: Maximum days per window.
-
-    Returns:
-        List of (window_start, window_end) Unix timestamp string pairs.
-    """
-    window_seconds = window_days * 86400
-    windows: list[tuple[str, str]] = []
-    current = from_ts
-
-    while current < to_ts:
-        window_end = min(current + window_seconds, to_ts)
-        windows.append((str(current), str(window_end)))
-        current = window_end
-
-    return windows
-
-
 def _fetch_for_type(
     client: Client,
     type_code: int,
     type_state: dict,
     max_fetch_per_type: int,
-    first_fetch_ts: str = "",
 ) -> tuple[str, list[dict], dict]:
-    """Fetch incidents for a single type, splitting into 31-day windows if needed.
+    """Fetch events for a single type within a ≤31-day window.
 
-    On first fetch with a large lookback (e.g., 90 days), the date range is split
-    into ≤31-day windows. Each window is processed sequentially, and the state is
-    updated after each window so that if a timeout occurs, the next run resumes
-    from where it left off.
+    Uses ``Config.DEFAULT_FROM_TIME`` as the starting point on first fetch.
+    The date range must not exceed 31 days (enforced by ``validate_date_range``).
 
     Args:
         client: The iZOOlogic client.
-        type_code: Incident type code.
+        type_code: Event type code.
         type_state: Per-type state from last_run.
-        max_fetch_per_type: Maximum incidents to return for this type.
-        first_fetch_ts: Unix timestamp for first fetch fallback.
+        max_fetch_per_type: Maximum events to return for this type.
 
     Returns:
-        Tuple of (type_key, cortex_incidents, updated_state).
+        Tuple of (type_key, consumed_events, updated_state).
     """
     type_key = str(type_code)
     last_created_on: str | None = type_state.get("last_created_on")
     last_ids: list[str] = type_state.get("last_ids", [])
 
-    effective_first_fetch = first_fetch_ts or date_to_unix_timestamp(Config.DEFAULT_FROM_TIME)
+    effective_first_fetch = date_to_unix_timestamp(Config.DEFAULT_FROM_TIME)
     from_date = snap_to_day_boundary_utc(
         last_created_on if last_created_on else effective_first_fetch,
         "start",
@@ -873,77 +817,53 @@ def _fetch_for_type(
         demisto.debug(f"[Fetch] Type {type_key}: from_date >= to_date. Skipping.")
         return type_key, [], type_state
 
-    windows = _generate_windows(from_ts, to_ts)
-    demisto.debug(f"[Fetch] Type {type_key}: Processing {len(windows)} window(s)")
+    validate_date_range(from_date, to_date)
 
-    all_cortex_incidents: list[dict] = []
-    current_state = type_state
-    is_multi_window = len(windows) > 1
+    raw_events = _fetch_all_pages(client, from_date, to_date, type_code)
 
-    for i, (window_start, window_end) in enumerate(windows):
-        window_last_created_on: str | None = current_state.get("last_created_on")
-        window_last_ids: list[str] = current_state.get("last_ids", [])
+    if not raw_events:
+        demisto.debug(f"[Fetch] Type {type_key}: No events found.")
+        return type_key, [], {"last_created_on": to_date, "last_ids": []}
 
-        cortex_incidents, updated_state = _fetch_single_window(
-            client,
-            type_code,
-            window_start,
-            window_end,
-            window_last_created_on,
-            window_last_ids,
-            max_fetch_per_type,
-        )
+    raw_events = _filter_and_dedup(raw_events, last_created_on, last_ids, type_key)
 
-        all_cortex_incidents.extend(cortex_incidents)
-        current_state = updated_state
+    if not raw_events:
+        demisto.debug(f"[Fetch] Type {type_key}: All events filtered out.")
+        return type_key, [], {"last_created_on": to_date, "last_ids": []}
 
-        # For multi-window fetches (first fetch with large lookback), persist
-        # incidents and state after each window so that if a timeout occurs,
-        # the next run resumes from where we left off.
-        if is_multi_window and cortex_incidents:
-            demisto.debug(
-                f"[Fetch] Type {type_key}: Window {i + 1}/{len(windows)}: "
-                f"persisting {len(cortex_incidents)} incidents and updating state"
-            )
-            demisto.incidents(cortex_incidents)
-            with _last_run_lock:
-                last_run = demisto.getLastRun()
-                last_run[type_key] = current_state
-                demisto.setLastRun(last_run)
+    raw_events.sort(key=lambda inc: int(inc.get("createdOn", "0")))
+    consumed = raw_events[:max_fetch_per_type]
+    demisto.debug(f"[Fetch] Type {type_key}: Consuming {len(consumed)} events")
 
-    if is_multi_window:
-        # Incidents were already persisted per-window, return empty to avoid duplicates
-        return type_key, [], current_state
-
-    return type_key, all_cortex_incidents, current_state
+    updated_state = _compute_new_state(consumed, type_key)
+    return type_key, consumed, updated_state
 
 
-async def fetch_incidents_command(
+async def fetch_events_command(
     client: Client,
     max_fetch_per_type: int,
-    incident_type_codes: list[int],
-    first_fetch_ts: str = "",
+    event_type_codes: list[int],
 ) -> None:
-    """Scheduled command to fetch incidents from iZOOlogic.
+    """Scheduled command to fetch events from iZOOlogic and send to XSIAM.
 
-    Fetches all incident types concurrently using asyncio.to_thread().
+    Fetches all event types concurrently using asyncio.to_thread().
     Each type maintains its own last_created_on and last_ids in last_run.
 
-    The API returns incidents sorted descending by createdOn with day-level filtering.
+    The API returns events sorted descending by createdOn with day-level filtering.
     For each type, we:
     1. Fetch ALL pages (exhaust pagination)
     2. Client-side filter by last_created_on timestamp
     3. Sort ascending by createdOn
     4. Slice to max_fetch_per_type
-    5. Advance last_created_on to the max createdOn of consumed incidents
+    5. Advance last_created_on to the max createdOn of consumed events
 
     Args:
         client: The iZOOlogic client.
-        max_fetch_per_type: Maximum number of incidents to fetch per type per run.
-        incident_type_codes: Incident type codes from integration config.
+        max_fetch_per_type: Maximum number of events to fetch per type per run.
+        event_type_codes: Event type codes from integration config.
     """
     last_run = demisto.getLastRun()
-    demisto.debug(f"[Fetch] Starting with last_run keys: {list(last_run.keys())}")
+    demisto.debug(f"[Fetch Events] Starting with last_run keys: {list(last_run.keys())}")
 
     # Launch concurrent fetches for all types
     tasks = [
@@ -953,29 +873,30 @@ async def fetch_incidents_command(
             type_code,
             last_run.get(str(type_code), {}),  # type: ignore[arg-type]
             max_fetch_per_type,
-            first_fetch_ts,
         )
-        for type_code in incident_type_codes
+        for type_code in event_type_codes
     ]
 
     results = await asyncio.gather(*tasks, return_exceptions=True)
 
     # Process results
-    all_cortex_incidents: list[dict] = []
+    all_events: list[dict] = []
     updated_last_run: dict = dict(last_run)
 
     for result in results:
         if isinstance(result, Exception):
-            demisto.error(f"[Fetch] Error fetching type: {result!s}")
+            demisto.error(f"[Fetch Events] Error fetching type: {result!s}")
             continue
 
-        type_key, cortex_incidents, updated_state = result  # type: ignore[misc]
-        all_cortex_incidents.extend(cortex_incidents)
+        type_key, consumed_events, updated_state = result  # type: ignore[misc]
+        all_events.extend(consumed_events)
         updated_last_run[type_key] = updated_state
 
-    demisto.incidents(all_cortex_incidents)
+    if all_events:
+        create_events(all_events)
+
     demisto.setLastRun(updated_last_run)
-    demisto.debug(f"[Fetch] Done. Total incidents: {len(all_cortex_incidents)}. Last run updated.")
+    demisto.debug(f"[Fetch Events] Done. Total events: {len(all_events)}. Last run updated.")
 
 
 # endregion
@@ -987,8 +908,8 @@ async def fetch_incidents_command(
 
 COMMAND_MAP: dict[str, Any] = {
     "test-module": test_module,
-    "izoologic-get-incidents": get_incidents_command,
-    "fetch-incidents": fetch_incidents_command,
+    "izoologic-get-events": get_events_command,
+    "fetch-events": fetch_events_command,
 }
 
 
@@ -1018,10 +939,10 @@ def main() -> None:
         if command == "test-module":
             result = command_func(client)
             return_results(result)
-        elif command == "fetch-incidents":
-            asyncio.run(command_func(client, config["max_fetch"], config["incident_type_codes"], config["first_fetch_ts"]))
-        elif command == "izoologic-get-incidents":
-            result = command_func(client, args, config["incident_type_codes"])
+        elif command == "fetch-events":
+            asyncio.run(command_func(client, config["max_fetch"], config["event_type_codes"]))
+        elif command == "izoologic-get-events":
+            result = command_func(client, args, config["event_type_codes"])
             return_results(result)
 
     except Exception as error:

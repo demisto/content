@@ -41,20 +41,15 @@ configuration:
   required: false
   additionalinfo: 'Whether to use the system proxy settings.'
   section: Connect
-- name: isFetch
+- name: isFetchEvents
   display: Fetch incidents
   type: 8
   required: false
   additionalinfo: 'Whether to fetch incidents from iZOOlogic.'
   section: Collect
-- name: first_fetch
-  display: First fetch timestamp
-  type: 0
-  required: false
-  defaultvalue: '1 day'
-  additionalinfo: 'The time range for the initial fetch (e.g., "1 day", "3 days"). Subsequent fetches use the last run timestamp.'
-  section: Collect
-- name: incident_types_filter
+  hidden:
+  - xsoar
+- name: events_types_filter
   display: Fetch incident types
   required: true
   defaultvalue: brand abuse,phishing,malware,pharming,smishing,vishing,mobile apps,social media,other,email
@@ -72,33 +67,32 @@ configuration:
   - email
   additionalinfo: 'A comma-separated list of incident types to fetch from iZOOlogic.'
   section: Collect
+  hidden:
+  - xsoar
 - name: max_fetch
-  display: Maximum Incidents Per Fetch Per Type
+  display: Maximum incidents per fetch per type
   required: true
   defaultvalue: '5000'
   type: 0
   additionalinfo: 'The maximum number of incidents to fetch per type per fetch cycle.'
   section: Collect
-- display: Incident type
-  name: incidentType
-  type: 13
-  section: Collect
-  required: false
+  hidden:
+  - xsoar
 description: Fetches threat incidents from iZOOlogic for automated ingestion into Cortex.
 script:
   commands:
-  - name: izoologic-get-incidents
-    description: Gets incidents from iZOOlogic. Use this command for development and debugging only, as it may exceed API rate limits.
+  - name: izoologic-get-events
+    description: Gets events from iZOOlogic. Use this command for development and debugging only, as it may exceed API rate limits.
     arguments:
     - name: limit
-      description: The maximum number of incidents to return per type.
+      description: The maximum number of events to return per type.
       defaultValue: '50'
     - name: start_time
-      description: 'The time to filter incidents detected at or after. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z").'
+      description: 'The time to filter events detected at or after. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z").'
     - name: end_time
-      description: 'The time to filter incidents detected at or before. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").'
-    - name: incident_type
-      description: 'Filter by incident type(s). If not specified, uses the types configured in the integration parameters.'
+      description: 'The time to filter events detected at or before. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").'
+    - name: event_type
+      description: 'Filter by events type(s). If not specified, uses the types configured in the integration parameters.'
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -112,6 +106,13 @@ script:
       - social media
       - other
       - email
+    - name: should_push_events
+      description: 'Whether to push the fetched events to XSIAM. Use with caution as it may create duplicate events.'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
     outputs:
     - contextPath: iZOOlogic.Incident.incidentID
       description: The unique identifier of the incident.
@@ -150,7 +151,8 @@ script:
       description: The entity that detected the incident.
       type: String
   dockerimage: demisto/fastapi:0.125.0.9094740
-  isfetch: true
+  isfetchevents: true
+  isfetchevents:xsoar: false
   runonce: false
   script: '-'
   subtype: python3
