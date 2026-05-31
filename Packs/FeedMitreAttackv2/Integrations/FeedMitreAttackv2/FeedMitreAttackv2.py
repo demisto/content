@@ -715,8 +715,8 @@ def get_mitre_value_from_id(client, args):
 
             attack_pattern_name = attack_pattern[0]["name"]
 
-            if attack_pattern_name and len(attack_id) > 5:  # sub-technique
-                sub_technique_attack_id = attack_id[:5]
+            if attack_pattern_name and "." in attack_id:  # sub-technique (e.g. T1059.001)
+                sub_technique_attack_id = attack_id.split(".")[0]
                 parent_object = list(
                     filter(
                         lambda attack_pattern_obj: filter_attack_pattern_object_by_attack_id(
@@ -725,9 +725,10 @@ def get_mitre_value_from_id(client, args):
                         attack_pattern_objects,
                     )
                 )
-                parent_name = parent_object[0]["name"]
-
-                attack_pattern_name = f"{parent_name}: {attack_pattern_name}"
+                if parent_object:
+                    attack_pattern_name = f"{parent_object[0]['name']}: {attack_pattern_name}"
+                else:
+                    demisto.debug(f"MA: Did not find parent attack pattern for sub-technique ID {attack_id}")
 
             if attack_pattern_name:
                 if not is_indicator_deprecated_or_revoked(attack_pattern[0]):
