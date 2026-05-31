@@ -1,3 +1,5 @@
+name: Cortex Core - Platform
+display: Cortex Platform - Core
 category: Endpoint
 provider: Palo Alto Networks
 defaultEnabled: true
@@ -16,8 +18,6 @@ configuration:
     required: false
     section: Connect
 description: This integration uses the Cortex API to access all the core services and capabilities of the Cortex platform.
-display: Cortex Platform - Core
-name: Cortex Core - Platform
 script:
   commands:
     - arguments:

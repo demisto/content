@@ -945,6 +945,114 @@ def test_search_assets_asset_type_empty():
     assert asset_type_entries == []
 
 
+def test_search_assets_page_size_zero_maps_to_max():
+    """
+    GIVEN:
+        page_size argument equal to 0.
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        The pagination limit sent to the API is the SEARCH_ASSETS_MAX_LIMIT
+        (preserving the legacy "0 means max" behavior on our side).
+    """
+    from CortexPlatformCore import Client, SEARCH_ASSETS_MAX_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {"page_size": "0"})
+
+    request_data = _get_request_data_from_webapp_call(mock_get_webapp_data)
+    paging = request_data["filter_data"]["paging"]
+    assert paging["from"] == 0
+    assert paging["to"] == SEARCH_ASSETS_MAX_LIMIT
+
+
+def test_search_assets_page_size_exceeds_max_raises():
+    """
+    GIVEN:
+        page_size argument larger than SEARCH_ASSETS_MAX_LIMIT.
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        A ValueError is raised with a message mentioning the max value,
+        and no request is sent to the API.
+    """
+    import pytest
+
+    from CortexPlatformCore import Client, SEARCH_ASSETS_MAX_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data") as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+        pytest.raises(ValueError, match=str(SEARCH_ASSETS_MAX_LIMIT)),
+    ):
+        search_assets_command(mock_client, {"page_size": str(SEARCH_ASSETS_MAX_LIMIT + 1)})
+
+    mock_get_webapp_data.assert_not_called()
+
+
+def test_search_assets_page_size_at_max_allowed():
+    """
+    GIVEN:
+        page_size argument exactly equal to SEARCH_ASSETS_MAX_LIMIT.
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        The request is sent successfully with the max limit and no error is raised.
+    """
+    from CortexPlatformCore import Client, SEARCH_ASSETS_MAX_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {"page_size": str(SEARCH_ASSETS_MAX_LIMIT)})
+
+    paging = _get_request_data_from_webapp_call(mock_get_webapp_data)["filter_data"]["paging"]
+    assert paging["to"] == SEARCH_ASSETS_MAX_LIMIT
+
+
+def test_search_assets_page_size_none_falls_back_to_default():
+    """
+    GIVEN:
+        An explicit page_size value of None passed via args (simulating
+        arg_to_number returning None for a missing/empty value).
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        It does not raise a TypeError and falls back to SEARCH_ASSETS_DEFAULT_LIMIT.
+    """
+    from CortexPlatformCore import Client, SEARCH_ASSETS_DEFAULT_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+        mock.patch("CortexPlatformCore.arg_to_number", return_value=None),
+    ):
+        search_assets_command(mock_client, {"page_size": ""})
+
+    paging = _get_request_data_from_webapp_call(mock_get_webapp_data)["filter_data"]["paging"]
+    assert paging["to"] == SEARCH_ASSETS_DEFAULT_LIMIT
+
+
 def test_get_vulnerabilities_command_success(mocker: MockerFixture):
     """
     Given:
