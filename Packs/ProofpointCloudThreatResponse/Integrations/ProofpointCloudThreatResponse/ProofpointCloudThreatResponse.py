@@ -478,8 +478,48 @@ def proofpoint_ctr_incident_get_command(client: Client, args: dict[str, Any]) ->
 
 
 def _build_incident(enriched: dict[str, Any], list_entry: dict[str, Any]) -> dict[str, Any]:
-    """Construct an XSOAR incident dict from a CTR incident payload."""
-    summary = enriched.get("summary") or list_entry
+    """Construct an XSOAR incident dict from a CTR incident payload.
+
+    The incoming mapper references both top-level fields (``id``, ``title``,
+    ``state``, ``createdAt``, ``updatedAt``, ``assignedTeamName``,
+    ``sourcesData``, ``dispositions``, ``clearConfidences``) and nested paths
+    (``summary.id``, ``summary.state``, ``summary.priority``,
+    ``summary.assignedApplicationUserName``, ``activities[].updated_at``, etc.).
+
+    To keep the mapper compatible regardless of whether ``fetch_enrich`` is
+    enabled, this function always ensures:
+
+    * A ``summary`` key is present in ``rawJSON`` — populated from the GET
+      response when enrichment ran, or synthesised from the list-entry fields
+      when it did not.
+    * An ``activities`` key is present — populated from the GET response when
+      enrichment ran, or an empty list otherwise (the mapper handles missing
+      activity data gracefully).
+    """
+    # When enrichment ran, the GET response contains a nested ``summary`` dict
+    # and an ``activities`` list.  When it did not, we synthesise equivalents
+    # from the flat list-entry so the mapper always finds the same paths.
+    if enriched:
+        summary = enriched.get("summary") or {}
+        activities = enriched.get("activities") or []
+    else:
+        # Build a synthetic summary from the list-entry fields that the mapper
+        # references via ``summary.*``.
+        summary = {
+            "id": list_entry.get("id"),
+            "displayId": list_entry.get("displayId"),
+            "state": list_entry.get("state"),
+            "priority": list_entry.get("priority"),
+            "assignedApplicationUserName": list_entry.get("assignedUserName"),
+            "assignedTeamName": list_entry.get("assignedTeamName"),
+            "createdAt": list_entry.get("createdAt"),
+            "updatedAt": list_entry.get("updatedAt"),
+            "closedAt": list_entry.get("closedAt"),
+            "title": list_entry.get("title"),
+            "messageCount": list_entry.get("messageCount"),
+        }
+        activities = []
+
     occurred_raw = summary.get("createdAt") or list_entry.get("createdAt")
     occurred = occurred_raw
     parsed_occurred = parse_ctr_date(occurred_raw) if occurred_raw else None
@@ -487,10 +527,18 @@ def _build_incident(enriched: dict[str, Any], list_entry: dict[str, Any]) -> dic
         occurred = parsed_occurred.strftime("%Y-%m-%dT%H:%M:%SZ")
     incident_id = list_entry.get("id") or summary.get("id") or ""
     display_id = list_entry.get("displayId") or summary.get("displayId")
+
+    raw: dict[str, Any] = {
+        **list_entry,
+        **enriched,
+        # Always guarantee these keys exist so the mapper finds them.
+        "summary": summary,
+        "activities": activities,
+    }
     return {
         "name": f"Proofpoint CTR Incident {display_id or incident_id}",
         "occurred": occurred,
-        "rawJSON": json.dumps({**list_entry, **enriched}),  # noqa: F405
+        "rawJSON": json.dumps(raw),  # noqa: F405
         "dbotMirrorId": str(incident_id),
     }
 
