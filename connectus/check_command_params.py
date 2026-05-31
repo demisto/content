@@ -2943,15 +2943,113 @@ def _synth_main_from_module(body: list[ast.stmt]) -> ast.FunctionDef:
 def extract_dict_dispatch_map(
     main_fn: ast.FunctionDef,
 ) -> tuple[dict[str, str] | None, bool]:
-    """Change 3 stub — returns ``(None, False)`` for now.
+    """Change 3: extract a command → handler-name map from a dispatch dict literal.
 
-    The real implementation walks a ``commands = {...}`` literal in
-    main_fn and returns a ``{command-name: handler-function-name}``
-    map (or ``None`` if no such literal is present), plus a
-    ``dict_blind`` flag set when the dict contains non-literal keys
-    or values. The stub keeps the call site forward-compatible.
+    Walks ``main_fn`` for an ``ast.Assign`` whose RHS is an
+    ``ast.Dict`` literal and whose target is a single ``Name``
+    (typically ``commands`` but any name is accepted — we recognise
+    the shape, not the name). The Dict must contain only
+    string-constant keys and ``ast.Name`` values; each matching
+    entry contributes ``map[key.value] = value.id``.
+
+    Returns ``(map, dict_blind)``:
+
+    * ``map`` is the ``{command: handler_name}`` dict when at least
+      one well-formed entry was found. ``None`` if no such literal
+      exists in ``main_fn`` at all.
+    * ``dict_blind`` is True iff a dict literal IS present but
+      contains AT LEAST ONE non-string-key OR non-Name-value
+      entry (the canonical "blind" shape — comprehensions like
+      ``{k: v for k, v in ...}`` produce an ``ast.DictComp`` not an
+      ``ast.Dict``, so they are picked up here by emitting an empty
+      ``map``-shape with ``dict_blind=True`` instead of letting them
+      silently degrade to legacy resolution).
+
+    The first eligible Assign wins — Cherwell / Jira / Gmail /
+    PATHelpdeskAdvanced and friends all bind their dispatch dict
+    exactly once near the top of ``main()`` so this matches the
+    universal shape.
     """
-    return None, False
+    if main_fn is None:
+        return None, False
+    # Walk the function body breadth-first so a top-level
+    # ``commands = {...}`` wins over any nested helper-local dict.
+    # Accept both plain ``Assign`` (``commands = {...}``) and the
+    # annotated form ``commands: Dict[str, Callable] = {...}``
+    # (``AnnAssign``); both shapes are common in production
+    # integrations (Jira uses the annotated form).
+    candidate_assigns: list[ast.Assign | ast.AnnAssign] = []
+    comprehension_seen = False
+    for node in ast.walk(main_fn):
+        target: ast.AST | None = None
+        value: ast.AST | None = None
+        if isinstance(node, ast.Assign):
+            if len(node.targets) != 1 or not isinstance(
+                node.targets[0], ast.Name
+            ):
+                continue
+            target = node.targets[0]
+            value = node.value
+        elif isinstance(node, ast.AnnAssign):
+            if not isinstance(node.target, ast.Name) or node.value is None:
+                continue
+            target = node.target
+            value = node.value
+        else:
+            continue
+        # Surface comprehension-bound dispatch tables as "blind".
+        if isinstance(value, ast.DictComp):
+            comprehension_seen = True
+            continue
+        if isinstance(value, ast.Dict):
+            candidate_assigns.append(node)
+    if not candidate_assigns and not comprehension_seen:
+        return None, False
+    if comprehension_seen and not candidate_assigns:
+        # Only comprehension-bound dispatch tables exist — emit
+        # blind so the consumer knows we couldn't resolve handlers.
+        return None, True
+
+    # Prefer the largest dict (most realistic dispatch table). If
+    # multiple have the same size, the first one wins.
+    def _dict_size(a: ast.Assign | ast.AnnAssign) -> int:
+        v = a.value
+        if isinstance(v, ast.Dict):
+            return len(v.keys)
+        return 0
+
+    candidate_assigns.sort(key=lambda a: -_dict_size(a))
+    out: dict[str, str] = {}
+    dict_blind = False
+    for assign in candidate_assigns:
+        d = assign.value
+        if not isinstance(d, ast.Dict):
+            continue
+        for k, v in zip(d.keys, d.values):
+            if not (isinstance(k, ast.Constant) and isinstance(k.value, str)):
+                dict_blind = True
+                continue
+            # Extract handler name. Accept bare Name and direct
+            # Lambda (we still register the str so the analyzer
+            # knows the command exists).
+            handler_name: str | None = None
+            if isinstance(v, ast.Name):
+                handler_name = v.id
+            else:
+                dict_blind = True
+                continue
+            # First entry wins for a given key; ignore subsequent
+            # rebinds to keep the resolver deterministic.
+            out.setdefault(k.value, handler_name)
+        if out:
+            # Stop at the first dict that yielded at least one
+            # well-formed entry — the analyzer treats it as THE
+            # dispatch table.
+            break
+
+    if not out:
+        return None, dict_blind or comprehension_seen
+    return out, dict_blind or comprehension_seen
 
 
 def _detect_scattered_truncated(
