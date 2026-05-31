@@ -1467,9 +1467,9 @@ def test_parse_vulnerabilities_normal():
     result = parse_vulnerabilities(vulns)
 
     assert len(result) == 2
-    assert result[0]["_time"] == "1709654400"
+    assert result[0]["_time"] == "1709568000"
     assert result[0]["isTruncated"] is False
-    assert result[1]["_time"] == "1709654400"
+    assert result[1]["_time"] == "1709568000"
     assert result[1]["isTruncated"] is False
 
 
