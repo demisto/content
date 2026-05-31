@@ -780,7 +780,92 @@ script:
   - description: Generate the login URL used for Authorization code flow.
     name: msgraph-files-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.5490413
+  - arguments:
+    - auto: PREDEFINED
+      description: The MS Graph resource.
+      name: object_type
+      predefined:
+      - drives
+      - groups
+      - sites
+      - users
+      required: true
+    - description: |-
+        MS Graph resource ID.
+        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'group': To get a list of all groups that exist, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'users': To get a list of all users that exist, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
+      name: object_type_id
+      required: true
+    - description: The ID of the drive item to read the sensitivity label from.
+      name: item_id
+      required: true
+    description: Retrieves the sensitivity label currently assigned to a drive item. Returns the label ID, display name, and protection state regardless of whether the label has encryption enabled.
+    name: msgraph-get-sensitivity-label
+    outputs:
+    - contextPath: MsGraphFiles.SensitivityLabel.itemId
+      description: The ID of the drive item the label was retrieved from.
+      type: String
+    - contextPath: MsGraphFiles.SensitivityLabel.id
+      description: The GUID of the sensitivity label assigned to the drive item, or empty string when no label is assigned.
+      type: String
+    - contextPath: MsGraphFiles.SensitivityLabel.displayName
+      description: The human-readable display name of the assigned sensitivity label, or empty string when no label is assigned.
+      type: String
+    - contextPath: MsGraphFiles.SensitivityLabel.protectionEnabled
+      description: True if the assigned label has encryption/protection settings; false for classification-only labels. Defaults to false when no label is assigned.
+      type: Boolean
+  - arguments:
+    - auto: PREDEFINED
+      description: The MS Graph resource.
+      name: object_type
+      predefined:
+      - drives
+      - groups
+      - sites
+      - users
+      required: true
+    - description: |-
+        MS Graph resource ID.
+        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'group': To get a list of all groups that exist, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'users': To get a list of all users that exist, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
+      name: object_type_id
+      required: true
+    - description: The ID of the drive item to assign the sensitivity label to.
+      name: item_id
+      required: true
+    - description: The GUID of the sensitivity label to assign. Pass an empty string to remove the existing sensitivity label from the drive item. Retrieve label GUIDs from the Microsoft Purview compliance portal or via the PowerShell `Get-Label` cmdlet.
+      name: sensitivity_label_id
+      required: true
+    - auto: PREDEFINED
+      description: |-
+        Assignment method recorded on Microsoft Graph.
+        standard: a user-driven assignment.
+        privileged: overrides existing user-applied labels.
+        auto: recorded as a system-driven assignment.
+      name: assignment_method
+      predefined:
+      - standard
+      - privileged
+      - auto
+    - description: Free-text justification recorded with the assignment. Required by Microsoft Graph when downgrading or replacing a user-assigned label.
+      name: justification_text
+    description: Assigns a sensitivity label to a drive item. Microsoft Graph treats this call as a long-running operation and returns the operation status URL in the Location response header; poll that URL to track completion. HTTP error responses from Microsoft Graph are surfaced verbatim as a command error.
+    name: msgraph-assign-sensitivity-label
+    outputs:
+    - contextPath: MsGraphFiles.AssignedSensitivityLabel.itemId
+      description: The ID of the drive item the label was assigned to.
+      type: String
+    - contextPath: MsGraphFiles.AssignedSensitivityLabel.sensitivityLabelId
+      description: The GUID of the sensitivity label that was assigned. Empty string indicates the existing label was removed.
+      type: String
+    - contextPath: MsGraphFiles.AssignedSensitivityLabel.location
+      description: URL returned in the Microsoft Graph Location response header. Microsoft Graph treats assignSensitivityLabel as a long-running operation; poll this URL to track the operation's completion status.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.8931184
   script: ''
   subtype: python3
   type: python

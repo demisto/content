@@ -23,7 +23,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### azure-nsg-security-rule-update
 
 ***
-Update a security rule. If one does not exist, it will be created. The command is deprecated, please use azure-vn-security-rule-update.
+Update a security rule. If one does not exist, it will be created. The command is deprecated, please use azure-vn-security-rule-update. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write.
 
 #### Base Command
 
@@ -71,7 +71,7 @@ Update a security rule. If one does not exist, it will be created. The command i
 ### azure-storage-account-update
 
 ***
-Updates a specific account storage.
+Updates a specific account storage. Required Permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write.
 
 #### Base Command
 
@@ -139,7 +139,7 @@ Updates a specific account storage.
 ### azure-storage-blob-service-properties-set
 
 ***
-Sets properties for the blob service in a specific account storage. The command is deprecated, please use azure-storage-blob-service-property-set.
+Sets properties for the blob service in a specific account storage. The command is deprecated, please use azure-storage-blob-service-property-set. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/read, Microsoft.Storage/storageAccounts/blobServices/write.
 
 #### Base Command
 
@@ -173,7 +173,7 @@ Sets properties for the blob service in a specific account storage. The command 
 ### azure-policy-assignment-create
 
 ***
-Creates a policy assignment.
+Creates a policy assignment. Required Permissions: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write.
 
 #### Base Command
 
@@ -242,7 +242,7 @@ There is no context output for this command.
 ### azure-webapp-config-set
 
 ***
-Updates the configuration settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-config-update.
+Updates the configuration settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-config-update. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write.
 
 #### Base Command
 
@@ -296,7 +296,7 @@ Updates the configuration settings of an existing Azure Web App. The command is 
 ### azure-webapp-auth-update
 
 ***
-Updates the authentication and authorization settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-auth-settings-update.
+Updates the authentication and authorization settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-auth-settings-update. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write.
 
 #### Base Command
 
@@ -351,7 +351,7 @@ Updates the authentication and authorization settings of an existing Azure Web A
 ### azure-mysql-flexible-server-param-set
 
 ***
-Updates a configuration of a server.
+Updates a configuration of a server. Required Permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write.
 
 #### Base Command
 
@@ -375,7 +375,7 @@ There is no context output for this command.
 ### azure-monitor-log-profile-update
 
 ***
-Updates a log profile in Azure Monitoring REST API.
+Updates a log profile in Azure Monitoring REST API. Required Permissions: Microsoft.Insights/logprofiles/read, Microsoft.Insights/logprofiles/write.
 
 #### Base Command
 
@@ -410,7 +410,7 @@ Updates a log profile in Azure Monitoring REST API.
 ### azure-disk-update
 
 ***
-Updates a disk. The command is deprecated, please use azure-compute-disk-update.
+Updates a disk. The command is deprecated, please use azure-compute-disk-update. Required Permissions: Microsoft.Compute/disks/read, Microsoft.Compute/disks/write.
 
 #### Base Command
 
@@ -474,7 +474,7 @@ Updates a disk. The command is deprecated, please use azure-compute-disk-update.
 ### azure-webapp-update
 
 ***
-Updates an Azure Web App. The command is deprecated, please use azure-appservice-webapp-update.
+Updates an Azure Web App. The command is deprecated, please use azure-appservice-webapp-update. Required Permissions: Microsoft.Web/sites/read, Microsoft.Web/sites/write.
 
 #### Base Command
 
@@ -572,7 +572,7 @@ Updates an Azure Web App. The command is deprecated, please use azure-appservice
 ### azure-acr-update
 
 ***
-Updates a container registry. The command is deprecated, please use azure-cr-registry-update.
+Updates a container registry. The command is deprecated, please use azure-cr-registry-update. Required Permissions: Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write.
 
 #### Base Command
 
@@ -643,7 +643,7 @@ There is no context output for this command.
 ### azure-key-vault-update
 
 ***
-Updates a key vault in the specified subscription. The command is deprecated, please use azure-keyvault-vault-update.
+Updates a key vault in the specified subscription. The command is deprecated, please use azure-keyvault-vault-update. Required Permissions: Microsoft.KeyVault/vaults/read, Microsoft.KeyVault/vaults/write.
 
 #### Base Command
 
@@ -693,7 +693,7 @@ Updates a key vault in the specified subscription. The command is deprecated, pl
 ### azure-sql-db-threat-policy-update
 
 ***
-Updates the database's threat detection policy. The command is deprecated, please use azure-sqldb-security-alert-policy-update.
+Updates the database's threat detection policy. The command is deprecated, please use azure-sqldb-security-alert-policy-update. Required Permissions: Microsoft.Sql/servers/databases/securityAlertPolicies/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write.
 
 #### Base Command
 
@@ -733,7 +733,7 @@ Updates the database's threat detection policy. The command is deprecated, pleas
 ### azure-sql-db-transparent-data-encryption-set
 
 ***
-Updates a logical database's transparent data encryption configuration.
+Updates a logical database's transparent data encryption configuration. Required Permissions: Microsoft.Sql/servers/databases/transparentDataEncryption/read, Microsoft.Sql/servers/databases/transparentDataEncryption/write.
 
 #### Base Command
 
@@ -756,7 +756,7 @@ There is no context output for this command.
 ### azure-cosmos-db-update
 
 ***
-Updates the properties of an existing Azure Cosmos DB database account. The command is deprecated, please use azure-cosmosdb-db-account-update.
+Updates the properties of an existing Azure Cosmos DB database account. The command is deprecated, please use azure-cosmosdb-db-account-update. Required Permissions: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write.
 
 #### Base Command
 
@@ -823,7 +823,7 @@ Updates the properties of an existing Azure Cosmos DB database account. The comm
 ### azure-vm-instance-details-get
 
 ***
-Gets the properties of a given virtual machine. The command is deprecated, please use azure-compute-vm-get.
+Gets the properties of a given virtual machine. The command is deprecated, please use azure-compute-vm-get. Required Permissions: Microsoft.Compute/virtualMachines/read.
 
 #### Base Command
 
@@ -862,7 +862,7 @@ Gets the properties of a given virtual machine. The command is deprecated, pleas
 ### azure-nsg-security-groups-list
 
 ***
-List all network security groups. The command is deprecated, please use azure-vn-security-groups-list.
+List all network security groups. The command is deprecated, please use azure-vn-security-groups-list. Required Permissions: Microsoft.Network/networkSecurityGroups/read.
 
 #### Base Command
 
@@ -894,7 +894,7 @@ List all network security groups. The command is deprecated, please use azure-vn
 ### azure-nsg-security-rule-delete
 
 ***
-Delete a security rule. The command is deprecated, please use azure-vn-security-rule-delete.
+Delete a security rule. The command is deprecated, please use azure-vn-security-rule-delete. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/delete.
 
 #### Base Command
 
@@ -916,7 +916,7 @@ There is no context output for this command.
 ### azure-storage-blob-containers-update
 
 ***
-Run this command to update a specific blob container. The command is deprecated, please use azure-storage-blob-container-update.
+Run this command to update a specific blob container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write. The command is deprecated, please use azure-storage-blob-container-update.
 
 #### Base Command
 
@@ -949,7 +949,7 @@ Run this command to update a specific blob container. The command is deprecated,
 ### azure-vm-instance-start
 
 ***
-Powers on a given virtual machine. The command is deprecated, please use azure-compute-vm-start.
+Powers on a given virtual machine. The command is deprecated, please use azure-compute-vm-start. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/start/action.
 
 #### Base Command
 
@@ -974,7 +974,7 @@ Powers on a given virtual machine. The command is deprecated, please use azure-c
 ### azure-nsg-network-interfaces-list
 
 ***
-Gets network interfaces in a resource group. The command is deprecated, please use azure-vn-network-interfaces-list.
+Gets network interfaces in a resource group. The command is deprecated, please use azure-vn-network-interfaces-list. Required Permissions: Microsoft.Network/networkInterfaces/read.
 
 #### Base Command
 
@@ -1012,7 +1012,7 @@ Gets network interfaces in a resource group. The command is deprecated, please u
 ### azure-vm-network-interface-details-get
 
 ***
-Gets the properties of a given network interface. The command is deprecated, please use azure-vn-network-interface-get.
+Gets the properties of a given network interface. The command is deprecated, please use azure-vn-network-interface-get. Required Permissions: Microsoft.Network/networkInterfaces/read.
 
 #### Base Command
 
@@ -1048,7 +1048,7 @@ Gets the properties of a given network interface. The command is deprecated, ple
 ### azure-nsg-security-rule-get
 
 ***
-Get a specific rule. The command is deprecated, please use azure-vn-security-rule-get.
+Get a specific rule. The command is deprecated, please use azure-vn-security-rule-get. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read.
 
 #### Base Command
 
@@ -1087,7 +1087,7 @@ Get a specific rule. The command is deprecated, please use azure-vn-security-rul
 ### azure-nsg-public-ip-addresses-list
 
 ***
-Gets public IP addresses in a resource group. The command is deprecated, please use azure-vn-public-ip-addresses-list.
+Gets public IP addresses in a resource group. The command is deprecated, please use azure-vn-public-ip-addresses-list. Required Permissions: Microsoft.Network/publicIPAddresses/read.
 
 #### Base Command
 
@@ -1125,7 +1125,7 @@ Gets public IP addresses in a resource group. The command is deprecated, please 
 ### azure-storage-blob-service-properties-get
 
 ***
-Run this command to get the blob service properties of a specific account storage. The command is deprecated, please use azure-storage-blob-service-property-get.
+Run this command to get the blob service properties of a specific account storage. The command is deprecated, please use azure-storage-blob-service-property-get. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/read, Microsoft.Storage/storageAccounts/blobServices/write.
 
 #### Base Command
 
@@ -1154,7 +1154,7 @@ Run this command to get the blob service properties of a specific account storag
 ### azure-vm-public-ip-details-get
 
 ***
-Gets the properties of a given public IP address. The command is deprecated, please use azure-vn-public-ip-address-get.
+Gets the properties of a given public IP address. The command is deprecated, please use azure-vn-public-ip-address-get. Required Permissions: Microsoft.Network/publicIPAddresses/read.
 
 #### Base Command
 
@@ -1188,7 +1188,7 @@ Gets the properties of a given public IP address. The command is deprecated, ple
 ### azure-nsg-security-rule-create
 
 ***
-Create a security rule. The command is deprecated, please use azure-vn-security-rule-create.
+Create a security rule. The command is deprecated, please use azure-vn-security-rule-create. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write.
 
 #### Base Command
 
@@ -1235,7 +1235,7 @@ Create a security rule. The command is deprecated, please use azure-vn-security-
 ### azure-nsg-resource-group-list
 
 ***
-Gets all resource groups for a subscription. The command is deprecated, please use azure-rm-resource-groups-list.
+Gets all resource groups for a subscription. The command is deprecated, please use azure-rm-resource-groups-list. Required Permissions: Microsoft.Resources/subscriptions/resourceGroups/read.
 
 #### Base Command
 
@@ -1269,7 +1269,7 @@ Gets all resource groups for a subscription. The command is deprecated, please u
 ### azure-vm-instance-power-off
 
 ***
-Powers off a given virtual machine. The command is deprecated, please use azure-compute-vm-power-off.
+Powers off a given virtual machine. The command is deprecated, please use azure-compute-vm-power-off. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/poweroff/action.
 
 #### Base Command
 
@@ -1281,7 +1281,7 @@ Powers off a given virtual machine. The command is deprecated, please use azure-
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group to which the virtual machine belongs. | Required |
-| virtual_machine_name | The name of the virtual machine to power off.| Required |
+| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command.| Required |
 | skip_shutdown | Set to True to request non-graceful VM shutdown. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
@@ -1295,7 +1295,7 @@ Powers off a given virtual machine. The command is deprecated, please use azure-
 ### azure-billing-usage-list
 
 ***
-Returns actual usage and cost details for a given time period, optionally filtered by service name.
+Returns actual usage and cost details for a given time period, optionally filtered by service name. Required Permissions: Microsoft.Consumption/usageDetails/read.
 
 #### Base Command
 
@@ -1377,7 +1377,7 @@ Returns actual usage and cost details for a given time period, optionally filter
 ### azure-billing-forecast-list
 
 ***
-Returns cost forecast for a subscription over a given time range.
+Returns cost forecast for a subscription over a given time range. Required Permissions: Microsoft.CostManagement/forecast/read.
 
 #### Base Command
 
@@ -1412,7 +1412,7 @@ Returns cost forecast for a subscription over a given time range.
 ### azure-billing-budgets-list
 
 ***
-Lists configured budgets at the subscription or resource group scope.
+Lists configured budgets at the subscription or resource group scope. Required Permissions: Microsoft.Consumption/budgets/read.
 
 #### Base Command
 
@@ -1461,7 +1461,7 @@ Lists configured budgets at the subscription or resource group scope.
 ### azure-storage-container-property-get
 
 ***
-Retrieve properties for the specified Container.
+Retrieve properties for the specified Container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/read.
 
 #### Base Command
 
@@ -1491,7 +1491,7 @@ Retrieve properties for the specified Container.
 ### azure-storage-container-create
 
 ***
-Create a new Container under the specified account.
+Create a new Container under the specified account. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write.
 
 #### Base Command
 
@@ -1513,7 +1513,7 @@ There is no context output for this command.
 ### azure-storage-container-delete
 
 ***
-Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection.
+Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/delete.
 
 #### Base Command
 
@@ -1535,7 +1535,7 @@ There is no context output for this command.
 ### azure-storage-container-blob-create
 
 ***
-Create a new Blob under the specified Container. The command is deprecated, please use azure-storage-blob-create.
+Create a new Blob under the specified Container. The command is deprecated, please use azure-storage-blob-create. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
 
 #### Base Command
 
@@ -1559,7 +1559,7 @@ There is no context output for this command.
 ### azure-storage-container-blob-get
 
 ***
-Retrieve Blob from Container. The command is deprecated, please use azure-storage-blob-get.
+Retrieve Blob from Container. The command is deprecated, please use azure-storage-blob-get. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read.
 
 #### Base Command
 
@@ -1593,7 +1593,7 @@ Retrieve Blob from Container. The command is deprecated, please use azure-storag
 ### azure-storage-container-blob-tag-get
 
 ***
-Retrieve the tags of the specified Blob. The command is deprecated, please use azure-storage-blob-tag-get.
+Retrieve the tags of the specified Blob. The command is deprecated, please use azure-storage-blob-tag-get. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read.
 
 #### Base Command
 
@@ -1621,7 +1621,7 @@ Retrieve the tags of the specified Blob. The command is deprecated, please use a
 ### azure-storage-container-blob-tag-set
 
 ***
-Sets the tags for the specified Blob. The command replace the entire tags of the Blob and can be used to remove tags. The command is deprecated, please use azure-storage-blob-tag-set.
+Sets the tags for the specified Blob. The command replace the entire tags of the Blob and can be used to remove tags. The command is deprecated, please use azure-storage-blob-tag-set. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read, Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write.
 
 #### Base Command
 
@@ -1645,7 +1645,7 @@ There is no context output for this command.
 ### azure-storage-container-blob-property-get
 
 ***
-Retrieve Blob properties. The command is deprecated, please use azure-storage-blob-property-get.
+Retrieve Blob properties. The command is deprecated, please use azure-storage-blob-property-get. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read.
 
 #### Base Command
 
@@ -1679,7 +1679,7 @@ Retrieve Blob properties. The command is deprecated, please use azure-storage-bl
 ### azure-storage-container-blob-property-set
 
 ***
-Set Blob properties.
+Set Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
 
 #### Base Command
 
@@ -1710,7 +1710,7 @@ There is no context output for this command.
 ### azure-storage-container-public-access-block
 
 ***
-Block public access to a container.
+Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action.
 
 #### Base Command
 
@@ -1732,7 +1732,7 @@ There is no context output for this command.
 ### azure-nsg-security-rules-list
 
 ***
-Gets all security rules in a network security group. The command is deprecated, please use azure-vn-security-rules-list.
+Gets all security rules in a network security group. The command is deprecated, please use azure-vn-security-rules-list. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read.
 
 #### Base Command
 
@@ -1834,6 +1834,86 @@ Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage
 | Azure.Storage.Blob.name | String | Blob name. |
 | Azure.Storage.Blob.ContainerName | String | Container name. |
 
+### azure-compute-vm-list
+
+***
+Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Required Permissions: Microsoft.Compute/virtualMachines/read.
+
+#### Base Command
+
+`azure-compute-vm-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The name of the resource group. | Required |
+| next_token | The URI to fetch the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.VirtualMachines.type | String | The type of the resource. |
+| Azure.Compute.VirtualMachines.location | String | The location of the resource. |
+| Azure.Compute.VirtualMachines.tags | Unknown | The tags of the resource. |
+| Azure.Compute.VirtualMachines.id | String | The ID of the resource. |
+| Azure.Compute.VirtualMachines.name | String | The name of the resource. |
+| Azure.Compute.VirtualMachines.etag | String | The ETag of the virtual machine, used to prevent overwriting concurrent updates. |
+| Azure.Compute.VirtualMachines.extendedLocation | Unknown | The extended location of the Virtual Machine. |
+| Azure.Compute.VirtualMachines.identity | Unknown | The identity of the virtual machine, if configured. |
+| Azure.Compute.VirtualMachines.managedBy | Unknown | MThe ARM resource ID of the Virtual Machine Scale Set \(VMSS\) that manages the virtual machine, if applicable. Used for internal resource group delete optimization. |
+| Azure.Compute.VirtualMachines.placement | Unknown | The user-defined constraints for virtual machine hardware placement. This property cannot be changed once the VM is provisioned. Minimum api-version: 2024-11-01. |
+| Azure.Compute.VirtualMachines.plan | Unknown | Information about the marketplace image used to create the virtual machine. |
+| Azure.Compute.VirtualMachines.systemData | Unknown | Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+| Azure.Compute.VirtualMachines.zones | Unknown. | The availability zones. |
+| Azure.Compute.VirtualMachines.properties.vmId | String | The unique ID of the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.availabilitySet | String | The availability set that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | The hardware settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.storageProfile | Unknown | The storage settings for the virtual machine disks. |
+| Azure.Compute.VirtualMachines.properties.osProfile | Unknown | The operating system settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.networkProfile | Unknown | The network interfaces of the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.provisioningState | String | The provisioning state, which only appears in the response. |
+| Azure.Compute.VirtualMachines.properties.additionalCapabilities | Unknown | Additional capabilities enabled or disabled on the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.securityProfile | Unknown | The security settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | Unknown | The boot diagnostic settings state. |
+| Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet | Unknown | The virtual machine scale set that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.proximityPlacementGroup | Unknown | The proximity placement group that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.scheduledEventsPolicy | Unknown | The Redeploy, Reboot, and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.priority | String | The priority for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.evictionPolicy | String | The eviction policy for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.billingProfile | Unknown | The billing related details of a Azure Spot virtual machine. |
+| Azure.Compute.VirtualMachines.properties.host | Unknown | The host that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.hostGroup | Unknown | The host group that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.licenseType | String | The license type for bringing your own license scenario. |
+| Azure.Compute.VirtualMachines.properties.extensionsTimeBudget | String | The time alloted for all extensions to start. |
+| Azure.Compute.VirtualMachines.properties.platformFaultDomain | Number | The fault domain that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.scheduledEventsProfile | Unknown | The scheduled event related configurations. |
+| Azure.Compute.VirtualMachines.properties.userData | String | The user data for the VM, which must be base-64 encoded. |
+| Azure.Compute.VirtualMachines.properties.capacityReservation | Unknown | The capacity reservation related details of a virtual machine. |
+| Azure.Compute.VirtualMachines.properties.applicationProfile | Unknown | The gallery applications that should be made available to the VM/VMSS. |
+| Azure.Compute.VirtualMachines.properties.timeCreated | Date | The time when the virtual machine was created. |
+| Azure.Compute.VirtualMachines.plan.name | String | The plan name. |
+| Azure.Compute.VirtualMachines.plan.publisher | String | The publisher of the plan. |
+| Azure.Compute.VirtualMachines.plan.product | String | The product of the plan. |
+| Azure.Compute.VirtualMachines.plan.promotionCode | String | The promotion code of the plan. |
+| Azure.Compute.VirtualMachines.resources.properties | Unknown | The properties of the resource. |
+| Azure.Compute.VirtualMachines.resources.id | String | The ID of the resource. |
+| Azure.Compute.VirtualMachines.resources.name | String | The name of the resource. |
+| Azure.Compute.VirtualMachines.resources.type | String | The type of the resource. |
+| Azure.Compute.VirtualMachines.resources.location | String | The location of the resource. |
+| Azure.Compute.VirtualMachines.resources.tags | Unknown | The tags of the resource. |
+| Azure.Compute.VirtualMachines.identity.principalId | String | The principal ID of the identity. |
+| Azure.Compute.VirtualMachines.identity.tenantId | String | The tenant ID of the identity. |
+| Azure.Compute.VirtualMachines.identity.type | String | The type of the identity. |
+| Azure.Compute.VirtualMachines.identity.userAssignedIdentities | String | The list of user assigned identities associated with the virtual machine. |
+| Azure.Compute.VirtualMachines.zones | String | The zones of the virtual machine. |
+| Azure.Compute.VirtualMachines.extendedLocation.name | String | The name of the extended location. |
+| Azure.Compute.VirtualMachines.extendedLocation.type | String | The type of the extended location. |
+| Azure.Compute.VirtualMachines.properties.instanceView | Unknown | The virtual machine instance view. |
+| Azure.Compute.VirtualMachinesNextToken | String | The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs. |
+
 ### azure-compute-vm-get
 
 ***
@@ -1849,7 +1929,7 @@ Gets the properties of a given virtual machine. Required Permissions: Microsoft.
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group to which the virtual machine belongs. | Required |
-| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 | expand | The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Possible values are: instanceView, userData, resiliencyView. Default is instanceView. | Optional |
 
 #### Context Output
@@ -1870,6 +1950,42 @@ Gets the properties of a given virtual machine. Required Permissions: Microsoft.
 | Azure.Compute.VirtualMachines.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. |
 | Azure.Compute.VirtualMachines.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. |
 
+### azure-vn-security-group-create
+
+***
+Creates a network security group. Required Permissions: Microsoft.Network/networkSecurityGroups/write.
+
+#### Base Command
+
+`azure-vn-security-group-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| security_group_name | The name of the network security group. | Required |
+| location | The location of the network security group. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.SecurityGroups.name | String | The security group's name. |
+| Azure.VirtualNetworks.SecurityGroups.id | String | The security group's ID. |
+| Azure.VirtualNetworks.SecurityGroups.etag | String | The security group's ETag. |
+| Azure.VirtualNetworks.SecurityGroups.type | String | The resource type. |
+| Azure.VirtualNetworks.SecurityGroups.location | String | The resource location. |
+| Azure.VirtualNetworks.SecurityGroups.properties.provisioningState | String | The provisioning state of the network security group resource. |
+| Azure.VirtualNetworks.SecurityGroups.properties.resourceGuid | String | The resource GUID property of the network security group resource. |
+| Azure.VirtualNetworks.SecurityGroups.properties.flushConnection | Boolean | When enabled, flows created from Network Security Group connections will be re-evaluated when rules are updates. Initial enablement will trigger re-evaluation. |
+| Azure.VirtualNetworks.SecurityGroups.properties.securityRules | Unknown | A collection of security rules of the network security group. |
+| Azure.VirtualNetworks.SecurityGroups.properties.defaultSecurityRules | Unknown | A collection of the default security rules of the network security group. |
+| Azure.VirtualNetworks.SecurityGroups.properties.flowLogs | Unknown | A collection of references to flow log resources. |
+| Azure.VirtualNetworks.SecurityGroups.properties.networkInterfaces | Unknown | A collection of references to network interfaces. |
+| Azure.VirtualNetworks.SecurityGroups.properties.subnets | Unknown | A collection of references to subnets. |
+
 ### azure-compute-vm-power-off
 
 ***
@@ -1882,10 +1998,10 @@ Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virt
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- |---| --- |
+| --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-rm-resource-groups-list` command. | Required |
-| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 | skip_shutdown | Set to True to request non-graceful VM shutdown. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
@@ -1911,7 +2027,7 @@ Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtu
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | Resource Group to which the virtual machine belongs. | Required |
-| virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 
 #### Context Output
 
@@ -2254,6 +2370,68 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 | Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
 | Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
+
+### azure-vn-network-interface-update
+
+***
+Updates a network interface. Required Permissions: Microsoft.Network/networkInterfaces/read, Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action, Microsoft.Network/loadBalancers/backendAddressPools/join/action.
+
+#### Base Command
+
+`azure-vn-network-interface-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group to which the network interface belongs. | Required |
+| network_interface_name | The name of the network interface to update. | Required |
+| location | The location of the network security group. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Optional |
+| enable_ip_forwarding | Whether to enable IP forwarding for the network interface. Possible values are: true, false. | Optional |
+| enable_accelerate_networking | Whether the network interface is configured for accelerated networking. Possible values are: true, false. | Optional |
+| auxiliary_mode | The auxiliary mode of the Network Interface resource. Possible values are: MaxConnections, Floating, AcceleratedConnections. | Optional |
+| auxiliary_sku | The auxiliary SKU of the Network Interface resource. Possible values are: A1, A2, A4, A8. | Optional |
+| dns_servers | A comma-separated list of DNS server IP addresses for the network interface. | Optional |
+| internal_dns_name_label | The internal DNS name label for the network interface. | Optional |
+| network_security_group_name | The name of the network security group. | Optional |
+| remove_network_security_group | Whether to remove the property networkSecurityGroup from the network interface. Possible values are: yes, no. Default is no. | Optional |
+| nic_type | The type of Network Interface resource. Possible values are: Standard, Elastic. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.NetworkInterfaces.id | String | The network interface ID. |
+| Azure.VirtualNetworks.NetworkInterfaces.name | String | The network interface name. |
+| Azure.VirtualNetworks.NetworkInterfaces.location | String | The Azure region where the network interface is deployed. |
+| Azure.VirtualNetworks.NetworkInterfaces.etag | String | A unique read-only string that changes whenever the network interface resource is updated. |
+| Azure.VirtualNetworks.NetworkInterfaces.type | String | The resource type. |
+| Azure.VirtualNetworks.NetworkInterfaces.tags | Unknown | The resource tags. |
+| Azure.VirtualNetworks.NetworkInterfaces.extendedLocation | Unknown | The extended location of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState | String | The current provisioning state of the network interface \(e.g., Succeeded, Updating, Failed\). |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations | Unknown | The list of IP configurations for the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings | Unknown | The DNS configuration of the network interface, including DNS servers and domain name. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.macAddress | String | The MAC address of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding | Boolean | Whether IP forwarding is enabled for the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.enableAcceleratedNetworking | Boolean | Whether accelerated networking is enabled for the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup | Unknown | The network security group associated with the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.primary | Boolean | Whether this is a primary network interface on a virtual machine. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.virtualMachine | Unknown | The reference to a virtual machine. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.nicType | String | The type of network interface \(Standard or Elastic\). |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliaryMode | Unknown | The auxiliary mode of the Network Interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliarySku | Unknown | The auxiliary SKU of the Network Interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.defaultOutboundConnectivityEnabled | Boolean | Whether default outbound connectivity for nic was configured. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.disableTcpStateTracking | Boolean | Whether to disable TCP state tracking. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.dscpConfiguration | Unknown | A reference to the DSCP configuration to which the network interface is linked. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.hostedWorkloads | Unknown | A list of references to linked BareMetal resources. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.migrationPhase | Unknown | The migration phase of the Network Interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.privateEndpoint | Unknown | A reference to the private endpoint to which the network interface is linked. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.privateLinkService | Unknown | The privatelinkservice of the network interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.resourceGuid | String | The resource GUID property of the network interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations | Unknown | A list of TapConfigurations of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.vnetEncryptionSupported | Boolean | Whether the virtual machine this nic is attached to supports encryption. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.workloadType | String | The workload type of the NetworkInterface for BareMetal resources. |
 
 ### azure-vn-security-rule-delete
 
