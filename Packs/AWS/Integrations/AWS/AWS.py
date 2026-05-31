@@ -850,6 +850,38 @@ def validate_network_firewall_identifier(kwargs: dict, obj: str):
         raise DemistoException("Please enter at least one of the arguments firewall_name or firewall_arn.")
 
 
+def create_network_firewall_policy_obj(args: dict) -> dict:
+    stateless_custom_actions_raw = args.get("stateless_custom_actions")
+    stateful_rule_group_references_raw = args.get("stateful_rule_group_references")
+    rule_variables_raw = args.get("policy_rule_variables")
+
+    stateless_custom_actions = parse_json_string(stateless_custom_actions_raw) if stateless_custom_actions_raw else None
+    stateful_rule_group_references = (
+        parse_json_string(stateful_rule_group_references_raw) if stateful_rule_group_references_raw else None
+    )
+    rule_variables = parse_json_string(rule_variables_raw) if rule_variables_raw else None
+
+    return remove_empty_elements(
+        {
+            "StatelessRuleGroupReferences": parse_resource_arn_priority_field(args.get("stateless_rule_group_references")),
+            "StatelessDefaultActions": argToList(args.get("stateless_default_actions")),
+            "StatelessFragmentDefaultActions": argToList(args.get("stateless_fragment_default_actions")),
+            "StatelessCustomActions": stateless_custom_actions,
+            "StatefulRuleGroupReferences": stateful_rule_group_references,
+            "StatefulDefaultActions": argToList(args.get("stateful_default_actions")),
+            "StatefulEngineOptions": {
+                "RuleOrder": args.get("stateful_engine_options_rule_order"),
+                "StreamExceptionPolicy": args.get("stateful_engine_options_stream_exception_policy"),
+                "FlowTimeouts": {
+                    "TcpIdleTimeoutSeconds": arg_to_number(args.get("stateful_engine_options_tcp_idle_timeout")),
+                },
+            },
+            "TLSInspectionConfigurationArn": args.get("tls_inspection_configuration_arn"),
+            "PolicyVariables": {"RuleVariables": rule_variables},
+        }
+    )
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -10118,35 +10150,7 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall policy information
         """
-        stateless_custom_actions_raw = args.get("stateless_custom_actions")
-        stateful_rule_group_references_raw = args.get("stateful_rule_group_references")
-        rule_variables_raw = args.get("policy_rule_variables")
-
-        stateless_custom_actions = parse_json_string(stateless_custom_actions_raw) if stateless_custom_actions_raw else None
-        stateful_rule_group_references = (
-            parse_json_string(stateful_rule_group_references_raw) if stateful_rule_group_references_raw else None
-        )
-        rule_variables = parse_json_string(rule_variables_raw) if rule_variables_raw else None
-
-        firewall_policy = remove_empty_elements(
-            {
-                "StatelessRuleGroupReferences": parse_resource_arn_priority_field(args.get("stateless_rule_group_references")),
-                "StatelessDefaultActions": argToList(args.get("stateless_default_actions")),
-                "StatelessFragmentDefaultActions": argToList(args.get("stateless_fragment_default_actions")),
-                "StatelessCustomActions": stateless_custom_actions,
-                "StatefulRuleGroupReferences": stateful_rule_group_references,
-                "StatefulDefaultActions": argToList(args.get("stateful_default_actions")),
-                "StatefulEngineOptions": {
-                    "RuleOrder": args.get("stateful_engine_options_rule_order"),
-                    "StreamExceptionPolicy": args.get("stateful_engine_options_stream_exception_policy"),
-                    "FlowTimeouts": {
-                        "TcpIdleTimeoutSeconds": arg_to_number(args.get("stateful_engine_options_tcp_idle_timeout")),
-                    },
-                },
-                "TLSInspectionConfigurationArn": args.get("tls_inspection_configuration_arn"),
-                "PolicyVariables": {"RuleVariables": rule_variables},
-            }
-        )
+        firewall_policy = create_network_firewall_policy_obj(args)
 
         encryption_configuration = remove_empty_elements(
             {
@@ -10259,6 +10263,61 @@ class NetworkFirewall:
             outputs_key_field="FirewallPolicyArn",
             outputs=firewall_policy_response,
             readable_output="The AWS Network Firewall policy was deleted successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def update_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Updates the properties of the specified firewall policy.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing the update token, the firewall policy name or ARN,
+                the stateless and stateful rule group references and default actions, the stateful engine options,
+                the TLS inspection configuration ARN, the policy rule variables, a description, the encryption
+                configuration, and a dry run flag.
+
+        Returns:
+            CommandResults: Formatted results with firewall policy information
+        """
+        firewall_policy = create_network_firewall_policy_obj(args)
+
+        kwargs = remove_empty_elements(
+            {
+                "UpdateToken": args.get("update_token"),
+                "FirewallPolicyArn": args.get("firewall_policy_arn"),
+                "FirewallPolicyName": args.get("firewall_policy_name"),
+                "FirewallPolicy": firewall_policy,
+                "Description": args.get("description"),
+                "EncryptionConfiguration": {
+                    "KeyId": args.get("encryption_configuration_key_id"),
+                    "Type": args.get("encryption_configuration_key_type"),
+                },
+            }
+        )
+        validate_network_firewall_identifier(kwargs, "FirewallPolicy")
+
+        print_debug_logs(client, f"Updating firewall policy with parameters: {kwargs}")
+        response = client.update_firewall_policy(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        firewall_policy_response = serialize_response_with_datetime_encoding(response.get("FirewallPolicyResponse", {}))
+        firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.FirewallPolicies",
+            outputs_key_field="FirewallPolicyArn",
+            outputs=firewall_policy_response,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Policy",
+                firewall_policy_response,
+                headers=["FirewallPolicyName", "FirewallPolicyArn", "Description", "FirewallPolicyStatus"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
             raw_response=response,
         )
 
@@ -10481,6 +10540,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-policy-create": NetworkFirewall.create_firewall_policy_command,
     "aws-network-firewall-firewall-policy-associate": NetworkFirewall.associate_firewall_policy_command,
     "aws-network-firewall-firewall-policy-delete": NetworkFirewall.delete_firewall_policy_command,
+    "aws-network-firewall-firewall-policy-update": NetworkFirewall.update_firewall_policy_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10668,6 +10728,7 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:TagResource",
     "network-firewall:ListFirewallPolicies",
     "network-firewall:CreateFirewallPolicy",
+    "network-firewall:UpdateFirewallPolicy",
     "network-firewall:DeleteFirewallPolicy",
     "network-firewall:AssociateFirewallPolicy",
 ]
