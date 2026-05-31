@@ -603,7 +603,7 @@ script:
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.id
       description: 'The request note ID.'
-      type: Date
+      type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.email_id
       description: 'The email ID of the request note creator.'
       type: String
@@ -679,7 +679,7 @@ script:
       description: 'The request note created time value.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.add_to_linked_requests
-      description: ''Whether to add notes from a specific request to its linked requests.'
+      description: 'Whether to add notes from a specific request to its linked requests.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.request.display_id
       description: 'The request display ID.'
@@ -701,7 +701,7 @@ script:
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.id
       description: 'The request note ID.'
-      type: Date
+      type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.email_id
       description: 'The email ID of the request note creator.'
       type: String
@@ -789,7 +789,7 @@ script:
       description: 'The request note created time value.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.add_to_linked_requests
-      description: ''Whether to add notes from a specific request to its linked requests.'
+      description: 'Whether to add notes from a specific request to its linked requests.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.request.display_id
       description: 'The request display ID.'
@@ -811,7 +811,7 @@ script:
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.id
       description: 'The request note ID.'
-      type: Date
+      type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.email_id
       description: 'The email ID of the request note creator.'
       type: String
