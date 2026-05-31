@@ -14,6 +14,7 @@ This integration was integrated and tested with version 1.0 of Proofpoint Cloud 
 | Maximum number of incidents per fetch | The maximum number of incidents to fetch each interval. Default and maximum is 200. | False |
 | Fetch delta (minutes) | An additional buffer \(in minutes\) subtracted from the start of each fetch window to mitigate clock drift and ensure no incidents are missed. | False |
 | Fetch incidents with specific states | Must be set when fetch is enabled. Selecting both \`open_incidents\` and \`closed_incidents\` returns an empty result from the upstream API. | False |
+| Enrich incidents during fetch | When enabled, each fetched incident is enriched with full details \(activities, comments, message source data\) by calling the GET /incidents/\{id\} endpoint once per incident. Disable when fetching large volumes to avoid rate limits. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -138,19 +139,19 @@ Returns full details for a specific Proofpoint Cloud Threat Response incident.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofPointCloud.Incident.summary.id | String | The internal UUID of the incident. |
-| ProofPointCloud.Incident.summary.displayId | Number | The numeric display ID of the incident. |
-| ProofPointCloud.Incident.summary.title | String | The incident title. |
-| ProofPointCloud.Incident.summary.state | String | The state of the incident. |
-| ProofPointCloud.Incident.summary.createdAt | Date | The creation timestamp of the incident. |
-| ProofPointCloud.Incident.summary.updatedAt | Date | The last update timestamp of the incident. |
-| ProofPointCloud.Incident.summary.priority | String | The priority of the incident. |
-| ProofPointCloud.Incident.summary.messageCount | Number | The number of messages associated with the incident. |
-| ProofPointCloud.Incident.summary.assignedTeamName | String | The name of the team the incident is assigned to. |
-| ProofPointCloud.Incident.summary.assignedApplicationUserName | String | The user the incident is assigned to. |
-| ProofPointCloud.Incident.summary.closedAt | Date | The timestamp when the incident was closed, if applicable. |
-| ProofPointCloud.Incident.summary.openedAt | Date | The timestamp when the incident was opened. |
-| ProofPointCloud.Incident.summary.messageSourceData | Unknown | Breakdown of message sources \(TAP, abuse mailbox, smart search, etc.\) for the incident. |
+| ProofPointCloud.Incident.id | String | The internal UUID of the incident. |
+| ProofPointCloud.Incident.displayId | Number | The numeric display ID of the incident. |
+| ProofPointCloud.Incident.title | String | The incident title. |
+| ProofPointCloud.Incident.state | String | The state of the incident. |
+| ProofPointCloud.Incident.createdAt | Date | The creation timestamp of the incident. |
+| ProofPointCloud.Incident.updatedAt | Date | The last update timestamp of the incident. |
+| ProofPointCloud.Incident.priority | String | The priority of the incident. |
+| ProofPointCloud.Incident.messageCount | Number | The number of messages associated with the incident. |
+| ProofPointCloud.Incident.assignedTeamName | String | The name of the team the incident is assigned to. |
+| ProofPointCloud.Incident.assignedApplicationUserName | String | The user the incident is assigned to. |
+| ProofPointCloud.Incident.closedAt | Date | The timestamp when the incident was closed, if applicable. |
+| ProofPointCloud.Incident.openedAt | Date | The timestamp when the incident was opened. |
+| ProofPointCloud.Incident.messageSourceData | Unknown | Breakdown of message sources \(TAP, abuse mailbox, smart search, etc.\) for the incident. |
 | ProofPointCloud.Incident.comments | Array | The comments associated with the incident. |
 | ProofPointCloud.Incident.activities | Array | The activities associated with the incident. |
 
@@ -162,28 +163,26 @@ Returns full details for a specific Proofpoint Cloud Threat Response incident.
 
 ```json
 {
-    "summary": {
-        "id": "00000000-0000-0000-0000-000000000001",
-        "createdAt": "2024-01-01T10:00:00.000+00:00",
-        "updatedAt": "2024-01-01T10:05:00.000+00:00",
-        "displayId": 12345,
-        "priority": "high",
-        "state": "open",
-        "title": "user[@]example[.]com reported a message \"Suspicious phishing attempt\"",
-        "closedAt": null,
-        "openedAt": "2024-01-01T10:00:00.000+00:00",
-        "assignedTeamName": "SOC_Analyst",
-        "assignedApplicationUserName": null,
-        "messageCount": 1,
-        "messageSourceData": {
-            "hasTapAlert": false,
-            "hasAbuseAlert": true,
-            "hasSmartSearchImport": false,
-            "hasMessageCsvUpload": false,
-            "hasWorkbenchEvent": false,
-            "hasImdAlert": false,
-            "hasMailBombAlert": false
-        }
+    "id": "00000000-0000-0000-0000-000000000001",
+    "createdAt": "2024-01-01T10:00:00.000+00:00",
+    "updatedAt": "2024-01-01T10:05:00.000+00:00",
+    "displayId": 12345,
+    "priority": "high",
+    "state": "open",
+    "title": "user[@]example[.]com reported a message \"Suspicious phishing attempt\"",
+    "closedAt": null,
+    "openedAt": "2024-01-01T10:00:00.000+00:00",
+    "assignedTeamName": "SOC_Analyst",
+    "assignedApplicationUserName": null,
+    "messageCount": 1,
+    "messageSourceData": {
+        "hasTapAlert": false,
+        "hasAbuseAlert": true,
+        "hasSmartSearchImport": false,
+        "hasMessageCsvUpload": false,
+        "hasWorkbenchEvent": false,
+        "hasImdAlert": false,
+        "hasMailBombAlert": false
     },
     "comments": [],
     "activities": [
@@ -227,3 +226,17 @@ Returns full details for a specific Proofpoint Cloud Threat Response incident.
 >| ID | Created At | State | Message Count | Assigned Team Name | Title |
 >|---|---|---|---|---|---|
 >| 00000000-0000-0000-0000-000000000001 | 2024-01-01T10:00:00.000+00:00 | open | 1 | SOC_Analyst | user[@]example[.]com reported a message "Suspicious phishing attempt" |
+
+## Known Limitations
+
+### Fetch Enrichment and API Rate Limits
+
+By default, the **"Enrich incidents during fetch"** parameter is disabled. When disabled, each fetch cycle makes a single API call to retrieve the incident list, and the raw JSON stored per incident contains only the fields returned by the list endpoint (summary fields such as `id`, `title`, `state`, `createdAt`, `messageCount`, etc.).
+
+When enrichment is enabled, the integration makes one additional `GET /api/v1/tric/incidents/{id}` call **per incident** in every fetch cycle. This provides richer data immediately (activities, comments, `messageSourceData`) but multiplies API call volume proportionally to the number of incidents fetched. In environments with high incident volume this can trigger Proofpoint API rate limits (HTTP 429).
+
+**Recommended approach for high-volume environments:**
+
+1. Keep **"Enrich incidents during fetch"** disabled (default).
+2. Use the `proofpoint-ctr-incident-get` command to enrich individual incidents on demand from a playbook or manually from the War Room.
+3. Because both commands write to the same context key (`ProofPointCloud.Incident.id`), running `proofpoint-ctr-incident-get` after `proofpoint-ctr-incidents-list` will **enrich the existing context entry** rather than creating a duplicate.

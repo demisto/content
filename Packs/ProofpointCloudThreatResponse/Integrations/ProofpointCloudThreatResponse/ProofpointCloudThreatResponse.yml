@@ -76,6 +76,19 @@ configuration:
   - closed_incidents
   additionalinfo: Must be set when fetch is enabled. Selecting both `open_incidents` and `closed_incidents` returns an empty result from the upstream API.
   section: Collect
+- display: Enrich incidents during fetch
+  name: fetch_enrich
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  additionalinfo: >-
+    When enabled, each fetched incident is enriched with full details (activities, comments, message source data)
+    by calling the GET /incidents/{id} endpoint once per incident. This provides richer data immediately but
+    increases API call volume proportionally to the number of incidents fetched. Disable this option when
+    fetching large volumes of incidents to avoid rate limits; you can always enrich individual incidents
+    on demand using the `proofpoint-ctr-incident-get` command.
+  section: Collect
+  advanced: true
 script:
   commands:
   - name: proofpoint-ctr-incidents-list
@@ -204,43 +217,43 @@ script:
       required: true
       isArray: true
     outputs:
-    - contextPath: ProofPointCloud.Incident.summary.id
+    - contextPath: ProofPointCloud.Incident.id
       description: The internal UUID of the incident.
       type: String
-    - contextPath: ProofPointCloud.Incident.summary.displayId
+    - contextPath: ProofPointCloud.Incident.displayId
       description: The numeric display ID of the incident.
       type: Number
-    - contextPath: ProofPointCloud.Incident.summary.title
+    - contextPath: ProofPointCloud.Incident.title
       description: The incident title.
       type: String
-    - contextPath: ProofPointCloud.Incident.summary.state
+    - contextPath: ProofPointCloud.Incident.state
       description: The state of the incident.
       type: String
-    - contextPath: ProofPointCloud.Incident.summary.createdAt
+    - contextPath: ProofPointCloud.Incident.createdAt
       description: The creation timestamp of the incident.
       type: Date
-    - contextPath: ProofPointCloud.Incident.summary.updatedAt
+    - contextPath: ProofPointCloud.Incident.updatedAt
       description: The last update timestamp of the incident.
       type: Date
-    - contextPath: ProofPointCloud.Incident.summary.priority
+    - contextPath: ProofPointCloud.Incident.priority
       description: The priority of the incident.
       type: String
-    - contextPath: ProofPointCloud.Incident.summary.messageCount
+    - contextPath: ProofPointCloud.Incident.messageCount
       description: The number of messages associated with the incident.
       type: Number
-    - contextPath: ProofPointCloud.Incident.summary.assignedTeamName
+    - contextPath: ProofPointCloud.Incident.assignedTeamName
       description: The name of the team the incident is assigned to.
       type: String
-    - contextPath: ProofPointCloud.Incident.summary.assignedApplicationUserName
+    - contextPath: ProofPointCloud.Incident.assignedApplicationUserName
       description: The user the incident is assigned to.
       type: String
-    - contextPath: ProofPointCloud.Incident.summary.closedAt
+    - contextPath: ProofPointCloud.Incident.closedAt
       description: The timestamp when the incident was closed, if applicable.
       type: Date
-    - contextPath: ProofPointCloud.Incident.summary.openedAt
+    - contextPath: ProofPointCloud.Incident.openedAt
       description: The timestamp when the incident was opened.
       type: Date
-    - contextPath: ProofPointCloud.Incident.summary.messageSourceData
+    - contextPath: ProofPointCloud.Incident.messageSourceData
       description: Breakdown of message sources (TAP, abuse mailbox, smart search, etc.) for the incident.
       type: Unknown
     - contextPath: ProofPointCloud.Incident.comments

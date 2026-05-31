@@ -408,17 +408,37 @@ def proofpoint_ctr_incidents_list_command(client: Client, args: dict[str, Any]) 
 
 
 def proofpoint_ctr_incident_get_command(client: Client, args: dict[str, Any]) -> "CommandResults":  # noqa: F405,F821
-    """Retrieve full details for one or more CTR incidents."""
+    """Retrieve full details for one or more CTR incidents.
+
+    The output is structured so that the top-level ``id`` field matches the
+    key used by :func:`proofpoint_ctr_incidents_list_command` (``outputs_key_field="id"``).
+    This allows XSOAR to enrich an existing context entry created by the list
+    command rather than creating a duplicate entry.
+
+    The enriched fields (``summary``, ``activities``, ``comments``) are merged
+    into the same object alongside the flat summary fields so that the context
+    entry is a superset of what the list command produced.
+    """
     incident_ids = argToList(args.get("incident_id"))  # noqa: F405
     if not incident_ids:
         raise DemistoException("Argument 'incident_id' is required.")  # noqa: F405
 
     results: list[dict[str, Any]] = []
     hr_rows: list[dict[str, Any]] = []
+    summary: dict[str, Any] = {}
     for inc_id in incident_ids:
         response = client.get_incident(inc_id)
-        results.append(response)
         summary = response.get("summary") or {}
+
+        # Flatten the summary fields to the top level so that ``id`` is a
+        # top-level key.  This makes the key field consistent with the list
+        # command and allows XSOAR to merge/enrich the existing context entry.
+        enriched: dict[str, Any] = {
+            **summary,
+            "activities": response.get("activities"),
+            "comments": response.get("comments"),
+        }
+        results.append(enriched)
         hr_rows.append(
             {
                 "ID": summary.get("id") or inc_id,
@@ -445,7 +465,7 @@ def proofpoint_ctr_incident_get_command(client: Client, args: dict[str, Any]) ->
     )
     return CommandResults(  # noqa: F405
         outputs_prefix=OUTPUT_PREFIX,
-        outputs_key_field="summary.id",
+        outputs_key_field="id",
         outputs=results,
         readable_output=readable,
         raw_response=results,
@@ -493,12 +513,21 @@ def fetch_incidents(
 
     The function returns a tuple ``(next_last_run, incidents)``. ``incidents``
     is the list of XSOAR incident dicts to pass to :func:`demisto.incidents`.
+
+    When ``fetch_enrich`` is enabled in the integration parameters each fetched
+    incident is enriched with full details (activities, comments, message source
+    data) via an additional ``GET /api/v1/tric/incidents/{id}`` call.  This
+    provides richer raw JSON immediately but multiplies API call volume by the
+    number of incidents per fetch cycle.  Disable it when ingesting large
+    volumes to avoid rate limits; individual incidents can always be enriched
+    on demand with the ``proofpoint-ctr-incident-get`` command.
     """
     fetch_delta_minutes = _coerce_int_arg(params.get("fetch_delta"), 1, "fetch_delta")
     max_fetch = _coerce_int_arg(params.get("max_fetch"), DEFAULT_FETCH_LIMIT, "max_fetch")
     if max_fetch < 1:
         raise DemistoException("Argument 'max_fetch' must be a positive integer.")  # noqa: F405
     max_fetch = min(max_fetch, MAX_PAGE_SIZE)
+    fetch_enrich = argToBoolean(params.get("fetch_enrich", False))  # noqa: F405
     fetch_states = argToList(params.get("fetch_states") or [])  # noqa: F405
     if "open_incidents" in fetch_states and "closed_incidents" in fetch_states:
         raise DemistoException(  # noqa: F405
@@ -556,16 +585,20 @@ def fetch_incidents(
         parse_ctr_date(last_fetch_iso) if last_fetch_iso else None
     )
 
+    demisto.debug(f"Proofpoint CTR: {fetch_enrich=}")
     for inc in new_incidents[:max_fetch]:
         inc_id = inc.get("id")
         if not inc_id:
             continue
-        try:
-            enriched = client.get_incident(inc_id)
-            demisto.debug(f"Proofpoint CTR: enriched incident {inc_id} via GET /api/v1/tric/incidents/{inc_id}")
-        except Exception as exc:  # noqa: BLE001
-            demisto.error(f"Proofpoint CTR: failed to enrich incident {inc_id}: {exc}")
-            enriched = {}
+        enriched: dict[str, Any] = {}
+        if fetch_enrich:
+            try:
+                enriched = client.get_incident(inc_id)
+                demisto.debug(f"Proofpoint CTR: enriched incident {inc_id} via GET /api/v1/tric/incidents/{inc_id}")
+            except Exception as exc:  # noqa: BLE001
+                demisto.error(f"Proofpoint CTR: failed to enrich incident {inc_id}: {exc}")
+        else:
+            demisto.debug(f"Proofpoint CTR: skipping enrichment for incident {inc_id} (fetch_enrich=False)")
         xsoar_incidents.append(_build_incident(enriched, inc))
         processed_ids.append(inc_id)
         created_at = parse_ctr_date(inc.get("createdAt"))
