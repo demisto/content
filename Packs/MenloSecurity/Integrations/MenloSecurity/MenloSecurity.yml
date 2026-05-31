@@ -66,6 +66,13 @@ configuration:
   type: 8
   required: false
   section: Collect
+- display: Long Running Instance
+  name: longRunning
+  type: 8
+  defaultvalue: 'true'
+  hidden: true
+  required: false
+  additionalinfo: 'Run the integration as a long-running process to maximize throughput. Should remain enabled.'
 - display: Maximum number of events per fetch per log type
   name: max_events_per_fetch_per_type
   type: 0
