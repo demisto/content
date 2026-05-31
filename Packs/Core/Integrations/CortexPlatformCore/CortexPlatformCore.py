@@ -2303,7 +2303,9 @@ def search_assets_command(client: Client, args):
     asset_types = argToList(args.get("asset_types", ""))
     filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, asset_types)
 
-    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT)) or SEARCH_ASSETS_DEFAULT_LIMIT
+    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
+    if page_size is None:
+        page_size = SEARCH_ASSETS_DEFAULT_LIMIT
     if page_size > SEARCH_ASSETS_MAX_LIMIT:
         raise ValueError(f"page_size cannot exceed {SEARCH_ASSETS_MAX_LIMIT}")
 

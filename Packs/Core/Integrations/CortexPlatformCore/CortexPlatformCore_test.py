@@ -1029,8 +1029,8 @@ def test_search_assets_page_size_at_max_allowed():
 def test_search_assets_page_size_none_falls_back_to_default():
     """
     GIVEN:
-        An explicit page_size value of None passed via args (simulating
-        arg_to_number returning None for a missing/empty value).
+        An empty page_size value passed via args (which causes arg_to_number
+        to return None for that field).
     WHEN:
         search_assets_command is invoked.
     THEN:
@@ -1045,7 +1045,6 @@ def test_search_assets_page_size_none_falls_back_to_default():
     with (
         mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
         mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
-        mock.patch("CortexPlatformCore.arg_to_number", return_value=None),
     ):
         search_assets_command(mock_client, {"page_size": ""})
 
