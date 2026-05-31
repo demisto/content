@@ -21,7 +21,7 @@ class Config:
 
     # Fetch defaults
     DEFAULT_MAX_FETCH = 1000
-    DEFAULT_FIRST_FETCH = "1 day"
+    DEFAULT_FIRST_FETCH = "1 minute"
 
     # API status codes
     RATE_LIMIT_STATUS_CODE = 429
