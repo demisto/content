@@ -1,0 +1,16 @@
+{
+    "id": "test-page-id",
+    "type": "page",
+    "status": "current",
+    "title": "test_page",
+    "body": {
+        "storage": {
+            "value": "<p>This is the page content</p>",
+            "representation": "storage"
+        }
+    },
+    "_links": {
+        "webui": "/spaces/TEST/pages/test-page-id/test_page",
+        "self": "https://test.atlassian.net/wiki/rest/api/content/test-page-id"
+    }
+}

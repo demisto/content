@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from CommonServerPython import *
@@ -1226,3 +1226,157 @@ class TestFilePermissionMethods:
         assert call_kwargs["params"]["supportsAllDrives"] is True
         assert call_kwargs["body"]["name"] == "Shared Drive Folder"
         assert call_kwargs["body"]["parents"] == ["shared_drive_root_id"]
+
+
+@pytest.mark.parametrize(
+    "url, expected_id",
+    [
+        ("https://docs.google.com/document/d/test-file-id/edit", "test-file-id"),
+        ("https://docs.google.com/spreadsheets/d/test-file-id/edit#gid=0", "test-file-id"),
+        ("https://docs.google.com/presentation/d/test-file-id/edit", "test-file-id"),
+        ("https://drive.google.com/file/d/test-file-id/view", "test-file-id"),
+        ("https://drive.google.com/open?id=test-file-id", "test-file-id"),
+    ],
+)
+def test_extract_file_id_from_url(url: str, expected_id: str):
+    """
+    Given:
+        A Google Drive file URL in various supported formats.
+    When:
+        Calling _extract_file_id_from_url to parse the URL.
+    Then:
+        The correct file ID is extracted from the URL.
+    """
+    from GoogleDrive import _extract_file_id_from_url
+
+    assert _extract_file_id_from_url(url) == expected_id
+
+
+def test_extract_file_id_from_url_invalid():
+    """
+    Given:
+        An unsupported URL format that does not contain a Google Drive file ID.
+    When:
+        Calling _extract_file_id_from_url to parse the URL.
+    Then:
+        A ValueError is raised with a descriptive error message.
+    """
+    from GoogleDrive import _extract_file_id_from_url
+
+    with pytest.raises(ValueError, match="Could not extract file ID from URL"):
+        _extract_file_id_from_url("https://example.com/not-a-drive-url")
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_get_file_content_command_google_doc(mocker_http_request, gsuite_client):
+    """
+    Given:
+        A Google Docs URL pointing to a Google Workspace document (exported as Markdown).
+    When:
+        Calling the get-file-content command with the URL.
+    Then:
+        Content holds the decoded Markdown text and Type is 'text/markdown' (no ';base64').
+    """
+    from GoogleDrive import get_file_content_command
+
+    mock_metadata = {
+        "id": "test-file-id",
+        "name": "test_document",
+        "mimeType": "application/vnd.google-apps.document",
+        "description": "Document used by unit tests.",
+        "webViewLink": "https://docs.google.com/document/d/test-file-id/edit",
+    }
+    mocker_http_request.return_value = mock_metadata
+
+    markdown_bytes = b"# Title\n\nSome **bold** text.\n"
+    mock_drive_service = MagicMock()
+    mock_drive_service.files().export().execute.return_value = markdown_bytes
+
+    with patch("GoogleDrive.discovery.build", return_value=mock_drive_service):
+        args = {"url": "https://docs.google.com/document/d/test-file-id/edit"}
+        result = get_file_content_command(gsuite_client, args)
+
+    assert result.outputs_prefix == "FileContent"
+    assert result.outputs_key_field == "Id"
+    assert result.outputs["Id"] == "test-file-id"
+    assert result.outputs["Title"] == "test_document"
+    assert result.outputs["Type"] == "text/markdown"
+    assert result.outputs["Content"] == "# Title\n\nSome **bold** text.\n"
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_get_file_content_command_google_sheet_text_export(mocker_http_request, gsuite_client):
+    """
+    Given:
+        A Google Sheets URL pointing to a Google Workspace spreadsheet (exported as CSV).
+    When:
+        Calling the get-file-content command with the URL.
+    Then:
+        Content is the decoded CSV text and Type is 'text/csv' (no ';base64' suffix).
+    """
+    from GoogleDrive import get_file_content_command
+
+    mock_metadata = {
+        "id": "test-sheet-id",
+        "name": "test_sheet",
+        "mimeType": "application/vnd.google-apps.spreadsheet",
+        "webViewLink": "https://docs.google.com/spreadsheets/d/test-sheet-id/edit",
+    }
+    mocker_http_request.return_value = mock_metadata
+
+    csv_bytes = b"a,b,c\n1,2,3\n"
+    mock_drive_service = MagicMock()
+    mock_drive_service.files().export().execute.return_value = csv_bytes
+
+    with patch("GoogleDrive.discovery.build", return_value=mock_drive_service):
+        args = {"url": "https://docs.google.com/spreadsheets/d/test-sheet-id/edit"}
+        result = get_file_content_command(gsuite_client, args)
+
+    assert result.outputs["Type"] == "text/csv"
+    assert result.outputs["Content"] == "a,b,c\n1,2,3\n"
+
+
+@patch(MOCKER_HTTP_METHOD)
+def test_get_file_content_command_regular_text_file(mocker_http_request, gsuite_client):
+    """
+    Given:
+        A Google Drive URL pointing to a regular text/plain file uploaded directly to Drive.
+    When:
+        Calling the get-file-content command with the URL.
+    Then:
+        The command downloads raw bytes via get_media and returns decoded text inline in Content.
+    """
+    from GoogleDrive import get_file_content_command
+
+    mock_metadata = {
+        "id": "test-txt-id",
+        "name": "test_notes.txt",
+        "mimeType": "text/plain",
+        "webViewLink": "https://drive.google.com/file/d/test-txt-id/view",
+    }
+    mocker_http_request.return_value = mock_metadata
+
+    mock_drive_service = MagicMock()
+    mock_drive_service.files().get_media().execute.return_value = b"hello world\n"
+
+    with patch("GoogleDrive.discovery.build", return_value=mock_drive_service):
+        args = {"url": "https://drive.google.com/file/d/test-txt-id/view"}
+        result = get_file_content_command(gsuite_client, args)
+
+    assert result.outputs["Type"] == "text/plain"
+    assert result.outputs["Content"] == "hello world\n"
+
+
+def test_get_file_content_command_missing_url(gsuite_client):
+    """
+    Given:
+        No URL argument provided to the get-file-content command.
+    When:
+        Calling the get-file-content command without a URL.
+    Then:
+        A ValueError is raised indicating the url argument is required.
+    """
+    from GoogleDrive import get_file_content_command
+
+    with pytest.raises(ValueError, match="'url' argument is required"):
+        get_file_content_command(gsuite_client, {})
