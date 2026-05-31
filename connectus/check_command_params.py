@@ -2833,23 +2833,87 @@ def analyze_static_attributions(
 
 
 def find_module_scope_dispatch(tree: ast.Module) -> list[ast.stmt] | None:
-    """Change 2 stub — returns None for now.
+    """Change 2: locate dispatch at module top-level (for no-main() integrations).
 
-    The real implementation lands in the next commit; until then no
-    integration-without-main() can resolve dispatch via the
-    module-scope path. This stub keeps the call site
-    forward-compatible with the verdict layer (Change 1).
+    Many small integrations (Shodan_v2 is the canonical example) do
+    NOT wrap their dispatch in a ``def main()``. Instead they dispatch
+    directly at module scope, optionally inside a top-level ``try``
+    block:
+
+        # Shape A — direct
+        if demisto.command() == "ip":
+            return_results(ip_command(...))
+        elif demisto.command() == "search":
+            return_results(search_command(...))
+
+        # Shape B — wrapped in try
+        try:
+            command = demisto.command()
+            if command == "ip":
+                ip_command(...)
+            elif command == "search":
+                search_command(...)
+        except Exception as e:
+            return_error(...)
+
+    Returns the body (``list[ast.stmt]``) of the smallest construct
+    that *contains* the dispatch. For Shape A that's the module body
+    itself; for Shape B it's the ``Try.body``. Returns ``None`` if
+    no dispatch construct is detected at module scope.
+
+    Detection rule: the returned region must contain at least one
+    statement that :func:`_is_dispatch_node` recognises (an ``If``
+    whose test references ``command`` / ``demisto.command()``, a
+    ``Match`` on the same, or a ``commands = {...}`` literal
+    assignment).
     """
+    if not isinstance(tree, ast.Module):
+        return None
+    # Module-scope walk: check each top-level statement (and the body
+    # of top-level Try / With / If-__name__ wrappers) for a dispatch
+    # construct.
+    def _body_has_dispatch(body: list[ast.stmt]) -> bool:
+        for stmt in body:
+            if _is_dispatch_node(stmt):
+                return True
+        return False
+
+    # Shape A: dispatch lives directly in module body.
+    if _body_has_dispatch(tree.body):
+        return list(tree.body)
+
+    # Shape B: dispatch lives inside a top-level Try / With body.
+    for stmt in tree.body:
+        if isinstance(stmt, ast.Try) and _body_has_dispatch(stmt.body):
+            return list(stmt.body)
+        if isinstance(stmt, (ast.With, ast.AsyncWith)) and _body_has_dispatch(stmt.body):
+            return list(stmt.body)
+        # Shape C: ``if __name__ == "__main__":`` wrapper containing
+        # the dispatch.
+        if isinstance(stmt, ast.If) and _body_has_dispatch(stmt.body):
+            return list(stmt.body)
     return None
 
 
 def _synth_main_from_module(body: list[ast.stmt]) -> ast.FunctionDef:
-    """Change 2 stub — construct a fake FunctionDef wrapping ``body``.
+    """Change 2: synthesize a FunctionDef wrapping a module-scope dispatch body.
 
-    The real implementation will be flushed out in Change 2's commit;
-    this minimal version is enough for any code path that exercises
-    the no-main fallback today (none, until Change 2 lands).
+    The rest of the analyzer pipeline (``find_command_handler_calls``,
+    ``collect_pre_dispatch_params``, ``_collect_pre_dispatch_attribution``)
+    treats its input as a ``main()`` FunctionDef. To support
+    module-scope dispatch without forking every helper, we synthesize
+    a minimal FunctionDef whose body IS the module-scope dispatch
+    region. The synthesized node carries ``lineno=1`` so downstream
+    line-comparison logic sees every wrapped statement as living "in
+    main()".
+
+    The synthesized function has no formal parameters and an empty
+    decorator list — the analyzer's param-tracer keys off ``params``
+    /aliases via :func:`find_params_var`, which still works because
+    that helper walks the body, not the signature.
     """
+    if not body:
+        body = [ast.Pass(lineno=1, col_offset=0)]
     fn = ast.FunctionDef(
         name="main",
         args=ast.arguments(
@@ -2861,13 +2925,18 @@ def _synth_main_from_module(body: list[ast.stmt]) -> ast.FunctionDef:
             kwarg=None,
             defaults=[],
         ),
-        body=list(body) if body else [ast.Pass(lineno=1, col_offset=0)],
+        body=list(body),
         decorator_list=[],
         returns=None,
         type_comment=None,
     )
     fn.lineno = 1
     fn.col_offset = 0
+    fn.end_lineno = max(
+        (getattr(s, "end_lineno", getattr(s, "lineno", 1)) for s in body),
+        default=1,
+    )
+    fn.end_col_offset = 0
     return fn
 
 
