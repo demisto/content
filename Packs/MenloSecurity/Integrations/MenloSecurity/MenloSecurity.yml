@@ -106,6 +106,8 @@ script:
       - "False"
   dockerimage: demisto/fastapi:0.125.0.9094740
   isfetchevents: true
+  longRunning: true
+  longRunningPort: false
   subtype: python3
 fromversion: 8.2.0
 marketplaces:

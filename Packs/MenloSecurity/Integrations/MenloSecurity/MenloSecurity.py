@@ -1,6 +1,8 @@
+import concurrent.futures
 import hashlib
 import json
 import threading
+import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
@@ -578,6 +580,142 @@ def get_events_command(
     return results
 
 
+""" LONG-RUNNING EXECUTION """
+
+
+# Sleep when caught up (saturation signal not set) — avoid hammering the API with empty calls.
+LONG_RUNNING_IDLE_SLEEP_SECONDS = 30
+# Back-off after an unexpected error inside the loop.
+LONG_RUNNING_ERROR_SLEEP_SECONDS = 10
+# Key used in integrationContext for state persistence (survives container restart in long-running mode).
+LONG_RUNNING_STATE_KEY = "last_run"
+
+
+def _send_events_parallel(events: list[dict]) -> None:
+    """Send events to XSIAM using multi-threaded chunk send (Code42 pattern).
+
+    The ContentClient/CommonServerPython SDK splits the events list into ~1MB chunks and sends each
+    chunk in its own thread, returning a list of futures. We wait for all futures to complete so
+    state is only advanced after a successful send.
+
+    On failure, the exception propagates up to the long-running loop, which logs + sleeps + retries.
+    The next cycle re-fetches from the previous boundary; dedup catches events that already landed.
+    """
+    if not events:
+        return
+    futures = send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT, multiple_threads=True)
+    if futures:
+        # Wait for all parallel sends; raises if any chunk failed.
+        for future in concurrent.futures.as_completed(futures):
+            future.result()
+
+
+def _init_long_running_state() -> dict:
+    """Load the initial state for the long-running loop.
+
+    Resolution order (first non-empty wins):
+    1. integrationContext['last_run']  ← authoritative for long-running, survives container restart
+    2. demisto.getLastRun()            ← migration path on first long-running iteration after upgrade
+    3. {}                              ← fresh install, fetch_events will use DEFAULT_FIRST_FETCH
+
+    After init, state is kept in a local Python variable. We never re-read inside the loop.
+    """
+    ctx = demisto.getIntegrationContext() or {}
+    state = ctx.get(LONG_RUNNING_STATE_KEY)
+    if state:
+        demisto.info(f"[long-running] Recovered state from integrationContext: {state}")
+        return state
+    last_run = demisto.getLastRun() or {}
+    if last_run:
+        demisto.info(f"[long-running] Migrating state from lastRun: {last_run}")
+        return last_run
+    demisto.info("[long-running] No previous state — first fetch will start from DEFAULT_FIRST_FETCH.")
+    return {}
+
+
+def _persist_long_running_state(state: dict) -> None:
+    """Persist state to integrationContext (the only valid store in long-running mode).
+
+    setLastRun is intentionally NOT called inside the loop: it's a scheduled-command mechanism
+    that the engine does not honor reliably from a long-running process. integrationContext is
+    the documented pattern for long-running state (see Akamai_SIEM, ProofpointEmailSecurity).
+    """
+    ctx = demisto.getIntegrationContext() or {}
+    ctx[LONG_RUNNING_STATE_KEY] = state
+    demisto.setIntegrationContext(ctx)
+
+
+def long_running_execution_command(
+    client: Client,
+    log_types: list[str],
+    first_fetch_time: str,
+    max_events_per_fetch_per_type: int,
+) -> None:
+    """Infinite event-collection loop (long-running mode).
+
+    Eliminates the per-cycle engine scheduling overhead (~25s gap between cycles in fetch-events mode).
+    Each iteration:
+      1. Calls fetch_events() to collect events from all configured log types.
+      2. Sends collected events to XSIAM with multiple_threads=True (parallel chunk send).
+      3. Persists state to integrationContext (authoritative store for long-running).
+      4. Sleeps LONG_RUNNING_IDLE_SLEEP_SECONDS if no log type was saturated; otherwise loops immediately.
+
+    State storage notes:
+    - Reads state ONCE on startup via _init_long_running_state (IntegrationContext, fallback to lastRun for migration).
+    - Holds state in a local Python variable between iterations (no engine RPC inside the loop).
+    - Writes ONLY to integrationContext per iteration (setLastRun is not honored reliably in long-running mode).
+    - Pops "nextTrigger" from next_state before persistence so it never lands in IntegrationContext.
+
+    On exception: logs + updates module health + back-off sleep. Cortex's long-running supervisor
+    restarts the container if this function ever returns or the process exits.
+    """
+    state = _init_long_running_state()
+    demisto.info(
+        f"[long-running] Starting infinite collection loop (log_types={log_types}, "
+        f"max_events_per_fetch_per_type={max_events_per_fetch_per_type})"
+    )
+
+    iteration = 0
+    while True:
+        iteration += 1
+        cycle_start = time.monotonic()
+        try:
+            next_state, events = fetch_events(
+                client=client,
+                last_run=state,
+                log_types=log_types,
+                first_fetch_time=first_fetch_time,
+                max_events_per_fetch_per_type=max_events_per_fetch_per_type,
+            )
+
+            _send_events_parallel(events)
+
+            # nextTrigger key inside next_state is meaningful only to the engine scheduler. In
+            # long-running mode the engine isn't scheduling us, so we POP it (don't persist) and
+            # reuse its presence as the "was saturated" flag to decide whether to sleep.
+            was_saturated = next_state.pop("nextTrigger", None) == "0"
+            state = next_state
+
+            _persist_long_running_state(state)
+            demisto.updateModuleHealth({"eventsPulled": len(events)})
+
+            cycle_seconds = time.monotonic() - cycle_start
+            demisto.debug(
+                f"[long-running] iter={iteration} cycle_seconds={cycle_seconds:.1f}s "
+                f"events={len(events)} saturated={was_saturated}"
+            )
+
+            if not was_saturated:
+                # Caught up — give the API a break before checking for new events.
+                time.sleep(LONG_RUNNING_IDLE_SLEEP_SECONDS)
+            # else: loop immediately (still draining backlog)
+
+        except Exception as e:
+            demisto.error(f"[long-running] iter={iteration} failed: {e}\n{traceback.format_exc()}")
+            demisto.updateModuleHealth(str(e), is_error=True)
+            time.sleep(LONG_RUNNING_ERROR_SLEEP_SECONDS)
+
+
 """ MAIN FUNCTION """
 
 
@@ -600,7 +738,8 @@ def main() -> None:
     )
     # TODO remove before release
     demisto.info(
-        f"[main] *** MenloSecurity build: MAX_EVENTS_PER_PAGE={MAX_EVENTS_PER_PAGE}, fast_time_parse=on, next_trigger=on ***"
+        f"[main] *** MenloSecurity build: MAX_EVENTS_PER_PAGE={MAX_EVENTS_PER_PAGE}, "
+        f"fast_time_parse=on, next_trigger=on, long_running=on, parallel_xsiam=on ***"
     )
     demisto.debug(f"[main] Command: {command}, token_type: {token_type}, params: {json.dumps(params)}, args: {json.dumps(args)}")
 
@@ -610,19 +749,27 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client, log_types))
 
+        elif command == "long-running-execution":
+            # When longRunning:true is set in YAML, the engine ALSO dispatches fetch-events in parallel.
+            # The real work happens here; the fetch-events handler below is a deliberate no-op so we
+            # don't run two concurrent collectors. Pattern from ProofpointEmailSecurityEventCollector.
+            if params.get("isFetchEvents", False):
+                long_running_execution_command(
+                    client=client,
+                    log_types=log_types,
+                    first_fetch_time=DEFAULT_FIRST_FETCH,
+                    max_events_per_fetch_per_type=max_events_per_fetch_per_type,
+                )
+            else:
+                demisto.info("[main] isFetchEvents disabled — long-running-execution idling.")
+                time.sleep(60)
+
         elif command == "fetch-events":
-            last_run = demisto.getLastRun()
-            demisto.debug(f"[main] Last run: {last_run}")
-            next_run, events = fetch_events(
-                client=client,
-                last_run=last_run,
-                log_types=log_types,
-                first_fetch_time=DEFAULT_FIRST_FETCH,
-                max_events_per_fetch_per_type=max_events_per_fetch_per_type,
-            )
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.setLastRun(next_run)
-            demisto.debug(f"[main] Next run: {next_run}")
+            # The YAML has longRunning: true, so the engine ALSO dispatches fetch-events alongside
+            # long-running-execution. This is ALWAYS a no-op — events are collected by the
+            # long-running loop. Without this guard, two collectors would race on the same state.
+            # (Pattern matches ProofpointEmailSecurityEventCollector.)
+            demisto.info("[main] fetch-events is a no-op — events are collected via long-running-execution.")
 
         elif command == "menlo-security-get-events":
             return_results(
