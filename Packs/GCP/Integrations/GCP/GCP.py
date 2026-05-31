@@ -2418,7 +2418,7 @@ def get_credentials(args: dict, params: dict) -> Credentials:
     password = creds_param.get("password", "").strip()
 
     if password:
-        # --- Marketplace path: service account JSON key ---
+        # --- Cortex XSOAR/Cortex XSIAM path: service account JSON key ---
         try:
             service_account_info = json.loads(password)
         except json.JSONDecodeError:
@@ -2448,11 +2448,7 @@ def get_credentials(args: dict, params: dict) -> Credentials:
     # --- Cortex Cloud path: CTS token-based authentication ---
     project_id = args.get("project_id")
     if not project_id:
-        raise DemistoException(
-            "Missing required parameter 'project_id'. "
-            "On Cortex Cloud, provide it as a command argument. "
-            "On Cortex XSOAR/XSIAM, supply a Service Account JSON key in the integration credentials."
-        )
+        raise DemistoException("Missing required parameter 'project_id'")
     try:
         credential_data = get_cloud_credentials(CloudTypes.GCP.value, project_id)
         token = credential_data.get("access_token")
