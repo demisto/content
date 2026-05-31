@@ -876,3 +876,46 @@ def test_wildfire_upload_file_uses_basename(mocker, input_name, expected_basenam
     copy_call_args = mock_copy.call_args[0]
     assert copy_call_args[1] == expected_basename
     assert os.path.basename(copy_call_args[1]) == copy_call_args[1]
+
+
+@pytest.mark.parametrize(
+    "func_name, url_dict_key, link_field, response_key",
+    [
+        ("wildfire_upload_url", "upload_url", "link", "submit-link-info"),
+        ("wildfire_upload_file_url", "upload_file_url", "url", "upload-file-info"),
+    ],
+)
+def test_url_upload_uses_files_arg_for_multipart(mocker, func_name, url_dict_key, link_field, response_key):
+    """
+    Given:
+        - wildfire_upload_url or wildfire_upload_file_url is invoked with a URL.
+    When:
+        - The integration constructs the HTTP request to the WildFire API.
+    Then:
+        - http_request is called with `files=` (so `requests` builds a compliant
+          multipart/form-data body), and not with a manual `body=`/`headers=`.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    mocker.patch.object(wf, "URL", "https://wildfire.example.com/publicapi")
+    mocker.patch.object(wf, "URL_DICT", {url_dict_key: f"/{url_dict_key.replace('_', '/')}"})
+    mocker.patch.object(wf, "BODY_DICT", {"apikey": "test-api-key", "agent": "xdr"})
+    mock_http = mocker.patch.object(
+        wf,
+        "http_request",
+        return_value={"wildfire": {response_key: {"md5": "m", "sha256": "s", "url": "https://example.com"}}},
+    )
+
+    func = getattr(wf, func_name)
+    func("https://example.com")
+
+    # Must use files= so requests builds RFC-compliant multipart/form-data.
+    args, kwargs = mock_http.call_args
+    assert "files" in kwargs, "Must pass files= so requests builds RFC-compliant multipart"
+    files = kwargs["files"]
+    assert files["apikey"] == (None, "test-api-key")
+    assert files["agent"] == (None, "xdr")
+    assert files[link_field] == (None, "https://example.com")
+    # Defensive: ensure no hand-rolled body string snuck back in.
+    assert kwargs.get("body") is None
+    assert kwargs.get("headers") is None

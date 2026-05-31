@@ -3,19 +3,23 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from CommonServerPython import CommandResults
+from typing import Any, cast
 from GroupIBTIA import (
     fetch_incidents_command,
     Client,
-    main,
     get_available_collections_command,
     local_search_command,
+    BuilderCommandResponses,
     CommonHelpers,
     INCIDENT_CREATED_DATES_MAPPING,
+    IncidentBuilder,
+    MAPPING,
+    PORTAL_LINKS,
 )
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 import GroupIBTIA
-from json import load
+from json import load, loads
 import os
 
 realpath = os.path.join(os.path.dirname(os.path.realpath(__file__)))
@@ -132,6 +136,69 @@ def test_fetch_incidents(mocker, session_fixture):
     assert isinstance(incidents, list)
 
 
+def test_fetch_incidents_masked_card_collection(mocker, single_session_fixture):
+    collection_name = "compromised/masked_card"
+    client = single_session_fixture
+    mock_portion = MagicMock()
+    mock_portion.sequpdate = 1592219410029000
+    mock_portion.portion_size = 1
+    mock_portion.count = 1
+    mock_portion.bulk_parse_portion.return_value = [
+        {
+            "id": "e66dbb9b2bdd55d5ecce174318060373f923c427",
+            "name": "000000XXXXXXXXXX",
+            "number": "000000XXXXXXXXXX",
+            "issuer": None,
+            "type": None,
+            "payment_system": None,
+            "validThru": "12/49",
+            "address": None,
+            "email": None,
+            "owner_name": None,
+            "phone": None,
+            "dateDetected": "2020-05-22T17:04:25+00:00",
+            "dateCompromised": "2020-05-15T09:17:45+00:00",
+            "malware_name": "vendeta",
+            "portalLink": "https://tap.group-ib.com/cd/cards?id=e66dbb9b2bdd55d5ecce174318060373f923c427",
+            "evaluation": {
+                "admiraltyCode": "A2",
+                "credibility": 80,
+                "reliability": 90,
+                "severity": "red",
+                "tlp": "red",
+            },
+            "sourceType": "Card shop",
+            "threat_actor_id": None,
+            "threat_actor_name": None,
+            "threat_actor_is_apt": None,
+            "indicators": {
+                "cnc_url": None,
+                "cnc_domain": "kingven.cc",
+                "cnc_ipv4_ip": "11.11.11.11",
+                "cnc_ipv4_asn": "AS63949",
+                "cnc_ipv4_country_name": "United States",
+                "cnc_ipv4_region": "North America",
+            },
+        }
+    ]
+
+    mocker.patch.object(client.poller, "get_available_collections", return_value=[collection_name])
+    mocker.patch.object(client, "create_poll_generator", return_value=([mock_portion], None))
+
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={},
+        first_fetch_time="3 days",
+        incident_collections=[collection_name],
+        max_requests=3,
+        hunting_rules=0,
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0]["dbotMirrorId"] == "e66dbb9b2bdd55d5ecce174318060373f923c427"
+    assert next_run["last_fetch"][collection_name] == "1592219410029000"
+
+
 def test_main_error():
     """
     Test for verifying the error-handling behavior in the main() function.
@@ -147,8 +214,141 @@ def test_main_error():
       - The test checks that the main function handles errors in a predictable and controlled
         manner, allowing graceful exits during failure.
     """
-    with pytest.raises(SystemExit):
-        main()["error_command"]()  # type: ignore
+    with (
+        pytest.raises(SystemExit),
+        patch.object(
+            GroupIBTIA.demisto,
+            "params",
+            return_value={
+                "credentials": {"identifier": "user@example.com", "password": "token"},
+                "url": "https://some-url.com",
+                "proxy": False,
+                "insecure": False,
+                "incident_collections": [],
+                "first_fetch": "3 days",
+                "max_fetch": 1,
+                "limit": 10,
+            },
+        ),
+        patch.object(GroupIBTIA.demisto, "args", return_value={}),
+        patch.object(GroupIBTIA.demisto, "command", return_value="non-existent-command"),
+        patch.object(GroupIBTIA, "Client", autospec=True),
+        patch.object(GroupIBTIA, "return_error", side_effect=SystemExit(1)),
+    ):
+        GroupIBTIA.main()
+
+
+def test_reputation_command_disabled_ip(mocker):
+    """
+    Given: Integration instance configuration does not enable the 'ip' reputation command.
+    When: The 'ip' command is invoked.
+    Then: The integration must return a controlled no-op result and must not execute enrichment logic.
+    """
+    mocker.patch.object(
+        GroupIBTIA.demisto,
+        "params",
+        return_value={
+            "credentials": {"identifier": "user@example.com", "password": "token"},
+            "url": "https://some-url.com",
+            "proxy": False,
+            "insecure": False,
+            # New behavior: allow-list. Empty means disabled.
+            "enabled_reputation_commands": [],
+            "incident_collections": [],
+            "first_fetch": "3 days",
+            "max_fetch": 1,
+            "limit": 10,
+        },
+    )
+    mocker.patch.object(GroupIBTIA.demisto, "args", return_value={"ip": "8.8.8.8"})
+    mocker.patch.object(GroupIBTIA.demisto, "command", return_value="ip")
+
+    mocker.patch.object(GroupIBTIA, "Client", autospec=True)
+    ip_impl = mocker.patch.object(GroupIBTIA.ReputationCommands, "ip", autospec=True)
+    rr = mocker.patch.object(GroupIBTIA, "return_results", autospec=True)
+    mocker.patch.object(GroupIBTIA, "return_error", side_effect=AssertionError("return_error must not be called"))
+
+    GroupIBTIA.main()
+
+    assert ip_impl.call_count == 0, "Expected ReputationCommands.ip not to be called when not enabled."
+    assert rr.call_count == 1
+    result_obj = rr.call_args[0][0]
+    assert isinstance(result_obj, CommandResults)
+    assert "not enabled" in (result_obj.readable_output or "").lower()
+
+
+def test_reputation_commands_default_disabled_when_param_missing(mocker):
+    """
+    Given: Integration instance configuration does not include the 'enabled_reputation_commands' param.
+    When: A reputation command (ip/domain/file) is invoked.
+    Then: The integration must default to disabled (fail-safe) and must not execute enrichment logic.
+    """
+    mocker.patch.object(
+        GroupIBTIA.demisto,
+        "params",
+        return_value={
+            "credentials": {"identifier": "user@example.com", "password": "token"},
+            "url": "https://some-url.com",
+            "proxy": False,
+            "insecure": False,
+            "incident_collections": [],
+            "first_fetch": "3 days",
+            "max_fetch": 1,
+            "limit": 10,
+        },
+    )
+    mocker.patch.object(GroupIBTIA.demisto, "args", return_value={"ip": "8.8.8.8"})
+    mocker.patch.object(GroupIBTIA.demisto, "command", return_value="ip")
+
+    mocker.patch.object(GroupIBTIA, "Client", autospec=True)
+    ip_impl = mocker.patch.object(GroupIBTIA.ReputationCommands, "ip", autospec=True)
+    rr = mocker.patch.object(GroupIBTIA, "return_results", autospec=True)
+    mocker.patch.object(GroupIBTIA, "return_error", side_effect=AssertionError("return_error must not be called"))
+
+    GroupIBTIA.main()
+
+    assert ip_impl.call_count == 0, "Expected ReputationCommands.ip not to be called when param is missing."
+    assert rr.call_count == 1
+
+
+def test_reputation_command_enabled_allow_list(mocker):
+    """
+    Given: Allow-list enables 'ip' reputation command.
+    When: The 'ip' reputation command is invoked.
+    Then: The integration must call the underlying reputation implementation.
+    """
+    mocker.patch.object(
+        GroupIBTIA.demisto,
+        "params",
+        return_value={
+            "credentials": {"identifier": "user@example.com", "password": "token"},
+            "url": "https://some-url.com",
+            "proxy": False,
+            "insecure": False,
+            "enabled_reputation_commands": ["ip"],
+            "incident_collections": [],
+            "first_fetch": "3 days",
+            "max_fetch": 1,
+            "limit": 10,
+        },
+    )
+    mocker.patch.object(GroupIBTIA.demisto, "args", return_value={"ip": "8.8.8.8"})
+    mocker.patch.object(GroupIBTIA.demisto, "command", return_value="ip")
+
+    mocker.patch.object(GroupIBTIA, "Client", autospec=True)
+    ip_impl = mocker.patch.object(
+        GroupIBTIA.ReputationCommands,
+        "ip",
+        autospec=True,
+        return_value=CommandResults(readable_output="ok"),
+    )
+    rr = mocker.patch.object(GroupIBTIA, "return_results", autospec=True)
+    mocker.patch.object(GroupIBTIA, "return_error", side_effect=AssertionError("return_error must not be called"))
+
+    GroupIBTIA.main()
+
+    assert ip_impl.call_count == 1
+    assert rr.call_count == 1
 
 
 def test_global_search_command(mocker, single_session_fixture):
@@ -174,7 +374,7 @@ def test_global_search_command(mocker, single_session_fixture):
     test_query = {"query": "8.8.8.8"}
     result = GroupIBTIA.global_search_command(client=client, args=test_query)
 
-    assert result.outputs_prefix == "GIBTIA.search.global"
+    assert result.outputs_prefix == "GIBTI.search.global"
     assert result.outputs_key_field == "query"
 
 
@@ -189,7 +389,7 @@ def test_get_available_collections(mocker, single_session_fixture):
       - The get_available_collections_command() function is invoked with the client instance.
 
     Then:
-      - Verifies that the outputs_prefix is correctly set to "GIBTIA.OtherInfo", indicating that
+      - Verifies that the outputs_prefix is correctly set to "GIBTI.OtherInfo", indicating that
         the response data is categorized as general information.
       - Checks that the outputs_key_field is "collections", matching the expected key for collections data.
       - Ensures that the "collections" field in the output contains a list of collection names, as expected.
@@ -200,7 +400,7 @@ def test_get_available_collections(mocker, single_session_fixture):
     mocker.patch.object(client, "get_available_collections_proxy_function", return_value=[AVALIBLE_COLLECTIONS_RAW_JSON])
     result = get_available_collections_command(client=client)
 
-    assert result.outputs_prefix == "GIBTIA.OtherInfo"
+    assert result.outputs_prefix == "GIBTI.OtherInfo"
     assert result.outputs_key_field == "collections"
     assert isinstance(result.outputs["collections"], list)
 
@@ -209,7 +409,7 @@ def test_get_available_collections(mocker, single_session_fixture):
 def mock_client():
     """Fixture to create a mock client."""
     client = MagicMock()
-    client.poller.create_search_generator.return_value = []
+    client.poller.create_update_generator.return_value = []
     return client
 
 
@@ -236,7 +436,7 @@ def test_local_search_command_no_results(mock_client, mock_common_helpers):
     result = local_search_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "GIBTIA.search.local"
+    assert result.outputs_prefix == "GIBTI.search.local"
     assert result.outputs_key_field == "id"
     assert result.outputs == []
     assert "Search results" in result.readable_output
@@ -248,7 +448,7 @@ def test_local_search_command_with_results(mock_client, mock_common_helpers):
     When: The local_search_command function is executed.
     Then: The function should return a formatted list of search results.
     """
-    mock_client.poller.create_search_generator.return_value = [
+    mock_client.poller.create_update_generator.return_value = [
         MagicMock(
             parse_portion=lambda keys, as_json: [
                 {"id": "123", "name": "Test Result"},
@@ -262,11 +462,12 @@ def test_local_search_command_with_results(mock_client, mock_common_helpers):
     result = local_search_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "GIBTIA.search.local"
+    assert result.outputs_prefix == "GIBTI.search.local"
     assert result.outputs_key_field == "id"
-    assert len(result.outputs) == 2
-    assert result.outputs[0]["id"] == "123"
-    assert result.outputs[0]["additional_info"] == "Name: Test Result"
+    outputs = cast(list[dict[str, Any]], result.outputs)
+    assert len(outputs) == 2
+    assert outputs[0]["id"] == "123"
+    assert outputs[0]["additional_info"] == "Name: Test Result"
     assert "Search results" in result.readable_output
     assert "Name: Test Result" in result.readable_output
     assert "Name: Another Result" in result.readable_output
@@ -280,8 +481,8 @@ def test_transform_dict_empty():
 
 
 def test_transform_dict_various_lengths():
-    input_dict = {"a": [1, 2], "b": "x", "c": []}
-    result = CommonHelpers.transform_dict(input_dict)
+    input_dict: dict[str, Any] = {"a": [1, 2], "b": "x", "c": []}
+    result = CommonHelpers.transform_dict(cast(Any, input_dict))
     assert len(result) == 2
     assert result[0] == {"a": 1, "b": "x", "c": None}
     assert result[1] == {"a": 2, "b": "x", "c": None}
@@ -300,14 +501,14 @@ def test_replace_empty_values_dict():
 
 
 def test_replace_empty_values_list():
-    data = ["", "x", [], [{}]]
-    result = CommonHelpers.replace_empty_values(data)
+    data: list[Any] = ["", "x", [], [{}]]
+    result = CommonHelpers.replace_empty_values(cast(Any, data))
     assert result == [None, "x", None, [{}]]
 
 
 def test_replace_empty_values_empty_list_returns_none():
-    assert CommonHelpers.replace_empty_values([]) is None
-    assert CommonHelpers.replace_empty_values([[]]) is None
+    assert CommonHelpers.replace_empty_values(cast(Any, [])) is None
+    assert CommonHelpers.replace_empty_values(cast(Any, [[]])) is None
 
 
 def test_all_lists_empty_true():
@@ -331,8 +532,8 @@ def test_date_parse_invalid():
 
 
 def test_transform_list_to_str():
-    data = [{"x": [1, 2], "y": "a"}, {"x": []}]
-    result = CommonHelpers.transform_list_to_str(data)
+    data: list[dict[str, Any]] = [{"x": [1, 2], "y": "a"}, {"x": []}]
+    result = CommonHelpers.transform_list_to_str(cast(Any, data))
     assert result[0]["x"] == "1, 2"
     assert result[1]["x"] == ""
 
@@ -440,10 +641,6 @@ def test_fetch_incidents_sequpdate_resolution(mocker, session_fixture):
       - Ensures the resolved sequpdate is used instead of date_from.
     """
     collection_name, client = session_fixture
-    if collection_name == "compromised/breached":
-        # Skip this test for compromised/breached as it uses different logic
-        return
-
     mock_portions = []
     mock_portion = MagicMock()
     mock_portion.sequpdate = 12345
@@ -458,6 +655,8 @@ def test_fetch_incidents_sequpdate_resolution(mocker, session_fixture):
     }
     # Add the appropriate date field for this collection
     mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+    if collection_name == "compromised/breached":
+        mock_incident_data["emails"] = ["test@example.com"]
     mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
     mock_portions.append(mock_portion)
 
@@ -474,11 +673,18 @@ def test_fetch_incidents_sequpdate_resolution(mocker, session_fixture):
         "get_available_collections",
         return_value=[collection_name],
     )
-    mocker.patch.object(
-        client.poller,
-        "create_update_generator",
-        return_value=mock_portions,
-    )
+    if collection_name == "compromised/breached":
+        mocker.patch.object(
+            client.poller,
+            "create_search_generator",
+            return_value=mock_portions,
+        )
+    else:
+        mocker.patch.object(
+            client.poller,
+            "create_update_generator",
+            return_value=mock_portions,
+        )
 
     next_run, incidents = fetch_incidents_command(
         client=client,
@@ -492,8 +698,16 @@ def test_fetch_incidents_sequpdate_resolution(mocker, session_fixture):
         enable_probable_corporate_access=False,
     )
 
-    # Verify get_seq_update_dict was called for sequpdate resolution
-    client.poller.get_seq_update_dict.assert_called_once()
+    if collection_name == "compromised/breached":
+        client.poller.get_seq_update_dict.assert_not_called()
+        client.poller.create_search_generator.assert_called_once()
+        search_call_kwargs = client.poller.create_search_generator.call_args[1]
+        assert search_call_kwargs["date_from"] == "2023-01-01"
+        assert search_call_kwargs["apply_hunting_rules"] == 1
+        assert isinstance(next_run["last_fetch"][collection_name], dict)
+    else:
+        # Verify get_seq_update_dict was called for sequpdate resolution
+        client.poller.get_seq_update_dict.assert_called_once()
     assert isinstance(incidents, list), "Expected incidents to be a list."
 
 
@@ -514,15 +728,18 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
       - Ensures effective_last_fetch is correctly calculated.
     """
     collection_name, client = session_fixture
-    if collection_name == "compromised/breached":
-        # Skip this test for compromised/breached as it uses different logic
-        return
-
-    last_fetch_value = 10000
-    sequpdate_value = 15000  # Higher than last_fetch
-
     mock_portions = []
     mock_portion = MagicMock()
+    if collection_name == "compromised/breached":
+        last_fetch_value = {
+            "starting_date_from": "2023-01-01",
+            "starting_date_to": "2023-01-31",
+            "current_date_to": "2023-01-31",
+        }
+        sequpdate_value = None
+    else:
+        last_fetch_value = 10000
+        sequpdate_value = 15000  # Higher than last_fetch
     mock_portion.sequpdate = sequpdate_value
     mock_portion.portion_size = 10
     mock_portion.count = 10
@@ -535,6 +752,8 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
     }
     # Add the appropriate date field for this collection
     mock_incident_data[date_field] = "2023-01-01T00:00:00+00:00"
+    if collection_name == "compromised/breached":
+        mock_incident_data["emails"] = ["test@example.com"]
     mock_portion.bulk_parse_portion.return_value = [mock_incident_data]
     mock_portions.append(mock_portion)
 
@@ -544,11 +763,18 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
         "get_available_collections",
         return_value=[collection_name],
     )
-    mocker.patch.object(
-        client,
-        "create_poll_generator",
-        return_value=(mock_portions, last_fetch_value),
-    )
+    if collection_name == "compromised/breached":
+        mocker.patch.object(
+            client.poller,
+            "create_search_generator",
+            return_value=mock_portions,
+        )
+    else:
+        mocker.patch.object(
+            client,
+            "create_poll_generator",
+            return_value=(mock_portions, last_fetch_value),
+        )
 
     next_run, incidents = fetch_incidents_command(
         client=client,
@@ -562,12 +788,18 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
         enable_probable_corporate_access=False,
     )
 
-    # Verify effective_last_fetch is max(last_fetch, sequpdate)
     assert collection_name in next_run["last_fetch"], "Expected collection name in next_run['last_fetch']."
     effective_last_fetch = next_run["last_fetch"][collection_name]
-    assert effective_last_fetch == max(
-        last_fetch_value, sequpdate_value
-    ), f"Expected effective_last_fetch to be max({last_fetch_value}, {sequpdate_value}) = {sequpdate_value}."
+    if collection_name == "compromised/breached":
+        client.poller.create_search_generator.assert_called_once()
+        search_call_kwargs = client.poller.create_search_generator.call_args[1]
+        assert search_call_kwargs["date_from"] is None
+        assert search_call_kwargs["date_to"] == last_fetch_value["current_date_to"]
+        assert effective_last_fetch == last_fetch_value
+    else:
+        assert int(str(effective_last_fetch)) == max(
+            last_fetch_value, sequpdate_value
+        ), f"Expected effective_last_fetch to be max({last_fetch_value}, {sequpdate_value}) = {sequpdate_value}."
 
 
 def test_fetch_incidents_incident_processing_loop(mocker, session_fixture):
@@ -587,10 +819,6 @@ def test_fetch_incidents_incident_processing_loop(mocker, session_fixture):
       - Checks that requests_count limits the number of processed portions.
     """
     collection_name, client = session_fixture
-    if collection_name == "compromised/breached":
-        # Skip this test for compromised/breached as it uses different logic
-        return
-
     # Create multiple mock portions
     mock_portions = []
     date_field = _get_date_field_for_collection(collection_name)
@@ -794,3 +1022,551 @@ def test_create_poll_generator_sequpdate_resolution_fallback(mocker, single_sess
     call_kwargs = client.poller.create_update_generator.call_args[1]
     assert call_kwargs.get("date_from") is not None, "Expected date_from to be used when sequpdate resolution fails."
     assert call_kwargs.get("sequpdate") is None, "Expected sequpdate to be None when resolution fails."
+
+
+def test_create_poll_generator_compromised_breached_uses_search_generator(mocker, single_session_fixture):
+    client = single_session_fixture
+    collection_name = "compromised/breached"
+    mock_portions = [MagicMock()]
+
+    mocker.patch.object(
+        client.poller,
+        "create_search_generator",
+        return_value=mock_portions,
+    )
+
+    portions, last_fetch = client.create_poll_generator(
+        collection_name=collection_name,
+        hunting_rules=0,
+        enable_probable_corporate_access=False,
+        unique=False,
+        combolist=False,
+        last_fetch=None,
+        first_fetch_time="2023-01-01",
+    )
+
+    client.poller.create_search_generator.assert_called_once()
+    call_kwargs = client.poller.create_search_generator.call_args[1]
+    assert call_kwargs["date_from"] == "2023-01-01"
+    assert call_kwargs["apply_hunting_rules"] == 1
+    assert portions == mock_portions
+    assert last_fetch["starting_date_from"] == "2023-01-01"
+    assert last_fetch["starting_date_to"] == last_fetch["current_date_to"]
+
+
+def test_fetch_incidents_compromised_breached_keeps_date_range_last_fetch(mocker, single_session_fixture):
+    collection_name = "compromised/breached"
+    client = single_session_fixture
+    mock_portion = MagicMock()
+    mock_portion.sequpdate = None
+    mock_portion.portion_size = 1
+    mock_portion.count = 1
+    mock_portion.bulk_parse_portion.return_value = [
+        {
+            "id": "breached-id",
+            "name": ["Email collection"],
+            "emails": ["user@example.com"],
+            "uploadTime": "2024-10-01T01:45:13",
+            "evaluation": {"severity": "green"},
+        }
+    ]
+    expected_last_fetch = {
+        "starting_date_from": "2024-10-01",
+        "starting_date_to": "2024-10-31",
+        "current_date_to": "2024-10-31",
+    }
+
+    mocker.patch.object(client.poller, "get_available_collections", return_value=[collection_name])
+    mocker.patch.object(client, "create_poll_generator", return_value=([mock_portion], expected_last_fetch))
+
+    next_run, incidents = fetch_incidents_command(
+        client=client,
+        last_run={},
+        first_fetch_time="3 days",
+        incident_collections=[collection_name],
+        max_requests=3,
+        hunting_rules=0,
+    )
+
+    assert len(incidents) == 1
+    assert next_run["last_fetch"][collection_name] == expected_last_fetch
+
+
+def test_build_feed_compromised_breached_generates_portal_link_from_email(mocker, single_session_fixture):
+    client = single_session_fixture
+    collection_name = "compromised/breached"
+    mock_result = MagicMock()
+    mock_result.parse_portion.return_value = {
+        "id": "breached-id",
+        "name": ["Email collection"],
+        "emails": ["user@example.com"],
+        "uploadTime": "2024-10-01T01:45:13",
+        "evaluation": {"severity": "green"},
+        "portalLink": "https://tap.group-ib.com/cd/breached?id=breached-id",
+    }
+
+    mocker.patch.object(client.poller, "search_feed_by_id", return_value=mock_result)
+
+    feed, _, _, _, _ = BuilderCommandResponses(
+        client=client,
+        collection_name=collection_name,
+        args={"id": "breached-id"},
+    ).build_feed()
+
+    assert feed["portalLink"] == f"{PORTAL_LINKS[collection_name]}user@example.com"
+
+
+def test_build_incident_compromised_breached_generates_portal_link_from_email():
+    collection_name = "compromised/breached"
+    incident = {
+        "id": "breached-id",
+        "name": ["Email collection"],
+        "emails": ["user@example.com"],
+        "uploadTime": "2024-10-01T01:45:13",
+        "evaluation": {"severity": "green"},
+        "portalLink": "https://tap.group-ib.com/cd/breached?id=breached-id",
+    }
+
+    built_incident = IncidentBuilder(
+        collection_name=collection_name,
+        incident=incident,
+        mapping=MAPPING[collection_name],
+    ).build_incident()
+    raw_incident = loads(built_incident["rawJSON"])
+
+    assert raw_incident["portalLink"] == f"{PORTAL_LINKS[collection_name]}user@example.com"
+
+
+# ---------------------------------------------------------------------------
+# Deduplication: retention contract for `dedup_lookback_days`
+# ---------------------------------------------------------------------------
+#
+# These tests pin the 1:1 semantics of the user-facing parameter:
+#   * Configured `dedup_lookback_days = N` means "an ID added today is dropped
+#     exactly N days later".
+#   * No hidden multipliers, no "latest ID kept forever" exception.
+#
+# The previous implementation relied on `CommonServerPython.get_found_incident_ids`,
+# which silently doubled the retention window (`look_back * 2`) and pinned the
+# newest ID forever, breaking the contract documented in the integration YAML.
+
+
+SECONDS_PER_DAY = 86_400
+
+
+def test_convert_dedup_lookback_days_to_seconds_basic():
+    assert GroupIBTIA._convert_dedup_lookback_days_to_seconds(1) == SECONDS_PER_DAY
+    assert GroupIBTIA._convert_dedup_lookback_days_to_seconds(365) == 365 * SECONDS_PER_DAY
+
+
+def test_convert_dedup_lookback_days_to_seconds_zero():
+    assert GroupIBTIA._convert_dedup_lookback_days_to_seconds(0) == 0
+
+
+def test_prune_seen_ids_returns_empty_for_zero_retention():
+    cache = {"a": 1000.0, "b": 2000.0}
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=0, now=10_000.0)
+    assert pruned == {}
+
+
+def test_prune_seen_ids_returns_empty_for_negative_retention():
+    cache = {"a": 1000.0}
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=-1, now=10_000.0)
+    assert pruned == {}
+
+
+def test_prune_seen_ids_keeps_entries_within_window():
+    now = 10_000.0
+    cache = {
+        "fresh": now - 100,
+        "older": now - 500,
+    }
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)
+    assert pruned == {"fresh": now - 100, "older": now - 500}
+
+
+def test_prune_seen_ids_drops_entries_older_than_window():
+    now = 10_000.0
+    cache = {
+        "fresh": now - 100,
+        "stale": now - 5000,
+    }
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)
+    assert pruned == {"fresh": now - 100}
+
+
+def test_prune_seen_ids_threshold_is_inclusive():
+    """An ID exactly at the retention boundary must be kept (>=, not >)."""
+    now = 10_000.0
+    cache = {"boundary": now - 1000}
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)
+    assert pruned == {"boundary": now - 1000}
+
+
+def test_prune_seen_ids_drops_entries_just_past_threshold():
+    now = 10_000.0
+    cache = {"just_past": now - 1000.001}
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)
+    assert pruned == {}
+
+
+def test_prune_seen_ids_drops_entries_with_malformed_timestamp():
+    """Defensive: corrupt cache entries are dropped, never raised."""
+    now = 10_000.0
+    cache = {
+        "ok": now - 100,
+        "string_ts": "not-a-number",  # type: ignore[dict-item]
+        "none_ts": None,  # type: ignore[dict-item]
+        "negative": -1,
+    }
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)  # type: ignore[arg-type]
+    assert pruned == {"ok": now - 100}
+
+
+def test_prune_seen_ids_does_not_mutate_input():
+    cache = {"a": 1.0, "b": 2.0}
+    snapshot = dict(cache)
+    GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1, now=1000.0)
+    assert cache == snapshot
+
+
+def test_prune_seen_ids_drops_latest_id_when_older_than_retention():
+    """
+    Critical regression vs the old CommonServerPython helper, which pinned the
+    newest ID forever via `addition_time == latest_incident_time`.
+
+    With the in-house helper, every entry obeys the retention window without
+    exceptions; otherwise, a single never-re-fetched ID would grow the cache
+    unboundedly across years of operation.
+    """
+    now = 10_000.0
+    cache = {
+        "ancient_but_latest": now - 99_999_999,
+        "ancient_too": now - 99_999_998,
+    }
+    pruned = GroupIBTIA._prune_seen_incident_ids(cache, retention_seconds=1000, now=now)
+    assert pruned == {}
+
+
+def test_update_fetch_seen_ids_cache_noop_for_empty_incidents():
+    state = {"found_incident_ids": {"existing": 1.0}}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[],
+        dedup_lookback_days=365,
+    )
+    assert state == {"found_incident_ids": {"existing": 1.0}}
+
+
+def test_update_fetch_seen_ids_cache_adds_new_ids(mocker):
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state: dict = {}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": "alpha"}, {"id": "beta"}],
+        dedup_lookback_days=365,
+    )
+    assert state["found_incident_ids"] == {"alpha": fixed_now, "beta": fixed_now}
+
+
+def test_update_fetch_seen_ids_cache_normalizes_non_string_ids(mocker):
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state: dict = {}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": 42}, {"id": "alpha"}],
+        dedup_lookback_days=365,
+    )
+    assert state["found_incident_ids"] == {"42": fixed_now, "alpha": fixed_now}
+
+
+def test_update_fetch_seen_ids_cache_skips_incidents_without_id(mocker):
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state: dict = {}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": None}, {"name": "no-id"}, {"id": "ok"}],
+        dedup_lookback_days=365,
+    )
+    assert state["found_incident_ids"] == {"ok": fixed_now}
+
+
+def test_update_fetch_seen_ids_cache_prunes_old_entries(mocker):
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state = {
+        "found_incident_ids": {
+            "stale": fixed_now - (366 * SECONDS_PER_DAY),  # > 365d -> drop
+            "fresh": fixed_now - (10 * SECONDS_PER_DAY),  # well within window
+        }
+    }
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": "new"}],
+        dedup_lookback_days=365,
+    )
+    assert "stale" not in state["found_incident_ids"]
+    assert "fresh" in state["found_incident_ids"]
+    assert state["found_incident_ids"]["new"] == fixed_now
+
+
+def test_update_fetch_seen_ids_cache_handles_corrupt_existing_value(mocker):
+    """If `found_incident_ids` was somehow stored as a string, we don't crash."""
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state: dict = {"found_incident_ids": "this-should-have-been-a-dict"}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": "alpha"}],
+        dedup_lookback_days=365,
+    )
+    assert state["found_incident_ids"] == {"alpha": fixed_now}
+
+
+def test_update_fetch_seen_ids_cache_one_to_one_retention_contract(mocker):
+    """
+    THE contract test for `dedup_lookback_days`:
+
+    Configured retention is N days. An ID added exactly N days ago must
+    still be kept. An ID added N days + 1 second ago must be dropped.
+
+    This is the assertion the previous implementation could not satisfy:
+    CommonServerPython would have kept the older ID for 2N days, and pinned
+    the newest one forever.
+    """
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    n_days = 7
+    retention_seconds = n_days * SECONDS_PER_DAY
+
+    state = {
+        "found_incident_ids": {
+            "boundary": fixed_now - retention_seconds,
+            "just_past": fixed_now - retention_seconds - 1,
+        }
+    }
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": "today"}],
+        dedup_lookback_days=n_days,
+    )
+
+    cache = state["found_incident_ids"]
+    assert "boundary" in cache, "ID at exactly N days must be retained (>= threshold)"
+    assert "just_past" not in cache, "ID at N days + 1s must be pruned"
+    assert cache["today"] == fixed_now
+
+
+def test_update_fetch_seen_ids_cache_disables_when_retention_is_zero(mocker):
+    """
+    Operational kill-switch: setting `dedup_lookback_days = 0` must drop the
+    entire cache on the next update so customers can fully disable built-in
+    deduplication without manual cleanup.
+    """
+    fixed_now = 1_700_000_000.0
+    mocker.patch.object(GroupIBTIA.time, "time", return_value=fixed_now)
+
+    state = {"found_incident_ids": {"old": fixed_now - 10}}
+    GroupIBTIA._update_fetch_seen_incident_ids_cache(
+        last_run_state=state,
+        incidents=[{"id": "incoming"}],
+        dedup_lookback_days=0,
+    )
+    assert state["found_incident_ids"] == {}
+
+
+# ---------------------------------------------------------------------------
+# Reputation pipeline — defensive behaviour on null / empty API responses
+# ---------------------------------------------------------------------------
+#
+# Group-IB API legitimately returns HTTP 200 with a `null` (or `[]`) body
+# when no data is available for an indicator. The reputation pipeline must
+# never raise; it must return a clean DBotScore.NONE with a "no data"
+# readable_output. The tests below pin that contract.
+
+
+def _make_reputation_processor(client):
+    """Construct a ReputationCommandProcessor with a stub args context."""
+    return GroupIBTIA.ReputationCommandProcessor(
+        client=client,
+        args={"value": "example.com"},
+    )
+
+
+@pytest.mark.parametrize(
+    "search_return",
+    [None, "", [], {}, {"oops": 1}, [None, "trash", {"apiPath": "x", "count": 1}]],
+)
+def test_get_search_data_tolerates_null_or_garbage(single_session_fixture, mocker, search_return):
+    """Every null / empty / non-list / mixed response collapses to a clean list."""
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "global_search", return_value=search_return)
+    processor = _make_reputation_processor(client)
+
+    result = processor._get_search_data("example.com")
+    # The only entry surviving from the mixed payload is {"apiPath":"x","count":1}.
+    expected = [("x", 1)] if search_return == [None, "trash", {"apiPath": "x", "count": 1}] else []
+    assert result == expected
+
+
+def test_get_search_data_swallows_global_search_exception(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "global_search", side_effect=RuntimeError("boom"))
+    processor = _make_reputation_processor(client)
+    assert processor._get_search_data("example.com") == []
+
+
+def test_get_indicator_data_handles_empty_search_data(single_session_fixture, mocker):
+    """An empty search_data must not crash; returns just {} (no per-collection work)."""
+    client = single_session_fixture
+    processor = _make_reputation_processor(client)
+    out = processor._get_indicator_data("domain", "example.com", [])
+    assert out == {}
+
+
+def test_get_indicator_data_skips_collection_on_exception(single_session_fixture, mocker):
+    """One failing collection must not abort the rest of the lookup."""
+    client = single_session_fixture
+    mocker.patch.object(
+        GroupIBTIA.IndicatorsHelper,
+        "collect_portions_for_indicator",
+        side_effect=RuntimeError("upstream null"),
+    )
+    processor = _make_reputation_processor(client)
+    # Pass at least one allowed path; the exception is swallowed, returns [].
+    out = processor._get_indicator_data("domain", "example.com", [("ioc/common", 5)])
+    assert out == {"ioc/common": []}
+
+
+def test_get_indicator_data_handles_ip_enrichment_failure(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(GroupIBTIA.IndicatorsHelper, "build_ip_enrichment", side_effect=RuntimeError("ip enrich boom"))
+    processor = _make_reputation_processor(client)
+    # No collections returned; ip-enrichment branch is exercised and the
+    # exception swallowed -> data_per_collections stays empty.
+    out = processor._get_indicator_data("ip", "8.8.8.8", [])
+    assert out == {}
+
+
+def test_collect_portions_handles_none_portions(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "create_update_generator", return_value=None)
+    out = GroupIBTIA.IndicatorsHelper.collect_portions_for_indicator(
+        indicator_name="domain",
+        indicator_value="example.com",
+        path="ioc/common",
+        poller=client.poller,
+        dates_mapping=None,
+        sensitive_collections=None,
+    )
+    assert out == []
+
+
+def test_collect_portions_handles_none_inner_portion(single_session_fixture, mocker):
+    client = single_session_fixture
+
+    class _P:
+        raw_dict = None
+
+    mocker.patch.object(client.poller, "create_update_generator", return_value=[None, _P()])
+    out = GroupIBTIA.IndicatorsHelper.collect_portions_for_indicator(
+        indicator_name="domain",
+        indicator_value="example.com",
+        path="ioc/common",
+        poller=client.poller,
+        dates_mapping=None,
+        sensitive_collections=None,
+    )
+    # Both portions yield no usable data; collector returns an empty list,
+    # never raises.
+    assert out == []
+
+
+def test_build_ip_enrichment_handles_null_scoring(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "scoring", return_value=None)
+    mocker.patch.object(client.poller, "graph_ip_search", return_value=None)
+    data = GroupIBTIA.IndicatorsHelper.build_ip_enrichment(poller=client.poller, indicator_value="8.8.8.8", mapping={})
+    # scoring null -> data["scoring"]["score"] == None, no crash.
+    assert data == {"scoring": {"score": None}}
+
+
+def test_build_ip_enrichment_handles_scoring_exception(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "scoring", side_effect=RuntimeError("scoring boom"))
+    mocker.patch.object(client.poller, "graph_ip_search", return_value=None)
+    data = GroupIBTIA.IndicatorsHelper.build_ip_enrichment(poller=client.poller, indicator_value="8.8.8.8", mapping={})
+    assert data == {"scoring": {"score": None}}
+
+
+def test_global_search_command_tolerates_null_response(single_session_fixture, mocker):
+    """A null response from global_search must yield a clean 'No results' CommandResults."""
+    client = single_session_fixture
+    mocker.patch.object(client, "search_proxy_function", return_value=None)
+    result = GroupIBTIA.global_search_command(client=client, args={"query": "example.com"})
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+    assert "No results" in (result.readable_output or "")
+
+
+def test_global_search_command_tolerates_empty_list(single_session_fixture, mocker):
+    client = single_session_fixture
+    mocker.patch.object(client, "search_proxy_function", return_value=[])
+    result = GroupIBTIA.global_search_command(client=client, args={"query": "example.com"})
+    assert result.outputs == []
+
+
+def test_global_search_command_skips_non_dict_entries(single_session_fixture, mocker):
+    client = single_session_fixture
+    # MAPPING is checked for the apiPath; we pass a known one + garbage.
+    known_path = next(iter(GroupIBTIA.MAPPING.keys()))
+    raw = [None, "trash", 42, {"apiPath": known_path, "count": 3, "link": "http://x"}]
+    mocker.patch.object(client, "search_proxy_function", return_value=raw)
+    result = GroupIBTIA.global_search_command(client=client, args={"query": "example.com"})
+    # Only the well-formed entry survives.
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+
+
+def test_local_search_command_tolerates_none_portions(mock_client, mock_common_helpers):
+    """`create_update_generator` returning None must yield an empty result list, not crash."""
+    mock_client.poller.create_update_generator.return_value = None
+    result = GroupIBTIA.local_search_command(mock_client, {"query": "q", "collection_name": "test_collection"})
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+
+
+def test_local_search_command_skips_none_portion_in_iter(mock_client, mock_common_helpers):
+    """Yielding None inside the portion generator must be skipped silently."""
+    portion = MagicMock()
+    portion.sequpdate = 1
+    portion.parse_portion.return_value = None
+    mock_client.poller.create_update_generator.return_value = [None, portion]
+    result = GroupIBTIA.local_search_command(mock_client, {"query": "q", "collection_name": "test_collection"})
+    assert result.outputs == []
+
+
+def test_reputation_run_no_data_emits_unknown_score(single_session_fixture, mocker):
+    """End-to-end: global_search returns null -> DBotScore.NONE (0) + 'No data' readable."""
+    client = single_session_fixture
+    mocker.patch.object(client.poller, "global_search", return_value=None)
+    processor = GroupIBTIA.ReputationCommandProcessor(
+        client=client,
+        args={"value": "example.com"},
+    )
+
+    result = processor.run("domain", GroupIBTIA.DBotScoreType.DOMAIN)
+    assert isinstance(result, CommandResults)
+    # readable_output carries the "no data" note.
+    assert "No Group-IB" in (result.readable_output or "")
+    # DBotScore.NONE is the integer 0 in the public XSOAR API.
+    assert result.raw_response["score"] == 0
