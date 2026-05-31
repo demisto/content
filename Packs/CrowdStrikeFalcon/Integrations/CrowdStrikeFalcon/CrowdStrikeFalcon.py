@@ -42,6 +42,7 @@ NGSIEM_INCIDENT = "ngsiem_incident"
 NGSIEM_AUTOMATED_LEAD = "ngsiem_automated_lead"
 NGSIEM_CASE = "ngsiem_case"
 THIRD_PARTY_DETECTION = "thirdparty_detection"
+IOA_DETECTION = "ioa_detection"
 RECON_NOTIFICATION = "Recon notifications"
 
 # Fetch type names as they appear in the .yml instance configurations
@@ -90,6 +91,9 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
+# Below the 5000 server-side maximum to keep payloads under XSOAR's auto-file threshold.
+MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
+MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
 
@@ -427,7 +431,7 @@ class IncidentType(Enum):
     LEGACY_ENDPOINT_DETECTION = "ldt"
     ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION = ":ind:"  # OFP was joined here since it has ':ind:' too in its id
     IOM_CONFIGURATIONS = "iom_configurations"
-    IOA_EVENTS = "ioa_events"
+    IOA_TYPE_TAG = "cloud-ioa"
     ON_DEMAND = "ods"
     OFP = "ofp"
     THIRD_PARTY = ":thirdparty:"
@@ -846,6 +850,57 @@ def log_falcon_assets(log_line: str, log_type="debug", asset="Spotlight"):
         demisto.error(full_log_line)
 
 
+def _get_process_memory_mb() -> str:
+    """Get current process RSS memory usage and Python's tracked allocations.
+
+    Reads VmRSS from /proc/self/status (Linux) to get the current resident set size,
+    which reflects actual physical memory usage at this moment.
+    Also reports tracemalloc's tracked Python allocations to quantify arena fragmentation
+    (difference between OS RSS and Python's tracked memory = fragmentation overhead).
+
+    Returns:
+        Formatted string with current RSS, peak RSS, and Python tracked memory in MB.
+    """
+    # Import locally to avoid shadowing the `resource` loop variable used in other functions
+    import resource as resource_mod  # noqa: F811
+    import sys
+    import tracemalloc
+
+    # Current RSS: read from /proc/self/status (Linux only)
+    # VmRSS shows the actual physical memory currently used by the process
+    current_rss_mb = 0.0
+    try:
+        with open("/proc/self/status") as f:
+            for line in f:
+                if line.startswith("VmRSS:"):
+                    # VmRSS is reported in KB in /proc/self/status
+                    current_rss_mb = int(line.split()[1]) / 1024
+                    break
+    except (FileNotFoundError, ValueError):
+        pass  # Not on Linux or parse error — current RSS will show 0
+
+    # Peak RSS: the maximum RSS ever reached during the process lifetime
+    # On Linux ru_maxrss is in KB, on macOS it's in bytes
+    rusage = resource_mod.getrusage(resource_mod.RUSAGE_SELF)
+    if sys.platform == "darwin":
+        peak_rss_mb = rusage.ru_maxrss / (1024 * 1024)
+    else:
+        peak_rss_mb = rusage.ru_maxrss / 1024
+
+    # Python tracked allocations via tracemalloc
+    # The gap between RSS and traced = arena fragmentation + non-Python allocations
+    traced_mb = 0.0
+    traced_peak_mb = 0.0
+    if tracemalloc.is_tracing():
+        traced_current, traced_peak = tracemalloc.get_traced_memory()
+        traced_mb = traced_current / (1024 * 1024)
+        traced_peak_mb = traced_peak / (1024 * 1024)
+
+    return f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB" + (
+        f", py_traced={traced_mb:.1f} MB, py_peak={traced_peak_mb:.1f} MB" if traced_mb > 0 else ""
+    )
+
+
 def _normalize_data_to_str(data: Union[str, list, None], data_type: str) -> str | None:
     """Convert data to a newline-separated JSON string for XSIAM ingestion.
 
@@ -1002,6 +1057,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         THIRD_PARTY_DETECTION_FETCH_TYPE,
         NGSIEM_INCIDENT_FETCH_TYPE,
         NGSIEM_AUTOMATED_LEADS_FETCH_TYPE,
+        IOA_FETCH_TYPE,
     ):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
@@ -1013,6 +1069,9 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
         incident_context["name"] = f'{detection_type} ID: {detection.get("mobile_detection_id")}'
         incident_context["severity"] = detection.get("severity")
+    elif detection_type == IOA_FETCH_TYPE:
+        incident_context["name"] = f'{detection_type} ID: {detection.get("composite_id")}'
+        incident_context["severity"] = severity_string_to_int(detection.get("severity_name"))
 
     if is_fetch_events:
         incident_context["_source_log_type"] = "detection"
@@ -3433,53 +3492,6 @@ def fetch_iom_incidents(iom_last_run):
     return iom_incidents, iom_last_run
 
 
-def fetch_ioa_incidents(ioa_last_run):
-    demisto.debug("Fetching Indicator of Attack incidents")
-    demisto.debug(f"{ioa_last_run=}")
-    fetch_query = demisto.params().get("ioa_fetch_query", "")
-    validate_ioa_fetch_query(ioa_fetch_query=fetch_query)
-
-    last_fetch_event_ids, ioa_next_token, last_date_time_since, _ = get_current_fetch_data(
-        last_run_object=ioa_last_run,
-        date_format=DATE_FORMAT,
-        last_date_key="last_date_time_since",
-        next_token_key="ioa_next_token",
-        last_fetched_ids_key="last_event_ids",
-    )
-    ioa_fetch_query = create_ioa_query(
-        is_paginating=bool(ioa_next_token),
-        configured_fetch_query=fetch_query,
-        last_fetch_query=ioa_last_run.get("last_fetch_query", ""),
-        last_date_time_since=last_date_time_since,
-    )
-    demisto.debug(f"IOA {ioa_fetch_query=}")
-    ioa_events, ioa_new_next_token = ioa_events_pagination(
-        ioa_fetch_query=ioa_fetch_query, ioa_next_token=ioa_next_token, fetch_limit=INCIDENTS_PER_FETCH, api_limit=1000
-    )
-    demisto.debug(f'Fetched the following IOA event IDs: {[event.get("event_id") for event in ioa_events]}')
-
-    ioa_incidents, ioa_event_ids, new_date_time_since = parse_ioa_iom_incidents(
-        fetched_data=ioa_events,
-        last_date=last_date_time_since,
-        last_fetched_ids=last_fetch_event_ids,
-        date_key="event_created",
-        id_key="event_id",
-        date_format=DATE_FORMAT,
-        is_paginating=bool(ioa_new_next_token or ioa_next_token),
-        to_incident_context=ioa_event_to_incident,
-        incident_type="ioa_events",
-    )
-
-    ioa_last_run = {
-        "ioa_next_token": ioa_new_next_token,
-        "last_date_time_since": new_date_time_since,
-        "last_fetch_query": ioa_fetch_query,
-        "last_event_ids": ioa_event_ids or last_fetch_event_ids,
-    }
-
-    return ioa_incidents, ioa_last_run
-
-
 def set_last_run_per_type(last_run: list, index: LastRunIndex, data: dict, is_fetch_events=False) -> None:
     """
     Safely set the specific sub last_run dictionary in the main last_run list.
@@ -3717,7 +3729,16 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch IOA")
         demisto.debug(f"CrowdStrikeFalconMsg: Current IOA last_run object: {ioa_last_run}")
 
-        fetched_ioa_incidents, ioa_last_run = fetch_ioa_incidents(ioa_last_run)
+        fetched_ioa_incidents, ioa_last_run = fetch_detections_by_product_type(
+            ioa_last_run,
+            look_back=look_back,
+            fetch_query=params.get("ioa_fetch_query", ""),
+            detections_type=IOA_DETECTION,
+            product_type=IncidentType.IOA_TYPE_TAG.value,
+            detection_name_prefix=IOA_FETCH_TYPE,
+            start_time_key="created_timestamp",
+            is_fetch_events=False,
+        )
         items.extend(fetched_ioa_incidents)
 
     if not is_fetch_events and NGSIEM_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
@@ -3888,7 +3909,8 @@ def save_spotlight_state(context_store: ContentClientContextStore, spotlight_sta
     integration_context = context_store.read()
     integration_context["spotlight_assets"] = spotlight_state.to_dict()
     context_store.write(integration_context)
-    log_falcon_assets(f"Saved Spotlight state to integration context (keys: {list(integration_context.keys())})")
+    spotlight_data = integration_context.get("spotlight_assets", {})
+    log_falcon_assets(f"Saved Spotlight state: metadata={spotlight_data.get('metadata', {})}")
 
 
 class AssetsDeviceHandler:
@@ -3999,7 +4021,7 @@ class AssetsDeviceHandler:
 
             # 2. Update state and send it to XSIAM after finish
             self.processed_aids.update(aid_batch)
-            self.spotlight_state.metadata["processed_aids"] = list(self.processed_aids)
+            self.spotlight_state.metadata["processed_aids_count"] = len(self.processed_aids)
 
             # 3. Send to XSIAM using existing generic function (fire-and-forget)
             send_task = create_task_send_batch_to_xsiam_and_save_context(
@@ -4247,16 +4269,41 @@ def send_data_to_xsiam_async(
     else:
         data_chunks = list(split_data_to_chunks(data_str, chunk_size))
 
-    async def send_events_async(data_chunk) -> int:
-        chunk_size_val = len(data_chunk)
-        data_chunk = "\n".join(data_chunk)
-        zipped_data = gzip.compress(data_chunk.encode("utf-8"))
+    # Free the intermediate JSON string — chunks now hold the only references
+    del data_str
+
+    # Compress chunks synchronously to free raw string data before creating async tasks.
+    # This reduces memory fragmentation by allowing Python to reuse arenas for the next batch.
+    compressed_chunks: list[tuple[bytes, int]] = []
+    total_raw_bytes = 0
+    total_compressed_bytes = 0
+    for chunk in data_chunks:
+        chunk_size_val = len(chunk) if isinstance(chunk, list) else 1
+        chunk_str = "\n".join(chunk) if isinstance(chunk, list) else chunk
+        raw_bytes = chunk_str.encode("utf-8")
+        total_raw_bytes += len(raw_bytes)
+        zipped_data = gzip.compress(raw_bytes)
+        total_compressed_bytes += len(zipped_data)
+        del raw_bytes  # Free the encoded string immediately
+        compressed_chunks.append((zipped_data, chunk_size_val))
+
+    # Free the uncompressed chunks — only compressed bytes remain
+    del data_chunks
+
+    if total_raw_bytes > 0:
+        ratio = total_compressed_bytes / total_raw_bytes * 100
+        log_falcon_assets(
+            f"Compressed {len(compressed_chunks)} chunks: "
+            f"{total_raw_bytes / 1024:.1f} KB → {total_compressed_bytes / 1024:.1f} KB ({ratio:.1f}%)"
+        )
+
+    async def send_compressed_async(zipped_data: bytes, chunk_size_val: int) -> int:
         await xsiam_api_call_async(
             xsiam_url=xsiam_url, zipped_data=zipped_data, headers=headers, num_of_attempts=num_of_attempts, data_type=data_type
         )
         return chunk_size_val
 
-    tasks = [asyncio.create_task(send_events_async(chunk)) for chunk in data_chunks]
+    tasks = [asyncio.create_task(send_compressed_async(zipped, size)) for zipped, size in compressed_chunks]
     return tasks
 
 
@@ -4301,7 +4348,7 @@ async def send_batch_to_xsiam_and_save_context(
     log_falcon_assets(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
 
     try:
-        # 1. Send to XSIAM (returns list of async tasks)
+        # 1. Send to XSIAM (compresses data synchronously, returns async tasks for HTTP only)
         tasks = send_data_to_xsiam_async(
             data=data,
             vendor=vendor,
@@ -4314,6 +4361,8 @@ async def send_batch_to_xsiam_and_save_context(
             snapshot_id=snapshot_id,
             items_count=items_count,
         )
+        # Release raw data — compression already done synchronously, async tasks hold only compressed bytes
+        del data
 
         # 2. Wait for all chunks to complete
         await asyncio.gather(*tasks)
@@ -4367,7 +4416,6 @@ def create_task_send_batch_to_xsiam_and_save_context(
     Returns:
         asyncio.Task: The created async task
     """
-    # items_count = items_count if batch
     task = asyncio.create_task(
         send_batch_to_xsiam_and_save_context(
             data=data,
@@ -4452,18 +4500,22 @@ def load_spotlight_state(
     # Extract state variables
     snapshot_id = spotlight_state.metadata.get("snapshot_id") or str(round(time.time() * 1000))
     total_fetched = spotlight_state.metadata.get("total_fetched_until_now", 0)
-    unique_aids = set(spotlight_state.metadata.get("unique_aids", []))
-    processed_aids = set(spotlight_state.metadata.get("processed_aids", []))
+    # AIDs are no longer stored in context (only counts) to reduce memory/serialization overhead.
+    # Backward compat: read old "unique_aids"/"processed_aids" lists if present, otherwise use counts.
+    unique_aids_count = spotlight_state.metadata.get("unique_aids_count", len(spotlight_state.metadata.get("unique_aids", [])))
+    processed_aids_count = spotlight_state.metadata.get(
+        "processed_aids_count", len(spotlight_state.metadata.get("processed_aids", []))
+    )
     completed_severities = spotlight_state.metadata.get("completed_severities", [])
 
     log_falcon_assets(
         f"Loaded Spotlight state: {snapshot_id=}, {total_fetched=}, "
-        f"unique_aids_count={len(unique_aids)}, processed_aids_count={len(processed_aids)}, "
+        f"{unique_aids_count=}, {processed_aids_count=}, "
         f"completed_severities={completed_severities}, "
         f"after_token={spotlight_state.cursor}"
     )
 
-    return spotlight_state, snapshot_id, total_fetched, unique_aids, processed_aids, completed_severities
+    return spotlight_state, snapshot_id, total_fetched, unique_aids_count, processed_aids_count, completed_severities
 
 
 def update_spotlight_state_and_metadata(
@@ -4499,8 +4551,8 @@ def update_spotlight_state_and_metadata(
     spotlight_state.metadata = {
         "snapshot_id": snapshot_id,
         "total_fetched_until_now": total_fetched,
-        "unique_aids": list(unique_aids),
-        "processed_aids": list(processed_aids),
+        "unique_aids_count": len(unique_aids),
+        "processed_aids_count": len(processed_aids),
         "completed_severities": completed_severities,
     }
 
@@ -4601,6 +4653,27 @@ async def fetch_vulnerabilities_by_severity(
 
     try:
         while True:
+            # BACKPRESSURE: before fetching next page, wait if too many send tasks are pending.
+            # This prevents unbounded memory growth from fire-and-forget vulnerability batches.
+            while len(pending_tasks) >= MAX_PENDING_TASKS_PER_SEVERITY:
+                log_falcon_assets(
+                    f"[{severity}] Backpressure: {len(pending_tasks)} pending tasks >= limit {MAX_PENDING_TASKS_PER_SEVERITY}, "
+                    f"waiting for at least one to complete (RSS: {_get_process_memory_mb()})"
+                )
+                done, pending_tasks_updated = await asyncio.wait(pending_tasks, return_when=asyncio.FIRST_COMPLETED)
+                pending_tasks = pending_tasks_updated
+                # Process completed tasks to update last_saved_batch_number
+                for completed_task in done:
+                    try:
+                        result = completed_task.result()
+                        if isinstance(result, int) and result > last_saved_batch_number:
+                            last_saved_batch_number = result
+                    except Exception as e:
+                        log_falcon_assets(f"[{severity}] Background send task failed: {e}", "error")
+                log_falcon_assets(
+                    f"[{severity}] Backpressure released: {len(done)} tasks completed, " f"{len(pending_tasks)} still pending"
+                )
+
             # Build filter query with severity
             filter_query = f"status:['open','reopen']+cve.severity:['{severity}']"
 
@@ -4651,23 +4724,36 @@ async def fetch_vulnerabilities_by_severity(
             )
 
             # Track task and update last_saved_batch_number when task completes
-            def update_last_saved(future):
+            def update_last_saved(future, _pending=pending_tasks):
                 nonlocal last_saved_batch_number
                 try:
                     last_saved_batch_number = future.result()
                 except Exception as e:
                     log_falcon_assets(f"[{severity}] Background vulnerability task failed: {e}", "error")
                 finally:
-                    pending_tasks.discard(future)
+                    _pending.discard(future)
 
             pending_tasks.add(task)
             task.add_done_callback(update_last_saved)
-            log_falcon_assets(f"[{severity}] Created background task for batch {batch_counter}")
+            log_falcon_assets(
+                f"[{severity}] Created send task for batch {batch_counter} "
+                f"(pending: {len(pending_tasks)}/{MAX_PENDING_TASKS_PER_SEVERITY})"
+            )
+
+            # Log memory stats every 10 batches
+            if batch_counter % 10 == 0:
+                log_falcon_assets(
+                    f"[{severity}] Memory checkpoint: batch={batch_counter}, total_fetched={total_fetched}, "
+                    f"unique_aids={len(unique_aids)}, pending_tasks={len(pending_tasks)}, "
+                    f"RSS: {_get_process_memory_mb()}",
+                    "info",
+                )
 
             # Check if more pages exist
             if is_last_batch:
                 log_falcon_assets(
-                    f"[{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}",
+                    f"[{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}, "
+                    f"pending_tasks: {len(pending_tasks)}, RSS: {_get_process_memory_mb()}",
                     "info",
                 )
                 break
@@ -4969,6 +5055,14 @@ async def fetch_spotlight_assets():
     Total time = max(all queries) = ~2.3 hours. No cursor expiration, no duplication.
     """
     log_falcon_assets("Starting Spotlight assets fetch execution (severity-based parallel approach).", "info")
+    fetch_start_time = time.monotonic()
+
+    # Start tracemalloc to track Python allocations vs OS RSS (quantifies arena fragmentation)
+    import tracemalloc
+
+    if not tracemalloc.is_tracing():
+        tracemalloc.start()
+        log_falcon_assets("tracemalloc started for memory diagnostics")
 
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
     spotlight_state, snapshot_id, _total_fetched, _unique_aids, _processed_aids, completed_severities = load_spotlight_state(
@@ -5002,9 +5096,13 @@ async def fetch_spotlight_assets():
         )
         save_spotlight_state(context_store, spotlight_state)
 
+        fetch_elapsed = time.monotonic() - fetch_start_time
+        fetch_minutes = fetch_elapsed / 60
         log_falcon_assets(
-            f"Finished Spotlight assets fetch. Total vulnerabilities: {total_vulnerabilities}, "
-            f"Total unique hosts: {len(all_unique_aids)}",
+            f"Finished Spotlight assets fetch in {fetch_minutes:.1f} minutes ({fetch_elapsed:.0f}s). "
+            f"Total vulnerabilities: {total_vulnerabilities}, "
+            f"Total unique hosts: {len(all_unique_aids)}, "
+            f"RSS: {_get_process_memory_mb()}",
             "info",
         )
 
@@ -5093,9 +5191,23 @@ def fetch_detections_by_product_type(
 
     fetch_limit = current_fetch_info.get("limit") or fetch_limit
 
-    filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
-    if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}:
-        filter = filter.replace("product:", "type:")
+    # Build the base product/type filter clauses.
+    # Most product types (e.g. idp, mobile, ngsiem, xdr, automated-lead, thirdparty) map to a single
+    # `product:'<value>'` clause. ON_DEMAND ('ods') and OFP ('ofp') need `type:'<value>'` instead.
+    # IOA needs a compound `product:'fcs'+type:'cloud-ioa'` selector.
+    product_type_to_clauses: dict[str, tuple[str | None, str | None]] = {
+        IncidentType.ON_DEMAND.value: (None, IncidentType.ON_DEMAND.value),
+        IncidentType.OFP.value: (None, IncidentType.OFP.value),
+        IncidentType.IOA_TYPE_TAG.value: ("fcs", IncidentType.IOA_TYPE_TAG.value),
+    }
+    product_clause_value, type_clause_value = product_type_to_clauses.get(product_type, (product_type, None))
+    filter_clauses: list[str] = []
+    if product_clause_value:
+        filter_clauses.append(f"product:'{product_clause_value}'")
+    if type_clause_value:
+        filter_clauses.append(f"type:'{type_clause_value}'")
+    filter_clauses.append(f"created_timestamp:>'{start_fetch_time}'")
+    filter = "+".join(filter_clauses)
 
     if fetch_query:
         filter = f"({filter})+({fetch_query})"
@@ -5620,187 +5732,6 @@ def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str
     """
     added_datetime = safe_strptime(date, date_format) + timedelta(seconds=seconds_to_add)
     return added_datetime.strftime(date_format)
-
-
-def create_ioa_query(is_paginating: bool, last_fetch_query: str, configured_fetch_query: str, last_date_time_since: str) -> str:
-    """Retrieve the IOA query that will be used in the current fetch round.
-
-    Args:
-        is_paginating (bool): Whether we are doing pagination or not.
-        last_fetch_query (str): The last fetch query that was used in the previous round.
-        configured_fetch_query (str): The fetched query configured by the user.
-        last_date_time_since (str): The last date time since.
-
-    Raises:
-        DemistoException: If paginating and last fetch query is an empty string.
-
-    Returns:
-        str: The IOA query that will be used in the current fetch.
-    """
-    fetch_query = configured_fetch_query
-    if is_paginating:
-        # If entered here, that means we are currently doing pagination, and we need to use the
-        # same fetch query as the previous round
-        fetch_query = last_fetch_query
-        if not fetch_query:
-            raise DemistoException("Last fetch query must not be empty when doing pagination")
-        demisto.debug(f"Doing pagination, using the same query as the previous round. Query is {fetch_query}")
-    else:
-        # If entered here, that means we aren't doing pagination, and we need to use the latest
-        # date_time_since time
-        fetch_query = f"{fetch_query}&date_time_since={last_date_time_since}"
-        demisto.debug(f"Not doing pagination. Query is {fetch_query}")
-    return fetch_query
-
-
-def ioa_event_to_incident(ioa_event: dict[str, Any], incident_type: str) -> dict[str, Any]:
-    """Create an incident from an IOA event.
-
-    Args:
-        ioa_event (dict[str, Any]): An IOA event.
-        incident_type (str): The incident type.
-
-    Returns:
-        dict[str, Any]: An incident from an IOA event.
-    """
-    resource = demisto.get(ioa_event, "aggregate.resource", {})
-    id = resource.get("id", [])
-    uuid = resource.get("uuid", [])
-    incident_metadata = assign_params(
-        mirror_direction=MIRROR_DIRECTION,
-        mirror_instance=INTEGRATION_INSTANCE,
-        extracted_account_id=demisto.get(ioa_event, "cloud_account_id.aws_account_id")
-        or demisto.get(ioa_event, "cloud_account_id.azure_account_id"),
-        extracted_uuid=uuid[0] if uuid else None,
-        extracted_resource_id=id[0] if id else None,
-        incident_type=incident_type,
-    )
-    incident_context = {
-        "name": f'IOA Event ID: {ioa_event.get("event_id")}',
-        "rawJSON": json.dumps(ioa_event | incident_metadata),
-    }
-    return incident_context
-
-
-def ioa_events_pagination(
-    ioa_fetch_query: str, api_limit: int, ioa_next_token: str | None, fetch_limit: int = INCIDENTS_PER_FETCH
-) -> tuple[list[dict[str, Any]], str | None]:
-    """This is in charge of doing the pagination process in a single fetch run, since the fetch limit can be greater than
-    the api limit, in such a case, we do multiple API calls until we reach the fetch limit, or no more results are found
-    by the API.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-        api_limit (int): The API limit
-        ioa_next_token (str | None): The IOA next token to start the pagination from.
-        fetch_limit (int, optional): The fetch limit. Defaults to INCIDENTS_PER_FETCH.
-
-    Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the fetched events, and the second is the next
-        token that will be used in the next fetch run.
-    """
-    total_incidents_count = 0
-    ioa_new_next_token = ioa_next_token
-    fetched_ioa_events: list[dict[str, Any]] = []
-    continue_pagination = True
-    while continue_pagination:
-        demisto.debug(
-            f"Doing IOA pagination with the arguments: {ioa_fetch_query=}, {api_limit=}, {ioa_new_next_token=},{fetch_limit=}"
-        )
-        ioa_events, ioa_new_next_token = get_ioa_events(
-            ioa_fetch_query=ioa_fetch_query,
-            ioa_next_token=ioa_new_next_token,
-            limit=min(api_limit, fetch_limit - total_incidents_count),
-        )
-        fetched_ioa_events.extend(ioa_events)
-        total_incidents_count += len(ioa_events)
-        demisto.debug(f"Results of IOA pagination: {total_incidents_count=}, {ioa_new_next_token=}")
-        if (ioa_new_next_token is None) or (total_incidents_count >= fetch_limit):
-            demisto.debug("Number of incidents reached the fetching limit, or there are no more results, stopping pagination")
-            # If the number of fetched incidents reaches the fetching limit, or there are no more results to be fetched
-            # (by checking the next token variable), then we should stop the pagination process
-            continue_pagination = False
-    return fetched_ioa_events, ioa_new_next_token
-
-
-def get_ioa_events(
-    ioa_fetch_query: str, ioa_next_token: str | None, limit: int = INCIDENTS_PER_FETCH
-) -> tuple[list[dict[str, Any]], str | None]:
-    """Do a single API call to receive IOA events.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-        ioa_next_token (int | None): The next token to be used as part of the pagination process.
-        limit (int, optional): The maximum amount to fetch IOA events. Defaults to INCIDENTS_PER_FETCH.
-
-    Returns:
-        tuple[list[dict[str, Any]], str | None]: A tuple where the first element is the returned events, and the second is the
-        next token that will be used in the next API call.
-    """
-    # The API does not support a `query` parameter, rather a set of query params
-    if ioa_next_token:
-        ioa_fetch_query = f"{ioa_fetch_query}&next_token={ioa_next_token}"
-    ioa_fetch_query = f"{ioa_fetch_query}&limit={limit}"
-    demisto.debug(f"IOA {ioa_fetch_query=}")
-    raw_response = http_request(method="GET", url_suffix=f"/detects/entities/ioa/v1?{ioa_fetch_query}")
-    events = demisto.get(raw_response, "resources.events", [])
-    pagination_obj = demisto.get(raw_response, "meta.pagination", {})
-    demisto.debug(f"{pagination_obj=}")
-    next_token = pagination_obj.get("next_token")
-    if next_token:
-        # If next_token has a value, that means more pagination is needed, and the next run should use it
-        demisto.debug("next_token has a value, more pagination is needed for the next run")
-        return events, next_token
-    else:
-        demisto.debug("next_token is None, no pagination is needed for the next run")
-        # If it is None, that means no more pagination is required, therefore,
-        # the next token for the next run should be None
-        return events, None
-
-
-def validate_ioa_fetch_query(ioa_fetch_query: str) -> None:
-    """Validate the IOA fetch query.
-
-    Args:
-        ioa_fetch_query (str): The IOA fetch query.
-
-    Raises:
-        DemistoException: If the param cloud_provider is not part of the query.
-        DemistoException: If an unsupported parameter has been entered.
-        DemistoException: If the value of a parameter is an empty string.
-        DemistoException: If a query section has a wrong format
-    """
-    demisto.debug(f"Validating IOA {ioa_fetch_query=}")
-    if "cloud_provider" not in ioa_fetch_query:
-        raise DemistoException("A cloud provider is required as part of the IOA fetch query. Options are: aws, azure")
-    # The following parameters are also supported by the API: 'date_time_since', 'next_token', 'limit', but we don't
-    # allow them to be as part of the original fetch query, since they are used by the fetching mechanism, internally
-    supported_params = (
-        "cloud_provider",
-        "account_id",
-        "aws_account_id",
-        "azure_subscription_id",
-        "azure_tenant_id",
-        "severity",
-        "region",
-        "service",
-        "state",
-    )
-    # The query has a format of 'param1=val1&param2=val2'
-    for section in ioa_fetch_query.split("&"):
-        param_and_value = section.split("=")
-        # Since each section should have a format of 'param1=val1', then when splitting by '=', we should get
-        # a list of length 2, where the first element holds the parameter that we want to validate
-        if param_and_value and len(param_and_value) == 2:
-            if param_and_value[0] not in supported_params:
-                raise DemistoException(
-                    f"An unsupported parameter has been entered, {param_and_value[0]}."
-                    f"Use the following parameters: {supported_params}"
-                )
-            if param_and_value[1] == "":
-                raise DemistoException(f"The value of the parameter {param_and_value[0]} cannot be an empty string")
-        else:
-            raise DemistoException(f'Query section "{section}" does not match the parameter=value format')
 
 
 def reformat_timestamp(time: str, date_format: str, dateparser_settings: Any | None = None) -> str:
@@ -8272,6 +8203,7 @@ def cs_falcon_spotlight_search_vulnerability_request(
     evaluation_logic: bool | None,
     host_info: bool | None,
     limit: str | None,
+    next_token: str | None = None,
 ) -> dict:
     input_arg_dict = {
         "aid": aid,
@@ -8308,6 +8240,8 @@ def cs_falcon_spotlight_search_vulnerability_request(
             url_facet += f"&facet={argument}"
     # The url is hardcoded since facet is a parameter that can have serval values, therefore we can't use a dict
     suffix_url = f"/spotlight/combined/vulnerabilities/v1?filter={url_filter}{url_facet}&limit={limit}"
+    if next_token:
+        suffix_url += f"&after={urllib.parse.quote(next_token, safe='')}"
     return http_request("GET", suffix_url)
 
 
@@ -8322,30 +8256,56 @@ def cve_request(cve_id: list[str] | None) -> dict:
     return http_request("GET", "/spotlight/combined/vulnerabilities/v1", params={"filter": url_filter, "facet": "cve"})
 
 
-def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResults:
-    """
-    Get a list of vulnerability by spotlight
-    : args: filter which include params or filter param.
-    : return: a list of vulnerabilities according to the user.
-    """
+def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> list[CommandResults]:
+    """Search Spotlight vulnerabilities with cursor-based pagination via ``next_token``.
 
-    vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(
-        argToList(args.get("aid")),
-        argToList(args.get("cve_id")),
-        argToList(args.get("cve_severity")),
-        argToList(args.get("tags")),
-        argToList(args.get("status")),
-        args.get("platform_name"),
-        argToList(args.get("host_group")),
-        argToList(args.get("host_type")),
-        args.get("last_seen_within"),
-        args.get("is_suppressed"),
-        args.get("filter", ""),
-        args.get("display_remediation_info"),
-        args.get("display_evaluation_logic_info"),
-        args.get("display_host_info"),
-        args.get("limit"),
-    )
+    The pagination cursor returned by CrowdStrike (``meta.pagination.after``) is always
+    emitted to the ``CrowdStrike.VulnerabilityNextToken`` context output when present,
+    and never rendered in the human-readable war-room output.
+
+    Args:
+        args: Command arguments (filter, limit, next_token, etc.).
+
+    Returns:
+        list[CommandResults]: Bulk-data entry, followed by a cursor entry when the
+        API returned a non-empty ``after`` cursor.
+    """
+    next_token = args.get("next_token")
+
+    limit = arg_to_number(args.get("limit", 50))
+    if limit is not None and limit > MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE:
+        limit = MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE
+
+    try:
+        vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(
+            argToList(args.get("aid")),
+            argToList(args.get("cve_id")),
+            argToList(args.get("cve_severity")),
+            argToList(args.get("tags")),
+            argToList(args.get("status")),
+            args.get("platform_name"),
+            argToList(args.get("host_group")),
+            argToList(args.get("host_type")),
+            args.get("last_seen_within"),
+            args.get("is_suppressed"),
+            args.get("filter", ""),
+            args.get("display_remediation_info"),
+            args.get("display_evaluation_logic_info"),
+            args.get("display_host_info"),
+            str(limit),
+            next_token,
+        )
+    except DemistoException as exc:
+        # Narrow intercept: only the expired-cursor case (HTTP 404).
+        # The generic 400 "Invalid pagination token" is already self-explanatory
+        # and is intentionally NOT caught here.
+        if "Search context expired" in str(exc):
+            return_error(
+                "CrowdStrike Spotlight pagination cursor has expired "
+                "(these cursors are short-lived, typically a few minutes). "
+                "Please rerun the command without the next_token argument to start a fresh pagination session."
+            )
+        raise
     headers = ["ID", "Severity", "Status", "Base Score", "Published Date", "Impact Score", "Exploitability Score", "Vector"]
     outputs = []
     for vulnerability in vulnerability_response.get("resources", {}):
@@ -8362,13 +8322,30 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResul
             }
         )
     human_readable = tableToMarkdown("List Vulnerabilities", outputs, removeNull=True, headers=headers)
-    return CommandResults(
-        raw_response=vulnerability_response,
-        readable_output=human_readable,
-        outputs=vulnerability_response.get("resources"),
-        outputs_prefix="CrowdStrike.Vulnerability",
-        outputs_key_field="id",
-    )
+
+    raw_after = vulnerability_response.get("meta", {}).get("pagination", {}).get("after")
+
+    results: list[CommandResults] = [
+        CommandResults(
+            outputs_prefix="CrowdStrike.Vulnerability",
+            outputs_key_field="id",
+            outputs=vulnerability_response.get("resources"),
+            readable_output=human_readable,
+            raw_response=vulnerability_response,
+        )
+    ]
+
+    if raw_after:
+        results.append(
+            CommandResults(
+                outputs_prefix="CrowdStrike.VulnerabilityNextToken",
+                outputs=raw_after,
+                readable_output="Token for next page was generated and can be found under CrowdStrike.VulnerabilityNextToken",
+                replace_existing=True,
+            )
+        )
+
+    return results
 
 
 def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> CommandResults:
