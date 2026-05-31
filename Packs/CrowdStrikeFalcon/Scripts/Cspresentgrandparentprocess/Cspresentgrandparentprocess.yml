@@ -21,9 +21,3 @@ tests:
 - No tests (auto formatted)
 marketplaces:
 - xsoar
-supportedModules:
-- agentix
-- xsiam
-- edr
-- cloud
-- cloud_runtime_security

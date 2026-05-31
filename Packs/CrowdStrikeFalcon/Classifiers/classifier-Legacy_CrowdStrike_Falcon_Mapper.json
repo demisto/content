@@ -682,12 +682,5 @@
     "toVersion": "6.4.9",
     "marketplaces": [
         "xsoar"
-    ],
-    "supportedModules": [
-        "agentix",
-        "xsiam",
-        "edr",
-        "cloud",
-        "cloud_runtime_security"
     ]
 }
