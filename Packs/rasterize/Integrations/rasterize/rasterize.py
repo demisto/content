@@ -178,8 +178,12 @@ class TabLifecycleManager:
             raise ex
 
         if BLOCKED_URLS:
-            patterns = [{"urlPattern": f"*{pat}*", "requestStage": "Request"} for pat in BLOCKED_URLS]
-            self.tab.Fetch.enable(patterns=patterns)
+            try:
+                patterns = [{"urlPattern": f"*{pat}*", "requestStage": "Request"} for pat in BLOCKED_URLS]
+                self.tab.Fetch.enable(patterns=patterns)
+            except Exception as ex:
+                demisto.info(f"TabLifecycleManager, __enter__, {self.chrome_port=}, failed to enable Fetch interception due to {ex}")
+                raise ex
 
         return self.tab
 
@@ -385,7 +389,7 @@ class PychromeEventHandler:
 
     def handle_request_paused(self, **kwargs):
         request_id = kwargs.get("requestId")
-        request_url = kwargs.get("request", {}).get("url")
+        request_url = kwargs.get("request", {}).get("url") or ""
 
         # abort the request if the url inside blocked_urls param and its redirect request
         if any(value in request_url for value in BLOCKED_URLS):
