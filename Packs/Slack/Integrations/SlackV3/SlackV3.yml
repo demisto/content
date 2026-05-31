@@ -584,7 +584,7 @@ script:
   type: python
   isFetchSamples: true
 supportsquickactions: true
-fromversion: 8.14.0
+fromversion: 5.5.0
 tests:
 - SlackV3 TestPB
 - Test_SlackV3_NonCaching
