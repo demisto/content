@@ -9,9 +9,12 @@ from __future__ import print_function
 import base64
 import binascii
 import gc
+import io as _io
 import json
 import logging
 import os
+import pickle as _pickle
+import pickletools
 import re
 import socket
 import sys
@@ -44,7 +47,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 47, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 50, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -14408,6 +14411,156 @@ def invalidate_ucp_credentials(method_unique_id):
 ###########################################
 #     End of UCP Functions     #
 ###########################################
+
+
+###########################################
+#   Safe Pickle Loading     #
+###########################################
+# Two-layer defense against insecure deserialization (RCE via malicious pickle payloads).
+# Layer 1 RestrictedUnpickler: allowlist of safe (module, class) pairs + safe module prefixes.
+# Layer 2 Opcode validator: blocks legacy/rare pickle opcodes that legitimate models never use.
+
+# Common (module, class) pairs shared by all ML-model loading sites.
+# Each script extends this base with its own site-specific entries via set union.
+BASE_PICKLE_ALLOWED_CLASSES = {
+    # Numpy
+    ("numpy.core.multiarray", "_reconstruct"),
+    ("numpy", "ndarray"),
+    ("numpy", "dtype"),
+    ("numpy.core.multiarray", "scalar"),
+    # Pandas
+    ("pandas.core.frame", "DataFrame"),
+    ("pandas.core.series", "Series"),
+    ("pandas.core.indexes.base", "Index"),
+    ("pandas.core.indexes.range", "RangeIndex"),
+    # Python builtins
+    ("builtins", "dict"),
+    ("builtins", "list"),
+    ("builtins", "tuple"),
+    ("builtins", "set"),
+    ("builtins", "frozenset"),
+    ("builtins", "str"),
+    ("builtins", "int"),
+    ("builtins", "float"),
+    ("builtins", "bool"),
+    ("builtins", "bytes"),
+    ("builtins", "bytearray"),
+    ("builtins", "complex"),
+    ("builtins", "slice"),
+    ("builtins", "range"),
+    # Python internals used by pickle protocol
+    ("collections", "OrderedDict"),
+    ("_codecs", "encode"),
+    ("copyreg", "_reconstructor"),
+}
+
+
+class UnsafePickleError(Exception):
+    """Raised when a pickle payload contains unsafe opcodes or classes.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+
+# Legacy/rare opcodes that legitimate ML models never use.
+_BLOCKED_PICKLE_OPCODES = {
+    "INST", "OBJ", "NEWOBJ_EX",
+    "EXT1", "EXT2", "EXT4",
+    "PERSID", "BINPERSID",
+}
+
+
+def validate_pickle_opcodes(payload):
+    # type: (bytes) -> None
+    """
+    Layer 2 defense-in-depth: reject pickle payloads containing
+    legacy/rare opcodes that legitimate ML models never use.
+
+    :type payload: ``bytes``
+    :param payload: Raw pickle byte stream to validate.
+
+    :raises UnsafePickleError: If a blocked opcode is found or the payload is malformed.
+
+    :return: None
+    :rtype: ``None``
+    """
+    try:
+        for opcode, _arg, pos in pickletools.genops(payload):
+            if opcode.name in _BLOCKED_PICKLE_OPCODES:
+                raise UnsafePickleError(
+                    "Blocked unsafe pickle opcode {!r} at byte {}".format(opcode.name, pos)
+                )
+    except (UnsafePickleError, Exception) as e:
+        if isinstance(e, UnsafePickleError):
+            raise
+        raise UnsafePickleError("Invalid or malformed pickle payload: {}".format(e))
+
+
+def _make_restricted_unpickler(allowed_classes, safe_module_prefixes):
+    # type: (set, set) -> type
+    """
+    Factory that creates a RestrictedUnpickler class with the given allowlists.
+
+    :type allowed_classes: ``set``
+    :param allowed_classes: Set of ``(module, name)`` tuples for exact class matches.
+
+    :type safe_module_prefixes: ``set``
+    :param safe_module_prefixes: Set of top-level module names (e.g. ``"sklearn"``, ``"numpy"``)
+        whose submodules are all considered safe data-science code.
+
+    :rtype: ``type``
+    :return: A subclass of ``pickle.Unpickler`` with restricted ``find_class``.
+    """
+
+    class RestrictedUnpickler(_pickle.Unpickler):
+        """Strict whitelist-based unpickler (Layer 1 primary defense)."""
+
+        def find_class(self, module, name):
+            # type: (str, str) -> type
+            if (module, name) in allowed_classes:
+                return _pickle.Unpickler.find_class(self, module, name)
+            top_module = module.split(".")[0]
+            if top_module in safe_module_prefixes:
+                return _pickle.Unpickler.find_class(self, module, name)
+            raise _pickle.UnpicklingError(
+                "Blocked unauthorized class: '{}.{}'".format(module, name)
+            )
+
+    return RestrictedUnpickler
+
+
+def safe_pickle_loads(data, allowed_classes, safe_module_prefixes):
+    # type: (bytes, set, set) -> object
+    """
+    Drop-in replacement for ``pickle.loads()`` / ``dill.loads()`` with two-layer security.
+
+    Layer 1 (primary): ``RestrictedUnpickler`` only allows classes in *allowed_classes*
+    or from modules whose top-level name is in *safe_module_prefixes*.
+
+    Layer 2 (defense-in-depth): opcode validator blocks legacy/rare pickle opcodes
+    that legitimate ML models never use.
+
+    :type data: ``bytes``
+    :param data: The raw pickle payload to deserialize.
+
+    :type allowed_classes: ``set``
+    :param allowed_classes: Set of ``(module, name)`` tuples for exact class matches
+        (e.g. ``{("builtins", "dict"), ("__main__", "MyModel")}``).
+
+    :type safe_module_prefixes: ``set``
+    :param safe_module_prefixes: Set of top-level module names whose submodules are
+        all considered safe (e.g. ``{"sklearn", "numpy", "pandas"}``).
+
+    :rtype: ``object``
+    :return: The deserialized Python object.
+
+    :raises UnsafePickleError: If the payload contains blocked opcodes or is malformed.
+    :raises pickle.UnpicklingError: If the payload references an unauthorized class.
+    """
+    validate_pickle_opcodes(data)
+    unpickler_cls = _make_restricted_unpickler(allowed_classes, safe_module_prefixes)
+    return unpickler_cls(_io.BytesIO(data)).load()
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
