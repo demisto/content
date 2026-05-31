@@ -1457,7 +1457,8 @@ script:
       description: Updates the properties of an issue. This command does not provide an explicit indication of success.
     - arguments:
       - name: page_size
-        description: The number of assets to return per page. Default is 100. Max is 5000.
+        description: The number of assets to return per page. Max is 5000.
+        defaultValue: "100"
       - name: page_number
         description: The page number for the assets to return for pagination. Default is 0.
       - name: asset_names
