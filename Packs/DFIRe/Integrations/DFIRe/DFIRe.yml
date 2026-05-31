@@ -4,6 +4,10 @@ commonfields:
 name: DFIRe
 display: DFIRe
 category: Forensics & Malware Analysis
+provider: DFIRe
+sectionorder:
+- Connect
+- Collect
 description: Integration with DFIRe (Digital Forensics and Incident Response) platform for case management and IOC indicator tracking.
 configuration:
 - name: url
@@ -11,6 +15,7 @@ configuration:
   type: 0
   required: true
   defaultvalue: https://your-dfire-instance.example.com
+  section: Connect
 - name: apikey
   display: API Key
   type: 9
@@ -18,21 +23,24 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   additionalinfo: Bearer API key (dfire_ak_...). Create under Settings > API Keys.
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   required: false
   advanced: true
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   type: 8
   required: false
   advanced: true
+  section: Connect
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.7090913
+  dockerimage: demisto/python3:3.12.13.9059085
   feed: false
   commands:
   - name: dfire-search
