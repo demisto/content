@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Compromised Masked Card"
+    ],
+    "caseInsensitive": false,
+    "cliName": "gibsourcelink",
+    "closeForm": false,
+    "content": true,
+    "description": "Source link of the masked card record in Group-IB",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibsourcelink",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Source Link",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB Compromised Masked Card"
+    ]
+}
