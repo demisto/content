@@ -1171,7 +1171,7 @@ class MicrosoftClient(BaseClient):
             if SESSION_STATE in self.auth_code:
                 raise ValueError(
                     "Malformed auth_code parameter: Please copy the auth code from the redirected uri "
-                    'without any additional info and without the "session_state" query parameter.'
+                    "for example: https://your-url.com/myapps?code=AUTHORIZATION_CODE&session_state=..."
                 )
             data["grant_type"] = AUTHORIZATION_CODE
             data["code"] = self.auth_code
