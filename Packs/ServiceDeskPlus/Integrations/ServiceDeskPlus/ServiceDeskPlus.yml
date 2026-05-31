@@ -676,61 +676,61 @@ script:
       description: 'The request note created time display value.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_time.value
-      description: 'created time value.'
+      description: 'The request note created time value.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.add_to_linked_requests
-      description: 'add to linked requests or not.'
+      description: ''Whether to add notes from a specific request to its linked requests.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.request.display_id
-      description: 'request display id.'
+      description: 'The request display ID.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.request.subject
-      description: 'request subject.'
+      description: 'The request subject.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.request.id
-      description: 'request id.'
+      description: 'The request ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.notify_technician
-      description: 'notify technician or not.'
+      description: 'Whether to notify the technician.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.show_to_requester
-      description: 'show to requester or not.'
+      description: 'Whether to show request notes to the requester.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.description
-      description: 'note description.'
+      description: 'The request note description.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.id
-      description: 'note id.'
+      description: 'The request note ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_by.email_id
-      description: 'email id of the creator.'
+      description: 'The email ID of the request note creator.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_technician
-      description: 'whether the creator is technician or not.'
+      description: 'Whether the request note creator is a technician.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.created_by.sms_mail
-      description: 'creator sms mail.'
+      description: 'The request note creator SMS mail.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.phone
-      description: 'creator phone.'
+      description: 'The request note creator phone number.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.name
-      description: 'creator name.'
+      description: 'The request note creator name.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.mobile
-      description: 'creator mobile.'
+      description: 'The request note creator mobile number.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.id
-      description: 'creator id.'
+      description: 'The request note creator ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_by.photo_url
-      description: 'creator photo url.'
+      description: 'The request note creator photo URL.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_vip_user
-      description: 'whether creator is vip user or not.'
+      description: 'Whether the request note creator is a VIP user.'
       type: Boolean
   - arguments:
-    - description: The ID of the request to delete it's notes.
+    - description: The ID of the request from which to delete notes.
       name: request_id
       required: true
     - description: The ID of the note to delete.
@@ -739,10 +739,10 @@ script:
     name: service-desk-plus-request-notes-delete
     description: Deletes a request note.
   - arguments:
-    - description: The ID of the note to retrieve it's data.
+    - description: The ID of the note from which to retrieve data.
       name: request_note_id
       required: true
-    - description: The ID of the request to retrieve it's notes.
+    - description: The ID of the request from which to retrieve notes.
       name: request_id
       required: true
     - description: The note description.
@@ -755,7 +755,7 @@ script:
       predefined:
         - "true"
         - "false"
-    - description: whether to add to linked requests or not.
+    - description: Whether to add notes from a specific request to its linked requests.
       name: add_to_linked_requests
       auto: PREDEFINED
       defaultValue: "false"
@@ -789,55 +789,55 @@ script:
       description: 'The request note created time value.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.add_to_linked_requests
-      description: 'add to linked requests or not.'
+      description: ''Whether to add notes from a specific request to its linked requests.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.request.display_id
-      description: 'request display id.'
+      description: 'The request display ID.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.request.subject
-      description: 'request subject.'
+      description: 'The request subject.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.request.id
-      description: 'request id.'
+      description: 'The request ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.notify_technician
-      description: 'notify technician or not.'
+      description: 'Whether to notify the technician.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.show_to_requester
-      description: 'show to requester or not.'
+      description: 'Whether to show request notes to the requester.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.description
-      description: 'note description.'
+      description: 'The request note description.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.id
-      description: 'note id.'
+      description: 'The request note ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_by.email_id
-      description: 'email id of the creator.'
+      description: 'The email ID of the request note creator.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_technician
-      description: 'whether the creator is technician or not.'
+      description: 'Whether the request note creator is a technician.'
       type: Boolean
     - contextPath: ServiceDeskPlus.Request.Note.created_by.sms_mail
-      description: 'creator sms mail.'
+      description: 'The request note creator SMS mail.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.phone
-      description: 'creator phone.'
+      description: 'The request note creator phone number.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.name
-      description: 'creator name.'
+      description: 'The request note creator name.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.mobile
-      description: 'creator mobile.'
+      description: 'The request note creator mobile number.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.id
-      description: 'creator id.'
+      description: 'The request note creator ID.'
       type: Date
     - contextPath: ServiceDeskPlus.Request.Note.created_by.photo_url
-      description: 'creator photo url.'
+      description: 'The request note creator photo URL.'
       type: String
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_vip_user
-      description: 'whether creator is vip user or not.'
+      description: 'Whether the request note creator is a VIP user.'
       type: Boolean
   dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true
