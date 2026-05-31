@@ -27,5 +27,6 @@
     "supportedModules": [
         "agentix",
         "xsiam"
-    ]
+    ],
+    "defaultDataSource": "SecurityScorecard"
 }
