@@ -3590,6 +3590,7 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         f["CUSTOM_FIELD_CLI_NAME"]: {
             "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_CLI_NAME"]),
             "field_type": f.get("CUSTOM_FIELD_TYPE", ""),
+            "select_values": (f.get("CUSTOM_FIELD_FIELD_DATA") or {}).get("selectValues") or [],
         }
         for f in fields_data
         if f.get("CUSTOM_FIELD_CLI_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
@@ -3608,15 +3609,29 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
             )
         elif field_name in custom_fields:
             field_type = custom_fields[field_name]["field_type"]
-            if field_type == "multiSelect" and not isinstance(field_value, list):
-                error_messages.append(
-                    f"Field '{field_name}' is of type multiSelect and requires a list value (e.g., [\"value\"])."
-                    f" Received: {field_value!r}"
-                )
+            select_values = custom_fields[field_name]["select_values"]
+
+            if field_type == "multiSelect":
+                # Auto-coerce plain string → single-element list for multiSelect fields
+                if not isinstance(field_value, list):
+                    demisto.debug(
+                        f"Field '{field_name}' is of type multiSelect but received a non-list value {field_value!r}. "
+                        f"Auto-converting to list: [{field_value!r}]"
+                    )
+                    field_value = [field_value]
+                if select_values:
+                    invalid_values = [v for v in field_value if v not in select_values]
+                    if invalid_values:
+                        error_messages.append(
+                            f"Field '{field_name}' contains invalid value(s): {invalid_values}."
+                            f" Allowed values are: {select_values}"
+                        )
+                        continue
+                valid_fields[field_name] = field_value
             elif field_type == "shortText" and isinstance(field_value, list):
                 error_messages.append(
                     f"Field '{field_name}' is of type shortText and does not accept a list value."
-                    f" Provide a single value instead."
+                    f" Provide a single string value instead."
                 )
             else:
                 valid_fields[field_name] = field_value
