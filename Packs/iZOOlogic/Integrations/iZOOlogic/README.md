@@ -1,4 +1,4 @@
-Fetches and manages threat incidents from iZOOlogic, enabling automated ingestion, incident creation, and advanced filtering for brand protection and threat management.
+Fetches and manages incidents from iZOOlogic, enabling automated ingestion, incident creation, and advanced filtering for brand protection and threat management.
 
 ## Configure iZOOlogic in Cortex
 

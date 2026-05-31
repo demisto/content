@@ -28,6 +28,7 @@ class ApiPaths:
     FETCH_EVENTS = "/api/ThreatManagement/FetchIncidents"
     REPORT_NEW_INCIDENT = "/api/ThreatManagement/ReportNewIncident"
 
+
 class Config:
     """Global static configuration."""
 
@@ -296,9 +297,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
 
     # Parse and validate event types filter — default to all types if none specified
     event_types_filter = argToList(params.get("events_types_filter"))
-    event_type_codes = (
-        resolve_type_codes(event_types_filter) if event_types_filter else list(ApiCodes.EVENT_TYPE.values())
-    )
+    event_type_codes = resolve_type_codes(event_types_filter) if event_types_filter else list(ApiCodes.EVENT_TYPE.values())
 
     max_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH_PER_TYPE))
     if max_fetch <= 0:
@@ -937,7 +936,6 @@ def _fetch_for_type(
     consumed = raw_events[:max_fetch_per_type]
     demisto.debug(f"[Fetch] Type {type_key}: Consuming {len(consumed)} events")
 
-
     updated_state = _compute_new_state(consumed, type_key)
     return type_key, consumed, updated_state
 
@@ -1044,7 +1042,7 @@ def _validate_incident_creation_args(args: dict[str, Any]) -> dict[str, Any]:
     incident_type_raw = args.get("incident_type", "")
     if not incident_type_raw:
         raise DemistoException("'incident_type' is a required argument.")
-    incident_type = _resolve_code_by_name(str(incident_type_raw), ApiCodes.INCIDENT_TYPE, "incident_type")
+    incident_type = _resolve_code_by_name(str(incident_type_raw), ApiCodes.EVENT_TYPE, "incident_type")
 
     # Required: brand_code
     brand_code = args.get("brand_code", "")
@@ -1172,7 +1170,7 @@ def search_incidents_command(client: Client, args: dict[str, Any]) -> CommandRes
     incident_type: int | None = None
     incident_type_raw = args.get("incident_type")
     if incident_type_raw:
-        incident_type = _resolve_code_by_name(str(incident_type_raw), ApiCodes.INCIDENT_TYPE, "incident_type")
+        incident_type = _resolve_code_by_name(str(incident_type_raw), ApiCodes.EVENT_TYPE, "incident_type")
 
     # Optional: threat_type (name only, mapped to integer code)
     threat_type: int | None = None
@@ -1197,7 +1195,7 @@ def search_incidents_command(client: Client, args: dict[str, Any]) -> CommandRes
         client,
         from_date=from_date,
         to_date=to_date,
-        incident_type=incident_type,
+        event_type=incident_type,
         threat_type=threat_type,
         brand_code=brand_code,
         executive_name=executive_name,

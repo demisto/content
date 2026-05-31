@@ -79,7 +79,7 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-description: Fetches threat incidents from iZOOlogic for automated ingestion into Cortex.
+description: Fetches and manages incidents from iZOOlogic, enabling automated ingestion, incident creation, and advanced filtering for brand protection and threat management.
 script:
   commands:
   - name: izoologic-get-events
