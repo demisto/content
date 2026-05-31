@@ -5309,3 +5309,58 @@ Updates the configuration for a Lambda function. Required IAM Permission: lambda
 | AWS.Lambda.FunctionConfig.ConfigSha256 | String | The SHA256 hash of the function configuration. |
 | AWS.Lambda.FunctionConfig.DurableConfig | Unknown | The function’s durable execution configuration settings, if the function is configured for durability. |
 | AWS.Lambda.FunctionConfig.TenancyConfig | Unknown | The function’s tenant isolation configuration settings. Determines whether the Lambda function runs on a shared or dedicated infrastructure per unique tenant. |
+### aws-lambda-function-create
+
+***
+Creates a Lambda function. To create a function, you need a deployment package and an execution role. Required IAM Permission: lambda:CreateFunction.
+
+#### Base Command
+
+`aws-lambda-function-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required | 
+| function_name | The name of the Lambda function. | Required | 
+| runtime | The runtime environment for the function. | Required | 
+| handler | The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler. | Required | 
+| role | The Amazon Resource Name (ARN) of the function's execution role. | Required | 
+| code | Entry ID of the uploaded base64-encoded contents of the deployment package. | Optional | 
+| s3_bucket | An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account. | Optional | 
+| description | A description of the function. | Optional | 
+| function_timeout | The amount of time (in seconds) that Lambda allows a function to run before stopping it. Default is 3. | Optional | 
+| memory_size | The amount of memory (in MB) available to the function at runtime. Default is 128. | Optional | 
+| publish | Set to true to publish the first version of the function during creation. Possible values are: true, false. | Optional | 
+| subnet_ids | A comma-separated list of VPC subnet IDs. | Optional | 
+| security_group_ids | A comma-separated list of VPC security group IDs. | Optional | 
+| ipv6_allowed_for_dual_stack | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. Possible values are: true, false. | Optional | 
+| package_type | The type of deployment package. Possible values are: Image, Zip. | Optional | 
+| environment | The environment variables for the function. Must be separated by a semicolon (;) and specified using the format "key=DB_HOST,value=localhost;key=DEBUG,value=true". | Optional | 
+| tracing_config | The tracing configuration for the function. Set to Active to sample and trace a subset of incoming requests with X-Ray. Possible values are: Active, PassThrough. Default is Active. | Optional | 
+| tags | The list of tags to apply to the function. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456". | Optional | 
+| layers | A list of function layers to add to the function's execution environment. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.Functions.FunctionName | string | The name of the function. | 
+| AWS.Lambda.Functions.FunctionArn | string | The function's Amazon Resource Name \(ARN\). | 
+| AWS.Lambda.Functions.Runtime | string | The identifier of the function's runtime. | 
+| AWS.Lambda.Functions.Role | string | The function's execution role. | 
+| AWS.Lambda.Functions.Handler | string | The function that Lambda calls to begin running your function. | 
+| AWS.Lambda.Functions.CodeSize | number | The size of the function's deployment package, in bytes. | 
+| AWS.Lambda.Functions.Description | string | The function's description. | 
+| AWS.Lambda.Functions.Timeout | number | The amount of time in seconds that Lambda allows a function to run before stopping it. | 
+| AWS.Lambda.Functions.MemorySize | number | The amount of memory available to the function at runtime. | 
+| AWS.Lambda.Functions.Version | string | The version of the Lambda function. | 
+| AWS.Lambda.Functions.VpcConfig.SubnetIds | array | A list of VPC subnet IDs. | 
+| AWS.Lambda.Functions.VpcConfig.SecurityGroupIds | array | A list of VPC security group IDs. | 
+| AWS.Lambda.Functions.VpcConfig.VpcId | string | The ID of the VPC. | 
+| AWS.Lambda.Functions.VpcConfig.Ipv6AllowedForDualStack | boolean | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. | 
+| AWS.Lambda.Functions.PackageType | string | The type of deployment package. Set to Image for container image and set Zip for .zip file archive. | 
+| AWS.Lambda.Functions.LastModified | string | The date and time that the function was last updated, in ISO-8601 format. | 
+| AWS.Lambda.Functions.Region | string | The AWS Region. | 
