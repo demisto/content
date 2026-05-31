@@ -152,7 +152,10 @@ def test_get_incident_command_iterates_ids(client: Client, mocker):
     result = proofpoint_ctr_incident_get_command(client, {"incident_id": "aaa,bbb"})
     assert calls == ["aaa", "bbb"]
     assert len(result.outputs) == 2
-    assert result.outputs[0]["summary"]["displayId"] == 12345
+    # The get command flattens the summary fields to the top level so that
+    # outputs_key_field="id" matches the list command and XSOAR can enrich
+    # the existing context entry rather than creating a duplicate.
+    assert result.outputs[0]["displayId"] == 12345
 
 
 def test_get_incident_requires_id(client: Client):
