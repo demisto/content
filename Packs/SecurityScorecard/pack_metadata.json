@@ -6,6 +6,7 @@
     "author": "SecurityScorecard",
     "url": "https://securityscorecard.com/contact-us",
     "email": "support@securityscorecard.io",
+    "defaultDataSource": "SecurityScorecard",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
@@ -27,6 +28,5 @@
     "supportedModules": [
         "agentix",
         "xsiam"
-    ],
-    "defaultDataSource": "SecurityScorecard"
+    ]
 }
