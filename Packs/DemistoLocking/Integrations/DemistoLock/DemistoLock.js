@@ -53,7 +53,7 @@ switch (command) {
 
         var guid = args.guid || guid();
         var time = 0;
-        var lock, version, lock_candidate;
+        var lock, lock_candidate, version, versionString;
 
         if (isDemistoVersionGE('8.0.0')) {  // XSOAR 8 lock implementation with polling.
             logDebug('Running on XSOAR version 8');
@@ -62,9 +62,9 @@ switch (command) {
             [lock, version] = getLock();
 
             if (typeof version === "object") {
-                version = JSON.stringify(version)
+                versionString = JSON.stringify(version)
             }
-            logDebug('Task guid: ' + guid + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
+            logDebug('Task guid: ' + guid + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + versionString);
 
             // if no lock found, try to acquire a new lock
             if (!lock.guid) {
