@@ -409,3 +409,140 @@ class TestCmdSetAuthForwardsSeedParam:
         assert called["value"] is False
         captured_err = capsys.readouterr().err
         assert "missing '=' separator" in captured_err
+
+
+# ---------------------------------------------------------------------------
+# 4) _evaluate_parity_for_set_auth — parity gate strictness (FIXES-TODO #1)
+# ---------------------------------------------------------------------------
+
+
+class TestEvaluateParityForSetAuth:
+    """Pin the parity gate's accept/reject decisions.
+
+    Per FIXES-TODO #1 (LOCKED 2026-05-31): ``inconclusive`` per-connection
+    statuses are NOT permissive anymore — they reject the candidate. The
+    rejection diagnostic surfaces failure_codes + the last ~10 lines of
+    stderr_excerpt per the cross-cutting Hints policy (no prescription
+    text in the tool; that lives in the skill).
+    """
+
+    def test_inconclusive_now_rejects(self) -> None:
+        result = {
+            "auth_parity": {
+                "api_key": {"status": "inconclusive", "commands": {}, "diagnostics": {}},
+            },
+        }
+        gate = ws_api._evaluate_parity_for_set_auth(result)
+        assert gate["allow"] is False
+        assert "inconclusive" in gate["reason"]
+
+    def test_pass_still_allows(self) -> None:
+        result = {
+            "auth_parity": {
+                "api_key": {"status": "pass", "commands": {}, "diagnostics": {}},
+            },
+        }
+        gate = ws_api._evaluate_parity_for_set_auth(result)
+        assert gate["allow"] is True
+
+    def test_skipped_passthrough_still_allows(self) -> None:
+        result = {
+            "auth_parity": {
+                "secret_bag": {
+                    "status": "skipped_passthrough", "commands": {}, "diagnostics": {},
+                },
+            },
+        }
+        gate = ws_api._evaluate_parity_for_set_auth(result)
+        assert gate["allow"] is True
+
+    def test_structural_skip_codes_still_allow(self) -> None:
+        for code in [
+            "ERROR_NON_PYTHON",
+            "ERROR_NO_BASECLIENT",
+            "ERROR_ALL_INTERPOLATED",
+            "ERROR_CONNECTION_INTERPOLATED",
+            "ERROR_INTEGRATION_REJECTS_HTTP",
+        ]:
+            result = {"error": {"code": code, "message": f"skip via {code}", "exit_code": 11}}
+            gate = ws_api._evaluate_parity_for_set_auth(result)
+            assert gate["allow"] is True, (
+                f"structural skip {code} should still allow but got: {gate}"
+            )
+
+    def test_rejection_diagnostic_surfaces_failure_codes(self) -> None:
+        """Per Hints policy: the diagnostic includes failure_codes from diffs."""
+        result = {
+            "auth_parity": {
+                "api_key": {
+                    "status": "inconclusive",
+                    "commands": {"test-module": {"status": "inconclusive"}},
+                    "diagnostics": {
+                        "commands": {
+                            "test-module": {
+                                "diffs": [
+                                    {"failure_code": "RUN_FAILED_NEW",
+                                     "sentinel": "", "old_locations": [], "new_locations": []},
+                                ],
+                                "old_run": {"status": "crashed",
+                                            "captured_request_count": 0,
+                                            "locations": {},
+                                            "stderr_excerpt": "old stderr line 1\nold stderr line 2"},
+                                "new_run": {"status": "crashed",
+                                            "captured_request_count": 0,
+                                            "locations": {},
+                                            "stderr_excerpt": (
+                                                "Traceback (most recent call last):\n"
+                                                "  File \"x.py\", line 1, in <module>\n"
+                                                "KeyError: 'identifier'"
+                                            )},
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        gate = ws_api._evaluate_parity_for_set_auth(result)
+        assert gate["allow"] is False
+        assert "RUN_FAILED_NEW" in gate["reason"]
+        # The last lines of the stderr excerpt should be present
+        assert "KeyError" in gate["reason"]
+
+    def test_rejection_diagnostic_has_no_prescription_text(self) -> None:
+        """The diagnostic describes; it does not prescribe (Hints policy
+        cross-cutting #1). When multiple valid fixes exist, prescription
+        lives in the skill, not the tool."""
+        result = {
+            "auth_parity": {
+                "api_key": {
+                    "status": "fail",
+                    "commands": {"test-module": {"status": "fail"}},
+                    "diagnostics": {
+                        "commands": {
+                            "test-module": {
+                                "diffs": [
+                                    {"failure_code": "WRONG_LOCATION",
+                                     "sentinel": "k1",
+                                     "old_locations": ["header:x-api-key"],
+                                     "new_locations": ["header:authorization:bearer"]},
+                                ],
+                                "old_run": {"status": "ok"},
+                                "new_run": {"status": "ok"},
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        gate = ws_api._evaluate_parity_for_set_auth(result)
+        assert gate["allow"] is False
+        # Sanity: no prescription verbs like "should", "must", "use", "add"
+        # in the diagnostic. The tool reports facts; the skill prescribes.
+        prescription_words = (
+            "you should ", "you must ", "please ", "consider ",
+        )
+        lowered = gate["reason"].lower()
+        for word in prescription_words:
+            assert word not in lowered, (
+                f"prescription word {word!r} leaked into diagnostic: {gate['reason']}"
+            )

@@ -10,7 +10,10 @@ from __future__ import annotations
 
 import pytest
 
-from workflow_state.validators import validate_shadowed_commands
+from workflow_state.validators import (
+    validate_release_notes,
+    validate_shadowed_commands,
+)
 
 
 class TestValidateShadowedCommands:
@@ -67,3 +70,97 @@ class TestValidateShadowedCommands:
     def test_renamed_with_disallowed_chars_rejected(self) -> None:
         errs = validate_shadowed_commands('{"foo": "foo-my brand"}')
         assert any("disallowed characters" in e for e in errs)
+
+
+class TestValidateReleaseNotes:
+    """Cover :func:`validate_release_notes` schema rules.
+
+    Added 2026-05-31 with the new Release Notes workflow step (FIXES-TODO
+    combined #4+#6+New_RN execution plan).
+    """
+
+    def test_valid_required_with_path_and_verified(self) -> None:
+        raw = (
+            '{"required": true, '
+            '"path": "Packs/MyPack/ReleaseNotes/1_2_3.md", '
+            '"verified": true}'
+        )
+        assert validate_release_notes(raw) == []
+
+    def test_valid_required_with_path_but_not_yet_verified(self) -> None:
+        raw = (
+            '{"required": true, '
+            '"path": "Packs/MyPack/ReleaseNotes/1_2_3.md", '
+            '"verified": false}'
+        )
+        assert validate_release_notes(raw) == []
+
+    def test_valid_not_required(self) -> None:
+        raw = '{"required": false, "path": null, "verified": false}'
+        assert validate_release_notes(raw) == []
+
+    def test_invalid_json_returns_parse_error(self) -> None:
+        errs = validate_release_notes("{not json")
+        assert errs and "Invalid JSON" in errs[0]
+
+    def test_top_level_must_be_object(self) -> None:
+        errs = validate_release_notes('["a","b"]')
+        assert errs and "Expected a JSON object" in errs[0]
+
+    def test_extra_keys_rejected(self) -> None:
+        raw = (
+            '{"required": true, "path": "x", "verified": true, '
+            '"extra": "key"}'
+        )
+        errs = validate_release_notes(raw)
+        assert any("Unexpected top-level keys" in e for e in errs)
+
+    def test_missing_keys_rejected(self) -> None:
+        errs = validate_release_notes('{"required": true}')
+        assert any("Missing required keys" in e for e in errs)
+
+    def test_required_not_bool_rejected(self) -> None:
+        raw = '{"required": "yes", "path": "x", "verified": true}'
+        errs = validate_release_notes(raw)
+        assert any("'required' must be a boolean" in e for e in errs)
+
+    def test_verified_not_bool_rejected(self) -> None:
+        raw = '{"required": true, "path": "x", "verified": "yes"}'
+        errs = validate_release_notes(raw)
+        assert any("'verified' must be a boolean" in e for e in errs)
+
+    def test_path_not_string_or_null_rejected(self) -> None:
+        raw = '{"required": true, "path": 42, "verified": false}'
+        errs = validate_release_notes(raw)
+        assert any("'path' must be a string or null" in e for e in errs)
+
+    def test_required_true_without_path_rejected(self) -> None:
+        raw = '{"required": true, "path": null, "verified": false}'
+        errs = validate_release_notes(raw)
+        assert any(
+            "When 'required' is true, 'path' must be a non-empty string" in e
+            for e in errs
+        )
+
+    def test_required_true_empty_path_rejected(self) -> None:
+        raw = '{"required": true, "path": "", "verified": false}'
+        errs = validate_release_notes(raw)
+        assert any(
+            "When 'required' is true, 'path' must be a non-empty string" in e
+            for e in errs
+        )
+
+    def test_required_false_with_path_rejected(self) -> None:
+        raw = '{"required": false, "path": "Packs/.../x.md", "verified": false}'
+        errs = validate_release_notes(raw)
+        assert any(
+            "When 'required' is false, 'path' must be null" in e for e in errs
+        )
+
+    def test_required_false_with_verified_rejected(self) -> None:
+        raw = '{"required": false, "path": null, "verified": true}'
+        errs = validate_release_notes(raw)
+        assert any(
+            "When 'required' is false, 'verified' must be false" in e
+            for e in errs
+        )

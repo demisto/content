@@ -29,14 +29,16 @@ from workflow_state.config_loader import _reset_config_for_testing
 
 # ---------------------------------------------------------------------------
 # Schema canaries — these encode the expected column positions in the
-# bundled YAML (3 identity columns + 13 steps). If the YAML shifts, fix
-# these numbers in lock-step with the column references below.
+# bundled YAML (3 identity columns + 12 steps as of 2026-05-31, after
+# FIXES-TODO combined #4+#6+New_RN dropped 2 steps and added 1). If the
+# YAML shifts, fix these numbers in lock-step with the column references
+# below.
 # ---------------------------------------------------------------------------
 
-_EXPECTED_TOTAL_COLS = 16
+_EXPECTED_TOTAL_COLS = 15
 _COL_INTEGRATION_ID = 1          # identity (allowed for show-step)
 _COL_AUTH_DETAILS = 5            # step #2 → CSV column 5
-_COL_GENERATED_MANIFEST = 10     # step #7 → CSV column 10 (first checkpoint, after Params for test with default in code + Shadowed Integration Commands + Params to Capabilities)
+_COL_GENERATED_MANIFEST = 9      # step #6 → CSV column 9 (first checkpoint, after Params for test + Params to Capabilities)
 
 
 @pytest.fixture(autouse=True)
@@ -48,7 +50,7 @@ def _reset_singleton():
 
 @pytest.fixture
 def temp_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """Seed a CSV with steps 1-6 already done so ``markpass <id> 10``
+    """Seed a CSV with steps 1-5 already done so ``markpass <id> 9``
     (the first checkpoint, ``generated manifest``) is at the workflow's
     current step. Identity + earlier data/flag steps are pre-filled."""
     cfg = workflow_state.get_config()
@@ -62,7 +64,6 @@ def temp_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     row["Auth Details"] = "{}"
     row["Params to Commands"] = "{}"
     row["Params for test with default in code"] = "{}"
-    row["Shadowed Integration Commands"] = "{}"
     row["Params to Capabilities"] = "{}"
     with open(p, "w", encoding="utf-8", newline="") as f:
         w = _csv.writer(f)
@@ -141,7 +142,7 @@ def test_show_step_no_raw_still_decorates(temp_csv: Path, capsys) -> None:
 # ---------------------------------------------------------------------------
 
 def test_markpass_resolves_checkpoint_by_number(temp_csv: Path, capsys) -> None:
-    """markpass <id> 10 → 'generated manifest' (first checkpoint)."""
+    """markpass <id> 9 → 'generated manifest' (first checkpoint)."""
     wf_cli.cmd_markpass(["TestInt", str(_COL_GENERATED_MANIFEST)])
     out = capsys.readouterr().out
     assert "generated manifest" in out

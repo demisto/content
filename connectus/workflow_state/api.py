@@ -7,7 +7,10 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import subprocess
 import sys
+from pathlib import Path
 from typing import Optional
 
 from auth_config_parser import (
@@ -695,20 +698,36 @@ def set_integration_auth(
 _PARITY_STRUCTURAL_SKIP_CODES = {
     "ERROR_NON_PYTHON",
     "ERROR_NO_BASECLIENT",
+    # FIXES-TODO #12 (LOCKED 2026-05-31): refined NO_BASECLIENT
+    # message for integrations whose Client subclasses a class defined
+    # in a shared *ApiModule (MicrosoftApiModule, OktaApiModule, …).
+    # Same structural-skip semantics as ERROR_NO_BASECLIENT, just a
+    # more actionable diagnostic.
+    "APIMODULE_INTEGRATION_CANNOT_VERIFY",
+    # FIXES-TODO #9 (LOCKED 2026-05-31): multi-secret Passthrough
+    # bundle (AbuseIPDB-class). Per cross-cutting decision #2
+    # (XOR-only auth), classified as Passthrough by design — the gate's
+    # reduced coverage is the documented trade-off, not a failure.
+    "MULTI_SECRET_PASSTHROUGH",
     "ERROR_ALL_INTERPOLATED",
     "ERROR_CONNECTION_INTERPOLATED",
     "ERROR_INTEGRATION_REJECTS_HTTP",
 }
 
 # Per-connection statuses that count as "passing" for the gate. `pass` is the
-# obvious one; `inconclusive` (analyzer couldn't reach a request — e.g.
-# test-module returned early without an HTTP call) is permissive on purpose
-# so we don't block on unrelated runtime failures. The `skipped_*` statuses
-# (signed, mtls, passthrough) are per-connection structural skips and also
-# count as passing.
+# obvious one; the `skipped_*` statuses (signed, mtls, passthrough) are
+# per-connection structural skips and also count as passing.
+#
+# NOTE (FIXES-TODO #1, 2026-05-31): ``inconclusive`` was previously listed
+# here as a permissive concession to "unrelated runtime failures." That
+# silently accepted candidates whose parity verification crashed (e.g. on
+# macOS without ``DEMISTO_SDK_LOG_FILE_PATH``, or on JS integrations, or
+# on the UCP-strip-crash pattern). It produced false-positive ✅ rows.
+# Removed per the parity-gate strictness fix. Specific recognizable
+# failure classes are now detected and surfaced explicitly (see
+# UCP_STRIP_CRASHED_UNCONDITIONAL_READ, etc.).
 _PARITY_OK_STATUSES = {
     "pass",
-    "inconclusive",
     "skipped_signed",
     "skipped_mtls",
     "skipped_passthrough",
@@ -834,13 +853,67 @@ def _evaluate_parity_for_set_auth(result: dict) -> dict:
     for conn_name, conn_block in auth_parity.items():
         status = (conn_block or {}).get("status")
         if status not in _PARITY_OK_STATUSES:
-            failing.append((conn_name, status))
+            failing.append((conn_name, status, conn_block or {}))
 
     if failing:
-        details = ", ".join(f"{n}={s!r}" for n, s in failing)
+        # Tightened diagnostic per FIXES-TODO #1 + cross-cutting hints
+        # policy: surface failure_codes + last ~10 lines of stderr_excerpt
+        # from each failing connection so the user can immediately tell
+        # whether this is a real auth mismatch (e.g. WRONG_LOCATION) or a
+        # tooling crash (e.g. RUN_FAILED_NEW with a KeyError in stderr).
+        # NO prescription text — that lives in the skill, not the tool.
+        lines: list[str] = []
+        for conn_name, status, conn_block in failing:
+            lines.append(f"  - {conn_name}: status={status!r}")
+            diag_commands = (
+                (conn_block.get("diagnostics") or {}).get("commands") or {}
+            )
+            for cmd_name, cmd_diag in diag_commands.items():
+                if not isinstance(cmd_diag, dict):
+                    continue
+                diffs = cmd_diag.get("diffs") or []
+                codes = sorted({
+                    str(d.get("failure_code"))
+                    for d in diffs
+                    if isinstance(d, dict) and d.get("failure_code")
+                })
+                if codes:
+                    lines.append(
+                        f"      {cmd_name}: failure_codes={codes}"
+                    )
+                    # FIXES-TODO #13: when the UCP-strip crash pattern
+                    # was detected, surface a description-only note that
+                    # points at skill §1.12 (two valid fix paths exist —
+                    # the skill is the right place to choose between
+                    # them, not the tool).
+                    if "UCP_STRIP_CRASHED_UNCONDITIONAL_READ" in codes:
+                        lines.append(
+                            "        note: the new run crashed reading "
+                            "a credential key that UCP strips from params. "
+                            "See skill §1.12 for the two fix paths "
+                            "(UCP override or is_ucp_enabled() gating)."
+                        )
+                for run_key in ("new_run", "old_run"):
+                    run = cmd_diag.get(run_key) or {}
+                    if not isinstance(run, dict):
+                        continue
+                    if run.get("status") == "crashed":
+                        excerpt = str(run.get("stderr_excerpt") or "")
+                        tail = "\n".join(excerpt.splitlines()[-10:])
+                        if tail:
+                            lines.append(
+                                f"      {cmd_name}.{run_key} stderr (last 10 lines):"
+                            )
+                            for tail_line in tail.splitlines():
+                                lines.append(f"        {tail_line}")
+        details = "\n".join(lines) if lines else (
+            ", ".join(f"{n}={s!r}" for n, s, _ in failing)
+        )
         return {
             "allow": False,
-            "reason": f"{len(failing)} connection(s) did not pass: {details}",
+            "reason": (
+                f"{len(failing)} connection(s) did not pass:\n{details}"
+            ),
         }
 
     statuses = sorted({(b or {}).get("status") for b in auth_parity.values()})
@@ -848,6 +921,168 @@ def _evaluate_parity_for_set_auth(result: dict) -> dict:
         "allow": True,
         "reason": f"all {len(auth_parity)} connection(s) ok: {statuses}",
     }
+
+
+# ---------------------------------------------------------------------------
+# Release Notes step (FIXES-TODO 2026-05-31, new workflow step)
+# ---------------------------------------------------------------------------
+
+# Exact substring the verifier looks for in the new RN file. Case-sensitive
+# per the spec. Operators can include this anywhere (bullet, paragraph,
+# heading) — substring match is robust to formatting variation.
+RELEASE_NOTES_REQUIRED_SUBSTRING = "Enabled support for UCP"
+
+
+def _integration_owns_files(integration_id: str) -> tuple[Path | None, Path | None]:
+    """Resolve absolute paths to the integration's own .py and .yml files.
+
+    Returns ``(py_abs_path, yml_abs_path)`` — either may be ``None`` if
+    the file doesn't exist (e.g. JS / PowerShell integrations have no
+    .py; nonexistent integrations have neither).
+    """
+    files_info = get_integration_files(integration_id)
+    if "error" in files_info:
+        return (None, None)
+    directory_rel = files_info.get("directory") or ""
+    abs_dir = (
+        Path(BASE_DIR) / directory_rel if directory_rel else Path(BASE_DIR)
+    )
+    py_rel = files_info.get("code")
+    yml_rel = files_info.get("yml")
+    py_abs = (
+        (Path(BASE_DIR) / py_rel).resolve()
+        if py_rel and files_info.get("code_language") == "python"
+        else None
+    )
+    yml_abs = (Path(BASE_DIR) / yml_rel).resolve() if yml_rel else None
+    # Sanity: both should live under abs_dir (which always exists when
+    # the CSV row's Integration File Path is valid).
+    _ = abs_dir  # touched for future use; keeps mypy happy
+    return (py_abs, yml_abs)
+
+
+def _release_notes_trigger_required(integration_id: str) -> bool:
+    """True when the migration touched the integration's own .py/.yml.
+
+    Implementation: ``git diff HEAD --name-only -- <py> <yml>``. Empty
+    output → no code touch → RN not required. Non-empty → RN required.
+    Per the spec the trigger looks at the integration's own .py and
+    .yml only (NOT broader pack files like README / images).
+    """
+    py_abs, yml_abs = _integration_owns_files(integration_id)
+    paths: list[str] = []
+    if py_abs is not None and py_abs.exists():
+        paths.append(str(py_abs))
+    if yml_abs is not None and yml_abs.exists():
+        paths.append(str(yml_abs))
+    if not paths:
+        # Defensive: no files to diff against → treat as "not required."
+        return False
+    try:
+        result = subprocess.run(
+            ["git", "diff", "HEAD", "--name-only", "--"] + paths,
+            cwd=BASE_DIR,
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+        # If git is unavailable or times out, fail safe by requiring the
+        # RN — operators can still set required=false explicitly if they
+        # know the migration didn't touch code.
+        return True
+    return bool(result.stdout.strip())
+
+
+_VERSION_FILENAME_RE = re.compile(
+    r"^(?P<major>\d+)_(?P<minor>\d+)_(?P<patch>\d+)\.md$",
+    re.IGNORECASE,
+)
+
+
+def _pack_release_notes_dir_for(integration_id: str) -> Path | None:
+    """Return the absolute path to the integration's pack ReleaseNotes/ dir."""
+    files_info = get_integration_files(integration_id)
+    if "error" in files_info:
+        return None
+    directory_rel = files_info.get("directory") or ""
+    # Pack root = Packs/<PackName>; integration lives at
+    # Packs/<PackName>/Integrations/<IntegrationName>/. Walk up two
+    # levels to find the pack root.
+    parts = directory_rel.split(os.sep)
+    if len(parts) < 3 or parts[0] != "Packs":
+        return None
+    pack_root = Path(BASE_DIR) / parts[0] / parts[1]
+    rn_dir = pack_root / "ReleaseNotes"
+    return rn_dir if rn_dir.is_dir() else rn_dir  # return path regardless; caller checks .is_dir()
+
+
+def find_newest_release_notes_file(integration_id: str) -> Path | None:
+    """Return the newest (largest version) RN .md file in the pack.
+
+    Per the spec: if multiple RN files exist, check the newest one.
+    Version is parsed from the filename (e.g. ``1_2_3.md`` →
+    ``(1, 2, 3)``). Files that don't match the version pattern are
+    ignored.
+    """
+    rn_dir = _pack_release_notes_dir_for(integration_id)
+    if rn_dir is None or not rn_dir.is_dir():
+        return None
+    best: tuple[tuple[int, int, int], Path] | None = None
+    for entry in rn_dir.iterdir():
+        if not entry.is_file():
+            continue
+        m = _VERSION_FILENAME_RE.match(entry.name)
+        if not m:
+            continue
+        version = (int(m.group("major")), int(m.group("minor")), int(m.group("patch")))
+        if best is None or version > best[0]:
+            best = (version, entry)
+    return best[1] if best is not None else None
+
+
+def verify_release_notes_substring(rn_path: Path) -> bool:
+    """True iff the RN file contains :data:`RELEASE_NOTES_REQUIRED_SUBSTRING`.
+
+    Exact case-sensitive substring match, anywhere in the file.
+    """
+    try:
+        contents = rn_path.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    return RELEASE_NOTES_REQUIRED_SUBSTRING in contents
+
+
+def evaluate_release_notes_for_integration(integration_id: str) -> dict:
+    """Compute the canonical ``Release Notes`` cell shape for the row.
+
+    Returns ``{"required": bool, "path": str | None, "verified": bool}``
+    suitable for direct serialization into the cell. The caller (the
+    setter) is responsible for invoking the validator on the JSON
+    before writing.
+
+    Decision tree:
+    * If the migration didn't touch the integration's .py/.yml →
+      ``{"required": false, "path": null, "verified": false}``.
+    * If it did, find the newest RN file in the pack and check for the
+      required substring.
+      - Found + substring present → ``required=true, path=<rel>, verified=true``
+      - Found + substring missing → ``required=true, path=<rel>, verified=false``
+      - Not found → ``required=true, path=null, verified=false``
+    """
+    required = _release_notes_trigger_required(integration_id)
+    if not required:
+        return {"required": False, "path": None, "verified": False}
+    newest = find_newest_release_notes_file(integration_id)
+    if newest is None:
+        return {"required": True, "path": None, "verified": False}
+    try:
+        rel = newest.resolve().relative_to(Path(BASE_DIR).resolve())
+        path_str: Optional[str] = str(rel)
+    except ValueError:
+        path_str = str(newest)
+    verified = verify_release_notes_substring(newest)
+    return {"required": True, "path": path_str, "verified": verified}
 
 
 # ---------------------------------------------------------------------------

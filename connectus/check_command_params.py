@@ -3412,6 +3412,29 @@ def _resolve_repo_root() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
+def _ensure_demisto_sdk_log_path() -> None:
+    """Auto-apply the documented ``DEMISTO_SDK_LOG_FILE_PATH`` workaround.
+
+    On macOS Sequoia, ``demisto-sdk`` subprocess invocations crash trying
+    to open ``~/.demisto-sdk/logs/demisto_sdk_debug.log`` because of the
+    ``com.apple.provenance`` xattr (see FIXES-TODO #2 / skill §"Set
+    DEMISTO_SDK_LOG_FILE_PATH"). If the env var is unset, default it to
+    a workspace-local ``<repo_root>/.tmp_migration/sdk-logs`` directory
+    (created on demand). Respect any explicitly-set value.
+    """
+    if os.environ.get("DEMISTO_SDK_LOG_FILE_PATH"):
+        return
+    log_dir = _resolve_repo_root() / ".tmp_migration" / "sdk-logs"
+    try:
+        log_dir.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        # If we can't create the dir, fall back to letting the SDK choose
+        # — the user will see the original crash and can apply the
+        # workaround manually. We don't want to hard-fail here.
+        return
+    os.environ["DEMISTO_SDK_LOG_FILE_PATH"] = str(log_dir)
+
+
 def _find_first_existing(rel_paths: tuple[str, ...]) -> Path | None:
     root = _resolve_repo_root()
     for rel in rel_paths:
@@ -3443,6 +3466,10 @@ def prepare_unified_content(
         raise DynamicPrepError(
             "demisto-sdk not found on PATH; install it or pass --static-only"
         )
+    # Auto-apply the DEMISTO_SDK_LOG_FILE_PATH workaround (FIXES-TODO #2).
+    # The subprocess inherits the current env, so setting it here is
+    # sufficient — no need to pass an explicit ``env=`` dict.
+    _ensure_demisto_sdk_log_path()
     yaml_out = out_dir / "unified.yml"
     cmd = [
         "demisto-sdk",
@@ -3470,6 +3497,31 @@ def prepare_unified_content(
         f"[dynamic] prepare-content: ok in {elapsed:.1f}s -> {yaml_out.name}",
         file=sys.stderr,
     )
+
+    # Language gate (FIXES-TODO #11): the unified YAML's script.type
+    # declares the integration's language. For non-Python integrations
+    # the script body is JS / PowerShell / etc. and would crash the
+    # ``ast.parse`` sanity-check below with a confusing
+    # SyntaxError-shaped DynamicPrepError ("invalid syntax" on a JS
+    # comment, etc.). Raise a typed, recognizable error here so
+    # callers can surface ``status="non_python"`` in the diagnostic
+    # envelope. Per the cross-cutting Hints policy: prescription is
+    # unambiguous, so the message points at ``--static-only``.
+    try:
+        _unified_data = yaml.safe_load(yaml_out.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — fall back to old behavior on YAML errors
+        _unified_data = None
+    _unified_lang = None
+    if isinstance(_unified_data, dict):
+        _script = _unified_data.get("script")
+        if isinstance(_script, dict):
+            _unified_lang = _script.get("type")
+    if _unified_lang and _unified_lang not in {"python", "python2", "python3"}:
+        raise DynamicPrepError(
+            f"non-Python unified file: {_unified_lang!r}; "
+            f"the dynamic phase cannot run on non-Python integrations. "
+            f"Use --static-only for the structured graceful skip."
+        )
 
     py_source = _extract_python_from_unified_yaml(yaml_out)
     final_text = _build_runnable_unified(py_source)
@@ -5311,6 +5363,28 @@ def analyze_integration(
 
     dynamic_results: dict[str, set[str]] = {cmd: set() for cmd in commands}
     diagnostics: dict[str, CommandDiagnostic] = {}
+    # Language gate (FIXES-TODO #11): the dynamic phase shells out to
+    # ``demisto-sdk prepare-content`` and then ``ast.parse``s the
+    # resulting unified file as Python. For JavaScript / PowerShell
+    # integrations, the unified file is JS / PowerShell source and
+    # ``ast.parse`` crashes the entire run with a confusing
+    # SyntaxError-shaped DynamicPrepError. The static phase already
+    # treats non-Python as a graceful skip; force the dynamic phase
+    # into the same shape here. ``language is None`` (no
+    # ``script.type`` in the YML) is treated as "unknown, probably
+    # Python, attempt" — only known non-Python languages skip. Per the
+    # cross-cutting Hints policy: prescription is unambiguous, so we
+    # include a one-line hint pointing at ``--static-only``.
+    _PYTHON_LANGS = {"python", "python2", "python3"}
+    if not static_only and language is not None and language not in _PYTHON_LANGS:
+        print(
+            f"[dynamic] skipping non-Python integration "
+            f"(language={language!r}); the analyzer cannot trace param "
+            f"flow through {language}. Use --static-only for the "
+            f"structured graceful skip.",
+            file=sys.stderr,
+        )
+        static_only = True
     if not static_only:
         # Resolve the runtime image once per integration. When
         # --use-integration-docker is set and the YML declares
@@ -6172,6 +6246,11 @@ def main(argv: list[str] | None = None) -> int:
     """
     import traceback
 
+    # Auto-apply the DEMISTO_SDK_LOG_FILE_PATH workaround at CLI entry
+    # (FIXES-TODO #2). Same call also fires inside ``prepare_unified_content``
+    # — this earlier call ensures the env is set for any code path,
+    # including the static-only one.
+    _ensure_demisto_sdk_log_path()
     args = _parse_args(argv if argv is not None else sys.argv[1:])
     integration_path = Path(args.integration_path).resolve()
     if not integration_path.is_dir():

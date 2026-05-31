@@ -661,6 +661,87 @@ def cmd_set_params_to_capabilities(args: list[str]) -> None:
     _set_json_data_step(args, "Params to Capabilities", "set-params-to-capabilities")
 
 
+def cmd_set_release_notes(args: list[str]) -> None:
+    """Set the ``Release Notes`` cell.
+
+    Usage::
+
+        workflow_state.py set-release-notes <integration_id>
+
+    Auto-computes the cell shape from the working tree (no payload
+    argument needed). The computation:
+
+    1. ``git diff HEAD --name-only -- <integration>.py <integration>.yml``.
+       Empty → ``{"required": false, "path": null, "verified": false}``;
+       cell committed.
+    2. Non-empty → look for the newest RN .md file in
+       ``Packs/<PackName>/ReleaseNotes/`` (highest version number).
+    3. Substring-match ``"Enabled support for UCP"`` (exact,
+       case-sensitive) anywhere in the file. Present → cell committed
+       with ``verified=true``; absent or no RN found → REJECT with a
+       diagnostic that includes the recommended ``demisto-sdk
+       update-release-notes`` invocation.
+
+    Per the FIXES-TODO Hints policy: the prescription is unambiguous
+    (run update-release-notes + add the substring), so the rejection
+    diagnostic includes a one-line operator-actionable hint.
+    """
+    from workflow_state.api import (
+        evaluate_release_notes_for_integration as _evaluate_rn,
+        RELEASE_NOTES_REQUIRED_SUBSTRING,
+    )
+
+    if len(args) < 1:
+        print(
+            "Usage: workflow_state.py set-release-notes <integration_id>"
+        )
+        sys.exit(1)
+    name = args[0]
+    if len(args) > 1:
+        # The cell is auto-computed; reject extra args to avoid confusion
+        # with the JSON-payload pattern used by other setters.
+        print(
+            "ERROR: set-release-notes takes only the integration ID. "
+            "The cell shape is auto-computed from the working tree."
+        )
+        sys.exit(1)
+
+    payload = _evaluate_rn(name)
+    # Reject when an RN was required but the verification didn't pass.
+    if payload.get("required") is True and payload.get("verified") is not True:
+        path = payload.get("path")
+        if path is None:
+            reason = (
+                f"the integration's .py/.yml were modified but NO release-"
+                f"notes file was found in the pack's ReleaseNotes/ "
+                f"directory."
+            )
+        else:
+            reason = (
+                f"the newest release-notes file ({path}) does NOT contain "
+                f"the required substring '{RELEASE_NOTES_REQUIRED_SUBSTRING}'."
+            )
+        print(f"ERROR: Release Notes step rejected for '{name}': {reason}")
+        # Operator-actionable hint per the Hints policy
+        # (cross-cutting decision #1): prescription is unambiguous.
+        print(
+            "  HINT: run `demisto-sdk update-release-notes -i "
+            "Packs/<PackName>` (use --update-type documentation if "
+            "the SDK exposes it), then edit the generated RN file to "
+            f"include the substring '{RELEASE_NOTES_REQUIRED_SUBSTRING}' "
+            "and re-run set-release-notes."
+        )
+        sys.exit(1)
+
+    # Hand the computed payload to the JSON-data step machinery so
+    # validation + cascade reset semantics match every other data step.
+    _set_json_data_step(
+        [name, json.dumps(payload)],
+        "Release Notes",
+        "set-release-notes",
+    )
+
+
 # (Removed 2026-05) ``set-params-for-test`` and ``set-shared-params``:
 # the ``Params for test with default in code`` and ``Params same in other
 # handlers`` columns were retired in the schema simplification. See the
@@ -1596,7 +1677,7 @@ def cmd_next(args: list[str]) -> None:
 # Help & main dispatch
 # ---------------------------------------------------------------------------
 
-_DOC = """Workflow State Machine for connectus-migration-pipeline.csv (UNIFIED 16-STEP MODEL)
+_DOC = """Workflow State Machine for connectus-migration-pipeline.csv (UNIFIED 12-STEP MODEL)
 
 This script manages the workflow tracking columns in the CSV. The shape
 of the workflow (steps, columns, markers) is declared in
@@ -1629,6 +1710,7 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "set-shadowed-commands": cmd_set_shadowed_commands,
     "detect-shadowed-commands": cmd_detect_shadowed_commands,
     "set-params-to-capabilities": cmd_set_params_to_capabilities,
+    "set-release-notes": cmd_set_release_notes,
     "markpass": cmd_markpass,
     "skip": cmd_skip,
     "fail": cmd_fail,

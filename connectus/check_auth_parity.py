@@ -60,12 +60,31 @@ import check_command_params as _ccp  # noqa: E402
 
 ERROR_NON_PYTHON = "ERROR_NON_PYTHON"
 ERROR_NO_BASECLIENT = "ERROR_NO_BASECLIENT"
+# FIXES-TODO #12 (LOCKED 2026-05-31): refined short-circuit for
+# integrations whose ``Client`` subclasses a class defined in a shared
+# ``*ApiModule`` (e.g. MicrosoftApiModule, OktaApiModule, ServiceNowApiModule).
+# The textual ``BaseClient`` detection in :func:`detect_no_baseclient`
+# never sees the literal token in such an integration's own .py because
+# the inheritance is transitive through the ApiModule. This is a
+# diagnostic refinement, not a detection widening — the right operator
+# response is still to mark the auth ``interpolated: true`` (per
+# cross-cutting decision #3, the documented fallback).
+APIMODULE_INTEGRATION_CANNOT_VERIFY = "APIMODULE_INTEGRATION_CANNOT_VERIFY"
+# FIXES-TODO #9 (LOCKED 2026-05-31): structural-skip code for the
+# multi-secret/multi-flow Passthrough pattern (e.g. AbuseIPDB's
+# primary + Hunting keys). Per cross-cutting decision #2 (XOR-only
+# auth), these integrations are classified as Passthrough. The parity
+# gate's coverage of such bundles is intentionally reduced — by design,
+# not a failure.
+MULTI_SECRET_PASSTHROUGH = "MULTI_SECRET_PASSTHROUGH"
 ERROR_ALL_INTERPOLATED = "ERROR_ALL_INTERPOLATED"
 ERROR_CONNECTION_INTERPOLATED = "ERROR_CONNECTION_INTERPOLATED"
 ERROR_INTEGRATION_REJECTS_HTTP = "ERROR_INTEGRATION_REJECTS_HTTP"
 
 EXIT_NON_PYTHON = 10
 EXIT_NO_BASECLIENT = 11
+EXIT_APIMODULE_INTEGRATION_CANNOT_VERIFY = 15
+EXIT_MULTI_SECRET_PASSTHROUGH = 16
 EXIT_ALL_INTERPOLATED = 12
 EXIT_CONNECTION_INTERPOLATED = 13
 EXIT_INTEGRATION_REJECTS_HTTP = 14
@@ -746,6 +765,55 @@ def detect_no_baseclient(py_source: str) -> bool:
     return "BaseClient" not in py_source
 
 
+def detect_apimodule_import(py_source: str) -> str | None:
+    """Return the name of the imported ``*ApiModule`` if any.
+
+    Implements the FIXES-TODO #12 (LOCKED 2026-05-31) diagnostic-clarity
+    refinement: ApiModule-using integrations (e.g. ``from
+    MicrosoftApiModule import *``) cannot be statically verified as
+    BaseClient-using because the inheritance is transitive through the
+    ApiModule. The right operator response is to mark the auth
+    ``interpolated: true`` (per cross-cutting #3). Returns the ApiModule
+    name on match (e.g. ``"MicrosoftApiModule"``) or None.
+    """
+    match = re.search(
+        r"from\s+(\w+ApiModule)\s+import\b", py_source
+    )
+    return match.group(1) if match else None
+
+
+# FIXES-TODO #9 — credential-field name substrings (case-insensitive).
+# A Passthrough profile carrying multiple keys whose names match any of
+# these patterns is classified as a multi-secret/multi-flow bundle (the
+# AbuseIPDB-class case per cross-cutting decision #2).
+_CREDENTIAL_FIELD_PATTERNS = (
+    "password", "key", "secret", "token", "credential", "apikey", "api_key",
+)
+
+
+def detect_multi_secret_passthrough(details: AuthDetails) -> list[str] | None:
+    """Return the list of credential-named keys when a Passthrough
+    profile carries 2+ of them; otherwise None.
+
+    Per the FIXES-TODO #9 resolution: this is a heuristic — we count
+    keys in any Passthrough profile's ``xsoar_param_map`` whose names
+    contain any of :data:`_CREDENTIAL_FIELD_PATTERNS` as a
+    case-insensitive substring. 2+ matches → the bundle is classified
+    as multi-secret.
+    """
+    for entry in details.auth_types or []:
+        if entry.type != AuthType.Passthrough:
+            continue
+        matched: list[str] = []
+        for path in (entry.xsoar_param_map or {}).keys():
+            lowered = path.lower()
+            if any(pattern in lowered for pattern in _CREDENTIAL_FIELD_PATTERNS):
+                matched.append(path)
+        if len(matched) >= 2:
+            return matched
+    return None
+
+
 def detect_signed_auth(py_source: str) -> bool:
     """True when the source code looks like it computes a derived signature.
 
@@ -799,6 +867,42 @@ def _msg_no_baseclient() -> str:
         f"Auth parity test requires BaseClient usage. This integration "
         f"does not use BaseClient. {_LITERAL_MARK_AUTH} if it cannot "
         f"use BaseClient injection."
+    )
+
+
+def _msg_multi_secret_passthrough(matched_keys: list[str]) -> str:
+    """FIXES-TODO #9 diagnostic — by design, not a failure.
+
+    Per the cross-cutting Hints policy: no prescription. The XOR-only
+    auth design (decision #2) makes Passthrough the explicit bucket for
+    multi-secret/multi-flow integrations; the gate's reduced coverage
+    is the documented trade-off.
+    """
+    keys = ", ".join(repr(k) for k in matched_keys)
+    return (
+        f"Multi-secret Passthrough auth profile detected (carries "
+        f"{len(matched_keys)} credential-named keys: {keys}). Per the "
+        f"XOR-only auth model (skill §1.2.2), multi-secret/multi-flow "
+        f"integrations classify as Passthrough by design and the parity "
+        f"gate's coverage of them is intentionally reduced. "
+        f"{_LITERAL_PARITY_GATE_SKIPPED}"
+    )
+
+
+def _msg_apimodule_cannot_verify(apimodule_name: str) -> str:
+    """Construct the FIXES-TODO #12 diagnostic message.
+
+    Per the cross-cutting Hints policy (decision #1): the prescription is
+    unambiguous (mark interpolated), so we include a one-line hint
+    pointing at cross-cutting #3 / skill §1.2.2 directly.
+    """
+    return (
+        f"Auth parity test cannot verify this integration: its Client "
+        f"subclasses a class defined in {apimodule_name} (transitive "
+        f"BaseClient inheritance is invisible to the textual detector). "
+        f"{_LITERAL_MARK_AUTH} — see skill §1.2.2 (cross-cutting "
+        f"decision #3: `interpolated: true` is the documented fallback "
+        f"on any auth profile type when parity verification cannot run)."
     )
 
 
@@ -1454,6 +1558,7 @@ def _per_command_result(
     sentinel_map: SentinelMap,
     connection_name: str,
     extra_sentinels: list[str],
+    auth_entry: AuthEntry | None = None,
 ) -> dict[str, Any]:
     """Build the per-command result block (§5.2 diagnostics + status).
 
@@ -1463,6 +1568,14 @@ def _per_command_result(
     sentinels dict here is keyed by path. The role lives inside the
     sentinel string itself, available for grep but not the primary
     diff label.
+
+    When ``auth_entry`` is supplied, the diffs are post-classified for
+    the FIXES-TODO #13 UCP-strip-crash pattern: when the new run
+    crashed with a ``KeyError`` on a key from the connection's
+    ``xsoar_param_map``, or with a ``TypeError: 'NoneType' object is
+    not subscriptable`` from a ``.get("credentials").get(...)`` chain,
+    the generic ``RUN_FAILED_NEW`` code is replaced with the more
+    specific ``UCP_STRIP_CRASHED_UNCONDITIONAL_READ``.
     """
     sentinels = dict(sentinel_map.path_to_value(connection_name))
     for extra in extra_sentinels:
@@ -1472,6 +1585,13 @@ def _per_command_result(
     new_locs = _per_sentinel_locations(run_new_result.requests, sentinels)
     diffs = _classify_command_diffs(sentinels, old_locs, new_locs)
     diffs.extend(_run_status_diffs(run_old_result, run_new_result))
+
+    # FIXES-TODO #13 (LOCKED 2026-05-31): post-classify RUN_FAILED_NEW
+    # for the UCP-strip-crash pattern. Detection only — no embedded
+    # prescription (two valid fix paths exist per skill §1.12), only a
+    # location pointer to the skill section.
+    if auth_entry is not None:
+        diffs = _reclassify_ucp_strip_crash(diffs, run_new_result, auth_entry)
 
     status = _command_status(run_old_result, run_new_result, diffs)
     return {
@@ -1483,6 +1603,110 @@ def _per_command_result(
             compare_request_sets(run_old_result.requests, run_new_result.requests)
         ),
     }
+
+
+# ---------------------------------------------------------------------------
+# FIXES-TODO #13 — UCP-strip-crash post-classification
+# ---------------------------------------------------------------------------
+
+# Both crash signatures we recognize. Per the resolution's open-question
+# answer, BOTH patterns are detected: the explicit KeyError and the
+# TypeError-from-NoneType chain.
+_UCP_KEYERROR_RE = re.compile(r"KeyError:\s*['\"]?(?P<key>[\w.\-]+)['\"]?")
+_UCP_NONETYPE_RE = re.compile(
+    r"TypeError:\s*['\"]?NoneType['\"]?\s+object\s+is\s+not\s+subscriptable",
+    re.IGNORECASE,
+)
+_UCP_DOTGET_CRED_RE = re.compile(
+    r"\.get\(\s*['\"]credentials['\"]\s*[,)]"
+)
+
+
+def _reclassify_ucp_strip_crash(
+    diffs: list[Diff],
+    new_run: RunResult,
+    auth_entry: AuthEntry,
+) -> list[Diff]:
+    """Replace generic ``RUN_FAILED_NEW`` with the UCP-strip-specific code.
+
+    Returns a (possibly modified) list of diffs. The original list is not
+    mutated. The reclassification fires only when the new run crashed
+    AND the stderr signature matches one of the recognized patterns AND
+    the implicated key/chain is plausibly UCP-stripped (i.e. it appears
+    in the connection's ``xsoar_param_map``).
+    """
+    if new_run.status != "crashed":
+        return diffs
+    if not any(d.failure_code == "RUN_FAILED_NEW" for d in diffs):
+        return diffs
+
+    stderr = new_run.stderr or ""
+    matched = _detect_ucp_strip_crash_signature(stderr, auth_entry)
+    if not matched:
+        return diffs
+
+    rewritten: list[Diff] = []
+    for d in diffs:
+        if d.failure_code == "RUN_FAILED_NEW":
+            rewritten.append(
+                Diff(
+                    sentinel=d.sentinel,
+                    failure_code="UCP_STRIP_CRASHED_UNCONDITIONAL_READ",
+                    old_locations=d.old_locations,
+                    new_locations=d.new_locations,
+                )
+            )
+        else:
+            rewritten.append(d)
+    return rewritten
+
+
+def _detect_ucp_strip_crash_signature(
+    stderr: str, auth_entry: AuthEntry
+) -> bool:
+    """True when the new-run stderr matches the UCP-strip-crash pattern.
+
+    Two recognized signatures:
+
+    * **KeyError**: ``KeyError: 'identifier'`` (or any other XSOAR-path
+      leaf) where the named key appears in the connection's
+      ``xsoar_param_map``. Captures the AMPv2 case from the original
+      finding.
+    * **TypeError-from-NoneType chain**: ``TypeError: 'NoneType' object
+      is not subscriptable`` paired with a ``.get("credentials")`` call
+      in the same stderr block. Captures integrations that defensively
+      use ``.get(...).get(...)`` chains but still crash when UCP strips
+      the parent.
+    """
+    # Build the set of "interesting" keys: every leaf name appearing in
+    # the connection's xsoar_param_map. For dotted paths
+    # (``credentials.identifier``) we include both the full path and
+    # each segment as candidates — different integrations crash at
+    # different layers of the chain.
+    candidates: set[str] = set()
+    for path in (auth_entry.xsoar_param_map or {}).keys():
+        if not path:
+            continue
+        candidates.add(path)
+        for segment in path.split("."):
+            if segment:
+                candidates.add(segment)
+
+    for m in _UCP_KEYERROR_RE.finditer(stderr):
+        key = m.group("key")
+        if key in candidates:
+            return True
+
+    if _UCP_NONETYPE_RE.search(stderr) and _UCP_DOTGET_CRED_RE.search(stderr):
+        # The NoneType chain often unwinds without naming the
+        # credentials key in the KeyError style, but the .get("credentials")
+        # call appears in the traceback. That's the AMPv2-class shape.
+        # Conservative trigger: only fire when xsoar_param_map mentions
+        # 'credentials' so we don't surface this on unrelated NoneType
+        # crashes.
+        if any("credentials" in k for k in (auth_entry.xsoar_param_map or {})):
+            return True
+    return False
 
 
 def _per_sentinel_locations(
@@ -1673,6 +1897,7 @@ def _run_one_command(
             new = _crashed_run(rc=-1, stderr=f"run_new exception: {exc}")
         result = _per_command_result(
             old, new, sentinel_map, entry.name, oauth_extra,
+            auth_entry=entry,
         )
         # ERROR_INTEGRATION_REJECTS_HTTP detection (§5.5) is raised by
         # the caller, not here — we just surface the stderr.
@@ -1780,6 +2005,22 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
     assert py_path is not None  # narrowed by detect_non_python
     py_source = py_path.read_text(encoding="utf-8", errors="replace")
     if detect_no_baseclient(py_source):
+        # FIXES-TODO #12 (LOCKED 2026-05-31): refine the diagnostic for
+        # integrations whose ``Client`` subclasses a class defined in a
+        # shared ``*ApiModule`` (MicrosoftApiModule, OktaApiModule, …).
+        # The textual ``detect_no_baseclient`` triggers because the
+        # ApiModule's class is imported under its own name, but the
+        # integration IS using BaseClient transitively. Emit the more
+        # specific code so the operator's path forward (mark
+        # ``interpolated: true``) is unambiguous.
+        apimodule = detect_apimodule_import(py_source)
+        if apimodule:
+            return _emit_hard_error(
+                display,
+                APIMODULE_INTEGRATION_CANNOT_VERIFY,
+                _msg_apimodule_cannot_verify(apimodule),
+                EXIT_APIMODULE_INTEGRATION_CANNOT_VERIFY,
+            )
         return _emit_hard_error(
             display, ERROR_NO_BASECLIENT, _msg_no_baseclient(), EXIT_NO_BASECLIENT,
         )
@@ -1791,6 +2032,22 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
         parse_auth_details(auth_details) if auth_details is not None
         else _empty_details()
     )
+
+    # FIXES-TODO #9 (LOCKED 2026-05-31): multi-secret Passthrough
+    # structural skip. Per cross-cutting decision #2 (XOR-only auth),
+    # multi-secret/multi-flow integrations like AbuseIPDB classify as
+    # Passthrough; the gate explicitly says "by design, not a failure."
+    # Fires BEFORE the all-interpolated check so the more specific
+    # diagnostic wins (Passthrough profiles are required to be
+    # interpolated, so they would otherwise short-circuit on the
+    # vaguer ERROR_ALL_INTERPOLATED).
+    multi_secret_keys = detect_multi_secret_passthrough(details)
+    if multi_secret_keys is not None:
+        return _emit_hard_error(
+            display, MULTI_SECRET_PASSTHROUGH,
+            _msg_multi_secret_passthrough(multi_secret_keys),
+            EXIT_MULTI_SECRET_PASSTHROUGH,
+        )
 
     interp_check = _check_interpolation_hard_errors(
         display, details, connection_filter
@@ -2071,6 +2328,13 @@ def main(argv: list[str] | None = None) -> int:
     ``--seed-param NAME=VALUE``; see :func:`check_auth_parity` for the
     semantics and the dotted-leaf rules for ``type:9`` credentials.
     """
+    # Auto-apply the DEMISTO_SDK_LOG_FILE_PATH workaround at the earliest
+    # possible point (FIXES-TODO #2). Belt-and-suspenders: the same call
+    # also fires inside ``_ccp.prepare_unified_content``; calling here
+    # first ensures the env var is present even for code paths that read
+    # ``os.environ['DEMISTO_SDK_LOG_FILE_PATH']`` before they spawn the
+    # ``demisto-sdk`` subprocess.
+    _ccp._ensure_demisto_sdk_log_path()
     args = _parse_args(argv if argv is not None else sys.argv[1:])
     integration_path = Path(args.integration_path).resolve()
     if not integration_path.is_dir():

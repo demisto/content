@@ -37,6 +37,7 @@ from __future__ import annotations
 import ast
 import textwrap
 from pathlib import Path
+from unittest import mock
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -3186,6 +3187,140 @@ class TestAnalyzeIntegrationDiagnosticsOptIn:
             with_diagnostics=True,
         )
         assert "diagnostics" not in result
+
+
+# =============================================================================
+# FIXES-TODO #11 — JavaScript language gate for the dynamic phase
+# =============================================================================
+
+
+class TestLanguageGateJavaScript:
+    """The dynamic phase must NOT run on non-Python integrations.
+
+    Per FIXES-TODO #11 (LOCKED 2026-05-31): static-only had a language
+    gate; the dynamic dispatch in :func:`analyze_integration` did not,
+    so JS / PowerShell integrations crashed the entire run with a
+    ``DynamicPrepError`` from ``ast.parse``. The fix is a language gate
+    BEFORE dynamic dispatch + a typed ``DynamicPrepError("non-Python
+    unified file: ...")`` in :func:`prepare_unified_content` as
+    defense-in-depth.
+    """
+
+    def _make_minimal_js_integration(self, tmp_path: Path) -> Path:
+        """Synthesize a tiny JavaScript integration on disk."""
+        integ_dir = tmp_path / "JsInt"
+        integ_dir.mkdir()
+        # The actual JS body is irrelevant — we just need the YML to
+        # declare ``script.type: javascript`` so the language gate fires.
+        (integ_dir / "JsInt.js").write_text(
+            "// JS integration body\n"
+            "function main() {\n"
+            "    return;\n"
+            "}\n"
+        )
+        (integ_dir / "JsInt.yml").write_text(
+            "name: JsInt\n"
+            "display: JsInt\n"
+            "configuration:\n"
+            "  - name: api_key\n"
+            "    type: 4\n"
+            "script:\n"
+            "  type: javascript\n"
+            "  script: ''\n"
+            "  commands:\n"
+            "    - name: js-do-thing\n"
+            "      arguments: []\n"
+        )
+        return integ_dir
+
+    def test_default_invocation_does_not_crash_on_js(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture
+    ) -> None:
+        """Without ``--static-only``, JS integration must NOT crash.
+
+        Per the operational workaround in FIXES-TODO #11, this is the
+        exact failure mode that lost the entire run on AMP.
+        """
+        integ_dir = self._make_minimal_js_integration(tmp_path)
+        # Default invocation: static_only=False. The language gate
+        # should short-circuit the dynamic phase before
+        # ``prepare-content`` ever runs (so this test does NOT require
+        # docker / demisto-sdk on PATH).
+        result = ccp.analyze_integration(
+            integration_path=integ_dir,
+            commands_filter=None,
+            static_only=False,
+            ignore=set(),
+            timeout=30,
+            docker_cfg=None,
+            with_diagnostics=False,
+        )
+        # The result should have the standard shape with empty
+        # commands (the static-only outcome for JS).
+        assert "commands" in result
+        # The dispatched command from the YML should appear with no
+        # captured params (static fallback can't trace JS).
+        assert result["commands"].get("js-do-thing", []) == []
+        # And the stderr message should include the unambiguous hint
+        # per the Hints policy (cross-cutting #1).
+        err = capsys.readouterr().err
+        assert "non-Python" in err
+        assert "--static-only" in err
+
+    def test_prepare_unified_content_raises_typed_dynamic_prep_error(
+        self, tmp_path: Path
+    ) -> None:
+        """Defense-in-depth: even if a caller bypasses the
+        ``analyze_integration`` gate, ``prepare_unified_content`` must
+        emit a typed ``DynamicPrepError("non-Python unified file: ...")``
+        rather than a confusing SyntaxError-shaped error from
+        ``ast.parse``.
+
+        We can't easily run real ``demisto-sdk prepare-content`` from a
+        test, so we monkeypatch the subprocess call to write a unified
+        YAML with ``script.type: javascript`` and assert the language
+        gate inside ``prepare_unified_content`` catches it.
+        """
+        import subprocess
+
+        out_dir = tmp_path / "out"
+        out_dir.mkdir()
+        integ_dir = tmp_path / "DummyInt"
+        integ_dir.mkdir()
+
+        # Synthesize the unified.yml that prepare-content would normally
+        # produce. The language gate reads ``script.type`` from this
+        # file.
+        def _fake_subprocess_run(cmd, *args, **kwargs):  # noqa: ANN001
+            # cmd is ["demisto-sdk", "prepare-content", "-i", ..., "-o", out_path]
+            # find the -o argument
+            out_path = Path(cmd[cmd.index("-o") + 1])
+            out_path.write_text(
+                "name: JsInt\n"
+                "script:\n"
+                "  type: javascript\n"
+                "  script: '// hello'\n",
+                encoding="utf-8",
+            )
+
+            class _R:
+                returncode = 0
+                stdout = ""
+                stderr = ""
+
+            return _R()
+
+        # Force shutil.which to return a non-None value so the early
+        # ``demisto-sdk not found on PATH`` check passes.
+        import shutil
+
+        with mock.patch.object(subprocess, "run", _fake_subprocess_run):
+            with mock.patch.object(shutil, "which", return_value="/fake/demisto-sdk"):
+                with pytest.raises(ccp.DynamicPrepError) as exc_info:
+                    ccp.prepare_unified_content(integ_dir, out_dir)
+        assert "non-Python" in str(exc_info.value)
+        assert "javascript" in str(exc_info.value)
+        assert "--static-only" in str(exc_info.value)
 
 
 # =============================================================================

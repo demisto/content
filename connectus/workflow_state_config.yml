@@ -89,14 +89,6 @@ steps:
     preserve_on_reset: false
     description: "JSON object mapping YML param name -> default value (any JSON type). Empty object {} is valid. Consumed by connector_param_mapper.py as the PARAM_DEFAULTS_JSON argument, and consumed by check_auth_parity.py as the first-precedence source of non-auth required param values."
 
-  - name: "Shadowed Integration Commands"
-    kind: data
-    optional: false
-    setter: set-shadowed-commands
-    json_schema: {"validator": "shadowed_commands"}
-    preserve_on_reset: false
-    description: "JSON object mapping original command name -> renamed command name (form `<original>-<integrationbrand>`). When integrations within the same connector share (shadow) a command name, the losing integration(s) must rename their command in both the .py and the .yml (keeping arguments identical). An empty object {} means no shadowed commands were detected for this integration. Use `python connectus/workflow_state.py detect-shadowed-commands <Integration ID>` to compute the required renames; the AI must apply the .py/.yml edits BEFORE committing this cell. The setter validates on commit that (a) each `original` was actually shadowed within the connector (present in this integration's YML AND in at least one sibling integration's YML at the time the connector was scanned), and (b) the renamed command now exists in this integration's YML and the original no longer does."
-
   - name: "Params to Capabilities"
     kind: data
     optional: false
@@ -117,11 +109,13 @@ steps:
     setter: null
     description: "Run `make validate` on the generated manifest."
 
-  - name: "write tests"
-    kind: checkpoint
+  - name: "Release Notes"
+    kind: data
     optional: false
-    setter: null
-    description: "Author unit tests for the integration."
+    setter: set-release-notes
+    json_schema: {"validator": "release_notes"}
+    preserve_on_reset: false
+    description: "Verifies a release-notes file exists for the integration when its .py or .yml was modified during the migration. Cell shape: {\"required\": bool, \"path\": str|null, \"verified\": bool}. When `git diff HEAD` on the integration's .py/.yml is empty: {\"required\": false} auto-passes. When non-empty: requires a Packs/<PackName>/ReleaseNotes/<Version>.md containing the exact substring 'Enabled support for UCP' (case-sensitive). Generate with `demisto-sdk update-release-notes -i Packs/<PackName>` and edit the resulting RN file to include the required substring. If multiple RN files exist, the newest (largest version) is checked."
 
   - name: "precommit/validate/unit tests passed"
     kind: checkpoint

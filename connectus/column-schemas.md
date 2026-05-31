@@ -845,3 +845,62 @@ The output file is then fed verbatim into
 python3 connectus/workflow_state.py set-params-to-capabilities "Gmail Single User" \
   "$(cat connectus/connectus_migration/_gmail_param_mapping.json)"
 ```
+
+---
+
+## `Release Notes`
+
+Added 2026-05-31 as part of the workflow re-sequencing (see
+[`FIXES-TODO.md`](FIXES-TODO.md) — combined #4+#6+New_RN execution
+plan). The cell verifies a release-notes file exists when the migration
+touched the integration's own .py/.yml.
+
+### JSON shape
+
+Object with exactly three top-level keys:
+
+```json
+{
+  "required": true,
+  "path": "Packs/MyPack/ReleaseNotes/1_2_3.md",
+  "verified": true
+}
+```
+
+| Key | Type | Description |
+|---|---|---|
+| `required` | `bool` | Whether the migration introduced changes that mandate a release-notes entry. Computed from `git diff HEAD --name-only -- <integration>.py <integration>.yml`. |
+| `path` | `str` \| `null` | Repo-relative path to the verified release-notes file. `null` when `required=false` or when no RN file was found. |
+| `verified` | `bool` | Whether the file at `path` contains the required substring (case-sensitive exact match): `Enabled support for UCP`. Always `false` when `required=false`. |
+
+### Cross-field rules
+
+- `required: true` requires `path` to be a non-empty string.
+- `required: false` requires `path: null` AND `verified: false` (nothing to verify).
+- Extra top-level keys are rejected.
+
+### Setter
+
+[`workflow_state.py set-release-notes "<Integration ID>"`](workflow_state/cli.py:1)
+([`cmd_set_release_notes`](workflow_state/cli.py:1)). The setter takes
+no JSON payload — the cell shape is auto-computed from the working
+tree:
+
+1. `git diff HEAD --name-only -- <py> <yml>` decides `required`.
+2. When `required=true`, look for the newest `Packs/<Pack>/ReleaseNotes/<Version>.md` file (highest version number across the directory).
+3. Substring-match `"Enabled support for UCP"` (exact, case-sensitive) anywhere in that file.
+
+If `required=true` and `verified=false`, the setter rejects with a
+diagnostic that includes the recommended invocation:
+
+```bash
+demisto-sdk update-release-notes -i Packs/<PackName>
+# Then edit the generated RN file to include the substring
+# "Enabled support for UCP", and re-run set-release-notes.
+```
+
+### Reset semantics
+
+`Release Notes` is **wiped** by every reset path (`reset`, `set-auth`,
+`fail`, `reset-to`). It does NOT carry `preserve_on_reset: true`. Re-run
+the setter after any reset.
