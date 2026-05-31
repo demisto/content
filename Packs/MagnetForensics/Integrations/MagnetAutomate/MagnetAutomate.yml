@@ -28,7 +28,7 @@ configuration:
   type: 8
   section: Connect
 description: Magnet Automate is an orchestration and automation platform that accelerates your digital forensics investigations by automating workflows and integrating with various forensic tools.
-display: Magnet Automate
+display: Magnet Automate Beta
 name: MagnetAutomate
 script:
   commands:
