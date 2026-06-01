@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+field_mappings:
+  - id: "domain"
+    field_name: "url"

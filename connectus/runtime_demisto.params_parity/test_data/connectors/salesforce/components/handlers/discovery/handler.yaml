@@ -1,0 +1,39 @@
+id: "saas-posture-config-discovery-salesforce"
+
+metadata:
+  version: 1.0.0
+  description: "Discovery handler for Salesforce connector"
+  tags:
+    - "Service"
+    - "Sales"
+    - "Marketing"
+  ownership:
+    team: "SSPM"
+    maintainers:
+      - "@sspm-team"
+  module: "discovery"
+  labels: {"saas"}
+
+enabled: true
+
+triggering:
+  type: "PUB_SUB"
+  args: {}
+
+capabilities:
+  - id: "saas-posture-config-monitoring"
+    auth_options:
+      - id: "oauth2_client_credentials.salesforce"
+        scopes:
+        - "api"
+        - "openid"
+        workloads:
+          - "saas-sspm-api"
+
+test_connection:
+  type: "endpoint"
+  host: "http://xdr-st-{tenant_id}-saas-sspm-api.xdr-st.svc.cluster.local:8080"
+  endpoint: "/api/auth/validate-credentials-ucp"
+  headers:
+    x-ps-app-name: "salesforce"
+    Content-Type: "application/json"

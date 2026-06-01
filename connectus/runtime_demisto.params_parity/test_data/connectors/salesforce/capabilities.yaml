@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=../../schema/capabilities.schema.json
+metadata:
+  title: "Capabilities"
+  description: "Name and configure the instance capabilities"
+  help: |
+    ## Salesforce Capabilities
+    ### Automation and Remediation: 
+    Enables executing commands, running automated workflows, managing cases, updating Chatter, or executing access control and CRUD (create, read, update, delete) operations across Salesforce and its IAM services. This capability includes commands for automation and remediation. <br>For more information, see: [Automation and remediation commands.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-3.x-Documentation/Ingest-and-run-Salesforce-automation-and-remediation)
+
+    ### Security Posture: 
+    Enables detecting, monitoring, and alerting on your cloud application settings. Available for Cloud Posture license only.
+
+general_configurations:
+  description: "General configurations for all capabilities"
+  configurations:
+    - fields:
+        - id: "instance_name"
+          title: "Enter a unique name for this instance"
+          field_type: "input"
+          metadata:
+            connector:
+              parameter: "instance_name"
+          validations:
+            - trigger: "change"
+              rules:
+                - type: "pattern"
+                  value: "^[a-zA-Z0-9 _-]+$"
+                  message: "Only alphanumeric characters, spaces, underscores, and hyphens are allowed."
+                - type: "async"
+                  validation_type: "uniqueness"
+          options:
+            placeholder: "Enter a unique name for this instance"
+            create_modifiers:
+              required: true
+              hidden: false
+            edit_modifiers:
+              required: true
+              hidden: false
+
+capabilities:
+  - id: "automation-and-remediation"
+    title: "Automation and Remediation"
+    description: "Automate identity lifecycle management including user provisioning, updates, and access control"
+    default_enabled: true
+    required: false
+    config:
+      required_license: ["agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"]
+
+  - id: "saas-posture-config-monitoring"
+    title: "Security Posture"
+    description: "Detect, monitor and alert on settings of your SaaS application."
+    default_enabled: true
+    required: false
+    config:
+      required_license: ["cloud_posture", "xsiam"]
+    sub_capabilities:
+      - id: "saas-posture-config-remediation"
+        title: "Help remediate the misconfigured security settings of your SaaS application."
+        default_enabled: false
+        required: false
+
+  - id: "identity"
+    title: "Identity Posture"
+    description: "Maintain visibility and control over SaaS-based identities, including users, groups, roles, and granular permissions."
+    default_enabled: true
+    required: false
+    config:
+      required_license: [ ]
+

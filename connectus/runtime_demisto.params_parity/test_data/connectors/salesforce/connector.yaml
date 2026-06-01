@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=../../schema/connector.schema.json
+id: "salesforce"
+
+metadata:
+  title: "Salesforce"
+  description: "Salesforce CRM services for identity management, automation, remediation and SaaS Posture Security"
+  version: 1.0.0
+  categories:
+    - "Case Management"
+  tags:
+    - "Security"
+  vendor: "Salesforce"
+  publisher: "Palo Alto Networks"
+  author_image: "salesforce-ic.svg"
+  ownership:
+    team: "xsoar"
+    maintainers:
+      - "@xsoar-content"
+
+settings:
+  allow_skip_verification: false
+
+  
+
