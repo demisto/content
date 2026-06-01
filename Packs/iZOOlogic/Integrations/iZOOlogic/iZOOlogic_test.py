@@ -837,6 +837,12 @@ class TestFetchForType:
 
 
 class TestGetEventsCommand:
+    @pytest.fixture(autouse=True)
+    def mock_xsiam_platform(self, mocker: MockerFixture):
+        """Mock is_xsiam to return True for all get-events tests."""
+        mocker.patch("iZOOlogic.is_xsiam", return_value=True)
+        mocker.patch("iZOOlogic.is_platform", return_value=False)
+
     def test_basic(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
         mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         result = get_events_command(mock_client, {"limit": "10"}, [2])
@@ -1325,6 +1331,12 @@ class TestCreateIncidentCommand:
 
 
 class TestSearchIncidentsCommand:
+    @pytest.fixture(autouse=True)
+    def mock_xsiam_platform(self, mocker: MockerFixture):
+        """Mock is_xsiam to return True for tests that call get_events_command."""
+        mocker.patch("iZOOlogic.is_xsiam", return_value=True)
+        mocker.patch("iZOOlogic.is_platform", return_value=False)
+
     def test_basic_no_args(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
         """Fetch with default args (no filters) returns incidents."""
         mocker.patch.object(mock_client, "fetch_events_page", return_value=incidents_result)
