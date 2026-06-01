@@ -2435,23 +2435,7 @@ def test_send_mail_with_attach_cids_uses_cid_labels_not_file_ids(mocker):
       - No call to getFilePath should be made with CID labels
       - The email should be sent successfully with inline images
     """
-    from MicrosoftGraphMail import MsGraphMailClient
-    from MicrosoftGraphMailApiModule import MsGraphMailBaseClient
-
-    client = MsGraphMailBaseClient(
-        tenant_id="tenant_id",
-        auth_id="auth_id",
-        enc_key="enc_key",
-        app_name="app_name",
-        base_url="https://graph.microsoft.com/v1.0/",
-        verify=True,
-        proxy=False,
-        self_deployed=True,
-        mailbox_to_fetch="test@example.com",
-        folder_to_fetch="Inbox",
-        first_fetch_interval="1 day",
-        emails_fetch_limit=50,
-    )
+    client = self_deployed_client()
 
     args = {
         "to": ["recipient@example.com"],
@@ -2469,26 +2453,23 @@ def test_send_mail_with_attach_cids_uses_cid_labels_not_file_ids(mocker):
         return_value={"path": "test_data/plant.jpg", "name": "plant.jpg"},
     )
 
-    # Mock send_mail to capture the payload
-    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
-    mocker.patch.object(client, "get_access_token")
+    with requests_mock.Mocker() as request_mocker:
+        mocker.patch.object(client, "get_access_token")
+        send_mail_mocker = request_mocker.post(f"https://graph.microsoft.com/v1.0/users/{args['from']}/SendMail")
 
-    send_email_command(client, args)
+        send_email_command(client, args)
 
-    # Verify send_mail was called
-    send_mail_mock.assert_called_once()
+        assert send_mail_mocker.called
+        message = send_mail_mocker.last_request.json().get("message")
+        assert message
+        message_attachments = message.get("attachments", [])
 
-    # Get the message payload
-    call_kwargs = send_mail_mock.call_args
-    json_data = call_kwargs.kwargs.get("json_data") or call_kwargs[1].get("json_data") or call_kwargs[0][1]
-    message_attachments = json_data.get("attachments", [])
-
-    # Verify the attachment is marked as inline with the correct CID
-    assert len(message_attachments) == 1
-    attachment = message_attachments[0]
-    assert attachment["isInline"] is True
-    assert attachment["contentId"] == "mylogo"
-    assert attachment["name"] == "plant.jpg"
+        # Verify the attachment is marked as inline with the correct CID
+        assert len(message_attachments) == 1
+        attachment = message_attachments[0]
+        assert attachment["isInline"] is True
+        assert attachment["contentId"] == "mylogo"
+        assert attachment["name"] == "plant.jpg"
 
     # Verify getFilePath was called with the War Room file ID, NOT the CID label
     demisto.getFilePath.assert_called_once_with("15@8")
@@ -2506,22 +2487,7 @@ def test_send_mail_with_attach_ids_no_cids_are_not_inline(mocker):
       - The attachments should NOT be marked as inline
       - The contentId should be the file ID (backward compatibility)
     """
-    from MicrosoftGraphMailApiModule import MsGraphMailBaseClient
-
-    client = MsGraphMailBaseClient(
-        tenant_id="tenant_id",
-        auth_id="auth_id",
-        enc_key="enc_key",
-        app_name="app_name",
-        base_url="https://graph.microsoft.com/v1.0/",
-        verify=True,
-        proxy=False,
-        self_deployed=True,
-        mailbox_to_fetch="test@example.com",
-        folder_to_fetch="Inbox",
-        first_fetch_interval="1 day",
-        emails_fetch_limit=50,
-    )
+    client = self_deployed_client()
 
     args = {
         "to": ["recipient@example.com"],
@@ -2537,18 +2503,18 @@ def test_send_mail_with_attach_ids_no_cids_are_not_inline(mocker):
         return_value={"path": "test_data/plant.jpg", "name": "plant.jpg"},
     )
 
-    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
-    mocker.patch.object(client, "get_access_token")
+    with requests_mock.Mocker() as request_mocker:
+        mocker.patch.object(client, "get_access_token")
+        send_mail_mocker = request_mocker.post(f"https://graph.microsoft.com/v1.0/users/{args['from']}/SendMail")
 
-    send_email_command(client, args)
+        send_email_command(client, args)
 
-    send_mail_mock.assert_called_once()
+        assert send_mail_mocker.called
+        message = send_mail_mocker.last_request.json().get("message")
+        assert message
+        message_attachments = message.get("attachments", [])
 
-    call_kwargs = send_mail_mock.call_args
-    json_data = call_kwargs.kwargs.get("json_data") or call_kwargs[1].get("json_data") or call_kwargs[0][1]
-    message_attachments = json_data.get("attachments", [])
-
-    assert len(message_attachments) == 1
-    attachment = message_attachments[0]
-    assert attachment["isInline"] is False
-    assert attachment["contentId"] == "15@8"
+        assert len(message_attachments) == 1
+        attachment = message_attachments[0]
+        assert attachment["isInline"] is False
+        assert attachment["contentId"] == "15@8"
