@@ -2671,9 +2671,6 @@ function Main
     $command_arguments = $null
     $integration_params = $null
     $ucp_creds = $null
-    # $test = Test-ShouldUseUcpAuth
-    # ReturnOutputs $test $null $null | Out-Null
-    ReturnOutputs "bvla" $null $null | Out-Null
     try {
         if (Test-ShouldUseUcpAuth) {
             $ucp_creds = Get-UcpCredentials
@@ -2681,6 +2678,12 @@ function Main
             $demisto.Debug("[UCP][EwsExtensionEXOPowershellV3.ps1] Retrieved UCP credentials via Get-UcpCredentials (type=$(script:GetExoProp $ucp_creds 'type'))")
             $demisto.Debug("[UCP][EwsExtensionEXOPowershellV3.ps1] Retrieved UCP credentials via Get-UcpCredentials (ucp_creds=$ucp_creds)")
         }
+        else {
+            $ucp_creds = $null
+            $command = $demisto.GetCommand()
+            $command_arguments = $demisto.Args()
+            $integration_params = [Hashtable] $demisto.Params()
+        } 
     } catch {
         # Surface the failure but continue with the fallback path so legacy
         # installs keep working.
