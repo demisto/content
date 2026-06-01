@@ -4772,7 +4772,7 @@ def main():
                 raise ValueError(MESSAGES["MISSING_REQUIRED_ARGS"].format(command))
             for indicator in indicator_list:
                 arguments = (client, indicator)
-                if exact_match:
+                if exact_match and command in ("ip", "domain", "url", "file"):
                     arguments += (exact_match,)  # type: ignore
                 results.append(REPUTATION_COMMAND_TO_FUNCTION[command](*arguments))
             return_results(results)

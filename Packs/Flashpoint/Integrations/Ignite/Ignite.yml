@@ -194,7 +194,7 @@ configuration:
   type: 8
   required: false
   section: Collect
-- additionalinfo: When enabled, enrichment commands (ip, domain, file, and url) use exact matching for indicator values by default. This behavior can be overridden for individual commands using the exact_match argument.
+- additionalinfo: Whether to use exact matching for indicator values by default in enrichment commands (ip, domain, file, and url). This behavior can be overridden for individual commands using the exact_match argument.
   display: Enable Exact Match for IOC Enrichment
   name: ioc_enrichment_exact_match
   type: 8
