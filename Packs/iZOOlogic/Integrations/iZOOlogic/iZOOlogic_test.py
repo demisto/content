@@ -1391,7 +1391,7 @@ class TestSearchIncidentsCommand:
         result = search_incidents_command(mock_client, {})
 
         assert "iZOOlogic Incidents" in result.readable_output
-        assert "incidentID" in result.readable_output
+        assert "Incident ID" in result.readable_output
 
     def test_existing_commands_dont_pass_new_params(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
         """Verify that _fetch_all_pages called from get_events_command does NOT pass new filter params."""

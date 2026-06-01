@@ -44,6 +44,33 @@ class Config:
     MAX_DATE_RANGE_DAYS = 31
 
 
+class TableHeaders:
+    """Human-readable table header mappings (API key → display name)."""
+
+    INCIDENT: dict[str, str] = {
+        "incidentID": "Incident ID",
+        "incidentType": "Incident Type",
+        "subIncidentType": "Sub Incident Type",
+        "brand": "Brand",
+        "url": "URL",
+        "status": "Status",
+        "statusCode": "Status Code",
+        "threatType": "Threat Type",
+        "detectionDate": "Detection Date",
+        "createdOn": "Created On",
+        "closedOn": "Closed On",
+        "detectedBy": "Detected By",
+    }
+
+    CREATE_INCIDENT: dict[str, str] = {
+        "reportedIncidentId": "Reported Incident ID",
+        "statusCode": "Status Code",
+        "statusDescription": "Status Description",
+        "caseType": "Case Type",
+        "caseTypeDescription": "Case Type Description",
+    }
+
+
 class ApiCodes:
     """Centralized API code mappings used across multiple commands."""
 
@@ -785,21 +812,8 @@ def get_events_command(
     readable_output = tableToMarkdown(
         f"{INTEGRATION_NAME} Events",
         all_events,
-        headers=[
-            "incidentID",
-            "incidentType",
-            "subIncidentType",
-            "brand",
-            "url",
-            "status",
-            "statusCode",
-            "threatType",
-            "detectionDate",
-            "createdOn",
-            "closedOn",
-            "detectedBy",
-        ],
-        headerTransform=string_to_table_header,
+        headers=list(TableHeaders.INCIDENT.keys()),
+        headerTransform=TableHeaders.INCIDENT.get,
         removeNull=True,
     )
 
@@ -1117,14 +1131,8 @@ def create_incident_command(client: Client, args: dict[str, Any]) -> CommandResu
     readable_output = tableToMarkdown(
         f"{INTEGRATION_NAME} - New Incident Created",
         result,
-        headers=[
-            "reportedIncidentId",
-            "statusCode",
-            "statusDescription",
-            "caseType",
-            "caseTypeDescription",
-        ],
-        headerTransform=string_to_table_header,
+        headers=list(TableHeaders.CREATE_INCIDENT.keys()),
+        headerTransform=TableHeaders.CREATE_INCIDENT.get,
         removeNull=True,
     )
 
@@ -1209,21 +1217,8 @@ def search_incidents_command(client: Client, args: dict[str, Any]) -> CommandRes
     readable_output = tableToMarkdown(
         f"{INTEGRATION_NAME} Incidents",
         all_incidents,
-        headers=[
-            "incidentID",
-            "incidentType",
-            "subIncidentType",
-            "brand",
-            "url",
-            "status",
-            "statusCode",
-            "threatType",
-            "detectionDate",
-            "createdOn",
-            "closedOn",
-            "detectedBy",
-        ],
-        headerTransform=string_to_table_header,
+        headers=list(TableHeaders.INCIDENT.keys()),
+        headerTransform=TableHeaders.INCIDENT.get,
         removeNull=True,
     )
 
