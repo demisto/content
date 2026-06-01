@@ -1,5 +1,5 @@
 import rasterize
-from rasterize import *
+from rasterize_8_15 import *
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
