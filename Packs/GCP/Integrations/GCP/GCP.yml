@@ -12,13 +12,13 @@ configuration:
   type: 9
   hiddenusername: true
   section: Connect
-  additionalinfo: "Required for Cortex XSOAR and Cortex XSIAM. Paste the full contents of a GCP Service Account private key JSON file. Not required on Cortex Cloud (platform), where authentication is handled automatically via the cloud connector."
+  additionalinfo: "The full contents of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM. Not required on Cortex Platform, where authentication is handled automatically via the cloud connector."
 - display: GCP Project ID
   name: project_id
   type: 0
   required: false
   section: Connect
-  additionalinfo: "Required for Cortex XSOAR and Cortex XSIAM. The GCP project ID to authenticate against when testing the integration (e.g. my-project-123). Not required on Cortex Cloud (platform)."
+  additionalinfo: "The GCP project ID to authenticate against when testing the integration (e.g. my-project-123). Required for Cortex XSOAR and Cortex XSIAM. Not required on Cortex Platform."
 - display: Use system proxy settings
   name: proxy
   type: 8
