@@ -2434,12 +2434,13 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         except Exception as e:
             raise DemistoException(f"Failed to build GCP credentials from service account JSON: {str(e)}")
 
-        # Propagate project_id from the service account JSON when not set in args
-        if not args.get("project_id") and service_account_info.get("project_id"):
-            args["project_id"] = service_account_info["project_id"]
-            demisto.debug(
-                f"[GCP get_credentials] project_id not in args; " f"using project from service account: {args['project_id']}"
-            )
+        # Propagate project_id to args using priority: args > params > service account JSON
+        if not args.get("project_id"):
+            if params.get("project_id"):
+                args["project_id"] = params["project_id"]
+            elif service_account_info.get("project_id"):
+                args["project_id"] = service_account_info["project_id"]
+
 
         demisto.debug("[GCP get_credentials] Using service account credentials (marketplace path)")
         return creds
