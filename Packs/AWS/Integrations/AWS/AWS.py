@@ -10084,8 +10084,14 @@ class NetworkFirewall:
 
         firewall_policies = response.get("FirewallPolicies", [])
 
+        key_map = {"Name": "FirewallPolicyName", "Arn": "FirewallPolicyArn"}
+        updated_firewall_policies = [
+            {key_map.get(k, k): v for k, v in d.items()}
+            for d in firewall_policies
+        ]
+
         outputs = {
-            "AWS.NetworkFirewall.FirewallPolicies(val.Arn == obj.Arn)": firewall_policies,
+            "AWS.NetworkFirewall.FirewallPolicies(val.FirewallPolicyArn == obj.FirewallPolicyArn)": updated_firewall_policies,
             "AWS.NetworkFirewall(true)": {"FirewallPoliciesNextToken": response.get("NextToken")},
         }
 
@@ -10093,8 +10099,8 @@ class NetworkFirewall:
             outputs=outputs,
             readable_output=tableToMarkdown(
                 "AWS Network Firewall Policies",
-                firewall_policies,
-                headers=["Name", "Arn"],
+                updated_firewall_policies,
+                headers=["FirewallPolicyName", "FirewallPolicyArn"],
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
@@ -10118,13 +10124,14 @@ class NetworkFirewall:
         validate_network_firewall_identifier(kwargs, "FirewallPolicy")
         print_debug_logs(client, f"Describing firewall policy with parameters: {kwargs}")
         response = client.describe_firewall_policy(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        firewall_policy_response = serialize_response_with_datetime_encoding(response.get("FirewallPolicyResponse", {}))
+        firewall_policy_response = response.get("FirewallPolicyResponse", {})
         firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
-        firewall_policy_response["FirewallPolicy"] = response.get("FirewallPolicy", {})
+        firewall_policy_response.update(response.get("FirewallPolicy", {}))
 
         return CommandResults(
             outputs_prefix="AWS.NetworkFirewall.FirewallPolicies",
@@ -10176,11 +10183,12 @@ class NetworkFirewall:
 
         print_debug_logs(client, f"Creating firewall policy with parameters: {kwargs}")
         response = client.create_firewall_policy(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        firewall_policy_response = serialize_response_with_datetime_encoding(response.get("FirewallPolicyResponse", {}))
+        firewall_policy_response = response.get("FirewallPolicyResponse", {})
         firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
 
         return CommandResults(
@@ -10256,11 +10264,12 @@ class NetworkFirewall:
         validate_network_firewall_identifier(kwargs, "FirewallPolicy")
         print_debug_logs(client, f"Deleting firewall policy with parameters: {kwargs}")
         response = client.delete_firewall_policy(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        firewall_policy_response = serialize_response_with_datetime_encoding(response.get("FirewallPolicyResponse", {}))
+        firewall_policy_response = response.get("FirewallPolicyResponse", {})
 
         return CommandResults(
             outputs_prefix="AWS.NetworkFirewall.FirewallPolicies",
@@ -10304,11 +10313,12 @@ class NetworkFirewall:
 
         print_debug_logs(client, f"Updating firewall policy with parameters: {kwargs}")
         response = client.update_firewall_policy(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        firewall_policy_response = serialize_response_with_datetime_encoding(response.get("FirewallPolicyResponse", {}))
+        firewall_policy_response = response.get("FirewallPolicyResponse", {})
         firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
 
         return CommandResults(

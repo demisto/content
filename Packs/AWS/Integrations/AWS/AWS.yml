@@ -18891,61 +18891,61 @@ script:
     - contextPath: AWS.NetworkFirewall.FirewallPolicies.UpdateToken
       description: A token used for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyName
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyName
       description: The descriptive name of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyArn
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyArn
       description: The Amazon Resource Name (ARN) of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyId
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyId
       description: The unique identifier for the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Description
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Description
       description: A description of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyStatus
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyStatus
       description: The current status of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Tags
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Tags
       description: The key:value pairs to associate with the resource.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedCapacity
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedCapacity
       description: The number of capacity units currently consumed by the policy's stateful rules.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.NumberOfAssociations
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.NumberOfAssociations
       description: The number of firewalls that are associated with this firewall policy.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.EncryptionConfiguration
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.EncryptionConfiguration
       description: A complex type that contains the Amazon Web Services KMS encryption configuration settings for your firewall policy.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.LastModifiedTime
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.LastModifiedTime
       description: The last time that the firewall policy was changed.
       type: Date
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatelessRuleGroupReferences
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.StatelessRuleGroupReferences
       description: References to the stateless rule groups that are used in the policy.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatelessDefaultActions
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.StatelessDefaultActions
       description: The actions to take on a packet if it doesn't match any of the stateless rules in the policy.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatelessFragmentDefaultActions
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.StatelessFragmentDefaultActions
       description: The actions to take on a fragmented UDP packet if it doesn't match any of the stateless rules in the policy.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatelessCustomActions
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.StatelessCustomActions
       description: The custom action definitions that are available for use in the firewall policy's stateless default actions setting.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatefulRuleGroupReferences
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.StatefulRuleGroupReferences
       description: References to the stateful rule groups that are used in the policy.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatefulDefaultActions
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.StatefulDefaultActions
       description: The default actions to take on a packet that doesn't match any stateful rules.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.StatefulEngineOptions
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.StatefulEngineOptions
       description: Additional options governing how Network Firewall handles stateful rules.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.TLSInspectionConfigurationArn
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.TLSInspectionConfigurationArn
       description: The Amazon Resource Name (ARN) of the TLS inspection configuration.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicy.PolicyVariables
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.PolicyVariables
       description: Contains variables that you can use to override default IP addresses and ports in stateful rule groups.
       type: Unknown
 
@@ -19048,40 +19048,40 @@ script:
     - contextPath: AWS.NetworkFirewall.FirewallPolicies.UpdateToken
       description: A token used for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyName
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyName
       description: The descriptive name of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyArn
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyArn
       description: The Amazon Resource Name (ARN) of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyId
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyId
       description: The unique identifier for the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Description
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Description
       description: A description of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyStatus
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyStatus
       description: The current status of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Tags
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Tags
       description: The key:value pairs to associate with the resource.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatelessRuleCapacity
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatelessRuleCapacity
       description: The number of capacity units currently consumed by the policy's stateless rules.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatefulRuleCapacity
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulRuleCapacity
       description: The number of capacity units currently consumed by the policy's stateful rules.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatefulDomainCapacity
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulDomainCapacity
       description: The number of capacity units currently consumed for the policy's stateful domain list rules.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.NumberOfAssociations
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.NumberOfAssociations
       description: The number of firewalls that are associated with this firewall policy.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.EncryptionConfiguration
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.EncryptionConfiguration
       description: A complex type that contains the Amazon Web Services KMS encryption configuration settings for your firewall policy.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.LastModifiedTime
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.LastModifiedTime
       description: The last time that the firewall policy was changed.
       type: String
 
@@ -19199,40 +19199,40 @@ script:
     - name: firewall_policy_arn
       description: The Amazon Resource Name (ARN) of the firewall policy. You must specify the ARN or the name, and you can specify both.
     outputs:
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyName
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyName
       description: The descriptive name of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyArn
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyArn
       description: The Amazon Resource Name (ARN) of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyId
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyId
       description: The unique identifier for the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Description
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Description
       description: A description of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyStatus
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyStatus
       description: The current status of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Tags
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Tags
       description: The key:value pairs to associate with the resource.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatelessRuleCapacity
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatelessRuleCapacity
       description: The number of capacity units currently consumed by the policy's stateless rules.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatefulRuleCapacity
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulRuleCapacity
       description: The number of capacity units currently consumed by the policy's stateful rules.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatefulDomainCapacity
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulDomainCapacity
       description: The number of capacity units currently consumed for the policy's stateful domain list rules.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.NumberOfAssociations
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.NumberOfAssociations
       description: The number of firewalls that are associated with this firewall policy.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.EncryptionConfiguration
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.EncryptionConfiguration
       description: A complex type that contains the Amazon Web Services KMS encryption configuration settings for your firewall policy.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.LastModifiedTime
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.LastModifiedTime
       description: The last time that the firewall policy was changed.
       type: String
 
@@ -19331,40 +19331,40 @@ script:
     - contextPath: AWS.NetworkFirewall.FirewallPolicies.UpdateToken
       description: A token used for optimistic locking. Network Firewall returns a token to your requests that access the firewall policy. The token marks the state of the policy resource at the time of the request.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyName
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyName
       description: The descriptive name of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyArn
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyArn
       description: The Amazon Resource Name (ARN) of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyId
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyId
       description: The unique identifier for the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Description
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Description
       description: A description of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.FirewallPolicyStatus
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyStatus
       description: The current status of the firewall policy.
       type: String
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.Tags
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.Tags
       description: The key:value pairs to associate with the resource.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatelessRuleCapacity
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatelessRuleCapacity
       description: The number of capacity units currently consumed by the policy's stateless rules.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatefulRuleCapacity
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulRuleCapacity
       description: The number of capacity units currently consumed by the policy's stateful rules.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.ConsumedStatefulDomainCapacity
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.ConsumedStatefulDomainCapacity
       description: The number of capacity units currently consumed for the policy's stateful domain list rules.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.NumberOfAssociations
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.NumberOfAssociations
       description: The number of firewalls that are associated with this firewall policy.
       type: Number
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.EncryptionConfiguration
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.EncryptionConfiguration
       description: A complex type that contains the Amazon Web Services KMS encryption configuration settings for your firewall policy.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.FirewallPolicies.FirewallPolicyResponse.LastModifiedTime
+    - contextPath: AWS.NetworkFirewall.FirewallPolicies.LastModifiedTime
       description: The last time that the firewall policy was changed.
       type: String
 
