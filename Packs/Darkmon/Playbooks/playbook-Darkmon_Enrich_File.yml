@@ -1,0 +1,128 @@
+id: Darkmon - Enrich File
+version: -1
+name: Darkmon - Enrich File
+description: Sub-playbook that calls the Darkmon !file command and returns DBotScore + Common.File for the input File indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d9c3e78a-32e0-43e2-8080-31304118525a
+    type: start
+    task:
+      id: d9c3e78a-32e0-43e2-8080-31304118525a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 46d36d63-f34d-404f-9248-ecc2b287f144
+    type: regular
+    task:
+      id: 46d36d63-f34d-404f-9248-ecc2b287f144
+      version: -1
+      name: Run Darkmon file lookup
+      description: Calls the Darkmon !file reputation command to enrich the File.
+      script: Darkmon|||file
+      type: regular
+      iscommand: true
+      brand: Darkmon
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      hash:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d8a1bc23-da78-42eb-9dfd-a51d18c1f4b7
+    type: title
+    task:
+      id: d8a1bc23-da78-42eb-9dfd-a51d18c1f4b7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 385, "width": 380, "x": 50, "y": 50}}}
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: true
+  description: The File indicator value to enrich. Defaults to ${File.MD5}.
+  playbookInputQuery: null
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator value.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor reporting the score (Darkmon).
+  type: string
+- contextPath: DBotScore.Score
+  description: The reputation score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad).
+  type: number
+- contextPath: DBotScore.Reliability
+  description: Source reliability per the Admiralty code.
+  type: string
+- contextPath: File.MD5
+  description: The File value.
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: The vendor that flagged this File as malicious (Darkmon).
+  type: string
+- contextPath: File.Malicious.Description
+  description: Reason this File was flagged as malicious.
+  type: string
+- contextPath: Darkmon.SearchResult
+  description: Full search result records returned by Darkmon for this indicator.
+  type: unknown
+tests:
+- No tests

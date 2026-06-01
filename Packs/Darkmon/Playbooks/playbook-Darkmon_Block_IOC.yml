@@ -1,0 +1,137 @@
+id: Darkmon - Block IOC
+version: -1
+name: Darkmon - Block IOC
+description: "Analyst-facing wrapper around Darkmon - Generic Block Indicator. Lets analysts paste an IOC into a War Room form and trigger a provider-routed block action."
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+tags:
+  - darkmon
+  - analyst-tool
+  - block
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ac1083d2-ade5-4406-8f04-7806222a7dbb
+    type: start
+    task:
+      id: ac1083d2-ade5-4406-8f04-7806222a7dbb
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1e06646f-3909-4565-9a28-955eb5973a03
+    type: playbook
+    task:
+      id: 1e06646f-3909-4565-9a28-955eb5973a03
+      version: -1
+      name: "Dispatch block via provider switchboard"
+      playbookName: "Darkmon - Generic Block Indicator"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Indicator:
+        simple: "${inputs.Indicator}"
+      Type:
+        simple: "${inputs.Type}"
+      Reason:
+        simple: "${inputs.Reason}"
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4488d703-b16e-439c-acc9-3c1e0cd1234d
+    type: playbook
+    task:
+      id: 4488d703-b16e-439c-acc9-3c1e0cd1234d
+      version: -1
+      name: "Notify SOC of manual block"
+      playbookName: "Darkmon - Generic Notify"
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Subject:
+        simple: "Manual block applied: ${inputs.Indicator}"
+      Body:
+        simple: "Analyst ${currentUser} blocked ${inputs.Indicator} (${inputs.Type}). Reason: ${inputs.Reason}"
+    nexttasks:
+      '#none#':
+        - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 455263b5-9720-4e2d-bf8d-9f1509d9561c
+    type: title
+    task:
+      id: 455263b5-9720-4e2d-bf8d-9f1509d9561c
+      version: -1
+      name: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 545}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 560, "width": 400, "x": 50, "y": 50}}}
+inputs:
+  - key: Indicator
+    value: {}
+    required: true
+    description: The indicator value to block.
+  - key: Type
+    value:
+      simple: ip
+    required: false
+    description: ip | domain | url.
+  - key: Reason
+    value:
+      simple: Manual analyst-triggered block
+    required: false
+    description: Reason annotated on the block rule.
+outputs: []
+tests:
+  - No tests

@@ -1,0 +1,128 @@
+id: Darkmon - Enrich Domain
+version: -1
+name: Darkmon - Enrich Domain
+description: Sub-playbook that calls the Darkmon !domain command and returns DBotScore + Common.Domain for the input Domain indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 58c433f6-9f8c-4c59-85e4-649d492159ef
+    type: start
+    task:
+      id: 58c433f6-9f8c-4c59-85e4-649d492159ef
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ef80b616-1b04-4184-8b45-91b4f63df51e
+    type: regular
+    task:
+      id: ef80b616-1b04-4184-8b45-91b4f63df51e
+      version: -1
+      name: Run Darkmon domain lookup
+      description: Calls the Darkmon !domain reputation command to enrich the Domain.
+      script: Darkmon|||domain
+      type: regular
+      iscommand: true
+      brand: Darkmon
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ecb5ddbd-8aec-40ac-85d1-ca61f892a561
+    type: title
+    task:
+      id: ecb5ddbd-8aec-40ac-85d1-ca61f892a561
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 385, "width": 380, "x": 50, "y": 50}}}
+inputs:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      accessor: Name
+  required: true
+  description: The Domain indicator value to enrich. Defaults to ${Domain.Name}.
+  playbookInputQuery: null
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator value.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor reporting the score (Darkmon).
+  type: string
+- contextPath: DBotScore.Score
+  description: The reputation score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad).
+  type: number
+- contextPath: DBotScore.Reliability
+  description: Source reliability per the Admiralty code.
+  type: string
+- contextPath: Domain.Name
+  description: The Domain value.
+  type: string
+- contextPath: Domain.Malicious.Vendor
+  description: The vendor that flagged this Domain as malicious (Darkmon).
+  type: string
+- contextPath: Domain.Malicious.Description
+  description: Reason this Domain was flagged as malicious.
+  type: string
+- contextPath: Darkmon.SearchResult
+  description: Full search result records returned by Darkmon for this indicator.
+  type: unknown
+tests:
+- No tests

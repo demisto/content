@@ -1,0 +1,16 @@
+{
+    "id": "Darkmon - Brand-Targeted NRD Watch",
+    "version": -1,
+    "name": "Darkmon - Brand-Targeted NRD Watch",
+    "details": "Scheduled trigger for the 'Darkmon - Brand-Targeted NRD Watch' playbook.",
+    "type": "Darkmon Typosquatting Threat",
+    "scheduled": true,
+    "cronView": true,
+    "cron": "30 6 * * *",
+    "playbookId": "Darkmon - Brand-Targeted NRD Watch",
+    "fromVersion": "6.8.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

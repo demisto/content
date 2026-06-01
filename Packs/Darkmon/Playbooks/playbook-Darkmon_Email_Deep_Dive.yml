@@ -1,0 +1,261 @@
+id: Darkmon - Email Deep Dive
+version: -1
+name: Darkmon - Email Deep Dive
+description: "Analyst-driven full Darkmon profile for a single email address. Runs board-protection check, all three boardemails categories, and global search. Outputs a unified summary into the incident War Room."
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+tags:
+  - darkmon
+  - investigation
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 50d311bd-b753-4029-8d44-c857bdca6289
+    type: start
+    task:
+      id: 50d311bd-b753-4029-8d44-c857bdca6289
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8c41331d-a866-450a-ac99-89e915250cb0
+    type: regular
+    task:
+      id: 8c41331d-a866-450a-ac99-89e915250cb0
+      version: -1
+      name: "Is the email under board protection?"
+      script: "Darkmon|||dmontip-get-boardprotection"
+      type: regular
+      iscommand: true
+      brand: "Darkmon"
+    scriptarguments:
+      size:
+        simple: "100"
+      term:
+        simple: "${inputs.Email}"
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f1faa4aa-c8cb-44e3-8115-f56abcb78164
+    type: regular
+    task:
+      id: f1faa4aa-c8cb-44e3-8115-f56abcb78164
+      version: -1
+      name: "Board-leak accounts for this email"
+      script: "Darkmon|||dmontip-get-boardemails"
+      type: regular
+      iscommand: true
+      brand: "Darkmon"
+    scriptarguments:
+      type:
+        simple: "accounts"
+      email:
+        simple: "${inputs.Email}"
+      size:
+        simple: "100"
+    nexttasks:
+      '#none#':
+        - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 608f841a-c5e0-421a-a124-dc7c1f68a7d8
+    type: regular
+    task:
+      id: 608f841a-c5e0-421a-a124-dc7c1f68a7d8
+      version: -1
+      name: "Board-leak combo lists"
+      script: "Darkmon|||dmontip-get-boardemails"
+      type: regular
+      iscommand: true
+      brand: "Darkmon"
+    scriptarguments:
+      type:
+        simple: "combo-lists"
+      email:
+        simple: "${inputs.Email}"
+      size:
+        simple: "100"
+    nexttasks:
+      '#none#':
+        - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 545}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6c2bd0b9-4806-4d41-9d48-8dea44162bcf
+    type: regular
+    task:
+      id: 6c2bd0b9-4806-4d41-9d48-8dea44162bcf
+      version: -1
+      name: "Board-leak public breaches"
+      script: "Darkmon|||dmontip-get-boardemails"
+      type: regular
+      iscommand: true
+      brand: "Darkmon"
+    scriptarguments:
+      type:
+        simple: "public-breaches"
+      email:
+        simple: "${inputs.Email}"
+      size:
+        simple: "100"
+    nexttasks:
+      '#none#':
+        - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 720}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 7aab48b4-4a8b-4f53-9dad-bf2e6487a102
+    type: regular
+    task:
+      id: 7aab48b4-4a8b-4f53-9dad-bf2e6487a102
+      version: -1
+      name: "Global search for the email"
+      script: "Darkmon|||dmontip-global-search"
+      type: regular
+      iscommand: true
+      brand: "Darkmon"
+    scriptarguments:
+      query:
+        simple: "${inputs.Email}"
+      type:
+        simple: "Email"
+      size:
+        simple: "50"
+    nexttasks:
+      '#none#':
+        - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 895}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 7fa7df32-96fa-4f7c-8df8-c1690f8b9fde
+    type: regular
+    task:
+      id: 7fa7df32-96fa-4f7c-8df8-c1690f8b9fde
+      version: -1
+      name: "Summarize into War Room"
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "Darkmon profile for ${inputs.Email}: under-protection=${Darkmon.BoardProtection.length:0}, accounts=${Darkmon.BoardLeak.Account.length:0}, combos=${Darkmon.BoardLeak.ComboList.length:0}, breaches=${Darkmon.BoardLeak.PublicBreach.length:0}, search-hits=${Darkmon.SearchResult.length:0}."
+    nexttasks:
+      '#none#':
+        - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 1070}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ef00f256-1a2b-4c50-952e-60f4cbc32422
+    type: title
+    task:
+      id: ef00f256-1a2b-4c50-952e-60f4cbc32422
+      version: -1
+      name: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 1245}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 1260, "width": 400, "x": 50, "y": 50}}}
+inputs:
+  - key: Email
+    value: {}
+    required: true
+    description: Email address to investigate.
+outputs:
+  - contextPath: Darkmon.BoardProtection
+    description: Board-protection records that match the email.
+    type: unknown
+  - contextPath: Darkmon.BoardLeak.Account
+    description: Account-class board-leak records for this email.
+    type: unknown
+  - contextPath: Darkmon.BoardLeak.ComboList
+    description: Combo-list records for this email.
+    type: unknown
+  - contextPath: Darkmon.BoardLeak.PublicBreach
+    description: Public-breach records for this email.
+    type: unknown
+  - contextPath: Darkmon.SearchResult
+    description: Global-search hits for the email.
+    type: unknown
+tests:
+  - No tests

@@ -1,0 +1,128 @@
+id: Darkmon - Enrich Email
+version: -1
+name: Darkmon - Enrich Email
+description: Sub-playbook that calls the Darkmon !email command and returns DBotScore + Common.Account.Email for the input Email indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f9f89ddb-d101-45c4-b2ad-8ee32f10704c
+    type: start
+    task:
+      id: f9f89ddb-d101-45c4-b2ad-8ee32f10704c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: cb039c1f-4814-4343-bd7d-891313566ab8
+    type: regular
+    task:
+      id: cb039c1f-4814-4343-bd7d-891313566ab8
+      version: -1
+      name: Run Darkmon email lookup
+      description: Calls the Darkmon !email reputation command to enrich the Email.
+      script: Darkmon|||email
+      type: regular
+      iscommand: true
+      brand: Darkmon
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      email:
+        complex:
+          root: inputs.Email
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c463b61b-5f34-4933-b449-28c8cd85862f
+    type: title
+    task:
+      id: c463b61b-5f34-4933-b449-28c8cd85862f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 385, "width": 380, "x": 50, "y": 50}}}
+inputs:
+- key: Email
+  value:
+    complex:
+      root: Email
+      accessor: Address
+  required: true
+  description: The Email indicator value to enrich. Defaults to ${Email.Address}.
+  playbookInputQuery: null
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator value.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor reporting the score (Darkmon).
+  type: string
+- contextPath: DBotScore.Score
+  description: The reputation score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad).
+  type: number
+- contextPath: DBotScore.Reliability
+  description: Source reliability per the Admiralty code.
+  type: string
+- contextPath: Account.Email.Address
+  description: The Email value.
+  type: string
+- contextPath: Account.Email.Malicious.Vendor
+  description: The vendor that flagged this Email as malicious (Darkmon).
+  type: string
+- contextPath: Account.Email.Malicious.Description
+  description: Reason this Email was flagged as malicious.
+  type: string
+- contextPath: Darkmon.SearchResult
+  description: Full search result records returned by Darkmon for this indicator.
+  type: unknown
+tests:
+- No tests

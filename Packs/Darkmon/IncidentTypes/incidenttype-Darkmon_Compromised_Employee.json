@@ -1,0 +1,24 @@
+{
+    "id": "Darkmon Compromised Employee",
+    "version": -1,
+    "name": "Darkmon Compromised Employee",
+    "preProcessingScript": "",
+    "color": "#FFA500",
+    "playbookId": "",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "isDefault": false,
+    "fromVersion": "6.5.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    }
+}

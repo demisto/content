@@ -1,0 +1,128 @@
+id: Darkmon - Enrich IP
+version: -1
+name: Darkmon - Enrich IP
+description: Sub-playbook that calls the Darkmon !ip command and returns DBotScore + Common.IP for the input IP indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
+fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 91a63e51-d4e0-45b8-9953-10567bc29ab2
+    type: start
+    task:
+      id: 91a63e51-d4e0-45b8-9953-10567bc29ab2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 77fd9027-c14e-4280-bfea-f54cc9b87b1f
+    type: regular
+    task:
+      id: 77fd9027-c14e-4280-bfea-f54cc9b87b1f
+      version: -1
+      name: Run Darkmon ip lookup
+      description: Calls the Darkmon !ip reputation command to enrich the IP.
+      script: Darkmon|||ip
+      type: regular
+      iscommand: true
+      brand: Darkmon
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a817544a-b347-4268-9860-83d88b17ffe3
+    type: title
+    task:
+      id: a817544a-b347-4268-9860-83d88b17ffe3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 385, "width": 380, "x": 50, "y": 50}}}
+inputs:
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+  required: true
+  description: The IP indicator value to enrich. Defaults to ${IP.Address}.
+  playbookInputQuery: null
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator value.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor reporting the score (Darkmon).
+  type: string
+- contextPath: DBotScore.Score
+  description: The reputation score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad).
+  type: number
+- contextPath: DBotScore.Reliability
+  description: Source reliability per the Admiralty code.
+  type: string
+- contextPath: IP.Address
+  description: The IP value.
+  type: string
+- contextPath: IP.Malicious.Vendor
+  description: The vendor that flagged this IP as malicious (Darkmon).
+  type: string
+- contextPath: IP.Malicious.Description
+  description: Reason this IP was flagged as malicious.
+  type: string
+- contextPath: Darkmon.SearchResult
+  description: Full search result records returned by Darkmon for this indicator.
+  type: unknown
+tests:
+- No tests

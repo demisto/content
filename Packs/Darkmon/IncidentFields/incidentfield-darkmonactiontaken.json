@@ -1,0 +1,36 @@
+{
+    "id": "incident_darkmonactiontaken",
+    "version": -1,
+    "modified": "2026-05-04T00:00:00Z",
+    "fromVersion": "6.5.0",
+    "name": "Darkmon Action Taken",
+    "ownerOnly": false,
+    "cliName": "darkmonactiontaken",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Darkmon Compromised Employee"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "description": "Action that was performed (disabled, reset, revoked, none).",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

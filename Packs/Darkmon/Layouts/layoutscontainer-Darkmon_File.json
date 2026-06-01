@@ -1,0 +1,69 @@
+{
+    "TypeName": "",
+    "definitionId": "",
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "name": "Darkmon File",
+    "id": "Darkmon File",
+    "group": "indicator",
+    "description": "Layout for Darkmon-enriched File indicators. Adds a Darkmon tab with classification and compromise context.",
+    "detached": false,
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Summary",
+                "type": "summary"
+            },
+            {
+                "id": "darkmon",
+                "name": "Darkmon",
+                "type": "custom",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "darkmon-overview",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicator_darkmonclassification",
+                                "height": 22,
+                                "id": "field-indicator_darkmonclassification",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Darkmon Overview",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    }
+                ]
+            },
+            {
+                "id": "investigation",
+                "name": "Investigation",
+                "type": "investigation"
+            },
+            {
+                "id": "relationships",
+                "name": "Relationships",
+                "type": "relationships"
+            }
+        ]
+    },
+    "indicatorsQuickView": {
+        "tabs": []
+    }
+}

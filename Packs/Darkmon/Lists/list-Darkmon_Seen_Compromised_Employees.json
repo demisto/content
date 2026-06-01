@@ -1,0 +1,13 @@
+{
+    "id": "Darkmon - Seen Compromised Employees",
+    "version": -1,
+    "name": "Darkmon - Seen Compromised Employees",
+    "description": "State store: employee account IDs already actioned.",
+    "type": "plain_text",
+    "data": "",
+    "fromVersion": "6.5.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

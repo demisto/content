@@ -1,0 +1,301 @@
+id: Darkmon - Generic Block Indicator
+version: -1
+name: Darkmon - Generic Block Indicator
+description: "Provider-agnostic indicator-block dispatcher. Reads the 'Darkmon - Block Provider' List for the configured block target (panos | fortinet | umbrella | cloudflare) and routes to the matching command. Falls back to logging the block intent in the War Room when no provider is configured."
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+tags:
+  - darkmon
+  - generic
+  - block
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9bb536c3-5e97-456e-ac40-1d6f00e1cf83
+    type: start
+    task:
+      id: 9bb536c3-5e97-456e-ac40-1d6f00e1cf83
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d1c9f0b8-1f1f-4877-bd12-82b48d94db3b
+    type: condition
+    task:
+      id: d1c9f0b8-1f1f-4877-bd12-82b48d94db3b
+      version: -1
+      name: "Provider switch"
+      type: condition
+      iscommand: false
+      brand: ""
+    conditions:
+      - label: "panos"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex: {"root": "lists.Darkmon - Block Provider"}
+                  iscontext: true
+                ignorecase: true
+                right:
+                  value:
+                    simple: panos
+      - label: "fortinet"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex: {"root": "lists.Darkmon - Block Provider"}
+                  iscontext: true
+                ignorecase: true
+                right:
+                  value:
+                    simple: fortinet
+      - label: "umbrella"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex: {"root": "lists.Darkmon - Block Provider"}
+                  iscontext: true
+                ignorecase: true
+                right:
+                  value:
+                    simple: umbrella
+      - label: "cloudflare"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex: {"root": "lists.Darkmon - Block Provider"}
+                  iscontext: true
+                ignorecase: true
+                right:
+                  value:
+                    simple: cloudflare
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    nexttasks:
+      panos:
+        - "2"
+      fortinet:
+        - "3"
+      umbrella:
+        - "4"
+      cloudflare:
+        - "5"
+      "#default#":
+        - "6"
+
+  "2":
+    id: "2"
+    taskid: b321b7e2-3563-4ba2-b73d-3f1b9d3132e0
+    type: regular
+    task:
+      id: b321b7e2-3563-4ba2-b73d-3f1b9d3132e0
+      version: -1
+      name: "Palo Alto: block on EDL"
+      description: "Adds the indicator to the Darkmon-Block external dynamic list on the Palo Alto firewall."
+      script: "pan-os-create-edl"
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      name:
+        simple: "Darkmon-Block"
+      ip-list:
+        simple: "${inputs.Indicator}"
+      description:
+        simple: "${inputs.Reason}"
+    nexttasks:
+      '#none#':
+        - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": -300, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d24fa4a6-7095-406a-bacd-df73c4bbe169
+    type: regular
+    task:
+      id: d24fa4a6-7095-406a-bacd-df73c4bbe169
+      version: -1
+      name: "Fortinet: add to address group"
+      script: "fortigate-create-address"
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      name:
+        simple: "${inputs.Indicator}"
+      address:
+        simple: "${inputs.Indicator}"
+    nexttasks:
+      '#none#':
+        - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": -100, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7799c889-cf98-4f20-ab9e-cf5993462fd5
+    type: regular
+    task:
+      id: 7799c889-cf98-4f20-ab9e-cf5993462fd5
+      version: -1
+      name: "Cisco Umbrella: add destination block"
+      script: "umbrella-add-destination"
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      destinations:
+        simple: "${inputs.Indicator}"
+      destinationListId:
+        simple: "${lists.Darkmon - Umbrella Block List ID}"
+    nexttasks:
+      '#none#':
+        - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 100, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8141f956-5a4b-4380-8b62-5ecb56aecdb0
+    type: regular
+    task:
+      id: 8141f956-5a4b-4380-8b62-5ecb56aecdb0
+      version: -1
+      name: "CloudFlare: zone-level block"
+      script: "cloudflare-block"
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      target:
+        simple: "${inputs.Indicator}"
+      mode:
+        simple: "block"
+      notes:
+        simple: "${inputs.Reason}"
+    nexttasks:
+      '#none#':
+        - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 300, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 804080f9-22bf-44c1-bea6-c42b0b8743ff
+    type: regular
+    task:
+      id: 804080f9-22bf-44c1-bea6-c42b0b8743ff
+      version: -1
+      name: "Fallback: log block intent"
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "Darkmon block intent: ${inputs.Indicator} (${inputs.Type}) - ${inputs.Reason}. Configure 'Darkmon - Block Provider' to actually block."
+    nexttasks:
+      '#none#':
+        - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 500, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 21fd741d-6a18-4ed5-9fbf-96e5fffe484d
+    type: title
+    task:
+      id: 21fd741d-6a18-4ed5-9fbf-96e5fffe484d
+      version: -1
+      name: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 545}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 560, "width": 900, "x": -300, "y": 50}}}
+inputs:
+  - key: Indicator
+    value: {}
+    required: true
+    description: The indicator value (IP, domain, URL) to block.
+  - key: Type
+    value:
+      simple: ip
+    required: false
+    description: One of ip | domain | url.
+  - key: Reason
+    value:
+      simple: Darkmon flagged as malicious
+    required: false
+    description: Free-text reason annotated on the block rule.
+outputs: []
+tests:
+  - No tests

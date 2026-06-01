@@ -1,0 +1,219 @@
+id: Darkmon - Critical CVE Pipeline
+version: -1
+name: Darkmon - Critical CVE Pipeline
+description: Daily filter of new CVEs (CVSS >= 9) against the customer's tech-stack tags. Matches open a 'Darkmon Critical CVE' incident per match and ticket via Generic Notify.
+fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+tags:
+  - darkmon
+  - monitoring
+  - vulnerability-management
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 72607c06-c96e-46d7-8d6d-20471a97117c
+    type: start
+    task:
+      id: 72607c06-c96e-46d7-8d6d-20471a97117c
+      version: -1
+      name: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 50}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 53cb6799-4390-4d67-a775-8f74dbb33f71
+    type: regular
+    task:
+      id: 53cb6799-4390-4d67-a775-8f74dbb33f71
+      version: -1
+      name: "Fetch CVE feed"
+      script: "Darkmon|||dmontip-get-cve"
+      type: regular
+      iscommand: true
+      brand: "Darkmon"
+    scriptarguments:
+      size:
+        simple: "200"
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 195}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f21527bb-1f21-4c80-9698-624a978f87f1
+    type: regular
+    task:
+      id: f21527bb-1f21-4c80-9698-624a978f87f1
+      version: -1
+      name: "Filter by CVSS >= 9 and tech-stack tags"
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonFilterCVEs
+    scriptarguments:
+      items:
+        simple: "${{Darkmon.CVE}}"
+      min_cvss:
+        simple: "9.0"
+      tech_stack_list:
+        simple: "Darkmon - Tech Stack Tags"
+    nexttasks:
+      '#none#':
+        - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 370}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e4568486-e083-4e96-90b2-71dc49493e37
+    type: regular
+    task:
+      id: e4568486-e083-4e96-90b2-71dc49493e37
+      version: -1
+      name: "Dedup against seen CVEs"
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonFilterUnseen
+    scriptarguments:
+      items:
+        simple: "${{FilteredCVEs}}"
+      id_field:
+        simple: "id"
+      seen_list:
+        simple: "Darkmon - Seen CVEs"
+    nexttasks:
+      '#none#':
+        - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 545}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 1d10ea23-1828-445b-8bd4-0599f1ae1511
+    type: regular
+    task:
+      id: 1d10ea23-1828-445b-8bd4-0599f1ae1511
+      version: -1
+      name: "Open CVE remediation incidents"
+      type: regular
+      iscommand: false
+      brand: ""
+      scriptName: DarkmonCreateIncidents
+    scriptarguments:
+      items:
+        simple: "${{NewAccounts}}"
+      incident_type:
+        simple: "Darkmon Critical CVE"
+      severity:
+        simple: "4"
+      name_template:
+        simple: "Darkmon: ${{name}} (CVSS ${{cvssScore}})"
+      field_map:
+        simple: "darkmoncveid=name,darkmoncvssscore=cvssScore,darkmoncveseverity=severity,darkmonaffectedcomponents=tags"
+    nexttasks:
+      '#none#':
+        - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 720}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: da175fc2-3e51-4581-b6d1-f9a559fff887
+    type: playbook
+    task:
+      id: da175fc2-3e51-4581-b6d1-f9a559fff887
+      version: -1
+      name: "File ticket with vuln-mgmt team"
+      type: playbook
+      iscommand: false
+      brand: ""
+      scriptName: Darkmon - Generic Notify
+    scriptarguments:
+      Subject:
+        simple: "Darkmon: ${{NewAccounts.length}} critical CVEs intersect your stack"
+      Body:
+        simple: "Open the Darkmon Critical CVE incidents in XSOAR for details."
+    nexttasks:
+      '#none#':
+        - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 895}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 2073c7b9-6473-4136-8032-004d4b7fde0d
+    type: title
+    task:
+      id: 2073c7b9-6473-4136-8032-004d4b7fde0d
+      version: -1
+      name: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 1070}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 1085, "width": 380, "x": 50, "y": 50}}}
+inputs: []
+outputs:
+  - contextPath: FilteredCVEs
+    description: CVEs that passed the CVSS + tech-stack filter.
+    type: unknown
+tests:
+  - No tests

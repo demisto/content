@@ -1,0 +1,129 @@
+{
+    "TypeName": "Darkmon Compromised Employee",
+    "definitionId": "",
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "name": "Darkmon Compromised Employee",
+    "id": "Darkmon Compromised Employee",
+    "group": "incident",
+    "description": "Layout for Darkmon Compromised Employee incidents.",
+    "detached": false,
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Summary",
+                "type": "summary"
+            },
+            {
+                "id": "darkmon",
+                "name": "Darkmon",
+                "type": "custom",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 8,
+                        "i": "darkmon-overview",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonemployeeemail",
+                                "height": 22,
+                                "id": "field-incident_darkmonemployeeemail",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmondirectoryuser",
+                                "height": 22,
+                                "id": "field-incident_darkmondirectoryuser",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonactiontaken",
+                                "height": 22,
+                                "id": "field-incident_darkmonactiontaken",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonusername",
+                                "height": 22,
+                                "id": "field-incident_darkmonusername",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonsourcename",
+                                "height": 22,
+                                "id": "field-incident_darkmonsourcename",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonstealer",
+                                "height": 22,
+                                "id": "field-incident_darkmonstealer",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonfirstcompromise",
+                                "height": 22,
+                                "id": "field-incident_darkmonfirstcompromise",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonlastcompromise",
+                                "height": 22,
+                                "id": "field-incident_darkmonlastcompromise",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Darkmon Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    }
+                ]
+            },
+            {
+                "id": "investigation",
+                "name": "Investigation",
+                "type": "investigation"
+            },
+            {
+                "id": "war_room",
+                "name": "War Room",
+                "type": "warRoom"
+            }
+        ]
+    }
+}

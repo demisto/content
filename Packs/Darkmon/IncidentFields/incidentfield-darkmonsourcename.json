@@ -1,0 +1,38 @@
+{
+    "id": "incident_darkmonsourcename",
+    "version": -1,
+    "modified": "2026-05-04T00:00:00Z",
+    "fromVersion": "6.5.0",
+    "name": "Darkmon Source",
+    "ownerOnly": false,
+    "cliName": "darkmonsourcename",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Darkmon Compromised Credential",
+        "Darkmon Compromised Employee",
+        "Darkmon VIP Email Leak"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "description": "The source where the leak was observed.",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

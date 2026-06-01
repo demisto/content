@@ -1,0 +1,68 @@
+commonfields:
+  id: DarkmonFilterCVEs
+  version: -1
+name: DarkmonFilterCVEs
+script: ""
+type: python
+subtype: python3
+fromversion: 6.5.0
+tags:
+- darkmon
+comment: "Filters CVEs by CVSS minimum and intersection with a tech-stack tag list."
+args:
+- name: items
+  isArray: true
+  description: Items to process.
+- name: id_field
+  description: Field name to use as the dedup key.
+  defaultValue: id
+- name: seen_list
+  description: Name of the XSOAR List storing already-seen IDs.
+- name: domain_filter_list
+  description: Optional - list of customer domains to filter username matches.
+- name: domain_match_field
+  description: Field on each item to match against domain_filter_list.
+  defaultValue: username
+- name: allowlist
+  description: Optional list of usernames/DNs that must NEVER be actioned.
+- name: allowlist_match_field
+  description: Field to match against the allowlist.
+  defaultValue: username
+- name: incident_type
+  description: Incident type for newly created incidents.
+- name: severity
+  description: Severity (1=Low, 2=Medium, 3=High, 4=Critical).
+- name: name_template
+  description: Incident name template (supports ${field} interpolation).
+- name: field_map
+  description: Comma-separated 'fieldCli=sourcePath' pairs.
+- name: emails
+  isArray: true
+  description: Email addresses to fan out per VIP fetch.
+- name: domains
+  isArray: true
+- name: brands_list
+- name: max_distance
+  defaultValue: "2"
+- name: min_cvss
+  defaultValue: "9.0"
+- name: tech_stack_list
+outputs:
+- contextPath: NewAccounts
+  type: unknown
+- contextPath: CreatedIncidents
+  type: unknown
+- contextPath: Count
+  type: number
+- contextPath: Typosquats
+  type: unknown
+- contextPath: FilteredCVEs
+  type: unknown
+- contextPath: VIPCreated
+  type: number
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.12.8.3720084
+marketplaces:
+- xsoar
+- marketplacev2
