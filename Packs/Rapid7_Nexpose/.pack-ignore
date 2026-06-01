@@ -16,9 +16,6 @@ ignore=PA116
 [file:Rapid7_Nexpose.yml]
 ignore=BA108,BA109,IN135
 
-[file:playbook-Nexpose_-_GenericPolling_-_Create_and_Download_Report.yml]
-ignore=PB118,RM116
-
 [known_words]
 InsightVM
 Nexpose
