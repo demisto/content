@@ -2418,3 +2418,137 @@ def test_parse_json_arg_invalid_json_raises():
     msg = str(exc_info.value)
     assert "myarg" in msg
     assert "valid JSON" in msg
+
+
+def test_send_mail_with_attach_cids_uses_cid_labels_not_file_ids(mocker):
+    """
+    Given:
+      - send-mail command with attachIDs (War Room file IDs) and attachCIDs (CID labels)
+      - The HTML body references inline images via CID (e.g., <img src="cid:mylogo"/>)
+
+    When:
+      - Sending a mail with inline image attachments
+
+    Then:
+      - The attachCIDs values should be used as contentId labels (not as file IDs for getFilePath)
+      - The files referenced by attachIDs should be marked as inline when they have a corresponding CID
+      - No call to getFilePath should be made with CID labels
+      - The email should be sent successfully with inline images
+    """
+    from MicrosoftGraphMail import MsGraphMailClient
+    from MicrosoftGraphMailApiModule import MsGraphMailBaseClient
+
+    client = MsGraphMailBaseClient(
+        tenant_id="tenant_id",
+        auth_id="auth_id",
+        enc_key="enc_key",
+        app_name="app_name",
+        base_url="https://graph.microsoft.com/v1.0/",
+        verify=True,
+        proxy=False,
+        self_deployed=True,
+        mailbox_to_fetch="test@example.com",
+        folder_to_fetch="Inbox",
+        first_fetch_interval="1 day",
+        emails_fetch_limit=50,
+    )
+
+    args = {
+        "to": ["recipient@example.com"],
+        "htmlBody": '<html><body>Hello <img src="cid:mylogo"/> World</body></html>',
+        "subject": "test with inline CID",
+        "from": "sender@example.com",
+        "attachIDs": "15@8",
+        "attachCIDs": "mylogo",
+    }
+
+    # Mock getFilePath to return a valid file for the War Room file ID "15@8"
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "test_data/plant.jpg", "name": "plant.jpg"},
+    )
+
+    # Mock send_mail to capture the payload
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    mocker.patch.object(client, "get_access_token")
+
+    send_email_command(client, args)
+
+    # Verify send_mail was called
+    send_mail_mock.assert_called_once()
+
+    # Get the message payload
+    call_kwargs = send_mail_mock.call_args
+    json_data = call_kwargs.kwargs.get("json_data") or call_kwargs[1].get("json_data") or call_kwargs[0][1]
+    message_attachments = json_data.get("attachments", [])
+
+    # Verify the attachment is marked as inline with the correct CID
+    assert len(message_attachments) == 1
+    attachment = message_attachments[0]
+    assert attachment["isInline"] is True
+    assert attachment["contentId"] == "mylogo"
+    assert attachment["name"] == "plant.jpg"
+
+    # Verify getFilePath was called with the War Room file ID, NOT the CID label
+    demisto.getFilePath.assert_called_once_with("15@8")
+
+
+def test_send_mail_with_attach_ids_no_cids_are_not_inline(mocker):
+    """
+    Given:
+      - send-mail command with attachIDs but no attachCIDs
+
+    When:
+      - Sending a mail with regular (non-inline) attachments
+
+    Then:
+      - The attachments should NOT be marked as inline
+      - The contentId should be the file ID (backward compatibility)
+    """
+    from MicrosoftGraphMailApiModule import MsGraphMailBaseClient
+
+    client = MsGraphMailBaseClient(
+        tenant_id="tenant_id",
+        auth_id="auth_id",
+        enc_key="enc_key",
+        app_name="app_name",
+        base_url="https://graph.microsoft.com/v1.0/",
+        verify=True,
+        proxy=False,
+        self_deployed=True,
+        mailbox_to_fetch="test@example.com",
+        folder_to_fetch="Inbox",
+        first_fetch_interval="1 day",
+        emails_fetch_limit=50,
+    )
+
+    args = {
+        "to": ["recipient@example.com"],
+        "htmlBody": "<html><body>Hello World</body></html>",
+        "subject": "test without CIDs",
+        "from": "sender@example.com",
+        "attachIDs": "15@8",
+    }
+
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "test_data/plant.jpg", "name": "plant.jpg"},
+    )
+
+    send_mail_mock = mocker.patch.object(client, "send_mail", return_value=None)
+    mocker.patch.object(client, "get_access_token")
+
+    send_email_command(client, args)
+
+    send_mail_mock.assert_called_once()
+
+    call_kwargs = send_mail_mock.call_args
+    json_data = call_kwargs.kwargs.get("json_data") or call_kwargs[1].get("json_data") or call_kwargs[0][1]
+    message_attachments = json_data.get("attachments", [])
+
+    assert len(message_attachments) == 1
+    attachment = message_attachments[0]
+    assert attachment["isInline"] is False
+    assert attachment["contentId"] == "15@8"
