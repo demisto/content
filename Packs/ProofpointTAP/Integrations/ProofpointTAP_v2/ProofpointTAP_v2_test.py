@@ -347,27 +347,91 @@ def test_get_fetch_times(mocker, mock_past, mock_now, expected):
         assert isinstance(end, str)
 
 
+# Test data for the conditional look-back logic of get_fetch_times.
+# Each row: (last_fetch, now, look_back_minutes, expected_first_interval_start, expected_last_interval_end)
+# Logic under test:
+#   effective_start = now - max(now - last_fetch, look_back_minutes)
+# i.e. the window is expanded ONLY when the existing gap is smaller than look_back_minutes.
+GET_FETCH_TIMES_LOOKBACK_MOCK = [
+    # 1. look_back_minutes=0 -> behavior unchanged, start == last_fetch.
+    (
+        "2010-01-01T00:00:00Z",
+        "2010-01-01T00:05:00Z",
+        0,
+        "2010-01-01T00:00:00Z",
+        "2010-01-01T00:05:00Z",
+    ),
+    # 2. now - last_fetch (1 min) < look_back_minutes (10) -> window expanded to look_back.
+    #    effective_start = now - 10min = 2009-12-31T23:51:00Z.
+    (
+        "2010-01-01T00:00:00Z",
+        "2010-01-01T00:01:00Z",
+        10,
+        "2009-12-31T23:51:00Z",
+        "2010-01-01T00:01:00Z",
+    ),
+    # 3. now - last_fetch (5 min) >= look_back_minutes (2) -> window unchanged,
+    #    look-back is NOT added on top. effective_start stays at last_fetch.
+    (
+        "2010-01-01T00:00:00Z",
+        "2010-01-01T00:05:00Z",
+        2,
+        "2010-01-01T00:00:00Z",
+        "2010-01-01T00:05:00Z",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "last_fetch, mock_now, look_back_minutes, expected_start, expected_end",
+    GET_FETCH_TIMES_LOOKBACK_MOCK,
+)
+def test_get_fetch_times_look_back_conditional(mocker, last_fetch, mock_now, look_back_minutes, expected_start, expected_end):
+    """
+    Given:
+     - A `last_fetch` timestamp, the current time `now`, and a `look_back_minutes` value.
+    When:
+     - `get_fetch_times` is called.
+    Then:
+     - The effective start is `now - max(now - last_fetch, look_back_minutes)`.
+       * look_back_minutes=0   -> start == last_fetch (no change).
+       * gap <  look_back      -> start == now - look_back_minutes (window expanded).
+       * gap >= look_back      -> start == last_fetch (look-back NOT added on top).
+     - The window ends at `now`.
+    """
+    from ProofpointTAP_v2 import get_fetch_times
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(mock_now, "%Y-%m-%dT%H:%M:%SZ"))
+
+    intervals = get_fetch_times(last_fetch, look_back_minutes=look_back_minutes)
+
+    assert intervals, "expected at least one interval"
+    assert intervals[0][0] == expected_start
+    assert intervals[-1][1] == expected_end
+
+
 def test_fetch_with_look_back_buffer(requests_mock, mocker):
     """
     Scenario: Fetch incidents with look-back buffer to account for Proofpoint API indexing delay.
     Given:
-     - User has configured look_back_minutes=2 to prevent missing events
-     - Last fetch was at 2010-01-01T00:00:00Z
-     - Current time is 2010-01-01T00:05:00Z
+     - User has configured look_back_minutes=10 to prevent missing events.
+     - Last fetch was at 2010-01-01T00:00:00Z.
+     - Current time is 2010-01-01T00:01:00Z (gap of 1 min < look_back of 10 min).
     When:
-     - fetch_incidents is called with look_back_minutes=2
+     - fetch_incidents is called with look_back_minutes=10.
     Then:
-     - Ensure the fetch start is shifted back by 2 minutes to 2009-12-31T23:58:00Z
-     - Ensure the fetch end is current time 2010-01-01T00:05:00Z
-     - Ensure incidents are fetched correctly
-     - Ensure next_run checkpoint is set to the end of the last interval (now)
+     - Ensure the fetch window is expanded so its length equals look_back_minutes:
+       effective_start = now - 10min = 2009-12-31T23:51:00Z.
+     - Ensure the fetch end is current time 2010-01-01T00:01:00Z.
+     - Ensure incidents are fetched correctly.
+     - Ensure next_run checkpoint is set to the end of the last interval (now).
     """
     from ProofpointTAP_v2 import fetch_incidents
 
     last_fetch_time = "2010-01-01T00:00:00Z"
-    current_time = "2010-01-01T00:05:00Z"
-    # With 2-minute look-back, effective start shifts back: 00:00:00 - 2min = 23:58:00 previous day
-    expected_start_time = "2009-12-31T23:58:00Z"
+    current_time = "2010-01-01T00:01:00Z"
+    # gap (1 min) < look_back (10 min) -> effective_start = now - 10min = 23:51:00 previous day
+    expected_start_time = "2009-12-31T23:51:00Z"
     # End time is now
     expected_end_time = current_time
 
@@ -393,7 +457,7 @@ def test_fetch_with_look_back_buffer(requests_mock, mocker):
         threat_status="",
         threat_type="",
         limit=50,
-        look_back_minutes=2,
+        look_back_minutes=10,
     )
 
     # Verify incidents were fetched

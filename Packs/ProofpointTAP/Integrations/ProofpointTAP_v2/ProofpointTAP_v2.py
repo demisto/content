@@ -62,13 +62,25 @@ def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int) -> dict[str
 def get_fetch_times(last_fetch, look_back_minutes: int = 0):
     """Generate time intervals for fetching events from Proofpoint TAP API.
 
-    When look_back_minutes > 0, the query window starts at (last_fetch - look_back_minutes)
-    to catch late-indexed events. Deduplication (handled by caller) prevents duplicates
-    from the overlapping region.
+    When `look_back_minutes` > 0, the effective fetch window between the start time
+    (derived from `last_fetch`) and `now` is guaranteed to be at least
+    `look_back_minutes` long. Equivalently:
+    ``effective_start = now - max(now - last_fetch, look_back_minutes)``.
+
+    - If ``now - last_fetch >= look_back_minutes``: leave the start unchanged
+      (do NOT add `look_back_minutes` on top of an already-large gap).
+    - If ``now - last_fetch <  look_back_minutes``: shift the start back so that
+      ``now - effective_start == look_back_minutes``, ensuring late-indexed events
+      from the last `look_back_minutes` are re-scanned.
+
+    Deduplication (handled by the caller) prevents duplicates produced by the
+    overlapping region.
 
     Args:
-        last_fetch (datetime or str): Starting time for fetch (will be shifted back by look_back_minutes)
-        look_back_minutes (int): Buffer time in minutes to re-scan for late-indexed events. Default is 0.
+        last_fetch (datetime or str): Starting time for fetch. May be shifted back so
+                                      that the window length is at least `look_back_minutes`.
+        look_back_minutes (int): Minimum length (in minutes) of the fetch window, used to
+                                 re-scan for late-indexed events. Default is 0 (no look-back).
 
     Returns:
         List[tuple[str, str]]: List of (start_time, end_time) tuples in DATE_FORMAT.
@@ -81,8 +93,15 @@ def get_fetch_times(last_fetch, look_back_minutes: int = 0):
     if isinstance(last_fetch, str):
         last_fetch = datetime.strptime(last_fetch, time_format)
 
-    # Shift start backward to catch late-indexed events
-    effective_start = last_fetch - timedelta(minutes=look_back_minutes) if look_back_minutes > 0 else last_fetch
+    # Ensure the window [effective_start, now] is at least `look_back_minutes` long.
+    # Equivalent to: effective_start = now - max(now - last_fetch, look_back_minutes).
+    # Only shift back when the existing gap is smaller than `look_back_minutes`; do not
+    # subtract `look_back_minutes` on top of an already-sufficient gap.
+    effective_start = last_fetch
+    if look_back_minutes > 0:
+        look_back_delta = timedelta(minutes=look_back_minutes)
+        if (now - last_fetch) < look_back_delta:
+            effective_start = now - look_back_delta
 
     # Guard against invalid intervals
     if effective_start >= now:
