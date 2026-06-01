@@ -1,3 +1,4 @@
+import traceback
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -1137,6 +1138,42 @@ class Client(CoreClient):
             json_data={"update_data": update_data},
         )
 
+    def get_multiple_cases_extra_data(self, case_ids: list[str]) -> dict:
+        """
+        Retrieve extra data for multiple cases in a single bulk API call.
+
+        Uses the /public_api/v1/incidents/get_multiple_incidents_extra_data/ endpoint
+        to fetch enriched data (alerts, network/file artifacts) for all provided case IDs at once.
+
+        Args:
+            case_ids: List of case ID strings to retrieve extra data for.
+
+        Returns:
+            dict: The raw API response containing enriched data for all requested cases.
+        """
+        payload = {
+            "request_data": {
+                "filters": [
+                    {
+                        "field": "incident_id_list",
+                        "operator": "in",
+                        "value": case_ids,
+                    },
+                ],
+                "full_alert_fields": True,
+            }
+        }
+        demisto.debug(f"Calling get_multiple_incidents_extra_data with case_ids={case_ids}")
+        response = self._http_request(
+            method="POST",
+            url_suffix="/public_api/v1/incidents/get_multiple_incidents_extra_data/",
+            json_data=payload,
+            headers=self._headers,
+            timeout=self.timeout,
+        )
+        demisto.debug(f"get_multiple_incidents_extra_data response received for {len(case_ids)} cases")
+        return response
+
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     """
@@ -1672,13 +1709,14 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def extract_ids(case_extra_data: dict) -> list:
+def extract_ids(case_extra_data: dict, data_key: str = "issues", field_name: str = "issue_id") -> list:
     """
     Extract a list of IDs from a command result.
 
     Args:
-        command_res: The result of a command. It can be either a dictionary or a list.
-        field_name: The name of the field that contains the ID.
+        case_extra_data: The extra data dictionary containing the nested data.
+        data_key: The top-level key containing the data list (default: "issues").
+        field_name: The name of the field that contains the ID (default: "issue_id").
 
     Returns:
         A list of the IDs extracted from the command result.
@@ -1686,63 +1724,90 @@ def extract_ids(case_extra_data: dict) -> list:
     if not case_extra_data:
         return []
 
-    field_name = "issue_id"
-    issues = case_extra_data.get("issues", {})
-    issues_data = issues.get("data", {}) if issues else {}
-    issue_ids = [issue.get(field_name) for issue in issues_data if isinstance(issue, dict) and field_name in issue]
-    demisto.debug(f"Extracted issue ids: {issue_ids}")
-    return issue_ids
+    container = case_extra_data.get(data_key, {})
+    data = container.get("data", []) if container else []
+    ids = [str(item[field_name]) for item in data if isinstance(item, dict) and item.get(field_name) is not None]
+    demisto.debug(f"Extracted {field_name}s: {ids}")
+    return ids
 
 
-def get_case_extra_data(client, args):
+def parse_single_case_extra_data(case_incident_data: dict) -> dict:
     """
-    Calls the core-get-case-extra-data command and parses the output to a standard structure.
+    Parse a single case's extra data from the bulk API response into the CaseExtraData format.
+
+    The bulk endpoint returns each case as:
+        {"incident": {...}, "alerts": {"total_count": N, "data": [...]}, "network_artifacts": ..., "file_artifacts": ...}
+
+    Extracts fields from the incident object that are only available via the extra-data API
+    (not returned by the initial get_cases call), plus issue_ids from alerts and artifacts.
 
     Args:
-        args: The arguments to pass to the core-get-case-extra-data command.
+        case_incident_data: A single case entry from the bulk response's 'incidents' list.
 
     Returns:
-        A dictionary containing the case data with the following keys:
-            issue_ids: A list of IDs of issues in the case.
-            network_artifacts: A list of network artifacts in the case.
-            file_artifacts: A list of file artifacts in the case.
+        dict: The CaseExtraData dict with issue_ids, extra incident fields, and network/file artifacts.
     """
-    demisto.debug(f"Calling core-get-case-extra-data, {args=}")
-    # Set the base URL for this API call to use the public API v1 endpoint
-    try:
-        case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
-    except Exception as e:
-        demisto.debug(f"Failed to retrieve extra data for case ID {args.get('case_id')}: {str(e)}")
-        return {}
-    demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
-    issue_ids = extract_ids(case_extra_data)
-    case_data = case_extra_data.get("case", {})
-    notes = case_data.get("notes")
-    xdr_url = case_data.get("xdr_url")
-    starred_manually = case_data.get("starred_manually")
-    detection_time = case_data.get("detection_time")
-    manual_description = case_extra_data.get("manual_description") or case_data.get("manual_description")
-    network_artifacts = case_extra_data.get("network_artifacts")
-    file_artifacts = case_extra_data.get("file_artifacts")
-    extra_data = {
+    incident_data = case_incident_data.get("incident", {})
+    issue_ids = extract_ids(case_incident_data, data_key="alerts", field_name="alert_id")
+
+    return {
         "issue_ids": issue_ids,
-        "network_artifacts": network_artifacts,
-        "file_artifacts": file_artifacts,
-        "notes": notes,
-        "detection_time": detection_time,
-        "xdr_url": xdr_url,
-        "starred_manually": starred_manually,
-        "manual_description": manual_description,
+        "network_artifacts": case_incident_data.get("network_artifacts"),
+        "file_artifacts": case_incident_data.get("file_artifacts"),
+        "notes": incident_data.get("notes"),
+        "detection_time": incident_data.get("detection_time"),
+        "xdr_url": incident_data.get("xdr_url"),
+        "starred_manually": incident_data.get("starred_manually"),
+        "manual_description": incident_data.get("manual_description"),
     }
-    return extra_data
 
 
-def add_cases_extra_data(client, cases_list):
-    # for each case id in the entry context, get the case extra data
+def add_cases_extra_data(client: Client, cases_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Enrich a list of cases with extra data using a single bulk API call.
+
+    Calls the /public_api/v1/incidents/get_multiple_incidents_extra_data/ endpoint once
+    for all case IDs, then maps the response back to each case.
+
+    Args:
+        client: The Cortex platform client instance.
+        cases_list: List of case dictionaries, each containing a 'case_id' key.
+
+    Returns:
+        list: The same cases_list with 'CaseExtraData' added to each case.
+    """
+    case_ids = [str(case["case_id"]) for case in cases_list if case.get("case_id") is not None]
+    demisto.debug(f"Fetching bulk extra data for case_ids={case_ids}")
+
+    if not case_ids:
+        demisto.debug("No valid case IDs to fetch extra data for, skipping API call.")
+        for case in cases_list:
+            case["CaseExtraData"] = {}
+        return cases_list
+
+    try:
+        response = client.get_multiple_cases_extra_data(case_ids)
+    except Exception as e:
+        demisto.debug(f"Failed to retrieve bulk extra data for case IDs {case_ids}: {e}\n{traceback.format_exc()}")
+        for case in cases_list:
+            case["CaseExtraData"] = {}
+        return cases_list
+
+    reply = response.get("reply", {})
+    incidents_data = reply.get("incidents", [])
+
+    # Build a lookup from case_id (incident_id) to its extra data
+    extra_data_by_case_id: dict[str, dict] = {}
+    for incident_entry in incidents_data:
+        case_id = str(incident_entry.get("incident", {}).get("incident_id", ""))
+        if case_id:
+            extra_data_by_case_id[case_id] = parse_single_case_extra_data(incident_entry)
+
+    demisto.debug(f"Bulk extra data parsed for {len(extra_data_by_case_id)} cases")
+
     for case in cases_list:
-        case_id = case.get("case_id")
-        extra_data = get_case_extra_data(client, {"case_id": case_id, "limit": 1000})
-        case.update({"CaseExtraData": extra_data})
+        case_id = str(case.get("case_id", ""))
+        case["CaseExtraData"] = extra_data_by_case_id.get(case_id, {})
 
     return cases_list
 
@@ -1910,7 +1975,7 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
     return filter_builder
 
 
-def get_cases_command(client, args):
+def get_cases_command(client: Client, args: dict[str, Any]):
     """
     Retrieves cases from Cortex platform based on provided filtering criteria.
 
@@ -1972,46 +2037,21 @@ def get_cases_command(client, args):
             demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
-    # In case enriched case data was requested
     if isinstance(data, dict):
         data = [data] if data else []
-    if get_enriched_case_data and 0 < len(data) <= 10:
-        case_extra_data = add_cases_extra_data(client, data)
 
-        command_results.append(
-            CommandResults(
-                readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
-                outputs_prefix="Core.Case",
-                outputs_key_field="case_id",
-                outputs=case_extra_data,
-                raw_response=case_extra_data,
-            )
+    if get_enriched_case_data and data:
+        data = add_cases_extra_data(client, data)
+
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+            outputs_key_field="case_id",
+            outputs=data,
+            raw_response=data,
         )
-
-    else:
-        if get_enriched_case_data:
-            demisto.info(
-                f"Enriched case data requested but {len(data)} cases were returned (limit is 10). "
-                "Falling back to standard case data."
-            )
-            command_results.append(
-                CommandResults(
-                    readable_output="Note: Cannot retrieve enriched case data for more than 10 cases. "
-                    "Returning standard case data instead. "
-                    "Try using a more specific query, "
-                    "for example specific case IDs you want to get enriched data for.",
-                )
-            )
-
-        command_results.append(
-            CommandResults(
-                readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
-                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
-                outputs_key_field="case_id",
-                outputs=data,
-                raw_response=data,
-            )
-        )
+    )
 
     return command_results
 
@@ -3550,6 +3590,7 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         f["CUSTOM_FIELD_CLI_NAME"]: {
             "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_CLI_NAME"]),
             "field_type": f.get("CUSTOM_FIELD_TYPE", ""),
+            "select_values": (f.get("CUSTOM_FIELD_FIELD_DATA") or {}).get("selectValues") or [],
         }
         for f in fields_data
         if f.get("CUSTOM_FIELD_CLI_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
@@ -3568,15 +3609,29 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
             )
         elif field_name in custom_fields:
             field_type = custom_fields[field_name]["field_type"]
-            if field_type == "multiSelect" and not isinstance(field_value, list):
-                error_messages.append(
-                    f"Field '{field_name}' is of type multiSelect and requires a list value (e.g., [\"value\"])."
-                    f" Received: {field_value!r}"
-                )
+            select_values = custom_fields[field_name]["select_values"]
+
+            if field_type == "multiSelect":
+                # Auto-coerce plain string → single-element list for multiSelect fields
+                if not isinstance(field_value, list):
+                    demisto.debug(
+                        f"Field '{field_name}' is of type multiSelect but received a non-list value {field_value!r}. "
+                        f"Auto-converting to list: [{field_value!r}]"
+                    )
+                    field_value = [field_value]
+                if select_values:
+                    invalid_values = [v for v in field_value if v not in select_values]
+                    if invalid_values:
+                        error_messages.append(
+                            f"Field '{field_name}' contains invalid value(s): {invalid_values}."
+                            f" Allowed values are: {select_values}"
+                        )
+                        continue
+                valid_fields[field_name] = field_value
             elif field_type == "shortText" and isinstance(field_value, list):
                 error_messages.append(
                     f"Field '{field_name}' is of type shortText and does not accept a list value."
-                    f" Provide a single value instead."
+                    f" Provide a single string value instead."
                 )
             else:
                 valid_fields[field_name] = field_value
