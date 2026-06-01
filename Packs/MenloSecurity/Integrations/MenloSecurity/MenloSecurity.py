@@ -304,12 +304,11 @@ def get_events_for_log_type(
                     # (which uses dateparser). Menlo returns naive ISO 8601, e.g.
                     # "2026-05-26T17:20:28.090" — handled natively by fromisoformat.
                     try:
-                        dt = datetime.fromisoformat(event_time_str)
-                        inner["_time"] = dt.strftime(DATE_FORMAT)
+                        inner["_time"] = datetime.fromisoformat(event_time_str).strftime(DATE_FORMAT)
                     except (ValueError, TypeError):
                         # Fallback for any unexpected format.
-                        dt = arg_to_datetime(event_time_str)
-                        inner["_time"] = dt.strftime(DATE_FORMAT) if dt else event_time_str
+                        fallback_dt: datetime | None = arg_to_datetime(event_time_str)
+                        inner["_time"] = fallback_dt.strftime(DATE_FORMAT) if fallback_dt else event_time_str
                 inner["source_log_type"] = source_log_type
             processed.append(inner)
 
@@ -882,8 +881,11 @@ def long_running_execution_command(
             # If the consumer logged a send failure mid-cycle, propagate it now so the outer
             # except clause logs + back-off-sleeps + retries on the next iteration. State has
             # NOT yet been persisted, so the next cycle re-fetches from the previous boundary.
-            if consumer_stats["error"] is not None:
-                raise consumer_stats["error"]
+            consumer_error = consumer_stats["error"]
+            if consumer_error is not None:
+                # Bind to a typed local so pylint/mypy know it's a BaseException, not Any.
+                assert isinstance(consumer_error, BaseException)
+                raise consumer_error
 
             # nextTrigger key inside next_state is meaningful only to the engine scheduler. In
             # long-running mode the engine isn't scheduling us, so we POP it (don't persist) and
