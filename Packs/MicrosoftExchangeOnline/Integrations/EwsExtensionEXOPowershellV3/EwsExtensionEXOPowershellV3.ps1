@@ -2667,21 +2667,28 @@ function Main
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
     param()
-    $command = $demisto.GetCommand()
-    $command_arguments = $demisto.Args()
-    $integration_params = [Hashtable] $demisto.Params()
+    $command = $null
+    $command_arguments = $null
+    $integration_params = $null
     $ucp_creds = $null
+    # $test = Test-ShouldUseUcpAuth
+    # ReturnOutputs $test $null $null | Out-Null
+    ReturnOutputs "bvla" $null $null | Out-Null
     try {
         if (Test-ShouldUseUcpAuth) {
             $ucp_creds = Get-UcpCredentials
+            ReturnOutputs $ucp_creds $null $null | Out-Null
             $demisto.Debug("[UCP][EwsExtensionEXOPowershellV3.ps1] Retrieved UCP credentials via Get-UcpCredentials (type=$(script:GetExoProp $ucp_creds 'type'))")
-            Write-Output $ucp_creds
+            $demisto.Debug("[UCP][EwsExtensionEXOPowershellV3.ps1] Retrieved UCP credentials via Get-UcpCredentials (ucp_creds=$ucp_creds)")
         }
     } catch {
         # Surface the failure but continue with the fallback path so legacy
         # installs keep working.
         $demisto.Debug("[UCP][EwsExtensionEXOPowershellV3.ps1] Get-UcpCredentials failed: $_")
         $ucp_creds = $null
+        $command = $demisto.GetCommand()
+        $command_arguments = $demisto.Args()
+        $integration_params = [Hashtable] $demisto.Params()
     }
     if ($integration_params.password.password)
     {
