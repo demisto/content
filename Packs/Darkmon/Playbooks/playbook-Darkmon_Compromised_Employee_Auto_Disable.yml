@@ -241,7 +241,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      scriptName: Darkmon - Generic User Action
+      playbookName: Darkmon - Generic User Action
     scriptarguments:
       Username:
         simple: "${{NewAccounts.username}}"
@@ -271,7 +271,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      scriptName: Darkmon - Generic Notify
+      playbookName: Darkmon - Generic Notify
     scriptarguments:
       Subject:
         simple: "Darkmon: ${{NewAccounts.length}} new compromised employees"

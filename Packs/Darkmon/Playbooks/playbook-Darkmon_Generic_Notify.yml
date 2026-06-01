@@ -144,7 +144,7 @@ tasks:
     scriptarguments:
       message: {"complex": {"root": "inputs.Body"}}
       to: {"complex": {"root": "inputs.SlackChannel"}}
-      using: {"simple": "Slack"}
+      using-brand: {"simple": "SlackV3"}
     nexttasks:
       '#none#':
       - "8"
@@ -173,7 +173,7 @@ tasks:
     scriptarguments:
       message: {"complex": {"root": "inputs.Body"}}
       to: {"complex": {"root": "inputs.TeamsChannel"}}
-      using: {"simple": "Microsoft Teams"}
+      using-brand: {"simple": "Microsoft Teams"}
     nexttasks:
       '#none#':
       - "8"

@@ -1,6 +1,12 @@
 [file:Darkmon.yml]
 ignore=BA126,BA129
 
+[file:playbook-Darkmon_Generic_Block_Indicator.yml]
+ignore=GR107
+
+[file:playbook-Darkmon_EDR_Alert_Enrichment.yml]
+ignore=PB121
+
 [file:DarkmonScoreNRDs.yml]
 ignore=BA129
 
@@ -14,6 +20,9 @@ ignore=BA129
 ignore=BA129
 
 [file:DarkmonCreateIncidents.yml]
+ignore=BA129
+
+[file:DarkmonVIPFanOut.yml]
 ignore=BA129
 
 [file:sync_yaml.py]

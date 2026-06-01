@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-This playbook does not use any sub-playbooks.
+* Darkmon - Generic Notify
 
 ### Integrations
 
@@ -14,7 +14,6 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* Darkmon - Generic Notify
 * DarkmonCreateIncidents
 * DarkmonFilterUnseen
 
