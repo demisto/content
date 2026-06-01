@@ -1124,6 +1124,17 @@ class TestGetEventsCommandErrors:
         mocker.patch("Koi.is_xsiam", return_value=True)
         mocker.patch("Koi.is_platform", return_value=False)
 
+    def test_not_xsiam_raises_error(self, mock_client, mocker):
+        """Test get-events command raises DemistoException on non-XSIAM platforms."""
+        mocker.patch("Koi.is_xsiam", return_value=False)
+        mocker.patch("Koi.is_platform", return_value=False)
+
+        args = {"limit": "10", "should_push_events": "false"}
+        params = {"event_types_to_fetch": "Alerts"}
+
+        with pytest.raises(DemistoException, match="available only on Cortex XSIAM"):
+            get_events_command(mock_client, args, params)
+
     def test_invalid_event_type(self, mock_client):
         """Test get-events command with invalid event type raises error."""
         args = {"event_type": "InvalidType", "limit": "10", "should_push_events": "false"}

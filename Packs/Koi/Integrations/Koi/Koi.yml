@@ -98,7 +98,8 @@ name: KOI
 script:
   commands:
   - name: koi-get-events
-    description: Gets events from KOI. This command is available only on Cortex XSIAM and is used for developing/debugging. Use with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+    hidden: true
+    description: Gets events from KOI. This command is used for developing/debugging. Use with caution, as it can create events, leading to event duplication and exceeding API request limitations. This command is not supported on XSOAR.
     arguments:
     - name: event_type
       description: 'The type of events to retrieve. If not specified, uses the value configured in the integration parameters.'
