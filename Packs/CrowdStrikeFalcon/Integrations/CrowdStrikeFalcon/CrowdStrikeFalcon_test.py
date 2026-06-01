@@ -10192,6 +10192,7 @@ class TestSynchronousCompression:
 
         # Compression happens lazily inside the async tasks — await them to trigger it
         import asyncio
+
         await asyncio.gather(*tasks)
 
         # Verify compression happened when the tasks ran
