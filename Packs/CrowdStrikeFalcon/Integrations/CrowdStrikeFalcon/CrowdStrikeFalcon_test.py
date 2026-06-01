@@ -9075,9 +9075,7 @@ class TestSpotlightSeverityBasedFetch:
         assert "filter" in call_kwargs["params"]
         assert "CRITICAL" in call_kwargs["params"]["filter"]
         assert "status:['open','reopen']" in call_kwargs["params"]["filter"]
-        # Lookback window filter is applied to bound the dataset size
-        assert "updated_timestamp:>'now-" in call_kwargs["params"]["filter"]
-        # Lookback window filter (bounds dataset size for large tenants)
+        # Lookback window filter is applied to bound the dataset size for large tenants
         assert "updated_timestamp:>'now-100d'" in call_kwargs["params"]["filter"]
 
         # Verify AIDs sent to handler

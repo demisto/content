@@ -4299,6 +4299,7 @@ async def send_batch_to_xsiam_and_save_context(
     state: ContentClientState,
     save_state_callback: Callable[[ContentClientContextStore, ContentClientState], None],
     data_type: str = "assets",
+    severity: str = "",
 ) -> int:
     """
     Send batch to XSIAM asynchronously, then save context ONLY if send succeeds AND this is the latest batch.
@@ -4344,19 +4345,7 @@ async def send_batch_to_xsiam_and_save_context(
         # Release raw data — already normalized into chunks held by the async tasks
         del data
 
-        # Force cyclic GC to break circular references in parsed JSON dicts (task → coroutine → data → dicts).
-        # A/B tested: without gc.collect(), py_traced grows ~130 MB/10 batches. With it, py_traced stays flat.
-        # malloc_trim(0) asks glibc to return free heap pages to OS (addresses arena fragmentation).
-        import gc
-        import ctypes
-        collected = gc.collect()
-        try:
-            ctypes.CDLL("libc.so.6").malloc_trim(0)
-        except Exception:
-            pass  # Not on Linux/glibc — safe to ignore
-        log_falcon_assets(
-            f"[Batch {batch_number}] [MEMLEAK] gc.collect() freed {collected} objects, RSS: {_get_process_memory_mb()}"
-        )
+        log_falcon_assets(f"[DIAG] [{severity}] [Batch {batch_number}] [MEMLEAK] sent to XSIAM, RSS: {_get_process_memory_mb()}")
 
         # 2. Wait for all chunks to complete
         await asyncio.gather(*tasks)
@@ -4389,6 +4378,7 @@ def create_task_send_batch_to_xsiam_and_save_context(
     state,
     save_state_callback,
     data_type,
+    severity="",
 ):
     """
     Create an async task to send vulnerability batch to XSIAM and save context.
@@ -4423,6 +4413,7 @@ def create_task_send_batch_to_xsiam_and_save_context(
             state=state,
             save_state_callback=save_state_callback,
             data_type=data_type,
+            severity=severity,
         )
     )
     return task
@@ -4442,10 +4433,12 @@ def create_spotlight_client(context_store: ContentClientContextStore) -> Content
         base_url=SERVER,
         verify=USE_SSL,
         proxy=PROXY,
-        # Basic authentication for testing with mock server
-        auth_handler=BasicAuthHandler(username=CLIENT_ID, password=SECRET),
-        # Enable diagnostics
-        diagnostic_mode=True,
+        # OAuth2 bearer auth — reuse the integration's existing CrowdStrike token flow
+        # (get_token() handles the client-credentials grant + token caching used across this integration).
+        auth_handler=BearerTokenAuthHandler(token=get_token()),
+        # diagnostic_mode retains a history of every request/response, which leaks ~1 dict per
+        # API call for the whole run (linear live-dict growth on large tenants -> OOM). Keep it off.
+        diagnostic_mode=False,
         client_name="FalconSpotlightAssetCollector",
     )
 
@@ -4718,6 +4711,7 @@ async def fetch_vulnerabilities_by_severity(
                 state=spotlight_state,
                 save_state_callback=save_spotlight_state,
                 data_type="assets",
+                severity=severity,
             )
 
             # Track task and update last_saved_batch_number when task completes
@@ -4737,11 +4731,14 @@ async def fetch_vulnerabilities_by_severity(
                 f"(pending: {len(pending_tasks)}/{MAX_PENDING_TASKS_PER_SEVERITY})"
             )
 
-            # Log memory stats every 10 batches
+            # Log memory stats every 10 batches (cheap len() reads + RSS; no gc.get_objects() walk)
             if batch_counter % 10 == 0:
                 log_falcon_assets(
-                    f"[{severity}] Memory checkpoint: batch={batch_counter}, total_fetched={total_fetched}, "
-                    f"unique_aids={len(unique_aids)}, pending_tasks={len(pending_tasks)}, "
+                    f"[DIAG] [{severity}] Memory checkpoint: batch={batch_counter}, total_fetched={total_fetched}, "
+                    f"pending_tasks={len(pending_tasks)}, "
+                    f"handler[processed_aids={len(asset_handler.processed_aids)}, "
+                    f"pending_buffer={len(asset_handler.pending_buffer)}, "
+                    f"running_tasks={len(asset_handler.running_tasks)}], "
                     f"RSS: {_get_process_memory_mb()}",
                     "info",
                 )
@@ -4749,8 +4746,12 @@ async def fetch_vulnerabilities_by_severity(
             # Check if more pages exist
             if is_last_batch:
                 log_falcon_assets(
-                    f"[{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, Unique hosts: {len(unique_aids)}, "
-                    f"pending_tasks: {len(pending_tasks)}, RSS: {_get_process_memory_mb()}",
+                    f"[DIAG] [{severity}] Completed fetching vulnerabilities. Total: {total_fetched}, "
+                    f"pending_tasks: {len(pending_tasks)}, "
+                    f"handler[processed_aids={len(asset_handler.processed_aids)}, "
+                    f"pending_buffer={len(asset_handler.pending_buffer)}, "
+                    f"running_tasks={len(asset_handler.running_tasks)}], "
+                    f"RSS: {_get_process_memory_mb()}",
                     "info",
                 )
                 break
@@ -4795,6 +4796,8 @@ async def fetch_vulnerabilities_by_severity(
         log_falcon_assets(f"[{severity}] Unexpected error during fetch: {e}", "error")
         raise
 
+    # pending_tasks is drained (empty) for this severity on the success path — its batch
+    # data has already been sent and freed. We still return the set for API compatibility.
     return total_fetched, unique_aids, pending_tasks
 
 
@@ -4921,7 +4924,7 @@ async def finalize_severity_fetch(
         await asset_handler.flush_remaining(total_items_count=total_assets_count)
 
         log_falcon_assets(
-            f"Parallel severity fetch completed. Total vulnerabilities: {total_vulnerabilities}, "
+            f"[DIAG] Parallel severity fetch completed. Total vulnerabilities: {total_vulnerabilities}, "
             f"Total unique hosts: {len(all_unique_aids)}, Enriched assets: {len(asset_handler.processed_aids)}",
             "info",
         )
@@ -4991,56 +4994,35 @@ async def fetch_spotlight_by_severity_parallel(
         batch_limit=MAX_FETCH_SPOTLIGHT_ASSETS,
     )
 
-    # Semaphore limits concurrent severity fetches to MAX_CONCURRENT_SEVERITY_FETCHES.
-    # As soon as one severity finishes, the next one starts (no waiting for the whole chunk).
-    # After each severity completes, its result data is explicitly deleted and gc.collect() runs
-    # to free memory before the slot is released to the next severity.
-    semaphore = asyncio.Semaphore(MAX_CONCURRENT_SEVERITY_FETCHES)
+    # SEQUENTIAL severity fetching — process one severity fully before starting the next.
+    # (Parallel/semaphore version preserved in task memory; re-apply if memory pressure requires
+    #  bounding peak allocations to N concurrent severities.)
+    async def fetch_one_severity(severity: str):
+        sev_start = time.monotonic()
+        log_falcon_assets(
+            f"[DIAG] [SEQUENTIAL] [{severity}] STARTED - RSS: {_get_process_memory_mb()}", "info"
+        )
+        result = await fetch_vulnerabilities_by_severity(
+            client=client,
+            severity=severity,
+            context_store=context_store,
+            spotlight_state=spotlight_state,
+            snapshot_id=snapshot_id,
+            asset_handler=asset_handler,
+        )
+        log_falcon_assets(
+            f"[DIAG] [SEQUENTIAL] [{severity}] FINISHED in {time.monotonic() - sev_start:.1f}s - "
+            f"RSS: {_get_process_memory_mb()}", "info"
+        )
+        return result
 
-    active_severities: set = set()
-
-    async def fetch_with_semaphore(severity: str):
-        log_falcon_assets(f"[PARALLEL] [{severity}] QUEUED - waiting for slot (active: {sorted(active_severities)})", "info")
-        async with semaphore:
-            active_severities.add(severity)
-            sev_start = time.monotonic()
-            log_falcon_assets(
-                f"[PARALLEL] [{severity}] STARTED - concurrent: {sorted(active_severities)} "
-                f"({len(active_severities)}/{MAX_CONCURRENT_SEVERITY_FETCHES}), RSS: {_get_process_memory_mb()}", "info"
-            )
-            result = await fetch_vulnerabilities_by_severity(
-                client=client,
-                severity=severity,
-                context_store=context_store,
-                spotlight_state=spotlight_state,
-                snapshot_id=snapshot_id,
-                asset_handler=asset_handler,
-            )
-            # Explicitly free result data before releasing the semaphore slot.
-            # This ensures the next severity starts with freed memory.
-            import gc
-            import ctypes
-            gc.collect()
-            try:
-                ctypes.CDLL("libc.so.6").malloc_trim(0)
-            except Exception:
-                pass
-            active_severities.discard(severity)
-            log_falcon_assets(
-                f"[PARALLEL] [{severity}] FINISHED in {time.monotonic() - sev_start:.1f}s - "
-                f"still active: {sorted(active_severities)}, RSS: {_get_process_memory_mb()}", "info"
-            )
-            return result
-
-    # Create tasks for all severities — semaphore limits actual concurrency to MAX_CONCURRENT_SEVERITY_FETCHES
-    severity_tasks = []
-    for severity in severities_to_fetch:
-        task = asyncio.create_task(fetch_with_semaphore(severity))
-        severity_tasks.append((severity, task))
+    # Wrap each severity coroutine in a task so the aggregator's `await task` interface is unchanged.
+    # With sequential processing the tasks are created and awaited one at a time inside the aggregator.
+    severity_tasks = [(severity, asyncio.ensure_future(fetch_one_severity(severity))) for severity in severities_to_fetch]
 
     log_falcon_assets(
-        f"[PARALLEL] Created {len(severity_tasks)} severity fetch tasks for {severities_to_fetch} "
-        f"(max {MAX_CONCURRENT_SEVERITY_FETCHES} concurrent). Awaiting all to complete...", "info"
+        f"[DIAG] [SEQUENTIAL] Created {len(severity_tasks)} severity fetch tasks for {severities_to_fetch} "
+        f"(processed sequentially). Awaiting all to complete...", "info"
     )
 
     # Wait for all severity tasks and aggregate results
@@ -5132,7 +5114,7 @@ async def fetch_spotlight_assets():
         fetch_elapsed = time.monotonic() - fetch_start_time
         fetch_minutes = fetch_elapsed / 60
         log_falcon_assets(
-            f"Finished Spotlight assets fetch in {fetch_minutes:.1f} minutes ({fetch_elapsed:.0f}s). "
+            f"[DIAG] Finished Spotlight assets fetch in {fetch_minutes:.1f} minutes ({fetch_elapsed:.0f}s). "
             f"Total vulnerabilities: {total_vulnerabilities}, "
             f"Total unique hosts: {len(all_unique_aids)}, "
             f"RSS: {_get_process_memory_mb()}",
