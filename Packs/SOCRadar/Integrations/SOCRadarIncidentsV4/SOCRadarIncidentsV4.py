@@ -540,9 +540,9 @@ def alarm_to_incident(
             if name and control:
                 compliance_parts.append(f"{name} ({control}): {desc}")
 
-    compliance_str = "\n".join(compliance_parts)
+    compliance_str = " || ".join(compliance_parts)
     if len(compliance_str) > 3072:
-        compliance_str = compliance_str[:3072] + "\n... (truncated)"
+        compliance_str = compliance_str[:3072] + "... (truncated)"
     if include_compliance and compliance_str:
         alarm["alarm_compliance"] = compliance_str
 
