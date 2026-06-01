@@ -12,7 +12,7 @@ configuration:
   required: true
   defaultvalue: https://example.com/api/v3.0/
   type: 0
-  additionalinfo:
+  additionalinfo: The full URL of the GuardiCore server, including the API path suffix. For example, https://my-domain.cloud.guardicore.com/api/v3.0/
   section: Connect
 - display: Username
   name: credentials
@@ -1210,7 +1210,7 @@ script:
     - contextPath: Endpoint.MACAddress
       description: The endpoint's MAC address.
       type: String
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.9059085
   isfetch: true
   runonce: false
   script: "-"
