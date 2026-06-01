@@ -19,6 +19,7 @@ tasks:
       id: eff80257-5aa8-4ceb-b61a-3b3248bfcd4c
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -42,6 +43,7 @@ tasks:
       id: ea07a276-36b2-485d-a212-90e060284889
       version: -1
       name: "Fetch ransomware mentions"
+      description: ""
       script: "Darkmon|||dmontip-get-ransomware"
       type: regular
       iscommand: true
@@ -73,6 +75,7 @@ tasks:
       id: aa4e0d9f-3d6d-4c4e-a083-8624a4576214
       version: -1
       name: "Filter new mentions"
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -104,6 +107,7 @@ tasks:
       id: 568ce999-4e54-46c7-9a0d-cb412ca28b8c
       version: -1
       name: "Open critical incidents"
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -139,6 +143,7 @@ tasks:
       id: d23b8918-25ef-4325-9412-eb83170bff09
       version: -1
       name: "Page CISO"
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -168,6 +173,7 @@ tasks:
       id: db745e82-1ae8-4f2e-9f2d-978ca7dd8a7a
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""

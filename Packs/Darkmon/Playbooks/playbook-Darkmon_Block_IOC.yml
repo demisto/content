@@ -20,6 +20,7 @@ tasks:
       id: ac1083d2-ade5-4406-8f04-7806222a7dbb
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -43,6 +44,7 @@ tasks:
       id: 1e06646f-3909-4565-9a28-955eb5973a03
       version: -1
       name: "Dispatch block via provider switchboard"
+      description: ""
       playbookName: "Darkmon - Generic Block Indicator"
       type: playbook
       iscommand: false
@@ -74,6 +76,7 @@ tasks:
       id: 4488d703-b16e-439c-acc9-3c1e0cd1234d
       version: -1
       name: "Notify SOC of manual block"
+      description: ""
       playbookName: "Darkmon - Generic Notify"
       type: playbook
       iscommand: false
@@ -103,6 +106,7 @@ tasks:
       id: 455263b5-9720-4e2d-bf8d-9f1509d9561c
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""

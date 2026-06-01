@@ -20,6 +20,7 @@ tasks:
       id: 9bb536c3-5e97-456e-ac40-1d6f00e1cf83
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -43,6 +44,7 @@ tasks:
       id: d1c9f0b8-1f1f-4877-bd12-82b48d94db3b
       version: -1
       name: "Provider switch"
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -151,6 +153,7 @@ tasks:
       id: d24fa4a6-7095-406a-bacd-df73c4bbe169
       version: -1
       name: "Fortinet: add to address group"
+      description: ""
       script: "fortigate-create-address"
       type: regular
       iscommand: true
@@ -180,6 +183,7 @@ tasks:
       id: 7799c889-cf98-4f20-ab9e-cf5993462fd5
       version: -1
       name: "Cisco Umbrella: add destination block"
+      description: ""
       script: "umbrella-add-destination"
       type: regular
       iscommand: true
@@ -209,6 +213,7 @@ tasks:
       id: 8141f956-5a4b-4380-8b62-5ecb56aecdb0
       version: -1
       name: "CloudFlare: zone-level block"
+      description: ""
       script: "cloudflare-block"
       type: regular
       iscommand: true
@@ -240,6 +245,7 @@ tasks:
       id: 804080f9-22bf-44c1-bea6-c42b0b8743ff
       version: -1
       name: "Fallback: log block intent"
+      description: ""
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -267,6 +273,7 @@ tasks:
       id: 21fd741d-6a18-4ed5-9fbf-96e5fffe484d
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""

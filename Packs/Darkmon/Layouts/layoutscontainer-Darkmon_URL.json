@@ -1,5 +1,4 @@
 {
-    "TypeName": "",
     "definitionId": "",
     "version": -1,
     "fromVersion": "6.5.0",
@@ -7,7 +6,6 @@
     "id": "Darkmon URL",
     "group": "indicator",
     "description": "Layout for Darkmon-enriched URL indicators. Adds a Darkmon tab with classification and compromise context.",
-    "detached": false,
     "system": false,
     "marketplaces": [
         "xsoar",

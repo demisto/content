@@ -20,6 +20,7 @@ tasks:
       id: 68996222-a5f9-4d1b-beb3-a6a005afad3e
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -73,6 +74,7 @@ tasks:
       id: 1f6fb4ed-7978-45d4-aa99-88584a6aa191
       version: -1
       name: "Force password reset"
+      description: ""
       playbookName: "Darkmon - Generic User Action"
       type: playbook
       iscommand: false
@@ -104,6 +106,7 @@ tasks:
       id: 68e42c77-12d0-42f6-a48f-9a704db515e7
       version: -1
       name: "Revoke active sessions"
+      description: ""
       playbookName: "Darkmon - Generic User Action"
       type: playbook
       iscommand: false
@@ -133,6 +136,7 @@ tasks:
       id: 32a3806b-a38f-4ecc-ab91-237b23df2090
       version: -1
       name: "Notify SOC + user"
+      description: ""
       playbookName: "Darkmon - Generic Notify"
       type: playbook
       iscommand: false
@@ -162,6 +166,7 @@ tasks:
       id: 56c90d3d-d139-4bcb-99a8-fd74efffe22f
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""

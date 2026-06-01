@@ -18,6 +18,7 @@ tasks:
       id: 0a901864-5faa-49b3-9c67-2bba28cc891c
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -40,6 +41,7 @@ tasks:
       id: 71cd6625-3579-4f00-bfb3-d3c18d7a1b3a
       version: -1
       name: Provider switch
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -106,6 +108,7 @@ tasks:
       id: f7fdbc63-230b-4983-8e3f-e86e716936db
       version: -1
       name: AD action switch
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -169,6 +172,7 @@ tasks:
       id: 083986cb-9bc1-4381-96a0-6e779d10aa8a
       version: -1
       name: 'Okta: deactivate user'
+      description: ""
       script: okta-deactivate-user
       type: regular
       iscommand: true
@@ -195,6 +199,7 @@ tasks:
       id: 9bc69625-c4c2-4b30-9d73-d12ccfd0bc29
       version: -1
       name: 'Azure AD: disable user'
+      description: ""
       script: msgraph-user-account-disable
       type: regular
       iscommand: true
@@ -221,6 +226,7 @@ tasks:
       id: 59c0c8a5-d47e-4b0e-915c-873f94f3fdca
       version: -1
       name: 'AD: disable account'
+      description: ""
       script: ad-disable-account
       type: regular
       iscommand: true
@@ -247,6 +253,7 @@ tasks:
       id: 674ed138-5e2f-41a4-8c36-76f7cc57a4b6
       version: -1
       name: 'AD: force password change at next logon'
+      description: ""
       script: ad-set-new-password
       type: regular
       iscommand: true
@@ -330,6 +337,7 @@ tasks:
       id: dd32a7c1-ed5f-4f6e-a1fd-bd6385e2eb60
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""

@@ -19,6 +19,7 @@ tasks:
       id: ef4aa57f-333c-4fc4-acb0-15078c6b9a92
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -102,6 +103,7 @@ tasks:
       id: 1c286565-f885-4638-9cc4-76e73ae868d3
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""

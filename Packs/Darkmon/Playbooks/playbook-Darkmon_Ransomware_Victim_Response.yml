@@ -20,6 +20,7 @@ tasks:
       id: 324d7be3-c5b0-49c3-977b-eef62d2f7b19
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -75,6 +76,7 @@ tasks:
       id: f567e5f3-0cdb-415b-a425-fe4f56a1c33c
       version: -1
       name: "Open war-room channel"
+      description: ""
       playbookName: "Darkmon - Generic Notify"
       type: playbook
       iscommand: false
@@ -106,6 +108,7 @@ tasks:
       id: ea33c8c9-e56f-48eb-a145-880799dba04b
       version: -1
       name: "Page CISO"
+      description: ""
       playbookName: "Darkmon - Generic Notify"
       type: playbook
       iscommand: false
@@ -137,6 +140,7 @@ tasks:
       id: 07d3b2e7-a1d5-4ee1-9f31-cb1980e53a7d
       version: -1
       name: "Print IR runbook hints"
+      description: ""
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -164,6 +168,7 @@ tasks:
       id: fd6b86db-5f92-4887-999f-ee1121d267c7
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""

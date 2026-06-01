@@ -1,5 +1,4 @@
 {
-    "id": "Darkmon",
     "name": "Darkmon",
     "description": "Stay ahead of cyber threats with Darkmon TIP - real-time threat intelligence from the Clear, Deep, and Dark Web tailored to your assets. The pack provides indicator enrichment, compromised-credentials monitoring, board-level VIP email protection, ransomware mention tracking, brand-targeting NRD detection, and critical CVE pipelines, plus provider-agnostic incident response playbooks ready to plug into any SOC stack.",
     "support": "developer",

@@ -1,5 +1,4 @@
 {
-    "TypeName": "Darkmon Typosquatting Threat",
     "definitionId": "",
     "version": -1,
     "fromVersion": "6.5.0",
@@ -7,7 +6,6 @@
     "id": "Darkmon Typosquatting Threat",
     "group": "incident",
     "description": "Layout for Darkmon Typosquatting Threat incidents.",
-    "detached": false,
     "system": false,
     "marketplaces": [
         "xsoar",

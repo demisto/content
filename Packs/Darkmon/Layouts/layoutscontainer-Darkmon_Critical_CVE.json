@@ -1,5 +1,4 @@
 {
-    "TypeName": "Darkmon Critical CVE",
     "definitionId": "",
     "version": -1,
     "fromVersion": "6.5.0",
@@ -7,7 +6,6 @@
     "id": "Darkmon Critical CVE",
     "group": "incident",
     "description": "Layout for Darkmon Critical CVE incidents.",
-    "detached": false,
     "system": false,
     "marketplaces": [
         "xsoar",

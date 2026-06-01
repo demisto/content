@@ -11,7 +11,6 @@
     "hoursR": 0,
     "daysR": 0,
     "weeksR": 0,
-    "isDefault": false,
     "fromVersion": "6.5.0",
     "marketplaces": [
         "xsoar",

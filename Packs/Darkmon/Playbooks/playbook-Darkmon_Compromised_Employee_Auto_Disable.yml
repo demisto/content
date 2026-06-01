@@ -28,6 +28,7 @@ tasks:
       id: 4c7a8f1e-5964-451f-bcb3-f8ec1584c701
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -83,6 +84,7 @@ tasks:
       id: c7e37494-89f6-4097-977c-c0a9292b6fe2
       version: -1
       name: "Filter new + non-allowlisted"
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -118,6 +120,7 @@ tasks:
       id: 76b775d5-1f30-4470-8f06-f65e864fe9ee
       version: -1
       name: "Branch on employee_disable_mode integration param"
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -166,6 +169,7 @@ tasks:
       id: 0fe490b7-d3a9-48cb-a0ee-4c5f11c15d5b
       version: -1
       name: "notify-only: create incident + notify"
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -263,6 +267,7 @@ tasks:
       id: bb1b8406-7dd9-4392-a1f3-a12aa338a58e
       version: -1
       name: "Notify SOC + IT"
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -292,6 +297,7 @@ tasks:
       id: 06e1c49c-8434-41eb-9026-e8c3427cc01c
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""

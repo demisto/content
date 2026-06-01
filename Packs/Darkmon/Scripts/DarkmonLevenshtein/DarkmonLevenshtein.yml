@@ -33,7 +33,9 @@ outputs:
   type: Number
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.12.8.3720084
+dockerimage: demisto/python3:3.12.13.9059085
 marketplaces:
 - xsoar
 - marketplacev2
+tests:
+- No tests

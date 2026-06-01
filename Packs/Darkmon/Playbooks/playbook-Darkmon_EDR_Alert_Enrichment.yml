@@ -20,6 +20,7 @@ tasks:
       id: 34f83352-a2f5-4e17-bd3c-39b00fdf618e
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -71,6 +72,7 @@ tasks:
       id: 1ca794ff-eb92-4ac2-9906-0df8602f5e00
       version: -1
       name: "Any malicious?"
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -108,6 +110,7 @@ tasks:
       id: a5e653c6-3a7c-43dd-bb14-e5eaaddfb968
       version: -1
       name: "Escalate severity to Critical"
+      description: ""
       scriptName: Set
       type: regular
       iscommand: false
@@ -137,6 +140,7 @@ tasks:
       id: 97d350cd-746d-4727-8dc9-4397bc312f97
       version: -1
       name: "Notify SOC"
+      description: ""
       playbookName: "Darkmon - Generic Notify"
       type: playbook
       iscommand: false
@@ -166,6 +170,7 @@ tasks:
       id: a66ce7e8-9b66-4993-abe1-beda29d76245
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""

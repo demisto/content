@@ -18,6 +18,7 @@ tasks:
       id: 3d7deead-057c-4a78-a75a-00ec3fb67659
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -40,6 +41,7 @@ tasks:
       id: 0b8c69c3-6dbf-47d5-9b50-90cc0805bbb5
       version: -1
       name: Provider switch
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -134,6 +136,7 @@ tasks:
       id: b02d32ea-eed6-46af-849d-a16b72e74287
       version: -1
       name: Send Slack message
+      description: ""
       script: send-notification
       type: regular
       iscommand: true
@@ -162,6 +165,7 @@ tasks:
       id: 6bfe95d5-7782-418d-88e4-0c486d2c9f30
       version: -1
       name: Send Teams message
+      description: ""
       script: send-notification
       type: regular
       iscommand: true
@@ -190,6 +194,7 @@ tasks:
       id: aaf0f6c8-7ab7-4294-bbba-cc512cde7573
       version: -1
       name: Send email
+      description: ""
       script: send-mail
       type: regular
       iscommand: true
@@ -218,6 +223,7 @@ tasks:
       id: 801ab1aa-6d9d-4743-b81b-f59a3e9a4240
       version: -1
       name: Create ServiceNow ticket
+      description: ""
       script: servicenow-create-ticket
       type: regular
       iscommand: true
@@ -245,6 +251,7 @@ tasks:
       id: 370d0f85-b465-4e47-839c-1f0b61262716
       version: -1
       name: Create Jira issue
+      description: ""
       script: jira-create-issue
       type: regular
       iscommand: true
@@ -304,6 +311,7 @@ tasks:
       id: 2b1883fa-edd0-4e3b-9b7c-9c0abcc24128
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""

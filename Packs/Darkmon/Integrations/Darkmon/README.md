@@ -22,7 +22,7 @@ mentions, watch newly registered domains, and ingest the IOC feed into TIM.
 
 ## Commands
 
-- `!test-module` — auth check
+- Run the **Test** button in the integration settings to verify connectivity
 - `!ip` / `!url` / `!domain` / `!email` / `!file` — reputation enrichment, populates `DBotScore` and `Common.<Type>`
 - `!dmontip-global-search` — fully dynamic search across every Darkmon data type
 - `!dmontip-get-indicators` — pull the latest IOC feed
@@ -41,8 +41,8 @@ Default sort is newest-first where applicable (`firstSeen,desc`,
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `test-module` 401 | Wrong API key or expired | Re-paste from Darkmon admin |
-| `test-module` 404 | Wrong base URL | Verify production endpoint or set instance URL to dev |
+| Test button 401 | Wrong API key or expired | Re-paste from Darkmon admin |
+| Test button 404 | Wrong base URL | Verify production endpoint or set instance URL to dev |
 | Empty results on every command | Company has no data yet, or API key scoped to wrong company | Check Darkmon tenant; rotate key |
 | Feed fetch timing out | `Indicator fetch limit` too high | Lower to 500 or 200 |
 | Passwords missing from table output | `redact_secrets` is on (the default) | Set to `false` only in dev contexts |

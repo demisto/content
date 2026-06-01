@@ -171,11 +171,11 @@ script:
       - Card
       - CardNumber
       - CardHolder
-      description: Type of the value
+      description: Type of the value.
       type: textArea
     - name: query
       required: true
-      description: A specific value
+      description: A specific value.
       type: textArea
     - name: page
       description: 1-indexed page number.

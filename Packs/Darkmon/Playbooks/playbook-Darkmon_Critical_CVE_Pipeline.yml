@@ -20,6 +20,7 @@ tasks:
       id: 72607c06-c96e-46d7-8d6d-20471a97117c
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -43,6 +44,7 @@ tasks:
       id: 53cb6799-4390-4d67-a775-8f74dbb33f71
       version: -1
       name: "Fetch CVE feed"
+      description: ""
       script: "Darkmon|||dmontip-get-cve"
       type: regular
       iscommand: true
@@ -70,6 +72,7 @@ tasks:
       id: f21527bb-1f21-4c80-9698-624a978f87f1
       version: -1
       name: "Filter by CVSS >= 9 and tech-stack tags"
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -101,6 +104,7 @@ tasks:
       id: e4568486-e083-4e96-90b2-71dc49493e37
       version: -1
       name: "Dedup against seen CVEs"
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -132,6 +136,7 @@ tasks:
       id: 1d10ea23-1828-445b-8bd4-0599f1ae1511
       version: -1
       name: "Open CVE remediation incidents"
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -167,6 +172,7 @@ tasks:
       id: da175fc2-3e51-4581-b6d1-f9a559fff887
       version: -1
       name: "File ticket with vuln-mgmt team"
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -196,6 +202,7 @@ tasks:
       id: 2073c7b9-6473-4136-8032-004d4b7fde0d
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""

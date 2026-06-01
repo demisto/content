@@ -20,6 +20,7 @@ tasks:
       id: f693a6e5-6455-417e-889c-78b3b4551f14
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -43,6 +44,7 @@ tasks:
       id: bc24ded0-f848-4b88-8f87-dbb5be4e678c
       version: -1
       name: "Fetch newly registered domains"
+      description: ""
       script: "Darkmon|||dmontip-get-nrd"
       type: regular
       iscommand: true
@@ -104,6 +106,7 @@ tasks:
       id: 723722dd-6c55-4a63-8ad7-793b89dc2dd7
       version: -1
       name: "Filter unseen typosquats"
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -135,6 +138,7 @@ tasks:
       id: b0f55cfe-1bb2-4d0f-b6f5-34a617c0626c
       version: -1
       name: "Open typosquatting incidents"
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -168,6 +172,7 @@ tasks:
       id: 39a521cc-5290-4e1e-9ad1-547bd592023c
       version: -1
       name: "Notify brand-protection team"
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -197,6 +202,7 @@ tasks:
       id: 3c52853d-c538-4a4c-9b37-5af3bf40393e
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""

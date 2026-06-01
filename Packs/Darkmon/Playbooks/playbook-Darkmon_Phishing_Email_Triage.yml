@@ -20,6 +20,7 @@ tasks:
       id: 9f19c1a2-93f8-4063-958a-159340d40505
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -101,6 +102,7 @@ tasks:
       id: 5b8eeb26-11e4-4268-ad11-08510cc0967c
       version: -1
       name: "Any indicator scored Bad?"
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -138,6 +140,7 @@ tasks:
       id: c07b16cd-622d-4a35-834f-4952aa8d1894
       version: -1
       name: "Block malicious indicators"
+      description: ""
       playbookName: "Darkmon - Generic Block Indicator"
       type: playbook
       iscommand: false
@@ -169,6 +172,7 @@ tasks:
       id: 361b9161-619e-4a94-a629-4590a974c293
       version: -1
       name: "Notify reporter"
+      description: ""
       playbookName: "Darkmon - Generic Notify"
       type: playbook
       iscommand: false
@@ -198,6 +202,7 @@ tasks:
       id: a1dfdd29-aa80-4c30-b0c8-c335e0f8a65c
       version: -1
       name: "Notify SOC"
+      description: ""
       playbookName: "Darkmon - Generic Notify"
       type: playbook
       iscommand: false
@@ -227,6 +232,7 @@ tasks:
       id: 3304e1ac-dc11-462d-8b9e-937a20e13723
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""
