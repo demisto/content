@@ -39,6 +39,8 @@ configuration:
   type: 8
   section: Collect
   required: false
+  hidden:
+  - xsoar
 - name: event_types_to_fetch
   display: Fetch event types
   required: true
@@ -49,6 +51,8 @@ configuration:
   - Audit
   additionalinfo: 'Select which event types to fetch from KOI.'
   section: Collect
+  hidden:
+  - xsoar
 - name: audit_types_filter
   display: Audit log type filter
   required: false
@@ -68,6 +72,8 @@ configuration:
   - vetting
   additionalinfo: 'Filter audit logs by type(s). If not specified, all audit log types will be fetched.'
   section: Collect
+  hidden:
+  - xsoar
 - name: max_fetch
   display: Maximum number of events per fetch
   type: 0
@@ -75,6 +81,8 @@ configuration:
   additionalinfo: 'Maximum number of events to fetch per type per fetch cycle (default: 5000).'
   section: Collect
   required: false
+  hidden:
+  - xsoar
 - defaultvalue: 1
   display: Events Fetch Interval
   name: eventFetchInterval
@@ -82,13 +90,15 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  hidden:
+  - xsoar
 description: KOI is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats.
 display: KOI
 name: KOI
 script:
   commands:
   - name: koi-get-events
-    description: Gets events from KOI. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+    description: Gets events from KOI. This command is available only on Cortex XSIAM and is used for developing/debugging. Use with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     arguments:
     - name: event_type
       description: 'The type of events to retrieve. If not specified, uses the value configured in the integration parameters.'
@@ -978,10 +988,12 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
+  isfetchevents:xsoar: false
   dockerimage: demisto/fastapi:0.125.0.7178097
 fromversion: 8.2.0
 tests:
 - No tests (auto formatted)
 marketplaces:
+- xsoar
 - marketplacev2
 - platform

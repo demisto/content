@@ -6,7 +6,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### koi-get-events
 
 ***
-Gets events from KOI. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+Gets events from KOI. This command is available only on Cortex XSIAM and is used for developing/debugging. Use with caution, as it can create events, leading to events duplication and API request limitation exceeding.
 
 #### Base Command
 
