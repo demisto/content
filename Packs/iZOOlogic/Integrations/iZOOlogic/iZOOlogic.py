@@ -749,6 +749,8 @@ def get_events_command(
 ) -> CommandResults:
     """Manual command to get events for debugging/development.
 
+    This command is available only on Cortex XSIAM.
+
     Args:
         client: The iZOOlogic client.
         args: Command arguments.
@@ -756,7 +758,13 @@ def get_events_command(
 
     Returns:
         CommandResults with the retrieved events.
+
+    Raises:
+        DemistoException: If the command is executed on a non-XSIAM platform.
     """
+    if not (is_xsiam() or is_platform()):
+        raise DemistoException("The izoologic-get-events command is available only on Cortex XSIAM.")
+
     demisto.debug("[Command] izoologic-get-events triggered")
 
     should_push_events = argToBoolean(args.get("should_push_events", False))

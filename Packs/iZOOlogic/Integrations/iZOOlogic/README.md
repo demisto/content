@@ -21,7 +21,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### izoologic-get-events
 
 ***
-Gets events from iZOOlogic. Use this command for development and debugging only, as it may exceed API rate limits.
+Gets events from iZOOlogic. This command is available only on Cortex XSIAM. Use for development and debugging only, as it may exceed API rate limits.
 
 #### Base Command
 

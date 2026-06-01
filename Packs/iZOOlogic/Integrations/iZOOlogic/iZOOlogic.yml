@@ -83,7 +83,7 @@ description: Fetches and manages incidents from iZOOlogic, enabling automated in
 script:
   commands:
   - name: izoologic-get-events
-    description: Gets events from iZOOlogic. Use this command for development and debugging only, as it may exceed API rate limits.
+    description: Gets events from iZOOlogic. This command is available only on Cortex XSIAM. Use for development and debugging only, as it may exceed API rate limits.
     arguments:
     - name: limit
       description: The maximum number of events to return per type.
