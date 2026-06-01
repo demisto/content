@@ -13805,7 +13805,7 @@ def test_create_network_acl_entry_command_success(mocker):
     call_kwargs = mock_client.create_network_acl_entry.call_args[1]
     assert call_kwargs["NetworkAclId"] == "acl-0abc12345"
     assert call_kwargs["RuleNumber"] == 100
-    assert call_kwargs["Protocol"] == "tcp"
+    assert call_kwargs["Protocol"] == "6"
     assert call_kwargs["RuleAction"] == "allow"
     assert call_kwargs["Egress"] is False
     assert call_kwargs["CidrBlock"] == "0.0.0.0/0"
