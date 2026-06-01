@@ -837,12 +837,6 @@ class TestFetchForType:
 
 
 class TestGetEventsCommand:
-    @pytest.fixture(autouse=True)
-    def mock_xsiam_platform(self, mocker: MockerFixture):
-        """Mock is_xsiam to return True for all get-events tests."""
-        mocker.patch("iZOOlogic.is_xsiam", return_value=True)
-        mocker.patch("iZOOlogic.is_platform", return_value=False)
-
     def test_basic(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
         mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         result = get_events_command(mock_client, {"limit": "10"}, [2])
@@ -908,6 +902,21 @@ class TestGetEventsCommand:
         mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         result = get_events_command(mock_client, {"limit": "10"}, [2])
         assert result.outputs_key_field == "incidentID"
+
+    def test_should_push_events_overridden_on_non_xsiam(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Test that should_push_events is silently overridden to False on non-XSIAM platforms."""
+        mocker.patch("iZOOlogic.is_xsiam", return_value=False)
+        mocker.patch("iZOOlogic.is_platform", return_value=False)
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        mock_create = mocker.patch("iZOOlogic.create_events")
+
+        result = get_events_command(mock_client, {"limit": "10", "should_push_events": "true"}, [2])
+
+        # Events should NOT be pushed (create_events should not be called)
+        mock_create.assert_not_called()
+        # Events should be returned as CommandResults
+        assert isinstance(result, CommandResults)
+        assert "iZOOlogic Events" in result.readable_output
 
 
 # endregion
@@ -1331,12 +1340,6 @@ class TestCreateIncidentCommand:
 
 
 class TestSearchIncidentsCommand:
-    @pytest.fixture(autouse=True)
-    def mock_xsiam_platform(self, mocker: MockerFixture):
-        """Mock is_xsiam to return True for tests that call get_events_command."""
-        mocker.patch("iZOOlogic.is_xsiam", return_value=True)
-        mocker.patch("iZOOlogic.is_platform", return_value=False)
-
     def test_basic_no_args(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
         """Fetch with default args (no filters) returns incidents."""
         mocker.patch.object(mock_client, "fetch_events_page", return_value=incidents_result)

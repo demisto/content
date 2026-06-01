@@ -83,7 +83,7 @@ description: Fetches and manages incidents from iZOOlogic, enabling automated in
 script:
   commands:
   - name: izoologic-get-events
-    description: Gets events from iZOOlogic. This command is available only on Cortex XSIAM. Use for development and debugging only, as it may exceed API rate limits.
+    description: Gets events from iZOOlogic. Use for development and debugging only, as it may exceed API rate limits.
     arguments:
     - name: limit
       description: The maximum number of events to return per type.
@@ -109,7 +109,7 @@ script:
       - email
       - executive
     - name: should_push_events
-      description: 'Whether to push the fetched events to XSIAM. Use with caution as it may create duplicate events.'
+      description: 'If true, pushes events to Cortex XSIAM (supported on Cortex XSIAM only). If false, events are only displayed in the War Room.'
       auto: PREDEFINED
       predefined:
       - 'true'

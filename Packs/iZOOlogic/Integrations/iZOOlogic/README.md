@@ -21,7 +21,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### izoologic-get-events
 
 ***
-Gets events from iZOOlogic. This command is available only on Cortex XSIAM. Use for development and debugging only, as it may exceed API rate limits.
+Gets events from iZOOlogic. Use for development and debugging only, as it may exceed API rate limits.
 
 #### Base Command
 
@@ -35,7 +35,7 @@ Gets events from iZOOlogic. This command is available only on Cortex XSIAM. Use 
 | start_time | The time to filter events detected at or after. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z"). | Optional |
 | end_time | The time to filter events detected at or before. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional |
 | event_type | Filter by event type(s). If not specified, uses the types configured in the integration parameters. Possible values are: brand abuse, phishing, malware, pharming, smishing, vishing, mobile apps, social media, other, email. | Optional |
-| should_push_events | Whether to push the fetched events to XSIAM. Use with caution as it may create duplicate events. Possible values are: true, false. Default is false. | Optional |
+| should_push_events | If true, pushes events to Cortex XSIAM \(supported on Cortex XSIAM only\). If false, events are only displayed in the War Room. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
