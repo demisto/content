@@ -2,3 +2,7 @@
 !msgraph-create-site-permissions site_name=Test role=write app_id=test_id display_name=test
 !msgraph-update-site-permissions permission_id=test_id role=read site_name=Test
 !msgraph-delete-site-permissions site_name=Test permission_id=test_id
+!msgraph-driveitem-update object_type=sites object_type_id=test_site_id item_id=test_item_id new_name=renamed-by-cortex.txt
+!msgraph-driveitem-copy object_type=sites object_type_id=test_site_id item_id=test_item_id destination_parent_id=test_folder_id new_name=copy-by-cortex.txt
+!msgraph-driveitem-permissions-list object_type=sites object_type_id=test_site_id item_id=test_item_id
+!msgraph-driveitem-permission-delete object_type=sites object_type_id=test_site_id item_id=test_item_id permission_id=test_perm_id
