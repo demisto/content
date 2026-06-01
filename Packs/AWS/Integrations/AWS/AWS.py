@@ -10257,7 +10257,7 @@ def _assume_role_credentials(params: dict, access_key_id: str, secret_access_key
         verify=not argToBoolean(params.get("insecure", False)),
     )
     assume_kwargs: dict = {"RoleArn": role_arn, "RoleSessionName": role_session_name}
-    if session_duration:
+    if session_duration is not None:
         assume_kwargs["DurationSeconds"] = session_duration
 
     demisto.debug(f"[AWS] Calling sts.AssumeRole with {assume_kwargs=}")
@@ -10340,8 +10340,7 @@ def get_service_client(
     # Resolve service name from command if not explicitly provided.
     if command in COMMAND_SERVICE_MAP:
         service_name = COMMAND_SERVICE_MAP[command]
-    elif not service_name and command:
-        service_name = command.split("-")[1]
+    service_name = service_name or command.split("-")[1]
     service = AWSServices(service_name)
 
     # Build base config from user-supplied timeout/retries.
@@ -10368,7 +10367,7 @@ def get_service_client(
     if is_platform_path:
         verify_ssl: str | bool = DEFAULT_PROXYDOME_CERTFICATE_PATH
     else:
-        verify_ssl = not params.get("insecure", True) if params else False
+        verify_ssl = not argToBoolean(params.get("insecure", False))
     endpoint_url: str | None = (params.get("endpoint_url") or None) if params else None
 
     client = aws_session.client(service, verify=verify_ssl, config=client_config, endpoint_url=endpoint_url)

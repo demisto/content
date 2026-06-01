@@ -17257,8 +17257,8 @@ def test_assume_role_credentials_returns_temp_creds(mocker):
     }
     result = _assume_role_credentials(
         params=params,
-        access_key_id="AKIAIOSFODNN7EXAMPLE",
-        secret_access_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+        access_key_id="dummy_access_key",
+        secret_access_key="dummy_secret_key",
         region="us-east-1",
     )
 
@@ -17321,7 +17321,7 @@ def test_get_service_client_marketplace_no_role(mocker):
     mocker.patch.object(demisto, "debug")
 
     params = {
-        "credentials": {"identifier": "AKIAIOSFODNN7EXAMPLE", "password": "wJalrXUtnFEMI"},
+        "credentials": {"identifier": "dummy_access_key", "password": "dummy_secret_key"},
         "role_arn": "",
         "region": "us-east-1",
         "timeout": "60,10",
@@ -17332,8 +17332,8 @@ def test_get_service_client_marketplace_no_role(mocker):
     client, session = get_service_client(params=params, service_name="sts")
 
     mock_session_cls.assert_called_once_with(
-        aws_access_key_id="AKIAIOSFODNN7EXAMPLE",
-        aws_secret_access_key="wJalrXUtnFEMI",
+        aws_access_key_id="dummy_access_key",
+        aws_secret_access_key="dummy_secret_key",
         region_name="us-east-1",
     )
     assert client == mock_client
@@ -17343,12 +17343,21 @@ def test_get_service_client_marketplace_with_role(mocker):
     """
     Given: Marketplace params with AK/SK and role_arn.
     When: get_service_client is called.
-    Then: _assume_role_credentials is called and the session uses temp creds.
+    Then: sts_client.assume_role is called with the configured role ARN, and the resulting
+        boto3 Session is built from the returned temporary credentials.
     """
     from AWS import get_service_client
 
-    tmp_creds = {"AccessKeyId": "ASIA_TMP", "SecretAccessKey": "tmp-sk", "SessionToken": "tmp-tok"}
-    mocker.patch("AWS._assume_role_credentials", return_value=tmp_creds)
+    # Mock the STS client created inside _assume_role_credentials via boto3.client.
+    mock_sts_client = mocker.Mock()
+    mock_sts_client.assume_role.return_value = {
+        "Credentials": {
+            "AccessKeyId": "ASIA_TMP",
+            "SecretAccessKey": "tmp-sk",
+            "SessionToken": "tmp-tok",
+        }
+    }
+    mocker.patch("boto3.client", return_value=mock_sts_client)
 
     mock_session_cls = mocker.patch("AWS.Session")
     mock_session = mocker.Mock()
@@ -17359,8 +17368,9 @@ def test_get_service_client_marketplace_with_role(mocker):
     mocker.patch.object(demisto, "debug")
 
     params = {
-        "credentials": {"identifier": "AKIAIOSFODNN7EXAMPLE", "password": "wJalrXUtnFEMI"},
+        "credentials": {"identifier": "dummy_access_key", "password": "dummy_secret_key"},
         "role_arn": "arn:aws:iam::123456789012:role/MyRole",
+        "role_session_name": "test-session",
         "region": "us-east-1",
         "timeout": "60,10",
         "retries": "3",
@@ -17369,6 +17379,13 @@ def test_get_service_client_marketplace_with_role(mocker):
     }
     get_service_client(params=params, service_name="sts")
 
+    # Verify sts_client.assume_role was called with the configured role ARN.
+    mock_sts_client.assume_role.assert_called_once_with(
+        RoleArn="arn:aws:iam::123456789012:role/MyRole",
+        RoleSessionName="test-session",
+    )
+
+    # Verify the session was built from the temporary credentials returned by STS.
     mock_session_cls.assert_called_once_with(
         aws_access_key_id="ASIA_TMP",
         aws_secret_access_key="tmp-sk",
@@ -17512,13 +17529,13 @@ def test_test_module_marketplace_calls_get_caller_identity(mocker):
     mock_sts_client.get_caller_identity.return_value = {
         "Account": "123456789012",
         "Arn": "arn:aws:iam::123456789012:user/test",
-        "UserId": "AIDAIOSFODNN7EXAMPLE",
+        "UserId": "dummy_id",
     }
     mocker.patch("AWS.get_service_client", return_value=(mock_sts_client, None))
     mocker.patch.object(demisto, "info")
 
     params = {
-        "credentials": {"identifier": "AKIAIOSFODNN7EXAMPLE", "password": "wJalrXUtnFEMI"},
+        "credentials": {"identifier": "dummy_access_key", "password": "dummy_secret_key"},
         "role_arn": "",
         "region": "us-east-1",
         "timeout": "60,10",

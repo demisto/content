@@ -21,7 +21,7 @@ When **Role name for cross-organization account access** and **AWS organization 
 
 ## Configuration (Cortex XSOAR / Cortex XSIAM)
 
-1. Create an IAM user (or use an existing one) with the required permissions listed below.
+1. Create an IAM user (or use an existing one) with the required permissions for the commands you intend to run (see the **Prerequisites** section below).
 2. Generate an **Access Key ID** and **Secret Access Key** for that user.
 3. In the integration instance settings, in the **Access Key / Secret Key** field enter the access key as the Access Key (username) and the secret key as the Secret Key (password).
 4. *(Optional)* If you want the integration to assume a role, enter the full role ARN in **Role ARN**. The IAM user must have `sts:AssumeRole` permission on that role.
@@ -33,35 +33,18 @@ Cloud integrations are installed from the **Data Sources** page. Go to **Setting
 
 ## Prerequisites
 
-For Cortex Cloud, the connector account must be granted the permissions described in:
-https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Premium-Documentation/Cloud-service-provider-permissions#:~:text=Microsoft%20Azure-,Amazon%20Web%20Services%20provider%20permissions,-ADS
+For Cortex Cloud, the connector account must be granted the permissions described in the [Cloud service provider permissions documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Premium-Documentation/Cloud-service-provider-permissions#:~:text=Microsoft%20Azure-,Amazon%20Web%20Services%20provider%20permissions,-ADS).
 
-For Cortex XSOAR / Cortex XSIAM, the IAM user or assumed role must have the permissions listed below.
+For Cortex XSOAR / Cortex XSIAM, the configured IAM user or assumed role must have the IAM permissions required by the specific commands you intend to run. Each command's required permission corresponds to its underlying AWS API action.
 
-| Command | Required Permissions |
-| --- | --- |
-| aws-rds-db-cluster-modify | rds:ModifyDBCluster |
-| aws-rds-db-cluster-snapshot-attribute-modify | rds:ModifyDBClusterSnapshotAttribute |
-| aws-rds-db-instance-modify | rds:ModifyDBInstance |
-| aws-rds-db-snapshot-attribute-modify | rds:ModifyDBSnapshotAttribute |
-| aws-s3-bucket-acl-put | s3:PutBucketAcl |
-| aws-s3-bucket-logging-put | s3:PutBucketLogging |
-| aws-s3-bucket-versioning-put | s3:PutBucketVersioning |
-| aws-s3-bucket-policy-put | s3:PutBucketPolicy |
-| aws-s3-public-access-block-put | s3:GetBucketPublicAccessBlock, s3:PutBucketPublicAccessBlock |
-| aws-ec2-security-group-egress-revoke | ec2:RevokeSecurityGroupEgress |
-| aws-ec2-image-attribute-modify | ec2:ModifyImageAttribute |
-| aws-ec2-instance-attribute-modify | ec2:ModifyInstanceAttribute |
-| aws-ec2-instance-metadata-options-modify | ec2:ModifyInstanceMetadataOptions |
-| aws-ec2-snapshot-attribute-modify | ec2:ModifySnapshotAttribute |
-| aws-ec2-security-group-ingress-revoke | ec2:RevokeSecurityGroupIngress |
-| aws-ec2-security-group-ingress-authorize | ec2:AuthorizeSecurityGroupIngress |
-| aws-eks-cluster-config-update | eks:UpdateClusterConfig |
-| aws-cloudtrail-trail-update | cloudtrail:UpdateTrail |
-| aws-cloudtrail-logging-start | cloudtrail:StartLogging |
-| aws-iam-login-profile-delete | iam:DeleteLoginProfile |
-| aws-iam-user-policy-put | iam:PutUserPolicy |
-| aws-iam-role-from-instance-profile-remove | iam:RemoveRoleFromInstanceProfile |
-| aws-iam-access-key-update | iam:UpdateAccessKey |
-| aws-iam-account-password-policy-get | iam:GetAccountPasswordPolicy |
-| aws-iam-account-password-policy-update | iam:UpdateAccountPasswordPolicy |
+### Locating the required permissions for your use case
+
+1. Identify the commands you plan to run (for example, `aws-ec2-instances-describe`).
+2. Open the integration's command reference on the [Amazon Web Services page on xsoar.pan.dev](https://xsoar.pan.dev/docs/reference/integrations/aws).
+3. For each command, map it to its AWS API action and grant the matching IAM permission. The mapping follows AWS naming conventions — for example:
+   - `aws-ec2-instances-describe` → `ec2:DescribeInstances`
+   - `aws-s3-bucket-policy-put` → `s3:PutBucketPolicy`
+   - `aws-iam-access-key-update` → `iam:UpdateAccessKey`
+4. Grant only the permissions for the commands you use, following the principle of least privilege.
+
+For the full, authoritative list of AWS IAM actions, see the [AWS Service Authorization Reference](https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html).
