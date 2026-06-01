@@ -1124,16 +1124,23 @@ class TestGetEventsCommandErrors:
         mocker.patch("Koi.is_xsiam", return_value=True)
         mocker.patch("Koi.is_platform", return_value=False)
 
-    def test_not_xsiam_raises_error(self, mock_client, mocker):
-        """Test get-events command raises DemistoException on non-XSIAM platforms."""
+    def test_should_push_events_overridden_on_non_xsiam(self, mock_client, alerts_response, mocker):
+        """Test that should_push_events is silently overridden to False on non-XSIAM platforms."""
         mocker.patch("Koi.is_xsiam", return_value=False)
         mocker.patch("Koi.is_platform", return_value=False)
+        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
+        mock_send = mocker.patch.object(mock_client, "send_events")
 
-        args = {"limit": "10", "should_push_events": "false"}
+        args = {"limit": "10", "should_push_events": "true", "event_type": "Alerts"}
         params = {"event_types_to_fetch": "Alerts"}
 
-        with pytest.raises(DemistoException, match="available only on Cortex XSIAM"):
-            get_events_command(mock_client, args, params)
+        result = get_events_command(mock_client, args, params)
+
+        # Events should NOT be pushed (send_events should not be called)
+        mock_send.assert_not_called()
+        # Events should be returned as CommandResults instead
+        assert not isinstance(result, str)
+        assert "KOI Events" in result.readable_output  # type: ignore[union-attr]
 
     def test_invalid_event_type(self, mock_client):
         """Test get-events command with invalid event type raises error."""

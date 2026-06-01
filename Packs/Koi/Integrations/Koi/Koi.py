@@ -1116,8 +1116,6 @@ def fetch_events_with_pagination(
 def get_events_command(client: Client, args: dict, params: dict) -> CommandResults | str:
     """Manual command to get events for debugging/development.
 
-    This command is available only on Cortex XSIAM.
-
     Args:
         client: The KOI client.
         args: Command arguments.
@@ -1125,19 +1123,17 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
 
     Returns:
         CommandResults or string message.
-
-    Raises:
-        DemistoException: If the command is executed on a non-XSIAM platform.
     """
-    if not (is_xsiam() or is_platform()):
-        raise DemistoException("The koi-get-events command is available only on Cortex XSIAM.")
-
     demisto.debug("[Command] koi-get-events triggered")
 
     limit = int(args.get("limit", "50"))
     start_time_input = args.get("start_time", Config.DEFAULT_FROM_TIME)
     end_time_input = args.get("end_time")
     should_push_events = argToBoolean(args.get("should_push_events", False))
+
+    if should_push_events and not (is_xsiam() or is_platform()):
+        demisto.debug("[Command] should_push_events is not supported on this platform. Overriding to False.")
+        should_push_events = False
 
     event_type_arg = argToList(args.get("event_type"))
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"]))
