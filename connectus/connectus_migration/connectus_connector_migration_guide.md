@@ -533,9 +533,9 @@ The following opens were identified while consolidating the legacy XSOAR FE/BE o
 
 | Field | Rule |
 |---|---|
-| `id` | Equal to the `connector` id given as input. (i.e. provider="Salesforce" , id="salesforce") TODO - need to verify this, @judah_yyy . this is an Open if there are spaces, replace them with underscore. id should be lowercase TODO: check that there are no plans to use the connector ID for "using"|
+| `id` | Derived from the vendor name plus a capability suffix (see §3.3.1 "Connector ID and title — naming convention" below). Lowercase, words separated by dashes (e.g. `okta-automation-and-collection`). |
 | `enabled` | always true, unless want to disable the connector |
-| `metadata.title` | Equal to the `provider` field given, in Title Case (e.g., provider `"Palo alto networks"` → `metadata.title: "Palo Alto Networks"`). |
+| `metadata.title` | Derived from the vendor name plus a capability suffix (see §3.3.1 "Connector ID and title — naming convention" below). Title Case, words separated by spaces (e.g. `Okta Automation and Collection`). |
 | `metadata.description` | Collect all descriptions from `relevant_packs_jsons` and suggest a generic connector description based on that. Flag this for review by a technical content writer. |
 | `metadata.version` | Always `1.0.0` for new connectors. |
 | `metadata.categories` | **Array.** Union of all `categories` from `relevant_packs_jsons`, deduplicated. At least one entry required. |
@@ -547,6 +547,47 @@ The following opens were identified while consolidating the legacy XSOAR FE/BE o
 | `metadata.ownership.team` | Always `"xsoar"`. |
 | `metadata.ownership.maintainers` | Always `["@xsoar-content"]`. |
 | `settings.allow_skip_verification` | Always `true` unless the vendor explicitly requires a successful verification before enabling. |
+
+#### 3.3.1 Connector ID and title — naming convention
+
+The connector `id` (in [`connector.yaml`](#21-connectoryaml)) and `metadata.title` MUST encode the same information — the vendor name plus a suffix that reflects which top-level capability families the connector exposes. They differ only in formatting:
+
+- **`id`** — lowercase, words separated by dashes, no spaces (e.g. `okta-automation-and-collection`). Must satisfy the schema's min-3-char rule and OPA validation.
+- **`metadata.title`** — Title Case, words separated by spaces (e.g. `Okta Automation and Collection`).
+
+##### Suffix derivation
+
+Inspect the set of capabilities the connector ends up declaring in [`capabilities.yaml`](#25-capabilitiesyaml) and compute the suffix as follows:
+
+| Capability set declared on the connector | Suffix (title form) | Suffix (id form) |
+|---|---|---|
+| Only `automation-and-remediation` | `Automation` | `automation` |
+| Only one or more **collection** capabilities — any of `log-collection`, `fetch-issues`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, `fetch-secrets` | `Collection` | `collection` |
+| Both `automation-and-remediation` AND at least one **collection** capability | `Automation and Collection` | `automation-and-collection` |
+
+"Collection" is a deliberately broad umbrella that covers **every** fetch capability (`log-collection`, `fetch-issues`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, `fetch-secrets`) — even if the connector exposes several of them, the suffix is still the single word `Collection`. The suffix does NOT enumerate which collection capabilities are present.
+
+##### Vendor prefix
+
+The vendor prefix is the vendor name (the same value used for [`metadata.vendor`](#21-connectoryaml)) rendered as:
+
+- **`id`**: lowercased, spaces replaced with dashes, any other non-`[a-z0-9-]` character stripped or replaced with a dash (e.g. `Palo Alto Networks` → `palo-alto-networks`).
+- **`metadata.title`**: Title Case, spaces preserved (e.g. `palo alto networks` → `Palo Alto Networks`).
+
+##### Worked examples
+
+| Vendor | Capabilities declared | `id` | `metadata.title` |
+|---|---|---|---|
+| Okta | `automation-and-remediation` + `log-collection` | `okta-automation-and-collection` | `Okta Automation and Collection` |
+| Okta | `automation-and-remediation` only | `okta-automation` | `Okta Automation` |
+| Okta | `log-collection` only | `okta-collection` | `Okta Collection` |
+| Salesforce | `automation-and-remediation` only | `salesforce-automation` | `Salesforce Automation` |
+| Palo Alto Networks | `automation-and-remediation` + `fetch-issues` + `threat-intelligence-and-enrichment` | `palo-alto-networks-automation-and-collection` | `Palo Alto Networks Automation and Collection` |
+
+##### Flags
+
+- If the connector declares **zero** capabilities, raise a flag — every connector must expose at least one capability family.
+- If the vendor name cannot be cleanly rendered as a slug (e.g. contains characters outside `[A-Za-z0-9 ]`), raise a flag for manual review of the chosen `id`.
 
 ### 3.4 capabilities.yaml Rules
 
@@ -1709,4 +1750,27 @@ triggering:
 
 ### Integration list
 
-> **TBD** — the canonical list of server-style integrations to populate this appendix will be added in a follow-up edit. Until then, treat anything whose YML declares `longRunning: true` AND accepts inbound traffic as a candidate
+The canonical list of server-style integrations in scope for the server-style profile is:
+
+| Integration ID | Notes |
+|---|---|
+| `EDL` | Long-running External Dynamic List server — serves indicators over HTTP. |
+| `TAXII Server` | Long-running TAXII 1.x server. |
+| `TAXII2 Server` | Long-running TAXII 2.x server. |
+| `Microsoft Teams` | Long-running inbound listener for Teams events. |
+| `AWS-SNS-Listener` | Long-running AWS SNS push listener. |
+| `Zoom` | Long-running inbound listener for Zoom events. |
+
+Matching rule: case-insensitive exact match against the integration `commonfields.id`. Any integration outside this list whose YML declares `longRunning: true` AND accepts inbound traffic should be flagged as a candidate for addition to this appendix rather than silently migrated under the server-style profile.
+
+### Forward-looking note — re-evaluate this list whenever new integrations enter scope
+
+This appendix reflects only the integrations **currently in scope** for migration. The list is **not exhaustive of every server-style integration in the Content repo** — it is a working subset. Whenever a new integration is brought into scope (either added to the migration pipeline, or moved out of [Appendix D — Excluded Integrations](#appendix-d-excluded-integrations-out-of-scope) / [Appendix E — Manual Migration](#appendix-e-integrations-requiring-manual-migration)), the maintainer MUST analyze it against the server-style criteria below and update this appendix accordingly:
+
+1. Does the YML declare `script.longRunning: true`?
+2. Does the integration accept inbound traffic (HTTP listener, syslog listener, SNS push, mail polling, webhook receiver, websocket server, etc.) rather than only initiating outbound API calls on a schedule?
+3. Does the integration carry a `type: 9` (credentials) parameter that needs to be pinned to a connection profile via `xsoar-long-running-credentials-profile-id`?
+
+If the answer to (1) and (2) is yes, the integration belongs in this appendix and likely also in [Appendix G](#appendix-g-engine--enginegroup--proxy-exclusion-list) (no engine/proxy fields).
+
+**Concrete example — `GenericWebhook`**: today it is excluded via [Appendix D](#appendix-d-excluded-integrations-out-of-scope) ("Generic webhook integration — not a vendor-specific connector"). When/if `GenericWebhook` (or any similar webhook-receiver integration) is brought into scope in the future, it MUST be analyzed against the criteria above — it is a long-running inbound HTTP listener and will require addition to this appendix (and to Appendix G), along with the credential-pinning rules described above. Do not migrate such an integration under the standard outbound-API path.
