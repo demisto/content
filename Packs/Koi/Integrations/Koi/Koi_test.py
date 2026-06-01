@@ -531,6 +531,12 @@ class TestTestModule:
 class TestGetEventsCommand:
     """Tests for the koi-get-events command."""
 
+    @pytest.fixture(autouse=True)
+    def mock_xsiam_platform(self, mocker):
+        """Mock is_xsiam to return True for all get-events tests."""
+        mocker.patch("Koi.is_xsiam", return_value=True)
+        mocker.patch("Koi.is_platform", return_value=False)
+
     def test_get_events_alerts_and_audit(self, mock_client, alerts_response, audit_response, mocker):
         """Test get-events command fetching both alerts and audit logs."""
         mocker.patch.object(
@@ -1111,6 +1117,12 @@ class TestParseDate:
 
 class TestGetEventsCommandErrors:
     """Tests for error handling in get_events_command."""
+
+    @pytest.fixture(autouse=True)
+    def mock_xsiam_platform(self, mocker):
+        """Mock is_xsiam to return True for all get-events error tests."""
+        mocker.patch("Koi.is_xsiam", return_value=True)
+        mocker.patch("Koi.is_platform", return_value=False)
 
     def test_invalid_event_type(self, mock_client):
         """Test get-events command with invalid event type raises error."""
