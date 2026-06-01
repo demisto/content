@@ -347,6 +347,87 @@ def validate_shadowed_commands(raw: str) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# Release Notes (FIXES-TODO new step, 2026-05-31)
+# ---------------------------------------------------------------------------
+
+def validate_release_notes(value: str) -> list[str]:
+    """Validate the ``Release Notes`` cell shape.
+
+    The cell records whether the migration touched the integration's
+    own .py/.yml files and, when it did, the path to the release-notes
+    file plus a verified flag::
+
+        { "required": bool, "path": str | null, "verified": bool }
+
+    All three keys are required. When ``required`` is ``true``,
+    ``path`` must be a non-empty string and ``verified`` must be a
+    boolean (the actual file-existence + substring check happens in
+    the setter, not the validator — see :func:`cmd_set_release_notes`).
+    When ``required`` is ``false``, ``path`` may be ``null`` and
+    ``verified`` should also be ``false`` (no RN was needed so none
+    was verified). Extra top-level keys are rejected so callers can't
+    sneak unverified state past the gate.
+    """
+    errors: list[str] = []
+    try:
+        payload = json.loads(value)
+    except json.JSONDecodeError as e:
+        return [f"Invalid JSON: {e}"]
+    if not isinstance(payload, dict):
+        return [f"Expected a JSON object, got {type(payload).__name__}"]
+
+    expected_keys = {"required", "path", "verified"}
+    extra = set(payload.keys()) - expected_keys
+    if extra:
+        errors.append(
+            f"Unexpected top-level keys: {sorted(extra)} "
+            f"(allowed: {sorted(expected_keys)})"
+        )
+    missing = expected_keys - set(payload.keys())
+    if missing:
+        errors.append(f"Missing required keys: {sorted(missing)}")
+        # Cannot validate per-field shapes without the keys; return early.
+        return errors
+
+    required = payload.get("required")
+    path = payload.get("path")
+    verified = payload.get("verified")
+
+    if not isinstance(required, bool):
+        errors.append(
+            f"'required' must be a boolean, got {type(required).__name__}"
+        )
+    if not isinstance(verified, bool):
+        errors.append(
+            f"'verified' must be a boolean, got {type(verified).__name__}"
+        )
+    if path is not None and not isinstance(path, str):
+        errors.append(
+            f"'path' must be a string or null, got {type(path).__name__}"
+        )
+
+    # Cross-field consistency.
+    if required is True:
+        if not isinstance(path, str) or not path.strip():
+            errors.append(
+                "When 'required' is true, 'path' must be a non-empty string"
+            )
+    elif required is False:
+        # When required=false, path should be null and verified should be false.
+        if path not in (None, ""):
+            errors.append(
+                "When 'required' is false, 'path' must be null (no RN was needed)"
+            )
+        if verified is True:
+            errors.append(
+                "When 'required' is false, 'verified' must be false "
+                "(nothing to verify)"
+            )
+
+    return errors
+
+
+# ---------------------------------------------------------------------------
 # Generic "any JSON" validator (used by the JSON-shaped data steps that
 # don't have a richer schema, e.g. "Params for test with default in code").
 # ---------------------------------------------------------------------------
@@ -463,6 +544,7 @@ _NAMED_VALIDATORS: dict[str, ValidatorFn] = {
     "param_defaults": validate_param_defaults,
     "params_to_capabilities": validate_params_to_capabilities,
     "shadowed_commands": validate_shadowed_commands,
+    "release_notes": validate_release_notes,
     "any_json": validate_any_json,
 }
 

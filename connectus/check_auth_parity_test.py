@@ -647,6 +647,65 @@ class TestHardErrors:
         assert payload["error"]["code"] == cap.ERROR_NO_BASECLIENT
         assert cap._LITERAL_MARK_AUTH in payload["error"]["message"]
 
+    def test_multi_secret_passthrough_emits_dedicated_diagnostic(
+        self, tmp_path: Path
+    ) -> None:
+        """FIXES-TODO #9: Passthrough profile with 2+ credential-named
+        keys produces ``MULTI_SECRET_PASSTHROUGH`` rather than running
+        the gate (or short-circuiting on a vaguer NoBaseClient)."""
+        pack = _make_python_integration(tmp_path)
+        details_json = {
+            "auth_types": [
+                {"type": "Passthrough", "name": "bag",
+                 "xsoar_param_map": {
+                     "credentials.password": "primary",
+                     "hunting_credentials.password": "hunting_key",
+                 },
+                 "interpolated": True},
+            ],
+            "other_connection": [],
+        }
+        rc, payload = _run_main_capture(
+            [str(pack), "--integration-id", "AbuseIPDB",
+             "--auth-details", json.dumps(details_json)]
+        )
+        assert rc == cap.EXIT_MULTI_SECRET_PASSTHROUGH
+        assert payload["error"]["code"] == cap.MULTI_SECRET_PASSTHROUGH
+        # The diagnostic lists the matched credential keys …
+        assert "credentials.password" in payload["error"]["message"]
+        assert "hunting_credentials.password" in payload["error"]["message"]
+        # … and frames the skip as "by design" via the canonical literal.
+        assert cap._LITERAL_PARITY_GATE_SKIPPED in payload["error"]["message"]
+
+    def test_apimodule_import_emits_dedicated_diagnostic(
+        self, tmp_path: Path
+    ) -> None:
+        """FIXES-TODO #12: integrations whose Client subclasses a class
+        from an ApiModule produce ``APIMODULE_INTEGRATION_CANNOT_VERIFY``
+        rather than the plain ``ERROR_NO_BASECLIENT`` message."""
+        py = (
+            "from CommonServerPython import *  # noqa: F401\n"
+            "from MicrosoftApiModule import *  # noqa: E402\n"
+            "def main():\n"
+            "    pass\n"
+        )
+        pack = _make_python_integration(tmp_path, py_source=py)
+        rc, payload = _run_main_capture(
+            [str(pack), "--integration-id", "AzureFirewall",
+             "--auth-details", self._STUB_AUTH_DETAILS]
+        )
+        assert rc == cap.EXIT_APIMODULE_INTEGRATION_CANNOT_VERIFY
+        assert payload["error"]["code"] == cap.APIMODULE_INTEGRATION_CANNOT_VERIFY
+        # The diagnostic names the ApiModule (so the operator knows
+        # WHY the gate cannot verify) …
+        assert "MicrosoftApiModule" in payload["error"]["message"]
+        # … includes the unambiguous prescription (cross-cutting #3) …
+        assert cap._LITERAL_MARK_AUTH in payload["error"]["message"]
+        # … and is a NEW enum member (not just a refined existing one).
+        assert (
+            cap.APIMODULE_INTEGRATION_CANNOT_VERIFY != cap.ERROR_NO_BASECLIENT
+        )
+
     def test_error_all_interpolated(self, tmp_path: Path) -> None:
         pack = _make_python_integration(tmp_path)
         # Auth Details are now passed in via --auth-details (the
@@ -744,6 +803,84 @@ class TestDetection:
     def test_detect_mtls_negative(self) -> None:
         yml = {"configuration": [{"name": "api_key", "type": 4}]}
         assert not cap.detect_mtls(yml)
+
+    # FIXES-TODO #9 — multi-secret Passthrough detection
+    def test_multi_secret_passthrough_two_credentials(self) -> None:
+        """AbuseIPDB-shape: Passthrough with primary + Hunting keys."""
+        details = _details(
+            AuthEntry(
+                type=AuthType.Passthrough, name="bag",
+                xsoar_param_map={
+                    "credentials.password": "primary",
+                    "hunting_credentials.password": "hunting_key",
+                },
+            )
+        )
+        matched = cap.detect_multi_secret_passthrough(details)
+        assert matched is not None
+        assert len(matched) == 2
+
+    def test_multi_secret_passthrough_apikey_pattern(self) -> None:
+        details = _details(
+            AuthEntry(
+                type=AuthType.Passthrough, name="bag",
+                xsoar_param_map={
+                    "api_key": "primary",
+                    "secondary_token": "hunting",
+                },
+            )
+        )
+        assert cap.detect_multi_secret_passthrough(details) is not None
+
+    def test_single_secret_passthrough_does_not_trigger(self) -> None:
+        """A Passthrough with just one credential-named key isn't multi-."""
+        details = _details(
+            AuthEntry(
+                type=AuthType.Passthrough, name="bag",
+                xsoar_param_map={
+                    "api_key": "primary",
+                    "url": "endpoint",  # non-credential — doesn't count
+                },
+            )
+        )
+        assert cap.detect_multi_secret_passthrough(details) is None
+
+    def test_non_passthrough_with_two_secrets_does_not_trigger(self) -> None:
+        """Plain auth profiles aren't subject to the multi-secret skip."""
+        details = _details(
+            AuthEntry(
+                type=AuthType.Plain, name="creds",
+                xsoar_param_map={
+                    "credentials.identifier": "username",
+                    "credentials.password": "password",
+                },
+            )
+        )
+        assert cap.detect_multi_secret_passthrough(details) is None
+
+    # FIXES-TODO #12 — ApiModule import detection
+    def test_detect_apimodule_import_microsoft(self) -> None:
+        src = (
+            "from CommonServerPython import *\n"
+            "from MicrosoftApiModule import *\n"
+            "def main():\n    pass\n"
+        )
+        assert cap.detect_apimodule_import(src) == "MicrosoftApiModule"
+
+    def test_detect_apimodule_import_okta(self) -> None:
+        src = (
+            "from OktaApiModule import OktaClient\n"
+            "def main():\n    pass\n"
+        )
+        assert cap.detect_apimodule_import(src) == "OktaApiModule"
+
+    def test_detect_apimodule_import_negative(self) -> None:
+        src = (
+            "from CommonServerPython import *\n"
+            "from typing import Any\n"
+            "def main():\n    pass\n"
+        )
+        assert cap.detect_apimodule_import(src) is None
 
 
 # --------------------------------------------------------------------------
@@ -1433,3 +1570,188 @@ class TestConnectMitm:
         p.stop()
         assert p.cert_dir() is None
         assert not cert_dir.exists()
+
+
+# --------------------------------------------------------------------------
+# §X — Inconclusive-status emission contract (FIXES-TODO #1)
+# --------------------------------------------------------------------------
+#
+# The parity-gate evaluator in workflow_state.api now REJECTS connections
+# whose status is "inconclusive" (previously they were silently accepted).
+# These tests pin the lower-level contract: which run-shape combinations
+# produce status="inconclusive" so the gate's rejection path actually fires
+# for the right inputs.
+
+
+class TestUcpStripCrashDetection:
+    """FIXES-TODO #13 — post-classify ``RUN_FAILED_NEW`` for the
+    UCP-strip-crash pattern.
+
+    The new run strips every key listed in the connection's
+    ``xsoar_param_map`` from ``params`` before invoking the child
+    (UCP is supposed to inject the secret via
+    ``demisto.getUCPCredentials()`` instead). Integrations whose
+    ``main()`` reads those keys unconditionally crash with either:
+
+    * ``KeyError: '<leaf>'`` where the leaf appears in the
+      xsoar_param_map, OR
+    * ``TypeError: 'NoneType' object is not subscriptable`` from a
+      ``.get("credentials").get(...)`` chain.
+
+    The post-classifier replaces the generic ``RUN_FAILED_NEW`` with
+    the more specific ``UCP_STRIP_CRASHED_UNCONDITIONAL_READ`` code so
+    the operator can recognize the pattern and apply one of the two
+    documented fixes from skill §1.12.
+    """
+
+    @staticmethod
+    def _crashed_run(stderr: str) -> cap.RunResult:
+        return cap.RunResult(
+            status="crashed", rc=1, stdout="", stderr=stderr,
+            timed_out=False, requests=[],
+        )
+
+    @staticmethod
+    def _ok_run() -> cap.RunResult:
+        return cap.RunResult(
+            status="ok", rc=0, stdout="", stderr="", timed_out=False,
+            requests=[],
+        )
+
+    @staticmethod
+    def _plain_entry_with_credentials() -> AuthEntry:
+        return AuthEntry(
+            type=AuthType.Plain, name="creds",
+            xsoar_param_map={
+                "credentials.identifier": "username",
+                "credentials.password": "password",
+            },
+        )
+
+    def test_keyerror_on_identifier_triggers_reclassification(self) -> None:
+        """The AMPv2 case: KeyError on a leaf from xsoar_param_map."""
+        stderr = (
+            "Traceback (most recent call last):\n"
+            '  File "/x/AMPv2.py", line 3665, in main\n'
+            '    client_id = params["credentials"]["identifier"]\n'
+            "              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^\n"
+            "KeyError: 'identifier'\n"
+        )
+        new_run = self._crashed_run(stderr)
+        entry = self._plain_entry_with_credentials()
+        diffs = [cap.Diff(sentinel="", failure_code="RUN_FAILED_NEW",
+                          old_locations=[], new_locations=[])]
+        rewritten = cap._reclassify_ucp_strip_crash(diffs, new_run, entry)
+        codes = [d.failure_code for d in rewritten]
+        assert "UCP_STRIP_CRASHED_UNCONDITIONAL_READ" in codes
+        assert "RUN_FAILED_NEW" not in codes
+
+    def test_nonetype_chain_triggers_reclassification(self) -> None:
+        """The defensive ``.get('credentials').get(...)`` chain still
+        crashes because UCP strips the parent dict — the leaf .get
+        returns None and the second .get fails with TypeError."""
+        stderr = (
+            "Traceback (most recent call last):\n"
+            '  File "/x/Int.py", line 100, in main\n'
+            '    user = params.get("credentials").get("identifier")\n'
+            "TypeError: 'NoneType' object is not subscriptable\n"
+        )
+        new_run = self._crashed_run(stderr)
+        entry = self._plain_entry_with_credentials()
+        diffs = [cap.Diff(sentinel="", failure_code="RUN_FAILED_NEW",
+                          old_locations=[], new_locations=[])]
+        rewritten = cap._reclassify_ucp_strip_crash(diffs, new_run, entry)
+        codes = [d.failure_code for d in rewritten]
+        assert "UCP_STRIP_CRASHED_UNCONDITIONAL_READ" in codes
+
+    def test_unrelated_keyerror_does_not_trigger(self) -> None:
+        """KeyError on a key NOT in xsoar_param_map should NOT be
+        reclassified — it's a genuine bug, not the UCP-strip pattern."""
+        stderr = (
+            "Traceback (most recent call last):\n"
+            "KeyError: 'some_unrelated_key'\n"
+        )
+        new_run = self._crashed_run(stderr)
+        entry = self._plain_entry_with_credentials()
+        diffs = [cap.Diff(sentinel="", failure_code="RUN_FAILED_NEW",
+                          old_locations=[], new_locations=[])]
+        rewritten = cap._reclassify_ucp_strip_crash(diffs, new_run, entry)
+        codes = [d.failure_code for d in rewritten]
+        assert "RUN_FAILED_NEW" in codes
+        assert "UCP_STRIP_CRASHED_UNCONDITIONAL_READ" not in codes
+
+    def test_ok_new_run_does_not_trigger(self) -> None:
+        """A passing new run with no RUN_FAILED_NEW diff is left alone."""
+        new_run = self._ok_run()
+        entry = self._plain_entry_with_credentials()
+        diffs: list[cap.Diff] = []
+        rewritten = cap._reclassify_ucp_strip_crash(diffs, new_run, entry)
+        assert rewritten == []
+
+    def test_unrelated_nonetype_without_credentials_in_map_does_not_trigger(
+        self,
+    ) -> None:
+        """NoneType subscript error without any 'credentials' key in
+        xsoar_param_map should NOT be reclassified — too noisy."""
+        stderr = (
+            "TypeError: 'NoneType' object is not subscriptable\n"
+        )
+        new_run = self._crashed_run(stderr)
+        # Entry whose xsoar_param_map has no 'credentials' key.
+        entry = AuthEntry(
+            type=AuthType.APIKey, name="api_key",
+            xsoar_param_map={"api_key": "key"},
+        )
+        diffs = [cap.Diff(sentinel="", failure_code="RUN_FAILED_NEW",
+                          old_locations=[], new_locations=[])]
+        rewritten = cap._reclassify_ucp_strip_crash(diffs, new_run, entry)
+        codes = [d.failure_code for d in rewritten]
+        assert "RUN_FAILED_NEW" in codes
+        assert "UCP_STRIP_CRASHED_UNCONDITIONAL_READ" not in codes
+
+
+class TestCommandStatusInconclusiveEmission:
+    """Pin the inputs that produce ``_command_status == 'inconclusive'``.
+
+    Added 2026-05-31 alongside FIXES-TODO #1: the gate at the
+    workflow_state level rejects ``inconclusive`` rather than accepting
+    it permissively. Documenting here which run-shape combinations
+    produce that status so the rejection contract is grounded in
+    observable behavior.
+    """
+
+    @staticmethod
+    def _run(status: str, stderr: str = "") -> cap.RunResult:
+        return cap.RunResult(
+            status=status, rc=0, stdout="", stderr=stderr, timed_out=False,
+            requests=[],
+        )
+
+    def test_both_crashed_yields_inconclusive(self) -> None:
+        old = self._run("crashed", stderr="prepare-content failed: boom")
+        new = self._run("crashed", stderr="prepare-content failed: boom")
+        diffs = cap._run_status_diffs(old, new)
+        status = cap._command_status(old, new, diffs)
+        assert status == "inconclusive"
+
+    def test_only_new_crashed_yields_inconclusive(self) -> None:
+        old = self._run("ok")
+        new = self._run("crashed", stderr="KeyError: 'identifier'")
+        diffs = cap._run_status_diffs(old, new)
+        status = cap._command_status(old, new, diffs)
+        assert status == "inconclusive"
+
+    def test_both_no_requests_yields_inconclusive(self) -> None:
+        old = self._run("no_requests")
+        new = self._run("no_requests")
+        diffs = cap._run_status_diffs(old, new)
+        status = cap._command_status(old, new, diffs)
+        assert status == "inconclusive"
+
+    def test_clean_ok_with_no_diffs_yields_pass(self) -> None:
+        # Sanity: the inconclusive contract isn't accidentally triggered
+        # when both runs are clean and there are no diffs.
+        old = self._run("ok")
+        new = self._run("ok")
+        status = cap._command_status(old, new, diffs=[])
+        assert status == "pass"

@@ -82,6 +82,7 @@ from workflow_state.validators import (  # noqa: I001
     validate_param_defaults,
     validate_params_to_capabilities,
     validate_params_to_commands,
+    validate_release_notes,
     validate_shadowed_commands,
 )
 
@@ -210,6 +211,7 @@ __all__ = [
     "validate_param_defaults",
     "validate_params_to_capabilities",
     "validate_params_to_commands",
+    "validate_release_notes",
     "validate_shadowed_commands",
     # Display
     "format_by_assignee",

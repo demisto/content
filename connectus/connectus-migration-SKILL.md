@@ -7,17 +7,17 @@ description: This skill should be used when migrating integrations to connectus
 
 ## Overview
 
-> _The workflow now has 13 steps (2026-05, schema_version=2): the standalone `wrote/checked code` and `auth parity test passes` checkpoints were removed (see breaking-change note below). Earlier 2026-05Q4 change: the new `Shadowed Integration Commands` data column replaced the old `shadowed command test passes` checkpoint. The per-profile `verify_connection_skip` boolean inside each `auth_types[]` entry of `Auth Details` remains the replacement signal (see §A.5 below) for the historical `verify button placement` step removed in 2026-05Q3._
+> _The workflow now has 12 steps (2026-05-31, schema_version=2 with FIXES-TODO combined #4+#6+New_RN re-sequencing): the historical `wrote/checked code` and `auth parity test passes` checkpoints were removed earlier (2026-05). The 2026-05-31 changes dropped two more steps — `Shadowed Integration Commands` (the shadow-rename design was unsustainable; see FIXES-TODO #4/#5) and `write tests` (the no-edit-case was the common one and added no value over `precommit/validate/unit tests passed`; see FIXES-TODO #6) — and inserted a new `Release Notes` data step. The per-profile `verify_connection_skip` boolean inside each `auth_types[]` entry of `Auth Details` remains the replacement signal (see §A.5 below) for the historical `verify button placement` step removed in 2026-05Q3._
 
 This skill guides the migration of XSOAR/XSIAM integrations to the ConnectUs platform. Each integration follows a workflow tracked in [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) via the [`connectus/workflow_state.py`](workflow_state.py) CLI tool.
 
 The CSV has two kinds of columns:
 
 - **Identity / metadata** (3): `Integration ID`, `Integration File Path`, `Connector ID`.
-- **Workflow columns** (13, managed by the state machine — CSV total is 16):
-  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Shadowed Integration Commands`, `Params to Capabilities` (6).
+- **Workflow columns** (12, managed by the state machine — CSV total is 15):
+  - **Workflow data columns** (free-text / JSON; set with dedicated commands): `assignee`, `Auth Details`, `Params to Commands`, `Params for test with default in code`, `Params to Capabilities`, `Release Notes` (6).
   - **Workflow flag**: _(none)_
-  - **Workflow checkpoints** (7, sequential ✅): `generated manifest`, `run manifest make validate`, `write tests`, `precommit/validate/unit tests passed`, `param parity test passes`, `code reviewed`, `code merged`.
+  - **Workflow checkpoints** (6, sequential ✅): `generated manifest`, `run manifest make validate`, `precommit/validate/unit tests passed`, `param parity test passes`, `code reviewed`, `code merged`.
 
 > _Schema_version=2 (2026-05) breaking change: the standalone `wrote/checked code` and `auth parity test passes` checkpoints were removed. Code authorship/review was redundant with the downstream `precommit/validate/unit tests passed` gate; auth parity is now enforced **inside `set-auth`** itself — the candidate `Auth Details` JSON is run through [`check_auth_parity.py`](check_auth_parity.py) before the cell is committed, and the write is rejected unless parity passes or short-circuits structurally (`NO_BASECLIENT` / `NON_PYTHON` / `ALL_INTERPOLATED` / `CONNECTION_INTERPOLATED` / `INTEGRATION_REJECTS_HTTP`). A successful `set-auth` therefore *means* "parity has been verified"; see [§1.12 Auth-parity gate inside `set-auth`](#112-auth-parity-gate-inside-set-auth)._
 
@@ -29,11 +29,11 @@ The skill supports three top-level invocation styles. Pick the matching flow bas
 
 | User phrase (examples) | Action |
 |---|---|
-| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 13-step procedure for that one integration. |
+| "migrate `<integration id>`" / "work on `<integration id>`" / "status of `<integration id>`" | Single-integration flow — jump straight to [Step 0: Identify the Integration](#step-0-identify-the-integration) and walk the existing 12-step procedure for that one integration. |
 | "migrate everything assigned to me" / "what's next for me" / "continue my work" / "keep going" | [Assignee batch flow](#assignee-batch-flow) — enumerate the user's in-progress + assigned integrations and walk them one by one. |
 | "migrate connector `<connector_id>`" / "work on connector `<connector_id>`" / "do the whole `<connector>` connector" | [Connector batch flow](#connector-batch-flow) — enumerate that connector's integrations and walk them one by one (with ownership disambiguation up front). |
 
-Both batch flows are an **outer loop** wrapped around the existing per-integration procedure. They never replace or re-implement the 15-step workflow — they pick *which* integration to run that workflow on next.
+Both batch flows are an **outer loop** wrapped around the existing per-integration procedure. They never replace or re-implement the 12-step workflow — they pick *which* integration to run that workflow on next.
 
 > **CLI column references accept numbers too.** Every CLI verb in this
 > skill that takes a column name (`show-step`, `markpass`, `skip`, `fail`,
@@ -65,7 +65,7 @@ Use when the user says something like "migrate everything assigned to me" / "con
 
    Otherwise, **ask the user** for the work order. Suggest a sensible default ("furthest-along first" or "by connector then alphabetical") but let them override.
 5. **Walk one integration at a time.** For each integration in the chosen order:
-   - Follow the existing per-integration migration procedure starting at [Step 0: Identify the Integration](#step-0-identify-the-integration). Do **not** duplicate the 15 steps here — the rest of this skill already documents them.
+   - Follow the existing per-integration migration procedure starting at [Step 0: Identify the Integration](#step-0-identify-the-integration). Do **not** duplicate the 12 steps here — the rest of this skill already documents them.
    - Between integrations, print a short progress recap (`X/N done in this batch — next: <integration id>`) and confirm before moving on, **unless** the user has explicitly said "do them all without asking" / "no confirmations" / equivalent.
 6. **Mid-loop "what's next" check.** Re-run `python3 connectus/workflow_state.py next --mine` after finishing each integration so the queue reflects any newly-assigned or just-completed work.
 7. **Finish.** When the queue is empty, summarize what was done and ask whether to start a new batch (e.g., a connector batch, or assigning more work).
@@ -133,6 +133,52 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 5. **Use `set-auth` to update Auth Details.** When correcting auth classifications, use `python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>'`. This validates the JSON schema and automatically resets the workflow back to the first checkpoint (`generated manifest`).
 6. If a checkpoint does not pass, it might be because a previous step was not done well — go back to it via `fail` or `reset-to`. Both verbs **preserve** `Params to Commands` only (the historical `Params for test with default in code` and `Params same in other handlers` columns were removed in 2026-05; today only `Params to Commands` carries `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml)) so per-command param research survives a failed checkpoint. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept; the api response includes the same names in `result["preserved"]`. **`set-auth` is NOT covered by this carve-out** — auth changes invalidate downstream artifacts, so `set-auth` continues to wipe `Params to Commands` by design (see Step 1 below). Plain `reset` (the "wipe the whole row" verb) also wipes it; preservation is for `reset-to`/`fail` only.
 7. Try to be efficient in what needs input from the user. If you have an option to read files instead of grep, or batch commands to the cli, it is better.
+
+## Cross-cutting Decisions (2026-05-31)
+
+The following four decisions were locked during the 2026-05-31 FIXES-TODO
+walkthrough. They are referenced throughout this document by name (e.g.
+"per the **Hints policy**", "per **cross-cutting #3**"). Tracking them in
+one place avoids re-litigating the same questions in every section.
+
+1. **Hints policy.** Scripts emit accurate, factual descriptions of what
+   went wrong. Hints (telling the operator what to *do*) are only
+   included when the prescription is **unambiguous** (one obvious right
+   answer, no judgment call). When multiple valid paths exist, the
+   diagnostic describes accurately and points to the relevant skill
+   section; prescription lives in the skill, not in the tool. Examples:
+   - **Unambiguous → hint OK.** "use `--static-only` for non-Python
+     integrations" (FIXES-TODO #11), "mark `interpolated: true`"
+     (FIXES-TODO #12 ApiModule case).
+   - **Multiple valid paths → describe + point to skill.** "UCP-strip
+     crash; see skill §1.12 for the two fix paths" (FIXES-TODO #13 —
+     `_apply_ucp_plain` override vs. `is_ucp_enabled()` gating).
+
+2. **XOR-only auth relations.** The auth-profile relation model is
+   exclusive-OR only. There is no `and` relation, no `any` / concurrent
+   relation. Integrations with multiple distinct credentials (e.g.
+   AbuseIPDB's primary + Hunting key) are classified as `Passthrough`
+   — the secrets-bag bucket. The parity gate's coverage of
+   `Passthrough` is intentionally reduced; this is documented as
+   expected, not a gap. Detection of the multi-secret pattern emits the
+   structural-skip code `MULTI_SECRET_PASSTHROUGH` (FIXES-TODO #9). See
+   §1.2.2 for the worked example.
+
+3. **`interpolated: true` is the documented fallback.** Operators may
+   set `interpolated: true` on **any** auth profile type, including
+   `Plain` and `APIKey`, as the documented escape valve when parity
+   verification fails or can't be performed (e.g. ApiModule-using
+   integrations, integrations whose `Client` doesn't UCP-cleanly).
+   There is no validator hard-reject. The skill text frames this
+   positively as a fallback, not as a bypass. See §1.2.2 (positive
+   framing paragraph) for guidance on when to reach for it.
+
+4. **Project scope is one-shot, no future.** There will be no "next
+   migrator" continuing this work past the current user. Resolutions
+   are scoped to "what does the current user need to execute," not
+   "what should we build for long-term maintainability." Treat this as
+   a finite project; do not invest in tooling whose payoff window
+   exceeds the current pipeline.
 
 ## Interaction Policy
 
@@ -407,6 +453,14 @@ Each `auth_types[]` entry describes **one complete UCP connection type** — one
   > **Enum.** The validator/enum in [`auth_config_parser/types.py`](auth_config_parser/types.py:1) accepts exactly the six values `OAuth2ClientCreds`, `OAuth2JWT`, `APIKey`, `Plain`, `Passthrough`, `NoneRequired`.
 - **Multi-secret auth flows: extras go in the SAME profile (see §1.2.2a).** Every entry is one self-contained, mutually-exclusive profile. If an auth flow consumes more than one XSOAR field-path, they all go in the **same** entry's `xsoar_param_map` — never split across multiple entries (because the only inter-profile relation is exclusive-OR, not AND). When the combined shape doesn't fit a canonical profile (no dominant canonical role; co-equal multi-secret packages like Datadog/AWS/Akamai/GitHub App), use `Passthrough`. When one canonical role dominates and the rest are "extras" (e.g. APIKey + a vendor cert), keep the canonical type and add the extras to the same map.
 - **`interpolated`** (optional, defaults to `false`) — set to `true` when the value is templated in at runtime by the manifest generator rather than supplied directly by the user. **Only `Plain` and `APIKey` entries may be non-interpolated (i.e., `interpolated: false` or omitted).** All other auth types (`OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough`) MUST set `interpolated: true` — these flows cannot accept raw user input verbatim; their values are always derived/templated at runtime. `xsoar_param_map` is still required and non-empty even when `interpolated: true`.
+
+  > **`interpolated: true` is a documented fallback on ANY profile type** (cross-cutting decision #3). Operators may set it on `Plain` and `APIKey` profiles too, as the escape valve when the parity gate cannot verify the integration cleanly. This is **not** a bypass — it's the documented escape path for these classes of failures:
+  >
+  > - **ApiModule-using integrations** (FIXES-TODO #12). When the parity gate emits `APIMODULE_INTEGRATION_CANNOT_VERIFY`, the gate cannot inspect transitive `BaseClient` use through e.g. `MicrosoftApiModule` / `OktaApiModule`. Mark the profile `interpolated: true` and move on.
+  > - **Custom-header `APIKey` integrations without an override** (FIXES-TODO #10 — tabled). When the gate emits `WRONG_LOCATION` because the integration uses `X-API-Key` instead of `Authorization: Bearer`, the canonical fix is a `_apply_ucp_api_key()` override on the `Client` (see §1.12). When you don't want to write the override now, mark the profile `interpolated: true`.
+  > - **Plain auth with unconditional `params["credentials"]["identifier"]` reads** (FIXES-TODO #13). When the gate emits `UCP_STRIP_CRASHED_UNCONDITIONAL_READ`, the canonical fixes are a `_apply_ucp_plain` override or `is_ucp_enabled()` gating (see §1.12). Marking the profile `interpolated: true` is the documented alternative when the integration's runtime cannot be touched.
+  >
+  > Document the reason in the commit notes ("marked interpolated: true because <reason>") so reviewers can verify the fallback was justified.
 - **`verify_connection_skip`** (optional, defaults to `false`) — set to `true` when this profile's `test-module` code path manually raises an exception (`raise DemistoException(...)` / `return_error(...)`) instead of reaching an actual HTTP call. Most commonly OAuth Authorization Code / Device Code / ROPC flows where the user must first run an out-of-band `!auth-start`-style command before the connection-test button can succeed. Per-profile: a multi-profile (exclusive-OR) row may set it `true` on one profile and leave it default on another. Must be a JSON boolean — string `"true"`/`"false"` and int `0`/`1` are rejected.
 - **Sort order** — entries are sorted by `(type, name)` ascending. The validator enforces this — `set-auth` will reject unsorted input. Map keys, by contrast, are an unordered dict and have no sort requirement.
 
@@ -442,6 +496,52 @@ For an auth flow that consumes more than one XSOAR field, count the **canonical-
 **Single-secret flows stay on their natural profile type.** If the integration has exactly one API key (one header / one query param / one HMAC secret-of-one) and nothing else auth-relevant, keep it as `APIKey`. If it has exactly one username+password pair (`Plain` profile has two fields by design) and nothing else, keep it as `Plain`. The "extras go in the profile" rule fires only when there ARE extras AND there is still a dominant canonical role; otherwise (no canonical dominance) use `Passthrough`.
 
 **HMAC of one** (single static secret producing per-request signature) stays `APIKey`. **HMAC of two-plus** (e.g. AWS SigV4's pair, Akamai's triple) is multi-secret with no dominant canonical pattern → `Passthrough`. The wire-protocol mechanism (HMAC, Bearer, signed query string, etc.) is irrelevant to the classification — only the **count of co-equal canonical patterns** matters.
+
+---
+
+#### 1.2.2b Multi-secret / multi-flow integrations → one `Passthrough` profile
+
+**Added 2026-05-31** (FIXES-TODO #9 worked example; locked under
+cross-cutting decision #2). Some integrations expose **two distinct
+optional auth flows** in a single configuration — e.g. AbuseIPDB has the
+primary AbuseIPDB API key AND an optional Abuse.ch Hunting API key, each
+authenticating against a different service URL. The user can configure
+either, both, or just the primary.
+
+Per cross-cutting decision #2 (XOR-only auth), the schema does NOT
+support `and` / `any` / concurrent relations. Multi-secret /
+multi-flow integrations classify as **one `Passthrough` profile**
+carrying all secrets in `xsoar_param_map`:
+
+```json
+{
+  "auth_types": [
+    {
+      "type": "Passthrough",
+      "name": "bag",
+      "interpolated": true,
+      "xsoar_param_map": {
+        "credentials.password":          "primary_api_key",
+        "hunting_credentials.password":  "hunting_api_key"
+      }
+    }
+  ],
+  "other_connection": ["url", "insecure", "proxy"]
+}
+```
+
+The parity gate detects this shape and emits the structural-skip code
+`MULTI_SECRET_PASSTHROUGH` with a diagnostic that frames the reduced
+coverage as "by design, not a failure." Heuristic: 2+ keys in a
+`Passthrough` profile's `xsoar_param_map` matching credential-field
+name patterns (`password`, `key`, `secret`, `token`, `credential`,
+`apikey`, `api_key` — case-insensitive substrings).
+
+**When in doubt** between "one `Passthrough` lumping both" and "two
+separate `APIKey` profiles", remember: there is no `any` relation. Two
+`APIKey` profiles would (incorrectly) tell the UCP runtime the user must
+pick one. `Passthrough` is the honest classification for "user may
+configure either, both, or just primary."
 
 ---
 
@@ -1268,11 +1368,21 @@ No code change. Re-classify `Auth Details` so that every `auth_types[]` entry ca
 The parity tool's structural-skip gates fire in a **fixed order** — the first one matched wins, and downstream gates are never evaluated. The order is:
 
 1. `ERROR_NON_PYTHON` (exit 10)
-2. `ERROR_NO_BASECLIENT` (exit 11)
-3. `ERROR_ALL_INTERPOLATED` (exit 12)
-4. `ERROR_CONNECTION_INTERPOLATED` (exit 13)
-5. `ERROR_INTEGRATION_REJECTS_HTTP` (exit 14)
-6. Per-connection skips inside the run: `skipped_signed`, `skipped_mtls`, `skipped_passthrough`.
+2. `ERROR_NO_BASECLIENT` (exit 11) — refined into `APIMODULE_INTEGRATION_CANNOT_VERIFY` (exit 15) when the integration's `.py` contains `from <Foo>ApiModule import` (FIXES-TODO #12). Same structural-skip semantics; clearer diagnostic.
+3. `MULTI_SECRET_PASSTHROUGH` (exit 16) — a `Passthrough` profile carrying 2+ credential-named keys (FIXES-TODO #9). Per cross-cutting decision #2, this is by design, not a failure. Fires before `ERROR_ALL_INTERPOLATED` so the more specific code wins.
+4. `ERROR_ALL_INTERPOLATED` (exit 12)
+5. `ERROR_CONNECTION_INTERPOLATED` (exit 13)
+6. `ERROR_INTEGRATION_REJECTS_HTTP` (exit 14)
+7. Per-connection skips inside the run: `skipped_signed`, `skipped_mtls`, `skipped_passthrough`.
+
+Per-command crash post-classification (does not short-circuit the gate;
+just refines the `RUN_FAILED_NEW` diagnostic):
+
+- `UCP_STRIP_CRASHED_UNCONDITIONAL_READ` (FIXES-TODO #13) — replaces the
+  generic `RUN_FAILED_NEW` when the new run crashed reading a key from
+  the connection's `xsoar_param_map` (KeyError) or via a defensive
+  `.get("credentials").get(...)` chain that hits the stripped parent
+  (TypeError: NoneType not subscriptable). See sub-section D below.
 
 **Boto3 / AWS integrations always trip `ERROR_NO_BASECLIENT` first**, NOT `skipped_signed`. They use `boto3.Session.client()` directly rather than subclassing `BaseClient`, so gate #2 catches them before gate #6 is even reached. The `skipped_signed` path conceptually exists for boto3 but is structurally unreachable for it — `skipped_signed` only fires for integrations that DO subclass `BaseClient` AND ALSO import `hmac` (or another signed-request module).
 
@@ -1280,7 +1390,71 @@ The parity tool's structural-skip gates fire in a **fixed order** — the first 
 
 **Detection during classification:** grep the integration's `.py` for `import boto3|from boto3|import botocore|from botocore|AWSApiModule`. If any match, mark `interpolated: true` up front on every `auth_types[]` entry — `set-auth` will then short-circuit via `ERROR_ALL_INTERPOLATED` and proceed without ever attempting the parity run.
 
-###### D. Permanent `interpolated: true` candidates (no parity testing possible)
+###### D. UCP-strip crash on unconditional `params["credentials"]` reads
+
+**Added 2026-05-31** (FIXES-TODO #13 worked example). When the new
+(UCP) run crashes with `KeyError: 'identifier'` (or a similar leaf
+from the connection's `xsoar_param_map`), or with `TypeError:
+'NoneType' object is not subscriptable` from a
+`.get("credentials").get(...)` chain, the parity gate post-classifies
+the diff as `UCP_STRIP_CRASHED_UNCONDITIONAL_READ`.
+
+**Why this happens.** The new run, by design, strips every key listed
+in the connection's `xsoar_param_map` from the `params` dict before
+invoking the child — because UCP is supposed to inject the secret via
+`demisto.getUCPCredentials()` instead. Integrations whose `main()`
+reads those keys **unconditionally** (e.g. AMPv2's
+`client_id = params["credentials"]["identifier"]`) crash.
+
+**TWO valid fixes** (per Hints policy / cross-cutting #1: prescription
+ambiguous, choose by context).
+
+**Fix path 1 — keep the integration UCP-clean (add an override).**
+Add `_apply_ucp_plain` (or the analogous APIKey/OAuth2 override) on
+the `Client` class so it consumes UCP-shape credentials directly:
+
+```python
+class Client(BaseClient):
+    def _apply_ucp_plain(self, credentials: dict, ctx: Any) -> None:
+        plain_data = credentials.get("plain", credentials)
+        ctx.auth = (
+            plain_data.get("username", ""),
+            plain_data.get("password", ""),
+        )
+```
+
+This is the right path when the integration is going to be a
+first-class UCP citizen and you want continued parity coverage.
+
+**Fix path 2 — minimal diff (`is_ucp_enabled()` gating).** Gate the
+unconditional `params[...]` read on `is_ucp_enabled()`:
+
+```python
+# BEFORE
+client_id = params["credentials"]["identifier"]
+api_key   = params["credentials"]["password"]
+
+# AFTER
+if is_ucp_enabled():
+    creds = demisto.getUCPCredentials()
+    client_id = creds["plain"]["username"]
+    api_key   = creds["plain"]["password"]
+else:
+    client_id = params["credentials"]["identifier"]
+    api_key   = params["credentials"]["password"]
+```
+
+This is the right path when the integration's `Client` doesn't
+subclass `BaseClient` cleanly (e.g. constructs `requests` manually
+with `auth=(client_id, api_key)`) so the override approach can't
+fully fix the dotted-access pattern.
+
+**Fix path 3 (escape valve) — mark `interpolated: true`.** When you
+just need to advance the migration, classify the profile
+`interpolated: true` per cross-cutting decision #3. Document the
+reason in the commit notes. This is the documented fallback.
+
+###### E. Permanent `interpolated: true` candidates (no parity testing possible)
 
 Three categories of integrations are permanent `interpolated: true` candidates — the parity tool will short-circuit on them, and that is the **correct** outcome (not a bug to chase):
 
@@ -1290,7 +1464,7 @@ Three categories of integrations are permanent `interpolated: true` candidates �
 
 For all three, the fix is to classify with `interpolated: true` on every `auth_types[]` entry. Do **not** attempt to refactor the integration onto `BaseClient` just to make the parity tool reachable — that is out of scope for the migration.
 
-###### E. Sentinel grammar (for grepping diagnostics)
+###### F. Sentinel grammar (for grepping diagnostics)
 
 Parity sentinels encode both the XSOAR path AND the **role** the secret plays, in the form `__AUTHPARITY__<connection>__<xsoar_path>__<role>__<uuid8>` — e.g. `__AUTHPARITY__credentials__credentials.password__key__86ad7936`. Diff messages can be grepped by role, which makes "missing-in-new on the `key` sentinel of `credentials`" trivially attributable to a missing `_apply_ucp_api_key` override (sub-section A above). See [`auth_parity_test_design.md`](auth_parity_test_design.md:1) §2.3 for the full sentinel grammar.
 
@@ -1625,7 +1799,9 @@ The skill ONLY needs to:
       --integration-id "<Integration ID>"
   ```
 
-  Same applies to any other `demisto-sdk` invocation made from the agent (Step 5 `validate`, Step 7 `pre-commit`). When in doubt, set the env var. The directory does not need to exist beforehand — `demisto-sdk` creates it on first write.
+  Same applies to any other `demisto-sdk` invocation made from the agent (Step 7 `validate`, Step 9 `pre-commit`). When in doubt, set the env var. The directory does not need to exist beforehand — `demisto-sdk` creates it on first write.
+
+  > **2026-05-31 update.** The connectus analyzers (`check_auth_parity.py`, `check_command_params.py`) now auto-apply this workaround when `DEMISTO_SDK_LOG_FILE_PATH` is unset: they default it to `<repo>/.tmp_migration/sdk-logs` and create the directory on demand. You only need to set the env var manually for `demisto-sdk` invocations you make YOURSELF (validate, pre-commit, update-release-notes, etc.) — the analyzer invocations are now self-fixing.
 
 ### 9. Runtime expectations
 
@@ -1844,72 +2020,16 @@ top-level object, non-empty string keys, any JSON value. Full schema in
 > path (`fail`, `reset-to`, `set-auth`, `reset` all wipe it). Only
 > `Params to Commands` carries `preserve_on_reset: true` today.
 
-### Step 3a-bis: Set `Shadowed Integration Commands` (data column)
-
-**Purpose:** ensure no two integrations within the same connector expose
-a command with the same name. When the migration pipeline scans all
-integrations in a connector and finds a shadowed (shared) command name,
-the "losing" integration(s) must rename their copy to a brand-suffixed
-variant so the connector remains unambiguous at runtime. This data
-column replaces the former `shadowed command test passes` checkpoint
-(removed 2026-05Q4) — the rename evidence is now the cell value itself.
-
-#### Detector
-
-```bash
-python3 connectus/workflow_state.py detect-shadowed-commands "<Integration ID>"
-```
-
-Prints a JSON object mapping each shadowed command name in THIS
-integration to the proposed renamed form `<original>-<brand>`. The
-**brand** is derived from this integration's YML top-level `name`,
-lowercased, with any non-alphanumeric character replaced by `-` (runs
-collapsed, leading/trailing dashes stripped). An empty `{}` means no
-shadowed commands were detected and the cell should be committed as
-`{}`.
-
-#### AI responsibility — rename BEFORE committing
-
-For each `(original, renamed)` pair the detector emits:
-
-1. Edit the integration's `.py` to rename the command. This typically
-   means updating the `command` string in the dispatcher / `if-elif`
-   block (`if command == "<renamed>"`) and the handler function name if
-   it embeds the command (e.g. `def <renamed>_command(...)`). Keep all
-   arguments and outputs identical.
-2. Edit the integration's `.yml`: update the matching
-   `script.commands[].name` entry from `<original>` to `<renamed>`. Do
-   NOT touch the command's `arguments` / `outputs` blocks.
-3. Do NOT touch the winning integration in the connector — it keeps the
-   original command name.
-
-#### Commit
-
-```bash
-python3 connectus/workflow_state.py set-shadowed-commands "<Integration ID>" '<JSON>'
-# or, when there are no shadowed commands:
-python3 connectus/workflow_state.py set-shadowed-commands "<Integration ID>" '{}'
-```
-
-#### Validation guarantees
-
-The setter validates both the JSON schema (see
-[`column-schemas.md`](column-schemas.md) §`Shadowed Integration Commands`)
-AND on-commit semantics:
-
-- Each `original` must currently be detected as shadowed within the
-  connector (i.e. present in this integration's YML AND in at least one
-  sibling integration's YML when the connector is scanned).
-- The renamed command MUST exist in this integration's YML
-  (`script.commands[].name == <renamed>`).
-- The original command MUST NO LONGER exist in this integration's YML.
-
-Any failure prints all collected errors and refuses to write the cell.
-
-> **Reset semantics.** `Shadowed Integration Commands` is NOT preserved
-> on any reset path (`fail`, `reset-to`, `set-auth`, `reset` all wipe
-> it). Only `Params to Commands` carries `preserve_on_reset: true`
-> today.
+<!--
+Step 3a-bis (Shadowed Integration Commands) was REMOVED 2026-05-31 as
+part of the FIXES-TODO combined #4+#6+New_RN execution plan. The
+underlying CLI commands (`set-shadowed-commands`, `detect-shadowed-
+commands`) remain in the codebase but are no longer part of the
+workflow sequence; the step has been dropped from
+`workflow_state_config.yml` and the matching CSV column has been
+removed. See `FIXES-TODO.md` §4 (subsumed by workflow removal) and §5
+(skipped — subsumed by #4).
+-->
 
 ### Step 3b: Set `Params to Capabilities` (data column)
 
@@ -1999,7 +2119,7 @@ python3 connectus/workflow_state.py markpass "<Integration ID>" "generated manif
 Prerequisite: `Params to Commands` must be set (valid JSON). The state
 machine enforces this and tells you what's missing.
 
-### Step 5: `run manifest make validate`
+### Step 7: `run manifest make validate`
 
 Run the manifest's `make validate` step:
 
@@ -2019,26 +2139,81 @@ If it fails, fix the issues. To reset:
 python3 connectus/workflow_state.py fail "<Integration ID>" "run manifest make validate"
 ```
 
-### Step 6: `write tests`
+<!--
+Step 6 (`write tests`) was REMOVED 2026-05-31 as part of the
+FIXES-TODO combined #4+#6+New_RN execution plan. Per FIXES-TODO #6
+resolution: the step's "no migration-driven edits" case was the
+common one (Passthrough integrations with no UCP overrides and no
+shadowed-command rename had nothing migration-specific to write a
+test for) and a write-tests gate added no value over the downstream
+`precommit/validate/unit tests passed` gate which already runs the
+existing test suite. The step has been dropped from
+`workflow_state_config.yml` and the matching CSV column has been
+removed.
 
-> **Note on code editing:** the standalone `wrote/checked code` checkpoint was removed in schema_version=2 (2026-05) — code authorship/review was always redundant with the downstream `precommit/validate/unit tests passed` gate. Any code edits driven by the parity gate (UCP `_apply_ucp_*` overrides, `is_ucp_enabled()` startup-validator gating, etc.) happen during Step 1 / §1.12 *before* `set-auth` accepts the cell. The `or "<default>"` code edits driven by Step 3a's `Params for test with default in code` cell happen during that step. By the time you reach Step 6, both classes of edits should already be in place; inspect the integration's `.py` and verify before writing tests against it.
->
-> When writing code, follow patterns in `Templates/Integrations/` and the project's [`AGENTS.md`](../AGENTS.md) rules:
->
-> - Import `demistomock as demisto` at the top
-> - Import `from CommonServerPython import *`
-> - Use `demisto.params()` for configuration, `demisto.args()` for command arguments
-> - Use `CommandResults` with `return_results()`
-> - Use `return_error()` for user-facing errors
-> - Use `demisto.debug()` / `demisto.info()` for logging, never `print()`
+Code-editing guidance from the old Step 6 still applies and is
+relevant to any code edits made during Step 1 / §1.12 (UCP
+`_apply_ucp_*` overrides, `is_ucp_enabled()` startup-validator
+gating) or Step 4 (`or "<default>"` fallbacks). Follow patterns in
+`Templates/Integrations/` and the project's [`AGENTS.md`](../AGENTS.md)
+rules:
 
-Write unit tests for the integration:
+  - Import `demistomock as demisto` at the top
+  - Import `from CommonServerPython import *`
+  - Use `demisto.params()` for configuration, `demisto.args()` for command arguments
+  - Use `CommandResults` with `return_results()`
+  - Use `return_error()` for user-facing errors
+  - Use `demisto.debug()` / `demisto.info()` for logging, never `print()`
+-->
 
-```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "write tests"
+### Step 8: `Release Notes` (data column)
+
+**Added 2026-05-31** as part of the FIXES-TODO combined #4+#6+New_RN
+execution plan. The step gates the migration on a release-notes file
+when the integration's own .py/.yml were modified by the migration.
+
+**Trigger.** `git diff HEAD --name-only -- <integration>.py <integration>.yml`.
+
+- **Empty diff** (no code touch) → the cell auto-passes with
+  `{"required": false, "path": null, "verified": false}`. No RN needed.
+- **Non-empty diff** → the operator must produce a release-notes file
+  containing the exact case-sensitive substring `"Enabled support for UCP"`.
+
+**Operator workflow** (when the trigger fires):
+
+1. Generate the RN scaffold:
+   ```bash
+   demisto-sdk update-release-notes -i Packs/<PackName>
+   # The SDK may expose --update-type documentation (or revision); use
+   # whichever flag matches your pack's existing RN convention. When
+   # in doubt, omit and let the SDK infer.
+   ```
+2. Edit the generated `Packs/<PackName>/ReleaseNotes/<Version>.md` to
+   include the required substring `"Enabled support for UCP"`
+   (anywhere in the file — bullet, paragraph, heading; substring match
+   is robust to formatting).
+3. Commit the RN file alongside the migration's other code edits.
+4. Run the setter:
+   ```bash
+   python3 connectus/workflow_state.py set-release-notes "<Integration ID>"
+   ```
+
+The setter takes **no JSON payload** — it auto-computes the cell shape
+from the working tree. If the trigger fired AND the verification did
+NOT pass, the setter rejects with a clear diagnostic plus a one-line
+hint (per the Hints policy — the prescription is unambiguous):
+
+```
+ERROR: Release Notes step rejected for '<id>': <reason>.
+  HINT: run `demisto-sdk update-release-notes -i Packs/<PackName>`,
+  then edit the generated RN file to include the substring
+  'Enabled support for UCP' and re-run set-release-notes.
 ```
 
-### Step 7: `precommit/validate/unit tests passed`
+See [`column-schemas.md`](column-schemas.md) §`Release Notes` for the
+cell shape and validator rules.
+
+### Step 9: `precommit/validate/unit tests passed`
 
 Run pre-commit, validate, and unit tests via demisto-sdk pre-commit (Docker):
 
@@ -2052,7 +2227,20 @@ When everything passes (Yuval decides which checks may be skipped):
 python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
 ```
 
-### Step 8: `param parity test passes`
+> **Workaround note (FIXES-TODO #7, 2026-05-31).** `demisto-sdk
+> pre-commit` has a known bug: the cache directory creation lacks
+> `exist_ok=True`, so the second and subsequent invocations crash with
+> `FileExistsError: [Errno 17] File exists:
+> '/Users/<you>/.demisto-sdk/cache/pre-commit'`. The fix is upstream
+> (one keyword argument) and tracked separately. Until then, the
+> workaround is to delete the cache dir before re-running:
+>
+> ```bash
+> rm -rf ~/.demisto-sdk/cache/pre-commit
+> demisto-sdk pre-commit -i Packs/<PackName>/Integrations/<IntegrationName>/
+> ```
+
+### Step 10: `param parity test passes`
 
 Run the parameter parity test to verify the ConnectUs integration's parameters match the original:
 
@@ -2060,7 +2248,7 @@ Run the parameter parity test to verify the ConnectUs integration's parameters m
 python3 connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
 ```
 
-### Step 9: `code reviewed`
+### Step 11: `code reviewed`
 
 After code review is complete:
 
@@ -2068,7 +2256,7 @@ After code review is complete:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "code reviewed"
 ```
 
-### Step 10: `code merged`
+### Step 12: `code merged`
 
 After the code is merged to the branch:
 
@@ -2077,17 +2265,27 @@ python3 connectus/workflow_state.py markpass "<Integration ID>" "code merged"
 ```
 
 <!--
-The historical Step 6 (`wrote/checked code`), Step 9 (`auth parity test passes`),
-Step 10 (`param parity test passes`), Step 11 (`code reviewed`), and Step 12
-(`code merged`) sections were consolidated/renumbered in schema_version=2
-(2026-05). The auth-parity playbook moved to §1.12 (Auth-parity gate inside
-`set-auth`); the rest of the per-step content collapsed into Steps 6-10 above.
+Step renumbering history:
+- schema_version=2 (2026-05) removed `wrote/checked code` and
+  `auth parity test passes`. Auth-parity content moved to §1.12.
+- 2026-05-31 (FIXES-TODO combined #4+#6+New_RN) removed
+  `Shadowed Integration Commands` (step 5, see FIXES-TODO #4/#5) and
+  `write tests` (step 9, see FIXES-TODO #6); inserted `Release Notes`
+  (step 8) immediately before `precommit/validate/unit tests passed`.
 
-Historical UCP-override + multi-auth troubleshooting content that used to live
-under the old Step 6 was relocated to §1.12 (sub-sections A-E). The old
-"Step 9: auth parity test passes" section was deleted outright — parity is now
-enforced inside `set-auth`. The old duplicate Step 7/8/10/11/12 stubs were also
-deleted; the renumbered versions appear as the canonical Steps 6-10 above.
+Current canonical sequence (12 steps):
+  1. assignee
+  2. Auth Details                                    (data, set-auth)
+  3. Params to Commands                              (data, set-params-to-commands)
+  4. Params for test with default in code            (data, set-param-defaults)
+  5. Params to Capabilities                          (data, set-params-to-capabilities)
+  6. generated manifest                              (checkpoint)
+  7. run manifest make validate                      (checkpoint)
+  8. Release Notes                                   (data, set-release-notes)  -- NEW 2026-05-31
+  9. precommit/validate/unit tests passed            (checkpoint)
+  10. param parity test passes                       (checkpoint)
+  11. code reviewed                                  (checkpoint)
+  12. code merged                                    (checkpoint)
 -->
 
 ## Error Recovery Commands
