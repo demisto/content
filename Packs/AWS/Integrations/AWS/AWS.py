@@ -10134,11 +10134,13 @@ def print_debug_logs(client: BotoClient, message: str):
 
 def test_module(params: dict) -> str:
     """
-    Validate marketplace credentials via ``sts:GetCallerIdentity``.
+    Validate marketplace credentials by calling ``sts:GetCallerIdentity``.
 
-    boto3 client construction is a local-only operation — no network call is made and
-    invalid credentials pass silently. ``GetCallerIdentity`` requires zero IAM permissions
-    and validates the full auth chain including assumed-role sessions.
+    ``GetCallerIdentity`` performs a live API call that returns details about the IAM
+    user or role whose credentials are used to call the operation. It requires zero IAM
+    permissions and validates the full auth chain including assumed-role sessions.
+    boto3 client construction alone is a local-only operation — no network call is made
+    and invalid credentials pass silently without this call.
     """
     sts_client, _ = get_service_client(
         params=params,
@@ -10344,7 +10346,8 @@ def get_service_client(
 
     # Build base config from user-supplied timeout/retries.
     read_timeout, connect_timeout = get_timeout(params.get("timeout") if params else None)
-    retries = min(int((params or {}).get("retries") or DEFAULT_MAX_RETRIES), 10)
+    _retries_raw = (params or {}).get("retries")
+    retries = min(int(_retries_raw if _retries_raw is not None and _retries_raw != "" else DEFAULT_MAX_RETRIES), 10)
     base_config = Config(
         connect_timeout=connect_timeout,
         read_timeout=read_timeout,
@@ -10376,15 +10379,33 @@ def get_service_client(
     return client, aws_session
 
 
+def _dispatch_command(command: str, args: dict, service_client: BotoClient) -> CommandResults | list[CommandResults] | None:
+    """Invoke the correct handler: polling commands take ``(args, client)``, others ``(client, args)``."""
+    if args.get("polling_timeout") is not None:
+        demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
+        return COMMANDS_MAPPING[command](args, service_client)
+    return COMMANDS_MAPPING[command](service_client, args)
+
+
 def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults | list[CommandResults] | None:
     """
     Execute an AWS command, routing to the appropriate service handler.
 
-    When ``access_role_name`` and ``accounts_to_access`` are both configured, the command
-    is fanned out in parallel across every listed account using ``ThreadPoolExecutor``.
-    Per-account errors are isolated and returned as error entries without aborting the batch.
-    Otherwise the command runs once against the single account from ``args["account_id"]``
-    (platform) or the configured credentials (marketplace).
+    When ``access_role_name`` and ``accounts_to_access`` are both configured and more than
+    one account is listed, the command is fanned out in parallel across every listed account
+    using ``ThreadPoolExecutor``. Per-account errors are isolated and returned as error entries
+    without aborting the batch. Otherwise the command runs once against the single account
+    from ``args["account_id"]`` (platform) or the configured credentials (marketplace).
+
+    Args:
+        command (str): The AWS command name to execute (e.g. ``"aws-ec2-instances-describe"``).
+        args (dict): Command arguments including ``account_id``, ``region``, and
+            service-specific parameters.
+        params (dict): Integration configuration parameters from ``demisto.params()``.
+
+    Returns:
+        CommandResults | list[CommandResults] | None: A single result for the single-account
+        path, or a flat list (one entry per account per result) for the multi-account fan-out.
     """
     # Set STS regional endpoint mode once on the main thread before any parallel execution.
     if not get_connector_id() and (regional := params.get("sts_regional_endpoint")):
@@ -10404,11 +10425,7 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
             try:
                 creds = get_cloud_credentials(CloudTypes.AWS.value, account_id) if get_connector_id() else {}
                 svc_client, _ = get_service_client(creds, per_account_params, per_account_args, command)
-                if per_account_args.get("polling_timeout") is not None:
-                    demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
-                    result = COMMANDS_MAPPING[command](per_account_args, svc_client)
-                else:
-                    result = COMMANDS_MAPPING[command](svc_client, per_account_args)
+                result = _dispatch_command(command, per_account_args, svc_client)
                 if result is None:
                     return [CommandResults(readable_output=f"#### Result for account `{account_id}`:\nNo result returned.")]
                 results_list = result if isinstance(result, list) else [result]
@@ -10441,11 +10458,7 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     account_id: str = args.get("account_id", "")
     credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id) if get_connector_id() else {}
     service_client, _ = get_service_client(credentials, params, args, command)
-    # If it is a polling command, the args must be the first argument
-    if args.get("polling_timeout") is not None:
-        demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
-        return COMMANDS_MAPPING[command](args, service_client)
-    return COMMANDS_MAPPING[command](service_client, args)
+    return _dispatch_command(command, args, service_client)
 
 
 def main():  # pragma: no cover
