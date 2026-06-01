@@ -6,13 +6,6 @@
   "trigger_name": "Enable Soft Delete on Blob",
   "automation_type": "command",
   "automation_id": "azure-storage-blob-enable-soft-delete-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

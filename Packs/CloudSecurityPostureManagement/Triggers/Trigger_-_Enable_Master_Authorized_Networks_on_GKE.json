@@ -6,13 +6,6 @@
   "trigger_name": "Enable Master Authorized Networks on GKE",
   "automation_type": "command",
   "automation_id": "gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

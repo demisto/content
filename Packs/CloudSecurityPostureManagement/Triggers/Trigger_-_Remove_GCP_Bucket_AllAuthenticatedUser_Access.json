@@ -6,13 +6,6 @@
   "trigger_name": "Remove GCP Bucket AllAuthenticatedUser Access",
   "automation_type": "command",
   "automation_id": "gcp-storage-bucket-policy-delete-remove-AllAuthenticatedUser-access-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

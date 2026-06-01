@@ -6,13 +6,6 @@
   "trigger_name": "Update Azure Monitor Log Retention Period",
   "automation_type": "command",
   "automation_id": "azure-monitor-log-retention-period-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

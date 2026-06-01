@@ -6,13 +6,6 @@
   "trigger_name": "Enable S3 Versioning",
   "automation_type": "command",
   "automation_id": "aws-s3-bucket-versioning-enable-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

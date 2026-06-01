@@ -5,14 +5,7 @@
   "description": "This CLI command requires 'Microsoft.Web/sites/config/Write' permission. Successful execution sets web app TLS encryption version to latest TLS version(i.e. TLS 1.2).",
   "trigger_name": "Set Function App Min TLS Version",
   "automation_type": "command",
-  "automation_id": "azure-function-app-set-min-tls-version-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
+  "automation_id": "azure-appservice-webapp-config-update-min-tls-version-quick-action",
   "alerts_filter": {
     "filter": {
       "OR": [

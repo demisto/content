@@ -6,13 +6,6 @@
   "trigger_name": "Enable Deletion Protection on RDS",
   "automation_type": "command",
   "automation_id": "aws-rds-db-instance-enable-deletion-protection-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

@@ -6,13 +6,6 @@
   "trigger_name": "Disable Public Access on RDS",
   "automation_type": "command",
   "automation_id": "aws-rds-db-instance-modify-publicly-accessible-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

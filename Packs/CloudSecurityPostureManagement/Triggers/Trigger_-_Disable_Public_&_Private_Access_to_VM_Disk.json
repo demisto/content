@@ -5,14 +5,7 @@
   "description": "This CLI command requires 'Microsoft.Compute/disks/write' permission. Successful execution will disable public network access and sets the network access policy to DenyAll for the specified disk, blocking external access. \nNote: As a security best practice, we are disabling public and private access to the disk. However, you can choose between the following options based on your security requirements:\n- Disable public access and enable private access\n- Disable public and private access",
   "trigger_name": "Disable Public & Private Access to VM Disk",
   "automation_type": "command",
-  "automation_id": "azure-disable-public-private-access-vm-disk-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
+  "automation_id": "azure-disable-public-n-private-access-vm-disk-quick-action",
   "alerts_filter": {
     "filter": {
       "OR": [

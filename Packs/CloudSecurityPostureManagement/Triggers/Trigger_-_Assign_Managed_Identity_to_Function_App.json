@@ -5,14 +5,7 @@
   "description": "This CLI command requires 'Microsoft.Web/sites/Write' permission. Successful execution sets managed service identity in Azure Function App, that makes the app more secure by eliminating secrets from the app, such as credentials in the connection strings.",
   "trigger_name": "Assign Managed Identity to Function App",
   "automation_type": "command",
-  "automation_id": "azure-webapp-update-assign-managed-identity-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
+  "automation_id": "azure-appservice-webapp-update-quick-action",
   "alerts_filter": {
     "filter": {
       "OR": [

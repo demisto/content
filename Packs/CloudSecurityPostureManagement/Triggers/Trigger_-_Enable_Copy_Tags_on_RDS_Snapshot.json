@@ -6,13 +6,6 @@
   "trigger_name": "Enable Copy Tags on RDS Snapshot",
   "automation_type": "command",
   "automation_id": "aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

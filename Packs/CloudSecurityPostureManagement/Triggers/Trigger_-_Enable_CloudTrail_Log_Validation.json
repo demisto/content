@@ -6,13 +6,6 @@
   "trigger_name": "Enable CloudTrail Log Validation",
   "automation_type": "command",
   "automation_id": "aws-cloudtrail-trail-enable-log-validation-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

@@ -6,13 +6,6 @@
   "trigger_name": "Enable GCP Bucket Versioning",
   "automation_type": "command",
   "automation_id": "gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

@@ -6,13 +6,6 @@
   "trigger_name": "Enable GKE Cluster Intra-node Visibility",
   "automation_type": "command",
   "automation_id": "gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

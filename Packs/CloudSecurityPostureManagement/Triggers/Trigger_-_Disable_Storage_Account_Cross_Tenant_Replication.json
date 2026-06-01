@@ -6,13 +6,6 @@
   "trigger_name": "Disable Storage Account Cross Tenant Replication",
   "automation_type": "command",
   "automation_id": "azure-storage-disable-cross-tenant-replication-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

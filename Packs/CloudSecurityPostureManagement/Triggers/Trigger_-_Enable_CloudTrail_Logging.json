@@ -6,13 +6,6 @@
   "trigger_name": "Enable CloudTrail Logging",
   "automation_type": "command",
   "automation_id": "aws-cloudtrail-logging-start-enable-logging-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

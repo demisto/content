@@ -5,14 +5,7 @@
   "description": "This CLI command requires 'Microsoft.Web/sites/{app_name}/config/*' permission. Successful execution sets HTTP version to 2.0, which has additional performance improvements on the head-of-line blocking problem of old HTTP version, header compression, and prioritization of requests.",
   "trigger_name": "Set Webapp HTTP Version to 2.0",
   "automation_type": "command",
-  "automation_id": "azure-webapp-set-http2-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
+  "automation_id": "azure-appservice-webapp-config-update-http2-quick-action",
   "alerts_filter": {
     "filter": {
       "OR": [

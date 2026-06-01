@@ -6,13 +6,6 @@
   "trigger_name": "Set RDS Cluster Snapshot to Private",
   "automation_type": "command",
   "automation_id": "aws-rds-db-cluster-snapshot-set-to-private-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

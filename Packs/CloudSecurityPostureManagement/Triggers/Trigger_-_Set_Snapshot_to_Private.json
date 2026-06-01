@@ -6,13 +6,6 @@
   "trigger_name": "Set Snapshot to Private",
   "automation_type": "command",
   "automation_id": "aws-ec2-set-snapshot-to-private-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
   "alerts_filter": {
     "filter": {
       "OR": [

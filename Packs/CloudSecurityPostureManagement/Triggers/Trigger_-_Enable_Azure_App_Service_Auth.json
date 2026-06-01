@@ -5,14 +5,7 @@
   "description": "This CLI command requires 'Microsoft.Web/sites/{app_name}/config/authsettings/*' permission. Successful execution will enable app service authentication, that can prevent anonymous HTTP requests from reaching the API app, or authenticate those that have tokens before they reach the API app.",
   "trigger_name": "Enable Azure App Service Auth",
   "automation_type": "command",
-  "automation_id": "azure-webapp-auth-update-quick-action",
-  "supportedModules": [
-    "cloud_runtime_security",
-    "agentix",
-    "cloud_posture",
-    "xsiam",
-    "cloud"
-  ],
+  "automation_id": "azure-appservice-webapp-auth-settings-update-quick-action",
   "alerts_filter": {
     "filter": {
       "OR": [
