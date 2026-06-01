@@ -42,7 +42,7 @@ In the [Google Cloud Console](https://console.cloud.google.com/apis/library), en
 
 1. In the Google Cloud Console, go to **IAM & Admin → Service Accounts**.
 2. Click **Create Service Account** and give it a descriptive name (e.g., `cortex-xsoar-gcp`).
-3. Grant the service account the IAM roles required for the commands you intend to use (see permissions table below).
+3. Grant the service account the IAM roles required for the commands you intend to use (see [Required Permissions](#required-permissions) below).
 4. Click **Done**.
 
 #### Step 3 — Create and Download a Private Key
@@ -69,44 +69,29 @@ Click **Test** to verify connectivity.
 
 ### Required Permissions
 
-Grant the following permissions to the service account based on which commands you use:
+Grant the service account only the IAM permissions required by the commands you intend to use.
+The full, per-command permission list is maintained in the official documentation:
 
-| Command | Required Permissions |
-|---|---|
-| `gcp-compute-firewall-patch` | `compute.firewalls.update`, `compute.firewalls.get`, `compute.firewalls.list`, `compute.networks.updatePolicy`, `compute.networks.list` |
-| `gcp-compute-firewall-insert` | `compute.firewalls.create` |
-| `gcp-compute-firewall-list` | `compute.firewalls.list` |
-| `gcp-compute-firewall-get` | `compute.firewalls.get` |
-| `gcp-compute-subnet-update` | `compute.subnetworks.setPrivateIpGoogleAccess`, `compute.subnetworks.update`, `compute.subnetworks.get`, `compute.subnetworks.list` |
-| `gcp-compute-instance-service-account-set` | `compute.instances.setServiceAccount`, `compute.instances.get` |
-| `gcp-compute-instance-service-account-remove` | `compute.instances.setServiceAccount`, `compute.instances.get` |
-| `gcp-compute-instance-start` | `compute.instances.start` |
-| `gcp-compute-instance-stop` | `compute.instances.stop` |
-| `gcp-compute-instances-list` | `compute.instances.list` |
-| `gcp-compute-instance-get` | `compute.instances.get` |
-| `gcp-compute-instance-labels-set` | `compute.instances.setLabels` |
-| `gcp-compute-network-tag-set` | `compute.instances.setTags` |
-| `gcp-compute-snapshots-list` | `compute.snapshots.list` |
-| `gcp-compute-snapshot-get` | `compute.snapshots.get` |
-| `gcp-compute-instances-aggregated-list-by-ip` | `cloudasset.assets.searchAllResources` |
-| `gcp-compute-network-get` | `compute.networks.get` |
-| `gcp-compute-networks-list` | `compute.networks.list` |
-| `gcp-compute-network-insert` | `compute.networks.insert` |
-| `gcp-compute-image-get` | `compute.images.get` |
-| `gcp-compute-instance-group-get` | `compute.instanceGroups.get` |
-| `gcp-compute-region-get` | `compute.regions.get` |
-| `gcp-compute-zone-get` | `compute.zone.get` |
-| `gcp-storage-bucket-list` | `storage.buckets.list` |
-| `gcp-storage-bucket-get` | `storage.buckets.get` |
-| `gcp-storage-bucket-objects-list` | `storage.objects.list` |
-| `gcp-storage-bucket-policy-list` | `storage.buckets.getIamPolicy`, `storage.buckets.get` |
-| `gcp-storage-bucket-policy-set` | `storage.buckets.setIamPolicy` |
-| `gcp-storage-bucket-policy-delete` | `storage.buckets.getIamPolicy`, `storage.buckets.setIamPolicy` |
-| `gcp-storage-bucket-metadata-update` | `storage.buckets.update` |
-| `gcp-storage-bucket-object-policy-list` | `storage.objects.getIamPolicy` |
-| `gcp-storage-bucket-object-policy-set` | `storage.objects.setIamPolicy` |
-| `gcp-container-cluster-security-update` | `container.clusters.update`, `container.clusters.get`, `container.clusters.list` |
-| `gcp-iam-project-policy-binding-remove` | `resourcemanager.projects.getIamPolicy`, `resourcemanager.projects.setIamPolicy` |
-| `gcp-bq-dataset-policy-remove` | `bigquery.datasets.update`, `bigquery.datasets.get`, `bigquery.datasets.getIamPolicy`, `bigquery.datasets.setIamPolicy` |
+- [Google Cloud Platform integration reference on xsoar.pan.dev](https://xsoar.pan.dev/docs/reference/integrations/gcp)
+
+#### Locating the Permissions for Your Use Case
+
+Each command's required permissions are listed in its reference documentation. To find what you need:
+
+1. Open the [integration reference](https://xsoar.pan.dev/docs/reference/integrations/gcp) and locate the command you plan to run (e.g., `gcp-compute-firewall-list`).
+2. Note the GCP permissions it requires (e.g., `compute.firewalls.list`).
+3. Grant a predefined role that includes those permissions, or create a [custom role](https://cloud.google.com/iam/docs/creating-custom-roles) containing exactly the permissions you need (least privilege).
+
+For example, to allow the firewall, instance, and snapshot read commands, the predefined `roles/compute.viewer` role is usually sufficient. For storage commands, use `roles/storage.admin`; for IAM policy commands, use `roles/resourcemanager.projectIamAdmin`.
+
+You can verify which permissions a service account already has on a project with:
+
+```bash
+gcloud projects test-iam-permissions PROJECT_ID \
+  --permissions=compute.firewalls.list,storage.buckets.list \
+  --impersonate-service-account=SA_EMAIL@PROJECT_ID.iam.gserviceaccount.com
+```
+
+The command returns only the permissions the service account actually holds, so any requested permission missing from the output still needs to be granted.
 
 **OAuth Scope Required**: `https://www.googleapis.com/auth/cloud-platform`

@@ -5346,11 +5346,11 @@ def test_get_credentials_marketplace_service_account(mocker):
 
     sa_info = {
         "type": "service_account",
-        "project_id": "my-project",
-        "private_key_id": "key-id",
-        "private_key": "-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA\n-----END RSA PRIVATE KEY-----\n",
-        "client_email": "sa@my-project.iam.gserviceaccount.com",
-        "client_id": "123456789",
+        "project_id": "dummy-project-id",
+        "private_key_id": "dummy-private-key-id",
+        "private_key": "-----BEGIN RSA PRIVATE KEY-----\ndummy_private_key\n-----END RSA PRIVATE KEY-----\n",
+        "client_email": "dummy-sa@dummy-project-id.iam.gserviceaccount.com",
+        "client_id": "dummy-client-id",
         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
         "token_uri": "https://oauth2.googleapis.com/token",
     }
@@ -5386,9 +5386,9 @@ def test_get_credentials_marketplace_propagates_project_id(mocker):
 
     sa_info = {
         "type": "service_account",
-        "project_id": "sa-project-id",
-        "private_key": "key",
-        "client_email": "sa@sa-project-id.iam.gserviceaccount.com",
+        "project_id": "dummy-sa-project-id",
+        "private_key": "dummy_private_key",
+        "client_email": "dummy-sa@dummy-sa-project-id.iam.gserviceaccount.com",
     }
     params = {"credentials": {"password": json.dumps(sa_info)}}
     args: dict = {}
@@ -5400,7 +5400,7 @@ def test_get_credentials_marketplace_propagates_project_id(mocker):
 
     get_credentials(args, params)
 
-    assert args["project_id"] == "sa-project-id"
+    assert args["project_id"] == "dummy-sa-project-id"
 
 
 def test_get_credentials_marketplace_invalid_json_raises():
@@ -5461,15 +5461,15 @@ def test_get_credentials_cortex_cloud_token_path(mocker):
     from google.oauth2.credentials import Credentials
 
     params: dict = {}
-    args = {"project_id": "my-gcp-project"}
+    args = {"project_id": "dummy-project-id"}
 
-    mock_creds_data = {"access_token": "ya29.test-token"}
+    mock_creds_data = {"access_token": "dummy-access-token"}
     mocker.patch("GCP.get_cloud_credentials", return_value=mock_creds_data)
 
     result = get_credentials(args, params)
 
     assert isinstance(result, Credentials)
-    assert result.token == "ya29.test-token"
+    assert result.token == "dummy-access-token"
 
 
 def test_test_module_marketplace_returns_ok(mocker):
@@ -5488,7 +5488,7 @@ def test_test_module_marketplace_returns_ok(mocker):
     from google.oauth2.credentials import Credentials
 
     creds = MagicMock(spec=Credentials)
-    params = {"project_id": "my-project-123"}
+    params = {"project_id": "dummy-project-id"}
 
     mock_rm = MagicMock()
     mock_rm.projects.return_value.testIamPermissions.return_value.execute.return_value = {
@@ -5500,7 +5500,7 @@ def test_test_module_marketplace_returns_ok(mocker):
 
     assert result == "ok"
     mock_rm.projects.return_value.testIamPermissions.assert_called_once_with(
-        resource="projects/my-project-123",
+        resource="projects/dummy-project-id",
         body={"permissions": ["resourcemanager.projects.get"]},
     )
 
@@ -5540,11 +5540,11 @@ def test_test_module_marketplace_api_failure_raises(mocker):
     from google.oauth2.credentials import Credentials
 
     creds = MagicMock(spec=Credentials)
-    params = {"project_id": "my-project-123"}
+    params = {"project_id": "dummy-project-id"}
 
     mock_rm = MagicMock()
     mock_rm.projects.return_value.testIamPermissions.return_value.execute.side_effect = Exception("403 Permission denied")
     mocker.patch("GCP.GCPServices.RESOURCE_MANAGER.build", return_value=mock_rm)
 
-    with pytest.raises(DemistoException, match="Failed to connect to GCP project 'my-project-123'"):
+    with pytest.raises(DemistoException, match="Failed to connect to GCP project 'dummy-project-id'"):
         test_module(creds, params)

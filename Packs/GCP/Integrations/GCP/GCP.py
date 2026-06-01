@@ -2399,7 +2399,8 @@ def get_credentials(args: dict, params: dict) -> Credentials:
     """Returns GCP credentials based on the deployment type.
 
     - Marketplace (Cortex XSOAR/Cortex XSIAM): builds credentials from the service account JSON key
-      in ``credentials.password``. Propagates ``project_id`` from the JSON if not in args.
+      in ``credentials.password``. If ``project_id`` is not already in ``args``, it is resolved using
+      the priority: ``args`` > ``params`` > the ``project_id`` field of the service account JSON.
     - Cortex Cloud (platform): fetches a short-lived token from CTS via ``get_cloud_credentials``.
 
     Args:
