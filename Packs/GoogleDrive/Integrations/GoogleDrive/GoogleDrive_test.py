@@ -1390,11 +1390,11 @@ class TestFilePermissionMethods:
     @patch(MOCKER_HTTP_METHOD)
     def test_file_permission_delete_command_ignore_not_found_404_treated_success(self, mocker_http_request, gsuite_client):
         """
-        Scenario: google-drive-file-permission-delete with ignore_not_found=true on a 404.
+        Scenario: google-drive-file-permission-delete with ignore_not_found=true on a permission Not Found.
 
         Given:
-        - The shared GSuite client raises DemistoException with "Status: 404" in
-          the message (the documented HTTP_ERROR template).
+        - The shared GSuite client raises DemistoException carrying the
+          documented "Permission not found" reason from Drive.
         - ignore_not_found=true.
 
         When:
@@ -1402,12 +1402,10 @@ class TestFilePermissionMethods:
 
         Then:
         - The exception is swallowed and the result surfaces alreadyRemoved=True.
-        - With ignore_not_found omitted, the same 404 still raises (default
-          behavior preserved).
+        - With ignore_not_found omitted, the same Not Found still raises
+          (default behavior preserved).
         """
         from GoogleDrive import file_permission_delete_command
-
-        mocker_http_request.side_effect = DemistoException("HTTP Connection error occurred. Status: 404. Reason: Not Found")
 
         args = {
             "file_id": "file_id_999",
@@ -1415,24 +1413,61 @@ class TestFilePermissionMethods:
             "permission_id": "perm_id_111",
             "ignore_not_found": "true",
         }
+
+        # Real-world payload observed from production.
+        mocker_http_request.side_effect = DemistoException("Not found. Reason: Permission not found: 12849315382336496719.")
         result: CommandResults = file_permission_delete_command(gsuite_client, args)
         perm_ctx = result.outputs.get("GoogleDrive.FilePermission").get("FilePermission")
         assert perm_ctx.get("alreadyRemoved") is True
         assert perm_ctx.get("id") == "perm_id_111"
         assert perm_ctx.get("fileId") == "file_id_999"
 
+        # Default behavior preserved: with ignore_not_found omitted, the same
+        # Not Found still raises.
         args_default = dict(args)
         args_default.pop("ignore_not_found")
-        with pytest.raises(DemistoException, match="Status: 404"):
+        with pytest.raises(DemistoException, match=r"(?i)permission not found"):
             file_permission_delete_command(gsuite_client, args_default)
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_delete_command_ignore_not_found_file_not_found_still_raises(
+        self, mocker_http_request, gsuite_client
+    ):
+        """
+        Scenario: bogus file_id with ignore_not_found=true must still raise.
+
+        Given:
+        - The shared GSuite client raises DemistoException carrying "File not
+          found" (the parent file does not exist, not the permission).
+        - ignore_not_found=true.
+
+        When:
+        - Calling file_permission_delete_command.
+
+        Then:
+        - The exception still raises; only "permission not found" is swallowed
+          so operator typos in file_id are not silently masked.
+        """
+        from GoogleDrive import file_permission_delete_command
+
+        mocker_http_request.side_effect = DemistoException("Not found. Reason: File not found: bogus_file_id_123.")
+
+        args = {
+            "file_id": "bogus_file_id_123",
+            "user_id": "admin@example.com",
+            "permission_id": "perm_id_111",
+            "ignore_not_found": "true",
+        }
+        with pytest.raises(DemistoException, match=r"(?i)file not found"):
+            file_permission_delete_command(gsuite_client, args)
 
     @patch(MOCKER_HTTP_METHOD)
     def test_file_permission_delete_command_ignore_not_found_other_error_still_raises(self, mocker_http_request, gsuite_client):
         """
-        Scenario: google-drive-file-permission-delete with ignore_not_found=true on non-404.
+        Scenario: google-drive-file-permission-delete with ignore_not_found=true on non-Not Found.
 
         Given:
-        - The shared GSuite client raises DemistoException with "Status: 403".
+        - The shared GSuite client raises a Forbidden DemistoException (not a 404).
         - ignore_not_found=true.
 
         When:

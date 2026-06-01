@@ -1708,10 +1708,20 @@ def file_permission_delete_command(client: "GSuiteClient", args: dict[str, str])
     try:
         client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
     except DemistoException as exc:
-        # The shared GSuiteApiModule formats HTTP errors as
-        # "HTTP Connection error occurred. Status: {code}. Reason: {msg}".
-        # Match on the "Status: 404" substring to detect a Not Found.
-        if ignore_not_found and "Status: 404" in str(exc):
+        # Only swallow Not Found responses that refer to the *permission* itself
+        # (i.e. the permission was already removed). Not Found responses that
+        # refer to the parent file are operator errors and must still be raised
+        # so playbooks do not silently mask a typo in file_id.
+        # The shared GSuiteApiModule surfaces these as:
+        #   "Not found. Reason: Permission not found: <id>"            -- swallowed
+        #   "Not found. Reason: File not found: <id>"                  -- re-raised
+        #   "HTTP Connection error occurred. Status: 404. Reason: ..." -- re-raised unless body
+        #                                                                 names a permission
+        exc_str = str(exc).lower()
+        is_permission_not_found = ignore_not_found and (
+            "permission not found" in exc_str or "permission_not_found" in exc_str or "permissionnotfound" in exc_str
+        )
+        if is_permission_not_found:
             demisto.debug(
                 f"google-drive-file-permission-delete: permission {args.get('permission_id')} "
                 "already removed; treating Not Found as success"
