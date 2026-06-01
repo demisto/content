@@ -2605,7 +2605,7 @@ script:
       - "true"
       - "false"
     - auto: PREDEFINED
-      description: 'When true, the file is moved to Trash (by patching the file with trashed=true) instead of being permanently deleted. Default behavior (omitted) preserves the existing hard-delete behavior.'
+      description: 'Whether to move the file to Trash instead of permanently deleting it. When set, the file is patched with trashed=true rather than issuing a hard delete. Omitting this argument preserves the existing hard-delete behavior.'
       name: soft_delete
       predefined:
       - "true"
@@ -2615,10 +2615,10 @@ script:
       description: ID of the deleted file.
       type: String
     - contextPath: GoogleDrive.File.File.trashed
-      description: True when the file is in Trash after a soft delete. Only populated when soft_delete=true.
+      description: Whether the file is in Trash after a soft delete. Only populated when soft_delete=true.
       type: Boolean
     - contextPath: GoogleDrive.File.File.trashedTime
-      description: ISO 8601 timestamp when the file was moved to Trash. Only populated for items in shared drives; not populated for items in My Drive.
+      description: The ISO 8601 timestamp when the file was moved to Trash. Only populated for items in shared drives; not populated for items in My Drive.
       type: Date
   - name: google-drive-file-permissions-list
     description: Lists a file's or shared drive's permissions.
@@ -2719,7 +2719,7 @@ script:
     - name: email_address
       description: The email address of the user or group to which this permission refers.
     - auto: PREDEFINED
-      description: 'Set to true to transfer ownership of the file to the user identified by the role=owner permission. Required by the vendor when role=owner is specified on an existing file; omitting this argument preserves the existing command behavior.'
+      description: 'Whether to transfer ownership of the file to the user identified by the role=owner permission. Required by the vendor when role=owner is specified on an existing file; omitting this argument preserves the existing command behavior.'
       name: transfer_ownership
       predefined:
       - "true"
@@ -2813,7 +2813,7 @@ script:
       - "true"
       - "false"
     - auto: PREDEFINED
-      description: 'When true, a Not Found response from the vendor (for example, when the permission was already removed) is treated as success and surfaced via the alreadyRemoved output, instead of raising an error. Useful inside loops over a previously-listed permission set.'
+      description: 'Whether to treat a Not Found response from the vendor (for example, when the permission was already removed) as success and surface it via the alreadyRemoved output, instead of raising an error. Useful inside loops over a previously-listed permission set.'
       name: ignore_not_found
       predefined:
       - "true"
@@ -2826,7 +2826,7 @@ script:
       description: The ID of the deleted permission.
       type: String
     - contextPath: GoogleDrive.FilePermission.FilePermission.alreadyRemoved
-      description: True when ignore_not_found=true and the permission was already removed (the vendor returned Not Found).
+      description: Whether the permission was already removed. Set to true when ignore_not_found=true and the vendor returned Not Found.
       type: Boolean
   - name: google-drive-file-modify-label
     description: Modify labels to file.
