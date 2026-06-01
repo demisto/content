@@ -64,7 +64,7 @@ they work whatever your stack looks like.
 2. Open *Settings → Integrations → Darkmon* and click **Add instance**.
 3. Paste your Darkmon API key. Leave **API Base URL** at the default unless
    instructed otherwise.
-4. Run `!test-module` from the War Room. Expect "Success".
+4. Click the **Test** button on the instance configuration page. Expect "Success".
 
 For full configuration, command examples, and playbook docs, see the
 per-artifact READMEs under each subfolder.

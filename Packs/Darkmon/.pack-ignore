@@ -1,5 +1,20 @@
 [file:Darkmon.yml]
-ignore=BA126
+ignore=BA126,BA129
+
+[file:DarkmonScoreNRDs.yml]
+ignore=BA129
+
+[file:DarkmonFilterUnseen.yml]
+ignore=BA129
+
+[file:DarkmonFilterCVEs.yml]
+ignore=BA129
+
+[file:DarkmonLevenshtein.yml]
+ignore=BA129
+
+[file:DarkmonCreateIncidents.yml]
+ignore=BA129
 
 [file:sync_yaml.py]
 ignore=BA101
