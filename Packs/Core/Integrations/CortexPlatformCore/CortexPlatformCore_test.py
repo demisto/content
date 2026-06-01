@@ -9371,14 +9371,15 @@ def test_validate_custom_fields_cli_name_lookup(mocker):
     assert not error_messages
 
 
-def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
+def test_validate_custom_fields_multiselect_with_string_value_auto_converts(mocker):
     """
     GIVEN:
-        A multiSelect custom field provided with a string value instead of a list.
+        A multiSelect custom field provided with a plain string value instead of a list.
     WHEN:
         validate_custom_fields is called.
     THEN:
-        The field is excluded and a clear error message instructs the user to provide a list value.
+        The string is auto-converted to a single-element list and the field is accepted.
+        No error messages are returned.
     """
     from CortexPlatformCore import validate_custom_fields, Client
 
@@ -9402,9 +9403,8 @@ def test_validate_custom_fields_multiselect_with_string_value_returns_error(mock
     fields_to_validate = {"multi_field": "single_value"}
     valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
 
-    assert "multi_field" not in valid_fields
-    assert "multiSelect" in error_messages
-    assert "list" in error_messages
+    assert valid_fields == {"multi_field": ["single_value"]}
+    assert error_messages == ""
 
 
 def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
@@ -9531,6 +9531,95 @@ def test_validate_custom_fields_non_enum_types_accept_string_value(mocker, field
 
     assert "my_field" in valid_fields
     assert not error_messages
+
+
+@pytest.mark.parametrize(
+    "select_values, field_value, expected_valid_fields",
+    [
+        # All provided values are in the allowed set
+        (["aa", "bb", "cc", "dd"], ["aa", "cc"], {"testmulti": ["aa", "cc"]}),
+        # No selectValues defined (open-ended field) → accepted without enforcement
+        ([], ["any_value", "another_value"], {"testmulti": ["any_value", "another_value"]}),
+    ],
+)
+def test_validate_custom_fields_multiselect_valid_values(mocker, select_values, field_value, expected_valid_fields):
+    """
+    GIVEN:
+        A multiSelect custom field where all provided values are valid (either within the allowed set
+        or the field has no selectValues restriction).
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is accepted and no error messages are returned.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "testmulti",
+                    "CUSTOM_FIELD_CLI_NAME": "testmulti",
+                    "CUSTOM_FIELD_PRETTY_NAME": "testmulti",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                    "CUSTOM_FIELD_FIELD_DATA": {"selectValues": select_values},
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    valid_fields, error_messages = validate_custom_fields({"testmulti": field_value}, client)
+
+    assert valid_fields == expected_valid_fields
+    assert not error_messages
+
+
+@pytest.mark.parametrize(
+    "select_values, field_value, expected_error_substrings",
+    [
+        # Some values are not in the allowed set → error lists invalid values and the allowed set
+        (["aa", "bb", "cc", "dd"], ["aa", "zz", "xx"], ["zz", "xx", "aa", "Allowed values are"]),
+    ],
+)
+def test_validate_custom_fields_multiselect_invalid_values(mocker, select_values, field_value, expected_error_substrings):
+    """
+    GIVEN:
+        A multiSelect custom field where some provided values are not in the allowed set.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is excluded from valid_fields and an error message lists the invalid values
+        and the full set of allowed values.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "testmulti",
+                    "CUSTOM_FIELD_CLI_NAME": "testmulti",
+                    "CUSTOM_FIELD_PRETTY_NAME": "testmulti",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                    "CUSTOM_FIELD_FIELD_DATA": {"selectValues": select_values},
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    valid_fields, error_messages = validate_custom_fields({"testmulti": field_value}, client)
+
+    assert "testmulti" not in valid_fields
+    for substring in expected_error_substrings:
+        assert substring in error_messages
 
 
 # =========================================== TEST platform_http_request Method ===========================================#
