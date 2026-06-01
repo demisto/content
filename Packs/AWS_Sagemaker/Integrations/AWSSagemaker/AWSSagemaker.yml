@@ -1,6 +1,9 @@
 commonfields:
   id: AWS Sagemaker
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: AWS Sagemaker
 display: AWS Sagemaker
 category: Data Enrichment & Threat Intelligence
@@ -12,28 +15,33 @@ configuration:
   type: 9
   displaypassword: AWS secret key
   required: false
+  section: Connect
 - display: AWS access key
   name: AWSAccessKey
   defaultvalue: ""
   type: 0
   hidden: true
   required: false
+  section: Connect
 - display: AWS secret key
   name: AWSSecretKey
   defaultvalue: ""
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: AWS Region code
   name: AWSRegion
   defaultvalue: "us-east-2"
   type: 0
   required: false
+  section: Connect
 - display: Endpoint Name
   name: EndpointName
   type: 0
   required: true
   defaultvalue: ""
+  section: Connect
 - display: AWS STS Regional Endpoints
   additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
   name: sts_regional_endpoint
@@ -47,6 +55,7 @@ configuration:
   name: proxy
   type: 8
   required: false
+  section: Connect
 script:
   script: ''
   type: python
@@ -64,7 +73,7 @@ script:
       description: The predication probability (range 0-1).
       type: number
     description: Classify input text (usually email content).
-  dockerimage: demisto/boto3py3:1.0.0.3575453
+  dockerimage: demisto/boto3py3:1.0.0.7260599
 tests:
 - Test Sagemaker
 fromversion: 5.0.0

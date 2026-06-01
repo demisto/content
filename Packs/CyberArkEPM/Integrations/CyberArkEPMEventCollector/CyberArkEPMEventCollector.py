@@ -75,7 +75,7 @@ class Client(BaseClient):
             "password": self.password,
         }
         result = self._http_request("POST", full_url=self.authentication_url, json_data=data)
-        demisto.debug(f"result is: {result}")
+        demisto.debug(f"[Client.get_session_token] result is: {result}")
         if result.get("status", "") != "SUCCESS":
             raise DemistoException(
                 f"Retrieving Okta session token returned status: {result.get('status')},"
@@ -107,7 +107,9 @@ class Client(BaseClient):
         self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
 
     def get_set_list(self) -> dict:
-        return self._http_request("GET", url_suffix="Sets")
+        result = self._http_request("GET", url_suffix="Sets")
+        demisto.debug(f"[Client.get_set_list] Retrieved {len(result.get('Sets', []))} sets from API")
+        return result
 
     def get_admin_audits(self, set_id: str, from_date: str = "", limit: int = ADMIN_AUDITS_MAX_LIMIT) -> dict:
         url_suffix = f"Sets/{set_id}/AdminAudit?dateFrom={from_date}&limit={min(limit, ADMIN_AUDITS_MAX_LIMIT)}"
@@ -230,6 +232,48 @@ def add_fields_to_events(events: list, date_field: str, event_type: str):
         event["source_log_type"] = XSIAM_EVENT_TYPE.get(event_type)
 
 
+def reconcile_last_run_with_current_sets(last_run: dict, current_set_ids: list, args: dict) -> dict:
+    """
+    Reconciles the last_run state with the currently configured set IDs.
+
+    This function handles configuration changes where the user modifies the set names in the integration settings.
+    Without this reconciliation, the integration would continue fetching from old/stale set IDs indefinitely,
+    even after the configuration has been updated to use different sets.
+
+    Args:
+        last_run (dict): The last run state loaded from demisto.getLastRun()
+        current_set_ids (list): The currently resolved set IDs from get_set_ids_by_set_names()
+        args (dict): Command arguments (used to get from_date for new sets)
+
+    Returns:
+        dict: Updated last_run with stale sets removed and new sets added
+    """
+    current_set_ids_set = set(current_set_ids)
+    last_run_set_ids = set(last_run.keys())
+
+    if current_set_ids_set != last_run_set_ids:
+        demisto.debug(
+            f"[reconcile_last_run] Set configuration changed! Current: {current_set_ids}, Previous: {list(last_run.keys())}"
+        )
+
+        # Remove old sets that are no longer configured
+        # This prevents fetching from sets the user no longer wants to monitor
+        for old_id in last_run_set_ids - current_set_ids_set:
+            del last_run[old_id]
+            demisto.debug(f"[reconcile_last_run] Removed stale set_id from last_run: {old_id}")
+
+        # Add new sets that were just configured
+        # Initialize them with a fresh from_date to start fetching their events
+        for new_id in current_set_ids_set - last_run_set_ids:
+            from_date = args.get("from_date") or datetime.now() - timedelta(hours=3)
+            last_run[new_id] = create_last_run([new_id], prepare_datetime(from_date))[new_id]
+            demisto.debug(f"[reconcile_last_run] Added new set_id to last_run: {new_id}")
+
+        demisto.debug(f"[reconcile_last_run] Reconciled last_run now contains set_ids: {list(last_run.keys())}")
+
+    return last_run
+
+
 def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
     """
     Gets a list of set names and returns a list of set IDs.
@@ -239,16 +283,42 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
     Returns:
         (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
+    demisto.debug(f"[get_set_ids_by_set_names] Requested set_names from config: {set_names}")
     context_set_items = get_integration_context().get("set_items", {})
+    demisto.debug(f"[get_set_ids_by_set_names] Cached set_items in context: {context_set_items}")
 
     if context_set_items.keys() != set(set_names):
         result = client.get_set_list()
+        all_sets = result.get("Sets", [])
+        # Log all available set names from API for debugging
+        all_set_names_from_api = [set_item.get("Name") for set_item in all_sets]
+        demisto.debug(f"[get_set_ids_by_set_names] All available set names from API: {all_set_names_from_api}")
+
         context_set_items = {
             set_item.get("Name"): set_item.get("Id") for set_item in result.get("Sets", []) if set_item.get("Name") in set_names
         }
-        set_integration_context({"set_items": context_set_items})
 
-    return list(context_set_items.values())
+        # Check for unresolved set names
+        resolved_set_names = set(context_set_items.keys())
+        unresolved_set_names = set(set_names) - resolved_set_names
+
+        demisto.info(f"[get_set_ids_by_set_names] Successfully resolved set names: {resolved_set_names}")
+        demisto.info(f"[get_set_ids_by_set_names] Resolved set_name -> set_id mapping: {context_set_items}")
+
+        if unresolved_set_names:
+            demisto.error(
+                f"[get_set_ids_by_set_names] Could not resolve the following set names to set IDs: "
+                f"{unresolved_set_names}. These sets will not be fetched."
+            )
+
+        set_integration_context({"set_items": context_set_items})
+    else:
+        demisto.debug("[get_set_ids_by_set_names] Using cached set_items from integration context")
+
+    set_ids = list(context_set_items.values())
+    demisto.info(f"[get_set_ids_by_set_names] Final set_ids to fetch events from: {set_ids}")
+
+    return set_ids
 
 
 def get_admin_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[str, list]:  # pragma: nocover
@@ -263,7 +333,8 @@ def get_admin_audits(client: Client, last_run_per_id: dict, limit: int) -> dict[
     admin_audits = {}
 
     for set_id, last_run in last_run_per_id.items():
-        result = client.get_admin_audits(set_id, last_run.get("admin_audits", {}).get("from_date"), limit)
+        from_date = last_run.get("admin_audits", {}).get("from_date")
+        result = client.get_admin_audits(set_id, from_date, limit)
         admin_audits[set_id] = result.get("AdminAudits", [])
         total_events = arg_to_number(result.get("TotalCount", 0))
 
@@ -365,9 +436,10 @@ def fetch_events(
         (list, dict) A list of events to push to XSIAM, A dict with information for next fetch.
     """
     events: list = []
+    set_ids_to_process = list(last_run.keys())
     demisto.info(f"[fetch_events] Start fetching, {last_run=}")
+    demisto.info(f"[fetch_events] Set IDs to process: {set_ids_to_process}")
     demisto.debug(f"[fetch_events] params: {max_fetch=}, {enable_admin_audits=}")
-    demisto.debug(f"[fetch_events] set_ids={list(last_run.keys())}")
 
     if enable_admin_audits:
         for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
@@ -399,10 +471,14 @@ def fetch_events(
             )
             events.extend(detailed_events)
 
-    demisto.info(f"[fetch_events] Sending {len(events)} events to XSIAM. updated_next_run={last_run}.")
     unique_types = list(dict.fromkeys(e.get("eventType") for e in events if isinstance(e, dict)))
     demisto.debug(f"[fetch_events] unique_event_types fetched during this fetch={unique_types}")
-    demisto.debug(f"[fetch_events] events_count={len(events)} first_event_keys={(list(events[0].keys()) if events else [])}")
+    demisto.info(
+        f"[fetch_events] Sending {len(events)} events to XSIAM. "
+        f"first_event_keys={(list(events[0].keys()) if events else [])} "
+        f"updated_next_run={last_run}"
+    )
+
     return events, last_run
 
 
@@ -472,7 +548,17 @@ def main():  # pragma: no cover
         )
 
         set_ids = get_set_ids_by_set_names(client, set_names)
+        demisto.debug(f"[main] Resolved {len(set_ids)} set ID(s) from {len(set_names)} configured set name(s)")
         demisto.debug(f"[main] resolved {set_ids=}")
+
+        # Validate we got set IDs
+        if not set_ids:
+            raise DemistoException(
+                f"No set IDs were resolved from configured set names: {set_names}. "
+                f"Please verify that the set names in the integration configuration match "
+                f"the actual set names in CyberArk EPM."
+            )
+
         if command != "fetch-events" or not demisto.getLastRun():
             from_date = args.get("from_date") or datetime.now() - timedelta(hours=3)
             last_run = create_last_run(set_ids, prepare_datetime(from_date))
@@ -480,6 +566,8 @@ def main():  # pragma: no cover
         else:
             last_run = demisto.getLastRun()
             demisto.debug(f"[main] loaded existing last_run for set_ids={list(last_run.keys())}")
+            # Reconcile last_run with current configuration to handle set name changes
+            last_run = reconcile_last_run_with_current_sets(last_run, set_ids, args)
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -495,7 +583,7 @@ def main():  # pragma: no cover
             events, command_result = get_events_command(client, "admin_audits", last_run, max_limit)  # type: ignore
             if argToBoolean(args.get("should_push_events", False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.debug(f"[cyberarkepm-get-admin-audits] send_events_to_xsiam: {events=}")
+                demisto.debug(f"[cyberarkepm-get-admin-audits] send_events_to_xsiam: {len(events)} events, {events=}")
             return_results(command_result)
 
         elif command == "cyberarkepm-get-policy-audits":
@@ -507,7 +595,7 @@ def main():  # pragma: no cover
             events, command_result = get_events_command(client, "policy_audits", last_run, max_limit)  # type: ignore
             if argToBoolean(args.get("should_push_events", False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.debug(f"[cyberarkepm-get-policy-audits] send_events_to_xsiam: {events=}")
+                demisto.debug(f"[cyberarkepm-get-policy-audits] send_events_to_xsiam: {len(events)} events, {events=}")
             return_results(command_result)
 
         elif command == "cyberarkepm-get-events":
@@ -520,13 +608,13 @@ def main():  # pragma: no cover
             events, command_result = get_events_command(client, "detailed_events", last_run, max_limit)  # type: ignore
             if argToBoolean(args.get("should_push_events", False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-                demisto.debug(f"[cyberarkepm-get-events] send_events_to_xsiam: {events=}")
+                demisto.debug(f"[cyberarkepm-get-events] send_events_to_xsiam: {len(events)} events, {events=}")
             return_results(command_result)
 
         elif command in "fetch-events":
             events, next_run = fetch_events(client, last_run, max_fetch, enable_admin_audits)  # type: ignore
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.debug(f"[fetch-events] send_events_to_xsiam: {events=}")
+            demisto.debug(f"[fetch-events] send_events_to_xsiam: {len(events)} events, {events=}")
             demisto.setLastRun(next_run)
 
     except Exception as e:

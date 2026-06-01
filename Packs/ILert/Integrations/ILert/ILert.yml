@@ -3,24 +3,31 @@ provider: Ilert GmbH
 commonfields:
   id: iLert
   version: -1
+sectionorder:
+  - Connect
+  - Collect
 configuration:
 - display: Server URL
   name: url
   defaultvalue: https://api.ilert.com/api/v1/
   required: true
   type: 0
+  section: Connect
 - display: The API key of the alert source (for triggering events only)
   name: integrationKey
   required: true
   type: 4
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Alert and notify users using iLert.
 display: iLert
 name: iLert
@@ -58,7 +65,7 @@ script:
       name: summary
     description: Resolves an existing event in iLert
     name: ilert-resolve-event
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
   runonce: false
   script: ''
   subtype: python3

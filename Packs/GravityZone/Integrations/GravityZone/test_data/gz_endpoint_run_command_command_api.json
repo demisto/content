@@ -1,0 +1,82 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "startCommandExecutionOnEndpoint",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "startCommandExecutionOnEndpoint",
+        "params": {
+          "targetId": "6942a43afe8d4e463ca5c197",
+          "command": "ls -1"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": "6943e3391e4fe5e8a40e51f6"
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "getInvestigationFileUrl",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getInvestigationFileUrl",
+        "params": {
+          "activityId": "6943e3391e4fe5e8a40e51f6",
+          "targetId": "6942a43afe8d4e463ca5c197"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "status": "pending"
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "getInvestigationFileUrl",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getInvestigationFileUrl",
+        "params": {
+          "activityId": "6943e3391e4fe5e8a40e51f6",
+          "targetId": "6942a43afe8d4e463ca5c197"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "status": "success",
+        "url": "https://localhost/storage/investigationFiles/6943e33ab67b0d4c770702c6",
+        "bucket": "investigationFiles",
+        "fileId": "6943e33ab67b0d4c770702c6"
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/storage/investigationFiles/6943e33ab67b0d4c770702c6",
+      "get": true
+    },
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Disposition": "attachment; filename=\"investigation_file_ENDPOINT_NAME_2025-12-18-13-19-21.tgz\""
+      },
+      "content": "abc"
+    }
+  }
+]

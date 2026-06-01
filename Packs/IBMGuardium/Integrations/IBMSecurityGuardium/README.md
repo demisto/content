@@ -56,3 +56,7 @@ There is no context output for this command.
 >| --- | --- | --- | --- | --- | --- | --- |
 >| 10.0.0.1 | admin | SQLClient | 10.0.0.100 | PROD_DB | customers | 2024-01-01 10:30:00 |
 >| 10.0.0.2 | user1 | AppServer | 10.0.0.100 | PROD_DB | orders | 2024-01-01 10:31:15 |
+
+## Additional Information
+
+**Note:** The integration fetches events from the last 12 hours by default on first run. This accounts for IBM Guardium's event indexing delays and ensures events are captured even when indexed with significant delays.

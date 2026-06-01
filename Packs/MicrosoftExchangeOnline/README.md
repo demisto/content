@@ -36,9 +36,11 @@ The [Security And Compliance V2](https://xsoar.pan.dev/docs/reference/integratio
 - manage the security of all your organization's emails, SharePoint sites, OneDrives, etc.
 - can perform actions (preview and delete) on emails.
 
+- Note: This integration is planned for **deprecation** on **June 2026**. Customers should transition to the **Microsoft Graph Security** integration for the supported replacement functionality. For a detailed list of command replacements refer to the **[integration documentation](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance-v2)**.
+
 ## EWS Permissions
 
-To perform actions on mailboxes of other users, and to execute searches on the Exchange server, you need specific permissions.
+To perform actions on other users’ mailboxes and execute searches on the Exchange server, you must have the required permissions.
 
 | Permission |Use Case |
 | ----- | ----|

@@ -243,7 +243,7 @@
 <h5 id="command-example">Command Example</h5>
 </div>
 <div class="cl-preview-section">
-<pre>!fd-create-ticket subject="Demonstrate Ticket Creation" description="&lt;em&gt;Here&lt;/em&gt; we are demonstrating the freshdesk integration ticket creation command" identifier="jeffrey.collins@gmail.com" priority="High" additional_fields="name=Jeffrey Collins;email=jeffrey.collins@gmail.com;tags=new,attention needed,billing related"</pre>
+<pre>!fd-create-ticket subject="Demonstrate Ticket Creation" description="&lt;em&gt;Here&lt;/em&gt; we are demonstrating the freshdesk integration ticket creation command" identifier="jeffrey.collins@gmail.com" priority="High" additional_fields="name=Jeff Testman;email=jeffrey.collins@gmail.com;tags=new,attention needed,billing related"</pre>
 </div>
 <div class="cl-preview-section">
 <h5 id="context-example">Context Example</h5>
@@ -267,7 +267,7 @@
             "DescriptionHTML": "&lt;em&gt;Here&lt;/em&gt; we are demonstrating the freshdesk integration ticket creation command",
             "DescriptionText": "Here we are demonstrating the freshdesk integration ticket creation command",
             "Email": "jeffrey.collins@gmail.com",
-            "Name": "Jeffrey Collins"
+            "Name": "Jeff Testman"
         },
         "ID": 108,
         "CreatedAt": "2019-02-05T15:55:35Z",
@@ -311,7 +311,7 @@
 <td style="width: 64px;">attention needed,<br> billing related,<br> new</td>
 <td style="width: 116px;">2043024010476</td>
 <td style="width: 103px;">2019-02-05T15:55:35Z</td>
-<td style="width: 240px;">DescriptionHTML: <em>Here</em>we are demonstrating the freshdesk integration ticket creation command<br> DescriptionText: Here we are demonstrating the freshdesk integration ticket creation command<br> Name: Jeffrey Collins<br> Email: jeffrey.collins@gmail.com</td>
+<td style="width: 240px;">DescriptionHTML: <em>Here</em>we are demonstrating the freshdesk integration ticket creation command<br> DescriptionText: Here we are demonstrating the freshdesk integration ticket creation command<br> Name: Jeff Testman<br> Email: jeffrey.collins@gmail.com</td>
 <td style="width: 27px;">108</td>
 <td style="width: 103px;">2019-02-05T15:55:35Z</td>
 <td style="width: 92px;">Demonstrate Ticket Creation</td>
@@ -515,7 +515,7 @@
             "Spam": false,
             "FrEscalated": false,
             "Requestor": {
-                "Name": "Jeffrey Collins",
+                "Name": "Jeff Testman",
                 "Email": "jeffrey.collins@gmail.com",
                 "Id": 2043024010476
             },
@@ -1057,7 +1057,7 @@
             "CreatedAt": "2019-01-20T09:06:34Z"
         },
         {
-            "Name": "Emily Dean",
+            "Name": "Emily Testman",
             "Language": "en",
             "ID": 2043022085989,
             "UpdatedAt": "2019-01-20T09:06:34Z",
@@ -1084,7 +1084,7 @@
             "CreatedAt": "2019-01-20T09:06:32Z"
         },
         {
-            "Name": "Jeffrey Collins",
+            "Name": "Jeff Testman",
             "Language": "en",
             "ID": 2043024010476,
             "UpdatedAt": "2019-02-05T10:30:16Z",
@@ -1111,7 +1111,7 @@
             "CreatedAt": "2019-01-20T09:06:33Z"
         },
         {
-            "Name": "Lewis Clarke",
+            "Name": "Lewis Testman",
             "Language": "en",
             "ID": 2043022085987,
             "UpdatedAt": "2019-01-20T09:06:33Z",
@@ -1147,7 +1147,7 @@
             "CreatedAt": "2019-01-20T09:06:32Z"
         },
         {
-            "Name": "Pedro Martinez",
+            "Name": "Pedro Testez",
             "ID": 2043023084321,
             "UpdatedAt": "2019-01-28T14:16:49Z",
             "TimeZone": "Athens",
@@ -1235,7 +1235,7 @@
 <td style="width: 103px;">2019-01-20T09:06:34Z</td>
 </tr>
 <tr>
-<td style="width: 73px;">Emily Dean</td>
+<td style="width: 73px;">Emily Testman</td>
 <td style="width: 77px;">en</td>
 <td style="width: 81px;"> </td>
 <td style="width: 100px;">2019-01-20T09:06:34Z</td>
@@ -1262,7 +1262,7 @@
 <td style="width: 103px;">2019-01-20T09:06:32Z</td>
 </tr>
 <tr>
-<td style="width: 73px;">Jeffrey Collins</td>
+<td style="width: 73px;">Jeff Testman</td>
 <td style="width: 77px;">en</td>
 <td style="width: 81px;"> </td>
 <td style="width: 100px;">2019-02-05T10:30:16Z</td>
@@ -1289,7 +1289,7 @@
 <td style="width: 103px;">2019-01-20T09:06:33Z</td>
 </tr>
 <tr>
-<td style="width: 73px;">Lewis Clarke</td>
+<td style="width: 73px;">Lewis Testman</td>
 <td style="width: 77px;">en</td>
 <td style="width: 81px;"> </td>
 <td style="width: 100px;">2019-01-20T09:06:33Z</td>
@@ -1325,7 +1325,7 @@
 <td style="width: 103px;">2019-01-20T09:06:32Z</td>
 </tr>
 <tr>
-<td style="width: 73px;">Pedro Martinez</td>
+<td style="width: 73px;">Pedro Testez</td>
 <td style="width: 77px;"> </td>
 <td style="width: 81px;"> </td>
 <td style="width: 100px;">2019-01-28T14:16:49Z</td>
@@ -2870,7 +2870,7 @@
         {
             "TicketScope": 1,
             "Contact": {
-                "Name": "Jeffrey Collins",
+                "Name": "Jeff Testman",
                 "Language": "en",
                 "LastLoginAt": "2019-01-23T09:05:34Z",
                 "Phone": "506912312",
@@ -2911,7 +2911,7 @@
 <tbody>
 <tr>
 <td style="width: 95px;">1</td>
-<td style="width: 199px;">Name: Jeffrey Collins<br> Language: en<br> LastLoginAt: 2019-01-23T09:05:34Z<br> Phone: 506912312<br> UpdatedAt: 2019-01-20T09:14:26Z<br> Active: true<br> TimeZone: Athens<br> Email: jeffrey.collins@gmail.com<br> CreatedAt: 2019-01-20T09:06:31Z</td>
+<td style="width: 199px;">Name: Jeff Testman<br> Language: en<br> LastLoginAt: 2019-01-23T09:05:34Z<br> Phone: 506912312<br> UpdatedAt: 2019-01-20T09:14:26Z<br> Active: true<br> TimeZone: Athens<br> Email: jeffrey.collins@gmail.com<br> CreatedAt: 2019-01-20T09:06:31Z</td>
 <td style="width: 102px;">2019-02-04T17:12:33Z</td>
 <td style="width: 103px;">support_agent</td>
 <td style="width: 116px;">2043022085976</td>

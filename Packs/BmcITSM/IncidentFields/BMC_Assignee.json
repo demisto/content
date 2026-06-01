@@ -27,7 +27,7 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "fullname",
+            "key": "FullName",
             "displayName": "Full Name",
             "type": "shortText",
             "orgType": "shortText",
@@ -40,7 +40,7 @@
             "selectValues": null
         },
         {
-            "key": "group",
+            "key": "Group",
             "displayName": "Group",
             "type": "shortText",
             "orgType": "shortText",
@@ -53,7 +53,7 @@
             "selectValues": null
         },
         {
-            "key": "supportorganization",
+            "key": "SupportOrganization",
             "displayName": "Support Organization",
             "type": "shortText",
             "orgType": "shortText",
@@ -66,7 +66,7 @@
             "selectValues": null
         },
         {
-            "key": "supportcompany",
+            "key": "SupportCompany",
             "displayName": "Support Company",
             "type": "shortText",
             "orgType": "shortText",

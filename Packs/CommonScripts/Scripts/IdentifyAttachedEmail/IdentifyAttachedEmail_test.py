@@ -37,6 +37,7 @@ def test_is_email():
         },
         "test.bin",
     )
+    assert is_email({"info": "CDFV2 Microsoft Outlook Message", "type": "msg"}, "test.msg")
 
     # invalid - info is missing with wrong type
     assert not is_email({"type": "invalid type"}, "test.txt")

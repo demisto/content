@@ -1,0 +1,10 @@
+!slack-create-channel name="example" users="Testy McTestface" using-brand="SlackV3"
+!slack-get-user-details user="cortex_xsoar" using-brand="SlackV3"
+!slack-invite-to-channel users="cortex_xsoar" channel="example" using-brand="SlackV3"
+!mirror-investigation direction="FromDemisto" channelName="example" using-brand="SlackV3"
+!send-notification channel="example" using-brand="SlackV3"
+!slack-send-file file="21@128" using-brand="SlackV3"
+!slack-rename-channel name="example" channel="doc-example2" using-brand="SlackV3"
+!slack-kick-from-channel users="cortex_xsoar" channel="example2" using-brand="SlackV3"
+!close-channel channel="example2" using-brand="SlackV3"
+!slack-get-integration-context

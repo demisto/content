@@ -3,24 +3,31 @@ provider: Fortinet
 commonfields:
   id: FortiAuthenticator
   version: -1
+sectionorder:
+  - Connect
+  - Collect
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
   required: true
   type: 0
+  section: Connect
 - display: Username
   displaypassword: Access Key
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
   required: false
 description: This integration allows you to manage the user configuration on FortiAuthenticator.
 display: FortiAuthenticator
@@ -67,7 +74,7 @@ script:
       description: The username that is defined in the User Information on FortiAuthenticator.
     name: fortiauthenticator-update-user
     description: Update the active status for specific user by email
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.7090913
   runonce: false
   script: ''
   subtype: python3

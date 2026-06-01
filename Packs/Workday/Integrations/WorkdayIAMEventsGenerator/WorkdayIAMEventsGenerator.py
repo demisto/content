@@ -97,7 +97,7 @@ FIRST_RUN_REPORT = {
             "Job_Function": "Engineering Function",
             "State": "California",
             "Exec_Admin_Flag": "N",
-            "Preferred_Name": "Stephen Arnold",
+            "Preferred_Name": "Steve Testman",
             "Regular_Employee_Flag": "Y",
             "Preferred_Name_-_Last_Name": "Arnold",
             "Cost_Center_Code": "101100",

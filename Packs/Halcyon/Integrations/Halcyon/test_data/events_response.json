@@ -1,0 +1,60 @@
+{
+    "data": [
+        {
+            "eventId": "event-001",
+            "occurredAt": "2024-01-15T09:00:00.000Z",
+            "kind": "DeviceActivity",
+            "deviceId": "device-123",
+            "deviceName": "WORKSTATION-001",
+            "userName": "john.doe",
+            "description": "Device connected to network",
+            "sourceIp": "192.168.1.100",
+            "destinationIp": null,
+            "processName": null,
+            "filePath": null
+        },
+        {
+            "eventId": "event-002",
+            "occurredAt": "2024-01-15T09:30:00.000Z",
+            "kind": "ProcessExecution",
+            "deviceId": "device-123",
+            "deviceName": "WORKSTATION-001",
+            "userName": "john.doe",
+            "description": "Process started",
+            "sourceIp": null,
+            "destinationIp": null,
+            "processName": "chrome.exe",
+            "filePath": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        },
+        {
+            "eventId": "event-003",
+            "occurredAt": "2024-01-15T10:00:00.000Z",
+            "kind": "FileOperation",
+            "deviceId": "device-456",
+            "deviceName": "WORKSTATION-002",
+            "userName": "jane.smith",
+            "description": "File created",
+            "sourceIp": null,
+            "destinationIp": null,
+            "processName": "explorer.exe",
+            "filePath": "C:\\Users\\jane.smith\\Documents\\report.docx"
+        },
+        {
+            "eventId": "event-004",
+            "occurredAt": "2024-01-15T10:30:00.000Z",
+            "kind": "NetworkConnection",
+            "deviceId": "device-789",
+            "deviceName": "SERVER-001",
+            "userName": "admin",
+            "description": "Outbound connection established",
+            "sourceIp": "192.168.1.10",
+            "destinationIp": "8.8.8.8",
+            "processName": "svchost.exe",
+            "filePath": null
+        }
+    ],
+    "page": 1,
+    "pageSize": 100,
+    "totalCount": 4,
+    "totalPages": 1
+}

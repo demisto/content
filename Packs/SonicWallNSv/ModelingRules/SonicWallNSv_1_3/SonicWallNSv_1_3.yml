@@ -4,3 +4,5 @@ name: SonicWall NSv
 rules: ''
 schema: ''
 tags: SonicWallNSv
+supportedModules:
+- xsiam

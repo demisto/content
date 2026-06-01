@@ -19,7 +19,7 @@ urllib3.disable_warnings()
 
 """ GLOBALS/PARAMS """
 
-TEST_QUERY = 'SELECT name FROM `bigquery-public-data.usa_names.usa_1910_2013` WHERE state = "TX" LIMIT 10'
+TEST_QUERY = "SELECT 1"
 
 
 """ HELPER FUNCTIONS """
@@ -111,11 +111,11 @@ def build_query_job_config(
     return query_job_config
 
 
-def convert_to_string(field_value):
+def convert_to_string(field_value, datetime_format: str = "%m/%d/%Y %H:%M:%S", date_only_format: str = "%m/%d/%Y"):
     if isinstance(field_value, datetime):
-        return field_value.strftime("%m/%d/%Y %H:%M:%S")
+        return field_value.strftime(datetime_format)
     if isinstance(field_value, date):
-        return field_value.strftime("%m/%d/%Y")
+        return field_value.strftime(date_only_format)
     if isinstance(field_value, bytes):
         return field_value.decode("utf-8")
     return field_value
@@ -213,8 +213,17 @@ def query_command(query_to_run=None):
         human_readable = f"### Dry run results: \n This query will process {query_results.total_bytes_processed} bytes"
 
     else:
+        context_key_format = args.get("context_key_format", "")
+        datetime_format = args.get("datetime_format", "%m/%d/%Y %H:%M:%S")
+        date_only_format = args.get("date_only_format", "%m/%d/%Y")
+        demisto.debug(f"{context_key_format=}, {datetime_format=}, {date_only_format=}")
         for row in query_results:
-            row_context = {underscoreToCamelCase(k): convert_to_string(v) for k, v in row.items()}
+            if context_key_format == "underscore":
+                row_context = {k: convert_to_string(v, datetime_format, date_only_format) for k, v in row.items()}
+            else:
+                row_context = {
+                    underscoreToCamelCase(k): convert_to_string(v, datetime_format, date_only_format) for k, v in row.items()
+                }
             rows_contexts.append(row_context)
 
         if rows_contexts:
@@ -408,17 +417,20 @@ def test_module():
     Perform basic get request to get item samples
     """
     try:
+        params = demisto.params()
         google_service_creds = (
-            demisto.params().get("credentials_google_service", {}).get("password") or demisto.params()["google_service_creds"]
+            params.get("credentials_google_service", {}).get("password") or demisto.params()["google_service_creds"]
         )
+        region = params.get("region")
         bigquery_client = start_and_return_bigquery_client(google_service_creds)
-        query_job = bigquery_client.query(TEST_QUERY)
+        demisto.debug(f"[BigQuery Debug] test-module with {region=}")
+        query_job = bigquery_client.query(TEST_QUERY, location=region)
         query_results = query_job.result()
         results_rows_iterator = iter(query_results)
         next(results_rows_iterator)
         demisto.results("ok")
     except Exception as ex:
-        return_error(f"Authentication error: credentials JSON provided is invalid.\n Exception recieved:{ex}")
+        return_error(f"Authentication error. Exception received:{ex}")
 
 
 """ COMMANDS MANAGER / SWITCH PANEL """

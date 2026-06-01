@@ -1,0 +1,27 @@
+{
+  "data": {
+    "objects": [
+      {
+        "id": "INSIGHT-100",
+        "readableId": "INSIGHT-100",
+        "name": "Initial Insight 1",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "First run insight 1.",
+        "severity": "MEDIUM",
+        "signals": []
+      },
+      {
+        "id": "INSIGHT-101",
+        "readableId": "INSIGHT-101",
+        "name": "Initial Insight 2",
+        "created": "2026-02-11T00:00:00.000000",
+        "description": "First run insight 2.",
+        "severity": "LOW",
+        "signals": []
+      }
+    ],
+    "total": 2,
+    "hasNextPage": false
+  },
+  "errors": []
+}

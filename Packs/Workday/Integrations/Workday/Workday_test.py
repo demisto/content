@@ -80,7 +80,7 @@ def test_convert_to_json():
 WORKER_CONTEXT_DATA = [
     {
         "Worker_ID": "123456",
-        "User_ID": "JDoe@paloaltonetworks.com",
+        "User_ID": "jdoe@example.com",
         "Country": "AE",
         "Legal_First_Name": "John Wick",
         "Legal_Last_Name": "Doe",
@@ -138,7 +138,7 @@ WORKER_CONTEXT_DATA = [
             },
             {
                 "Address_ID": "ADDRESS_REFERENCE-6-107",
-                "Formatted_Address": "King Faisal District&#xa;Narnia 13215&#xa;Saudi Arabia",
+                "Formatted_Address": "King Testname District&#xa;Narnia 13215&#xa;Saudi Arabia",
                 "Country": "SA",
                 "Region": "",
                 "Region_Descriptor": "",
@@ -148,7 +148,7 @@ WORKER_CONTEXT_DATA = [
         ],
         "Emails": [
             {"Email_Address": "John@hotmail.com", "Type": "HOME", "Primary": True, "Public": False},
-            {"Email_Address": "JDoe@paloaltonetworks.com", "Type": "WORK", "Primary": True, "Public": True},
+            {"Email_Address": "jdoe@example.com", "Type": "WORK", "Primary": True, "Public": True},
         ],
         "Phones": [
             {"ID": "PHONE_REFERENCE-3-4210", "Phone_Number": "+966555055555", "Type": "Mobile", "Usage": "WORK"},

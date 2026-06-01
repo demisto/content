@@ -5,11 +5,11 @@ from CommonServerUserPython import *
 BRAND_MAPPING = {
     "Microsoft Teams": {
         "brand": "Microsoft Teams",
-        "valid_args": {"brand", "message", "to", "channel", "team"},
+        "valid_args": {"brand", "message", "to", "channel", "team", "thread_id"},
     },
     "Slack": {
         "brand": "SlackV3",
-        "valid_args": {"brand", "message", "to", "channel", "channel_id"},
+        "valid_args": {"brand", "message", "to", "channel", "channel_id", "thread_id"},
     },
     "Mattermost": {
         "brand": "MattermostV2",
@@ -33,6 +33,11 @@ def send_notification_by_brand(brand: str, args: dict):
 
     command_args = {"using-brand": brand_map.get("brand")}
     command_args.update(args)
+
+    if brand == "Microsoft Teams" and "thread_id" in command_args:
+        command_args["message_id"] = command_args.pop("thread_id")
+    elif brand == "Slack" and "thread_id" in command_args:
+        command_args["threadID"] = command_args.pop("thread_id")
 
     return demisto.executeCommand("send-notification", args=command_args)
 

@@ -48,8 +48,8 @@ def filter_relationships_by_entity_types(
 
         for relationship in data.get("Relationships", []):
             # For this case:
-            # !SearchIndicatorRelationships Entities = google.com, example.com relationships=relats_to entity_type=DOMAIN
-            # Relationships = google.com relate_to example.com
+            # !SearchIndicatorRelationships Entities = google.com, example.com relationships=relates-to entity_type=DOMAIN
+            # Relationships = google.com relates-to example.com
             if (
                 relationship["EntityAType"] in entities_types
                 and relationship["EntityBType"] in entities_types
@@ -91,15 +91,18 @@ def get_relationships(args: dict) -> list:
                 returns filtered relationships where EntityA or EntityB type matches entities_types.
                 Returns empty list if no parameters are provided or no relationships found.
     """
-    entities_types = argToList(args.pop("entities_types", []))
+    entities_types = argToList(args.pop("related_entity_types", []))
     entities = argToList(args.get("entities", []))
     relationships = argToList(args.get("relationships", []))
     verbose = args.get("verbose", "false")
     revoked = args.get("revoked", "false")
     limit = int(args.get("limit", "20"))
 
-    if not entities and not entities_types and not relationships:
-        return []
+    if entities_types and entities:
+        filtered_relationships = filter_relationships_by_entity_types(
+            entities, entities_types, relationships, limit, verbose, revoked
+        )
+        return filtered_relationships
 
     search_params = {
         "entities": entities,
@@ -110,11 +113,6 @@ def get_relationships(args: dict) -> list:
         "revoked": revoked,
     }
     remove_nulls_from_dictionary(search_params)
-    if entities_types:
-        filtered_relationships = filter_relationships_by_entity_types(
-            entities, entities_types, relationships, limit, verbose, revoked
-        )
-        return filtered_relationships
 
     res = demisto.executeCommand("SearchIndicatorRelationships", search_params)
     if not res or len(res) == 0:

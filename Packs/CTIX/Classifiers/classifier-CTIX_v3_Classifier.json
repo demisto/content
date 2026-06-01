@@ -1,0 +1,17 @@
+{
+    "defaultIncidentType": "CTIX Intel",
+    "description": "Classifier for Cyware Intel Exchange fetched Incidents.",
+    "feed": false,
+    "id": "CTIX v3 Classifier",
+    "keyTypeMap": {
+        "report": "CTIX Intel"
+    },
+    "name": "CTIX v3 Classifier",
+    "transformer": {
+        "complex": null,
+        "simple": "type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

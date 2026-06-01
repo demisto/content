@@ -3,7 +3,7 @@
     "description": "Deprecated. Please Use the Service Desk Plus pack instead.",
     "hidden": true,
     "support": "xsoar",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -25,10 +25,6 @@
         "platform"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix"
     ]
 }

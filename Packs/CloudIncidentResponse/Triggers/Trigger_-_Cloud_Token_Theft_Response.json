@@ -89,5 +89,8 @@
         }
       ]
     }
-  }
+  },
+  "supportedModules": [
+    "xsiam"
+  ]
 }

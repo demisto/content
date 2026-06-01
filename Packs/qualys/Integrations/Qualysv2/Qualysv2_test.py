@@ -38,7 +38,8 @@ from Qualysv2 import (
     ASSETS_FETCH_FROM,
     ASSETS_DATE_FORMAT,
     HOST_LIMIT,
-    API_SUFFIX,
+    API_SUFFIX_DETECTION,
+    API_SUFFIX_KNOWLEDGEBASE,
     VENDOR,
     DEFAULT_LAST_ASSETS_RUN,
 )
@@ -168,7 +169,7 @@ def test_fetch_assets_command(requests_mock: RequestsMocker, client: Client):
     with open("./test_data/host_list_detections_raw.xml") as f:
         assets = f.read()
     requests_mock.get(
-        f"{BASE_URL}api/2.0/fo/asset/host/vm/detection/"
+        f"{BASE_URL}api/5.0/fo/asset/host/vm/detection/"
         f"?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after="
         f"{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}",
         text=assets,
@@ -193,7 +194,7 @@ def test_fetch_assets_command_time_out(requests_mock: RequestsMocker, mocker, cl
     with open("./test_data/host_list_detections_raw.xml") as f:
         assets = f.read()
     requests_mock.get(
-        f"{BASE_URL}api/2.0/fo/asset/host/vm/detection/"
+        f"{BASE_URL}api/5.0/fo/asset/host/vm/detection/"
         f"?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after="
         f"{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}",
         exc=requests.exceptions.ReadTimeout,
@@ -222,7 +223,7 @@ def test_fetch_vulnerabilities_command_by_date(requests_mock: RequestsMocker, cl
     since_datetime = arg_to_datetime("2025-01-25").strftime(ASSETS_DATE_FORMAT)
     last_run = {"since_datetime": since_datetime}
     requests_mock.post(
-        f"{BASE_URL}api/2.0/fo/knowledge_base/vuln/?action=list&last_modified_after={since_datetime}", text=raw_response
+        f"{BASE_URL}api/4.0/fo/knowledge_base/vuln/?action=list&last_modified_after={since_datetime}", text=raw_response
     )
 
     vulnerabilities, next_run = fetch_vulnerabilities(client=client, last_run=last_run)
@@ -248,7 +249,7 @@ def test_fetch_vulnerabilities_command_by_qid(requests_mock: RequestsMocker, cli
     expected_vulnerabilities = util_load_json("./test_data/fetched_vulnerabilities.json")
 
     detection_qids = ["10052", "10186"]
-    requests_mock.post(f'{BASE_URL}api/2.0/fo/knowledge_base/vuln/?action=list&ids={",".join(detection_qids)}', text=raw_response)
+    requests_mock.post(f'{BASE_URL}api/4.0/fo/knowledge_base/vuln/?action=list&ids={",".join(detection_qids)}', text=raw_response)
 
     vulnerabilities, next_run = fetch_vulnerabilities(client=client, last_run={}, detection_qids=detection_qids)
 
@@ -1121,7 +1122,7 @@ class TestClientClass:
         assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "GET"
         assert http_request_kwargs["url_suffix"] == urljoin(
-            API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
+            API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
         )
         assert http_request_kwargs["params"] == {
             "truncation_limit": HOST_LIMIT,
@@ -1159,8 +1160,29 @@ class TestClientClass:
 
         assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "POST"
-        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
+        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list")
         assert http_request_kwargs["params"] == expected_params
+
+    @pytest.mark.parametrize(
+        "exception",
+        [
+            pytest.param(requests.exceptions.ReadTimeout, id="ReadTimeout"),
+            pytest.param(requests.exceptions.ChunkedEncodingError, id="ChunkedEncodingError"),
+        ],
+    )
+    def test_get_vulnerabilities_timeout(self, mocker: MockerFixture, exception: type) -> None:
+        """
+        Given:
+            - A ReadTimeout or ChunkedEncodingError raised by the HTTP request.
+        When:
+            - Calling client.get_vulnerabilities.
+        Assert:
+            - The exception is re-raised after logging.
+        """
+        mocker.patch.object(self.client, "_http_request", side_effect=exception())
+        mocker.patch("Qualysv2.demisto.error")
+        with pytest.raises(exception):
+            self.client.get_vulnerabilities(since_datetime="2024-12-12")
 
 
 class TestInputValidations:
@@ -1659,7 +1681,7 @@ def test_get_vulnerabilities_valid_inputs(
     http_request_kwargs = client_http_request.call_args.kwargs
 
     assert http_request_kwargs["method"] == "POST"
-    assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
+    assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list")
     assert http_request_kwargs["params"] == expected_params
 
 
@@ -1697,6 +1719,10 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFix
     Assert:
         - Ensure correct sending to XSIAM and correctly set next assets run.
     """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
     last_total_assets = 100
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
 
@@ -1770,6 +1796,10 @@ def test_fetch_assets_and_vulnerabilities_by_date_set_new_limit(mocker: MockerFi
         - Ensure no data is sent to XSIAM and module health is not updated.
         - Ensure assets next run is correctly set with the half of the original host limit, same snapshot ID, and next trigger 0.
     """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
     last_total_assets = 10
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
 
@@ -1810,6 +1840,10 @@ def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, cl
         - Ensure correct sending of assets and vulnerabilities to XSIAM.
         - Ensure correct last run that preserves snapshot ID, sets next trigger to 0, and updates total counts.
     """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
     last_total_assets = 100
     last_total_vulns = 66
     last_run = {"total_assets": last_total_assets, "total_vulnerabilities": last_total_vulns, "snapshot_id": SNAPSHOT_ID}
@@ -1907,6 +1941,47 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     assert not send_data_to_xsiam_vulns_kwargs["should_update_health_module"]
 
 
+def test_send_assets_and_vulnerabilities_to_xsiam_empty_last_page(mocker: MockerFixture):
+    """
+    Given:
+        - Empty assets and vulnerabilities lists on the closing snapshot (has_next_page=False).
+        - Cumulative counts of 500 assets and 200 vulnerabilities from previous pages.
+
+    When:
+        - Calling send_assets_and_vulnerabilities_to_xsiam with empty data and has_next_page=False.
+
+    Then:
+        - Ensure close_snapshot_if_empty replaces empty lists with [{}] and increments items_count by 1.
+        - Ensure send_data_to_xsiam is called with data=[{}] and items_count=str(count + 1) for both datasets.
+    """
+    cumulative_assets_count = 500
+    cumulative_vulns_count = 200
+
+    mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
+
+    send_assets_and_vulnerabilities_to_xsiam(
+        assets=[],
+        vulnerabilities=[],
+        cumulative_assets_count=cumulative_assets_count,
+        cumulative_vulns_count=cumulative_vulns_count,
+        has_next_page=False,
+        snapshot_id=SNAPSHOT_ID,
+    )
+
+    send_data_to_xsiam_assets_kwargs = mock_send_data_to_xsiam.mock_calls[0].kwargs
+    send_data_to_xsiam_vulns_kwargs = mock_send_data_to_xsiam.mock_calls[1].kwargs
+
+    # Assets: empty list replaced with [{}], items_count incremented by 1
+    assert send_data_to_xsiam_assets_kwargs["data"] == [{}]
+    assert send_data_to_xsiam_assets_kwargs["items_count"] == str(cumulative_assets_count + 1)
+    assert send_data_to_xsiam_assets_kwargs["snapshot_id"] == SNAPSHOT_ID
+
+    # Vulnerabilities: empty list replaced with [{}], items_count incremented by 1
+    assert send_data_to_xsiam_vulns_kwargs["data"] == [{}]
+    assert send_data_to_xsiam_vulns_kwargs["items_count"] == str(cumulative_vulns_count + 1)
+    assert send_data_to_xsiam_vulns_kwargs["snapshot_id"] == SNAPSHOT_ID
+
+
 @pytest.fixture
 def mock_client():
     client = Mock()
@@ -1978,3 +2053,52 @@ def test_get_qid_for_cve_multiple_qids(mock_client):
     result = get_qid_for_cve(mock_client, "CVE-2024-9999")
 
     assert result.outputs == ["12345", "67890"]
+
+
+@freeze_time("2025-01-01 00:00:00 UTC")
+def test_fetch_assets_and_vulnerabilities_by_date_last_page_empty(mocker: MockerFixture, client: Client):
+    """
+    Given:
+        - Qualys client and last run dictionary with fetch stage, total assets count, and snapshot ID.
+        - The last page of assets returns 0 assets (empty list) but no next page (pagination complete).
+
+    When:
+        - Calling fetch_assets_and_vulnerabilities_by_date with the "assets" stage.
+
+    Then:
+        - Ensure a snapshot closing signal is sent to XSIAM with a placeholder [{}] and the correct items_count.
+        - Ensure the stage transitions to "vulnerabilities".
+    """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
+    last_total_assets = 500
+    last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
+
+    # Last page returns 0 assets, no next page, no limit reduction needed
+    empty_assets, next_page, set_new_limit = [], "", False
+    mocker.patch("Qualysv2.get_host_list_detections_events", return_value=(empty_assets, next_page, set_new_limit))
+
+    mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
+    mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
+
+    fetch_assets_and_vulnerabilities_by_date(client, last_run)
+
+    send_data_to_xsiam_kwargs: dict = mock_send_data_to_xsiam.call_args.kwargs
+    next_run = mock_set_assets_last_run.call_args[0][0]
+
+    # Should send an empty JSON [{}] to close the snapshot since assets is empty
+    assert send_data_to_xsiam_kwargs["data"] == [{}]
+    assert send_data_to_xsiam_kwargs["vendor"] == VENDOR
+    assert send_data_to_xsiam_kwargs["product"] == "assets"
+    assert send_data_to_xsiam_kwargs["snapshot_id"] == SNAPSHOT_ID
+    assert send_data_to_xsiam_kwargs["items_count"] == str(
+        last_total_assets + 1
+    )  # total_assets + 1 to account for the empty JSON row
+    assert not send_data_to_xsiam_kwargs["should_update_health_module"]
+
+    assert next_run["next_page"] == ""
+    assert next_run["stage"] == "vulnerabilities"
+    assert next_run["total_assets"] == last_total_assets
+    assert next_run["snapshot_id"] == SNAPSHOT_ID

@@ -795,6 +795,7 @@ Searches for Gmail records for a specific Google user.
 | Gmail.Attachments.Name | String | The email attachment name. |
 | Gmail.Headers | unknown | All headers of a specific email \(list\). |
 | Gmail.Mailbox | string | The email mailbox. |
+| GmailEmails.NextPageToken | string | Token used to get the next page of results. |
 | Email.To | String | The recipient of the email. |
 | Email.From | String | The sender of the email. |
 | Email.CC | String | The additional recipient email address \(CC\). |
@@ -3675,7 +3676,7 @@ Creates a new Gmail user.
 {
     "Account": {
         "CustomerId": "C03puekhd",
-        "DisplayName": "John Snow",
+        "DisplayName": "John Testmanw",
         "Domain": "domain.io",
         "Email": {
             "Address": "user1@domain.io"
@@ -3700,7 +3701,7 @@ Creates a new Gmail user.
 
 >|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|
 >|---|---|---|---|---|---|---|---|
->| Google | 103470368646956060577 | John | John Snow | admin#directory#user | C03puekhd | domain.io | Address: user1@domain.io |
+>| Google | 103470368646956060577 | John | John Testmanw | admin#directory#user | C03puekhd | domain.io | Address: user1@domain.io |
 
 ### gmail-delete-mail
 

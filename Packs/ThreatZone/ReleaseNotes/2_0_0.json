@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Added ThreatZone.Submission.* outputs while preserving legacy ThreatZone.Analysis.* and ThreatZone.IOC.* outputs for backward compatibility."
+}

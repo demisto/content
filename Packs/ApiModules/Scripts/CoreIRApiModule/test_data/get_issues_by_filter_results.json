@@ -1,0 +1,54 @@
+{
+    "reply": {
+        "DATA": [
+            {
+                "agent_data_collection_status": true,
+                "agent_id": "ANOTHER ID",
+                "agent_ip_addresses": [
+                    "IP"
+                ],
+                "agent_os_type": "AGENT_OS_WINDOWS",
+                "alert_action_status": "SCANNED",
+                "alert_category": "Malware",
+                "alert_description": "Suspicious executable detected",
+                "alert_name": "SOME NAME",
+                "alert_source": "SOURCE",
+                "bioc_indicator": "None",
+                "external_id": "some ID",
+                "internal_id": 33333,
+                "is_whitelisted": false,
+                "local_insert_ts": 1649750275398,
+                "matching_status": "MATCHED",
+                "severity": "SEV_030_MEDIUM",
+                "source_insert_ts": 1649750245010,
+                "starred": false
+            },
+            {
+                "agent_data_collection_status": true,
+                "agent_id": "ANOTHER ID",
+                "agent_ip_addresses": [
+                    "IP"
+                ],
+                "agent_os_type": "AGENT_OS_WINDOWS",
+                "alert_action_status": "SCANNED",
+                "alert_category": "Malware",
+                "alert_description": "Suspicious executable detected",
+                "alert_name": "SOME NAME 2",
+                "alert_source": "SOURCE",
+                "bioc_indicator": "None",
+                "case_id": 41,
+                "events_length": 1,
+                "external_id": "some ID 2",
+                "internal_id": 33333,
+                "is_whitelisted": false,
+                "local_insert_ts": 1649750275398,
+                "matching_status": "MATCHED",
+                "severity": "SEV_030_MEDIUM",
+                "source_insert_ts": 1649750245010,
+                "starred": false
+            }
+        ],
+        "FILTER_COUNT": 8668,
+        "TOTAL_COUNT": 14932
+    }
+}

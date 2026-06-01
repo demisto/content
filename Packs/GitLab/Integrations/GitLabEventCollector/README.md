@@ -1,14 +1,35 @@
-An event collector for Gitlab audit events using Gitlab's API.  
+An event collector for GitLab audit events using Gitlab's API.
 
 [Audit events API documentation](https://docs.gitlab.com/ee/api/audit_events.html)
+
+## Prerequisites
+
+To retrieve audit events using the API, you must authenticate yourself as an Administrator.
+
+You must use [Personal access tokens](https://docs.gitlab.com/user/profile/personal_access_tokens.html):
+
+### Create a Personal Access Token
+
+1. In the upper-right corner, select your avatar.
+2. Select **Edit profile**.
+3. On the left sidebar, select **Personal access tokens**.
+4. Select **Add new token**.
+5. In **Token name**, enter a name for the token.
+6. Optional. In **Token description**, enter a description for the token.
+7. In **Expiration date**, enter an expiration date for the token.
+   - The token expires on that date at midnight UTC. A token with the expiration date of 2024-01-01 expires at 00:00:00 UTC on 2024-01-01.
+   - If you do not enter an expiration date, the expiration date is automatically set to 365 days later than the current date.
+   - By default, this date can be a maximum of 365 days later than the current date. In GitLab 17.6 or later, you can extend this limit to 400 days.
+8. Select the desired scopes (see [PAT scopes](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)).
+9. Select **Create personal access token**.
 
 ## Configure Gitlab Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
-| API Key | The API Key to use for connection. | True |
-| Fetch Instance Audit Events | When checked, the fetch mechanism will fetch events from the audit_events endpoint. That endpoint requires a higher level of authorization, see description for more details. |  |
+| API Key | The personal access token created above with Administrator authorization. | True |
+| Fetch Instance Audit Events | When checked, the fetch mechanism will fetch events from the audit_events endpoint. That endpoint requires Administrator authorization. See [Audit Events API documentation](https://docs.gitlab.com/api/audit_events/) for more details. |  |
 | Groups IDs |  | False |
 | Projects IDS |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) |  | True |

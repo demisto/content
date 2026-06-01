@@ -1465,3 +1465,5 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.6.0
+supportedModules:
+- xsiam

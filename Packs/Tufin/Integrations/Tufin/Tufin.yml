@@ -4,6 +4,9 @@ commonfields:
 name: Tufin
 display: Tufin
 category: Network Security
+sectionorder:
+  - Connect
+  - Collect
 provider: Turn River Capital
 description: Retrieve and analyze network access controls across Tufin-managed firewalls, SDN, and public cloud to identify vulnerable access paths of an attack.
 configuration:
@@ -12,45 +15,54 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 - display: SecureTrack User Credentials
   name: SecureTrack-User
   defaultvalue: ""
   type: 9
   required: true
+  section: Connect
 - display: SecureChange IP or FQDN
   name: SecureChange-Server
   defaultvalue: ""
   type: 0
   required: false
+  section: Connect
 - display: SecureChange User Credentials
   name: SecureChange-User
   defaultvalue: ""
   type: 9
   required: false
+  section: Connect
 - display: SecureApp IP or FQDN
   name: SecureApp-Server
   defaultvalue: ""
   type: 0
   required: false
+  section: Connect
 - display: SecureApp User Credentials
   name: SecureApp-User
   defaultvalue: ""
   type: 9
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
 - display: Maximum number of rules returned from device durring a policy search
   name: MaxRules
   defaultvalue: "100"
   type: 0
   required: false
+  section: Connect
 script:
   script: ''
   type: python
@@ -281,7 +293,7 @@ script:
       description: Connection comment.
       type: string
     description: Get SecureApp application connections.
-  dockerimage: demisto/netutils:1.0.0.3562043
+  dockerimage: demisto/netutils:1.0.0.6153064
   subtype: python3
 fromversion: 5.0.0
 tests:

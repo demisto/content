@@ -1,5 +1,5 @@
 category: Identity and Access Management
-provider: Salesforce
+provider: Slack
 sectionorder:
 - Connect
 - Collect
@@ -75,9 +75,13 @@ configuration:
 - defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: true
+  required: false
   type: 0
   section: Connect
+  additionalinfo: Cortex XSOAR only parameter.
+  hidden:
+  - marketplacev2
+  - platform
 description: Integrate with Slack's services to execute CRUD operations for employee lifecycle processes.
 display: Slack IAM
 name: Slack IAM
@@ -377,10 +381,3 @@ supportedModules:
 - edr
 - cloud
 - cloud_runtime_security
-- C1
-- C3
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS

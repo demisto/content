@@ -39,6 +39,12 @@ ASSETS_DATE_FORMAT = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 EXECUTION_START_TIME = time.time()
 API_SUFFIX = "/api/2.0/fo/"
+# New API version suffixes per endpoint group (replacing some deprecated v2.0 endpoints)
+API_SUFFIX_HOST = "/api/5.0/fo/"  # asset/host/ endpoints (list, update, purge)
+API_SUFFIX_DETECTION = "/api/5.0/fo/"  # asset/host/vm/detection/ endpoints
+API_SUFFIX_KNOWLEDGEBASE = "/api/4.0/fo/"  # knowledge_base/vuln/ endpoints
+API_SUFFIX_SCAN = "/api/3.0/fo/"  # scan/ endpoints
+API_SUFFIX_REPORT = "/api/3.0/fo/"  # report/ endpoints
 TAG_API_SUFFIX = "/qps/rest/2.0/"
 
 FETCH_COMMAND = {"events": 0, "assets": 1}
@@ -598,12 +604,12 @@ COMMANDS_CONTEXT_DATA = {
 # Information about the API request of the commands
 COMMANDS_API_DATA: dict[str, dict[str, str]] = {
     "qualys-purge-scan-host-data": {
-        "api_route": API_SUFFIX + "asset/host/?action=purge",
+        "api_route": API_SUFFIX_HOST + "asset/host/?action=purge",
         "call_method": "POST",
         "resp_type": "text",
     },
     "qualys-report-list": {
-        "api_route": API_SUFFIX + "/report/?action=list",
+        "api_route": API_SUFFIX_REPORT + "/report/?action=list",
         "call_method": "GET",
         "resp_type": "text",
     },
@@ -613,7 +619,7 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "resp_type": "text",
     },
     "qualys-vm-scan-list": {
-        "api_route": API_SUFFIX + "/scan/?action=list",
+        "api_route": API_SUFFIX_SCAN + "/scan/?action=list",
         "call_method": "GET",
         "resp_type": "text",
     },
@@ -643,7 +649,7 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "resp_type": "text",
     },
     "qualys-host-list": {
-        "api_route": API_SUFFIX + "/asset/host/?action=list",
+        "api_route": API_SUFFIX_HOST + "/asset/host/?action=list",
         "call_method": "POST",
         "resp_type": "text",
     },
@@ -668,7 +674,7 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "resp_type": "text",
     },
     "qualys-vulnerability-list": {
-        "api_route": API_SUFFIX + "/knowledge_base/vuln/?action=list",
+        "api_route": API_SUFFIX_KNOWLEDGEBASE + "/knowledge_base/vuln/?action=list",
         "call_method": "POST",
         "resp_type": "text",
     },
@@ -794,14 +800,14 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
     },
     "qualys-host-list-detection": {
         # show detection score `QDS` and score contributing factors `QDS_FACTORS`
-        "api_route": API_SUFFIX
+        "api_route": API_SUFFIX_DETECTION
         + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1&\
             host_metadata=all&show_cloud_tags=1",
         "call_method": "GET",
         "resp_type": "text",
     },
     "qualys-host-update": {
-        "api_route": API_SUFFIX + "asset/host/?action=update",
+        "api_route": API_SUFFIX_HOST + "asset/host/?action=update",
         "call_method": "POST",
         "resp_type": "text",
     },
@@ -1089,6 +1095,7 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
             "show_supported_modules_info",
             "show_disabled_flag",
             "show_qid_change_log",
+            "cloud_agent_scan_type",
         ],
         "inner_args": ["limit"],
     },
@@ -1621,7 +1628,7 @@ class Client(BaseClient):
         err_msg += f"Error in API call [{res.status_code}] - {res.reason}"
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
-            err_msg = f'{err_msg}\nError Code: {simple_response.get("CODE")}\nError Message: {simple_response.get("TEXT")}'
+            err_msg = f"{err_msg}\nError Code: {simple_response.get('CODE')}\nError Message: {simple_response.get('TEXT')}"
         except Exception:
             try:
                 # Try to parse json error response
@@ -1675,7 +1682,7 @@ class Client(BaseClient):
 
         response = self._http_request(
             method="GET",
-            url_suffix=urljoin(API_SUFFIX, "activity_log/?action=list"),
+            url_suffix=urljoin(API_SUFFIX, "activity_log/?action=list"),  # Activity log is not deprecated; stays on v2.0
             resp_type="text/csv",
             params=params,
             timeout=60,
@@ -1724,7 +1731,9 @@ class Client(BaseClient):
         try:
             response = self._http_request(
                 method="GET",
-                url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"),
+                url_suffix=urljoin(
+                    API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
+                ),
                 resp_type="text",
                 params=params,
                 timeout=timeout,
@@ -1740,7 +1749,7 @@ class Client(BaseClient):
         demisto.debug(f"Got host list detections response length of {len(response)} characters. Used query params: {params}.")
         return response, set_new_limit
 
-    def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> requests.Response:
+    def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> str:
         """
         Make a http request to Qualys API to get vulnerabilities
         Args:
@@ -1755,28 +1764,37 @@ class Client(BaseClient):
 
         params: dict[str, Any] = assign_params(ids=detection_qids, last_modified_after=since_datetime)
 
-        response = self._http_request(
-            method="POST",
-            url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
-            resp_type="text",
-            params=params,
-            timeout=60,
-            error_handler=self.error_handler,
+        timeout = (
+            60,  # Connection Timeout: max seconds to wait for a connection to the server to be established
+            150,  # Read Timeout: max seconds to wait between streamed bytes of the response body from the server
         )
+
+        try:
+            response = self._http_request(
+                method="POST",
+                url_suffix=urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list"),
+                resp_type="text",
+                params=params,
+                timeout=timeout,
+                error_handler=self.error_handler,
+            )
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
+            demisto.error(f"An error occurred during the vulnerabilities request: {str(e)}. Will retry in the next fetch cycle.")
+            raise
 
         return response
 
-    def get_qid_for_cve(self, cve: str) -> requests.Response:
+    def get_qid_for_cve(self, cve: str, cloud_agent_scan_type: str | None = None) -> requests.Response:
         """
         This method retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
         """
         self._headers.update({"Content-Type": "application/json"})
 
-        params: dict[str, Any] = {"cve": cve}
+        params: dict[str, Any] = assign_params(cve=cve, cloud_agent_scan_type=cloud_agent_scan_type)
 
         response = self._http_request(
             method="GET",
-            url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
+            url_suffix=urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list"),
             params=params,
             resp_type="xml",
             timeout=60,
@@ -2538,7 +2556,7 @@ def build_ip_list_output(**kwargs) -> tuple[dict[str, List[str]], str]:
     limit_msg = ""
 
     if "STATUS" in handled_result:
-        readable_output += f'### Current Status: {handled_result["STATUS"]}\n'
+        readable_output += f"### Current Status: {handled_result['STATUS']}\n"
 
     if command_parse_and_output_data["collection_name"] in handled_result:
         asset_collection = handled_result[command_parse_and_output_data["collection_name"]]
@@ -2822,11 +2840,11 @@ def handle_host_list_detection_result(raw_response: str) -> tuple[list, Optional
     return response_requested_value, str(response_next_url)
 
 
-def handle_vulnerabilities_result(raw_response: requests.Response) -> list:
+def handle_vulnerabilities_result(raw_response: str) -> list:
     """
     Handles vulnerabilities response - parses xml to json and gets the list
     Args:
-        raw_response (requests.Response): the raw result received from Qualys API command
+        raw_response (str): the raw XML result received from Qualys API command
     Returns:
         List with data generated for the result given
     """
@@ -2939,6 +2957,37 @@ def get_detections_from_hosts(hosts):
     return fetched_assets, False
 
 
+def close_snapshot_if_empty(
+    data: list,
+    items_count: int,
+    snapshot_id: str,
+    product: str,
+) -> tuple[list, int]:
+    """Ensures a snapshot can be closed even when the last page returned 0 items.
+
+    `send_data_to_xsiam` skips the API call when `data` is an empty list, which prevents the snapshot
+    from being finalized with the correct `items_count`. When this happens, we send an empty JSON (`[{}]`)
+    to trigger the API call and increment `items_count` by 1 to account for the extra row in the dataset.
+
+    Args:
+        data (list): The data to send. If empty and snapshot needs closing, will be replaced with [{}].
+        items_count (int): The total items count to report for the snapshot.
+        snapshot_id (str): The snapshot ID.
+        product (str): The product name (for logging).
+
+    Returns:
+        tuple[list, int]: The (possibly modified) data and items_count.
+    """
+    if not data and items_count > 0:
+        items_count += 1  # Account for the empty JSON row added to the dataset
+        demisto.debug(
+            f"Last page returned 0 {product}. "
+            f"Sending snapshot closing signal with items_count={items_count} for snapshot {snapshot_id}."
+        )
+        data = [{}]
+    return data, items_count
+
+
 def send_assets_and_vulnerabilities_to_xsiam(
     assets: list,
     vulnerabilities: list,
@@ -2961,12 +3010,16 @@ def send_assets_and_vulnerabilities_to_xsiam(
     # Set to 1 if not done pulling to signal to the server that the dataset snapshot is not yet complete
     total_assets_to_report = 1 if has_next_page else cumulative_assets_count
     total_vulns_to_report = 1 if has_next_page else cumulative_vulns_count
+    is_closing_snapshot = not has_next_page
 
     demisto.debug(
         f"Sending {len(assets)} assets to XSIAM with snapshot ID: {snapshot_id}. "
         f"Total assets collected so far: {cumulative_assets_count}. "
-        f"Reported items count: {total_assets_to_report}."
+        f"Reported items count: {total_assets_to_report}. Is closing snapshot: {is_closing_snapshot}."
     )
+
+    if is_closing_snapshot:
+        assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
 
     send_data_to_xsiam(
         data=assets,
@@ -2983,6 +3036,12 @@ def send_assets_and_vulnerabilities_to_xsiam(
         f"Total vulnerabilities collected so far: {cumulative_vulns_count}. "
         f"Reported items count: {total_vulns_to_report}."
     )
+
+    if is_closing_snapshot:
+        vulnerabilities, total_vulns_to_report = close_snapshot_if_empty(
+            vulnerabilities, total_vulns_to_report, snapshot_id, "vulnerabilities"
+        )
+
     send_data_to_xsiam(
         data=vulnerabilities,
         vendor=VENDOR,
@@ -3184,14 +3243,14 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
     return vulnerabilities, new_last_run
 
 
-def get_qid_for_cve(client: Client, cve: str) -> CommandResults:
+def get_qid_for_cve(client: Client, cve: str, cloud_agent_scan_type: str | None = None) -> CommandResults:
     """
     This function retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
     """
 
     demisto.debug(f"Start getting qids for the given {cve=}")
 
-    response = client.get_qid_for_cve(cve=cve)
+    response = client.get_qid_for_cve(cve=cve, cloud_agent_scan_type=cloud_agent_scan_type)
     # Parse XML response
     root = ElementTree.fromstring(response.content)
 
@@ -3417,11 +3476,16 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
             new_last_run = set_assets_last_run_with_new_limit(last_run, last_run.get("limit", HOST_LIMIT))
         else:
             cumulative_assets_count: int = new_last_run["total_assets"]
+            is_last_page = not new_last_run.get("next_page")
             demisto.debug(
                 f"Sending {len(assets)} assets to XSIAM with snapshot ID: {snapshot_id}. "
                 f"Total assets collected so far: {cumulative_assets_count}. "
-                f"Reported items count: {total_assets_to_report}."
+                f"Reported items count: {total_assets_to_report}. Is last page: {is_last_page}."
             )
+
+            if is_last_page:
+                assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
+
             send_data_to_xsiam(
                 data=assets,
                 vendor=VENDOR,
@@ -3800,7 +3864,9 @@ def main():  # pragma: no cover
             )
 
         elif command == "qualys-get-quid-by-cve":
-            return_results(get_qid_for_cve(client=client, cve=args["cve"]))
+            return_results(
+                get_qid_for_cve(client=client, cve=args["cve"], cloud_agent_scan_type=args.get("cloud_agent_scan_type"))
+            )
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()

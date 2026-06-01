@@ -1,0 +1,211 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Cortex Insights [Security Events]",
+            "description": "This dashboard provides a comprehensive overview of the security events and alerts detected across your environment. It highlights key metrics such as the distribution of events by source product, alert counts by endpoint prevention policy, and the volume of detections from analytics engines.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-3819",
+                    "data": [
+                        {
+                            "key": "xql_1772560671464",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 1094,
+                                "phrase": "config timeframe = 30d case_sensitive = false \n  | dataset = xdr_data\n  | fields backtrace_identities\n  | arrayexpand backtrace_identities \n  | alter product = backtrace_identities -\u003e product\n  | alter product = lowercase(product)\n  | comp count() as Count by product \n  | sort desc Count",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-a7cc59f0-4414-435f-b266-0743eb8503d0",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1772560551207",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 1094,
+                                "phrase": "config timeframe = 30d case_sensitive = false\n  | dataset = alerts\n  | filter alert_source = ENUM.XDR_AGENT and action = ENUM.DETECTED__REPORTED_\n  | join type = inner (dataset = endpoints | fields endpoint_id, endpoint_name, assigned_prevention_policy) as ep ep.endpoint_id = endpoint_id\n  | comp count() as events by assigned_prevention_policy, alert_name",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-2304cb88-5346-43f8-9800-1a5d39d61ea1",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1772560616889",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 1094,
+                                "phrase": "config timeframe = 30d case_sensitive = false \n  | dataset = alerts\n  | filter alert_source in (ENUM.XDR_ANALYTICS, ENUM.XDR_ANALYTICS_BIOC)\n  | comp count() as Alerts by alert_source",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "30d",
+                                    "isRelative": true
+                                },
+                                "entityType": "xql-widget-table-06d11dbc-1d02-4d08-8eb7-f992381938ca",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "7afc9346f5e64ffdb7af57ae060284d4",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1772560616889",
+            "title": "Alerts associated with Analytics rules",
+            "creation_time": 1772560616889,
+            "description": "This widget displays a 30-day count of alerts generated from Analytics and Analytics BIOC rules. Use this to gauge the volume of automated detections and understand the activity from built-in versus custom analytics rules.",
+            "data": {
+                "phrase": "config timeframe = 30d case_sensitive = false \n  | dataset = alerts\n  | filter alert_source in (ENUM.XDR_ANALYTICS, ENUM.XDR_ANALYTICS_BIOC)\n  | comp count() as Alerts by alert_source",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "alerts"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1772560671464",
+            "title": "Products participating in XDR data Stitching",
+            "creation_time": 1772560671464,
+            "description": "This widget displays the volume of data each security product has contributed to XDR stitching over the last 30 days. This insight helps you validate the health of your data source integrations and ensure you have complete visibility across your environment.",
+            "data": {
+                "phrase": "config timeframe = 30d case_sensitive = false \n  | dataset = xdr_data\n  | fields backtrace_identities\n  | arrayexpand backtrace_identities \n  | alter product = backtrace_identities -\u003e product\n  | alter product = lowercase(product)\n  | comp count() as Count by product \n  | sort desc Count",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "xdr_data"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1772560551207",
+            "title": "Detected (Reported) Alerts over 90 days",
+            "creation_time": 1772560551207,
+            "description": "This widget displays the count of XDR agent alerts from the last 30 days, categorized by alert name and the assigned prevention policy. This information helps security teams evaluate policy effectiveness and identify which threats are being detected most frequently across different policy groups.",
+            "data": {
+                "phrase": "config timeframe = 30d case_sensitive = false\n  | dataset = alerts\n  | filter alert_source = ENUM.XDR_AGENT and action = ENUM.DETECTED__REPORTED_\n  | join type = inner (dataset = endpoints | fields endpoint_id, endpoint_name, assigned_prevention_policy) as ep ep.endpoint_id = endpoint_id\n  | comp count() as events by assigned_prevention_policy, alert_name",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "30d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "alerts",
+                    "endpoints"
+                ],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}

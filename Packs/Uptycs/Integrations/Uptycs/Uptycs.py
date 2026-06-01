@@ -21,14 +21,9 @@ signal_func(SIGPIPE, SIG_DFL)
 ###############################################################################
 
 if not demisto.params().get("proxy", False) or demisto.params()["proxy"] == "false":
-    if "HTTP_PROXY" in os.environ:
-        del os.environ["HTTP_PROXY"]
-    if "HTTPS_PROXY" in os.environ:
-        del os.environ["HTTPS_PROXY"]
-    if "http_proxy" in os.environ:
-        del os.environ["http_proxy"]
-    if "https_proxy" in os.environ:
-        del os.environ["https_proxy"]
+    # Remove proxy environment variables if they exist
+    for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
+        os.environ.pop(proxy_var, None)
 
 
 """GLOBAL VARS"""

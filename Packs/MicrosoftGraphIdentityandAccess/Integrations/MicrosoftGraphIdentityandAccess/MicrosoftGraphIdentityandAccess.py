@@ -1328,7 +1328,7 @@ def detection_to_incident(detection: dict, detection_date: str, severity_overrid
 
     detection_type: str = detection.get("riskEventType", "")
     detection_detail: str = detection.get("riskDetail", "")
-    detection_upn: str = detection.get("userPrincipalName", "")
+    detection_upn: str = detection.get("userPrincipalName", "") or ""
 
     risk = sign_in_risk_mapping.get(detection_type, {})
 
@@ -1376,7 +1376,7 @@ def detections_to_incidents(
 
 
 def risky_user_to_incident(riskyuser: dict, riskyuser_date: str, severity_override: bool, overridden_issue_severity: str) -> dict:
-    riskyuser_upn: str = riskyuser.get("userPrincipalName", "")
+    riskyuser_upn: str = riskyuser.get("userPrincipalName", "") or ""
     riskyuser_risk_level: str = riskyuser.get("riskLevel", "")
     riskyuser_risk_state: str = riskyuser.get("riskState", "")
 

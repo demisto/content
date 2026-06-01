@@ -40,6 +40,8 @@ configuration:
   - gp_gateway
   - gp_portal
   - clean_pipe
+  - swg_proxy
+  - rbi
   additionalinfo: https://docs.paloaltonetworks.com/prisma/prisma-access/prisma-access-panorama-admin/prisma-access-overview/retrieve-ip-addresses-for-prisma-access
 - display: Address Type
   name: addrType

@@ -95,6 +95,14 @@
     "activityType": {
       "type": "int",
       "is_array": false
+    },
+    "activityUuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "description": {
+      "type": "string",
+      "is_array": false
     }
   }
 }
