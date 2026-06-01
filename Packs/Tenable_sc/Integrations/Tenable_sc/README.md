@@ -10,6 +10,23 @@ This integration was integrated and tested with Tenable.sc v5.7.0.
     * Create and view assets.
     * View policies, repositories, credentials, users and more system information.
     * View and real-time receiving of alerts.
+    * Ingest host/asset data and vulnerability data into Cortex XSIAM.
+
+## XSIAM Asset and Vulnerability Ingestion
+
+This integration supports ingesting host/asset data and cumulative vulnerability data into Cortex XSIAM using the **fetch-assets** command.
+
+### Assets
+
+Host/asset data is fetched from the Tenable.sc `/hosts/search` API endpoint with pagination support. The data is sent to Cortex XSIAM as asset records.
+
+### Vulnerabilities
+
+After the asset fetch phase completes, cumulative vulnerability data is fetched via the `/analysis` API endpoint with pagination support (using `sourceType=cumulative`). Vulnerability data is sent to Cortex XSIAM with product `sc_vulnerabilities`.
+
+### Configuration
+
+To configure asset and vulnerability ingestion set the **Assets fetch interval in minutes** parameter to control how often assets and vulnerabilities are fetched. The default is 720 minutes (12 hours) and the minimum allowed value is 1 hour.
 
 ## Configure Tenable.sc in Cortex
 
@@ -25,6 +42,7 @@ This integration was integrated and tested with Tenable.sc v5.7.0.
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The timestamp to start the fetch from. | False |
+| Assets fetch interval in minutes | The interval in minutes between asset fetches. Default is 720 minutes. Minimum is 720 minutes. | False |
 
 ## Commands
 
