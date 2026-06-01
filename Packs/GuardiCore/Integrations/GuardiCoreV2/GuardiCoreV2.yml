@@ -12,7 +12,7 @@ configuration:
   required: true
   defaultvalue: https://example.com/api/v3.0/
   type: 0
-  additionalinfo: The full URL of the GuardiCore server, including the API path suffix. For example, https://my-domain.cloud.guardicore.com/api/v3.0/
+  additionalinfo: The full URL of the GuardiCore server, including the API path suffix. For example, https://my-domain.cloud.guardicore.com/api/v3.0/.
   section: Connect
 - display: Username
   name: credentials
