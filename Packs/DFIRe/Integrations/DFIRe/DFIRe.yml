@@ -24,14 +24,14 @@ configuration:
   hiddenusername: true
   additionalinfo: Bearer API key (dfire_ak_...). Create under Settings > API Keys.
   section: Connect
-- name: insecure
-  display: Trust any certificate (not secure)
+- name: proxy
+  display: Use system proxy settings
   type: 8
   required: false
   advanced: true
   section: Connect
-- name: proxy
-  display: Use system proxy settings
+- name: insecure
+  display: Trust any certificate (not secure)
   type: 8
   required: false
   advanced: true
