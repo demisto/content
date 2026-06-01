@@ -10131,20 +10131,20 @@ def test_list_workflow_executions_command_filter_priority(mocker):
 
 
 class TestSynchronousCompression:
-    """Tests for gzip compression in send_data_to_xsiam_async (CIAC-16811 memory optimization)."""
+    """Tests for synchronous compression in send_data_to_xsiam_async (CIAC-16811 memory optimization)."""
 
     @pytest.mark.asyncio
-    async def test_send_data_to_xsiam_async_compresses_chunks(self, mocker):
+    async def test_send_data_to_xsiam_async_compresses_synchronously(self, mocker):
         """
-        Tests that send_data_to_xsiam_async compresses data with gzip when its async tasks run.
+        Tests that send_data_to_xsiam_async compresses data synchronously before creating async tasks.
 
         Given:
             - A list of vulnerability dicts to send to XSIAM.
         When:
-            - send_data_to_xsiam_async is called and the returned tasks are awaited.
+            - send_data_to_xsiam_async is called.
         Then:
-            - Data is compressed with gzip inside the async tasks.
-            - The compressed bytes decompress back to the original JSON data.
+            - Data is compressed synchronously (gzip.compress called during function execution, not in async task).
+            - Async tasks receive pre-compressed bytes, not raw data.
             - The returned tasks are valid asyncio tasks.
         """
         import gzip
@@ -10159,7 +10159,7 @@ class TestSynchronousCompression:
         )
         mocker.patch("CrowdStrikeFalcon.demisto.getLicenseCustomField", return_value="mock-token")
 
-        # Track gzip.compress calls to verify compression occurs in the async tasks
+        # Track gzip.compress calls to verify synchronous compression
         original_compress = gzip.compress
         compress_calls: list[bytes] = []
 
@@ -10190,13 +10190,8 @@ class TestSynchronousCompression:
             snapshot_id="snap123",
         )
 
-        # Compression happens lazily inside the async tasks — await them to trigger it
-        import asyncio
-
-        await asyncio.gather(*tasks)
-
-        # Verify compression happened when the tasks ran
-        assert len(compress_calls) > 0, "gzip.compress should have been called when tasks ran"
+        # Verify compression happened synchronously (before tasks are awaited)
+        assert len(compress_calls) > 0, "gzip.compress should have been called synchronously"
 
         # Verify compressed data is valid gzip that decompresses to the original data
         for compressed in compress_calls:
