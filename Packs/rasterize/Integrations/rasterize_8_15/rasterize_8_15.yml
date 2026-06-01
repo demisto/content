@@ -391,6 +391,3 @@ defaultEnabled: true
 tests:
 - Rasterize Test
 fromversion: 8.15.0
-marketplaces:
-- marketplacev2
-- platform
