@@ -11,7 +11,9 @@ MAX_PAGES_PER_RUN = 100  # Max pages fetched per run (1000 incidents) to avoid t
 
 class Client(BaseClient):
     def __init__(self, api_url: str, api_key: str, verify: bool, proxy: bool):
-        super().__init__(base_url=api_url, verify=verify, proxy=proxy, headers={"X-COMPANY-API-KEY": api_key, "accept": "application/json"})
+        super().__init__(
+            base_url=api_url, verify=verify, proxy=proxy, headers={"X-COMPANY-API-KEY": api_key, "accept": "application/json"}
+        )
 
     def get_incidents(self, last_incident_id=None, page=0):
         """Fetches incidents from Threatmon API using pagination and lastIncidentId filtering."""
@@ -39,7 +41,6 @@ class Client(BaseClient):
             ok_codes=(200, 400, 403, 404, 409),
             resp_type="response",
         )
-
 
 
 def convert_to_demisto_severity(severity: str) -> int:
