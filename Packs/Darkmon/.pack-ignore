@@ -2,7 +2,10 @@
 ignore=BA126,BA129
 
 [file:playbook-Darkmon_Generic_Block_Indicator.yml]
-ignore=GR107
+ignore=GR103,GR107
+
+[file:playbook-Darkmon_Generic_User_Action.yml]
+ignore=GR103
 
 [file:playbook-Darkmon_EDR_Alert_Enrichment.yml]
 ignore=PB121
