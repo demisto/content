@@ -1,19 +1,19 @@
 id: SpecterOpsBloodHoundEnterprise
-version: -1
+version: 10
 name: SpecterOpsBloodHoundEnterprise
+description: Automated playbook that enriches BloodHound Enterprise attack path incidents with object information and validates attack path existence between security principals.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 91f1d417-45ec-4aea-82ed-242c08b46898
+    taskid: 38708774-9cc2-4cbf-861e-4aa058c56765
     type: start
     task:
-      id: 91f1d417-45ec-4aea-82ed-242c08b46898
+      id: 38708774-9cc2-4cbf-861e-4aa058c56765
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a6bf4571-f72b-4659-b0cd-d76fee80d05d
+    taskid: 6c4829bf-cfbd-4f6d-8879-582b79699d5c
     type: regular
     task:
-      id: a6bf4571-f72b-4659-b0cd-d76fee80d05d
+      id: 6c4829bf-cfbd-4f6d-8879-582b79699d5c
       version: -1
       name: bloodhound-object-id-get
       description: Fetches the object ID using the object name.
@@ -73,10 +73,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: bf6b7e83-2520-4759-86b3-87d622800fa2
+    taskid: 9e967ffb-1733-4441-8c5b-9d9be442cc0e
     type: regular
     task:
-      id: bf6b7e83-2520-4759-86b3-87d622800fa2
+      id: 9e967ffb-1733-4441-8c5b-9d9be442cc0e
       version: -1
       name: closeInvestigation
       description: Closes the current incident.
@@ -84,6 +84,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -102,10 +105,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4e231c98-8283-41a3-b785-c889ac1f6c65
+    taskid: dc534344-2e3b-4db4-8fd8-9f68577604c4
     type: regular
     task:
-      id: 4e231c98-8283-41a3-b785-c889ac1f6c65
+      id: dc534344-2e3b-4db4-8fd8-9f68577604c4
       version: -1
       name: bloodhound-asset-info-get
       description: Fetches asset information using the object ID.
@@ -140,10 +143,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: fb78ab7f-fa7f-4856-a06e-a7e4e43a9e74
+    taskid: 96e05e9c-58d7-4c49-8dd5-7b53b92c07cf
     type: regular
     task:
-      id: fb78ab7f-fa7f-4856-a06e-a7e4e43a9e74
+      id: 96e05e9c-58d7-4c49-8dd5-7b53b92c07cf
       version: -1
       name: bloodhound-path-exist
       description: Checks if a path exists between the two nodes.
@@ -178,12 +181,39 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f8bb8b4e-2c2a-445a-bc6b-e0db93ffab8b
+    type: title
+    task:
+      id: f8bb8b4e-2c2a-445a-bc6b-e0db93ffab8b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 850,
+        "height": 1020,
         "width": 380,
         "x": 450,
         "y": 50
@@ -195,4 +225,3 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
-description: Automated playbook that enriches BloodHound Enterprise attack path incidents with object information and validates attack path existence between security principals.

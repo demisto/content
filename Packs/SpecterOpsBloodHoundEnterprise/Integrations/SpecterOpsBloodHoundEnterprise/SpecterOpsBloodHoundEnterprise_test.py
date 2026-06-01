@@ -220,7 +220,7 @@ class TestClient:
         assert result is not None
         assert "http" in result
         assert "https" in result
-        assert "proxy.example.com:8080" in result["http"]
+        assert result["http"] == "http://proxy.example.com:8080"
 
     def test_build_proxy_dict_with_auth(self):
         """Test _build_proxy_dict with proxy authentication"""
@@ -236,7 +236,7 @@ class TestClient:
         )
         result = client._build_proxy_dict()
         assert result is not None
-        assert "user:pass@" in result["http"]
+        assert result["http"] == "http://user:pass@proxy.example.com:8080"
 
     @patch("SpecterOpsBloodHoundEnterprise.demisto.error")
     def test_build_proxy_dict_invalid_url(self, mock_error):
@@ -456,10 +456,10 @@ class TestHelperFunctions:
             "finding2": {"title": "Finding 2"},
         }
         result = _group_attack_paths_by_domain(attack_path_details, domains, attack_paths_info)
-        assert "domain1.com" in result
-        assert "domain2.com" in result
-        assert "Finding 1" in result["domain1.com"]
-        assert "Finding 2" in result["domain1.com"]
+        assert "domain1.com" in result.keys()
+        assert "domain2.com" in result.keys()
+        assert "Finding 1" in result["domain1.com"].keys()
+        assert "Finding 2" in result["domain1.com"].keys()
 
 
 class TestDomainFunctions:
