@@ -2439,7 +2439,6 @@ def get_credentials(args: dict, params: dict) -> Credentials:
             elif service_account_info.get("project_id"):
                 args["project_id"] = service_account_info["project_id"]
 
-
         demisto.debug("[GCP get_credentials] Using service account credentials (marketplace path)")
         return creds
 

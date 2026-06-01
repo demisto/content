@@ -5,10 +5,10 @@ This integration was integrated and tested with version v1 (Compute, Storage, Co
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Service Account Private Key file content (JSON). | Required for Cortex XSOAR and Cortex XSIAM. Paste the full contents of a GCP Service Account private key JSON file. Not required on Cortex Cloud \(platform\), where authentication is handled automatically via the cloud connector. | False |
-| GCP Project ID | Required for Cortex XSOAR and Cortex XSIAM. The GCP project ID to authenticate against when testing the integration \(e.g. my-project-123\). Not required on Cortex Cloud \(platform\). | False |
-| Use system proxy settings | Use system proxy settings. | False |
-| Trust any certificate (not secure) | Trust any certificate (not secure). | False |
+| Service Account Private Key file content (JSON). | The full contents of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM. Not required on Cortex Platform, where authentication is handled automatically via the cloud connector. | False |
+| GCP Project ID | The GCP project ID to authenticate against when testing the integration \(e.g. my-project-123\). Required for Cortex XSOAR and Cortex XSIAM. Not required on Cortex Platform. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
 ## Commands
 
@@ -18,7 +18,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### gcp-compute-firewall-patch
 
 ***
-Updates the specified firewall rule with the data included in the request.
+Updates a specific firewall rule with the data included in the request. Required permissions: compute.firewalls.update, compute.firewalls.get, compute.firewalls.list, compute.networks.updatePolicy, compute.networks.list.
 
 #### Base Command
 
@@ -75,7 +75,7 @@ Updates the specified firewall rule with the data included in the request.
 ### gcp-storage-bucket-policy-delete
 
 ***
-Removes an entity from a bucket's Access Control List.
+Removes an entity from a bucket's Access Control List. Required permissions: storage.buckets.getIamPolicy, storage.buckets.setIamPolicy.
 
 #### Base Command
 
@@ -98,7 +98,7 @@ There is no context output for this command.
 ### gcp-compute-subnet-update
 
 ***
-Enables flow logs or Private Google Access on a subnet.
+Enables flow logs or Private Google Access on a subnet. Required permissions: compute.subnetworks.setPrivateIpGoogleAccess, compute.subnetworks.update, compute.subnetworks.get, compute.subnetworks.list.
 
 #### Base Command
 
@@ -133,7 +133,7 @@ Enables flow logs or Private Google Access on a subnet.
 ### gcp-container-cluster-security-update
 
 ***
-Configures security settings for GKE clusters, including access controls and visibility.
+Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
 
 #### Base Command
 
@@ -182,7 +182,7 @@ Configures security settings for GKE clusters, including access controls and vis
 ### gcp-storage-bucket-metadata-update
 
 ***
-Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings such as versioning and Uniform Bucket-Level Access (UBLA).
+Updates Google Cloud Storage (GCS) bucket metadata, including settings such as versioning and Uniform Bucket-Level Access (UBLA). Required permission: storage.buckets.update.
 
 #### Base Command
 
@@ -229,7 +229,7 @@ Updates the metadata of a Google Cloud Storage (GCS) bucket, including settings 
 ### gcp-iam-project-policy-binding-remove
 
 ***
-Removes a specified IAM role binding from a GCP project.
+Removes a specified IAM role binding from a GCP project. Required permissions: resourcemanager.projects.getIamPolicy, resourcemanager.projects.setIamPolicy.
 
 #### Base Command
 
@@ -250,7 +250,7 @@ There is no context output for this command.
 ### gcp-compute-instance-service-account-set
 
 ***
-Sets the service account for a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed.
+Sets the service account for a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed. Required permissions: compute.instances.setServiceAccount, compute.instances.get.
 
 #### Base Command
 
@@ -296,7 +296,7 @@ Sets the service account for a GCP Compute Engine VM instance. The instance must
 ### gcp-compute-instance-service-account-remove
 
 ***
-Removes the service account associated with a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed.
+Removes the service account associated with a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed. Required permissions: compute.instances.setServiceAccount, compute.instances.get.
 
 #### Base Command
 
@@ -340,7 +340,7 @@ Removes the service account associated with a GCP Compute Engine VM instance. Th
 ### gcp-compute-instance-start
 
 ***
-Starts an instance that was stopped using the instances().stop method.
+Starts an instance that was stopped using the instances().stop method. Required permission: compute.instances.start.
 
 #### Base Command
 
@@ -384,7 +384,7 @@ Starts an instance that was stopped using the instances().stop method.
 ### gcp-compute-instance-stop
 
 ***
-Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
+Stops and cleanly shuts down a running instance, allowing you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using such as persistent disks and static IP addresses will continue to be charged until they are deleted. Required permission: compute.instances.stop.
 
 #### Base Command
 
@@ -428,7 +428,7 @@ Stops a running instance, shutting it down cleanly, and allows you to restart th
 ### gcp-compute-instances-list
 
 ***
-Retrieves the list of instances in the specified zone.
+Retrieves the list of instances in the specified zone. Required permission: compute.instances.list.
 
 #### Base Command
 
@@ -500,7 +500,7 @@ Retrieves the list of instances in the specified zone.
 ### gcp-compute-instance-labels-set
 
 ***
-Sets labels on an instance.
+Sets labels on an instance. Required permission: compute.instances.setLabels.
 
 #### Base Command
 
@@ -546,7 +546,7 @@ Sets labels on an instance.
 ### gcp-compute-instance-get
 
 ***
-Returns the specified Instance resource. To get a list of available instances, make a list() request.
+Returns a specific instance resource. To get a list of available instances, make a list() request. Required permission: compute.instances.get.
 
 #### Base Command
 
@@ -631,7 +631,7 @@ Returns the specified Instance resource. To get a list of available instances, m
 ### gcp-storage-bucket-list
 
 ***
-Retrieves the list of buckets in the project associated with the client.
+Retrieves the list of buckets in the project associated with the client. Required permission: storage.buckets.list.
 
 #### Base Command
 
@@ -671,7 +671,7 @@ Retrieves information about a specific bucket. Required Permissions: storage.buc
 ### gcp-storage-bucket-get
 
 ***
-Retrieves information about a specific bucket.
+Retrieves information about a specific bucket. Required permission: storage.buckets.get.
 
 #### Base Command
 
@@ -706,7 +706,7 @@ Retrieves information about a specific bucket.
 ### gcp-storage-bucket-objects-list
 
 ***
-Retrieves the list of objects in a bucket.
+Retrieves the list of objects in a bucket. Required permission: storage.objects.list.
 
 #### Base Command
 
@@ -753,7 +753,7 @@ Retrieves the list of objects in a bucket.
 ### gcp-storage-bucket-policy-list
 
 ***
-Retrieves the IAM policy for a bucket.
+Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.getIamPolicy, storage.buckets.get.
 
 #### Base Command
 
@@ -784,7 +784,7 @@ Retrieves the IAM policy for a bucket.
 ### gcp-storage-bucket-policy-set
 
 ***
-Sets the IAM policy for a bucket.
+Sets the IAM policy for a bucket. Required permission: storage.buckets.setIamPolicy.
 
 #### Base Command
 
@@ -847,7 +847,7 @@ Sets the IAM policy for a specific object in a bucket. Required Permissions: sto
 ### gcp-storage-bucket-object-policy-list
 
 ***
-Retrieves the IAM policy for a specific object in a bucket.
+Retrieves the IAM policy for a specific object in a bucket. Required permission: storage.objects.getIamPolicy.
 
 #### Base Command
 
@@ -880,7 +880,7 @@ Retrieves the IAM policy for a specific object in a bucket.
 ### gcp-storage-bucket-object-policy-set
 
 ***
-Sets the IAM policy for a specific object in a bucket.
+Sets the IAM policy for a specific object in a bucket. Required permission: storage.objects.setIamPolicy.
 
 #### Base Command
 
@@ -935,7 +935,7 @@ Sets the IAM policy for a specific object in a bucket.
 ### gcp-compute-firewall-get
 
 ***
-Retrieves a specific firewall rule by name.
+Retrieves a specific firewall rule by name. Required permission: compute.firewalls.get.
 
 #### Base Command
 
@@ -963,7 +963,7 @@ Retrieves a specific firewall rule by name.
 ### gcp-compute-snapshots-list
 
 ***
-Lists snapshots in the specified project.
+Lists snapshots in a specific project. Required permission: compute.snapshots.list.
 
 #### Base Command
 
@@ -1009,7 +1009,7 @@ Lists snapshots in the specified project.
 ### gcp-compute-snapshot-get
 
 ***
-Retrieves details for a specific snapshot.
+Retrieves details for a specific snapshot. Required permission: compute.snapshots.get.
 
 #### Base Command
 
@@ -1052,7 +1052,7 @@ Retrieves details for a specific snapshot.
 ### gcp-compute-instances-aggregated-list-by-ip
 
 ***
-Aggregated list of instances across all zones; can be filtered by internal or external IP.
+Returns an aggregated list of instances across all zones that can be filtered by internal or external IP. Required permission: cloudasset.assets.searchAllResources.
 
 #### Base Command
 
@@ -1081,7 +1081,7 @@ Aggregated list of instances across all zones; can be filtered by internal or ex
 ### gcp-compute-network-tag-set
 
 ***
-Adds a network tag to a VM instance (merges with existing tags).
+Adds a network tag to a VM instance (merges with existing tags). Required permission: compute.instances.setTags.
 
 #### Base Command
 
@@ -1176,7 +1176,7 @@ Returns the specified image. Gets a list of available images by making a list() 
 ### gcp-compute-image-get
 
 ***
-Returns the specified image.
+Returns a specific image. Required permission: compute.images.get.
 
 #### Base Command
 
@@ -1246,7 +1246,7 @@ Returns the specified image.
 ### gcp-compute-instance-group-get
 
 ***
-Returns the specified instance group.
+Returns a specific instance group. Required permission: compute.instanceGroups.get.
 
 #### Base Command
 
@@ -1359,7 +1359,7 @@ Returns the specified Zone resource.
 ### gcp-compute-networks-list
 
 ***
-Retrieves the list of networks available to the specified project.
+Retrieves a list of networks available for the specified project. Required permission: compute.networks.list.
 
 #### Base Command
 
@@ -1401,7 +1401,7 @@ Retrieves the list of networks available to the specified project.
 ### gcp-compute-network-insert
 
 ***
-Creates a network in the specified project using the data included in the request.
+Creates a network in the specified project using the data included in the request. Required permission: compute.networks.create.
 
 #### Base Command
 
