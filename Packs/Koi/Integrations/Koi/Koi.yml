@@ -98,7 +98,7 @@ name: KOI
 script:
   commands:
   - name: koi-get-events
-    description: Gets events from KOI. This command is used for developing/debugging. Use with caution, as it can create events, leading to event duplication and exceeding API request limitations.
+    description: Gets events from KOI. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     arguments:
     - name: event_type
       description: 'The type of events to retrieve. If not specified, uses the value configured in the integration parameters.'
@@ -118,7 +118,7 @@ script:
     - name: should_push_events
       auto: PREDEFINED
       defaultValue: 'false'
-      description: If true, the command pushes events to Cortex XSIAM (supported on Cortex XSIAM only). If false, events are only displayed in the War Room.
+      description: The flag that indicates whether to push events to Cortex XSIAM. Pushing events is supported on Cortex XSIAM only. When set to false, or on non-XSIAM platforms, events are displayed without being pushed.
       predefined:
       - 'true'
       - 'false'

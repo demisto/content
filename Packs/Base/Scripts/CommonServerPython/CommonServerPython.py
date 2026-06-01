@@ -9247,6 +9247,32 @@ def is_xsiam():
 
 
 
+def resolve_should_push_events(should_push_events: bool) -> bool:
+    """Resolve the ``should_push_events`` flag based on the current platform.
+
+    If ``should_push_events`` is ``True`` but the platform is not Cortex XSIAM,
+    the value is silently overridden to ``False`` and a debug log is emitted.
+
+    Use this in ``get-events`` debug commands to gracefully degrade on
+    non-XSIAM platforms (e.g., Cortex XSOAR) instead of raising an error.
+
+    :param should_push_events: The requested push-events flag from the user.
+    :type should_push_events: ``bool``
+    :return: The resolved push-events flag (``False`` on unsupported platforms).
+    :rtype: ``bool``
+
+    Example::
+
+        should_push = argToBoolean(args.get("should_push_events", False))
+        should_push = resolve_should_push_events(should_push)
+    """
+    if should_push_events and not is_xsiam():
+        demisto.debug("[CommonServerPython] [resolve_should_push_events] "
+                      "should_push_events is not supported on this platform. Overriding to False.")
+        return False
+    return should_push_events
+
+
 def is_using_engine():
     """Determines whether or not the platform is using engine.
     NOTE:
