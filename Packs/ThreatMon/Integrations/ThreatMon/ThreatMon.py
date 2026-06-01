@@ -40,25 +40,6 @@ class Client(BaseClient):
             resp_type="response",
         )
 
-    def request_takedown(self, finding_id: int, finding: str):
-        """Submits a takedown request for a specific finding (alarm row)."""
-
-        url = f"{self.api_url}/takedown"
-        payload = {"findingId": finding_id, "finding": finding}
-        response = requests.post(url, headers=self.headers, json=payload)
-
-        if response.status_code == 200:
-            return {"message": "Takedown request submitted successfully"}
-        elif response.status_code == 404:
-            raise Exception(f"Finding not found: findingId={finding_id}")
-        elif response.status_code == 409:
-            raise Exception(f"A takedown request already exists for findingId={finding_id}")
-        elif response.status_code == 403:
-            raise Exception("Takedown quota exceeded. Please contact ThreatMon.")
-        elif response.status_code == 400:
-            raise Exception("This finding is not eligible for a takedown request.")
-        else:
-            raise Exception(f"API Error: {response.status_code} - {response.text}")
 
 
 def convert_to_demisto_severity(severity: str) -> int:
