@@ -248,7 +248,7 @@ def test_storage_account_update_command(mocker, client, mock_params):
     result = storage_account_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.StorageAccount"
+    assert result.outputs_prefix == "Azure.Storage.StorageAccounts"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "teststorage"
     assert result.outputs["properties"]["supportsHttpsTrafficOnly"] is True
@@ -270,6 +270,7 @@ def test_storage_blob_service_properties_set_command(mocker, client, mock_params
     }
 
     mocker.patch.object(client, "storage_blob_service_properties_set_request", return_value=properties_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-properties-set")
 
     # Call the function
     args = {"account_name": "teststorage", "delete_rentention_policy_enabled": "true", "delete_rentention_policy_days": "7"}
@@ -318,7 +319,7 @@ def test_create_policy_assignment_command(mocker, client, mock_params):
     result = create_policy_assignment_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.PolicyAssignment"
+    assert result.outputs_prefix == "Azure.Policy.PolicyAssignments"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-policy"
     assert result.outputs["properties"]["displayName"] == "Test Policy"
@@ -492,7 +493,7 @@ def test_monitor_log_profile_update_command(mocker, client, mock_params):
     result = monitor_log_profile_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.LogProfile"
+    assert result.outputs_prefix == "Azure.Monitor.LogProfiles"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-profile"
     assert result.outputs["location"] == "westus"
@@ -1026,6 +1027,7 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     }
 
     mocker.patch.object(client, "storage_blob_service_properties_set_request", return_value=properties_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-property-set")
 
     # Call the function with minimal args
     args = {"account_name": "teststorage"}
@@ -1033,7 +1035,7 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     result = storage_blob_service_properties_set_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.StorageAccountBlobServiceProperties"
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "default"
 
@@ -3064,6 +3066,7 @@ def test_storage_blob_service_properties_get_command(mocker):
 
     mock_client = mocker.Mock()
     mock_client.storage_blob_service_properties_get_request.return_value = mock_response
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-properties-get")
 
     params = {"subscription_id": "subid", "resource_group_name": "rg1"}
     args = {"account_name": "teststorage"}
@@ -3285,11 +3288,11 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
         "Etag": "0x8DB7F5589F2DC4A",
         "Last-Modified": "Wed, 14 Aug 2024 10:00:00 GMT",
         "Date": "Wed, 14 Aug 2024 10:05:00 GMT",
-        "x-ms-request-id": "req-id-12345",
-        "x-ms-lease-status": "unlocked",
-        "x-ms-lease-state": "available",
-        "x-ms-has-immutability-policy": "false",
-        "x-ms-has-legal-hold": "false",
+        "X-Ms-Request-Id": "req-id-12345",
+        "X-Ms-Lease-Status": "unlocked",
+        "X-Ms-Lease-State": "available",
+        "X-Ms-Has-Immutability-Policy": "false",
+        "X-Ms-Has-Legal-Hold": "false",
     }
     mock_response.headers = CaseInsensitiveDict(raw_response_data)
 
@@ -3302,8 +3305,8 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
     # Verify client.get_storage_container_properties_request was called with correct parameters
     client.get_storage_container_properties_request.assert_called_once_with("testaccount", "testcontainer")
 
-    assert result.outputs_prefix == "Azure.StorageContainer"
-    assert result.outputs_key_field == "name"
+    assert result.outputs_prefix == "Azure.Storage.Container"
+    assert result.outputs_key_field == "ContainerName"
 
 
 def test_storage_container_create_command(mocker, client, mock_params):
@@ -5042,6 +5045,63 @@ def test_nsg_security_rules_list_command_missing_properties(mocker):
     assert len(result.outputs) == 2
 
 
+def test_storage_blob_service_properties_set_command_new(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to set blob service properties.
+    When: The storage_blob_service_properties_set_command function is called with valid parameters with
+        azure-storage-blob-service-property-set.
+    Then: The function should return the updated blob service properties in the expected format,
+        including backward compatibility outputs.
+    """
+    from Azure import storage_blob_service_properties_set_command
+
+    # Prepare mock response
+    properties_response = {
+        "name": "default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices"
+        "/default",
+        "properties": {"deleteRetentionPolicy": {"enabled": True, "days": 7}},
+    }
+
+    mocker.patch.object(client, "storage_blob_service_properties_set_request", return_value=properties_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-property-set")
+
+    # Call the function
+    args = {"account_name": "teststorage", "delete_rentention_policy_enabled": "true", "delete_rentention_policy_days": "7"}
+
+    result = storage_blob_service_properties_set_command(client, mock_params, args)
+
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == properties_response
+    assert result.raw_response == properties_response
+
+
+def test_storage_blob_service_properties_get_command_new(mocker):
+    """
+    Given: An Azure client mock and the get_blob_service_properties.json file.
+    When: storage_blob_service_properties_get_command is called with azure-storage-blob-service-property-get.
+    Then: The CommandResults should have correct outputs, readable_output, and metadata, including backward compatibility outputs.
+    """
+    from Azure import storage_blob_service_properties_get_command
+
+    mock_response = util_load_json("test_data/get_blob_service_properties.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_service_properties_get_request.return_value = mock_response
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-property-get")
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"account_name": "teststorage"}
+
+    result = storage_blob_service_properties_get_command(mock_client, params, args)
+
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+
 def test_create_network_security_group(mocker, client):
     """
     Given: An Azure client and a request to create a network security group.
@@ -5364,7 +5424,7 @@ def test_network_interface_update_command_success(mocker):
         "resource_group_name": "rg1",
         "network_interface_name": "test-nic",
         "enable_ip_forwarding": "true",
-        "accelerate_networking": "true",
+        "enable_accelerate_networking": "true",
         "internal_dns_name_label": "test-label",
         "dns_servers": "1.1.1.1",
     }
@@ -5396,7 +5456,7 @@ def test_network_interface_update_command_success(mocker):
             "location": "eastus",
             "properties": {
                 "enableIPForwarding": True,
-                "enableAcceleratedNetworking": False,
+                "enableAcceleratedNetworking": True,
                 "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
             },
         },
