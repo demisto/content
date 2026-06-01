@@ -623,8 +623,7 @@ def fetch_events(
 
         is_saturated = result.events_emitted >= max_events_per_fetch_per_type
         saturation_details.append(
-            f"{result.log_type_ui}={result.events_emitted}/{max_events_per_fetch_per_type}"
-            f"{'(SAT)' if is_saturated else ''}"
+            f"{result.log_type_ui}={result.events_emitted}/{max_events_per_fetch_per_type}" f"{'(SAT)' if is_saturated else ''}"
         )
         if is_saturated:
             any_saturated = True
@@ -843,7 +842,7 @@ def long_running_execution_command(
     while True:
         iteration += 1
         cycle_start = time.monotonic()
-        page_queue: "queue.Queue[Any]" = queue.Queue(maxsize=LONG_RUNNING_PAGE_QUEUE_MAXSIZE)
+        page_queue: queue.Queue[Any] = queue.Queue(maxsize=LONG_RUNNING_PAGE_QUEUE_MAXSIZE)
         consumer_stats: dict[str, Any] = {"pages_sent": 0, "events_sent": 0, "error": None}
         consumer = threading.Thread(
             target=_xsiam_consumer_loop,
