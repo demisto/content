@@ -17,7 +17,7 @@ This integration enforces AWS security best practices across your cloud environm
 
 ## Multi-Account Support
 
-When **Role name for cross-organization account access** and **AWS organization accounts** are both configured, commands are executed in parallel across every listed account. Each account result is tagged with its `AccountId`. Per-account failures do not abort the batch. This feature was previously available only in the legacy **AWS-EC2** integration and is now available for all AWS services in this unified integration.
+When **Role name for cross-organization account access** and **AWS organization accounts** are both configured, commands are executed in parallel across every listed account. Each account result is tagged with its `AccountId`. Per-account failures do not abort the batch.
 
 ## Configuration (Cortex XSOAR / Cortex XSIAM)
 
