@@ -41,24 +41,35 @@ args:
   description: Email addresses to fan out per VIP fetch.
 - name: domains
   isArray: true
+  description: Optional list of customer domains to filter domain-based matches.
 - name: brands_list
+  description: Name of the XSOAR List containing brand names for NRD brand-watch matching.
 - name: max_distance
   defaultValue: "2"
+  description: Maximum Levenshtein distance allowed when matching NRD domains against brand names.
 - name: min_cvss
   defaultValue: "9.0"
+  description: Minimum CVSS score threshold; CVEs below this value are excluded.
 - name: tech_stack_list
+  description: Name of the XSOAR List containing tech-stack tags used to filter CVEs by relevance.
 outputs:
 - contextPath: NewAccounts
+  description: Newly discovered account records that have not been previously actioned.
   type: unknown
 - contextPath: CreatedIncidents
+  description: Incidents created during this execution run.
   type: unknown
 - contextPath: Count
+  description: Total count of new items processed.
   type: number
 - contextPath: Typosquats
+  description: NRD domains identified as potential typosquats of monitored brand names.
   type: unknown
 - contextPath: FilteredCVEs
+  description: CVEs that passed the CVSS and tech-stack filters.
   type: unknown
 - contextPath: VIPCreated
+  description: Number of VIP-related incidents created during this execution.
   type: number
 scripttarget: 0
 runonce: false

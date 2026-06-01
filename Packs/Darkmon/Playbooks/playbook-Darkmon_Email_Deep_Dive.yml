@@ -19,6 +19,7 @@ tasks:
       id: 50d311bd-b753-4029-8d44-c857bdca6289
       version: -1
       name: ""
+      description: ""
       type: start
       iscommand: false
       brand: ""
@@ -42,6 +43,7 @@ tasks:
       id: 8c41331d-a866-450a-ac99-89e915250cb0
       version: -1
       name: "Is the email under board protection?"
+      description: "Checks whether the email address is currently under board-leak protection monitoring."
       script: "Darkmon|||dmontip-get-boardprotection"
       type: regular
       iscommand: true
@@ -71,6 +73,7 @@ tasks:
       id: f1faa4aa-c8cb-44e3-8115-f56abcb78164
       version: -1
       name: "Board-leak accounts for this email"
+      description: "Retrieves leaked account records associated with the board-protected email."
       script: "Darkmon|||dmontip-get-boardemails"
       type: regular
       iscommand: true
@@ -102,6 +105,7 @@ tasks:
       id: 608f841a-c5e0-421a-a124-dc7c1f68a7d8
       version: -1
       name: "Board-leak combo lists"
+      description: "Retrieves combo list records associated with the board-protected email."
       script: "Darkmon|||dmontip-get-boardemails"
       type: regular
       iscommand: true
@@ -133,6 +137,7 @@ tasks:
       id: 6c2bd0b9-4806-4d41-9d48-8dea44162bcf
       version: -1
       name: "Board-leak public breaches"
+      description: "Retrieves public breach records associated with the board-protected email."
       script: "Darkmon|||dmontip-get-boardemails"
       type: regular
       iscommand: true
@@ -164,6 +169,7 @@ tasks:
       id: 7aab48b4-4a8b-4f53-9dad-bf2e6487a102
       version: -1
       name: "Global search for the email"
+      description: "Performs a global search across the Darkmon platform for the email address."
       script: "Darkmon|||dmontip-global-search"
       type: regular
       iscommand: true
@@ -195,6 +201,7 @@ tasks:
       id: 7fa7df32-96fa-4f7c-8df8-c1690f8b9fde
       version: -1
       name: "Summarize into War Room"
+      description: "Prints a summary of all Darkmon findings for the email into the War Room."
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -222,6 +229,7 @@ tasks:
       id: ef00f256-1a2b-4c50-952e-60f4cbc32422
       version: -1
       name: "Done"
+      description: ""
       type: title
       iscommand: false
       brand: ""

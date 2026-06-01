@@ -2,6 +2,9 @@ commonfields:
   id: Darkmon
   version: -1
 name: Darkmon
+sectionorder:
+- Connect
+- Collect
 display: Darkmon
 category: Data Enrichment & Threat Intelligence
 description: |-
@@ -16,24 +19,30 @@ configuration:
   additionalinfo: Override the Darkmon TIP API base URL. Leave blank to use the default
     development environment, or set to your production endpoint (e.g.
     https://api.darkmon.com/tip/2025.1).
+  section: Connect
 - display: Fetch indicators
   name: feed
+  defaultvalue: 'true'
   type: 8
   required: false
+  section: Collect
 - display: ""
   displaypassword: API key
   name: X-API-KEY
   type: 9
   required: true
   hiddenusername: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: feedInstanceReputationNotSet
@@ -45,6 +54,7 @@ configuration:
   - Suspicious
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation
+  section: Collect
 - display: Source Reliability
   name: feedReliability
   defaultvalue: F - Reliability cannot be judged
@@ -58,6 +68,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
+  section: Collect
 - display: ''
   name: feedExpirationPolicy
   defaultvalue: indicatorType
@@ -68,21 +79,25 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  section: Collect
 - display: ''
   name: feedExpirationInterval
   defaultvalue: '20160'
   type: 1
   required: false
+  section: Collect
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: '240'
   type: 19
   required: false
+  section: Collect
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  section: Collect
 - display: Traffic Light Protocol Color
   name: tlp_color
   type: 15
@@ -92,18 +107,21 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  additionalinfo: Applies the selected TLP marking to all fetched indicators.
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  section: Collect
 - display: Tags
   name: feedTags
   type: 0
   required: false
-  additionalinfo: Comma-separated tags to apply to every fetched indicator.
+  additionalinfo: Supports CSV values.
+  section: Collect
 - display: Indicator fetch limit
   name: limit
   defaultvalue: '1000'
   type: 0
   required: false
   additionalinfo: Maximum number of indicators to fetch per cycle.
+  section: Collect
 - display: Redact secrets in War Room output
   name: redact_secrets
   defaultvalue: 'true'
@@ -112,6 +130,7 @@ configuration:
   additionalinfo: When enabled, replaces password/card-number values in markdown
     table output with '***'. Raw values remain in rawJSON for playbook automation.
     Disable only in non-production debugging contexts.
+  section: Connect
 - display: Employee compromise disable mode
   name: employee_disable_mode
   defaultvalue: notify-only
@@ -128,6 +147,7 @@ configuration:
     disable.  auto-disable: disables the account immediately. Accounts in the
     "Darkmon - Auto-Disable Allowlist" list are NEVER auto-disabled regardless
     of mode.'
+  section: Collect
 script:
   script: ''
   type: python
@@ -198,16 +218,16 @@ script:
       description: Search results for the IP indicator.
       type: Unknown
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type (ip, url, domain, file, email).
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor reporting the score (Darkmon).
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The reputation score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad).
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
       description: Source reliability per the Admiralty code.
@@ -237,16 +257,16 @@ script:
       description: Search results for the URL indicator.
       type: Unknown
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type (ip, url, domain, file, email).
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor reporting the score (Darkmon).
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The reputation score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad).
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
       description: Source reliability per the Admiralty code.
@@ -275,16 +295,16 @@ script:
       description: Search results for the domain indicator.
       type: Unknown
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type (ip, url, domain, file, email).
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor reporting the score (Darkmon).
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The reputation score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad).
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
       description: Source reliability per the Admiralty code.
@@ -313,16 +333,16 @@ script:
       description: Search results for the email indicator.
       type: Unknown
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type (ip, url, domain, file, email).
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor reporting the score (Darkmon).
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The reputation score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad).
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
       description: Source reliability per the Admiralty code.
@@ -351,16 +371,16 @@ script:
       description: Search results for the file-hash indicator.
       type: Unknown
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type (ip, url, domain, file, email).
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor reporting the score (Darkmon).
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The reputation score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad).
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
       description: Source reliability per the Admiralty code.

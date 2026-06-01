@@ -1,5 +1,4 @@
 {
-    "TypeName": "Darkmon Compromised Employee",
     "definitionId": "",
     "version": -1,
     "fromVersion": "6.5.0",
@@ -7,7 +6,6 @@
     "id": "Darkmon Compromised Employee",
     "group": "incident",
     "description": "Layout for Darkmon Compromised Employee incidents.",
-    "detached": false,
     "system": false,
     "marketplaces": [
         "xsoar",

@@ -6,6 +6,11 @@
     "type": "plain_text",
     "data": "",
     "fromVersion": "6.5.0",
+    "itemVersion": "",
+    "locked": false,
+    "nameLocked": false,
+    "packID": "Darkmon",
+    "system": false,
     "marketplaces": [
         "xsoar",
         "marketplacev2"
