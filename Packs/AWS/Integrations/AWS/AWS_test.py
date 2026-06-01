@@ -18316,3 +18316,142 @@ def test_update_firewall_policy_command_api_error(mocker):
         NetworkFirewall.update_firewall_policy_command(mock_client, args)
 
     mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_update_firewall_policy_change_protection_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall policy name and change protection flag.
+    When: update_firewall_policy_change_protection_command is called successfully.
+    Then: It should return CommandResults with the updated firewall policy details.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.update_firewall_policy_change_protection.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "FirewallPolicyChangeProtection": True,
+        "UpdateToken": "token-123",
+    }
+
+    args = {"firewall_name": "test-policy", "firewall_policy_change_protection": "true"}
+
+    result = NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The change protection flag of the firewall policy was updated successfully." in result.readable_output
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewall"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-policy"
+    assert result.outputs["FirewallPolicyChangeProtection"] is True
+    mock_client.update_firewall_policy_change_protection.assert_called_once_with(
+        FirewallName="test-policy", FirewallPolicyChangeProtection=True
+    )
+
+
+def test_update_firewall_policy_change_protection_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall policy ARN and change protection flag.
+    When: update_firewall_policy_change_protection_command is called successfully.
+    Then: It should return CommandResults and call the API with the firewall policy ARN.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.update_firewall_policy_change_protection.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "FirewallPolicyChangeProtection": False,
+        "UpdateToken": "token-123",
+    }
+
+    args = {
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "firewall_policy_change_protection": "false",
+    }
+
+    result = NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    mock_client.update_firewall_policy_change_protection.assert_called_once_with(
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        FirewallPolicyChangeProtection=False,
+    )
+
+
+def test_update_firewall_policy_change_protection_command_with_update_token(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall policy name, change protection flag, and update token.
+    When: update_firewall_policy_change_protection_command is called successfully.
+    Then: It should return CommandResults and call the API including the update token.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.update_firewall_policy_change_protection.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "FirewallPolicyChangeProtection": True,
+        "UpdateToken": "token-456",
+    }
+
+    args = {
+        "firewall_name": "test-policy",
+        "firewall_policy_change_protection": "true",
+        "update_token": "token-123",
+    }
+
+    result = NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    mock_client.update_firewall_policy_change_protection.assert_called_once_with(
+        UpdateToken="token-123", FirewallName="test-policy", FirewallChangeProtection=True
+    )
+
+
+def test_update_firewall_policy_change_protection_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no firewall policy identifier arguments.
+    When: update_firewall_policy_change_protection_command is called without firewall_policy_name or firewall_policy_arn.
+    Then: It should raise a DemistoException asking for at least one identifier argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"firewall_policy_change_protection": "true"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+        NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
+
+
+def test_update_firewall_policy_change_protection_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: update_firewall_policy_change_protection_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.update_firewall_policy_change_protection.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {
+        "firewall_policy_name": "test-policy",
+        "firewall_policy_change_protection": "true",
+        "account_id": "123456789012",
+    }
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")

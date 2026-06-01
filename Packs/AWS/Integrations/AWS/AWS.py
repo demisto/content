@@ -10325,6 +10325,45 @@ class NetworkFirewall:
             raw_response=response,
         )
 
+    @staticmethod
+    def update_firewall_policy_change_protection_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the flag, ChangeProtection, which indicates whether it is possible to change the firewall policy.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_policy_name or firewall_policy_arn, and
+                firewall_policy_change_protection
+
+        Returns:
+            CommandResults: Formatted results with firewall policy information
+        """
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "FirewallPolicyChangeProtection": arg_to_bool_or_none(args.get("firewall_policy_change_protection")),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        validate_network_firewall_identifier(kwargs, "Firewall")
+
+        print_debug_logs(client, f"Updating firewall policy change protection with parameters: {kwargs}")
+        response = client.update_firewall_policy_change_protection(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        outputs = copy.deepcopy(response)
+        outputs.pop("ResponseMetadata", None)
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=outputs,
+            readable_output="The change protection flag of the firewall was updated successfully.",
+            raw_response=response,
+        )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -10545,6 +10584,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-policy-associate": NetworkFirewall.associate_firewall_policy_command,
     "aws-network-firewall-firewall-policy-delete": NetworkFirewall.delete_firewall_policy_command,
     "aws-network-firewall-firewall-policy-update": NetworkFirewall.update_firewall_policy_command,
+    "aws-network-firewall-firewall-policy-change-protection-update": NetworkFirewall.update_firewall_policy_change_protection_command,  # noqa: E501
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10735,6 +10775,7 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:UpdateFirewallPolicy",
     "network-firewall:DeleteFirewallPolicy",
     "network-firewall:AssociateFirewallPolicy",
+    "network-firewall:UpdateFirewallPolicyChangeProtection",
 ]
 
 COMMAND_SERVICE_MAP = {
