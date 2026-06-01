@@ -1,3 +1,4 @@
+import html as html_module
 import json
 import random
 import re
@@ -8,6 +9,76 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ERROR_TEMPLATE = "ERROR: PreprocessEmail - {function_name}: {reason}"
+
+ALLOWED_EMAIL_TAGS = {
+    "p",
+    "br",
+    "div",
+    "span",
+    "b",
+    "i",
+    "u",
+    "a",
+    "img",
+    "table",
+    "tr",
+    "td",
+    "th",
+    "thead",
+    "tbody",
+    "ul",
+    "ol",
+    "li",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "pre",
+    "code",
+    "blockquote",
+    "strong",
+    "em",
+    "hr",
+    "font",
+    "center",
+    "small",
+    "big",
+    "sub",
+    "sup",
+    "dl",
+    "dt",
+    "dd",
+    "caption",
+}
+
+ALLOWED_EMAIL_ATTRIBUTES: dict[str, set[str]] = {
+    "*": {"style", "class", "id", "dir", "align", "width", "height", "bgcolor", "valign"},
+    "a": {"href", "target"},
+    "img": {"src", "alt", "title"},
+    "td": {"colspan", "rowspan"},
+    "th": {"colspan", "rowspan", "scope"},
+    "font": {"color", "face", "size"},
+    "table": {"border", "cellpadding", "cellspacing"},
+}
+
+
+def sanitize_html_body(html_body: str) -> str:
+    """Sanitize email body HTML using an allowlist of tags and attributes.
+
+    When nh3 is available, strips disallowed tags and attributes while preserving safe ones.
+    When nh3 is not available, returns the HTML as-is since full escaping
+    would break legitimate formatting in an HTML rendering context.
+    """
+    try:
+        import nh3
+
+        return nh3.clean(html_body, tags=ALLOWED_EMAIL_TAGS, attributes=ALLOWED_EMAIL_ATTRIBUTES)  # pylint: disable=no-member
+    except ImportError:
+        demisto.debug("nh3 is not available; HTML sanitization skipped")
+        return html_body
+
 
 # List of strings that mail clients use to separate new message content from previous thread messages when replying
 QUOTE_MARKERS = [
@@ -79,13 +150,15 @@ def create_email_html(email_html="", entry_id_list=[]):
         saas_xsoar_xsiam_prefix = "xsoar/" if is_xsiam_or_xsoar_saas() else ""
         if "-attachmentName-" in image_name:
             content_id = image_name.split("-attachmentName-", 1)[0]
-        if re.search(rf'(src="cid:{content_id}")', email_html):
+        escaped_image_name = re.escape(image_name)
+        escaped_content_id = re.escape(content_id)
+        if re.search(rf'(src="cid:{escaped_content_id}")', email_html):
             email_html = re.sub(
-                f'src="cid:{content_id}"', f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}", email_html
+                f'src="cid:{escaped_content_id}"', f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}", email_html
             )
-        elif re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
+        elif re.search(f'src="[^>]+"(?=[^>]+alt="{escaped_image_name}")', email_html):
             email_html = re.sub(
-                f'src="[^>]+"(?=[^>]+alt="{image_name}")',
+                f'src="[^>]+"(?=[^>]+alt="{escaped_image_name}")',
                 f"src={saas_xsoar_xsiam_prefix}entry/download/{image_entry_id}",
                 email_html,
             )
@@ -164,16 +237,16 @@ def set_email_reply(email_from, email_to, email_cc, html_body, attachments):
 
     """
     email_reply = f"""
-    From: *{email_from}*
-    To: *{email_to}*
-    CC: *{email_cc}*
+    From: *{html_module.escape(email_from or '')}*
+    To: *{html_module.escape(email_to or '')}*
+    CC: *{html_module.escape(email_cc or '')}*
 
     """
     if attachments:
-        attachment_names = [attachment.get("name", "") for attachment in attachments]
+        attachment_names = [html_module.escape(attachment.get("name") or "") for attachment in attachments]
         email_reply += f"Attachments: {attachment_names}\n\n"
 
-    email_reply += f"{html_body}\n"
+    email_reply += f"{sanitize_html_body(html_body or '')}\n"
 
     return email_reply
 

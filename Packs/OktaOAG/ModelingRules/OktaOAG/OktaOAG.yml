@@ -5,3 +5,5 @@ toversion: 6.9.9
 tags: Okta Access Gateway
 rules: ''
 schema: ''
+supportedModules:
+- xsiam

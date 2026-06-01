@@ -265,7 +265,7 @@ script:
       description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
 
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.8319994
   isfetch: true
   runonce: false
   script: '-'

@@ -691,7 +691,9 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         """
         # Use a separate client for token refresh to avoid recursion/deadlocks
         # and to not share state with the main client
-        async with httpx.AsyncClient(verify=client._verify, timeout=httpx.Timeout(self.token_timeout)) as token_client:
+        async with httpx.AsyncClient(
+            verify=client._verify, timeout=httpx.Timeout(self.token_timeout), follow_redirects=True
+        ) as token_client:
             data = {
                 "grant_type": "client_credentials",
                 "client_id": self.client_id,
@@ -1450,6 +1452,7 @@ class ContentClient:
                         headers={"User-Agent": DEFAULT_USER_AGENT},
                         verify=self._verify,
                         http2=True,
+                        follow_redirects=True,
                     )
             except ImportError:
                 self._http2_available = False
@@ -1462,6 +1465,7 @@ class ContentClient:
                     headers={"User-Agent": DEFAULT_USER_AGENT},
                     verify=self._verify,
                     http2=False,
+                    follow_redirects=True,
                 )
 
             self._local_storage.client_event_loop = current_loop

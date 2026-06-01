@@ -558,3 +558,12 @@ SMTP
 # GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
 [file:silent-playbook-New_Administrative_Behavior.yml]
 ignore=GR109
+
+[file:silent-Trigger_-_Uncommon_execution_of_ODBCconf_Test.json]
+ignore=TR101
+
+[file:silent-Trigger_-_Suspicious_process_execution_by_scheduled_task_on_a_sensitive_server_Test.json]
+ignore=TR101
+
+[file:silent-Trigger_-_Remote_WMI_Process_Execution_Test.json]
+ignore=TR101

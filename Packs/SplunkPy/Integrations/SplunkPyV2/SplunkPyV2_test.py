@@ -9,6 +9,7 @@ from CommonServerPython import *
 from pytest_mock import MockerFixture
 from splunklib import client, results
 from splunklib.binding import AuthenticationError, HTTPError
+from datetime import UTC
 
 RETURN_ERROR_TARGET = "SplunkPyV2.return_error"
 
@@ -323,6 +324,28 @@ class Jobs:
         return job
 
 
+class _MagicKVStore:
+    """Minimal stand-in for ``service.kvstore`` used by tests.
+
+    The production code reaches the KV-store via ``service.kvstore["mc_notes"].data.query(query=...)``
+    (see :func:`SplunkPyV2.enrich_with_splunk_notes_v2`). The test ``Service`` mock historically did
+    not expose ``kvstore``, which made the v2 helper raise an ``AttributeError`` and spill a
+    ``demisto.error(...)`` line into stdout — flagged by the strict autouse ``check_std_out_err``
+    fixture in :mod:`conftest`.
+
+    This stand-in returns a benign empty result for any collection access so the helper short-circuits
+    via the "no notes found" branch without touching real Splunk infrastructure.
+    Tests that need to assert specific KV-store behavior can still override ``service.kvstore`` (or
+    the higher-level helper) with their own mock — this default is only the safety net.
+    """
+
+    def __getitem__(self, _name):  # ``service.kvstore["mc_notes"]``
+        return MagicMock(data=MagicMock(query=MagicMock(return_value=[])))
+
+    def __contains__(self, _name):  # ``"mc_notes" in service.kvstore``
+        return True
+
+
 class Service:
     def __init__(self, status):
         self.jobs = Jobs(status, self)
@@ -330,6 +353,8 @@ class Service:
         self.disable_v2_api = False
         self.namespace = {"app": "test", "owner": "test", "sharing": "global"}
         self._abspath = lambda x, **kwargs: x
+        # See :class:`_MagicKVStore` docstring for rationale.
+        self.kvstore = _MagicKVStore()
 
     def get(self, path_segment, owner=None, app=None, headers=None, sharing=None, **query):
         return {"status": "200", "body": "test", "headers": {"content-type": "application/json"}, "reason": "OK"}
@@ -682,6 +707,8 @@ class TestFetchRemovingIrrelevantIncidents:
     class Service:
         def __init__(self):
             self.jobs = TestFetchForLateIndexedEvents.Jobs()
+            # Stand-in for service.kvstore — see _MagicKVStore docstring at module top.
+            self.kvstore = _MagicKVStore()
 
     def test_remove_irrelevant_fetched_incident_ids(self, mocker: MockerFixture):
         """
@@ -735,6 +762,8 @@ class TestFetchForLateIndexedEvents:
     class Service:
         def __init__(self):
             self.jobs = TestFetchForLateIndexedEvents.Jobs()
+            # Stand-in for service.kvstore — see _MagicKVStore docstring at module top.
+            self.kvstore = _MagicKVStore()
 
     # If late_indexed_pagination is True, then we exclude the last fetched ids (check by using fetch query),
     # and kwargs_oneshot['offset'] == 0
@@ -1089,6 +1118,68 @@ def test_reset_enriching_fetch_mechanism(mocker):
     set_mocker = mocker.patch("SplunkPyV2.set_integration_context")
     splunk.reset_enriching_fetch_mechanism()
     assert set_mocker.call_args[0][0] == {}
+
+
+def test_given_enrichment_enabled_when_fetch_then_dedup_ids_persisted_in_final_setLastRun(mocker):
+    """
+    Regression test for the dedup-IDs-lost-when-enrichment-enabled bug.
+
+    Given:
+        - Enrichments are enabled (so the FindingsFetchHandler routes through
+          ``run_enrichment_mechanism`` instead of the plain ``fetch_findings``
+          path).
+        - ``run_enrichment_mechanism`` is stubbed to return a non-empty
+          ``last_run_delta`` containing the dedup keys
+          (``next_run_found_incidents_ids``, ``next_run_earliest_time``).
+
+    When:
+        - The dispatcher ``fetch_incidents`` runs one cycle.
+
+    Then:
+        - The final ``demisto.setLastRun`` (the dispatcher's single emit at the
+          end of the cycle) must carry the dedup IDs and time cursor produced
+          by the enrichment mechanism.
+
+        Previously, the dispatcher snapshotted ``demisto.getLastRun()`` BEFORE
+        invoking the handler and then re-wrote that stale snapshot at the end
+        of the cycle, wiping out any inner ``setLastRun`` performed by
+        ``run_enrichment_mechanism``. The fix lets the enrichment path return
+        its delta through ``FetchResult.last_run_delta`` so the dispatcher
+        merges and persists it in the final emit.
+    """
+    # GIVEN — enrichment enabled and stable last-run/params plumbing.
+    mocker.patch.object(splunk, "ENABLED_ENRICHMENTS", new=[splunk.DRILLDOWN_ENRICHMENT])
+    mocker.patch.object(demisto, "getLastRun", return_value={"next_run_earliest_time": "2018-10-24T14:13:20.000+00:00"})
+    mocker.patch.object(demisto, "params", return_value={"fetch_event_types": "Finding"})
+    mocker.patch.object(demisto, "incidents")
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(splunk, "get_integration_context", return_value={})
+
+    # The enrichment helper returns (incidents, last_run_delta). We surface a
+    # delta with the dedup keys we expect to see at the end of the cycle.
+    expected_dedup_ids = {"event-id-1": {"occurred_time": "2018-10-24T14:23:20.000+00:00"}}
+    expected_delta = {
+        "next_run_earliest_time": "2018-10-24T14:23:20.000+00:00",
+        "next_run_latest_time": None,
+        "offset": 0,
+        "next_run_found_incidents_ids": expected_dedup_ids,
+        splunk.DUMMY: splunk.DUMMY,
+    }
+    mocker.patch.object(splunk, "run_enrichment_mechanism", return_value=([], expected_delta))
+
+    # WHEN — dispatcher runs one cycle.
+    service = mocker.MagicMock()
+    mapper = splunk.UserMappingObject(service, False)
+    splunk.fetch_incidents(service, mapper=mapper)
+
+    # THEN — the final setLastRun must carry the dedup keys returned by the
+    # enrichment mechanism (i.e. the dispatcher merged them in, not overwrote them).
+    assert set_last_run_mock.call_count == 1
+    final_last_run = set_last_run_mock.call_args[0][0]
+    assert final_last_run["next_run_found_incidents_ids"] == expected_dedup_ids
+    assert final_last_run["next_run_earliest_time"] == "2018-10-24T14:23:20.000+00:00"
+    assert final_last_run["offset"] == 0
+    assert final_last_run.get(splunk.DUMMY) == splunk.DUMMY
 
 
 @pytest.mark.parametrize(
@@ -2117,7 +2208,7 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, finding_data, debug_l
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Finding event was closed on Splunk with status "Closed".',
+                    "closeReason": 'Splunk event was closed on Splunk with status "Closed".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
@@ -2163,7 +2254,7 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, finding_data, debug_l
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Finding event was closed on Splunk with status "Custom".',
+                    "closeReason": 'Splunk event was closed on Splunk with status "Custom".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
@@ -2209,7 +2300,7 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, finding_data, debug_l
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Finding event was closed on Splunk with status "Custom".',
+                    "closeReason": 'Splunk event was closed on Splunk with status "Custom".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
@@ -2256,7 +2347,7 @@ def test_drilldown_enrichment_no_enrichement_cases(mocker, finding_data, debug_l
                 "Type": EntryType.NOTE,
                 "Contents": {
                     "dbotIncidentClose": True,
-                    "closeReason": 'Finding event was closed on Splunk with status "Custom".',
+                    "closeReason": 'Splunk event was closed on Splunk with status "Custom".',
                 },
                 "ContentsFormat": EntryFormat.JSON,
             },
@@ -2274,6 +2365,8 @@ def test_get_modified_remote_data_command_close_incident(
     class Service:
         def __init__(self):
             self.jobs = Jobs()
+            # Stand-in for service.kvstore — see _MagicKVStore docstring at module top.
+            self.kvstore = _MagicKVStore()
 
     expected_entries = {"EntryContext": {"mirrorRemoteId": "id"}, "Type": EntryType.NOTE, "ContentsFormat": EntryFormat.JSON}
     args = {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"}
@@ -2345,6 +2438,9 @@ def test_fetch_with_error_in_message(mocker):
     mocker.patch("demistomock.getLastRun", return_value={"time": "2018-10-24T14:13:20"})
     mocker.patch("demistomock.params", return_value=mock_params)
     mocker.patch("splunklib.results.JSONResultsReader", return_value=[results.Message("FATAL", "Error")])
+    # Phase 3b: dispatcher logs handler exceptions via demisto.error before
+    # re-raising. Mute it here to satisfy the no-stdout fixture in conftest.
+    mocker.patch.object(demisto, "error")
 
     # run
     service = mocker.patch("splunklib.client.connect")
@@ -2393,17 +2489,17 @@ def test_edit_finding_event__failed_to_update(mocker):
     test_args = {"event_ids": "ID100", "owner": "dbot"}
     mocker.patch.object(demisto, "error")
     mocker.patch.object(
-        splunk, "return_error", side_effect=Exception("Failed to update finding ID100: ValueError: Invalid owner value.")
+        splunk, "return_error", side_effect=Exception("Failed to update Splunk ES event ID100: ValueError: Invalid owner value.")
     )
 
     mocker.patch.object(splunk, "update_investigation_or_finding", side_effect=Exception("ValueError: Invalid owner value."))
 
-    with pytest.raises(Exception, match="Failed to update finding ID100: ValueError: Invalid owner value."):
-        splunk.splunk_edit_finding_command(service=MagicMock(), args=test_args)
+    with pytest.raises(Exception, match="Failed to update Splunk ES event ID100: ValueError: Invalid owner value."):
+        splunk.splunk_edit_event_command(service=MagicMock(), args=test_args)
 
     assert splunk.return_error.call_count == 1
     error_message = splunk.return_error.call_args[0][0]
-    assert "Failed to update finding ID100: ValueError: Invalid owner value." in error_message
+    assert "Failed to update Splunk ES event ID100: ValueError: Invalid owner value." in error_message
 
 
 NOTABLE = {
@@ -3156,6 +3252,74 @@ def test_module_message_object(mocker):
     assert service.info.call_count == 1
 
 
+def test_module_investigations_query_missing_placeholder_raises(mocker):
+    """
+    Given:
+        - isFetch is enabled
+        - "Investigation" is selected in `fetch_event_types`
+        - `investigations_fetch_query` does NOT contain FETCH_FILTER_PLACEHOLDER
+
+    When:
+        - Run test-module command
+
+    Then:
+        - DemistoException is raised whose message names the missing token and
+          the parameter to fix
+    """
+    # prepare
+    message = results.Message("DEBUG", "stub")
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=[message])
+    service = mocker.patch("splunklib.client.connect", return_value=None)
+
+    params = {
+        "isFetch": True,
+        "fetchQuery": "search `notable`",
+        "fetch_event_types": ["Finding", "Investigation"],
+        "investigations_fetch_query": '| rest "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true"',
+    }
+
+    # run + validate
+    with pytest.raises(splunk.DemistoException) as exc_info:
+        splunk.test_module(service, params)
+    msg = str(exc_info.value)
+    assert "FETCH_FILTER_PLACEHOLDER" in msg
+    assert "Investigations fetch query" in msg
+
+
+def test_module_investigations_not_selected_skips_validation(mocker):
+    """
+    Given:
+        - isFetch is enabled
+        - "Investigation" is NOT in `fetch_event_types`
+        - `investigations_fetch_query` is set to an invalid value (no placeholder)
+
+    When:
+        - Run test-module command
+
+    Then:
+        - test_module completes without raising the placeholder validation error
+          (the invalid investigations query is irrelevant when Investigation isn't selected)
+    """
+    # prepare
+    message = results.Message("DEBUG", "stub")
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=[message])
+    service = mocker.patch("splunklib.client.connect", return_value=None)
+
+    params = {
+        "isFetch": True,
+        "fetchQuery": "search `notable`",
+        "fetch_event_types": ["Finding"],  # Investigation NOT selected
+        # Intentionally invalid query — must not be probed when Investigation isn't selected.
+        "investigations_fetch_query": '| rest "/path/v2/investigations?no_placeholder_here"',
+    }
+
+    # run — must not raise the placeholder DemistoException
+    splunk.test_module(service, params)
+
+    # validate connection still probed
+    assert service.info.call_count == 1
+
+
 def test_labels_with_non_str_values(mocker):
     """
     Given:
@@ -3656,7 +3820,7 @@ def test_splunk_submit_event_hec(
             "Content-Type": "application/json",
             "X-Splunk-Request-Channel": "test_channel",
         },
-        verify=True,
+        verify=splunk.VERIFY_CERTIFICATE,
     )
 
 
@@ -3731,7 +3895,7 @@ def test_mirror_in_with_enrichment_enabled(mocker):
     }
     mocker.patch("SplunkPyV2.set_integration_context")
     mocker.patch("SplunkPyV2.get_integration_context", return_value=integration_context)
-    mocker.patch.object(demisto, "params")
+    mocker.patch.object(demisto, "params", return_value={})
     mocker.patch.object(splunk, "ENABLED_ENRICHMENTS", new=[splunk.DRILLDOWN_ENRICHMENT])
     mocker.patch("SplunkPyV2.results.JSONResultsReader", side_effect=lambda res: res)
     mocker.patch.object(splunk.UserMappingObject, "get_xsoar_user_by_splunk", return_value="after_mirror_owner")
@@ -4183,7 +4347,7 @@ def test_fetch_findings_with_notes(mocker):
     When:
         - fetch_findings is called
     Then:
-        - Notes are fetched via enrich_findings_with_splunk_notes with is_fetch=True
+        - Notes are fetched via enrich_with_splunk_notes with is_fetch=True
         - Notes are stored in the finding under 'splunk_notes' key for incident creation
         - The fetch process includes notes even if they weren't in the original search
     """
@@ -4217,8 +4381,17 @@ def test_fetch_findings_with_notes(mocker):
     mock_kv_store = MagicMock()
     mock_kv_store.data.query.return_value = mock_notes_data
 
-    # Mock helper functions
-    mocker.patch("SplunkPyV2.get_fetch_time_window", return_value=("", ""))
+    # Mock helper functions.
+    # `fetch_findings` now derives an epoch float from the fetch-window start
+    # to scope the v2 KV-store note query (`enrich_with_splunk_notes_v2`),
+    # so the helper must return real ISO timestamps (not empty strings).
+    mocker.patch(
+        "SplunkPyV2.get_fetch_time_window",
+        return_value=(
+            "2021-02-09T15:41:30.589575+02:00",
+            "2021-02-09T17:41:30.589575+02:00",
+        ),
+    )
     mocker.patch("SplunkPyV2.remove_irrelevant_incident_ids")
     mocker.patch("SplunkPyV2.format_splunk_note_for_xsoar", return_value="Note from fetch")
 
@@ -5450,3 +5623,2187 @@ def test_response_size_validator_message_format(mocker):
     assert "20" in warning
     assert "normal usage size" in warning
     assert "exceeds" in warning.lower()
+
+
+# ===================== Tests for add_investigation_note retry/fallback =====================
+
+
+def test_add_investigation_note_success_without_notable_time():
+    """
+    Given:
+        - A mock Splunk service and valid note parameters.
+    When:
+        - add_investigation_note is called and the first service.post call succeeds.
+    Then:
+        - The result matches the expected response.
+        - service.post is called exactly once (without notable_time).
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "note-123", "content": "test note"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+
+    result = splunk.add_investigation_note(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        content="test note",
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-abc/notes",
+        body=json.dumps({"content": "test note"}),
+    )
+
+
+def test_add_investigation_note_fallback_with_notable_time():
+    """
+    Given:
+        - A mock Splunk service where the first service.post call raises an exception.
+    When:
+        - add_investigation_note is called.
+    Then:
+        - The function retries with notable_time=now and returns the result from the second call.
+        - service.post is called exactly twice.
+        - The second call includes notable_time="now".
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "note-456", "content": "fallback note"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.side_effect = [Exception("API error"), mock_response]
+
+    result = splunk.add_investigation_note(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        content="fallback note",
+    )
+
+    assert result == expected_result
+    assert mock_service.post.call_count == 2
+    second_call = mock_service.post.call_args_list[1]
+    assert second_call.kwargs.get("notable_time") == "now"
+
+
+def test_add_investigation_note_both_fail():
+    """
+    Given:
+        - A mock Splunk service where both service.post calls raise exceptions.
+    When:
+        - add_investigation_note is called.
+    Then:
+        - The second exception propagates to the caller.
+        - service.post is called exactly twice.
+    """
+    mock_service = MagicMock()
+    mock_service.post.side_effect = [Exception("First error"), Exception("Second error")]
+
+    with pytest.raises(Exception, match="Second error"):
+        splunk.add_investigation_note(
+            service=mock_service,
+            investigation_or_finding_id="finding-abc",
+            content="will fail",
+        )
+
+    assert mock_service.post.call_count == 2
+
+
+def test_add_investigation_note_with_note_type():
+    """
+    Given:
+        - A mock Splunk service and a note_type parameter is provided.
+    When:
+        - add_investigation_note is called with note_type="Task".
+    Then:
+        - The request body includes both "content" and "type" fields.
+        - service.post is called once with the correct body.
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "note-789", "content": "typed note", "type": "Task"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+
+    result = splunk.add_investigation_note(
+        service=mock_service,
+        investigation_or_finding_id="finding-xyz",
+        content="typed note",
+        note_type="Task",
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-xyz/notes",
+        body=json.dumps({"content": "typed note", "type": "Task"}),
+    )
+
+
+# ===================== Tests for update_investigation_or_finding retry/fallback =====================
+
+
+def test_update_investigation_or_finding_success_without_notable_time():
+    """
+    Given:
+        - A mock Splunk service and valid update fields.
+    When:
+        - update_investigation_or_finding is called and the first service.post call succeeds.
+    Then:
+        - The result matches the expected response.
+        - service.post is called exactly once (without notable_time).
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "finding-abc", "status": "closed"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        status="closed",
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-abc",
+        body=json.dumps({"status": "closed"}),
+    )
+
+
+def test_update_investigation_or_finding_fallback_with_notable_time():
+    """
+    Given:
+        - A mock Splunk service where the first service.post call raises an exception.
+    When:
+        - update_investigation_or_finding is called.
+    Then:
+        - The function retries with notable_time=now and returns the result from the second call.
+        - service.post is called exactly twice.
+        - The second call includes notable_time="now".
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "finding-abc", "owner": "admin"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.side_effect = [Exception("API error"), mock_response]
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        owner="admin",
+    )
+
+    assert result == expected_result
+    assert mock_service.post.call_count == 2
+    second_call = mock_service.post.call_args_list[1]
+    assert second_call.kwargs.get("notable_time") == "now"
+
+
+def test_update_investigation_or_finding_both_fail(mocker):
+    """
+    Given:
+        - A mock Splunk service where both service.post calls raise exceptions.
+    When:
+        - update_investigation_or_finding is called.
+    Then:
+        - The second Exception is raised (from the retry attempt).
+        - service.post is called exactly twice.
+    """
+    mock_service = MagicMock()
+    mock_service.post.side_effect = [Exception("First error"), Exception("Second error")]
+
+    with pytest.raises(Exception, match="Second error"):
+        splunk.update_investigation_or_finding(
+            service=mock_service,
+            investigation_or_finding_id="finding-abc",
+            status="closed",
+        )
+
+    assert mock_service.post.call_count == 2
+
+
+def test_update_investigation_or_finding_no_fields():
+    """
+    Given:
+        - A mock Splunk service and no update fields provided (all None).
+    When:
+        - update_investigation_or_finding is called without any fields.
+    Then:
+        - Returns a dict with success=False and a message about no fields.
+        - service.post is never called.
+    """
+    mock_service = MagicMock()
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+    )
+
+    assert result == {"success": False, "message": "No fields provided to update"}
+    mock_service.post.assert_not_called()
+
+
+def test_update_investigation_or_finding_partial_fields():
+    """
+    Given:
+        - A mock Splunk service and only some update fields provided.
+    When:
+        - update_investigation_or_finding is called with owner and urgency (but not status or disposition).
+    Then:
+        - The request body contains only the provided fields.
+        - service.post is called once with the correct partial body.
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "finding-abc", "owner": "admin", "urgency": "high"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        owner="admin",
+        urgency="high",
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-abc",
+        body=json.dumps({"owner": "admin", "urgency": "high"}),
+    )
+
+
+def test_update_investigation_or_finding_with_finding_time():
+    """
+    Given:
+        - A mock Splunk service, valid update fields, and a finding_time value.
+    When:
+        - update_investigation_or_finding is called with finding_time provided and the first
+          service.post call succeeds.
+    Then:
+        - service.post is called exactly once.
+        - The call includes notable_time equal to the provided finding_time (no fallback to "now").
+        - The result matches the expected response.
+    """
+    mock_service = MagicMock()
+    expected_result = {"id": "finding-abc", "status": "closed"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+    finding_time = "2024-01-15T12:34:56.000+00:00"
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        status="closed",
+        finding_time=finding_time,
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-abc",
+        body=json.dumps({"status": "closed"}),
+        notable_time=finding_time,
+    )
+
+
+# =================================================================================
+# Phase 3a — Fetch Investigations scaffolding (helpers + model + factory).
+# These tests cover only the new (currently dead-code) pieces added in Phase 3a.
+# Existing fetch behavior is unchanged.
+# =================================================================================
+
+
+# --------------------------- prepare_investigations_query ---------------------------
+
+
+class TestPrepareInvestigationsQuery:
+    """Given the user's `investigations_fetch_query` SPL, when prepare_investigations_query
+    runs, then the mandatory `FETCH_FILTER_PLACEHOLDER` token is substituted with the
+    four managed params; if the token is missing, a DemistoException is raised.
+    """
+
+    DEFAULT_URL = "/servicesNS/nobody/missioncontrol/public/v2/investigations?search_format=true" "&FETCH_FILTER_PLACEHOLDER"
+    DEFAULT_QUERY = f'| rest "{DEFAULT_URL}"'
+
+    def test_given_placeholder_when_called_then_substituted_with_all_four_params(self):
+        """Given the default SPL containing FETCH_FILTER_PLACEHOLDER,
+        when prepare_investigations_query runs,
+        then the placeholder is replaced and all four managed params appear once
+        (timestamps are URL-encoded by ``urlencode``, so ':' becomes '%3A')."""
+        out = splunk.prepare_investigations_query(
+            user_query=self.DEFAULT_QUERY,
+            create_time_min="2025-01-01T00:00:00Z",
+            create_time_max="2025-01-02T00:00:00Z",
+            limit=50,
+            offset=0,
+        )
+        assert "FETCH_FILTER_PLACEHOLDER" not in out
+        for fragment in (
+            "create_time_min=2025-01-01T00%3A00%3A00Z",
+            "create_time_max=2025-01-02T00%3A00%3A00Z",
+            "limit=50",
+            "offset=0",
+        ):
+            assert out.count(fragment) == 1, f"expected exactly one '{fragment}' in {out!r}"
+
+    def test_given_query_without_placeholder_when_called_then_raises_demisto_exception(self):
+        """Given a user_query that does NOT contain FETCH_FILTER_PLACEHOLDER,
+        when prepare_investigations_query runs,
+        then a DemistoException is raised whose message names the missing token
+        and the parameter to fix."""
+        query = '| rest "/path/v2/investigations?search_format=true"'
+        with pytest.raises(splunk.DemistoException) as exc_info:
+            splunk.prepare_investigations_query(query, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", 10, 0)
+        msg = str(exc_info.value)
+        assert "FETCH_FILTER_PLACEHOLDER" in msg
+        assert "Investigations fetch query" in msg
+
+    def test_given_limit_above_cap_when_called_then_clamped_to_100(self):
+        """Given `limit > 100`, when called, then it is clamped to INVESTIGATIONS_MAX_LIMIT (100)."""
+        out = splunk.prepare_investigations_query(
+            self.DEFAULT_QUERY, "2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z", limit=999, offset=0
+        )
+        assert "limit=100" in out
+        assert "limit=999" not in out
+
+    @pytest.mark.parametrize(
+        "ts_min, ts_max",
+        [
+            ("2025-01-01T00:00:00Z", "2025-01-02T00:00:00Z"),
+            ("2026-04-29T10:00:00.3950565Z", "2026-04-30T10:00:00.3950565Z"),
+        ],
+    )
+    def test_given_iso_boundary_strings_when_substituted_then_passed_through(self, ts_min, ts_max):
+        """Given seconds-only and sub-second ISO 8601 inputs (placeholder path),
+        when called, then the strings are inserted as URL-encoded query parameters
+        (``urlencode`` percent-encodes the ':' separators)."""
+        from urllib.parse import quote_plus
+
+        out = splunk.prepare_investigations_query(self.DEFAULT_QUERY, ts_min, ts_max, 10, 0)
+        assert f"create_time_min={quote_plus(ts_min)}" in out
+        assert f"create_time_max={quote_plus(ts_max)}" in out
+
+
+# --------------------------- to_mc_iso8601_utc ---------------------------
+
+
+class TestToMcIso8601Utc:
+    """Given a timestamp string or datetime, when to_mc_iso8601_utc runs,
+    then it returns the canonical Mission Control shape `YYYY-MM-DDTHH:MM:SS.ffffffZ`
+    (always 6-digit microsecond precision)."""
+
+    def test_given_get_fetch_time_window_format_when_normalized_then_z_suffix(self):
+        """Given the format produced by get_fetch_time_window (e.g. '+00:00'),
+        when normalized, then output ends with Z and preserves microseconds."""
+        out = splunk.to_mc_iso8601_utc("2025-12-03T11:53:45.138540+00:00")
+        assert out == "2025-12-03T11:53:45.138540Z"
+
+    def test_given_canonical_input_when_normalized_then_passes_through(self):
+        """Given an already-canonical input (6-digit microseconds + Z),
+        when normalized, then it passes through unchanged."""
+        ts = "2025-01-01T00:00:00.000000Z"
+        assert splunk.to_mc_iso8601_utc(ts) == ts
+
+    def test_given_negative_offset_when_normalized_then_converted_to_utc_z(self):
+        """Given a `-05:00` offset, when normalized, then converted to UTC and emitted with Z."""
+        out = splunk.to_mc_iso8601_utc("2025-01-01T00:00:00-05:00")
+        # 00:00 EST → 05:00 UTC
+        assert out == "2025-01-01T05:00:00.000000Z"
+
+    def test_given_subsecond_when_normalized_then_microseconds_preserved(self):
+        """Given a sub-second offset input, when normalized, then microseconds are preserved."""
+        out = splunk.to_mc_iso8601_utc("2025-01-01T00:00:00.123456+00:00")
+        assert out == "2025-01-01T00:00:00.123456Z"
+
+    def test_given_no_subsecond_when_normalized_then_zero_microseconds_emitted(self):
+        """Given an input without fractional seconds, when normalized, then zero-padded
+        6-digit microseconds are emitted (canonical shape is always preserved)."""
+        out = splunk.to_mc_iso8601_utc("2025-01-01T00:00:00+00:00")
+        assert out == "2025-01-01T00:00:00.000000Z"
+
+    def test_given_naive_string_when_normalized_then_raises(self):
+        """Given a naive ISO string (no tz), when normalized, then DemistoException is raised."""
+        with pytest.raises(splunk.DemistoException, match="naive"):
+            splunk.to_mc_iso8601_utc("2025-01-01T00:00:00")
+
+    def test_given_naive_datetime_when_normalized_then_raises(self):
+        """Given a naive datetime, when normalized, then DemistoException is raised."""
+        with pytest.raises(splunk.DemistoException, match="naive"):
+            splunk.to_mc_iso8601_utc(datetime(2025, 1, 1, 0, 0, 0))
+
+    def test_given_aware_datetime_when_normalized_then_canonical_z(self):
+        """Given a tz-aware datetime, when normalized, then canonical Z output with
+        zero-padded 6-digit microseconds."""
+
+        dt = datetime(2025, 1, 1, 12, 0, 0, tzinfo=UTC)
+        assert splunk.to_mc_iso8601_utc(dt) == "2025-01-01T12:00:00.000000Z"
+
+
+# --------------------------- FetchHandlerFactory ---------------------------
+
+
+class TestFetchHandlerFactory:
+    """Given a (possibly empty) selection of event types, when FetchHandlerFactory.build runs,
+    then it returns the matching handlers in registration order, ignoring unknowns."""
+
+    def setup_method(self):
+        # Snapshot the live registry so each test starts from a clean state and
+        # can restore afterwards (factory is a class-level singleton).
+        self._registry_snapshot = dict(splunk.FetchHandlerFactory._registry)
+
+    def teardown_method(self):
+        splunk.FetchHandlerFactory._registry = self._registry_snapshot
+
+    def _stub(self, event_type: str):
+        """Define a minimal concrete FetchHandler subclass usable in build()."""
+
+        class _StubHandler(splunk.FetchHandler):
+            def fetch(self, service, last_run, mapper, params):  # noqa: D401
+                return splunk.FetchResult(incidents=[], last_run_delta={})
+
+        _StubHandler.event_type = event_type
+        _StubHandler.__name__ = f"Stub{event_type}Handler"
+        return _StubHandler
+
+    def test_given_empty_registry_and_default_selection_then_returns_empty_list(self):
+        """Given an empty registry, when build(None) runs (defaulting to ['Finding']),
+        then no handlers are returned (Phase 3a default)."""
+        splunk.FetchHandlerFactory._registry = {}
+        assert splunk.FetchHandlerFactory.build(None) == []
+
+    def test_given_empty_registry_and_empty_selection_then_returns_empty_list(self):
+        """Given an empty registry and an empty list, when build runs,
+        then no handlers are returned."""
+        splunk.FetchHandlerFactory._registry = {}
+        assert splunk.FetchHandlerFactory.build([]) == []
+
+    def test_given_investigation_only_when_built_then_single_handler(self):
+        """Given a selection of ['Investigation'] and a registered Investigation stub,
+        when build runs, then exactly one handler is returned."""
+        splunk.FetchHandlerFactory._registry = {}
+        splunk.FetchHandlerFactory.register("Investigation", self._stub("Investigation"))
+        out = splunk.FetchHandlerFactory.build(["Investigation"])
+        assert len(out) == 1
+        assert out[0].event_type == "Investigation"
+
+    def test_given_both_selected_when_built_then_two_handlers_in_registration_order(self):
+        """Given Finding registered first and Investigation second,
+        when build(['Finding', 'Investigation']) runs,
+        then handlers are returned in the requested selection order."""
+        splunk.FetchHandlerFactory._registry = {}
+        splunk.FetchHandlerFactory.register("Finding", self._stub("Finding"))
+        splunk.FetchHandlerFactory.register("Investigation", self._stub("Investigation"))
+        out = splunk.FetchHandlerFactory.build(["Finding", "Investigation"])
+        assert [h.event_type for h in out] == ["Finding", "Investigation"]
+
+    def test_given_unknown_type_when_built_then_silently_ignored(self):
+        """Given an unknown event type alongside a known one, when build runs,
+        then the unknown is silently ignored."""
+        splunk.FetchHandlerFactory._registry = {}
+        splunk.FetchHandlerFactory.register("Finding", self._stub("Finding"))
+        out = splunk.FetchHandlerFactory.build(["Finding", "Galaxy"])
+        assert [h.event_type for h in out] == ["Finding"]
+
+    def test_given_default_with_finding_registered_then_returns_finding(self):
+        """Given Finding is registered and selection is None,
+        when build runs, then it falls back to ['Finding'] and returns one handler."""
+        splunk.FetchHandlerFactory._registry = {}
+        splunk.FetchHandlerFactory.register("Finding", self._stub("Finding"))
+        out = splunk.FetchHandlerFactory.build(None)
+        assert len(out) == 1
+        assert out[0].event_type == "Finding"
+
+
+# --------------------------- parse_investigation / Investigation ---------------------------
+
+
+def _sample_investigation_row() -> dict:
+    """Build a representative investigations row in-line
+    (no fixture file dependency), reflecting the schema in plan §3.7.1."""
+    return {
+        "investigation_guid": "5f4d3c2b-1a09-4b8c-9d7e-6f5a4b3c2d1e",
+        "investigation_id": "ES-00015",
+        "name": "Suspicious lateral movement",
+        "description": "Multiple failed logons followed by privilege escalation.",
+        "create_time": 1777446173.55,
+        "update_time": 1777449999.12,
+        "mc_create_time": 1777446173.55,
+        "incident_origin": "MC Incident",
+        "investigation_type": "default",
+        "disposition": "disposition:6",
+        "disposition_name": "Undetermined",
+        "status": "1",
+        "status_name": "New",
+        "owner": "unassigned",
+        "urgency": "high",
+        "sensitivity": "Unassigned",
+        "findings": {"incident_ids": ["F-1", "F-2"]},
+        "excluded_finding_ids": [],
+        "implicit_finding_ids": ["IMP-1"],
+        "intermediate_finding_ids": [],
+        "consolidated_findings": {"summary": "n/a"},
+        "count_findings": 1,
+        "risk_event_count": 0,
+        "risk_score": 60.0,
+        "risk_object": [],
+        "risk_object_type": [],
+        "src": ["192.168.0.2"],
+        "dest": ["192.168.0.2"],
+        "dvc": [],
+        "orig_host": [],
+        "src_user": ["unknown"],
+        "user": ["tng\\crusher"],  # backslash → must round-trip via json.dumps
+        "is_investigation": True,
+        "is_finding_group": False,
+        "is_search_enriched": True,
+    }
+
+
+class TestParseInvestigation:
+    """Given an investigations row, when parse_investigation runs,
+    then it returns a flattened dict tagged for the classifier."""
+
+    def test_given_row_when_parsed_then_event_type_tag_added(self):
+        out = splunk.parse_investigation(_sample_investigation_row())
+        assert out[splunk.SPLUNK_ES_EVENT_TYPE_FIELD] == "Investigation"
+
+    def test_given_row_when_parsed_then_findings_incident_ids_lifted(self):
+        out = splunk.parse_investigation(_sample_investigation_row())
+        assert out["incident_ids"] == ["F-1", "F-2"]
+
+    def test_given_row_when_parsed_then_risk_object_and_risk_object_type_distinct(self):
+        row = _sample_investigation_row()
+        row["risk_object"] = ["host-1"]
+        row["risk_object_type"] = ["system"]
+        out = splunk.parse_investigation(row)
+        assert out["risk_object"] == ["host-1"]
+        assert out["risk_object_type"] == ["system"]
+
+    def test_given_row_when_parsed_then_user_and_src_user_remain_arrays(self):
+        out = splunk.parse_investigation(_sample_investigation_row())
+        assert isinstance(out["user"], list)
+        assert isinstance(out["src_user"], list)
+
+    def test_given_row_when_parsed_then_input_not_mutated(self):
+        row = _sample_investigation_row()
+        original_keys = set(row.keys())
+        splunk.parse_investigation(row)
+        assert set(row.keys()) == original_keys
+        assert splunk.SPLUNK_ES_EVENT_TYPE_FIELD not in row
+
+    def test_given_dotted_consolidated_findings_keys_when_parsed_then_collected_into_nested_object(self):
+        """
+        Given:
+            - A row whose `consolidated_findings` data is delivered as flat,
+              dotted keys (e.g. `consolidated_findings.search_name`,
+              `consolidated_findings.queue_id`, `consolidated_findings.dest`),
+              which is how the investigations endpoint actually returns it.
+        When:
+            - parse_investigation is called.
+        Then:
+            - All dotted keys are removed from the top level.
+            - Their values are nested under a single `consolidated_findings`
+              key whose payload is a JSON string preserving the inner keys
+              (without the prefix) and their original values.
+        """
+        row = _sample_investigation_row()
+        # Drop the legacy nested `consolidated_findings` so we exercise the
+        # dotted-keys-only path explicitly.
+        row.pop("consolidated_findings", None)
+        row["consolidated_findings.search_name"] = ["Suspicious Login", "Brute Force"]
+        row["consolidated_findings.queue_id"] = "None"
+        row["consolidated_findings.dest"] = ["host-a", "host-b"]
+        row["consolidated_findings.src_user"] = "unknown"
+
+        out = splunk.parse_investigation(row)
+
+        # No dotted keys remain at the top level.
+        assert not any(k.startswith("consolidated_findings.") for k in out)
+        # Single key holds the JSON-encoded nested payload.
+        assert isinstance(out["consolidated_findings"], str)
+        nested = json.loads(out["consolidated_findings"])
+        assert nested == {
+            "search_name": ["Suspicious Login", "Brute Force"],
+            "queue_id": "None",
+            "dest": ["host-a", "host-b"],
+            "src_user": "unknown",
+        }
+
+    def test_given_dotted_keys_and_nested_object_when_parsed_then_merged(self):
+        """
+        Given:
+            - A row that contains BOTH a pre-existing nested
+              `consolidated_findings` object AND additional dotted-key entries
+              (mixed schemas can occur during transition windows).
+        When:
+            - parse_investigation is called.
+        Then:
+            - The dotted keys are merged into the existing nested object
+              (dotted keys win on conflict, since they reflect the latest
+              top-level row state from Splunk), producing a single JSON
+              string under `consolidated_findings`.
+        """
+        row = _sample_investigation_row()
+        row["consolidated_findings"] = {"queue_id": "old", "extra": "keep-me"}
+        row["consolidated_findings.queue_id"] = "new"
+        row["consolidated_findings.dest"] = ["host-a"]
+
+        out = splunk.parse_investigation(row)
+
+        nested = json.loads(out["consolidated_findings"])
+        # Dotted-key value overrides existing nested value on conflict.
+        assert nested["queue_id"] == "new"
+        # Pre-existing nested keys are retained.
+        assert nested["extra"] == "keep-me"
+        # Newly collected dotted key is present.
+        assert nested["dest"] == ["host-a"]
+
+    def test_given_consolidated_findings_object_when_parsed_then_serialized_to_json_string(self):
+        """
+        Given:
+            - A row whose `consolidated_findings` is a nested object containing
+              both scalars (queue_id, src_user) and parallel array columns
+              (search_name, _time, dest, risk_score), as returned by the
+              investigations endpoint.
+        When:
+            - parse_investigation is called.
+        Then:
+            - The output's `consolidated_findings` is a JSON-encoded string
+              (so the classifier can map it as-is into a longText incident
+              field), and the original row remains untouched.
+        """
+        row = _sample_investigation_row()
+        payload = {
+            "search_name": ["Suspicious Login", "Brute Force"],
+            "_time": ["2025-01-01T10:00:00", "2025-01-01T10:05:00"],
+            "dest": ["host-a", "host-b"],
+            "risk_score": ["80", "90"],
+            "queue_id": "None",
+            "src_user": "unknown",
+        }
+        row["consolidated_findings"] = payload
+
+        out = splunk.parse_investigation(row)
+
+        assert isinstance(out["consolidated_findings"], str)
+        assert json.loads(out["consolidated_findings"]) == payload
+        # Source row must NOT be mutated.
+        assert isinstance(row["consolidated_findings"], dict)
+
+    def test_given_consolidated_findings_already_string_when_parsed_then_left_unchanged(self):
+        """
+        Given:
+            - A row whose `consolidated_findings` is already a JSON string
+              (e.g. an upstream caller pre-serialized it).
+        When:
+            - parse_investigation is called.
+        Then:
+            - The string is preserved as-is (no double encoding).
+        """
+        row = _sample_investigation_row()
+        original_string = '{"queue_id":"None","src_user":"unknown"}'
+        row["consolidated_findings"] = original_string
+
+        out = splunk.parse_investigation(row)
+
+        assert out["consolidated_findings"] == original_string
+
+    def test_given_consolidated_findings_missing_when_parsed_then_no_key_added(self):
+        """
+        Given:
+            - A row where `consolidated_findings` is absent or None.
+        When:
+            - parse_investigation is called.
+        Then:
+            - No spurious key is materialized; absent stays absent.
+        """
+        row = _sample_investigation_row()
+        row.pop("consolidated_findings", None)
+
+        out = splunk.parse_investigation(row)
+
+        assert "consolidated_findings" not in out
+
+
+class TestInvestigationModel:
+    """Given a parsed investigation row, when Investigation.to_incident runs,
+    then it produces an XSOAR incident dict that satisfies the Phase 3a contract."""
+
+    def _mapper(self):
+        m = MagicMock()
+        m.should_map = False
+        m.get_xsoar_user_by_splunk.side_effect = lambda u: u
+        return m
+
+    def test_given_happy_path_row_when_to_incident_then_no_type_set(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={"mirror_direction": "Incoming"})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="splunk_inst_1")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        assert "type" not in incident, "Phase 3a forbids the integration setting incident['type']"
+
+    def test_given_happy_path_row_when_to_incident_then_event_type_in_rawjson(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={"mirror_direction": "None"})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="splunk_inst_1")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        raw = json.loads(incident["rawJSON"])
+        assert raw[splunk.SPLUNK_ES_EVENT_TYPE_FIELD] == "Investigation"
+
+    def test_given_happy_path_row_when_to_incident_then_dbot_mirror_id_is_guid(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={"mirror_direction": "None"})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="splunk_inst_1")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        assert incident["dbotMirrorId"] == "5f4d3c2b-1a09-4b8c-9d7e-6f5a4b3c2d1e"
+        assert incident["dbotMirrorInstance"] == "splunk_inst_1"
+        assert incident["dbotMirrorDirection"] is None  # MIRROR_DIRECTION["None"] is None
+
+    def test_given_urgency_when_to_incident_then_severity_derived(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="x")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        assert incident["severity"] == splunk.severity_to_level("high")
+
+    def test_given_create_time_when_to_incident_then_occurred_is_rfc3339(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="x")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        # RFC 3339 with timezone suffix.
+        assert "T" in incident["occurred"]
+        assert incident["occurred"].endswith("+00:00") or incident["occurred"].endswith("Z")
+
+    def test_given_missing_optional_fields_when_to_incident_then_handled(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="x")
+        sparse_row = {
+            "investigation_guid": "g-1",
+            "investigation_id": "ES-1",
+            "name": "n",
+            "create_time": 1777446173.0,
+        }
+        inv = splunk.Investigation(splunk.parse_investigation(sparse_row))
+        incident = inv.to_incident(self._mapper())
+        assert incident["name"] == "n"
+        assert "details" not in incident
+        assert "severity" not in incident
+        assert "owner" not in incident
+
+    def test_given_backslash_in_user_when_to_incident_then_round_trips(self, mocker):
+        mocker.patch.object(splunk.demisto, "params", return_value={})
+        mocker.patch.object(splunk.demisto, "integrationInstance", return_value="x")
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        incident = inv.to_incident(self._mapper())
+        raw = json.loads(incident["rawJSON"])
+        assert raw["user"] == ["tng\\crusher"]
+
+    def test_given_get_id_then_prefers_investigation_id(self):
+        inv = splunk.Investigation(splunk.parse_investigation(_sample_investigation_row()))
+        assert inv.get_id() == "ES-00015"
+
+    def test_given_no_investigation_id_when_get_id_then_falls_back_to_guid(self):
+        row = _sample_investigation_row()
+        row.pop("investigation_id")
+        inv = splunk.Investigation(splunk.parse_investigation(row))
+        assert inv.get_id() == "5f4d3c2b-1a09-4b8c-9d7e-6f5a4b3c2d1e"
+
+
+# ============================================================================
+# Phase 3b — refactor + handlers + dispatcher
+# ============================================================================
+
+
+class TestBuildFetchQueryGeneralized:
+    """Given build_fetch_query is generalized, when called with the optional
+    ``query_param_name``, then it reads the right param key with full BC."""
+
+    def test_given_no_override_then_reads_fetchQuery_BC(self):
+        # GIVEN
+        params = {"fetchQuery": "search index=notable"}
+        # WHEN
+        out = splunk.build_fetch_query(params)
+        # THEN
+        assert out == "search index=notable"
+
+    def test_given_explicit_override_then_reads_that_key(self):
+        # GIVEN
+        params = {
+            "fetchQuery": "search ignored",
+            "investigations_fetch_query": '| rest "/foo"',
+        }
+        # WHEN
+        out = splunk.build_fetch_query(params, query_param_name="investigations_fetch_query")
+        # THEN
+        assert out == '| rest "/foo"'
+
+    def test_given_extract_fields_then_appended_to_chosen_query(self):
+        # GIVEN
+        params = {
+            "investigations_fetch_query": '| rest "/foo"',
+            "extractFields": "field_a,field_b",
+        }
+        # WHEN
+        out = splunk.build_fetch_query(params, query_param_name="investigations_fetch_query")
+        # THEN
+        assert "| eval field_a=field_a" in out
+        assert "| eval field_b=field_b" in out
+        assert out.startswith('| rest "/foo"')
+
+
+class TestFetchFindingsRefactor:
+    """Given fetch_findings has been refactored to return FetchResult,
+    when called directly, then it does NOT call demisto.incidents/setLastRun
+    and every produced incident is tagged splunk_es_event_type=Finding."""
+
+    def test_given_call_when_run_then_returns_FetchResult(self, mocker):
+        # GIVEN
+        mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
+        mocker.patch("demistomock.getLastRun", return_value={"time": "2018-10-24T14:13:20"})
+        mocker.patch("demistomock.params", return_value={"fetchQuery": "something"})
+        incidents_mock = mocker.patch.object(demisto, "incidents")
+        set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch("splunklib.results.JSONResultsReader", return_value=deepcopy(SAMPLE_RESPONSE))
+        service = Service("DONE")
+        mapper = splunk.UserMappingObject(service, False)
+        # WHEN
+        result = splunk.fetch_findings(service=service, mapper=mapper)
+        # THEN
+        assert isinstance(result, splunk.FetchResult)
+        assert isinstance(result.incidents, list)
+        assert isinstance(result.last_run_delta, dict)
+        # No side-effects — dispatcher owns those.
+        incidents_mock.assert_not_called()
+        set_last_run_mock.assert_not_called()
+
+    def test_given_produced_incidents_when_inspected_then_tagged_with_Finding(self, mocker):
+        # GIVEN
+        mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
+        mocker.patch("demistomock.getLastRun", return_value={"time": "2018-10-24T14:13:20"})
+        mocker.patch("demistomock.params", return_value={"fetchQuery": "something"})
+        mocker.patch.object(demisto, "incidents")
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch("splunklib.results.JSONResultsReader", return_value=deepcopy(SAMPLE_RESPONSE))
+        service = Service("DONE")
+        mapper = splunk.UserMappingObject(service, False)
+        # WHEN
+        result = splunk.fetch_findings(service=service, mapper=mapper)
+        # THEN
+        assert result.incidents, "expected at least one produced incident"
+        for inc in result.incidents:
+            raw = json.loads(inc["rawJSON"])
+            assert raw[splunk.SPLUNK_ES_EVENT_TYPE_FIELD] == "Finding"
+            # Integration must NOT set incident["type"]; the Classifier owns it.
+            assert "type" not in inc
+
+    def test_given_FetchResult_when_inspected_then_last_run_delta_has_BC_keys(self, mocker):
+        # GIVEN
+        mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
+        mocker.patch("demistomock.getLastRun", return_value={"time": "2018-10-24T14:13:20"})
+        mocker.patch("demistomock.params", return_value={"fetchQuery": "something"})
+        mocker.patch.object(demisto, "incidents")
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch("splunklib.results.JSONResultsReader", return_value=deepcopy(SAMPLE_RESPONSE))
+        service = Service("DONE")
+        mapper = splunk.UserMappingObject(service, False)
+        # WHEN
+        result = splunk.fetch_findings(service=service, mapper=mapper)
+        # THEN — same top-level keys as the legacy setLastRun payload.
+        for key in ("next_run_earliest_time", "offset", "next_run_found_incidents_ids"):
+            assert key in result.last_run_delta
+
+
+class TestFindingsFetchHandler:
+    """Given FindingsFetchHandler wraps fetch_findings, when invoked,
+    then output is identical to calling fetch_findings directly (in the
+    non-enrichment branch)."""
+
+    def setup_method(self):
+        # Snapshot/restore the registry so factory mutations don't leak.
+        self._registry_snapshot = dict(splunk.FetchHandlerFactory._registry)
+
+    def teardown_method(self):
+        splunk.FetchHandlerFactory._registry = self._registry_snapshot
+
+    def test_given_default_construction_then_event_type_and_last_run_key_set(self):
+        h = splunk.FindingsFetchHandler()
+        assert h.event_type == "Finding"
+        assert h.last_run_key is None
+
+    def test_given_no_enrichments_when_fetch_then_passes_through_to_fetch_findings(self, mocker):
+        # GIVEN
+        mocker.patch.object(splunk, "ENABLED_ENRICHMENTS", [])
+        mocker.patch.object(splunk, "get_current_splunk_time", return_value="2018-10-24T14:13:20.000+00:00")
+        mocker.patch("demistomock.getLastRun", return_value={"time": "2018-10-24T14:13:20"})
+        mocker.patch("demistomock.params", return_value={"fetchQuery": "something"})
+        mocker.patch("splunklib.results.JSONResultsReader", return_value=deepcopy(SAMPLE_RESPONSE))
+        service = Service("DONE")
+        mapper = splunk.UserMappingObject(service, False)
+        handler = splunk.FindingsFetchHandler()
+        # WHEN
+        result = handler.fetch(service, last_run={}, mapper=mapper, params=demisto.params())
+        # THEN
+        assert isinstance(result, splunk.FetchResult)
+        for inc in result.incidents:
+            raw = json.loads(inc["rawJSON"])
+            assert raw[splunk.SPLUNK_ES_EVENT_TYPE_FIELD] == "Finding"
+
+
+class _FakeReader:
+    """Minimal stand-in for splunklib.results.JSONResultsReader — yields rows."""
+
+    def __init__(self, rows):
+        self._rows = rows
+
+    def __iter__(self):
+        return iter(self._rows)
+
+
+class TestInvestigationsFetchHandler:
+    """Given InvestigationsFetchHandler runs against mocked oneshot results,
+    when fetched, then incidents are tagged Investigation, dedup is honored,
+    pagination cursor advances/resets correctly, and enrichment is NOT called."""
+
+    def setup_method(self):
+        self._registry_snapshot = dict(splunk.FetchHandlerFactory._registry)
+
+    def teardown_method(self):
+        splunk.FetchHandlerFactory._registry = self._registry_snapshot
+
+    def _service_returning(self, rows, mocker):
+        """Build a mock service whose service.jobs.oneshot returns ``rows``."""
+        service = mocker.MagicMock()
+        service.jobs.oneshot.return_value = MagicMock()
+        mocker.patch("splunklib.results.JSONResultsReader", return_value=_FakeReader(rows))
+        return service
+
+    def _mapper(self):
+        m = MagicMock()
+        m.should_map = False
+        m.get_xsoar_user_by_splunk.side_effect = lambda u: u
+        return m
+
+    def _common_setup(self, mocker, params_extra=None):
+        params = {
+            "investigations_fetch_query": (
+                '| rest "/servicesNS/nobody/missioncontrol/public/v2/investigations'
+                '?search_format=true&FETCH_FILTER_PLACEHOLDER"'
+            ),
+            "investigations_max_fetch": "2",
+            "first_fetch": "7 days",
+            "investigations_first_fetch": "7 days",
+            "mirror_direction": "None",
+        }
+        if params_extra:
+            params.update(params_extra)
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "integrationInstance", return_value="splunk_inst_1")
+        # Defensive: silence demisto.error so the conftest no-stdout fixture is
+        # satisfied if a handler-level exception is logged.
+        mocker.patch.object(demisto, "error")
+        mocker.patch.object(
+            splunk,
+            "get_fetch_time_window",
+            return_value=(
+                "2025-01-01T00:00:00.000000+00:00",
+                "2025-01-08T00:00:00.000000+00:00",
+            ),
+        )
+        return params
+
+    def test_given_rows_when_fetch_then_all_incidents_tagged_Investigation(self, mocker):
+        # GIVEN
+        params = self._common_setup(mocker)
+        rows = [_sample_investigation_row()]
+        rows[0]["investigation_id"] = "ES-001"
+        service = self._service_returning(rows, mocker)
+        handler = splunk.InvestigationsFetchHandler()
+        # WHEN
+        result = handler.fetch(service, last_run={}, mapper=self._mapper(), params=params)
+        # THEN
+        assert len(result.incidents) == 1
+        raw = json.loads(result.incidents[0]["rawJSON"])
+        assert raw[splunk.SPLUNK_ES_EVENT_TYPE_FIELD] == "Investigation"
+        assert result.incidents[0]["dbotMirrorId"] == raw["investigation_guid"]
+        # Integration MUST NOT set incident["type"].
+        assert "type" not in result.incidents[0]
+
+    def test_given_dup_id_in_last_run_when_fetch_then_dropped(self, mocker):
+        # GIVEN
+        params = self._common_setup(mocker)
+        row_a = _sample_investigation_row()
+        row_a["investigation_id"] = "ES-001"
+        row_b = deepcopy(_sample_investigation_row())
+        row_b["investigation_id"] = "ES-002"
+        service = self._service_returning([row_a, row_b], mocker)
+        handler = splunk.InvestigationsFetchHandler()
+        # `remove_irrelevant_incident_ids` parses occurred_time using
+        # ISO_FORMAT_TZ_AWARE (`%Y-%m-%dT%H:%M:%S.%f%z`) — must use the +00:00
+        # offset shape, NOT the Mission Control Z-suffix shape.
+        last_run = {"found_incidents_ids": {"ES-001": {"occurred_time": "2025-01-08T00:00:00.000000+00:00"}}}
+        # WHEN
+        result = handler.fetch(service, last_run=last_run, mapper=self._mapper(), params=params)
+        # THEN
+        assert len(result.incidents) == 1
+        raw = json.loads(result.incidents[0]["rawJSON"])
+        assert raw["investigation_id"] == "ES-002"
+
+    def test_given_full_page_when_fetch_then_offset_advances(self, mocker):
+        # GIVEN limit=2 and 2 rows returned
+        params = self._common_setup(mocker, {"investigations_max_fetch": "2"})
+        rows = [
+            {**_sample_investigation_row(), "investigation_id": "ES-100"},
+            {**_sample_investigation_row(), "investigation_id": "ES-101"},
+        ]
+        service = self._service_returning(rows, mocker)
+        handler = splunk.InvestigationsFetchHandler()
+        # WHEN
+        result = handler.fetch(service, last_run={"offset": 0}, mapper=self._mapper(), params=params)
+        # THEN
+        assert result.last_run_delta["offset"] == 2
+
+    def test_given_partial_page_when_fetch_then_offset_resets(self, mocker):
+        # GIVEN limit=5 and only 1 row returned
+        params = self._common_setup(mocker, {"investigations_max_fetch": "5"})
+        rows = [{**_sample_investigation_row(), "investigation_id": "ES-200"}]
+        service = self._service_returning(rows, mocker)
+        handler = splunk.InvestigationsFetchHandler()
+        # WHEN
+        result = handler.fetch(service, last_run={"offset": 5}, mapper=self._mapper(), params=params)
+        # THEN
+        assert result.last_run_delta["offset"] == 0
+
+    def test_given_fetch_when_run_then_run_enrichment_mechanism_NOT_called(self, mocker):
+        # GIVEN
+        params = self._common_setup(mocker)
+        rows = [{**_sample_investigation_row(), "investigation_id": "ES-300"}]
+        service = self._service_returning(rows, mocker)
+        enrich_mock = mocker.patch.object(splunk, "run_enrichment_mechanism")
+        handler = splunk.InvestigationsFetchHandler()
+        # WHEN
+        handler.fetch(service, last_run={}, mapper=self._mapper(), params=params)
+        # THEN
+        enrich_mock.assert_not_called()
+
+    def test_given_fetch_when_run_then_event_type_injected_once(self, mocker):
+        # GIVEN
+        params = self._common_setup(mocker)
+        row = _sample_investigation_row()
+        row["investigation_id"] = "ES-400"
+        service = self._service_returning([row], mocker)
+        handler = splunk.InvestigationsFetchHandler()
+        # WHEN
+        result = handler.fetch(service, last_run={}, mapper=self._mapper(), params=params)
+        # THEN — exactly one occurrence of the tag in rawJSON.
+        raw_str = result.incidents[0]["rawJSON"]
+        assert raw_str.count(f'"{splunk.SPLUNK_ES_EVENT_TYPE_FIELD}"') == 1
+
+    def test_given_rows_with_guid_when_fetch_then_enrich_with_splunk_notes_called(self, mocker):
+        """Given fetched rows with `investigation_guid`, when the handler runs,
+        then `enrich_with_splunk_notes_v2` is called with a guid-keyed map and
+        `is_fetch=True` (mirrors the Findings enrichment pattern; status doc
+        Phase 3b, lines 1562–1567).
+
+        The handler was switched from the legacy ``enrich_with_splunk_notes``
+        helper to the v2 KV-store variant; this test asserts the new contract.
+        """
+        # GIVEN
+        params = self._common_setup(mocker)
+        row = _sample_investigation_row()
+        row["investigation_id"] = "ES-NOTES-1"
+        service = self._service_returning([row], mocker)
+        enrich_spy = mocker.patch.object(splunk, "enrich_with_splunk_notes_v2")
+        handler = splunk.InvestigationsFetchHandler()
+        # WHEN
+        handler.fetch(service, last_run={}, mapper=self._mapper(), params=params)
+        # THEN — called exactly once, with the guid as the dict key and is_fetch=True.
+        enrich_spy.assert_called_once()
+        call_args = enrich_spy.call_args
+        # Positional args: (service, guid_to_row_map)
+        passed_map = call_args.args[1]
+        assert row["investigation_guid"] in passed_map
+        assert passed_map[row["investigation_guid"]] is row
+        # is_fetch must be True for the fetch path (vs. the modified-remote-data path).
+        assert call_args.kwargs.get("is_fetch") is True
+        # v2 helper additionally takes a `last_update_splunk_timestamp` epoch float
+        # so it can scope the KV-store query by `update_time`.
+        assert "last_update_splunk_timestamp" in call_args.kwargs
+        assert isinstance(call_args.kwargs["last_update_splunk_timestamp"], float)
+
+    def test_given_handler_failure_when_fetch_then_logs_error_and_reraises(self, mocker):
+        """Given the inner `_do_fetch` raises, when `fetch` runs, then
+        `demisto.error` is called with the handler+event-type prefix and the
+        exception is re-raised (plan §3.10 error-path contract)."""
+        # GIVEN
+        self._common_setup(mocker)
+        boom = RuntimeError("simulated downstream failure")
+        mocker.patch.object(splunk.InvestigationsFetchHandler, "_do_fetch", side_effect=boom)
+        # The common setup already patches demisto.error; recapture it as a spy.
+        error_spy = mocker.patch.object(demisto, "error")
+        handler = splunk.InvestigationsFetchHandler()
+        # WHEN / THEN — exception re-raised.
+        with pytest.raises(RuntimeError, match="simulated downstream failure"):
+            handler.fetch(service=MagicMock(), last_run={}, mapper=self._mapper(), params={})
+        # AND — error was logged with the handler/event-type prefix.
+        error_spy.assert_called_once()
+        logged = error_spy.call_args.args[0]
+        assert "InvestigationsFetchHandler" in logged
+        assert "Investigation" in logged
+        assert "simulated downstream failure" in logged
+
+    def test_given_first_fetch_when_fetch_then_investigations_first_fetch_used_without_mutating_params(self, mocker):
+        """Given an empty last_run (first-fetch path), when the handler runs,
+        then `get_fetch_time_window` receives a params copy whose `first_fetch`
+        is the value of `investigations_first_fetch`, and the caller's `params`
+        dict is NOT mutated (status doc Phase 3b lines 1520–1523:
+        `params_for_window = dict(params, first_fetch=...)`)."""
+        # GIVEN
+        params = {
+            "investigations_fetch_query": (
+                '| rest "/servicesNS/nobody/missioncontrol/public/v2/investigations'
+                '?search_format=true&FETCH_FILTER_PLACEHOLDER"'
+            ),
+            "investigations_max_fetch": "2",
+            "investigations_first_fetch": "30 days",
+            "first_fetch": "10 minutes",  # Findings-side default — must NOT leak into investigations window
+            "mirror_direction": "None",
+        }
+        original_params_snapshot = deepcopy(params)
+        mocker.patch.object(demisto, "params", return_value=params)
+        mocker.patch.object(demisto, "integrationInstance", return_value="splunk_inst_1")
+        mocker.patch.object(demisto, "error")
+        time_window_spy = mocker.patch.object(
+            splunk,
+            "get_fetch_time_window",
+            return_value=(
+                "2025-01-01T00:00:00.000000+00:00",
+                "2025-01-08T00:00:00.000000+00:00",
+            ),
+        )
+        service = self._service_returning([], mocker)
+        handler = splunk.InvestigationsFetchHandler()
+        # WHEN — empty last_run triggers the first-fetch path.
+        handler.fetch(service, last_run={}, mapper=self._mapper(), params=params)
+        # THEN — get_fetch_time_window saw `first_fetch == investigations_first_fetch`.
+        time_window_spy.assert_called_once()
+        passed_params = time_window_spy.call_args.args[0]
+        assert passed_params["first_fetch"] == "30 days"
+        # AND — caller's params dict was not mutated; the Findings-side `first_fetch` survives.
+        assert params == original_params_snapshot
+        assert params["first_fetch"] == "10 minutes"
+
+    def test_given_full_page_when_fetch_then_delta_keeps_window_with_all_5_keys(self, mocker):
+        """Given a full page (advance branch), when the handler runs, then
+        the 5-key last-run delta is returned and the window is kept
+        (`time == ts_min`, `next_run_latest_time == ts_max`) — see status doc
+        Phase 3b lines 1618–1631 for the cursor-advance contract."""
+        # GIVEN limit=2, exactly 2 rows -> next_offset advances, window held.
+        params = self._common_setup(mocker, {"investigations_max_fetch": "2"})
+        rows = [
+            {**_sample_investigation_row(), "investigation_id": "ES-501"},
+            {**_sample_investigation_row(), "investigation_id": "ES-502"},
+        ]
+        service = self._service_returning(rows, mocker)
+        handler = splunk.InvestigationsFetchHandler()
+        # WHEN
+        result = handler.fetch(service, last_run={"offset": 0}, mapper=self._mapper(), params=params)
+        # THEN — all 5 keys present.
+        delta = result.last_run_delta
+        for key in ("time", "next_run_earliest_time", "next_run_latest_time", "offset", "found_incidents_ids"):
+            assert key in delta, f"missing key={key} in last_run_delta"
+        # AND — `time` is an alias of `next_run_earliest_time` for cursor-reader BC.
+        assert delta["time"] == delta["next_run_earliest_time"]
+        # AND — window held: `next_run_earliest_time` == ts_min (canonical Z), latest == ts_max.
+        assert delta["next_run_earliest_time"] == "2025-01-01T00:00:00.000000Z"
+        assert delta["next_run_latest_time"] == "2025-01-08T00:00:00.000000Z"
+        assert delta["offset"] == 2
+
+    def test_given_partial_page_when_fetch_then_delta_advances_window_and_clears_latest(self, mocker):
+        """Given a partial page (reset branch), when the handler runs, then
+        the window advances (`time == ts_max`, `next_run_latest_time is None`)
+        and offset resets — status doc Phase 3b lines 1618–1623."""
+        # GIVEN limit=5, only 1 row -> next_offset resets, window advances.
+        params = self._common_setup(mocker, {"investigations_max_fetch": "5"})
+        rows = [{**_sample_investigation_row(), "investigation_id": "ES-RESET-1"}]
+        service = self._service_returning(rows, mocker)
+        handler = splunk.InvestigationsFetchHandler()
+        # WHEN
+        result = handler.fetch(service, last_run={"offset": 0}, mapper=self._mapper(), params=params)
+        # THEN
+        delta = result.last_run_delta
+        assert delta["offset"] == 0
+        assert delta["next_run_latest_time"] is None
+        # Window advanced to ts_max.
+        assert delta["next_run_earliest_time"] == "2025-01-08T00:00:00.000000Z"
+        assert delta["time"] == delta["next_run_earliest_time"]
+
+
+class TestFetchIncidentsDispatcher:
+    """Given the refactored fetch_incidents dispatcher, when called with
+    different ``fetch_event_types`` configurations, then the right handlers
+    run, last-run namespacing is correct, and BC defaults preserve old
+    behavior."""
+
+    def setup_method(self):
+        self._registry_snapshot = dict(splunk.FetchHandlerFactory._registry)
+
+    def teardown_method(self):
+        splunk.FetchHandlerFactory._registry = self._registry_snapshot
+
+    def _install_stub(self, event_type: str, last_run_key, incidents=None, delta=None):
+        """Install a stub handler that returns a deterministic FetchResult."""
+        captured: dict = {}
+
+        class _StubHandler(splunk.FetchHandler):
+            def fetch(self, service, last_run, mapper, params):  # noqa: D401
+                captured["service"] = service
+                captured["last_run"] = last_run
+                captured["mapper"] = mapper
+                captured["params"] = params
+                return splunk.FetchResult(
+                    incidents=incidents or [],
+                    last_run_delta=delta or {},
+                )
+
+        _StubHandler.event_type = event_type
+        _StubHandler.last_run_key = last_run_key
+        _StubHandler.__name__ = f"Stub{event_type}Handler"
+        splunk.FetchHandlerFactory.register(event_type, _StubHandler)
+        return captured
+
+    def test_given_unset_fetch_event_types_then_only_findings_runs(self, mocker):
+        # GIVEN — only Findings stub registered, default fetch_event_types absent
+        splunk.FetchHandlerFactory._registry = {}
+        finding_inc = {"name": "f", "rawJSON": json.dumps({"splunk_es_event_type": "Finding"})}
+        finding_capture = self._install_stub("Finding", None, [finding_inc], {"next_run_earliest_time": "2025-01-08"})
+        mocker.patch.object(demisto, "params", return_value={"fetchQuery": "x"})
+        mocker.patch.object(demisto, "getLastRun", return_value={"time": "2025-01-01"})
+        incidents_mock = mocker.patch.object(demisto, "incidents")
+        set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+        # WHEN
+        splunk.fetch_incidents(service=MagicMock(), mapper=MagicMock())
+        # THEN
+        incidents_mock.assert_called_once_with([finding_inc])
+        last_run = set_last_run_mock.call_args[0][0]
+        assert last_run["time"] == "2025-01-01"  # carried over
+        assert last_run["next_run_earliest_time"] == "2025-01-08"  # top-level merge (BC)
+        assert "investigations" not in last_run
+        assert finding_capture["last_run"] == {"time": "2025-01-01"}
+
+    def test_given_investigation_only_then_only_investigations_runs_and_namespaced(self, mocker):
+        # GIVEN
+        splunk.FetchHandlerFactory._registry = {}
+        inv_inc = {"name": "i", "rawJSON": json.dumps({"splunk_es_event_type": "Investigation"})}
+        inv_capture = self._install_stub("Investigation", "investigations", [inv_inc], {"offset": 50, "time": "2025-01-08"})
+        # Also register Finding so unknown filtering doesn't leak.
+        self._install_stub("Finding", None, [], {})
+        mocker.patch.object(demisto, "params", return_value={"fetch_event_types": "Investigation"})
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={"time": "2024-12-25", "investigations": {"offset": 0}},
+        )
+        incidents_mock = mocker.patch.object(demisto, "incidents")
+        set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+        # WHEN
+        splunk.fetch_incidents(service=MagicMock(), mapper=MagicMock())
+        # THEN
+        incidents_mock.assert_called_once_with([inv_inc])
+        last_run = set_last_run_mock.call_args[0][0]
+        # Top-level keys untouched.
+        assert last_run["time"] == "2024-12-25"
+        # Namespaced keys merged.
+        assert last_run["investigations"]["offset"] == 50
+        assert last_run["investigations"]["time"] == "2025-01-08"
+        # Handler received only the namespaced scope.
+        assert inv_capture["last_run"] == {"offset": 0}
+
+    def test_given_both_selected_then_both_handlers_run_and_merged(self, mocker):
+        # GIVEN
+        splunk.FetchHandlerFactory._registry = {}
+        finding_inc = {"name": "f", "rawJSON": json.dumps({"splunk_es_event_type": "Finding"})}
+        inv_inc = {"name": "i", "rawJSON": json.dumps({"splunk_es_event_type": "Investigation"})}
+        self._install_stub("Finding", None, [finding_inc], {"next_run_earliest_time": "F"})
+        self._install_stub("Investigation", "investigations", [inv_inc], {"offset": 100})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"fetch_event_types": "Finding,Investigation"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        incidents_mock = mocker.patch.object(demisto, "incidents")
+        set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+        # WHEN
+        splunk.fetch_incidents(service=MagicMock(), mapper=MagicMock())
+        # THEN — Findings before Investigation per registration order.
+        emitted = incidents_mock.call_args[0][0]
+        assert emitted == [finding_inc, inv_inc]
+        last_run = set_last_run_mock.call_args[0][0]
+        assert last_run["next_run_earliest_time"] == "F"
+        assert last_run["investigations"]["offset"] == 100
+
+    def test_given_argToList_handles_csv_string(self, mocker):
+        # GIVEN — argToList accepts a comma-separated string.
+        splunk.FetchHandlerFactory._registry = {}
+        finding_inc = {"name": "f", "rawJSON": json.dumps({"splunk_es_event_type": "Finding"})}
+        inv_inc = {"name": "i", "rawJSON": json.dumps({"splunk_es_event_type": "Investigation"})}
+        self._install_stub("Finding", None, [finding_inc], {})
+        self._install_stub("Investigation", "investigations", [inv_inc], {})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"fetch_event_types": "Finding, Investigation"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        incidents_mock = mocker.patch.object(demisto, "incidents")
+        mocker.patch.object(demisto, "setLastRun")
+        # WHEN
+        splunk.fetch_incidents(service=MagicMock(), mapper=MagicMock())
+        # THEN
+        emitted = incidents_mock.call_args[0][0]
+        assert len(emitted) == 2
+
+    def test_given_handler_raises_when_dispatcher_runs_then_logs_error_and_reraises(self, mocker):
+        """Given a handler raises mid-fetch, when the dispatcher runs, then
+        `demisto.error` is called with the handler/event-type prefix and the
+        exception is re-raised; no `demisto.incidents`/`setLastRun` emit
+        happens (plan §3.10 + status doc Phase 3b deviation #4)."""
+        # GIVEN
+        splunk.FetchHandlerFactory._registry = {}
+        boom = RuntimeError("dispatcher-level boom")
+
+        class _RaisingHandler(splunk.FetchHandler):
+            event_type = "Investigation"
+            last_run_key = "investigations"
+
+            def fetch(self, service, last_run, mapper, params):
+                raise boom
+
+        splunk.FetchHandlerFactory.register("Investigation", _RaisingHandler)
+        mocker.patch.object(demisto, "params", return_value={"fetch_event_types": "Investigation"})
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        incidents_mock = mocker.patch.object(demisto, "incidents")
+        set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+        error_spy = mocker.patch.object(demisto, "error")
+        # WHEN / THEN
+        with pytest.raises(RuntimeError, match="dispatcher-level boom"):
+            splunk.fetch_incidents(service=MagicMock(), mapper=MagicMock())
+        # AND — error logged with handler name + event_type, no emit happened.
+        error_spy.assert_called_once()
+        logged = error_spy.call_args.args[0]
+        assert "_RaisingHandler" in logged
+        assert "Investigation" in logged
+        assert "dispatcher-level boom" in logged
+        incidents_mock.assert_not_called()
+        set_last_run_mock.assert_not_called()
+
+
+class TestListModifiedInvestigations:
+    """Given an investigations endpoint response, when list_modified_investigations
+    runs, then it returns the row dicts (or an empty list on failure)."""
+
+    @staticmethod
+    def _service_returning(payload) -> MagicMock:
+        """Build a fake `client.Service` whose `.get(endpoint)` returns ``payload``
+        wrapped in the splunklib body/read shape.
+
+        ``payload`` may be either the raw list of rows (matching the v2
+        contract that `_fetch_modified_investigations_page` consumes) or a
+        ``{"entry": [...]}`` wrapper kept for back-compat with older fixtures
+        — the wrapper is unwrapped automatically.
+        """
+        if isinstance(payload, dict) and "entry" in payload:
+            payload = payload["entry"]
+        service = MagicMock()
+        body = MagicMock()
+        body.read.return_value = json.dumps(payload).encode("utf-8")
+        response = MagicMock()
+        response.body = body
+        service.get.return_value = response
+        return service
+
+    def test_given_two_rows_when_called_then_both_returned_and_url_carries_update_time_min(self):
+        """
+        Given:
+            - The v2 endpoint returns two rows with `investigation_guid` values g-1 and g-2.
+        When:
+            - list_modified_investigations is called with update_time_min="2026-04-29T10:00:00Z".
+        Then:
+            - Both rows are returned, and the URL hit on the service contains
+              `update_time_min=2026-04-29T10:00:00Z`.
+        """
+        service = self._service_returning({"entry": [{"investigation_guid": "g-1"}, {"investigation_guid": "g-2"}]})
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z")
+        assert [r["investigation_guid"] for r in result] == ["g-1", "g-2"]
+        # `update_time_min` is forwarded as a kwarg on `service.get(...)`,
+        # not baked into the URL — splunklib serialises kwargs into the query
+        # string at HTTP-send time.
+        assert service.get.call_args.kwargs["update_time_min"] == "2026-04-29T10:00:00Z"
+
+    def test_given_row_missing_guid_when_called_then_id_row_is_kept(self):
+        """
+        Given:
+            - The endpoint returns a row that has only `investigation_id`.
+        When:
+            - list_modified_investigations runs.
+        Then:
+            - The row is kept in the returned list (the helper does not drop it).
+        """
+        service = self._service_returning({"entry": [{"investigation_id": "id-only"}]})
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z")
+        assert len(result) == 1
+        assert result[0]["investigation_id"] == "id-only"
+
+    def test_given_row_missing_both_when_called_then_silently_skipped(self):
+        """
+        Given:
+            - The endpoint returns a row that has neither `investigation_guid`
+              nor `investigation_id`.
+        When:
+            - list_modified_investigations runs.
+        Then:
+            - That row is silently skipped (not present in the result).
+        """
+        service = self._service_returning({"entry": [{"unrelated_field": "value"}, {"investigation_guid": "g-keep"}]})
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z")
+        assert len(result) == 1
+        assert result[0].get("investigation_guid") == "g-keep"
+
+    def test_given_caller_page_size_999_when_called_then_url_carries_limit_100(self):
+        """
+        Given:
+            - A caller passes page_size=999.
+        When:
+            - list_modified_investigations runs.
+        Then:
+            - The URL hit on the service contains `limit=100` (clamped to
+              INVESTIGATIONS_MAX_LIMIT).
+        """
+        service = self._service_returning({"entry": []})
+        splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z", page_size=999)
+        # `limit` is forwarded as a kwarg on `service.get(...)`; assert it was
+        # clamped to INVESTIGATIONS_MAX_LIMIT (100) before being passed on.
+        assert service.get.call_args.kwargs["limit"] == 100
+
+    def test_given_full_page_when_called_then_offset_advances_and_short_page_stops_loop(self, mocker):
+        """
+        Given:
+            - The first page returns a full page of rows (page_size rows) so the
+              loop must request the next page; the second page is short, ending pagination.
+        When:
+            - list_modified_investigations runs with a small page_size for clarity.
+        Then:
+            - Two service.get calls are made; the first carries `offset=0`, the second
+              `offset=<page_size>`. All rows from both pages are returned.
+        """
+        page_size = 2
+        first_page = [{"investigation_guid": "g-1"}, {"investigation_guid": "g-2"}]
+        second_page = [{"investigation_guid": "g-3"}]  # short page → loop stops
+
+        # Patch the per-page fetch helper directly so the test does not need to
+        # juggle multi-call MagicMock side_effects on `service.get`.
+        page_spy = mocker.patch.object(splunk, "_fetch_modified_investigations_page", side_effect=[first_page, second_page])
+
+        result = splunk.list_modified_investigations(
+            MagicMock(), update_time_min="2026-04-29T10:00:00Z", page_size=page_size, max_total=10
+        )
+
+        assert page_spy.call_count == 2
+        assert page_spy.call_args_list[0].args[3] == 0  # first offset
+        assert page_spy.call_args_list[1].args[3] == page_size  # advanced offset
+        assert [r["investigation_guid"] for r in result] == ["g-1", "g-2", "g-3"]
+
+    def test_given_max_total_reached_when_paginating_then_loop_stops_at_cap(self, mocker):
+        """
+        Given:
+            - Every page is full (so the loop would otherwise keep going).
+        When:
+            - list_modified_investigations runs with max_total=3 and page_size=2.
+        Then:
+            - Exactly 3 rows are returned and no further pages are requested
+              once the cap is reached.
+        """
+        full_page = [{"investigation_guid": "x"}, {"investigation_guid": "y"}]
+
+        # Each call returns a fresh page of two distinct ids (so dedup does not interfere).
+        def _page(_svc, _t, _ps, offset):
+            return [
+                {"investigation_guid": f"g-{offset}-a"},
+                {"investigation_guid": f"g-{offset}-b"},
+            ]
+
+        page_spy = mocker.patch.object(splunk, "_fetch_modified_investigations_page", side_effect=_page)
+
+        result = splunk.list_modified_investigations(
+            MagicMock(), update_time_min="2026-04-29T10:00:00Z", page_size=2, max_total=3
+        )
+        assert len(result) == 3
+        # 2 calls suffice: page 1 yields 2 rows, page 2 yields 1 more before max_total hits.
+        assert page_spy.call_count == 2
+        # `full_page` reference is intentionally unused; kept for readability only.
+        _ = full_page
+
+    def test_given_endpoint_raises_when_called_then_returns_empty_and_logs_error(self, mocker):
+        """
+        Given:
+            - The service.get call raises an exception.
+        When:
+            - list_modified_investigations runs.
+        Then:
+            - The function returns an empty list and demisto.error is called once,
+              so a single endpoint hiccup does not break Findings mirror-in.
+        """
+        service = MagicMock()
+        service.get.side_effect = RuntimeError("boom")
+        error_spy = mocker.patch.object(demisto, "error")
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z")
+        assert result == []
+        assert error_spy.call_count == 1
+
+    def test_given_mapper_with_mapping_enabled_when_called_then_owner_is_translated_to_xsoar_user(self):
+        """
+        Given:
+            - The v2 endpoint returns a row with `owner` = "splunk_user".
+            - A `UserMappingObject` whose `should_map` is True and that resolves
+              "splunk_user" → "xsoar_user".
+        When:
+            - list_modified_investigations is called with `mapper=<that mapper>`.
+        Then:
+            - The returned row's `owner` field is rewritten to "xsoar_user", matching
+              the Findings owner-mapping behaviour in get_modified_remote_data_command.
+        """
+        service = self._service_returning({"entry": [{"investigation_guid": "g-1", "owner": "splunk_user"}]})
+        mapper = MagicMock()
+        mapper.should_map = True
+        mapper.get_xsoar_user_by_splunk.return_value = "xsoar_user"
+        # Delegate to the real helper so we exercise the same code path Findings use.
+        mapper.map_owner_to_xsoar_user.side_effect = lambda rows: splunk.UserMappingObject.map_owner_to_xsoar_user(mapper, rows)
+
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z", mapper=mapper)
+
+        assert result[0]["owner"] == "xsoar_user"
+        mapper.get_xsoar_user_by_splunk.assert_called_once_with("splunk_user")
+
+    def test_given_mapper_with_mapping_disabled_when_called_then_owner_is_not_modified(self):
+        """
+        Given:
+            - The v2 endpoint returns a row with `owner` = "splunk_user".
+            - A `UserMappingObject` whose `should_map` is False (mapping disabled).
+        When:
+            - list_modified_investigations is called with `mapper=<that mapper>`.
+        Then:
+            - The row's `owner` is left untouched (no mapping lookup performed).
+        """
+        service = self._service_returning({"entry": [{"investigation_guid": "g-1", "owner": "splunk_user"}]})
+        mapper = MagicMock()
+        mapper.should_map = False
+        mapper.map_owner_to_xsoar_user.side_effect = lambda rows: splunk.UserMappingObject.map_owner_to_xsoar_user(mapper, rows)
+
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z", mapper=mapper)
+
+        assert result[0]["owner"] == "splunk_user"
+        mapper.get_xsoar_user_by_splunk.assert_not_called()
+
+    def test_given_no_mapper_when_called_then_owner_is_returned_as_is(self):
+        """
+        Given:
+            - The v2 endpoint returns a row with `owner` = "splunk_user".
+            - No mapper is supplied (caller did not pass one).
+        When:
+            - list_modified_investigations is called without `mapper`.
+        Then:
+            - The owner value is returned untouched, preserving the previous
+              behaviour for callers that have not opted into user mapping.
+        """
+        service = self._service_returning({"entry": [{"investigation_guid": "g-1", "owner": "splunk_user"}]})
+
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z")
+
+        assert result[0]["owner"] == "splunk_user"
+
+    def test_given_full_v2_row_when_called_then_rows_returned_in_canonical_parsed_shape(self):
+        """
+        Given:
+            - The v2 endpoint returns a representative investigations row
+              (`_sample_investigation_row`) carrying:
+                * a nested `findings.incident_ids` array,
+                * a nested `consolidated_findings` dict,
+                * none of the fetch-time normalisations applied.
+        When:
+            - list_modified_investigations is called.
+        Then:
+            - Every returned row carries the canonical fetch-time shape produced
+              by `parse_investigation`:
+                * `splunk_es_event_type == "Investigation"` (classifier tag),
+                * `incident_ids` lifted to top level,
+                * `consolidated_findings` JSON-serialised to a string.
+            - This guarantees mirror-in payloads match what the original fetch
+              flow emits via the Investigation class, so the classifier/mapper
+              receive consistently-shaped data on both code paths.
+        """
+        service = self._service_returning([_sample_investigation_row()])
+
+        result = splunk.list_modified_investigations(service, update_time_min="2026-04-29T10:00:00Z")
+
+        assert len(result) == 1
+        parsed_row = result[0]
+        # Classifier routing tag stamped by parse_investigation.
+        assert parsed_row[splunk.SPLUNK_ES_EVENT_TYPE_FIELD] == "Investigation"
+        # `findings.incident_ids` lifted to top level.
+        assert parsed_row["incident_ids"] == ["F-1", "F-2"]
+        # `consolidated_findings` serialised to JSON string (vs the dict in the raw row).
+        assert isinstance(parsed_row["consolidated_findings"], str)
+        assert json.loads(parsed_row["consolidated_findings"]) == {"summary": "n/a"}
+
+
+class TestGetModifiedRemoteDataInvestigations:
+    """Given fetch_event_types containing (or not containing) Investigation,
+    when get_modified_remote_data_command runs, then list_modified_investigations
+    is invoked (or skipped) and its rows are appended to the response."""
+
+    def _build_kwargs(self, mocker) -> dict:
+        service = mocker.patch.object(client, "Service")
+        return {
+            "service": service,
+            "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+            "close_incident": True,
+            "close_end_statuses": True,
+            "close_extra_labels": ["Custom"],
+            "mapper": splunk.UserMappingObject(service, False),
+        }
+
+    def test_given_investigations_selected_when_command_runs_then_guid_rows_appended(self, mocker):
+        """
+        Given:
+            - `fetch_event_types` is "Finding,Investigation".
+            - The Findings audit-log SPL search yields ids F-1 and F-2.
+            - list_modified_investigations is mocked to return [{"investigation_guid": "g-1"}].
+        When:
+            - get_modified_remote_data_command runs.
+        Then:
+            - The SplunkGetModifiedRemoteDataResponse carries all three rows
+              (F-1, F-2 from Findings + g-1 from Investigations) so the platform
+              can route each to its own get-remote-data handler.
+        """
+        kwargs = self._build_kwargs(mocker)
+        mocker.patch.object(demisto, "params", return_value={"timezone": "0", "fetch_event_types": "Finding,Investigation"})
+        finding_rows = [
+            {"rule_id": "F-1", "event_id": "F-1", "review_time": "1737547610.56"},
+            {"rule_id": "F-2", "event_id": "F-2", "review_time": "1737547611.56"},
+        ]
+        mocker.patch("SplunkPyV2.results.JSONResultsReader", return_value=finding_rows)
+        mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
+        # The mirror-in dedup loop in `get_modified_remote_data_command` filters
+        # out any investigation row missing `investigation_guid` OR `update_time`
+        # (these together form the dedup cache key). Provide both so the row
+        # survives the dedup filter and is appended to the response.
+        helper_spy = mocker.patch.object(
+            splunk,
+            "list_modified_investigations",
+            return_value=[{"investigation_guid": "g-1", "update_time": 1737547610.56}],
+        )
+        results_spy = mocker.patch.object(demisto, "results")
+
+        splunk.get_modified_remote_data_command(**kwargs)
+
+        assert helper_spy.call_count == 1
+        emitted_entries = results_spy.call_args[0][0]
+        mirror_ids = {entry["EntryContext"]["mirrorRemoteId"] for entry in emitted_entries}
+        assert {"F-1", "F-2", "g-1"}.issubset(mirror_ids)
+
+    def test_given_investigations_not_selected_when_command_runs_then_helper_not_called(self, mocker):
+        """
+        Given:
+            - `fetch_event_types` is "Finding" only.
+        When:
+            - get_modified_remote_data_command runs.
+        Then:
+            - list_modified_investigations is NOT invoked, preserving BC for
+              instances that have not opted into Investigation mirror-in.
+        """
+        kwargs = self._build_kwargs(mocker)
+        mocker.patch.object(demisto, "params", return_value={"timezone": "0", "fetch_event_types": "Finding"})
+        mocker.patch("SplunkPyV2.results.JSONResultsReader", return_value=[])
+        mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
+        helper_spy = mocker.patch.object(splunk, "list_modified_investigations")
+        mocker.patch.object(demisto, "results")
+
+        splunk.get_modified_remote_data_command(**kwargs)
+
+        assert helper_spy.call_count == 0
+
+
+# ============================================================================================
+# CLOSE-ON-MIRROR-IN TESTS FOR INVESTIGATIONS
+# ============================================================================================
+class TestHandleClosedEntitiesForInvestigations:
+    """Given investigation rows normalised by `parse_investigation` to expose the
+    canonical closure keys (`status_label`, `status_end`), when the SAME
+    `handle_closed_entities` helper that handles Findings is invoked, then
+    investigation rows whose Splunk-side status indicates closure produce a
+    `dbotIncidentClose` entry — and rows that are still open do not."""
+
+    def test_given_closed_investigation_when_helper_runs_then_close_entry_appended(self):
+        """
+        Given:
+            - An investigation row with `status_label="Closed"` (the canonical
+              key Findings also use; populated for investigations by
+              `parse_investigation` from the `status_name` field).
+        When:
+            - `handle_closed_entities` is called with `close_incident=True`
+              equivalent (i.e. the caller already gated on the param).
+        Then:
+            - Exactly one `dbotIncidentClose` entry is appended to `entries`,
+              keyed by the investigation guid via `mirrorRemoteId`, mirroring
+              the Findings closure shape verbatim.
+        """
+        entries: list[dict] = []
+        guid = "inv-guid-1"
+        investigations_map = {guid: {"status_label": "Closed", "status_end": "false"}}
+
+        splunk.handle_closed_entities(
+            modified_entities_map=investigations_map,
+            close_extra_labels=[],
+            close_end_statuses=False,
+            entries=entries,
+        )
+
+        assert len(entries) == 1
+        entry = entries[0]
+        assert entry["EntryContext"]["mirrorRemoteId"] == guid
+        assert entry["Type"] == EntryType.NOTE
+        assert entry["Contents"]["dbotIncidentClose"] is True
+        assert "Closed" in entry["Contents"]["closeReason"]
+
+    def test_given_open_investigation_when_helper_runs_then_no_close_entry_appended(self):
+        """
+        Given:
+            - An investigation row whose `status_label` is "New" (not closed,
+              not in the configured close_extra_labels).
+        When:
+            - `handle_closed_entities` is called.
+        Then:
+            - `entries` remains empty — the helper must not fabricate closure
+              for non-closed investigations.
+        """
+        entries: list[dict] = []
+        investigations_map = {"inv-guid-2": {"status_label": "New", "status_end": "false"}}
+
+        splunk.handle_closed_entities(
+            modified_entities_map=investigations_map,
+            close_extra_labels=["Custom"],
+            close_end_statuses=True,
+            entries=entries,
+        )
+
+        assert entries == []
+
+
+def test_given_close_incident_true_when_command_runs_then_handle_closed_entities_invoked_for_investigations(mocker):
+    """
+    Given:
+        - `fetch_event_types` includes "Investigation" and `close_incident=True`.
+        - `list_modified_investigations` returns one row keyed by `investigation_guid`.
+    When:
+        - `get_modified_remote_data_command` runs.
+    Then:
+        - `handle_closed_entities` is invoked for the investigations map (in
+          addition to / independently of the Findings call), proving the same
+          mechanism is wired up for both event types.
+    """
+    service = mocker.patch.object(client, "Service")
+    mocker.patch.object(demisto, "params", return_value={"timezone": "0", "fetch_event_types": "Investigation"})
+    mocker.patch("SplunkPyV2.results.JSONResultsReader", return_value=[])
+    mocker.patch("SplunkPyV2.get_current_splunk_time", return_value="2021-02-09T17:41:30.589575+02:00")
+    mocker.patch.object(
+        splunk,
+        "list_modified_investigations",
+        return_value=[{"investigation_guid": "g-99", "update_time": 1737547610.56, "status_label": "Closed"}],
+    )
+    mocker.patch.object(splunk, "enrich_with_splunk_notes_v2", return_value=[])
+    mocker.patch.object(demisto, "results")
+    handle_spy = mocker.patch.object(splunk, "handle_closed_entities")
+
+    splunk.get_modified_remote_data_command(
+        service=service,
+        args={"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        close_incident=True,
+        close_end_statuses=True,
+        close_extra_labels=["Custom"],
+        mapper=splunk.UserMappingObject(service, False),
+    )
+
+    # Assert handle_closed_entities was called with the investigations map (keyed
+    # by investigation_guid). The Findings branch is skipped because
+    # `fetch_event_types` is "Investigation"-only, so the only call must be the
+    # investigation one.
+    investigation_calls = [
+        call
+        for call in handle_spy.call_args_list
+        if "g-99" in (call.args[0] if call.args else call.kwargs.get("modified_entities_map", {}))
+    ]
+    assert len(investigation_calls) == 1
+
+
+# ===================== Tests for splunk_update_investigation_command =====================
+
+
+def _make_update_investigation_args(**overrides):
+    """Helper that builds a baseline args dict for splunk-update-investigation tests."""
+    base = {"event_ids": "INV-1"}
+    base.update(overrides)
+    return base
+
+
+def test_splunk_update_investigation_command_name_only(mocker):
+    """
+    Given:
+        - args containing event_ids and only the new `name` field.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - update_investigation_or_finding is called once with name=<value>.
+        - add_findings_to_investigation and add_investigation_note are NOT called.
+        - The readable_output mirrors the splunk-finding-event-edit success format
+          ("Splunk ES events updated successfully:" + per-id success line).
+    """
+    args = _make_update_investigation_args(name="My new investigation name")
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_note = mocker.patch.object(splunk, "add_investigation_note")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_or_finding_id="INV-1",
+        name="My new investigation name",
+    )
+    mock_add_note.assert_not_called()
+    mock_add_findings.assert_not_called()
+    assert result.readable_output == ("Splunk ES events updated successfully:\nSuccessfully updated Splunk ES event INV-1")
+
+
+def test_splunk_update_investigation_command_description_only(mocker):
+    """
+    Given:
+        - args containing event_ids and only the new `description` field.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - update_investigation_or_finding is called once with description=<value>.
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(description="Updated description text")
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mocker.patch.object(splunk, "add_investigation_note")
+    mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_or_finding_id="INV-1",
+        description="Updated description text",
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_name_and_description(mocker):
+    """
+    Given:
+        - args containing event_ids and both `name` and `description`.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - update_investigation_or_finding is called once with both fields together.
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(name="New Name", description="New Description")
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mocker.patch.object(splunk, "add_investigation_note")
+    mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_or_finding_id="INV-1",
+        name="New Name",
+        description="New Description",
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_single_finding(mocker):
+    """
+    Given:
+        - args containing event_ids and a single `findings` value.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - add_findings_to_investigation is called with a 1-element list.
+        - update_investigation_or_finding is NOT called (no other update fields).
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(findings="FND-1")
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_not_called()
+    mock_add_findings.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_id="INV-1",
+        finding_ids=["FND-1"],
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_multiple_findings_csv(mocker):
+    """
+    Given:
+        - args containing event_ids and a CSV `findings` value (multiple ids).
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - add_findings_to_investigation is called once with a list of all parsed finding ids
+          (single batch call, matching the Splunk API contract).
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(findings="FND-1,FND-2,FND-3")
+    mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_add_findings.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_id="INV-1",
+        finding_ids=["FND-1", "FND-2", "FND-3"],
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_combined_name_description_findings(mocker):
+    """
+    Given:
+        - args containing event_ids, name, description and findings together.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - update_investigation_or_finding is called with name + description.
+        - add_findings_to_investigation is called once with both finding ids.
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(
+        name="Combined name",
+        description="Combined description",
+        findings="FND-1,FND-2",
+    )
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_or_finding_id="INV-1",
+        name="Combined name",
+        description="Combined description",
+    )
+    mock_add_findings.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_id="INV-1",
+        finding_ids=["FND-1", "FND-2"],
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_no_updatable_args_raises(mocker):
+    """
+    Given:
+        - args containing only event_ids and no updatable fields.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - A DemistoException is raised with a clear message naming the supported fields.
+        - No HTTP-related helper is called.
+    """
+    args = {"event_ids": "INV-1"}
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_note = mocker.patch.object(splunk, "add_investigation_note")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    with pytest.raises(DemistoException, match="At least one of"):
+        splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_update.assert_not_called()
+    mock_add_note.assert_not_called()
+    mock_add_findings.assert_not_called()
+
+
+def test_add_findings_to_investigation_posts_batch():
+    """
+    Given:
+        - A list of two finding ids to append to an investigation.
+    When:
+        - add_findings_to_investigation is called.
+    Then:
+        - service.post is invoked once against the /findings endpoint with the JSON body
+          containing the `finding_ids` array (single batch, matching the Splunk API).
+    """
+    mock_service = MagicMock()
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = b"{}"
+    mock_service.post.return_value = mock_response
+
+    splunk.add_findings_to_investigation(
+        service=mock_service,
+        investigation_id="INV-9",
+        finding_ids=["FND-A", "FND-B"],
+    )
+
+    assert mock_service.post.call_count == 1
+    args, kwargs = mock_service.post.call_args
+    assert args[0] == "public/v2/investigations/INV-9/findings"
+    body = json.loads(kwargs["body"])
+    assert body == {"finding_ids": ["FND-A", "FND-B"]}
+
+
+def test_splunk_update_investigation_command_findings_with_finding_times(mocker):
+    """
+    Given:
+        - args containing event_ids, multiple `findings` and a matching number of `finding_times`.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - add_findings_to_investigation is called once with finding_ids and finding_times in the same order.
+        - The underlying request body (via the helper) carries both arrays in parallel.
+        - The readable_output uses the standard success format with the investigation id.
+    """
+    args = _make_update_investigation_args(
+        findings="FND-1,FND-2,FND-3",
+        finding_times="1700000001,1700000002,1700000003",
+    )
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_add_findings.assert_called_once_with(
+        service=mocker.ANY,
+        investigation_id="INV-1",
+        finding_ids=["FND-1", "FND-2", "FND-3"],
+        finding_times=["1700000001", "1700000002", "1700000003"],
+    )
+    assert "Successfully updated Splunk ES event INV-1" in result.readable_output
+
+
+def test_splunk_update_investigation_command_finding_times_without_findings_raises(mocker):
+    """
+    Given:
+        - args containing event_ids and `finding_times` but no `findings`.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - A DemistoException is raised with a clear message stating finding_times requires findings.
+        - add_findings_to_investigation is NOT called.
+    """
+    args = _make_update_investigation_args(finding_times="1700000001,1700000002")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    with pytest.raises(DemistoException, match="'finding_times' was provided without 'findings'"):
+        splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_add_findings.assert_not_called()
+
+
+def test_splunk_update_investigation_command_findings_with_multiple_event_ids_raises(mocker):
+    """
+    Given:
+        - args containing multiple event_ids (CSV) together with a `findings` value.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - A DemistoException is raised stating findings can only be used with a single investigation.
+        - add_findings_to_investigation is NOT called (guard fires before any HTTP call).
+    """
+    args = _make_update_investigation_args(event_ids="ES-1,ES-2", findings="FND-1")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+    mocker.patch.object(splunk, "update_investigation_or_finding")
+    mocker.patch.object(splunk, "add_investigation_note")
+
+    with pytest.raises(
+        DemistoException,
+        match="'findings' \\(and 'finding_times'\\) can only be used when updating a single investigation",
+    ):
+        splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_add_findings.assert_not_called()
+
+
+def test_splunk_update_investigation_command_finding_times_with_multiple_event_ids_raises(mocker):
+    """
+    Given:
+        - args containing multiple event_ids (CSV) together with `findings` and `finding_times`.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - A DemistoException is raised stating findings/finding_times require a single investigation.
+        - add_findings_to_investigation is NOT called (guard fires before any HTTP call).
+    """
+    args = _make_update_investigation_args(
+        event_ids="ES-1,ES-2",
+        findings="FND-1",
+        finding_times="1700000001",
+    )
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+    mocker.patch.object(splunk, "update_investigation_or_finding")
+    mocker.patch.object(splunk, "add_investigation_note")
+
+    with pytest.raises(
+        DemistoException,
+        match="'findings' \\(and 'finding_times'\\) can only be used when updating a single investigation",
+    ):
+        splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    mock_add_findings.assert_not_called()
+
+
+def test_splunk_update_investigation_command_multiple_event_ids_without_findings_still_works(mocker):
+    """
+    Given:
+        - args containing multiple event_ids (CSV) and `name` but NO findings/finding_times.
+    When:
+        - splunk_update_investigation_command is called.
+    Then:
+        - No exception is raised; the existing multi-investigation update path is preserved.
+        - update_investigation_or_finding is called once per investigation id with name=<value>.
+        - add_findings_to_investigation is NOT called.
+    """
+    args = _make_update_investigation_args(event_ids="ES-1,ES-2", name="updated")
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mock_add_note = mocker.patch.object(splunk, "add_investigation_note")
+    mock_add_findings = mocker.patch.object(splunk, "add_findings_to_investigation")
+
+    result = splunk.splunk_update_investigation_command(service=MagicMock(), args=args)
+
+    assert mock_update.call_count == 2
+    mock_update.assert_any_call(
+        service=mocker.ANY,
+        investigation_or_finding_id="ES-1",
+        name="updated",
+    )
+    mock_update.assert_any_call(
+        service=mocker.ANY,
+        investigation_or_finding_id="ES-2",
+        name="updated",
+    )
+    mock_add_note.assert_not_called()
+    mock_add_findings.assert_not_called()
+    assert "Successfully updated Splunk ES event ES-1" in result.readable_output
+    assert "Successfully updated Splunk ES event ES-2" in result.readable_output

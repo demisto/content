@@ -50,6 +50,9 @@ outputs:
 - contextPath: Email.HTML
   description: Email 'html' body if exists.
   type: string
+- contextPath: Email.HTMLUnescape
+  description: The HTML body with all HTML entities decoded (e.g. '&amp;' becomes '&'). Use this field for indicator extraction from HTML emails to ensure URLs and other indicators are correctly formed.
+  type: string
 - contextPath: Email.Text
   description: Email 'text' body if exists.
   type: string
@@ -117,4 +120,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - ParseEmailFilesV2-test
-dockerimage: demisto/parse-emails:0.1.48.6539219
+dockerimage: demisto/parse-emails:0.1.48.8231046

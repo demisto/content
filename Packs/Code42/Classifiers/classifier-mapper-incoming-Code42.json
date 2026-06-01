@@ -130,5 +130,9 @@
     },
     "version": -1,
     "fromVersion": "6.5.0",
-    "feed": false
+    "feed": false,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

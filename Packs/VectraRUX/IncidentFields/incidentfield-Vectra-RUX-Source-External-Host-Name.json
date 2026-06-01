@@ -1,0 +1,31 @@
+{
+    "id": "incident_vectraruxsourceexternalhostname",
+    "version": -1,
+    "modified": "2025-12-29T12:26:06.111568769+05:30",
+    "name": "Vectra RUX Source External Host Name",
+    "ownerOnly": false,
+    "cliName": "vectraruxsourceexternalhostname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Vectra RUX Events Detection"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

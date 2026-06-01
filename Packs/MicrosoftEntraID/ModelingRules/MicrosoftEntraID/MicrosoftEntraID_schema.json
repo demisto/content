@@ -198,6 +198,10 @@
             "type": "string",
             "is_array": false
         },
+        "location": {
+            "type": "string",
+            "is_array": false
+        },
         "networkLocationDetails": {
             "type": "string",
             "is_array": false
