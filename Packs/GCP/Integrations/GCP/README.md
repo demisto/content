@@ -7,8 +7,8 @@ This integration was integrated and tested with version v1 (Compute, Storage, Co
 | --- | --- | --- |
 | Service Account Private Key file content (JSON). | Required for Cortex XSOAR and Cortex XSIAM. Paste the full contents of a GCP Service Account private key JSON file. Not required on Cortex Cloud \(platform\), where authentication is handled automatically via the cloud connector. | False |
 | GCP Project ID | Required for Cortex XSOAR and Cortex XSIAM. The GCP project ID to authenticate against when testing the integration \(e.g. my-project-123\). Not required on Cortex Cloud \(platform\). | False |
-| Use system proxy settings |  | False |
-| Trust any certificate (not secure) |  | False |
+| Use system proxy settings | Use system proxy settings. | False |
+| Trust any certificate (not secure) | Trust any certificate (not secure). | False |
 
 ## Commands
 
