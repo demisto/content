@@ -39,19 +39,21 @@ tasks:
   "14":
     id: "14"
     taskid: bcc8b85f-7acd-4003-8cb4-09a85dcd4ad7
-    type: regular
+    type: condition
     task:
       id: bcc8b85f-7acd-4003-8cb4-09a85dcd4ad7
       version: -1
-      name: Check Check Point EM Takedowns integration availability
+      name: Is the Check Point EM Takedowns integration enabled?
       description: Runs the IsIntegrationAvailable script against the Check Point EM Takedowns integration so the playbook can short-circuit gracefully if no instance is configured.
-      script: IsIntegrationAvailable
-      type: regular
+      scriptName: IsIntegrationAvailable
+      type: condition
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
-      '#none#':
-      - "15"
+      "no":
+      - "16"
+      "yes":
+      - "1"
     scriptarguments:
       brandname:
         simple: Cyberint Takedowns
@@ -61,48 +63,6 @@ tasks:
         "position": {
           "x": 450,
           "y": 145
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: 736fd76f-f490-4b23-a834-bd129b90fc41
-    type: condition
-    task:
-      id: 736fd76f-f490-4b23-a834-bd129b90fc41
-      version: -1
-      name: Is the Check Point EM Takedowns integration enabled?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: Routes to the main flow only when the Check Point EM Takedowns integration reports an enabled instance.
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: brandInstances
-            iscontext: true
-          right:
-            value:
-              simple: "yes"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
         }
       }
     note: false
@@ -122,6 +82,9 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
+    nexttasks:
+      \'#none#\':
+      - "17"
     separatecontext: false
     view: |-
       {
@@ -327,7 +290,8 @@ tasks:
         complex:
           root: inputs.AlertID
       note:
-        simple: Submitted automatically by the Cyberint - Phishing Takedown SOAR playbook.
+        complex:
+          root: inputs.Note
     separatecontext: false
     view: |-
       {
@@ -353,7 +317,7 @@ tasks:
       script: '|||setIncident'
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "7"
@@ -436,7 +400,7 @@ tasks:
       script: '|||setIncident'
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "9"
@@ -466,7 +430,9 @@ tasks:
       name: Notify SOC of takedown outcome
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
+      script: Print
+      scriptName: Print
       description: |-
         Notify the SOC team of the final takedown status (see Cyberint.takedowns_list in the context).
 
@@ -474,6 +440,11 @@ tasks:
     nexttasks:
       '#none#':
       - "11"
+    scriptarguments:
+      value:
+        simple: "Phishing takedown outcome for ${inputs.URL} (alert ${inputs.AlertID}): status=${Cyberint.takedowns_list.status}, status_reason=${Cyberint.takedowns_list.status_reason}, last_action=${Cyberint.takedowns_list.last_action_date}.
+
+If the status indicates pending details, supply the additional information Cyberint is requesting (e.g. registrar correspondence, brand/copyright proof). Wire this task to your notification integration (email, Slack, Microsoft Teams) to dispatch a real alert to the SOC."
     separatecontext: false
     view: |-
       {
@@ -497,7 +468,9 @@ tasks:
       name: Manual review - confidence below threshold
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
+      script: Print
+      scriptName: Print
       description: |-
         The phishing website alert did not meet the configured confidence and severity thresholds for an automated takedown.
 
@@ -505,6 +478,16 @@ tasks:
     nexttasks:
       '#none#':
       - "12"
+    scriptarguments:
+      value:
+        simple: "Phishing alert did not meet the configured automated-takedown thresholds.
+
+URL: ${inputs.URL}
+Alert ID: ${inputs.AlertID}
+Confidence: ${inputs.Confidence} (threshold ${inputs.ConfidenceThreshold})
+Severity: ${inputs.Severity} (minimum ${inputs.MinSeverity})
+
+Review the alert; if appropriate, submit a takedown request manually via cyberint-takedown-url customer=${inputs.CustomerID} url=${inputs.URL} reason=${inputs.Reason}."
     separatecontext: false
     view: |-
       {
@@ -530,6 +513,9 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
+    nexttasks:
+      \'#none#\':
+      - "17"
     separatecontext: false
     view: |-
       {
@@ -555,6 +541,9 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
+    nexttasks:
+      \'#none#\':
+      - "17"
     separatecontext: false
     view: |-
       {
@@ -580,12 +569,40 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
+    nexttasks:
+      \'#none#\':
+      - "17"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
           "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: b368697c-d6ba-44d7-ac05-8cb503f116d4
+    type: title
+    task:
+      id: b368697c-d6ba-44d7-ac05-8cb503f116d4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1945
         }
       }
     note: false
@@ -610,12 +627,12 @@ inputs:
   value:
     simple: ${incident.cyberintalertdata.url}
   required: false
-  description: The phishing website URL to submit for takedown. Defaults to the URL from the Cyberint alert data.
+  description: 'The phishing website URL to submit for takedown. Expected format: full URL including the scheme, e.g. ``http://evil.example.com/login``. Defaults to the URL from the Cyberint alert data.'
   playbookInputQuery:
 - key: CustomerID
   value: {}
   required: true
-  description: The Cyberint customer ID, as configured in the Cyberint integration. Used to submit and track the takedown request.
+  description: 'The Cyberint customer ID, as configured in the Cyberint Takedown integration. Expected format: customer identifier string, e.g. ``acme-corp``. Used to submit and track the takedown request.'
   playbookInputQuery:
 - key: Reason
   value:
@@ -627,49 +644,55 @@ inputs:
   value:
     simple: ${incident.cyberintalertid}
   required: false
-  description: The Cyberint alert ID associated with the phishing website. Used to correlate the takedown request with the alert.
+  description: 'The Cyberint alert ID associated with the phishing website. Expected format: numeric alert ID, e.g. ``123456``. Used to correlate the takedown request with the alert.'
   playbookInputQuery:
 - key: Confidence
   value:
     simple: ${incident.cyberintconfidence}
   required: false
-  description: The confidence score (0-100) of the phishing website alert. Defaults to the Cyberint alert confidence field.
+  description: 'The confidence score (0-100) of the phishing website alert. Accepts a single number 0-100, e.g. ``80`` or ``95``. Defaults to the Cyberint alert confidence field.'
   playbookInputQuery:
 - key: ConfidenceThreshold
   value:
     simple: "80"
   required: false
-  description: The minimum confidence score (0-100) required to initiate a takedown. Default is 80.
+  description: 'Minimum confidence score (0-100) required to initiate a takedown. Accepts a single number 0-100, e.g. ``80``. Default is 80.'
   playbookInputQuery:
 - key: Severity
   value:
     simple: ${incident.severity}
   required: false
-  description: The severity of the incident (1-Low, 2-Medium, 3-High, 4-Critical). Defaults to the incident severity.
+  description: 'The severity of the incident. Accepts a single integer 1-4: ``1`` Low, ``2`` Medium, ``3`` High, ``4`` Critical. Defaults to the incident severity.'
   playbookInputQuery:
 - key: MinSeverity
   value:
     simple: "3"
   required: false
-  description: The minimum incident severity (1-4) required to initiate a takedown. Default is 3 (High).
+  description: 'Minimum incident severity required to initiate a takedown. Accepts a single integer 1-4 (Low/Medium/High/Critical), e.g. ``3``. Default is 3 (High).'
   playbookInputQuery:
 - key: AutoTakedown
   value:
     simple: "no"
   required: false
-  description: Whether to submit the takedown request automatically (yes) or to require analyst approval first (no). Default is no.
+  description: 'Whether to submit the takedown request automatically (``yes``) or to require analyst approval first (``no``). Default is ``no``.'
   playbookInputQuery:
 - key: PollingInterval
   value:
     simple: "5"
   required: false
-  description: How often, in minutes, to poll the Cyberint takedown request status. Default is 5.
+  description: 'How often, in minutes, to poll the Cyberint takedown request status. Accepts a positive integer, e.g. ``5`` or ``15``. Default is 5.'
   playbookInputQuery:
 - key: PollingTimeout
   value:
     simple: "1440"
   required: false
-  description: How long, in minutes, to keep polling the takedown request status before timing out. Default is 1440 (24 hours).
+  description: 'How long, in minutes, to keep polling the takedown request status before timing out. Accepts a positive integer, e.g. ``1440`` (24 hours). Default is 1440.'
+  playbookInputQuery:
+- key: Note
+  value:
+    simple: Submitted automatically by the Check Point - Phishing Takedown SOAR playbook.
+  required: false
+  description: 'Optional free-text note attached to the Cyberint takedown request. Accepts a single string, e.g. ``Ticket ABC-1234`` or the default value. Use this to embed an internal ticket reference into the takedown request without editing the playbook.'
   playbookInputQuery:
 outputs:
 - contextPath: Cyberint.takedowns_submit
@@ -680,7 +703,7 @@ outputs:
   type: unknown
 tests:
 - Check Point - Phishing Takedown - Test
-fromversion: 6.10.0
+fromversion: 6.9.0
 marketplaces:
 - xsoar
 - marketplacev2

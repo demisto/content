@@ -39,19 +39,24 @@ tasks:
   "13":
     id: "13"
     taskid: c10df9f0-5912-493e-82f3-00a48ca68d0a
-    type: regular
+    type: condition
     task:
       id: c10df9f0-5912-493e-82f3-00a48ca68d0a
       version: -1
-      name: Check Check Point EM Feed integration availability
+      name: Is the Check Point EM Feed integration enabled?
       description: Runs the IsIntegrationAvailable script against the Check Point EM Feed integration so the playbook can short-circuit gracefully if no instance is configured.
-      script: IsIntegrationAvailable
-      type: regular
+      scriptName: IsIntegrationAvailable
+      type: condition
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
-      '#none#':
-      - "14"
+      "no":
+      - "15"
+      "yes":
+      - "1"
+      - "3"
+      - "5"
+      - "7"
     scriptarguments:
       brandname:
         simple: Cyberint Feed
@@ -61,51 +66,6 @@ tasks:
         "position": {
           "x": 450,
           "y": 145
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: 9775138a-cd10-44a6-b174-3ea5d76815ec
-    type: condition
-    task:
-      id: 9775138a-cd10-44a6-b174-3ea5d76815ec
-      version: -1
-      name: Is the Check Point EM Feed integration enabled?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: Routes to the main flow only when the Check Point EM Feed integration reports an enabled instance.
-    nexttasks:
-      '#default#':
-      - "15"
-      "yes":
-      - "1"
-      - "3"
-      - "5"
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: brandInstances
-            iscontext: true
-          right:
-            value:
-              simple: "yes"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
         }
       }
     note: false
@@ -125,6 +85,9 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
+    nexttasks:
+      \'#none#\':
+      - "16"
     separatecontext: false
     view: |-
       {
@@ -549,7 +512,7 @@ tasks:
       script: '|||setIncident'
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "12"
@@ -583,7 +546,7 @@ tasks:
       script: '|||setIncident'
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "12"
@@ -615,12 +578,40 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
+    nexttasks:
+      \'#none#\':
+      - "16"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
           "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 69a40a7b-1bfd-4fd5-adc4-795bf28a1162
+    type: title
+    task:
+      id: 69a40a7b-1bfd-4fd5-adc4-795bf28a1162
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1070
         }
       }
     note: false
@@ -647,7 +638,7 @@ inputs:
       root: IP
       accessor: Address
   required: false
-  description: IP address indicators to enrich with Cyberint threat intelligence. Defaults to IP indicators extracted from the incident.
+  description: 'IP address indicators to enrich. Expected format: IPv4 dotted notation. Accepts a comma-separated list, e.g. ``1.1.1.1,8.8.8.8``. Defaults to IP indicators extracted from the incident.'
   playbookInputQuery:
 - key: Domain
   value:
@@ -655,7 +646,7 @@ inputs:
       root: Domain
       accessor: Name
   required: false
-  description: Domain indicators to enrich with Cyberint threat intelligence. Defaults to domain indicators extracted from the incident.
+  description: 'Domain indicators to enrich. Expected format: registered domain name. Accepts a comma-separated list, e.g. ``example.com,evil.example.org``. Defaults to domain indicators extracted from the incident.'
   playbookInputQuery:
 - key: URL
   value:
@@ -663,7 +654,7 @@ inputs:
       root: URL
       accessor: Data
   required: false
-  description: URL indicators to enrich with Cyberint threat intelligence. Defaults to URL indicators extracted from the incident.
+  description: 'URL indicators to enrich. Expected format: full URL including the scheme. Accepts a comma-separated list, e.g. ``http://evil.example.com/login,https://phish.example.net/x``. Defaults to URL indicators extracted from the incident.'
   playbookInputQuery:
 - key: FileSHA256
   value:
@@ -671,13 +662,13 @@ inputs:
       root: File
       accessor: SHA256
   required: false
-  description: SHA256 file hash indicators to enrich with Cyberint threat intelligence. Defaults to file hashes extracted from the incident.
+  description: 'SHA256 file hash indicators to enrich. Expected format: 64-character hexadecimal SHA256 (case-insensitive). Accepts a comma-separated list, e.g. ``6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789``. Defaults to file hashes extracted from the incident.'
   playbookInputQuery:
 - key: MaliciousScoreThreshold
   value:
     simple: "50"
   required: false
-  description: The Cyberint maliciousness score (0-100) at or above which an indicator is treated as malicious and the incident is escalated. Default is 50.
+  description: 'Cyberint maliciousness score (0-100) at or above which an indicator is treated as malicious and the incident is escalated. Accepts a single number 0-100, e.g. ``50`` or ``80``. Default is 50.'
   playbookInputQuery:
 outputs:
 - contextPath: Cyberint.ipv4
@@ -694,7 +685,7 @@ outputs:
   type: unknown
 tests:
 - Check Point - IOC Enrichment and Triage - Test
-fromversion: 6.10.0
+fromversion: 6.9.0
 marketplaces:
 - xsoar
 - marketplacev2
