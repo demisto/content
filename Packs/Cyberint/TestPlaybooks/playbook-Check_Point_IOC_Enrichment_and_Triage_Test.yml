@@ -1,6 +1,7 @@
 id: Check Point - IOC Enrichment and Triage - Test
 version: -1
 name: Check Point - IOC Enrichment and Triage - Test
+hidden: true
 description: Test playbook for "Check Point - IOC Enrichment and Triage". Seeds sample IP / domain / URL / SHA256 indicators, runs the playbook, and verifies that Cyberint IOC enrichment context is produced.
 starttaskid: "0"
 tasks:

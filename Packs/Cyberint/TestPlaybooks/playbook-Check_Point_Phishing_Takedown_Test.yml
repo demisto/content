@@ -1,6 +1,7 @@
 id: Check Point - Phishing Takedown - Test
 version: -1
 name: Check Point - Phishing Takedown - Test
+hidden: true
 description: Test playbook for "Check Point - Phishing Takedown". Seeds a sample phishing URL and customer ID, runs the playbook in semi-automated mode (analyst approval required), and verifies that the takedown flow reaches a terminal state.
 starttaskid: "0"
 tasks:

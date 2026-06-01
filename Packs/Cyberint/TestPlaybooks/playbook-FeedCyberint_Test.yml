@@ -1,6 +1,7 @@
 id: FeedCyberint
 version: -1
 name: FeedCyberint
+hidden: true
 starttaskid: "0"
 tasks:
   "0":

@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -150
         }
       }
     note: false
@@ -62,7 +62,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 145
+          "y": -15
         }
       }
     note: false
@@ -89,8 +89,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 195
+          "x": 990,
+          "y": 225
         }
       }
     note: false
@@ -179,7 +179,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 370
+          "y": 380
         }
       }
     note: false
@@ -220,7 +220,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 340,
           "y": 545
         }
       }
@@ -251,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 720
+          "x": 240,
+          "y": 740
         }
       }
     note: false
@@ -576,8 +576,8 @@ Review the alert; if appropriate, submit a takedown request manually via cyberin
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 0,
+          "y": 395
         }
       }
     note: false
@@ -601,8 +601,8 @@ Review the alert; if appropriate, submit a takedown request manually via cyberin
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1945
+          "x": 760,
+          "y": 1940
         }
       }
     note: false
@@ -612,13 +612,15 @@ Review the alert; if appropriate, submit a takedown request manually via cyberin
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "16_17_none": 0.83
+    },
     "paper": {
       "dimensions": {
-        "height": 1785,
-        "width": 1090,
-        "x": 50,
-        "y": 50
+        "height": 2155,
+        "width": 1370,
+        "x": 0,
+        "y": -150
       }
     }
   }

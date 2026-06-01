@@ -1,6 +1,7 @@
 id: playbook-Cyberint_Test
 version: -1
 name: playbook-Cyberint_Test
+hidden: true
 starttaskid: "0"
 tasks:
   "0":
