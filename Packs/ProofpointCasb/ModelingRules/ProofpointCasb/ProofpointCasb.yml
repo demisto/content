@@ -3,3 +3,5 @@ id: ProofpointCASB_ModelingRule
 name: ProofpointCASB Modeling Rule
 rules: ''
 schema: ''
+supportedModules:
+- xsiam

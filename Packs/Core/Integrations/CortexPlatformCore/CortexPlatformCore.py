@@ -1,3 +1,4 @@
+import traceback
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -32,17 +33,17 @@ WINDOWS_PLATFORM = "Windows"
 
 
 ASSET_FIELDS = {
-    "asset_names": "xdm.asset.name",
-    "asset_types": "xdm.asset.type.name",
-    "asset_tags": "xdm.asset.tags",
-    "asset_ids": "xdm.asset.id",
-    "asset_providers": "xdm.asset.provider",
-    "asset_realms": "xdm.asset.realm",
-    "asset_group_ids": "xdm.asset.group_ids",
-    "asset_categories": "xdm.asset.type.category",
-    "asset_classes": "xdm.asset.type.class",
-    "software_package_versions": "xdm.software_package.version",
-    "kubernetes_cluster_versions": "xdm.kubernetes.cluster.version",
+    "asset_names": "xdm__asset__name",
+    "asset_types": "xdm__asset__type__name",
+    "asset_tags": "xdm__asset__tags",
+    "asset_ids": "xdm__asset__id",
+    "asset_providers": "xdm__asset__provider",
+    "asset_realms": "xdm__asset__realm",
+    "asset_group_ids": "xdm__asset__group_ids",
+    "asset_categories": "xdm__asset__type__category",
+    "asset_classes": "xdm__asset__type__class",
+    "software_package_versions": "xdm__software_package__version",
+    "kubernetes_cluster_versions": "xdm__kubernetes__cluster__version",
 }
 
 APPSEC_SOURCES = [
@@ -82,6 +83,7 @@ WEBAPP_COMMANDS = [
     "core-list-brokers",
     "core-create-endpoint-policy",
     "core-delete-endpoint-policy",
+    "core-search-assets",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -90,6 +92,7 @@ XSOAR_COMMANDS = ["core-run-playbook", "core-get-case-resolution-statuses"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+ASSETS_TABLE = "UNIFIED_ASSET_MANAGEMENT_AGGREGATED_ASSETS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
@@ -464,6 +467,17 @@ DAYS_MAPPING = {
     "saturday": 7,
 }
 
+# Mapping from human-readable issue type names to table names.
+ISSUE_TYPE_TABLE_MAPPING: dict[str, str] = {
+    "vulnerabilities": "ISSUES_CVES",
+    "secrets": "ISSUES_SECRETS",
+    "iac": "ISSUES_IAC",
+    "weaknesses": "ISSUES_WEAKNESSES",
+    "operational_risk": "ISSUES_OPERATIONAL_RISK",
+    "licenses": "ISSUES_LICENSES",
+    "cicd": "ISSUES_CI_CD",
+}
+
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     """
@@ -815,7 +829,7 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             data=request_body,
-            headers={**self._headers, "content-type": "application/json"},
+            headers=self._headers,
             url_suffix="/v1/issues/fix/trigger_fix_pull_request",
         )
 
@@ -839,7 +853,7 @@ class Client(CoreClient):
         return self._http_request(
             method="POST",
             data=policy_payload,
-            headers={**self._headers, "content-type": "application/json"},
+            headers=self._headers,
             url_suffix="/public_api/appsec/v1/policies",
         )
 
@@ -1022,8 +1036,9 @@ class Client(CoreClient):
         Retrieve custom fields metadata from the CUSTOM_FIELDS_CASE_TABLE.
 
         Returns comprehensive metadata for all custom fields including:
-        - CUSTOM_FIELD_NAME: Internal field identifier
+        - CUSTOM_FIELD_NAME: Internal field identifier (display name)
         - CUSTOM_FIELD_PRETTY_NAME: User-friendly display name
+        - CUSTOM_FIELD_CLI_NAME: Machine/CLI name used in commands and search
         - CUSTOM_FIELD_IS_SYSTEM: Boolean flag (true = system field, false = custom field)
         - CUSTOM_FIELD_TYPE: Field data type
 
@@ -1042,6 +1057,7 @@ class Client(CoreClient):
                 "paging": {"from": 0, "to": 1000},
             },
             "jsons": [],
+            "on_demand_fields": ["CUSTOM_FIELD_CLI_NAME"],
         }
 
         return self.get_webapp_data(request_data)
@@ -1121,6 +1137,42 @@ class Client(CoreClient):
             url_suffix="/agent/policy/update",
             json_data={"update_data": update_data},
         )
+
+    def get_multiple_cases_extra_data(self, case_ids: list[str]) -> dict:
+        """
+        Retrieve extra data for multiple cases in a single bulk API call.
+
+        Uses the /public_api/v1/incidents/get_multiple_incidents_extra_data/ endpoint
+        to fetch enriched data (alerts, network/file artifacts) for all provided case IDs at once.
+
+        Args:
+            case_ids: List of case ID strings to retrieve extra data for.
+
+        Returns:
+            dict: The raw API response containing enriched data for all requested cases.
+        """
+        payload = {
+            "request_data": {
+                "filters": [
+                    {
+                        "field": "incident_id_list",
+                        "operator": "in",
+                        "value": case_ids,
+                    },
+                ],
+                "full_alert_fields": True,
+            }
+        }
+        demisto.debug(f"Calling get_multiple_incidents_extra_data with case_ids={case_ids}")
+        response = self._http_request(
+            method="POST",
+            url_suffix="/public_api/v1/incidents/get_multiple_incidents_extra_data/",
+            json_data=payload,
+            headers=self._headers,
+            timeout=self.timeout,
+        )
+        demisto.debug(f"get_multiple_incidents_extra_data response received for {len(case_ids)} cases")
+        return response
 
 
 def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
@@ -1306,6 +1358,7 @@ def create_issue_recommendations_readable_output(issue_ids: list[str], all_recom
         "severity",
         "description",
         "remediation",
+        "network_reachability",
     ]
 
     # Flags to track what headers we need to append
@@ -1414,6 +1467,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
             "severity": issue.get("severity"),
             "description": issue.get("alert_description"),
             "remediation": issue.get("remediation"),
+            "network_reachability": issue.get("extended_fields", {}).get("network_reachability") or {},
         }
 
         # --- Playbook and Quick Action Suggestions ---
@@ -1655,13 +1709,14 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def extract_ids(case_extra_data: dict) -> list:
+def extract_ids(case_extra_data: dict, data_key: str = "issues", field_name: str = "issue_id") -> list:
     """
     Extract a list of IDs from a command result.
 
     Args:
-        command_res: The result of a command. It can be either a dictionary or a list.
-        field_name: The name of the field that contains the ID.
+        case_extra_data: The extra data dictionary containing the nested data.
+        data_key: The top-level key containing the data list (default: "issues").
+        field_name: The name of the field that contains the ID (default: "issue_id").
 
     Returns:
         A list of the IDs extracted from the command result.
@@ -1669,63 +1724,90 @@ def extract_ids(case_extra_data: dict) -> list:
     if not case_extra_data:
         return []
 
-    field_name = "issue_id"
-    issues = case_extra_data.get("issues", {})
-    issues_data = issues.get("data", {}) if issues else {}
-    issue_ids = [issue.get(field_name) for issue in issues_data if isinstance(issue, dict) and field_name in issue]
-    demisto.debug(f"Extracted issue ids: {issue_ids}")
-    return issue_ids
+    container = case_extra_data.get(data_key, {})
+    data = container.get("data", []) if container else []
+    ids = [str(item[field_name]) for item in data if isinstance(item, dict) and item.get(field_name) is not None]
+    demisto.debug(f"Extracted {field_name}s: {ids}")
+    return ids
 
 
-def get_case_extra_data(client, args):
+def parse_single_case_extra_data(case_incident_data: dict) -> dict:
     """
-    Calls the core-get-case-extra-data command and parses the output to a standard structure.
+    Parse a single case's extra data from the bulk API response into the CaseExtraData format.
+
+    The bulk endpoint returns each case as:
+        {"incident": {...}, "alerts": {"total_count": N, "data": [...]}, "network_artifacts": ..., "file_artifacts": ...}
+
+    Extracts fields from the incident object that are only available via the extra-data API
+    (not returned by the initial get_cases call), plus issue_ids from alerts and artifacts.
 
     Args:
-        args: The arguments to pass to the core-get-case-extra-data command.
+        case_incident_data: A single case entry from the bulk response's 'incidents' list.
 
     Returns:
-        A dictionary containing the case data with the following keys:
-            issue_ids: A list of IDs of issues in the case.
-            network_artifacts: A list of network artifacts in the case.
-            file_artifacts: A list of file artifacts in the case.
+        dict: The CaseExtraData dict with issue_ids, extra incident fields, and network/file artifacts.
     """
-    demisto.debug(f"Calling core-get-case-extra-data, {args=}")
-    # Set the base URL for this API call to use the public API v1 endpoint
-    try:
-        case_extra_data = get_extra_data_for_case_id_command(init_client("public"), args).outputs
-    except Exception as e:
-        demisto.debug(f"Failed to retrieve extra data for case ID {args.get('case_id')}: {str(e)}")
-        return {}
-    demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
-    issue_ids = extract_ids(case_extra_data)
-    case_data = case_extra_data.get("case", {})
-    notes = case_data.get("notes")
-    xdr_url = case_data.get("xdr_url")
-    starred_manually = case_data.get("starred_manually")
-    detection_time = case_data.get("detection_time")
-    manual_description = case_extra_data.get("manual_description") or case_data.get("manual_description")
-    network_artifacts = case_extra_data.get("network_artifacts")
-    file_artifacts = case_extra_data.get("file_artifacts")
-    extra_data = {
+    incident_data = case_incident_data.get("incident", {})
+    issue_ids = extract_ids(case_incident_data, data_key="alerts", field_name="alert_id")
+
+    return {
         "issue_ids": issue_ids,
-        "network_artifacts": network_artifacts,
-        "file_artifacts": file_artifacts,
-        "notes": notes,
-        "detection_time": detection_time,
-        "xdr_url": xdr_url,
-        "starred_manually": starred_manually,
-        "manual_description": manual_description,
+        "network_artifacts": case_incident_data.get("network_artifacts"),
+        "file_artifacts": case_incident_data.get("file_artifacts"),
+        "notes": incident_data.get("notes"),
+        "detection_time": incident_data.get("detection_time"),
+        "xdr_url": incident_data.get("xdr_url"),
+        "starred_manually": incident_data.get("starred_manually"),
+        "manual_description": incident_data.get("manual_description"),
     }
-    return extra_data
 
 
-def add_cases_extra_data(client, cases_list):
-    # for each case id in the entry context, get the case extra data
+def add_cases_extra_data(client: Client, cases_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Enrich a list of cases with extra data using a single bulk API call.
+
+    Calls the /public_api/v1/incidents/get_multiple_incidents_extra_data/ endpoint once
+    for all case IDs, then maps the response back to each case.
+
+    Args:
+        client: The Cortex platform client instance.
+        cases_list: List of case dictionaries, each containing a 'case_id' key.
+
+    Returns:
+        list: The same cases_list with 'CaseExtraData' added to each case.
+    """
+    case_ids = [str(case["case_id"]) for case in cases_list if case.get("case_id") is not None]
+    demisto.debug(f"Fetching bulk extra data for case_ids={case_ids}")
+
+    if not case_ids:
+        demisto.debug("No valid case IDs to fetch extra data for, skipping API call.")
+        for case in cases_list:
+            case["CaseExtraData"] = {}
+        return cases_list
+
+    try:
+        response = client.get_multiple_cases_extra_data(case_ids)
+    except Exception as e:
+        demisto.debug(f"Failed to retrieve bulk extra data for case IDs {case_ids}: {e}\n{traceback.format_exc()}")
+        for case in cases_list:
+            case["CaseExtraData"] = {}
+        return cases_list
+
+    reply = response.get("reply", {})
+    incidents_data = reply.get("incidents", [])
+
+    # Build a lookup from case_id (incident_id) to its extra data
+    extra_data_by_case_id: dict[str, dict] = {}
+    for incident_entry in incidents_data:
+        case_id = str(incident_entry.get("incident", {}).get("incident_id", ""))
+        if case_id:
+            extra_data_by_case_id[case_id] = parse_single_case_extra_data(incident_entry)
+
+    demisto.debug(f"Bulk extra data parsed for {len(extra_data_by_case_id)} cases")
+
     for case in cases_list:
-        case_id = case.get("case_id")
-        extra_data = get_case_extra_data(client, {"case_id": case_id, "limit": 1000})
-        case.update({"CaseExtraData": extra_data})
+        case_id = str(case.get("case_id", ""))
+        case["CaseExtraData"] = extra_data_by_case_id.get(case_id, {})
 
     return cases_list
 
@@ -1893,7 +1975,7 @@ def build_get_cases_filter(args: dict) -> FilterBuilder:
     return filter_builder
 
 
-def get_cases_command(client, args):
+def get_cases_command(client: Client, args: dict[str, Any]):
     """
     Retrieves cases from Cortex platform based on provided filtering criteria.
 
@@ -1955,46 +2037,21 @@ def get_cases_command(client, args):
             demisto.debug(f"Failed to retrieve case AI summary for case ID {case_id}: {str(e)}")
 
     get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
-    # In case enriched case data was requested
     if isinstance(data, dict):
         data = [data] if data else []
-    if get_enriched_case_data and 0 < len(data) <= 10:
-        case_extra_data = add_cases_extra_data(client, data)
 
-        command_results.append(
-            CommandResults(
-                readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
-                outputs_prefix="Core.Case",
-                outputs_key_field="case_id",
-                outputs=case_extra_data,
-                raw_response=case_extra_data,
-            )
+    if get_enriched_case_data and data:
+        data = add_cases_extra_data(client, data)
+
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+            outputs_key_field="case_id",
+            outputs=data,
+            raw_response=data,
         )
-
-    else:
-        if get_enriched_case_data:
-            demisto.info(
-                f"Enriched case data requested but {len(data)} cases were returned (limit is 10). "
-                "Falling back to standard case data."
-            )
-            command_results.append(
-                CommandResults(
-                    readable_output="Note: Cannot retrieve enriched case data for more than 10 cases. "
-                    "Returning standard case data instead. "
-                    "Try using a more specific query, "
-                    "for example specific case IDs you want to get enriched data for.",
-                )
-            )
-
-        command_results.append(
-            CommandResults(
-                readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
-                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
-                outputs_key_field="case_id",
-                outputs=data,
-                raw_response=data,
-            )
-        )
+    )
 
     return command_results
 
@@ -2174,8 +2231,8 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
 
 def normalize_key(key: str) -> str:
     """
-    Strips the prefixes 'xdm.asset.' or 'xdm.' from the beginning of the key,
-    if present, and returns the remaining key unchanged otherwise.
+    Strips the prefixes 'xdm__asset__' or 'xdm__' from the
+    beginning of the key, if present, and returns the remaining key unchanged otherwise.
 
     Args:
         key (str): The original output key.
@@ -2183,11 +2240,11 @@ def normalize_key(key: str) -> str:
     Returns:
         str: The normalized key without XDM prefixes.
     """
-    if key.startswith("xdm.asset."):
-        return key.replace("xdm.asset.", "")
+    if key.startswith("xdm__asset__"):
+        return key.removeprefix("xdm__asset__")
 
-    if key.startswith("xdm."):
-        return key.replace("xdm.", "")
+    if key.startswith("xdm__"):
+        return key.removeprefix("xdm__")
 
     return key
 
@@ -2217,11 +2274,6 @@ def search_assets_command(client: Client, args):
         argToList(args.get("asset_names", "")),
     )
     filter.add_field(
-        ASSET_FIELDS["asset_types"],
-        FilterType.EQ,
-        argToList(args.get("asset_types", "")),
-    )
-    filter.add_field(
         ASSET_FIELDS["asset_tags"],
         FilterType.JSON_WILDCARD,
         safe_load_json(args.get("asset_tags", [])),
@@ -2246,21 +2298,40 @@ def search_assets_command(client: Client, args):
     filter.add_field(ASSET_FIELDS["asset_classes"], FilterType.EQ, argToList(args.get("asset_classes", "")))
     filter.add_field(ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(software_package_versions))
     filter.add_field(ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(kubernetes_cluster_versions))
-    filter_str = filter.to_dict()
 
-    demisto.debug(f"Search Assets Filter: {filter_str}")
-    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
-    page_number = arg_to_number(args.get("page_number", 0))
-    on_demand_fields = ["xdm.asset.tags"]
+    asset_types = argToList(args.get("asset_types", ""))
+    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.CONTAINS, asset_types)
+
+    page_size: int = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))  # type: ignore[assignment]
+    page_number: int = arg_to_number(args.get("page_number", 0))  # type: ignore[assignment]
+    on_demand_fields = ["xdm__asset__tags"]
     version_fields = [
-        ("xdm.software_package.version", software_package_versions),
-        ("xdm.kubernetes.cluster.version", kubernetes_cluster_versions),
+        ("xdm__software_package__version", software_package_versions),
+        ("xdm__kubernetes__cluster__version", kubernetes_cluster_versions),
     ]
     on_demand_fields.extend([field for field, condition in version_fields if condition])
 
-    raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
-    # Remove "xdm.asset." suffix from all keys in the response
+    request_data = build_webapp_request_data(
+        table_name=ASSETS_TABLE,
+        filter_dict=filter.to_dict(),
+        limit=page_number * page_size + page_size,
+        sort_field="xdm__asset__name",
+        sort_order="DESC",
+        start_page=page_number * page_size,
+        on_demand_fields=on_demand_fields,
+    )
+    demisto.debug(f"Search Assets Request: {request_data}")
+    raw_response = client.get_webapp_data(request_data).get("reply", {}).get("DATA", [])
+    # Remove "xdm__asset__" and "xdm__" prefix from all keys in the response
     response = [{normalize_key(k): v for k, v in item.items()} for item in raw_response]
+
+    # Preserve BC after migrating to private API - add related issues/cases as in old API response
+    for asset in response:
+        asset["related_issues.critical_issues"] = asset.get("issues_critical", [])
+        asset["related_issues.issues_breakdown"] = asset.get("issues_breakdown", [])
+        asset["related_cases.critical_cases"] = asset.get("cases_critical", [])
+        asset["related_cases.cases_breakdown"] = asset.get("cases_breakdown", [])
+
     return CommandResults(
         readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
@@ -2694,6 +2765,7 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
             - conditions_*: Various condition parameters (finding type, severity, etc.)
             - scope_*: Policy scope configuration parameters
             - trigger_*: Policy trigger configuration (periodic, PR, CI/CD)
+            - suggestion_id: Optional ID of an AI-generated policy suggestion to link to
 
     Returns:
         CommandResults: Results object containing the created policy information with
@@ -2726,8 +2798,12 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
         "assetGroupIds": asset_group_ids,
         "triggers": triggers,
     }
+
+    # Optional: link to an AI-generated policy suggestion
+    if suggestion_id := args.get("suggestion_id"):
+        payload["suggestionId"] = suggestion_id
+
     payload = json.dumps(payload)
-    demisto.debug(f"{payload=}")
 
     client.create_policy(payload)
 
@@ -2757,7 +2833,16 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
         # Default to all finding types if none specified
         finding_types = [ft for ft in POLICY_FINDING_TYPE_MAPPING if ft != "CI/CD Risk"]
 
-    builder.add_field("Finding Type", FilterType.EQ, finding_types, POLICY_FINDING_TYPE_MAPPING)
+    # Support both human-readable names ("Vulnerabilities") and raw API values ("CAS_CVE_SCANNER").
+    api_values = set(POLICY_FINDING_TYPE_MAPPING.values())
+    resolved_finding_types = []
+    for ft in finding_types:
+        if ft in api_values:
+            resolved_finding_types.append(ft)
+        elif ft in POLICY_FINDING_TYPE_MAPPING:
+            resolved_finding_types.append(POLICY_FINDING_TYPE_MAPPING[ft])
+
+    builder.add_field("Finding Type", FilterType.EQ, resolved_finding_types)
 
     # Severity
     if severities := argToList(args.get("conditions_severity")):
@@ -2767,33 +2852,37 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
     if dev_supp := arg_to_bool_or_none(args.get("conditions_respect_developer_suppression")):
         builder.add_field("Respect Developer Suppression", FilterType.EQ, dev_supp)
 
-    # Backlog
-    if backlog := args.get("conditions_backlog_status"):
-        builder.add_field("Backlog Status", FilterType.EQ, backlog)
-
     # Packages
-    for field in ["package_name", "package_version", "package_operational_risk"]:
+    package_field_map = {
+        "package_name": ("PackageName", FilterType.EQ),
+        "package_version": ("PackageVersion", FilterType.EQ),
+        "package_operational_risk": ("Package Operational Risk", FilterType.EQ),
+    }
+    for field, (api_field_name, op) in package_field_map.items():
         if val := args.get(f"conditions_{field}"):
-            op = FilterType.CONTAINS if field == "package_name" else FilterType.EQ
-            builder.add_field(field.replace("_", " ").title(), op, val)
+            builder.add_field(api_field_name, op, val)
 
     # AppSec Rules
     if rule_names := argToList(args.get("conditions_appsec_rule_names")):
         rule_ids = get_appsec_rule_ids_from_names(client, rule_names)
         builder.add_field("AppSec Rule", FilterType.EQ, rule_ids)
 
+    # HasAFix
+    if has_a_fix := arg_to_bool_or_none(args.get("conditions_has_a_fix")):
+        builder.add_field("HasAFix", FilterType.EQ, has_a_fix)
+
+    # Backlog
+    if backlog := args.get("conditions_backlog_status"):
+        builder.add_field("Backlog Status", FilterType.EQ, backlog)
+
+    # IsKev
+    if is_kev := arg_to_bool_or_none(args.get("conditions_is_kev")):
+        builder.add_field("IsKev", FilterType.EQ, is_kev)
+
     # CVSS / EPSS
     for f, n in [("cvss", "CVSS"), ("epss", "EPSS")]:
         if val := arg_to_number(args.get(f"conditions_{f}")):
             builder.add_field(n, FilterType.GTE, val)
-
-    # Boolean Conditions
-    for key, label in {
-        "has_a_fix": "HasAFix",
-        "is_kev": "IsKev",
-    }.items():
-        if val := arg_to_bool_or_none(args.get(f"conditions_{key}")):
-            builder.add_field(label, FilterType.EQ, val)
 
     # Secret Validity, License Type
     for key, label in {
@@ -2871,16 +2960,16 @@ def create_policy_build_scope(args: dict) -> dict:
 
     # Category
     if categories := argToList(args.get("scope_category", [])):
-        builder.add_field("category", FilterType.EQ, categories, POLICY_CATEGORY_MAPPING)
+        resolved_categories = [POLICY_CATEGORY_MAPPING.get(c.title(), POLICY_CATEGORY_MAPPING.get(c, c)) for c in categories]
+        builder.add_field("category", FilterType.EQ, resolved_categories)
 
-    # Business application names - use the exact field name
+    # Business application names — always use ARRAY_CONTAINS since the field is an array type.
     if business_app_names := argToList(args.get("scope_business_application_names")):
-        filter_type = FilterType.ARRAY_CONTAINS if len(business_app_names) > 1 else FilterType.CONTAINS
-        builder.add_field("business_application_names", filter_type, business_app_names)
+        builder.add_field("business_application_names", FilterType.ARRAY_CONTAINS, business_app_names)
 
     # Application business criticality
-    if app_criticality := args.get("scope_application_business_criticality"):
-        builder.add_field("application_business_criticality", FilterType.CONTAINS, app_criticality)
+    if app_criticality := argToList(args.get("scope_application_business_criticality")):
+        builder.add_field("application_business_criticality", FilterType.EQ, app_criticality)
 
     # Repository name
     if repo_name := args.get("scope_repository_name"):
@@ -2892,7 +2981,7 @@ def create_policy_build_scope(args: dict) -> dict:
         "scope_has_deployed_assets": "has_deployed_assets",
         "scope_has_internet_exposed_deployed_assets": "has_internet_exposed",
         "scope_has_sensitive_data_access": "has_sensitive_data_access",
-        "scope_has_privileged_capabilities": "has_privileged_capabilities",
+        "scope_has_privileged_capabilities": "has_leverage_privileged_capabilities",
     }.items():
         if val := arg_to_bool_or_none(args.get(key)):
             builder.add_field(label, FilterType.EQ, val)
@@ -3017,9 +3106,23 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
     tables_filters = {}
     filter_builder = FilterBuilder()
 
-    for issue_type in AppsecIssues.ISSUE_TYPES:
-        if special_filter_args.issubset(issue_type.filters):
-            tables_filters[issue_type.table_name] = filter_builder
+    # If issue_category is specified, restrict to those specific tables
+    requested_types = argToList(args.get("issue_category"))
+    if requested_types:
+        valid_table_names = {it.table_name for it in AppsecIssues.ISSUE_TYPES}
+        for rt in requested_types:
+            rt_lower = rt.lower().strip()
+            table_name = ISSUE_TYPE_TABLE_MAPPING.get(rt_lower) or rt.upper().strip()
+            if table_name in valid_table_names:
+                tables_filters[table_name] = filter_builder
+            else:
+                raise DemistoException(
+                    f"Unknown issue type '{rt}'. " f"Supported values: {', '.join(ISSUE_TYPE_TABLE_MAPPING.keys())}."
+                )
+    else:
+        for issue_type in AppsecIssues.ISSUE_TYPES:
+            if special_filter_args.issubset(issue_type.filters):
+                tables_filters[issue_type.table_name] = filter_builder
 
     if not tables_filters:
         raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
@@ -3124,10 +3227,13 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
         "secret_validation": {"path": ["secret_validation"]},
         "is_fixable": {"path": ["cas_issues_is_fixable"]},
         "repository_name": {"path": ["cas_issues_normalized_fields", "xdm.repository.name"]},
+        "package_version": {"path": ["cas_issues_extended_fields", "package_version"]},
+        "fix_versions": {"path": ["cas_issues_normalized_fields", "xdm.vulnerability.fix_versions"]},
         "repository_organization": {"path": ["cas_issues_normalized_fields", "xdm.repository.organization"]},
         "file_path": {"path": ["cas_issues_normalized_fields", "xdm.file.path"]},
         "collaborator": {"path": ["cas_issues_normalized_fields", "xdm.code.git.commit.author.name"]},
         "is_deployed": {"path": ["cas_issues_extended_fields", "urgency", "metric", "is_deployed"]},
+        "repository_is_public": {"path": ["cas_issues_extended_fields", "repository_is_public"]},
         "backlog_status": {"path": ["backlog_status"]},
     }
     appsec_issue = {}
@@ -3456,8 +3562,12 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
     """
     Validates custom fields against system metadata.
 
+    Users must pass the CLI/machine name (e.g., ``servicenowticketid``) which
+    is the identifier shown in Object Setup and used in XQL queries.  The
+    metadata API returns this value in ``CUSTOM_FIELD_CLI_NAME``.
+
     Args:
-        fields_to_validate: Dict of field names and values to validate.
+        fields_to_validate: Dict of field CLI names and values to validate.
         client: Client instance for API calls.
 
     Returns:
@@ -3472,17 +3582,18 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
         return {}, "No Fields are defined in the system."
 
     system_fields = {
-        f["CUSTOM_FIELD_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"])
+        f["CUSTOM_FIELD_CLI_NAME"]: f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_CLI_NAME"])
         for f in fields_data
-        if f.get("CUSTOM_FIELD_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
+        if f.get("CUSTOM_FIELD_CLI_NAME") and f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
     custom_fields = {
-        f["CUSTOM_FIELD_NAME"]: {
-            "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_NAME"]),
+        f["CUSTOM_FIELD_CLI_NAME"]: {
+            "pretty_name": f.get("CUSTOM_FIELD_PRETTY_NAME", f["CUSTOM_FIELD_CLI_NAME"]),
             "field_type": f.get("CUSTOM_FIELD_TYPE", ""),
+            "select_values": (f.get("CUSTOM_FIELD_FIELD_DATA") or {}).get("selectValues") or [],
         }
         for f in fields_data
-        if f.get("CUSTOM_FIELD_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
+        if f.get("CUSTOM_FIELD_CLI_NAME") and not f.get("CUSTOM_FIELD_IS_SYSTEM")
     }
 
     if not custom_fields:
@@ -3498,54 +3609,133 @@ def validate_custom_fields(fields_to_validate: dict, client: Client) -> tuple[di
             )
         elif field_name in custom_fields:
             field_type = custom_fields[field_name]["field_type"]
-            if field_type == "multiSelect" and not isinstance(field_value, list):
-                error_messages.append(
-                    f"Field '{field_name}' is of type multiSelect and requires a list value (e.g., [\"value\"])."
-                    f" Received: {field_value!r}"
-                )
+            select_values = custom_fields[field_name]["select_values"]
+
+            if field_type == "multiSelect":
+                # Auto-coerce plain string → single-element list for multiSelect fields
+                if not isinstance(field_value, list):
+                    demisto.debug(
+                        f"Field '{field_name}' is of type multiSelect but received a non-list value {field_value!r}. "
+                        f"Auto-converting to list: [{field_value!r}]"
+                    )
+                    field_value = [field_value]
+                if select_values:
+                    invalid_values = [v for v in field_value if v not in select_values]
+                    if invalid_values:
+                        error_messages.append(
+                            f"Field '{field_name}' contains invalid value(s): {invalid_values}."
+                            f" Allowed values are: {select_values}"
+                        )
+                        continue
+                valid_fields[field_name] = field_value
             elif field_type == "shortText" and isinstance(field_value, list):
                 error_messages.append(
                     f"Field '{field_name}' is of type shortText and does not accept a list value."
-                    f" Provide a single value instead."
+                    f" Provide a single string value instead."
                 )
             else:
                 valid_fields[field_name] = field_value
         else:
-            error_messages.append(f"Field '{field_name}' does not exist.")
+            error_messages.append(f"Field '{field_name}' does not exist. Use the CLI/machine name as shown in Object Setup.")
 
     return valid_fields, "\n".join(f"- {e}" for e in error_messages)
+
+
+def resolve_playbook_id(client: Client, playbook: str) -> str:
+    """
+    Resolves a playbook name or ID to a playbook ID.
+
+    Fetches all playbooks metadata and builds a name→id mapping.
+    If the provided value matches a known playbook name, the corresponding ID is returned.
+    If no name match is found, the value is checked against known IDs.
+    If it matches a known ID, it is returned as-is.
+    If it matches neither a name nor a known ID, a DemistoException is raised.
+
+    Args:
+        client (Client): The client instance for making API requests.
+        playbook (str): A playbook name or playbook ID.
+
+    Returns:
+        str: The resolved playbook ID.
+
+    Raises:
+        DemistoException: If the value does not match any known playbook name or ID.
+    """
+    pbs_metadata: list = client.get_playbooks_metadata() or []
+    name_to_id: dict[str, str] = {}
+    known_ids: set[str] = set()
+    for pb in pbs_metadata:
+        pb_name = pb.get("name", "")
+        pb_id = pb.get("id", "")
+        known_ids.add(pb_id)
+        name_to_id[pb_name] = pb_id
+
+    if playbook in known_ids:
+        demisto.debug(f"Playbook '{playbook}' matched a known ID directly.")
+        return playbook
+
+    if playbook in name_to_id:
+        resolved_id = name_to_id[playbook]
+        demisto.debug(f"Resolved playbook name '{playbook}' to ID '{resolved_id}'.")
+        return resolved_id
+
+    raise DemistoException(
+        f"Playbook '{playbook}' was not found. "
+        f"Verify that the playbook name or ID is correct and that the playbook exists in the system."
+    )
 
 
 def run_playbook_command(client: Client, args: dict) -> CommandResults:
     """
     Executes a playbook command with specified arguments.
 
+    Reads the ``playbook`` argument, which can be either a playbook name or a playbook ID,
+    and resolves it to a playbook ID via :func:`resolve_playbook_id`.
+
+    All outcomes — success, resolution errors (unknown name/ID), and API-level per-issue
+    failures — are reported via the ``result`` output field rather than raising exceptions.
+    The ``result`` field contains the full status message string in all cases.
+
     Args:
         client (Client): The client instance for making API requests.
-        args (dict): Arguments for running the playbook.
+        args (dict): Arguments for running the playbook. Supported keys:
+            - ``playbook`` (str): Playbook name or ID to execute.
+            - ``issue_ids`` (str | list): Issue IDs to run the playbook against.
 
     Returns:
-        CommandResults: Results of the playbook execution.
+        CommandResults: Results of the playbook execution with the following output fields:
+            - ``playbook``: The playbook name or ID as provided by the caller.
+            - ``result``: A status message string. On success:
+              ``"Playbook '<name>' executed successfully for all issue IDs: <ids>"``.
+              On resolution failure or per-issue API errors: a descriptive error string.
     """
-    playbook_id = args.get("playbook_id", "")
+    playbook_input = args.get("playbook", "")
     issue_ids = argToList(args.get("issue_ids", ""))
+
+    try:
+        playbook_id = resolve_playbook_id(client, playbook_input)
+    except DemistoException as e:
+        demisto.debug(f"Playbook resolution error: {str(e)}")
+        return CommandResults(
+            outputs_prefix="Core.RunPlaybook",
+            outputs_key_field="playbook",
+            outputs={"playbook": playbook_input, "result": str(e)},
+        )
 
     response = client.run_playbook(issue_ids, playbook_id)
 
-    # Process the response to determine success or failure
-    if not response:
-        # Empty response indicates success for all issues
-        return CommandResults(
-            readable_output=f"Playbook '{playbook_id}' executed successfully for all issue IDs: {', '.join(issue_ids)}",
-        )
+    if response:
+        pb_failed_on_issue = [f"Issue ID {issue_id}: {msg.replace('alert', 'issue')}" for issue_id, msg in response.items()]
+        result = f"Playbook '{playbook_input}' failed for following issues:\n" + "\n".join(pb_failed_on_issue)
+        demisto.debug(f"Playbook run errors: {pb_failed_on_issue}")
+    else:
+        result = f"Playbook '{playbook_input}' executed successfully for all issue IDs: {', '.join(issue_ids)}"
 
-    error_messages = []
-
-    for issue_id, error_message in response.items():
-        error_messages.append(f"Issue ID {issue_id}: {error_message}")
-
-    demisto.debug(f"Playbook run errors: {error_messages}")
-    raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
+    return CommandResults(
+        outputs_prefix="Core.RunPlaybook",
+        outputs_key_field="playbook",
+        outputs={"playbook": playbook_input, "result": result},
+    )
 
 
 def list_scripts_command(client: Client, args: dict) -> List[CommandResults]:
@@ -3648,7 +3838,7 @@ def run_script_agentix_command(client: Client, args: dict) -> PollResult:
 
     if script_name:
         scripts_results = list_scripts_command(client, {"script_name": script_name})
-        scripts = scripts_results[0].outputs.get("Scripts", [])  # type: ignore
+        scripts: list = scripts_results[0].outputs or []  # type: ignore
         number_of_returned_scripts = len(scripts)
         demisto.debug(f"Scripts results: {scripts}")
         if number_of_returned_scripts > 1:
