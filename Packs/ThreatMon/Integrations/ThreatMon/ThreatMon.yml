@@ -3,6 +3,9 @@ commonfields:
   version: -1
 name: Threatmon
 display: Threatmon
+marketplaces:
+- xsoar
+- marketplacev2
 sectionorder:
 - Connect
 - Collect
