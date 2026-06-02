@@ -415,7 +415,6 @@ def alarm_to_incident(
     include_response: bool = False,
     include_detection_and_analysis: bool = False,
     include_post_incident_analysis: bool = False,
-    include_compliance: bool = False,
     include_related_assets: bool = False,
     include_related_entities: bool = False,
     include_company_id: bool = False,
@@ -433,7 +432,6 @@ def alarm_to_incident(
         include_response: Whether to include response steps in custom fields
         include_detection_and_analysis: Whether to include detection & analysis in custom fields
         include_post_incident_analysis: Whether to include post-incident analysis in custom fields
-        include_compliance: Whether to include compliance frameworks in custom fields
         include_related_assets: Whether to include related assets in custom fields
         include_related_entities: Whether to include related entities in custom fields
         include_company_id: Whether to include company ID in custom fields
@@ -527,24 +525,6 @@ def alarm_to_incident(
     if include_post_incident_analysis and alarm_post_incident:
         alarm["alarm_post_incident_analysis"] = alarm_post_incident
 
-    # Build compliance string from compliance list
-    compliance_list = alarm_type_details.get("alarm_compliance_list", [])
-    if not isinstance(compliance_list, list):
-        compliance_list = []
-
-    compliance_parts = []
-    for item in compliance_list:
-        if isinstance(item, dict):
-            name = item.get("name", "")
-            control = item.get("control_item", "")
-            desc = item.get("description", "")
-            if name and control:
-                compliance_parts.append(f"{name} ({control}): {desc}")
-
-    compliance_str = " || ".join(compliance_parts)
-    if len(compliance_str) > 3072:
-        compliance_str = compliance_str[:3072] + "... (truncated)"
-
     # Build incident content string from content dict
     incident_content = ""
     if show_content and content:
@@ -618,8 +598,6 @@ def alarm_to_incident(
         custom_fields["socradardetectionandanalysis"] = alarm_detection_analysis
     if include_post_incident_analysis and alarm_post_incident:
         custom_fields["socradarpostincidentanalysis"] = alarm_post_incident
-    if include_compliance and compliance_str:
-        custom_fields["socradarcompliance"] = compliance_str
     if include_related_assets and related_assets_str:
         custom_fields["socradarrelatedassets"] = related_assets_str
     if include_related_entities and related_entities_str:
@@ -662,7 +640,6 @@ def fetch_incidents(
     include_response: bool = False,
     include_detection_and_analysis: bool = False,
     include_post_incident_analysis: bool = False,
-    include_compliance: bool = False,
     include_related_assets: bool = False,
     include_related_entities: bool = False,
     include_company_id: bool = False,
@@ -813,7 +790,6 @@ def fetch_incidents(
                         include_response=include_response,
                         include_detection_and_analysis=include_detection_and_analysis,
                         include_post_incident_analysis=include_post_incident_analysis,
-                        include_compliance=include_compliance,
                         include_related_assets=include_related_assets,
                         include_related_entities=include_related_entities,
                         include_company_id=include_company_id,
@@ -1188,7 +1164,6 @@ def main() -> None:
             include_response = argToBoolean(params.get("include_response", False))
             include_detection_and_analysis = argToBoolean(params.get("include_detection_and_analysis", False))
             include_post_incident_analysis = argToBoolean(params.get("include_post_incident_analysis", False))
-            include_compliance = argToBoolean(params.get("include_compliance", False))
             include_related_assets = argToBoolean(params.get("include_related_assets", False))
             include_related_entities = argToBoolean(params.get("include_related_entities", False))
             include_company_id = argToBoolean(params.get("include_company_id", False))
@@ -1253,7 +1228,6 @@ def main() -> None:
                 include_response=include_response,
                 include_detection_and_analysis=include_detection_and_analysis,
                 include_post_incident_analysis=include_post_incident_analysis,
-                include_compliance=include_compliance,
                 include_related_assets=include_related_assets,
                 include_related_entities=include_related_entities,
                 include_company_id=include_company_id,

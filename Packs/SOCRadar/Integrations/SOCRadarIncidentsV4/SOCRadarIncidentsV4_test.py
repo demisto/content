@@ -723,18 +723,6 @@ def test_alarm_to_incident_include_post_incident_analysis():
     assert raw.get("alarm_post_incident_analysis") == "Post analysis"
 
 
-def test_alarm_to_incident_include_compliance():
-    from SOCRadarIncidentsV4 import alarm_to_incident
-
-    alarm = _make_alarm()
-    alarm["alarm_type_details"]["alarm_compliance_list"] = [
-        {"name": "GDPR", "control_item": "Art 5", "description": "Data protection"}
-    ]
-
-    incident = alarm_to_incident(alarm, include_compliance=True)
-    assert "GDPR" in incident["CustomFields"]["socradarcompliance"]
-    assert "Art 5" in incident["CustomFields"]["socradarcompliance"]
-
 
 def test_alarm_to_incident_include_related_assets():
     from SOCRadarIncidentsV4 import alarm_to_incident
@@ -1087,23 +1075,6 @@ def test_test_module_unexpected_exception(mock_client, mocker, capfd):
 
 
 # ---------------------------------------------------------------------------
-# alarm_to_incident compliance truncation
-# ---------------------------------------------------------------------------
-
-
-def test_alarm_to_incident_compliance_truncation():
-    from SOCRadarIncidentsV4 import alarm_to_incident
-
-    alarm = _make_alarm()
-    # Create a very long compliance list
-    long_list = [{"name": f"Framework{i}", "control_item": f"Ctrl{i}", "description": "x" * 200} for i in range(50)]
-    alarm["alarm_type_details"]["alarm_compliance_list"] = long_list
-
-    incident = alarm_to_incident(alarm, include_compliance=True)
-    compliance = incident["CustomFields"]["socradarcompliance"]
-    assert compliance.endswith("... (truncated)")
-    assert len(compliance) <= 3100  # 3072 + len("... (truncated)")
-
 
 # ---------------------------------------------------------------------------
 # Client methods - missing company_id
