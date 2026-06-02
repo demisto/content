@@ -10362,8 +10362,9 @@ def get_service_client(
     client_config = base_config.merge(config) if config else base_config
 
     # On the platform path, verify using the ProxyDome CA bundle (requests go through ProxyDome
-    # which presents a self-signed cert). On the marketplace path, respect the user's insecure param.
-    # Default matches all other AWS-* packs: insecure=True (SSL disabled) unless user unchecks the box.
+    # which presents a self-signed cert). On the marketplace path, respect the user's insecure param:
+    # SSL verification is enabled by default (insecure=False) and disabled only when the user
+    # checks the "Trust any certificate (not secure)" box.
     if is_platform_path:
         verify_ssl: str | bool = DEFAULT_PROXYDOME_CERTFICATE_PATH
     else:

@@ -457,6 +457,8 @@ def get_timeout(timeout: int | str | None) -> tuple[int, int]:
         timeout = "60,10"
     try:
         if isinstance(timeout, int):
+            if timeout < 0:
+                raise ValueError("Timeout values must not be negative.")
             return timeout, 10
         timeout_vals = str(timeout).split(",")
         if len(timeout_vals) > 2:
@@ -467,6 +469,8 @@ def get_timeout(timeout: int | str | None) -> tuple[int, int]:
             )
         read_timeout = int(timeout_vals[0])
         connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
+        if read_timeout < 0 or connect_timeout < 0:
+            raise ValueError("Timeout values must not be negative.")
         return read_timeout, connect_timeout
     except ValueError:
         raise DemistoException(

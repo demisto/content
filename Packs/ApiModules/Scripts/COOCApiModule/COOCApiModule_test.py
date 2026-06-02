@@ -1130,11 +1130,15 @@ def test_is_gov_account_empty_accounts_list_no_account(mocker):
         (120, (120, 10)),
         (0, (0, 10)),
         ("0", (0, 10)),
+        (" 30 ", (30, 10)),
+        ("45, 15", (45, 15)),
+        (" 45 , 15 ", (45, 15)),
     ],
 )
 def test_get_timeout_valid_inputs(timeout, expected):
     """
-    Given: Various valid timeout values (None, empty string, read-only string, read+connect string, integer, zero).
+    Given: Various valid timeout values (None, empty string, read-only string, read+connect string,
+        integer, zero, and strings containing surrounding spaces).
     When: get_timeout is called.
     Then: Returns the correct (read_timeout, connect_timeout) tuple.
     """
@@ -1167,3 +1171,17 @@ def test_get_timeout_too_many_values_raises():
 
     with pytest.raises(DemistoException, match="Too many timeout values"):
         get_timeout("60,10,5")
+
+
+@pytest.mark.parametrize("bad_timeout", [-5, "-5", "60,-1"])
+def test_get_timeout_negative_raises(bad_timeout):
+    """
+    Given: A timeout value (int or string) containing a negative number.
+    When: get_timeout is called.
+    Then: Raises DemistoException because timeout values must not be negative.
+    """
+    from COOCApiModule import get_timeout
+    from CommonServerPython import DemistoException
+
+    with pytest.raises(DemistoException):
+        get_timeout(bad_timeout)
