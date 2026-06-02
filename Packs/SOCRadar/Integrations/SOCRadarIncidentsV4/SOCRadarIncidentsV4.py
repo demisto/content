@@ -560,6 +560,7 @@ def alarm_to_incident(
             f"https://platform.socradar.com/app/company/{company_id}"
             f"/alarm-management?tab=approved&field=alarmId&operator=equals&value={alarm_id}"
         )
+        alarm["incident_link"] = incident_link
 
     alarm_text = alarm.get("alarm_text", "")
 
