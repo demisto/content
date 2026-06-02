@@ -833,9 +833,9 @@ script:
     - defaultValue: '20'
       description: The maximum number of investigations to return on the page. Maximum is 100.
       name: limit
-    - description: Pagination offset used together with `limit` to specify the starting point of the returned results.
+    - description: The pagination offset used together with `limit` to specify the starting point of the returned results.
       name: offset
-    - description: Sort expression for the returned investigations (for example, `create_time:asc,status:desc`).
+    - description: The sort expression for the returned investigations (for example, `create_time:asc,status:desc`).
       name: sort
     - description: A comma-separated list of disposition IDs or disposition labels to filter investigations by (for example, `disposition:1,Undetermined`).
       name: disposition
