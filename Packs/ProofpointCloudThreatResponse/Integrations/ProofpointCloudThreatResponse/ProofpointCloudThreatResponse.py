@@ -143,7 +143,6 @@ class ProofpointCTRAuthHandler(AuthHandler):  # type: ignore[misc]  # noqa: F405
                         "client_secret": self._client_secret,
                     },
                     headers={"Content-Type": "application/x-www-form-urlencoded"},
-                    timeout=30,
                 )
                 response.raise_for_status()
                 payload = response.json()
@@ -204,7 +203,6 @@ class Client(ContentClient):  # type: ignore[misc]  # noqa: F405
             headers={"Content-Type": "application/json"},
             auth_handler=auth_handler,
             client_name=CLIENT_NAME,
-            timeout=60,
             retry_policy=retry_policy,
         )
 
