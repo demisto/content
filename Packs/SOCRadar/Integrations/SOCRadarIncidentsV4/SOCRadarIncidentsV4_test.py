@@ -723,7 +723,6 @@ def test_alarm_to_incident_include_post_incident_analysis():
     assert raw.get("alarm_post_incident_analysis") == "Post analysis"
 
 
-
 def test_alarm_to_incident_include_related_assets():
     from SOCRadarIncidentsV4 import alarm_to_incident
 
