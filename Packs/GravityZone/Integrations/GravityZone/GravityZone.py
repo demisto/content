@@ -2922,7 +2922,7 @@ def check_endpoint_memory_dump_status(args: dict[str, Any], client: Client) -> P
     )
 
 
-def gz_endpoint_memory_dump_status_command(args: dict[str, Any], client: Client) -> PollResult:
+def gz_endpoint_memory_dump_status_command(client: Client, args: dict[str, Any]) -> PollResult:
     if "polling" not in args:
         args = {**args, "polling": True}
     return check_endpoint_memory_dump_status(args, client)
@@ -2983,12 +2983,12 @@ def main():
             "gz-poll-investigation-activity-status": gz_poll_investigation_activity_status_command,
             "gz-poll-live-search-status": gz_poll_live_search_status_command,
             "gz-poll-endpoint-users-loggedin-status": gz_poll_endpoint_users_loggedin_status_command,
-            "gz-endpoint-memory-dump-status": gz_endpoint_memory_dump_status_command,
             ### GravityZone Endpoint Commands ###
             "gz-endpoint-list": gz_endpoint_list_command,
             "gz-endpoint-get": gz_endpoint_get_command,
             "gz-endpoint-users-loggedin": gz_endpoint_users_loggedin_command,
             "gz-endpoint-create-memory-dump": gz_endpoint_create_memory_dump_command,
+            "gz-endpoint-memory-dump-status": gz_endpoint_memory_dump_status_command,
             "gz-endpoint-download-investigation-package": gz_endpoint_download_investigation_package_command,
             "gz-endpoint-download-file": gz_endpoint_download_file_command,
             "gz-endpoint-isolate": gz_endpoint_isolate_command,
@@ -3016,7 +3016,6 @@ def main():
             "gz-poll-investigation-activity-status",
             "gz-poll-live-search-status",
             "gz-poll-endpoint-users-loggedin-status",
-            "gz-endpoint-memory-dump-status",
         ]
 
         if command in command_function_map:

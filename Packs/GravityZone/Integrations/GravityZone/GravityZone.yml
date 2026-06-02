@@ -216,7 +216,7 @@ script:
       type: Unknown
 
   - name: gz-endpoint-create-memory-dump
-    description: Creates an endpoint memory dump task. When polling is true (default), waits for completion and returns the download URL. When polling is false, returns the task ID immediately.
+    description: Creates an endpoint memory dump task. When polling is true or not specified, waits for completion and returns the download URL. When polling is false, returns the task ID immediately.
     polling: true
     arguments:
     - name: id
@@ -242,7 +242,7 @@ script:
       description: Whether to continue polling until the memory dump task is completed. If false, returns the task ID immediately.
       required: false
       secret: false
-      default: true
+      default: false
     outputs:
     - contextPath: GravityZone.MemoryDump.TaskID
       description: The task ID.
@@ -1049,7 +1049,7 @@ script:
       default: false
     outputs: []
   - name: gz-endpoint-memory-dump-status
-    description: Checks endpoint memory dump task status using a task ID returned by gz-endpoint-create-memory-dump. This command is intended for direct use.
+    description: Checks the status of an endpoint memory dump task using a task ID returned by gz-endpoint-create-memory-dump. Polling is enabled by default (when not specified).
     polling: true
     arguments:
     - name: task_id
@@ -1069,7 +1069,7 @@ script:
       description: Whether to continue polling until the memory dump task is completed.
       required: false
       secret: false
-      default: true
+      default: false
     outputs: []
   - name: get-modified-remote-data
     description: Retrieves incidents that were modified since the last data sync. This command is intended for debugging purposes.

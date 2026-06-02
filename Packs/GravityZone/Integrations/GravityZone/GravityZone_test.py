@@ -362,7 +362,7 @@ def test_gz_endpoint_create_memory_dump_command(mock_demisto, requests_mock):
     assert_command_mocked_data(
         "gz-endpoint-create-memory-dump",
         command_response,
-        polling_func=gz_endpoint_memory_dump_status_command,
+        polling_func=lambda poll_args, poll_client: gz_endpoint_memory_dump_status_command(poll_client, poll_args),
         client=client,
     )
 
@@ -405,7 +405,7 @@ def test_gz_endpoint_memory_dump_status_command_defaults_polling_true(mock_check
 
     client = object()
 
-    gz_endpoint_memory_dump_status_command({"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"}, client)
+    gz_endpoint_memory_dump_status_command(client, {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"})
 
     mock_check_status.assert_called_once_with(
         {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID", "polling": True},
