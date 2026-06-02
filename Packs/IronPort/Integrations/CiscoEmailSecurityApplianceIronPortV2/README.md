@@ -2369,3 +2369,105 @@ Retrieve metadata about the SMTP connection and transmission behavior of specifi
 >|---|---|
 >| 16 Nov 2018 11:01:08 (GMT) | ICID 19213 sender_group: RELAYLIST sender_ip: 1.11.11.1, <br/>                 sbrs: not enabled |
 >| 16 Nov 2018 11:01:08 (GMT) | Protocol SMTP interface Management  (IP 10.76.71.196) on <br/>                 incoming connection (ICID 19213) from sender IP 1.11.11.1. Reverse DNS<br/>                 host vm30bsd0199.com verified yes. |
+
+### cisco-esa-message-filter-list
+
+***
+Retrieve all message filters or a specific message filter by name. Message filters are evaluated early in the Work Queue, before security engines.
+
+#### Base Command
+
+`cisco-esa-message-filter-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
+| host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
+| filter_name | The name of a specific message filter to retrieve. When omitted, all filters in scope are returned. | Optional |
+| active | Client-side filter — return only active or only inactive filters. Ignored when `filter_name` is supplied. Possible values are: true, false. | Optional |
+| limit | Maximum number of filters to return. Applied client-side after fetch. Ignored when `filter_name` is supplied. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoESA.MessageFilter.name | String | Filter name. |
+| CiscoESA.MessageFilter.active | String | Whether the filter is active \(\`"true"\` / \`"false"\`\). |
+| CiscoESA.MessageFilter.valid | String | Whether Cisco AsyncOS parsed the filter as valid \(\`"true"\` / \`"false"\`\). |
+| CiscoESA.MessageFilter.order | Number | 1-based execution order. |
+| CiscoESA.MessageFilter.rules_and_actions | String | Full Cisco filter DSL body. |
+| CiscoESA.MessageFilter.invalid_reason | String | Reason the filter is marked invalid. Present only when \`valid\` is \`"false"\`. |
+
+### cisco-esa-message-filter-create
+
+***
+Create a new message filter. If the appliance accepts the filter but flags it as invalid (e.g. unknown listener/interface), the command returns success and surfaces the appliance warning in the human-readable output.
+
+#### Base Command
+
+`cisco-esa-message-filter-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
+| host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
+| filter_name | Name for the new filter. | Required |
+| rules_and_actions | Full Cisco filter DSL: `if (&lt;conditions&gt;) { &lt;actions&gt;; }`. See the Cisco AsyncOS for Email Security Admin Guide for the DSL reference. | Required |
+| active | Whether the filter should be active on creation. Possible values are: true, false. Default is true. | Optional |
+| order | 1-based position in the filter list. Defaults to append-to-end when omitted. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### cisco-esa-message-filter-update
+
+***
+Update an existing message filter. Only the supplied fields (`active`, `order`) are sent — at least one must be provided.
+
+#### Base Command
+
+`cisco-esa-message-filter-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
+| host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
+| filter_name | Name of the filter to update. | Required |
+| active | Enable or disable the filter. Possible values are: true, false. | Optional |
+| order | New 1-based position in the filter list. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### cisco-esa-message-filter-delete
+
+***
+Delete a message filter.
+
+#### Base Command
+
+`cisco-esa-message-filter-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
+| host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
+| filter_name | Name of the filter to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
