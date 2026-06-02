@@ -3,7 +3,6 @@ import json
 from requests import Response
 import pytest
 
-from Packs.SilentPush.Integrations.SilentPushv2.SilentPushv2 import Client
 from SilentPushv2 import (
     Client,
     CommandResults,
@@ -76,7 +75,7 @@ def test_get_subnet_reputation_command(mock_client, mocker):
     assert result.outputs_prefix == "SilentPush.SubnetReputation"
     assert result.outputs_key_field == "subnet"
     assert result.outputs["subnet"] == "192.168.1.0/24"
-    result.outputs["reputation_history"] == mock_response
+    assert result.outputs["reputation_history"] == mock_response
     assert result.readable_output == "Mocked Markdown Table"
 
 
@@ -97,7 +96,7 @@ def test_get_ipv4_reputation_command(mock_client, mocker):
         "IPv4": args.get("ipv4"),
         "reputation_history": mock_response
     }
-    result.outputs["reputation_history"] == mock_response
+    assert result.outputs["reputation_history"] == mock_response
     assert result.readable_output == "Mocked Markdown Table"
 
 
@@ -478,7 +477,7 @@ def test_ipdiversity_lookup_command(mock_client, mocker):
     mock_client.lookup.return_value = (mock_response, "Mocked Markdown Table")
     result = ip_diversity_lookup_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "SilentPush.$Lookup"
+    assert result.outputs_prefix == "SilentPush.Lookup"
     assert result.outputs_key_field == "query"
     assert result.outputs == mock_response.get("response").get("records")
     assert result.readable_output == "Mocked Markdown Table"
@@ -576,7 +575,7 @@ def test_density_lookup_command(mock_client, mocker):
     mock_client.lookup.return_value = (mock_response, "Mocked Markdown Table")
     result = density_lookup_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "SilentPush.$Lookup"
+    assert result.outputs_prefix == "SilentPush.Lookup"
     assert result.outputs_key_field == "query"
     assert result.outputs["qtype"] == "nssrv"
     assert result.outputs["query"] == "example.com"

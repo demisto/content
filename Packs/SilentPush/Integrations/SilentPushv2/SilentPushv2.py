@@ -1082,22 +1082,23 @@ PADNS_OUTPUTS = [
     OutputArgument(name="records.type", output_type=str, description="The type of the DNS record (e.g., NS)."),
 ]
 WHOIS_OUTPUTS = [
-    OutputArgument(name="whois.registrar", output_type=str, description=""),
-    OutputArgument(name="whois.name", output_type=str, description=""),
-    OutputArgument(name="whois.whois_server", output_type=str, description=""),
-    OutputArgument(name="whois.org", output_type=str, description=""),
-    OutputArgument(name="whois.address", output_type=str, description=""),
-    OutputArgument(name="whois.city", output_type=int, description=""),
-    OutputArgument(name="whois.country", output_type=str, description=""),
-    OutputArgument(name="whois.created", output_type=str, description=""),
-    OutputArgument(name="whois.date", output_type=str, description=""),
-    OutputArgument(name="whois.domain", output_type=str, description=""),
-    OutputArgument(name="whois.emails", output_type=int, description=""),
-    OutputArgument(name="whois.expires", output_type=str, description=""),
-    OutputArgument(name="whois.nameservers", output_type=str, description=""),
-    OutputArgument(name="whois.state", output_type=str, description=""),
-    OutputArgument(name="whois.updated", output_type=str, description=""),
-    OutputArgument(name="whois.zipcode", output_type=str, description=""),
+    OutputArgument(name="whois.registrar", output_type=str,
+                   description="Name or partial name of the registrar used to register domains."),
+    OutputArgument(name="whois.name", output_type=str, description="The registrant name"),
+    OutputArgument(name="whois.whois_server", output_type=str, description="The server queried"),
+    OutputArgument(name="whois.org", output_type=str, description="Organization"),
+    OutputArgument(name="whois.address", output_type=str, description="Address"),
+    OutputArgument(name="whois.city", output_type=int, description="City"),
+    OutputArgument(name="whois.country", output_type=str, description="Country"),
+    OutputArgument(name="whois.created", output_type=str, description="Date created"),
+    OutputArgument(name="whois.date", output_type=str, description="Date"),
+    OutputArgument(name="whois.domain", output_type=str, description="Domain"),
+    OutputArgument(name="whois.emails", output_type=int, description="Emails"),
+    OutputArgument(name="whois.expires", output_type=str, description="Expires"),
+    OutputArgument(name="whois.nameservers", output_type=str, description="Nameservers"),
+    OutputArgument(name="whois.state", output_type=str, description="State"),
+    OutputArgument(name="whois.updated", output_type=str, description="Date updated"),
+    OutputArgument(name="whois.zipcode", output_type=str, description="Zip code"),
 ]
 FORWARD_PADNS_OUTPUTS = PADNS_OUTPUTS
 REVERSE_PADNS_OUTPUTS = PADNS_OUTPUTS
@@ -1937,8 +1938,6 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
         request_field="nameserver",
         response_field="ns_server_reputation_history",
     )
-    if type(readable_output) is CommandResults:
-        return readable_output
     return CommandResults(
         outputs_prefix="SilentPush.NameserverReputation",
         outputs_key_field="ns_server",
@@ -1976,8 +1975,6 @@ def get_subnet_reputation_command(client: Client, args: dict) -> CommandResults:
         request_field="subnet",
         response_field="subnet_reputation_history",
     )
-    if type(readable_output) is CommandResults:
-        return readable_output
     return CommandResults(
         outputs_prefix="SilentPush.SubnetReputation",
         outputs_key_field="subnet",
@@ -2010,8 +2007,6 @@ def get_ipv4_reputation_command(client: Client, args: dict[str, Any]) -> Command
         request_field="ipv4",
         response_field="ip_reputation_history",
     )
-    if type(readable_output) is CommandResults:
-        return readable_output
     return CommandResults(
         outputs_prefix="SilentPush.IPv4Reputation",
         outputs_key_field="ip",
@@ -2080,8 +2075,6 @@ def forward_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     :return: CommandResults: The formatted results of the PADNS lookup or an error message if something goes wrong.
     """
     raw_response, readable_output = client.lookup(url_path=FORWARD_PADNS, args=args)
-    if type(raw_response) is CommandResults:
-        return raw_response
     return CommandResults(
         outputs_prefix="SilentPush.PADNSLookup",
         outputs_key_field="qname",
@@ -2116,8 +2109,6 @@ def reverse_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     """
 
     raw_response, readable_output = client.lookup(url_path=REVERSE_PADNS, args=args)
-    if type(raw_response) is CommandResults:
-        return raw_response
     return CommandResults(
         outputs_prefix="SilentPush.ReversePADNSLookup",
         outputs_key_field="qname",
@@ -2154,8 +2145,6 @@ def multi_conditional_padns_lookup_command(client: Client, args: dict) -> Comman
     raw_response, readable_output = client.lookup(
         url_path=MULTI_CONDITIONAL_PADNS_LOOKUP, args=args, both=True
     )
-    if type(raw_response) is CommandResults:
-        return raw_response
     return CommandResults(
         outputs_prefix="SilentPush.MultiConditionalPADNSLookup",
         outputs_key_field="qname",
@@ -2190,8 +2179,6 @@ def density_lookup_command(client: Client, args: dict) -> CommandResults:
     :return: CommandResults: Formatted results of the density lookup, including either the density records or an error message.
     """
     raw_response, readable_output = client.lookup(url_path=DENSITY, args=args)
-    if type(raw_response) is CommandResults:
-        return raw_response
     return CommandResults(
         outputs_prefix="SilentPush.$Lookup",
         outputs_key_field="query",
@@ -2223,8 +2210,6 @@ def ip_diversity_lookup_command(client: Client, args: dict) -> CommandResults:
     :return: CommandResults: Formatted results of the density lookup, including either the density records or an error message.
     """
     raw_response, readable_output = client.lookup(url_path=IP_DIVERSITY, args=args)
-    if type(raw_response) is CommandResults:
-        return raw_response
     return CommandResults(
         outputs_prefix="SilentPush.$Lookup",
         outputs_key_field="query",
@@ -2380,8 +2365,6 @@ def list_domain_information_command(client: Client, args: dict[str, Any]) -> Com
         payload={"domains": argToList(args.get("domains"))},
         url_suffix=BULK_DOMAIN_INFO
     )
-    if type(response) is CommandResults:
-        return response
     return CommandResults(
         outputs_prefix="SilentPush.Domain",
         outputs_key_field="domain",
@@ -2414,8 +2397,6 @@ def list_ip4_information_command(client: Client, args: dict[str, Any]) -> Comman
         payload={"ips": argToList(args.get("ips"))},
         url_suffix=BULK_IP4_INFO
     )
-    if type(response) is CommandResults:
-        return response
     return CommandResults(
         outputs_prefix="SilentPush.IP4",
         outputs_key_field="ip",
@@ -2448,8 +2429,6 @@ def list_ip6_information_command(client: Client, args: dict[str, Any]) -> Comman
         payload={"ips": argToList(args.get("ips"))},
         url_suffix=BULK_IP6_INFO
     )
-    if type(response) is CommandResults:
-        return response
     return CommandResults(
         outputs_prefix="SilentPush.IP6",
         outputs_key_field="ip",
@@ -2581,14 +2560,6 @@ def get_enrichment_data_command(client: Client, args: dict) -> CommandResults:
     enrichment_data = client.get_enrichment_data(
         resource=ResourceType(resource), value=value, explain=explain, scan_data=scan_data
     )
-    if not enrichment_data:
-        return CommandResults(
-            readable_output=f"No enrichment data found for resource: {value}",
-            outputs_prefix="SilentPush.Enrichment",
-            outputs_key_field="value",
-            outputs={"value": value, **enrichment_data},
-            raw_response=enrichment_data,
-        )
     readable_output = tableToMarkdown(f"Enrichment Data for {value}", enrichment_data, removeNull=True,
                                       is_auto_json_transform=True)
     return CommandResults(

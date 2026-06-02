@@ -16,12 +16,12 @@
 !silentpush-get-domain-certificates domain=uol.com
 !silentpush-search-scan-data query=domain="ig.com" fields=scan_date,hostname,domain,ip,user-agent sort=scan_date/desc,domain/asc limit=10
 !silentpush-live-url-scan url=https://bol.com.br region=EU proxy=mu platform=Mobile
-!silentpush-add-feed name=myFeed
+!silentpush-add-feed name=myFeed type=domain
 !silentpush-add-feed-tags feed_uuid=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx tags=Tag1,Tag2
 !silentpush-add-indicators feed_uuid=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx indicators=ig.com,1.1.1.1
 !silentpush-add-indicator-tags feed_uuid=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx indicator_name=ig.com tags=Tag3,Tag4
 !silentpush-run-threat-check data=iofa query=127.0.0.2 type=ip user_identifier=your-threat-check-key
-!silentpush-get-data-exports export_type=organisation name=the_file_name
+!silentpush-get-data-exports export_type=organisation file_name=the_file_name file_type=csv
 !silentpush-whois domain=x.com
 !silentpush-retry-job job_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 !silentpush-ip-diversity-patterns nsname=*.bodis.com asn_diversity_min=2
