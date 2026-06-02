@@ -372,6 +372,8 @@ script:
   script: "-"
   subtype: python3
   type: python
+defaultclassifier: SOCRadar Incident Classifier
+defaultmapperin: SOCRadar Incident Mapper
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
