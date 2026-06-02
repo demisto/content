@@ -180,6 +180,9 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
+    - agentix
+    - cloud
+    - cloud_posture
     polling: true
     outputs:
     - contextPath: Core.Isolation.endpoint_id
@@ -387,6 +390,9 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
+    - agentix
+    - cloud
+    - cloud_posture
     outputs:
     - contextPath: Core.Endpoint.endpoint_id
       description: The endpoint ID.
@@ -974,6 +980,9 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
+    - agentix
+    - cloud
+    - cloud_posture
     outputs:
     - contextPath: Core.blocklist.added_hashes
       description: Added file hash to the block list.
@@ -1003,6 +1012,9 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
+    - agentix
+    - cloud
+    - cloud_posture
     outputs:
     - contextPath: Core.allowlist.added_hashes
       description: Added a file hash to the allow list.
@@ -1756,6 +1768,9 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
+    - agentix
+    - cloud
+    - cloud_posture
     polling: true
     outputs:
     - contextPath: Core.RetrievedFiles.action_id
@@ -1876,6 +1891,9 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
+    - agentix
+    - cloud
+    - cloud_posture
     outputs:
     - contextPath: File
       description: The file details returned by the command.
@@ -2297,6 +2315,9 @@ script:
     - cloud_runtime_security
     - edr
     - xsiam
+    - agentix
+    - cloud
+    - cloud_posture
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -4474,3 +4495,4 @@ supportedModules:
 - cloud_posture
 - xsiam
 - edr
+- agentix
