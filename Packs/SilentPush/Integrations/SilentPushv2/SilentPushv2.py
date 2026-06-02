@@ -727,7 +727,7 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(
         name='scan_data.headers.headers.content-length"',
         output_type=str,
-        description="Content lenght of the HTTP response.",
+        description="Content length of the HTTP response.",
     ),
     OutputArgument(name="scan_data.headers.headers.date", output_type=str, description="The date/time of the response."),
     OutputArgument(
