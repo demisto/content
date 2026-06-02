@@ -6,7 +6,7 @@ This integration was integrated and tested with version 20230215 of Lumu
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Maximum number of incidents to fetch every time |  | False |
-| First fetch time interval | The time range to consider for the initial data fetch. \(&amp;lt;number&amp;gt; &amp;lt;unit&amp;gt;, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years\). Default is 3 days. | False |
+| First fetch time interval | The time range to consider for the initial data fetch. \(&lt;number&gt; &lt;unit&gt;, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years\). Default is 3 days. | False |
 | Server URL |  | True |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
@@ -17,7 +17,7 @@ This integration was integrated and tested with version 20230215 of Lumu
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | Incidents Fetch Interval |  | False |
-| Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Lumu to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Lumu\), or both \*\*Incoming And Outgoing\*\*. | False |
+| Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror \*\*Incoming\*\* only \(from Lumu to Cortex XSOAR\), \*\*Outgoing\*\* only \(from Cortex XSOAR to Lumu\), or both \*\*Incoming And Outgoing\*\*. Cortex XSOAR only parameter. | False |
 | Mirror tags | Comment and files that will be marked with this tag will be pushed into Lumu. | False |
 
 ## Commands
