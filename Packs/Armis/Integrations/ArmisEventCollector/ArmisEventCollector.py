@@ -888,8 +888,7 @@ def fetch_by_event_type(
         if not next:
             event_type_fetch_start_time = running_state["last_event_time"] or last_fetch_time
             demisto.debug(
-                f"[stream:{event_type.dataset_name}] cursor drained — advancing last_fetch_time "
-                f"to {event_type_fetch_start_time}"
+                f"[stream:{event_type.dataset_name}] cursor drained — advancing last_fetch_time to {event_type_fetch_start_time}"
             )
         else:
             demisto.debug(
@@ -1349,7 +1348,7 @@ def fetch_events(
                 event_max_fetch = max_fetch if event_type_name != "Devices" else devices_max_fetch
                 stream_this = enable_streaming and event_type_name in STREAMING_EVENT_TYPES
                 safe_debug(
-                    f"[Worker-{worker_num}:{event_type_name}] Submitting task " f"(max: {event_max_fetch}, stream={stream_this})"
+                    f"[Worker-{worker_num}:{event_type_name}] Submitting task (max: {event_max_fetch}, stream={stream_this})"
                 )
 
                 task = executor.submit(
@@ -1534,6 +1533,36 @@ def main():  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     last_run = demisto.getLastRun()
+
+    # === STRESS TEST: one-shot last_run reset (REMOVE after test) ===
+    # Marker is stored in the persistent integration context, so this overrides last_run
+    # ONLY on the first cycle after deploy. Subsequent cycles see the marker = "done"
+    # and skip the reset, letting the integration continue naturally from whatever
+    # last_fetch_time it wrote at the end of the test cycle. Self-disables after one run.
+    # Timestamp formats match exactly what the integration writes back today:
+    #   - alerts uses ISO 8601 with timezone (e.g. "2026-06-02T10:11:08+00:00")
+    #   - activities/devices use DATE_FORMAT without timezone (e.g. "2026-06-01T13:31:52")
+    # Both are accepted by arg_to_datetime so this is defensive but exact-format-match.
+    # Setting *_last_fetch_next_field=0 resets pagination cursors to start fresh.
+    _stress_test_marker = "stress_test_v1_done"
+    _stress_ctx = demisto.getIntegrationContext()
+    if _stress_ctx.get(_stress_test_marker) != "done":
+        demisto.info("=== STRESS TEST: overriding last_run to fetch ~1 week of backlog ===")
+        last_run = {
+            "alerts_last_fetch_time": "2026-05-26T09:00:00+00:00",
+            "alerts_last_fetch_ids": [],
+            "alerts_last_fetch_next_field": 0,
+            "activity_last_fetch_time": "2026-05-26T09:00:00",
+            "activity_last_fetch_ids": [],
+            "activity_last_fetch_next_field": 0,
+            "devices_last_fetch_time": "2026-05-26T09:00:00",
+            "devices_last_fetch_ids": [],
+            "devices_last_fetch_next_field": 0,
+        }
+        _stress_ctx[_stress_test_marker] = "done"
+        demisto.setIntegrationContext(_stress_ctx)
+        demisto.info("=== STRESS TEST: marker set, last_run overridden — subsequent cycles will run normally ===")
+
     access_token = demisto.getIntegrationContext().get("access_token")
     api_key = params.get("credentials", {}).get("password")
     base_url = urljoin(params.get("server_url"), API_V1_ENDPOINT)
