@@ -6,15 +6,15 @@ This integration manages and secures Google Cloud Platform (GCP) resources inclu
 
 ### Supported Platforms
 
-| Platform | Authentication | Setup |
-|---|---|---|
-| **Cortex Cloud** | Automatic via cloud connector (CTS) | Data Sources page |
-| **Cortex XSOAR** | Service Account private key JSON | Integration configuration |
-| **Cortex XSIAM** | Service Account private key JSON | Integration configuration |
+| Platform                                          | Authentication | Setup |
+|---------------------------------------------------|---|---|
+| **Cortex Cloud or Cortex XSIAM (version >= 3.0)** | Automatic via cloud connector (CTS) | Data Sources page |
+| **Cortex XSOAR**                                  | Service Account private key JSON | Integration configuration |
+| **Cortex XSIAM (version < 3.0)**                  | Service Account private key JSON | Integration configuration |
 
 ---
 
-### Cortex Cloud Setup
+### Cortex Cloud or Cortex XSIAM (version >= 3.0) Setup
 
 Cloud integrations are installed from the **Data Sources** page.
 
@@ -25,7 +25,7 @@ Authentication is handled automatically — no credentials are required in the i
 
 ---
 
-### Cortex XSOAR / Cortex XSIAM Setup
+### Cortex XSOAR / Cortex XSIAM (version < 3.0) Setup
 
 #### Step 1 — Enable Required GCP APIs
 
