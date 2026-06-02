@@ -1129,8 +1129,7 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
     limit = int(args.get("limit", "50"))
     start_time_input = args.get("start_time", Config.DEFAULT_FROM_TIME)
     end_time_input = args.get("end_time")
-    should_push_events = argToBoolean(args.get("should_push_events", False))
-    should_push_events = resolve_should_push_events(should_push_events)
+    should_push_events = resolve_should_push_events(args)
 
     event_type_arg = argToList(args.get("event_type"))
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"]))

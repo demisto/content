@@ -528,13 +528,18 @@ class TestTestModule:
             koi_test_module(mock_client)
 
 
+@pytest.fixture()
+def mock_xsiam(mocker):
+    """Mock is_xsiam to return True so resolve_should_push_events allows pushing."""
+    mocker.patch("Koi.is_xsiam", return_value=True)
+
+
 class TestGetEventsCommand:
     """Tests for the koi-get-events command."""
 
     @pytest.fixture(autouse=True)
-    def mock_xsiam_platform(self, mocker):
-        """Mock is_xsiam to return True so resolve_should_push_events allows pushing."""
-        mocker.patch("Koi.is_xsiam", return_value=True)
+    def _mock_xsiam(self, mock_xsiam):
+        """Apply the shared mock_xsiam fixture to all tests in this class."""
 
     def test_get_events_alerts_and_audit(self, mock_client, alerts_response, audit_response, mocker):
         """Test get-events command fetching both alerts and audit logs."""
@@ -1118,9 +1123,8 @@ class TestGetEventsCommandErrors:
     """Tests for error handling in get_events_command."""
 
     @pytest.fixture(autouse=True)
-    def mock_xsiam_platform(self, mocker):
-        """Mock is_xsiam to return True so resolve_should_push_events allows pushing."""
-        mocker.patch("Koi.is_xsiam", return_value=True)
+    def _mock_xsiam(self, mock_xsiam):
+        """Apply the shared mock_xsiam fixture to all tests in this class."""
 
     def test_should_push_events_overridden_on_non_xsiam(self, mock_client, alerts_response, mocker):
         """Test that should_push_events is silently overridden to False on non-XSIAM platforms via resolve_should_push_events."""
