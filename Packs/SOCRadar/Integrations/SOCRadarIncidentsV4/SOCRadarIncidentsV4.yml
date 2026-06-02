@@ -143,13 +143,6 @@ configuration:
   defaultvalue: "false"
   section: Collect
   additionalinfo: Includes post-incident analysis recommendations. Contains lessons learned guidance such as reviewing incident response processes, updating security policies, and monitoring for recurrence. Available for select alarm types (e.g., Vulnerability Intelligence).
-- display: Include Compliance
-  name: include_compliance
-  type: 8
-  required: false
-  defaultvalue: "false"
-  section: Collect
-  additionalinfo: Includes related compliance framework mappings for each alarm (e.g., GDPR, ISO/IEC 27001, NIST SP 800-53, PCI DSS, HIPAA, SOX, MITRE ATT&CK, CIS Controls, DORA). Useful for regulatory reporting and audit trails. Content is truncated at 3072 characters.
 - display: Include Related Assets
   name: include_related_assets
   type: 8
