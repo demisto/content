@@ -34,7 +34,7 @@ This command add the new feed
 | type | Feed Type. | Required | 
 | category | Feed Category. | Optional | 
 | vendor | Vendor. | Optional | 
-| feed_description | URL for the screenshot. | Optional | 
+| feed_description | Detailed info about the feed. | Optional | 
 | tags | Tags that should be attached with the feed. | Optional | 
 
 #### Context Output
@@ -61,7 +61,7 @@ This command add indicators to the feed
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| feed_uuid | Never return query metadata, even if original request did include metadata. | Optional | 
+| feed_uuid | The feed uuid that is returned when creating it. | Optional | 
 | tags | Comma separated tags to be updated to the feed. | Optional | 
 
 #### Context Output
@@ -84,7 +84,7 @@ This command add indicators to the feed
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| feed_uuid | UUID of the feed. | Required | 
+| feed_uuid | The feed uuid that is returned when creating it. | Required | 
 | indicators | Indicators for the feed. | Required | 
 
 #### Context Output
@@ -107,7 +107,7 @@ This command updates tags to the indicators
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| feed_uuid | UUID of the feed. | Required | 
+| feed_uuid | The feed uuid that is returned when creating it. | Required | 
 | indicator_name | The name of the indicator to tag. | Required | 
 | tags | Tags to be added to the indicator. | Required | 
 
@@ -763,7 +763,7 @@ Get IP diversity (number of IP addresses pointed to over time) for the query to 
 | window | use records with a last_seen more recently than days ago, default = 30. | Optional | 
 | asn | include asn diversity, 0 = do not include, 1 (default) = include asn diversity. | Optional | 
 | timeline | include timeline of {ip, first_seen, last_seen} (+asn if asn=1), 0 (default) = do not include, 1 = include timeline. | Optional | 
-| verbose | eturn ips, dates, timeline, (and asns if asn=1), 0 (default) = do not include, 1 = include all data. | Optional | 
+| verbose | return ips, dates, timeline, (and asns if asn=1), 0 (default) = do not include, 1 = include all data. | Optional | 
 | scope | exact or near match results by qtype, *scope=live is automatically set when timeline=1 or verbose=1. *for qtype = a: host - exact match (default when qtype=a), domain - match all hosts in this domain (domain extracted from {query}), subdomain - match all hosts at this subdomain level (i.e. *.{query}), live - calculate values from live data instead of pre-aggregated values - also switches to exact match only. *for qtype = aaaa, live - only this mode is supported for qtype=aaaa. | Optional | 
 
 #### Context Output
@@ -774,6 +774,7 @@ Get IP diversity (number of IP addresses pointed to over time) for the query to 
 | SilentPush.IPdiversityLookup.host | String | The domain name \(host\) associated with the record. | 
 | SilentPush.IPdiversityLookup.ip_diversity_all | Number | The total number of unique IPs associated with the domain. | 
 | SilentPush.IPdiversityLookup.ip_diversity_groups | Number | The number of unique IP groups associated with the domain. | 
+| SilentPush.IPdiversityLookup.timeline | Unknown | timeline of \{ip, first_seen, last_seen\}. | 
 
 ### silentpush-ip-diversity-patterns
 
@@ -835,6 +836,7 @@ Search for IP Diversity patterns, with optional name server and domain name patt
 | SilentPush.IPDiversityPatterns.host | String | The domain name \(host\) associated with the record. | 
 | SilentPush.IPDiversityPatterns.ip_diversity_all | Number | The total number of unique IPs associated with the domain. | 
 | SilentPush.IPDiversityPatterns.ip_diversity_groups | Number | The number of unique IP groups associated with the domain. | 
+| SilentPush.IPDiversityPatterns.timeline | Unknown | timeline of \{ip, first_seen, last_seen\}. | 
 
 ### silentpush-list-domain-information
 
@@ -1316,6 +1318,7 @@ This command search for domains with optional filters.
 | SilentPush.IPDiversityPatterns.host | String | The domain name \(host\) associated with the record. | 
 | SilentPush.IPDiversityPatterns.ip_diversity_all | Number | The total number of unique IPs associated with the domain. | 
 | SilentPush.IPDiversityPatterns.ip_diversity_groups | Number | The number of unique IP groups associated with the domain. | 
+| SilentPush.IPDiversityPatterns.timeline | Unknown | timeline of \{ip, first_seen, last_seen\}. | 
 
 ### silentpush-search-scan-data
 
