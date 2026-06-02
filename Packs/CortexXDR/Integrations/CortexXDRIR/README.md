@@ -7,32 +7,33 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
 2. Search for Palo Alto Networks Cortex XDR - Investigation and Response.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Server URL (copy URL from XDR) |  | True |
-    | API Key ID |  | True |
-    | API Key |  | True |
-    | Remove legacy incident fields | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.) | False |
-    | Incident Mirroring Direction |  | False |
-    | Close Mirrored XSOAR Incident | When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR. | False |
-    | Close Mirrored Cortex XDR Incident | When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. If not selected, but "Close all related alerts in XDR" is selected, the incident will automatically be closed in Cortex XDR. | False |
-    | XDR mirroring delay in minutes | In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the lookback period. However, be aware that this may result in increased latency when updating incidents. | False |
-    | Custom close-reason mapping for mirrored **XSOAR -> XDR** incidents. | Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated close-reason mapping (acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other". Default: "Other=Other,Duplicate=Duplicate Incident,False Positive=False Positive,Resolved=True Positive”. Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`). | False |
-    | Custom lose-reason mapping for mirrored **XDR -> XSOAR** incidents. | Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved". Default: “Known Issue=Other,Duplicate Incident=Duplicate,False Positive=False Positive,True Positive=Resolved,Security Testing=Other,Other=Other,Auto=Resolved". Refer to the integration documentation for possible close-reasons (`XDR Incident Mirroring, sec. 7`). | False |
-    | Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
-    | Only fetch starred incidents |  | False |
-    | Starred incidents fetch window | Starred fetch window timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). Fetches only starred incidents within the specified time range. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Sync Incident Owners | For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Prevent Only Mode | Whether the Cortex XDR tenant mode is prevent only. | False |
-    | Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched. | False |
-    | Minimize Incident Information | Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information. | False |
-    | Minimize Alert Information | Whether to fetch only the essential alert fields in order to minimize the incident's information. Possible values: null_values to remove all null values from alerts data (recommended), or any other field of an alert.| False|
-    | Close all related alerts in XDR | Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Server URL (copy URL from XDR) |  | True |
+| API Key ID |  | False |
+| API Key |  | False |
+| Remove legacy incident fields | Not selected for backwards compatibility. Recommended to select. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts \(like client_id, clientid.\) | False |
+| Incident Mirroring Direction | Not supported on Cortex platform. | False |
+| Close Mirrored XSOAR Incident | When selected, closing the Cortex XDR incident is mirrored in Cortex XSOAR. | False |
+| Close Mirrored Cortex XDR Incident | When selected, closing the Cortex XSOAR incident is mirrored in Cortex XDR. Notice: If not selected, but 'Close all related alerts in XDR' is selected, the incident will automatically be closed in Cortex XDR. | False |
+| XDR mirroring delay in minutes | In the event of a delay in mirroring incoming changes from XDR, use the xdr_delay parameter to extend the look-back period. However, be aware that this may result in increased latency when updating incidents. | False |
+| Custom close-reason mapping (XSOAR -&gt; XDR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR) | Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated list of close reasons \(acceptable format \{Cortex XSOAR close reason\}=\{Cortex XDR close reason\}\) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other,Duplicate=Other". Refer to ../README.md for possible close-reasons - \`XDR Incident Mirroring\`. | False |
+| Custom close-reason mapping (XDR -&gt; XSOAR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR) | Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons \(acceptable format \{Cortex XDR close reason\}=\{Cortex XSOAR close reason\}\) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to ../README.md for possible close-reasons - \`XDR Incident Mirroring\`. | False |
+| HTTP Timeout | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\). | False |
+| Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
+| Only fetch starred incidents |  | False |
+| Starred incidents fetch window | Starred fetch window timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). Fetches only starred incidents within the specified time range. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Sync Incident Owners | For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Prevent Only Mode | Whether the XDR tenant mode is prevent only | False |
+| Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched. | False |
+| Minimize Incident Information | Whether to fetch only the essential incident's fields - without Network Artifacts and File Artifacts to minimize the incident's information. | False |
+| Minimize Alert Information | Whether to fetch only the essential alert fields in order to minimize the incident's information. Possible values: null_values to remove all null values from alerts data, or any other field of an alert. | False |
+| Close all related alerts in XDR | Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -1143,8 +1144,8 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 | PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_RESULT | String | Audit result. |
 | PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_REASON | String | Audit reason. |
 | PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_DESCRIPTION | String | Description of the audit. |
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY | String | Audit entity \(e.g., AUTH, DISTRIBUTIONS\). |
-| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE | String | Entity subtype \(e.g., Login, Create\). |
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY | String | Audit entity (e.g., AUTH, DISTRIBUTIONS). |
+| PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE | String | Entity subtype (e.g., Login, Create). |
 | PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_CASE_ID | Number | Audit case ID. |
 | PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_INSERT_TIME | Date | Log's insert time. |
 
@@ -1190,9 +1191,9 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 | PaloAltoNetworksXDR.AuditAgentReports.TRAPSVERSION | String | Traps version. |
 | PaloAltoNetworksXDR.AuditAgentReports.RECEIVEDTIME | Date | Received time in Epoch time. |
 | PaloAltoNetworksXDR.AuditAgentReports.TIMESTAMP | Date | Timestamp in Epoch time. |
-| PaloAltoNetworksXDR.AuditAgentReports.CATEGORY | String | Report category \(e.g., Audit\). |
-| PaloAltoNetworksXDR.AuditAgentReports.TYPE | String | Report type \(e.g., Action, Policy\). |
-| PaloAltoNetworksXDR.AuditAgentReports.SUBTYPE | String | Report subtype \(e.g., Fully Protected,Policy Update,Cancel Isolation\). |
+| PaloAltoNetworksXDR.AuditAgentReports.CATEGORY | String | Report category (e.g., Audit). |
+| PaloAltoNetworksXDR.AuditAgentReports.TYPE | String | Report type (e.g., Action, Policy). |
+| PaloAltoNetworksXDR.AuditAgentReports.SUBTYPE | String | Report subtype (e.g., Fully Protected,Policy Update,Cancel Isolation\). |
 | PaloAltoNetworksXDR.AuditAgentReports.RESULT | String | Report result. |
 | PaloAltoNetworksXDR.AuditAgentReports.REASON | String | Report reason. |
 | PaloAltoNetworksXDR.AuditAgentReports.DESCRIPTION | String | Agent report description. |
@@ -2421,10 +2422,10 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 
 There is no context output for this command.
 
-### xdr-get-alerts
+### xdr-get-alerts (Deprecated)
 
 ***
-Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object.
+This command is deprecated, please use xdr-issue-list instead. Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object.
 Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value.
 
 ##### Required Permissions
@@ -3845,10 +3846,10 @@ There is no context output for this command.
 >The endpoint alias was changed successfully.
 Note: If there is no error in the process, then this is the output even when the specific endpoint does not exist.
 
-### xdr-update-alert
+### xdr-update-alert (Deprecated)
 
 ***
-Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored. Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
+This command is deprecated, please use xdr-issue-update instead. Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored. Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -4739,3 +4740,120 @@ Initiates a forensics triage on the specified endpoints. You must have Cortex XD
 | PaloAltoNetworksXDR.EndpointTriage.TRIAGE_ID | String | The unique identifier assigned to the created triage action. |
 | PaloAltoNetworksXDR.EndpointTriage.SUCCESSFUL_AGENT_IDS | Array | A list of agent IDs where the triage action was successfully initiated. |
 | PaloAltoNetworksXDR.EndpointTriage.UNSUCCESSFUL_AGENT_IDS | Array | A list of agent IDs where the triage action failed to initiate. |
+
+### xdr-issue-list
+
+***
+Retrieve issues based on filters. Issues with an 'INFO' severity level are filtered out.
+
+#### Base Command
+
+`xdr-issue-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | A comma-separated list of issue IDs. | Optional |
+| external_id | A comma-separated list of external IDs. | Optional |
+| detection_method | A comma-separated list of methods used to detect the activity. Possible values: 'BIOC', 'Correlation', 'Analytics', 'System', 'IOC'. Possible values are: BIOC, Correlation, Analytics, System, IOC. | Optional |
+| domain | A comma-separated list of domains. | Optional |
+| severity | A comma-separated list of severities. Possible values: 'critical', 'high', 'medium', 'low', 'info'. Possible values are: info, low, medium, high, critical. | Optional |
+| insert_time | Filter by issues inserted after this time. | Optional |
+| status | A comma-separated list of statuses. Possible values: 'New', 'In Progress', 'Resolved'. Possible values are: New, In Progress, Resolved. | Optional |
+| sort_field | The field to sort by. Possible values are: issue_id, severity, observation_time. | Optional |
+| sort_order | The sort order. Possible values are: asc, desc. | Optional |
+| limit | The maximum number of results to return. | Optional |
+| page_size | The page size. | Optional |
+| page | The page number. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.Issue.observation_time | Number | The timestamp when the observation occurred. |
+| PaloAltoNetworksXDR.Issue.domain | String | The security domain associated with the observation. |
+| PaloAltoNetworksXDR.Issue.remediation | String | Suggested remediation steps. |
+| PaloAltoNetworksXDR.Issue.impact | String | The potential impact of the observed activity. |
+| PaloAltoNetworksXDR.Issue.status | String | The current progress status \(e.g., New\). |
+| PaloAltoNetworksXDR.Issue.status_resolution_comment | String | Comments regarding the resolution of the status. |
+| PaloAltoNetworksXDR.Issue.status_progress | String | The current progress status \(e.g., New\). |
+| PaloAltoNetworksXDR.Issue.asset_ids | String | List of asset IDs involved. |
+| PaloAltoNetworksXDR.Issue.assigned_to_pretty | String | The display name of the user assigned to this item. |
+| PaloAltoNetworksXDR.Issue.last_update_timestamp | Number | The last time this record was updated. |
+| PaloAltoNetworksXDR.Issue.detection_method | String | The method used to detect the activity \(e.g., BIOC\). |
+| PaloAltoNetworksXDR.Issue.is_starred | Boolean | Whether the item has been starred/flagged. |
+| PaloAltoNetworksXDR.Issue.name | String | The name of the observation or alert. |
+| PaloAltoNetworksXDR.Issue.external_id | String | The unique UUID for external reference. |
+| PaloAltoNetworksXDR.Issue.insert_time | Number | The time the record was inserted into the database. |
+| PaloAltoNetworksXDR.Issue.detection_rule_id | String | The ID of the specific detection rule triggered. |
+| PaloAltoNetworksXDR.Issue.tags | String | A list of tags associated with the observation. |
+| PaloAltoNetworksXDR.Issue.type | String | The classification type of the observation. |
+| PaloAltoNetworksXDR.Issue.id | Number | The numeric ID of the observation. |
+| PaloAltoNetworksXDR.Issue.description | String | Detailed description of the observed activity. |
+| PaloAltoNetworksXDR.Issue.severity | String | The severity level \(e.g., LOW\). |
+| PaloAltoNetworksXDR.Issue.category | String | The category classification. |
+| PaloAltoNetworksXDR.Issue.is_excluded | Boolean | Whether this observation is excluded from standard views. |
+
+### xdr-issue-create
+
+***
+Creates a new issue. Issues with an 'INFO' severity level are not displayed in the UI.
+
+#### Base Command
+
+`xdr-issue-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The issue name. | Required |
+| description | The issue description. | Required |
+| observation_time | The observation time. Should support english expressions like "one year". | Required |
+| domain | The domain. | Required |
+| category | The category. | Required |
+| asset_id | A comma-separated list of asset IDs. | Optional |
+| mitre_tactic | A comma-separated list of MITRE tactics. | Optional |
+| mitre_technique | A comma-separated list of MITRE techniques. | Optional |
+| type | The issue type. | Optional |
+| extended_description | The extended description. | Optional |
+| impact | The impact. | Optional |
+| tags | A comma-separated list of tags. | Optional |
+| is_excluded | Whether the issue is excluded. Possible values are: true, false. | Optional |
+| is_starred | Whether the issue is starred. Possible values are: true, false. | Optional |
+| assigned_to | The user assigned to the issue. | Optional |
+| assigned_to_pretty | The pretty name of the user assigned to the issue. | Optional |
+| severity | The severity. Possible values are: critical, info, low, medium, high. | Required |
+| normalized_fields_json | The JSON to add to the "normalized_fields" field in the API. | Optional |
+| custom_fields_json | The JSON to add to the "custom_fields" field in the API. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.Issue.external_id | String | The issue external ID. |
+| PaloAltoNetworksXDR.Issue.detection_method | String | The issue detection method. |
+
+### xdr-issue-update
+
+***
+Updates an existing issue.
+
+#### Base Command
+
+`xdr-issue-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | The issue ID. | Required |
+| severity | The severity. Possible values are: critical, info, low, medium, high. | Optional |
+| status | The status. Possible values are: new, in_progress, resolved. | Optional |
+| resolve_reason | The resolve reason. Possible values are: resolved_threat_handled, resolved_known_issue, resolved_duplicate, resolved_false_positive, resolved_other, resolved_true_positive, resolved_security_testing. | Optional |
+| resolve_comment | The resolve comment. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
