@@ -18190,9 +18190,9 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: firewall_name
-      description: The descriptive name of the firewall. You can't change the name of a firewall after you create it.
+      description: The descriptive name of the firewall. You can't change the name of a firewall after you create it. You must specify the ARN or the name, and you can specify both.
     - name: firewall_arn
-      description: The Amazon Resource Name (ARN) of the firewall.    
+      description: The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both.
     outputs:
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
       description: The descriptive name of the firewall.
@@ -18213,7 +18213,7 @@ script:
       description: The unique identifier for the firewall.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
-      description: An optional token that you can use for optimistic locking.
+      description: An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId
       description: The unique identifier for the subnet.
@@ -18247,7 +18247,7 @@ script:
       type: Number
     - contextPath: AWS.NetworkFirewall.Firewalls.EnabledAnalysisTypes
       description: The enabled analysis types.
-      type: String
+      type: Unknown
     - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayId
       description: The unique identifier for the transit gateway.
       type: String
@@ -18321,9 +18321,10 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: limit
-      description: The maximum number of objects that you want Network Firewall to return for this request. Default is 50.
+      defaultValue: '50'
+      description: The maximum number of objects that you want Network Firewall to return for this request.
     - name: next_token
-      description: The NextToken value returned from a previous paginated ListFirewalls request.
+      description: The NextToken value returned from a previous paginated ListFirewalls request. The next_token will be at AWS.NetworkFirewall.FirewallsNextToken.
     - name: vpc_ids
       description: A comma-separated list of unique identifiers of the VPCs that you want to retrieve the firewalls for.
       isArray: true
@@ -18333,6 +18334,9 @@ script:
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
       description: The Amazon Resource Name (ARN) of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayAttachmentId
+      description: The unique identifier of the transit gateway attachment associated with this firewall. This field is only present for transit gateway-attached firewalls.
       type: String
     - contextPath: AWS.NetworkFirewall.FirewallsNextToken
       description: The token for request a list of objects with a limit setting, if the number of objects that are still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value in the response.
@@ -18390,10 +18394,8 @@ script:
       required: true
       description: The Amazon Resource Name (ARN) of the FirewallPolicy that you want to use for the firewall.
     - name: vpc_id
-      required: true
       description: The unique identifier of the VPC where Network Firewall should create the firewall.
     - name: subnet_mappings
-      required: true
       description: 'A JSON string specifying the public subnets to use for your Network Firewall firewalls. [{\"SubnetId\": \"string\", \"IPAddressType\": \"DUALSTACK\"}]. The possible values for the IPAddressType are DUALSTACK, IPV4 ,IPV6.'
     - name: delete_protection
       auto: PREDEFINED
@@ -18406,13 +18408,13 @@ script:
       predefined:
         - "true"
         - "false"
-      description: Whether it is possible to change the associated subnet(s).
+      description: whether the firewall is protected against changes to the subnet associations. Use this setting to protect against accidentally modifying the subnet associations for a firewall that is in use. When you create a firewall, the operation initializes this setting to TRUE.
     - name: firewall_policy_change_protection
       auto: PREDEFINED
       predefined:
         - "true"
         - "false"
-      description: Whether it is possible to change the associated firewall policy.
+      description: whether the firewall is protected against a change to the firewall policy association. Use this setting to protect against accidentally modifying the firewall policy for a firewall that is in use. When you create a firewall, the operation initializes this setting to TRUE.
     - name: description
       description: A description of the firewall.
     - name: tags
@@ -18423,15 +18425,15 @@ script:
       description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
       auto: PREDEFINED
       predefined:
-        - CUSTOM_KMS
+        - CUSTOMER_KMS
         - AWS_OWNED_KMS_KEY
     - name: enabled_analysis_types
       description: A comma-separated list of the enabled analysis types.
       isArray: true
     - name: transit_gateway_id
-      description: The unique identifier for the transit gateway.
+      description: The unique identifier for the transit gateway. Required when creating a transit gateway-attached firewall. After creating the firewall, you cannot change the transit gateway association. To use a different transit gateway, you must create a new firewall.
     - name: availability_zone_mappings
-      description: A comma-separated list of Availability Zones to use for your Network Firewall firewalls.
+      description: A comma-separated list of availability Zones where you want to create firewall endpoints for a transit gateway-attached firewall.
       isArray: true
     - name: availability_zone_change_protection
       description: Whether the firewall is protected against changes to its Availability Zone configuration.
@@ -18563,88 +18565,9 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: firewall_name
-      description: The descriptive name of the firewall. You can't change the name of a firewall after you create it.
+      description: The descriptive name of the firewall. You can't change the name of a firewall after you create it. You must specify the ARN or the name, and you can specify both.
     - name: firewall_arn
-      description: The Amazon Resource Name (ARN) of the firewall.
-    outputs:
-      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
-        description: The descriptive name of the firewall.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
-        description: The Amazon Resource Name (ARN) of the firewall.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyArn
-        description: The Amazon Resource Name (ARN) of the firewall policy.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.VpcId
-        description: The unique identifier of the VPC where the firewall is in use.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId
-        description: The unique identifier for the subnet.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.IPAddressType
-        description: The subnet's IP address type.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
-        description: The flag indicating whether it is possible to delete the firewall.
-        type: Boolean
-      - contextPath: AWS.NetworkFirewall.Firewalls.SubnetChangeProtection
-        description: The flag indicating whether it is possible to change the associated subnet(s).
-        type: Boolean
-      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyChangeProtection
-        description: The flag indicating whether it is possible to change the associated firewall policy.
-        type: Boolean
-      - contextPath: AWS.NetworkFirewall.Firewalls.Description
-        description: The description of the firewall.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallId
-        description: The unique identifier for the firewall.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.Tags.Key
-        description: The key of the tag.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.Tags.Value
-        description: The value of the tag.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.EncryptionConfiguration.KeyId
-        description: The ID of the Amazon Web Services Key Management Service (KMS) customer managed key.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.EncryptionConfiguration.Type
-        description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.NumberOfAssociations
-        description: The number of VpcEndpointAssociation resources that use this firewall.
-        type: Number
-      - contextPath: AWS.NetworkFirewall.Firewalls.EnabledAnalysisTypes
-        description: The enabled analysis types.
-        type: Unknown
-      - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayId
-        description: The unique identifier of the transit gateway associated with this firewall.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayOwnerAccountId
-        description: The Amazon Web Services account ID that owns the transit gateway.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneMappings.AvailabilityZone
-        description: The ID of the Availability Zone where the firewall endpoint is located.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneChangeProtection
-        description: The setting indicating whether the firewall is protected against changes to its Availability Zone configuration.
-        type: Boolean
-      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.Status
-        description: The readiness status of the firewall.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.ConfigurationSyncStateSummary
-        description: The configuration sync state for the firewall.
-        type: String
-      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.SyncStates
-        description: Status for the subnets that you’ve configured in the firewall. This contains one array element per Availability Zone where you’ve configured a subnet in the firewall.
-        type: Unknown
-      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.CapacityUsageSummary
-        description: Describes the capacity usage of the resources contained in a firewall’s reference sets.
-        type: Unknown
-      - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.TransitGatewayAttachmentSyncState
-        description: The synchronization state of the transit gateway attachment.
-        type: Unknown
+      description: The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both.
 
   - name: aws-network-firewall-firewall-delete-protection-update
     description: "Modifies the flag, DeleteProtection, which indicates whether it is possible to delete the firewall. Requires permissions: network-firewall:UpdateFirewallDeleteProtection."
@@ -18692,9 +18615,9 @@ script:
     - name: update_token
       description: An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
     - name: firewall_name
-      description: The descriptive name of the firewall. You can't change the name of a firewall after you create it.
+      description: The descriptive name of the firewall. You can't change the name of a firewall after you create it. You must specify the ARN or the name, and you can specify both.
     - name: firewall_arn
-      description: The Amazon Resource Name (ARN) of the firewall.
+      description: The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both.
     - name: delete_protection
       description: Whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion. Use this setting to protect against accidentally deleting a firewall that is in use. When you create a firewall, the operation initializes this flag to TRUE.
       required: true
@@ -18702,19 +18625,6 @@ script:
       predefined:
         - "true"
         - "false"
-    outputs:
-    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
-      description: The descriptive name of the firewall.
-      type: String
-    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
-      description: The Amazon Resource Name (ARN) of the firewall.
-      type: String
-    - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
-      description: The flag indicating whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion.
-      type: Boolean
-    - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
-      description: An optional token that you can use for optimistic locking.
-      type: String
 
   - name: aws-network-firewall-firewall-description-update
     description: "Modifies the description for the specified firewall. Required permissions: network-firewall:UpdateFirewallDescription."
@@ -18762,24 +18672,12 @@ script:
     - name: update_token
       description: An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
     - name: firewall_name
-      description: The descriptive name of the firewall. You can't change the name of a firewall after you create it.
+      description: The descriptive name of the firewall. You can't change the name of a firewall after you create it. You must specify the ARN or the name, and you can specify both.
     - name: firewall_arn
-      description: The Amazon Resource Name (ARN) of the firewall.
+      description: The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both.
     - name: description
       description: The new description for the firewall. If you omit this setting, Network Firewall removes the description for the firewall.
-    outputs:
-    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
-      description: The descriptive name of the firewall.
-      type: String
-    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
-      description: The Amazon Resource Name (ARN) of the firewall.
-      type: String
-    - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
-      description: Whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion.
-      type: Boolean
-    - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
-      description: An optional token that you can use for optimistic locking.
-      type: String
+      required: true
 
   isfetch: false
   runonce: false
