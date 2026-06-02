@@ -16,7 +16,7 @@ from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 # Specific libraries
-import dateparser
+import dateparser  # type: ignore[import]
 
 # XSOAR libraries
 import demistomock as demisto  # noqa: F401
@@ -2806,6 +2806,7 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
 
     detection_category = integration_params.get("detection_category", "")
     detection_type = integration_params.get("detection_type", "").strip()
+    create_multiple_incidents_by_timestamp = integration_params.get("create_multiple_incidents_by_timestamp", False)
     api_response: dict = {}
 
     # Get the last run and the last fetched value
@@ -2921,11 +2922,20 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
                     break
 
                 incident_uid = f"{entity_type}_{event.get('id')}"
-                if incident_uid in last_created_events:
+
+                if (not create_multiple_incidents_by_timestamp) and incident_uid in last_created_events:
                     demisto.debug(
                         f"{entity_type} - Skipping object last_timestamp : {event.get('last_timestamp')} / ID : {event.get('id')}"
                     )
                     continue
+
+                if create_multiple_incidents_by_timestamp:
+                    ts_field = "last_detection_timestamp" if entity_type in ("Accounts", "Hosts") else "last_timestamp"
+                    event_id = str(event.get("id"))
+                    event_ts = event.get(ts_field)
+                    checkpoint_dict = new_last_run[entity_type].get("multiple_incidents_checkpoint", {}) or {}
+                    if event_id in checkpoint_dict and checkpoint_dict.get(event_id) == event_ts:
+                        continue
 
                 incident_last_run = None
                 if entity_type == "Accounts":
@@ -2953,8 +2963,15 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
                     entity_incidents.append(incident)
                     new_last_run[entity_type]["last_timestamp"] = incident_last_run.get("last_timestamp")
                     new_last_run[entity_type]["id"] = incident_last_run.get("id")
+                    ts_field = "last_detection_timestamp" if entity_type in ("Accounts", "Hosts") else "last_timestamp"
+                    existing_multiple_incidents_checkpoint = (
+                        new_last_run[entity_type].get("multiple_incidents_checkpoint", {}) or {}
+                    )
+                    existing_multiple_incidents_checkpoint[str(incident_last_run.get("id"))] = event.get(ts_field)
+                    new_last_run[entity_type]["multiple_incidents_checkpoint"] = existing_multiple_incidents_checkpoint
                     # We add this event in the list, as that's a new event we need to remember for next run
-                    last_created_events.append(incident_uid)
+                    if incident_uid not in last_created_events:
+                        last_created_events.append(incident_uid)
 
             if len(entity_incidents) > 0:
                 demisto.info(f"{entity_type} - {len(entity_incidents)} incident(s) to create")
