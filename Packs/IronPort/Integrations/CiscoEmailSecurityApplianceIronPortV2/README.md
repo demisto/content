@@ -2404,7 +2404,7 @@ Retrieve all message filters or a specific message filter by name. Message filte
 ### cisco-esa-message-filter-create
 
 ***
-Create a new message filter. If the appliance accepts the filter but flags it as invalid (e.g. unknown listener/interface), the command returns success and surfaces the appliance warning in the human-readable output.
+Create a new message filter. If the appliance accepts the filter but flags it as invalid (e.g. unknown listener/interface), the command returns success and surfaces the appliance warning in the human-readable output. For details on Cisco's filter rule language, see "Using Message Filters to Enforce Email Policies" in the Cisco Secure Email Gateway 16.0 Admin Guide: https://www.cisco.com/c/en/us/td/docs/security/esa/esa16-0/user_guide/b_ESA_Admin_Guide_16-0/b_ESA_Admin_Guide_12_1_chapter_01000.html
 
 #### Base Command
 
