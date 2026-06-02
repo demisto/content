@@ -260,9 +260,7 @@ class TestClient:
 def test_test_module_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import test_module
 
-    mocker.patch.object(
-        mock_client, "search_incidents", return_value={"is_success": True, "data": []}
-    )
+    mocker.patch.object(mock_client, "search_incidents", return_value={"is_success": True, "data": []})
     result = test_module(mock_client)
     assert result == "ok"
 
@@ -298,9 +296,7 @@ def test_test_module_forbidden(mock_client, mocker, capfd):
     from SOCRadarIncidentsV4 import test_module
     from CommonServerPython import DemistoException
 
-    mocker.patch.object(
-        mock_client, "search_incidents", side_effect=DemistoException("403 Forbidden")
-    )
+    mocker.patch.object(mock_client, "search_incidents", side_effect=DemistoException("403 Forbidden"))
     with capfd.disabled():
         result = test_module(mock_client)
     assert "Access Denied" in result
@@ -310,9 +306,7 @@ def test_test_module_not_found(mock_client, mocker, capfd):
     from SOCRadarIncidentsV4 import test_module
     from CommonServerPython import DemistoException
 
-    mocker.patch.object(
-        mock_client, "search_incidents", side_effect=DemistoException("404 Not Found")
-    )
+    mocker.patch.object(mock_client, "search_incidents", side_effect=DemistoException("404 Not Found"))
     with capfd.disabled():
         result = test_module(mock_client)
     assert "Not Found" in result
@@ -352,9 +346,7 @@ def test_fetch_incidents_first_fetch(mock_client, mocker):
     """Test fetch incidents on first run"""
     from SOCRadarIncidentsV4 import fetch_incidents
 
-    mocker.patch.object(
-        mock_client, "search_incidents", return_value=_mock_response([_make_alarm()])
-    )
+    mocker.patch.object(mock_client, "search_incidents", return_value=_mock_response([_make_alarm()]))
 
     next_run, incidents = fetch_incidents(
         client=mock_client,
@@ -419,9 +411,7 @@ def test_fetch_incidents_no_alarms(mock_client, mocker):
     """Test fetch when no alarms returned"""
     from SOCRadarIncidentsV4 import fetch_incidents
 
-    mocker.patch.object(
-        mock_client, "search_incidents", return_value=_mock_response([])
-    )
+    mocker.patch.object(mock_client, "search_incidents", return_value=_mock_response([]))
 
     next_run, incidents = fetch_incidents(
         client=mock_client,
@@ -440,9 +430,7 @@ def test_fetch_incidents_error_handling(mock_client, mocker, capfd):
     """Test fetch gracefully handles API errors"""
     from SOCRadarIncidentsV4 import fetch_incidents
 
-    mocker.patch.object(
-        mock_client, "search_incidents", side_effect=Exception("API Error")
-    )
+    mocker.patch.object(mock_client, "search_incidents", side_effect=Exception("API Error"))
 
     with capfd.disabled():
         next_run, incidents = fetch_incidents(
@@ -461,9 +449,7 @@ def test_fetch_incidents_with_filters(mock_client, mocker):
     """Test fetch passes filters correctly to search_incidents"""
     from SOCRadarIncidentsV4 import fetch_incidents
 
-    mock_search = mocker.patch.object(
-        mock_client, "search_incidents", return_value=_mock_response([_make_alarm()])
-    )
+    mock_search = mocker.patch.object(mock_client, "search_incidents", return_value=_mock_response([_make_alarm()]))
 
     fetch_incidents(
         client=mock_client,
@@ -490,13 +476,9 @@ def test_fetch_incidents_with_filters(mock_client, mocker):
 def test_change_status_command_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import change_status_command
 
-    mocker.patch.object(
-        mock_client, "change_alarm_status", return_value={"is_success": True}
-    )
+    mocker.patch.object(mock_client, "change_alarm_status", return_value={"is_success": True})
 
-    result = change_status_command(
-        mock_client, {"alarm_ids": "1,2", "status_reason": "RESOLVED"}
-    )
+    result = change_status_command(mock_client, {"alarm_ids": "1,2", "status_reason": "RESOLVED"})
     assert "Status changed" in result.readable_output
 
 
@@ -515,9 +497,7 @@ def test_change_status_command_missing_params(mock_client):
 def test_mark_false_positive_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import mark_as_false_positive_command
 
-    mocker.patch.object(
-        mock_client, "change_alarm_status", return_value={"is_success": True}
-    )
+    mocker.patch.object(mock_client, "change_alarm_status", return_value={"is_success": True})
     result = mark_as_false_positive_command(mock_client, {"alarm_id": "1"})
     assert "false positive" in result.readable_output
 
@@ -532,9 +512,7 @@ def test_mark_false_positive_missing_alarm_id(mock_client):
 def test_mark_resolved_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import mark_as_resolved_command
 
-    mocker.patch.object(
-        mock_client, "change_alarm_status", return_value={"is_success": True}
-    )
+    mocker.patch.object(mock_client, "change_alarm_status", return_value={"is_success": True})
     result = mark_as_resolved_command(mock_client, {"alarm_id": "1"})
     assert "resolved" in result.readable_output
 
@@ -547,9 +525,7 @@ def test_mark_resolved_success(mock_client, mocker):
 def test_add_comment_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import add_comment_command
 
-    mocker.patch.object(
-        mock_client, "add_alarm_comment", return_value={"is_success": True}
-    )
+    mocker.patch.object(mock_client, "add_alarm_comment", return_value={"is_success": True})
     result = add_comment_command(
         mock_client,
         {"alarm_id": "1", "user_email": "user@example.com", "comment": "test"},
@@ -561,20 +537,14 @@ def test_add_comment_missing_params(mock_client):
     from SOCRadarIncidentsV4 import add_comment_command
 
     with pytest.raises(ValueError):
-        add_comment_command(
-            mock_client, {"alarm_id": "1", "user_email": "", "comment": ""}
-        )
+        add_comment_command(mock_client, {"alarm_id": "1", "user_email": "", "comment": ""})
 
 
 def test_add_assignee_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import add_assignee_command
 
-    mocker.patch.object(
-        mock_client, "add_alarm_assignee", return_value={"is_success": True}
-    )
-    result = add_assignee_command(
-        mock_client, {"alarm_id": "1", "user_emails": "user@example.com"}
-    )
+    mocker.patch.object(mock_client, "add_alarm_assignee", return_value={"is_success": True})
+    result = add_assignee_command(mock_client, {"alarm_id": "1", "user_emails": "user@example.com"})
     assert "Assignee added" in result.readable_output
 
 
@@ -588,9 +558,7 @@ def test_add_assignee_missing_emails(mock_client):
 def test_add_tag_success(mock_client, mocker):
     from SOCRadarIncidentsV4 import add_tag_command
 
-    mocker.patch.object(
-        mock_client, "add_remove_tag", return_value={"is_success": True}
-    )
+    mocker.patch.object(mock_client, "add_remove_tag", return_value={"is_success": True})
     result = add_tag_command(mock_client, {"alarm_id": "1", "tag": "critical"})
     assert "critical" in result.readable_output
 
@@ -623,9 +591,7 @@ def test_test_fetch_success(mock_client, mocker):
 def test_test_fetch_no_incidents(mock_client, mocker):
     from SOCRadarIncidentsV4 import test_fetch_command
 
-    mocker.patch.object(
-        mock_client, "search_incidents", return_value=_mock_response([])
-    )
+    mocker.patch.object(mock_client, "search_incidents", return_value=_mock_response([]))
 
     result = test_fetch_command(mock_client, {"first_fetch": "3 days", "limit": "5"})
     assert "No incidents found" in result.readable_output
@@ -774,15 +740,10 @@ def test_alarm_to_incident_include_related_assets():
     from SOCRadarIncidentsV4 import alarm_to_incident
 
     alarm = _make_alarm()
-    alarm["alarm_related_assets"] = [
-        {"key": "domain", "value": ["example.com", "test.com"]}
-    ]
+    alarm["alarm_related_assets"] = [{"key": "domain", "value": ["example.com", "test.com"]}]
 
     incident = alarm_to_incident(alarm, include_related_assets=True)
-    assert (
-        "domain: example.com || test.com"
-        in incident["CustomFields"]["socradarrelatedassets"]
-    )
+    assert "domain: example.com || test.com" in incident["CustomFields"]["socradarrelatedassets"]
 
 
 def test_alarm_to_incident_include_related_entities():
@@ -803,9 +764,7 @@ def test_alarm_to_incident_include_company_id():
     # Remove company_id from alarm to test configured_company_id fallback
     del alarm["company_id"]
 
-    incident = alarm_to_incident(
-        alarm, include_company_id=True, configured_company_id="789"
-    )
+    incident = alarm_to_incident(alarm, include_company_id=True, configured_company_id="789")
     assert incident["CustomFields"]["socradarcompanyid"] == "789"
     raw = json.loads(incident["rawJSON"])
     assert raw.get("company_id") == "789"
@@ -826,7 +785,7 @@ def test_alarm_to_incident_show_content_false():
     alarm = _make_alarm()
     alarm["content"] = {"key1": "value1", "key2": "value2"}
 
-    incident = alarm_to_incident(alarm, show_content=False)
+    incident = alarm_to_incident(alarm, show_content=False, include_incident_link=True)
     assert incident["CustomFields"]["socradarincidentcontent"] == ""
 
 
@@ -836,7 +795,7 @@ def test_alarm_to_incident_show_content_true():
     alarm = _make_alarm()
     alarm["content"] = {"key1": "value1"}
 
-    incident = alarm_to_incident(alarm, show_content=True)
+    incident = alarm_to_incident(alarm, show_content=True, include_incident_link=True)
     assert "key1: value1" in incident["CustomFields"]["socradarincidentcontent"]
 
 
@@ -856,7 +815,7 @@ def test_alarm_to_incident_non_dict_content():
     alarm = _make_alarm()
     alarm["content"] = "not-a-dict"
 
-    incident = alarm_to_incident(alarm, show_content=True)
+    incident = alarm_to_incident(alarm, show_content=True, include_incident_link=True)
     assert incident["CustomFields"]["socradarincidentcontent"] == ""
 
 
@@ -1051,9 +1010,7 @@ def test_change_status_command_with_update_related_and_email(mock_client, mocker
     """Test change_status_command passes update_related and email correctly."""
     from SOCRadarIncidentsV4 import change_status_command
 
-    mocker.patch.object(
-        mock_client, "change_alarm_status", return_value={"is_success": True}
-    )
+    mocker.patch.object(mock_client, "change_alarm_status", return_value={"is_success": True})
 
     result = change_status_command(
         mock_client,
@@ -1080,9 +1037,7 @@ def test_fetch_incidents_passes_include_params(mock_client, mocker):
     alarm["alarm_type_details"]["alarm_default_mitigation_plan"] = "Mitigation plan"
     alarm["alarm_response"] = "Response plan"
 
-    mocker.patch.object(
-        mock_client, "search_incidents", return_value=_mock_response([alarm])
-    )
+    mocker.patch.object(mock_client, "search_incidents", return_value=_mock_response([alarm]))
 
     next_run, incidents = fetch_incidents(
         client=mock_client,
@@ -1125,9 +1080,7 @@ def test_parse_alarm_date_space_format():
 def test_test_module_unexpected_exception(mock_client, mocker, capfd):
     from SOCRadarIncidentsV4 import test_module
 
-    mocker.patch.object(
-        mock_client, "search_incidents", side_effect=RuntimeError("unexpected")
-    )
+    mocker.patch.object(mock_client, "search_incidents", side_effect=RuntimeError("unexpected"))
     with capfd.disabled():
         result = test_module(mock_client)
     assert "Unexpected error" in result
@@ -1143,10 +1096,7 @@ def test_alarm_to_incident_compliance_truncation():
 
     alarm = _make_alarm()
     # Create a very long compliance list
-    long_list = [
-        {"name": f"Framework{i}", "control_item": f"Ctrl{i}", "description": "x" * 200}
-        for i in range(50)
-    ]
+    long_list = [{"name": f"Framework{i}", "control_item": f"Ctrl{i}", "description": "x" * 200} for i in range(50)]
     alarm["alarm_type_details"]["alarm_compliance_list"] = long_list
 
     incident = alarm_to_incident(alarm, include_compliance=True)
