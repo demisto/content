@@ -8,9 +8,13 @@ import pytest
 from CommonServerPython import CommandResults, DemistoException
 from MicrosoftGraphFiles import (
     MsGraphClient,
+    _decode_sharepoint_login_name,
+    _summarize_permission_grantees,
     assign_sensitivity_label_command,
+    copy_driveitem_command,
     create_new_folder_command,
     create_site_permissions_command,
+    delete_driveitem_permission_command,
     delete_file_command,
     delete_site_permission_command,
     download_file_command,
@@ -18,10 +22,12 @@ from MicrosoftGraphFiles import (
     get_site_id_from_site_name,
     list_drive_content_command,
     list_drives_in_site_command,
+    list_driveitem_permissions_command,
     list_sharepoint_sites_command,
     list_site_permissions_command,
     parse_key_to_context,
     remove_identity_key,
+    update_driveitem_command,
     update_site_permissions_command,
     upload_new_file_command,
     url_validation,
@@ -1062,6 +1068,533 @@ def test_test_function(mocker, grant_type, self_deployed, demisto_command, expec
 
 
 # ---------------------------------------------------------------------------
+# msgraph-driveitem-update (N1)
+# ---------------------------------------------------------------------------
+
+DRIVEITEM_RESPONSE = {
+    "@odata.context": "test-context",
+    "id": "item-1",
+    "name": "renamed.txt",
+    "size": 42,
+    "webUrl": "https://example/web",
+    "createdDateTime": "2024-01-01T00:00:00Z",
+    "lastModifiedDateTime": "2024-01-02T00:00:00Z",
+    "parentReference": {
+        "driveId": "drive-1",
+        "driveType": "documentLibrary",
+        "id": "parent-1",
+        "path": "/drive/root:",
+    },
+    "file": {"mimeType": "text/plain"},
+}
+
+
+def test_update_driveitem_rename_only(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - object_type=users with only new_name supplied
+    When:
+        - update_driveitem_command is invoked
+    Then:
+        - Only the name key is sent in the PATCH body
+        - MsGraphFiles.UpdatedItem context is populated from the response
+    """
+    authorization_mock(requests_mock)
+    mock = requests_mock.patch(
+        "https://graph.microsoft.com/v1.0/users/uid/drive/items/item-1",
+        json=DRIVEITEM_RESPONSE,
+    )
+    result = update_driveitem_command(
+        CLIENT_MOCKER,
+        {
+            "object_type": "users",
+            "object_type_id": "uid",
+            "item_id": "item-1",
+            "new_name": "renamed.txt",
+        },
+    )
+    assert mock.last_request.json() == {"name": "renamed.txt"}
+    assert result.outputs_prefix == "MsGraphFiles.UpdatedItem"
+    assert result.outputs["ID"] == "item-1"
+    assert result.outputs["Name"] == "renamed.txt"
+
+
+def test_update_driveitem_cross_drive_move(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - object_type=drives, new_parent_id, new_parent_drive_id and conflict_behavior
+    When:
+        - update_driveitem_command is invoked
+    Then:
+        - parentReference body carries both id and driveId
+        - @microsoft.graph.conflictBehavior is in the body
+        - URI uses the drives/{id}/items/{id} shape (no /drive/ segment)
+    """
+    authorization_mock(requests_mock)
+    mock = requests_mock.patch(
+        "https://graph.microsoft.com/v1.0/drives/drive-source/items/item-1",
+        json=DRIVEITEM_RESPONSE,
+    )
+    update_driveitem_command(
+        CLIENT_MOCKER,
+        {
+            "object_type": "drives",
+            "object_type_id": "drive-source",
+            "item_id": "item-1",
+            "new_parent_id": "parent-2",
+            "new_parent_drive_id": "drive-dest",
+            "conflict_behavior": "rename",
+        },
+    )
+    sent = mock.last_request.json()
+    assert sent["parentReference"] == {"id": "parent-2", "driveId": "drive-dest"}
+    assert sent["@microsoft.graph.conflictBehavior"] == "rename"
+    assert "name" not in sent
+    assert "description" not in sent
+
+
+def test_update_driveitem_no_fields_raises(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - No optional update fields are supplied
+    When:
+        - update_driveitem_command is invoked
+    Then:
+        - DemistoException is raised before any HTTP call
+    """
+    authorization_mock(requests_mock)
+    with pytest.raises(DemistoException, match="at least one update field"):
+        update_driveitem_command(
+            CLIENT_MOCKER,
+            {"object_type": "users", "object_type_id": "uid", "item_id": "item-1"},
+        )
+
+
+# ---------------------------------------------------------------------------
+# msgraph-driveitem-copy (N2)
+# ---------------------------------------------------------------------------
+
+
+def test_copy_driveitem_202_returns_monitor_url(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - object_type=users with destination_parent_id and new_name
+    When:
+        - copy_driveitem_command is invoked and Microsoft Graph responds 202 + Location header
+    Then:
+        - The body contains parentReference.id and name
+        - The MonitorUrl output is populated from the Location header
+        - Echo fields ItemId / ObjectType / ObjectTypeId are populated
+    """
+    authorization_mock(requests_mock)
+    monitor_url = "https://graph.microsoft.com/v1.0/operations/monitor-xyz"
+    mock = requests_mock.post(
+        "https://graph.microsoft.com/v1.0/users/uid/drive/items/item-1/copy",
+        status_code=202,
+        headers={"Location": monitor_url},
+        text="",
+    )
+    result = copy_driveitem_command(
+        CLIENT_MOCKER,
+        {
+            "object_type": "users",
+            "object_type_id": "uid",
+            "item_id": "item-1",
+            "destination_parent_id": "parent-2",
+            "new_name": "copied.txt",
+        },
+    )
+    sent_body = mock.last_request.json()
+    assert sent_body == {"parentReference": {"id": "parent-2"}, "name": "copied.txt"}
+    assert result.outputs == {
+        "MonitorUrl": monitor_url,
+        "ItemId": "item-1",
+        "ObjectType": "users",
+        "ObjectTypeId": "uid",
+    }
+    assert result.outputs_prefix == "MsGraphFiles.CopyOperation"
+
+
+def test_copy_driveitem_cross_drive_with_conflict_behavior(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - object_type=drives with both destination_parent_id and destination_drive_id, plus conflict_behavior
+    When:
+        - copy_driveitem_command is invoked
+    Then:
+        - parentReference body carries both id and driveId
+        - conflict_behavior is sent as a query parameter (not in body)
+        - URI uses drives/{id}/items/{id}/copy (no /drive/ segment)
+    """
+    authorization_mock(requests_mock)
+    mock = requests_mock.post(
+        "https://graph.microsoft.com/v1.0/drives/drive-src/items/item-1/copy",
+        status_code=202,
+        headers={"Location": "https://example/monitor"},
+        text="",
+    )
+    copy_driveitem_command(
+        CLIENT_MOCKER,
+        {
+            "object_type": "drives",
+            "object_type_id": "drive-src",
+            "item_id": "item-1",
+            "destination_parent_id": "parent-2",
+            "destination_drive_id": "drive-dest",
+            "conflict_behavior": "rename",
+        },
+    )
+    sent_body = mock.last_request.json()
+    assert sent_body == {"parentReference": {"id": "parent-2", "driveId": "drive-dest"}}
+    assert mock.last_request.qs.get("@microsoft.graph.conflictbehavior") == ["rename"]
+
+
+def test_copy_driveitem_empty_body_when_no_optional_args(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - Only required args (object_type, object_type_id, item_id)
+    When:
+        - copy_driveitem_command is invoked
+    Then:
+        - An empty JSON body is sent (Graph copies to root with the original name)
+        - No conflict_behavior query parameter is sent
+    """
+    authorization_mock(requests_mock)
+    mock = requests_mock.post(
+        "https://graph.microsoft.com/v1.0/users/uid/drive/items/item-1/copy",
+        status_code=202,
+        headers={"Location": "https://example/monitor"},
+        text="",
+    )
+    copy_driveitem_command(
+        CLIENT_MOCKER,
+        {"object_type": "users", "object_type_id": "uid", "item_id": "item-1"},
+    )
+    assert mock.last_request.json() == {}
+    assert "@microsoft.graph.conflictbehavior" not in mock.last_request.qs
+
+
+# ---------------------------------------------------------------------------
+# msgraph-driveitem-permissions-list (N3)
+# ---------------------------------------------------------------------------
+
+DRIVEITEM_PERMISSIONS_RESPONSE = {
+    "@odata.context": "test-context",
+    "@odata.nextLink": "https://graph.microsoft.com/v1.0/page2?$skiptoken=abc",
+    "value": [
+        {
+            "id": "perm-1",
+            "roles": ["read"],
+            "link": {"scope": "anonymous", "type": "view", "webUrl": "https://example.com/share/link"},
+        },
+        {
+            "id": "perm-2",
+            "roles": ["write"],
+            "grantedToV2": {
+                "user": {"displayName": "External User", "email": "ext@external.com", "id": "u-ext"},
+            },
+        },
+        {
+            "id": "perm-3",
+            "roles": ["read"],
+            "grantedToV2": {"user": {"displayName": "Owner", "email": "owner@tenant.com", "id": "u-own"}},
+            "inheritedFrom": {"driveId": "drive-1", "id": "parent-1", "path": "/drive/root:"},
+        },
+    ],
+}
+
+
+def test_list_driveitem_permissions_happy_path(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - A driveItem with three permissions of mixed types
+    When:
+        - list_driveitem_permissions_command is invoked
+    Then:
+        - All three permissions are returned under MsGraphFiles.ItemPermission.Value
+        - NextToken carries @odata.nextLink
+        - Echo fields ItemId / ObjectType / ObjectTypeId are populated
+    """
+    authorization_mock(requests_mock)
+    requests_mock.get(
+        "https://graph.microsoft.com/v1.0/sites/site-1/drive/items/item-1/permissions",
+        json=DRIVEITEM_PERMISSIONS_RESPONSE,
+    )
+    result = list_driveitem_permissions_command(
+        CLIENT_MOCKER,
+        {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1"},
+    )
+    assert result.outputs_prefix == "MsGraphFiles.ItemPermission"
+    assert result.outputs["ItemId"] == "item-1"
+    assert result.outputs["ObjectType"] == "sites"
+    assert result.outputs["ObjectTypeId"] == "site-1"
+    assert result.outputs["NextToken"] == DRIVEITEM_PERMISSIONS_RESPONSE["@odata.nextLink"]
+    assert len(result.outputs["Value"]) == 3
+    ids = [p["ID"] for p in result.outputs["Value"]]
+    assert ids == ["perm-1", "perm-2", "perm-3"]
+
+
+def test_list_driveitem_permissions_with_limit(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - object_type=drives with limit=10
+    When:
+        - list_driveitem_permissions_command is invoked
+    Then:
+        - $top=10 is sent as a query parameter
+        - URI uses drives/{id}/items/{id}/permissions (no /drive/ segment)
+    """
+    authorization_mock(requests_mock)
+    mock = requests_mock.get(
+        "https://graph.microsoft.com/v1.0/drives/drive-1/items/item-1/permissions",
+        json={"@odata.context": "ctx", "value": []},
+    )
+    list_driveitem_permissions_command(
+        CLIENT_MOCKER,
+        {"object_type": "drives", "object_type_id": "drive-1", "item_id": "item-1", "limit": "10"},
+    )
+    assert mock.last_request.qs.get("$top") == ["10"]
+
+
+def test_list_driveitem_permissions_uses_next_page_url(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - next_page_url pointing to a follow-up @odata.nextLink
+    When:
+        - list_driveitem_permissions_command is invoked
+    Then:
+        - The full URL is used directly (not appended to base)
+    """
+    authorization_mock(requests_mock)
+    next_url = "https://graph.microsoft.com/v1.0/users/uid/drive/items/i1/permissions?$skiptoken=xyz"
+    mock = requests_mock.get(next_url, json={"@odata.context": "ctx", "value": []})
+    list_driveitem_permissions_command(
+        CLIENT_MOCKER,
+        {
+            "object_type": "users",
+            "object_type_id": "uid",
+            "item_id": "i1",
+            "next_page_url": next_url,
+        },
+    )
+    assert mock.called
+
+
+# ---------------------------------------------------------------------------
+# msgraph-driveitem-permission-delete (N4)
+# ---------------------------------------------------------------------------
+
+
+def test_delete_driveitem_permission_204(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - All four required args
+    When:
+        - delete_driveitem_permission_command is invoked and Microsoft Graph responds 204
+    Then:
+        - The expected DELETE URL is called
+        - Echo outputs ItemId / PermissionId are populated
+    """
+    authorization_mock(requests_mock)
+    mock = requests_mock.delete(
+        "https://graph.microsoft.com/v1.0/sites/site-1/drive/items/item-1/permissions/perm-1",
+        status_code=204,
+        text="",
+    )
+    result = delete_driveitem_permission_command(
+        CLIENT_MOCKER,
+        {
+            "object_type": "sites",
+            "object_type_id": "site-1",
+            "item_id": "item-1",
+            "permission_id": "perm-1",
+        },
+    )
+    assert mock.called
+    assert result.outputs == {
+        "ItemId": "item-1",
+        "PermissionId": "perm-1",
+        "ObjectType": "sites",
+        "ObjectTypeId": "site-1",
+    }
+    assert result.outputs_prefix == "MsGraphFiles.RemovedItemPermission"
+
+
+def test_delete_driveitem_permission_drives_uri(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - object_type=drives
+    When:
+        - delete_driveitem_permission_command is invoked
+    Then:
+        - The URI uses drives/{id}/items/{id}/permissions/{permId} (no /drive/ segment)
+    """
+    authorization_mock(requests_mock)
+    mock = requests_mock.delete(
+        "https://graph.microsoft.com/v1.0/drives/drive-1/items/item-1/permissions/perm-1",
+        status_code=204,
+        text="",
+    )
+    delete_driveitem_permission_command(
+        CLIENT_MOCKER,
+        {
+            "object_type": "drives",
+            "object_type_id": "drive-1",
+            "item_id": "item-1",
+            "permission_id": "perm-1",
+        },
+    )
+    assert mock.called
+
+
+def test_delete_driveitem_permission_404_surfaced(requests_mock: MockerCore) -> None:
+    """
+    Given:
+        - A permission_id that does not exist (Microsoft Graph returns 404)
+    When:
+        - delete_driveitem_permission_command is invoked
+    Then:
+        - The error is surfaced (no silent suppression). Playbook is expected to use
+          XSOAR's per-task "Continue on error" for bulk-delete loops.
+    """
+    authorization_mock(requests_mock)
+    requests_mock.delete(
+        "https://graph.microsoft.com/v1.0/users/uid/drive/items/item-1/permissions/bogus",
+        status_code=404,
+        json={"error": {"code": "itemNotFound", "message": "The resource could not be found."}},
+    )
+    with pytest.raises(Exception):  # noqa: B017 - the underlying client raises DemistoException
+        delete_driveitem_permission_command(
+            CLIENT_MOCKER,
+            {
+                "object_type": "users",
+                "object_type_id": "uid",
+                "item_id": "item-1",
+                "permission_id": "bogus",
+            },
+        )
+
+
+def test_decode_sharepoint_login_name_guest_user() -> None:
+    """
+    Given:
+        - A SharePoint claims-encoded loginName for an external guest user
+    When:
+        - _decode_sharepoint_login_name is called
+    Then:
+        - The original external email is recovered (underscore replaced back with '@')
+    """
+    encoded = "i:0#.f|membership|ymishra_paloaltonetworks.com#ext#@aperturesync.onmicrosoft.com"
+    assert _decode_sharepoint_login_name(encoded) == "ymishra@paloaltonetworks.com"
+
+
+def test_decode_sharepoint_login_name_internal_user() -> None:
+    """
+    Given:
+        - A SharePoint claims-encoded loginName for an internal tenant user (no #ext# marker)
+    When:
+        - _decode_sharepoint_login_name is called
+    Then:
+        - The UPN portion after the last "|" is returned unchanged
+    """
+    encoded = "i:0#.f|membership|user@tenant.onmicrosoft.com"
+    assert _decode_sharepoint_login_name(encoded) == "user@tenant.onmicrosoft.com"
+
+
+def test_decode_sharepoint_login_name_passthrough() -> None:
+    """
+    Given:
+        - A non-claims-encoded string or empty input
+    When:
+        - _decode_sharepoint_login_name is called
+    Then:
+        - The input is returned as-is
+    """
+    assert _decode_sharepoint_login_name("plain@example.com") == "plain@example.com"
+    assert _decode_sharepoint_login_name("") == ""
+
+
+def test_summarize_permission_grantees_external_user_via_siteuser() -> None:
+    """
+    Given:
+        - A permission entry where the external guest user shows up under
+          GrantedToV2.SiteUser with both Email and a claims-encoded LoginName
+    When:
+        - _summarize_permission_grantees is called
+    Then:
+        - The external user's email is returned (proving SiteUser.Email is now surfaced)
+    """
+    perm = {
+        "ID": "perm-ext",
+        "Roles": ["write"],
+        "GrantedTo": {"User": {"DisplayName": "ymishra", "Email": "ymishra@paloaltonetworks.com"}},
+        "GrantedToV2": {
+            "SiteUser": {
+                "DisplayName": "ymishra",
+                "Email": "ymishra@paloaltonetworks.com",
+                "LoginName": "i:0#.f|membership|ymishra_paloaltonetworks.com#ext#@aperturesync.onmicrosoft.com",
+            },
+        },
+    }
+    assert _summarize_permission_grantees(perm) == "ymishra@paloaltonetworks.com"
+
+
+def test_summarize_permission_grantees_siteuser_loginname_only() -> None:
+    """
+    Given:
+        - A permission entry whose only identifier is a claims-encoded SiteUser.LoginName
+          (no Email field populated)
+    When:
+        - _summarize_permission_grantees is called
+    Then:
+        - The decoded guest email is surfaced
+    """
+    perm = {
+        "ID": "perm-ext",
+        "Roles": ["write"],
+        "GrantedToV2": {
+            "SiteUser": {
+                "LoginName": "i:0#.f|membership|ymishra_paloaltonetworks.com#ext#@aperturesync.onmicrosoft.com",
+            },
+        },
+    }
+    assert _summarize_permission_grantees(perm) == "ymishra@paloaltonetworks.com"
+
+
+def test_summarize_permission_grantees_multiple_identities() -> None:
+    """
+    Given:
+        - A permission entry with grantedToIdentitiesV2 carrying multiple users
+    When:
+        - _summarize_permission_grantees is called
+    Then:
+        - All distinct emails are joined with ", " preserving discovery order
+    """
+    perm = {
+        "ID": "perm-link",
+        "Roles": ["read"],
+        "GrantedToIdentitiesV2": [
+            {"User": {"Email": "alice@example.com"}},
+            {"User": {"Email": "bob@example.com"}},
+            {"User": {"Email": "alice@example.com"}},  # duplicate — should be deduped
+        ],
+    }
+    assert _summarize_permission_grantees(perm) == "alice@example.com, bob@example.com"
+
+
+def test_summarize_permission_grantees_empty() -> None:
+    """
+    Given:
+        - A permission entry with no grantedTo* fields (e.g. anonymous link only)
+    When:
+        - _summarize_permission_grantees is called
+    Then:
+        - An empty string is returned
+    """
+    perm = {"ID": "perm-link", "Roles": ["read"], "Link": {"Scope": "anonymous", "Type": "view"}}
+    assert _summarize_permission_grantees(perm) == ""
+
+
 # Sensitivity-label commands
 # ---------------------------------------------------------------------------
 
