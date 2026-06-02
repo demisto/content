@@ -10,7 +10,7 @@ def util_load_json(path):
 
 
 def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dict = {}, retries: int = 3):
-    if url_suffix == "/secrets" or full_url.endswith("/secrets"):
+    if url_suffix == "/incidents/secrets" or full_url.endswith("/incidents/secrets"):
         return util_load_json("test_data/incident_response.json")
     elif full_url == "next_url":
         return util_load_json("test_data/audit_log_response_next_link.json")
