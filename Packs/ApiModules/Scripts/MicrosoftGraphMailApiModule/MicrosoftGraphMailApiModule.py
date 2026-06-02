@@ -114,7 +114,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         return file_attachments_result
 
     @classmethod
-    def _build_attachments_input(cls, ids, attach_names=None, is_inline=False):
+    def _build_attachments_input(cls, ids, attach_names=None, attach_cids=None, is_inline=False):
         """
         Builds valid attachment input of the message. Is used for both in-line and regular attachments.
 
@@ -123,6 +123,10 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
         :type attach_names: ``list``
         :param attach_names: List of attachment name, not required.
+
+        :type attach_cids: ``list``
+        :param attach_cids: List of CID labels for inline attachments, mapped positionally to ids.
+            When a CID is provided for a given file, that file is marked as inline with the CID as its contentId.
 
         :type is_inline: ``bool``
         :param is_inline: Indicates whether the attachment is inline or not
@@ -139,25 +143,24 @@ class MsGraphMailBaseClient(MicrosoftClient):
         # in case that no attach names where provided, ids are zipped together and the attach_name value is ignored
         attachments = zip(ids, attach_names) if provided_names else zip(ids, ids)
 
-        for attach_id, attach_name in attachments:
-            try:
-                file_data, file_size, uploaded_file_name = GraphMailUtils.read_file(attach_id)
-            except Exception as e:
-                demisto.debug(
-                    f"send-mail: Failed to read file with ID '{attach_id}'. " f"Skipping this attachment. Error: {str(e)}"
-                )
-                # Skip this attachment if we can't read it - this can happen if the ID is invalid
-                continue
+        for index, (attach_id, attach_name) in enumerate(attachments):
+            file_data, file_size, uploaded_file_name = GraphMailUtils.read_file(attach_id)
             file_name = attach_name if provided_names or not uploaded_file_name else uploaded_file_name
+
+            # Determine CID and inline status: if a CID label is provided at this index, mark as inline
+            cid = attach_cids[index] if attach_cids and len(attach_cids) > index and attach_cids[index] else ""
+            file_is_inline = is_inline or bool(cid)
+            content_id = cid if cid else attach_id
+
             if file_size < cls.MAX_ATTACHMENT_SIZE:  # if file is less than 3MB
                 file_attachments_result.append(
                     {
                         "@odata.type": cls.FILE_ATTACHMENT,
                         "contentBytes": base64.b64encode(file_data).decode("utf-8"),
-                        "isInline": is_inline,
+                        "isInline": file_is_inline,
                         "name": file_name,
                         "size": file_size,
-                        "contentId": attach_id,
+                        "contentId": content_id,
                     }
                 )
             else:
@@ -166,9 +169,9 @@ class MsGraphMailBaseClient(MicrosoftClient):
                         "size": file_size,
                         "data": file_data,
                         "name": file_name,
-                        "isInline": is_inline,
+                        "isInline": file_is_inline,
                         "requires_upload": True,
-                        "contentId": attach_id,
+                        "contentId": content_id,
                     }
                 )
         return file_attachments_result
@@ -1740,7 +1743,8 @@ class GraphMailUtils:
         :param attach_names: List of regular attachments names to send
 
         :type attach_cids: ``list``
-        :param attach_cids: List of uploaded to War Room inline attachments to send
+        :param attach_cids: List of CID labels mapped positionally to attach_ids.
+            Files whose index has a corresponding CID label will be marked as inline attachments.
 
         :type manual_attachments: ``list``
         :param manual_attachments: List of manual attachments reports to send
@@ -1748,8 +1752,11 @@ class GraphMailUtils:
         :return: List of both inline and regular attachments of the message
         :rtype: ``list``
         """
-        regular_attachments = MsGraphMailBaseClient._build_attachments_input(ids=attach_ids, attach_names=attach_names)
-        inline_attachments = MsGraphMailBaseClient._build_attachments_input(ids=attach_cids, is_inline=True)
+        # Build attachments from War Room file IDs, using attach_cids as CID labels (not file IDs).
+        # Files with a corresponding CID label are automatically marked as inline.
+        attachments = MsGraphMailBaseClient._build_attachments_input(
+            ids=attach_ids, attach_names=attach_names, attach_cids=attach_cids
+        )
         # collecting manual attachments info
         manual_att_ids = [os.path.basename(att["RealFileName"]) for att in manual_attachments if "RealFileName" in att]
         manual_att_names = [att["FileName"] for att in manual_attachments if "FileName" in att]
@@ -1760,7 +1767,7 @@ class GraphMailUtils:
             inline_attachments_from_layout
         )
 
-        return regular_attachments + inline_attachments + manual_report_attachments + inline_from_layout_attachments
+        return attachments + manual_report_attachments + inline_from_layout_attachments
 
     @staticmethod
     def build_headers_input(internet_message_headers):
