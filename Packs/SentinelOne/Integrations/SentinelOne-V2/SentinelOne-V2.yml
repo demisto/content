@@ -144,7 +144,7 @@ configuration:
   type: 19
   section: Collect
   required: false
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne). Cortex XSOAR only parameter.'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -156,6 +156,9 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident

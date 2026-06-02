@@ -3,24 +3,24 @@ This integration was integrated and tested with version 9.5.5 of GLPI
 
 ## Configure GLPI in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL (e.g. https://example.net/apirest.php) | True |
-| Application Token | True |
-| User Token | True |
-| Fetch incidents | False |
-| Incident type | False |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
-| Incidents Fetch Interval | False |
-| Long running instance | False |
-| Maximum number of incidents to mirror each time | False |
-| Incident Mirror Direction | False |
-| Tag used for work note mirroring | False |
-| Tag used for comment mirroring | False |
-| Tag used for file mirroring | False |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-| Max incidents fetch at the same time | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g. https://example.net/apirest.php) |  | True |
+| Application Token |  | True |
+| User Token |  | True |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Incidents Fetch Interval |  | False |
+| Long running instance |  | False |
+| Maximum number of incidents to mirror each time |  | False |
+| Incident Mirror Direction | Cortex XSOAR only parameter. | False |
+| Tag used for work note mirroring |  | False |
+| Tag used for comment mirroring |  | False |
+| Tag used for file mirroring |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| Max incidents fetch at the same time |  | False |
 
 ## Commands
 
