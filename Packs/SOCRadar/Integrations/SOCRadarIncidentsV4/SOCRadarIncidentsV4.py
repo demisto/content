@@ -609,8 +609,6 @@ def alarm_to_incident(
         "socradarasset": alarm_asset,
         "socradaralarmtype": alarm_main_type,
         "socradartags": tags_str,
-        "socradarincidentlink": incident_link,
-        "socradarincidentcontent": incident_content,
     }
 
     if include_mitigation and alarm_mitigation:
@@ -631,6 +629,8 @@ def alarm_to_incident(
         if "company_id" not in alarm:
             alarm["company_id"] = str(company_id) if company_id else ""
         custom_fields["socradarcompanyid"] = str(company_id) if company_id else ""
+        custom_fields["socradarincidentlink"] = incident_link
+        custom_fields["socradarincidentcontent"] = incident_content
 
     incident = {
         "name": incident_name,
