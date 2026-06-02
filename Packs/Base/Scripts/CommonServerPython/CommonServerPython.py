@@ -9247,7 +9247,7 @@ def is_xsiam():
 
 
 
-def resolve_should_push_events(args: dict) -> bool:
+def resolve_should_push_events(args) -> bool:
     """Resolve the ``should_push_events`` flag from command args based on the current platform.
 
     Extracts the ``should_push_events`` argument (defaulting to ``False``) and converts it
