@@ -2471,3 +2471,44 @@ Delete a message filter.
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+
+### Filter created but marked invalid (unknown Listener)
+
+**Symptom**
+
+A `cisco-esa-message-filter-create` (or `cisco-esa-message-filter-update`) call completes without raising an error, but the human-readable output includes a warning from the appliance similar to:
+
+> Filter `<FILTER_NAME>` has been marked invalid for these reasons: Listener '`<LISTENER_NAME>`' unknown;.
+
+On the Cisco Email Security Appliance the filter exists, but it is flagged as invalid and will not run against mail flow.
+
+**Cause**
+
+The `rules_and_actions` value passed to the command references a Listener name (for example, `recv-listener == "InboundMail"`) that does not exist on the target appliance. The appliance accepts the filter definition but refuses to activate it because it cannot resolve the Listener.
+
+**How to find the correct Listener name**
+
+The Listener is configured on the **Cisco Email Security Appliance** itself — not in Cortex XSOAR. Use either of the following on the appliance:
+
+- **Appliance web UI:** Navigate to **Network → IP Interfaces** and look at the **Listener** column to see the Listener names bound to each interface. Common values are `IncomingMail`, `Default`, `Inbound`, or `Public`.
+- **Appliance CLI:** Run `listenerconfig`, then use `SETUP` or `DISPLAY` to list the configured Listeners.
+
+**How to fix**
+
+1. Delete the invalid filter:
+
+   ```
+   !cisco-esa-message-filter-delete filter_name=<FILTER_NAME>
+   ```
+
+2. Re-create the filter using a Listener name that exists on the appliance. For example:
+
+   ```
+   !cisco-esa-message-filter-create filter_name=URL_QUARANTINE_MALICIOUS \
+     rules_and_actions="if (recv-listener == \"MailFlow\") and (url-reputation(-10.00, -6.00, \"bypass_urls\", 1, 1)) { quarantine(\"URL_MALICIOUS\"); }" \
+     active=true
+   ```
+
+For details on Cisco's filter rule language, see [Using Message Filters to Enforce Email Policies](https://www.cisco.com/c/en/us/td/docs/security/esa/esa16-0/user_guide/b_ESA_Admin_Guide_16-0/b_ESA_Admin_Guide_12_1_chapter_01000.html) in the Cisco Secure Email Gateway 16.0 Admin Guide.
