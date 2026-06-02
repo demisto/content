@@ -357,7 +357,7 @@ class SNSCertificateManager:
         # Lock-free fast path: one atomic ref-read of `_cached`.
         cached = self._cached
         if cached and cached[0] == cert_url:
-            demisto.debug(f"Using cached certificate for SigningCertURL: {cert_url}")
+            demisto.debug("Using cached certificate for SigningCertURL")
             return cached[1]
 
         # Cache miss: fetch + parse + CN check WITHOUT holding the lock.
