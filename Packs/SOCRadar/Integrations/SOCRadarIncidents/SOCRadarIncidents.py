@@ -378,7 +378,7 @@ def fetch_incidents(
 
         alert_assets = " || ".join(alert.get("alarm_assets") or [])
         alert_related_assets = ""
-        for related_asset_dict in (alert.get("alarm_related_assets") or []):
+        for related_asset_dict in alert.get("alarm_related_assets") or []:
             related_asset_key, related_asset_value_list = (
                 related_asset_dict.get("key"),
                 related_asset_dict.get("value") or [],
@@ -389,7 +389,7 @@ def fetch_incidents(
                 alert_related_assets += f"{related_asset_key}: {' || '.join(related_asset_value_list)}\n"
 
         alert_related_entities = ""
-        for related_entity_dict in (alert.get("alarm_related_entities") or []):
+        for related_entity_dict in alert.get("alarm_related_entities") or []:
             related_entity_key, related_entity_value_list = (
                 related_entity_dict.get("key"),
                 related_entity_dict.get("value") or [],
