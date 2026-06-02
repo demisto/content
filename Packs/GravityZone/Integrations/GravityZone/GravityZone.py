@@ -2922,6 +2922,7 @@ def check_endpoint_memory_dump_status(args: dict[str, Any], client: Client) -> P
     )
 
 
+@logger
 def gz_endpoint_memory_dump_status_command(client: Client, args: dict[str, Any]) -> PollResult:
     if "polling" not in args:
         args = {**args, "polling": True}

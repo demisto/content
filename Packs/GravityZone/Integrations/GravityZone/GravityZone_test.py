@@ -402,14 +402,37 @@ def test_gz_endpoint_create_memory_dump_command_no_polling(mock_demisto, request
 @patch("GravityZone.check_endpoint_memory_dump_status")
 def test_gz_endpoint_memory_dump_status_command_defaults_polling_true(mock_check_status):
     from GravityZone import gz_endpoint_memory_dump_status_command
+    from GravityZone import Client
 
-    client = object()
+    client = cast(Client, object())
 
     gz_endpoint_memory_dump_status_command(client, {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"})
 
     mock_check_status.assert_called_once_with(
         {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID", "polling": True},
         client,
+    )
+
+
+@patch("GravityZone.demisto")
+def test_gz_endpoint_memory_dump_status_command(mock_demisto, requests_mock):
+    from GravityZone import gz_endpoint_memory_dump_status_command
+
+    mock_demisto.command.return_value = "gz-endpoint-memory-dump-status"
+    mock_demisto.params.return_value = {}
+    load_api_mocked_data(requests_mock, "gz-endpoint-memory-dump-status")
+    client = get_client()
+
+    command_response = gz_endpoint_memory_dump_status_command(
+        client,
+        {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"},
+    )
+
+    assert_command_mocked_data(
+        "gz-endpoint-memory-dump-status",
+        command_response,
+        polling_func=lambda poll_args, poll_client: gz_endpoint_memory_dump_status_command(poll_client, poll_args),
+        client=client,
     )
 
 
