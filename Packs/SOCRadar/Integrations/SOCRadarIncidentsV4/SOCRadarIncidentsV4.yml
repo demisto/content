@@ -114,7 +114,14 @@ configuration:
   required: false
   defaultvalue: "false"
   section: Collect
-  additionalinfo: If enabled, the SOCRadar Company ID, incident link, and incident content will be stored as custom fields on each fetched incident. Also adds company_id and incident_link to rawJSON labels. Useful for multi-tenant environments to identify which company an incident belongs to.
+  additionalinfo: If enabled, the SOCRadar Company ID will be stored as a custom field on each fetched incident. Also adds company_id to rawJSON labels. Useful for multi-tenant environments to identify which company an incident belongs to.
+- display: Include Incident Link
+  name: include_incident_link
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: If enabled, adds the SOCRadar platform incident link and incident content as custom fields on each fetched incident. Also adds incident_link to rawJSON labels.
 - display: Include Mitigation
   name: include_mitigation
   type: 8

@@ -419,6 +419,7 @@ def alarm_to_incident(
     include_related_assets: bool = False,
     include_related_entities: bool = False,
     include_company_id: bool = False,
+    include_incident_link: bool = False,
     configured_company_id: str = "",
 ) -> dict[str, Any]:
     """
@@ -560,8 +561,6 @@ def alarm_to_incident(
             f"https://platform.socradar.com/app/company/{company_id}"
             f"/alarm-management?tab=approved&field=alarmId&operator=equals&value={alarm_id}"
         )
-        if include_company_id:
-            alarm["incident_link"] = incident_link
 
     alarm_text = alarm.get("alarm_text", "")
 
@@ -629,6 +628,9 @@ def alarm_to_incident(
         if "company_id" not in alarm:
             alarm["company_id"] = str(company_id) if company_id else ""
         custom_fields["socradarcompanyid"] = str(company_id) if company_id else ""
+    if include_incident_link:
+        if incident_link:
+            alarm["incident_link"] = incident_link
         custom_fields["socradarincidentlink"] = incident_link
         custom_fields["socradarincidentcontent"] = incident_content
 
@@ -664,6 +666,7 @@ def fetch_incidents(
     include_related_assets: bool = False,
     include_related_entities: bool = False,
     include_company_id: bool = False,
+    include_incident_link: bool = False,
     configured_company_id: str = "",
     status: list[str] | None = None,
     severities: list[str] | None = None,
@@ -814,6 +817,7 @@ def fetch_incidents(
                         include_related_assets=include_related_assets,
                         include_related_entities=include_related_entities,
                         include_company_id=include_company_id,
+                        include_incident_link=include_incident_link,
                         configured_company_id=configured_company_id,
                     )
                     page_incidents.append(incident)
@@ -1188,6 +1192,7 @@ def main() -> None:
             include_related_assets = argToBoolean(params.get("include_related_assets", False))
             include_related_entities = argToBoolean(params.get("include_related_entities", False))
             include_company_id = argToBoolean(params.get("include_company_id", False))
+            include_incident_link = argToBoolean(params.get("include_incident_link", False))
 
             alarm_type_ids_str = params.get("alarm_type_ids", "")
             alarm_type_ids = None
@@ -1252,6 +1257,7 @@ def main() -> None:
                 include_related_assets=include_related_assets,
                 include_related_entities=include_related_entities,
                 include_company_id=include_company_id,
+                include_incident_link=include_incident_link,
                 configured_company_id=company_id or "",
                 status=argToList(params.get("status")),
                 severities=argToList(params.get("severities")),
