@@ -9267,7 +9267,7 @@ def resolve_should_push_events(should_push_events: bool) -> bool:
         should_push = resolve_should_push_events(should_push)
     """
     if should_push_events and not is_xsiam():
-        demisto.debug("[CommonServerPython] [resolve_should_push_events] "
+        demisto.debug("[Events Push Check] "
                       "should_push_events is not supported on this platform. Overriding to False.")
         return False
     return should_push_events
