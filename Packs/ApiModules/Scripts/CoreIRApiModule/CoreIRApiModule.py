@@ -2171,17 +2171,35 @@ def diagnose_scan_failure(client: CoreClient, args) -> str:
     and inspects their state to produce a specific, actionable reason. This is a
     best-effort enrichment that only runs on the error path.
 
-    Note: field values returned by the API are not normalized (e.g. endpoint_status may
-    be "CONNECTED", "DISCONNECTED", "UNINSTALLED" or even "STATUS_010_CONNECTED", and
-    os_type needs to be normalized via convert_os_to_standard), so all comparisons are
-    case-insensitive / substring based.
-
     :param client: the Core API client.
     :param args: the original command arguments.
     :return: a human-readable diagnosis message.
     """
+    endpoints = get_endpoints_for_scan_diagnosis(client, args)
+    if endpoints is None:
+        return scan_failure_generic_message()
+
+    if not endpoints:
+        return (
+            "No endpoints were found matching the provided filters. "
+            "Verify the filter values (endpoint_id_list, hostname, ip_list, etc.) are correct "
+            "and that the endpoints exist in the system."
+        )
+
+    classified = classify_unscannable_endpoints(endpoints)
+    return build_scan_failure_message(classified)
+
+
+def get_endpoints_for_scan_diagnosis(client: CoreClient, args) -> list | None:
+    """
+    Fetch the endpoints matching the scan filters, for failure diagnosis.
+
+    :param client: the Core API client.
+    :param args: the original command arguments.
+    :return: the list of matching endpoints, or None if the lookup itself failed.
+    """
     try:
-        endpoints = client.get_endpoints(
+        return client.get_endpoints(
             endpoint_id_list=argToList(args.get("endpoint_id_list")),
             dist_name=argToList(args.get("dist_name")),
             ip_list=argToList(args.get("ip_list")),
@@ -2195,20 +2213,28 @@ def diagnose_scan_failure(client: CoreClient, args) -> str:
             last_seen_lte=args.get("lte_last_seen"),
         )
     except Exception as e:
-        demisto.debug(f"diagnose_scan_failure: get_endpoints failed: {e}")
-        return scan_failure_generic_message()
+        demisto.debug(f"get_endpoints_for_scan_diagnosis: get_endpoints failed: {e}")
+        return None
 
-    if not endpoints:
-        return (
-            "No endpoints were found matching the provided filters. "
-            "Verify the filter values (endpoint_id_list, hostname, ip_list, etc.) are correct "
-            "and that the endpoints exist in the system."
-        )
 
-    active_scans: list = []
-    invalid_status: list = []
-    unsupported_os: list = []
-    version_too_old: list = []
+def classify_unscannable_endpoints(endpoints: list) -> dict:
+    """
+    Classify endpoints by the reason they cannot be scanned.
+
+    Note: field values returned by the API are not normalized (e.g. endpoint_status may
+    be "CONNECTED", "DISCONNECTED", "UNINSTALLED" or even "STATUS_010_CONNECTED", and
+    os_type needs to be normalized via convert_os_to_standard), so all comparisons are
+    case-insensitive / substring based.
+
+    :param endpoints: the endpoints returned by the get_endpoints lookup.
+    :return: a dict mapping each reason key to the list of affected endpoint IDs.
+    """
+    classified: dict = {
+        "active_scans": [],
+        "invalid_status": [],
+        "unsupported_os": [],
+        "version_too_old": [],
+    }
 
     for endpoint in endpoints:
         endpoint_id = endpoint.get("endpoint_id", "unknown")
@@ -2218,28 +2244,38 @@ def diagnose_scan_failure(client: CoreClient, args) -> str:
         version = endpoint.get("endpoint_version") or ""
 
         if scan_status in BLOCKING_SCAN_STATUSES:
-            active_scans.append(endpoint_id)
+            classified["active_scans"].append(endpoint_id)
         elif "connected" not in endpoint_status:
             # Scannable endpoints are 'connected' or 'disconnected'; both contain "connected".
-            invalid_status.append(endpoint_id)
+            classified["invalid_status"].append(endpoint_id)
         elif not normalized_os:
-            unsupported_os.append(endpoint_id)
+            classified["unsupported_os"].append(endpoint_id)
         elif not is_scan_version_supported(normalized_os, version):
-            version_too_old.append(endpoint_id)
+            classified["version_too_old"].append(endpoint_id)
 
+    return classified
+
+
+def build_scan_failure_message(classified: dict) -> str:
+    """
+    Build a human-readable message from classified unscannable endpoints.
+
+    :param classified: the output of classify_unscannable_endpoints.
+    :return: a specific diagnosis message, or the generic fallback when nothing was classified.
+    """
     issues: list = []
-    if active_scans:
-        issues.append(f"{len(active_scans)} endpoint(s) already have an active or pending scan")
-    if invalid_status:
-        issues.append(f"{len(invalid_status)} endpoint(s) are not in 'connected' or 'disconnected' status")
-    if unsupported_os:
+    if classified["active_scans"]:
+        issues.append(f"{len(classified['active_scans'])} endpoint(s) already have an active or pending scan")
+    if classified["invalid_status"]:
+        issues.append(f"{len(classified['invalid_status'])} endpoint(s) are not in 'connected' or 'disconnected' status")
+    if classified["unsupported_os"]:
         issues.append(
-            f"{len(unsupported_os)} endpoint(s) have an unsupported operating system "
+            f"{len(classified['unsupported_os'])} endpoint(s) have an unsupported operating system "
             f"(supported: Windows, macOS, Linux, Android)"
         )
-    if version_too_old:
+    if classified["version_too_old"]:
         issues.append(
-            f"{len(version_too_old)} endpoint(s) have an agent version that does not support scanning "
+            f"{len(classified['version_too_old'])} endpoint(s) have an agent version that does not support scanning "
             f"(minimum: Windows 5.0.0, macOS 7.1.0, Linux 7.8.0, Android 5.0.0)"
         )
 
