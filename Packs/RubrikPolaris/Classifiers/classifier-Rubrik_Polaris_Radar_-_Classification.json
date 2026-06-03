@@ -4,6 +4,7 @@
     "id": "Rubrik Polaris Radar - Classification",
     "keyTypeMap": {
         "RubrikRadar": "Rubrik Radar",
+        "RubrikDSPMViolation": "Rubrik DSPM Violation",
         "RubrikThreatMonitoringObject": "Rubrik Threat Monitoring Object"
     },
     "name": "Rubrik Polaris Radar - Classification",
