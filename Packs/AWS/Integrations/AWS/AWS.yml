@@ -1113,7 +1113,6 @@ script:
     - name: region
       description: The AWS region.
       required: false
-      required:platform: true
       auto: PREDEFINED
       predefined:
         - us-east-1
