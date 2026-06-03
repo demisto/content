@@ -1906,10 +1906,13 @@ def _validate_task_type_for_command(
     if task_type is None:
         return CommandResults(
             raw_response=task_output,
-            readable_output=f"Task '{task_id}' does not have a type. Cannot determine if it matches the expected type for command '{command_name}'.",
+            readable_output=(
+                f"Task '{task_id}' does not have a type. Cannot determine if it matches "
+                f"the expected type for command '{command_name}'."
+            ),
             entry_type=EntryType.ERROR,
         )
-        
+
     if task_type == expected_task_type:
         return None
 
