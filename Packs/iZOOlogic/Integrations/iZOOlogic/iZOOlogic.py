@@ -26,6 +26,7 @@ class ApiPaths:
 
     AUTHENTICATE = "/api/Token/Authenticate"
     FETCH_EVENTS = "/api/ThreatManagement/FetchIncidents"
+    REPORT_NEW_INCIDENT = "/api/ThreatManagement/ReportNewIncident"
 
 
 class Config:
@@ -37,27 +38,79 @@ class Config:
 
     # Fetch defaults
     DEFAULT_FROM_TIME = "5 minutes ago"
+    DEFAULT_FETCH_COMMAND_FROM_TIME = "1 day ago"
 
     # Max date range for API (31 days)
     MAX_DATE_RANGE_DAYS = 31
 
 
-# API error codes
-NO_DATA_FOUND_ERROR_CODE = "iZOO2011"
+class TableHeaders:
+    """Human-readable table header mappings (API key → display name)."""
 
-# Mapping of event type display names to API integer codes
-EVENT_TYPE_CODES: dict[str, int] = {
-    "brand abuse": 1,
-    "phishing": 2,
-    "malware": 3,
-    "pharming": 4,
-    "smishing": 5,
-    "vishing": 6,
-    "mobile apps": 7,
-    "social media": 8,
-    "other": 9,
-    "email": 23,
-}
+    INCIDENT: dict[str, str] = {
+        "incidentID": "Incident ID",
+        "incidentType": "Incident Type",
+        "subIncidentType": "Sub Incident Type",
+        "brand": "Brand",
+        "url": "URL",
+        "status": "Status",
+        "statusCode": "Status Code",
+        "threatType": "Threat Type",
+        "detectionDate": "Detection Date",
+        "createdOn": "Created On",
+        "closedOn": "Closed On",
+        "detectedBy": "Detected By",
+    }
+
+    CREATE_INCIDENT: dict[str, str] = {
+        "reportedIncidentId": "Reported Incident ID",
+        "statusCode": "Status Code",
+        "statusDescription": "Status Description",
+        "caseType": "Case Type",
+        "caseTypeDescription": "Case Type Description",
+    }
+
+
+class ApiCodes:
+    """Centralized API code mappings used across multiple commands."""
+
+    # API error codes
+    NO_DATA_FOUND = "iZOO2011"
+
+    # Mapping of incident type display names to API integer codes
+    EVENT_TYPE: dict[str, int] = {
+        "brand abuse": 1,
+        "phishing": 2,
+        "malware": 3,
+        "pharming": 4,
+        "smishing": 5,
+        "vishing": 6,
+        "mobile apps": 7,
+        "social media": 8,
+        "other": 9,
+        "email": 23,
+        "executive": 56,
+    }
+
+    # Mapping of threat type display names to API integer codes
+    THREAT_TYPE: dict[str, int] = {
+        "low threat": 10,
+        "moderate threat": 11,
+        "substantial threat": 12,
+        "high threat": 13,
+        "critical threat": 14,
+        "redirect to whitelist": 48,
+    }
+
+    # Mapping of case type display names to API integer codes
+    CASE_TYPE: dict[str, int] = {
+        "incident": 6,
+        "brand abuse monitoring": 2,
+        "domain monitoring": 1,
+        "social media monitoring": 4,
+        "mobile app monitoring": 3,
+        "executive monitoring": 5,
+    }
 
 
 def date_to_unix_timestamp(date_input: str) -> str:
@@ -224,7 +277,7 @@ def _validate_api_response(response: dict) -> dict:
         error_code = response.get("errorCode", "")
         message = response.get("message", "Unknown error")
 
-        if error_code == NO_DATA_FOUND_ERROR_CODE:
+        if error_code == ApiCodes.NO_DATA_FOUND:
             demisto.debug(f"[API] No data found for the given time range (errorCode: {error_code})")
             return {}
 
@@ -271,7 +324,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
 
     # Parse and validate event types filter — default to all types if none specified
     event_types_filter = argToList(params.get("events_types_filter"))
-    event_type_codes = resolve_type_codes(event_types_filter) if event_types_filter else list(EVENT_TYPE_CODES.values())
+    event_type_codes = resolve_type_codes(event_types_filter) if event_types_filter else list(ApiCodes.EVENT_TYPE.values())
 
     max_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH_PER_TYPE))
     if max_fetch <= 0:
@@ -337,9 +390,9 @@ def resolve_type_codes(type_names: list[str]) -> list[int]:
     """
     codes: list[int] = []
     for name in type_names:
-        code = EVENT_TYPE_CODES.get(name.lower().strip())
+        code = ApiCodes.EVENT_TYPE.get(name.lower().strip())
         if code is None:
-            raise DemistoException(f"Invalid event type: '{name}'. Valid types: {list(EVENT_TYPE_CODES.keys())}")
+            raise DemistoException(f"Invalid event type: '{name}'. Valid types: {list(ApiCodes.EVENT_TYPE.keys())}")
         codes.append(code)
     return codes
 
@@ -482,6 +535,11 @@ class Client(ContentClient):
         to_date: str,
         event_type: int | None = None,
         page_token: str | None = None,
+        threat_type: int | None = None,
+        brand_code: str | None = None,
+        executive_name: str | None = None,
+        client_ref_id: str | None = None,
+        client_code: str | None = None,
     ) -> dict[str, Any]:
         """Fetch a single page of events from the iZOOlogic API.
 
@@ -496,20 +554,26 @@ class Client(ContentClient):
             to_date: End date as Unix timestamp string (floored to its day by the API).
             event_type: Optional event type code to filter by.
             page_token: Pagination token for retrieving the next page.
+            threat_type: Optional threat level code to filter by.
+            brand_code: Optional brand identifier to filter by.
+            executive_name: Optional executive name to filter by.
+            client_ref_id: Optional client reference ID for specific incident lookup.
+            client_code: Optional client identifier to filter by.
 
         Returns:
             The 'result' object from the API response containing events and pagination info.
         """
-        body: dict[str, Any] = {
-            "fromdate": from_date,
-            "todate": to_date,
-        }
-
-        if event_type is not None:
-            body["incidenttype"] = event_type
-
-        if page_token:
-            body["token"] = page_token
+        body: dict[str, Any] = assign_params(
+            fromdate=from_date,
+            todate=to_date,
+            incidenttype=event_type,
+            token=page_token,
+            threattype=threat_type,
+            brandcode=brand_code,
+            executivename=executive_name,
+            clientrefid=client_ref_id,
+            clientcode=client_code,
+        )
 
         demisto.debug(f"[API Fetch] Fetching events | Params: {body}")
 
@@ -520,6 +584,54 @@ class Client(ContentClient):
         )
 
         return _validate_api_response(response)
+
+    def report_new_incident(
+        self,
+        incident_url: str,
+        incident_type: int,
+        brand_code: str,
+        threat_type: int | None = None,
+        case_type: int | None = None,
+        comment: str | None = None,
+        executive_name: str | None = None,
+        client_code: str | None = None,
+    ) -> dict[str, Any]:
+        """Report a new security incident to the iZOOlogic API.
+
+        Args:
+            incident_url: URL, email, or target of the security incident (max 1000 chars).
+            incident_type: Type of incident (API integer code).
+            brand_code: Brand identifier associated with the incident.
+            threat_type: Optional threat level code. Defaults to moderate threat if not specified.
+            case_type: Optional case type code. Defaults to incident (6) if not specified.
+            comment: Optional comments about the incident (max 2500 chars).
+            executive_name: Optional executive name for executive-related incidents (max 2500 chars).
+            client_code: Optional client identifier for validation and access control.
+
+        Returns:
+            The full API response dictionary.
+        """
+        body: dict[str, Any] = assign_params(
+            incidenturl=incident_url,
+            incidenttype=incident_type,
+            brandcode=brand_code,
+            threattype=threat_type,
+            casetype=case_type,
+            comment=comment,
+            executivename=executive_name,
+            clientcode=client_code,
+        )
+
+        log_body = {**body, "executivename": "***"} if "executivename" in body else body
+        demisto.debug(f"[API ReportNewIncident] Creating incident | Params: {log_body}")
+
+        response = self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.REPORT_NEW_INCIDENT,
+            json_data=body,
+        )
+
+        return response
 
 
 # endregion
@@ -565,6 +677,11 @@ def _fetch_all_pages(
     from_date: str,
     to_date: str,
     event_type: int | None = None,
+    threat_type: int | None = None,
+    brand_code: str | None = None,
+    executive_name: str | None = None,
+    client_ref_id: str | None = None,
+    client_code: str | None = None,
 ) -> list[dict]:
     """Fetch ALL pages of events until pagination is exhausted.
 
@@ -572,13 +689,19 @@ def _fetch_all_pages(
     or the API returns an empty page. No max_results cap — fetches everything
     in the time window.
 
-    Used by all commands: test_module, get_events_command, and fetch_events_command.
+    Used by all commands: test_module, get_events_command, fetch_events_command,
+    and search_incidents_command.
 
     Args:
         client: The iZOOlogic client.
         from_date: Start date as Unix timestamp string (must be midnight UTC).
         to_date: End date as Unix timestamp string.
         event_type: Optional event type code.
+        threat_type: Optional threat level code to filter by.
+        brand_code: Optional brand identifier to filter by.
+        executive_name: Optional executive name to filter by.
+        client_ref_id: Optional client reference ID for specific event lookup.
+        client_code: Optional client identifier to filter by.
 
     Returns:
         List of ALL raw event dictionaries from all pages.
@@ -593,6 +716,11 @@ def _fetch_all_pages(
             to_date=to_date,
             event_type=event_type,
             page_token=page_token,
+            threat_type=threat_type,
+            brand_code=brand_code,
+            executive_name=executive_name,
+            client_ref_id=client_ref_id,
+            client_code=client_code,
         )
 
         page_events = result_obj.get("incidents") or []
@@ -631,7 +759,7 @@ def get_events_command(
     """
     demisto.debug("[Command] izoologic-get-events triggered")
 
-    should_push_events = argToBoolean(args.get("should_push_events", False))
+    should_push_events = resolve_should_push_events(args)
 
     limit = arg_to_number(args.get("limit", Config.DEFAULT_LIMIT))
     if not limit or limit <= 0:
@@ -684,21 +812,8 @@ def get_events_command(
     readable_output = tableToMarkdown(
         f"{INTEGRATION_NAME} Events",
         all_events,
-        headers=[
-            "incidentID",
-            "incidentType",
-            "subIncidentType",
-            "brand",
-            "url",
-            "status",
-            "statusCode",
-            "threatType",
-            "detectionDate",
-            "createdOn",
-            "closedOn",
-            "detectedBy",
-        ],
-        headerTransform=string_to_table_header,
+        headers=list(TableHeaders.INCIDENT.keys()),
+        headerTransform=TableHeaders.INCIDENT.get,
         removeNull=True,
     )
 
@@ -899,6 +1014,223 @@ async def fetch_events_command(
     demisto.debug(f"[Fetch Events] Done. Total events: {len(all_events)}. Last run updated.")
 
 
+def _resolve_code_by_name(raw_value: str, code_map: dict[str, int], field_name: str) -> int:
+    """Resolve a display name to an API integer code.
+
+    Args:
+        raw_value: The user-provided display name.
+        code_map: Mapping of display names to integer codes.
+        field_name: Argument name used in error messages.
+
+    Returns:
+        The resolved integer code.
+
+    Raises:
+        DemistoException: If the name is not found in the code map.
+    """
+    normalized = raw_value.lower().strip()
+    code = code_map.get(normalized)
+    if code is None:
+        raise DemistoException(f"Invalid '{field_name}': '{raw_value}'. " f"Valid values: {list(code_map.keys())}.")
+    return code
+
+
+def _validate_incident_creation_args(args: dict[str, Any]) -> dict[str, Any]:
+    """Validate and parse arguments for the izoologic-incident-create command.
+
+    Args:
+        args: Raw command arguments from demisto.args().
+
+    Returns:
+        Validated and parsed arguments dictionary ready for the API call.
+
+    Raises:
+        DemistoException: If required arguments are missing or invalid.
+    """
+    # Required: incident_url
+    incident_url = args.get("incident_url", "")
+    if not incident_url:
+        raise DemistoException("'incident_url' is a required argument.")
+
+    # Required: incident_type (name only, mapped to integer code)
+    incident_type_raw = args.get("incident_type", "")
+    if not incident_type_raw:
+        raise DemistoException("'incident_type' is a required argument.")
+    incident_type = _resolve_code_by_name(str(incident_type_raw), ApiCodes.EVENT_TYPE, "incident_type")
+
+    # Required: brand_code
+    brand_code = args.get("brand_code", "")
+    if not brand_code:
+        raise DemistoException("'brand_code' is a required argument.")
+
+    # Optional: threat_type (name only, mapped to integer code)
+    threat_type: int | None = None
+    threat_type_raw = args.get("threat_type")
+    if threat_type_raw:
+        threat_type = _resolve_code_by_name(str(threat_type_raw), ApiCodes.THREAT_TYPE, "threat_type")
+
+    # Optional: case_type (name only, mapped to integer code)
+    case_type: int | None = None
+    case_type_raw = args.get("case_type")
+    if case_type_raw:
+        case_type = _resolve_code_by_name(str(case_type_raw), ApiCodes.CASE_TYPE, "case_type")
+
+    # Optional: comment
+    comment = args.get("comment")
+
+    # Optional: executive_name
+    executive_name = args.get("executive_name")
+
+    # Optional: client_code
+    client_code = args.get("client_code")
+
+    return {
+        "incident_url": incident_url,
+        "incident_type": incident_type,
+        "brand_code": brand_code,
+        "threat_type": threat_type,
+        "case_type": case_type,
+        "comment": comment,
+        "executive_name": executive_name,
+        "client_code": client_code,
+    }
+
+
+def create_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new security incident in iZOOlogic.
+
+    Args:
+        client: The iZOOlogic client.
+        args: Command arguments from demisto.args().
+
+    Returns:
+        CommandResults with the API response.
+    """
+    demisto.debug("[Command] izoologic-incident-create triggered")
+
+    validated_args = _validate_incident_creation_args(args)
+
+    response = client.report_new_incident(
+        incident_url=validated_args["incident_url"],
+        incident_type=validated_args["incident_type"],
+        brand_code=validated_args["brand_code"],
+        threat_type=validated_args["threat_type"],
+        case_type=validated_args["case_type"],
+        comment=validated_args["comment"],
+        executive_name=validated_args["executive_name"],
+        client_code=validated_args["client_code"],
+    )
+
+    if not response.get("success", False):
+        error_code = response.get("errorCode", "")
+        message = response.get("message", "Unknown error")
+        raise DemistoException(f"Failed to create incident: {message} (errorCode: {error_code})")
+
+    result = response.get("result", {})
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} - New Incident Created",
+        result,
+        headers=list(TableHeaders.CREATE_INCIDENT.keys()),
+        headerTransform=TableHeaders.CREATE_INCIDENT.get,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="iZOOlogic.Incident",
+        outputs_key_field="reportedIncidentId",
+        outputs=result,
+        raw_response=response,
+    )
+
+
+def search_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Fetch incidents from iZOOlogic with advanced filtering.
+
+    Retrieves incidents based on specified filters including date range, brand,
+    incident type, threat type, and other criteria. Supports pagination for
+    large result sets.
+
+    Args:
+        client: The iZOOlogic client.
+        args: Command arguments from demisto.args().
+
+    Returns:
+        CommandResults with the retrieved incidents.
+    """
+    demisto.debug("[Command] izoologic-incident-fetch triggered")
+
+    # Date range — default: 1 day ago to now
+    from_date_input = args.get("from_date", Config.DEFAULT_FETCH_COMMAND_FROM_TIME)
+    to_date_input = args.get("to_date")
+
+    from_ts = date_to_unix_timestamp(from_date_input)
+    from_date = snap_to_day_boundary_utc(from_ts, "start")
+    to_date = date_to_unix_timestamp(to_date_input) if to_date_input else get_current_unix_timestamp()
+
+    validate_date_range(from_date, to_date)
+
+    # When from_date and to_date are both at midnight of the same day, snap to_date to end of day
+    if int(to_date) == int(from_date):
+        to_date = snap_to_day_boundary_utc(to_date, "end")
+
+    # Optional: incident_type (name only, mapped to integer code)
+    incident_type: int | None = None
+    incident_type_raw = args.get("incident_type")
+    if incident_type_raw:
+        incident_type = _resolve_code_by_name(str(incident_type_raw), ApiCodes.EVENT_TYPE, "incident_type")
+
+    # Optional: threat_type (name only, mapped to integer code)
+    threat_type: int | None = None
+    threat_type_raw = args.get("threat_type")
+    if threat_type_raw:
+        threat_type = _resolve_code_by_name(str(threat_type_raw), ApiCodes.THREAT_TYPE, "threat_type")
+
+    # Optional string filters
+    brand_code = args.get("brand_code")
+    executive_name = args.get("executive_name")
+    client_ref_id = args.get("client_ref_id")
+    client_code = args.get("client_code")
+
+    demisto.debug(
+        f"[Command Params] From: {from_date}, To: {to_date}, "
+        f"IncidentType: {incident_type}, ThreatType: {threat_type}, "
+        f"BrandCode: {brand_code}, ExecutiveName: {executive_name}, "
+        f"ClientRefId: {client_ref_id}, ClientCode: {client_code}"
+    )
+
+    all_incidents = _fetch_all_pages(
+        client,
+        from_date=from_date,
+        to_date=to_date,
+        event_type=incident_type,
+        threat_type=threat_type,
+        brand_code=brand_code,
+        executive_name=executive_name,
+        client_ref_id=client_ref_id,
+        client_code=client_code,
+    )
+
+    demisto.debug(f"[Command Result] Total incidents retrieved: {len(all_incidents)}")
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Incidents",
+        all_incidents,
+        headers=list(TableHeaders.INCIDENT.keys()),
+        headerTransform=TableHeaders.INCIDENT.get,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="iZOOlogic.Incident",
+        outputs_key_field="incidentID",
+        outputs=all_incidents,
+        raw_response=all_incidents,
+    )
+
+
 # endregion
 
 # region Command Map and Main
@@ -910,6 +1242,8 @@ COMMAND_MAP: dict[str, Any] = {
     "test-module": test_module,
     "izoologic-get-events": get_events_command,
     "fetch-events": fetch_events_command,
+    "izoologic-incident-create": create_incident_command,
+    "izoologic-incident-fetch": search_incidents_command,
 }
 
 
@@ -943,6 +1277,9 @@ def main() -> None:
             asyncio.run(command_func(client, config["max_fetch"], config["event_type_codes"]))
         elif command == "izoologic-get-events":
             result = command_func(client, args, config["event_type_codes"])
+            return_results(result)
+        elif command in ("izoologic-incident-create", "izoologic-incident-fetch"):
+            result = command_func(client, args)
             return_results(result)
 
     except Exception as error:

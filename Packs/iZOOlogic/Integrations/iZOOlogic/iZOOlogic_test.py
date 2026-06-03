@@ -10,6 +10,7 @@ from pytest_mock import MockerFixture
 
 from iZOOlogic import (
     Client,
+    ApiCodes,
     COMMAND_MAP,
     IZOOlogicAuthHandler,
     _validate_api_response,
@@ -27,9 +28,13 @@ from iZOOlogic import (
     _filter_and_dedup,
     _compute_new_state,
     _fetch_for_type,
+    _resolve_code_by_name,
+    _validate_incident_creation_args,
     test_module as izoologic_test_module,
     get_events_command,
     fetch_events_command,
+    create_incident_command,
+    search_incidents_command,
     main,
 )
 
@@ -71,6 +76,12 @@ def events_result_with_pagination() -> dict:
 def empty_result() -> dict:
     """The 'result' object with no events."""
     return load_test_data("empty_response.json")["result"]
+
+
+@pytest.fixture
+def incidents_result() -> dict:
+    """The 'result' object from the API response (same structure as events)."""
+    return load_test_data("events_response.json")["result"]
 
 
 @pytest.fixture
@@ -503,7 +514,7 @@ class TestParseIntegrationParams:
     def test_no_filter_defaults_to_all(self, valid_params: dict):
         del valid_params["events_types_filter"]
         config = parse_integration_params(valid_params)
-        assert len(config["event_type_codes"]) == 10
+        assert len(config["event_type_codes"]) == 11
 
     def test_trailing_slash_stripped(self, valid_params: dict):
         valid_params["url"] = "https://api.izoologic.com///"
@@ -892,6 +903,47 @@ class TestGetEventsCommand:
         result = get_events_command(mock_client, {"limit": "10"}, [2])
         assert result.outputs_key_field == "incidentID"
 
+    def test_should_push_events_overridden_on_non_xsiam(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Test that should_push_events is silently overridden to False on non-XSIAM platforms."""
+        # resolve_should_push_events lives in CommonServerPython and resolves is_xsiam from its own namespace.
+        mocker.patch("CommonServerPython.is_xsiam", return_value=False)
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        mock_create = mocker.patch("iZOOlogic.create_events")
+
+        result = get_events_command(mock_client, {"limit": "10", "should_push_events": "true"}, [2])
+
+        # Events should NOT be pushed (create_events should not be called)
+        mock_create.assert_not_called()
+        # Events should be returned as CommandResults
+        assert isinstance(result, CommandResults)
+        assert "iZOOlogic Events" in result.readable_output
+
+    def test_should_push_events_pushed_on_xsiam(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Test that should_push_events pushes events when running on Cortex XSIAM."""
+        # resolve_should_push_events lives in CommonServerPython and resolves is_xsiam from its own namespace.
+        mocker.patch("CommonServerPython.is_xsiam", return_value=True)
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        mock_create = mocker.patch("iZOOlogic.create_events")
+
+        # Use a time window that brackets the fixture events' createdOn (1700000000-1700000200)
+        # so they survive the command's client-side time filter and get pushed.
+        result = get_events_command(
+            mock_client,
+            {
+                "limit": "10",
+                "should_push_events": "true",
+                "start_time": "2023-11-14T00:00:00Z",
+                "end_time": "2023-11-14T23:59:59Z",
+            },
+            [2],
+        )
+
+        # Events should be pushed (create_events should be called)
+        mock_create.assert_called_once()
+        # Events should also be returned as CommandResults
+        assert isinstance(result, CommandResults)
+        assert "iZOOlogic Events" in result.readable_output
+
 
 # endregion
 
@@ -993,7 +1045,10 @@ class TestFetchEventsCommand:
 
 
 class TestMain:
-    @pytest.mark.parametrize("command", ["test-module", "fetch-events", "izoologic-get-events"])
+    @pytest.mark.parametrize(
+        "command",
+        ["test-module", "fetch-events", "izoologic-get-events", "izoologic-incident-create", "izoologic-incident-fetch"],
+    )
     def test_main_dispatches(self, mocker: MockerFixture, command: str):
         mocker.patch("ContentClientApiModule.support_multithreading")
         mocker.patch.object(demisto, "command", return_value=command)
@@ -1063,4 +1118,333 @@ class TestMain:
 
 # endregion
 
+# region Resolve Code By Name Tests
+
+
+class TestResolveCodeByName:
+    @pytest.mark.parametrize(
+        "raw_value, code_map, expected",
+        [
+            ("phishing", ApiCodes.EVENT_TYPE, 2),
+            ("PHISHING", ApiCodes.EVENT_TYPE, 2),
+            (" phishing ", ApiCodes.EVENT_TYPE, 2),
+            ("low threat", ApiCodes.THREAT_TYPE, 10),
+            ("critical threat", ApiCodes.THREAT_TYPE, 14),
+            ("incident", ApiCodes.CASE_TYPE, 6),
+            ("domain monitoring", ApiCodes.CASE_TYPE, 1),
+        ],
+    )
+    def test_valid_names(self, raw_value: str, code_map: dict, expected: int):
+        assert _resolve_code_by_name(raw_value, code_map, "test_field") == expected
+
+    @pytest.mark.parametrize(
+        "raw_value, code_map",
+        [
+            ("nonexistent", ApiCodes.EVENT_TYPE),
+            ("999", ApiCodes.EVENT_TYPE),
+            ("2", ApiCodes.EVENT_TYPE),  # Integer strings not accepted
+            ("invalid", ApiCodes.THREAT_TYPE),
+        ],
+    )
+    def test_invalid_names_raise(self, raw_value: str, code_map: dict):
+        with pytest.raises(DemistoException, match="Invalid 'test_field'"):
+            _resolve_code_by_name(raw_value, code_map, "test_field")
+
+
 # endregion
+
+# region Validate Incident Creation Args Tests
+
+
+class TestValidateIncidentCreationArgs:
+    @pytest.fixture
+    def valid_create_args(self) -> dict:
+        return {
+            "incident_url": "https://malicious-site.example.com",
+            "incident_type": "phishing",
+            "brand_code": "BRAND001",
+        }
+
+    def test_valid_required_only(self, valid_create_args: dict):
+        result = _validate_incident_creation_args(valid_create_args)
+        assert result["incident_url"] == "https://malicious-site.example.com"
+        assert result["incident_type"] == 2
+        assert result["brand_code"] == "BRAND001"
+        assert result["threat_type"] is None
+        assert result["case_type"] is None
+        assert result["comment"] is None
+        assert result["executive_name"] is None
+        assert result["client_code"] is None
+
+    def test_valid_all_args(self, valid_create_args: dict):
+        valid_create_args.update(
+            {
+                "threat_type": "critical threat",
+                "case_type": "incident",
+                "comment": "Test comment",
+                "executive_name": "John Doe",
+                "client_code": "CLIENT001",
+            }
+        )
+        result = _validate_incident_creation_args(valid_create_args)
+        assert result["incident_type"] == 2
+        assert result["threat_type"] == 14
+        assert result["case_type"] == 6
+        assert result["comment"] == "Test comment"
+        assert result["executive_name"] == "John Doe"
+        assert result["client_code"] == "CLIENT001"
+
+    @pytest.mark.parametrize(
+        "missing_field",
+        ["incident_url", "incident_type", "brand_code"],
+    )
+    def test_missing_required_raises(self, valid_create_args: dict, missing_field: str):
+        valid_create_args[missing_field] = ""
+        with pytest.raises(DemistoException, match=f"'{missing_field}' is a required argument"):
+            _validate_incident_creation_args(valid_create_args)
+
+    def test_invalid_incident_type_raises(self, valid_create_args: dict):
+        valid_create_args["incident_type"] = "nonexistent"
+        with pytest.raises(DemistoException, match="Invalid 'incident_type'"):
+            _validate_incident_creation_args(valid_create_args)
+
+    def test_invalid_threat_type_raises(self, valid_create_args: dict):
+        valid_create_args["threat_type"] = "invalid"
+        with pytest.raises(DemistoException, match="Invalid 'threat_type'"):
+            _validate_incident_creation_args(valid_create_args)
+
+    def test_invalid_case_type_raises(self, valid_create_args: dict):
+        valid_create_args["case_type"] = "invalid"
+        with pytest.raises(DemistoException, match="Invalid 'case_type'"):
+            _validate_incident_creation_args(valid_create_args)
+
+    def test_case_insensitive_incident_type(self, valid_create_args: dict):
+        valid_create_args["incident_type"] = "PHISHING"
+        result = _validate_incident_creation_args(valid_create_args)
+        assert result["incident_type"] == 2
+
+    def test_executive_type(self, valid_create_args: dict):
+        valid_create_args["incident_type"] = "executive"
+        result = _validate_incident_creation_args(valid_create_args)
+        assert result["incident_type"] == 56
+
+
+# endregion
+
+# region Client Report New Incident Tests
+
+
+class TestClientReportNewIncident:
+    def test_report_new_incident_full_body(self, mocker: MockerFixture, mock_client: Client):
+        """Test that report_new_incident sends correct body with all params."""
+        api_response = load_test_data("create_incident_response.json")
+        mock_req = mocker.patch.object(mock_client, "_http_request", return_value=api_response)
+
+        mock_client.report_new_incident(
+            incident_url="https://malicious.example.com",
+            incident_type=2,
+            brand_code="BRAND001",
+            threat_type=14,
+            case_type=6,
+            comment="Test comment",
+            executive_name="John Doe",
+            client_code="CLIENT001",
+        )
+
+        body = mock_req.call_args.kwargs["json_data"]
+        assert body["incidenturl"] == "https://malicious.example.com"
+        assert body["incidenttype"] == 2
+        assert body["brandcode"] == "BRAND001"
+        assert body["threattype"] == 14
+        assert body["casetype"] == 6
+        assert body["comment"] == "Test comment"
+        assert body["executivename"] == "John Doe"
+        assert body["clientcode"] == "CLIENT001"
+
+    def test_report_new_incident_minimal_body(self, mocker: MockerFixture, mock_client: Client):
+        """Without optional params, body only has required fields."""
+        api_response = load_test_data("create_incident_response.json")
+        mock_req = mocker.patch.object(mock_client, "_http_request", return_value=api_response)
+
+        mock_client.report_new_incident(
+            incident_url="https://malicious.example.com",
+            incident_type=2,
+            brand_code="BRAND001",
+        )
+
+        body = mock_req.call_args.kwargs["json_data"]
+        assert body == {
+            "incidenturl": "https://malicious.example.com",
+            "incidenttype": 2,
+            "brandcode": "BRAND001",
+        }
+        # Optional fields should not be present (assign_params removes None values)
+        assert "threattype" not in body
+        assert "casetype" not in body
+        assert "comment" not in body
+        assert "executivename" not in body
+        assert "clientcode" not in body
+
+
+# endregion
+
+# region Create Incident Command Tests
+
+
+class TestCreateIncidentCommand:
+    def test_success(self, mocker: MockerFixture, mock_client: Client):
+        api_response = load_test_data("create_incident_response.json")
+        mocker.patch.object(mock_client, "_http_request", return_value=api_response)
+
+        args = {
+            "incident_url": "https://malicious.example.com",
+            "incident_type": "phishing",
+            "brand_code": "BRAND001",
+        }
+        result = create_incident_command(mock_client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "iZOOlogic.Incident"
+        assert result.outputs_key_field == "reportedIncidentId"
+        assert result.outputs["reportedIncidentId"] == "ycB2E7gPQ"
+        assert result.outputs["statusCode"] == 1
+
+    def test_api_error_raises(self, mocker: MockerFixture, mock_client: Client):
+        error_response = {
+            "success": False,
+            "message": "Invalid brand code",
+            "errorCode": "iZOO4001",
+            "result": None,
+        }
+        mocker.patch.object(mock_client, "_http_request", return_value=error_response)
+
+        args = {
+            "incident_url": "https://malicious.example.com",
+            "incident_type": "phishing",
+            "brand_code": "INVALID",
+        }
+        with pytest.raises(DemistoException, match="Failed to create incident"):
+            create_incident_command(mock_client, args)
+
+    def test_with_all_optional_args(self, mocker: MockerFixture, mock_client: Client):
+        api_response = load_test_data("create_incident_response.json")
+        mocker.patch.object(mock_client, "_http_request", return_value=api_response)
+
+        args = {
+            "incident_url": "https://malicious.example.com",
+            "incident_type": "executive",
+            "brand_code": "BRAND001",
+            "threat_type": "critical threat",
+            "case_type": "executive monitoring",
+            "comment": "Executive impersonation detected",
+            "executive_name": "Jane Smith",
+            "client_code": "CLIENT001",
+        }
+        result = create_incident_command(mock_client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs["reportedIncidentId"] == "ycB2E7gPQ"
+
+    def test_readable_output(self, mocker: MockerFixture, mock_client: Client):
+        api_response = load_test_data("create_incident_response.json")
+        mocker.patch.object(mock_client, "_http_request", return_value=api_response)
+
+        args = {
+            "incident_url": "https://malicious.example.com",
+            "incident_type": "phishing",
+            "brand_code": "BRAND001",
+        }
+        result = create_incident_command(mock_client, args)
+
+        assert "New Incident Created" in result.readable_output
+        assert "ycB2E7gPQ" in result.readable_output
+
+
+# endregion
+
+# region Incident Fetch Command Tests
+
+
+class TestSearchIncidentsCommand:
+    def test_basic_no_args(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Fetch with default args (no filters) returns incidents."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=incidents_result)
+        result = search_incidents_command(mock_client, {})
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == "iZOOlogic.Incident"
+        assert result.outputs_key_field == "incidentID"
+        assert len(result.outputs) == 3  # type: ignore[arg-type]
+
+    def test_with_all_filters(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Fetch with all filters passes them to the API."""
+        mock_fetch = mocker.patch.object(mock_client, "fetch_events_page", return_value=incidents_result)
+
+        args = {
+            "from_date": "2024-01-01T00:00:00Z",
+            "to_date": "2024-01-02T00:00:00Z",
+            "incident_type": "phishing",
+            "threat_type": "critical threat",
+            "brand_code": "BRAND001",
+            "executive_name": "John Doe",
+            "client_ref_id": "REF123",
+            "client_code": "CLIENT001",
+        }
+        result = search_incidents_command(mock_client, args)
+
+        assert isinstance(result, CommandResults)
+        # Verify the API was called with the correct filters
+        call_kwargs = mock_fetch.call_args.kwargs
+        assert call_kwargs["event_type"] == 2  # phishing
+        assert call_kwargs["threat_type"] == 14  # critical threat
+        assert call_kwargs["brand_code"] == "BRAND001"
+        assert call_kwargs["executive_name"] == "John Doe"
+        assert call_kwargs["client_ref_id"] == "REF123"
+        assert call_kwargs["client_code"] == "CLIENT001"
+
+    def test_invalid_incident_type_raises(self, mocker: MockerFixture, mock_client: Client):
+        with pytest.raises(DemistoException, match="Invalid 'incident_type'"):
+            search_incidents_command(mock_client, {"incident_type": "nonexistent"})
+
+    def test_invalid_threat_type_raises(self, mocker: MockerFixture, mock_client: Client):
+        with pytest.raises(DemistoException, match="Invalid 'threat_type'"):
+            search_incidents_command(mock_client, {"threat_type": "invalid"})
+
+    def test_inverted_date_range_raises(self, mocker: MockerFixture, mock_client: Client):
+        with pytest.raises(DemistoException, match="is before"):
+            search_incidents_command(
+                mock_client,
+                {
+                    "from_date": "2024-01-15T00:00:00Z",
+                    "to_date": "2024-01-10T00:00:00Z",
+                },
+            )
+
+    def test_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=empty_result)
+        result = search_incidents_command(mock_client, {})
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs == []
+
+    def test_readable_output_has_headers(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=incidents_result)
+        result = search_incidents_command(mock_client, {})
+
+        assert "iZOOlogic Incidents" in result.readable_output
+        assert "Incident ID" in result.readable_output
+
+    def test_existing_commands_dont_pass_new_params(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
+        """Verify that _fetch_all_pages called from get_events_command does NOT pass new filter params."""
+        mock_fetch_all = mocker.patch("iZOOlogic._fetch_all_pages", return_value=[])
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=incidents_result)
+
+        get_events_command(mock_client, {"limit": "10"}, [2])
+
+        # _fetch_all_pages should be called without the new params
+        call_kwargs = mock_fetch_all.call_args.kwargs
+        assert "threat_type" not in call_kwargs
+        assert "brand_code" not in call_kwargs
+        assert "executive_name" not in call_kwargs
+        assert "client_ref_id" not in call_kwargs
+        assert "client_code" not in call_kwargs
