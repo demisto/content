@@ -181,7 +181,10 @@ outputs:
 system: false
 timeout: '0'
 subtype: python3
-dockerimage: demisto/python3:3.12.12.6391686
+dockerimage: demisto/python3:3.12.13.8428455
+dependson:
+  must:
+  - SearchIndicatorRelationships
 fromversion: 6.6.0
 tests:
 - No tests (auto formatted)
