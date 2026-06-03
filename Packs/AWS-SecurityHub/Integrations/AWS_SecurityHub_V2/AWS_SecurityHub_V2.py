@@ -1,15 +1,56 @@
-from datetime import UTC
-import boto3
 import demistomock as demisto  # noqa: F401
+import urllib3.util
 from CommonServerPython import *  # noqa: F401
-from dateparser import parse
 from AWSApiModule import *  # noqa: E402
 from botocore.client import BaseClient as BotoClient
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 DEFAULT_RETRIES = 5
 
 
-def build_client(params: dict) -> AWSClient:
+def validate_aws_params(
+    aws_region: str | None,
+    aws_role_arn: str | None,
+    aws_role_session_name: str | None,
+    aws_access_key_id: str | None,
+    aws_secret_access_key: str | None,
+) -> None:
+    """Validate that the provided parameters are compatible with the chosen authentication method.
+
+    Args:
+        aws_region (str | None): The AWS region to operate in.
+        aws_role_arn (str | None): The ARN of the IAM role to assume.
+        aws_role_session_name (str | None): The session name used when assuming the role.
+        aws_access_key_id (str | None): The AWS access key id (when using credentials auth).
+        aws_secret_access_key (str | None): The AWS secret access key (when using credentials auth).
+
+    Raises:
+        DemistoException: If the region is missing or the credentials/role parameters are inconsistent.
+    """
+    if not aws_region:
+        raise DemistoException("You must specify the AWS region.")
+
+    if bool(aws_access_key_id) != bool(aws_secret_access_key):
+        raise DemistoException("You must provide both Access Key id and Secret Key to configure the instance with credentials.")
+
+    if bool(aws_role_arn) != bool(aws_role_session_name):
+        raise DemistoException("Role session name is required when using a role ARN.")
+
+
+def build_client(params: dict) -> BotoClient:
+    """Build and return a boto3 Security Hub client based on the integration parameters.
+
+    The client is created through the shared ``AWSClient`` (AWSApiModule), which handles
+    STS role assumption, credentials, certificate verification, timeouts and retries.
+
+    Args:
+        params (dict): The integration parameters (``demisto.params()``).
+
+    Returns:
+        BotoClient: An initialized boto3 ``securityhub`` client.
+    """
     aws_region = params.get("region")
     aws_role_arn = params.get("role_arn")
     aws_role_session_name = params.get("role_session_name")
@@ -19,13 +60,13 @@ def build_client(params: dict) -> AWSClient:
     aws_secret_access_key = params.get("credentials", {}).get("password")
     verify_certificate = not params.get("insecure", True)
     timeout = params.get("timeout")
-    retries = params.get("retries", DEFAULT_RETRIES)
-    sts_endpoint_url = params.get("sts_endpoint_url")
-    endpoint_url = params.get("endpoint_url")
+    retries = params.get("retries") or DEFAULT_RETRIES
+    sts_endpoint_url = params.get("sts_endpoint_url") or None
+    endpoint_url = params.get("endpoint_url") or None
 
-    validate_params(aws_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key)
+    validate_aws_params(aws_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key)
 
-    return AWSClient(
+    aws_client = AWSClient(
         aws_region,
         aws_role_arn,
         aws_role_session_name,
@@ -38,8 +79,10 @@ def build_client(params: dict) -> AWSClient:
         retries,
         sts_endpoint_url=sts_endpoint_url,
         endpoint_url=endpoint_url,
-    ).aws_session(
-        service="ec2",
+    )
+
+    return aws_client.aws_session(
+        service="securityhub",
         region=aws_region,
         role_arn=aws_role_arn,
         role_session_name=aws_role_session_name,
@@ -48,63 +91,65 @@ def build_client(params: dict) -> AWSClient:
 
 
 def test_module(client: BotoClient) -> str:
-    pass
+    """Test connectivity and authentication against the AWS Security Hub V2 API.
+    Args:
+        client (BotoClient): An initialized boto3 ``securityhub`` client.
+    Returns:
+        str: ``"ok"`` if the call succeeds.
+    Raises:
+        DemistoException: With a user-friendly message when Security Hub V2 is not enabled
+            or the credentials/role do not have sufficient permissions.
+    """
+    demisto.debug("[AWS_Security_Hub_V2] Test Connectivity and Authentication")
+    try:
+        client.describe_security_hub_v2()
+    except client.exceptions.ResourceNotFoundException:
+        raise DemistoException(
+            "Security Hub V2 is not enabled in the configured account/region. "
+            "Enable Security Hub V2 or verify the configured region."
+        )
+    except client.exceptions.AccessDeniedException:
+        raise DemistoException(
+            "Access denied. Verify the configured role/credentials have the "
+            "'securityhub:DescribeSecurityHubV2' permission."
+        )
+    return "ok"
 
 
 def main():  # pragma: no cover
-    args = demisto.args()
-    command = demisto.command()
     params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
+
+    demisto.debug(f"Command being called is {command}")
 
     try:
         client = build_client(params)
-        demisto.debug(f"Command being called is {command}")
 
-        # if command == "test-module":
-        #     # This is the call made when pressing the integration test button.
-        #     human_readable, outputs, response = test_function(client)
+        if command == "test-module":
+            return_results(test_module(client))
+
         # elif command == "aws-securityhub-get-findings":
-        #     human_readable, outputs, response = get_findings_command(client, args)
-        # elif command == "aws-securityhub-get-master-account":
-        #     human_readable, outputs, response = get_master_account_command(client, args)
-        # elif command == "aws-securityhub-list-members":
-        #     human_readable, outputs, response = list_members_command(client, args)
-        # elif command == "aws-securityhub-enable-security-hub":
-        #     human_readable, outputs, response = enable_security_hub_command(client, args)
-        # elif command == "aws-securityhub-disable-security-hub":
-        #     human_readable, outputs, response = disable_security_hub_command(client, args)
-        # elif command == "aws-securityhub-update-findings":
-        #     human_readable, outputs, response = update_findings_command(client, args)
-        # elif command == "aws-securityhub-batch-update-findings":
-        #     human_readable, outputs, response = batch_update_findings_command(client, args)
+        #     return_results(get_findings_command(client, args))
+        # elif command == "aws-securityhub-get-finding-statistics":
+        #     return_results(get_finding_statistics_command(client, args))
         # elif command == "fetch-incidents":
-        #     fetch_incidents(
-        #         client,
-        #         aws_sh_severity,
-        #         archive_findings,
-        #         additional_filters,
-        #         mirror_direction,
-        #         finding_type,
-        #         workflow_status,
-        #         product_name,
-        #     )
+        #     fetch_incidents(client, params)
         #     return
         # elif command == "get-remote-data":
         #     return_results(get_remote_data_command(client, args))
         #     return
         # elif command == "update-remote-system":
-        #     return_results(update_remote_system_command(client, args, resolve_findings))
+        #     return_results(update_remote_system_command(client, args))
         #     return
         # elif command == "get-mapping-fields":
         #     return_results(get_mapping_fields_command())
         #     return
-        # else:
-        #     raise NotImplementedError(f"{command} command is not implemented.")
-
-        # return_outputs(human_readable, outputs, response)
+        else:
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
-        return_error(f"Error has occurred in the AWS securityhub Integration: {type(e)} {e}", error=e)
+        return_error(f"Error has occurred in the AWS Security Hub V2 Integration: {type(e)} {e}", error=e)
 
 
 if __name__ in ["__builtin__", "builtins", "__main__"]:  # pragma: no cover
