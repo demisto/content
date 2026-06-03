@@ -34,6 +34,12 @@ ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
+# Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
+RATE_LIMIT_STATUS_CODE = 409
+RATE_LIMIT_TO_WAIT_HEADER = "X-RateLimit-ToWait-Sec"
+RATE_LIMIT_WAIT_BUFFER_SEC = 2
+RATE_LIMIT_MAX_WAIT_SEC = 45
+RATE_LIMIT_DEFAULT_WAIT_SEC = 30
 
 ASSETS_DATE_FORMAT = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -794,8 +800,8 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
         "resp_type": "text",
     },
     "test-module": {
-        "api_route": API_SUFFIX + "/scan/?action=list",
-        "call_method": "POST",
+        "api_route": API_SUFFIX_SCAN + "/scan/?action=list",
+        "call_method": "GET",
         "resp_type": "text",
     },
     "qualys-host-list-detection": {
@@ -1625,6 +1631,8 @@ class Client(BaseClient):
                 "If this error was produced by a schedule-scan-create, "
                 "please execute it again with IP list of less than 5000 characters\n\n"
             )
+        if res.status_code == 409:
+            err_msg += "Rate limit reached - the Qualys API rate limit was exceeded.\n"
         err_msg += f"Error in API call [{res.status_code}] - {res.reason}"
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
@@ -1639,6 +1647,39 @@ class Client(BaseClient):
                 err_msg += f"\n{res.text}"
                 raise DemistoException(err_msg, res=res)
         raise DemistoException(err_msg, res=res)
+
+    def _http_request_with_rate_limit_retry(self, **kwargs):
+        """
+        Wraps _http_request and retries once on a Qualys rate-limit (HTTP 409) response.
+        Qualys returns a custom `X-RateLimit-ToWait-Sec` header indicating how long to
+        wait before retrying, so we honor that value (with a buffer and a cap) instead
+        of relying on static backoff.
+        """
+        try:
+            return self._http_request(**kwargs)
+        except DemistoException as exc:
+            response = exc.res
+            if getattr(response, "status_code", None) != RATE_LIMIT_STATUS_CODE:
+                raise
+            wait_seconds = self._get_rate_limit_wait_seconds(response)
+            demisto.info(
+                f"[RateLimit] Hit Qualys rate limit (HTTP {RATE_LIMIT_STATUS_CODE}). "
+                f"Waiting {wait_seconds}s before retrying once."
+            )
+            time.sleep(wait_seconds)  # pylint: disable=E9003
+        # Single retry after waiting; let any error propagate to the caller.
+        return self._http_request(**kwargs)
+
+    @staticmethod
+    def _get_rate_limit_wait_seconds(response) -> int:
+        """Read X-RateLimit-ToWait-Sec from the response, add a buffer, and cap the result."""
+        headers = getattr(response, "headers", {}) or {}
+        raw_wait = headers.get(RATE_LIMIT_TO_WAIT_HEADER, RATE_LIMIT_DEFAULT_WAIT_SEC)
+        try:
+            wait_seconds = int(raw_wait) + RATE_LIMIT_WAIT_BUFFER_SEC
+        except (TypeError, ValueError):
+            wait_seconds = RATE_LIMIT_DEFAULT_WAIT_SEC
+        return min(wait_seconds, RATE_LIMIT_MAX_WAIT_SEC)
 
     @logger
     def command_http_request(self, command_api_data: dict[str, str]) -> Union[str, bytes]:
@@ -1680,7 +1721,7 @@ class Client(BaseClient):
         if next_page:
             params["id_max"] = next_page
 
-        response = self._http_request(
+        response = self._http_request_with_rate_limit_retry(
             method="GET",
             url_suffix=urljoin(API_SUFFIX, "activity_log/?action=list"),  # Activity log is not deprecated; stays on v2.0
             resp_type="text/csv",

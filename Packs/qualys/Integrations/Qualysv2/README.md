@@ -22225,3 +22225,28 @@ Retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.QID | unknown | All the Qualys QID \(Qualys ID\) associated with a specified CVE. |
+
+## Troubleshooting
+
+### Rate limit reached (HTTP 409, Error Code 1965)
+
+You may encounter the following error when running **Test** or during a fetch:
+
+```
+Rate limit reached - the Qualys API rate limit was exceeded.
+Error in API call [409] - Conflict
+Error Code: 1965
+Error Message: This API cannot be run again for another N seconds.
+```
+
+This error originates from the **Qualys API**, which enforces account-level limits:
+
+- A **rate limit** on the number of API requests allowed per rolling time window.
+- A **concurrency limit** on the number of simultaneous API requests.
+
+When a limit is exceeded, Qualys returns HTTP `409` and indicates how many seconds to wait before retrying. The integration reads this wait time from the Qualys response and automatically retries the request once after waiting, which reduces how often this error surfaces. However, the error cannot be fully eliminated, because it depends on the Qualys account's quota - if the quota is still exhausted after the wait, the error is returned.
+
+**Recommended actions:**
+
+- Avoid running **Test** repeatedly in quick succession, as each run consumes from the same Qualys quota.
+- If the error persists during normal use, review and, if needed, raise the API quota for the account on the Qualys side.
