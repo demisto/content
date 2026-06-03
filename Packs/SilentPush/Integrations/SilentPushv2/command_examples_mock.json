@@ -1,0 +1,16 @@
+{
+    "HOST": "a.dns-servers.net.ru",
+    "DOMAIN": "silenpush.com",
+    "DOMAINS": "silentpush.com,docs.silentpush.com",
+    "IP4": "173.245.58.236",
+    "IP4S": "173.245.58.236,173.245.58.237",
+    "IP6": "2a02:4780:37:b262:f807:71a8:e3ee:9b64",
+    "IP6S": "2606:4700:4700::1111,2a02:4780:37:b262:f807:71a8:e3ee:9b64",
+    "SUBNET": "192.35.168.0/23",
+    "URL": "https://help.silentpush.com/docs/get-started-with-api",
+    "QUERY": "sil*push.*",
+    "ANSWER": "*.ns.cloudflare.com",
+    "UUID": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "FILENAME": "file_name",
+    "THREATCHECKKEY": "your-threat-check-key"
+}

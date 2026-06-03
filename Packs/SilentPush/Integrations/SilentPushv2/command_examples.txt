@@ -1,27 +1,27 @@
-!silentpush-get-nameserver-reputation nameserver="a.dns-servers.net.ru"
-!silentpush-get-subnet-reputation subnet="192.35.168.0/23"
-!silentpush-get-ipv4-reputation ipv4="173.245.58.236"
-!silentpush-forward-padns-lookup qtype="a" query="vida.ns.cloudflare.com"
-!silentpush-reverse-padns-lookup qtype="a" query="173.245.58.236"
-!silentpush-multi-conditional-padns-lookup qtype="ns" query="sil*push.*" answer="*.ns.cloudflare.com" last_seen_after="2021-07-01"
-!silentpush-density-lookup qtype="nssrv" query="vida.ns.cloudflare.com"
-!silentpush-ip-diversity-lookup qtype="a" query="ibm.com"
-!silentpush-get-enrichment-data resource="ipv6" value="2a02:4780:37:b262:f807:71a8:e3ee:9b64"
-!silentpush-bulk-enrich resource="ipv4" value="173.245.58.236,173.245.58.237" explain="1" scan_data="1"
-!silentpush-list-domain-information domains="ig.com,x.com"
-!silentpush-list-ip4-information ips="8.8.4.4,1.1.1.1"
-!silentpush-list-ip6-information ips="2606:4700:4700::1111,2a02:4780:37:b262:f807:71a8:e3ee:9b64"
-!silentpush-search-domains name_server="*.bodis.com" min_asn_diversity="2" limit="3" timeline="1"
-!silentpush-get-asns-for-domain domain="x.com"
-!silentpush-get-domain-certificates domain="uol.com"
-!silentpush-search-scan-data query="domain=\"ig.com\"" fields="scan_date,hostname,domain,ip,user-agent" sort="scan_date/desc,domain/asc" limit="10"
-!silentpush-live-url-scan url="https://bol.com.br" region="EU" proxy="mu" platform="Mobile"
-!silentpush-add-feed name="myFeed" type="domain"
-!silentpush-add-feed-tags feed_uuid="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" tags="Tag1,Tag2"
-!silentpush-add-indicators feed_uuid="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" indicators="ig.com,1.1.1.1"
-!silentpush-add-indicator-tags feed_uuid="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" indicator_name="ig.com" tags="Tag3,Tag4"
-!silentpush-run-threat-check data="iofa" query="127.0.0.2" type="ip" user_identifier="your-threat-check-key"
-!silentpush-get-data-exports export_type="organisation" file_name="the_file_name" file_type="csv"
-!silentpush-whois domain="x.com"
-!silentpush-retry-job job_id="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-!silentpush-ip-diversity-patterns nsname="*.bodis.com" asn_diversity_min="2"
+!silentpush-get-nameserver-reputation nameserver=a.dns-servers.net.ru
+!silentpush-get-subnet-reputation subnet=192.35.168.0/23
+!silentpush-get-ipv4-reputation ipv4=173.245.58.236
+!silentpush-forward-padns-lookup qtype=a query=silenpush.com
+!silentpush-reverse-padns-lookup qtype=a query=173.245.58.236
+!silentpush-multi-conditional-padns-lookup qtype=ns query=silenpush.com answer=a.dns-servers.net.ru last_seen_after=2021-07-01
+!silentpush-density-lookup qtype=nssrv query=silenpush.com
+!silentpush-ip-diversity-lookup qtype=a query=silenpush.com
+!silentpush-get-enrichment-data resource=ipv6 value=2a02:4780:37:b262:f807:71a8:e3ee:9b64
+!silentpush-bulk-enrich resource=ipv4 value=173.245.58.236S explain=1 scan_data=1
+!silentpush-list-domain-information domains=silentpush.com,docs.silentpush.com
+!silentpush-list-ip4-information ips=173.245.58.236,173.245.58.237
+!silentpush-list-ip6-information ips=2606:4700:4700::1111,2a02:4780:37:b262:f807:71a8:e3ee:9b64
+!silentpush-search-domains name_server=a.dns-servers.net.ru min_asn_diversity=2 limit=3 timeline=1
+!silentpush-get-asns-for-domain domain=silenpush.com
+!silentpush-getdomain-certificates domain=silenpush.com
+!silentpush-search-scan-data query=domain=silenpush.com fields=scan_date,a.dns-servers.net.runame,silenpush.com,ip,user-agent sort=scan_date/desc,silenpush.com/asc limit=10
+!silentpush-live-url-scan url=URL region=EU proxy=mu platform=Mobile
+!silentpush-add-feed name=myFeed type=silenpush.com
+!silentpush-add-feed-tags feed_uuid=c20664f4-6516-40d9-bd4a-e089ef67684e tags=Tag1,Tag2
+!silentpush-add-indicators feed_uuid=c20664f4-6516-40d9-bd4a-e089ef67684e indicators=silenpush.com,173.245.58.236
+!silentpush-add-indicator-tags feed_uuid=c20664f4-6516-40d9-bd4a-e089ef67684e indicator_name=silenpush.com tags=Tag3,Tag4
+!silentpush-run-threat-check data=iofa query=173.245.58.236 type=ip user_identifier=c20664f4-6516-40d9-bd4a-e089ef67684e
+!silentpush-get-data-exports export_type=organisation file_name=filename file_type=csv
+!silentpush-whois domain=silenpush.com
+!silentpush-retry-job job_id=c20664f4-6516-40d9-bd4a-e089ef67684e
+!silentpush-ip-diversity-patterns nsname=a.dns-servers.net.ru asn_diversity_min=2
