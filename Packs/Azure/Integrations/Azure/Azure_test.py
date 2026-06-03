@@ -248,7 +248,7 @@ def test_storage_account_update_command(mocker, client, mock_params):
     result = storage_account_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.StorageAccount"
+    assert result.outputs_prefix == "Azure.Storage.StorageAccounts"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "teststorage"
     assert result.outputs["properties"]["supportsHttpsTrafficOnly"] is True
@@ -270,6 +270,7 @@ def test_storage_blob_service_properties_set_command(mocker, client, mock_params
     }
 
     mocker.patch.object(client, "storage_blob_service_properties_set_request", return_value=properties_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-properties-set")
 
     # Call the function
     args = {"account_name": "teststorage", "delete_rentention_policy_enabled": "true", "delete_rentention_policy_days": "7"}
@@ -318,7 +319,7 @@ def test_create_policy_assignment_command(mocker, client, mock_params):
     result = create_policy_assignment_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.PolicyAssignment"
+    assert result.outputs_prefix == "Azure.Policy.PolicyAssignments"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-policy"
     assert result.outputs["properties"]["displayName"] == "Test Policy"
@@ -343,7 +344,22 @@ def test_set_postgres_config_command(mocker, client, mock_params):
     assert "Updated the configuration log_checkpoints of the server test-postgres" in result.readable_output
 
 
-def test_set_webapp_config_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-webapp-config-set", "Azure.WebAppConfig"),
+        ("azure-webapp-set-http2-quick-action", "Azure.WebAppConfig"),
+        ("azure-set-function-app-http-version2-0-quick-action", "Azure.WebAppConfig"),
+        ("azure-webapp-disable-remote-debugging-quick-action", "Azure.WebAppConfig"),
+        ("azure-webapp-set-min-tls-version-quick-action", "Azure.WebAppConfig"),
+        ("azure-function-app-set-min-tls-version-quick-action", "Azure.WebAppConfig"),
+        ("azure-appservice-webapp-config-update", "Azure.AppService.WebAppConfiguration"),
+        ("azure-appservice-webapp-config-update-http2-quick-action", "Azure.AppService.WebAppConfiguration"),
+        ("azure-appservice-webapp-config-disable-remote-debugging-quick-action", "Azure.AppService.WebAppConfiguration"),
+        ("azure-appservice-webapp-config-update-min-tls-version-quick-action", "Azure.AppService.WebAppConfiguration"),
+    ],
+)
+def test_set_webapp_config_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to set WebApp configurations.
     When: The set_webapp_config_command function is called with valid parameters.
@@ -358,6 +374,7 @@ def test_set_webapp_config_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "set_webapp_config", return_value=webapp_response)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {"name": "test-webapp", "http20_enabled": "true", "remote_debugging_enabled": "false", "min_tls_version": "1.2"}
@@ -365,13 +382,22 @@ def test_set_webapp_config_command(mocker, client, mock_params):
     result = set_webapp_config_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.WebAppConfig"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-webapp"
     assert result.outputs["properties"]["http20Enabled"] is True
 
 
-def test_update_webapp_auth_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-webapp-auth-update", "Azure.WebAppAuth"),
+        ("azure-webapp-auth-update-quick-action", "Azure.WebAppAuth"),
+        ("azure-appservice-webapp-auth-settings-update", "Azure.AppService.WebAppAuthSettings"),
+        ("azure-appservice-webapp-auth-settings-update-quick-action", "Azure.AppService.WebAppAuthSettings"),
+    ],
+)
+def test_update_webapp_auth_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to update WebApp authentication settings.
     When: The update_webapp_auth_command function is called with valid parameters.
@@ -393,6 +419,7 @@ def test_update_webapp_auth_command(mocker, client, mock_params):
 
     mocker.patch.object(client, "get_webapp_auth", return_value=current_auth)
     mocker.patch.object(client, "update_webapp_auth", return_value=updated_auth)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {"name": "test-webapp", "enabled": "true"}
@@ -400,7 +427,7 @@ def test_update_webapp_auth_command(mocker, client, mock_params):
     result = update_webapp_auth_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.WebAppAuth"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "authsettings"
     assert result.outputs["properties"]["enabled"] is True
@@ -466,7 +493,7 @@ def test_monitor_log_profile_update_command(mocker, client, mock_params):
     result = monitor_log_profile_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.LogProfile"
+    assert result.outputs_prefix == "Azure.Monitor.LogProfiles"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-profile"
     assert result.outputs["location"] == "westus"
@@ -474,7 +501,18 @@ def test_monitor_log_profile_update_command(mocker, client, mock_params):
     assert result.outputs["properties"]["retentionPolicy"]["days"] == 30
 
 
-def test_disk_update_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-disk-update", "Azure.Disk"),
+        ("azure-disk-set-data-access-ad-quick-action", "Azure.Disk"),
+        ("azure-disable-public-private-access-vm-disk-quick-action", "Azure.Disk"),
+        ("azure-compute-disk-update", "Azure.Compute.Disks"),
+        ("azure-disable-public-n-private-access-vm-disk-quick-action", "Azure.Compute.Disks"),
+        ("azure-compute-disk-update-data-access-ad-quick-action", "Azure.Compute.Disks"),
+    ],
+)
+def test_disk_update_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to update disk properties.
     When: The disk_update_command function is called with valid parameters.
@@ -493,6 +531,7 @@ def test_disk_update_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "disk_update", return_value=disk_response)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {
@@ -505,7 +544,7 @@ def test_disk_update_command(mocker, client, mock_params):
     result = disk_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.Disk"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-disk"
     assert result.outputs["properties"]["publicNetworkAccess"] == "Disabled"
@@ -513,7 +552,17 @@ def test_disk_update_command(mocker, client, mock_params):
     assert result.outputs["properties"]["dataAccessAuthMode"] == "AzureActiveDirectory"
 
 
-def test_webapp_update_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-webapp-update", "Azure.WebApp"),
+        ("azure-webapp-assign-managed-identity-quick-action", "Azure.WebApp"),
+        ("azure-webapp-update-assign-managed-identity-quick-action", "Azure.WebApp"),
+        ("azure-appservice-webapp-update", "Azure.AppService.WebApp"),
+        ("azure-appservice-webapp-update-quick-action", "Azure.AppService.WebApp"),
+    ],
+)
+def test_webapp_update_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to update webapp properties.
     When: The webapp_update_command function is called with valid parameters.
@@ -529,6 +578,7 @@ def test_webapp_update_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "webapp_update", return_value=webapp_response)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {"name": "test-webapp", "identity_type": "SystemAssigned", "https_only": "true", "client_cert_enabled": "true"}
@@ -536,7 +586,7 @@ def test_webapp_update_command(mocker, client, mock_params):
     result = webapp_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.WebApp"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-webapp"
     assert result.outputs["identity"]["type"] == "SystemAssigned"
@@ -544,7 +594,20 @@ def test_webapp_update_command(mocker, client, mock_params):
     assert result.outputs["properties"]["clientCertEnabled"] is True
 
 
-def test_acr_update_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-acr-update", "Azure.ACR"),
+        ("azure-acr-disable-public-private-access-quick-action", "Azure.ACR"),
+        ("azure-acr-disable-authentication-as-arm-quick-action", "Azure.ACR"),
+        ("azure-acr-disable-anonymous-pull-quick-action", "Azure.ACR"),
+        ("azure-cr-registry-update", "Azure.ContainerRegistry.Registries"),
+        ("azure-cr-disable-public-private-access-quick-action", "Azure.ContainerRegistry.Registries"),
+        ("azure-cr-disable-anonymous-pull-quick-action", "Azure.ContainerRegistry.Registries"),
+        ("azure-cr-disable-authentication-as-arm-quick-action", "Azure.ContainerRegistry.Registries"),
+    ],
+)
+def test_acr_update_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to update Azure Container Registry properties.
     When: The acr_update_command function is called with valid parameters.
@@ -563,6 +626,7 @@ def test_acr_update_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "acr_update", return_value=acr_response)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {
@@ -576,7 +640,7 @@ def test_acr_update_command(mocker, client, mock_params):
     result = acr_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.ACR"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "testregistry"
     assert result.outputs["properties"]["publicNetworkAccess"] == "Disabled"
@@ -963,6 +1027,7 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     }
 
     mocker.patch.object(client, "storage_blob_service_properties_set_request", return_value=properties_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-property-set")
 
     # Call the function with minimal args
     args = {"account_name": "teststorage"}
@@ -970,7 +1035,7 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     result = storage_blob_service_properties_set_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.StorageAccountBlobServiceProperties"
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "default"
 
@@ -3001,6 +3066,7 @@ def test_storage_blob_service_properties_get_command(mocker):
 
     mock_client = mocker.Mock()
     mock_client.storage_blob_service_properties_get_request.return_value = mock_response
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-properties-get")
 
     params = {"subscription_id": "subid", "resource_group_name": "rg1"}
     args = {"account_name": "teststorage"}
@@ -3222,11 +3288,11 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
         "Etag": "0x8DB7F5589F2DC4A",
         "Last-Modified": "Wed, 14 Aug 2024 10:00:00 GMT",
         "Date": "Wed, 14 Aug 2024 10:05:00 GMT",
-        "x-ms-request-id": "req-id-12345",
-        "x-ms-lease-status": "unlocked",
-        "x-ms-lease-state": "available",
-        "x-ms-has-immutability-policy": "false",
-        "x-ms-has-legal-hold": "false",
+        "X-Ms-Request-Id": "req-id-12345",
+        "X-Ms-Lease-Status": "unlocked",
+        "X-Ms-Lease-State": "available",
+        "X-Ms-Has-Immutability-Policy": "false",
+        "X-Ms-Has-Legal-Hold": "false",
     }
     mock_response.headers = CaseInsensitiveDict(raw_response_data)
 
@@ -3239,8 +3305,8 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
     # Verify client.get_storage_container_properties_request was called with correct parameters
     client.get_storage_container_properties_request.assert_called_once_with("testaccount", "testcontainer")
 
-    assert result.outputs_prefix == "Azure.StorageContainer"
-    assert result.outputs_key_field == "name"
+    assert result.outputs_prefix == "Azure.Storage.Container"
+    assert result.outputs_key_field == "ContainerName"
 
 
 def test_storage_container_create_command(mocker, client, mock_params):
@@ -4979,6 +5045,63 @@ def test_nsg_security_rules_list_command_missing_properties(mocker):
     assert len(result.outputs) == 2
 
 
+def test_storage_blob_service_properties_set_command_new(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to set blob service properties.
+    When: The storage_blob_service_properties_set_command function is called with valid parameters with
+        azure-storage-blob-service-property-set.
+    Then: The function should return the updated blob service properties in the expected format,
+        including backward compatibility outputs.
+    """
+    from Azure import storage_blob_service_properties_set_command
+
+    # Prepare mock response
+    properties_response = {
+        "name": "default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices"
+        "/default",
+        "properties": {"deleteRetentionPolicy": {"enabled": True, "days": 7}},
+    }
+
+    mocker.patch.object(client, "storage_blob_service_properties_set_request", return_value=properties_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-property-set")
+
+    # Call the function
+    args = {"account_name": "teststorage", "delete_rentention_policy_enabled": "true", "delete_rentention_policy_days": "7"}
+
+    result = storage_blob_service_properties_set_command(client, mock_params, args)
+
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == properties_response
+    assert result.raw_response == properties_response
+
+
+def test_storage_blob_service_properties_get_command_new(mocker):
+    """
+    Given: An Azure client mock and the get_blob_service_properties.json file.
+    When: storage_blob_service_properties_get_command is called with azure-storage-blob-service-property-get.
+    Then: The CommandResults should have correct outputs, readable_output, and metadata, including backward compatibility outputs.
+    """
+    from Azure import storage_blob_service_properties_get_command
+
+    mock_response = util_load_json("test_data/get_blob_service_properties.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_service_properties_get_request.return_value = mock_response
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-property-get")
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"account_name": "teststorage"}
+
+    result = storage_blob_service_properties_get_command(mock_client, params, args)
+
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+
 def test_create_network_security_group(mocker, client):
     """
     Given: An Azure client and a request to create a network security group.
@@ -5301,7 +5424,7 @@ def test_network_interface_update_command_success(mocker):
         "resource_group_name": "rg1",
         "network_interface_name": "test-nic",
         "enable_ip_forwarding": "true",
-        "accelerate_networking": "true",
+        "enable_accelerate_networking": "true",
         "internal_dns_name_label": "test-label",
         "dns_servers": "1.1.1.1",
     }
@@ -5333,7 +5456,7 @@ def test_network_interface_update_command_success(mocker):
             "location": "eastus",
             "properties": {
                 "enableIPForwarding": True,
-                "enableAcceleratedNetworking": False,
+                "enableAcceleratedNetworking": True,
                 "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
             },
         },

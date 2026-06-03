@@ -3661,12 +3661,12 @@ class EC2:
         outputs = {
             "AWS.EC2.Images(val.ImageId && val.ImageId == obj.ImageId)": images,
             "AWS.EC2(true)": {
-                "ImagesNextPageToken": response.get("NextToken"),
+                "ImagesNextToken": response.get("NextToken"),
             },
         }
 
         next_token = response.get("NextToken")
-        next_token_text = f"ImagesNextPageToken: {escape(next_token)}" if next_token else ""
+        next_token_text = f"ImagesNextToken: {escape(next_token)}" if next_token else ""
 
         return CommandResults(
             outputs=outputs,
@@ -3907,8 +3907,8 @@ class EC2:
         if waiter_config:
             kwargs["WaiterConfig"] = waiter_config
 
-        print_debug_logs(client, f"Waiting for image to become available with parameters: {kwargs}")
         remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Waiting for image to become available with parameters: {kwargs}")
 
         try:
             waiter = client.get_waiter("image_available")
@@ -4707,7 +4707,7 @@ class EC2:
 
         outputs = {
             "AWS.EC2.Snapshots(val.SnapshotId && val.SnapshotId == obj.SnapshotId)": snapshots,
-            "AWS.EC2(true)": {"SnapshotsNextPageToken": response.get("NextToken")},
+            "AWS.EC2(true)": {"SnapshotsNextToken": response.get("NextToken")},
         }
 
         return CommandResults(
@@ -4924,7 +4924,7 @@ class EC2:
             CommandResults: Results containing the created launch template information
         """
         kwargs: Dict[str, Any] = remove_empty_elements(create_launch_template_kwargs_builder(args))
-        print_debug_logs(client, f"Creating launch template with parameters: {kwargs}")
+        print_debug_logs(client, f"Creating launch template with parameters: {kwargs.keys()}")
 
         response = client.create_launch_template(**kwargs)
 
@@ -5496,11 +5496,15 @@ class EC2:
         Returns:
             CommandResults: Results with success message
         """
+        protocols_2_numbers = {"tcp": "6", "udp": "17", "icmp": "1", "icmpv6": "58", "-1": "-1"}
+        proto = args.get("protocol")
+        if proto and proto.lower() in protocols_2_numbers:
+            proto = protocols_2_numbers[proto.lower()]
         kwargs = remove_empty_elements(
             {
                 "NetworkAclId": args.get("network_acl_id"),
                 "RuleNumber": arg_to_number(args.get("rule_number")),
-                "Protocol": args.get("protocol"),
+                "Protocol": proto,
                 "RuleAction": args.get("rule_action"),
                 "Egress": arg_to_bool_or_none(args.get("egress")),
                 "CidrBlock": args.get("cidr_block"),
@@ -5578,6 +5582,7 @@ class EC2:
         Returns:
             CommandResults: Results containing the allocated host IDs.
         """
+        tags = parse_tag_field(args.get("tags"))
         kwargs = remove_empty_elements(
             {
                 "AvailabilityZone": args.get("availability_zone"),
@@ -5591,7 +5596,7 @@ class EC2:
                 "HostMaintenance": args.get("host_maintenance"),
                 "OutpostArn": args.get("outpost_arn"),
                 "AssetIds": argToList(args.get("asset_ids")),
-                "TagSpecifications": [{"ResourceType": "dedicated-host", "Tags": parse_tag_field(args.get("tags"))}],
+                "TagSpecifications": [{"ResourceType": "dedicated-host", "Tags": tags}] if tags else [],
             }
         )
 
@@ -5881,7 +5886,8 @@ class EKS:
 
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(
-            client, f"Updating EKS access entry for cluster: {cluster_name}, principal: {principal_arn}, kwargs: {kwargs}"
+            client,
+            f"Updating EKS access entry for cluster: {cluster_name}, principal: {principal_arn}, kwargs keys: {kwargs.keys()}",
         )
 
         response = client.update_access_entry(**kwargs)
@@ -6311,7 +6317,6 @@ class RDS:
         demisto.debug(f"calling describe_db_instances_command with {kwargs=}")
         response = client.describe_db_instances(**kwargs)
         response = serialize_response_with_datetime_encoding(response)
-        demisto.debug(f"The response of describe_db_instances {response}")
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
@@ -6337,7 +6342,6 @@ class RDS:
             removeNull=True,
             headerTransform=pascalToSpace,
         )
-        demisto.debug(f"The {readable_output=}")
 
         return CommandResults(
             outputs=outputs,
@@ -7429,7 +7433,7 @@ class Lambda:
 
         # Extract configuration for readable output
         func_config = response.get("Configuration", {})
-        func_config["Location"] = response.get("Code").get("Location")  # type: ignore
+        func_config["Location"] = response.get("Code", {}).get("Location")  # type: ignore
         func_config["Region"] = args.get("region")
         response["FunctionArn"] = func_config["FunctionArn"]
         outputs = copy.deepcopy(response)
