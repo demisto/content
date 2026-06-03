@@ -1,6 +1,6 @@
 {
   "command_args": {
-        "endpoint_id_list":[123],
+        "endpoint_id_list":["5a75bff72e754839bbd4bfd5e88f7012"],
         "dist_name":"123",
         "gte_first_seen":"123",
         "gte_last_seen":"123",

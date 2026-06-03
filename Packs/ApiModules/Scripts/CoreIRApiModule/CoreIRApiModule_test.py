@@ -939,6 +939,235 @@ def test_endpoint_scan_command_scan_all_endpoints_no_filters_error(requests_mock
         endpoint_scan_command(client, {})
 
 
+@pytest.mark.parametrize(
+    "invalid_value",
+    [
+        "ADDYXDRSRV",
+        "5a75bff72e754839bbd4bfd5e88f70",
+        "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+    ],
+)
+def test_validate_endpoint_id_list_invalid(invalid_value):
+    """
+    Given:
+        - An endpoint_id_list value that is not a 32-character hex agent ID.
+    When:
+        - Validating the scan command arguments.
+    Then:
+        - A descriptive DemistoException is raised before any API call is made.
+    """
+    from CoreIRApiModule import validate_endpoint_id_list
+
+    with pytest.raises(DemistoException, match="Invalid value\\(s\\) for endpoint_id_list"):
+        validate_endpoint_id_list([invalid_value])
+
+
+def test_validate_endpoint_id_list_valid():
+    """
+    Given:
+        - A valid 32-character hex agent ID.
+    When:
+        - Validating the scan command arguments.
+    Then:
+        - No exception is raised.
+    """
+    from CoreIRApiModule import validate_endpoint_id_list
+
+    validate_endpoint_id_list(["5a75bff72e754839bbd4bfd5e88f7012"])
+
+
+def test_endpoint_scan_command_invalid_endpoint_id_pre_validation():
+    """
+    Given:
+        - A hostname mistakenly passed as endpoint_id_list.
+    When:
+        - Running the scan command.
+    Then:
+        - The command fails fast with a clear message and never calls the scan API.
+    """
+    from CoreIRApiModule import CoreClient, endpoint_scan_command
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    client._headers = {}
+    with pytest.raises(DemistoException, match="Invalid value\\(s\\) for endpoint_id_list"):
+        endpoint_scan_command(client, {"endpoint_id_list": "ADDYXDRSRV"})
+
+
+SCAN_CREATION_ERROR_BODY = {
+    "reply": {
+        "err_code": 500,
+        "err_msg": "An error occurred while processing XDR public API - "
+        "No endpoint was found for creating the requested action",
+        "err_extra": "can't create group action id for SCAN",
+    }
+}
+
+
+def test_endpoint_scan_command_diagnosis_no_endpoints(requests_mock):
+    """
+    Given:
+        - A scan request that fails with the server-side 'no endpoint' 500 error,
+          and get_endpoint returns no matching endpoints.
+    When:
+        - Running the scan command.
+    Then:
+        - The raised error explains that no endpoints matched the filters.
+    """
+    from CoreIRApiModule import CoreClient, endpoint_scan_command
+
+    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/scan/", status_code=500, json=SCAN_CREATION_ERROR_BODY)
+    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/get_endpoint/", json={"reply": {"endpoints": []}})
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    client._headers = {}
+    with pytest.raises(DemistoException, match="No endpoints were found matching the provided filters"):
+        endpoint_scan_command(client, {"hostname": "LPITSEC14"})
+
+
+def test_endpoint_scan_command_diagnosis_active_scan(requests_mock):
+    """
+    Given:
+        - A scan request that fails with the 'no endpoint' 500 error,
+          and the matched endpoint already has an in-progress scan.
+    When:
+        - Running the scan command.
+    Then:
+        - The raised error explains that the endpoint already has an active/pending scan.
+    """
+    from CoreIRApiModule import CoreClient, endpoint_scan_command
+
+    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/scan/", status_code=500, json=SCAN_CREATION_ERROR_BODY)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/get_endpoint/",
+        json={
+            "reply": {
+                "endpoints": [
+                    {
+                        "endpoint_id": "5a75bff72e754839bbd4bfd5e88f7012",
+                        "scan_status": "IN_PROGRESS",
+                        "endpoint_status": "CONNECTED",
+                        "os_type": "AGENT_OS_WINDOWS",
+                        "endpoint_version": "8.9.0",
+                    }
+                ]
+            }
+        },
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    client._headers = {}
+    with pytest.raises(DemistoException, match="active or pending scan"):
+        endpoint_scan_command(client, {"endpoint_id_list": "5a75bff72e754839bbd4bfd5e88f7012"})
+
+
+def test_endpoint_scan_command_diagnosis_invalid_status(requests_mock):
+    """
+    Given:
+        - A scan request that fails with the 'no endpoint' 500 error,
+          and the matched endpoint is in an UNINSTALLED (non-scannable) status.
+    When:
+        - Running the scan command.
+    Then:
+        - The raised error explains the endpoint is not in a scannable status.
+    """
+    from CoreIRApiModule import CoreClient, endpoint_scan_command
+
+    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/scan/", status_code=500, json=SCAN_CREATION_ERROR_BODY)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/get_endpoint/",
+        json={
+            "reply": {
+                "endpoints": [
+                    {
+                        "endpoint_id": "5a75bff72e754839bbd4bfd5e88f7012",
+                        "scan_status": "NONE",
+                        "endpoint_status": "UNINSTALLED",
+                        "os_type": "AGENT_OS_WINDOWS",
+                        "endpoint_version": "8.9.0",
+                    }
+                ]
+            }
+        },
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    client._headers = {}
+    with pytest.raises(DemistoException, match="'connected' or 'disconnected' status"):
+        endpoint_scan_command(client, {"endpoint_id_list": "5a75bff72e754839bbd4bfd5e88f7012"})
+
+
+def test_endpoint_scan_command_diagnosis_version_too_old(requests_mock):
+    """
+    Given:
+        - A scan request that fails with the 'no endpoint' 500 error,
+          and the matched Windows endpoint has an agent version below the scan minimum.
+    When:
+        - Running the scan command.
+    Then:
+        - The raised error explains the agent version does not support scanning.
+    """
+    from CoreIRApiModule import CoreClient, endpoint_scan_command
+
+    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/scan/", status_code=500, json=SCAN_CREATION_ERROR_BODY)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/get_endpoint/",
+        json={
+            "reply": {
+                "endpoints": [
+                    {
+                        "endpoint_id": "5a75bff72e754839bbd4bfd5e88f7012",
+                        "scan_status": "NONE",
+                        "endpoint_status": "CONNECTED",
+                        "os_type": "AGENT_OS_WINDOWS",
+                        "endpoint_version": "4.9.0",
+                    }
+                ]
+            }
+        },
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    client._headers = {}
+    with pytest.raises(DemistoException, match="agent version that does not support scanning"):
+        endpoint_scan_command(client, {"endpoint_id_list": "5a75bff72e754839bbd4bfd5e88f7012"})
+
+
+def test_endpoint_scan_command_diagnosis_fallback(requests_mock):
+    """
+    Given:
+        - A scan request that fails with the 'no endpoint' 500 error,
+          but the matched endpoint looks healthy (scenarios 6/7 - undiagnosable).
+    When:
+        - Running the scan command.
+    Then:
+        - The raised error is the comprehensive fallback message.
+    """
+    from CoreIRApiModule import CoreClient, endpoint_scan_command
+
+    requests_mock.post(f"{Core_URL}/public_api/v1/endpoints/scan/", status_code=500, json=SCAN_CREATION_ERROR_BODY)
+    requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/get_endpoint/",
+        json={
+            "reply": {
+                "endpoints": [
+                    {
+                        "endpoint_id": "5a75bff72e754839bbd4bfd5e88f7012",
+                        "scan_status": "NONE",
+                        "endpoint_status": "CONNECTED",
+                        "os_type": "AGENT_OS_WINDOWS",
+                        "endpoint_version": "8.9.0",
+                    }
+                ]
+            }
+        },
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    client._headers = {}
+    with pytest.raises(DemistoException, match="No eligible endpoints were found"):
+        endpoint_scan_command(client, {"endpoint_id_list": "5a75bff72e754839bbd4bfd5e88f7012"})
+
+
 def test_endpoint_scan_abort_command_scan_all_endpoints_no_filters_error(requests_mock):
     """
     Given:

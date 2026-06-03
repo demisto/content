@@ -15,6 +15,23 @@ from re import Match
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
+# Endpoint (agent) IDs are 32-character hex strings. Used to pre-validate the
+# endpoint_id_list argument of the scan/abort-scan commands before calling the API,
+# so that malformed values (e.g. a hostname or a truncated ID) fail fast with a
+# clear message instead of an opaque server-side 500 error.
+AGENT_ID_REGEX = re.compile(r"^[0-9a-fA-F]{32}$")
+
+# Minimum agent versions required for scanning, by normalized OS type.
+MIN_SCAN_VERSIONS: dict[str, str] = {
+    "Windows": "5.0.0",
+    "Macos": "7.1.0",
+    "Linux": "7.8.0",
+    "Android": "5.0.0",
+}
+
+# Scan statuses (as returned by the API) that block creating a new scan action.
+BLOCKING_SCAN_STATUSES = {"pending", "in_progress"}
+
 COVERAGE_API_FIELDS_MAPPING = {
     "vendor_name": "asset_provider",
     "asset_provider": "unified_provider",
@@ -2054,6 +2071,29 @@ def arg_to_int(arg, arg_name: str, required: bool = False):
     return ValueError(f'Invalid number: "{arg_name}"')
 
 
+def validate_endpoint_id_list(endpoint_id_list: list) -> None:
+    """
+    Validate that every value in endpoint_id_list is a 32-character hex agent ID.
+
+    Catches the common mistakes that otherwise surface as an opaque server-side 500
+    error ("No endpoint was found for creating the requested action"):
+    - a hostname passed instead of an agent ID (e.g. "ADDYXDRSRV")
+    - a truncated/corrupted agent ID (e.g. 30 chars instead of 32)
+
+    :param endpoint_id_list: list of endpoint (agent) ID values to validate.
+    :raises DemistoException: if one or more values are not valid agent IDs.
+    """
+    invalid_ids = [endpoint_id for endpoint_id in endpoint_id_list if not AGENT_ID_REGEX.match(str(endpoint_id))]
+    if invalid_ids:
+        invalid_str = ", ".join(f"'{endpoint_id}'" for endpoint_id in invalid_ids)
+        raise DemistoException(
+            f"Invalid value(s) for endpoint_id_list: {invalid_str}. "
+            f"The endpoint_id_list argument requires 32-character hexadecimal agent IDs. "
+            f"To filter by hostname, use the 'hostname' argument instead. "
+            f"To filter by IP address, use the 'ip_list' argument instead."
+        )
+
+
 def validate_args_scan_commands(args):
     endpoint_id_list = argToList(args.get("endpoint_id_list"))
     dist_name = argToList(args.get("dist_name"))
@@ -2067,6 +2107,10 @@ def validate_args_scan_commands(args):
     alias = argToList(args.get("alias"))
     hostname = argToList(args.get("hostname"))
     all_ = argToBoolean(args.get("all", "false"))
+
+    # Fail fast on malformed endpoint IDs (hostname/truncated ID) to avoid an opaque server-side 500.
+    if endpoint_id_list:
+        validate_endpoint_id_list(endpoint_id_list)
 
     # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
     err_msg = (
@@ -2105,6 +2149,177 @@ def validate_args_scan_commands(args):
         raise Exception(err_msg)
 
 
+def is_scan_creation_error(error_message: str) -> bool:
+    """
+    Identify the specific server-side error that indicates no eligible endpoint was
+    found for creating the scan/abort action (returned as an HTTP 500).
+
+    :param error_message: the string representation of the raised error.
+    :return: True if this is the "can't create group action" error, False otherwise.
+    """
+    return (
+        "No endpoint was found for creating the requested action" in error_message
+        or "can't create group action id" in error_message
+    )
+
+
+def diagnose_scan_failure(client: CoreClient, args) -> str:
+    """
+    Diagnose why a scan/abort-scan action could not be created.
+
+    Re-queries the endpoints using the same filters that were used for the scan request
+    and inspects their state to produce a specific, actionable reason. This is a
+    best-effort enrichment that only runs on the error path.
+
+    :param client: the Core API client.
+    :param args: the original command arguments.
+    :return: a human-readable diagnosis message.
+    """
+    endpoints = get_endpoints_for_scan_diagnosis(client, args)
+    if endpoints is None:
+        return scan_failure_generic_message()
+
+    if not endpoints:
+        return (
+            "No endpoints were found matching the provided filters. "
+            "Verify the filter values (endpoint_id_list, hostname, ip_list, etc.) are correct "
+            "and that the endpoints exist in the system."
+        )
+
+    classified = classify_unscannable_endpoints(endpoints)
+    return build_scan_failure_message(classified)
+
+
+def get_endpoints_for_scan_diagnosis(client: CoreClient, args) -> list | None:
+    """
+    Fetch the endpoints matching the scan filters, for failure diagnosis.
+
+    :param client: the Core API client.
+    :param args: the original command arguments.
+    :return: the list of matching endpoints, or None if the lookup itself failed.
+    """
+    try:
+        return client.get_endpoints(
+            endpoint_id_list=argToList(args.get("endpoint_id_list")),
+            dist_name=argToList(args.get("dist_name")),
+            ip_list=argToList(args.get("ip_list")),
+            group_name=argToList(args.get("group_name")),
+            platform=argToList(args.get("platform")),
+            alias_name=argToList(args.get("alias")),
+            hostname=argToList(args.get("hostname")),
+            first_seen_gte=args.get("gte_first_seen"),
+            first_seen_lte=args.get("lte_first_seen"),
+            last_seen_gte=args.get("gte_last_seen"),
+            last_seen_lte=args.get("lte_last_seen"),
+        )
+    except Exception as e:
+        demisto.debug(f"get_endpoints_for_scan_diagnosis: get_endpoints failed: {e}")
+        return None
+
+
+def classify_unscannable_endpoints(endpoints: list) -> dict:
+    """
+    Classify endpoints by the reason they cannot be scanned.
+
+    Note: field values returned by the API are not normalized (e.g. endpoint_status may
+    be "CONNECTED", "DISCONNECTED", "UNINSTALLED" or even "STATUS_010_CONNECTED", and
+    os_type needs to be normalized via convert_os_to_standard), so all comparisons are
+    case-insensitive / substring based.
+
+    :param endpoints: the endpoints returned by the get_endpoints lookup.
+    :return: a dict mapping each reason key to the list of affected endpoint IDs.
+    """
+    classified: dict = {
+        "active_scans": [],
+        "invalid_status": [],
+        "unsupported_os": [],
+        "version_too_old": [],
+    }
+
+    for endpoint in endpoints:
+        endpoint_id = endpoint.get("endpoint_id", "unknown")
+        scan_status = (endpoint.get("scan_status") or "").lower()
+        endpoint_status = (endpoint.get("endpoint_status") or "").lower()
+        normalized_os = convert_os_to_standard(endpoint.get("os_type", ""))
+        version = endpoint.get("endpoint_version") or ""
+
+        if scan_status in BLOCKING_SCAN_STATUSES:
+            classified["active_scans"].append(endpoint_id)
+        elif "connected" not in endpoint_status:
+            # Scannable endpoints are 'connected' or 'disconnected'; both contain "connected".
+            classified["invalid_status"].append(endpoint_id)
+        elif not normalized_os:
+            classified["unsupported_os"].append(endpoint_id)
+        elif not is_scan_version_supported(normalized_os, version):
+            classified["version_too_old"].append(endpoint_id)
+
+    return classified
+
+
+def build_scan_failure_message(classified: dict) -> str:
+    """
+    Build a human-readable message from classified unscannable endpoints.
+
+    :param classified: the output of classify_unscannable_endpoints.
+    :return: a specific diagnosis message, or the generic fallback when nothing was classified.
+    """
+    issues: list = []
+    if classified["active_scans"]:
+        issues.append(f"{len(classified['active_scans'])} endpoint(s) already have an active or pending scan")
+    if classified["invalid_status"]:
+        issues.append(f"{len(classified['invalid_status'])} endpoint(s) are not in 'connected' or 'disconnected' status")
+    if classified["unsupported_os"]:
+        issues.append(
+            f"{len(classified['unsupported_os'])} endpoint(s) have an unsupported operating system "
+            f"(supported: Windows, macOS, Linux, Android)"
+        )
+    if classified["version_too_old"]:
+        issues.append(
+            f"{len(classified['version_too_old'])} endpoint(s) have an agent version that does not support scanning "
+            f"(minimum: Windows 5.0.0, macOS 7.1.0, Linux 7.8.0, Android 5.0.0)"
+        )
+
+    if not issues:
+        return scan_failure_generic_message()
+
+    return "Failed to initiate scan on the matched endpoint(s). Issues found:\n" + "\n".join(f"- {issue}" for issue in issues)
+
+
+def is_scan_version_supported(normalized_os: str, version: str) -> bool:
+    """
+    Check whether the agent version supports scanning for the given normalized OS.
+
+    :param normalized_os: OS type as returned by convert_os_to_standard (e.g. "Windows").
+    :param version: the agent version string (e.g. "8.9.0").
+    :return: True if the version meets the minimum for the OS, False otherwise.
+    """
+    min_version = MIN_SCAN_VERSIONS.get(normalized_os)
+    if not min_version:
+        return False
+    try:
+        return tuple(int(part) for part in str(version).split(".")[:3]) >= tuple(int(part) for part in min_version.split("."))
+    except (ValueError, AttributeError):
+        # If the version can't be parsed, don't flag it as too old (avoid false positives).
+        return True
+
+
+def scan_failure_generic_message() -> str:
+    """Return the comprehensive fallback message listing all possible scan-failure reasons."""
+    return (
+        "Failed to initiate scan. No eligible endpoints were found. This can occur when:\n"
+        "1. The endpoint(s) already have an active or pending scan.\n"
+        "2. No endpoints match the provided filters.\n"
+        "3. The endpoint is not in 'connected' or 'disconnected' status.\n"
+        "4. The agent version does not meet the minimum requirement for scanning "
+        "(Windows 5.0.0, macOS 7.1.0, Linux 7.8.0, Android 5.0.0).\n"
+        "5. The endpoint's operating system does not support scanning "
+        "(supported: Windows, macOS, Linux, Android).\n"
+        "6. Scanning is not enabled for the endpoint's operating system.\n"
+        "7. The endpoint is outside your access scope.\n"
+        "Please verify your request and try again."
+    )
+
+
 def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
     endpoint_id_list = argToList(args.get("endpoint_id_list"))
     dist_name = argToList(args.get("dist_name"))
@@ -2122,22 +2337,27 @@ def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
 
     validate_args_scan_commands(args)
 
-    reply = client.endpoint_scan(
-        url_suffix="/endpoints/scan/",
-        endpoint_id_list=argToList(endpoint_id_list),
-        dist_name=dist_name,
-        gte_first_seen=gte_first_seen,
-        gte_last_seen=gte_last_seen,
-        lte_first_seen=lte_first_seen,
-        lte_last_seen=lte_last_seen,
-        ip_list=ip_list,
-        group_name=group_name,
-        platform=platform,
-        alias=alias,
-        isolate=isolate,
-        hostname=hostname,
-        incident_id=incident_id,
-    )
+    try:
+        reply = client.endpoint_scan(
+            url_suffix="/endpoints/scan/",
+            endpoint_id_list=argToList(endpoint_id_list),
+            dist_name=dist_name,
+            gte_first_seen=gte_first_seen,
+            gte_last_seen=gte_last_seen,
+            lte_first_seen=lte_first_seen,
+            lte_last_seen=lte_last_seen,
+            ip_list=ip_list,
+            group_name=group_name,
+            platform=platform,
+            alias=alias,
+            isolate=isolate,
+            hostname=hostname,
+            incident_id=incident_id,
+        )
+    except Exception as e:
+        if is_scan_creation_error(str(e)):
+            raise DemistoException(diagnose_scan_failure(client, args)) from e
+        raise
 
     action_id = reply.get("action_id")
 
@@ -3307,22 +3527,27 @@ def endpoint_scan_abort_command(client, args):
 
     validate_args_scan_commands(args)
 
-    reply = client.endpoint_scan(
-        url_suffix="endpoints/abort_scan/",
-        endpoint_id_list=argToList(endpoint_id_list),
-        dist_name=dist_name,
-        gte_first_seen=gte_first_seen,
-        gte_last_seen=gte_last_seen,
-        lte_first_seen=lte_first_seen,
-        lte_last_seen=lte_last_seen,
-        ip_list=ip_list,
-        group_name=group_name,
-        platform=platform,
-        alias=alias,
-        isolate=isolate,
-        hostname=hostname,
-        incident_id=incident_id,
-    )
+    try:
+        reply = client.endpoint_scan(
+            url_suffix="endpoints/abort_scan/",
+            endpoint_id_list=argToList(endpoint_id_list),
+            dist_name=dist_name,
+            gte_first_seen=gte_first_seen,
+            gte_last_seen=gte_last_seen,
+            lte_first_seen=lte_first_seen,
+            lte_last_seen=lte_last_seen,
+            ip_list=ip_list,
+            group_name=group_name,
+            platform=platform,
+            alias=alias,
+            isolate=isolate,
+            hostname=hostname,
+            incident_id=incident_id,
+        )
+    except Exception as e:
+        if is_scan_creation_error(str(e)):
+            raise DemistoException(diagnose_scan_failure(client, args)) from e
+        raise
 
     action_id = reply.get("action_id")
 
