@@ -5,9 +5,9 @@ from CommonServerPython import *  # noqa: F401
 import math
 import re
 import traceback
+from collections.abc import Callable
 from copy import deepcopy
 from datetime import date
-from collections.abc import Callable
 
 import jwt
 import urllib3
@@ -26,6 +26,7 @@ HUMAN_READABLE_DATE_TIME_FORMAT = "%b %d, %Y at %I:%M:%S %p"
 USER_ACCESS_HYPERLINK = "{}sonar/user_intelligence?redirected_user_id={}"
 EVENT_HYPERLINK = '{}events/details/{}?clusterUuid="{}"'
 THREAT_MONITORING_HYPERLINK = "{}radar/threat_monitoring/{}"
+DSPM_VIOLATION_HYPERLINK = "{}sonar/data_risks/violations/{}/{}/{}/{}/details"
 
 DEFAULT_IS_FETCH = False
 MAX_FETCH_MIN = 1
@@ -48,7 +49,7 @@ DEFAULT_EVENT_SORT_ORDER = "DESC"
 DEFAULT_SHOW_CLUSTER_SLA_ONLY = "True"
 DEFAULT_SORT_BY_SLA_DOMAIN = "NAME"
 DEFAULT_CLUSTER_SORT_BY = "ClusterName"
-DEFAULT_REQUEST_NAME = f"PAXSOAR-{get_pack_version() or '1.6.0'}"
+DEFAULT_REQUEST_NAME = f"PAXSOAR-{get_pack_version() or '1.7.0'}"
 DEFAULT_PRINCIPAL_SUMMARY_CATEGORY = "USERS_WITH_SENSITIVE_ACCESS"
 DEFAULT_RELIABILITY = "A - Completely reliable"
 SCAN_ID = "Scan ID"
@@ -102,6 +103,8 @@ TOTAL_SENSITIVE_OBJECTS = "Total Sensitive Objects"
 HIGH_RISK_HITS = "High Risk Hits"
 MEDIUM_RISK_HITS = "Medium Risk Hits"
 LOW_RISK_HITS = "Low Risk Hits"
+NO_RISK_HITS = "No Risk Hits"
+TOTAL_RISK_HITS = "Total Risk Hits"
 POLICY_NAME = "Policy Name"
 VENDOR_NAME = "Rubrik Security Cloud"
 GENERAL_INFO_KEY = "generalInfo"
@@ -124,9 +127,10 @@ DEFAULT_TIME_PERIOD = "7 days"
 MAX_MATCHES_PER_OBJECT = 100
 MAXIMUM_FILE_SIZE = 5000000
 MAXIMUM_PAGINATION_LIMIT = 1000
-DEFAULT_FETCH_TYPE = ["event", "threat monitoring object"]
+DEFAULT_FETCH_TYPE = ["event", "threat monitoring object", "dspm violation"]
 EVENT_FETCH_TYPE = "event"
 THREAT_MONITORING_FETCH_TYPE = "threat monitoring object"
+DSPM_VIOLATION_FETCH_TYPE = "dspm violation"
 IOC_MATCHES = ["MATCHES_FOUND", "NO_MATCHES", "UNSCANNED"]
 QUERANTINE_STATUS = ["QUARANTINED_MATCHES", "NO_QUARANTINED_MATCHES"]
 HUNT_STATUSES = ["ABORTED", "CANCELED", "CANCELING", "FAILED", "IN_PROGRESS", "PARTIALLY_SUCCEEDED", "PENDING", "SUCCEEDED"]
@@ -134,6 +138,81 @@ MAX_INT_VALUE = 2**31 - 1
 MAX_LONG_VALUE = 2**63 - 1 - 512
 DEFAULT_POLLING_NEXT_RUN_IN_SECONDS = 30
 DEFAULT_POLLING_TIMEOUT = 300
+DEFAULT_DSPM_VIOLATION_STATUS = ["OPEN", "IN_PROGRESS"]
+DSPM_VIOLATION_STATUS = ["OPEN", "REMEDIATED", "DISMISSED", "IN_PROGRESS", "CLOSED"]
+DSPM_VIOLATION_SENSITIVITY = ["HIGH", "MEDIUM", "LOW", "NO"]
+DSPM_VIOLATION_SEVERITY = ["SEVERITY_UNSPECIFIED", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
+DSPM_VIOLATION_CATEGORY = ["CATEGORY_UNSPECIFIED", "MISPLACED", "REDUNDANT", "OVEREXPOSED", "UNPROTECTED"]
+DSPM_VIOLATION_OBJECT_TYPE = [
+    "AWS_NATIVE_DYNAMODB_TABLE",
+    "AWS_NATIVE_EBS_VOLUME",
+    "AWS_NATIVE_RDS_INSTANCE",
+    "AWS_NATIVE_S3_BUCKET",
+    "AZURE_MANAGED_DISK",
+    "AZURE_SQL_DATABASE_DB",
+    "AZURE_SQL_MANAGED_INSTANCE_DB",
+    "AZURE_STORAGE_ACCOUNT",
+    "AZURE_VIRTUAL_MACHINE",
+    "GCP_NATIVE_DISK",
+    "GCP_NATIVE_GCE_INSTANCE",
+    "HYPERV_VIRTUAL_MACHINE",
+    "K8S_PROTECTION_SET",
+    "K8S_VIRTUAL_MACHINE",
+    "LINUX_FILESET",
+    "NAS_FILESET",
+    "NUTANIX_VIRTUAL_MACHINE",
+    "O365_ONEDRIVE",
+    "O365_SITE",
+    "ORACLE_DATA_GUARD_GROUP",
+    "ORACLE_DATABASE",
+    "SHARE_FILESET",
+    "VOLUME_GROUP",
+    "VSPHERE_VIRTUAL_MACHINE",
+    "WINDOWS_FILESET",
+]
+DSPM_VIOLATION_SORT_BY = [
+    "SEVERITY",
+    "HITS",
+    "DETECTION_TIME",
+    "UPDATE_TIME",
+    "IDENTITY_TYPE",
+    "FILES_AT_RISK",
+    "TOTAL_HITS",
+    "ACCESSIBLE_OBJECTS",
+    "ORIGIN",
+    "EVENT_TIME",
+    "NAME",
+    "TYPE",
+]
+DSPM_VIOLATION_FILE_LIST_SENSITIVITY = ["HIGH", "MEDIUM", "LOW", "NO"]
+DSPM_VIOLATION_FILE_LIST_EXPOSURE = ["EXPLICIT", "INHERITED", "NOT_OPEN", "PUBLIC"]
+DSPM_VIOLATION_FILE_LIST_ACCESS_VIA = ["ACCESS_TYPE_UNSPECIFIED", "DIRECT", "GROUP", "ROLE"]
+DSPM_VIOLATION_FILE_LIST_SORT_BY = [
+    "CLUSTER",
+    "CREATION_TIME",
+    "DAILY_CHANGE",
+    "DATA_CATEGORY",
+    "DATA_TYPE",
+    "DOCUMENT_TYPE",
+    "EXPOSED_FILES",
+    "FILES_WITH_HITS",
+    "FILES_WITH_OPEN_ACCESS_HITS",
+    "HITS",
+    "HITS_BY_SENSITIVITY",
+    "LAST_ACCESS_TIME",
+    "LAST_MODIFIED",
+    "LAST_SCAN_TIME",
+    "NAME",
+    "NATIVE_PATH",
+    "NUM_ACTIVITIES",
+    "NUM_ACTIVITIES_DELTA",
+    "OBJECT_LOCATION",
+    "OBJECT_NAME",
+    "OPEN_ACCESS_TYPE",
+    "SNAPSHOT_TIME",
+    "STALE_FILES_WITH_HITS",
+    "TOTAL_SENSITIVE_HITS",
+]
 
 MESSAGES = {
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
@@ -201,6 +280,12 @@ OUTPUT_PREFIX = {
     "TURBO_IOC_SCAN": "RubrikPolaris.TurboIOCScan",
     "ADVANCE_IOC_SCAN": "RubrikPolaris.AdvanceIOCScan",
     "ANOMALY_CSV_ANALYSIS_V2": "RubrikPolaris.AnomalyCSVv2",
+    "DSPM_VIOLATION": "RubrikPolaris.DSPMViolation",
+    "PAGE_TOKEN_DSPM_VIOLATION": "RubrikPolaris.PageToken.DSPMViolation",
+    "DSPM_VIOLATION_FILE": "RubrikPolaris.DSPMViolationFile",
+    "PAGE_TOKEN_DSPM_VIOLATION_FILE": "RubrikPolaris.PageToken.DSPMViolationFile",
+    "DSPM_VIOLATION_CSV_DOWNLOAD": "RubrikPolaris.DSPMViolationCSVDownload",
+    "DSPM_VIOLATION_LOG_DOWNLOAD": "RubrikPolaris.DSPMViolationRemediationLogDownload",
 }
 
 ERROR_MESSAGES = {
@@ -233,6 +318,7 @@ ERROR_MESSAGES = {
     "MISSING_TWO_REQUIRED_FIELD": "Requires both '{}' and '{}' arguments. Please provide correct input.",
     "NEGATIVE_ARG_VALUE": "'{}' is an invalid value for '{}'. Value must be greater than zero.",
     "INVALID_INT_VALUE": "'{}' is an invalid value for '{}'. Value must be less than or equal to {}.",
+    "INVALID_DATE_RANGE": "'{}' cannot be greater than '{}'. Please provide correct input.",
 }
 
 DBOT_SCORE_MAPPING = {
@@ -1179,6 +1265,547 @@ query DownloadBarQuery {
 }
 """
 
+DSPM_VIOLATION_GET_QUERY = """ query DataSecurityViolationGetQuery($violationId: String!) {
+  policyViolation(
+    violationId: $violationId
+    policyTypes: [POLICY_TYPE_DATAGOV]
+  ) {
+    ...DataAtRiskPanelFragment
+    status
+    violationSeverity
+    policyViolationId
+    createdAt
+    lastUpdatedAt
+    resourceId
+    policy {
+      policyId
+      name
+      description
+      policyCategory
+      policySeverity
+      containsAccessFilters
+      __typename
+    }
+    remediations {
+      remediationId
+      state
+      remediationDetails {
+        details {
+          ticketNumber
+          ticketUrl
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    resourceMetadata {
+      metadata {
+        ... on CommonAssetMetadata {
+          platform
+          cloudAccountInfo {
+            accountName
+            __typename
+          }
+          objectType
+          clusterInfo {
+            clusterName
+            clusterUuid
+            __typename
+          }
+          creationTime
+          lastAccessTime
+          snapshotTimestamp
+          physicalHost
+          name
+          isDeleted
+          region
+          __typename
+        }
+      }
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment SensitiveHitsChartFragment on DataGovViolationDetails {
+  snapshotId
+  violatedSensitiveHits
+  violatedNoRiskSensitiveHits
+  violatedLowRiskSensitiveHits
+  violatedMediumRiskSensitiveHits
+  violatedHighRiskSensitiveHits
+  __typename
+}
+
+fragment DataAtRiskPanelFragment on PolicyViolation {
+  details {
+    ...SensitiveHitsChartFragment
+    ... on DataGovViolationDetails {
+      dataCategories {
+        id
+        name
+        totalViolatedHits
+        __typename
+      }
+      dataTypes {
+        id
+        name
+        totalViolatedHits
+        __typename
+      }
+      mipLabels {
+        id
+        totalViolatedHits
+        name
+        __typename
+      }
+      documentTypes {
+        id
+        name
+        totalViolatedHits
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+"""
+
+DSPM_VIOLATIONS_LIST_QUERY = """query DataSecurityViolationsListQuery(
+  $policyIds: [UUID!]
+  $resourceIds: [String!]
+  $statuses: [PolicyViolationStatus!]
+  $severities: [Severity!]
+  $categories: [Category!]
+  $sensitivityLevels: [SensitivityLevel!]
+  $detectionDate: TimeRangeInput
+  $updateDate: TimeRangeInput
+  $first: Int
+  $after: String
+  $sortBy: PolicyViolationSortField
+  $sortOrder: SortOrder
+  $resourceMetadataFilter: ResourceMetadataFiltersInput
+  $dataCategoryIds: [String!]
+  $dataTypeIds: [String!]
+) {
+  policyViolations(
+    policyIds: $policyIds
+    resourceIds: $resourceIds
+    statuses: $statuses
+    policySeverities: $severities
+    policyCategories: $categories
+    sensitivityLevels: $sensitivityLevels
+    detectionDate: $detectionDate
+    updateDate: $updateDate
+    policyTypes: [POLICY_TYPE_DATAGOV]
+    first: $first
+    after: $after
+    sortBy: $sortBy
+    sortOrder: $sortOrder
+    resourceMetadataFilter: $resourceMetadataFilter
+    dataCategoryIds: $dataCategoryIds
+    dataTypeIds: $dataTypeIds
+  ) {
+    edges {
+      node {
+        policyViolationId
+        ...PolicyViolationStatusFragment
+        createdAt
+        lastUpdatedAt
+        name
+        violationSeverity
+        policy {
+          policyId
+          name
+          policySeverity
+          policyCategory
+          description
+          __typename
+        }
+        resourceId
+        resourceType
+        resourceMetadata {
+          metadata {
+            ... on CommonAssetMetadata {
+              name
+              objectType
+              platform
+              physicalHost
+              region
+              creationTime
+              lastAccessTime
+              snapshotTimestamp
+              clusterInfo {
+                clusterName
+                clusterUuid
+                __typename
+              }
+              cloudAccountInfo {
+                accountName
+                __typename
+              }
+              __typename
+            }
+            __typename
+          }
+          __typename
+        }
+        ...PolicyViolationDetailsFragment
+        remediations {
+          type
+          state
+          remediationDetails {
+            details {
+              ticketNumber
+              ticketUrl
+              __typename
+            }
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      cursor
+      __typename
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      __typename
+    }
+    count
+    __typename
+  }
+}
+
+fragment PolicyViolationStatusFragment on PolicyViolation {
+  status
+  __typename
+}
+
+fragment PolicyViolationDetailsFragment on PolicyViolation {
+  policyViolationId
+  details {
+    ... on DataGovViolationDetails {
+      violatedNoRiskSensitiveHits
+      violatedLowRiskSensitiveHits
+      violatedMediumRiskSensitiveHits
+      violatedHighRiskSensitiveHits
+      violatedSensitiveHits
+      snapshotId
+      dataTypes {
+        id
+        name
+        totalViolatedHits
+        __typename
+      }
+      dataCategories {
+        id
+        name
+        totalViolatedHits
+        __typename
+      }
+    }
+    __typename
+  }
+  __typename
+}
+"""
+
+DSPM_VIOLATION_STATUS_UPDATE_MUTATION = """mutation UpdatePolicyViolationsMutation($input: BulkUpdatePolicyViolationsInput!) {
+  bulkUpdatePolicyViolations(input: $input)
+}"""
+
+DSPM_VIOLATION_FILE_LIST_QUERY = """query DSPMViolationFileListQuery(
+  $first: Int!
+  $after: String
+  $snappableFid: String!
+  $snapshotFid: String!
+  $filters: ListFileResultFiltersInput
+  $sort: FileResultSortInput
+  $timezone: String!
+) {
+  policyObj(snappableFid: $snappableFid, snapshotFid: $snapshotFid) {
+    id: snapshotFid
+    fileResultConnection(
+      first: $first
+      after: $after
+      filter: $filters
+      sort: $sort
+      timezone: $timezone
+    ) {
+      edges {
+        cursor
+        node {
+          ...DiscoveryFileFragment
+          __typename
+        }
+        __typename
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        __typename
+      }
+      hasLatestData
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment DiscoveryFileFragment on FileResult {
+  nativePath
+  stdPath
+  filename
+  mode
+  size
+  lastAccessTime
+  lastModifiedTime
+  creationTime
+  lastScanTime
+  directory
+  createdBy
+  modifiedBy
+  numDescendantFiles
+  numDescendantErrorFiles
+  numDescendantSkippedExtFiles
+  numDescendantSkippedSizeFiles
+  errorCode
+  hits {
+    totalHits
+    violations
+    violationsDelta
+    totalHitsDelta
+    __typename
+  }
+  filesWithHits {
+    totalHits
+    violations
+    __typename
+  }
+  openAccessFilesWithHits {
+    totalHits
+    violations
+    __typename
+  }
+  staleFilesWithHits {
+    totalHits
+    violations
+    __typename
+  }
+  analyzerGroupResults {
+    ...AnalyzerGroupResultFragment
+    __typename
+  }
+  sensitiveFiles {
+    ...SensitiveFilesTableCellFragment
+    __typename
+  }
+  sensitiveHits {
+    highRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    mediumRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    lowRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    noRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    __typename
+  }
+  analyzerRiskHits {
+    highRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    mediumRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    lowRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    noRiskHits {
+      totalHits
+      violatedHits
+      __typename
+    }
+    __typename
+  }
+  analyzerResults {
+    hits {
+      totalHits
+      violations
+      __typename
+    }
+    analyzer {
+      id
+      name
+      analyzerType
+      __typename
+    }
+    __typename
+  }
+  openAccessType
+  stalenessType
+  numActivities
+  numActivitiesDelta
+  exposureSummary {
+    exposureType
+    fileCount {
+      totalCount
+      violatedCount
+      __typename
+    }
+    __typename
+  }
+  dbEntityType
+  mipLabelsSummary {
+    ...ObjectInventoryMipColumnFragment
+    __typename
+  }
+  documentTypesSummary {
+    id
+    name
+    filesCount {
+      totalCount
+      violatedCount
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment SensitiveFilesTableCellFragment on SensitiveFiles {
+  highRiskFileCount {
+    ...SummaryCountFragment
+    __typename
+  }
+  mediumRiskFileCount {
+    ...SummaryCountFragment
+    __typename
+  }
+  lowRiskFileCount {
+    ...SummaryCountFragment
+    __typename
+  }
+  noRiskFileCount {
+    ...SummaryCountFragment
+    __typename
+  }
+  totalFileCount {
+    ...SummaryCountFragment
+    __typename
+  }
+  __typename
+}
+
+fragment SummaryCountFragment on SummaryCount {
+  totalCount
+  violatedCount
+  __typename
+}
+
+fragment AnalyzerGroupResultFragment on AnalyzerGroupResult {
+  analyzerGroup {
+    groupType
+    id
+    name
+    __typename
+  }
+  analyzerResults {
+    hits {
+      totalHits
+      violations
+      __typename
+    }
+    analyzer {
+      id
+      name
+      analyzerType
+      __typename
+    }
+    __typename
+  }
+  hits {
+    totalHits
+    violations
+    violationsDelta
+    totalHitsDelta
+    __typename
+  }
+  __typename
+}
+
+fragment ObjectInventoryMipColumnFragment on MipLabelSummary {
+  mipLabel {
+    siteId
+    labelName
+    labelId
+    hasProtection
+    __typename
+  }
+  filesCount {
+    violatedCount
+    totalCount
+    __typename
+  }
+  __typename
+}
+"""
+
+DOWNLOAD_DSPM_VIOLATION_CSV_MUTATION = """mutation DownloadDSPMViolationCsvMutation(
+  $filters: DownloadResultsCsvFiltersInput
+  $snappableFid: String!
+  $snapshotFid: String!
+) {
+  downloadSnapshotResultsCsv(
+    snappableFid: $snappableFid
+    snapshotFid: $snapshotFid
+    downloadFilter: $filters
+  ) {
+    isSuccessful
+    __typename
+  }
+}
+"""
+
+DOWNLOAD_DSPM_VIOLATION_REMEDIATION_LOG_MUTATION = """mutation DownloadDSPMViolationRemediationLogMutation(
+  $input: CreateViolationRemediationInput!
+) {
+  createViolationRemediation(input: $input) {
+    remediationId
+    __typename
+  }
+}
+"""
+
 
 class MyClient(PolarisClient):
     """Client class."""
@@ -1264,6 +1891,24 @@ def convert_to_demisto_severity(severity: str = "XSOAR LOW") -> int:
         }[severity]
     except KeyError:
         raise ValueError(ERROR_MESSAGES["FETCH_PARAM_REQUIRED"].format("Event Critical Severity Level Mapping"))
+
+
+def convert_severity_to_incident_severity(severity: str) -> int:
+    """
+    Map the severity level to XSOAR incident severity level.
+
+    :type severity: ``str``
+    :param severity: Severity level (CRITICAL, HIGH, MEDIUM, LOW)
+
+    :return: mapped incident severity level
+    :rtype: ``int``
+    """
+    return {
+        "CRITICAL": IncidentSeverity.CRITICAL,
+        "HIGH": IncidentSeverity.HIGH,
+        "MEDIUM": IncidentSeverity.MEDIUM,
+        "LOW": IncidentSeverity.LOW,
+    }.get(severity.upper(), IncidentSeverity.UNKNOWN)
 
 
 def process_activity_nodes(activity_nodes: list, processed_incident):
@@ -2464,6 +3109,77 @@ def prepare_context_hr_user_access_list(
     return context, hr, pages, risk_levels
 
 
+def prepare_context_hr_dspm_violation_get(violation_data: Dict) -> tuple[Dict, str]:
+    """
+    Prepare context output and human-readable response for rubrik-data-security-violation-get command.
+
+    :type violation_data: ``Dict``
+    :param violation_data: Policy violation data from the API response.
+
+    :return: Context output and human-readable for the command.
+    """
+    context = remove_empty_elements(violation_data)
+
+    metadata = demisto.get(violation_data, "resourceMetadata.metadata", {})
+    policy = demisto.get(violation_data, "policy", {})
+    details = demisto.get(violation_data, "details", {})
+    status = violation_data.get("status", "")
+    display_status = status.replace("POLICY_VIOLATION_STATUS_", "").replace("_", " ").title() if status else ""
+
+    severity = violation_data.get("violationSeverity", "")
+    display_severity = severity.title() if severity else ""
+
+    data_types = demisto.get(details, "dataTypes", [])
+    data_types_data = [
+        {"id": dt.get("id"), "name": dt.get("name"), "totalViolatedHits": dt.get("totalViolatedHits")} for dt in data_types
+    ]
+
+    data_categories = demisto.get(details, "dataCategories", [])
+    data_categories_data = [
+        {"id": dc.get("id"), "name": dc.get("name"), "totalViolatedHits": dc.get("totalViolatedHits")} for dc in data_categories
+    ]
+
+    hr_content = {
+        "ID": violation_data.get("policyViolationId"),
+        "Violation Name": policy.get("name"),
+        SEVERITY: display_severity,
+        "Violation Status": display_status,
+        DETECTION_TIME: violation_data.get("createdAt"),
+        "Last Updated": violation_data.get("lastUpdatedAt"),
+        "Policy ID": policy.get("policyId"),
+        "Policy Description": policy.get("description"),
+        "Policy Category": policy.get("policyCategory"),
+        "Policy Severity": policy.get("policySeverity").title() if policy.get("policySeverity") else "",
+        TOTAL_RISK_HITS: details.get("violatedSensitiveHits"),
+        HIGH_RISK_HITS: details.get("violatedHighRiskSensitiveHits"),
+        MEDIUM_RISK_HITS: details.get("violatedMediumRiskSensitiveHits"),
+        LOW_RISK_HITS: details.get("violatedLowRiskSensitiveHits"),
+        NO_RISK_HITS: details.get("violatedNoRiskSensitiveHits"),
+        SNAPSHOT_ID: details.get("snapshotId"),
+        OBJECT_ID: violation_data.get("resourceId"),
+        OBJECT_NAME: metadata.get("name"),
+        OBJECT_TYPE: metadata.get("objectType"),
+        "Object Location": metadata.get("physicalHost"),
+        "Object Account name": demisto.get(metadata, "cloudAccountInfo.accountName"),
+        "Object Platform": metadata.get("platform"),
+        "Object Region": metadata.get("region"),
+        CLUSTER_ID: demisto.get(metadata, "clusterInfo.clusterUuid"),
+        CLUSTER_NAME: demisto.get(metadata, "clusterInfo.clusterName"),
+        "Data Types": data_types_data,
+        "Data Categories": data_categories_data,
+    }
+
+    hr = tableToMarkdown(
+        "DSPM Violation Data",
+        hr_content,
+        removeNull=True,
+        sort_headers=False,
+        json_transform_mapping={"Data Types": JsonTransformer(), "Data Categories": JsonTransformer()},
+    )
+
+    return context, hr
+
+
 def prepare_context_hr_user_access_get(
     principal_summary: Dict, policy_hits_context: list, base_url: str, include_whitelisted_results: bool
 ) -> tuple[list, str, str]:
@@ -3172,6 +3888,192 @@ def validate_comman_fetch_params(max_fetch: Optional[int], fetch_types: list):
         raise ValueError(ERROR_MESSAGES["INVALID_MAX_FETCH"])
 
 
+def validate_dspm_violation_fetch_params(
+    violation_statuses: list, violation_severities: list, violation_sensitivities: list, is_fetch: bool = True
+) -> tuple:
+    """
+    Validate and transform DSPM violation fetch parameters to API enum format.
+
+    :param violation_statuses: List of violation statuses to validate.
+    :type violation_statuses: list
+
+    :param violation_severities: List of violation severities to validate.
+    :type violation_severities: list
+
+    :param violation_sensitivities: List of violation sensitivities to validate.
+    :type violation_sensitivities: list
+
+    :param is_fetch: Whether this is called from fetch (True) or list command (False).
+    :type is_fetch: bool
+
+    :return: Tuple of (statuses, severities, sensitivities) transformed to API enum format.
+    :rtype: tuple
+    :raises ValueError: If any parameter value is not in the allowed values.
+    """
+    statuses = []
+    status_arg_name = "dspm_violation_status" if is_fetch else "status"
+    severity_arg_name = "dspm_violation_severity" if is_fetch else "severity"
+    sensitivity_arg_name = "dspm_violation_sensitivity" if is_fetch else "sensitivity"
+
+    for status in violation_statuses:
+        if status.upper() not in DSPM_VIOLATION_STATUS:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(status, status_arg_name, DSPM_VIOLATION_STATUS))
+
+        statuses.append(f"POLICY_VIOLATION_STATUS_{status.upper()}")
+
+    severities = []
+    for severity in violation_severities:
+        if severity.upper() not in DSPM_VIOLATION_SEVERITY:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(severity, severity_arg_name, DSPM_VIOLATION_SEVERITY))
+
+        severities.append(severity.upper())
+
+    sensitivities = []
+    for sensitivity in violation_sensitivities:
+        if sensitivity.upper() not in DSPM_VIOLATION_SENSITIVITY:
+            raise ValueError(
+                ERROR_MESSAGES["INVALID_SELECT"].format(sensitivity, sensitivity_arg_name, DSPM_VIOLATION_SENSITIVITY)
+            )
+
+        sensitivities.append(f"{sensitivity.upper()}_SENSITIVITY")
+
+    return statuses, severities, sensitivities
+
+
+def validate_date_range(start_time: Optional[datetime], start_time_arg: str, end_time: Optional[datetime], end_time_arg: str):
+    """
+    Validate that start time is not greater than end time.
+
+    :type start_time: ``Optional[datetime]``
+    :param start_time: The start time value.
+
+    :type start_time_arg: ``str``
+    :param start_time_arg: The argument name for start time (used in error messages).
+
+    :type end_time: ``Optional[datetime]``
+    :param end_time: The end time value.
+
+    :type end_time_arg: ``str``
+    :param end_time_arg: The argument name for end time (used in error messages).
+
+    :raises ValueError: If start time is greater than end time.
+    """
+    if start_time and end_time and start_time > end_time:
+        raise ValueError(ERROR_MESSAGES["INVALID_DATE_RANGE"].format(start_time_arg, end_time_arg))
+
+
+def validate_data_security_violation_list_command_args(
+    limit: Optional[int],
+    sort_by: Optional[str],
+    sort_order: str,
+    detection_start_date: Optional[datetime],
+    detection_end_date: Optional[datetime],
+    resolved_start_date: Optional[datetime],
+    resolved_end_date: Optional[datetime],
+):
+    """
+    Validate the arguments of the rubrik-data-security-violation-list command.
+
+    :type limit: ``Optional[int]``
+    :param limit: The number of results to return.
+
+    :type sort_by: ``Optional[str]``
+    :param sort_by: The field to sort by.
+
+    :type sort_order: ``str``
+    :param sort_order: The sort order (ASC or DESC).
+
+    :type detection_start_date: ``Optional[datetime]``
+    :param detection_start_date: The detection start date.
+
+    :type detection_end_date: ``Optional[datetime]``
+    :param detection_end_date: The detection end date.
+
+    :type resolved_start_date: ``Optional[datetime]``
+    :param resolved_start_date: The resolved start date.
+
+    :type resolved_end_date: ``Optional[datetime]``
+    :param resolved_end_date: The resolved end date.
+
+    :raises ValueError: If any parameter value is not valid.
+    """
+    if not limit or not 1 <= limit <= MAXIMUM_PAGINATION_LIMIT:
+        raise ValueError(ERROR_MESSAGES["INVALID_LIMIT"].format(limit))
+
+    if sort_by and sort_by.upper() not in DSPM_VIOLATION_SORT_BY:
+        raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(sort_by, "sort_by", DSPM_VIOLATION_SORT_BY))
+
+    if sort_order.upper() not in (ASCENDING_SORT_ORDER, DESCENDING_SORT_ORDER):
+        raise ValueError(ERROR_MESSAGES["INVALID_SORT_ORDER"].format(sort_order))
+
+    if bool(detection_start_date) != bool(detection_end_date):
+        raise ValueError(ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("detection_start_date", "detection_end_date"))
+
+    if bool(resolved_start_date) != bool(resolved_end_date):
+        raise ValueError(ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("resolved_start_date", "resolved_end_date"))
+
+    validate_date_range(detection_start_date, "detection_start_date", detection_end_date, "detection_end_date")
+    validate_date_range(resolved_start_date, "resolved_start_date", resolved_end_date, "resolved_end_date")
+
+
+def prepare_context_hr_data_security_violation_list(edges: list) -> tuple:
+    """
+    Prepare context and human readable output for the rubrik-data-security-violation-list command.
+
+    :type edges: ``list``
+    :param edges: List of violation edges from the GraphQL response.
+
+    :return: Tuple of (context, human_readable)
+    :rtype: ``tuple``
+    """
+    hr_content = []
+    context = []
+    for edge in edges:
+        node = edge.get("node", {})
+        node = remove_empty_elements(node)
+        context.append(node)
+
+        status = node.get("status", "")
+        display_status = status.replace("POLICY_VIOLATION_STATUS_", "").replace("_", " ").title() if status else ""
+
+        severity = demisto.get(node, "policy.policySeverity", "")
+        display_severity = severity.title() if severity else ""
+
+        hr_content.append(
+            {
+                "ID": node.get("policyViolationId"),
+                "Violation Name": demisto.get(node, "policy.name"),
+                "Severity": display_severity,
+                "Object Name": demisto.get(node, "resourceMetadata.metadata.name"),
+                "Violation Status": display_status,
+                "High Risk Hits": demisto.get(node, "details.violatedHighRiskSensitiveHits"),
+                "Medium Risk Hits": demisto.get(node, "details.violatedMediumRiskSensitiveHits"),
+                "Low Risk Hits": demisto.get(node, "details.violatedLowRiskSensitiveHits"),
+                "No Risk Hits": demisto.get(node, "details.violatedNoRiskSensitiveHits"),
+                "Detection On": node.get("createdAt"),
+            }
+        )
+
+    hr = tableToMarkdown(
+        "DSPM Violations List",
+        hr_content,
+        headers=[
+            "ID",
+            "Violation Name",
+            "Severity",
+            "Object Name",
+            "Violation Status",
+            "High Risk Hits",
+            "Medium Risk Hits",
+            "Low Risk Hits",
+            "No Risk Hits",
+            "Detection On",
+        ],
+        removeNull=True,
+    )
+    return context, hr
+
+
 def validate_ioc_scan_list_v2_command_args(
     limit: Optional[int], ioc_match: Optional[list], quarantine_status: Optional[list], hunt_status: Optional[list]
 ):
@@ -3414,6 +4316,214 @@ def prepare_ioc_and_validate_advance_ioc_scan_args(
     return iocs
 
 
+def check_empty(x: Any) -> bool:
+    """
+    Check if input is empty (None, empty dict, empty list, or empty string).
+
+    :param x: Input to check.
+    :type x: Any
+    :return: True if x is empty, False otherwise.
+    :rtype: bool
+    """
+    return x is None or x == {} or x == [] or x == ""
+
+
+def remove_empty_elements_for_fetch(d: Any) -> Any:
+    """
+    Recursively remove empty lists, empty dicts, or None elements from a dictionary or list.
+    :param d: Input dictionary or list.
+    :return: Dictionary or list with all empty lists, and empty dictionaries removed.
+    """
+    if not isinstance(d, dict | list):
+        return d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements_for_fetch(v) for v in d) if not check_empty(v)]
+    return {k: v for k, v in ((k, remove_empty_elements_for_fetch(v)) for k, v in d.items()) if not check_empty(v)}
+
+
+def validate_data_security_violation_file_list_command_args(
+    limit: Optional[int],
+    sort_by: str,
+    sort_order: str,
+    sensitivities: list,
+    exposures: list,
+    access_via: str,
+    last_access_start_date: Optional[datetime],
+    last_access_end_date: Optional[datetime],
+    last_modified_start_date: Optional[datetime],
+    last_modified_end_date: Optional[datetime],
+    creation_start_date: Optional[datetime],
+    creation_end_date: Optional[datetime],
+    last_scan_start_date: Optional[datetime],
+    last_scan_end_date: Optional[datetime],
+):
+    """
+    Validate the arguments of the rubrik-data-security-violation-file-list command.
+
+    :type limit: ``Optional[int]``
+    :param limit: The number of results to return.
+
+    :type sort_by: ``Optional[str]``
+    :param sort_by: The field to sort by.
+
+    :type sort_order: ``str``
+    :param sort_order: The sort order (ASC or DESC).
+
+    :type sensitivities: ``list``
+    :param sensitivities: The list of file sensitivites.
+
+    :type exposures: ``list``
+    :param exposures: The list of file exposures.
+
+    :type access_via: ``str``
+    :param access_via: The file access via type.
+
+    :type last_access_start_date: ``Optional[datetime]``
+    :param last_access_start_date: The file access start date.
+
+    :type last_access_end_date: ``Optional[datetime]``
+    :param last_access_end_date: The file access end date.
+
+    :type last_modified_start_date: ``Optional[datetime]``
+    :param last_modified_start_date: The file modified start date.
+
+    :type last_modified_end_date: ``Optional[datetime]``
+    :param last_modified_end_date: The file modified end date.
+
+    :type creation_start_date: ``Optional[datetime]``
+    :param creation_start_date: The file create start date.
+
+    :type creation_end_date: ``Optional[datetime]``
+    :param creation_end_date: The file create end date.
+
+    :type last_scan_start_date: ``Optional[datetime]``
+    :param last_scan_start_date: The file scan start date.
+
+    :type last_scan_end_date: ``Optional[datetime]``
+    :param last_scan_end_date: The file scan end date.
+
+    :raises ValueError: If any parameter value is not valid.
+    """
+    if not limit or not 1 <= limit <= MAXIMUM_PAGINATION_LIMIT:
+        raise ValueError(ERROR_MESSAGES["INVALID_LIMIT"].format(limit))
+
+    if sort_by and sort_by.upper() not in DSPM_VIOLATION_FILE_LIST_SORT_BY:
+        raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(sort_by, "sort_by", DSPM_VIOLATION_FILE_LIST_SORT_BY))
+
+    if sort_order.upper() not in (ASCENDING_SORT_ORDER, DESCENDING_SORT_ORDER):
+        raise ValueError(ERROR_MESSAGES["INVALID_SORT_ORDER"].format(sort_order))
+
+    for sensitivity in sensitivities:
+        if sensitivity.upper() not in DSPM_VIOLATION_FILE_LIST_SENSITIVITY:
+            raise ValueError(
+                ERROR_MESSAGES["INVALID_SELECT"].format(sensitivity, "sensitivity", DSPM_VIOLATION_FILE_LIST_SENSITIVITY)
+            )
+
+    for exposure in exposures:
+        if exposure.upper() not in DSPM_VIOLATION_FILE_LIST_EXPOSURE:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(exposure, "exposure", DSPM_VIOLATION_FILE_LIST_EXPOSURE))
+
+    if access_via and access_via.upper() not in DSPM_VIOLATION_FILE_LIST_ACCESS_VIA:
+        raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(access_via, "access_via", DSPM_VIOLATION_FILE_LIST_ACCESS_VIA))
+
+    if bool(last_access_start_date) != bool(last_access_end_date):
+        raise ValueError(ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("last_access_start_date", "last_access_end_date"))
+
+    if bool(last_modified_start_date) != bool(last_modified_end_date):
+        raise ValueError(
+            ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("last_modified_start_date", "last_modified_end_date")
+        )
+
+    if bool(creation_start_date) != bool(creation_end_date):
+        raise ValueError(ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("creation_start_date", "creation_end_date"))
+
+    if bool(last_scan_start_date) != bool(last_scan_end_date):
+        raise ValueError(ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("last_scan_start_date", "last_scan_end_date"))
+
+    validate_date_range(last_access_start_date, "last_access_start_date", last_access_end_date, "last_access_end_date")
+    validate_date_range(last_modified_start_date, "last_modified_start_date", last_modified_end_date, "last_modified_end_date")
+    validate_date_range(creation_start_date, "creation_start_date", creation_end_date, "creation_end_date")
+    validate_date_range(last_scan_start_date, "last_scan_start_date", last_scan_end_date, "last_scan_end_date")
+
+
+def prepare_context_hr_data_security_violation_file_list(edges: list) -> tuple:
+    """
+    Prepare context and human readable output for the rubrik-data-security-violation-file-list command.
+
+    :type edges: ``list``
+    :param edges: List of files edges from the GraphQL response.
+
+    :return: Tuple of (context, human_readable)
+    :rtype: ``tuple``
+    """
+    hr_content = []
+    context = []
+    for edge in edges:
+        node = edge.get("node", {})
+        node = remove_empty_elements(node)
+        context.append(node)
+        last_access_time = node.get("lastAccessTime")
+        last_access_time_str = (
+            datetime.fromtimestamp(last_access_time, tz=timezone.utc).strftime(HR_DATE_TIME_FORMAT)
+            if last_access_time is not None
+            else ""
+        )
+        last_modified_time = node.get("lastModifiedTime")
+        last_modified_time_str = (
+            datetime.fromtimestamp(last_modified_time, tz=timezone.utc).strftime(HR_DATE_TIME_FORMAT)
+            if last_modified_time is not None
+            else ""
+        )
+        total_risk_hits = demisto.get(node, "hits.violations") or 0
+        high_risk_hits = demisto.get(node, "sensitiveHits.highRiskHits.violatedHits") or 0
+        medium_risk_hits = demisto.get(node, "sensitiveHits.mediumRiskHits.violatedHits") or 0
+        low_risk_hits = demisto.get(node, "sensitiveHits.lowRiskHits.violatedHits") or 0
+        no_risk_hits = demisto.get(node, "sensitiveHits.noRiskHits.violatedHits") or 0
+        data_categories = [
+            {
+                "id": demisto.get(result, "analyzerGroup.id", ""),
+                "name": demisto.get(result, "analyzerGroup.name", ""),
+                "totalViolatedHits": demisto.get(result, "hits.violations") or 0,
+            }
+            for result in node.get("analyzerGroupResults", [])
+        ]
+
+        hr_content.append(
+            {
+                FILE_PATH: node.get("stdPath"),
+                FILE_SIZE: node.get("size"),
+                TOTAL_RISK_HITS: total_risk_hits,
+                HIGH_RISK_HITS: high_risk_hits,
+                MEDIUM_RISK_HITS: medium_risk_hits,
+                LOW_RISK_HITS: low_risk_hits,
+                NO_RISK_HITS: no_risk_hits,
+                "Data Categories": data_categories,
+                LAST_ACCESS_TIME: last_access_time_str,
+                LAST_MODIFIED_TIME: last_modified_time_str,
+            }
+        )
+
+    hr = tableToMarkdown(
+        "DSPM Violation File List",
+        hr_content,
+        headers=[
+            FILE_PATH,
+            FILE_SIZE,
+            TOTAL_RISK_HITS,
+            HIGH_RISK_HITS,
+            MEDIUM_RISK_HITS,
+            LOW_RISK_HITS,
+            NO_RISK_HITS,
+            LAST_ACCESS_TIME,
+            LAST_MODIFIED_TIME,
+            "Data Categories",
+        ],
+        removeNull=True,
+        json_transform_mapping={"Data Categories": JsonTransformer()},
+    )
+    return context, hr
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -3549,6 +4659,7 @@ def fetch_events(client: PolarisClient, last_run: dict, params: dict, max_fetch:
                 "severity": processed_incident["severity"],
             }
         )
+    demisto.debug(f"Checkpoint for Events: Next page token = {evnet_next_run.get('next_page_token')}")
     return evnet_next_run, incidents
 
 
@@ -3675,12 +4786,167 @@ def fetch_threat_monitoring_objects(
     threat_monitoring_next_run["match_type_filter"] = ioc_match_type
     threat_monitoring_next_run["object_type_filter"] = object_types
     threat_monitoring_next_run["already_fetched"] = already_fetched
+    demisto.debug(
+        f"Checkpoint for Threat monitoring objects: Next page token = {threat_monitoring_next_run.get('next_page_token')}, "
+        f"Match Type = {threat_monitoring_next_run.get('match_type_filter')}, "
+        f"Object Type = {threat_monitoring_next_run.get('object_type_filter')}"
+    )
     return threat_monitoring_next_run, incidents
+
+
+def fetch_dspm_violations(client: PolarisClient, last_run: dict, params: dict, max_fetch: Optional[int]) -> tuple[dict, list]:
+    """
+    Fetch Rubrik DSPM violations as incidents.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type last_run: ``dict``
+    :param last_run: last run object obtained from demisto.getLastRun().
+
+    :type params: ``dict``
+    :param params: arguments obtained from demisto.params().
+
+    :type max_fetch: ``Optional[int]``
+    :param max_fetch: The maximum number of incidents to fetch.
+
+    :return: tuple of next run object and list of incidents.
+    :rtype: ``tuple[dict, list]``
+    """
+    # Get configuration parameters
+    violation_statuses = argToList(
+        params.get("dspm_violation_status", DEFAULT_DSPM_VIOLATION_STATUS), transform=lambda s: s.strip()
+    )
+    violation_severities = argToList(params.get("dspm_violation_severity"), transform=lambda s: s.strip())
+    violation_sensitivities = argToList(params.get("dspm_violation_sensitivity"), transform=lambda s: s.strip())
+    violation_categories = argToList(params.get("dspm_violation_category"), transform=lambda s: s.strip().upper())
+    violation_object_types = argToList(params.get("dspm_violation_object_type"), transform=lambda s: s.strip().upper())
+    current_time = arg_to_datetime("now").strftime(DATE_TIME_FORMAT)  # type: ignore
+
+    # Get last run state for DSPM violations
+    dspm_last_run = last_run.get("dspm_violation", {})
+    last_run_time = dspm_last_run.get("last_fetch", None)
+    next_page_token = dspm_last_run.get("next_page_token", "")
+    already_fetched = dspm_last_run.get("already_fetched", [])
+
+    dspm_next_run = dspm_last_run.copy()
+
+    # Initialize last_run_time if this is the first fetch
+    if last_run_time is None:
+        first_fetch = params.get("first_fetch", DEFAULT_FIRST_FETCH)
+        first_fetch = arg_to_datetime(first_fetch, "First fetch time")
+        last_run_time = first_fetch.strftime(DATE_TIME_FORMAT)  # type: ignore
+        dspm_next_run["last_fetch"] = last_run_time
+
+    # Map configuration values to API enum values
+    statuses, severities, sensitivities = validate_dspm_violation_fetch_params(
+        violation_statuses, violation_severities, violation_sensitivities
+    )
+    # Prepare GraphQL query variables
+    dspm_filters = {
+        "statuses": statuses,
+        "severities": severities,
+        "sensitivityLevels": sensitivities,
+        "categories": violation_categories,
+        "detectionDate": {
+            "start": last_run_time,
+            "end": current_time,
+        },
+        "first": max_fetch,
+        "after": next_page_token,
+        "sortBy": "SORT_DETECTION_TIME",
+        "sortOrder": ASCENDING_SORT_ORDER,
+    }
+    if violation_object_types:
+        dspm_filters["resourceMetadataFilter"] = {"managedObjectTypes": violation_object_types}
+
+    # Remove None values
+    remove_nulls_from_dictionary(dspm_filters)
+
+    # Execute GraphQL query
+    dspm_response = client._query_raw(
+        raw_query=DSPM_VIOLATIONS_LIST_QUERY,
+        operation_name="DataSecurityViolationsListQuery",
+        variables=dspm_filters,
+        timeout=60,
+    )
+
+    edges = []
+    page_info = {}
+    dspm_data = dspm_response.get("data", {})
+    if dspm_data is not None:
+        edges = demisto.get(dspm_data, "policyViolations.edges", [])
+        page_info = demisto.get(dspm_data, "policyViolations.pageInfo", {})
+
+    # Update next page token
+    page_cursor = remove_empty_elements(page_info)
+    new_next_page_token = page_cursor.get("endCursor")
+    if new_next_page_token:
+        dspm_next_run["next_page_token"] = new_next_page_token
+
+    incidents = []
+    duplicate_violation_ids = []
+
+    for violation in edges:
+        node = violation.get("node", {})
+        violation_id = node.get("policyViolationId")
+
+        # Skip if already fetched (deduplication)
+        if violation_id in already_fetched:
+            duplicate_violation_ids.append(violation_id)
+            continue
+
+        already_fetched.append(violation_id)
+
+        # Prepare incident data
+        processed_incident: dict[str, Any] = {
+            "incidentClassification": "RubrikDSPMViolation",
+        }
+        processed_incident.update(node)
+
+        # Create incident link
+        base_url = str(client._baseurl).removesuffix("api")
+        resource_id = node.get("resourceId", "")
+        policy_id = demisto.get(node, "policy.policyId", "")
+        snapshot_id = demisto.get(node, "details.snapshotId", "")
+
+        # Build the violation details URL
+        if violation_id and resource_id and policy_id and snapshot_id:
+            processed_incident["incident_link"] = DSPM_VIOLATION_HYPERLINK.format(
+                base_url, violation_id, resource_id, policy_id, snapshot_id
+            )
+
+        # Map severity to XSOAR severity
+        violation_severity = node.get("violationSeverity", "")
+        processed_incident["severity"] = convert_severity_to_incident_severity(violation_severity)
+
+        # Get resource name for incident title
+        resource_name = demisto.get(node, "resourceMetadata.metadata.name", "")
+        policy_name = demisto.get(node, "policy.name", "")
+
+        incidents.append(
+            {
+                "name": f"Rubrik DSPM Violation - {policy_name} - {resource_name}",
+                "occurred": processed_incident.get("createdAt", ""),
+                "rawJSON": json.dumps(remove_empty_elements_for_fetch(processed_incident)),
+                "severity": processed_incident.get("severity"),
+            }
+        )
+
+    dspm_next_run["already_fetched"] = already_fetched
+
+    if duplicate_violation_ids:
+        demisto.debug(
+            f"DSPM Violation: Skipped {len(duplicate_violation_ids)} duplicate DSPM violation(s): {duplicate_violation_ids}"
+        )
+
+    demisto.debug(f"Checkpoint for DSPM Violation: Next page token = {dspm_next_run.get('next_page_token')}")
+    return dspm_next_run, incidents
 
 
 def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tuple[dict, list]:
     """
-    Fetch Rubrik Anomaly incidents.
+    Fetch Rubrik incidents (Events, Threat Monitoring Objects, and DSPM Violations).
 
     :type client: ``PolarisClient``
     :param client: Rubrik Polaris client to use
@@ -3700,24 +4966,32 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
     validate_comman_fetch_params(max_fetch, fetch_types)
 
     total_incidents = []
-    next_run = last_run
-    if fetch_types == [EVENT_FETCH_TYPE]:
-        evnet_next_run, incidents = fetch_events(client, last_run, params, max_fetch)
+    next_run = last_run.copy()
+
+    FETCH_TYPE_HANDLERS = {
+        EVENT_FETCH_TYPE: ("", fetch_events),
+        THREAT_MONITORING_FETCH_TYPE: ("threat_monitoring", fetch_threat_monitoring_objects),
+        DSPM_VIOLATION_FETCH_TYPE: ("dspm_violation", fetch_dspm_violations),
+    }
+
+    selected_handlers = [FETCH_TYPE_HANDLERS[fetch_type] for fetch_type in fetch_types]
+    remaining_limit: int = max_fetch  # type: ignore
+    remaining_fetch_types = len(selected_handlers)
+
+    for (state_key, fetch_function), fetch_type in zip(selected_handlers, fetch_types):
+        allocation = remaining_limit // remaining_fetch_types if remaining_fetch_types > 0 else 0
+        next_state, incidents = fetch_function(client, last_run, params, allocation)
+
         total_incidents.extend(incidents)
-        next_run = evnet_next_run
-    elif fetch_types == [THREAT_MONITORING_FETCH_TYPE]:
-        threat_monitoring_next_run, incidents = fetch_threat_monitoring_objects(client, last_run, params, max_fetch)
-        total_incidents.extend(incidents)
-        next_run["threat_monitoring"] = threat_monitoring_next_run
-    else:
-        new_max_fetch = max_fetch // 2  # type: ignore
-        threat_monitoring_next_run, incidents = fetch_threat_monitoring_objects(client, last_run, params, new_max_fetch)
-        total_incidents.extend(incidents)
-        new_max_fetch = max_fetch - len(incidents)  # type: ignore
-        evnet_next_run, incidents = fetch_events(client, last_run, params, new_max_fetch)
-        total_incidents.extend(incidents)
-        evnet_next_run["threat_monitoring"] = threat_monitoring_next_run
-        next_run = evnet_next_run
+        demisto.info(f"Fetched {len(incidents)} incidents for {fetch_type}.")
+        remaining_limit -= len(incidents)
+        remaining_fetch_types -= 1
+
+        if state_key:
+            next_run[state_key] = next_state
+        else:
+            next_run.update(next_state)
+
     return next_run, total_incidents
 
 
@@ -6389,6 +7663,693 @@ def rubrik_anomaly_csv_analysis_v2_command(client: PolarisClient, args: Dict[str
     return result
 
 
+def rubrik_data_security_violation_list_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the list of DSPM violations.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    limit = arg_to_number(args.get("limit", "50"))
+    next_page_token = args.get("next_page_token")
+    object_types = argToList(args.get("object_type"), transform=lambda s: s.strip().upper())
+    sort_by = args.get("sort_by", "DETECTION_TIME")
+    sort_order = args.get("sort_order", DESCENDING_SORT_ORDER)
+
+    statuses = argToList(args.get("status"), transform=lambda s: s.strip())
+    severities = argToList(args.get("severity"), transform=lambda s: s.strip())
+    sensitivities = argToList(args.get("sensitivity"), transform=lambda s: s.strip())
+    categories = argToList(args.get("category"), transform=lambda s: s.strip().upper())
+
+    detection_start_date = arg_to_datetime(args.get("detection_start_date"), arg_name="detection_start_date")
+    detection_end_date = arg_to_datetime(args.get("detection_end_date"), arg_name="detection_end_date")
+    resolved_start_date = arg_to_datetime(args.get("resolved_start_date"), arg_name="resolved_start_date")
+    resolved_end_date = arg_to_datetime(args.get("resolved_end_date"), arg_name="resolved_end_date")
+
+    validate_data_security_violation_list_command_args(
+        limit, sort_by, sort_order, detection_start_date, detection_end_date, resolved_start_date, resolved_end_date
+    )
+
+    mapped_statuses, mapped_severities, mapped_sensitivities = validate_dspm_violation_fetch_params(
+        statuses, severities, sensitivities, is_fetch=False
+    )
+
+    mapped_sort_by = f"SORT_{sort_by.upper()}" if sort_by else None
+
+    dspm_filters: Dict[str, Any] = {
+        "statuses": mapped_statuses,
+        "severities": mapped_severities,
+        "sensitivityLevels": mapped_sensitivities,
+        "categories": categories,
+        "first": limit,
+        "after": next_page_token,
+        "sortBy": mapped_sort_by,
+        "sortOrder": sort_order.upper(),
+    }
+
+    if object_types:
+        dspm_filters["resourceMetadataFilter"] = {"managedObjectTypes": object_types}
+
+    if detection_start_date and detection_end_date:
+        dspm_filters["detectionDate"] = {
+            "start": detection_start_date.strftime(DATE_TIME_FORMAT),
+            "end": detection_end_date.strftime(DATE_TIME_FORMAT),
+        }
+
+    if resolved_start_date and resolved_end_date:
+        dspm_filters["updateDate"] = {
+            "start": resolved_start_date.strftime(DATE_TIME_FORMAT),
+            "end": resolved_end_date.strftime(DATE_TIME_FORMAT),
+        }
+
+    remove_nulls_from_dictionary(dspm_filters)
+
+    response = client._query_raw(
+        raw_query=DSPM_VIOLATIONS_LIST_QUERY,
+        operation_name="DataSecurityViolationsListQuery",
+        variables=dspm_filters,
+        timeout=60,
+    )
+
+    edges = []
+    page_info = {}
+    dspm_data = response.get("data", {})
+    if dspm_data is not None:
+        policy_violations = dspm_data.get("policyViolations", {})
+        if policy_violations:
+            edges = policy_violations.get("edges", [])
+            page_info = policy_violations.get("pageInfo", {})
+
+    page_cursor = remove_empty_elements(page_info)
+    page_cursor.pop("__typename", None)
+    end_cursor = page_cursor.pop("endCursor", None)
+    has_next_page = page_cursor.pop("hasNextPage", False)
+    page_cursor.pop("startCursor", None)
+    page_cursor.pop("hasPreviousPage", None)
+    page_cursor.update(
+        {
+            "name": "rubrik-data-security-violation-list",
+            "next_page_token": end_cursor,
+            "has_next_page": has_next_page,
+        }
+    )
+
+    outputs: Dict[str, Any] = {
+        f"{OUTPUT_PREFIX['PAGE_TOKEN_DSPM_VIOLATION']}(val.name == obj.name)": remove_empty_elements(page_cursor),
+    }
+
+    if not edges:
+        return CommandResults(
+            outputs=outputs,
+            raw_response=response,
+            readable_output=f"#### {MESSAGES['NO_RECORDS_FOUND'].format('DSPM violations')}",
+        )
+
+    context, hr = prepare_context_hr_data_security_violation_list(edges)
+
+    if has_next_page:
+        hr += f"\n{MESSAGES['NEXT_RECORD']} {end_cursor}"
+
+    outputs[f"{OUTPUT_PREFIX['DSPM_VIOLATION']}(val.policyViolationId == obj.policyViolationId)"] = context
+
+    return CommandResults(
+        outputs=remove_empty_elements(outputs),
+        raw_response=response,
+        readable_output=hr,
+    )
+
+
+def rubrik_data_security_violation_get_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the details of DSPM violation based on the provided violation ID.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``dict``
+    :param args: Arguments for the command.
+
+    :return: CommandResult object.
+    """
+    violation_id = validate_required_arg("violation_id", args.get("violation_id"))
+
+    filters = {"violationId": violation_id}
+
+    response = client._query_raw(
+        raw_query=DSPM_VIOLATION_GET_QUERY,
+        operation_name="DataSecurityViolationGetQuery",
+        variables=filters,
+        timeout=60,
+    )
+
+    violation_data = response.get("data", {}).get("policyViolation", {})
+    if not violation_data:
+        return CommandResults(readable_output=f"#### {MESSAGES['NO_RESPONSE']}", raw_response=response)
+
+    context, hr = prepare_context_hr_dspm_violation_get(violation_data)
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["DSPM_VIOLATION"],
+        outputs_key_field="policyViolationId",
+        outputs=context,
+        raw_response=response,
+        readable_output=hr,
+    )
+
+
+def rubrik_data_security_violation_status_update_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Update the status of a DSPM violation.
+
+    :type client: ``Client``
+    :param client: Object of Client class.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :rtype: ``CommandResults``
+    :return: Standard command result.
+    """
+    violation_id = args.get("violation_id", "").strip()
+    status = args.get("status", "").strip()
+
+    validate_required_arg("violation_id", violation_id)
+    validate_required_arg("status", status)
+
+    if status.upper() not in DSPM_VIOLATION_STATUS:
+        raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(status, "status", DSPM_VIOLATION_STATUS))
+
+    update_status = f"POLICY_VIOLATION_STATUS_{status.upper()}"
+    params = {
+        "newPolicyViolationStatus": update_status,
+        "policyViolationIds": [violation_id],
+    }
+
+    input_params = {"input": params}
+
+    violation_status_update_response = client._query_raw(
+        raw_query=DSPM_VIOLATION_STATUS_UPDATE_MUTATION,
+        operation_name="UpdatePolicyViolationsMutation",
+        variables=input_params,
+        timeout=60,
+    )
+
+    ec = {
+        "policyViolationId": violation_id,
+        "status": update_status,
+    }
+
+    status_display = status.replace("_", " ").title()
+    hr_output = f"#### Successfully updated the DSPM violation status to {status_display}"
+
+    return CommandResults(
+        readable_output=hr_output,
+        raw_response=violation_status_update_response,
+        outputs=remove_empty_elements(ec),
+        outputs_prefix=OUTPUT_PREFIX["DSPM_VIOLATION"],
+        outputs_key_field=["policyViolationId"],
+    )
+
+
+def rubrik_data_security_violation_file_list_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the list of Files information of DSPM violation.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    violation_id = validate_required_arg("violation_id", args.get("violation_id"))
+    object_id = validate_required_arg("object_id", args.get("object_id"))
+    snapshot_id = validate_required_arg("snapshot_id", args.get("snapshot_id"))
+
+    limit = arg_to_number(args.get("limit", "25"))
+    next_page_token = args.get("next_page_token")
+    file_search_text = args.get("file_name")
+    sort_by = args.get("sort_by", "HITS")
+    sort_order = args.get("sort_order", DESCENDING_SORT_ORDER)
+    sensitivities = argToList(args.get("sensitivity"), transform=lambda s: s.strip().upper())
+    exposures = argToList(args.get("exposure"), transform=lambda s: s.strip().upper())
+    access_via = args.get("access_via", "ACCESS_TYPE_UNSPECIFIED")
+
+    last_access_start_date = arg_to_datetime(args.get("last_access_start_date"), arg_name="last_access_start_date")
+    last_access_end_date = arg_to_datetime(args.get("last_access_end_date"), arg_name="last_access_end_date")
+    last_modified_start_date = arg_to_datetime(args.get("last_modified_start_date"), arg_name="last_modified_start_date")
+    last_modified_end_date = arg_to_datetime(args.get("last_modified_end_date"), arg_name="last_modified_end_date")
+    creation_start_date = arg_to_datetime(args.get("creation_start_date"), arg_name="creation_start_date")
+    creation_end_date = arg_to_datetime(args.get("creation_end_date"), arg_name="creation_end_date")
+    last_scan_start_date = arg_to_datetime(args.get("last_scan_start_date"), arg_name="last_scan_start_date")
+    last_scan_end_date = arg_to_datetime(args.get("last_scan_end_date"), arg_name="last_scan_end_date")
+
+    validate_data_security_violation_file_list_command_args(
+        limit,
+        sort_by,
+        sort_order,
+        sensitivities,
+        exposures,
+        access_via,
+        last_access_start_date,
+        last_access_end_date,
+        last_modified_start_date,
+        last_modified_end_date,
+        creation_start_date,
+        creation_end_date,
+        last_scan_start_date,
+        last_scan_end_date,
+    )
+
+    mapped_sensitivities = [f"{sensitivity.upper()}_RISK" for sensitivity in sensitivities]
+    timezone = "UTC"
+    file_filters: dict[str, Any] = {
+        "violationId": violation_id,
+        "accessVia": access_via.upper(),
+        "fileType": "HITS",
+        "whitelistEnabled": True,
+        "searchText": file_search_text,
+        "snappablePaths": [{"snappableFid": object_id}],
+        "riskLevelTypesFilter": mapped_sensitivities,
+        "exposureFilter": exposures,
+    }
+
+    if creation_start_date and creation_end_date:
+        file_filters["creationTimeFilter"] = {
+            "startTime": creation_start_date.strftime(DATE_TIME_FORMAT),
+            "endTime": creation_end_date.strftime(DATE_TIME_FORMAT),
+            "timezone": timezone,
+        }
+
+    if last_modified_start_date and last_modified_end_date:
+        file_filters["lastModifiedFilter"] = {
+            "startTime": last_modified_start_date.strftime(DATE_TIME_FORMAT),
+            "endTime": last_modified_end_date.strftime(DATE_TIME_FORMAT),
+            "timezone": timezone,
+        }
+
+    if last_access_start_date and last_access_end_date:
+        file_filters["lastAccessFilter"] = {
+            "startTime": last_access_start_date.strftime(DATE_TIME_FORMAT),
+            "endTime": last_access_end_date.strftime(DATE_TIME_FORMAT),
+            "timezone": timezone,
+        }
+
+    if last_scan_start_date and last_scan_end_date:
+        file_filters["lastScanFilter"] = {
+            "startTime": last_scan_start_date.strftime(DATE_TIME_FORMAT),
+            "endTime": last_scan_end_date.strftime(DATE_TIME_FORMAT),
+            "timezone": timezone,
+        }
+
+    remove_nulls_from_dictionary(file_filters)
+    dspm_file_list_filters: dict[str, Any] = {
+        "snapshotFid": snapshot_id,
+        "snappableFid": object_id,
+        "first": limit,
+        "after": next_page_token,
+        "sort": {"sortBy": sort_by, "sortOrder": sort_order},
+        "filters": file_filters,
+        "timezone": timezone,
+    }
+
+    remove_nulls_from_dictionary(dspm_file_list_filters)
+
+    response = client._query_raw(
+        raw_query=DSPM_VIOLATION_FILE_LIST_QUERY,
+        operation_name="DSPMViolationFileListQuery",
+        variables=dspm_file_list_filters,
+        timeout=60,
+    )
+
+    edges = []
+    page_info = {}
+    object_data = response.get("data", {})
+    if object_data is not None:
+        file_info = demisto.get(object_data, "policyObj.fileResultConnection")
+        if file_info:
+            edges = file_info.get("edges", [])
+            page_info = file_info.get("pageInfo", {})
+
+    page_cursor = remove_empty_elements(page_info)
+    page_cursor.pop("__typename", None)
+    end_cursor = page_cursor.pop("endCursor", None)
+    has_next_page = page_cursor.pop("hasNextPage", False)
+    page_cursor.pop("startCursor", None)
+    page_cursor.pop("hasPreviousPage", None)
+    page_cursor.update(
+        {
+            "name": "rubrik-data-security-violation-file-list",
+            "next_page_token": end_cursor,
+            "has_next_page": has_next_page,
+        }
+    )
+
+    outputs: Dict[str, Any] = {
+        f"{OUTPUT_PREFIX['PAGE_TOKEN_DSPM_VIOLATION_FILE']}(val.name == obj.name)": remove_empty_elements(page_cursor),
+    }
+
+    if not edges:
+        return CommandResults(
+            outputs=outputs,
+            raw_response=response,
+            readable_output=f"#### {MESSAGES['NO_RECORDS_FOUND'].format('DSPM violation Files')}",
+        )
+
+    context, hr = prepare_context_hr_data_security_violation_file_list(edges)
+
+    if has_next_page:
+        hr += f"\n{MESSAGES['NEXT_RECORD']} {end_cursor}"
+
+    outputs[f"{OUTPUT_PREFIX['DSPM_VIOLATION_FILE']}(val.stdPath == obj.stdPath)"] = context
+
+    return CommandResults(
+        outputs=remove_empty_elements(outputs),
+        raw_response=response,
+        readable_output=hr,
+    )
+
+
+def rubrik_data_security_violation_csv_download_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+    Scheduled polling command to download DSPM Violation Files at Risk CSV file.
+
+    This command implements a three-step polling workflow:
+    1. First execution: Triggers CSV download using downloadSnapshotResultsCsv mutation.
+    2. Polling iterations: Polls allUserFiles query until file status becomes READY.
+    3. Final step: Downloads the file data using external_id through REST API and returns the CSV file.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args: Command arguments obtained from demisto.args().
+
+    :rtype: ``List[CommandResults]``
+    :return: List of CommandResults.
+    """
+    violation_id = validate_required_arg("violation_id", args.get("violation_id"))
+    snapshot_id = validate_required_arg("snapshot_id", args.get("snapshot_id"))
+    object_id = validate_required_arg("object_id", args.get("object_id"))
+    object_name = args.get("object_name")
+
+    if not object_name:
+        filters = {"violationId": violation_id}
+        demisto.debug(f"Retrieving the object name by using the get violation request for ID {violation_id}.")
+        violation_response = client._query_raw(
+            raw_query=DSPM_VIOLATION_GET_QUERY,
+            operation_name="DataSecurityViolationGetQuery",
+            variables=filters,
+            timeout=60,
+        )
+
+        violation_data = violation_response.get("data", {}).get("policyViolation", {})
+        metadata = demisto.get(violation_data, "resourceMetadata.metadata", {})
+        object_name = metadata.get("name", "")
+
+    polling = argToBoolean(args.get("polling", False))
+    outputs = {
+        "violationId": violation_id,
+        "snapshotId": snapshot_id,
+        "objectId": object_id,
+        "objectName": object_name,
+    }
+
+    is_successful = True
+    if not polling:
+        input_data = {
+            "snappableFid": object_id,
+            "snapshotFid": snapshot_id,
+            "filters": {"policyViolationId": violation_id, "fileType": "HITS"},
+        }
+
+        response = client._query_raw(
+            raw_query=DOWNLOAD_DSPM_VIOLATION_CSV_MUTATION,
+            operation_name="DownloadDSPMViolationCsvMutation",
+            variables=input_data,
+            timeout=60,
+        )
+
+        data = response.get("data", {})
+        download_data = data.get("downloadSnapshotResultsCsv", {})
+        if not download_data:
+            return [CommandResults(readable_output=f"#### {MESSAGES['NO_RESPONSE']}")]
+        is_successful = download_data.get("isSuccessful", False)
+
+        outputs.update({"isSuccessful": is_successful})
+
+        hr = (
+            "#### Successfully initiated the downloading of the CSV file."
+            if is_successful
+            else "#### Failed to initiated the downloading of the CSV file."
+        )
+
+        return [
+            CommandResults(
+                outputs_prefix=OUTPUT_PREFIX["DSPM_VIOLATION_CSV_DOWNLOAD"],
+                outputs_key_field=["violationId", "snapshotId", "objectId"],
+                outputs=outputs,
+                readable_output=hr,
+                raw_response=response,
+            )
+        ]
+
+    # Check the state of file
+    target_file_name = f"{object_name}-violating-files_file_results"
+    download_file_name = ""
+    external_id = ""
+
+    user_files_response = client._query_raw(
+        raw_query=ALL_USER_DOWNLOADS_FILES_QUERY,
+        operation_name="DownloadBarQuery",
+        variables={},
+        timeout=60,
+    )
+
+    data = user_files_response.get("data", {})
+    user_files = data.get("allUserFiles", [])
+
+    for user_file in user_files:
+        downloaded_files = user_file.get("downloads", [])
+        downloaded_files = downloaded_files[::-1]
+        for file_info in downloaded_files:
+            if target_file_name in file_info.get("filename"):
+                download_file_name = file_info.get("filename")
+                file_state = file_info.get("state", "").lower()
+                if file_state == "ready":
+                    external_id = file_info.get("externalId", "")
+                    break
+                if file_state == "failed":
+                    is_successful = False
+                    break
+
+    # Attempt to download the file if external_id is available
+    file_result = None
+    if external_id:
+        base_url = str(client._baseurl).removesuffix("api")
+        download_url = urljoin(base_url, f"file-downloads/{external_id}")
+        response = requests.get(
+            download_url,
+            headers=client.prepare_headers(),
+            verify=client._verify,
+            proxies=client._proxies,
+            timeout=60,
+        )
+        response.raise_for_status()
+
+        file_result = fileResult(filename=download_file_name, data=response.content, file_type=EntryType.ENTRY_INFO_FILE)
+
+    # Determine human-readable message based on status
+    if not is_successful:
+        hr = "#### Failed to download the Files at Risk CSV file."
+    elif file_result:
+        hr = "#### Successfully downloaded the Files at Risk CSV file."
+    else:
+        hr = "#### Polling for CSV file availability. The command will automatically retry..."
+
+    # Prepare outputs and results
+    outputs.update({"isSuccessful": is_successful, "externalId": external_id})
+
+    result = [
+        CommandResults(
+            outputs_prefix=OUTPUT_PREFIX["DSPM_VIOLATION_CSV_DOWNLOAD"],
+            outputs_key_field=["violationId", "snapshotId", "objectId"],
+            outputs=remove_empty_elements(outputs),
+            readable_output=hr,
+            raw_response=user_files_response,
+        )
+    ]
+
+    if file_result:
+        result.append(file_result)
+
+    return result
+
+
+def rubrik_data_security_violation_log_download_command(client: PolarisClient, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+    Scheduled polling command to download DSPM Violation Remediation Log file.
+
+    This command implements a three-step polling workflow:
+    1. First execution: Triggers Log download using createViolationRemediation mutation.
+    2. Polling iterations: Polls allUserFiles query until file status becomes READY.
+    3. Final step: Downloads the file data using external_id through REST API and returns the file.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args: Command arguments obtained from demisto.args().
+
+    :rtype: ``List[CommandResults]``
+    :return: List of CommandResults.
+    """
+    violation_id = validate_required_arg("violation_id", args.get("violation_id"))
+    object_id = validate_required_arg("object_id", args.get("object_id"))
+    object_name = args.get("object_name")
+
+    if not object_name:
+        filters = {"violationId": violation_id}
+        demisto.debug("Retrieving the object name using the get violation request.")
+        violation_response = client._query_raw(
+            raw_query=DSPM_VIOLATION_GET_QUERY,
+            operation_name="DataSecurityViolationGetQuery",
+            variables=filters,
+            timeout=60,
+        )
+
+        violation_data = violation_response.get("data", {}).get("policyViolation", {})
+        metadata = demisto.get(violation_data, "resourceMetadata.metadata", {})
+        object_name = metadata.get("name", "")
+
+    polling = argToBoolean(args.get("polling", False))
+    outputs = {
+        "violationId": violation_id,
+        "objectId": object_id,
+        "objectName": object_name,
+    }
+
+    is_successful = True
+    if not polling:
+        input_data = {
+            "targets": {
+                "targetIds": [violation_id],
+                "targetType": "REMEDIATION_TARGET_TYPE_VIOLATION",
+            },
+            "remediationType": "REMEDIATION_TYPE_EXPORT_ACTIONS_LOG_TO_CSV",
+            "resourceId": object_id,
+        }
+
+        response = client._query_raw(
+            raw_query=DOWNLOAD_DSPM_VIOLATION_REMEDIATION_LOG_MUTATION,
+            operation_name="DownloadDSPMViolationRemediationLogMutation",
+            variables={"input": input_data},
+            timeout=60,
+        )
+
+        data = response.get("data", {})
+        download_data = data.get("createViolationRemediation", {})
+        if not download_data:
+            return [CommandResults(readable_output=f"#### {MESSAGES['NO_RESPONSE']}")]
+        remediation_id = download_data.get("remediationId")
+
+        is_successful = bool(remediation_id)
+        outputs.update({"remediationId": remediation_id, "isSuccessful": is_successful})
+
+        hr = (
+            "#### Successfully initiated the downloading of the Remediation Log file."
+            if is_successful
+            else "#### Failed to initiated the downloading of the Remediation Log file."
+        )
+
+        return [
+            CommandResults(
+                outputs_prefix=OUTPUT_PREFIX["DSPM_VIOLATION_LOG_DOWNLOAD"],
+                outputs_key_field=["violationId", "objectId"],
+                outputs=outputs,
+                readable_output=hr,
+                raw_response=response,
+            )
+        ]
+
+    # Check the state of file
+    target_file_name = f"{object_name} actions log"
+    external_id = ""
+
+    user_files_response = client._query_raw(
+        raw_query=ALL_USER_DOWNLOADS_FILES_QUERY,
+        operation_name="DownloadBarQuery",
+        variables={},
+        timeout=60,
+    )
+
+    data = user_files_response.get("data", {})
+    user_files = data.get("allUserFiles", [])
+
+    for user_file in user_files:
+        downloaded_files = user_file.get("downloads", [])
+        downloaded_files = downloaded_files[::-1]
+        for file_info in downloaded_files:
+            if target_file_name in file_info.get("filename"):
+                file_state = file_info.get("state", "").lower()
+                if file_state == "ready":
+                    external_id = file_info.get("externalId", "")
+                    break
+                if file_state == "failed":
+                    is_successful = False
+                    break
+
+    # Attempt to download the file if external_id is available
+    file_result = None
+    if external_id:
+        base_url = str(client._baseurl).removesuffix("api")
+        download_url = urljoin(base_url, f"file-downloads/{external_id}")
+        response = requests.get(
+            download_url,
+            headers=client.prepare_headers(),
+            verify=client._verify,
+            proxies=client._proxies,
+            timeout=60,
+        )
+        response.raise_for_status()
+
+        file_result = fileResult(filename=f"{target_file_name}.csv", data=response.content, file_type=EntryType.ENTRY_INFO_FILE)
+
+    # Determine human-readable message based on status
+    if not is_successful:
+        hr = "#### Failed to download the Remediation Log file."
+    elif file_result:
+        hr = "#### Successfully downloaded the Remediation Log file."
+    else:
+        hr = "#### Polling for Remediation Log file availability. The command will automatically retry..."
+
+    # Prepare outputs and results
+    outputs.update({"isSuccessful": is_successful, "externalId": external_id})
+
+    result = [
+        CommandResults(
+            outputs_prefix=OUTPUT_PREFIX["DSPM_VIOLATION_LOG_DOWNLOAD"],
+            outputs_key_field=["violationId", "objectId"],
+            outputs=remove_empty_elements(outputs),
+            readable_output=hr,
+            raw_response=user_files_response,
+        )
+    ]
+
+    if file_result:
+        result.append(file_result)
+
+    return result
+
+
 def run_polling_command(client, args: dict, command_name: str, search_function: Callable) -> List[CommandResults]:
     """
     For Scheduling command.
@@ -6406,7 +8367,7 @@ def run_polling_command(client, args: dict, command_name: str, search_function: 
         return result
 
     if not outputs.get("externalId"):
-        polling_args = {"polling": True, **args}
+        polling_args = {"polling": True, **args, "object_name": outputs.get("objectName")}
         scheduled_command = ScheduledCommand(
             command=command_name,
             next_run_in_seconds=DEFAULT_POLLING_NEXT_RUN_IN_SECONDS,
@@ -6431,6 +8392,10 @@ def trim_spaces_from_args(args):
     for key, val in args.items():
         if isinstance(val, str):
             args[key] = val.strip()
+        val_list = argToList(val)
+        if len(val_list) > 1:
+            val_list = [item.strip() for item in val_list if item.strip()]
+            args[key] = ",".join(val_list)
 
     return args
 
@@ -6501,6 +8466,7 @@ def main() -> None:
         client = create_client_object(service_account_json, username, domain, password, proxies, insecure)
 
         client.auth()
+        remove_nulls_from_dictionary(trim_spaces_from_args(params))
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client, params))
@@ -6561,13 +8527,25 @@ def main() -> None:
                 "rubrik-ioc-scan-results-v2": rubrik_ioc_scan_results_v2_command,
                 "rubrik-turbo-ioc-scan": rubrik_turbo_ioc_scan_command,
                 "rubrik-advance-ioc-scan": rubrik_advance_ioc_scan_command,
+                "rubrik-data-security-violation-list": rubrik_data_security_violation_list_command,
+                "rubrik-data-security-violation-get": rubrik_data_security_violation_get_command,
+                "rubrik-data-security-violation-status-update": rubrik_data_security_violation_status_update_command,
+                "rubrik-data-security-violation-file-list": rubrik_data_security_violation_file_list_command,
             }
+
+            SCHEDULED_COMMAND_TO_FUNCTION: dict = {
+                "rubrik-anomaly-csv-analysis-v2": rubrik_anomaly_csv_analysis_v2_command,
+                "rubrik-data-security-violation-csv-download": rubrik_data_security_violation_csv_download_command,
+                "rubrik-data-security-violation-log-download": rubrik_data_security_violation_log_download_command,
+            }
+            command = demisto.command()
+
             if COMMAND_TO_FUNCTION.get(demisto.command()):
                 args = demisto.args()
                 remove_nulls_from_dictionary(trim_spaces_from_args(args))
 
                 return_results(COMMAND_TO_FUNCTION[demisto.command()](client, args))
-            elif demisto.command() == "rubrik-anomaly-csv-analysis-v2":
+            elif SCHEDULED_COMMAND_TO_FUNCTION.get(command):
                 args = demisto.args()
                 remove_nulls_from_dictionary(trim_spaces_from_args(args))
 
@@ -6575,8 +8553,8 @@ def main() -> None:
                     run_polling_command(
                         client=client,
                         args=args,
-                        search_function=rubrik_anomaly_csv_analysis_v2_command,
-                        command_name="rubrik-anomaly-csv-analysis-v2",
+                        search_function=SCHEDULED_COMMAND_TO_FUNCTION[command],
+                        command_name=command,
                     )
                 )
             else:
