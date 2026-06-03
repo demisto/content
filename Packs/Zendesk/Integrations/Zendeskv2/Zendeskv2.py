@@ -827,14 +827,14 @@ class ZendeskClient(BaseClient):
         file_id: STR_OR_STR_LIST,
         ticket_id: int,
         comment: str,
-        file_name: STR_OR_STR_LIST | None = None,
+        filename: STR_OR_STR_LIST | None = None,
         is_mirror: bool = False,
     ):
         headers = {"Content-Type": "application/binary"}
         if is_mirror:
             headers["user-agent"] = MIRROR_USER_AGENT
         file_id = argToList(file_id)
-        file_name_list = argToList(file_name) if file_name else [None] * len(file_id)
+        file_name_list = argToList(filename) if filename else [None] * len(file_id)
         file_tokens = []
         uploaded_files = []
         for single_file_id, single_file_name in zip(file_id, file_name_list):
