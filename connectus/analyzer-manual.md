@@ -12,17 +12,24 @@ Run the analyzer for any integration that requires the `Params to Commands` colu
 
 The analyzer is a self-contained script. It starts its own HTTP capture proxy internally — **the skill does not need to start any external proxy, server, or service**. The only external dependency is Docker (used by default to give each integration its production runtime environment).
 
-Standard invocation:
+Standard invocation (inside the migration workflow — `--integration-id` alone supplies both the directory and the auth ignore-set):
 
 ```bash
-python3 connectus/check_command_params.py <integration_dir> \
+python3 connectus/check_command_params.py \
     --ignore-params-file connectus/default_ignore_params.txt \
     --integration-id "<Integration ID>"
 ```
 
-Where `<integration_dir>` is the directory containing the integration's `.yml` and `.py` files (e.g., `Packs/QRadar/Integrations/QRadar_v3`). The positional argument MUST be the **directory**, NOT a file — passing the `.py` file directly exits with code `2`.
+**The positional `<integration_dir>` is OPTIONAL.** When you pass `--integration-id`, the analyzer resolves the integration directory itself from the workflow CSV's `Integration File Path` column (the same source as `context`'s `file_paths.yml`), so there is no need to type, re-derive, `find`/`ls`/`glob`, or sub-agent-lookup the path. Exactly one of the positional directory / `--integration-id` is required; if both are given the explicit directory wins (and `--integration-id` still contributes the auth ignore-set).
 
-**You already have this directory — do NOT re-derive or search for it.** It is the `Directory:` field of `workflow_state.py files "<Integration ID>"`, and equivalently the `dirname` of `context`'s `file_paths.yml` (i.e. `file_paths.yml` minus the trailing `/<Base>.yml`). Since Step 0 already runs `context` (which returns `file_paths`), reuse that value — there is no need for a separate `files` call, a `find`/`ls`/`glob`, or a sub-agent lookup just to get the path. Example: `file_paths.yml = "Packs/AbuseDB/Integrations/AbuseDB/AbuseDB.yml"` → `<integration_dir> = "Packs/AbuseDB/Integrations/AbuseDB"`.
+Standalone invocation (integration not in the workflow CSV) — pass the directory explicitly:
+
+```bash
+python3 connectus/check_command_params.py <integration_dir> \
+    --ignore-params-file connectus/default_ignore_params.txt
+```
+
+Where `<integration_dir>` is the directory containing the integration's `.yml` and `.py` files (e.g., `Packs/QRadar/Integrations/QRadar_v3`). The positional argument MUST be the **directory**, NOT a file — passing the `.py` file directly exits with code `2`. (If you resolve it by hand it is the `Directory:` field of `workflow_state.py files "<Integration ID>"`, equivalently the `dirname` of `context`'s `file_paths.yml`. Example: `file_paths.yml = "Packs/AbuseDB/Integrations/AbuseDB/AbuseDB.yml"` → `<integration_dir> = "Packs/AbuseDB/Integrations/AbuseDB"`.)
 
 The `--integration-id "<Integration ID>"` flag is **strongly recommended inside the migration workflow.** When supplied, the analyzer additionally calls [`workflow_state.py auth-params <id>`](workflow_state/cli.py:1) and unions every YML param id declared in the integration's `Auth Details` cell (auth-secret params projected from `auth_types[].xsoar_param_map.keys()` — dotted leaves collapse to the segment before the first `.` — plus every `other_connection` entry) into its own ignore set. This removes the entire burden of "remembering which params already live in `Auth Details`" from the AI — those params will simply not appear in the analyzer's per-command output. When you pass `--integration-id`, you do NOT need a standalone `auth-params` call — the analyzer auto-unions that set. (`auth-params` remains available for human display only.)
 

@@ -982,14 +982,16 @@ See the canonical [Auth Type Reference](#auth-type-reference) table near the end
 
 Populate `Params to Commands` (Step 2) by running the analyzer, then merging its output with a quick source review.
 
-**Canonical invocation** (always pass `--integration-id` so the auth ignore-set is auto-unioned — no separate `auth-params` call needed):
+**Canonical invocation** (pass only `--integration-id` — it now resolves the integration directory from the workflow CSV's `Integration File Path` column AND auto-unions the auth ignore-set, so neither the positional `<integration_dir>` nor a separate `auth-params` call is needed):
 
 ```bash
 DEMISTO_SDK_LOG_FILE_PATH="$PWD/.tmp_migration/sdk-logs" \
-  python3 connectus/check_command_params.py <integration_dir> \
+  python3 connectus/check_command_params.py \
     --ignore-params-file connectus/default_ignore_params.txt \
     --integration-id "<Integration ID>"
 ```
+
+The positional `<integration_dir>` is still accepted (and wins if both are given) for standalone runs on integrations not in the CSV; inside the migration workflow, omit it and let `--integration-id` supply the path.
 
 Runs all commands in one invocation (Docker + internal capture proxy). Default stdout payload = exactly two keys: `integration` + `commands`.
 
