@@ -636,6 +636,61 @@ class TestHardErrors:
         assert payload["error"]["code"] == cap.ERROR_NON_PYTHON
         assert cap._LITERAL_MARK_AUTH in payload["error"]["message"]
 
+    def test_non_python_all_interpolated_takes_clean_path(
+        self, tmp_path: Path
+    ) -> None:
+        """ORDERING FIX (NON_PYTHON, 2026-06-03): a non-Python (.js/.ps1)
+        integration whose auth is fully interpolated must reach the clean
+        ERROR_ALL_INTERPOLATED path (rc 0 / committable), NOT the
+        ERROR_NON_PYTHON hard error.
+
+        REGRESSION: previously the NON_PYTHON gate fired before the
+        all-interpolated short-circuit, so marking a JS integration's auth
+        ``interpolated: true`` (as the tool's own NON_PYTHON diagnostic
+        instructs) had no effect and the integration was un-committable.
+        The all-interpolated check is now hoisted above the NON_PYTHON gate.
+        """
+        pack = _make_js_integration(tmp_path)
+        auth_details = json.dumps({
+            "auth_types": [
+                {"type": "Plain", "name": "credentials", "interpolated": True,
+                 "xsoar_param_map": {
+                     "credentials.identifier": "username",
+                     "credentials.password": "password"}},
+            ],
+            "other_connection": [],
+        })
+        rc, payload = _run_main_capture(
+            [str(pack), "--integration-id", "JsInt",
+             "--auth-details", auth_details]
+        )
+        # Must be the clean all-interpolated path, NOT NON_PYTHON.
+        assert payload["error"]["code"] == cap.ERROR_ALL_INTERPOLATED
+        assert payload["error"]["exit_code"] == cap.EXIT_ALL_INTERPOLATED
+
+    def test_non_python_non_interpolated_still_errors(
+        self, tmp_path: Path
+    ) -> None:
+        """Guard: a non-Python integration with a NON-interpolated profile
+        must STILL hard-error NON_PYTHON (the fix must not make untested
+        non-python secret placements silently committable)."""
+        pack = _make_js_integration(tmp_path)
+        auth_details = json.dumps({
+            "auth_types": [
+                {"type": "Plain", "name": "credentials",
+                 "xsoar_param_map": {
+                     "credentials.identifier": "username",
+                     "credentials.password": "password"}},
+            ],
+            "other_connection": [],
+        })
+        rc, payload = _run_main_capture(
+            [str(pack), "--integration-id", "JsInt",
+             "--auth-details", auth_details]
+        )
+        assert rc == cap.EXIT_NON_PYTHON
+        assert payload["error"]["code"] == cap.ERROR_NON_PYTHON
+
     def test_error_no_baseclient(self, tmp_path: Path) -> None:
         py = "def main():\n    pass\n"  # No BaseClient anywhere.
         pack = _make_python_integration(tmp_path, py_source=py)

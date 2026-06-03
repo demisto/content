@@ -20,7 +20,9 @@ python3 connectus/check_command_params.py <integration_dir> \
     --integration-id "<Integration ID>"
 ```
 
-Where `<integration_dir>` is the directory containing the integration's `.yml` and `.py` files (e.g., `Packs/QRadar/Integrations/QRadar_v3`).
+Where `<integration_dir>` is the directory containing the integration's `.yml` and `.py` files (e.g., `Packs/QRadar/Integrations/QRadar_v3`). The positional argument MUST be the **directory**, NOT a file — passing the `.py` file directly exits with code `2`.
+
+**You already have this directory — do NOT re-derive or search for it.** It is the `Directory:` field of `workflow_state.py files "<Integration ID>"`, and equivalently the `dirname` of `context`'s `file_paths.yml` (i.e. `file_paths.yml` minus the trailing `/<Base>.yml`). Since Step 0 already runs `context` (which returns `file_paths`), reuse that value — there is no need for a separate `files` call, a `find`/`ls`/`glob`, or a sub-agent lookup just to get the path. Example: `file_paths.yml = "Packs/AbuseDB/Integrations/AbuseDB/AbuseDB.yml"` → `<integration_dir> = "Packs/AbuseDB/Integrations/AbuseDB"`.
 
 The `--integration-id "<Integration ID>"` flag is **strongly recommended inside the migration workflow.** When supplied, the analyzer additionally calls [`workflow_state.py auth-params <id>`](workflow_state/cli.py:1) and unions every YML param id declared in the integration's `Auth Details` cell (auth-secret params projected from `auth_types[].xsoar_param_map.keys()` — dotted leaves collapse to the segment before the first `.` — plus every `other_connection` entry) into its own ignore set. This removes the entire burden of "remembering which params already live in `Auth Details`" from the AI — those params will simply not appear in the analyzer's per-command output. When you pass `--integration-id`, you do NOT need a standalone `auth-params` call — the analyzer auto-unions that set. (`auth-params` remains available for human display only.)
 
@@ -34,6 +36,8 @@ Optional flags the skill should know about:
 - `--integration-id <id>` — OPTIONAL. When supplied, the analyzer pulls the auth-derived ignore set from [`workflow_state.py auth-params <id>`](workflow_state/cli.py:1) and unions it with the file-based ignore set, guaranteeing that any param already declared in the integration's `Auth Details` cell cannot leak into the per-command output. The analyzer logs a single-line stderr INFO with the pulled list. Inside the migration workflow, ALWAYS pass this flag — `set-params-to-commands` will reject overlap regardless, so pulling the exclusion list up front saves a round-trip. If the integration is not in the workflow CSV, or its `Auth Details` is unset, the analyzer logs a single-line stderr WARNING and proceeds with just the file-based ignore set (it is intentionally not a fatal error).
 - `--no-sentinel-coercion` — disable automatic sentinel-value coercion. By default the analyzer coerces sentinels for params whose **NAME** (case-insensitive substring match) contains `thumbprint`, `certificate`, or `private_key`, replacing the generic `SENTINEL_PARAM_<name>` string with a syntactically-valid stub (40-char hex thumbprint, stub PEM cert, stub PEM private key). This prevents the cert-thumbprint-hex-validator pattern (see auth-examples.md §1.6 row #9) from killing the entire dynamic phase. Pass `--no-sentinel-coercion` for strict-sentinel debug mode.
 - `--seed-param NAME=VALUE` — repeatable. Operator/AI escape hatch: provide an explicit value to seed for a specific YML param, overriding all other sources (YML default, cert coercion, generic sentinel). Use this when an integration has a param the auto-coercion didn't anticipate (e.g., a different format-validating credential, an enum-value selector that needs a specific value to traverse a code path). Values >= 4 chars long act as ad-hoc sentinels — they're grep-able in captured HTTP and the post-hoc attribution code looks for them too.
+- `--seed-arg CMD:NAME=VALUE` — repeatable. The command-**argument** analogue of `--seed-param`. Seeds the value `demisto.args()` returns for argument `NAME` of command `CMD`, overriding the auto-derived value. The `CMD:` prefix scopes the override to one command, so the same arg name on different commands can differ (e.g. `--seed-arg ip:ip=1.1.1.1 --seed-arg abuseipdb-report-ip:ip=8.8.8.8`). Use when a required command argument needs a specific real value (e.g. a valid IP/CIDR) to traverse a code path that the auto-seeded `SENTINEL_ARG_<name>` doesn't satisfy. See §11 (argument seeding) below.
+- `--no-seed-args` — disable automatic command-argument seeding (which is **ON by default**). With seeding on, the analyzer builds `demisto.args()` for each command from its YML `arguments` (each arg's `defaultValue`, else first `predefined` option, else a `SENTINEL_ARG_<name>` sentinel) so handlers whose YML arguments are **required positional parameters** don't crash with `TypeError: missing required positional argument` before issuing any HTTP request. Pass `--no-seed-args` only for strict/debug runs where you want the legacy empty-`args()` behavior. See §11.
 - `--no-auto-retry-integration-docker` — disable the automatic retry. By default, when the FIRST command's diagnostic comes back as `module_not_found` AND the analyzer is using the default `demisto/py3-native` image, it will automatically restart the dynamic phase with `--use-integration-docker` (which uses the integration's own production image, usually with the missing package preinstalled). Pass `--no-auto-retry-integration-docker` to disable, in which case the analyzer fast-fails the remaining commands as `module_not_found` (~30s × N saved) and returns immediately.
 - `--with-diagnostics` — opt-in. Emits a top-level `diagnostics` key in the stdout JSON in addition to `integration` and `commands`. **Do NOT pass this flag inside the migration workflow** — `set-params-to-commands` will reject any payload containing extra top-level keys. Only pass it for interactive / debug use when you specifically want to read per-command status / failure attribution / Hybrid narrowing signal. (See §§3a/4/5/6 below; all of that documentation applies only when `--with-diagnostics` is set.)
 
@@ -92,6 +96,8 @@ Optional fields, present only under specific conditions:
 - **`scope_1_narrowed`** — `true`. Present **only when Hybrid Scope-1 narrowing actually dropped at least one param** for this command. Omitted entirely when narrowing was applied but the captured set was a superset of the static Scope-1 set (i.e. narrowing fired silently and changed nothing). **An absent field therefore does not mean narrowing was skipped** — it could also mean narrowing trivially kept everything. See §6's narrowing callout.
 - **`scope_1_dropped`** — list of param names that narrowing dropped. Present iff `scope_1_narrowed` is present.
 - **`limitation`** — optional string flag for known structural reasons the dynamic signal cannot fire for this integration. Currently the only documented value is `"capture_proxy_bypassed"`, attached to **every command** of any integration whose source imports `boto3`, `botocore`, or `AWSApiModule` (matched by prefix on `Import` / `ImportFrom` AST nodes). It means the capture proxy could not observe HTTP traffic, so Hybrid Scope-1 narrowing structurally cannot fire for that integration regardless of `status`. Treat the per-command list as the full static union and verify against source.
+
+The per-param `attributions[*].by_source` map may also contain a `dynamic_access` source (confidence 0.9) — the **params-access spy** signal (the param was READ at runtime during this command's execution, above the startup baseline). See §12.
 
 ## 4. Status enum reference
 
@@ -321,4 +327,116 @@ The analyzer's two phases handle non-Python integrations asymmetrically:
 - **Dynamic analysis (current)**: exits non-zero (rc=3) with empty stdout. (This asymmetry is a known limitation tracked as a future improvement — see [`check_command_params_design.md`](check_command_params_design.md:1) §"Language asymmetry".)
 
 For the AI, **treat any JavaScript or PowerShell integration the same way you treat `module_not_found`**: ignore the analyzer's output, read the integration source + YML directly, and write a polished per-command param list manually. The batch runner surfaces the rc=3 as `{"error": ..., "stderr": ...}` in the cell — Step 1 of the decision tree (§6e above) covers this case. **Never propagate the error into the persisted pipeline data.**
+
+## 11. Command-argument seeding (ON by default)
+
+The dynamic phase invokes each command via `demisto.args()`. Many handlers
+take their YML arguments as **required positional parameters** (e.g.
+`def check_ip_command(reliability, ip, ...)` invoked as
+`handler(**demisto.args())`). If `args()` returns `{}`, those handlers
+crash with `TypeError: missing required positional argument` **before any
+HTTP request**, so the param-flow capture sees nothing → `status: no_data`
+across the integration.
+
+**Argument seeding fixes this.** For each command, the analyzer builds the
+`demisto.args()` dict from the command's YML `arguments`, with this
+per-argument precedence:
+
+1. `--seed-arg CMD:NAME=VALUE` operator override (per-command scoped).
+2. YML `defaultValue` (parsed).
+3. First `predefined` option (enum-style args — e.g. `true`/`false`, a format selector).
+4. A grep-able `SENTINEL_ARG_<name>` sentinel.
+
+Every declared argument gets a value, so required-positional handlers run.
+Seeding is **ON by default**; pass `--no-seed-args` for the legacy
+empty-`args()` behavior.
+
+**When to use `--seed-arg`:** auto-seeding satisfies the *signature*, but a
+sentinel like `SENTINEL_ARG_ip` won't pass a value-validator (e.g.
+`ipaddress.ip_address(ip)`). When a command still fails on a
+malformed-argument validation, re-run with a real value:
+`--seed-arg ip:ip=1.1.1.1`. The `CMD:` prefix means the same arg name on
+different commands can take different values.
+
+**Note:** seeding args makes a command *run*; it does not by itself make
+arg-derived params capturable. The param signal still comes from the
+sentinel-on-wire scan, the params-access spy (§12), and static analysis.
+
+## 12. Params-access spy
+
+The sentinel-on-wire scan only detects params whose seeded **value travels
+into an outgoing HTTP request**. It misses params that are read but never
+sent: control-flow booleans (`if params.get("disregard_quota")`),
+post-response/client-side params (`integrationReliability` used to compute
+a DBot label), and short YML-default values recorded as non-traceable.
+
+The **params-access spy** closes that gap. The analyzer replaces the child's
+params dict with an instrumented `TrackingMapping` that records every key
+READ at runtime (`__getitem__`, `.get()`, `__contains__`), then reports the
+accessed-key set back to the parent. A spy hit folds into the per-param
+`attributions[*].by_source` as the `dynamic_access` source at confidence
+**0.9** — high, but below the on-wire `dynamic_capture` (1.0) gold tier, so
+the verdict stays `needs_review`: **the agent should still double-check.**
+
+### 12.1 Baseline diff (why a global read isn't tagged on every command)
+
+A param read in module-level code or `main()` before dispatch is read on
+**every** command run. To avoid tagging those on every command, the spy
+computes a **baseline** = the startup "always-read" key set (test-module's
+accessed set, unioned with the intersection of all commands' accessed
+sets). Only keys read **above** the baseline for a given command are
+elevated to `dynamic_access`. Pre-dispatch / module-import reads fall into
+the baseline and stay at their existing low static tier (0.2 / 0.1).
+
+### 12.2 Known limitation — module-level-global integrations
+
+Integrations that read params into **module-level globals** at import time
+(a very common older-XSOAR pattern), e.g.:
+
+```python
+SERVER = demisto.params().get("server")
+MAX_AGE = demisto.params().get("days")
+```
+
+execute those reads on **every** child run (import precedes any command),
+so they all land in the baseline → nothing is "above baseline" → the spy
+elevates **nothing** for that integration. This is intentional: the
+baseline correctly prevents per-command false-positives, but it also means
+the spy adds no signal for the module-global pattern. **For these
+integrations, fall back to source review** (the "err on inclusion"
+principle, §7) — the spy is silent precisely so it never over-claims. The
+spy's value is for integrations that read params **inside handlers /
+helpers at call time** (especially through dynamic dispatch, `getattr`, or
+helper chains deeper than `--call-graph-depth`, which static analysis can
+miss).
+
+### 12.3 Confidence tier reference (updated)
+
+| source | confidence | meaning |
+|---|---|---|
+| `dynamic_capture` | 1.0 | seeded value observed on the wire (gold) |
+| `handler_body` | 1.0 | direct `params.get()` in the command handler (static) |
+| `dynamic_access` | **0.9** | **params-access spy: read at runtime, above baseline (needs_review — double-check)** |
+| `helper_depth_1..4+` | 0.8 → 0.3 | `params.get()` reached through a helper at call-graph depth N |
+| `module_const_referenced` | 0.5 | a module constant binding a param is referenced in reachable code |
+| `pre_dispatch_main` | 0.2 | read in `main()` before dispatch (every command) |
+| `module_const_hedged` | 0.1 | module-const reference with an uncertain static walk |
+
+### 12.4 Presenting scores to the user (Step 2)
+
+When you present the Step 2 `Params to Commands` payload for approval, make
+the **per-param confidence explicit** so the user can see what the analyzer
+proved vs. what you decided yourself. Show, per param: the **max score**
+(the `rollup_confidence`), its top **source**, and whether you **added it
+by source review** (analyzer score below your inclusion bar). A compact
+table works well:
+
+| Param | Max score | Top source | Decision |
+|---|---|---|---|
+| `disregard_quota` | 0.8 | `helper` | trust (analyzer) |
+| `integrationReliability` | 0.2 | `pre_dispatch_main` | investigated — reputation post-response param |
+| `days` | 0.1 | `module_const_hedged` | investigated — used in reputation handlers |
+
+Call out explicitly which params you elevated despite a low analyzer score
+(the "investigated myself" rows) and why, so the override is auditable.
 

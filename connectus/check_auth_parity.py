@@ -2027,17 +2027,9 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
     yml_data = _ccp.load_yml(yml_path)
     display = display_name_override or _ccp.display_name(yml_data, integration_id)
 
-    lang = detect_non_python(yml_data, py_path)
-    if lang is not None:
-        return _emit_hard_error(
-            display, ERROR_NON_PYTHON, _msg_non_python(lang), EXIT_NON_PYTHON
-        )
-    assert py_path is not None  # narrowed by detect_non_python
-    py_source = py_path.read_text(encoding="utf-8", errors="replace")
-
     # Parse + validate Auth Details up front so the interpolation gate can
-    # run before any "cannot verify" structural gate (no-baseclient,
-    # apimodule, multi-secret-passthrough).
+    # run before ANY "cannot verify" structural gate (non-python,
+    # no-baseclient, apimodule, multi-secret-passthrough).
     errors = validate_auth_details(auth_details) if auth_details is not None else []
     if errors:
         raise ValueError(f"Invalid Auth Details for {integration_id}: {errors}")
@@ -2046,23 +2038,41 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
         else _empty_details()
     )
 
-    # ORDERING FIX (SplunkPy v2, 2026-06-03): the all-interpolated
-    # short-circuit MUST run before the no-baseclient / apimodule /
-    # multi-secret-passthrough structural gates. When EVERY auth type is
-    # interpolated there is genuinely nothing to parity-test, so the
-    # integration takes the clean all-interpolated pass path regardless of
-    # whether it uses BaseClient. Previously the no-baseclient gate fired
-    # first and pre-empted this, so a fully-interpolated non-BaseClient
-    # integration (SplunkPy v2, which uses splunklib) wrongly errored with
-    # ERROR_NO_BASECLIENT and the ``interpolated: true`` flag was never
-    # evaluated. The connection-filter interpolation check stays AFTER the
-    # structural gates (see below) — it only matters once we know we have a
+    # ORDERING FIX (SplunkPy v2, 2026-06-03; extended to NON_PYTHON,
+    # 2026-06-03): the all-interpolated short-circuit MUST run before EVERY
+    # "cannot verify" structural gate — including the non-python gate below.
+    # When EVERY auth type is interpolated there is genuinely nothing to
+    # parity-test, so the integration takes the clean all-interpolated pass
+    # path regardless of language or whether it uses BaseClient.
+    #
+    # Previously the no-baseclient gate fired first and pre-empted this, so a
+    # fully-interpolated non-BaseClient integration (SplunkPy v2, which uses
+    # splunklib) wrongly errored with ERROR_NO_BASECLIENT and the
+    # ``interpolated: true`` flag was never evaluated. The original SplunkPy
+    # fix moved this check above no-baseclient/apimodule/multi-secret but
+    # left it BELOW the non-python check, so non-python (.js/.ps1)
+    # integrations could never reach the all-interpolated path: marking them
+    # ``interpolated: true`` (as the tool's own diagnostic instructs) had no
+    # effect and they were un-committable. Hoisting the check above the
+    # non-python gate restores the documented "mark interpolated -> clean
+    # ALL_INTERPOLATED path" behavior for every language.
+    #
+    # The connection-filter interpolation check stays AFTER the structural
+    # gates (see below) — it only matters once we know we have a
     # mixed/non-interpolated profile worth testing.
     if details.auth_types and all(e.interpolated for e in details.auth_types):
         return _emit_hard_error(
             display, ERROR_ALL_INTERPOLATED,
             _msg_all_interpolated(), EXIT_ALL_INTERPOLATED,
         )
+
+    lang = detect_non_python(yml_data, py_path)
+    if lang is not None:
+        return _emit_hard_error(
+            display, ERROR_NON_PYTHON, _msg_non_python(lang), EXIT_NON_PYTHON
+        )
+    assert py_path is not None  # narrowed by detect_non_python
+    py_source = py_path.read_text(encoding="utf-8", errors="replace")
 
     if detect_no_baseclient(py_source):
         # FIXES-TODO #12 (LOCKED 2026-05-31): refine the diagnostic for

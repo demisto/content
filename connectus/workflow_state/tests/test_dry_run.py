@@ -79,7 +79,7 @@ _VALID_AUTH_JSON = (
 class TestDryRunAuthEnvelopeShape:
     """Pin the 6-key envelope and the per-branch payload."""
 
-    def test_envelope_always_has_six_keys(
+    def test_envelope_always_has_expected_keys(
         self,
         monkeypatch: pytest.MonkeyPatch,
         mock_csv: list[dict],
@@ -95,6 +95,7 @@ class TestDryRunAuthEnvelopeShape:
         )
         env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
         assert set(env.keys()) == {
+            "pass",
             "dry_run",
             "integration_id",
             "validator",
@@ -104,6 +105,8 @@ class TestDryRunAuthEnvelopeShape:
         }
         assert env["dry_run"] is True
         assert env["integration_id"] == "MyIntegration"
+        # Top-level `pass` mirrors verdict.would_commit.
+        assert env["pass"] == env["verdict"]["would_commit"]
 
     def test_validator_failure_short_circuits_with_skip_markers(
         self,

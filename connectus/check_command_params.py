@@ -2425,6 +2425,7 @@ def _build_attributions(
     yml_param_names: set[str] | None = None,
     analysis_status: str = ANALYSIS_STATUS_DISPATCH_UNRESOLVED,
     emit_proven_unused: bool = True,
+    access_spy_params: set[str] | None = None,
 ) -> list[ParamAttribution]:
     """Compose per-(command, param) attributions from every evidence source.
 
@@ -2536,7 +2537,20 @@ def _build_attributions(
             ),
         )
 
-    # 4) Dynamic capture: authoritative, fold in last.
+    # 4) Params-access spy: the param was READ at runtime during this
+    #    command's execution, above the startup baseline. Strong (0.9) but
+    #    below on-wire capture so the verdict stays needs_review.
+    for param in access_spy_params or set():
+        _add(
+            param,
+            ParamSourceEvidence(
+                source="dynamic_access",
+                confidence=TIER_CONFIDENCE["dynamic_access"],
+                evidence="read at runtime (params-access spy, above baseline)",
+            ),
+        )
+
+    # 5) Dynamic capture: authoritative, fold in last.
     for param in captured:
         _add(
             param,
@@ -3149,6 +3163,7 @@ def analyze_static_attributions_with_status(
     call_graph_depth: int = 3,
     yml_param_names: set[str] | None = None,
     emit_proven_unused: bool = True,
+    access_spy_params: set[str] | None = None,
 ) -> tuple[set[str], set[str], list[ParamAttribution], str]:
     """Same as :func:`analyze_static_attributions` plus per-command analysis_status.
 
@@ -3213,6 +3228,7 @@ def analyze_static_attributions_with_status(
                 yml_param_names=yml_param_names,
                 analysis_status=status,
                 emit_proven_unused=emit_proven_unused,
+                access_spy_params=access_spy_params,
             )
             return scope_1, scope_2, attributions, status
         # Synthesize a function-like wrapper so the rest of the
@@ -3381,6 +3397,7 @@ def analyze_static_attributions_with_status(
         yml_param_names=yml_param_names,
         analysis_status=analysis_status,
         emit_proven_unused=emit_proven_unused,
+        access_spy_params=access_spy_params,
     )
     return scope_1, scope_2, attributions, analysis_status
 
@@ -4044,6 +4061,207 @@ def build_param_values(
     return values, sentinels, non_traceable
 
 
+# --------------------------------------------------------------------------
+# Command-ARGUMENT seeding (mirrors param seeding above).
+#
+# The dynamic phase invokes each command with ``demisto.args()``. Without
+# seeding, ``args()`` returns ``{}`` and any handler whose YML arguments
+# are passed as REQUIRED POSITIONAL parameters (e.g.
+# ``check_ip_command(reliability, ip, ...)`` invoked as
+# ``handler(**demisto.args())``) crashes with ``TypeError: missing
+# required positional argument`` BEFORE issuing any HTTP request — so the
+# param-flow capture sees nothing (status ``no_data``). Seeding args from
+# the command's YML ``arguments`` (defaultValue, else a type-appropriate
+# value) lets those handlers run far enough to exercise their param reads.
+# ``--seed-arg CMD:NAME=VALUE`` lets the operator/AI override any single
+# arg value per command.
+# --------------------------------------------------------------------------
+
+ARG_SENTINEL_PREFIX = "SENTINEL_ARG_"
+
+
+def get_command_args(yml_data: dict[str, Any], command: str) -> list[dict[str, Any]]:
+    """Return the YML ``arguments`` list for *command* (empty if none).
+
+    ``test-module`` and other synthetic commands (fetch-incidents, etc.)
+    have no YML ``arguments`` entry and yield ``[]``.
+    """
+    script = yml_data.get("script") or {}
+    for entry in script.get("commands") or []:
+        if isinstance(entry, dict) and entry.get("name") == command:
+            args = entry.get("arguments") or []
+            return [a for a in args if isinstance(a, dict) and a.get("name")]
+    return []
+
+
+def build_arg_values(
+    command_args: list[dict[str, Any]],
+    *,
+    seed_args: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Build the ``demisto.args()`` dict for one command.
+
+    Value-selection precedence per argument (highest first):
+
+    1. ``--seed-arg CMD:NAME=VALUE`` operator override (``seed_args`` here
+       is already scoped to this command — see :func:`parse_seed_args`).
+    2. YML ``defaultValue`` (camelCase, the command-argument spelling),
+       parsed to a sensible Python type.
+    3. First ``predefined`` option, when the argument is an enum-style
+       ``predefined`` list (commonly ``true``/``false`` or a format
+       selector) — picking a valid value avoids enum-validation crashes.
+    4. A grep-able string sentinel ``SENTINEL_ARG_<name>`` so the value is
+       traceable in captured HTTP, mirroring the param sentinel.
+
+    Every declared argument gets a value (so required-positional handlers
+    never crash on a missing kwarg). The returned dict is JSON-serialized
+    into ``CHECK_ARGS_JSON`` for the child's ``demisto.args()``.
+    """
+    overrides = seed_args or {}
+    values: dict[str, Any] = {}
+    for arg in command_args:
+        name = arg["name"]
+        # 1. Operator override wins outright.
+        if name in overrides:
+            values[name] = overrides[name]
+            continue
+        # 2. YML defaultValue (command args use camelCase ``defaultValue``;
+        #    tolerate the lowercase ``defaultvalue`` just in case).
+        raw_default = arg.get("defaultValue", arg.get("defaultvalue"))
+        if raw_default is not None and raw_default != "":
+            values[name] = raw_default
+            continue
+        # 3. First predefined option (enum-style arg).
+        predefined = arg.get("predefined")
+        if isinstance(predefined, list) and predefined:
+            values[name] = predefined[0]
+            continue
+        # 4. Grep-able sentinel.
+        values[name] = f"{ARG_SENTINEL_PREFIX}{name}"
+    return values
+
+
+def parse_seed_args(raw_pairs: list[str] | None) -> dict[str, dict[str, str]]:
+    """Parse ``--seed-arg CMD:NAME=VALUE`` pairs into a nested dict.
+
+    Returns ``{command: {arg_name: value}}``. Each raw pair MUST be of
+    the form ``CMD:NAME=VALUE`` — the ``CMD:`` prefix scopes the override
+    to a single command so the same arg name on different commands can
+    take different values. Malformed pairs (missing ``:`` or ``=``) raise
+    ``ValueError`` with an actionable message.
+    """
+    out: dict[str, dict[str, str]] = {}
+    for pair in raw_pairs or []:
+        if ":" not in pair or "=" not in pair.split(":", 1)[1]:
+            raise ValueError(
+                f"--seed-arg {pair!r} is malformed; expected "
+                f"CMD:NAME=VALUE (e.g. --seed-arg ip:ip=1.1.1.1)."
+            )
+        cmd, rest = pair.split(":", 1)
+        name, _, value = rest.partition("=")
+        cmd, name = cmd.strip(), name.strip()
+        if not cmd or not name:
+            raise ValueError(
+                f"--seed-arg {pair!r} is malformed; CMD and NAME must be "
+                f"non-empty (e.g. --seed-arg ip:ip=1.1.1.1)."
+            )
+        out.setdefault(cmd, {})[name] = value
+    return out
+
+
+# --------------------------------------------------------------------------
+# Params-ACCESS spy.
+#
+# The sentinel-on-the-wire scan only detects params whose seeded value
+# travels into an outgoing HTTP request. It misses params that are read
+# but never sent — control-flow booleans (``if params.get("disregard_
+# quota")``), post-response/client-side params (``integrationReliability``
+# used to compute a DBot label), and short YML-default values that are
+# recorded non-traceable. The access spy closes that gap: it replaces the
+# params dict with an instrumented mapping that records every key READ at
+# runtime, then reports the accessed-key set back to the parent.
+#
+# Attribution rule (see skill): a baseline run (startup / test-module)
+# captures the "always-read" key set; only keys read ABOVE that baseline
+# for a given command are elevated. Pre-dispatch / module-import reads
+# fall into the baseline and stay at their existing low static tier. A
+# spy hit is scored at the ``dynamic_access`` tier (high but < the on-wire
+# ``dynamic_capture`` gold tier) so the agent still double-checks.
+#
+# The class SOURCE lives in one string so the importable Python class
+# (for unit tests) and the mock-template copy (run in the child process,
+# which cannot import this module) never drift.
+# --------------------------------------------------------------------------
+
+_TRACKING_MAPPING_SRC = '''
+class TrackingMapping(dict):
+    """A dict that records every key read via __getitem__/.get()/__contains__.
+
+    Subclasses dict so any ``isinstance(x, dict)`` checks in integration
+    code still pass and all non-recorded dict behavior is inherited.
+    ``.get(k)`` records ``k`` even when absent (the READ intent matters,
+    e.g. ``params.get("disregard_quota")`` returning None still means the
+    integration consulted that param).
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Use object.__setattr__-free plain attribute; dict allows it.
+        self.accessed_keys = set()
+
+    def __getitem__(self, key):
+        self.accessed_keys.add(key)
+        return super().__getitem__(key)
+
+    def get(self, key, default=None):
+        self.accessed_keys.add(key)
+        return super().get(key, default)
+
+    def __contains__(self, key):
+        self.accessed_keys.add(key)
+        return super().__contains__(key)
+'''
+
+# Build the importable class by executing the shared source.
+_tracking_ns: dict[str, Any] = {}
+exec(_TRACKING_MAPPING_SRC, _tracking_ns)  # noqa: S102 - trusted constant
+TrackingMapping = _tracking_ns["TrackingMapping"]
+
+
+def parse_access_report(text: str | None) -> set[str]:
+    """Parse the child's emitted accessed-keys report into a set.
+
+    The child writes a JSON list of key strings to ``CHECK_ACCESS_OUT``.
+    Robust to empty/missing/garbled content (returns an empty set) so a
+    truncated child report never crashes the parent.
+    """
+    if not text:
+        return set()
+    try:
+        data = json.loads(text)
+    except (ValueError, TypeError):
+        return set()
+    if isinstance(data, list):
+        return {str(k) for k in data}
+    return set()
+
+
+def attribute_access_spy(
+    command_accessed: set[str],
+    baseline_accessed: set[str],
+    yml_param_names: set[str],
+    ignore: set[str],
+) -> set[str]:
+    """Return the YML params to elevate from the access spy for one command.
+
+    Elevate a key iff it was read during THIS command's run, NOT in the
+    startup baseline (so pre-dispatch / module-import globals are excluded),
+    IS a declared YML config param, and is NOT on the ignore set.
+    """
+    above_baseline = command_accessed - baseline_accessed
+    return (above_baseline & yml_param_names) - ignore
+
+
 # Source for ``DemistoClassApiModule.py`` — the unified file does
 # ``from DemistoClassApiModule import *`` near the end of CommonServerPython
 # (around line ~13920). The real DemistoClassApiModule (in
@@ -4078,25 +4296,51 @@ _DEMISTO_CLASS_API_MODULE_TEMPLATE = textwrap.dedent(
 #     ``demisto`` attribute is a real object whose ``.params()``,
 #     ``.command()``, ``.args()`` we control.
 #
-# The mock reads ``CHECK_PARAMS_JSON``, ``CHECK_COMMAND`` from the env at
-# import time so seeded values are visible to module-level code in the
-# integration (e.g. ``SERVER = demisto.params().get("server")``).
+# The mock reads ``CHECK_PARAMS_JSON``, ``CHECK_COMMAND``, and
+# ``CHECK_ARGS_JSON`` from the env at import time so seeded values are
+# visible to module-level code in the integration (e.g.
+# ``SERVER = demisto.params().get("server")``) and so seeded command
+# arguments are returned by ``demisto.args()`` (mirroring how params are
+# seeded — lets the dynamic phase get past required-positional command
+# args that would otherwise crash the handler before any HTTP call).
 _DEMISTOMOCK_TEMPLATE = textwrap.dedent(
     '''
     """On-disk demistomock used by check_command_params.py dynamic runs."""
+    import atexit as _atexit
     import json as _json
     import os as _os
     import sys as _sys
 
-    _PARAMS = _json.loads(_os.environ.get("CHECK_PARAMS_JSON", "{}"))
+    __TRACKING_MAPPING_INJECTION__
+
+    _RAW_PARAMS = _json.loads(_os.environ.get("CHECK_PARAMS_JSON", "{}"))
+    # Wrap params in the access-spy mapping so every key READ is recorded,
+    # even reads whose value never reaches an HTTP request (control-flow
+    # booleans, post-response params). The parent diffs this against a
+    # startup baseline to attribute command-specific reads.
+    _PARAMS = TrackingMapping(_RAW_PARAMS)
     _COMMAND = _os.environ.get("CHECK_COMMAND", "")
+    _ARGS = _json.loads(_os.environ.get("CHECK_ARGS_JSON", "{}"))
+
+    # On exit (normal OR sys.exit from the patched return_error), dump the
+    # set of accessed param keys to CHECK_ACCESS_OUT for the parent to read.
+    def _dump_access_report():
+        _out = _os.environ.get("CHECK_ACCESS_OUT")
+        if not _out:
+            return
+        try:
+            with open(_out, "w", encoding="utf-8") as _f:
+                _json.dump(sorted(_PARAMS.accessed_keys), _f)
+        except Exception:
+            pass
+    _atexit.register(_dump_access_report)
 
 
     class _Demisto:
-        callingContext = {"context": {}, "params": _PARAMS, "command": _COMMAND}
+        callingContext = {"context": {}, "params": _PARAMS, "command": _COMMAND, "args": _ARGS}
         def params(self): return _PARAMS
         def command(self): return _COMMAND
-        def args(self): return {}
+        def args(self): return _ARGS
         def results(self, *a, **k): return None
         def getLastRun(self): return {}
         def setLastRun(self, *a, **k): return None
@@ -4141,7 +4385,7 @@ _DEMISTOMOCK_TEMPLATE = textwrap.dedent(
     # as the demisto object).
     def params(): return _PARAMS
     def command(): return _COMMAND
-    def args(): return {}
+    def args(): return _ARGS
     def results(*a, **k): return None
     def info(*a, **k): return None
     def debug(*a, **k): return None
@@ -4216,6 +4460,14 @@ _DEMISTOMOCK_TEMPLATE = textwrap.dedent(
     callingContext = {"context": {}, "params": _PARAMS, "command": _COMMAND}
     '''
 ).lstrip()
+
+# Inject the shared TrackingMapping class source (column-0) into the mock
+# template so the child process has the access-spy mapping without needing
+# to import this analyzer module. Single source of truth: the same
+# _TRACKING_MAPPING_SRC backs the importable TrackingMapping above.
+_DEMISTOMOCK_TEMPLATE = _DEMISTOMOCK_TEMPLATE.replace(
+    "__TRACKING_MAPPING_INJECTION__", _TRACKING_MAPPING_SRC.strip()
+)
 
 
 # Bootstrap script run in the child interpreter. Critical ordering:
@@ -4492,9 +4744,18 @@ def _build_child_env(
     proxy_url: str,
     unified_path: str,
     mock_dir: str,
+    args: dict[str, Any] | None = None,
+    access_out: str | None = None,
 ) -> dict[str, str]:
-    """Build the env vars the bootstrap script reads to drive one command."""
-    return {
+    """Build the env vars the bootstrap script reads to drive one command.
+
+    ``args`` is the seeded command-argument dict the mock exposes via
+    ``demisto.args()`` (defaults to ``{}`` for backward compatibility).
+    ``access_out`` is the file path the child writes its params-access-spy
+    report to (a JSON list of read keys); omitted/empty disables the spy
+    for that run.
+    """
+    env = {
         "HTTP_PROXY": proxy_url,
         "HTTPS_PROXY": proxy_url,
         "http_proxy": proxy_url,
@@ -4502,9 +4763,13 @@ def _build_child_env(
         "NO_PROXY": "",
         "CHECK_PARAMS_JSON": json.dumps(params),
         "CHECK_COMMAND": command,
+        "CHECK_ARGS_JSON": json.dumps(args or {}),
         "CHECK_UNIFIED_PATH": unified_path,
         "CHECK_MOCK_DIR": mock_dir,
     }
+    if access_out:
+        env["CHECK_ACCESS_OUT"] = access_out
+    return env
 
 
 def _decode_subprocess_streams(
@@ -4625,10 +4890,18 @@ def run_integration(
     docker_cfg: DockerConfig | None = None,
     image: str | None = None,
     *,
+    args: dict[str, Any] | None = None,
+    access_out_host: Path | None = None,
     extra_env: dict[str, str] | None = None,
     extra_mounts: list[tuple[str, str, str]] | None = None,
 ) -> tuple[int, str, str, bool]:
     """Run the integration in a child process. Returns ``(rc, stdout, stderr, timed_out)``.
+
+    ``access_out_host`` (when given) is a writable HOST file path the child
+    writes its params-access-spy report to. In host mode the child writes
+    there directly; in docker mode the file's parent dir is bind-mounted
+    writable into the container and ``CHECK_ACCESS_OUT`` is set to the
+    in-container path. The caller reads the host file after the run.
 
     When ``docker_cfg.effective_use_docker`` is true, the child runs in a
     container based on ``image`` (or, when ``image`` is ``None``,
@@ -4652,12 +4925,29 @@ def run_integration(
     if not bootstrap_path.is_file():
         bootstrap_path.write_text(_BOOTSTRAP_TEMPLATE, encoding="utf-8")
 
+    # Access-spy output path. Host mode: child writes the host path
+    # directly. Docker mode: bind-mount the file's parent dir writable and
+    # point CHECK_ACCESS_OUT at the in-container path.
+    access_out_for_child: str | None = None
+    spy_mounts: list[tuple[str, str, str]] = []
+    if access_out_host is not None:
+        if use_docker:
+            container_access_dir = "/check_spy"
+            access_out_for_child = f"{container_access_dir}/{access_out_host.name}"
+            spy_mounts.append(
+                (str(access_out_host.parent), container_access_dir, "rw")
+            )
+        else:
+            access_out_for_child = str(access_out_host)
+
     env = _build_child_env(
         params=params,
         command=command,
         proxy_url=proxy_url,
         unified_path=str(unified_path),
         mock_dir=str(mock_dir),
+        args=args,
+        access_out=access_out_for_child,
     )
     if extra_env:
         env.update(extra_env)
@@ -4667,6 +4957,7 @@ def run_integration(
 
     assert docker_cfg is not None  # narrowed by use_docker
     effective_image = image or docker_cfg.default_image
+    merged_mounts = list(extra_mounts or []) + spy_mounts
     return _run_child_docker(
         tmp_dir=tmp_dir,
         env=env,
@@ -4674,7 +4965,7 @@ def run_integration(
         image=effective_image,
         pulled_cache=docker_cfg.pulled_images,
         proxy_url=proxy_url,
-        extra_mounts=extra_mounts,
+        extra_mounts=merged_mounts or None,
     )
 
 
@@ -4811,6 +5102,11 @@ LIMITATION_CAPTURE_PROXY_BYPASSED = "capture_proxy_bypassed"
 TIER_CONFIDENCE: dict[str, float] = {
     "dynamic_capture": 1.0,
     "handler_body": 1.0,
+    # Params-access spy: the param was READ at runtime during this
+    # command's execution, above the startup baseline. Strong evidence —
+    # but below the on-wire dynamic_capture gold tier so the agent still
+    # double-checks (verdict stays needs_review, not proven_used).
+    "dynamic_access": 0.9,
     "helper_depth_1": 0.8,
     "helper_depth_2": 0.7,
     "helper_depth_3": 0.5,
@@ -4921,6 +5217,10 @@ class CommandDiagnostic:
     failure_excerpt: str = ""
     failing_params: list[str] = field(default_factory=list)
     missing_module: str | None = None
+    # Params-access spy: the raw set of param keys this command's child
+    # run READ at runtime (via the TrackingMapping). Includes startup
+    # globals; the parent diffs against the baseline before elevating.
+    spy_accessed: set[str] = field(default_factory=set)
     scope_1_narrowed: bool = False
     scope_1_dropped: list[str] = field(default_factory=list)
     limitation: str | None = None
@@ -5067,6 +5367,11 @@ def integration_uses_proxy_bypass(py_source: str) -> bool:
     return False
 
 
+def _sanitize_cmd_filename(command: str) -> str:
+    """Make a command name safe for use as a filename component."""
+    return "".join(c if (c.isalnum() or c in "-_") else "_" for c in command) or "cmd"
+
+
 def analyze_dynamic_for_command(
     proxy: CaptureProxy,
     unified_path: Path,
@@ -5079,6 +5384,10 @@ def analyze_dynamic_for_command(
     image: str | None = None,
     coerce_certs: bool = True,
     seed_overrides: dict[str, str] | None = None,
+    command_args: list[dict[str, Any]] | None = None,
+    seed_args: dict[str, str] | None = None,
+    seed_command_args: bool = True,
+    collect_access_spy: bool = True,
 ) -> tuple[set[str], CommandDiagnostic]:
     """Return ``(captured_param_names, diagnostic)`` for one command.
 
@@ -5112,8 +5421,29 @@ def analyze_dynamic_for_command(
         coerce_certs=coerce_certs,
         seed_overrides=seed_overrides,
     )
+    # Build the seeded command-argument dict (ON by default). When
+    # disabled (--no-seed-args), pass {} so demisto.args() stays empty
+    # (legacy behavior). seed_args here is already scoped to this command.
+    arg_values: dict[str, Any] = (
+        build_arg_values(command_args or [], seed_args=seed_args)
+        if seed_command_args
+        else {}
+    )
     yml_param_names = {p["name"] for p in yml_params}
     session_id = proxy.new_session()
+    # Params-access spy output file (written next to the unified content so
+    # the docker writable mount is a sibling of /check). Read back after
+    # the run and stamped onto the diagnostic.
+    access_out_host: Path | None = None
+    if collect_access_spy:
+        access_out_host = (
+            unified_path.parent / f"access_{_sanitize_cmd_filename(command)}.json"
+        )
+        # Ensure a stale file from a prior run doesn't leak.
+        try:
+            access_out_host.unlink()
+        except OSError:
+            pass
     _t0 = _t.time()
     rc, _stdout, stderr, timed_out = run_integration(
         unified_path,
@@ -5124,10 +5454,22 @@ def analyze_dynamic_for_command(
         timeout,
         docker_cfg=docker_cfg,
         image=image,
+        args=arg_values,
+        access_out_host=access_out_host,
     )
     elapsed = _t.time() - _t0
     captured = proxy.get_requests(session_id)
     proxy.delete_session(session_id)
+    # Read the access-spy report (best-effort; absent on crash-before-exit
+    # is tolerated — the child's atexit hook runs even on sys.exit(7)).
+    spy_accessed: set[str] = set()
+    if access_out_host is not None:
+        try:
+            spy_accessed = parse_access_report(
+                access_out_host.read_text(encoding="utf-8")
+            )
+        except OSError:
+            spy_accessed = set()
 
     if timed_out:
         raise DynamicAnalysisError(
@@ -5159,6 +5501,7 @@ def analyze_dynamic_for_command(
                 captured_requests=0,
                 failure_excerpt=error_line[:500],
                 missing_module=module_name,
+                spy_accessed=spy_accessed,
             )
             return set(), diag
         # 2. Sentinel attribution.
@@ -5174,6 +5517,7 @@ def analyze_dynamic_for_command(
                 captured_requests=0,
                 failure_excerpt=short_excerpt,
                 failing_params=failing,
+                spy_accessed=spy_accessed,
             )
             return set(failing), diag
         # 3. No specific attribution → fall back to the loud-fail behaviour.
@@ -5206,7 +5550,11 @@ def analyze_dynamic_for_command(
         )
     hits = detect_sentinel_hits(captured, sentinels)
     status = "ok" if captured else "ok_no_capture"
-    diag = CommandDiagnostic(status=status, captured_requests=len(captured))
+    diag = CommandDiagnostic(
+        status=status,
+        captured_requests=len(captured),
+        spy_accessed=spy_accessed,
+    )
     return hits, diag
 
 
@@ -5279,6 +5627,8 @@ def analyze_integration(
     coerce_certs: bool = True,
     auto_retry_integration_docker: bool = True,
     seed_overrides: dict[str, str] | None = None,
+    seed_args: dict[str, dict[str, str]] | None = None,
+    seed_command_args: bool = True,
     with_diagnostics: bool = False,
     call_graph_depth: int = 3,
     min_confidence: float = 0.0,
@@ -5501,6 +5851,8 @@ def analyze_integration(
             auto_retry_integration_docker=auto_retry_integration_docker,
             yml_data=yml_data,
             seed_overrides=seed_overrides,
+            seed_args=seed_args,
+            seed_command_args=seed_command_args,
         )
 
     # Fix B (B.6): for every command, build the per-(command, param)
@@ -5517,11 +5869,43 @@ def analyze_integration(
     # analyze_static_attributions_with_status for silent-zero row
     # synthesis (the proven_unused / needs_review verdicts).
     yml_param_name_set = set(all_param_names) - ignore
+    # Params-access-spy baseline: keys read at startup are read by EVERY
+    # command, so they must NOT be elevated per-command. Use test-module's
+    # accessed-key set as the baseline (it exercises the module-import +
+    # main() startup path without command-specific args). Falls back to the
+    # intersection of all commands' accessed sets if test-module is absent.
+    # Baseline = keys read at startup (import + main() before dispatch),
+    # which appear on EVERY command. Combine two robust signals so a flaky
+    # test-module read can't shrink the baseline (a too-small baseline
+    # would cause false per-command elevations):
+    #   (a) test-module's accessed set (pure startup path), AND
+    #   (b) the intersection of all commands' accessed sets (keys every
+    #       command reads = startup-common, e.g. module-level globals).
+    # Their UNION is the conservative baseline.
+    baseline_accessed: set[str] = set()
+    tm_diag = diagnostics.get("test-module")
+    if tm_diag is not None and tm_diag.spy_accessed:
+        baseline_accessed |= set(tm_diag.spy_accessed)
+    spy_sets = [
+        set(d.spy_accessed) for d in diagnostics.values() if d.spy_accessed
+    ]
+    if spy_sets:
+        baseline_accessed |= set.intersection(*spy_sets)
     for cmd in commands:
         diag = diagnostics.get(cmd)
         if diag is None:
             diag = CommandDiagnostic(status="ok_no_capture")
             diagnostics[cmd] = diag
+        # Compute the access-spy elevation set for this command: keys read
+        # above the startup baseline, restricted to YML params (minus
+        # ignored). Pre-dispatch/module-import reads fall into the baseline
+        # and are intentionally NOT elevated (they stay at their static tier).
+        access_spy_params = attribute_access_spy(
+            command_accessed=set(diag.spy_accessed),
+            baseline_accessed=baseline_accessed,
+            yml_param_names=yml_param_name_set,
+            ignore=ignore,
+        )
         (
             _scope_1,
             _scope_2,
@@ -5537,6 +5921,7 @@ def analyze_integration(
             call_graph_depth=call_graph_depth,
             yml_param_names=yml_param_name_set,
             emit_proven_unused=emit_proven_unused,
+            access_spy_params=access_spy_params,
         )
         # Change 1: surface the per-command analysis_status on the
         # diagnostic so the consumer's AI can gate its triage on it.
@@ -5640,6 +6025,8 @@ def _run_dynamic_phase(
     auto_retry_integration_docker: bool = True,
     yml_data: dict[str, Any] | None = None,
     seed_overrides: dict[str, str] | None = None,
+    seed_args: dict[str, dict[str, str]] | None = None,
+    seed_command_args: bool = True,
 ) -> None:
     """Drive prepare-content + per-command dynamic runs.
 
@@ -5700,6 +6087,8 @@ def _run_dynamic_phase(
             auto_retry_integration_docker=auto_retry_integration_docker,
             yml_data=yml_data,
             seed_overrides=seed_overrides,
+            seed_args=seed_args,
+            seed_command_args=seed_command_args,
         )
         if not retry_triggered or retries_done >= 1:
             return
@@ -5731,6 +6120,8 @@ def _run_dynamic_phase_once(
     auto_retry_integration_docker: bool = True,
     yml_data: dict[str, Any] | None = None,
     seed_overrides: dict[str, str] | None = None,
+    seed_args: dict[str, dict[str, str]] | None = None,
+    seed_command_args: bool = True,
 ) -> bool:
     """Run one pass of the dynamic phase.
 
@@ -5782,6 +6173,10 @@ def _run_dynamic_phase_once(
                     failures += 1
                     continue
                 try:
+                    cmd_args = (
+                        get_command_args(yml_data, cmd) if yml_data is not None else []
+                    )
+                    cmd_seed_args = (seed_args or {}).get(cmd)
                     captured_set, diag = analyze_dynamic_for_command(
                         proxy,
                         unified,
@@ -5794,6 +6189,9 @@ def _run_dynamic_phase_once(
                         image=image,
                         coerce_certs=coerce_certs,
                         seed_overrides=seed_overrides,
+                        command_args=cmd_args,
+                        seed_args=cmd_seed_args,
+                        seed_command_args=seed_command_args,
                     )
                     dynamic_results[cmd] = captured_set
                     diagnostics[cmd] = diag
@@ -6112,6 +6510,35 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
             "recovery loop."
         ),
     )
+    parser.add_argument(
+        "--seed-arg",
+        action="append",
+        default=None,
+        metavar="CMD:NAME=VALUE",
+        help=(
+            "Explicitly seed command-ARGUMENT NAME with VALUE for command "
+            "CMD during the dynamic phase, overriding the YML "
+            "defaultValue / first-predefined / SENTINEL_ARG_<name> "
+            "default. Repeatable. The CMD: prefix scopes the override to "
+            "one command, so the same arg name on different commands can "
+            "differ, e.g. --seed-arg ip:ip=1.1.1.1 "
+            "--seed-arg abuseipdb-report-ip:ip=8.8.8.8. Use this when a "
+            "required command argument needs a specific value to traverse "
+            "a code path (e.g. a real IP/CIDR) that the auto-seeded "
+            "sentinel doesn't satisfy."
+        ),
+    )
+    parser.add_argument(
+        "--no-seed-args",
+        action="store_true",
+        help=(
+            "Disable automatic command-argument seeding (ON by default). "
+            "When set, demisto.args() returns {} during the dynamic phase "
+            "(legacy behavior). Handlers whose YML arguments are required "
+            "positional parameters will then crash before any HTTP call "
+            "(status no_data). Use only for strict/debug runs."
+        ),
+    )
     # Fix A: --call-graph-depth knob (default 3, clamped [1, 5]).
     # Bumped from the implicit hard-coded depth=2 so transitive helper
     # reads at depth-3 (SplunkPy v2 ``update_remote_system`` shape) are
@@ -6273,6 +6700,11 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
+    try:
+        seed_args = parse_seed_args(args.seed_arg)
+    except ValueError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
     # Fix A: validate --call-graph-depth (range [1, 5]). Reject loud
     # so a typo of 0 or 10 surfaces immediately instead of silently
     # producing trash output.
@@ -6320,6 +6752,8 @@ def main(argv: list[str] | None = None) -> int:
             coerce_certs=not args.no_sentinel_coercion,
             auto_retry_integration_docker=args.auto_retry_integration_docker,
             seed_overrides=seed_overrides,
+            seed_args=seed_args,
+            seed_command_args=not args.no_seed_args,
             with_diagnostics=args.with_diagnostics,
             call_graph_depth=args.call_graph_depth,
             min_confidence=args.min_confidence,

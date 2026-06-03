@@ -1,8 +1,8 @@
 Integration ID,Integration File Path,Connector ID,assignee,Auth Details,Params to Commands,Params for test with default in code,Params to Capabilities,generated manifest,run manifest make validate,Release Notes,precommit/validate/unit tests passed,param parity test passes,code reviewed,code merged
-AMP,Packs/AMP/Integrations/AMP/AMP.yml,Cisco Security,,,,,,,,,,,,
-AMPv2,Packs/AMP/Integrations/AMPv2/AMPv2.yml,Cisco Security,,,,,,,,,,,,
-APIVoid,Packs/APIVoid/Integrations/APIVoid/APIVoid.yml,APIVoid,,,,,,,,,,,,
-AWS - ACM,Packs/AWS-ACM/Integrations/AWS-ACM/AWS-ACM.yml,AWS,,,,,,,,,,,,
+AMP,Packs/AMP/Integrations/AMP/AMP.yml,Cisco Security,juschwartz,"{""auth_types"":[{""type"":""Plain"",""name"":""credentials"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""insecure"",""server""]}",,,,,,,,,,
+AMPv2,Packs/AMP/Integrations/AMPv2/AMPv2.yml,Cisco Security,juschwartz,"{""auth_types"":[{""type"":""Plain"",""name"":""credentials"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""insecure"",""server_url""]}",,,,,,,,,,
+APIVoid,Packs/APIVoid/Integrations/APIVoid/APIVoid.yml,APIVoid,juschwartz,"{""auth_types"":[{""type"":""APIKey"",""name"":""apikey"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""key""}}],""other_connection"":[""insecure"",""url""]}",,,,,,,,,,
+AWS - ACM,Packs/AWS-ACM/Integrations/AWS-ACM/AWS-ACM.yml,AWS,juschwartz,"{""auth_types"":[{""type"":""Passthrough"",""name"":""aws_creds"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""access_key"",""credentials.password"":""secret_key""}}],""other_connection"":[""defaultRegion"",""insecure"",""proxy"",""roleArn"",""roleSessionName"",""sessionDuration"",""sts_regional_endpoint""]}",,,,,,,,,,
 AWS - AccessAnalyzer,Packs/AWS-AccessAnalyzer/Integrations/AWS-AccessAnalyzer/AWS-AccessAnalyzer.yml,AWS,,,,,,,,,,,,
 AWS - Athena - Beta,Packs/AWS-Athena/Integrations/AWS-Athena/AWS-Athena.yml,AWS,,,,,,,,,,,,
 AWS - CloudTrail,Packs/AWS-CloudTrail/Integrations/AWS-CloudTrail/AWS-CloudTrail.yml,AWS,,,,,,,,,,,,
@@ -31,7 +31,31 @@ AWS-SNS-Listener,Packs/AWS-SNS-Listener/Integrations/AWSSNSListener/AWSSNSListen
 AWS-WAF,Packs/AWS_WAF/Integrations/AWSWAF/AWSWAF.yml,AWS,,,,,,,,,,,,
 Abnormal Security Event Collector,Packs/AbnormalSecurity/Integrations/AbnormalSecurityEventCollector/AbnormalSecurityEventCollector.yml,Abnormal Security,,,,,,,,,,,,
 Absolute,Packs/Absolute/Integrations/Absolute/Absolute.yml,Absolute Software Absolute,,,,,,,,,,,,
-AbuseIPDB,Packs/AbuseDB/Integrations/AbuseDB/AbuseDB.yml,AbuseIPDB,,,,,,,,,,,,
+AbuseIPDB,Packs/AbuseDB/Integrations/AbuseDB/AbuseDB.yml,AbuseIPDB,juschwartz,"{
+  ""auth_types"": [
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""abuseipdb_multi_key"",
+      ""xsoar_param_map"": {
+        ""credentials.password"": ""abuseipdb_api_key"",
+        ""hunting_credentials.password"": ""abusech_hunting_api_key""
+      },
+      ""interpolated"": true
+    }
+  ],
+  ""other_connection"": [""abusech_hunting_url"", ""insecure"", ""proxy"", ""server""]
+}","{
+  ""integration"": ""AbuseIPDB"",
+  ""commands"": {
+    ""ip"": [""days"", ""disable_private_ip_lookup"", ""disregard_quota"", ""integrationReliability"", ""threshold""],
+    ""abuseipdb-check-cidr-block"": [""days"", ""disregard_quota"", ""integrationReliability"", ""threshold""],
+    ""abuseipdb-report-ip"": [""disregard_quota""],
+    ""abuseipdb-get-blacklist"": [""disregard_quota""],
+    ""abuseipdb-get-categories"": [],
+    ""abuseipdb-get-fplist"": [],
+    ""test-module"": []
+  }
+}",,,,,,,,,
 Active Directory Query v2,Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml,Microsoft Active Directory,,,,,,,,,,,,
 ActiveMQ,Packs/ActiveMQ/Integrations/ActiveMQ/ActiveMQ.yml,Apache ActiveMQ,,,,,,,,,,,,
 AdminByRequest,Packs/AdminByRequest/Integrations/AdminByRequestEventCollector/AdminByRequestEventCollector.yml,AdminByRequest,,,,,,,,,,,,

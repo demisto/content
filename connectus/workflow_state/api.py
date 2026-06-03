@@ -1077,10 +1077,11 @@ def dry_run_auth(
     Runs the same three checks ``set_integration_auth`` runs — schema
     validation, seed-overrides/Auth-Details overlap, and the auth-parity
     gate — in the same order, short-circuiting on the first failure, but
-    never persists anything. Returns a six-key envelope describing what
-    *would* happen on the real path::
+    never persists anything. Returns an envelope describing what *would*
+    happen on the real path::
 
         {
+          "pass":            bool,   # TOP-LEVEL verdict — read THIS
           "dry_run":         True,
           "integration_id":  "<id>",
           "validator":       {"passed": bool, "errors": [...]},
@@ -1092,10 +1093,41 @@ def dry_run_auth(
           "verdict":         {"would_commit": bool, "reason": "<why>"},
         }
 
+    The top-level ``pass`` key is the single, unambiguous "is this payload
+    good to commit?" signal — it mirrors ``verdict.would_commit`` (``True``
+    when parity passed or structurally short-circuited) and is the field
+    callers / the skill should branch on. The nested ``verdict`` block is
+    retained for its human-readable ``reason``.
+
     The CSV is never read for mutation and ``save_csv`` is never called.
     Use :func:`dry_run_exit_code` to map the envelope to a process exit
     code that is symmetric with the real path's
     :func:`set_auth_exit_code`.
+    """
+    envelope = _dry_run_auth_impl(
+        integration_id,
+        auth_detail_json,
+        seed_overrides=seed_overrides,
+        timeout=timeout,
+    )
+    # Single, unambiguous top-level verdict the skill / callers branch on.
+    # Mirrors verdict.would_commit; placed first for visibility.
+    would_commit = bool((envelope.get("verdict") or {}).get("would_commit"))
+    return {"pass": would_commit, **envelope}
+
+
+def _dry_run_auth_impl(
+    integration_id: str,
+    auth_detail_json: str,
+    *,
+    seed_overrides: dict | None = None,
+    timeout: int = 60,
+) -> dict:
+    """Internal worker for :func:`dry_run_auth`.
+
+    Builds the envelope (sans the top-level ``pass`` key, which the public
+    wrapper injects). Kept separate so every short-circuit ``return`` path
+    automatically gets the ``pass`` field without repeating it five times.
     """
     skipped_marker = "not evaluated (earlier check failed)"
 

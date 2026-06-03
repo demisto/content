@@ -1,0 +1,259 @@
+"""Tests for self-executing checkpoint gates (:mod:`workflow_state.gates`).
+
+Covers:
+
+1. The gate registry (``GATES``, ``known_gate_names``, ``is_known_gate``)
+   and the ``run_gate`` runner with a mocked subprocess (pass / fail /
+   timeout / unknown-gate / spawn-error).
+2. The config loader parsing the per-step ``gate:`` key, including
+   rejection of an unknown gate name and a ``gate`` on a non-checkpoint
+   step.
+3. ``markpass_integration_step`` running the gate and rejecting the
+   markpass unless the gate passes — with NO bypass.
+"""
+from __future__ import annotations
+
+import subprocess
+from unittest import mock
+
+import pytest
+
+from workflow_state import api as ws_api
+from workflow_state import gates
+from workflow_state.config_loader import (
+    _reset_config_for_testing,
+    load_config,
+)
+from workflow_state.exceptions import ConfigLoadError
+
+
+@pytest.fixture(autouse=True)
+def _reset_singleton():
+    _reset_config_for_testing()
+    yield
+    _reset_config_for_testing()
+
+
+# ---------------------------------------------------------------------------
+# 1) Registry + runner
+# ---------------------------------------------------------------------------
+
+class TestRegistry:
+    def test_precommit_gate_registered(self) -> None:
+        assert gates.is_known_gate("precommit")
+        assert "precommit" in gates.known_gate_names()
+
+    def test_deferred_gates_not_registered(self) -> None:
+        # param_parity and make_validate are deferred (design §6.1/§6.3).
+        assert not gates.is_known_gate("param_parity")
+        assert not gates.is_known_gate("make_validate")
+
+    def test_no_bypass_helper_exists(self) -> None:
+        # There must be no env-var bypass for checkpoint gates.
+        assert not hasattr(gates, "gate_skipped_via_env")
+
+
+class TestRunGate:
+    def test_pass_on_exit_zero(self) -> None:
+        completed = subprocess.CompletedProcess(
+            args=["demisto-sdk"], returncode=0, stdout="ok", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("precommit", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        assert verdict["exit_code"] == 0
+        assert verdict["gate"] == "precommit"
+        # argv targets the integration dir.
+        called_argv = m.call_args.args[0]
+        assert called_argv == ["demisto-sdk", "pre-commit", "-i", "/abs/dir"]
+
+    def test_fail_on_nonzero_exit(self) -> None:
+        completed = subprocess.CompletedProcess(
+            args=["demisto-sdk"], returncode=1, stdout="", stderr="boom"
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed):
+            verdict = gates.run_gate("precommit", "/abs/dir", "MyInt")
+        assert verdict["allow"] is False
+        assert verdict["exit_code"] == 1
+        assert "exited 1" in verdict["reason"]
+        assert verdict["stderr_tail"] == "boom"
+
+    def test_timeout_is_failure(self) -> None:
+        with mock.patch.object(
+            gates.subprocess,
+            "run",
+            side_effect=subprocess.TimeoutExpired(cmd="demisto-sdk", timeout=5),
+        ):
+            verdict = gates.run_gate("precommit", "/abs/dir", "MyInt", timeout=5)
+        assert verdict["allow"] is False
+        assert verdict["exit_code"] is None
+        assert "timed out" in verdict["reason"]
+
+    def test_spawn_error_is_failure(self) -> None:
+        with mock.patch.object(
+            gates.subprocess, "run", side_effect=FileNotFoundError("no demisto-sdk")
+        ):
+            verdict = gates.run_gate("precommit", "/abs/dir", "MyInt")
+        assert verdict["allow"] is False
+        assert verdict["exit_code"] is None
+        assert "could not be launched" in verdict["reason"]
+
+    def test_unknown_gate_is_failure(self) -> None:
+        verdict = gates.run_gate("nope", "/abs/dir", "MyInt")
+        assert verdict["allow"] is False
+        assert verdict["exit_code"] is None
+        assert "unknown gate" in verdict["reason"]
+
+    def test_timeout_override_passed_to_subprocess(self) -> None:
+        completed = subprocess.CompletedProcess(
+            args=["x"], returncode=0, stdout="", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            gates.run_gate("precommit", "/abs/dir", "MyInt", timeout=42)
+        assert m.call_args.kwargs["timeout"] == 42
+
+
+# ---------------------------------------------------------------------------
+# 2) Config-loader gate parsing
+# ---------------------------------------------------------------------------
+
+_BASE_YAML = """\
+schema_version: 1
+identity_columns:
+  - {{"name": "Integration ID", "description": "primary key"}}
+markers:
+  check: "✅"
+  fail: "❌"
+  na: "N/A"
+  checkpoint_done_values: ["✅", "N/A"]
+  flag_values: ["YES", "NO", "N/A"]
+steps:
+  - name: "assignee"
+    kind: data
+    optional: false
+    setter: set-assignee
+    description: "owner"
+  - name: "gated cp"
+    kind: {cp_kind}
+    optional: false
+    setter: {cp_setter}
+    {gate_line}
+    description: "a step"
+"""
+
+
+def _write(tmp_path, *, cp_kind="checkpoint", cp_setter="null", gate_line=""):
+    body = _BASE_YAML.format(cp_kind=cp_kind, cp_setter=cp_setter, gate_line=gate_line)
+    p = tmp_path / "wf.yml"
+    p.write_text(body, encoding="utf-8")
+    return str(p)
+
+
+class TestLoaderGateParsing:
+    def test_default_yaml_binds_precommit_gate(self) -> None:
+        cfg = load_config()
+        step = cfg.step_by_name["precommit/validate/unit tests passed"]
+        assert step.gate == "precommit"
+
+    def test_checkpoint_without_gate_defaults_none(self) -> None:
+        cfg = load_config()
+        assert cfg.step_by_name["generated manifest"].gate is None
+
+    def test_valid_gate_parsed(self, tmp_path) -> None:
+        p = _write(tmp_path, gate_line="gate: precommit")
+        cfg = load_config(p)
+        assert cfg.step_by_name["gated cp"].gate == "precommit"
+
+    def test_unknown_gate_rejected(self, tmp_path) -> None:
+        p = _write(tmp_path, gate_line="gate: bogus_gate")
+        with pytest.raises(ConfigLoadError) as exc:
+            load_config(p)
+        assert "unknown gate" in str(exc.value)
+
+    def test_gate_on_data_step_rejected(self, tmp_path) -> None:
+        p = _write(
+            tmp_path, cp_kind="data", cp_setter="set-thing", gate_line="gate: precommit"
+        )
+        with pytest.raises(ConfigLoadError) as exc:
+            load_config(p)
+        assert "only valid for kind=checkpoint" in str(exc.value)
+
+
+# ---------------------------------------------------------------------------
+# 3) markpass gating (no bypass)
+# ---------------------------------------------------------------------------
+
+_GATED_STEP = "precommit/validate/unit tests passed"
+
+
+def _row_at_gated_step() -> dict:
+    """A CSV row with every step before the gated checkpoint already done."""
+    cfg = load_config()
+    row = {
+        "Integration ID": "MyInt",
+        "Integration File Path": "Packs/Fake/Integrations/Fake/Fake.yml",
+        "Connector ID": "fake",
+    }
+    for s in cfg.steps:
+        if s.name == _GATED_STEP:
+            row[s.name] = ""  # the step under test — not yet done
+            break
+        # Fill prior steps: checkpoints get the check marker, data gets a value.
+        row[s.name] = cfg.markers.check if s.kind == "checkpoint" else "x"
+    # Ensure remaining columns exist (empty) so the row is well-formed.
+    for s in cfg.steps:
+        row.setdefault(s.name, "")
+    return row
+
+
+@pytest.fixture
+def gated_csv(monkeypatch: pytest.MonkeyPatch) -> list[dict]:
+    rows = [_row_at_gated_step()]
+    monkeypatch.setattr(ws_api, "load_csv", lambda: rows)
+    monkeypatch.setattr(ws_api, "save_csv", lambda _rows: None)
+    return rows
+
+
+class TestMarkpassGate:
+    def test_gate_pass_allows_markpass(self, gated_csv, monkeypatch) -> None:
+        monkeypatch.setattr(
+            ws_api,
+            "run_checkpoint_gate",
+            lambda iid, gate, timeout: {"allow": True, "gate": gate, "reason": "passed"},
+        )
+        result = ws_api.markpass_integration_step("MyInt", _GATED_STEP)
+        assert "error" not in result
+        assert result["completed_step"] == _GATED_STEP
+        assert gated_csv[0][_GATED_STEP] == load_config().markers.check
+
+    def test_gate_fail_rejects_markpass(self, gated_csv, monkeypatch) -> None:
+        monkeypatch.setattr(
+            ws_api,
+            "run_checkpoint_gate",
+            lambda iid, gate, timeout: {
+                "allow": False, "gate": gate, "reason": "exited 1",
+                "stderr_tail": "boom",
+            },
+        )
+        result = ws_api.markpass_integration_step("MyInt", _GATED_STEP)
+        assert "error" in result
+        assert "gate 'precommit' failed" in result["error"]
+        # The cell must NOT have been marked passed.
+        assert gated_csv[0][_GATED_STEP] == ""
+
+    def test_gate_is_actually_invoked(self, gated_csv, monkeypatch) -> None:
+        calls = []
+
+        def _spy(iid, gate, timeout):
+            calls.append((iid, gate, timeout))
+            return {"allow": True, "gate": gate, "reason": "passed"}
+
+        monkeypatch.setattr(ws_api, "run_checkpoint_gate", _spy)
+        ws_api.markpass_integration_step("MyInt", _GATED_STEP, gate_timeout=99)
+        assert calls == [("MyInt", "precommit", 99)]
+
+    def test_no_bypass_kwarg(self) -> None:
+        # markpass_integration_step must NOT accept a skip/bypass kwarg.
+        import inspect
+        sig = inspect.signature(ws_api.markpass_integration_step)
+        assert "skip_gate" not in sig.parameters

@@ -722,6 +722,337 @@ class TestBuildParamValues:
         assert sentinels["anything"][0].startswith(ccp.SENTINEL_PREFIX)
 
 
+class TestGetCommandArgs:
+    _YML = {
+        "script": {
+            "commands": [
+                {
+                    "name": "ip",
+                    "arguments": [
+                        {"name": "ip", "isArray": True},
+                        {"name": "verbose", "defaultValue": "true"},
+                    ],
+                },
+                {"name": "no-args-cmd", "arguments": []},
+                {"name": "missing-args-key"},
+            ]
+        }
+    }
+
+    def test_returns_arguments_for_command(self) -> None:
+        args = ccp.get_command_args(self._YML, "ip")
+        assert [a["name"] for a in args] == ["ip", "verbose"]
+
+    def test_empty_for_command_without_arguments(self) -> None:
+        assert ccp.get_command_args(self._YML, "no-args-cmd") == []
+
+    def test_empty_when_arguments_key_missing(self) -> None:
+        assert ccp.get_command_args(self._YML, "missing-args-key") == []
+
+    def test_empty_for_synthetic_command(self) -> None:
+        # test-module / fetch-incidents have no YML arguments entry.
+        assert ccp.get_command_args(self._YML, "test-module") == []
+
+    def test_empty_for_unknown_command(self) -> None:
+        assert ccp.get_command_args(self._YML, "does-not-exist") == []
+
+    def test_skips_malformed_argument_entries(self) -> None:
+        yml = {"script": {"commands": [{"name": "c", "arguments": [
+            {"name": "good"}, {"no_name": "x"}, "not-a-dict",
+        ]}]}}
+        assert [a["name"] for a in ccp.get_command_args(yml, "c")] == ["good"]
+
+
+class TestBuildArgValues:
+    def test_uses_default_value(self) -> None:
+        args = [{"name": "verbose", "defaultValue": "true"}]
+        assert ccp.build_arg_values(args) == {"verbose": "true"}
+
+    def test_tolerates_lowercase_defaultvalue(self) -> None:
+        args = [{"name": "x", "defaultvalue": "v"}]
+        assert ccp.build_arg_values(args) == {"x": "v"}
+
+    def test_first_predefined_when_no_default(self) -> None:
+        args = [{"name": "format", "predefined": ["json", "csv"]}]
+        assert ccp.build_arg_values(args) == {"format": "json"}
+
+    def test_sentinel_when_no_default_or_predefined(self) -> None:
+        args = [{"name": "ip", "isArray": True}]
+        out = ccp.build_arg_values(args)
+        assert out["ip"] == f"{ccp.ARG_SENTINEL_PREFIX}ip"
+
+    def test_default_wins_over_predefined(self) -> None:
+        args = [{"name": "f", "defaultValue": "csv", "predefined": ["json", "csv"]}]
+        assert ccp.build_arg_values(args) == {"f": "csv"}
+
+    def test_empty_string_default_falls_through_to_predefined(self) -> None:
+        args = [{"name": "f", "defaultValue": "", "predefined": ["json"]}]
+        assert ccp.build_arg_values(args) == {"f": "json"}
+
+    def test_seed_arg_overrides_everything(self) -> None:
+        args = [
+            {"name": "ip", "isArray": True},
+            {"name": "verbose", "defaultValue": "true"},
+            {"name": "format", "predefined": ["json", "csv"]},
+        ]
+        out = ccp.build_arg_values(args, seed_args={"ip": "1.1.1.1", "format": "csv"})
+        assert out == {"ip": "1.1.1.1", "verbose": "true", "format": "csv"}
+
+    def test_every_arg_gets_a_value(self) -> None:
+        # Guarantees required-positional handlers never crash on missing kwarg.
+        args = [{"name": "a"}, {"name": "b"}, {"name": "c"}]
+        out = ccp.build_arg_values(args)
+        assert set(out.keys()) == {"a", "b", "c"}
+
+    def test_empty_args_yields_empty_dict(self) -> None:
+        assert ccp.build_arg_values([]) == {}
+
+
+class TestParseSeedArgs:
+    def test_parses_per_command_scoped_pairs(self) -> None:
+        out = ccp.parse_seed_args(["ip:ip=1.1.1.1", "report:ip=8.8.8.8"])
+        assert out == {"ip": {"ip": "1.1.1.1"}, "report": {"ip": "8.8.8.8"}}
+
+    def test_multiple_args_same_command(self) -> None:
+        out = ccp.parse_seed_args(["ip:ip=1.1.1.1", "ip:days=7"])
+        assert out == {"ip": {"ip": "1.1.1.1", "days": "7"}}
+
+    def test_none_yields_empty(self) -> None:
+        assert ccp.parse_seed_args(None) == {}
+
+    def test_value_may_contain_equals(self) -> None:
+        out = ccp.parse_seed_args(["c:q=a=b"])
+        assert out == {"c": {"q": "a=b"}}
+
+    def test_missing_colon_raises(self) -> None:
+        with pytest.raises(ValueError, match="CMD:NAME=VALUE"):
+            ccp.parse_seed_args(["ip=1.1.1.1"])
+
+    def test_missing_equals_raises(self) -> None:
+        with pytest.raises(ValueError, match="CMD:NAME=VALUE"):
+            ccp.parse_seed_args(["ip:ip"])
+
+    def test_empty_command_raises(self) -> None:
+        with pytest.raises(ValueError, match="non-empty"):
+            ccp.parse_seed_args([":ip=1.1.1.1"])
+
+    def test_empty_name_raises(self) -> None:
+        with pytest.raises(ValueError, match="non-empty"):
+            ccp.parse_seed_args(["ip:=1.1.1.1"])
+
+
+class TestBuildChildEnvArgs:
+    def test_args_json_present_and_serialized(self) -> None:
+        env = ccp._build_child_env(
+            params={"p": 1},
+            command="ip",
+            proxy_url="http://x",
+            unified_path="/u",
+            mock_dir="/m",
+            args={"ip": "1.1.1.1"},
+        )
+        import json as _json
+        assert _json.loads(env["CHECK_ARGS_JSON"]) == {"ip": "1.1.1.1"}
+        assert _json.loads(env["CHECK_PARAMS_JSON"]) == {"p": 1}
+        assert env["CHECK_COMMAND"] == "ip"
+
+    def test_args_defaults_to_empty_dict(self) -> None:
+        env = ccp._build_child_env(
+            params={},
+            command="c",
+            proxy_url="http://x",
+            unified_path="/u",
+            mock_dir="/m",
+        )
+        assert env["CHECK_ARGS_JSON"] == "{}"
+
+    def test_mock_template_reads_check_args_json(self) -> None:
+        # The on-disk demistomock must surface CHECK_ARGS_JSON via args().
+        assert "CHECK_ARGS_JSON" in ccp._DEMISTOMOCK_TEMPLATE
+        assert "_ARGS" in ccp._DEMISTOMOCK_TEMPLATE
+
+
+class TestTrackingMapping:
+    """The params-access spy: an instrumented mapping that records reads."""
+
+    def test_getitem_records_key(self) -> None:
+        m = ccp.TrackingMapping({"a": 1, "b": 2})
+        _ = m["a"]
+        assert m.accessed_keys == {"a"}
+
+    def test_get_records_key(self) -> None:
+        m = ccp.TrackingMapping({"a": 1})
+        m.get("a")
+        assert "a" in m.accessed_keys
+
+    def test_get_records_missing_key_too(self) -> None:
+        # params.get("disregard_quota") returns None when absent, but the
+        # READ intent is still meaningful — record it.
+        m = ccp.TrackingMapping({"a": 1})
+        m.get("missing")
+        assert "missing" in m.accessed_keys
+
+    def test_contains_records_key(self) -> None:
+        m = ccp.TrackingMapping({"a": 1})
+        _ = "a" in m
+        assert "a" in m.accessed_keys
+
+    def test_behaves_like_dict_for_values(self) -> None:
+        m = ccp.TrackingMapping({"a": 1, "b": 2})
+        assert m["a"] == 1
+        assert m.get("b") == 2
+        assert m.get("z", "default") == "default"
+        assert ("a" in m) is True
+        assert ("z" in m) is False
+
+    def test_nested_get_chain_records_parent(self) -> None:
+        # ``params.get("credentials", {}).get("password")`` must record
+        # the parent key 'credentials' on the tracking mapping.
+        m = ccp.TrackingMapping({"credentials": {"password": "x"}})
+        m.get("credentials", {}).get("password")
+        assert "credentials" in m.accessed_keys
+
+    def test_accessed_keys_starts_empty(self) -> None:
+        m = ccp.TrackingMapping({"a": 1})
+        assert m.accessed_keys == set()
+
+
+class TestParseAccessReport:
+    def test_parses_json_list(self) -> None:
+        assert ccp.parse_access_report('["a", "b"]') == {"a", "b"}
+
+    def test_empty_or_missing_yields_empty(self) -> None:
+        assert ccp.parse_access_report("") == set()
+        assert ccp.parse_access_report(None) == set()
+
+    def test_ignores_malformed(self) -> None:
+        # Robust to a truncated/garbled child report.
+        assert ccp.parse_access_report("not json{{{") == set()
+
+
+class TestAttributeAccessSpy:
+    def test_elevates_above_baseline_only(self) -> None:
+        # 'integrationReliability' is read at startup (baseline) → not
+        # elevated. 'disregard_quota' is command-specific → elevated.
+        elevate = ccp.attribute_access_spy(
+            command_accessed={"integrationReliability", "disregard_quota"},
+            baseline_accessed={"integrationReliability"},
+            yml_param_names={"integrationReliability", "disregard_quota", "threshold"},
+            ignore=set(),
+        )
+        assert elevate == {"disregard_quota"}
+
+    def test_filters_to_yml_params(self) -> None:
+        # Keys not in the YML config set are dropped (e.g. internal keys).
+        elevate = ccp.attribute_access_spy(
+            command_accessed={"disregard_quota", "some_internal_key"},
+            baseline_accessed=set(),
+            yml_param_names={"disregard_quota"},
+            ignore=set(),
+        )
+        assert elevate == {"disregard_quota"}
+
+    def test_drops_ignored_params(self) -> None:
+        elevate = ccp.attribute_access_spy(
+            command_accessed={"server", "disregard_quota"},
+            baseline_accessed=set(),
+            yml_param_names={"server", "disregard_quota"},
+            ignore={"server"},
+        )
+        assert elevate == {"disregard_quota"}
+
+    def test_empty_when_all_in_baseline(self) -> None:
+        elevate = ccp.attribute_access_spy(
+            command_accessed={"a", "b"},
+            baseline_accessed={"a", "b"},
+            yml_param_names={"a", "b"},
+            ignore=set(),
+        )
+        assert elevate == set()
+
+
+class TestDynamicAccessTier:
+    def test_dynamic_access_tier_exists_and_is_high_but_not_one(self) -> None:
+        # Per decision: spy hit is strong (needs_review) but below the
+        # on-wire dynamic_capture gold tier so the agent double-checks.
+        assert "dynamic_access" in ccp.TIER_CONFIDENCE
+        val = ccp.TIER_CONFIDENCE["dynamic_access"]
+        assert 0.5 < val < 1.0
+        assert val < ccp.TIER_CONFIDENCE["dynamic_capture"]
+
+
+class TestAccessSpyEnvWiring:
+    def test_mock_template_uses_tracking_mapping(self) -> None:
+        assert "TrackingMapping" in ccp._DEMISTOMOCK_TEMPLATE
+        assert "CHECK_ACCESS_OUT" in ccp._DEMISTOMOCK_TEMPLATE
+
+    def test_child_env_carries_access_out_path(self) -> None:
+        env = ccp._build_child_env(
+            params={},
+            command="c",
+            proxy_url="http://x",
+            unified_path="/u",
+            mock_dir="/m",
+            access_out="/tmp/access.json",
+        )
+        assert env["CHECK_ACCESS_OUT"] == "/tmp/access.json"
+
+
+class TestBuildAttributionsAccessSpy:
+    """The spy folds into the attribution rollup at the dynamic_access tier."""
+
+    def test_spy_param_gets_dynamic_access_source(self) -> None:
+        attrs = ccp._build_attributions(
+            handler_evidence=[],
+            pre_dispatch_evidence={},
+            module_const_to_params={},
+            hedged_constants=set(),
+            referenced_const_names=set(),
+            walk_uncertain=False,
+            captured=set(),
+            yml_param_names={"disregard_quota"},
+            access_spy_params={"disregard_quota"},
+        )
+        by_param = {a.param: a for a in attrs}
+        assert "disregard_quota" in by_param
+        assert "dynamic_access" in by_param["disregard_quota"].by_source
+        assert by_param["disregard_quota"].rollup_confidence == pytest.approx(0.9)
+
+    def test_spy_does_not_override_higher_dynamic_capture(self) -> None:
+        # On-wire capture (1.0) must still win the rollup over spy (0.9).
+        attrs = ccp._build_attributions(
+            handler_evidence=[],
+            pre_dispatch_evidence={},
+            module_const_to_params={},
+            hedged_constants=set(),
+            referenced_const_names=set(),
+            walk_uncertain=False,
+            captured={"token"},
+            yml_param_names={"token"},
+            access_spy_params={"token"},
+        )
+        by_param = {a.param: a for a in attrs}
+        assert by_param["token"].rollup_confidence == pytest.approx(1.0)
+        # both sources recorded
+        assert "dynamic_access" in by_param["token"].by_source
+        assert "dynamic_capture" in by_param["token"].by_source
+
+    def test_no_spy_params_means_no_dynamic_access_source(self) -> None:
+        attrs = ccp._build_attributions(
+            handler_evidence=[],
+            pre_dispatch_evidence={"x": "read in main"},
+            module_const_to_params={},
+            hedged_constants=set(),
+            referenced_const_names=set(),
+            walk_uncertain=False,
+            captured=set(),
+            yml_param_names={"x"},
+            access_spy_params=set(),
+        )
+        by_param = {a.param: a for a in attrs}
+        assert "dynamic_access" not in by_param["x"].by_source
+
+
 class TestSentinelDetection:
     def test_hit_in_url(self) -> None:
         reqs = [{"method": "GET", "url": "http://x/SENTINEL_PARAM_foo", "headers": {}}]

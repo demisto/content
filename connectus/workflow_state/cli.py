@@ -547,9 +547,14 @@ def _print_dry_run_text(env: dict) -> None:
     seed-overlap, parity, and verdict sections.
     """
     verdict = env.get("verdict") or {}
-    would = verdict.get("would_commit")
+    # Prefer the unambiguous top-level `pass`; fall back to verdict for
+    # backward compatibility with any envelope lacking it.
+    would = env.get("pass")
+    if would is None:
+        would = verdict.get("would_commit")
     print("set-auth dry-run preview")
     print(f"  integration: {env.get('integration_id')}")
+    print(f"  PASS:        {bool(would)}")
 
     validator = env.get("validator") or {}
     if validator.get("passed"):
