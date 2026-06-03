@@ -4,7 +4,7 @@
 
 ## What does this pack do?
 
-This pack integrates Cortex XSIAM with a DFIRe instance to automate your forensics and incident response workflows:
+This pack integrates Cortex XSIAM with a DFIRe instance to automate your forensics and incident response workflows, including:
 
 - **Case management** — Create, update, list, and close DFIRe cases directly from playbooks. Supports severity levels, assignees, and custom case types.
 - **IOC indicator synchronization** — Push indicators (IPs, domains, hashes, URLs) from Cortex XSIAM into DFIRe's global IOC registry, and link them to specific cases.
@@ -16,7 +16,7 @@ This pack integrates Cortex XSIAM with a DFIRe instance to automate your forensi
 
 ## Use Cases
 
-- Automatically open a DFIRe case when a high-severity Cortex XSIAM alert fires and assign it to the on-call analyst.
+- Automatically open a DFIRe case when a high-severity Cortex XSIAM issue fires and assign it to the on-call analyst.
 - Enrich a DFIRe case with IOC indicators extracted during triage, keeping the forensics case and the Cortex XSOAR investigation in sync.
 - Upload memory dumps, logs, or forensic artifacts from a War Room investigation directly into DFIRe with a single playbook task.
 - Add incident timeline entries from automated response actions so the forensic record reflects the full response lifecycle.
