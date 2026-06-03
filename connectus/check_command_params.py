@@ -6338,14 +6338,14 @@ def resolve_integration_path(integration_id: str) -> Path:
     """
     try:
         from workflow_state import get_integration_files
+
+        files = get_integration_files(integration_id)
     except Exception as exc:  # noqa: BLE001 — surface as a CLI error
         raise ValueError(
-            f"could not import workflow_state to resolve "
+            f"could not use workflow_state to resolve "
             f"--integration-id {integration_id!r}: "
             f"{type(exc).__name__}: {exc}"
         ) from exc
-
-    files = get_integration_files(integration_id)
     if "error" in files:
         raise ValueError(
             f"--integration-id {integration_id!r}: {files['error']} "

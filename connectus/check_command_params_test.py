@@ -4668,12 +4668,12 @@ class TestResolveIntegrationPath:
             with pytest.raises(ValueError, match="no resolvable YML path"):
                 ccp.resolve_integration_path("Foo")
 
-    def test_import_failure_raises_valueerror(self) -> None:
+    def test_workflow_state_failure_raises_valueerror(self) -> None:
         with patch(
             "workflow_state.get_integration_files",
             side_effect=ImportError("boom"),
         ):
-            with pytest.raises(ValueError, match="could not import workflow_state"):
+            with pytest.raises(ValueError, match="could not use workflow_state"):
                 ccp.resolve_integration_path("Foo")
 
 
