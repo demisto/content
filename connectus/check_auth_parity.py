@@ -2034,6 +2034,36 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
         )
     assert py_path is not None  # narrowed by detect_non_python
     py_source = py_path.read_text(encoding="utf-8", errors="replace")
+
+    # Parse + validate Auth Details up front so the interpolation gate can
+    # run before any "cannot verify" structural gate (no-baseclient,
+    # apimodule, multi-secret-passthrough).
+    errors = validate_auth_details(auth_details) if auth_details is not None else []
+    if errors:
+        raise ValueError(f"Invalid Auth Details for {integration_id}: {errors}")
+    details = (
+        parse_auth_details(auth_details) if auth_details is not None
+        else _empty_details()
+    )
+
+    # ORDERING FIX (SplunkPy v2, 2026-06-03): the all-interpolated
+    # short-circuit MUST run before the no-baseclient / apimodule /
+    # multi-secret-passthrough structural gates. When EVERY auth type is
+    # interpolated there is genuinely nothing to parity-test, so the
+    # integration takes the clean all-interpolated pass path regardless of
+    # whether it uses BaseClient. Previously the no-baseclient gate fired
+    # first and pre-empted this, so a fully-interpolated non-BaseClient
+    # integration (SplunkPy v2, which uses splunklib) wrongly errored with
+    # ERROR_NO_BASECLIENT and the ``interpolated: true`` flag was never
+    # evaluated. The connection-filter interpolation check stays AFTER the
+    # structural gates (see below) — it only matters once we know we have a
+    # mixed/non-interpolated profile worth testing.
+    if details.auth_types and all(e.interpolated for e in details.auth_types):
+        return _emit_hard_error(
+            display, ERROR_ALL_INTERPOLATED,
+            _msg_all_interpolated(), EXIT_ALL_INTERPOLATED,
+        )
+
     if detect_no_baseclient(py_source):
         # FIXES-TODO #12 (LOCKED 2026-05-31): refine the diagnostic for
         # integrations whose ``Client`` subclasses a class defined in a
@@ -2055,22 +2085,13 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
             display, ERROR_NO_BASECLIENT, _msg_no_baseclient(), EXIT_NO_BASECLIENT,
         )
 
-    errors = validate_auth_details(auth_details) if auth_details is not None else []
-    if errors:
-        raise ValueError(f"Invalid Auth Details for {integration_id}: {errors}")
-    details = (
-        parse_auth_details(auth_details) if auth_details is not None
-        else _empty_details()
-    )
-
     # FIXES-TODO #9 (LOCKED 2026-05-31): multi-secret Passthrough
     # structural skip. Per cross-cutting decision #2 (XOR-only auth),
     # multi-secret/multi-flow integrations like AbuseIPDB classify as
     # Passthrough; the gate explicitly says "by design, not a failure."
-    # Fires BEFORE the all-interpolated check so the more specific
-    # diagnostic wins (Passthrough profiles are required to be
-    # interpolated, so they would otherwise short-circuit on the
-    # vaguer ERROR_ALL_INTERPOLATED).
+    # Runs AFTER the all-interpolated check (a fully-interpolated bundle is
+    # the clean path and wins) but is otherwise a more specific diagnostic
+    # than the per-connection interpolation gate below.
     multi_secret_keys = detect_multi_secret_passthrough(details)
     if multi_secret_keys is not None:
         return _emit_hard_error(

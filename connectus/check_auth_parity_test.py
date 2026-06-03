@@ -652,7 +652,49 @@ class TestHardErrors:
     ) -> None:
         """FIXES-TODO #9: Passthrough profile with 2+ credential-named
         keys produces ``MULTI_SECRET_PASSTHROUGH`` rather than running
-        the gate (or short-circuiting on a vaguer NoBaseClient)."""
+        the gate (or short-circuiting on a vaguer NoBaseClient).
+
+        ORDERING FIX (2026-06-03): the entry is now NON-interpolated. A
+        genuinely-all-interpolated passthrough bundle legitimately takes
+        the clean all-interpolated path (see
+        ``test_all_interpolated_passthrough_takes_clean_path`` and the
+        api.py gate strictness note), so the multi-secret diagnostic is
+        only reachable for a passthrough bundle that still carries secrets
+        to place (interpolated=False).
+        """
+        pack = _make_python_integration(tmp_path)
+        details_json = {
+            "auth_types": [
+                {"type": "Passthrough", "name": "bag",
+                 "xsoar_param_map": {
+                     "credentials.password": "primary",
+                     "hunting_credentials.password": "hunting_key",
+                 },
+                 "interpolated": False},
+            ],
+            "other_connection": [],
+        }
+        rc, payload = _run_main_capture(
+            [str(pack), "--integration-id", "AbuseIPDB",
+             "--auth-details", json.dumps(details_json)]
+        )
+        assert rc == cap.EXIT_MULTI_SECRET_PASSTHROUGH
+        assert payload["error"]["code"] == cap.MULTI_SECRET_PASSTHROUGH
+        # The diagnostic lists the matched credential keys …
+        assert "credentials.password" in payload["error"]["message"]
+        assert "hunting_credentials.password" in payload["error"]["message"]
+        # … and frames the skip as "by design" via the canonical literal.
+        assert cap._LITERAL_PARITY_GATE_SKIPPED in payload["error"]["message"]
+
+    def test_all_interpolated_passthrough_takes_clean_path(
+        self, tmp_path: Path
+    ) -> None:
+        """ORDERING FIX (2026-06-03): a fully-interpolated multi-secret
+        passthrough bundle is the clean all-interpolated path — it must
+        NOT auto-pass merely for being passthrough, nor error. It takes
+        ERROR_ALL_INTERPOLATED (rc 0), matching the api.py gate's
+        documented intent (workflow_state/api.py §_PARITY_STRUCTURAL_SKIP_CODES).
+        """
         pack = _make_python_integration(tmp_path)
         details_json = {
             "auth_types": [
@@ -669,13 +711,9 @@ class TestHardErrors:
             [str(pack), "--integration-id", "AbuseIPDB",
              "--auth-details", json.dumps(details_json)]
         )
-        assert rc == cap.EXIT_MULTI_SECRET_PASSTHROUGH
-        assert payload["error"]["code"] == cap.MULTI_SECRET_PASSTHROUGH
-        # The diagnostic lists the matched credential keys …
-        assert "credentials.password" in payload["error"]["message"]
-        assert "hunting_credentials.password" in payload["error"]["message"]
-        # … and frames the skip as "by design" via the canonical literal.
-        assert cap._LITERAL_PARITY_GATE_SKIPPED in payload["error"]["message"]
+        assert payload["error"]["code"] != cap.MULTI_SECRET_PASSTHROUGH
+        assert rc == 0
+        assert payload["error"]["code"] == cap.ERROR_ALL_INTERPOLATED
 
     def test_apimodule_import_emits_dedicated_diagnostic(
         self, tmp_path: Path
@@ -726,6 +764,41 @@ class TestHardErrors:
         # case is the ONLY clean fallback, so the standalone CLI now exits 0
         # (the envelope still carries ERROR_ALL_INTERPOLATED with its distinct
         # EXIT_ALL_INTERPOLATED value for callers that inspect error.exit_code).
+        assert rc == 0
+        assert payload["error"]["code"] == cap.ERROR_ALL_INTERPOLATED
+        assert payload["error"]["exit_code"] == cap.EXIT_ALL_INTERPOLATED
+        assert cap._LITERAL_PARITY_GATE_SKIPPED in payload["error"]["message"]
+
+    def test_all_interpolated_passes_even_without_baseclient(
+        self, tmp_path: Path
+    ) -> None:
+        """REPRODUCTION (SplunkPy v2, 2026-06-03): a fully-interpolated
+        integration that does NOT use BaseClient must take the clean
+        all-interpolated pass path, NOT the ERROR_NO_BASECLIENT gate.
+
+        Before the ordering fix, ``detect_no_baseclient`` fired first and
+        short-circuited with ERROR_NO_BASECLIENT, so the
+        ``interpolated: true`` flag was never evaluated. With the fix the
+        interpolation short-circuit runs first, so the no-baseclient gate
+        is never reached for an all-interpolated auth.
+        """
+        # No BaseClient anywhere (mirrors SplunkPy v2, which uses splunklib).
+        py = "def main():\n    pass\n"
+        pack = _make_python_integration(tmp_path, py_source=py)
+        details_json = {
+            "auth_types": [
+                {"type": "APIKey", "name": "api_key",
+                 "xsoar_param_map": {"api_key": "key"}, "interpolated": True},
+            ],
+            "other_connection": [],
+        }
+        rc, payload = _run_main_capture(
+            [str(pack), "--integration-id", "SplunkPy v2",
+             "--auth-details", json.dumps(details_json)]
+        )
+        # Must NOT be the no-baseclient gate.
+        assert payload["error"]["code"] != cap.ERROR_NO_BASECLIENT
+        # Must be the clean all-interpolated path (rc 0).
         assert rc == 0
         assert payload["error"]["code"] == cap.ERROR_ALL_INTERPOLATED
         assert payload["error"]["exit_code"] == cap.EXIT_ALL_INTERPOLATED
