@@ -29,7 +29,8 @@ def find_existing_indicators_by_value(indicator_values: list[str]) -> dict[str, 
     if not escaped_normalized_indicators:
         return {}
 
-    query = f"value:({' '.join(f'"{indicator_value}"' for indicator_value in escaped_normalized_indicators)})"
+    quoted_values = " ".join(f'"{indicator_value}"' for indicator_value in escaped_normalized_indicators)
+    query = f"value:({quoted_values})"
     demisto.debug(f"Searching for existing indicators with query: {query}")
 
     searcher = IndicatorsSearcher(query=query)

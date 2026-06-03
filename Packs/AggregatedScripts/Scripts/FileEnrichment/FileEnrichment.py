@@ -88,13 +88,11 @@ def file_enrichment_script(
         ),
         Command(
             name="core-get-hash-analytics-prevalence",
-            args={"sha256":
-                [file for file in valid_inputs if get_hash_type(file) == "sha256"]
-            },
+            args={"sha256": [file for file in valid_inputs if get_hash_type(file) == "sha256"]},
             brand="Cortex Core - IR",
             command_type=CommandType.INTERNAL,
             context_output_mapping={},
-        )
+        ),
     ]
 
     commands = [command_batch1, command_batch2]
