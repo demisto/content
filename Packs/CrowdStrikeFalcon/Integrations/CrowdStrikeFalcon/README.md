@@ -136,10 +136,10 @@ Indicator of Attack (IOA) fetch query. An FQL filter that will be combined with 
 
 ## Fetch Assets
 
-CrowdStrike Falcon assets and vulnerabilities can be fetched and ingested into the Cortex XSIAM Unified Asset Inventory (UAI).
+CrowdStrike Falcon assets and vulnerabilities can be fetched and ingested into the Cortex XSIAM [Unified Asset Inventory (UAI)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Unified-Asset-Inventory).
 Select the desired method in the Fetch Assets Type parameter:
 
-- Spotlight: Fetches vulnerabilities from the Spotlight Vulnerabilities Endpoint and enriches them with the associated host details. Both the vulnerabilities and the corresponding assets are ingested into the XSIAM UAI.
+- Spotlight: Fetches vulnerabilities from the Spotlight Vulnerabilities Endpoint and enriches them with the associated host details. Both the vulnerabilities and the corresponding assets are ingested into the Unified Asset Inventory. Only vulnerabilities updated within the last 100 days are retrieved, keeping each collection focused on recent data.
 - CNAPP Alerts: Fetches Cloud Native Application Protection Platform (CNAPP) alerts as assets.
 
 ## Commands
