@@ -1004,19 +1004,19 @@ script:
       description: The association timestamp.
       type: Date
     - contextPath: DFIRe.CaseIndicator.case_count
-      description: Total cases this indicator appears in.
+      description: The number of cases this indicator appears in.
       type: Number
   - name: dfire-case-indicator-add
-    description: Add an indicator to a case. Creates the indicator if it does not exist.
+    description: Adds an indicator to a case. Creates the indicator if it does not exist.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     - name: value
-      description: The IOC value.
+      description: The indicator value.
       required: true
     - name: stix_type
-      description: STIX 2.1 SCO type.
+      description: The indicator STIX 2.1 SCO type.
       required: true
       predefined:
       - ipv4-addr
@@ -1038,7 +1038,7 @@ script:
       - mutex
       - x509-certificate
     - name: classification
-      description: IOC classification.
+      description: The indicator classification.
       defaultValue: unknown
       predefined:
       - unknown
@@ -1046,14 +1046,14 @@ script:
       - suspicious
       - malicious
     - name: confidence
-      description: Confidence level.
+      description: The indicator confidence level.
       defaultValue: low
       predefined:
       - low
       - medium
       - high
     - name: tlp
-      description: TLP designation.
+      description: The indicator TLP designation.
       defaultValue: amber
       predefined:
       - clear
@@ -1062,12 +1062,12 @@ script:
       - amber_strict
       - red
     - name: context
-      description: Case-private notes about this IOC.
+      description: The case private notes about the indicator.
     - name: tags
-      description: Comma-separated tags.
+      description: A comma-separated list of indicator tags.
       isArray: true
     - name: source
-      description: How this IOC was obtained.
+      description: The source from which the indicator was obtained.
       predefined:
       - manual
       - automated
@@ -1076,9 +1076,9 @@ script:
       - enrichment
       - import
     - name: source_reference
-      description: Free-form reference identifying the source (URL, ticket, report name, etc.).
+      description: The free-form reference identifying the source (URL, ticket, report name, etc.).
     - name: valid_until
-      description: Auto-revoke after this ISO-8601 datetime (e.g. "2026-12-31T00:00:00Z").
+      description: The ISO-8601 datetime after which to automatically invalidate the indicator, for example, "2026-12-31T00:00:00Z".
     - name: decompose
       description: Whether to auto-decompose the indicator (URL→domain, email→domain).
       defaultValue: 'true'
@@ -1099,10 +1099,10 @@ script:
       description: The indicator ID.
       type: Number
     - contextPath: DFIRe.CaseIndicator.indicator.value
-      description: The IOC value.
+      description: The indicator value.
       type: String
   - name: dfire-case-indicator-remove
-    description: Remove an indicator association from a case.
+    description: Removes an indicator association from a case.
     arguments:
     - name: case_id
       description: The case ID.
@@ -1112,25 +1112,25 @@ script:
       required: true
     outputs: []
   - name: dfire-ioc-extract
-    description: Extract candidate IOCs from a block of text. Returns suggestions only — does not add them to any case.
+    description: Extracts candidate IOCs from a block of text. Returns suggestions only — does not add them to any case.
     arguments:
     - name: text
-      description: Text to scan for IOCs.
+      description: The text to scan to extract indicators from.
       required: true
     outputs:
     - contextPath: DFIRe.IOCExtraction.candidates
-      description: List of extracted IOC candidates.
+      description: The list of extracted indicator candidates.
       type: Unknown
   - name: dfire-indicator-check
-    description: Batch-check whether IOCs already exist in the global registry.
+    description: Batch-checks whether IOCs already exist in the global registry.
     arguments:
     - name: indicators
-      description: JSON array of {value, stix_type} objects (mutually exclusive with values+stix_type).
+      description: The JSON array of {value, stix_type} objects (mutually exclusive with values+stix_type).
     - name: values
-      description: Comma-separated IOC values to check (used with stix_type).
+      description: A comma-separated indicator values to check (used with stix_type).
       isArray: true
     - name: stix_type
-      description: STIX type to use when checking the values arg.
+      description: The STIX type to use when checking the values argument.
       predefined:
       - ipv4-addr
       - ipv6-addr
@@ -1152,19 +1152,19 @@ script:
       - x509-certificate
     outputs:
     - contextPath: DFIRe.IndicatorCheck.results
-      description: Existence/metadata for each submitted indicator.
+      description: The status and details of each submitted indicator.
       type: Unknown
   - name: dfire-indicator-enrich
-    description: Trigger external enrichment for an indicator.
+    description: Triggers external enrichment for an indicator.
     arguments:
     - name: indicator_id
       description: The indicator ID.
       required: true
     - name: providers
-      description: Comma-separated provider names (omit to run all applicable).
+      description: A comma-separated list of provider names (omit this to run all providers).
       isArray: true
     - name: force
-      description: Re-enrich even if cached results exist.
+      description: Whether to re-enrich even if cached results exist.
       predefined:
       - 'true'
       - 'false'
@@ -1173,110 +1173,110 @@ script:
       description: The indicator ID.
       type: Number
   - name: dfire-indicator-enrichment-list
-    description: Get cached enrichment results for an indicator.
+    description: Retrieves cached enrichment results for an indicator.
     arguments:
     - name: indicator_id
       description: The indicator ID.
       required: true
     outputs:
     - contextPath: DFIRe.Enrichment.enrichments
-      description: Enrichment records.
+      description: The enrichment records.
       type: Unknown
   - name: dfire-indicator-publish
-    description: Publish an indicator (make it visible to TAXII consumers and STIX exports).
+    description: Publishes an indicator (making it visible to TAXII consumers and STIX exports).
     arguments:
     - name: indicator_id
       description: The indicator ID.
       required: true
     outputs:
     - contextPath: DFIRe.Indicator.id
-      description: The indicator ID.
+      description: The DFIRe indicator ID.
       type: Number
     - contextPath: DFIRe.Indicator.is_published
       description: Whether the indicator is published.
       type: Boolean
   - name: dfire-indicator-unpublish
-    description: Unpublish an indicator.
+    description: Unpublishes an indicator.
     arguments:
     - name: indicator_id
       description: The indicator ID.
       required: true
     outputs:
     - contextPath: DFIRe.Indicator.id
-      description: The indicator ID.
+      description: The DFIRe indicator ID.
       type: Number
     - contextPath: DFIRe.Indicator.is_published
       description: Whether the indicator is published.
       type: Boolean
   - name: dfire-indicator-revoke
-    description: Revoke an indicator.
+    description: Revokes an indicator.
     arguments:
     - name: indicator_id
       description: The indicator ID.
       required: true
     outputs:
     - contextPath: DFIRe.Indicator.id
-      description: The indicator ID.
+      description: The DFIRe indicator ID.
       type: Number
     - contextPath: DFIRe.Indicator.is_revoked
       description: Whether the indicator is revoked.
       type: Boolean
   - name: dfire-indicator-unrevoke
-    description: Unrevoke an indicator.
+    description: Unrevokes an indicator.
     arguments:
     - name: indicator_id
       description: The indicator ID.
       required: true
     outputs:
     - contextPath: DFIRe.Indicator.id
-      description: The indicator ID.
+      description: The DFIRe indicator ID.
       type: Number
     - contextPath: DFIRe.Indicator.is_revoked
       description: Whether the indicator is revoked.
       type: Boolean
   - name: dfire-indicator-decompose
-    description: Auto-decompose an indicator (URL→domain, email→domain, etc.).
+    description: Auto-decomposes an indicator (URL→domain, email→domain, etc.).
     arguments:
     - name: indicator_id
       description: The indicator ID.
       required: true
     outputs:
     - contextPath: DFIRe.Indicator.id
-      description: The indicator ID.
+      description: The DFIRe indicator ID.
       type: Number
   - name: dfire-indicator-add-tags
-    description: Merge a list of tags into the indicator's existing tag set.
+    description: Merges a list of tags into the indicator's existing tag set.
     arguments:
     - name: indicator_id
       description: The indicator ID.
       required: true
     - name: tags
-      description: Comma-separated tags to add.
+      description: A comma-separated list of tags to add.
       required: true
       isArray: true
     outputs:
     - contextPath: DFIRe.Indicator.id
-      description: The indicator ID.
+      description: The DFIRe indicator ID.
       type: Number
     - contextPath: DFIRe.Indicator.tags
-      description: Updated tag list.
+      description: The updated tag list.
       type: Unknown
   - name: dfire-indicator-correlated-list
-    description: List indicators that appear in multiple cases.
+    description: Lists indicators that appear in multiple cases.
     arguments: []
     outputs:
     - contextPath: DFIRe.IndicatorCorrelated.results
-      description: Correlated indicators across cases.
+      description: The indicators correlated across cases.
       type: Unknown
   - name: dfire-indicator-bulk-classify
-    description: Bulk-update classification for multiple indicators.
+    description: Bulk-updates classification for multiple indicators.
     arguments:
     - name: indicator_ids
-      description: Comma-separated indicator IDs.
+      description: A comma-separated list of indicator IDs.
       required: true
       isArray: true
     - name: classification
-      description: New classification.
+      description: The new indicator classification.
       required: true
       predefined:
       - unknown
@@ -1285,17 +1285,17 @@ script:
       - malicious
     outputs:
     - contextPath: DFIRe.BulkResult
-      description: Bulk operation result.
+      description: The bulk operation result.
       type: Unknown
   - name: dfire-indicator-bulk-confidence
-    description: Bulk-update confidence for multiple indicators.
+    description: The bulk-update confidence for multiple indicators.
     arguments:
     - name: indicator_ids
-      description: Comma-separated indicator IDs.
+      description: A comma-separated list of indicator IDs.
       required: true
       isArray: true
     - name: confidence
-      description: New confidence level.
+      description: The new indicator confidence level.
       required: true
       predefined:
       - low
