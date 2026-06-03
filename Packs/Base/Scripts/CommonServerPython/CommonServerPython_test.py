@@ -41,7 +41,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, remove_duplicates_from_list_arg,
                                 DBotScoreType, DBotScoreReliability, Common, ExecutionMetrics,
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
-                                is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
+                                is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, resolve_should_push_events, send_data_to_xsiam,
                                 censor_request_logs, safe_sleep, get_server_config, b64_decode,
                                 get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD,
                                 execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version, ExecutionTimeout, is_ip_address_internal,
@@ -8211,6 +8211,36 @@ class TestDeterminePlatform:
     def test_determine_platform(self, mocker, demistoVersion, method):
         mocker.patch.object(demisto, 'demistoVersion', return_value=demistoVersion)
         assert method()
+
+
+class TestResolveShouldPushEvents:
+    """Tests for the resolve_should_push_events utility function."""
+
+    def test_true_on_xsiam_returns_true(self, mocker):
+        """Given should_push_events='true' on XSIAM, should return True."""
+        mocker.patch('CommonServerPython.is_xsiam', return_value=True)
+        assert resolve_should_push_events({'should_push_events': 'true'}) is True
+
+    def test_true_on_non_xsiam_returns_false(self, mocker):
+        """Given should_push_events='true' on non-XSIAM, should return False and log debug."""
+        mocker.patch('CommonServerPython.is_xsiam', return_value=False)
+        mock_debug = mocker.patch.object(demisto, 'debug')
+        assert resolve_should_push_events({'should_push_events': 'true'}) is False
+        mock_debug.assert_called_once()
+        assert 'should_push_events' in mock_debug.call_args[0][0]
+
+    def test_false_on_any_platform_returns_false(self, mocker):
+        """Given should_push_events='false', should return False regardless of platform."""
+        mocker.patch('CommonServerPython.is_xsiam', return_value=True)
+        assert resolve_should_push_events({'should_push_events': 'false'}) is False
+
+        mocker.patch('CommonServerPython.is_xsiam', return_value=False)
+        assert resolve_should_push_events({'should_push_events': 'false'}) is False
+
+    def test_missing_arg_defaults_to_false(self, mocker):
+        """Given no should_push_events arg, should default to False."""
+        mocker.patch('CommonServerPython.is_xsiam', return_value=True)
+        assert resolve_should_push_events({}) is False
 
 
 def test_smart_get_dict():
