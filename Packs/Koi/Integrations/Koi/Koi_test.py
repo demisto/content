@@ -528,8 +528,23 @@ class TestTestModule:
             koi_test_module(mock_client)
 
 
+@pytest.fixture()
+def mock_xsiam(mocker):
+    """Mock is_xsiam to return True so resolve_should_push_events allows pushing.
+
+    Patches is_xsiam in the CommonServerPython namespace, since
+    resolve_should_push_events (defined there) resolves is_xsiam from its own module.
+    """
+    mocker.patch("CommonServerPython.is_xsiam", return_value=True)
+
+
 class TestGetEventsCommand:
     """Tests for the koi-get-events command."""
+
+    @pytest.fixture(autouse=True)
+    def _mock_xsiam(self, mock_xsiam):
+        """Apply the shared mock_xsiam fixture to all tests in this class."""
+        return mock_xsiam
 
     def test_get_events_alerts_and_audit(self, mock_client, alerts_response, audit_response, mocker):
         """Test get-events command fetching both alerts and audit logs."""
@@ -1111,6 +1126,27 @@ class TestParseDate:
 
 class TestGetEventsCommandErrors:
     """Tests for error handling in get_events_command."""
+
+    @pytest.fixture(autouse=True)
+    def _mock_xsiam(self, mock_xsiam):
+        """Apply the shared mock_xsiam fixture to all tests in this class."""
+
+    def test_should_push_events_overridden_on_non_xsiam(self, mock_client, alerts_response, mocker):
+        """Test that should_push_events is silently overridden to False on non-XSIAM platforms via resolve_should_push_events."""
+        mocker.patch("CommonServerPython.is_xsiam", return_value=False)
+        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
+        mock_send = mocker.patch.object(mock_client, "send_events")
+
+        args = {"limit": "10", "should_push_events": "true", "event_type": "Alerts"}
+        params = {"event_types_to_fetch": "Alerts"}
+
+        result = get_events_command(mock_client, args, params)
+
+        # Events should NOT be pushed (send_events should not be called)
+        mock_send.assert_not_called()
+        # Events should be returned as CommandResults instead
+        assert isinstance(result, CommandResults)
+        assert "KOI Events" in result.readable_output
 
     def test_invalid_event_type(self, mock_client):
         """Test get-events command with invalid event type raises error."""
