@@ -26,8 +26,6 @@ from CommonServerUserPython import *
 
 PARAMS: dict = demisto.params()
 
-# Test/back-compat only — no longer read or written by `store_samples`.
-sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
 
 # Defensive serialisation of the get/append/set RMW on the integration-context
 # `sample_events` key. Effectively uncontended now that all writes go through
