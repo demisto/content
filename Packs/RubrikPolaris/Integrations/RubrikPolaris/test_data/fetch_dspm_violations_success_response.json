@@ -1,0 +1,251 @@
+{
+    "data": {
+        "policyViolations": {
+            "edges": [
+                {
+                    "node": {
+                        "policyViolationId": "00000000-0000-0000-0000-000000000001",
+                        "status": "POLICY_VIOLATION_STATUS_OPEN",
+                        "__typename": "PolicyViolation",
+                        "createdAt": "2026-03-25T09:29:55.000Z",
+                        "lastUpdatedAt": "2026-03-25T13:29:54.000Z",
+                        "name": "",
+                        "violationSeverity": "HIGH",
+                        "policy": {
+                            "policyId": "00000000-0000-0000-0000-000000000011",
+                            "name": "Secrets stored outside of vault",
+                            "policySeverity": "HIGH",
+                            "policyCategory": "MISPLACED",
+                            "description": "Storing secrets outside vaults can lead to privilege escalation and unauthorized access.",
+                            "__typename": "DSPMPolicy"
+                        },
+                        "resourceId": "00000000-0000-0000-0000-000000000101",
+                        "resourceType": "RESOURCE_TYPE_OBJECT",
+                        "resourceMetadata": {
+                            "metadata": {
+                                "name": "TEST-VM-PROD-01",
+                                "objectType": "VSPHERE_VIRTUAL_MACHINE",
+                                "platform": "PLATFORM_DATA_CENTER",
+                                "physicalHost": "object_location",
+                                "region": "",
+                                "creationTime": 0,
+                                "lastAccessTime": 0,
+                                "snapshotTimestamp": 0,
+                                "clusterInfo": {
+                                    "clusterName": "Cluster_A",
+                                    "clusterUuid": "00000000-0000-0000-0000-000000001001",
+                                    "__typename": "ClusterInfo"
+                                },
+                                "cloudAccountInfo": {
+                                    "accountName": "",
+                                    "__typename": "CloudAccountInfo"
+                                },
+                                "__typename": "CommonAssetMetadata"
+                            },
+                            "__typename": "ResourceMetadata"
+                        },
+                        "details": {
+                            "violatedNoRiskSensitiveHits": 37,
+                            "violatedLowRiskSensitiveHits": 2,
+                            "violatedMediumRiskSensitiveHits": 1,
+                            "violatedHighRiskSensitiveHits": 0,
+                            "violatedSensitiveHits": 40,
+                            "snapshotId": "00000000-0000-0000-0000-000000010001",
+                            "dataTypes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000d01",
+                                    "name": "API Keys",
+                                    "totalViolatedHits": 263,
+                                    "__typename": "DataTypeStats"
+                                },
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000d02",
+                                    "name": "Passwords",
+                                    "totalViolatedHits": 227,
+                                    "__typename": "DataTypeStats"
+                                }
+                            ],
+                            "dataCategories": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000c01",
+                                    "name": "Credentials",
+                                    "totalViolatedHits": 1322,
+                                    "__typename": "DataCategoryStats"
+                                }
+                            ],
+                            "__typename": "DataGovViolationDetails"
+                        },
+                        "remediations": null
+                    },
+                    "cursor": "cursor_0",
+                    "__typename": "PolicyViolationEdge"
+                },
+                {
+                    "node": {
+                        "policyViolationId": "00000000-0000-0000-0000-000000000002",
+                        "status": "POLICY_VIOLATION_STATUS_OPEN",
+                        "__typename": "PolicyViolation",
+                        "createdAt": "2026-03-25T14:30:02.000Z",
+                        "lastUpdatedAt": "2026-03-25T17:30:00.000Z",
+                        "name": "",
+                        "violationSeverity": "MEDIUM",
+                        "policy": {
+                            "policyId": "00000000-0000-0000-0000-000000000022",
+                            "name": "Stale sensitive data - not modified for over a year",
+                            "policySeverity": "MEDIUM",
+                            "policyCategory": "STALE_DATA",
+                            "description": "Sensitive data that has not been accessed or modified for extended periods.",
+                            "__typename": "DSPMPolicy"
+                        },
+                        "resourceId": "00000000-0000-0000-0000-000000000202",
+                        "resourceType": "RESOURCE_TYPE_OBJECT",
+                        "resourceMetadata": {
+                            "metadata": {
+                                "name": "TEST-NUTANIX-VM-02",
+                                "objectType": "NUTANIX_VIRTUAL_MACHINE",
+                                "platform": "PLATFORM_DATA_CENTER",
+                                "physicalHost": "Production",
+                                "region": "",
+                                "creationTime": 0,
+                                "lastAccessTime": 0,
+                                "snapshotTimestamp": 0,
+                                "clusterInfo": {
+                                    "clusterName": "Cluster_C",
+                                    "clusterUuid": "00000000-0000-0000-0000-000000001002",
+                                    "__typename": "ClusterInfo"
+                                },
+                                "cloudAccountInfo": {
+                                    "accountName": "",
+                                    "__typename": "CloudAccountInfo"
+                                },
+                                "__typename": "CommonAssetMetadata"
+                            },
+                            "__typename": "ResourceMetadata"
+                        },
+                        "details": {
+                            "violatedNoRiskSensitiveHits": 0,
+                            "violatedLowRiskSensitiveHits": 0,
+                            "violatedMediumRiskSensitiveHits": 5,
+                            "violatedHighRiskSensitiveHits": 0,
+                            "violatedSensitiveHits": 5,
+                            "snapshotId": "00000000-0000-0000-0000-000000020002",
+                            "dataTypes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000d03",
+                                    "name": "Credit Card Numbers",
+                                    "totalViolatedHits": 5,
+                                    "__typename": "DataTypeStats"
+                                }
+                            ],
+                            "dataCategories": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000c02",
+                                    "name": "Financial Data",
+                                    "totalViolatedHits": 5,
+                                    "__typename": "DataCategoryStats"
+                                }
+                            ],
+                            "__typename": "DataGovViolationDetails"
+                        },
+                        "remediations": null
+                    },
+                    "cursor": "cursor_1",
+                    "__typename": "PolicyViolationEdge"
+                },
+                {
+                    "node": {
+                        "policyViolationId": "00000000-0000-0000-0000-000000000003",
+                        "status": "POLICY_VIOLATION_STATUS_OPEN",
+                        "__typename": "PolicyViolation",
+                        "createdAt": "2026-03-25T16:45:30.000Z",
+                        "lastUpdatedAt": "2026-03-25T18:30:15.000Z",
+                        "name": "",
+                        "violationSeverity": "LOW",
+                        "policy": {
+                            "policyId": "00000000-0000-0000-0000-000000000033",
+                            "name": "Org-wide accessible sensitive data",
+                            "policySeverity": "LOW",
+                            "policyCategory": "OPEN_ACCESS",
+                            "description": "Sensitive data accessible to all organization members.",
+                            "__typename": "DSPMPolicy"
+                        },
+                        "resourceId": "00000000-0000-0000-0000-000000000303",
+                        "resourceType": "RESOURCE_TYPE_OBJECT",
+                        "resourceMetadata": {
+                            "metadata": {
+                                "name": "Test User",
+                                "objectType": "O365_ONEDRIVE",
+                                "platform": "PLATFORM_M365",
+                                "physicalHost": "",
+                                "region": "",
+                                "creationTime": 0,
+                                "lastAccessTime": 0,
+                                "snapshotTimestamp": 0,
+                                "clusterInfo": {
+                                    "clusterName": "",
+                                    "clusterUuid": "",
+                                    "__typename": "ClusterInfo"
+                                },
+                                "cloudAccountInfo": {
+                                    "accountName": "Test Organization",
+                                    "__typename": "CloudAccountInfo"
+                                },
+                                "__typename": "CommonAssetMetadata"
+                            },
+                            "__typename": "ResourceMetadata"
+                        },
+                        "details": {
+                            "violatedNoRiskSensitiveHits": 1500,
+                            "violatedLowRiskSensitiveHits": 800,
+                            "violatedMediumRiskSensitiveHits": 200,
+                            "violatedHighRiskSensitiveHits": 50,
+                            "violatedSensitiveHits": 2550,
+                            "snapshotId": "00000000-0000-0000-0000-000000030003",
+                            "dataTypes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000d04",
+                                    "name": "Social Security Numbers",
+                                    "totalViolatedHits": 1200,
+                                    "__typename": "DataTypeStats"
+                                },
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000d05",
+                                    "name": "Email Addresses",
+                                    "totalViolatedHits": 1350,
+                                    "__typename": "DataTypeStats"
+                                }
+                            ],
+                            "dataCategories": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000c03",
+                                    "name": "Personal Identifiable Information",
+                                    "totalViolatedHits": 2000,
+                                    "__typename": "DataCategoryStats"
+                                },
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000c04",
+                                    "name": "Contact Information",
+                                    "totalViolatedHits": 550,
+                                    "__typename": "DataCategoryStats"
+                                }
+                            ],
+                            "__typename": "DataGovViolationDetails"
+                        },
+                        "remediations": null
+                    },
+                    "cursor": "cursor_2",
+                    "__typename": "PolicyViolationEdge"
+                }
+            ],
+            "pageInfo": {
+                "startCursor": "start_cursor",
+                "endCursor": "end_cursor",
+                "hasNextPage": true,
+                "hasPreviousPage": false,
+                "__typename": "PageInfo"
+            },
+            "count": 3,
+            "__typename": "PolicyViolationConnection"
+        }
+    }
+}
