@@ -1303,21 +1303,21 @@ script:
       - high
     outputs:
     - contextPath: DFIRe.BulkResult
-      description: Bulk operation result.
+      description: The bulk operation result.
       type: Unknown
   - name: dfire-indicator-bulk-tag
-    description: Bulk add/remove/set tags on multiple indicators.
+    description: Bulk adds/removes/sets tags on multiple indicators.
     arguments:
     - name: indicator_ids
-      description: Comma-separated indicator IDs.
+      description: A comma-separated list of indicator IDs.
       required: true
       isArray: true
     - name: tags
-      description: Comma-separated tags.
+      description: A comma-separated list of indicator tags.
       required: true
       isArray: true
     - name: mode
-      description: How to apply the tags.
+      description: The action to perform on the tags (add, remove, set).
       defaultValue: add
       predefined:
       - add
@@ -1325,17 +1325,17 @@ script:
       - set
     outputs:
     - contextPath: DFIRe.BulkResult
-      description: Bulk operation result.
+      description: The bulk operation result.
       type: Unknown
   - name: dfire-indicator-bulk-tlp
-    description: Bulk-update TLP designation for multiple indicators.
+    description: Bulk-updates TLP designation for multiple indicators.
     arguments:
     - name: indicator_ids
-      description: Comma-separated indicator IDs.
+      description: A comma-separated list of indicator IDs.
       required: true
       isArray: true
     - name: tlp
-      description: New TLP designation.
+      description: The new indicator TLP designation.
       required: true
       predefined:
       - clear
@@ -1345,59 +1345,59 @@ script:
       - red
     outputs:
     - contextPath: DFIRe.BulkResult
-      description: Bulk operation result.
+      description: The bulk operation result.
       type: Unknown
   - name: dfire-indicator-bulk-publish
-    description: Bulk-publish indicators.
+    description: Bulk-publishes indicators.
     arguments:
     - name: indicator_ids
-      description: Comma-separated indicator IDs.
+      description: A comma-separated list of indicator IDs.
       required: true
       isArray: true
     outputs:
     - contextPath: DFIRe.BulkPublishResponse.published_count
-      description: Number of indicators published.
+      description: The number of indicators published.
       type: Number
     - contextPath: DFIRe.BulkPublishResponse.skipped_revoked
-      description: Number skipped because revoked.
+      description: The number of indicators skipped because they were revoked.
       type: Number
     - contextPath: DFIRe.BulkPublishResponse.skipped_red
-      description: Number skipped because TLP:RED.
+      description: The number of indicators skipped because of TLP status RED.
       type: Number
   - name: dfire-indicator-bulk-revoke
-    description: Bulk-revoke indicators.
+    description: Bulk-revokes indicators.
     arguments:
     - name: indicator_ids
-      description: Comma-separated indicator IDs.
+      description: A comma-separated list of indicator IDs.
       required: true
       isArray: true
     outputs:
     - contextPath: DFIRe.BulkResult
-      description: Bulk operation result.
+      description: The bulk operation result.
       type: Unknown
   - name: dfire-indicator-bulk-delete
-    description: Bulk-delete indicators.
+    description: Bulk-deletes indicators.
     arguments:
     - name: indicator_ids
-      description: Comma-separated indicator IDs.
+      description: A comma-separated list of indicator IDs.
       required: true
       isArray: true
     outputs:
     - contextPath: DFIRe.BulkResult
-      description: Bulk operation result.
+      description: The bulk operation result.
       type: Unknown
   - name: dfire-case-generate-summary
-    description: Trigger AI-generated executive summary for a case.
+    description: Triggers an AI-generated executive summary for a case.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     outputs:
     - contextPath: DFIRe.CaseSummary
-      description: Summary result.
+      description: The summary result.
       type: Unknown
   - name: dfire-case-chat
-    description: Send a chat message to the case AI assistant.
+    description: Sends a chat message to the case AI assistant.
     arguments:
     - name: case_id
       description: The case ID.
@@ -1407,110 +1407,110 @@ script:
       required: true
     outputs:
     - contextPath: DFIRe.CaseChat
-      description: Chat response.
+      description: The chat response.
       type: Unknown
   - name: dfire-case-update-report
-    description: Update the text of an AI-generated report attached to a case (e.g. an executive summary).
+    description: Updates the text of an AI-generated report attached to a case (e.g. an executive summary).
     arguments:
     - name: case_id
       description: The case ID the report belongs to.
       required: true
     - name: report_id
-      description: ID of the generated report to update.
+      description: The ID of the generated report to update.
       required: true
     - name: report_text
-      description: New report text content.
+      description: The new report text content.
       required: true
     outputs:
     - contextPath: DFIRe.CaseReport
-      description: Updated report.
+      description: The updated report.
       type: Unknown
   - name: dfire-case-can-report-list
-    description: List CAN (Case Activity Notice) reports for a case.
+    description: Lists CAN (Case Activity Notice) reports for a case.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     outputs:
     - contextPath: DFIRe.CANReport.id
-      description: CAN report ID.
+      description: The CAN report ID.
       type: Number
   - name: dfire-case-can-report-generate
-    description: Generate a new CAN report for a case.
+    description: Generates a new CAN report for a case.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     - name: body
-      description: Optional JSON body describing the report parameters.
+      description: The optional JSON body describing the report parameters.
     outputs:
     - contextPath: DFIRe.CANReport.id
-      description: Generated report ID.
+      description: The generated report ID.
       type: Number
   - name: dfire-case-investigation-report-get
-    description: Get the investigation report for a case.
+    description: Retrieves the investigation report for a case.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     outputs:
     - contextPath: DFIRe.InvestigationReport
-      description: Investigation report.
+      description: The investigation report.
       type: Unknown
   - name: dfire-case-investigation-report-generate
-    description: Generate AI content for a single section of a case's investigation report. Returns preview content; does not auto-save.
+    description: Generates AI content for a single section of a case's investigation report. Returns preview content; does not auto-save.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     - name: section_id
-      description: ID of the report section to generate content for.
+      description: The ID of the report section to generate content for.
       required: true
     outputs:
     - contextPath: DFIRe.InvestigationReport.content
-      description: Generated section content.
+      description: The generated section content.
       type: String
     - contextPath: DFIRe.InvestigationReport.model
-      description: Model used to generate the content.
+      description: The model used to generate the content.
       type: String
   - name: dfire-case-investigation-report-finalize
-    description: Finalize the investigation report for a case.
+    description: Finalizes the investigation report for a case.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     outputs:
     - contextPath: DFIRe.InvestigationReport
-      description: Finalized investigation report.
+      description: The finalized investigation report.
       type: Unknown
   - name: dfire-case-investigation-report-ready-for-qa
-    description: Mark a single section of the investigation report as ready for QA review.
+    description: Marks a single section of the investigation report as ready for QA review.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     - name: section_id
-      description: ID of the report section to mark ready for QA.
+      description: The ID of the report section to mark ready for QA.
       required: true
     outputs:
     - contextPath: DFIRe.InvestigationReport
-      description: Investigation report section after the state change.
+      description: The investigation report section after the state change.
       type: Unknown
   - name: dfire-case-timeline-change-phase
-    description: Move a case to a new incident-response phase.
+    description: Moves a case to a new response phase in the timeline.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     - name: phase_id
-      description: Target phase ID.
+      description: The target phase ID.
     - name: phase_name
-      description: Target phase name (used if phase_id is omitted).
+      description: The target phase name (used if phase_id is omitted).
     - name: note
-      description: Optional note explaining the phase change.
+      description: The optional note explaining the phase change.
     outputs:
     - contextPath: DFIRe.TimelineEvent.id
-      description: Created phase-change timeline event ID.
+      description: The created phase change timeline event ID.
       type: Number
   - name: dfire-case-todo-list
     description: List todos for a case.
