@@ -2701,13 +2701,11 @@ def message_filter_list_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: Readable outputs, structured outputs under CiscoESA.MessageFilter,
             and the raw API response.
     """
-    demisto.debug(f"cisco-esa-message-filter-list: args={args}")
-
     mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
     host_name = args.get("host_name", "")
     group_name = args.get("group_name", "")
     filter_name = args.get("filter_name") or ""
-    active_filter = args.get("active")
+    active = args.get("active")
     limit = arg_to_number(args.get("limit")) or 50
 
     host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
@@ -2716,6 +2714,7 @@ def message_filter_list_command(client: Client, args: dict[str, Any]) -> Command
         "cisco-esa-message-filter-list: calling Cisco with "
         f"filter_name={filter_name!r}, mode={mode!r}, host_name={host_name!r}, group_name={group_name!r}"
     )
+
     response = client.message_filter_list_request(
         filter_name=filter_name or None,
         mode=mode,
@@ -2724,18 +2723,12 @@ def message_filter_list_command(client: Client, args: dict[str, Any]) -> Command
     )
 
     rows: list[dict[str, Any]] = list(response.get("data") or [])
-    demisto.debug(f"cisco-esa-message-filter-list: response meta={response.get('meta')}, data array len={len(rows)}")
 
     # Client-side filtering is only meaningful when listing (not when reading one by name).
     if not filter_name:
-        if active_filter:
-            rows = [row for row in rows if row.get("active") == active_filter]
+        if active:
+            rows = [row for row in rows if row.get("active").lower() == active.lower()]  # type: ignore
         rows = rows[:limit]
-
-    demisto.debug(
-        f"cisco-esa-message-filter-list: returned {len(rows)} rows "
-        f"(after active={active_filter!r} filter and limit={limit} slice)"
-    )
 
     # Conditionally include the 'Invalid Reason' column only when at least one row has it.
     headers = ["Name", "Active", "Order", "Rules And Actions"]
@@ -2789,15 +2782,12 @@ def message_filter_create_command(client: Client, args: dict[str, Any]) -> Comma
     Returns:
         CommandResults: Readable outputs and the raw API response (no context outputs).
     """
-    demisto.debug(f"cisco-esa-message-filter-create: args={args}")
-
     mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
     host_name = args.get("host_name", "")
     group_name = args.get("group_name", "")
     filter_name = args["filter_name"]
     rules_and_actions = args["rules_and_actions"]
-    # Coerce to lowercase quoted-string — Cisco API expects "true"/"false" (not a Python bool).
-    active = str(argToBoolean(args.get("active", "true"))).lower()
+    active = args.get("active", "true")
     order = arg_to_number(args.get("order"))
 
     host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
@@ -2815,11 +2805,6 @@ def message_filter_create_command(client: Client, args: dict[str, Any]) -> Comma
         mode=mode,
         host_name=host_name,
         group_name=group_name,
-    )
-
-    demisto.debug(
-        f"cisco-esa-message-filter-create: response meta={response.get('meta')}, "
-        f"data keys={list(response.get('data', {}).keys()) if isinstance(response.get('data'), dict) else 'non-dict data'}"
     )
 
     readable_output = f"Filter {filter_name} was added successfully."
@@ -2847,16 +2832,11 @@ def message_filter_update_command(client: Client, args: dict[str, Any]) -> Comma
     Returns:
         CommandResults: Readable outputs and the raw API response (no context outputs).
     """
-    demisto.debug(f"cisco-esa-message-filter-update: args={args}")
-
     mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
     host_name = args.get("host_name", "")
     group_name = args.get("group_name", "")
     filter_name = args["filter_name"]
-
-    raw_active = args.get("active")
-    # Coerce to lowercase quoted-string — Cisco API expects "true"/"false" (not a Python bool).
-    active = str(argToBoolean(raw_active)).lower() if raw_active is not None else None
+    active = args.get("active")
     order = arg_to_number(args.get("order"))
 
     host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
@@ -2873,11 +2853,6 @@ def message_filter_update_command(client: Client, args: dict[str, Any]) -> Comma
         mode=mode,
         host_name=host_name,
         group_name=group_name,
-    )
-
-    demisto.debug(
-        f"cisco-esa-message-filter-update: response meta={response.get('meta')}, "
-        f"data keys={list(response.get('data', {}).keys()) if isinstance(response.get('data'), dict) else 'non-dict data'}"
     )
 
     readable_output = f"Filter {filter_name} was successfully updated."
@@ -2899,8 +2874,6 @@ def message_filter_delete_command(client: Client, args: dict[str, Any]) -> Comma
     Returns:
         CommandResults: Readable outputs and the raw API response (no context outputs).
     """
-    demisto.debug(f"cisco-esa-message-filter-delete: args={args}")
-
     mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
     host_name = args.get("host_name", "")
     group_name = args.get("group_name", "")
@@ -2918,11 +2891,6 @@ def message_filter_delete_command(client: Client, args: dict[str, Any]) -> Comma
         mode=mode,
         host_name=host_name,
         group_name=group_name,
-    )
-
-    demisto.debug(
-        f"cisco-esa-message-filter-delete: response meta={response.get('meta')}, "
-        f"data keys={list(response.get('data', {}).keys()) if isinstance(response.get('data'), dict) else 'non-dict data'}"
     )
 
     return CommandResults(
