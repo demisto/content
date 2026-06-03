@@ -2401,6 +2401,90 @@ Retrieve all message filters or a specific message filter by name. Message filte
 | CiscoESA.MessageFilter.rules_and_actions | String | The full Cisco filter DSL body. |
 | CiscoESA.MessageFilter.invalid_reason | String | The reason the filter is marked as invalid. Present only when \`valid\` is \`"false"\`. |
 
+#### Command example
+
+```!cisco-esa-message-filter-list```
+
+#### Context Example
+
+```json
+{
+    "CiscoESA": {
+        "MessageFilter": [
+            {
+                "active": "true",
+                "name": "URL_QUARANTINE_MALICIOUS",
+                "order": 1,
+                "rules_and_actions": "if (recv-listener == \"MailFlow\") AND (url-reputation(-10.00, -6.00 , \"bypass_urls\", 1, 1)) { quarantine(\"URL_MALICIOUS\"); }",
+                "valid": "true"
+            },
+            {
+                "active": "true",
+                "name": "URL_REWRITE_SUSPICIOUS",
+                "order": 2,
+                "rules_and_actions": "if (recv-listener == \"MailFlow\") AND (url-reputation(-6.00, -5.60 , \"bypass_urls\", 0, 1)) { url-reputation-proxy-redirect(-6.00, -5.60,\"\",0); }",
+                "valid": "true"
+            },
+            {
+                "active": "false",
+                "name": "BLOCKED_LIST_QUARANTINE",
+                "order": 3,
+                "rules_and_actions": "if recv-listener == \"MailFlow\" { quarantine(\"BLOCKED_LIST\"); }",
+                "valid": "true"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cisco ESA — Message Filters (mode: cluster)
+>
+>|Name|Active|Order|Rules And Actions|Invalid Reason|
+>|---|---|---|---|---|
+>| URL_QUARANTINE_MALICIOUS | true | 1 | if (recv-listener == "MailFlow") AND (url-reputation(-10.00, -6.00 , "bypass_urls", 1, 1)) { quarantine("URL_MALICIOUS"); } |  |
+>| URL_REWRITE_SUSPICIOUS | true | 2 | if (recv-listener == "MailFlow") AND (url-reputation(-6.00, -5.60 , "bypass_urls", 0, 1)) { url-reputation-proxy-redirect(-6.00, -5.60,"",0); } |  |
+>| BLOCKED_LIST_QUARANTINE | false | 3 | if recv-listener == "MailFlow" { quarantine("BLOCKED_LIST"); } |  |
+
+#### Command example
+
+```!cisco-esa-message-filter-list active=true limit=5```
+
+#### Context Example
+
+```json
+{
+    "CiscoESA": {
+        "MessageFilter": [
+            {
+                "active": "true",
+                "name": "URL_QUARANTINE_MALICIOUS",
+                "order": 1,
+                "rules_and_actions": "if (recv-listener == \"MailFlow\") AND (url-reputation(-10.00, -6.00 , \"bypass_urls\", 1, 1)) { quarantine(\"URL_MALICIOUS\"); }",
+                "valid": "true"
+            },
+            {
+                "active": "true",
+                "name": "URL_REWRITE_SUSPICIOUS",
+                "order": 2,
+                "rules_and_actions": "if (recv-listener == \"MailFlow\") AND (url-reputation(-6.00, -5.60 , \"bypass_urls\", 0, 1)) { url-reputation-proxy-redirect(-6.00, -5.60,\"\",0); }",
+                "valid": "true"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cisco ESA — Message Filters (mode: cluster)
+>
+>|Name|Active|Order|Rules And Actions|
+>|---|---|---|---|
+>| URL_QUARANTINE_MALICIOUS | true | 1 | if (recv-listener == "MailFlow") AND (url-reputation(-10.00, -6.00 , "bypass_urls", 1, 1)) { quarantine("URL_MALICIOUS"); } |  |
+>| URL_REWRITE_SUSPICIOUS | true | 2 | if (recv-listener == "MailFlow") AND (url-reputation(-6.00, -5.60 , "bypass_urls", 0, 1)) { url-reputation-proxy-redirect(-6.00, -5.60,"",0); } |  |
+
 ### cisco-esa-message-filter-create
 
 ***
@@ -2450,6 +2534,22 @@ Update an existing message filter. Only the supplied fields (`active`, `order`) 
 
 There is no context output for this command.
 
+#### Command example
+
+```!cisco-esa-message-filter-update filter_name=example_filter active=false```
+
+#### Human Readable Output
+
+>Filter example_filter was successfully updated.
+
+#### Command example
+
+```!cisco-esa-message-filter-update filter_name=example_filter order=2```
+
+#### Human Readable Output
+
+>Filter example_filter was successfully updated.
+
 ### cisco-esa-message-filter-delete
 
 ***
@@ -2471,6 +2571,14 @@ Delete a message filter.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!cisco-esa-message-filter-delete filter_name=example_filter```
+
+#### Human Readable Output
+
+>Filter example_filter was deleted successfully.
 
 ## Troubleshooting
 
