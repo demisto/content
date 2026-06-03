@@ -1259,7 +1259,7 @@ def fetch_incidents(bhe_client: Client):
         demisto.info("[FETCH] Lock not acquired, sending empty incident list.")
         demisto.incidents([])
         return None
-    
+
     fetch_start_time = datetime.utcnow()
     try:
         demisto.info("Executing fetch_incidents function")
@@ -1292,11 +1292,13 @@ def fetch_incidents(bhe_client: Client):
         last_run.update(finding_type_latest_dates)
         demisto.setLastRun(last_run)
         demisto.incidents(incidents)
-        
+
         # Log fetch performance
         fetch_duration = (datetime.utcnow() - fetch_start_time).total_seconds()
-        demisto.info(f"[FETCH_PERFORMANCE] Completed fetch cycle in {fetch_duration:.2f} seconds. "
-                     f"Created {len(incidents)} incidents from {len(attack_path_details)} attack path groups.")
+        demisto.info(
+            f"[FETCH_PERFORMANCE] Completed fetch cycle in {fetch_duration:.2f} seconds. "
+            f"Created {len(incidents)} incidents from {len(attack_path_details)} attack path groups."
+        )
 
     except Exception as e:
         demisto.error(f"Error in fetch_incidents: {str(e)}")

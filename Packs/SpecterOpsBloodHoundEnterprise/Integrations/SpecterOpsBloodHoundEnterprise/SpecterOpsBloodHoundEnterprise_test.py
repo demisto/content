@@ -61,7 +61,6 @@ from SpecterOpsBloodHoundEnterprise import (
 )
 
 
-
 @pytest.fixture
 def mock_client():
     """Create a mock Client instance for testing"""
