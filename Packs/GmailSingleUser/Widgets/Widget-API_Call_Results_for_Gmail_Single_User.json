@@ -94,7 +94,6 @@
     "description": "",
     "supportedModules": [
         "agentix",
-        "xsiam",
-        "edr"
+        "xsiam"
     ]
 }

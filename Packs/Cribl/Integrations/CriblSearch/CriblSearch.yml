@@ -1,0 +1,557 @@
+category: IT Services
+commonfields:
+  id: CriblSearch
+  version: -1
+provider: Cribl
+configuration:
+- defaultvalue: https://${workspaceName}-${organizationId}.cribl.cloud
+  display: Base URL
+  name: url
+  required: true
+  type: 0
+  additionalinfo: 'The base URL assigned to your organization: https://${workspaceName}-${organizationId}.cribl.cloud'
+  section: Connect
+- name: credentials
+  display: Client ID
+  displaypassword: Client Secret
+  type: 9
+  required: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: Cribl Search allows you to query, retrieve, and manage search jobs, datasets, and saved searches across your Cribl Cloud deployment.
+display: Cribl Search
+name: CriblSearch
+script:
+  commands:
+
+  - name: cribl-search-query
+    description: Runs a search query against Cribl Search and returns results.
+    execution: false
+    arguments:
+    - name: query_id
+      required: false
+      description: The ID of a saved query to execute.
+    - name: job_id
+      required: false
+      description: The ID of an existing search job to retrieve results from.
+    - name: query
+      required: false
+      description: The search query string to execute.
+    - name: earliest
+      required: false
+      description: The start time for the search, in relative time or epoch seconds.
+    - name: latest
+      required: false
+      description: The end time for the search, in relative time or epoch seconds.
+    - name: sample_rate
+      required: false
+      description: The probability (0-1) of including each matching event (for example, 0.1 returns ~10%). If omitted, no sampling is applied.
+    - name: force
+      required: false
+      defaultValue: false
+      description: Whether to force execution of a scheduled query.
+    - name: page
+      required: false
+      description: The page number for pagination.
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return.
+    outputs:
+    - contextPath: Cribl.SearchQuery.events
+      description: The list of events returned by the search (parsed from the NDJSON response). May be empty when the job is still queued/running.
+      type: Unknown
+    - contextPath: Cribl.SearchQuery.isFinished
+      description: Whether the search query has finished executing.
+      type: Boolean
+    - contextPath: Cribl.SearchQuery.job
+      description: The search job metadata associated with this query.
+      type: Object
+    - contextPath: Cribl.SearchQuery.job.id
+      description: The unique identifier of the search job that produced these results.
+      type: String
+    - contextPath: Cribl.SearchQuery.job.query
+      description: The search query string executed by the job.
+      type: String
+    - contextPath: Cribl.SearchQuery.job.status
+      description: The current status of the search job (for example, queued, running, completed).
+      type: String
+    - contextPath: Cribl.SearchQuery.job.timeCreated
+      description: The epoch (ms) when the search job was created.
+      type: Number
+    - contextPath: Cribl.SearchQuery.offset
+      description: The offset within the result set used for pagination.
+      type: Number
+    - contextPath: Cribl.SearchQuery.persistedEventCount
+      description: The number of events persisted in the result set.
+      type: Number
+    - contextPath: Cribl.SearchQuery.totalEventCount
+      description: Total number of events matched by the query.
+      type: Number
+
+  - name: cribl-search-status
+    description: Retrieves the status of a specific search job.
+    execution: false
+    arguments:
+    - name: job_id
+      required: true
+      description: The unique identifier of the search job.
+    outputs:
+    - contextPath: Cribl.SearchStatus.pendingComputeNodeStatuses
+      description: The counts of pending compute nodes (warm/cold) for the job.
+      type: Object
+    - contextPath: Cribl.SearchStatus.status
+      description: The current status of the search job (for example, queued, running, completed).
+      type: String
+    - contextPath: Cribl.SearchStatus.timeCreated
+      description: The epoch (ms) when the search job was created.
+      type: Number
+    - contextPath: Cribl.SearchStatus.timeStarted
+      description: The epoch (ms) when the search job started executing. This is only set once the job leaves the queued state.
+      type: Number
+    - contextPath: Cribl.SearchStatus.timeCompleted
+      description: The epoch (ms) when the search job completed. This is only set after the job finishes.
+      type: Number
+
+  - name: cribl-search-result
+    description: Retrieves the results of a completed search job.
+    execution: false
+    arguments:
+    - name: job_id
+      required: true
+      description: The unique identifier of the search job.
+    - name: lower_bound
+      required: false
+      description: The lower time bound for results (inclusive, epoch).
+    - name: upper_bound
+      required: false
+      description: The upper time bound for results (exclusive, epoch).
+    - name: page
+      required: false
+      description: The page number for pagination.
+    - name: limit
+      required: false
+      defaultValue: 50
+      description: The maximum number of results to return.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all results. If true, overrides the limit argument.
+    outputs:
+    - contextPath: Cribl.SearchResult.events
+      description: The list of events returned by the search (parsed from the NDJSON response). Each element is a free-form event object whose shape depends on the dataset and the query's projection.
+      type: Unknown
+    - contextPath: Cribl.SearchResult.isFinished
+      description: Whether the search job has finished executing.
+      type: Boolean
+    - contextPath: Cribl.SearchResult.job
+      description: The search job metadata associated with these results.
+      type: Object
+    - contextPath: Cribl.SearchResult.job.id
+      description: The unique identifier of the search job.
+      type: String
+    - contextPath: Cribl.SearchResult.job.query
+      description: The search query string executed by the job.
+      type: String
+    - contextPath: Cribl.SearchResult.job.status
+      description: The current status of the search job (for example, queued, running, completed).
+      type: String
+    - contextPath: Cribl.SearchResult.job.timeCreated
+      description: The epoch (ms) when the search job was created.
+      type: Number
+    - contextPath: Cribl.SearchResult.offset
+      description: The offset within the result set used for pagination.
+      type: Number
+    - contextPath: Cribl.SearchResult.persistedEventCount
+      description: The number of events persisted in the result set.
+      type: Number
+    - contextPath: Cribl.SearchResult.totalEventCount
+      description: The total number of events matched by the search job.
+      type: Number
+
+  - name: cribl-search-job-create
+    description: Creates a new search job in Cribl Search.
+    execution: false
+    arguments:
+    - name: query
+      required: true
+      description: The search query string.
+    - name: earliest
+      required: false
+      description: The start time for the search, in epoch seconds.
+    - name: latest
+      required: false
+      description: The end time for the search, in epoch seconds.
+    - name: sample_rate
+      required: false
+      description: The probability (0-1) of including each matching event (for example, 0.1 returns ~10%). If omitted, no sampling is applied.
+    - name: num_events_before
+      required: false
+      description: The number of events to include before the target event.
+    - name: num_events_after
+      required: false
+      description: The number of events to include after the target event.
+    - name: target_event_time
+      required: false
+      description: The target event time (epoch seconds).
+    - name: is_private
+      required: false
+      defaultValue: true
+      description: Whether the search job is private.
+    - name: set_options
+      required: false
+      description: A JSON string of additional search options.
+    - name: expected_output_type
+      required: false
+      description: The expected output type for the search.
+    outputs:
+    - contextPath: Cribl.SearchJob.id
+      description: The unique identifier of the search job.
+      type: String
+    - contextPath: Cribl.SearchJob.user
+      description: The user identifier (client ID) that created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.displayUsername
+      description: The display name of the user who created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.group
+      description: The search group the job belongs to.
+      type: String
+    - contextPath: Cribl.SearchJob.query
+      description: The search query string executed by the job.
+      type: String
+    - contextPath: Cribl.SearchJob.status
+      description: The current status of the search job (for example, queued, running, completed).
+      type: String
+    - contextPath: Cribl.SearchJob.timeCreated
+      description: The epoch (ms) when the search job was created.
+      type: Number
+    - contextPath: Cribl.SearchJob.type
+      description: The type of search job (for example, standard, dashboard).
+      type: String
+    - contextPath: Cribl.SearchJob.usageGroupId
+      description: The identifier of the usage group the job is billed against.
+      type: String
+    - contextPath: Cribl.SearchJob.isPrivate
+      description: Whether the search job is marked private.
+      type: Boolean
+    - contextPath: Cribl.SearchJob.accelerated
+      description: Whether the search job uses acceleration.
+      type: Boolean
+    - contextPath: Cribl.SearchJob.earliest
+      description: The start time for the search, in relative time or epoch seconds.
+      type: String
+    - contextPath: Cribl.SearchJob.latest
+      description: The end time for the search, in relative time or epoch seconds.
+      type: String
+    - contextPath: Cribl.SearchJob.compatibilityChecks
+      description: The compatibility check flags evaluated for the job.
+      type: Object
+    - contextPath: Cribl.SearchJob.metadata
+      description: The metadata about the query (for example, datasets, providers, operators, and functions).
+      type: Object
+    - contextPath: Cribl.SearchJob.setOptions
+      description: The additional search options provided when creating the job.
+      type: Object
+    - contextPath: Cribl.SearchJob.stages
+      description: The stages of the search job's execution plan.
+      type: Unknown
+    - contextPath: Cribl.SearchJob.internal
+      description: The internal job state (compiled policies, role-derived limits, preprocessed query, etc.). Returned on create; not normally returned by list/update.
+      type: Object
+    - contextPath: Cribl.SearchJob.userDetails
+      description: The details about the user/credential that created the job.
+      type: Object
+    - contextPath: Cribl.SearchJob.userDetails.email
+      description: The email address of the user who created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.userDetails.username
+      description: The username of the user (or client ID, for API-credential users) who created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.userDetails.displayUsername
+      description: The display name of the user who created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.userDetails.type
+      description: The type of user identity (for example, apiCredential, sso).
+      type: String
+    - contextPath: Cribl.SearchJob.userDetails.roles
+      description: The roles assigned to the user.
+      type: Unknown
+
+  - name: cribl-search-job-list
+    description: Retrieves a list of search jobs or details of a specific search job.
+    execution: false
+    arguments:
+    - name: job_id
+      required: false
+      description: The unique identifier of a specific search job to retrieve.
+    - name: limit
+      required: false
+      defaultValue: 10
+      description: The maximum number of results to return.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all results. If true, overrides the limit argument.
+    outputs:
+    - contextPath: Cribl.SearchJob.id
+      description: Unique identifier of the search job.
+      type: String
+    - contextPath: Cribl.SearchJob.user
+      description: User identifier (client ID) that created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.displayUsername
+      description: Display name of the user who created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.group
+      description: Search group the job belongs to.
+      type: String
+    - contextPath: Cribl.SearchJob.query
+      description: The search query string executed by the job.
+      type: String
+    - contextPath: Cribl.SearchJob.status
+      description: Current status of the search job (e.g., queued, running, completed).
+      type: String
+    - contextPath: Cribl.SearchJob.timeCreated
+      description: Epoch (ms) when the search job was created.
+      type: Number
+    - contextPath: Cribl.SearchJob.timeStarted
+      description: Epoch (ms) when the search job started executing.
+      type: Number
+    - contextPath: Cribl.SearchJob.timeCompleted
+      description: Epoch (ms) when the search job completed.
+      type: Number
+    - contextPath: Cribl.SearchJob.type
+      description: Type of search job (e.g., standard, dashboard).
+      type: String
+    - contextPath: Cribl.SearchJob.isPrivate
+      description: Whether the search job is marked private.
+      type: Boolean
+    - contextPath: Cribl.SearchJob.accelerated
+      description: Whether the search job uses acceleration.
+      type: Boolean
+    - contextPath: Cribl.SearchJob.earliest
+      description: Earliest time boundary for the search (relative time string or epoch seconds).
+      type: String
+    - contextPath: Cribl.SearchJob.earliestEpoch
+      description: Resolved earliest time boundary in epoch milliseconds.
+      type: Number
+    - contextPath: Cribl.SearchJob.latest
+      description: Latest time boundary for the search (relative time string or epoch seconds).
+      type: String
+    - contextPath: Cribl.SearchJob.latestEpoch
+      description: Resolved latest time boundary in epoch milliseconds.
+      type: Number
+    - contextPath: Cribl.SearchJob.cpuMetrics
+      description: CPU usage metrics for the executed job (billable seconds, per-executor breakdown, totals).
+      type: Object
+    - contextPath: Cribl.SearchJob.compatibilityChecks
+      description: Compatibility check flags evaluated for the job.
+      type: Object
+    - contextPath: Cribl.SearchJob.metadata
+      description: Metadata about the query (datasets, providers, operators, functions, etc.).
+      type: Object
+    - contextPath: Cribl.SearchJob.setOptions
+      description: Additional search options provided when creating the job.
+      type: Object
+    - contextPath: Cribl.SearchJob.stages
+      description: Stages of the search job's execution plan, including per-stage cache status and search config.
+      type: Unknown
+
+  - name: cribl-search-job-update
+    description: Updates a search job's status or privacy setting. At least one of status or is_private must be provided.
+    execution: false
+    arguments:
+    - name: job_id
+      required: true
+      description: The unique identifier of the search job to update.
+    - name: status
+      required: false
+      description: The new status for the search job (e.g., completed, canceled).
+    - name: is_private
+      required: false
+      description: Whether the search job should be private.
+    outputs:
+    - contextPath: Cribl.SearchJob.id
+      description: Unique identifier of the search job.
+      type: String
+    - contextPath: Cribl.SearchJob.user
+      description: User identifier (client ID) that created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.displayUsername
+      description: Display name of the user who created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.group
+      description: Search group the job belongs to.
+      type: String
+    - contextPath: Cribl.SearchJob.query
+      description: The search query string executed by the job.
+      type: String
+    - contextPath: Cribl.SearchJob.status
+      description: Current status of the search job (e.g., queued, running, completed).
+      type: String
+    - contextPath: Cribl.SearchJob.timeCreated
+      description: Epoch (ms) when the search job was created.
+      type: Number
+    - contextPath: Cribl.SearchJob.timeStarted
+      description: Epoch (ms) when the search job started executing.
+      type: Number
+    - contextPath: Cribl.SearchJob.timeCompleted
+      description: Epoch (ms) when the search job completed.
+      type: Number
+    - contextPath: Cribl.SearchJob.type
+      description: Type of search job (e.g., standard, dashboard).
+      type: String
+    - contextPath: Cribl.SearchJob.isPrivate
+      description: Whether the search job is marked private.
+      type: Boolean
+    - contextPath: Cribl.SearchJob.accelerated
+      description: Whether the search job uses acceleration.
+      type: Boolean
+    - contextPath: Cribl.SearchJob.earliest
+      description: Earliest time boundary for the search (relative time string or epoch seconds).
+      type: String
+    - contextPath: Cribl.SearchJob.earliestEpoch
+      description: Resolved earliest time boundary in epoch milliseconds.
+      type: Number
+    - contextPath: Cribl.SearchJob.latest
+      description: Latest time boundary for the search (relative time string or epoch seconds).
+      type: String
+    - contextPath: Cribl.SearchJob.latestEpoch
+      description: Resolved latest time boundary in epoch milliseconds.
+      type: Number
+    - contextPath: Cribl.SearchJob.compatibilityChecks
+      description: Compatibility check flags evaluated for the job.
+      type: Object
+    - contextPath: Cribl.SearchJob.metadata
+      description: Metadata about the query (datasets, providers, operators, functions, etc.).
+      type: Object
+    - contextPath: Cribl.SearchJob.setOptions
+      description: Additional search options provided when creating the job.
+      type: Object
+    - contextPath: Cribl.SearchJob.stages
+      description: Stages of the search job's execution plan, including per-stage cache status and search config.
+      type: Unknown
+    - contextPath: Cribl.SearchJob.userDetails
+      description: Details about the user/credential that created the job.
+      type: Object
+    - contextPath: Cribl.SearchJob.userDetails.email
+      description: Email address of the user who created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.userDetails.username
+      description: Username of the user (or client ID, for API-credential users) who created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.userDetails.displayUsername
+      description: Display name of the user who created the job.
+      type: String
+    - contextPath: Cribl.SearchJob.userDetails.type
+      description: Type of user identity (e.g., apiCredential, sso).
+      type: String
+    - contextPath: Cribl.SearchJob.userDetails.roles
+      description: Roles assigned to the user.
+      type: Unknown
+
+  - name: cribl-search-job-delete
+    description: Deletes a specific search job.
+    execution: true
+    arguments:
+    - name: job_id
+      required: true
+      description: The unique identifier of the search job to delete.
+
+  - name: cribl-search-dataset-list
+    description: Retrieves a list of available datasets or details of a specific dataset.
+    execution: false
+    arguments:
+    - name: dataset_id
+      required: false
+      description: The unique identifier of a specific dataset to retrieve.
+    - name: limit
+      required: false
+      defaultValue: 10
+      description: The maximum number of results to return.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all results. If true, overrides the limit argument.
+    outputs:
+    - contextPath: Cribl.SearchDataset.id
+      description: The unique identifier of the dataset.
+      type: String
+    - contextPath: Cribl.SearchDataset.type
+      description: The dataset provider type (for example, s3, azure_blob, gcs).
+      type: String
+    - contextPath: Cribl.SearchDataset.provider
+      description: The identifier of the provider configuration backing the dataset.
+      type: String
+    - contextPath: Cribl.SearchDataset.region
+      description: The cloud region where the dataset's underlying storage resides (when applicable).
+      type: String
+    - contextPath: Cribl.SearchDataset.bucket
+      description: The bucket/path template that locates the dataset's underlying objects.
+      type: String
+    - contextPath: Cribl.SearchDataset.description
+      description: The human-readable description of the dataset.
+      type: String
+    - contextPath: Cribl.SearchDataset.filter
+      description: The filter expression applied to events from the dataset; defaults to "true" (passes all events).
+      type: String
+    - contextPath: Cribl.SearchDataset.tags
+      description: The tags assigned to the dataset (string or array of strings).
+      type: Unknown
+    - contextPath: Cribl.SearchDataset.breakerRulesets
+      description: The event breaker rulesets associated with the dataset.
+      type: Unknown
+    - contextPath: Cribl.SearchDataset.storageClasses
+      description: The storage classes the dataset is configured to read from.
+      type: Unknown
+    - contextPath: Cribl.SearchDataset.staleChannelFlushMs
+      description: The time in milliseconds after which a stale channel is flushed during ingestion.
+      type: Number
+
+  - name: cribl-saved-search-list
+    description: Retrieves a list of saved searches or details of a specific saved search.
+    execution: false
+    arguments:
+    - name: search_id
+      required: false
+      description: The unique identifier of a specific saved search to retrieve.
+    - name: limit
+      required: false
+      defaultValue: 10
+      description: The maximum number of results to return.
+    - name: all_results
+      required: false
+      defaultValue: false
+      description: Whether to return all results. If true, overrides the limit argument.
+    outputs:
+    - contextPath: Cribl.SavedSearch.id
+      description: The unique identifier of the saved search.
+      type: String
+    - contextPath: Cribl.SavedSearch.name
+      description: The display name of the saved search.
+      type: String
+    - contextPath: Cribl.SavedSearch.query
+      description: The search query string defined by the saved search.
+      type: String
+
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:0.125.0.8198656
+fromversion: 6.10.0
+tests:
+- No tests
+sectionorder:
+- Connect

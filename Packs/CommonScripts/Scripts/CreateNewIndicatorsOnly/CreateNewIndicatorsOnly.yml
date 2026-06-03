@@ -10,7 +10,8 @@ comment: Create indicators to the Threat Intel database only if they are not reg
 enabled: true
 args:
 - name: indicator_values
-  description: The indicator values.
+  description: |
+    Comma-separated values are not supported because indicator values may contain commas. To pass multiple indicators, provide an array from context.
   isArray: true
 - name: type
   auto: PREDEFINED
@@ -76,7 +77,7 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.12.5490952
+dockerimage: demisto/python3:3.12.13.8428455
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

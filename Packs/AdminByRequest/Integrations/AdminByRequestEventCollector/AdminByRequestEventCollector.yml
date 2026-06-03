@@ -53,6 +53,8 @@ configuration:
   - Requests
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - additionalinfo: 'Maximum number of audit log entries to retrieve per fetch cycle. Applies only if the "Auditlog" event type is enabled for fetching.'
   defaultvalue: "50000"
   display: Maximum number of Auditlog per fetch
@@ -63,6 +65,8 @@ configuration:
   advanced: true
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - additionalinfo: 'Maximum number of event entries to retrieve per fetch cycle. Applies only if the "Events" event type is enabled for fetching.'
   defaultvalue: "50000"
   display: Maximum number of Events per fetch
@@ -73,12 +77,16 @@ configuration:
   advanced: true
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - additionalinfo: 'Maximum number of request entries to retrieve per fetch cycle. Applies only if the "Requests" event type is enabled for fetching.'
   defaultvalue: "5000"
   display: Maximum number of Requests per fetch
   name: max_requests_per_fetch
   required: false
   type: 0
+  supportedModules:
+  - xsiam
   section: Collect
   advanced: true
   hidden:
@@ -239,5 +247,3 @@ marketplaces:
 - xsoar
 tests:
 - No tests (auto formatted)
-supportedModules:
-- xsiam

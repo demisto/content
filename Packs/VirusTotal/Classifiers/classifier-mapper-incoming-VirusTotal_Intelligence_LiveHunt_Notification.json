@@ -62,5 +62,9 @@
     "name": "VirusTotal Intelligence LiveHunt Notification",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

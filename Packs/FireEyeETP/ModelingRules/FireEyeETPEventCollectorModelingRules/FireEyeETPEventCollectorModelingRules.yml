@@ -3,3 +3,5 @@ id: Trellix_Email_Security_Cloud_ModelingRule
 name: Trellix Email Security Cloud Modeling Rule
 rules: ''
 schema: ''
+supportedModules:
+- xsiam
