@@ -1,4 +1,6 @@
+deprecated: true
 description: |-
+  Deprecated. Use the Microsoft Graph Security - Search And Delete Emails playbook instead.
   This playbook perform:
   1. Creates a new compliance search action - Preview (Base on created compliance search).
   2. Waits for the preview action to complete.
@@ -381,8 +383,7 @@ view: |-
 version: -1
 fromversion: 5.5.0
 tests:
-- O365-SecurityAndCompliance-Test
-- O365-SecurityAndCompliance-ContextResults-Test
+- No tests (deprecated)
 supportedModules:
 - agentix
 - cloud
