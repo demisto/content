@@ -1708,15 +1708,9 @@ def file_permission_delete_command(client: "GSuiteClient", args: dict[str, str])
     try:
         client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
     except DemistoException as exc:
-        # Only swallow Not Found responses that refer to the *permission* itself
-        # (i.e. the permission was already removed). Not Found responses that
-        # refer to the parent file are operator errors and must still be raised
-        # so playbooks do not silently mask a typo in file_id.
-        # The shared GSuiteApiModule surfaces these as:
-        #   "Not found. Reason: Permission not found: <id>"            -- swallowed
-        #   "Not found. Reason: File not found: <id>"                  -- re-raised
-        #   "HTTP Connection error occurred. Status: 404. Reason: ..." -- re-raised unless body
-        #                                                                 names a permission
+        # Narrow match: only swallow "permission not found" so a typo in file_id
+        # (which surfaces as "file not found") still raises.
+        # See GSuiteApiModule.COMMON_MESSAGES for the exact error templates.
         exc_str = str(exc).lower()
         is_permission_not_found = ignore_not_found and (
             "permission not found" in exc_str or "permission_not_found" in exc_str or "permissionnotfound" in exc_str
