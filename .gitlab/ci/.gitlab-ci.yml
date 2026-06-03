@@ -1,6 +1,7 @@
 variables:
   CURRENT_BRANCH_NAME: "add-content-item-skill"
 
+
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     ref: "add-content-item-skill"
