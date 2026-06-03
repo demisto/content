@@ -5213,3 +5213,138 @@ Revoke exposed GitHub credentials (tokens) via the GitHub credential revocation 
 #### Context Output
 
 There is no context output for this command.
+
+### github-list-organization-repositories
+
+***
+Lists repositories for the specified organization.
+
+#### Base Command
+
+`github-list-organization-repositories`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization | The name of the organization. Defaults to the instance configured owner if not given. | Optional |
+| type | The type of repositories to list. Possible values are: all, public, private, forks, sources, member, internal. Default is all. | Optional |
+| page | The page number of results to return \(1-based\). Default is 1. | Optional |
+| per_page | The number of results per page \(max 100\). Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Repository.id | Number | The repository ID. |
+| GitHub.Repository.name | String | The repository name. |
+| GitHub.Repository.full_name | String | The full repository name \(org/repo\). |
+| GitHub.Repository.private | Boolean | Whether the repository is private. |
+| GitHub.Repository.default_branch | String | The default branch name. |
+| GitHub.Repository.updated_at | Date | The date the repository was last updated, in ISO 8601 format \(e.g., 2024-05-01T12:00:00Z\). |
+
+### github-list-actions-caches
+
+***
+Lists GitHub Actions caches for a repository.
+
+#### Base Command
+
+`github-list-actions-caches`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | The owner \(organization or username\) of the repository. Defaults to the instance configured owner if not given. | Optional |
+| repository | The repository name. Defaults to the instance configured repository if not given. | Optional |
+| page | The page number of results to return \(1-based\). Default is 1. | Optional |
+| per_page | The number of results per page \(max 100\). Default is 50. | Optional |
+| ref | The full Git ref to filter caches by \(e.g., refs/heads/main\). | Optional |
+| key | The cache key or prefix to filter by. | Optional |
+| sort | The property to sort the results by. Possible values are: created_at, last_accessed_at, size_in_bytes. | Optional |
+| direction | The sort direction. Possible values are: asc, desc. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.ActionsCache.id | Number | The cache ID. |
+| GitHub.ActionsCache.key | String | The cache key. |
+| GitHub.ActionsCache.ref | String | The Git ref the cache belongs to. |
+| GitHub.ActionsCache.version | String | The cache version. |
+| GitHub.ActionsCache.size_in_bytes | Number | The size of the cache in bytes. |
+| GitHub.ActionsCache.last_accessed_at | Date | The date the cache was last accessed, in ISO 8601 format \(e.g., 2024-05-01T12:00:00Z\). |
+| GitHub.ActionsCache.created_at | Date | The date the cache was created, in ISO 8601 format \(e.g., 2024-05-01T12:00:00Z\). |
+
+### github-delete-actions-cache
+
+***
+Deletes a GitHub Actions cache entry.
+
+#### Base Command
+
+`github-delete-actions-cache`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | The owner \(organization or username\) of the repository. Defaults to the instance configured owner if not given. | Optional |
+| repository | The repository name. Defaults to the instance configured repository if not given. | Optional |
+| cache_id | The ID of the cache to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### github-list-actions-artifacts
+
+***
+Lists GitHub Actions artifacts for a repository.
+
+#### Base Command
+
+`github-list-actions-artifacts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | The owner \(organization or username\) of the repository. Defaults to the instance configured owner if not given. | Optional |
+| repository | The repository name. Defaults to the instance configured repository if not given. | Optional |
+| page | The page number of results to return \(1-based\). Default is 1. | Optional |
+| per_page | The number of results per page \(max 100\). Default is 50. | Optional |
+| name | The exact artifact name to filter by. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.ActionsArtifact.id | Number | The artifact ID. |
+| GitHub.ActionsArtifact.name | String | The artifact name. |
+| GitHub.ActionsArtifact.size_in_bytes | Number | The size of the artifact in bytes. |
+| GitHub.ActionsArtifact.expired | Boolean | Whether the artifact has expired. |
+| GitHub.ActionsArtifact.created_at | Date | The date the artifact was created, in ISO 8601 format \(e.g., 2024-05-01T12:00:00Z\). |
+| GitHub.ActionsArtifact.expires_at | Date | The date the artifact expires, in ISO 8601 format \(e.g., 2024-05-01T12:00:00Z\). |
+
+### github-delete-actions-artifact
+
+***
+Deletes a GitHub Actions artifact.
+
+#### Base Command
+
+`github-delete-actions-artifact`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | The owner \(organization or username\) of the repository. Defaults to the instance configured owner if not given. | Optional |
+| repository | The repository name. Defaults to the instance configured repository if not given. | Optional |
+| artifact_id | The ID of the artifact to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
