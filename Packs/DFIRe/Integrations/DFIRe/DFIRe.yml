@@ -366,10 +366,10 @@ script:
       description: The note author.
       type: String
     - contextPath: DFIRe.CaseNote.created_at
-      description: Note creation timestamp.
+      description: The note creation timestamp.
       type: Date
   - name: dfire-case-note-create
-    description: Create a note on a case.
+    description: Creates a note on a case.
     arguments:
     - name: case_id
       description: The case ID to add the note to.
@@ -394,18 +394,18 @@ script:
       description: The note content.
       type: String
   - name: dfire-indicator-list
-    description: List indicators from the global IOC registry.
+    description: Lists indicators from the global IOC registry.
     arguments:
     - name: limit
-      description: Maximum number of indicators to return.
+      description: The maximum number of indicators to return.
       defaultValue: '50'
     - name: offset
-      description: Offset for pagination.
+      description: The offset for pagination.
       defaultValue: '0'
     - name: search
-      description: Search term to filter indicators.
+      description: The search term by which to filter indicators.
     - name: stix_type
-      description: Filter by STIX type.
+      description: The STIX type by which to filter indicators.
       predefined:
       - ipv4-addr
       - ipv6-addr
@@ -426,20 +426,20 @@ script:
       - mutex
       - x509-certificate
     - name: classification
-      description: Filter by classification.
+      description: The classification by which to filter indicators.
       predefined:
       - unknown
       - benign
       - suspicious
       - malicious
     - name: confidence
-      description: Filter by confidence level.
+      description: The confidence level by which to filter indicators.
       predefined:
       - low
       - medium
       - high
     - name: tlp
-      description: Filter by TLP designation.
+      description: The TLP designation by which to filter indicators.
       predefined:
       - clear
       - green
@@ -447,19 +447,19 @@ script:
       - amber_strict
       - red
     - name: is_published
-      description: Filter by published status.
+      description: Whether to filter indicators by published status.
       predefined:
       - 'true'
       - 'false'
     - name: is_revoked
-      description: Filter by revoked status.
+      description: Whether to filter indicators by revoked status.
       predefined:
       - 'true'
       - 'false'
     - name: parent
-      description: Filter by parent indicator ID (returns children of this indicator).
+      description: The ID of the parent indicator by which to filter results to return its child indicators.
     - name: ordering
-      description: Order results by field (e.g. "created_at", "-confidence").
+      description: The field by which to order results, for example, "created_at", or "-confidence" for descending order.
     outputs:
     - contextPath: DFIRe.Indicator.id
       description: The indicator ID.
@@ -468,16 +468,16 @@ script:
       description: The IOC value.
       type: String
     - contextPath: DFIRe.Indicator.stix_type
-      description: STIX 2.1 SCO type.
+      description: The STIX 2.1 SCO type.
       type: String
     - contextPath: DFIRe.Indicator.classification
-      description: Classification (unknown/benign/suspicious/malicious).
+      description: The indicator classification (unknown/benign/suspicious/malicious).
       type: String
     - contextPath: DFIRe.Indicator.confidence
-      description: Confidence level.
+      description: The indicator confidence level.
       type: String
     - contextPath: DFIRe.Indicator.tlp
-      description: TLP designation.
+      description: The indicator TLP designation.
       type: String
     - contextPath: DFIRe.Indicator.is_published
       description: Whether the indicator is published.
@@ -486,80 +486,80 @@ script:
       description: Whether the indicator is revoked.
       type: Boolean
     - contextPath: DFIRe.Indicator.case_count
-      description: Number of associated cases.
+      description: The number of associated cases for the indicator.
       type: Number
     - contextPath: DFIRe.Indicator.first_seen
-      description: First seen timestamp.
+      description: The indicator first seen timestamp.
       type: Date
     - contextPath: DFIRe.Indicator.created_at
-      description: Creation timestamp.
+      description: The indicator creation timestamp.
       type: Date
   - name: dfire-indicator-get
-    description: Get details of a specific indicator.
+    description: Retrieves details of a specific indicator.
     arguments:
     - name: indicator_id
       description: The indicator ID.
       required: true
     outputs:
     - contextPath: DFIRe.Indicator.id
-      description: The indicator ID.
+      description: The DFIRe indicator ID.
       type: Number
     - contextPath: DFIRe.Indicator.value
       description: The IOC value.
       type: String
     - contextPath: DFIRe.Indicator.value_normalized
-      description: Normalized IOC value.
+      description: The normalized IOC value.
       type: String
     - contextPath: DFIRe.Indicator.stix_type
-      description: STIX 2.1 SCO type.
+      description: The STIX 2.1 SCO type.
       type: String
     - contextPath: DFIRe.Indicator.classification
-      description: Classification.
+      description: The indicator classification.
       type: String
     - contextPath: DFIRe.Indicator.confidence
-      description: Confidence level.
+      description: The indicator confidence level.
       type: String
     - contextPath: DFIRe.Indicator.tlp
-      description: TLP designation.
+      description: The indicator TLP designation.
       type: String
     - contextPath: DFIRe.Indicator.tags
-      description: Tags assigned to the indicator.
+      description: The tags assigned to the indicator.
       type: Unknown
     - contextPath: DFIRe.Indicator.public_notes
-      description: Public notes.
+      description: The indicator public notes.
       type: String
     - contextPath: DFIRe.Indicator.is_published
-      description: Whether published.
+      description: Whether the indicator is published.
       type: Boolean
     - contextPath: DFIRe.Indicator.is_revoked
-      description: Whether revoked.
+      description: Whether the indicator is revoked.
       type: Boolean
     - contextPath: DFIRe.Indicator.parent
-      description: Parent indicator ID.
+      description: The parent indicator ID.
       type: Number
     - contextPath: DFIRe.Indicator.case_count
-      description: Number of associated cases.
+      description: The number of associated cases for the indicator.
       type: Number
     - contextPath: DFIRe.Indicator.children_count
-      description: Number of child indicators.
+      description: The number of child indicators.
       type: Number
     - contextPath: DFIRe.Indicator.first_seen
-      description: First seen timestamp.
+      description: The indicator first seen timestamp.
       type: Date
     - contextPath: DFIRe.Indicator.last_seen
-      description: Last seen timestamp.
+      description: The indicator last seen timestamp.
       type: Date
     - contextPath: DFIRe.Indicator.created_at
-      description: Creation timestamp.
+      description: The indicator creation timestamp.
       type: Date
   - name: dfire-indicator-create
-    description: Create a new indicator in the global IOC registry.
+    description: Creates a new indicator in the global IOC registry.
     arguments:
     - name: value
       description: The IOC value (IP, domain, hash, URL, etc.).
       required: true
     - name: stix_type
-      description: STIX 2.1 SCO type.
+      description: The STIX 2.1 SCO type.
       required: true
       predefined:
       - ipv4-addr
@@ -581,20 +581,20 @@ script:
       - mutex
       - x509-certificate
     - name: classification
-      description: IOC classification.
+      description: The indicator classification.
       predefined:
       - unknown
       - benign
       - suspicious
       - malicious
     - name: confidence
-      description: Confidence level.
+      description: The indicator confidence level.
       predefined:
       - low
       - medium
       - high
     - name: tlp
-      description: TLP designation.
+      description: The incidator TLP designation.
       predefined:
       - clear
       - green
@@ -602,27 +602,27 @@ script:
       - amber_strict
       - red
     - name: tags
-      description: Comma-separated tags.
+      description: A comma-separated list of indicator tags.
       isArray: true
     - name: public_notes
-      description: Public notes about the indicator.
+      description: The public notes about the indicator.
     - name: valid_until
-      description: Auto-revoke date (ISO 8601).
+      description: The indicator auto-revoke date (ISO 8601).
     outputs:
     - contextPath: DFIRe.Indicator.id
       description: The created indicator ID.
       type: Number
     - contextPath: DFIRe.Indicator.value
-      description: The IOC value.
+      description: The indicator value.
       type: String
     - contextPath: DFIRe.Indicator.stix_type
-      description: STIX type.
+      description: The indicator STIX type.
       type: String
     - contextPath: DFIRe.Indicator.is_existing
-      description: Whether the indicator already existed.
+      description: Whether the indicator already exists.
       type: Boolean
   - name: dfire-indicator-update
-    description: Update an existing indicator.
+    description: Updates an existing indicator.
     arguments:
     - name: indicator_id
       description: The indicator ID to update.
