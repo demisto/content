@@ -59,6 +59,13 @@ class Step:
     # this value instead of "". The CSV cell is NOT auto-written; only
     # an explicit setter call persists a value to disk.
     default: Optional[str] = None
+    # Named checkpoint-gate key (or None for a pure-bookkeeping markpass).
+    # When set on a ``kind: checkpoint`` step, ``markpass`` RUNS the named
+    # gate (a shell command, e.g. ``demisto-sdk pre-commit``) and only
+    # writes the pass marker if the gate succeeds — mirroring the
+    # auth-parity gate inside ``set-auth``. The key must resolve in
+    # ``workflow_state.gates.GATES``. Validated by the config loader.
+    gate: Optional[str] = None
 
 
 @dataclass(frozen=True)
