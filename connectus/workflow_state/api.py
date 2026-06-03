@@ -691,27 +691,30 @@ def set_integration_auth(
 # Auth-parity gate (in-process, called by set_integration_auth)
 # ---------------------------------------------------------------------------
 
-# Exit codes from check_auth_parity that we treat as "structural skip" — the
-# integration is not parity-testable, but that's a known, accepted state
-# (same semantics as the historical 'N/A markpass' on the removed
-# `auth parity test passes` checkpoint). We allow set-auth to proceed.
+# Exit codes from check_auth_parity that we treat as the ONLY valid clean
+# fallback for the gate: the auth is (entirely) interpolated, so there is
+# genuinely nothing to parity-test. These auto-grant ``allow=True``.
+#
+# AUTH-PARITY GATE STRICTNESS FIX (2026-06-03): the set was previously much
+# wider and equated "the analyzer could not test this integration" with
+# "this integration passed." That silently committed UNTESTED,
+# non-interpolated secret-placements. The fix narrows the set to the
+# interpolated cases ONLY. Every "cannot verify" code
+# (ERROR_NON_PYTHON, ERROR_NO_BASECLIENT, APIMODULE_INTEGRATION_CANNOT_VERIFY,
+# ERROR_INTEGRATION_REJECTS_HTTP, MULTI_SECRET_PASSTHROUGH) now falls through
+# to the ``else`` branch below (allow=False) and BLOCKS the commit. The
+# required operator action for those is to mark the offending auth(s)
+# ``interpolated: true``, after which they flow through ERROR_ALL_INTERPOLATED
+# (the clean path).
+#
+# Note on MULTI_SECRET_PASSTHROUGH: passthrough entries are
+# required-interpolated, so a genuinely-all-interpolated passthrough bundle
+# is already covered by ERROR_ALL_INTERPOLATED. Per the general-case intent
+# it must NOT auto-pass merely because it is "passthrough"; it is removed
+# from the skip set and only passes if it is actually all-interpolated.
 _PARITY_STRUCTURAL_SKIP_CODES = {
-    "ERROR_NON_PYTHON",
-    "ERROR_NO_BASECLIENT",
-    # FIXES-TODO #12 (LOCKED 2026-05-31): refined NO_BASECLIENT
-    # message for integrations whose Client subclasses a class defined
-    # in a shared *ApiModule (MicrosoftApiModule, OktaApiModule, …).
-    # Same structural-skip semantics as ERROR_NO_BASECLIENT, just a
-    # more actionable diagnostic.
-    "APIMODULE_INTEGRATION_CANNOT_VERIFY",
-    # FIXES-TODO #9 (LOCKED 2026-05-31): multi-secret Passthrough
-    # bundle (AbuseIPDB-class). Per cross-cutting decision #2
-    # (XOR-only auth), classified as Passthrough by design — the gate's
-    # reduced coverage is the documented trade-off, not a failure.
-    "MULTI_SECRET_PASSTHROUGH",
     "ERROR_ALL_INTERPOLATED",
     "ERROR_CONNECTION_INTERPOLATED",
-    "ERROR_INTEGRATION_REJECTS_HTTP",
 }
 
 # Per-connection statuses that count as "passing" for the gate. `pass` is the
@@ -838,16 +841,46 @@ def _evaluate_parity_for_set_auth(result: dict) -> dict:
                 "allow": True,
                 "reason": f"structural skip ({code}): {msg}",
             }
+        # AUTH-PARITY GATE STRICTNESS FIX (2026-06-03): any other analyzer
+        # error (cannot-verify codes, infra failures, docker/env unavailable,
+        # crashes) BLOCKS. Spell out the only two valid resolutions so the
+        # operator does not have to guess. (The cannot-verify messages from
+        # the analyzer already carry the grep literal "Mark its auth as
+        # interpolated"; we append guidance without altering them.)
         return {
             "allow": False,
-            "reason": f"parity errored ({code or 'unknown'}): {msg}",
+            "reason": (
+                f"parity errored ({code or 'unknown'}): {msg}\n"
+                f"  This auth was NOT parity-tested, so it cannot be "
+                f"committed. Resolve by either:\n"
+                f"    (a) mark the offending auth(s) 'interpolated: true' "
+                f"(then it flows through the all-interpolated clean path), or\n"
+                f"    (b) make parity runnable (provide docker/env) so the "
+                f"gate can actually verify the secret placement."
+            ),
         }
 
     auth_parity = result.get("auth_parity")
     if not isinstance(auth_parity, dict) or not auth_parity:
-        # No connections evaluated (e.g. empty auth_types). Allow —
-        # NoneRequired flows have nothing to test.
-        return {"allow": True, "reason": "no connections evaluated"}
+        # AUTH-PARITY GATE STRICTNESS FIX (2026-06-03): tightened fast-allow.
+        # A genuinely all-interpolated / nothing-testable payload short-circuits
+        # in the analyzer as ERROR_ALL_INTERPOLATED and is handled in the error
+        # branch above. Reaching this point with NO error but an empty/missing
+        # auth_parity means a testable (non-interpolated) auth was expected but
+        # produced zero evaluated connections — we cannot prove it passed.
+        # We cannot reliably distinguish "zero testable entries existed" from
+        # "testable entries were silently dropped/filtered" from this envelope
+        # alone, so per the spec we choose the conservative behavior and FAIL.
+        return {
+            "allow": False,
+            "reason": (
+                "parity produced no evaluated connections, so nothing was "
+                "verified. This auth cannot be committed. If the auth is "
+                "fully interpolated, mark it 'interpolated: true' (it will "
+                "then take the all-interpolated clean path); otherwise make "
+                "parity runnable (provide docker/env)."
+            ),
+        }
 
     failing = []
     for conn_name, conn_block in auth_parity.items():

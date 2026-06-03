@@ -722,9 +722,53 @@ class TestHardErrors:
             [str(pack), "--integration-id", "TestInt",
              "--auth-details", json.dumps(details_json)]
         )
-        assert rc == cap.EXIT_ALL_INTERPOLATED
+        # AUTH-PARITY GATE STRICTNESS FIX (2026-06-03): the all-interpolated
+        # case is the ONLY clean fallback, so the standalone CLI now exits 0
+        # (the envelope still carries ERROR_ALL_INTERPOLATED with its distinct
+        # EXIT_ALL_INTERPOLATED value for callers that inspect error.exit_code).
+        assert rc == 0
         assert payload["error"]["code"] == cap.ERROR_ALL_INTERPOLATED
+        assert payload["error"]["exit_code"] == cap.EXIT_ALL_INTERPOLATED
         assert cap._LITERAL_PARITY_GATE_SKIPPED in payload["error"]["message"]
+
+    def test_exit_code_for_all_interpolated_is_zero(self) -> None:
+        """AUTH-PARITY GATE STRICTNESS FIX: _exit_code_for() maps the
+        all-interpolated envelope to 0 (the only clean fallback).
+        """
+        envelope = {
+            "integration": "TestInt",
+            "error": {
+                "code": cap.ERROR_ALL_INTERPOLATED,
+                "message": "all interpolated",
+                "exit_code": cap.EXIT_ALL_INTERPOLATED,
+            },
+        }
+        assert cap._exit_code_for(envelope) == 0
+
+    def test_exit_code_for_cannot_verify_codes_are_nonzero(self) -> None:
+        """Every "cannot verify" code keeps its non-zero exit code, so the
+        gate cannot mistake an untested integration for a passing one.
+        """
+        cannot_verify = [
+            (cap.APIMODULE_INTEGRATION_CANNOT_VERIFY,
+             cap.EXIT_APIMODULE_INTEGRATION_CANNOT_VERIFY),
+            (cap.ERROR_NO_BASECLIENT, cap.EXIT_NO_BASECLIENT),
+            (cap.ERROR_NON_PYTHON, cap.EXIT_NON_PYTHON),
+            (cap.ERROR_INTEGRATION_REJECTS_HTTP,
+             cap.EXIT_INTEGRATION_REJECTS_HTTP),
+        ]
+        for code, exit_code in cannot_verify:
+            envelope = {
+                "integration": "TestInt",
+                "error": {
+                    "code": code,
+                    "message": "cannot verify",
+                    "exit_code": exit_code,
+                },
+            }
+            rc = cap._exit_code_for(envelope)
+            assert rc != 0, f"{code} must map to a non-zero exit code"
+            assert rc == exit_code
 
     def test_error_connection_interpolated(self, tmp_path: Path) -> None:
         pack = _make_python_integration(tmp_path)

@@ -456,19 +456,39 @@ class TestEvaluateParityForSetAuth:
         gate = ws_api._evaluate_parity_for_set_auth(result)
         assert gate["allow"] is True
 
-    def test_structural_skip_codes_still_allow(self) -> None:
+    def test_interpolated_structural_skip_codes_still_allow(self) -> None:
+        # AUTH-PARITY GATE STRICTNESS FIX (2026-06-03): only the interpolated
+        # codes remain in _PARITY_STRUCTURAL_SKIP_CODES; they are the ONLY
+        # clean fallback (nothing to parity-test).
+        for code in [
+            "ERROR_ALL_INTERPOLATED",
+            "ERROR_CONNECTION_INTERPOLATED",
+        ]:
+            result = {"error": {"code": code, "message": f"skip via {code}", "exit_code": 12}}
+            gate = ws_api._evaluate_parity_for_set_auth(result)
+            assert gate["allow"] is True, (
+                f"interpolated structural skip {code} should allow but got: {gate}"
+            )
+
+    def test_cannot_verify_codes_now_block(self) -> None:
+        # AUTH-PARITY GATE STRICTNESS FIX (2026-06-03): codes that mean "the
+        # analyzer could not test this integration" no longer auto-pass; an
+        # untested, non-interpolated auth must BLOCK.
         for code in [
             "ERROR_NON_PYTHON",
             "ERROR_NO_BASECLIENT",
-            "ERROR_ALL_INTERPOLATED",
-            "ERROR_CONNECTION_INTERPOLATED",
+            "APIMODULE_INTEGRATION_CANNOT_VERIFY",
             "ERROR_INTEGRATION_REJECTS_HTTP",
+            "MULTI_SECRET_PASSTHROUGH",
         ]:
-            result = {"error": {"code": code, "message": f"skip via {code}", "exit_code": 11}}
+            result = {"error": {"code": code, "message": f"cannot verify {code}", "exit_code": 11}}
             gate = ws_api._evaluate_parity_for_set_auth(result)
-            assert gate["allow"] is True, (
-                f"structural skip {code} should still allow but got: {gate}"
+            assert gate["allow"] is False, (
+                f"cannot-verify code {code} must block but got: {gate}"
             )
+            # Operator guidance is surfaced in the reason.
+            assert "interpolated: true" in gate["reason"]
+            assert "docker/env" in gate["reason"]
 
     def test_rejection_diagnostic_surfaces_failure_codes(self) -> None:
         """Per Hints policy: the diagnostic includes failure_codes from diffs."""

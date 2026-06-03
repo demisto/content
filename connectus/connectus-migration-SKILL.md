@@ -201,7 +201,7 @@ which is then applied verbatim).
 
 | # | CLI verb | Column written | What to show before asking |
 |---|---|---|---|
-| 1 | `set-auth` | `Auth Details` | The full JSON payload; a concise bullet list of source-code evidence per `auth_types[]` entry (which YML param + which code site justifies the type); the `other_connection` list. Note that this call resets the workflow + wipes the downstream Params\* columns AND runs the auth-parity test on the candidate payload — the cell is **rejected** unless parity passes or short-circuits structurally (see [§1.12 Auth-parity gate inside `set-auth`](#112-auth-parity-gate-inside-set-auth)). If the gate fails, treat the printed diff as the next problem to solve (most often: a non-standard auth header that needs a `_apply_ucp_<type>` override on the integration's `Client`, or a multi-auth integration with a startup validator that needs `is_ucp_enabled()` gating) — see the same §1.12 for the troubleshooting playbook. |
+| 1 | `set-auth` | `Auth Details` | The full JSON payload; a per-`auth_types[]`-entry evidence table that MUST include, for each profile, the **XSOAR fields** (the `xsoar_param_map` keys) it consumes alongside the role each field plays, the YML param + code site that justifies the type, and any `verify_connection_skip` / `interpolated` flags. Any XSOAR field that appears in more than one profile MUST be **highlighted** (🔶 marker by default) and called out in a mandatory overlap note beneath the table (see [§1.2](#12-researching-auth-details--the-four-sources-of-truth) for the table format and highlight conventions); the `other_connection` list. Note that this call resets the workflow + wipes the downstream Params\* columns AND runs the auth-parity test on the candidate payload — the cell is **rejected** unless parity passes or short-circuits structurally (see [§1.12 Auth-parity gate inside `set-auth`](#112-auth-parity-gate-inside-set-auth)). If the gate fails, treat the printed diff as the next problem to solve (most often: a non-standard auth header that needs a `_apply_ucp_<type>` override on the integration's `Client`, or a multi-auth integration with a startup validator that needs `is_ucp_enabled()` gating) — see the same §1.12 for the troubleshooting playbook. |
 | 2 | `set-params-to-commands` | `Params to Commands` | The full JSON payload; the analyzer's per-command findings vs. the final list (call out any commands where you overrode the analyzer); the auth-ignore set pulled from `auth-params`. |
 | 3 | `set-param-defaults` | `Params for test with default in code` | The full JSON payload AND, for each entry, a one-line attribution: **(a)** *param `foo`: code fallback added — was `params.get("foo")`, now `params.get("foo") or "<yml default>"`, default sourced from YML `defaultvalue`.* **(b)** *param `foo`: NO YML default; proposed default `<value>` — please confirm/edit/skip before the code edit is applied.* **(c)** *param `foo`: code already supplies fallback `<existing default>`; recorded for the cell, no code edit.* Branch (b) is the only sub-confirmation that pauses the workflow per-param (within the same outer pause-before-`set-param-defaults` step). The skill MUST collect all branch-(b) confirmations before applying any `.py` edits, AND before calling `set-param-defaults`. If any branch-(b) param is rejected, drop it from the JSON and skip its code edit. |
 | 4 | `set-params-to-capabilities` | `Params to Capabilities` | The full JSON payload from the mapping helper; any `MANUAL_COMMAND_TO_CAPABILITY_JSON` overrides applied and why. |
@@ -303,9 +303,10 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 7. ☐ Extract the **connection-adjacent** YML params (URL, proxy, insecure, port, host, region, …) into the sorted `other_connection` list — see [1.2.5](#125-building-the-other_connection-list)
 8. ☐ Sanity-check against [Known Misclassification Patterns](#16-known-misclassification-patterns) and the [Decision Tree](#19-decision-tree-for-auth-type)
 9. ☐ Run the [Pre-flight self-check](#111-pre-flight-self-check)
-10. ☐ Apply via `set-auth` (this validates the JSON schema, **runs the auth-parity test on the candidate payload**, and on success resets the workflow) — see [1.10](#110-applying-corrections)
-11. ☐ If `set-auth` rejects the cell with a parity-gate failure, apply the troubleshooting playbook in [§1.12](#112-auth-parity-gate-inside-set-auth) (UCP header override, startup-validator gating, `interpolated: true` fallback, etc.) and re-run
-12. ☐ Re-run `status` to confirm the value was stored as intended
+10. ☐ **Dry-run first.** Validate the candidate payload with `set-auth … --dry-run` BEFORE the real apply — this runs the schema validator + the auth-parity gate and reports `verdict.would_commit` **without** writing the cell or resetting the workflow. Inspect the JSON result, then present the evidence table to the user. See [1.10](#110-applying-corrections).
+11. ☐ Apply via `set-auth` (no `--dry-run`) once the dry-run reports `would_commit: true` and the user approves (this validates the JSON schema, **runs the auth-parity test on the candidate payload**, and on success resets the workflow) — see [1.10](#110-applying-corrections)
+12. ☐ If the dry-run (or the real `set-auth`) reports a parity-gate failure, apply the troubleshooting playbook in [§1.12](#112-auth-parity-gate-inside-set-auth) (UCP header override, startup-validator gating, `interpolated: true` fallback, etc.) and re-run the dry-run
+13. ☐ Re-run `status` to confirm the value was stored as intended
 
 The current CSV value, if any, is informational only — show it to the user for context but derive the new value entirely from the source code:
 
@@ -403,7 +404,31 @@ Read these four files **in this order**, treating each one as a cross-check on t
 
 If steps 1 and 2 disagree (e.g. the YML defines a `credentials` param but the code only ever reads `params.get('api_key')`), step 2 wins. Steps 3 and 4 are tiebreakers when the code is ambiguous.
 
-Before you actually use the `set_auth` command, present the evidence to the user for why you decided on the auth types and config structure in a concise and clear way.
+Before you actually use the `set_auth` command, present the evidence to the user for why you decided on the auth types and config structure in a concise and clear way. Present it as a **table with one row per `auth_types[]` profile**, and the table MUST include a column listing the **XSOAR fields** that profile consumes — i.e. the `xsoar_param_map` keys (the dotted-leaf YML field paths such as `credentials_enc_key.password`, `private_key`) and the role each maps to. The recommended columns are:
+
+| Profile (`name`) | Type | XSOAR fields (`xsoar_param_map` → role) | Evidence (YML param + code site) | Flags |
+|---|---|---|---|---|
+
+where:
+- **XSOAR fields** lists every `xsoar_param_map` key for that profile and the role value it maps to (e.g. `credentials_enc_key.password → client_secret`, `private_key → private_key`). This makes it explicit to the user exactly which XSOAR fields feed each profile so they can spot a misplaced or missing field before the cell is committed.
+- **Evidence** cites the YML param id(s) and the code line(s) that justify the classification.
+- **Flags** notes `interpolated` / `verify_connection_skip` when set.
+
+Also show the `other_connection` list separately.
+
+##### Highlighting overlapping XSOAR fields
+
+A single XSOAR field path MAY legitimately appear in more than one profile's `xsoar_param_map` (e.g. one `credentials.password` backing both a `Plain` profile and a `Passthrough` profile). When this happens it MUST be **highlighted** in the evidence table so the user can immediately see which fields are shared across profiles and confirm the overlap is intentional rather than a copy-paste error.
+
+Because the evidence table is printed to the user as terminal-rendered CommonMark markdown, **true per-cell background/foreground color is not reliably available** — markdown tables have no per-cell color and raw ANSI escapes break table layout in most renderers. Use one of the following highlight conventions, in this order of preference:
+
+1. **Emoji marker + overlap note (default — portable, survives copy/paste).** Prefix every overlapping field with 🔶 inside the table cell, and add a one-line note directly beneath the table listing each overlapping field and the profiles it appears in. Example:
+   - Cell: `🔶 credentials.password → client_secret`
+   - Note: `🔶 Overlapping fields: credentials.password appears in profiles [plain, client_creds] — intentional (same secret backs both flows).`
+2. **Bold + ⚠️ marker (inline alternative).** Render the shared field as `**credentials.password** ⚠️ → client_secret` instead of the emoji prefix. Still add the overlap note beneath the table.
+3. **ANSI color codes (color-capable terminals only).** If — and only if — you know the output target renders ANSI, you MAY wrap the overlapping field token in an ANSI color sequence (e.g. yellow: `\033[33m…\033[0m`). Do NOT use this inside a markdown table (it corrupts the column layout); reserve it for a plain (non-table) bullet-list rendering of the evidence. Always pair it with the same plain-text overlap note so the information survives if the color is stripped.
+
+Whichever convention you use, the **overlap note beneath the table is mandatory** — the color/marker is a visual aid, but the explicit list of `<field> appears in profiles [<a>, <b>]` is the source of truth the user confirms against. If NO field overlaps between profiles, state that explicitly ("No XSOAR fields overlap between profiles.") so the absence of highlighting is unambiguous rather than an oversight.
 ---
 
 #### 1.2.1 Classification decision table
@@ -417,14 +442,14 @@ Map "what you saw in the source" → "auth-type enum value" (the values are the 
 | `Authorization: Basic <user>:<pass>` from a credentials (type `9`) or two flat params | `Plain` |
 | Username + password posted to a login endpoint that returns a session cookie | `Plain` |
 | OAuth2 with user-driven `code` + `redirect_uri` flow | `Passthrough` |
-| OAuth2 with `client_id` + `client_secret` (no user code, `grant_type=client_credentials`) | `OAuth2ClientCreds` |
-| OAuth2 with a signed JWT assertion (private key + claims, `grant_type=jwt-bearer`) | `OAuth2JWT` |
+| OAuth2 with `client_id` + `client_secret` (no user code, `grant_type=client_credentials`) | `Passthrough` |
+| OAuth2 with a signed JWT assertion (private key + claims, `grant_type=jwt-bearer`) | `Passthrough` |
 | OAuth2 ROPC (`grant_type=password`), Device Code, Managed Identity, mTLS-only, HMAC signing, custom challenge/response | `Passthrough` |
 | Two or more API keys / secrets used together (regardless of how they're issued — Datadog `api_key`+`application_key`, AWS access_key+secret_key, Akamai EdgeGrid's three tokens, etc.) | `Passthrough` |
 | Any auth flow that doesn't cleanly fit one of the five canonical profile types in §1.2.6 | `Passthrough` |
 | No credentials at all (public API, or a feed that just hits a URL) | `NoneRequired` |
 
-> **`Passthrough` is the "doesn't fit a profile" catch-all.** The five canonical UCP profile types — `oauth2_client_credentials`, `oauth2_jwt_bearer`, `plain`, `api_key`, and `NoneRequired` — each have a fixed field shape (see §1.2.6 "Authentication Profile Types — Fields Reference"). Anything that doesn't fit one of those shapes (multi-key packages, OAuth2 Authorization Code's browser flow, ROPC, Device Code, Managed Identity, custom HMAC schemes, mTLS, certificate-based flows, etc.) becomes `Passthrough`. When in doubt, prefer `Passthrough` — it is the safe, explicit "we couldn't classify this into a known profile" signal.
+> **`Passthrough` is the "doesn't fit a profile" catch-all — and now the home for ALL OAuth2 flows.** The classifier emits exactly four `Auth Details` types: `APIKey`, `Plain`, `Passthrough`, and `NoneRequired`. Every OAuth2 flow — client-credentials, JWT-bearer, Authorization Code's browser flow, ROPC, Device Code — is now classified as `Passthrough` (with `interpolated: true`), as are multi-key packages, Managed Identity, custom HMAC schemes, mTLS, and certificate-based flows. The OAuth2-specific UCP profile shapes (`oauth2_client_credentials`, `oauth2_jwt_bearer`) still exist in the manifest layer, but the skill no longer instructs you to OUTPUT `OAuth2ClientCreds` / `OAuth2JWT` as classification values. When in doubt, prefer `Passthrough` — it is the safe, explicit "we couldn't classify this into a known profile" signal.
 
 ---
 
@@ -445,14 +470,14 @@ Each `auth_types[]` entry describes **one complete UCP connection type** — one
   |---|---|
   | `APIKey` | `"key"` |
   | `Plain` | `"username"`, `"password"` |
-  | `OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough` | any non-empty string (enum **deliberately undefined for now** — typical illustrative values: `"client_id"`, `"client_secret"`, `"access_token"`, `"credentials_file"`, `"subject_email"`) |
+  | `Passthrough` | any non-empty string (enum **deliberately undefined for now** — typical illustrative values: `"client_id"`, `"client_secret"`, `"access_token"`, `"credentials_file"`, `"subject_email"`) |
   | `NoneRequired` | n/a — no entry in `auth_types[]` at all |
 
-  The validator enforces the APIKey and Plain constraints strictly; OAuth/Passthrough values are only checked for "non-empty string".
+  The validator enforces the APIKey and Plain constraints strictly; `Passthrough` values are only checked for "non-empty string".
 
-  > **Enum.** The validator/enum in [`auth_config_parser/types.py`](auth_config_parser/types.py:1) accepts exactly the six values `OAuth2ClientCreds`, `OAuth2JWT`, `APIKey`, `Plain`, `Passthrough`, `NoneRequired`.
+  > **Enum.** The validator/enum in [`auth_config_parser/types.py`](auth_config_parser/types.py:1) still technically accepts the legacy values `OAuth2ClientCreds` and `OAuth2JWT` in addition to `APIKey`, `Plain`, `Passthrough`, `NoneRequired` — **but the skill no longer emits the two OAuth2 values.** The only values you may OUTPUT in an `Auth Details` classification are `APIKey`, `Plain`, `Passthrough`, and `NoneRequired`. OAuth2 client-credentials and JWT-bearer flows are now folded into `Passthrough`.
 - **Multi-secret auth flows: extras go in the SAME profile (see §1.2.2a).** Every entry is one self-contained, mutually-exclusive profile. If an auth flow consumes more than one XSOAR field-path, they all go in the **same** entry's `xsoar_param_map` — never split across multiple entries (because the only inter-profile relation is exclusive-OR, not AND). When the combined shape doesn't fit a canonical profile (no dominant canonical role; co-equal multi-secret packages like Datadog/AWS/Akamai/GitHub App), use `Passthrough`. When one canonical role dominates and the rest are "extras" (e.g. APIKey + a vendor cert), keep the canonical type and add the extras to the same map.
-- **`interpolated`** (optional, defaults to `false`) — set to `true` when the value is templated in at runtime by the manifest generator rather than supplied directly by the user. **Only `Plain` and `APIKey` entries may be non-interpolated (i.e., `interpolated: false` or omitted).** All other auth types (`OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough`) MUST set `interpolated: true` — these flows cannot accept raw user input verbatim; their values are always derived/templated at runtime. `xsoar_param_map` is still required and non-empty even when `interpolated: true`.
+- **`interpolated`** (optional, defaults to `false`) — set to `true` when the value is templated in at runtime by the manifest generator rather than supplied directly by the user. **Only `Plain` and `APIKey` entries may be non-interpolated (i.e., `interpolated: false` or omitted).** `Passthrough` MUST set `interpolated: true` — these flows (including all OAuth2 flows, which are now classified as `Passthrough`) cannot accept raw user input verbatim; their values are always derived/templated at runtime. `xsoar_param_map` is still required and non-empty even when `interpolated: true`.
 
   > **`interpolated: true` is a documented fallback on ANY profile type** (cross-cutting decision #3). Operators may set it on `Plain` and `APIKey` profiles too, as the escape valve when the parity gate cannot verify the integration cleanly. This is **not** a bypass — it's the documented escape path for these classes of failures:
   >
@@ -478,7 +503,7 @@ For an auth flow that consumes more than one XSOAR field, count the **canonical-
   - Examples:
     - **`Plain` + a vendor client certificate** (the cert participates in the TLS handshake alongside username/password): one `Plain` entry whose `xsoar_param_map` holds `<id>.identifier`/`<id>.password` AND the cert leaf.
     - **`APIKey` + a vendor client certificate** (mTLS-protected endpoint that also needs a static API key): one `APIKey` entry whose `xsoar_param_map` holds both the `key` and the cert leaf.
-    - **`OAuth2ClientCreds` + an "scopes" or "tenant_id" string that the OAuth flow itself requires**: one `OAuth2ClientCreds` entry whose `xsoar_param_map` holds the OAuth client id + secret AND the extra leaf.
+    - **An OAuth2 client-credentials flow + a "scopes" or "tenant_id" string that the flow itself requires**: one `Passthrough` entry (`interpolated: true`) whose `xsoar_param_map` holds the OAuth client id + secret AND the extra leaf. (OAuth2 flows are classified as `Passthrough`, so the extra leaf rides along inside the same free-form map.)
 - **Two-or-more co-equal canonical leaves (no obvious "dominant" canonical role)** → `Passthrough`.
   - Examples:
     - **Datadog** (`api_key` + `application_key` — two equal-rank API-key-style values, neither dominates).
@@ -660,8 +685,8 @@ Resulting field inside `Auth Details`:
 
 | Profile Type | Profile-Level Properties | User-Facing `auth.parameter` Fields | Maps from classification |
 |---|---|---|---|
-| `oauth2_client_credentials` | `discovery_url` **OR** `token_endpoint` | `client_key`, `client_secret` | `OAuth2ClientCreds` |
-| `oauth2_jwt_bearer` | `discovery_url` **OR** `token_endpoint` | `subject_email`, `credentials_file` | `OAuth2JWT` |
+| `oauth2_client_credentials` | `discovery_url` **OR** `token_endpoint` | `client_key`, `client_secret` | `Passthrough` (OAuth2 client-credentials folded into `Passthrough`) |
+| `oauth2_jwt_bearer` | `discovery_url` **OR** `token_endpoint` | `subject_email`, `credentials_file` | `Passthrough` (OAuth2 JWT-bearer folded into `Passthrough`) |
 | `plain` | *(none beyond id/type/title/description)* | `username`, `password` | `Plain` |
 | `api_key` | *(none beyond id/type/title/description)* | `api_key` | `APIKey` (single key only) |
 | `Passthrough` (no canonical profile) | n/a | n/a — define fields ad-hoc in the manifest | `Passthrough` — includes `oauth2_authorization_code` (browser flow), Device Code, ROPC, Managed Identity, mTLS, dual-key API (e.g. Datadog `api_key`+`application_key`), AWS SigV4, Akamai EdgeGrid, GitHub App, custom signing |
@@ -676,7 +701,7 @@ Resulting field inside `Auth Details`:
 - **`metadata.auth.parameter` fields:**
   - `client_key` — OAuth2 client ID / consumer key (`input`, unmasked)
   - `client_secret` — OAuth2 client secret (`input`, `mask: true`)
-- **Classification:** any integration whose code does `grant_type=client_credentials` with exactly two secrets (`client_id` + `client_secret`) fed in directly — no JWT, no browser redirect.
+- **Classification:** any integration whose code does `grant_type=client_credentials` with exactly two secrets (`client_id` + `client_secret`) fed in directly — no JWT, no browser redirect — is now classified as **`Passthrough`** (`interpolated: true`). The `oauth2_client_credentials` profile shape still describes the manifest-layer fields, but the skill no longer outputs an `OAuth2ClientCreds` classification value.
 
 ###### 2. `oauth2_jwt_bearer`
 
@@ -684,7 +709,7 @@ Resulting field inside `Auth Details`:
 - **`metadata.auth.parameter` fields:**
   - `subject_email` — impersonation subject (`input`, usually in `general_configurations`)
   - `credentials_file` — JSON key file (`file_upload`, `formats: ".json"`, `mask: true`)
-- **Classification:** any integration that signs a JWT assertion with a private key (typically a Google service-account JSON file) and posts it to a `grant_type=jwt-bearer` token endpoint.
+- **Classification:** any integration that signs a JWT assertion with a private key (typically a Google service-account JSON file) and posts it to a `grant_type=jwt-bearer` token endpoint is now classified as **`Passthrough`** (`interpolated: true`). The `oauth2_jwt_bearer` profile shape still describes the manifest-layer fields, but the skill no longer outputs an `OAuth2JWT` classification value.
 
 ###### 3. `plain`
 
@@ -724,7 +749,7 @@ Resulting field inside `Auth Details`:
 
 ##### Decision rule (one-line summary)
 
-> **If — and only if — every secret the integration consumes maps cleanly into one of the four canonical profiles' field lists above, use that profile's classification (`OAuth2ClientCreds` / `OAuth2JWT` / `Plain` / `APIKey`). Otherwise, classify as `Passthrough`.** `oauth2_authorization_code` is always `Passthrough` — its user-facing config lives on the profile itself, not in `metadata.auth.parameter`, so it has no canonical field shape to match against from the classification side.
+> **The classifier emits exactly four values: `APIKey`, `Plain`, `Passthrough`, `NoneRequired`.** If every secret maps cleanly into the `plain` (`username`/`password`) or `api_key` (single static secret) field shape, use `Plain` / `APIKey` respectively. **Everything else — including ALL OAuth2 flows (client-credentials, JWT-bearer, Authorization Code, Device Code, ROPC), multi-key packages, Managed Identity, mTLS, and custom signing — is classified as `Passthrough`** (`interpolated: true`). `oauth2_authorization_code` is `Passthrough` because its user-facing config lives on the profile itself; OAuth2 client-credentials and JWT-bearer are likewise folded into `Passthrough` even though their `oauth2_client_credentials` / `oauth2_jwt_bearer` profile shapes still exist at the manifest layer.
 
 ---
 
@@ -863,19 +888,11 @@ oauth = OAuth1(params['credentials_consumer']['identifier'],
                params['credentials_consumer']['password'], ...)
 ```
 
-Resulting JSON (note entries sorted by `(type, name)` — `OAuth2ClientCreds` < `Plain` alphabetically; `other_connection` sorted ascending; the OAuth entry uses free-form role strings while the Plain entry is constrained to `"username"`/`"password"`):
+Resulting JSON (note entries sorted by `(type, name)` — `Passthrough` > `Plain` alphabetically, so the `Plain` entry sorts first; `other_connection` sorted ascending; the OAuth2 flow is classified as `Passthrough` with `interpolated: true` and uses free-form role strings, while the `Plain` entry is constrained to `"username"`/`"password"`):
 
 ```json
 {
   "auth_types": [
-    {
-      "type": "OAuth2ClientCreds",
-      "name": "credentials_consumer",
-      "xsoar_param_map": {
-        "credentials_consumer.identifier": "client_id",
-        "credentials_consumer.password": "client_secret"
-      }
-    },
     {
       "type": "Plain",
       "name": "credentials",
@@ -883,11 +900,22 @@ Resulting JSON (note entries sorted by `(type, name)` — `OAuth2ClientCreds` < 
         "credentials.identifier": "username",
         "credentials.password": "password"
       }
+    },
+    {
+      "type": "Passthrough",
+      "name": "credentials_consumer",
+      "interpolated": true,
+      "xsoar_param_map": {
+        "credentials_consumer.identifier": "client_id",
+        "credentials_consumer.password": "client_secret"
+      }
     }
   ],
   "other_connection": ["insecure", "proxy", "url"]
 }
 ```
+
+> **Note:** the OAuth2 consumer-key/secret flow above (formerly classified as `OAuth2ClientCreds`) is now emitted as a `Passthrough` profile with `interpolated: true`. The role strings (`client_id` / `client_secret`) stay the same — `Passthrough` accepts any non-empty string role.
 
 ---
 
@@ -949,7 +977,7 @@ The `hiddenusername` / `hiddenpassword` flags suppress only the **named leaf** o
 
 For each auth type, search the Python file using these patterns:
 
-**OAuth2 Client Credentials:**
+**OAuth2 Client Credentials — classified as `Passthrough` (`interpolated: true`):**
 ```bash
 grep -n "client_credentials\|grant_type.*client\|/oauth2/token\|/token\|MicrosoftClient\|oproxy\|get_access_token\|client_id.*client_secret" <file>.py
 ```
@@ -959,7 +987,7 @@ grep -n "client_credentials\|grant_type.*client\|/oauth2/token\|/token\|Microsof
 grep -n "authorization_code\|redirect_uri\|oauth-start\|oauth-complete\|auth_code\|code_verifier\|PKCE" <file>.py
 ```
 
-**OAuth2 JWT Bearer:**
+**OAuth2 JWT Bearer — classified as `Passthrough` (`interpolated: true`):**
 ```bash
 grep -n "jwt\.encode\|jwt-bearer\|ServiceAccountCredentials\|google\.auth\|google\.oauth2\|service_account\|private_key.*sign" <file>.py
 ```
@@ -1006,14 +1034,14 @@ Based on manual review of 148 integrations (71 corrections found), these are the
 
 | # | Pattern | Freq | Classifier Output | Correct Value | How to Detect |
 |---|---------|------|-------------------|---------------|---------------|
-| 1 | `type=9` credentials used for OAuth2 client_credentials | 9 | `Plain(credentials)` | `OAuth2ClientCreds(credentials)` | Code does `grant_type=client_credentials` or uses `MicrosoftClient` |
+| 1 | `type=9` credentials used for OAuth2 client_credentials | 9 | `Plain(credentials)` | `Passthrough(credentials)` (`interpolated: true`) | Code does `grant_type=client_credentials` or uses `MicrosoftClient` |
 | 2 | Bearer token classified as Plain | 8 | `Plain(credentials)` | `APIKey(credentials)` | Code sets `Authorization: Bearer {token}` with a static token from params |
-| 3 | False positive OAuth2ClientCreds from code patterns | 25 | `OPTIONAL(OAuth2ClientCreds)` added | Should be removed | Code has `client_id`/`access_token` strings but they're not OAuth2 — they're proprietary token exchange |
+| 3 | False positive OAuth2 client-creds from code patterns | 25 | spurious extra `Passthrough` profile added | Should be removed | Code has `client_id`/`access_token` strings but they're not OAuth2 — they're proprietary token exchange |
 | 4 | Microsoft/Azure missing ManagedIdentity | 23 | No mention | Add to `auth_types` as `Passthrough` | Code imports `MicrosoftClient` and has `managed_identities_client_id` param |
 | 5 | Microsoft/Azure missing DeviceCode | 12 | No mention | Add to `auth_types` as `Passthrough` | Code has `device_code` grant type support |
-| 6 | OAuth2 ROPC misclassified | 13 | `OAuth2ClientCreds` or `Plain` | `Passthrough` (ROPC) | Code does `grant_type=password` |
+| 6 | OAuth2 ROPC misclassified | 13 | OAuth2 client-creds or `Plain` | `Passthrough` (ROPC) | Code does `grant_type=password` |
 | 7 | Hidden old param creates false CHOICE | ~10 | `CHOICE(APIKey, Plain)` | Single mechanism | Old `type=4` param is `hidden: true`, new `type=9` param is visible — same credential |
-| 8 | `type=4` OAuth client secret classified as APIKey | ~5 | `APIKey(client_secret)` | `OAuth2ClientCreds(client_secret)` | Param named `client_secret` or `enc_key` used in OAuth flow |
+| 8 | `type=4` OAuth client secret classified as APIKey | ~5 | `APIKey(client_secret)` | `Passthrough(client_secret)` (`interpolated: true`) | Param named `client_secret` or `enc_key` used in OAuth flow |
 | 9 | Microsoft cert-thumbprint integrations seed-fail at module load | many | 100% `no_data` across every command | Not a misclassification; analyzer limitation. Use the full static union; do NOT retry with `--use-integration-docker` (failure is in `MicrosoftApiModule.MicrosoftClient.__init__` cert validator, not a missing package). `--ignore-params <name>` does NOT help — the slot is still seeded, it only filters output. | Stderr contains `Error: Odd-length string` or `non-hexadecimal number found in fromhex()`; integration's YML has `certificate_thumbprint` (type=4) or `creds_certificate` (type=9) consumed by `MicrosoftClient`. Until the analyzer ships per-param seed overrides, manual source review is the only path. |
 
 ---
@@ -1027,12 +1055,12 @@ Microsoft/Azure integrations are the most complex (23 corrections in the manual 
   > **Important: 4 flows is the upper bound, not the default.** Many Microsoft integrations support only a subset. Common variants observed in the codebase:
   >
   > - **All 4 flows** — `auth_type` selector (type=15) with `Client Credentials` / `Authorization Code` / `Device Code` options + `managed_identities_client_id` param.
-  > - **Client-creds-only with cert OR secret + Managed Identity** (Azure Sentinel pattern) — 3 entries: `OAuth2ClientCreds(cert)` + `OAuth2ClientCreds(secret)` + `Passthrough(managed_identity)`. No `auth_type` selector param.
+  > - **Client-creds-only with cert OR secret + Managed Identity** (Azure Sentinel pattern) — 3 entries: `Passthrough(cert)` + `Passthrough(secret)` + `Passthrough(managed_identity)`, all with `interpolated: true` (the two OAuth2 client-creds flows are folded into `Passthrough`). No `auth_type` selector param.
   > - **Pure Client Credentials** (no cert, no MI) — 1 entry.
   >
   > The decisive evidence is **always** the source code, not the import. Read `main()` to determine which auth paths are reachable — never assume "imports `MicrosoftClient` ⇒ all 4 flows".
 
-  - It likely supports **4 auth flows**: `OAuth2ClientCreds`, plus three flavours of `Passthrough` (Authorization Code, Device Code, Managed Identity).
+  - It likely supports **4 auth flows**, all classified as `Passthrough` (`interpolated: true`): OAuth2 Client Credentials, plus Authorization Code, Device Code, and Managed Identity.
   - Check for `auth_type` selector param (`type: 15`) with options like `Client Credentials`, `Authorization Code`, `Device Code`
   - Check for `managed_identities_client_id` param → indicates Managed Identity support (Passthrough entry)
   - Check for `redirect_uri` and `auth_code` params → indicates Authorization Code support (Passthrough entry)
@@ -1050,7 +1078,7 @@ After determining the correct auth types, validate the Auth Details JSON against
 3. Every `xsoar_param_map` key is a non-empty string (the XSOAR field path); every value is a non-empty string (the role). The **role enum is constrained per `type`**:
    - `APIKey` → values MUST be `"key"`.
    - `Plain` → values MUST be in `{"username", "password"}`.
-   - `OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough` → any non-empty string (enum deliberately undefined for now; typical illustrative values: `"client_id"`, `"client_secret"`, `"access_token"`, `"credentials_file"`, `"subject_email"`).
+   - `Passthrough` → any non-empty string (enum deliberately undefined for now; typical illustrative values: `"client_id"`, `"client_secret"`, `"access_token"`, `"credentials_file"`, `"subject_email"`). All OAuth2 flows are classified as `Passthrough`, so their roles use this free-form set.
 4. Per-entry keys outside `{type, name, xsoar_param_map, interpolated, verify_connection_skip}` are silently ignored. The pre-2026-05 `xsoar_params: list[str]` field on an entry is no longer recognized at all (the dedicated migration-help error was removed in commit `cd09e3ff`); rewrite any such field as `xsoar_param_map`.
 5. `auth_types[]` entries are sorted by `(type, name)` ascending. Map keys, by contrast, are an unordered dict — no sort requirement applies.
 6. Profile relations are implicit from `len(auth_types)`: 0 → no auth, 1 → single required, ≥2 → exclusive-OR. The pre-2026-05 top-level `config` expression key is no longer recognized (removed in commit `cd09e3ff`); strip it from any pre-2026-05 payload.
@@ -1068,14 +1096,14 @@ Is there a credentials param (type=9)?
 ├── YES: What does the code do with it?
 │   ├── Sends as Basic Auth (HTTPBasicAuth) → Plain
 │   ├── Sends as Bearer token (Authorization: Bearer) → APIKey
-│   ├── Uses in OAuth2 client_credentials flow → OAuth2ClientCreds
+│   ├── Uses in OAuth2 client_credentials flow → Passthrough (interpolated:true)
 │   ├── Uses in OAuth2 ROPC flow (grant_type=password) → Passthrough (ROPC)
 │   └── Uses as username/password for login → Plain
 ├── NO: Is there an encrypted param (type=4)?
 │   ├── YES: What is it?
 │   │   ├── Named api_key, apikey, token → APIKey
-│   │   ├── Named client_secret, enc_key used in OAuth → OAuth2ClientCreds
-│   │   └── Named private_key used for JWT signing → OAuth2JWT
+│   │   ├── Named client_secret, enc_key used in OAuth → Passthrough (interpolated:true)
+│   │   └── Named private_key used for JWT signing → Passthrough (interpolated:true)
 │   └── NO: Is there any auth at all?
 │       ├── YES: Check code for auth mechanism → classify accordingly
 │       └── NO: NoneRequired
@@ -1097,7 +1125,30 @@ Examples currently in the pipeline: `SpamhausFeed`, `MalwareBazaarFeed`, `AbuseI
 
 #### 1.10 Applying Corrections
 
-When corrections are needed (or for the initial set), use `set-auth`:
+##### Always dry-run first (`--dry-run`)
+
+**Before the real `set-auth`, ALWAYS validate the candidate payload with `--dry-run`.** This runs the full schema validator and the auth-parity gate against the candidate JSON and prints a machine-readable verdict, but does **NOT** write the `Auth Details` cell and does **NOT** reset the workflow:
+
+```bash
+python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details JSON>' --dry-run
+```
+
+The JSON result has four blocks to inspect:
+
+- `validator` — `passed` + any schema `errors` (unsorted `auth_types[]`, role-enum violations, missing `other_connection`, etc.).
+- `seed_overlap` — `passed` for the field-overlap / seed check.
+- `parity` — the auth-parity gate outcome. Either a clean pass, an interpolated short-circuit (`ERROR_ALL_INTERPOLATED` / `ERROR_CONNECTION_INTERPOLATED`), or an `error` with a cannot-verify `code` (e.g. `APIMODULE_INTEGRATION_CANNOT_VERIFY`, `ERROR_NO_BASECLIENT`, `ERROR_NON_PYTHON`, `MULTI_SECRET_PASSTHROUGH`) and a `message`.
+- `verdict` — `would_commit` (boolean) + a human-readable `reason`. Only an interpolated short-circuit (`ERROR_ALL_INTERPOLATED` / `ERROR_CONNECTION_INTERPOLATED`) yields `would_commit: true` as a structural skip. A cannot-verify code now yields `would_commit: false` (AUTH-PARITY GATE STRICTNESS FIX, 2026-06-03) — the `reason` spells out the two valid resolutions (mark the auth `interpolated: true`, or make parity runnable).
+
+**Decision rule:**
+- `verdict.would_commit == true` → the payload is good. Present the evidence table to the user, get approval, then run the **same command without `--dry-run`** to actually commit.
+- `verdict.would_commit == false` (validator/parity failure) → do NOT run the real apply. Fix the JSON or apply the [§1.12](#112-auth-parity-gate-inside-set-auth) troubleshooting playbook (UCP header override, startup-validator gating, `interpolated: true` fallback, etc.), then re-run the dry-run until it passes.
+
+Re-running a dry-run is free and side-effect-free — iterate on it as many times as needed. Only the final, `--dry-run`-clean, user-approved payload should be committed.
+
+##### Committing the value
+
+When corrections are needed (or for the initial set), use `set-auth` (drop `--dry-run` to actually write):
 
 ```bash
 python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details JSON>'
@@ -1157,10 +1208,11 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 
 | Analyzer outcome | Gate decision | What happens |
 |---|---|---|
-| All connections return `status: "pass"` (or per-connection `skipped_signed` / `skipped_mtls` / `skipped_passthrough` / `inconclusive`) | **Allow** | The cell is written; downstream Params\* columns are wiped per the normal cascade. |
-| `auth_types` is empty (NoneRequired) | **Allow** | No connections to test. The cell is written. |
-| Hard error: `ERROR_NO_BASECLIENT` (11), `ERROR_NON_PYTHON` (10), `ERROR_ALL_INTERPOLATED` (12), `ERROR_CONNECTION_INTERPOLATED` (13), `ERROR_INTEGRATION_REJECTS_HTTP` (14) | **Allow (structural skip)** | The integration cannot be parity-tested for a known, accepted reason. Same semantics as the historical "N/A markpass" on the removed `auth parity test passes` checkpoint. The cell is written. |
-| Any connection returns `status: "fail"` | **Block** | The cell is NOT written. The row is left untouched. The skill should apply the troubleshooting playbook below and re-run `set-auth`. |
+| All connections return `status: "pass"` (or per-connection `skipped_signed` / `skipped_mtls` / `skipped_passthrough`) | **Allow** | The cell is written; downstream Params\* columns are wiped per the normal cascade. |
+| Interpolated short-circuit: `ERROR_ALL_INTERPOLATED` (12), `ERROR_CONNECTION_INTERPOLATED` (13) | **Allow (clean fallback)** | Every (relevant) auth is `interpolated: true`, so there is genuinely nothing to parity-test. This is the ONLY clean structural skip. The cell is written. |
+| Cannot-verify: `ERROR_NO_BASECLIENT` (11), `ERROR_NON_PYTHON` (10), `APIMODULE_INTEGRATION_CANNOT_VERIFY` (15), `ERROR_INTEGRATION_REJECTS_HTTP` (14), `MULTI_SECRET_PASSTHROUGH` (16) | **Block** | **AUTH-PARITY GATE STRICTNESS FIX (2026-06-03):** the analyzer could NOT parity-test a non-interpolated auth, so the secret-placement is unverified and the cell is **NOT** written. An ApiModule / no-`BaseClient` / boto3 / feed-framework integration that cannot be parity-tested now BLOCKS. **Required operator action: mark the offending auth(s) `interpolated: true`** — they then flow through the `ERROR_ALL_INTERPOLATED` clean path (Allow). Alternatively, make parity runnable (provide docker/env) and re-run. |
+| Any connection returns `status: "fail"` **or** `status: "inconclusive"` (e.g. docker/env unavailable, crash) | **Block** | The cell is NOT written (`inconclusive` is no longer treated as passing). The row is left untouched. Apply the troubleshooting playbook below or make parity runnable, then re-run `set-auth`. |
+| Empty / missing `auth_parity` with no error (no connections evaluated) | **Block** | Nothing was verified, so the auth cannot be committed. If the auth is fully interpolated, mark it `interpolated: true` (it then takes the `ERROR_ALL_INTERPOLATED` clean path); otherwise make parity runnable. |
 | Infrastructure failure (`ERROR_FILES_LOOKUP`, `ERROR_PARITY_IMPORT`, `ERROR_PARITY_UNHANDLED`, etc.) | **Block** | The cell is NOT written. Inspect the error and fix the prerequisite (missing `Integration File Path`, broken import path, etc.) before re-running. |
 
 When the gate blocks, the api/CLI returns the full analyzer envelope under `result["parity"]` so the skill can attribute the failure to a specific connection / sentinel.
@@ -1456,13 +1508,15 @@ reason in the commit notes. This is the documented fallback.
 
 ###### E. Permanent `interpolated: true` candidates (no parity testing possible)
 
-Three categories of integrations are permanent `interpolated: true` candidates — the parity tool will short-circuit on them, and that is the **correct** outcome (not a bug to chase):
+Three categories of integrations are permanent `interpolated: true` candidates — the parity tool cannot test them and emits a cannot-verify short-circuit, and that is the **expected** outcome (not a bug to chase):
 
 1. **Legacy HTTP layer / no `BaseClient` subclass** — short-circuits with `ERROR_NO_BASECLIENT`. Example: CrowdStrike Falcon.
 2. **Feed-framework integrations** (any `*FeedApiModule` import) — short-circuits with `ERROR_NO_BASECLIENT`. See §1.9.1.
 3. **`boto3` / `botocore` / `AWSApiModule` integrations** — short-circuits with `ERROR_NO_BASECLIENT` (see sub-section C above).
 
 For all three, the fix is to classify with `interpolated: true` on every `auth_types[]` entry. Do **not** attempt to refactor the integration onto `BaseClient` just to make the parity tool reachable — that is out of scope for the migration.
+
+> **AUTH-PARITY GATE STRICTNESS FIX (2026-06-03):** these cannot-verify short-circuits (`ERROR_NO_BASECLIENT`, `APIMODULE_INTEGRATION_CANNOT_VERIFY`, `ERROR_NON_PYTHON`, `ERROR_INTEGRATION_REJECTS_HTTP`, `MULTI_SECRET_PASSTHROUGH`) **no longer auto-pass** the `set-auth` gate. Until you mark the auth(s) `interpolated: true`, `set-auth` **BLOCKS** (`would_commit: false`) so an untested, non-interpolated secret-placement can't be silently committed. Once marked `interpolated: true`, the payload flows through the `ERROR_ALL_INTERPOLATED` clean path and the gate allows it.
 
 ###### F. Sentinel grammar (for grepping diagnostics)
 
@@ -1490,12 +1544,12 @@ See [`connectus/Readme.md`](Readme.md:19) for the full Auth Type definitions and
 
 | Value | UCP profile type | Description |
 |---|---|---|
-| `OAuth2ClientCreds` | `oauth2_client_credentials` | OAuth 2.0 Client Credentials flow (`client_id` + `client_secret`) |
-| `OAuth2JWT` | `oauth2_jwt_bearer` | OAuth 2.0 JWT Bearer flow (service-account / signed-assertion) |
 | `APIKey` | `api_key` | Single API key, single-secret HMAC, or other single-static-secret mechanisms |
 | `Plain` | `plain` | Single username + password pair (basic auth, login form, etc.) |
 | `Passthrough` | n/a (no canonical profile shape) | Authorization Code (browser flow), Device Code, ROPC, Managed Identity, mTLS, multi-secret packages (Datadog 2-key, AWS SigV4, Akamai EdgeGrid, GitHub App, etc.), custom signing, and anything else that doesn't cleanly fit one of the four profile shapes above. When in doubt, prefer `Passthrough`. |
 | `NoneRequired` | n/a | No authentication needed |
+
+> **OAuth2 flows are NOT selectable classification values.** OAuth2 Client Credentials (`oauth2_client_credentials`) and JWT-bearer (`oauth2_jwt_bearer`) flows still exist as manifest-layer profile shapes, but the skill classifies them as **`Passthrough`** (`interpolated: true`) — do NOT put `OAuth2ClientCreds` or `OAuth2JWT` in `auth_types[].type`.
 
 
 ## Analyzing per-command parameters
@@ -1723,6 +1777,8 @@ The analyzer's per-handler tracer sees `args.get("max_tokens")` inside the handl
 Watch also for in-place mutation patterns like `args.update({k: params.get(k) for k in BEHAVIOURAL_PARAMS})` and `args = {**args, **{k: params.get(k) for k in ...}}`.
 
 #### 6h. Recovery loop using `--seed-param`
+
+> **Symptom that MUST trigger this loop — do NOT fall back to static-only.** When **every** command in the dynamic phase fails identically *before any HTTP request* with a credential-parse error raised from `main()` (e.g. `called return_error before any HTTP request: ... Unable to parse JSON string`), the integration is parsing/validating a credential param at startup (the classic case: a Google service-account JSON loaded via `safe_load_non_strict_json(...)` in `main()` before command dispatch). This is **not** a real param-discovery limitation and you MUST NOT silently treat the run as static-only — the dynamic signal is recoverable by seeding a structurally-valid credential value (see the `user_creds.*` example below). Static-only is the fallback only after seeding still fails to produce a parseable credential. Reach for `--seed-param` first.
 
 When the analyzer reports `status: no_data` AND the failure_excerpt suggests a format-validator failure on a credential-shaped param that the auto-coercion didn't catch (skill §1.6 row #9 covers the common Microsoft cert-thumbprint case), the recovery loop is:
 
@@ -2371,12 +2427,12 @@ When analyzing an integration's authentication, use these classification values 
 
 | Auth Type | UCP Profile | Description |
 |---|---|---|
-| `OAuth2ClientCreds` | `oauth2_client_credentials` | OAuth 2.0 Client Credentials flow (`client_id` + `client_secret`) |
-| `OAuth2JWT` | `oauth2_jwt_bearer` | OAuth 2.0 JWT Bearer flow (`subject_email` + `credentials_file`) |
 | `APIKey` | `api_key` | Single static secret (header / query param / single-secret HMAC). Two-or-more keys → `Passthrough`. |
 | `Plain` | `plain` | Single username + password pair (`username` + `password`) |
-| `Passthrough` | n/a | OAuth2 Authorization Code (browser flow), Device Code, ROPC, Managed Identity, mTLS, dual-key API (Datadog, AWS, Akamai EdgeGrid, GitHub App), custom HMAC/signing, and anything else that doesn't cleanly fit one of the four profiles above. **When in doubt, prefer `Passthrough`.** |
+| `Passthrough` | n/a | **All OAuth2 flows** — Client Credentials, JWT-bearer, Authorization Code (browser flow), Device Code, ROPC — plus Managed Identity, mTLS, dual-key API (Datadog, AWS, Akamai EdgeGrid, GitHub App), custom HMAC/signing, and anything else that doesn't cleanly fit `api_key` or `plain`. Always `interpolated: true`. **When in doubt, prefer `Passthrough`.** |
 | `NoneRequired` | n/a | No authentication required |
+
+> **OAuth2 classifications removed.** The `oauth2_client_credentials` and `oauth2_jwt_bearer` UCP profile shapes still exist at the manifest layer, but `OAuth2ClientCreds` / `OAuth2JWT` are **no longer selectable `auth_types[].type` values** — classify both flows as `Passthrough` (`interpolated: true`). The only values you may OUTPUT are `APIKey`, `Plain`, `Passthrough`, and `NoneRequired`.
 
 
 

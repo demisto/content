@@ -2344,9 +2344,26 @@ def _parse_auth_details_input(args: argparse.Namespace) -> Any:
 
 
 def _exit_code_for(result: dict[str, Any]) -> int:
-    """Pick the process exit code from the result envelope."""
+    """Pick the process exit code from the result envelope.
+
+    AUTH-PARITY GATE STRICTNESS FIX (2026-06-03): the all-interpolated
+    envelope is the ONLY clean fallback for the workflow_state gate — when
+    every auth is interpolated there is genuinely nothing to parity-test and
+    the standalone CLI must exit 0 so the gate's "all-interpolated clean path"
+    is observable from the process exit code as well as the envelope.
+
+    This is intentionally a special-case here rather than a change to the
+    ``EXIT_ALL_INTERPOLATED`` constant: other callers (and the
+    ``error.exit_code`` field carried in the envelope) may still depend on the
+    distinct ``12`` value, so the constant is preserved. Every "cannot verify"
+    code (APIMODULE_INTEGRATION_CANNOT_VERIFY, ERROR_NO_BASECLIENT,
+    ERROR_NON_PYTHON, ERROR_INTEGRATION_REJECTS_HTTP, MULTI_SECRET_PASSTHROUGH,
+    ERROR_CONNECTION_INTERPOLATED) keeps its non-zero exit code.
+    """
     error = result.get("error")
     if isinstance(error, dict):
+        if str(error.get("code") or "") == ERROR_ALL_INTERPOLATED:
+            return 0
         return int(error.get("exit_code") or 1)
     return 0
 

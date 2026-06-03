@@ -276,7 +276,15 @@ GoogleCalendar,Packs/GoogleCalendar/Integrations/GoogleCalendar/GoogleCalendar.y
 GoogleCloudLogging,Packs/GoogleCloudLogging/Integrations/GoogleCloudLogging/GoogleCloudLogging.yml,Google GCP,,,,,,,,,,,,
 GoogleCloudTranslate,Packs/GoogleCloudTranslate/Integrations/GoogleCloudTranslate/GoogleCloudTranslate.yml,Google GCP,,,,,,,,,,,,
 GoogleDocs,Packs/GoogleDocs/Integrations/GoogleDocs/GoogleDocs.yml,Google Google Workspace,,,,,,,,,,,,
-GoogleDrive,Packs/GoogleDrive/Integrations/GoogleDrive/GoogleDrive.yml,Google Google Workspace,,,,,,,,,,,,
+GoogleDrive,Packs/GoogleDrive/Integrations/GoogleDrive/GoogleDrive.yml,Google Google Workspace,juschwartz,"{""auth_types"":[{""type"":""Passthrough"",""name"":""service_account"",""xsoar_param_map"":{""user_creds.password"":""credentials_file"",""user_creds.identifier"":""subject_email"",""user_service_account_json"":""credentials_file"",""user_id"":""subject_email""},""interpolated"":true,""verify_connection_skip"":false}],""other_connection"":[""insecure"",""proxy""]}","{""integration"":""Google Drive"",""commands"":{""fetch-incidents"":[""drive_item_search_field"",""drive_item_search_value"",""first_fetch"",""max_fetch""],""test-module"":[""drive_item_search_field"",""drive_item_search_value"",""first_fetch"",""isFetch"",""max_fetch""],""google-drive-activity-list"":[],""google-drive-changes-list"":[],""google-drive-create"":[],""google-drive-drive-create"":[],""google-drive-drive-delete"":[],""google-drive-drive-get"":[],""google-drive-drives-list"":[],""google-drive-file-copy"":[],""google-drive-file-create"":[],""google-drive-file-delete"":[],""google-drive-file-download"":[],""google-drive-file-get"":[],""google-drive-file-get-parents"":[],""google-drive-file-modify-label"":[],""google-drive-file-move"":[],""google-drive-file-permission-create"":[],""google-drive-file-permission-delete"":[],""google-drive-file-permission-update"":[],""google-drive-file-permissions-list"":[],""google-drive-file-replace-existing"":[],""google-drive-file-upload"":[],""google-drive-files-list"":[],""google-drive-get-file-labels"":[],""google-drive-get-labels"":[]}}",{},"{
+  ""general_configurations"": [
+    ""isFetch"",
+    ""drive_item_search_value"",
+    ""max_fetch"",
+    ""drive_item_search_field"",
+    ""first_fetch""
+  ]
+}",,,,,,,
 GoogleGemini,Packs/GoogleGemini/Integrations/GoogleGemini/GoogleGemini.yml,Google Google AI,,,,,,,,,,,,
 GoogleKubernetesEngine,Packs/GoogleKubernetesEngine/Integrations/GoogleKubernetesEngine/GoogleKubernetesEngine.yml,Google GCP,,,,,,,,,,,,
 GoogleMaps,Packs/GoogleMaps/Integrations/GoogleMaps/GoogleMaps.yml,Google GoogleMaps,,,,,,,,,,,,
@@ -371,7 +379,7 @@ MicrosoftGraphApplications,Packs/MicrosoftGraphApplications/Integrations/Microso
 MicrosoftGraphIdentityandAccess,Packs/MicrosoftGraphIdentityandAccess/Integrations/MicrosoftGraphIdentityandAccess/MicrosoftGraphIdentityandAccess.yml,Microsoft Entra ID,,,,,,,,,,,,
 MicrosoftGraphMail,Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphMail/MicrosoftGraphMail.yml,Microsoft Microsoft 365,,,,,,,,,,,,
 MicrosoftPolicyAndComplianceAuditLog,Packs/Office365AndAzureAuditLog/Integrations/MicrosoftPolicyAndComplianceAuditLog/MicrosoftPolicyAndComplianceAuditLog.yml,Microsoft Security,,,,,,,,,,,,
-Microsoft_Graph_Files,Packs/MicrosoftGraphFiles/Integrations/MicrosoftGraphFiles/MicrosoftGraphFiles.yml,Microsoft Microsoft 365,,,,,,,,,,,,
+Microsoft_Graph_Files,Packs/MicrosoftGraphFiles/Integrations/MicrosoftGraphFiles/MicrosoftGraphFiles.yml,Microsoft Microsoft 365,juschwartz,"{""auth_types"":[{""type"":""OAuth2ClientCreds"",""name"":""client_creds"",""xsoar_param_map"":{""credentials_auth_id.password"":""client_id"",""credentials_tenant_id.password"":""tenant_id"",""credentials_enc_key.password"":""client_secret"",""credentials_certificate_thumbprint.password"":""certificate_thumbprint"",""private_key"":""private_key""},""interpolated"":false},{""type"":""Passthrough"",""name"":""auth_code"",""xsoar_param_map"":{""auth_code_creds.password"":""authorization_code"",""redirect_uri"":""redirect_uri""},""interpolated"":true,""verify_connection_skip"":true},{""type"":""Passthrough"",""name"":""managed_identity"",""xsoar_param_map"":{""managed_identities_client_id.password"":""managed_identities_client_id""},""interpolated"":true}],""other_connection"":[""host"",""insecure"",""proxy"",""self_deployed""]}",,,,,,,,,,
 Mimecast Event Collector v2,Packs/Mimecast/Integrations/MimecastEventCollectorV2/MimecastEventCollectorV2.yml,Mimecast,,,,,,,,,,,,
 MimecastV2,Packs/Mimecast/Integrations/MimecastV2/MimecastV2.yml,Mimecast,,,,,,,,,,,,
 MondayEventCollector,Packs/Monday/Integrations/MondayEventCollector/MondayEventCollector.yml,Monday.com,,,,,,,,,,,,

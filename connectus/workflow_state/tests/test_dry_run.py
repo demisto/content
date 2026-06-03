@@ -192,13 +192,38 @@ class TestDryRunAuthEnvelopeShape:
         assert env["verdict"]["would_commit"] is False
         assert "fail" in env["verdict"]["reason"]
 
-    def test_structural_skip_yields_would_commit_true(
+    def test_all_interpolated_structural_skip_yields_would_commit_true(
         self,
         monkeypatch: pytest.MonkeyPatch,
         mock_csv: list[dict],
     ) -> None:
-        """ERROR_NO_BASECLIENT (feed framework, boto3, etc.) must
-        round-trip as a structural skip → would_commit=True.
+        """ERROR_ALL_INTERPOLATED is the ONLY clean fallback: every auth is
+        interpolated, so there is nothing to parity-test → would_commit=True.
+        """
+        monkeypatch.setattr(
+            ws_api,
+            "_run_auth_parity_for_set_auth",
+            lambda **_k: {
+                "error": {
+                    "code": "ERROR_ALL_INTERPOLATED",
+                    "message": "all auths are interpolated; nothing to test",
+                    "exit_code": 12,
+                },
+            },
+        )
+        env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
+        assert env["verdict"]["would_commit"] is True
+        assert "structural skip" in env["verdict"]["reason"].lower()
+
+    def test_no_baseclient_non_interpolated_yields_would_commit_false(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        mock_csv: list[dict],
+    ) -> None:
+        """AUTH-PARITY GATE STRICTNESS FIX: ERROR_NO_BASECLIENT means the
+        analyzer could NOT parity-test a non-interpolated auth. It must now
+        BLOCK (would_commit=False) instead of silently committing an
+        untested secret-placement.
         """
         monkeypatch.setattr(
             ws_api,
@@ -212,8 +237,59 @@ class TestDryRunAuthEnvelopeShape:
             },
         )
         env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
-        assert env["verdict"]["would_commit"] is True
-        assert "structural skip" in env["verdict"]["reason"].lower()
+        assert env["verdict"]["would_commit"] is False
+        assert "not parity-tested" in env["verdict"]["reason"].lower()
+        # Surfaces the two valid resolutions for the operator.
+        assert "interpolated: true" in env["verdict"]["reason"]
+        assert "docker/env" in env["verdict"]["reason"]
+
+    def test_apimodule_cannot_verify_non_interpolated_blocks(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        mock_csv: list[dict],
+    ) -> None:
+        """APIMODULE_INTEGRATION_CANNOT_VERIFY on a non-interpolated auth
+        must BLOCK (would_commit=False) and map to a non-zero dry-run exit
+        code.
+        """
+        monkeypatch.setattr(
+            ws_api,
+            "_run_auth_parity_for_set_auth",
+            lambda **_k: {
+                "error": {
+                    "code": "APIMODULE_INTEGRATION_CANNOT_VERIFY",
+                    "message": "Client subclasses MicrosoftApiModule",
+                    "exit_code": 15,
+                },
+            },
+        )
+        env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
+        assert env["verdict"]["would_commit"] is False
+        assert ws_api.dry_run_exit_code(env) != 0
+
+    def test_docker_unavailable_inconclusive_blocks(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        mock_csv: list[dict],
+    ) -> None:
+        """Docker/env unavailable surfaces as a per-connection
+        ``inconclusive`` status. ``inconclusive`` is NOT in
+        _PARITY_OK_STATUSES, so the gate must BLOCK (would_commit=False).
+        """
+        monkeypatch.setattr(
+            ws_api,
+            "_run_auth_parity_for_set_auth",
+            lambda **_k: {
+                "integration": "MyIntegration",
+                "auth_parity": {
+                    "primary": {"status": "inconclusive", "diffs": []},
+                },
+                "diagnostics": {},
+            },
+        )
+        env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
+        assert env["verdict"]["would_commit"] is False
+        assert ws_api.dry_run_exit_code(env) != 0
 
     def test_integration_not_found_returns_would_commit_false(
         self,
