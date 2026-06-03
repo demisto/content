@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: dd2debd13332e98fd4b1844bba3ff74ae402b8b4
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: dd2debd13332e98fd4b1844bba3ff74ae402b8b4
     project: "${CI_PROJECT_NAMESPACE}/infra"
