@@ -653,6 +653,123 @@ script:
     - contextPath: AzureSQL.ResourceGroup.tags
       description: The tags attached to the resource group.
       type: String
+  - arguments:
+    - description: The name of the server.
+      name: server_name
+      required: true
+    - description: The name of the firewall rule. If not provided, all firewall rules for the server are returned.
+      name: firewall_rule_name
+    - description: Subscription ID. This value will override the instance param 'subscription_id'.
+      name: subscription_id
+    - description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
+      isArray: true
+      name: resource_group_name
+    - defaultValue: '50'
+      description: The number of items to return. Default is 50.
+      name: limit
+    - defaultValue: '0'
+      description: Offset in the data set. Default is 0.
+      name: offset
+    description: "Gets a list of firewall rules or a specific firewall rule. Required Permissions: Microsoft.Sql/servers/firewallRules/read."
+    name: azure-sql-firewall-rule-list
+    outputs:
+    - contextPath: AzureSQL.FirewallRule.id
+      description: Resource ID.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.name
+      description: Resource name.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.type
+      description: Resource type.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.startIpAddress
+      description: The start IP address of the firewall rule.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.endIpAddress
+      description: The end IP address of the firewall rule.
+      type: String
+  - arguments:
+    - description: The name of the server.
+      name: server_name
+      required: true
+    - description: The name of the firewall rule.
+      name: firewall_rule_name
+      required: true
+    - description: "The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses."
+      name: end_ip_address
+    - description: "The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses."
+      name: start_ip_address
+    - description: Subscription ID. This value will override the instance param 'subscription_id'.
+      name: subscription_id
+    - description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
+      isArray: true
+      name: resource_group_name
+    description: "Creates or updates a firewall rule. Required Permissions: Microsoft.Sql/servers/firewallRules/write."
+    name: azure-sql-firewall-rule-create-update
+    outputs:
+    - contextPath: AzureSQL.FirewallRule.id
+      description: Resource ID.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.name
+      description: Resource name.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.type
+      description: Resource type.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.startIpAddress
+      description: The start IP address of the firewall rule.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.endIpAddress
+      description: The end IP address of the firewall rule.
+      type: String
+  - arguments:
+    - description: The name of the server.
+      name: server_name
+      required: true
+    - description: The name of the firewall rule.
+      name: firewall_rule_name
+      required: true
+    - description: Subscription ID. This value will override the instance param 'subscription_id'.
+      name: subscription_id
+    - description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
+      isArray: true
+      name: resource_group_name
+    description: "Deletes a firewall rule. Required Permissions: Microsoft.Sql/servers/firewallRules/delete."
+    name: azure-sql-firewall-rule-delete
+  - arguments:
+    - description: The name of the server.
+      name: server_name
+      required: true
+    - description: The name of the firewall rule.
+      name: firewall_rule_name
+      required: true
+    - description: "The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses."
+      name: end_ip_address
+    - description: "The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses."
+      name: start_ip_address
+    - description: Subscription ID. This value will override the instance param 'subscription_id'.
+      name: subscription_id
+    - description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
+      isArray: true
+      name: resource_group_name
+    description: "Replaces all firewall rules on the server. Required Permissions: Microsoft.Sql/servers/firewallRules/write."
+    name: azure-sql-firewall-rule-replace
+    outputs:
+    - contextPath: AzureSQL.FirewallRule.id
+      description: Resource ID.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.name
+      description: Resource name.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.type
+      description: Resource type.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.startIpAddress
+      description: The start IP address of the firewall rule.
+      type: String
+    - contextPath: AzureSQL.FirewallRule.endIpAddress
+      description: The end IP address of the firewall rule.
+      type: String
   dockerimage: demisto/crypto:1.0.0.3539024
   runonce: false
   script: '-'
