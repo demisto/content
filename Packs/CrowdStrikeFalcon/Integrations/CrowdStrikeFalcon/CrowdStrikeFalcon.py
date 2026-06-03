@@ -91,7 +91,10 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
+# Below the 5000 server-side maximum to keep payloads under XSOAR's auto-file threshold.
+MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
 MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
+SPOTLIGHT_LOOKBACK_DAYS = 100  # Only fetch vulnerabilities updated within this many days (bounds dataset size)
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
 
@@ -4450,8 +4453,10 @@ def create_spotlight_client(context_store: ContentClientContextStore) -> Content
         auth_handler=OAuth2ClientCredentialsHandler(
             token_url=f"{SERVER}/oauth2/token", client_id=CLIENT_ID, client_secret=SECRET, context_store=context_store
         ),
-        # Enable diagnostics
-        diagnostic_mode=True,
+        # diagnostic_mode retains a history of every request/response (full parsed response bodies),
+        # which on large tenants grows memory linearly with the number of vulnerabilities and leads
+        # to an out-of-memory failure. Keep it disabled so memory stays bounded.
+        diagnostic_mode=False,
         client_name="FalconSpotlightAssetCollector",
     )
 
@@ -4672,8 +4677,12 @@ async def fetch_vulnerabilities_by_severity(
                     f"[{severity}] Backpressure released: {len(done)} tasks completed, " f"{len(pending_tasks)} still pending"
                 )
 
-            # Build filter query with severity
-            filter_query = f"status:['open','reopen']+cve.severity:['{severity}']"
+            # Build filter query with severity and a lookback window.
+            # Only fetch vulnerabilities updated within the last SPOTLIGHT_LOOKBACK_DAYS days to bound
+            # the dataset size for very large tenants. Uses FQL relative time syntax.
+            filter_query = (
+                f"status:['open','reopen']+cve.severity:['{severity}']" f"+updated_timestamp:>'now-{SPOTLIGHT_LOOKBACK_DAYS}d'"
+            )
 
             log_falcon_assets(
                 f"[{severity}] Fetching batch {batch_counter + 1} with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, "
@@ -8201,6 +8210,7 @@ def cs_falcon_spotlight_search_vulnerability_request(
     evaluation_logic: bool | None,
     host_info: bool | None,
     limit: str | None,
+    next_token: str | None = None,
 ) -> dict:
     input_arg_dict = {
         "aid": aid,
@@ -8237,6 +8247,8 @@ def cs_falcon_spotlight_search_vulnerability_request(
             url_facet += f"&facet={argument}"
     # The url is hardcoded since facet is a parameter that can have serval values, therefore we can't use a dict
     suffix_url = f"/spotlight/combined/vulnerabilities/v1?filter={url_filter}{url_facet}&limit={limit}"
+    if next_token:
+        suffix_url += f"&after={urllib.parse.quote(next_token, safe='')}"
     return http_request("GET", suffix_url)
 
 
@@ -8251,30 +8263,56 @@ def cve_request(cve_id: list[str] | None) -> dict:
     return http_request("GET", "/spotlight/combined/vulnerabilities/v1", params={"filter": url_filter, "facet": "cve"})
 
 
-def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResults:
-    """
-    Get a list of vulnerability by spotlight
-    : args: filter which include params or filter param.
-    : return: a list of vulnerabilities according to the user.
-    """
+def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> list[CommandResults]:
+    """Search Spotlight vulnerabilities with cursor-based pagination via ``next_token``.
 
-    vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(
-        argToList(args.get("aid")),
-        argToList(args.get("cve_id")),
-        argToList(args.get("cve_severity")),
-        argToList(args.get("tags")),
-        argToList(args.get("status")),
-        args.get("platform_name"),
-        argToList(args.get("host_group")),
-        argToList(args.get("host_type")),
-        args.get("last_seen_within"),
-        args.get("is_suppressed"),
-        args.get("filter", ""),
-        args.get("display_remediation_info"),
-        args.get("display_evaluation_logic_info"),
-        args.get("display_host_info"),
-        args.get("limit"),
-    )
+    The pagination cursor returned by CrowdStrike (``meta.pagination.after``) is always
+    emitted to the ``CrowdStrike.VulnerabilityNextToken`` context output when present,
+    and never rendered in the human-readable war-room output.
+
+    Args:
+        args: Command arguments (filter, limit, next_token, etc.).
+
+    Returns:
+        list[CommandResults]: Bulk-data entry, followed by a cursor entry when the
+        API returned a non-empty ``after`` cursor.
+    """
+    next_token = args.get("next_token")
+
+    limit = arg_to_number(args.get("limit", 50))
+    if limit is not None and limit > MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE:
+        limit = MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE
+
+    try:
+        vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(
+            argToList(args.get("aid")),
+            argToList(args.get("cve_id")),
+            argToList(args.get("cve_severity")),
+            argToList(args.get("tags")),
+            argToList(args.get("status")),
+            args.get("platform_name"),
+            argToList(args.get("host_group")),
+            argToList(args.get("host_type")),
+            args.get("last_seen_within"),
+            args.get("is_suppressed"),
+            args.get("filter", ""),
+            args.get("display_remediation_info"),
+            args.get("display_evaluation_logic_info"),
+            args.get("display_host_info"),
+            str(limit),
+            next_token,
+        )
+    except DemistoException as exc:
+        # Narrow intercept: only the expired-cursor case (HTTP 404).
+        # The generic 400 "Invalid pagination token" is already self-explanatory
+        # and is intentionally NOT caught here.
+        if "Search context expired" in str(exc):
+            return_error(
+                "CrowdStrike Spotlight pagination cursor has expired "
+                "(these cursors are short-lived, typically a few minutes). "
+                "Please rerun the command without the next_token argument to start a fresh pagination session."
+            )
+        raise
     headers = ["ID", "Severity", "Status", "Base Score", "Published Date", "Impact Score", "Exploitability Score", "Vector"]
     outputs = []
     for vulnerability in vulnerability_response.get("resources", {}):
@@ -8291,13 +8329,30 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResul
             }
         )
     human_readable = tableToMarkdown("List Vulnerabilities", outputs, removeNull=True, headers=headers)
-    return CommandResults(
-        raw_response=vulnerability_response,
-        readable_output=human_readable,
-        outputs=vulnerability_response.get("resources"),
-        outputs_prefix="CrowdStrike.Vulnerability",
-        outputs_key_field="id",
-    )
+
+    raw_after = vulnerability_response.get("meta", {}).get("pagination", {}).get("after")
+
+    results: list[CommandResults] = [
+        CommandResults(
+            outputs_prefix="CrowdStrike.Vulnerability",
+            outputs_key_field="id",
+            outputs=vulnerability_response.get("resources"),
+            readable_output=human_readable,
+            raw_response=vulnerability_response,
+        )
+    ]
+
+    if raw_after:
+        results.append(
+            CommandResults(
+                outputs_prefix="CrowdStrike.VulnerabilityNextToken",
+                outputs=raw_after,
+                readable_output="Token for next page was generated and can be found under CrowdStrike.VulnerabilityNextToken",
+                replace_existing=True,
+            )
+        )
+
+    return results
 
 
 def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> CommandResults:
