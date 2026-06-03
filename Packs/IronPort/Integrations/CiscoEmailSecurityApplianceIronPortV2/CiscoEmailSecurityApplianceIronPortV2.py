@@ -2725,10 +2725,10 @@ def message_filter_list_command(client: Client, args: dict[str, Any]) -> Command
             rows = [row for row in rows if row.get("active").lower() == active.lower()]  # type: ignore
         rows = rows[:limit]
 
-    # Conditionally include the 'Invalid Reason' column only when at least one row has it.
+    # Conditionally include the 'Validation Warning' column only when at least one row has it.
     headers = ["Name", "Active", "Order", "Rules And Actions"]
     if any(row.get("invalid_reason") for row in rows):
-        headers.append("Invalid Reason")
+        headers.append("Validation Warning")
 
     hr_rows = [
         {
@@ -2736,7 +2736,7 @@ def message_filter_list_command(client: Client, args: dict[str, Any]) -> Command
             "Active": row.get("active"),
             "Order": row.get("order"),
             "Rules And Actions": row.get("rules_and_actions"),
-            "Invalid Reason": row.get("invalid_reason"),
+            "Validation Warning": row.get("invalid_reason"),
         }
         for row in rows
     ]

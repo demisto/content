@@ -2441,7 +2441,7 @@ Retrieve all message filters or a specific message filter by name. Message filte
 
 >### Cisco ESA — Message Filters (mode: cluster)
 >
->|Name|Active|Order|Rules And Actions|Invalid Reason|
+>|Name|Active|Order|Rules And Actions|Validation Warning|
 >|---|---|---|---|---|
 >| URL_QUARANTINE_MALICIOUS | true | 1 | if (recv-listener == "MailFlow") AND (url-reputation(-10.00, -6.00 , "bypass_urls", 1, 1)) { quarantine("URL_MALICIOUS"); } |  |
 >| URL_REWRITE_SUSPICIOUS | true | 2 | if (recv-listener == "MailFlow") AND (url-reputation(-6.00, -5.60 , "bypass_urls", 0, 1)) { url-reputation-proxy-redirect(-6.00, -5.60,"",0); } |  |

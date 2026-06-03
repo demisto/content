@@ -1551,13 +1551,13 @@ def test_message_filter_list_command_with_limit(requests_mock, mock_client):
 
 def test_message_filter_list_command_hr_includes_invalid_reason_column(requests_mock, mock_client):
     """
-    Scenario: HR table includes the 'Invalid Reason' column when at least one row has invalid_reason.
+    Scenario: HR table includes the 'Validation Warning' column when at least one row has invalid_reason.
     Given:
      - A fixture where some rows include the invalid_reason key.
     When:
      - cisco-esa-message-filter-list is called.
     Then:
-     - The 'Invalid Reason' column appears in the readable output.
+     - The 'Validation Warning' column appears in the readable output.
     """
     from CiscoEmailSecurityApplianceIronPortV2 import message_filter_list_command
 
@@ -1567,18 +1567,18 @@ def test_message_filter_list_command_hr_includes_invalid_reason_column(requests_
 
     result = message_filter_list_command(mock_client, {})
 
-    assert "Invalid Reason" in result.readable_output
+    assert "Validation Warning" in result.readable_output
 
 
 def test_message_filter_list_command_hr_omits_invalid_reason_column(requests_mock, mock_client):
     """
-    Scenario: HR table omits the 'Invalid Reason' column when no row has invalid_reason.
+    Scenario: HR table omits the 'Validation Warning' column when no row has invalid_reason.
     Given:
      - A fixture where no rows include the invalid_reason key.
     When:
      - cisco-esa-message-filter-list is called.
     Then:
-     - The 'Invalid Reason' column does NOT appear in the readable output.
+     - The 'Validation Warning' column does NOT appear in the readable output.
     """
     from CiscoEmailSecurityApplianceIronPortV2 import message_filter_list_command
 
@@ -1588,7 +1588,7 @@ def test_message_filter_list_command_hr_omits_invalid_reason_column(requests_moc
 
     result = message_filter_list_command(mock_client, {})
 
-    assert "Invalid Reason" not in result.readable_output
+    assert "Validation Warning" not in result.readable_output
 
 
 def test_message_filter_create_command_happy_path(requests_mock, mock_client):
