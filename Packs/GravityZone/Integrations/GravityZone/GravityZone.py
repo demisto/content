@@ -1907,8 +1907,8 @@ def _validate_task_type_for_command(
         return CommandResults(
             raw_response=task_output,
             readable_output=(
-                f"Task '{task_id}' does not have a type. Cannot determine if it matches "
-                f"the expected type for command '{command_name}'."
+                f"Task '{task_id}' does not have a type. "
+                f"Cannot determine if it matches the expected type for command '{command_name}'."
             ),
             entry_type=EntryType.ERROR,
         )
