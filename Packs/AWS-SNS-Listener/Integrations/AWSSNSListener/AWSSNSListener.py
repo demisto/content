@@ -26,7 +26,7 @@ from CommonServerUserPython import *
 
 PARAMS: dict = demisto.params()
 
-
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 # Defensive serialisation of the get/append/set RMW on the integration-context
 # `sample_events` key. Effectively uncontended now that all writes go through
 # the single-thread `_SAMPLE_EXECUTOR` below.
