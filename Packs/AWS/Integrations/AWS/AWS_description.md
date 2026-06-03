@@ -1,6 +1,6 @@
 # AWS Integration
 
-This integration enforces AWS security best practices across your cloud environment by:
+This integration enforces AWS security best practices by:
 - Securing RDS instances and clusters by modifying configurations and snapshot attributes.
 - Implementing S3 bucket security controls including ACLs, logging, versioning, and public access restrictions.
 - Managing EC2 security groups, instance attributes, and metadata options.
@@ -11,7 +11,6 @@ This integration enforces AWS security best practices across your cloud environm
 
 | Platform                                                     | Authentication |
 |--------------------------------------------------------------| --- |
-| **Cortex Cloud (platform)** or Cortex XSIAM (version >= 3.0) | Automatic — credentials are provided by the Cortex Cloud connector (CTS). No access keys required. |
 | **Cortex XSOAR**                                             | Manual — configure an AWS Access Key and Secret Key on the integration instance. Optionally assume a role via STS. |
 | **Cortex XSIAM**             (version < 3.0)                 | Manual — configure an AWS Access Key and Secret Key on the integration instance. Optionally assume a role via STS. |
 
@@ -27,13 +26,8 @@ When **Role name for cross-organization account access** and **AWS organization 
 4. *(Optional)* If you want the integration to assume a role, enter the full role ARN in **Role ARN**. The IAM user must have `sts:AssumeRole` permission on that role.
 5. *(Optional)* For cross-account fan-out, enter a comma-separated list of account IDs in **AWS organization accounts** and the role name (that exists in each account) in **Role name for cross-organization account access**.
 
-## Configuration (Cortex Cloud or Cortex XSIAM (version >= 3.0))
-
-Cloud integrations are installed from the **Data Sources** page. Go to **Settings > Data Sources**, click **Add Data Source**, select **AWS**, then in **Advanced Settings > Security Capabilities**, enable **Automation**. No access keys are required.
 
 ## Prerequisites
-
-For Cortex Cloud or Cortex XSIAM (version >= 3.0), the connector account must be granted the permissions described in the [Cloud service provider permissions documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Premium-Documentation/Cloud-service-provider-permissions#:~:text=Microsoft%20Azure-,Amazon%20Web%20Services%20provider%20permissions,-ADS).
 
 For Cortex XSOAR / Cortex XSIAM (version < 3.0), the configured IAM user or assumed role must have the IAM permissions required by the specific commands you intend to run. Each command's required permission corresponds to its underlying AWS API action.
 
