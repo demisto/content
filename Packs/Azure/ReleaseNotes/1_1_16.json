@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "The context outputs paths of the following commands, and quick actions were updated: azure-storage-container-property-get, azure-monitor-log-profile-update, Update Azure Monitor Log Retention Period, azure-policy-assignment-create, Apply MS Defender Policy, azure-storage-account-update, Allow Access by Trusted Services, Disable Storage Account Cross Tenant Replication, Disable Storage Account Public Access, Disable Network Access to Storage Account, Set Storage Account to HTTPS only."
-}
