@@ -80,13 +80,9 @@ def test_list_cidr_blocks_command(mocker, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    mocker.patch.object(
-        akamai_waf_client, "list_cidr_blocks", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "list_cidr_blocks", return_value=expected_raw_response)
 
-    human_readable, context_entry, raw_response = list_cidr_blocks_command(
-        akamai_waf_client, last_action, effective_date_gt
-    )
+    human_readable, context_entry, raw_response = list_cidr_blocks_command(akamai_waf_client, last_action, effective_date_gt)
 
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
@@ -115,9 +111,7 @@ def test_update_cps_enrollment_command(mocker, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    mocker.patch.object(
-        akamai_waf_client, "update_cps_enrollment", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "update_cps_enrollment", return_value=expected_raw_response)
 
     human_readable, context_entry, raw_response = update_cps_enrollment_command(
         client=akamai_waf_client,
@@ -158,13 +152,11 @@ def test_update_cps_enrollment_schedule_command(mocker, akamai_waf_client):
         return_value=expected_raw_response,
     )
 
-    human_readable, context_entry, raw_response = (
-        update_cps_enrollment_schedule_command(
-            client=akamai_waf_client,
-            enrollment_id=enrollment_id,
-            change_id=change_id,
-            deploy_not_before=deploy_not_before,
-        )
+    human_readable, context_entry, raw_response = update_cps_enrollment_schedule_command(
+        client=akamai_waf_client,
+        enrollment_id=enrollment_id,
+        change_id=change_id,
+        deploy_not_before=deploy_not_before,
     )
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
@@ -189,9 +181,7 @@ def test_get_cps_change_status_command(mocker, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    mocker.patch.object(
-        akamai_waf_client, "get_cps_change_status", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "get_cps_change_status", return_value=expected_raw_response)
 
     human_readable, context_entry, raw_response = get_cps_change_status_command(
         client=akamai_waf_client, enrollment_path=enrollment_path
@@ -241,13 +231,9 @@ def test_list_siteshield_maps_command(mocker, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    mocker.patch.object(
-        akamai_waf_client, "list_siteshield_maps", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "list_siteshield_maps", return_value=expected_raw_response)
 
-    human_readable, context_entry, raw_response = list_siteshield_maps_command(
-        client=akamai_waf_client
-    )
+    human_readable, context_entry, raw_response = list_siteshield_maps_command(client=akamai_waf_client)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -267,17 +253,11 @@ def test_acknowledge_warning_command(mocker, akamai_waf_client):
     change_path = "/cps/v2/enrollments/10002/changes/10002"
     expected_raw_response = {"change": "/cps/v2/enrollments/10002/changes/10002"}
     expected_human_readable = "Akamai WAF - Acknowledge_warning"
-    expected_context_entry = {
-        "Akamai.Acknowledge": {"change": "/cps/v2/enrollments/10002/changes/10002"}
-    }
+    expected_context_entry = {"Akamai.Acknowledge": {"change": "/cps/v2/enrollments/10002/changes/10002"}}
 
-    mocker.patch.object(
-        akamai_waf_client, "acknowledge_warning", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "acknowledge_warning", return_value=expected_raw_response)
 
-    human_readable, context_entry, raw_response = acknowledge_warning_command(
-        client=akamai_waf_client, change_path=change_path
-    )
+    human_readable, context_entry, raw_response = acknowledge_warning_command(client=akamai_waf_client, change_path=change_path)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -297,14 +277,8 @@ def test_cancel_cps_change_command(mocker, akamai_waf_client):
     expected_raw_response = {"change": "/cps/v2/enrollments/193622/changes/3914270"}
     expected_human_readable = "### Akamai WAF - cps cancel change\n|change|\n|---|\n|\
  /cps/v2/enrollments/193622/changes/3914270 |\n"
-    expected_context_entry = {
-        "Akamai.Cps.Change.Canceled": {
-            "change": "/cps/v2/enrollments/193622/changes/3914270"
-        }
-    }
-    mocker.patch.object(
-        akamai_waf_client, "cancel_cps_change", return_value=expected_raw_response
-    )
+    expected_context_entry = {"Akamai.Cps.Change.Canceled": {"change": "/cps/v2/enrollments/193622/changes/3914270"}}
+    mocker.patch.object(akamai_waf_client, "cancel_cps_change", return_value=expected_raw_response)
     human_readable, context_entry, raw_response = cancel_cps_change_command(
         client=akamai_waf_client, enrollment_id="193622", change_id="3914270"
     )
@@ -326,18 +300,14 @@ def test_get_cps_enrollment_by_id_command(mocker, akamai_waf_client):
 
     test_data = util_load_json("test_data/get_cps_enrollment_by_id_test.json")
     expected_raw_response = test_data
-    expected_context_entry = util_load_json(
-        "test_data/get_cps_enrollment_by_id_context.json"
-    )
+    expected_context_entry = util_load_json("test_data/get_cps_enrollment_by_id_context.json")
 
     mocker.patch.object(
         akamai_waf_client,
         "get_cps_enrollment_by_id",
         return_value=expected_raw_response,
     )
-    _, context_entry, raw_response = get_cps_enrollment_by_id_command(
-        client=akamai_waf_client, enrollment_id=193622
-    )
+    _, context_entry, raw_response = get_cps_enrollment_by_id_command(client=akamai_waf_client, enrollment_id=193622)
     assert expected_raw_response == raw_response
     assert expected_context_entry == context_entry
 
@@ -356,13 +326,9 @@ def test_list_appsec_config_command(mocker, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    mocker.patch.object(
-        akamai_waf_client, "list_appsec_config", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "list_appsec_config", return_value=expected_raw_response)
 
-    human_readable, context_entry, raw_response = list_appsec_config_command(
-        client=akamai_waf_client
-    )
+    human_readable, context_entry, raw_response = list_appsec_config_command(client=akamai_waf_client)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -382,13 +348,9 @@ def test_list_dns_zones_command(mocker, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    mocker.patch.object(
-        akamai_waf_client, "list_dns_zones", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "list_dns_zones", return_value=expected_raw_response)
 
-    human_readable, context_entry, raw_response = list_dns_zones_command(
-        client=akamai_waf_client
-    )
+    human_readable, context_entry, raw_response = list_dns_zones_command(client=akamai_waf_client)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -415,9 +377,7 @@ def test_list_dns_zone_recordsets_command(mocker, akamai_waf_client):
         return_value=expected_raw_response,
     )
 
-    human_readable, context_entry, raw_response = list_dns_zone_recordsets_command(
-        client=akamai_waf_client, zone=zone
-    )
+    human_readable, context_entry, raw_response = list_dns_zone_recordsets_command(client=akamai_waf_client, zone=zone)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -473,9 +433,7 @@ def test_list_datastream_groups_command(requests_mock, akamai_waf_client):
         json=expected_raw_response,
     )
 
-    human_readable, context_entry, raw_response = list_datastream_groups_command(
-        client=akamai_waf_client
-    )
+    human_readable, context_entry, raw_response = list_datastream_groups_command(client=akamai_waf_client)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -497,13 +455,9 @@ def test_get_client_lists_command(requests_mock, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    requests_mock.get(
-        "https://hostname/client-list/v1/lists", json=expected_raw_response
-    )
+    requests_mock.get("https://hostname/client-list/v1/lists", json=expected_raw_response)
 
-    human_readable, context_entry, raw_response = get_client_lists_command(
-        client=akamai_waf_client
-    )
+    human_readable, context_entry, raw_response = get_client_lists_command(client=akamai_waf_client)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -570,9 +524,7 @@ def test_delete_datastream_command(requests_mock, akamai_waf_client):
         status_code=204,
     )
 
-    human_readable, context_entry, raw_response = delete_datastream_command(
-        client=akamai_waf_client, stream_id=stream_id
-    )
+    human_readable, context_entry, raw_response = delete_datastream_command(client=akamai_waf_client, stream_id=stream_id)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -601,9 +553,7 @@ def test_list_datastreams_command(requests_mock, akamai_waf_client):
         json=expected_raw_response,
     )
 
-    human_readable, context_entry, raw_response = list_datastreams_command(
-        client=akamai_waf_client, group_id=group_id
-    )
+    human_readable, context_entry, raw_response = list_datastreams_command(client=akamai_waf_client, group_id=group_id)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -628,9 +578,7 @@ def test_generic_api_call_command(requests_mock, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    requests_mock.get(
-        f"https://hostname/{url_suffix.strip('/')}", json=expected_raw_response
-    )
+    requests_mock.get(f"https://hostname/{url_suffix.strip('/')}", json=expected_raw_response)
 
     human_readable, context_entry, raw_response = generic_api_call_command(
         client=akamai_waf_client, url_suffix=url_suffix, method=method
@@ -661,9 +609,7 @@ def test_list_idam_properties_command(requests_mock, akamai_waf_client):
         json=expected_raw_response,
     )
 
-    human_readable, context_entry, raw_response = list_idam_properties_command(
-        client=akamai_waf_client
-    )
+    human_readable, context_entry, raw_response = list_idam_properties_command(client=akamai_waf_client)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -692,10 +638,8 @@ def test_list_datastream_properties_bygroup_command(requests_mock, akamai_waf_cl
         json=expected_raw_response,
     )
 
-    human_readable, context_entry, raw_response = (
-        list_datastream_properties_bygroup_command(
-            client=akamai_waf_client, group_id=group_id
-        )
+    human_readable, context_entry, raw_response = list_datastream_properties_bygroup_command(
+        client=akamai_waf_client, group_id=group_id
     )
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
@@ -750,13 +694,9 @@ def test_get_client_list_command(mocker, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    mocker.patch.object(
-        akamai_waf_client, "get_client_list", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "get_client_list", return_value=expected_raw_response)
 
-    human_readable, context_entry, raw_response = get_client_list_command(
-        client=akamai_waf_client
-    )
+    human_readable, context_entry, raw_response = get_client_list_command(client=akamai_waf_client)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -778,9 +718,7 @@ def test_create_client_list_command(mocker, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    mocker.patch.object(
-        akamai_waf_client, "create_client_list", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "create_client_list", return_value=expected_raw_response)
 
     human_readable, context_entry, raw_response = create_client_list_command(
         client=akamai_waf_client,
@@ -816,13 +754,9 @@ def test_deprecate_client_list_command(mocker, akamai_waf_client):
 
     mock_response = requests.Response()
     mock_response.status_code = 204
-    mocker.patch.object(
-        akamai_waf_client, "deprecate_client_list", return_value=mock_response
-    )
+    mocker.patch.object(akamai_waf_client, "deprecate_client_list", return_value=mock_response)
 
-    human_readable, _, _ = deprecate_client_list_command(
-        client=akamai_waf_client, client_list_id="12345"
-    )
+    human_readable, _, _ = deprecate_client_list_command(client=akamai_waf_client, client_list_id="12345")
     assert expected_human_readable == human_readable
 
 
@@ -841,9 +775,7 @@ def test_add_client_list_entry_command(mocker, akamai_waf_client):
     expected_raw_response = test_data.get("raw_response")
     expected_human_readable = test_data.get("human_readable")
 
-    mocker.patch.object(
-        akamai_waf_client, "add_client_list_entry", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "add_client_list_entry", return_value=expected_raw_response)
 
     human_readable, _, raw_response = add_client_list_entry_command(
         client=akamai_waf_client,
@@ -870,9 +802,7 @@ def test_add_client_list_entry_command_multiple_values(mocker, akamai_waf_client
 
     expected_raw_response = {}
 
-    mocker.patch.object(
-        akamai_waf_client, "add_client_list_entry", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "add_client_list_entry", return_value=expected_raw_response)
 
     human_readable, _, raw_response = add_client_list_entry_command(
         client=akamai_waf_client,
@@ -882,10 +812,7 @@ def test_add_client_list_entry_command_multiple_values(mocker, akamai_waf_client
         tags="test_tag",
     )
     assert expected_raw_response == raw_response
-    assert (
-        human_readable
-        == "Entries '1.2.3.4, 1.2.3.5, 1.2.3.6' added successfully to Akamai WAF Client List 12345."
-    )
+    assert human_readable == "Entries '1.2.3.4, 1.2.3.5, 1.2.3.6' added successfully to Akamai WAF Client List 12345."
 
 
 def test_add_client_list_entry_command_empty_value(akamai_waf_client):
@@ -952,13 +879,9 @@ def test_get_contract_group_command(mocker, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    mocker.patch.object(
-        akamai_waf_client, "get_contract_group", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "get_contract_group", return_value=expected_raw_response)
 
-    human_readable, context_entry, raw_response = get_contract_group_command(
-        client=akamai_waf_client
-    )
+    human_readable, context_entry, raw_response = get_contract_group_command(client=akamai_waf_client)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -980,9 +903,7 @@ def test_update_client_list_command(mocker, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    mocker.patch.object(
-        akamai_waf_client, "update_client_list", return_value=expected_raw_response
-    )
+    mocker.patch.object(akamai_waf_client, "update_client_list", return_value=expected_raw_response)
 
     human_readable, context_entry, raw_response = update_client_list_command(
         client=akamai_waf_client,
@@ -1013,9 +934,7 @@ def test_update_client_list_entry_command(mocker, akamai_waf_client):
     expected_human_readable = test_data.get("human_readable")
     expected_context_entry = test_data.get("context_entry")
 
-    mocker.patch.object(
-        akamai_waf_client, "get_client_list", return_value=existing_list
-    )
+    mocker.patch.object(akamai_waf_client, "get_client_list", return_value=existing_list)
     mocker.patch.object(
         akamai_waf_client,
         "update_client_list_entry",
@@ -1057,9 +976,7 @@ def test_get_datastream_command(requests_mock, akamai_waf_client):
         json=expected_raw_response,
     )
 
-    human_readable, context_entry, raw_response = get_datastream_command(
-        client=akamai_waf_client, stream_id=stream_id
-    )
+    human_readable, context_entry, raw_response = get_datastream_command(client=akamai_waf_client, stream_id=stream_id)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
@@ -1088,9 +1005,7 @@ def test_list_edgehostname_command(requests_mock, akamai_waf_client):
         json=expected_raw_response,
     )
 
-    human_readable, context_entry, raw_response = list_edgehostname_command(
-        client=akamai_waf_client, contract_id=contract_id
-    )
+    human_readable, context_entry, raw_response = list_edgehostname_command(client=akamai_waf_client, contract_id=contract_id)
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
