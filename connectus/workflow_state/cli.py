@@ -1130,9 +1130,83 @@ def _set_flag_step_via_dispatch(
         print(f"  🎉 All {len(cfg.steps)} steps complete!")
 
 
+def _print_gate_verdict(verdict: dict, step_name: str, *, dry_run: bool) -> None:
+    """Print a checkpoint-gate verdict (pass or fail) with output tails."""
+    gate = verdict.get("gate", "?")
+    if verdict.get("allow"):
+        prefix = "DRY-RUN: " if dry_run else ""
+        print(f"{prefix}✅ Gate '{gate}' for '{step_name}' passed.")
+        return
+    prefix = "DRY-RUN: " if dry_run else "ERROR: "
+    print(
+        f"{prefix}gate '{gate}' for '{step_name}' FAILED: "
+        f"{verdict.get('reason')}",
+        file=sys.stderr,
+    )
+    stderr_tail = verdict.get("stderr_tail") or ""
+    stdout_tail = verdict.get("stdout_tail") or ""
+    if stderr_tail.strip():
+        print("  --- gate stderr (tail) ---", file=sys.stderr)
+        print(stderr_tail, file=sys.stderr)
+    elif stdout_tail.strip():
+        print("  --- gate stdout (tail) ---", file=sys.stderr)
+        print(stdout_tail, file=sys.stderr)
+
+
+def _parse_markpass_flags(
+    args: list[str],
+) -> tuple[list[str], bool, Optional[int]]:
+    """Extract ``--dry-run`` / ``--timeout=N`` from markpass args.
+
+    Returns ``(remaining_args, dry_run, timeout)``. ``--dry-run`` runs a
+    gated checkpoint's gate WITHOUT writing the CSV. ``--timeout=N``
+    overrides the gate's default timeout (positive int; only the ``=``
+    form is accepted). There is intentionally no ``--no-gate`` flag —
+    gates cannot be bypassed.
+    """
+    remaining: list[str] = []
+    dry_run = False
+    timeout: Optional[int] = None
+
+    for arg in args:
+        if arg == "--dry-run":
+            dry_run = True
+        elif arg == "--timeout":
+            print(
+                "ERROR: --timeout requires the '=' form, e.g. --timeout=120 "
+                "(space-separated --timeout 120 is not supported).",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        elif arg.startswith("--timeout="):
+            value = arg[len("--timeout="):]
+            try:
+                parsed = int(value)
+            except ValueError:
+                print(
+                    f"ERROR: --timeout value must be a positive integer; "
+                    f"got {value!r}.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+            if parsed <= 0:
+                print(
+                    f"ERROR: --timeout must be a positive integer; got {parsed}.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+            timeout = parsed
+        else:
+            remaining.append(arg)
+
+    return remaining, dry_run, timeout
+
+
 def cmd_markpass(args: list[str]) -> None:
     cfg = get_config()
     non_checkpoint = cfg.non_checkpoint_steps
+
+    args, dry_run, gate_timeout = _parse_markpass_flags(args)
 
     if len(args) < 2:
         print("Usage: workflow_state.py markpass <integration_id> <step_name|step_number>")
@@ -1194,6 +1268,29 @@ def cmd_markpass(args: list[str]) -> None:
                     f"'{step_name}' set to {inter.write_value} (auth parity test not required)."
                 )
                 return
+
+    # ----- Self-executing checkpoint gate -----------------------------------
+    # If the step declares a gate, RUN it. On --dry-run, report the verdict
+    # and exit WITHOUT writing the CSV. Otherwise reject the markpass unless
+    # the gate passes. There is no bypass.
+    if target.gate:
+        from workflow_state.api import run_checkpoint_gate
+        print(f"Running gate '{target.gate}' for '{name}' (this may take a while)…")
+        verdict = run_checkpoint_gate(name, target.gate, gate_timeout)
+        if dry_run:
+            _print_gate_verdict(verdict, step_name, dry_run=True)
+            sys.exit(0 if verdict.get("allow") else 1)
+        if not verdict.get("allow"):
+            _print_gate_verdict(verdict, step_name, dry_run=False)
+            sys.exit(1)
+        print(f"  Gate '{target.gate}' passed.")
+    elif dry_run:
+        # No gate to run; --dry-run is a no-op that would simply markpass.
+        print(
+            f"'{step_name}' has no gate; --dry-run has nothing to verify. "
+            f"Run without --dry-run to mark it passed."
+        )
+        return
 
     try:
         cleared, no_op = apply_step_action(row, target, cfg.markers.check, verb="markpass")

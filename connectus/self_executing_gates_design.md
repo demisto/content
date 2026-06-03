@@ -1,6 +1,24 @@
 # Self-Executing Checkpoint Gates — Design Proposal
 
-> **STATUS: proposal.** Make selected connectus workflow **checkpoints**
+> **STATUS: Phase 1 IMPLEMENTED.** The `precommit` gate is wired and shipping.
+> The infra (`Step.gate`, gate registry, runner, markpass wiring, `--dry-run`,
+> exit codes) is implemented. `param_parity` and `make_validate` remain
+> deferred. **Key deviation from the original proposal below: there is NO
+> bypass** — the `--no-gate` flag and `CONNECTUS_SKIP_CHECKPOINT_GATES` env var
+> described in §2/§5/§7 were dropped per decision; a gated checkpoint MUST run
+> its command and pass. Implementation:
+> - [`workflow_state/gates.py`](workflow_state/gates.py) — `GATES` registry +
+>   `run_gate` runner (no bypass helper).
+> - [`workflow_state/types.py`](workflow_state/types.py) — `Step.gate` field.
+> - [`workflow_state/config_loader.py`](workflow_state/config_loader.py) —
+>   parses/validates `gate:`.
+> - [`markpass_integration_step` / `run_checkpoint_gate`](workflow_state/api.py) —
+>   gate-before-persist (no `skip_gate` kwarg).
+> - [`cmd_markpass`](workflow_state/cli.py) — `--dry-run` / `--timeout=` only.
+> - [`workflow_state_config.yml`](workflow_state_config.yml) — `gate: precommit`.
+> - Tests: [`workflow_state/tests/test_gates.py`](workflow_state/tests/test_gates.py).
+
+> **Original proposal.** Make selected connectus workflow **checkpoints**
 > self-executing: running `markpass` on such a checkpoint **runs the underlying
 > command itself** (e.g. `demisto-sdk pre-commit`) and writes the `✅` marker
 > **only if the command succeeds** — instead of trusting the agent to have run

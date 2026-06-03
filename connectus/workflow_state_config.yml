@@ -121,7 +121,8 @@ steps:
     kind: checkpoint
     optional: false
     setter: null
-    description: "Run pre-commit, validate, and unit tests via demisto-sdk pre-commit."
+    gate: precommit
+    description: "Run pre-commit, validate, and unit tests via demisto-sdk pre-commit. Self-executing gate: `markpass` RUNS `demisto-sdk pre-commit -i <integration dir>` and only passes the checkpoint if it exits 0. No bypass."
 
   - name: "param parity test passes"
     kind: checkpoint

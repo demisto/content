@@ -23,6 +23,7 @@ from workflow_state.types import (
     StepInteraction,
     WorkflowConfig,
 )
+from workflow_state.gates import is_known_gate, known_gate_names
 from workflow_state.validators import (
     is_known_cross_check,
     known_cross_check_names,
@@ -504,6 +505,27 @@ def _build_one_step(index: int, item: dict) -> tuple[Optional[Step], list[str]]:
         else:
             default_clean = raw_default
 
+    # ---- Per-step checkpoint gate (kind: checkpoint only) -----------
+    raw_gate = item.get("gate", None)
+    gate_clean: Optional[str] = None
+    if raw_gate is not None:
+        if kind != "checkpoint":
+            errors.append(
+                f"{label}.gate is only valid for kind=checkpoint; "
+                f"got kind={kind!r}"
+            )
+        elif not isinstance(raw_gate, str) or not raw_gate.strip():
+            errors.append(
+                f"{label}.gate must be a non-empty string; got {raw_gate!r}"
+            )
+        elif not is_known_gate(raw_gate):
+            errors.append(
+                f"{label}.gate: unknown gate name {raw_gate!r}; "
+                f"valid: {known_gate_names()}"
+            )
+        else:
+            gate_clean = raw_gate
+
     if errors and (kind not in _VALID_STEP_KINDS or not name):
         return None, errors
 
@@ -521,6 +543,7 @@ def _build_one_step(index: int, item: dict) -> tuple[Optional[Step], list[str]]:
             preserve_on_reset=preserve_on_reset,
             flag_values=flag_values_clean,
             default=default_clean,
+            gate=gate_clean,
         ),
         errors,
     )

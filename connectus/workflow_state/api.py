@@ -433,8 +433,53 @@ def assign_connector(connector_id: str, assignee_name: str) -> dict:
     }
 
 
-def markpass_integration_step(integration_id: str, step_name: str) -> dict:
-    """Mark a checkpoint as passed via the unified dispatch."""
+def run_checkpoint_gate(
+    integration_id: str,
+    gate_name: str,
+    timeout: Optional[int] = None,
+) -> dict:
+    """Resolve the integration directory and run a checkpoint gate.
+
+    Thin wrapper around :func:`workflow_state.gates.run_gate` that handles
+    the on-disk directory resolution (so ``gates`` stays free of an
+    ``api`` import). Returns the gate verdict dict augmented with the
+    integration id. Infrastructure failures (e.g. missing file path) are
+    returned as a non-allowing verdict with ``exit_code: None``.
+    """
+    from workflow_state.gates import run_gate
+
+    files_info = get_integration_files(integration_id)
+    if "error" in files_info:
+        return {
+            "allow": False,
+            "reason": files_info["error"],
+            "exit_code": None,
+            "stdout_tail": "",
+            "stderr_tail": "",
+            "gate": gate_name,
+            "integration_id": integration_id,
+        }
+    directory_rel = files_info.get("directory") or ""
+    abs_dir = os.path.join(BASE_DIR, directory_rel) if directory_rel else BASE_DIR
+
+    verdict = run_gate(gate_name, abs_dir, integration_id, timeout=timeout)
+    verdict["integration_id"] = integration_id
+    return verdict
+
+
+def markpass_integration_step(
+    integration_id: str,
+    step_name: str,
+    *,
+    gate_timeout: Optional[int] = None,
+) -> dict:
+    """Mark a checkpoint as passed via the unified dispatch.
+
+    If the checkpoint declares a ``gate`` (see :class:`Step`), the gate
+    command is RUN first and the pass marker is written only if it
+    succeeds — mirroring the auth-parity gate inside ``set-auth``. There
+    is NO bypass: a gated checkpoint must run its command and pass.
+    """
     cfg = get_config()
     rows = load_csv()
     idx = find_row(rows, integration_id)
@@ -450,6 +495,8 @@ def markpass_integration_step(integration_id: str, step_name: str) -> dict:
         return {"error": f"'{step_name}' is not a checkpoint; use {non_checkpoint[step_name]}."}
 
     # Honour any flag_auto_na_target interaction whose target_step matches.
+    # This short-circuit runs BEFORE the gate: an auto-N/A means the
+    # checkpoint is "not applicable", so there is nothing to verify.
     for inter in cfg.step_interactions:
         if inter.kind == "flag_auto_na_target" and inter.target_step == step_name:
             flag = row.get(inter.when_step, "").strip().upper()
@@ -464,6 +511,23 @@ def markpass_integration_step(integration_id: str, step_name: str) -> dict:
                 }
             if flag == "":
                 return {"error": f"'{step_name}' requires the flag to be set first."}
+
+    # ----- Self-executing checkpoint gate -----------------------------------
+    # If the step declares a gate, RUN it and reject the markpass unless it
+    # passes. Persist (apply_step_action + save_csv) happens only after the
+    # gate clears — the ordering IS the enforcement (same as set-auth).
+    # There is NO bypass.
+    if target.gate:
+        verdict = run_checkpoint_gate(integration_id, target.gate, gate_timeout)
+        if not verdict.get("allow"):
+            return {
+                "error": (
+                    f"'{step_name}' rejected — gate '{target.gate}' failed: "
+                    f"{verdict.get('reason')}. Fix the underlying problem and "
+                    f"re-run markpass."
+                ),
+                "gate": verdict,
+            }
 
     try:
         cleared, no_op = apply_step_action(row, target, cfg.markers.check, verb="markpass")
