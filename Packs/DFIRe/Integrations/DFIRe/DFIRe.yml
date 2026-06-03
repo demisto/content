@@ -340,14 +340,14 @@ script:
       description: The updated case status.
       type: String
   - name: dfire-case-delete
-    description: Delete a case from DFIRe.
+    description: Deletes a case from DFIRe.
     arguments:
     - name: case_id
       description: The ID of the case to delete.
       required: true
     outputs: []
   - name: dfire-case-note-list
-    description: List notes for a case.
+    description: Lists notes for a case.
     arguments:
     - name: case_id
       description: The case ID to list notes for.
@@ -628,20 +628,20 @@ script:
       description: The indicator ID to update.
       required: true
     - name: classification
-      description: New classification.
+      description: The new indicator classification.
       predefined:
       - unknown
       - benign
       - suspicious
       - malicious
     - name: confidence
-      description: New confidence level.
+      description: The new indicator confidence level.
       predefined:
       - low
       - medium
       - high
     - name: tlp
-      description: New TLP designation.
+      description: The new indicator TLP designation.
       predefined:
       - clear
       - green
@@ -649,12 +649,12 @@ script:
       - amber_strict
       - red
     - name: tags
-      description: New comma-separated tags (replaces existing).
+      description: A comma-separated list of new indicator tags (replaces the existing).
       isArray: true
     - name: public_notes
-      description: New public notes.
+      description: The new indicator public notes.
     - name: valid_until
-      description: New auto-revoke date (ISO 8601). Set empty to clear.
+      description: The new indicator auto-revoke date (ISO 8601). Set it to empty to clear.
     outputs:
     - contextPath: DFIRe.Indicator.id
       description: The indicator ID.
@@ -663,17 +663,17 @@ script:
       description: The IOC value.
       type: String
     - contextPath: DFIRe.Indicator.classification
-      description: Updated classification.
+      description: The updated indicator classification.
       type: String
   - name: dfire-indicator-delete
-    description: Delete an indicator from the global IOC registry.
+    description: Deletes an indicator from the global IOC registry.
     arguments:
     - name: indicator_id
       description: The indicator ID to delete.
       required: true
     outputs: []
   - name: dfire-item-type-list
-    description: List available evidence item types and their IDs.
+    description: Lists available evidence item types and their IDs.
     arguments: []
     outputs:
     - contextPath: DFIRe.ItemType.id
@@ -686,7 +686,7 @@ script:
       description: The item type icon.
       type: String
   - name: dfire-item-flag-list
-    description: List available item flags and their IDs.
+    description: Lists available item flags and their IDs.
     arguments: []
     outputs:
     - contextPath: DFIRe.ItemFlag.id
@@ -702,121 +702,121 @@ script:
       description: The flag description.
       type: String
   - name: dfire-item-list
-    description: List evidence items, optionally filtered by case.
+    description: Lists evidence items, optionally filtered by case.
     arguments:
     - name: case_id
-      description: Filter items by case ID.
+      description: The case ID by which to filter evidence items.
     outputs:
     - contextPath: DFIRe.Item.uuid
-      description: The item UUID.
+      description: The evidence item UUID.
       type: String
     - contextPath: DFIRe.Item.name
-      description: The item name.
+      description: The evidence item name.
       type: String
     - contextPath: DFIRe.Item.display_title
-      description: The item display title.
+      description: The evidence item display title.
       type: String
     - contextPath: DFIRe.Item.item_type_name
-      description: The item type name.
+      description: The evidence item type name.
       type: String
     - contextPath: DFIRe.Item.case
-      description: The associated case ID.
+      description: The evidence item associated case ID.
       type: Number
     - contextPath: DFIRe.Item.location
-      description: The item location.
+      description: The evidence item location.
       type: String
     - contextPath: DFIRe.Item.attachment_count
-      description: Number of attachments.
+      description: The number of attachments to the evidence item.
       type: Number
     - contextPath: DFIRe.Item.created_at
-      description: Creation timestamp.
+      description: The evidence item creation timestamp.
       type: Date
   - name: dfire-item-get
-    description: Get details of a specific evidence item.
+    description: Retrieves details of a specific evidence item.
     arguments:
     - name: item_id
-      description: The item ID.
+      description: The evidence item ID.
       required: true
     outputs:
     - contextPath: DFIRe.Item.uuid
-      description: The item UUID.
+      description: The evidence item UUID.
       type: String
     - contextPath: DFIRe.Item.name
-      description: The item name.
+      description: The evidence item name.
       type: String
     - contextPath: DFIRe.Item.display_title
-      description: The item display title.
+      description: The evidence item display title.
       type: String
     - contextPath: DFIRe.Item.item_type_name
-      description: The item type name.
+      description: The evidence item type name.
       type: String
     - contextPath: DFIRe.Item.case
-      description: The associated case ID.
+      description: The evidence item associated case ID.
       type: Number
     - contextPath: DFIRe.Item.location
-      description: The item location.
+      description: The evidence item location.
       type: String
     - contextPath: DFIRe.Item.attachment_count
-      description: Number of attachments.
+      description: The number of attachments for the evidence item.
       type: Number
     - contextPath: DFIRe.Item.created_at
-      description: Creation timestamp.
+      description: The evidence item creation timestamp.
       type: Date
   - name: dfire-item-create
-    description: Create a new evidence item on a case.
+    description: Creates a new evidence item on a case.
     arguments:
     - name: case_id
-      description: The case ID to add the item to.
+      description: The case ID to add the evidence item to.
       required: true
     - name: item_type
-      description: The item type ID.
+      description: The evidence item type ID.
       required: true
     - name: location
-      description: The item location (e.g. storage location, lab).
+      description: The evidence item location (e.g. storage location, lab).
       required: true
     - name: name
-      description: Friendly name/label for the item.
+      description: The friendly name/label for the evidence item.
     - name: owner_id
-      description: Legal entity ID of the item owner.
+      description: The legal entity ID of the evidence item owner.
     - name: primary_user_id
-      description: Legal entity ID of the primary user.
+      description: The legal entity ID of the primary user.
     - name: collected_by
-      description: User ID of the collector.
+      description: The user ID of the collector.
     - name: parent_item
-      description: UUID of the parent item.
+      description: The UUID of the parent evidence item.
     outputs:
     - contextPath: DFIRe.Item.uuid
-      description: The created item UUID.
+      description: The created evidence item UUID.
       type: String
     - contextPath: DFIRe.Item.name
-      description: The item name.
+      description: The evidence item name.
       type: String
     - contextPath: DFIRe.Item.case
       description: The case ID.
       type: Number
   - name: dfire-attachment-list
-    description: List attachments, optionally filtered by evidence item UUID.
+    description: Lists attachments, optionally filtered by evidence item UUID.
     arguments:
     - name: item_uuid
-      description: Filter attachments by evidence item UUID.
+      description: The evidence item UUID by which to filter attachments.
     outputs:
     - contextPath: DFIRe.Attachment.id
       description: The attachment ID.
       type: Number
     - contextPath: DFIRe.Attachment.filename
-      description: The filename.
+      description: The attachment filename.
       type: String
     - contextPath: DFIRe.Attachment.mime_type
-      description: The MIME type.
+      description: The attachment MIME type.
       type: String
     - contextPath: DFIRe.Attachment.size
-      description: File size in bytes.
+      description: The attachment file size in bytes.
       type: Number
     - contextPath: DFIRe.Attachment.category
-      description: Attachment category.
+      description: The attachment category.
       type: String
     - contextPath: DFIRe.Attachment.case
-      description: The associated case ID.
+      description: The attachment associated case ID.
       type: Number
     - contextPath: DFIRe.Attachment.item
       description: The associated item UUID.
