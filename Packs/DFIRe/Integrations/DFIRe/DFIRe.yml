@@ -1513,23 +1513,23 @@ script:
       description: The created phase change timeline event ID.
       type: Number
   - name: dfire-case-todo-list
-    description: List todos for a case.
+    description: Lists todos for a case.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     outputs:
     - contextPath: DFIRe.CaseTodo.id
-      description: Todo ID.
+      description: The todo ID.
       type: Number
     - contextPath: DFIRe.CaseTodo.title
-      description: Todo title.
+      description: The todo title.
       type: String
     - contextPath: DFIRe.CaseTodo.status
-      description: Todo status.
+      description: The todo status.
       type: String
   - name: dfire-case-todo-get
-    description: Get a single todo with full details.
+    description: Retrieves a single todo with full details.
     arguments:
     - name: case_id
       description: The case ID.
@@ -1539,10 +1539,10 @@ script:
       required: true
     outputs:
     - contextPath: DFIRe.CaseTodo.id
-      description: Todo ID.
+      description: The todo ID.
       type: Number
   - name: dfire-case-todo-assign
-    description: Assign a todo to a user.
+    description: Assigns a todo to a user.
     arguments:
     - name: case_id
       description: The case ID.
@@ -1551,16 +1551,16 @@ script:
       description: The todo ID.
       required: true
     - name: user_id
-      description: User ID of the assignee.
+      description: The user ID of the assignee.
     outputs:
     - contextPath: DFIRe.CaseTodo.id
-      description: Todo ID.
+      description: The todo ID.
       type: Number
     - contextPath: DFIRe.CaseTodo.assignee_name
-      description: Assignee display name.
+      description: The assignee display name.
       type: String
   - name: dfire-case-todo-note-set
-    description: Set or replace the note on a todo.
+    description: Sets or replaces the note on a todo.
     arguments:
     - name: case_id
       description: The case ID.
@@ -1569,14 +1569,14 @@ script:
       description: The todo ID.
       required: true
     - name: note
-      description: New note content.
+      description: The new note content.
       required: true
     outputs:
     - contextPath: DFIRe.CaseTodo.id
-      description: Todo ID.
+      description: The todo ID.
       type: Number
   - name: dfire-case-todo-attach-runbook
-    description: Attach a runbook to a todo.
+    description: Attaches a runbook to a todo.
     arguments:
     - name: case_id
       description: The case ID.
@@ -1585,17 +1585,17 @@ script:
       description: The todo ID.
       required: true
     - name: runbook_slug
-      description: Runbook slug to attach.
+      description: The runbook slug to attach.
       required: true
     outputs:
     - contextPath: DFIRe.CaseTodo.id
-      description: Todo ID.
+      description: The todo ID.
       type: Number
     - contextPath: DFIRe.CaseTodo.runbook_slug
-      description: Attached runbook slug.
+      description: The attached runbook slug.
       type: String
   - name: dfire-case-todo-detach-runbook
-    description: Detach the runbook from a todo.
+    description: Detaches the runbook from a todo.
     arguments:
     - name: case_id
       description: The case ID.
@@ -1605,26 +1605,26 @@ script:
       required: true
     outputs:
     - contextPath: DFIRe.CaseTodo.id
-      description: Todo ID.
+      description: The todo ID.
       type: Number
   - name: dfire-case-timer-list
-    description: List SLA timers for a case.
+    description: Lists the SLA timers for a case.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     outputs:
     - contextPath: DFIRe.CaseTimer.id
-      description: Timer ID.
+      description: The timer ID.
       type: Number
     - contextPath: DFIRe.CaseTimer.name
-      description: Timer name.
+      description: The timer name.
       type: String
     - contextPath: DFIRe.CaseTimer.framework
-      description: Compliance framework.
+      description: The compliance framework.
       type: String
   - name: dfire-case-timer-get
-    description: Get a single SLA timer.
+    description: Retrieves a single SLA timer.
     arguments:
     - name: case_id
       description: The case ID.
@@ -1634,10 +1634,10 @@ script:
       required: true
     outputs:
     - contextPath: DFIRe.CaseTimer.id
-      description: Timer ID.
+      description: The timer ID.
       type: Number
   - name: dfire-case-timer-complete
-    description: Mark a case SLA timer as complete.
+    description: Marks a case SLA timer as complete.
     arguments:
     - name: case_id
       description: The case ID.
@@ -1647,10 +1647,10 @@ script:
       required: true
     outputs:
     - contextPath: DFIRe.CaseTimer.id
-      description: Timer ID.
+      description: The timer ID.
       type: Number
   - name: dfire-case-timer-reset
-    description: Reset a case SLA timer.
+    description: Resets a case SLA timer.
     arguments:
     - name: case_id
       description: The case ID.
@@ -1660,10 +1660,10 @@ script:
       required: true
     outputs:
     - contextPath: DFIRe.CaseTimer.id
-      description: Timer ID.
+      description: The timer ID.
       type: Number
   - name: dfire-case-get-by-number
-    description: Look up a case by its human-readable case number.
+    description: Looks up a case by its human-readable case number.
     arguments:
     - name: case_number
       description: The case number (e.g. "CASE-2026-0001").
@@ -1676,10 +1676,10 @@ script:
       description: The case number.
       type: String
   - name: dfire-item-resolve-short-id
-    description: Resolve an 8-character item short ID to its full UUID and parent case ID.
+    description: Resolves an 8-character item short ID to its full UUID and parent case ID.
     arguments:
     - name: short_id
-      description: First 8 characters of the item UUID.
+      description: The first 8 characters of the item UUID.
       required: true
     outputs:
     - contextPath: DFIRe.Item.uuid
@@ -1689,64 +1689,64 @@ script:
       description: The parent case ID.
       type: Number
   - name: dfire-incident-category-list
-    description: List ENISA incident categories (useful for picklists).
+    description: Lists ENISA incident categories (useful for picklists).
     arguments: []
     outputs:
     - contextPath: DFIRe.IncidentCategory.id
-      description: Category ID.
+      description: The category ID.
       type: Number
     - contextPath: DFIRe.IncidentCategory.name
-      description: Category name.
+      description: The category name.
       type: String
   - name: dfire-incident-phase-list
-    description: List configured incident-response phases.
+    description: Lists configured incident-response phases.
     arguments: []
     outputs:
     - contextPath: DFIRe.IncidentPhase.id
-      description: Phase ID.
+      description: The phase ID.
       type: Number
     - contextPath: DFIRe.IncidentPhase.name
-      description: Phase name.
+      description: The phase name.
       type: String
   - name: dfire-outcome-verdict-list
-    description: List case outcome verdicts (true positive, false positive, etc.).
+    description: Lists case outcome verdicts (true positive, false positive, etc.).
     arguments: []
     outputs:
     - contextPath: DFIRe.OutcomeVerdict.id
-      description: Verdict ID.
+      description: The verdict ID.
       type: Number
     - contextPath: DFIRe.OutcomeVerdict.name
-      description: Verdict name.
+      description: The verdict name.
       type: String
   - name: dfire-project-list
-    description: List projects.
+    description: Lists projects.
     arguments: []
     outputs:
     - contextPath: DFIRe.Project.id
-      description: Project ID.
+      description: The project ID.
       type: Number
     - contextPath: DFIRe.Project.name
-      description: Project name.
+      description: The project name.
       type: String
   - name: dfire-runbook-list
-    description: List available runbooks (used for todo runbook attachments).
+    description: Lists available runbooks (used for todo runbook attachments).
     arguments: []
     outputs:
     - contextPath: DFIRe.Runbook.slug
-      description: Runbook slug.
+      description: The runbook slug.
       type: String
     - contextPath: DFIRe.Runbook.name
-      description: Runbook name.
+      description: The runbook name.
       type: String
   - name: dfire-group-list
-    description: List user groups.
+    description: Lists user groups.
     arguments: []
     outputs:
     - contextPath: DFIRe.Group.id
-      description: Group ID.
+      description: The user group ID.
       type: Number
     - contextPath: DFIRe.Group.name
-      description: Group name.
+      description: The user group name.
       type: String
 fromversion: 6.10.0
 tests:
