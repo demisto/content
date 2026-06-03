@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 import base64
 import io
+import os
 import re
 import uuid
 from collections.abc import Callable
@@ -15,6 +16,39 @@ import urllib3
 import yaml
 from apiclient import discovery, errors
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+
+APPROVED_EXTENSIONS = {'.md', '.json', '.jsonl', '.csv', '.docx', '.yaml', '.yml', '.txt'}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+
+
+def is_approved_file(file_name: str, mime_type: str = None) -> bool:
+    if file_name:
+        _, ext = os.path.splitext(file_name.lower())
+        if ext in APPROVED_EXTENSIONS:
+            return True
+
+    if mime_type:
+        mime_map = {
+            "text/markdown": ".md",
+            "text/x-markdown": ".md",
+            "application/json": ".json",
+            "application/jsonl": ".jsonl",
+            "application/x-jsonlines": ".jsonl",
+            "text/csv": ".csv",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+            "text/yaml": ".yaml",
+            "text/x-yaml": ".yaml",
+            "application/yaml": ".yaml",
+            "application/x-yaml": ".yaml",
+            "application/vnd.google-apps.document": ".md",
+            "application/vnd.google-apps.spreadsheet": ".csv",
+            "text/plain": ".txt",
+        }
+        ext = mime_map.get(mime_type.lower())
+        if ext in APPROVED_EXTENSIONS:
+            return True
+
+    return False
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -2178,7 +2212,7 @@ def get_file_content_command(client: "GSuiteClient", args: dict[str, str]) -> Co
 
     http_request_params: dict[str, str] = assign_params(
         supportsAllDrives=True,
-        fields="id, name, mimeType, description, webViewLink",
+        fields="id, name, mimeType, size, description, webViewLink",
     )
     url_suffix = URL_SUFFIX["DRIVE_FILES_ID"].format(file_id)
     response = client.http_request(url_suffix=url_suffix, method="GET", params=http_request_params)
@@ -2186,6 +2220,18 @@ def get_file_content_command(client: "GSuiteClient", args: dict[str, str]) -> Co
     file_name = response.get("name", "")
     mime_type = response.get("mimeType", "")
     demisto.debug(f"get-file-content: file_id={file_id} mime_type={mime_type}")
+
+    # Check file format
+    if not is_approved_file(file_name, mime_type):
+        raise ValueError(f"File format not approved: {file_name} ({mime_type})")
+
+    # Check file size (limit to 5MB = 5 * 1024 * 1024 bytes)
+    size_str = response.get("size")
+    if size_str:
+        size_bytes = int(size_str)
+        if size_bytes > MAX_FILE_SIZE:
+            size_mb = size_bytes / (1024 * 1024)
+            raise ValueError(f"File size exceeds the 5MB limit: {size_mb:.2f} MB")
 
     content, output_type = _download_drive_file_content(client, file_id, mime_type)
 
