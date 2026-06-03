@@ -4,3 +4,5 @@ name: Palo Alto Prisma Cloud Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

@@ -240,15 +240,15 @@ def test_update_findings_feedback(mocker, response, raises):
                 "detectorId": "some_id",
                 "findingIds": "finding_id1, finding_id2",
                 "comments": "some_comment1, some_comment2",
-                "feedback": "some_feedback1, some_feedback2",
+                "feedback": "USEFUL",
             },
         )
 
     update_findings_feedback_mock.assert_called_with(
         DetectorId="some_id",
         FindingIds=["finding_id1", "finding_id2"],
-        Comments=["some_comment1", "some_comment2"],
-        Feedback=["some_feedback1", "some_feedback2"],
+        Comments="some_comment1, some_comment2",
+        Feedback="USEFUL",
     )
 
 

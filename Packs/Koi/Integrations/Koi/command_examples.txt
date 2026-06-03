@@ -1,0 +1,25 @@
+!koi-get-events event_type=Alerts limit=10 should_push_events=false
+!koi-get-events event_type=Audit limit=10 start_time="3 days ago" end_time="now" should_push_events=false
+!koi-policy-list limit=50
+!koi-policy-list page=1 page_size=100
+!koi-allowlist-get
+!koi-allowlist-items-add item_id=example-extension marketplace=vscode created_by="security-team@org.com" notes="Approved by security team"
+!koi-allowlist-items-add items_list_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID
+!koi-allowlist-items-remove item_id=example-extension marketplace=vscode
+!koi-allowlist-items-remove items_list_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID
+!koi-blocklist-get
+!koi-blocklist-items-add item_id=malicious-ext marketplace=chrome_web_store created_by="security-team@org.com" notes="Blocked due to security risk"
+!koi-blocklist-items-add items_list_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID
+!koi-blocklist-items-remove item_id=malicious-ext marketplace=chrome_web_store
+!koi-blocklist-items-remove items_list_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID
+!koi-policy-status-update policy_id=1 enabled=true
+!koi-policy-status-update policy_id=1 enabled=false
+!koi-inventory-list limit=50 marketplace=vscode sort_by=first_seen sort_direction=desc
+!koi-inventory-list page=1 page_size=50 risk_level=high view=browser_extensions
+!koi-inventory-list device_id=DEVICE-123 installation_method=manual publisher_name="Microsoft"
+!koi-inventory-item-get item_id=example-extension marketplace=vscode version=1.2.3
+!koi-inventory-item-get item_id=example-extension marketplace=vscode
+!koi-inventory-search filter_json="{\"field\":\"risk_level\",\"operator\":\"eq\",\"value\":\"high\"}" limit=50 sort_by=first_seen sort_direction=desc
+!koi-inventory-search filter_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID page=1 page_size=100
+!koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode version=1.2.3 limit=50
+!koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode page=1 page_size=100

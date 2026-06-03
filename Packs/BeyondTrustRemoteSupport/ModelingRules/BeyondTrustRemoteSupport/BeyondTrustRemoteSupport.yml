@@ -4,3 +4,5 @@ name: BeyondTrust Remote Support Modeling Rule
 rules: ''
 schema: ''
 tags: BeyondTrust
+supportedModules:
+- xsiam

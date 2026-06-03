@@ -38,6 +38,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
   additionalinfo: Whether to collect events.
 - display: Statistic types to fetch
   name: statistic_types_to_fetch
@@ -50,6 +52,8 @@ configuration:
   defaultvalue: Metering Stats,Export Stats,Export Peaks FPS,Optimization Stats
   section: Collect
   required: true
+  supportedModules:
+  - xsiam
 - name: proxy
   display: Use system proxy settings
   type: 8
@@ -140,5 +144,3 @@ script:
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
-supportedModules:
-- xsiam

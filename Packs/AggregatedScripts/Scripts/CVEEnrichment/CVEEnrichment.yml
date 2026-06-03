@@ -39,7 +39,7 @@ args:
     for each of the indicator result.  
     `AdditionalFields` contains all fields returned by TIM or the integrations
     that are not part of the standard output keys: `ID`, `Brand`, `CVSS`, 
-    `Description`, `Published`, `CVSS`.  
+    `Description`, `Published`.  
     When set to false, only the standard keys are returned.
   auto: PREDEFINED
   predefined:
@@ -71,6 +71,9 @@ outputs:
   description: The error message explaining the reason for the failure (e.g., "Invalid", "createIndicator failed", etc.).
   type: string
 # CVEEnrichment Main Keys
+- contextPath: CVEEnrichment.Results.ID
+  description: The ID of the indicator.
+  type: string
 - contextPath: CVEEnrichment.Results.Brand
   description: The brand of the indicator.
   type: string

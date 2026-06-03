@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
+import os
 import shutil
 
 
@@ -108,11 +109,12 @@ class Client(BaseClient):
         return response  # pylint: disable=E0601
 
     def document_upload_file(self, entry_id):
+        file_name = ""
         try:
             headers = self._headers
             del headers["Content-Type"]
             file_path = demisto.getFilePath(entry_id)["path"]
-            file_name = demisto.getFilePath(entry_id)["name"]
+            file_name = os.path.basename(demisto.getFilePath(entry_id)["name"])
             try:
                 exists = False
                 document_name("custom-documents", file_name, self.document_list())
@@ -133,7 +135,11 @@ class Client(BaseClient):
             demisto.debug(msg)
             raise Exception(msg)
         finally:
-            shutil.rmtree(file_name, ignore_errors=True)
+            try:
+                if file_name:
+                    os.remove(file_name)
+            except OSError:
+                pass
 
         return response  # pylint: disable=E0601
 

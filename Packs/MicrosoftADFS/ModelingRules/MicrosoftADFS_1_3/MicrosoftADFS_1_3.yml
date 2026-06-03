@@ -4,3 +4,5 @@ name: Microsoft ADFS Collection
 rules: ''
 schema: ''
 tags: Microsoft Windows Active Directory Federation Services ADFS Event Colletion
+supportedModules:
+- xsiam
