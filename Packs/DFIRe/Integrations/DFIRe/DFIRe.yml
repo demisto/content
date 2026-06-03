@@ -819,68 +819,68 @@ script:
       description: The attachment associated case ID.
       type: Number
     - contextPath: DFIRe.Attachment.item
-      description: The associated item UUID.
+      description: The attachment associated evidence item UUID.
       type: String
     - contextPath: DFIRe.Attachment.hash_sha256
-      description: SHA-256 hash of the plaintext file.
+      description: The SHA-256 hash of the plaintext file attachment.
       type: String
     - contextPath: DFIRe.Attachment.uploaded_by_name
-      description: Who uploaded the file.
+      description: Who uploaded the file attachment.
       type: String
     - contextPath: DFIRe.Attachment.uploaded_at
-      description: Upload timestamp.
+      description: The attachment upload timestamp.
       type: Date
   - name: dfire-attachment-get
-    description: Get details of a specific attachment.
+    description: Gets details of a specific attachment.
     arguments:
     - name: attachment_id
       description: The attachment ID.
       required: true
     outputs:
     - contextPath: DFIRe.Attachment.id
-      description: The attachment ID.
+      description: The DFIRe attachment ID.
       type: Number
     - contextPath: DFIRe.Attachment.filename
-      description: The filename.
+      description: The attachment filename.
       type: String
     - contextPath: DFIRe.Attachment.mime_type
-      description: The MIME type.
+      description: The attachment MIME type.
       type: String
     - contextPath: DFIRe.Attachment.size
-      description: File size in bytes.
+      description: The attachment file size in bytes.
       type: Number
     - contextPath: DFIRe.Attachment.category
-      description: Attachment category.
+      description: The attachment category.
       type: String
     - contextPath: DFIRe.Attachment.description
-      description: User-provided description.
+      description: The attachment user-provided description.
       type: String
     - contextPath: DFIRe.Attachment.hash_sha256
-      description: SHA-256 hash of the plaintext file.
+      description: The SHA-256 hash of the plaintext file attachment.
       type: String
     - contextPath: DFIRe.Attachment.status
-      description: Upload/encryption status.
+      description: The attachment upload/encryption status.
       type: String
     - contextPath: DFIRe.Attachment.storage_location
-      description: Storage backend (local, s3, smb).
+      description: The attachment storage location (local, s3, smb).
       type: String
     - contextPath: DFIRe.Attachment.uploaded_at
-      description: Upload timestamp.
+      description: The attachment upload timestamp.
       type: Date
   - name: dfire-attachment-upload
-    description: Upload a file as an attachment to a case or evidence item.
+    description: Uploads a file as an attachment to a case or evidence item.
     arguments:
     - name: entry_id
       description: The War Room entry ID of the file to upload.
       required: true
     - name: case_id
-      description: Case ID to associate the attachment with.
+      description: The case ID to associate the attachment with.
     - name: item_uuid
-      description: Evidence item UUID to associate the attachment with.
+      description: The evidence item UUID to associate the attachment with.
     - name: filename
-      description: Override the filename (defaults to the uploaded file name).
+      description: The name with which to override the filename. (default is the uploaded file name).
     - name: category
-      description: Attachment category. `general` routes to the encrypted file store and is what most playbooks want. `evidence` is reserved for evidence photos and routes to the image gallery, not the file store.
+      description: The attachment category. `general` routes to the encrypted file store and is relevant for most playbooks. `evidence` is reserved for evidence photos and routes to the image gallery, not the file store.
       defaultValue: general
       predefined:
       - general
@@ -890,90 +890,90 @@ script:
       description: The created attachment ID.
       type: Number
     - contextPath: DFIRe.Attachment.filename
-      description: The filename.
+      description: The attachment filename.
       type: String
     - contextPath: DFIRe.Attachment.size
-      description: File size in bytes.
+      description: The attachment file size in bytes.
       type: Number
   - name: dfire-attachment-delete
-    description: Delete an attachment.
+    description: Deletes an attachment.
     arguments:
     - name: attachment_id
       description: The attachment ID to delete.
       required: true
     outputs: []
   - name: dfire-timeline-list
-    description: List timeline events for a case (newest first).
+    description: Lists timeline events for a case (newest first).
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     outputs:
     - contextPath: DFIRe.TimelineEvent.id
-      description: The event ID.
+      description: The timeline event ID.
       type: Number
     - contextPath: DFIRe.TimelineEvent.event_type
-      description: The event type.
+      description: The timeline event type.
       type: String
     - contextPath: DFIRe.TimelineEvent.subject
-      description: The event subject.
+      description: The timeline event subject.
       type: String
     - contextPath: DFIRe.TimelineEvent.details
-      description: The event details.
+      description: The timeline event details.
       type: String
     - contextPath: DFIRe.TimelineEvent.event_datetime
-      description: When the event occurred.
+      description: When the timeline event occurred.
       type: Date
     - contextPath: DFIRe.TimelineEvent.created_by_name
-      description: Who created the event.
+      description: Who created the timeline event.
       type: String
   - name: dfire-timeline-create
-    description: Add a manual timeline event to a case.
+    description: Adds a manual timeline event to a case.
     arguments:
     - name: case_id
       description: The case ID.
       required: true
     - name: subject
-      description: The event subject line.
+      description: The timeline event subject line.
       required: true
     - name: details
-      description: The event description.
+      description: The timeline event description.
     - name: event_datetime
-      description: When the event occurred (ISO 8601). Defaults to now.
+      description: When the timeline event occurred (ISO 8601). Default is now.
     outputs:
     - contextPath: DFIRe.TimelineEvent.id
-      description: The created event ID.
+      description: The created timeline event ID.
       type: Number
     - contextPath: DFIRe.TimelineEvent.subject
-      description: The event subject.
+      description: The timeline event subject.
       type: String
     - contextPath: DFIRe.TimelineEvent.event_datetime
-      description: The event timestamp.
+      description: The timeline event timestamp.
       type: Date
   - name: dfire-user-list
-    description: List users in the DFIRe tenant. Useful for looking up user IDs for assignments.
+    description: Lists users in the DFIRe tenant. Useful for looking up user IDs for assignments.
     arguments: []
     outputs:
     - contextPath: DFIRe.User.id
-      description: The user ID.
+      description: The DFIRe user ID.
       type: Number
     - contextPath: DFIRe.User.username
-      description: The username.
+      description: The DFIRe username.
       type: String
     - contextPath: DFIRe.User.full_name
-      description: The user's full name.
+      description: The DFIRe user's full name.
       type: String
     - contextPath: DFIRe.User.email
-      description: The user's email.
+      description: The DFIRe user's email.
       type: String
     - contextPath: DFIRe.User.is_active
-      description: Whether the user is active.
+      description: Whether the DFIRe user is active.
       type: Boolean
     - contextPath: DFIRe.User.groups
-      description: Groups the user belongs to.
+      description: Groups the DFIRe user belongs to.
       type: Unknown
   - name: dfire-case-indicator-list
-    description: List indicators associated with a case.
+    description: Lists indicators associated with a case.
     arguments:
     - name: case_id
       description: The case ID.
@@ -989,19 +989,19 @@ script:
       description: The indicator ID.
       type: Number
     - contextPath: DFIRe.CaseIndicator.indicator.value
-      description: The IOC value.
+      description: The indicator value.
       type: String
     - contextPath: DFIRe.CaseIndicator.indicator.stix_type
-      description: STIX type.
+      description: The indicator STIX type.
       type: String
     - contextPath: DFIRe.CaseIndicator.context
-      description: Case-private notes about this IOC.
+      description: The case private notes about the associated indicator.
       type: String
     - contextPath: DFIRe.CaseIndicator.source
-      description: How the indicator was added.
+      description: How the associated indicator was added.
       type: String
     - contextPath: DFIRe.CaseIndicator.created_at
-      description: Association timestamp.
+      description: The association timestamp.
       type: Date
     - contextPath: DFIRe.CaseIndicator.case_count
       description: Total cases this indicator appears in.
