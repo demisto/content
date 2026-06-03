@@ -1903,7 +1903,14 @@ def _validate_task_type_for_command(
     command_name: str,
 ) -> CommandResults | None:
     task_type = task_output.get("type")
-    if task_type is None or task_type == expected_task_type:
+    if task_type is None:
+        return CommandResults(
+            raw_response=task_output,
+            readable_output=f"Task '{task_id}' does not have a type. Cannot determine if it matches the expected type for command '{command_name}'.",
+            entry_type=EntryType.ERROR,
+        )
+        
+    if task_type == expected_task_type:
         return None
 
     expected_task_name = TASK_NUMERIC_TO_COMMAND_NAME.get(expected_task_type, str(expected_task_type))
