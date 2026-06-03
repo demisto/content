@@ -2806,19 +2806,16 @@ def message_filter_create_command(client: Client, args: dict[str, Any]) -> Comma
         "cisco-esa-message-filter-create: calling Cisco with "
         f"filter_name={filter_name!r}, mode={mode!r}, host_name={host_name!r}, group_name={group_name!r}"
     )
-    try:
-        response = client.message_filter_create_request(
-            filter_name=filter_name,
-            rules_and_actions=rules_and_actions,
-            active=active,
-            order=order,
-            mode=mode,
-            host_name=host_name,
-            group_name=group_name,
-        )
-    except Exception as e:
-        demisto.debug(f"cisco-esa-message-filter-create: exception while calling Cisco — {type(e).__name__}: {e}")
-        raise
+
+    response = client.message_filter_create_request(
+        filter_name=filter_name,
+        rules_and_actions=rules_and_actions,
+        active=active,
+        order=order,
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+    )
 
     demisto.debug(
         f"cisco-esa-message-filter-create: response meta={response.get('meta')}, "
@@ -2868,18 +2865,15 @@ def message_filter_update_command(client: Client, args: dict[str, Any]) -> Comma
         "cisco-esa-message-filter-update: calling Cisco with "
         f"filter_name={filter_name!r}, mode={mode!r}, host_name={host_name!r}, group_name={group_name!r}"
     )
-    try:
-        response = client.message_filter_update_request(
-            filter_name=filter_name,
-            active=active,
-            order=order,
-            mode=mode,
-            host_name=host_name,
-            group_name=group_name,
-        )
-    except Exception as e:
-        demisto.debug(f"cisco-esa-message-filter-update: exception while calling Cisco — {type(e).__name__}: {e}")
-        raise
+
+    response = client.message_filter_update_request(
+        filter_name=filter_name,
+        active=active,
+        order=order,
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+    )
 
     demisto.debug(
         f"cisco-esa-message-filter-update: response meta={response.get('meta')}, "
@@ -2918,16 +2912,13 @@ def message_filter_delete_command(client: Client, args: dict[str, Any]) -> Comma
         "cisco-esa-message-filter-delete: calling Cisco with "
         f"filter_name={filter_name!r}, mode={mode!r}, host_name={host_name!r}, group_name={group_name!r}"
     )
-    try:
-        response = client.message_filter_delete_request(
-            filter_name=filter_name,
-            mode=mode,
-            host_name=host_name,
-            group_name=group_name,
-        )
-    except Exception as e:
-        demisto.debug(f"cisco-esa-message-filter-delete: exception while calling Cisco — {type(e).__name__}: {e}")
-        raise
+
+    response = client.message_filter_delete_request(
+        filter_name=filter_name,
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+    )
 
     demisto.debug(
         f"cisco-esa-message-filter-delete: response meta={response.get('meta')}, "
