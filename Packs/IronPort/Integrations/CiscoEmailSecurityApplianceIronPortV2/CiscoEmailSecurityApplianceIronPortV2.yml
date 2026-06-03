@@ -1754,7 +1754,7 @@ script:
       description: Retrieve all message filters or a specific message filter by name. Message filters are evaluated early in the Work Queue, before security engines.
       arguments:
         - name: mode
-          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          description: The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
           defaultValue: cluster
           auto: PREDEFINED
           predefined:
@@ -1768,17 +1768,17 @@ script:
         - name: filter_name
           description: The name of a specific message filter to retrieve. When omitted, all filters in scope are returned.
         - name: active
-          description: Client-side filter — return only active or only inactive filters. Ignored when `filter_name` is supplied.
+          description: Whether to return only active or only inactive filters. Ignored when `filter_name` is supplied.
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: limit
-          description: Maximum number of filters to return. Applied client-side after fetch. Ignored when `filter_name` is supplied.
+          description: The maximum number of filters to return. Ignored when `filter_name` is supplied.
           defaultValue: "50"
       outputs:
         - contextPath: CiscoESA.MessageFilter.name
-          description: Filter name.
+          description: The filter name.
           type: String
         - contextPath: CiscoESA.MessageFilter.active
           description: Whether the filter is active (`"true"` / `"false"`).
@@ -1787,19 +1787,19 @@ script:
           description: Whether Cisco AsyncOS parsed the filter as valid (`"true"` / `"false"`).
           type: String
         - contextPath: CiscoESA.MessageFilter.order
-          description: 1-based execution order.
+          description: The 1-based position in the execution order.
           type: Number
         - contextPath: CiscoESA.MessageFilter.rules_and_actions
-          description: Full Cisco filter DSL body.
+          description: The full Cisco filter DSL body.
           type: String
         - contextPath: CiscoESA.MessageFilter.invalid_reason
-          description: Reason the filter is marked invalid. Present only when `valid` is `"false"`.
+          description: The reason the filter is marked as invalid. Present only when `valid` is `"false"`.
           type: String
     - name: cisco-esa-message-filter-create
       description: 'Create a new message filter. If the appliance accepts the filter but flags it as invalid (e.g. unknown listener/interface), the command returns success and surfaces the appliance warning in the human-readable output. For details on Cisco''s filter rule language, see "Using Message Filters to Enforce Email Policies" in the Cisco Secure Email Gateway 16.0 Admin Guide: https://www.cisco.com/c/en/us/td/docs/security/esa/esa16-0/user_guide/b_ESA_Admin_Guide_16-0/b_ESA_Admin_Guide_12_1_chapter_01000.html'
       arguments:
         - name: mode
-          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          description: The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
           defaultValue: cluster
           auto: PREDEFINED
           predefined:
@@ -1811,10 +1811,10 @@ script:
         - name: host_name
           description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
         - name: filter_name
-          description: Name for the new filter.
+          description: The name for the new filter.
           required: true
         - name: rules_and_actions
-          description: 'Full Cisco filter DSL: `if (<conditions>) { <actions>; }`. See the Cisco AsyncOS for Email Security Admin Guide for the DSL reference.'
+          description: 'The full Cisco filter DSL: `if (<conditions>) { <actions>; }`. See the Cisco AsyncOS for Email Security Admin Guide for the DSL reference.'
           required: true
         - name: active
           description: Whether the filter should be active on creation.
@@ -1824,12 +1824,12 @@ script:
             - "true"
             - "false"
         - name: order
-          description: 1-based position in the filter list. Defaults to append-to-end when omitted.
+          description: The 1-based position in the filter list. Defaults to append-to-end when omitted.
     - name: cisco-esa-message-filter-update
       description: Update an existing message filter. Only the supplied fields (`active`, `order`) are sent — at least one must be provided.
       arguments:
         - name: mode
-          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          description: The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
           defaultValue: cluster
           auto: PREDEFINED
           predefined:
@@ -1841,21 +1841,21 @@ script:
         - name: host_name
           description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
         - name: filter_name
-          description: Name of the filter to update.
+          description: The name of the filter to update.
           required: true
         - name: active
-          description: Enable or disable the filter.
+          description: Whether to enable or disable the filter.
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: order
-          description: New 1-based position in the filter list.
+          description: The new 1-based position in the filter list.
     - name: cisco-esa-message-filter-delete
       description: Delete a message filter.
       arguments:
         - name: mode
-          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          description: The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
           defaultValue: cluster
           auto: PREDEFINED
           predefined:
@@ -1867,7 +1867,7 @@ script:
         - name: host_name
           description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
         - name: filter_name
-          description: Name of the filter to delete.
+          description: The name of the filter to delete.
           required: true
 fromversion: 6.5.0
 tests:

@@ -2383,23 +2383,23 @@ Retrieve all message filters or a specific message filter by name. Message filte
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| mode | The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
 | filter_name | The name of a specific message filter to retrieve. When omitted, all filters in scope are returned. | Optional |
-| active | Client-side filter — return only active or only inactive filters. Ignored when `filter_name` is supplied. Possible values are: true, false. | Optional |
-| limit | Maximum number of filters to return. Applied client-side after fetch. Ignored when `filter_name` is supplied. Default is 50. | Optional |
+| active | Whether to return only active or only inactive filters. Ignored when `filter_name` is supplied. Possible values are: true, false. | Optional |
+| limit | The maximum number of filters to return. Ignored when `filter_name` is supplied. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoESA.MessageFilter.name | String | Filter name. |
+| CiscoESA.MessageFilter.name | String | The filter name. |
 | CiscoESA.MessageFilter.active | String | Whether the filter is active \(\`"true"\` / \`"false"\`\). |
 | CiscoESA.MessageFilter.valid | String | Whether Cisco AsyncOS parsed the filter as valid \(\`"true"\` / \`"false"\`\). |
-| CiscoESA.MessageFilter.order | Number | 1-based execution order. |
-| CiscoESA.MessageFilter.rules_and_actions | String | Full Cisco filter DSL body. |
-| CiscoESA.MessageFilter.invalid_reason | String | Reason the filter is marked invalid. Present only when \`valid\` is \`"false"\`. |
+| CiscoESA.MessageFilter.order | Number | The 1-based position in the execution order. |
+| CiscoESA.MessageFilter.rules_and_actions | String | The full Cisco filter DSL body. |
+| CiscoESA.MessageFilter.invalid_reason | String | The reason the filter is marked as invalid. Present only when \`valid\` is \`"false"\`. |
 
 ### cisco-esa-message-filter-create
 
@@ -2414,13 +2414,13 @@ Create a new message filter. If the appliance accepts the filter but flags it as
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| mode | The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
-| filter_name | Name for the new filter. | Required |
-| rules_and_actions | Full Cisco filter DSL: `if (&lt;conditions&gt;) { &lt;actions&gt;; }`. See the Cisco AsyncOS for Email Security Admin Guide for the DSL reference. | Required |
+| filter_name | The name for the new filter. | Required |
+| rules_and_actions | The full Cisco filter DSL: `if (&lt;conditions&gt;) { &lt;actions&gt;; }`. See the Cisco AsyncOS for Email Security Admin Guide for the DSL reference. | Required |
 | active | Whether the filter should be active on creation. Possible values are: true, false. Default is true. | Optional |
-| order | 1-based position in the filter list. Defaults to append-to-end when omitted. | Optional |
+| order | The 1-based position in the filter list. Defaults to append-to-end when omitted. | Optional |
 
 #### Context Output
 
@@ -2439,12 +2439,12 @@ Update an existing message filter. Only the supplied fields (`active`, `order`) 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| mode | The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
-| filter_name | Name of the filter to update. | Required |
-| active | Enable or disable the filter. Possible values are: true, false. | Optional |
-| order | New 1-based position in the filter list. | Optional |
+| filter_name | The name of the filter to update. | Required |
+| active | Whether to enable or disable the filter. Possible values are: true, false. | Optional |
+| order | The new 1-based position in the filter list. | Optional |
 
 #### Context Output
 
@@ -2463,10 +2463,10 @@ Delete a message filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mode | Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| mode | The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
 | group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
-| filter_name | Name of the filter to delete. | Required |
+| filter_name | The name of the filter to delete. | Required |
 
 #### Context Output
 
