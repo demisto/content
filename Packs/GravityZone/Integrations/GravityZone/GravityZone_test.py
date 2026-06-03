@@ -5,6 +5,8 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from CommonServerPython import CommandResults
+
 
 SERVER_URL = "https://localhost"
 
@@ -448,10 +450,10 @@ def test_check_endpoint_users_loggedin_status_returns_error_on_unexpected_task_t
         MockClient(),
     )
 
-    assert result.continue_to_poll is False
-    assert result.response is not None
-    assert "unexpected type" in result.response.readable_output
-    assert "GetActiveSessions" in result.response.readable_output
+    assert isinstance(result, CommandResults)
+    assert result.readable_output is not None
+    assert "unexpected type" in result.readable_output
+    assert "GetActiveSessions" in result.readable_output
 
 
 def test_check_endpoint_memory_dump_status_returns_error_on_unexpected_task_type():
@@ -466,10 +468,10 @@ def test_check_endpoint_memory_dump_status_returns_error_on_unexpected_task_type
         MockClient(),
     )
 
-    assert result.continue_to_poll is False
-    assert result.response is not None
-    assert "unexpected type" in result.response.readable_output
-    assert "CreateMemoryDump" in result.response.readable_output
+    assert isinstance(result, CommandResults)
+    assert result.readable_output is not None
+    assert "unexpected type" in result.readable_output
+    assert "CreateMemoryDump" in result.readable_output
 
 
 def test_extract_active_sessions_from_task_handles_missing_optional_fields():

@@ -22,7 +22,7 @@
         "taskId": "TASK_ID",
         "startDate": "2026-05-25T10:00:00",
         "status": 1,
-        "type": 91,
+        "type": 27,
         "hasMoreSubtasks": false,
         "subtasks": [
           {
@@ -62,7 +62,7 @@
         "name": "Create memory dump 2026-05-25",
         "startDate": "2026-05-25T10:00:00",
         "status": 1,
-        "type": 91,
+        "type": 27,
         "hasMoreSubtasks": false,
         "subtasks": [
           {
@@ -102,7 +102,7 @@
         "name": "Create memory dump 2026-05-25",
         "startDate": "2026-05-25T10:00:00",
         "status": 3,
-        "type": 91,
+        "type": 27,
         "hasMoreSubtasks": false,
         "subtasks": [
           {
