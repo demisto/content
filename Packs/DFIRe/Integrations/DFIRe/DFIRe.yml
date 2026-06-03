@@ -90,15 +90,15 @@ script:
     - name: page
       description: Page number for pagination.
     - name: status
-      description: Filter by case status.
+      description: The status by which to filter cases.
       predefined:
       - OPEN
       - CLOSED
       - ARCHIVED
     - name: status_in
-      description: Filter by multiple statuses (comma-separated, e.g. "OPEN,CLOSED").
+      description: A comma-separated list of statuses by which to filter cases, for example, "OPEN,CLOSED".
     - name: severity
-      description: Filter by severity.
+      description: The severity by which to filter cases.
       predefined:
       - critical
       - high
@@ -106,18 +106,18 @@ script:
       - low
       - info
     - name: case_mode
-      description: Filter by case mode.
+      description: The mode by which to filter cases.
       predefined:
       - investigation
       - incident
     - name: lead_investigator
-      description: Filter by lead investigator user ID.
+      description: The lead investigator user ID by which to filter cases.
     - name: created_at_gte
-      description: Filter cases created on or after this ISO-8601 datetime (e.g. "2026-05-01T00:00:00Z").
+      description: The ISO-8601 datetime on or after which to filter cases, for example, "2026-05-01T00:00:00Z".
     - name: created_at_lte
-      description: Filter cases created on or before this ISO-8601 datetime.
+      description: The ISO-8601 datetime on or before which to filter cases.
     - name: ordering
-      description: Order results by field (e.g. "created_at", "-created_at" for descending).
+      description: The field by which to order results, for example, "created_at", or "-created_at" for descending order.
     outputs:
     - contextPath: DFIRe.Case.id
       description: The case ID.
@@ -135,19 +135,19 @@ script:
       description: The case severity.
       type: String
     - contextPath: DFIRe.Case.case_mode
-      description: Investigation or incident.
+      description: The case mode, investigation or incident.
       type: String
     - contextPath: DFIRe.Case.case_type_name
       description: The case type name.
       type: String
     - contextPath: DFIRe.Case.lead_investigator
-      description: Lead investigator user ID.
+      description: The lead investigator user ID.
       type: Number
     - contextPath: DFIRe.Case.created_at
       description: Case creation timestamp.
       type: Date
   - name: dfire-case-get
-    description: Get details of a specific case.
+    description: Retrieves details of a specific case.
     arguments:
     - name: case_id
       description: The ID of the case.
@@ -166,7 +166,7 @@ script:
       description: The case description.
       type: String
     - contextPath: DFIRe.Case.notes
-      description: High-level case notes.
+      description: The high-level case notes.
       type: String
     - contextPath: DFIRe.Case.status
       description: The case status.
@@ -175,7 +175,7 @@ script:
       description: The case severity.
       type: String
     - contextPath: DFIRe.Case.case_mode
-      description: Investigation or incident.
+      description: The case mode, investigation or incident.
       type: String
     - contextPath: DFIRe.Case.case_type
       description: The case type ID.
@@ -184,31 +184,31 @@ script:
       description: The case type name.
       type: String
     - contextPath: DFIRe.Case.external_id
-      description: External reference ID.
+      description: The external reference ID.
       type: String
     - contextPath: DFIRe.Case.lead_investigator
-      description: Lead investigator user ID.
+      description: The lead investigator user ID.
       type: Number
     - contextPath: DFIRe.Case.project_id
-      description: Associated project ID.
+      description: The associated project ID.
       type: Number
     - contextPath: DFIRe.Case.current_phase_name
-      description: Current incident phase name.
+      description: The current case phase name.
       type: String
     - contextPath: DFIRe.Case.item_count
-      description: Number of evidence items.
+      description: The number of evidence items.
       type: Number
     - contextPath: DFIRe.Case.indicator_count
-      description: Number of indicators.
+      description: The number of indicators.
       type: Number
     - contextPath: DFIRe.Case.created_at
-      description: Case creation timestamp.
+      description: The case creation timestamp.
       type: Date
     - contextPath: DFIRe.Case.closed_at
-      description: Case closure timestamp.
+      description: The case closure timestamp.
       type: Date
   - name: dfire-case-create
-    description: Create a new case in DFIRe.
+    description: Creates a new case in DFIRe.
     arguments:
     - name: title
       description: The case title.
@@ -219,7 +219,7 @@ script:
     - name: description
       description: The case description.
     - name: notes
-      description: High-level case summary or notes.
+      description: The high-level case summary or notes.
     - name: severity
       description: The case severity.
       predefined:
@@ -229,34 +229,34 @@ script:
       - low
       - info
     - name: case_mode
-      description: Investigation or incident mode.
+      description: The case mode, investigation or incident.
       predefined:
       - investigation
       - incident
     - name: lead_investigator
-      description: User ID of the lead investigator.
+      description: The user ID of the lead investigator.
     - name: investigators
-      description: Comma-separated list of investigator user IDs.
+      description: A comma-separated list of investigator user IDs.
       isArray: true
     - name: viewers
-      description: Comma-separated list of viewer user IDs.
+      description: A comma-separated list of viewer user IDs.
       isArray: true
     - name: investigator_ids
-      description: Comma-separated list of investigator IDs (alternate write field).
+      description: A comma-separated list of investigator IDs (alternate write field).
       isArray: true
     - name: viewer_ids
-      description: Comma-separated list of viewer IDs (alternate write field).
+      description: A comma-separated list of viewer IDs (alternate write field).
       isArray: true
     - name: incident_category
-      description: ENISA incident category ID.
+      description: The ENISA incident category ID.
     - name: outcome_verdict
-      description: Outcome verdict ID (true positive, false positive, etc.).
+      description: The outcome verdict ID (true positive, false positive, etc.).
     - name: external_id
-      description: External reference ID (e.g. ticket number).
+      description: The external reference ID (e.g. ticket number).
     - name: project_id
-      description: Project ID to associate the case with.
+      description: The project ID to associate the case with.
     - name: attributes
-      description: JSON string of custom attributes to attach to the case.
+      description: The JSON string of custom attributes to attach to the case.
     - name: create_slack_channel
       description: Whether to auto-create a Slack channel for this case. Defaults to false to avoid unintended channel creation from automated workflows.
       defaultValue: 'false'
@@ -277,25 +277,25 @@ script:
       description: The case status.
       type: String
   - name: dfire-case-update
-    description: Update an existing case in DFIRe.
+    description: Updates an existing case in DFIRe.
     arguments:
     - name: case_id
       description: The ID of the case to update.
       required: true
     - name: title
-      description: New title for the case.
+      description: The new title for the case.
     - name: description
-      description: New description.
+      description: The new case description.
     - name: notes
-      description: High-level case summary or notes.
+      description: The high-level case summary or notes.
     - name: status
-      description: New status.
+      description: The new case status.
       predefined:
       - OPEN
       - CLOSED
       - ARCHIVED
     - name: severity
-      description: New severity.
+      description: The new case severity.
       predefined:
       - critical
       - high
@@ -303,32 +303,32 @@ script:
       - low
       - info
     - name: case_mode
-      description: New case mode.
+      description: The new case mode, investigation or incident.
       predefined:
       - investigation
       - incident
     - name: lead_investigator
-      description: New lead investigator user ID.
+      description: The new case lead investigator user ID.
     - name: investigators
-      description: Replace investigator list (comma-separated user IDs).
+      description: A comma-separated list of user IDs with which to replace the investigator list..
       isArray: true
     - name: viewers
-      description: Replace viewer list (comma-separated user IDs).
+      description: A comma-separated list of user IDs with which to replace the viewer list.
       isArray: true
     - name: investigator_ids
-      description: Comma-separated list of investigator IDs (alternate write field).
+      description: A comma-separated list of investigator IDs (alternate write field).
       isArray: true
     - name: viewer_ids
-      description: Comma-separated list of viewer IDs (alternate write field).
+      description: A comma-separated list of viewer IDs (alternate write field).
       isArray: true
     - name: incident_category
-      description: ENISA incident category ID.
+      description: The ENISA incident category ID.
     - name: outcome_verdict
-      description: Outcome verdict ID.
+      description: The outcome verdict ID.
     - name: external_id
-      description: New external reference ID.
+      description: The new external reference ID.
     - name: attributes
-      description: JSON string of custom attributes to attach to the case.
+      description: The JSON string of custom attributes to attach to the case.
     outputs:
     - contextPath: DFIRe.Case.id
       description: The case ID.
