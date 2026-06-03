@@ -1024,14 +1024,14 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Returns:
             list[ContextResult]: The search results.
         """
-        indicator_values = " or ".join(
+        indicator_values = " ".join(
             {
-                f'value:"{indicator_instance.extracted_value}"'
+                f'"{indicator_instance.extracted_value}"'
                 for indicator_instance in self.indicator_instances
                 if indicator_instance.extracted_value
             }
         )
-        query = f"type:{self.indicator_schema.type} and ({indicator_values})"
+        query = f"type:{self.indicator_schema.type} and (value:({indicator_values}))"
         try:
             demisto.debug(f"Executing TIM search with query: {query}")
             searcher_start = time.perf_counter()
