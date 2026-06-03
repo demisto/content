@@ -5,7 +5,7 @@
   "description": "This CLI command requires 'Microsoft.Storage/storageAccounts/blobServices/write' permission. Successful execution will enable soft delete for blobs on Azure Storage accounts. NOTE: As best practice we are setting delete retention days to 30 days; it can be changed based on customer requirement by cloning the policy.",
   "trigger_name": "Enable Soft Delete on Blob",
   "automation_type": "command",
-  "automation_id": "azure-storage-blob-enable-soft-delete-quick-action",
+  "automation_id": "azure-storage-blob-soft-deletion-enable-quick-action",
   "alerts_filter": {
     "filter": {
       "OR": [

@@ -2,7 +2,7 @@
   "trigger_id": "3ceea3b41166ed841fca7e7cb7a56cf7",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure App Service Webapps without a Managed Service Identity",
-  "description": "This CLI command requires 'Microsoft.Web/sites/{app_name}/config/*' permission. Successful execution sets managed service identity in App Service, that makes the app more secure by eliminating secrets from the app, such as credentials in the connection strings.",
+  "description": "This CLI command requires 'Microsoft.Web/sites/{app_name}/config/*' permission. Successful execution sets managed service identity in App Service, which makes the app more secure by eliminating secrets from the app, such as credentials in the connection strings.",
   "trigger_name": "Assign Managed Identity to Web App",
   "automation_type": "command",
   "automation_id": "azure-appservice-webapp-update-quick-action",
