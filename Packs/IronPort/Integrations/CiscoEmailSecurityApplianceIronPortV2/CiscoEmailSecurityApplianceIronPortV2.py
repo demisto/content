@@ -2754,7 +2754,8 @@ def message_filter_list_command(client: Client, args: dict[str, Any]) -> Command
     )
 
     return CommandResults(
-        outputs_prefix="CiscoESA.MessageFilter",
+        # NOTE: `(true)` forces a full overwrite of the LastQuery context on each run.
+        outputs_prefix="CiscoESA.MessageFilter(true)",
         outputs_key_field="name",
         outputs=rows,
         raw_response=response,

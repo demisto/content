@@ -1430,7 +1430,7 @@ def test_message_filter_list_command_all(requests_mock, mock_client):
     When:
      - cisco-esa-message-filter-list is called.
     Then:
-     - Outputs prefix is CiscoESA.MessageFilter.
+     - Outputs prefix is CiscoESA.MessageFilter(true) (predicate forces overwrite).
      - Outputs key field is 'name'.
      - All rows from the fixture's data array are returned.
      - device_type=esa is passed in the underlying request.
@@ -1443,7 +1443,7 @@ def test_message_filter_list_command_all(requests_mock, mock_client):
 
     result = message_filter_list_command(mock_client, {})
 
-    assert result.outputs_prefix == "CiscoESA.MessageFilter"
+    assert result.outputs_prefix == "CiscoESA.MessageFilter(true)"
     assert result.outputs_key_field == "name"
     assert result.outputs == mock_response["data"]
     assert len(result.outputs) == 3
@@ -1460,6 +1460,7 @@ def test_message_filter_list_command_specific(requests_mock, mock_client):
      - cisco-esa-message-filter-list is called.
     Then:
      - Endpoint includes the filter name.
+     - Outputs prefix is CiscoESA.MessageFilter(true) (predicate forces overwrite).
      - Outputs contain the single returned row (no extra wrapping).
      - Title in HR mentions the filter name.
     """
@@ -1471,7 +1472,7 @@ def test_message_filter_list_command_specific(requests_mock, mock_client):
 
     result = message_filter_list_command(mock_client, {"filter_name": "F1"})
 
-    assert result.outputs_prefix == "CiscoESA.MessageFilter"
+    assert result.outputs_prefix == "CiscoESA.MessageFilter(true)"
     assert result.outputs == mock_response["data"]
     assert len(result.outputs) == 1
     assert result.outputs[0]["name"] == "F1"
