@@ -2180,7 +2180,7 @@ def density_lookup_command(client: Client, args: dict) -> CommandResults:
     """
     raw_response, readable_output = client.lookup(url_path=DENSITY, args=args)
     return CommandResults(
-        outputs_prefix="SilentPush.$Lookup",
+        outputs_prefix="SilentPush.Lookup",
         outputs_key_field="query",
         outputs={
             "qtype": args.get("qtype"),
@@ -2211,7 +2211,7 @@ def ip_diversity_lookup_command(client: Client, args: dict) -> CommandResults:
     """
     raw_response, readable_output = client.lookup(url_path=IP_DIVERSITY, args=args)
     return CommandResults(
-        outputs_prefix="SilentPush.$Lookup",
+        outputs_prefix="SilentPush.Lookup",
         outputs_key_field="query",
         outputs=raw_response.get("response", {}).get("records", []),
         readable_output=readable_output,
