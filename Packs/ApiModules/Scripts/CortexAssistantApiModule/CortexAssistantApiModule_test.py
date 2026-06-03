@@ -924,3 +924,51 @@ async def test_sensitive_action_approval_decision_indicator_before_feedback(mock
     assert blocks[1]["type"] == "context"  # decision indicator
     assert blocks[1]["elements"][0]["text"] == AssistantMessages.DECISION_APPROVED
     assert blocks[2]["type"] == "actions"  # feedback buttons (last)
+
+
+@pytest.mark.asyncio
+async def test_handle_bot_mention_auto_select_agent(mocker: MockerFixture):
+    """
+    Given:
+        A bot mention where the backend returns a list of agents, and a default_agent_id is configured.
+    When:
+        The bot mention is handled.
+    Then:
+        The default agent is automatically selected, a selection message is sent, and the message is resent to the backend.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "params", return_value={"default_agent_id": "agent1"})
+    
+    # Mock agentixCommands to return agents list first, then success on the second call
+    call_count = 0
+    def mock_agentix_commands(cmd, args):
+        nonlocal call_count
+        call_count += 1
+        if call_count == 1:
+            return {"agents": [{"id": "agent1", "name": "Security Analyst"}, {"id": "agent2", "name": "Incident Responder"}]}
+        return {"success": True}
+        
+    mocker.patch.object(demisto, "agentixCommands", side_effect=mock_agentix_commands)
+
+    handler = MockMessagingHandler()
+    assistant = {}
+
+    updated_assistant = await handler.handle_bot_mention(
+        text="<@bot1> hello",
+        user_id="U123",
+        user_email="user@example.com",
+        channel_id="C123",
+        thread_id="T123",
+        assistant=assistant,
+        assistant_id_key="C123_T123",
+        bot_id="bot1",
+        message_id="msg_ts",
+    )
+
+    # Verify that the selection message was sent
+    assert any(msg["message"] == "Selected agent: Security Analyst" for msg in handler.sent_messages)
+    # Verify that the thinking indicator was sent
+    assert any(msg["message"] == AssistantMessages.THINKING_INDICATOR for msg in handler.sent_messages)
+    # Verify that the conversation is locked with AWAITING_BACKEND_RESPONSE status and selected_agent is set
+    assert updated_assistant["C123_T123"]["status"] == AssistantStatus.AWAITING_BACKEND_RESPONSE.value
+    assert updated_assistant["C123_T123"]["selected_agent"] == "agent1"

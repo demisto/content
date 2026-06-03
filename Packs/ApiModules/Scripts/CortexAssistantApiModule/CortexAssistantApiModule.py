@@ -1591,8 +1591,80 @@ class AssistantMessagingHandler:
         if "agents" in raw_response:
             agents_list = raw_response.get("agents", [])
             demisto.debug(f"Backend returned {len(agents_list) if isinstance(agents_list, list) else 0} agents for selection")
-            # Check if agents list is empty or UI creation failed
-            if agents_list:
+            
+            # Check if a default agent is configured in demisto.params() for dev/auto-selection
+            default_agent_id = demisto.params().get("default_agent_id")
+            
+            if default_agent_id and any(agent.get("id") == default_agent_id for agent in agents_list):
+                demisto.debug(f"Auto-selecting configured default agent: {default_agent_id}")
+                
+                # Find the selected agent's name
+                selected_agent_name = next(
+                    (agent.get("name", "") for agent in agents_list if agent.get("id") == default_agent_id),
+                    default_agent_id
+                )
+                
+                # Prepend source chat metadata so the backend knows where this conversation originated
+                source_context = self.format_source_chat_context(channel_id, thread_id)
+                message_with_metadata = f"{source_context}\n{message_with_context}"
+                
+                # Send message to backend with selected agent immediately
+                raw_response = demisto.agentixCommands(
+                    BackendCommand.SEND_TO_CONVERSATION,
+                    {
+                        "channel_id": channel_id,
+                        "thread_id": thread_id,
+                        "message": message_with_metadata,
+                        "username": user_email,
+                        "agent_id": default_agent_id,
+                    },
+                )
+                backend_response = self.handle_backend_response(raw_response, "sendToConversation (auto agent selection)")
+                
+                if backend_response.success:
+                    # Send a message indicating the selected agent (similar to manual selection)
+                    await self.send_message_async(
+                        channel_id, f"Selected agent: {selected_agent_name}", thread_id=thread_id
+                    )
+                    
+                    # Send thinking indicator
+                    thinking_response = await self.send_message_async(
+                        channel_id, AssistantMessages.THINKING_INDICATOR, thread_id=thread_id
+                    )
+                    thinking_ts = thinking_response.get("ts") if thinking_response else None
+
+                    # Lock the conversation with initial status
+                    assistant[assistant_id_key] = {
+                        "date": thread_id,
+                        "user": user_id,
+                        "message": message_with_metadata,
+                        "channel_id": channel_id,
+                        "thread_id": thread_id,
+                        "status": AssistantStatus.AWAITING_BACKEND_RESPONSE.value,
+                        "selected_agent": default_agent_id,
+                        "last_updated": datetime.now(UTC).timestamp(),
+                    }
+
+                    # Store thinking message ID if sent successfully
+                    if thinking_ts:
+                        assistant[assistant_id_key][THINKING_MESSAGE_ID_KEY] = thinking_ts
+                    
+                    demisto.debug(f"Locked conversation {assistant_id_key}, awaiting backend response (auto-selected agent)")
+                else:
+                    # Backend call failed - show appropriate error message
+                    if backend_response.error_type == BackendErrorType.WRONG_USER:
+                        error_msg = AssistantMessages.THREAD_LOCKED_TO_ANOTHER_USER.format(bot_tag="the assistant")
+                    elif backend_response.error_type:
+                        error_msg = backend_response.error_type.user_message
+                    else:
+                        error_msg = AssistantMessages.AGENT_SELECTION_FAILED
+                        if backend_response.error_code:
+                            error_msg = f"{error_msg} (Error code: {backend_response.error_code})"
+                    
+                    await self.send_message_async(
+                        channel_id, error_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
+                    )
+            elif agents_list:
                 # Backend returned a list of agents - user needs to select one
                 # Create agent selection UI
                 agent_selection_blocks = self.create_agent_selection_ui(agents_list)
