@@ -759,11 +759,7 @@ def get_events_command(
     """
     demisto.debug("[Command] izoologic-get-events triggered")
 
-    should_push_events = argToBoolean(args.get("should_push_events", False))
-
-    if should_push_events and not (is_xsiam() or is_platform()):
-        demisto.debug("[Command] should_push_events is not supported on this platform. Overriding to False.")
-        should_push_events = False
+    should_push_events = resolve_should_push_events(args)
 
     limit = arg_to_number(args.get("limit", Config.DEFAULT_LIMIT))
     if not limit or limit <= 0:

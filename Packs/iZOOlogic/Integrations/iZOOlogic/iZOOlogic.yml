@@ -109,7 +109,7 @@ script:
       - email
       - executive
     - name: should_push_events
-      description: 'If true, pushes events to Cortex XSIAM (supported on Cortex XSIAM only). If false, events are only displayed in the War Room.'
+      description: The flag that indicates whether to push events to Cortex XSIAM. Pushing events is supported on Cortex XSIAM only. When set to false, or on non-XSIAM platforms, events are displayed without being pushed.
       auto: PREDEFINED
       predefined:
       - 'true'

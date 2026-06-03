@@ -905,8 +905,8 @@ class TestGetEventsCommand:
 
     def test_should_push_events_overridden_on_non_xsiam(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
         """Test that should_push_events is silently overridden to False on non-XSIAM platforms."""
-        mocker.patch("iZOOlogic.is_xsiam", return_value=False)
-        mocker.patch("iZOOlogic.is_platform", return_value=False)
+        # resolve_should_push_events lives in CommonServerPython and resolves is_xsiam from its own namespace.
+        mocker.patch("CommonServerPython.is_xsiam", return_value=False)
         mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         mock_create = mocker.patch("iZOOlogic.create_events")
 
@@ -915,6 +915,32 @@ class TestGetEventsCommand:
         # Events should NOT be pushed (create_events should not be called)
         mock_create.assert_not_called()
         # Events should be returned as CommandResults
+        assert isinstance(result, CommandResults)
+        assert "iZOOlogic Events" in result.readable_output
+
+    def test_should_push_events_pushed_on_xsiam(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Test that should_push_events pushes events when running on Cortex XSIAM."""
+        # resolve_should_push_events lives in CommonServerPython and resolves is_xsiam from its own namespace.
+        mocker.patch("CommonServerPython.is_xsiam", return_value=True)
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        mock_create = mocker.patch("iZOOlogic.create_events")
+
+        # Use a time window that brackets the fixture events' createdOn (1700000000-1700000200)
+        # so they survive the command's client-side time filter and get pushed.
+        result = get_events_command(
+            mock_client,
+            {
+                "limit": "10",
+                "should_push_events": "true",
+                "start_time": "2023-11-14T00:00:00Z",
+                "end_time": "2023-11-14T23:59:59Z",
+            },
+            [2],
+        )
+
+        # Events should be pushed (create_events should be called)
+        mock_create.assert_called_once()
+        # Events should also be returned as CommandResults
         assert isinstance(result, CommandResults)
         assert "iZOOlogic Events" in result.readable_output
 
