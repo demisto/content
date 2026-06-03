@@ -862,11 +862,23 @@ def _evaluate_parity_for_set_auth(result: dict) -> dict:
         # whether this is a real auth mismatch (e.g. WRONG_LOCATION) or a
         # tooling crash (e.g. RUN_FAILED_NEW with a KeyError in stderr).
         # NO prescription text — that lives in the skill, not the tool.
+        #
+        # The per-command diagnostics live at the TOP LEVEL of the
+        # check_auth_parity result (``result["diagnostics"][conn]["commands"]``),
+        # NOT nested inside each ``auth_parity[conn]`` block. (Sweep finding
+        # F3, 2026-06-03: the previous code read ``conn_block["diagnostics"]``,
+        # which is always empty, so failure_codes/stderr NEVER surfaced and the
+        # whole FIXES-TODO #1 tightening was silently a no-op.) Prefer the
+        # top-level block; fall back to the conn_block for the unit-test
+        # fixtures that inline diagnostics under the connection.
+        top_diagnostics = result.get("diagnostics") or {}
         lines: list[str] = []
         for conn_name, status, conn_block in failing:
             lines.append(f"  - {conn_name}: status={status!r}")
             diag_commands = (
-                (conn_block.get("diagnostics") or {}).get("commands") or {}
+                (top_diagnostics.get(conn_name) or {}).get("commands")
+                or (conn_block.get("diagnostics") or {}).get("commands")
+                or {}
             )
             for cmd_name, cmd_diag in diag_commands.items():
                 if not isinstance(cmd_diag, dict):
@@ -892,6 +904,21 @@ def _evaluate_parity_for_set_auth(result: dict) -> dict:
                             "a credential key that UCP strips from params. "
                             "See skill §1.12 for the two fix paths "
                             "(UCP override or is_ucp_enabled() gating)."
+                        )
+                    # F4 (sweep 2026-06-03): when BOTH runs captured zero
+                    # requests the proxy saw no HTTP traffic at all. Per the
+                    # Hints policy (multiple valid causes → describe + point
+                    # to skill, no prescription), flag it so the operator can
+                    # tell this apart from a genuine secret-placement
+                    # mismatch.
+                    if "NO_REQUESTS_CAPTURED" in codes:
+                        lines.append(
+                            "        note: the capture proxy observed no "
+                            "HTTP requests in either run, so parity could "
+                            "not be verified (commonly a test-module that "
+                            "doesn't reach an HTTP call, or a proxy-bypassing "
+                            "HTTP layer). This is inconclusive, not a "
+                            "confirmed mismatch — see skill §1.9 / §1.12."
                         )
                 for run_key in ("new_run", "old_run"):
                     run = cmd_diag.get(run_key) or {}
@@ -921,6 +948,214 @@ def _evaluate_parity_for_set_auth(result: dict) -> dict:
         "allow": True,
         "reason": f"all {len(auth_parity)} connection(s) ok: {statuses}",
     }
+
+
+# ---------------------------------------------------------------------------
+# Dry-run auth (set-auth --dry-run) — read-only preview of the gate
+# ---------------------------------------------------------------------------
+
+# Infrastructure error codes — these mean the gate could not be evaluated
+# (file lookup failed, the analyzer could not be imported, it crashed, or the
+# candidate was not JSON). They are NOT auth-mismatch verdicts; they map to
+# exit-code 3 ("could not evaluate"). Distinct from ERROR_SEED_AUTH_OVERLAP
+# (a user-input conflict → exit-code 2) and from a real parity block
+# (→ exit-code 1).
+_INFRA_ERROR_CODES = {
+    "ERROR_FILES_LOOKUP",
+    "ERROR_PARITY_IMPORT",
+    "ERROR_PARITY_UNHANDLED",
+    "ERROR_AUTH_NOT_JSON",
+}
+
+
+def dry_run_auth(
+    integration_id: str,
+    auth_detail_json: str,
+    *,
+    seed_overrides: dict | None = None,
+    timeout: int = 60,
+) -> dict:
+    """Preview the ``set-auth`` gate WITHOUT writing the CSV.
+
+    Runs the same three checks ``set_integration_auth`` runs — schema
+    validation, seed-overrides/Auth-Details overlap, and the auth-parity
+    gate — in the same order, short-circuiting on the first failure, but
+    never persists anything. Returns a six-key envelope describing what
+    *would* happen on the real path::
+
+        {
+          "dry_run":         True,
+          "integration_id":  "<id>",
+          "validator":       {"passed": bool, "errors": [...]},
+          "seed_overlap":    {"passed": bool, "error": {...}}
+                                | {"skipped": "<why>"},
+          "parity":          {<check_auth_parity result>}
+                                | {"skipped": "<why>"}
+                                | {"error": {...}},
+          "verdict":         {"would_commit": bool, "reason": "<why>"},
+        }
+
+    The CSV is never read for mutation and ``save_csv`` is never called.
+    Use :func:`dry_run_exit_code` to map the envelope to a process exit
+    code that is symmetric with the real path's
+    :func:`set_auth_exit_code`.
+    """
+    skipped_marker = "not evaluated (earlier check failed)"
+
+    # ----- 1. Schema validation -------------------------------------------
+    schema_errors = validate_auth_detail(auth_detail_json)
+    if schema_errors:
+        return {
+            "dry_run": True,
+            "integration_id": integration_id,
+            "validator": {"passed": False, "errors": schema_errors},
+            "seed_overlap": {"skipped": skipped_marker},
+            "parity": {"skipped": skipped_marker},
+            "verdict": {
+                "would_commit": False,
+                "reason": "validator failed",
+            },
+        }
+
+    validator_block = {"passed": True, "errors": []}
+
+    # ----- 2. Integration existence ---------------------------------------
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        return {
+            "dry_run": True,
+            "integration_id": integration_id,
+            "validator": validator_block,
+            "seed_overlap": {"skipped": skipped_marker},
+            "parity": {"skipped": skipped_marker},
+            "verdict": {
+                "would_commit": False,
+                "reason": f"integration '{integration_id}' not found",
+            },
+        }
+
+    row = rows[idx]
+
+    # ----- 3. Seed-overrides ∩ Auth Details overlap -----------------------
+    if seed_overrides:
+        try:
+            candidate_for_overlap = json.loads(auth_detail_json)
+        except json.JSONDecodeError:
+            candidate_for_overlap = {}
+        overlap_errors = _validate_seed_overrides_no_auth_overlap(
+            seed_overrides,
+            candidate_for_overlap if isinstance(candidate_for_overlap, dict) else {},
+        )
+        if overlap_errors:
+            return {
+                "dry_run": True,
+                "integration_id": integration_id,
+                "validator": validator_block,
+                "seed_overlap": {
+                    "passed": False,
+                    "error": {
+                        "code": "ERROR_SEED_AUTH_OVERLAP",
+                        "message": (
+                            "--seed-param key(s) overlap with the candidate "
+                            "Auth Details:\n"
+                            + "\n".join(f"  - {e}" for e in overlap_errors)
+                        ),
+                        "exit_code": 2,
+                    },
+                },
+                "parity": {"skipped": skipped_marker},
+                "verdict": {
+                    "would_commit": False,
+                    "reason": "ERROR_SEED_AUTH_OVERLAP",
+                },
+            }
+
+    seed_overlap_block = {"passed": True}
+
+    # ----- 4. Parity gate (read-only) -------------------------------------
+    parity_payload = _run_auth_parity_for_set_auth(
+        integration_id=row.get("Integration ID", integration_id),
+        auth_detail_json=auth_detail_json,
+        timeout=timeout,
+        seed_overrides=seed_overrides,
+    )
+    gate = _evaluate_parity_for_set_auth(parity_payload)
+    would_commit = bool(gate["allow"])
+    reason = gate["reason"]
+    return {
+        "dry_run": True,
+        "integration_id": integration_id,
+        "validator": validator_block,
+        "seed_overlap": seed_overlap_block,
+        "parity": parity_payload,
+        "verdict": {"would_commit": would_commit, "reason": reason},
+    }
+
+
+def dry_run_exit_code(envelope: dict) -> int:
+    """Map a :func:`dry_run_auth` envelope to a process exit code.
+
+    Symmetric with :func:`set_auth_exit_code` (same logical branch →
+    same code)::
+
+        0  would_commit == True (parity passed or structural skip)
+        2  seed-overrides/Auth-Details overlap (ERROR_SEED_AUTH_OVERLAP)
+        3  infrastructure failure (could not evaluate the gate)
+        1  validator failed, or a real parity block
+    """
+    verdict = envelope.get("verdict") or {}
+    if verdict.get("would_commit") is True:
+        return 0
+
+    # Seed-overlap → 2.
+    seed_overlap = envelope.get("seed_overlap") or {}
+    seed_err = seed_overlap.get("error") if isinstance(seed_overlap, dict) else None
+    if isinstance(seed_err, dict) and seed_err.get("code") == "ERROR_SEED_AUTH_OVERLAP":
+        return 2
+
+    # Infrastructure failure surfaced through the parity block → 3.
+    parity = envelope.get("parity") or {}
+    parity_err = parity.get("error") if isinstance(parity, dict) else None
+    if isinstance(parity_err, dict) and str(parity_err.get("code")) in _INFRA_ERROR_CODES:
+        return 3
+
+    # Everything else that did not commit (validator fail, parity block,
+    # not-found) → 1.
+    return 1
+
+
+def set_auth_exit_code(result: dict) -> int:
+    """Map a :func:`set_integration_auth` result to a process exit code.
+
+    Symmetric with :func:`dry_run_exit_code`::
+
+        0  success (no "error" key)
+        2  seed-overrides/Auth-Details overlap (ERROR_SEED_AUTH_OVERLAP)
+        3  infrastructure failure (could not evaluate the gate)
+        1  any other failure (schema, not-found, real parity block)
+    """
+    error = result.get("error")
+    if error is None:
+        return 0
+
+    # Structured error dict (seed-overlap, parity infra failures).
+    if isinstance(error, dict):
+        code = str(error.get("code") or "")
+        if code == "ERROR_SEED_AUTH_OVERLAP":
+            return 2
+        if code in _INFRA_ERROR_CODES:
+            return 3
+        return 1
+
+    # String error (parity block, schema, not-found). Inspect the attached
+    # parity block: an infra-code there still means "could not evaluate" → 3.
+    parity = result.get("parity") or {}
+    parity_err = parity.get("error") if isinstance(parity, dict) else None
+    if isinstance(parity_err, dict) and str(parity_err.get("code")) in _INFRA_ERROR_CODES:
+        return 3
+
+    return 1
 
 
 # ---------------------------------------------------------------------------

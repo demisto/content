@@ -546,3 +546,116 @@ class TestEvaluateParityForSetAuth:
             assert word not in lowered, (
                 f"prescription word {word!r} leaked into diagnostic: {gate['reason']}"
             )
+
+
+# ---------------------------------------------------------------------------
+# 5) _evaluate_parity_for_set_auth — REAL diagnostics shape (sweep F3/F4)
+# ---------------------------------------------------------------------------
+
+
+class TestEvaluateParityRealDiagnosticsShape:
+    """Regression for sweep finding F3 (2026-06-03).
+
+    The real ``check_auth_parity`` result carries per-command diagnostics
+    at the TOP LEVEL (``result["diagnostics"][conn]["commands"]``), NOT
+    nested inside ``result["auth_parity"][conn]["diagnostics"]`` (which is
+    the shape the older ``TestEvaluateParityForSetAuth`` fixtures used, and
+    why the no-op went unnoticed). These tests use the production shape so a
+    future regression to the wrong data path is caught.
+    """
+
+    def _real_shape_result(self, conn: str, failure_codes: list[str]) -> dict:
+        return {
+            "integration": "X",
+            "auth_parity": {
+                conn: {
+                    "status": "inconclusive",
+                    "commands": {"test-module": {"status": "inconclusive"}},
+                },
+            },
+            "diagnostics": {
+                conn: {
+                    "sentinels": {},
+                    "commands": {
+                        "test-module": {
+                            "status": "inconclusive",
+                            "diffs": [
+                                {"failure_code": fc, "sentinel": "",
+                                 "old_locations": [], "new_locations": []}
+                                for fc in failure_codes
+                            ],
+                            "old_run": {"status": "no_requests",
+                                        "captured_request_count": 0,
+                                        "locations": {}, "stderr_excerpt": ""},
+                            "new_run": {"status": "no_requests",
+                                        "captured_request_count": 0,
+                                        "locations": {}, "stderr_excerpt": ""},
+                        },
+                    },
+                },
+            },
+        }
+
+    def test_failure_codes_surface_from_top_level_diagnostics(self) -> None:
+        result = self._real_shape_result(
+            "credentials", ["MISSING_IN_BOTH", "NO_REQUESTS_CAPTURED"]
+        )
+        gate = ws_api._evaluate_parity_for_set_auth(result)
+        assert gate["allow"] is False
+        # The whole point of F3: these MUST appear in the reason now.
+        assert "MISSING_IN_BOTH" in gate["reason"]
+        assert "NO_REQUESTS_CAPTURED" in gate["reason"]
+
+    def test_no_requests_captured_emits_descriptive_note(self) -> None:
+        """F4: a both-runs-zero-requests case gets a description-only note
+        that points at the skill (no prescription)."""
+        result = self._real_shape_result(
+            "credentials", ["NO_REQUESTS_CAPTURED"]
+        )
+        gate = ws_api._evaluate_parity_for_set_auth(result)
+        assert gate["allow"] is False
+        reason = gate["reason"].lower()
+        assert "no http requests" in reason or "observed no" in reason
+        assert "inconclusive" in reason
+        # Points to skill, does not prescribe.
+        assert "§1.9" in gate["reason"] or "§1.12" in gate["reason"]
+        for word in ("you should ", "you must ", "please ", "consider "):
+            assert word not in reason
+
+    def test_ucp_strip_note_still_fires_with_real_shape(self) -> None:
+        result = self._real_shape_result(
+            "credentials", ["UCP_STRIP_CRASHED_UNCONDITIONAL_READ"]
+        )
+        gate = ws_api._evaluate_parity_for_set_auth(result)
+        assert gate["allow"] is False
+        assert "UCP_STRIP_CRASHED_UNCONDITIONAL_READ" in gate["reason"]
+        assert "§1.12" in gate["reason"]
+
+    def test_crashed_run_stderr_surfaces_with_real_shape(self) -> None:
+        result = {
+            "integration": "X",
+            "auth_parity": {
+                "credentials": {
+                    "status": "inconclusive",
+                    "commands": {"test-module": {"status": "inconclusive"}},
+                },
+            },
+            "diagnostics": {
+                "credentials": {
+                    "commands": {
+                        "test-module": {
+                            "diffs": [{"failure_code": "RUN_FAILED_NEW",
+                                       "sentinel": "", "old_locations": [],
+                                       "new_locations": []}],
+                            "old_run": {"status": "ok"},
+                            "new_run": {"status": "crashed",
+                                        "stderr_excerpt": "Traceback...\nKeyError: 'identifier'"},
+                        },
+                    },
+                },
+            },
+        }
+        gate = ws_api._evaluate_parity_for_set_auth(result)
+        assert gate["allow"] is False
+        assert "RUN_FAILED_NEW" in gate["reason"]
+        assert "KeyError" in gate["reason"]

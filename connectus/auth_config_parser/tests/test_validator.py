@@ -543,12 +543,59 @@ class TestXsoarParamMapRoleEnum:
         })
         assert validate_auth_details(detail) == []
 
-    def test_apikey_two_paths_same_role_allowed(self) -> None:
-        """APIKey with two paths both mapping to 'key' — accepted
-        (dict-value uniqueness is NOT enforced)."""
+    def test_apikey_two_paths_same_role_rejected(self) -> None:
+        """APIKey with two paths both mapping to 'key' — REJECTED.
+
+        Sweep finding F5 (2026-06-03): a canonical APIKey profile has a
+        fixed single-'key' shape. Two params mapping to 'key' violate
+        OPA Check 17 (duplicate auth.parameter values) — the auth flow no
+        longer fits a canonical profile and must be classified as
+        'Passthrough' (the shape-fallback). The validator now catches this
+        at set-auth time instead of letting it fail later at the OPA gate.
+        """
         detail = _wrap({
             "type": "APIKey", "name": "x",
             "xsoar_param_map": {"a": "key", "b": "key"},
+        })
+        errors = validate_auth_details(detail)
+        assert errors, "expected duplicate-'key' role to be rejected"
+        assert any("OPA Check 17" in e and "Passthrough" in e for e in errors)
+
+    def test_plain_two_passwords_rejected(self) -> None:
+        """Plain with two 'password' roles — REJECTED (OPA Check 17).
+
+        A canonical Plain profile is exactly one username + one password.
+        Two passwords (sweep finding F5, e.g. the Rapid7 basic-auth +
+        optional 2FA token case) do not fit the canonical shape and must
+        be classified as 'Passthrough'.
+        """
+        detail = _wrap({
+            "type": "Plain", "name": "x",
+            "xsoar_param_map": {
+                "credentials.identifier": "username",
+                "credentials.password": "password",
+                "token.password": "password",
+            },
+        })
+        errors = validate_auth_details(detail)
+        assert errors, "expected duplicate-'password' role to be rejected"
+        assert any("OPA Check 17" in e and "Passthrough" in e for e in errors)
+
+    def test_passthrough_duplicate_role_still_allowed(self) -> None:
+        """Passthrough is the free-form shape-fallback: the duplicate-role
+        rule does NOT apply (its role enum is deliberately undefined)."""
+        detail = _wrap({
+            "type": "Passthrough", "name": "x", "interpolated": True,
+            "xsoar_param_map": {"a": "token", "b": "token"},
+        })
+        assert validate_auth_details(detail) == []
+
+    def test_plain_proper_one_each_allowed(self) -> None:
+        """Sanity: the proper one-username + one-password Plain shape
+        is still accepted after the F5 duplicate-role check."""
+        detail = _wrap({
+            "type": "Plain", "name": "x",
+            "xsoar_param_map": {"u": "username", "p": "password"},
         })
         assert validate_auth_details(detail) == []
 

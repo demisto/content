@@ -185,6 +185,36 @@ def validate_auth_details(data: str | dict) -> list[str]:
                                     "connectus/column-schemas.md "
                                     "§Auth Details for the role table."
                                 )
+                        # OPA Check 17 (column-schemas.md §Auth Details):
+                        # duplicate auth.parameter values within a single
+                        # canonical profile are rejected — a canonical
+                        # profile type (APIKey / Plain) has a FIXED field
+                        # shape (APIKey = one 'key'; Plain = one 'username'
+                        # + one 'password'). If two XSOAR params map to the
+                        # same role the shape no longer fits a canonical
+                        # profile and the integration MUST be classified as
+                        # 'Passthrough' (the shape-fallback). Catching it
+                        # here, at set-auth time, beats failing later at the
+                        # OPA gate. Sweep finding F5 (2026-06-03).
+                        role_counts: dict[str, list[str]] = {}
+                        for k, v in entry["xsoar_param_map"].items():
+                            if v in allowed:
+                                role_counts.setdefault(v, []).append(k)
+                        for role, keys in role_counts.items():
+                            if len(keys) > 1:
+                                errors.append(
+                                    f"auth_types[{i}].xsoar_param_map "
+                                    f"(type={enum_at.value}): role '{role}' "
+                                    f"is assigned to {len(keys)} params "
+                                    f"{sorted(keys)}, but a '{enum_at.value}' "
+                                    f"profile allows it exactly once "
+                                    f"(OPA Check 17 rejects duplicate "
+                                    f"auth.parameter values). An auth flow "
+                                    f"that needs two of the same role does "
+                                    f"not fit a canonical profile — classify "
+                                    f"it as 'Passthrough'. See "
+                                    "connectus/column-schemas.md §Auth Details."
+                                )
             if "interpolated" in entry and not isinstance(
                 entry["interpolated"], bool
             ):

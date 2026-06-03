@@ -16,7 +16,10 @@ from typing import Any, Callable, Optional
 from workflow_state.api import (
     _check_params_to_commands_overlap,
     auth_param_ids,
+    dry_run_auth,
+    dry_run_exit_code,
     get_integration_files,
+    set_auth_exit_code,
     set_integration_auth,
     test_module_params,
 )
@@ -311,6 +314,82 @@ def _parse_seed_param_flags(args: list[str]) -> tuple[list[str], dict[str, str]]
     return remaining, seed_overrides
 
 
+def _parse_set_auth_flags(
+    args: list[str],
+) -> tuple[list[str], bool, Optional[int], str]:
+    """Extract ``--dry-run`` / ``--timeout=N`` / ``--format=json|text``.
+
+    Returns ``(remaining_args, dry_run, timeout, fmt)`` where:
+
+    - ``dry_run`` is ``True`` when ``--dry-run`` is present.
+    - ``timeout`` is the positive int from ``--timeout=N`` (``None`` when
+      omitted). Only the ``=`` form is accepted; the space form
+      (``--timeout 5``) is rejected with ``SystemExit(1)``. A
+      non-integer or non-positive value is rejected the same way.
+    - ``fmt`` is the lower-cased value of ``--format=json|text``
+      (``""`` when omitted, so the caller can default it per mode). The
+      space form (``--format json``) and any unknown value are rejected
+      with ``SystemExit(1)``.
+
+    Only the surface flag shape is handled here; ``--seed-param`` is
+    handled separately by :func:`_parse_seed_param_flags`.
+    """
+    remaining: list[str] = []
+    dry_run = False
+    timeout: Optional[int] = None
+    fmt = ""
+
+    for arg in args:
+        if arg == "--dry-run":
+            dry_run = True
+        elif arg == "--timeout":
+            print(
+                "ERROR: --timeout requires the '=' form, e.g. --timeout=120 "
+                "(space-separated --timeout 120 is not supported).",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        elif arg.startswith("--timeout="):
+            value = arg[len("--timeout="):]
+            try:
+                parsed = int(value)
+            except ValueError:
+                print(
+                    f"ERROR: --timeout value must be a positive integer; "
+                    f"got {value!r}.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+            if parsed <= 0:
+                print(
+                    f"ERROR: --timeout must be a positive integer; "
+                    f"got {parsed}.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+            timeout = parsed
+        elif arg == "--format":
+            print(
+                "ERROR: --format requires the '=' form, e.g. --format=json "
+                "(space-separated --format json is not supported).",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        elif arg.startswith("--format="):
+            value = arg[len("--format="):].lower()
+            if value not in ("json", "text"):
+                print(
+                    f"ERROR: --format must be 'json' or 'text'; got {value!r}.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+            fmt = value
+        else:
+            remaining.append(arg)
+
+    return remaining, dry_run, timeout, fmt
+
+
 def cmd_set_auth(args: list[str]) -> None:
     """Set the ``Auth Details`` cell via the parity-gated API.
 
@@ -326,9 +405,11 @@ def cmd_set_auth(args: list[str]) -> None:
     before the parity gate runs (see
     :func:`workflow_state.validators.validate_seed_overrides_no_auth_overlap`).
     """
+    args, dry_run, timeout, fmt = _parse_set_auth_flags(args)
     args, seed_overrides = _parse_seed_param_flags(args)
     if len(args) < 2:
         print("Usage: workflow_state.py set-auth <integration_id> '<json>' "
+              "[--dry-run] [--timeout=N] [--format=json|text] "
               "[--seed-param NAME=VALUE ...]")
         print("  The value must be valid JSON (see connectus/column-schemas.md).")
         sys.exit(1)
@@ -348,20 +429,57 @@ def cmd_set_auth(args: list[str]) -> None:
         print(f"  Example: workflow_state.py set-auth \"{name}\" '{{}}'")
         sys.exit(1)
 
+    # ----- Dry-run branch (read-only preview; never writes the CSV) --------
+    if dry_run:
+        # Default to JSON output for the dry-run preview (machine-readable),
+        # unless the operator explicitly asked for text.
+        out_fmt = fmt or "json"
+        env = dry_run_auth(
+            name,
+            raw,
+            seed_overrides=seed_overrides or None,
+            timeout=timeout if timeout is not None else 60,
+        )
+        if out_fmt == "json":
+            print(json.dumps(env, indent=2, sort_keys=True))
+        else:
+            _print_dry_run_text(env)
+        sys.exit(dry_run_exit_code(env))
+
+    # ----- Real path (gated commit) ---------------------------------------
+    # Default to text output for the real path (human-readable), unless the
+    # operator explicitly asked for JSON.
+    out_fmt = fmt or "text"
+    # Only forward parity_timeout when explicitly set, so the default call
+    # signature stays identical to the historical one (preserves callers /
+    # test stubs that don't accept the keyword).
+    extra_kwargs = {"parity_timeout": timeout} if timeout is not None else {}
     result = set_integration_auth(
         name,
         raw,
         seed_overrides=seed_overrides or None,
+        **extra_kwargs,
     )
+
+    exit_code = set_auth_exit_code(result)
+
+    if out_fmt == "json":
+        print(json.dumps(result, indent=2, sort_keys=True, default=str))
+        # Only raise on failure so the historical success path (which
+        # returns normally) is preserved for callers/tests.
+        if exit_code != 0:
+            sys.exit(exit_code)
+        return
+
     error = result.get("error")
     if error:
         # Unwrap dict-shaped error envelopes (e.g. ERROR_SEED_AUTH_OVERLAP).
         if isinstance(error, dict):
             msg = error.get("message") or str(error)
             print(f"ERROR: {msg}")
-            sys.exit(int(error.get("exit_code") or 1))
-        print(f"ERROR: {error}")
-        sys.exit(1)
+        else:
+            print(f"ERROR: {error}")
+        sys.exit(exit_code or 1)
 
     msg = result.get("message")
     if msg:
@@ -380,6 +498,58 @@ def cmd_set_auth(args: list[str]) -> None:
         # branch).
         cfg = get_config()
         print(f"  🎉 All {len(cfg.steps)} steps complete!")
+    # Success: return normally (exit code 0), matching the historical
+    # behaviour the seed-param forwarding tests rely on.
+
+
+def _print_dry_run_text(env: dict) -> None:
+    """Render a :func:`dry_run_auth` envelope as a human-readable report.
+
+    ASCII-safe, no JSON braces — a plain-text summary of the validator,
+    seed-overlap, parity, and verdict sections.
+    """
+    verdict = env.get("verdict") or {}
+    would = verdict.get("would_commit")
+    print("set-auth dry-run preview")
+    print(f"  integration: {env.get('integration_id')}")
+
+    validator = env.get("validator") or {}
+    if validator.get("passed"):
+        print("  validator:   PASS")
+    elif "skipped" in validator:
+        print(f"  validator:   skipped ({validator['skipped']})")
+    else:
+        print("  validator:   FAIL")
+        for e in validator.get("errors") or []:
+            print(f"    - {e}")
+
+    seed_overlap = env.get("seed_overlap") or {}
+    if "skipped" in seed_overlap:
+        print(f"  seed-check:  skipped ({seed_overlap['skipped']})")
+    elif seed_overlap.get("passed"):
+        print("  seed-check:  PASS")
+    else:
+        print("  seed-check:  FAIL")
+        err = seed_overlap.get("error") or {}
+        if err.get("message"):
+            for line in str(err["message"]).splitlines():
+                print(f"    {line}")
+
+    parity = env.get("parity") or {}
+    if "skipped" in parity:
+        print(f"  parity:      skipped ({parity['skipped']})")
+    elif isinstance(parity.get("error"), dict):
+        perr = parity["error"]
+        print(f"  parity:      ERROR ({perr.get('code')}): {perr.get('message')}")
+    else:
+        print("  parity:      evaluated")
+
+    verdict_label = "WOULD COMMIT" if would else "WOULD NOT COMMIT"
+    print(f"  verdict:     {verdict_label}")
+    reason = verdict.get("reason")
+    if reason:
+        for line in str(reason).splitlines():
+            print(f"    {line}")
 
 
 def cmd_set_params_to_commands(args: list[str]) -> None:

@@ -54,6 +54,36 @@ from capture_proxy import CaptureProxy  # noqa: E402
 import check_command_params as _ccp  # noqa: E402
 
 
+# Content repo root = parent of the connectus/ dir this file lives in.
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _resolve_integration_path(raw_path: str) -> Path | None:
+    """Resolve an integration directory path tolerantly.
+
+    Sweep finding F1 (2026-06-03): the skill's §1.12 playbook and the
+    ``files`` command both surface integration paths as repo-root-relative
+    ``Packs/<Pack>/Integrations/<Name>`` strings. But ``Path(p).resolve()``
+    is **cwd-relative**, so copy-pasting that path and running this script
+    from ``connectus/`` (or anywhere but the repo root) produced a
+    confusing ``ERROR_BAD_PATH``. Try, in order:
+
+    1. absolute / cwd-relative (the historical behavior), then
+    2. repo-root-relative (``<repo>/<raw_path>``).
+
+    Returns the first candidate that is an existing directory, else
+    ``None``.
+    """
+    cwd_candidate = Path(raw_path).resolve()
+    if cwd_candidate.is_dir():
+        return cwd_candidate
+    if not Path(raw_path).is_absolute():
+        repo_candidate = (_REPO_ROOT / raw_path).resolve()
+        if repo_candidate.is_dir():
+            return repo_candidate
+    return None
+
+
 # --------------------------------------------------------------------------
 # Constants — error codes (§5.5) and exit codes
 # --------------------------------------------------------------------------
@@ -2336,13 +2366,22 @@ def main(argv: list[str] | None = None) -> int:
     # ``demisto-sdk`` subprocess.
     _ccp._ensure_demisto_sdk_log_path()
     args = _parse_args(argv if argv is not None else sys.argv[1:])
-    integration_path = Path(args.integration_path).resolve()
-    if not integration_path.is_dir():
+    integration_path = _resolve_integration_path(args.integration_path)
+    if integration_path is None or not integration_path.is_dir():
+        # Show the cwd-relative resolution in the error (the most likely
+        # user expectation) plus the repo-root candidate we also tried.
+        tried_cwd = Path(args.integration_path).resolve()
         result = {
             "integration": args.display_name or args.integration_id,
             "error": {
                 "code": "ERROR_BAD_PATH",
-                "message": f"Not a directory: {integration_path}",
+                "message": (
+                    f"Not a directory: {tried_cwd} "
+                    f"(also tried repo-root-relative). Pass a path that "
+                    f"exists relative to the current directory OR relative "
+                    f"to the content repo root (e.g. "
+                    f"'Packs/<Pack>/Integrations/<Name>')."
+                ),
                 "exit_code": 2,
             },
         }

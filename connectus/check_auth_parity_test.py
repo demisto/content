@@ -1755,3 +1755,44 @@ class TestCommandStatusInconclusiveEmission:
         new = self._run("ok")
         status = cap._command_status(old, new, diffs=[])
         assert status == "pass"
+
+
+class TestResolveIntegrationPath:
+    """Regression for sweep finding F1 (2026-06-03): the standalone CLI
+    must resolve repo-root-relative ``Packs/...`` paths (as printed by the
+    ``files`` command and used in the skill's §1.12 playbook) even when the
+    process cwd is not the repo root.
+    """
+
+    def test_cwd_relative_existing_dir_resolves(self, tmp_path, monkeypatch) -> None:
+        d = tmp_path / "Packs" / "Foo" / "Integrations" / "Foo"
+        d.mkdir(parents=True)
+        monkeypatch.chdir(tmp_path)
+        got = cap._resolve_integration_path("Packs/Foo/Integrations/Foo")
+        assert got == d.resolve()
+
+    def test_repo_root_relative_resolves_from_other_cwd(self, tmp_path, monkeypatch) -> None:
+        # Point the module's repo-root anchor at a temp tree, then chdir
+        # somewhere else entirely. The repo-root-relative path must still
+        # resolve.
+        repo = tmp_path / "repo"
+        d = repo / "Packs" / "Bar" / "Integrations" / "Bar"
+        d.mkdir(parents=True)
+        elsewhere = tmp_path / "elsewhere"
+        elsewhere.mkdir()
+        monkeypatch.setattr(cap, "_REPO_ROOT", repo.resolve())
+        monkeypatch.chdir(elsewhere)
+        got = cap._resolve_integration_path("Packs/Bar/Integrations/Bar")
+        assert got == d.resolve()
+
+    def test_nonexistent_path_returns_none(self, tmp_path, monkeypatch) -> None:
+        monkeypatch.setattr(cap, "_REPO_ROOT", tmp_path.resolve())
+        monkeypatch.chdir(tmp_path)
+        assert cap._resolve_integration_path("Packs/Nope/Nope") is None
+
+    def test_absolute_path_not_repo_joined(self, tmp_path, monkeypatch) -> None:
+        d = tmp_path / "abs" / "dir"
+        d.mkdir(parents=True)
+        monkeypatch.setattr(cap, "_REPO_ROOT", (tmp_path / "repo").resolve())
+        got = cap._resolve_integration_path(str(d))
+        assert got == d.resolve()
