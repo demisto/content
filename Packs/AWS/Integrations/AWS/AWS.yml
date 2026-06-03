@@ -10770,8 +10770,8 @@ script:
       type: number
       auto: PREDEFINED
       predefined:
-      - 5
-      - 60
+      - "5"
+      - "60"
     - name: access_log_s3_bucket_prefix
       description: S3 key prefix (Path) for access logs.  If the prefix is not provided, the log folder is placed at the root level of the bucket.
       required: false

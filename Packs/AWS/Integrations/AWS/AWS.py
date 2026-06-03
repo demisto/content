@@ -4,9 +4,11 @@ from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
 from datetime import date, datetime, timedelta, UTC
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
 from botocore.exceptions import ClientError, WaiterError
+import boto3
 from boto3 import Session
 from xml.sax.saxutils import escape
 import re
@@ -14,6 +16,7 @@ import copy
 
 
 DEFAULT_MAX_RETRIES: int = 5
+DEFAULT_MAX_WORKERS: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
 DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
 DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
@@ -982,6 +985,7 @@ class AWSServices(str, Enum):
     BUDGETS = "budgets"
     SSM = "ssm"
     Redshift = "redshift"
+    STS = "sts"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -8582,7 +8586,7 @@ def test_module(params: dict) -> str:
     """
     sts_client, _ = get_service_client(
         params=params,
-        service_name="sts",
+        service_name=AWSServices.STS,
         config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
     )
     sts_client.get_caller_identity()
