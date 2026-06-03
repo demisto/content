@@ -178,7 +178,7 @@ configuration:
   section: Collect
 - defaultvalue: 'false'
   display: 'Re-Fetch Account/Host entity and Detection for new activity/event'
-  additionalinfo: "When enabled, multiple incidents can be created for the same Entity (Account or Host) or Detection if new detection activity occurs for the entity (Account or Host) or a new event is detected for the detection."
+  additionalinfo: "Whether to create multiple incidents for the same entity (Account or Host) or Detection if new detection activity occurs for the entity (Account or Host) or a new event is detected for the detection."
   name: create_multiple_incidents_by_timestamp
   type: 8
   required: false

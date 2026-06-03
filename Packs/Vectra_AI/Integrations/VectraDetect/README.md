@@ -46,7 +46,7 @@ This integration was integrated and tested with version 7.1 of Vectra Detect
     | Max created incidents per fetch | The maximum number of new incidents to create per fetch. This value would be split between selected "Entity types to fetch". If the value is greater than 200, it will be considered as 200. The maximum is 200. \(Default - 50\) | False |
     | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
     | Advanced: Fetch escalated Accounts and Hosts | Use this parameter to fetch escalated Accounts and Hosts.<br/><br/>Note: If this parameter is set to True, it will fetch Accounts and Hosts that have been updated based on the provided filter parameters, even if their detection timestamps are older than the first fetch time. | False |
-    | Re-Fetch Account/Host entity and Detection for new activity/event | When enabled, multiple incidents can be created for the same Entity \(Account or Host\) or Detection if new detection activity occurs for the entity \(Account or Host\) or a new event is detected for the detection. | False |
+    | Re-Fetch Account/Host entity and Detection for new activity/event | Whether to create multiple incidents for the same entity \(Account or Host\) or Detection if new detection activity occurs for the entity \(Account or Host\) or a new event is detected for the detection. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -73,7 +73,7 @@ To fetch Vectra Account or Vectra Host as a Cortex XSOAR incident:
 13. Provide the filter parameter "Detection Category” and "Detection Type", to filter detections by the specified category and type for fetch type account and host.
 14. Provide the "Minutes to look back when fetching" parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
 15. Check the "Fetch escalated Accounts and Hosts" option to fetch escalated Accounts and Hosts that have been updated based on the provided filter parameters, even if their detection timestamps are older than the first fetch time.
-16. Check the "Re-Fetch Account/Host entity and Detection for new activity/event" option if you want multiple XSOAR incidents to be created for the same Entity (Account or Host) or Detection whenever new detection activity is recorded. Disable this option if you want only one incident per Entity (Account or Host) or Detection regardless of ongoing activity.
+16. Check the "Re-Fetch Account/Host entity and Detection for new activity/event" option if you want multiple Cortex XSOAR incidents to be created for the same Entity (Account or Host) or Detection whenever new detection activity is recorded. Disable this option if you want only one incident per Entity (Account or Host) or Detection regardless of ongoing activity.
 
 **Notes for mirroring:**
 

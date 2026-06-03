@@ -2913,6 +2913,7 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
 
             # Due to backward search we need to avoid creating incidents of already ingested events
             api_results = api_response.get("results", [])
+            ts_field = "last_detection_timestamp" if entity_type in ("Accounts", "Hosts") else "last_timestamp"
             for event in api_results:
                 if len(entity_incidents) >= max_created_incidents:
                     demisto.debug(
@@ -2930,7 +2931,6 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
                     continue
 
                 if create_multiple_incidents_by_timestamp:
-                    ts_field = "last_detection_timestamp" if entity_type in ("Accounts", "Hosts") else "last_timestamp"
                     event_id = str(event.get("id"))
                     event_ts = event.get(ts_field)
                     checkpoint_dict = new_last_run[entity_type].get("multiple_incidents_checkpoint", {}) or {}
@@ -2963,7 +2963,6 @@ def fetch_incidents(client: Client, integration_params: dict, is_test: bool = Fa
                     entity_incidents.append(incident)
                     new_last_run[entity_type]["last_timestamp"] = incident_last_run.get("last_timestamp")
                     new_last_run[entity_type]["id"] = incident_last_run.get("id")
-                    ts_field = "last_detection_timestamp" if entity_type in ("Accounts", "Hosts") else "last_timestamp"
                     existing_multiple_incidents_checkpoint = (
                         new_last_run[entity_type].get("multiple_incidents_checkpoint", {}) or {}
                     )
