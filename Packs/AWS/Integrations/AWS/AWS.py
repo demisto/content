@@ -8818,7 +8818,19 @@ def get_service_client(
 
 
 def _dispatch_command(command: str, args: dict, service_client: BotoClient) -> CommandResults | list[CommandResults] | None:
-    """Invoke the correct handler: polling commands take ``(args, client)``, others ``(client, args)``."""
+    """
+    Invoke the correct handler: polling commands take ``(args, client)``, others ``(client, args)``.
+
+    Args:
+        command (str): The AWS command name to dispatch (e.g. ``"aws-ec2-instances-describe"``). Must be a key in
+            ``COMMANDS_MAPPING``.
+        args (dict): Command arguments. A non-``None`` ``polling_timeout`` key marks the command as a polling
+            command and selects the reversed ``(args, client)`` argument order.
+        service_client (BotoClient): The boto3 service client passed to the handler.
+
+    Returns:
+        CommandResults | list[CommandResults] | None: The result returned by the invoked command handler.
+    """
     if args.get("polling_timeout") is not None:
         demisto.debug(f"The {command=} is a polling command, call it with args as the first argument.")
         return COMMANDS_MAPPING[command](args, service_client)
