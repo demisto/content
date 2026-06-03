@@ -1070,7 +1070,37 @@ script:
       required: false
       secret: false
       default: false
-    outputs: []
+    outputs:
+    - contextPath: GravityZone.MemoryDump.TaskID
+      description: The task ID.
+      type: String
+    - contextPath: GravityZone.MemoryDump.TaskType
+      description: The task type.
+      type: String
+    - contextPath: GravityZone.MemoryDump.Status
+      description: The task status.
+      type: String
+    - contextPath: GravityZone.MemoryDump.EndpointID
+      description: The endpoint ID.
+      type: String
+    - contextPath: GravityZone.MemoryDump.Hostname
+      description: The endpoint hostname.
+      type: String
+    - contextPath: GravityZone.MemoryDump.StartDate
+      description: The memory dump task start date for the endpoint.
+      type: Date
+    - contextPath: GravityZone.MemoryDump.EndDate
+      description: The memory dump task end date for the endpoint.
+      type: Date
+    - contextPath: GravityZone.MemoryDump.ErrorCode
+      description: The memory dump task error code, if available.
+      type: String
+    - contextPath: GravityZone.MemoryDump.Error
+      description: The memory dump task error message, if available.
+      type: String
+    - contextPath: GravityZone.MemoryDump.DownloadURL
+      description: The memory dump download URL when task is completed successfully.
+      type: String
   - name: get-modified-remote-data
     description: Retrieves incidents that were modified since the last data sync. This command is intended for debugging purposes.
     arguments:

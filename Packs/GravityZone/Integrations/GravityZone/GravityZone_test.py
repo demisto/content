@@ -436,6 +436,42 @@ def test_gz_endpoint_memory_dump_status_command(mock_demisto, requests_mock):
     )
 
 
+def test_check_endpoint_users_loggedin_status_returns_error_on_unexpected_task_type():
+    from GravityZone import check_endpoint_users_loggedin_status
+
+    class MockClient:
+        def get_task_status(self, _task_id):
+            return {"status": 3, "type": 27, "subtasks": []}
+
+    result = check_endpoint_users_loggedin_status(
+        {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"},
+        MockClient(),
+    )
+
+    assert result.continue_to_poll is False
+    assert result.response is not None
+    assert "unexpected type" in result.response.readable_output
+    assert "GetActiveSessions" in result.response.readable_output
+
+
+def test_check_endpoint_memory_dump_status_returns_error_on_unexpected_task_type():
+    from GravityZone import check_endpoint_memory_dump_status
+
+    class MockClient:
+        def get_task_status(self, _task_id):
+            return {"status": 3, "type": 26, "subtasks": []}
+
+    result = check_endpoint_memory_dump_status(
+        {"task_id": "TASK_ID", "endpoint_id": "ENDPOINT_ID"},
+        MockClient(),
+    )
+
+    assert result.continue_to_poll is False
+    assert result.response is not None
+    assert "unexpected type" in result.response.readable_output
+    assert "CreateMemoryDump" in result.response.readable_output
+
+
 def test_extract_active_sessions_from_task_handles_missing_optional_fields():
     from GravityZone import _extract_active_sessions_from_task
 

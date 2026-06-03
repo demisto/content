@@ -1896,6 +1896,30 @@ def _extract_endpoint_summary_from_task(task_output: dict[str, Any], endpoint_id
     return resolved_endpoint_id, resolved_hostname
 
 
+def _validate_task_type_for_command(
+    task_output: dict[str, Any],
+    task_id: str,
+    expected_task_type: int,
+    command_name: str,
+) -> CommandResults | None:
+    task_type = task_output.get("type")
+    if task_type is None or task_type == expected_task_type:
+        return None
+
+    expected_task_name = TASK_NUMERIC_TO_COMMAND_NAME.get(expected_task_type, str(expected_task_type))
+    received_task_name = (
+        TASK_NUMERIC_TO_COMMAND_NAME.get(task_type, str(task_type)) if isinstance(task_type, int) else str(task_type)
+    )
+    return CommandResults(
+        raw_response=task_output,
+        readable_output=(
+            f"Task '{task_id}' has unexpected type '{received_task_name}' ({task_type}). "
+            f"Command '{command_name}' supports only '{expected_task_name}' ({expected_task_type}) tasks."
+        ),
+        entry_type=EntryType.ERROR,
+    )
+
+
 def _build_users_loggedin_results(task_output: dict[str, Any], endpoint_id: str) -> CommandResults:
     """Build endpoint-scoped command results for active logged-in sessions."""
     endpoint_id, endpoint_hostname = _extract_endpoint_summary_from_task(task_output, endpoint_id)
@@ -2862,6 +2886,15 @@ def check_endpoint_users_loggedin_status(args: dict[str, Any], client: Client) -
         )
 
     task_output = client.get_task_status(task_id)
+    invalid_task_type_result = _validate_task_type_for_command(
+        task_output,
+        task_id,
+        TASK_TYPE_GET_ACTIVE_SESSIONS_PARENT,
+        "gz-poll-endpoint-users-loggedin-status",
+    )
+    if invalid_task_type_result:
+        return PollResult(invalid_task_type_result)
+
     current_status = task_output.get("status")
 
     if current_status == TASK_STATUS_PROCESSED:
@@ -2907,6 +2940,15 @@ def check_endpoint_memory_dump_status(args: dict[str, Any], client: Client) -> P
         )
 
     task_output = client.get_task_status(task_id)
+    invalid_task_type_result = _validate_task_type_for_command(
+        task_output,
+        task_id,
+        TASK_TYPE_CREATE_MEMORY_DUMP_PARENT,
+        "gz-endpoint-memory-dump-status",
+    )
+    if invalid_task_type_result:
+        return PollResult(invalid_task_type_result)
+
     current_status = task_output.get("status")
 
     if current_status == TASK_STATUS_PROCESSED:
