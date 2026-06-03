@@ -44,10 +44,10 @@ script:
   feed: false
   commands:
   - name: dfire-search
-    description: Search across all DFIRe data (cases, indicators, notes, items). Supports AND, OR, NOT operators.
+    description: Searches across all DFIRe data (cases, indicators, notes, items). Supports AND, OR, NOT operators.
     arguments:
     - name: query
-      description: Search query (min 2 characters).
+      description: The search query (min 2 characters).
       required: true
     outputs:
     - contextPath: DFIRe.Search.id
@@ -60,19 +60,19 @@ script:
       description: The result title.
       type: String
     - contextPath: DFIRe.Search.snippet
-      description: Matching text snippet.
+      description: The matching text snippet.
       type: String
     - contextPath: DFIRe.Search.rank
-      description: Search relevance rank.
+      description: The search relevance rank.
       type: Number
     - contextPath: DFIRe.Search.url
-      description: URL to the result in DFIRe.
+      description: The URL to the result in DFIRe.
       type: String
     - contextPath: DFIRe.Search.date
-      description: Result date.
+      description: The result date.
       type: Date
   - name: dfire-case-type-list
-    description: List available case types and their IDs.
+    description: Lists available case types and their IDs.
     arguments: []
     outputs:
     - contextPath: DFIRe.CaseType.id
@@ -82,13 +82,13 @@ script:
       description: The case type name.
       type: String
   - name: dfire-case-list
-    description: List cases from DFIRe.
+    description: Lists cases from DFIRe.
     arguments:
     - name: limit
-      description: Maximum number of cases to return.
+      description: The maximum number of cases to return.
       defaultValue: '50'
     - name: page
-      description: Page number for pagination.
+      description: The page number for pagination.
     - name: status
       description: The status by which to filter cases.
       predefined:
