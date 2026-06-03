@@ -2076,16 +2076,6 @@ top-level object, non-empty string keys, any JSON value. Full schema in
 > path (`fail`, `reset-to`, `set-auth`, `reset` all wipe it). Only
 > `Params to Commands` carries `preserve_on_reset: true` today.
 
-<!--
-Step 3a-bis (Shadowed Integration Commands) was REMOVED 2026-05-31 as
-part of the FIXES-TODO combined #4+#6+New_RN execution plan. The
-underlying CLI commands (`set-shadowed-commands`, `detect-shadowed-
-commands`) remain in the codebase but are no longer part of the
-workflow sequence; the step has been dropped from
-`workflow_state_config.yml` and the matching CSV column has been
-removed. See `FIXES-TODO.md` §4 (subsumed by workflow removal) and §5
-(skipped — subsumed by #4).
--->
 
 ### Step 3b: Set `Params to Capabilities` (data column)
 
@@ -2195,32 +2185,6 @@ If it fails, fix the issues. To reset:
 python3 connectus/workflow_state.py fail "<Integration ID>" "run manifest make validate"
 ```
 
-<!--
-Step 6 (`write tests`) was REMOVED 2026-05-31 as part of the
-FIXES-TODO combined #4+#6+New_RN execution plan. Per FIXES-TODO #6
-resolution: the step's "no migration-driven edits" case was the
-common one (Passthrough integrations with no UCP overrides and no
-shadowed-command rename had nothing migration-specific to write a
-test for) and a write-tests gate added no value over the downstream
-`precommit/validate/unit tests passed` gate which already runs the
-existing test suite. The step has been dropped from
-`workflow_state_config.yml` and the matching CSV column has been
-removed.
-
-Code-editing guidance from the old Step 6 still applies and is
-relevant to any code edits made during Step 1 / §1.12 (UCP
-`_apply_ucp_*` overrides, `is_ucp_enabled()` startup-validator
-gating) or Step 4 (`or "<default>"` fallbacks). Follow patterns in
-`Templates/Integrations/` and the project's [`AGENTS.md`](../AGENTS.md)
-rules:
-
-  - Import `demistomock as demisto` at the top
-  - Import `from CommonServerPython import *`
-  - Use `demisto.params()` for configuration, `demisto.args()` for command arguments
-  - Use `CommandResults` with `return_results()`
-  - Use `return_error()` for user-facing errors
-  - Use `demisto.debug()` / `demisto.info()` for logging, never `print()`
--->
 
 ### Step 8: `Release Notes` (data column)
 
@@ -2320,29 +2284,6 @@ After the code is merged to the branch:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "code merged"
 ```
 
-<!--
-Step renumbering history:
-- schema_version=2 (2026-05) removed `wrote/checked code` and
-  `auth parity test passes`. Auth-parity content moved to §1.12.
-- 2026-05-31 (FIXES-TODO combined #4+#6+New_RN) removed
-  `Shadowed Integration Commands` (step 5, see FIXES-TODO #4/#5) and
-  `write tests` (step 9, see FIXES-TODO #6); inserted `Release Notes`
-  (step 8) immediately before `precommit/validate/unit tests passed`.
-
-Current canonical sequence (12 steps):
-  1. assignee
-  2. Auth Details                                    (data, set-auth)
-  3. Params to Commands                              (data, set-params-to-commands)
-  4. Params for test with default in code            (data, set-param-defaults)
-  5. Params to Capabilities                          (data, set-params-to-capabilities)
-  6. generated manifest                              (checkpoint)
-  7. run manifest make validate                      (checkpoint)
-  8. Release Notes                                   (data, set-release-notes)  -- NEW 2026-05-31
-  9. precommit/validate/unit tests passed            (checkpoint)
-  10. param parity test passes                       (checkpoint)
-  11. code reviewed                                  (checkpoint)
-  12. code merged                                    (checkpoint)
--->
 
 ## Error Recovery Commands
 

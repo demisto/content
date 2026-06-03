@@ -19,6 +19,7 @@ from workflow_state.api import (
     dry_run_auth,
     dry_run_exit_code,
     get_integration_files,
+    get_integration_status,
     set_auth_exit_code,
     set_integration_auth,
     test_module_params,
@@ -143,12 +144,49 @@ def _set_step_via_dispatch(
 # ---------------------------------------------------------------------------
 
 def cmd_status(args: list[str]) -> None:
-    if not args:
-        print("Usage: workflow_state.py status <integration_id> [id2 ...]")
+    # Extract --format=text|json (position-insensitive, '=' form only —
+    # matching cmd_files / cmd_auth_params). Default stays "text" so the
+    # historical byte-for-byte text output is preserved for callers/tests
+    # that depend on it.
+    fmt = "text"
+    positional: list[str] = []
+    for a in args:
+        if a.startswith("--format="):
+            fmt = a[len("--format="):]
+        else:
+            positional.append(a)
+
+    if not positional:
+        print(
+            "Usage: workflow_state.py status <integration_id> [id2 ...] "
+            "[--format=text|json]"
+        )
+        sys.exit(1)
+
+    if fmt not in {"text", "json"}:
+        print(
+            f"ERROR: Unknown --format value '{fmt}'. Valid: text, json.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     rows = load_csv()
-    for name in args:
+
+    if fmt == "json":
+        # Multi-id behaviour: emit the get_integration_status(...) dict
+        # for each id. We mirror the text path's "skip unknown ids and
+        # keep going" behaviour, but in JSON an unknown id surfaces as an
+        # {"error": ...} dict (from get_integration_status) rather than a
+        # stderr line, so the document stays a complete, parseable record
+        # of every requested id. To keep the shape predictable we ALWAYS
+        # emit a JSON list (one element per requested id) — even for a
+        # single id — so machine consumers never have to branch on
+        # "list vs object" based on arg count.
+        payload = [get_integration_status(name) for name in positional]
+        print(json.dumps(payload, indent=2))
+        return
+
+    for name in positional:
         idx = find_row(rows, name)
         if idx is None:
             print(f"ERROR: Integration '{name}' not found.")
@@ -1725,6 +1763,134 @@ def cmd_test_module_params(args: list[str]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# context — single-document aggregate read (reduces agent round-trips)
+# ---------------------------------------------------------------------------
+
+# The JSON-valued data columns surfaced under `data_columns`. Each is
+# parsed to its JSON value (or null when unset / unparseable) so the
+# agent does not have to do a second `show-step --raw` + json.loads per
+# cell. Kept as an explicit list (rather than cfg.json_valued_columns)
+# so the `context` shape is stable and documented even if the config's
+# json-valued set changes for unrelated reasons.
+_CONTEXT_DATA_COLUMNS = (
+    "Auth Details",
+    "Params to Commands",
+    "Params for test with default in code",
+    "Params to Capabilities",
+    "Release Notes",
+)
+
+
+def _parse_data_column(row: dict[str, str], column: str) -> Any:
+    """Return the parsed-JSON value of ``column`` in ``row``.
+
+    Returns ``None`` when the cell is empty OR cannot be parsed as JSON
+    (graceful degradation — `context` is a read-only convenience verb,
+    so a malformed cell should not abort the aggregate). Mirrors
+    display.py's defensive json.loads handling.
+    """
+    raw = (row.get(column, "") or "").strip()
+    if not raw:
+        return None
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+
+
+def cmd_context(args: list[str]) -> None:
+    """Emit, as a SINGLE pretty-printed JSON document, everything an
+    agent would otherwise gather via multiple separate calls: workflow
+    data columns + file paths + current/completed step info + the
+    auth-derived ignore set.
+
+    Read-only — never mutates the CSV. Composes the existing api.py
+    helpers (``get_integration_status`` / ``get_integration_files`` /
+    ``auth_param_ids``) rather than re-deriving anything.
+
+    Errors:
+      * Unknown integration id → stderr message + exit 1 (consistent
+        with ``files`` / ``auth-params``).
+      * A stale/missing Integration File Path does NOT abort the whole
+        command: ``file_paths`` is set to null and a ``file_paths_error``
+        key carries the message, so the rest of the document still
+        emits (graceful degradation per the spec).
+    """
+    positional: list[str] = [a for a in args if not a.startswith("--")]
+
+    if not positional:
+        print(
+            "Usage: workflow_state.py context <integration_id>",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    integration_id = " ".join(positional)
+
+    # ----- Status (also our unknown-id gate) ------------------------------
+    status = get_integration_status(integration_id)
+    if "error" in status:
+        # Unknown id (or other status error) → stderr + non-zero exit,
+        # matching files/auth-params bad-id handling.
+        print(f"ERROR: {status['error']}", file=sys.stderr)
+        sys.exit(1)
+
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    # idx cannot be None here (get_integration_status already found it),
+    # but be defensive for the monkeypatch-divergence case.
+    row = rows[idx] if idx is not None else {}
+
+    # ----- File paths (graceful degradation) ------------------------------
+    files_info = get_integration_files(integration_id)
+    file_paths: Optional[dict[str, Optional[str]]] = None
+    file_paths_error: Optional[str] = None
+    if "error" in files_info:
+        file_paths_error = files_info["error"]
+    else:
+        file_paths = {
+            "yml": files_info.get("yml"),
+            "code": files_info.get("code"),
+            "description": files_info.get("description"),
+            "readme": files_info.get("readme"),
+            "test": files_info.get("test"),
+        }
+
+    # ----- Auth-derived ignore set (reuse auth_param_ids) -----------------
+    # If Auth Details is unset (or otherwise rejected by auth_param_ids),
+    # degrade to an empty list rather than throwing — the spec requires
+    # `context` to stay read-only and non-fatal here.
+    try:
+        auth_ignore_params = auth_param_ids(integration_id)
+    except WorkflowError:
+        auth_ignore_params = []
+
+    # ----- Data columns (parsed JSON or null) -----------------------------
+    data_columns = {
+        column: _parse_data_column(row, column)
+        for column in _CONTEXT_DATA_COLUMNS
+    }
+
+    payload: dict[str, Any] = {
+        "integration_id": status.get("name", integration_id),
+        "connector_id": row.get("Connector ID", "").strip(),
+        "assignee": row.get("assignee", "").strip(),
+        "file_paths": file_paths,
+        "data_columns": data_columns,
+        "auth_ignore_params": auth_ignore_params,
+        "current_step": status.get("current_step"),
+        "current_step_index": status.get("current_step_index"),
+        "completed_steps": status.get("completed_steps"),
+        "total_steps": status.get("total_steps"),
+        "all_complete": status.get("all_complete"),
+    }
+    if file_paths_error is not None:
+        payload["file_paths_error"] = file_paths_error
+
+    print(json.dumps(payload, indent=2))
+
+
+# ---------------------------------------------------------------------------
 # next
 # ---------------------------------------------------------------------------
 
@@ -1897,6 +2063,7 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "files": cmd_files,
     "auth-params": cmd_auth_params,
     "test-module-params": cmd_test_module_params,
+    "context": cmd_context,
     "help": cmd_help,
 }
 
