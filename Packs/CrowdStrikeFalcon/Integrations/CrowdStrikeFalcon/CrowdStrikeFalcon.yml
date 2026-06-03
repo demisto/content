@@ -5336,3 +5336,10 @@ tests:
 defaultclassifier: CrowdStrike Falcon
 defaultmapperin: CrowdStrike Falcon-Mapper
 defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
+supportedModules:
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security
+- exposure_management
