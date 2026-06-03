@@ -25,7 +25,7 @@ skips dynamic analysis explicitly.
 
 Usage::
 
-    python3 connectus/check_command_params.py <integration_path> \\
+    python3 connectus/check_command_params.py [<integration_path>] \\
         [--commands cmd1 cmd2 ...] \\
         [--static-only] \\
         [--ignore-params PARAM [PARAM ...]] \\
@@ -35,6 +35,15 @@ Usage::
         [--no-sentinel-coercion] \\
         [--no-auto-retry-integration-docker] \\
         [--seed-param NAME=VALUE [--seed-param NAME=VALUE ...]]
+
+The positional ``<integration_path>`` is OPTIONAL: supply it directly,
+OR supply ``--integration-id ID`` and the path is resolved from the
+workflow CSV's ``Integration File Path`` column (via
+:func:`resolve_integration_path`). Exactly one of the two is required.
+If both are given the explicit path wins, and ``--integration-id`` still
+contributes the auth-aware ignore set described below. Inside the
+migration workflow this lets the canonical invocation drop the redundant
+hand-typed path and pass only ``--integration-id``.
 
 Three behaviour gates added in the latest analyzer revision:
 
@@ -6315,6 +6324,45 @@ def _run_dynamic_phase_once(
 # --------------------------------------------------------------------------
 
 
+def resolve_integration_path(integration_id: str) -> Path:
+    """Resolve an integration directory from its workflow-CSV id.
+
+    Looks up ``integration_id`` in the workflow CSV (via
+    :func:`workflow_state.get_integration_files`) and returns the
+    integration's directory as an absolute :class:`~pathlib.Path`.
+
+    Raises ``ValueError`` with an actionable message when the id is
+    unknown, the row has no ``Integration File Path``, or the recorded
+    path is stale on disk — mirroring the analyzer's loud-fail policy.
+    The caller turns this into a non-zero CLI exit.
+    """
+    try:
+        from workflow_state import get_integration_files
+    except Exception as exc:  # noqa: BLE001 — surface as a CLI error
+        raise ValueError(
+            f"could not import workflow_state to resolve "
+            f"--integration-id {integration_id!r}: "
+            f"{type(exc).__name__}: {exc}"
+        ) from exc
+
+    files = get_integration_files(integration_id)
+    if "error" in files:
+        raise ValueError(
+            f"--integration-id {integration_id!r}: {files['error']} "
+            f"Pass an explicit integration_path instead, or fix the "
+            f"'Integration File Path' column in the workflow CSV."
+        )
+    yml_rel = files.get("yml")
+    if not yml_rel:
+        raise ValueError(
+            f"--integration-id {integration_id!r}: workflow CSV row has "
+            f"no resolvable YML path. Pass an explicit integration_path "
+            f"instead."
+        )
+    # ``yml`` is repo-relative; its parent directory is the integration dir.
+    return (Path(yml_rel).resolve()).parent
+
+
 def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Analyze which YML params each command of an XSOAR integration uses.",
@@ -6322,7 +6370,17 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     )
     parser.add_argument(
         "integration_path",
-        help="Path to the integration directory (e.g., Packs/HelloWorld/Integrations/HelloWorldV2).",
+        nargs="?",
+        default=None,
+        help=(
+            "Path to the integration directory (e.g., "
+            "Packs/HelloWorld/Integrations/HelloWorldV2). OPTIONAL when "
+            "--integration-id is supplied: the path is then resolved from "
+            "the workflow CSV's 'Integration File Path' column. If both are "
+            "given, this explicit path wins (and --integration-id still "
+            "supplies the auth-aware ignore set). Exactly one of "
+            "integration_path / --integration-id is required."
+        ),
     )
     parser.add_argument(
         "--commands",
@@ -6679,7 +6737,30 @@ def main(argv: list[str] | None = None) -> int:
     # including the static-only one.
     _ensure_demisto_sdk_log_path()
     args = _parse_args(argv if argv is not None else sys.argv[1:])
-    integration_path = Path(args.integration_path).resolve()
+    # Resolve the integration directory. Exactly one of
+    # ``integration_path`` (explicit) / ``--integration-id`` (CSV lookup)
+    # is required. When both are supplied the explicit path wins and the
+    # id still drives the auth-aware ignore set (see compose_ignore_set).
+    if args.integration_path is not None:
+        integration_path = Path(args.integration_path).resolve()
+    elif args.integration_id is not None:
+        try:
+            integration_path = resolve_integration_path(args.integration_id)
+        except ValueError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 2
+        print(
+            f"[resolve] integration_path resolved from "
+            f"--integration-id {args.integration_id!r}: {integration_path}",
+            file=sys.stderr,
+        )
+    else:
+        print(
+            "ERROR: provide an integration_path positional argument OR "
+            "--integration-id (one is required).",
+            file=sys.stderr,
+        )
+        return 2
     if not integration_path.is_dir():
         print(
             f"ERROR: integration path is not a directory: {integration_path}",

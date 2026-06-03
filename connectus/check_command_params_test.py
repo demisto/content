@@ -4640,3 +4640,101 @@ class TestVerdictsAndDispatchPatterns:
             a.param == "Y" and a.verdict == ccp.VERDICT_PROVEN_UNUSED
             for a in attrs_off
         )
+
+
+# =============================================================================
+# integration_path / --integration-id resolution (CLI simplification)
+# =============================================================================
+
+
+class TestResolveIntegrationPath:
+    """``resolve_integration_path`` maps a CSV id to its directory."""
+
+    def test_resolves_directory_from_yml(self) -> None:
+        fake = {"yml": "Packs/Foo/Integrations/Foo/Foo.yml"}
+        with patch("workflow_state.get_integration_files", return_value=fake):
+            result = ccp.resolve_integration_path("Foo")
+        assert result == (Path("Packs/Foo/Integrations/Foo/Foo.yml").resolve()).parent
+        assert result.name == "Foo"
+
+    def test_unknown_id_raises_valueerror(self) -> None:
+        fake = {"error": "Integration 'Nope' not found."}
+        with patch("workflow_state.get_integration_files", return_value=fake):
+            with pytest.raises(ValueError, match="not found"):
+                ccp.resolve_integration_path("Nope")
+
+    def test_missing_yml_key_raises_valueerror(self) -> None:
+        with patch("workflow_state.get_integration_files", return_value={}):
+            with pytest.raises(ValueError, match="no resolvable YML path"):
+                ccp.resolve_integration_path("Foo")
+
+    def test_import_failure_raises_valueerror(self) -> None:
+        with patch(
+            "workflow_state.get_integration_files",
+            side_effect=ImportError("boom"),
+        ):
+            with pytest.raises(ValueError, match="could not import workflow_state"):
+                ccp.resolve_integration_path("Foo")
+
+
+class TestMainPathResolution:
+    """``main`` accepts path-only, id-only, both, or neither."""
+
+    @staticmethod
+    def _patch_analysis(returned: dict | None = None):
+        """Patch the heavy analysis + ignore-set so main() stays pure."""
+        result = returned or {"integration": "X", "commands": {}}
+        return (
+            patch.object(ccp, "analyze_integration", return_value=result),
+            patch.object(ccp, "compose_ignore_set", return_value=set()),
+            patch.object(ccp, "resolve_docker_config", return_value=None),
+            patch.object(ccp, "_ensure_demisto_sdk_log_path"),
+        )
+
+    def test_path_only_uses_explicit_path(self, tmp_path: Path) -> None:
+        ai, ci, rd, el = self._patch_analysis()
+        with ai as m_ai, ci, rd, el:
+            rc = ccp.main([str(tmp_path), "--static-only"])
+        assert rc == 0
+        assert m_ai.call_args.kwargs["integration_path"] == tmp_path.resolve()
+
+    def test_id_only_resolves_path(self, tmp_path: Path) -> None:
+        ai, ci, rd, el = self._patch_analysis()
+        with ai as m_ai, ci, rd, el, patch.object(
+            ccp, "resolve_integration_path", return_value=tmp_path
+        ) as m_resolve:
+            rc = ccp.main(["--integration-id", "Foo", "--static-only"])
+        assert rc == 0
+        m_resolve.assert_called_once_with("Foo")
+        assert m_ai.call_args.kwargs["integration_path"] == tmp_path
+
+    def test_both_explicit_path_wins(self, tmp_path: Path) -> None:
+        ai, ci, rd, el = self._patch_analysis()
+        with ai as m_ai, ci, rd, el, patch.object(
+            ccp, "resolve_integration_path"
+        ) as m_resolve:
+            rc = ccp.main([str(tmp_path), "--integration-id", "Foo", "--static-only"])
+        assert rc == 0
+        # Explicit path wins → the CSV resolver is never consulted.
+        m_resolve.assert_not_called()
+        assert m_ai.call_args.kwargs["integration_path"] == tmp_path.resolve()
+
+    def test_neither_errors(self, capsys: pytest.CaptureFixture[str]) -> None:
+        ai, ci, rd, el = self._patch_analysis()
+        with ai, ci, rd, el:
+            rc = ccp.main(["--static-only"])
+        assert rc == 2
+        assert "one is required" in capsys.readouterr().err
+
+    def test_id_resolution_failure_exits_2(
+        self, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        ai, ci, rd, el = self._patch_analysis()
+        with ai, ci, rd, el, patch.object(
+            ccp,
+            "resolve_integration_path",
+            side_effect=ValueError("stale path"),
+        ):
+            rc = ccp.main(["--integration-id", "Foo", "--static-only"])
+        assert rc == 2
+        assert "stale path" in capsys.readouterr().err
