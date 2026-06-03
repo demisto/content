@@ -18402,7 +18402,7 @@ script:
       predefined:
         - "true"
         - "false"
-      description: Whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion.
+      description: Whether it is possible to delete the firewall. A setting of TRUE indicates that the firewall is protected against deletion. Use this setting to protect against accidentally deleting a firewall that is in use. When you create a firewall, the operation initializes this flag to TRUE.
     - name: subnet_change_protection
       auto: PREDEFINED
       predefined:
@@ -18428,7 +18428,7 @@ script:
         - CUSTOMER_KMS
         - AWS_OWNED_KMS_KEY
     - name: enabled_analysis_types
-      description: A comma-separated list of the enabled analysis types.
+      description: "A comma-separated list of the enabled analysis types to enable on the firewall. Valid Values: TLS_SNI | HTTP_HOST".
       isArray: true
     - name: transit_gateway_id
       description: The unique identifier for the transit gateway. Required when creating a transit gateway-attached firewall. After creating the firewall, you cannot change the transit gateway association. To use a different transit gateway, you must create a new firewall.
