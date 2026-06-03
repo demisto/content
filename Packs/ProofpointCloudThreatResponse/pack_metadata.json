@@ -22,6 +22,12 @@
         "CTR",
         "TRAP"
     ],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": false,
+            "display_name": "Common Types"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2",

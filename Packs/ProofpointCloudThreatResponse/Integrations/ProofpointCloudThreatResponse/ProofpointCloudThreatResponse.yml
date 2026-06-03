@@ -2,6 +2,7 @@ name: Proofpoint Cloud Threat Response
 display: Proofpoint Cloud Threat Response
 description: Fetches Proofpoint Cloud Threat Response (CTR) incidents into Cortex XSOAR for case management, and exposes commands to list and retrieve incident details.
 category: Case Management
+provider: Proofpoint
 sectionorder:
 - Connect
 - Collect
@@ -262,7 +263,7 @@ script:
     - contextPath: ProofPointCloud.Incident.activities
       description: The activities associated with the incident.
       type: Array
-  dockerimage: demisto/fastapi:0.125.0.7178097
+  dockerimage: demisto/fastapi:0.125.0.9094740
   isfetch: true
   runonce: false
   script: '-'

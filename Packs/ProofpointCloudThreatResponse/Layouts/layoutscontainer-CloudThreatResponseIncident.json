@@ -735,9 +735,5 @@
     "description": "Layout for Proofpoint Cloud Threat Response incidents.",
     "marketplaces": [
         "xsoar"
-    ],
-    "typeId": "Cloud Threat Response Incident",
-    "types": [
-        "Cloud Threat Response Incident"
     ]
 }
