@@ -170,3 +170,6 @@ ignore=GR107
 
 [file:Cortex_XDR_Port_Scan.json]
 ignore=GR107
+
+[file:Test_Playbook_-_Cortex_XDR_Malware_-_Incident_Enrichment.yml]
+ignore=BA130
