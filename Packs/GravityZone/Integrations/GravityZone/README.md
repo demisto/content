@@ -1733,7 +1733,7 @@ Creates an endpoint memory dump task. When polling is true or not specified, wai
 ```json
 {
     "GravityZone": {
-        "EndpointMemoryDump": {
+        "MemoryDump": {
             "TaskID": "6836f4a01a2b3c4d5e6f7a8b",
             "TaskType": "CreateMemoryDump",
             "Status": "Processed",
@@ -1798,7 +1798,7 @@ Checks the status of an endpoint memory dump task using a task ID returned by gz
 ```json
 {
     "GravityZone": {
-        "EndpointMemoryDump": {
+        "MemoryDump": {
             "TaskID": "6836f4a01a2b3c4d5e6f7a8b",
             "TaskType": "CreateMemoryDump",
             "Status": "Processed",
