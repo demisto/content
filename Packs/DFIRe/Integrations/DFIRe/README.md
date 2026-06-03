@@ -21,7 +21,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### dfire-search
 
 ***
-Search across all DFIRe data (cases, indicators, notes, items). Supports AND, OR, NOT operators.
+Searches across all DFIRe data (cases, indicators, notes, items). Supports AND, OR, NOT operators.
 
 #### Base Command
 
@@ -31,7 +31,7 @@ Search across all DFIRe data (cases, indicators, notes, items). Supports AND, OR
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search query (min 2 characters). | Required |
+| query | The search query (min 2 characters). | Required |
 
 #### Context Output
 
@@ -40,15 +40,15 @@ Search across all DFIRe data (cases, indicators, notes, items). Supports AND, OR
 | DFIRe.Search.id | String | The result ID. |
 | DFIRe.Search.type | String | The result type \(e.g. case, indicator, note\). |
 | DFIRe.Search.title | String | The result title. |
-| DFIRe.Search.snippet | String | Matching text snippet. |
-| DFIRe.Search.rank | Number | Search relevance rank. |
-| DFIRe.Search.url | String | URL to the result in DFIRe. |
-| DFIRe.Search.date | Date | Result date. |
+| DFIRe.Search.snippet | String | The matching text snippet. |
+| DFIRe.Search.rank | Number | The search relevance rank. |
+| DFIRe.Search.url | String | The URL to the result in DFIRe. |
+| DFIRe.Search.date | Date | The result date. |
 
 ### dfire-case-type-list
 
 ***
-List available case types and their IDs.
+Lists available case types and their IDs.
 
 #### Base Command
 
@@ -68,7 +68,7 @@ There are no input arguments for this command.
 ### dfire-case-list
 
 ***
-List cases from DFIRe.
+Lists cases from DFIRe.
 
 #### Base Command
 
@@ -78,16 +78,16 @@ List cases from DFIRe.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of cases to return. Default is 50. | Optional |
-| page | Page number for pagination. | Optional |
-| status | Filter by case status. Possible values are: OPEN, CLOSED, ARCHIVED. | Optional |
-| status_in | Filter by multiple statuses (comma-separated, e.g. "OPEN,CLOSED"). | Optional |
-| severity | Filter by severity. Possible values are: critical, high, medium, low, info. | Optional |
-| case_mode | Filter by case mode. Possible values are: investigation, incident. | Optional |
-| lead_investigator | Filter by lead investigator user ID. | Optional |
-| created_at_gte | Filter cases created on or after this ISO-8601 datetime (e.g. "2026-05-01T00:00:00Z"). | Optional |
-| created_at_lte | Filter cases created on or before this ISO-8601 datetime. | Optional |
-| ordering | Order results by field (e.g. "created_at", "-created_at" for descending). | Optional |
+| limit | The maximum number of cases to return. Default is 50. | Optional |
+| page | The page number for pagination. | Optional |
+| status | The status by which to filter cases. Possible values are: OPEN, CLOSED, ARCHIVED. | Optional |
+| status_in | A comma-separated list of statuses by which to filter cases, for example, "OPEN,CLOSED". | Optional |
+| severity | The severity by which to filter cases. Possible values are: critical, high, medium, low, info. | Optional |
+| case_mode | The mode by which to filter cases. Possible values are: investigation, incident. | Optional |
+| lead_investigator | The lead investigator user ID by which to filter cases. | Optional |
+| created_at_gte | The ISO-8601 datetime on or after which to filter cases, for example, "2026-05-01T00:00:00Z". | Optional |
+| created_at_lte | The ISO-8601 datetime on or before which to filter cases. | Optional |
+| ordering | The field by which to order results, for example, "created_at", or "-created_at" for descending order. | Optional |
 
 #### Context Output
 
@@ -98,15 +98,15 @@ List cases from DFIRe.
 | DFIRe.Case.case_number | String | The case number. |
 | DFIRe.Case.status | String | The case status. |
 | DFIRe.Case.severity | String | The case severity. |
-| DFIRe.Case.case_mode | String | Investigation or incident. |
+| DFIRe.Case.case_mode | String | The case mode, investigation or incident. |
 | DFIRe.Case.case_type_name | String | The case type name. |
-| DFIRe.Case.lead_investigator | Number | Lead investigator user ID. |
+| DFIRe.Case.lead_investigator | Number | The lead investigator user ID. |
 | DFIRe.Case.created_at | Date | Case creation timestamp. |
 
 ### dfire-case-get
 
 ***
-Get details of a specific case.
+Retrieves details of a specific case.
 
 #### Base Command
 
@@ -126,25 +126,25 @@ Get details of a specific case.
 | DFIRe.Case.title | String | The case title. |
 | DFIRe.Case.case_number | String | The case number. |
 | DFIRe.Case.description | String | The case description. |
-| DFIRe.Case.notes | String | High-level case notes. |
+| DFIRe.Case.notes | String | The high-level case notes. |
 | DFIRe.Case.status | String | The case status. |
 | DFIRe.Case.severity | String | The case severity. |
-| DFIRe.Case.case_mode | String | Investigation or incident. |
+| DFIRe.Case.case_mode | String | The case mode, investigation or incident. |
 | DFIRe.Case.case_type | Number | The case type ID. |
 | DFIRe.Case.case_type_name | String | The case type name. |
-| DFIRe.Case.external_id | String | External reference ID. |
-| DFIRe.Case.lead_investigator | Number | Lead investigator user ID. |
-| DFIRe.Case.project_id | Number | Associated project ID. |
-| DFIRe.Case.current_phase_name | String | Current incident phase name. |
-| DFIRe.Case.item_count | Number | Number of evidence items. |
-| DFIRe.Case.indicator_count | Number | Number of indicators. |
-| DFIRe.Case.created_at | Date | Case creation timestamp. |
-| DFIRe.Case.closed_at | Date | Case closure timestamp. |
+| DFIRe.Case.external_id | String | The external reference ID. |
+| DFIRe.Case.lead_investigator | Number | The lead investigator user ID. |
+| DFIRe.Case.project_id | Number | The associated project ID. |
+| DFIRe.Case.current_phase_name | String | The current case phase name. |
+| DFIRe.Case.item_count | Number | The number of evidence items. |
+| DFIRe.Case.indicator_count | Number | The number of indicators. |
+| DFIRe.Case.created_at | Date | The case creation timestamp. |
+| DFIRe.Case.closed_at | Date | The case closure timestamp. |
 
 ### dfire-case-create
 
 ***
-Create a new case in DFIRe.
+Creates a new case in DFIRe.
 
 #### Base Command
 
@@ -157,19 +157,19 @@ Create a new case in DFIRe.
 | title | The case title. | Required |
 | case_type | The case type ID. | Required |
 | description | The case description. | Optional |
-| notes | High-level case summary or notes. | Optional |
+| notes | The high-level case summary or notes. | Optional |
 | severity | The case severity. Possible values are: critical, high, medium, low, info. | Optional |
-| case_mode | Investigation or incident mode. Possible values are: investigation, incident. | Optional |
-| lead_investigator | User ID of the lead investigator. | Optional |
-| investigators | Comma-separated list of investigator user IDs. | Optional |
-| viewers | Comma-separated list of viewer user IDs. | Optional |
-| investigator_ids | Comma-separated list of investigator IDs (alternate write field). | Optional |
-| viewer_ids | Comma-separated list of viewer IDs (alternate write field). | Optional |
-| incident_category | ENISA incident category ID. | Optional |
-| outcome_verdict | Outcome verdict ID (true positive, false positive, etc.). | Optional |
-| external_id | External reference ID (e.g. ticket number). | Optional |
-| project_id | Project ID to associate the case with. | Optional |
-| attributes | JSON string of custom attributes to attach to the case. | Optional |
+| case_mode | The case mode, investigation or incident. Possible values are: investigation, incident. | Optional |
+| lead_investigator | The user ID of the lead investigator. | Optional |
+| investigators | A comma-separated list of investigator user IDs. | Optional |
+| viewers | A comma-separated list of viewer user IDs. | Optional |
+| investigator_ids | A comma-separated list of investigator IDs (alternate write field). | Optional |
+| viewer_ids | A comma-separated list of viewer IDs (alternate write field). | Optional |
+| incident_category | The ENISA incident category ID. | Optional |
+| outcome_verdict | The outcome verdict ID (true positive, false positive, etc.). | Optional |
+| external_id | The external reference ID (e.g. ticket number). | Optional |
+| project_id | The project ID to associate the case with. | Optional |
+| attributes | The JSON string of custom attributes to attach to the case. | Optional |
 | create_slack_channel | Whether to auto-create a Slack channel for this case. Defaults to false to avoid unintended channel creation from automated workflows. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
@@ -184,7 +184,7 @@ Create a new case in DFIRe.
 ### dfire-case-update
 
 ***
-Update an existing case in DFIRe.
+Updates an existing case in DFIRe.
 
 #### Base Command
 
@@ -195,21 +195,21 @@ Update an existing case in DFIRe.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The ID of the case to update. | Required |
-| title | New title for the case. | Optional |
-| description | New description. | Optional |
-| notes | High-level case summary or notes. | Optional |
-| status | New status. Possible values are: OPEN, CLOSED, ARCHIVED. | Optional |
-| severity | New severity. Possible values are: critical, high, medium, low, info. | Optional |
-| case_mode | New case mode. Possible values are: investigation, incident. | Optional |
-| lead_investigator | New lead investigator user ID. | Optional |
-| investigators | Replace investigator list (comma-separated user IDs). | Optional |
-| viewers | Replace viewer list (comma-separated user IDs). | Optional |
-| investigator_ids | Comma-separated list of investigator IDs (alternate write field). | Optional |
-| viewer_ids | Comma-separated list of viewer IDs (alternate write field). | Optional |
-| incident_category | ENISA incident category ID. | Optional |
-| outcome_verdict | Outcome verdict ID. | Optional |
-| external_id | New external reference ID. | Optional |
-| attributes | JSON string of custom attributes to attach to the case. | Optional |
+| title | The new title for the case. | Optional |
+| description | The new case description. | Optional |
+| notes | The high-level case summary or notes. | Optional |
+| status | The new case status. Possible values are: OPEN, CLOSED, ARCHIVED. | Optional |
+| severity | The new case severity. Possible values are: critical, high, medium, low, info. | Optional |
+| case_mode | The new case mode, investigation or incident. Possible values are: investigation, incident. | Optional |
+| lead_investigator | The new case lead investigator user ID. | Optional |
+| investigators | A comma-separated list of user IDs with which to replace the investigator list.. | Optional |
+| viewers | A comma-separated list of user IDs with which to replace the viewer list. | Optional |
+| investigator_ids | A comma-separated list of investigator IDs (alternate write field). | Optional |
+| viewer_ids | A comma-separated list of viewer IDs (alternate write field). | Optional |
+| incident_category | The ENISA incident category ID. | Optional |
+| outcome_verdict | The outcome verdict ID. | Optional |
+| external_id | The new external reference ID. | Optional |
+| attributes | The JSON string of custom attributes to attach to the case. | Optional |
 
 #### Context Output
 
@@ -222,7 +222,7 @@ Update an existing case in DFIRe.
 ### dfire-case-delete
 
 ***
-Delete a case from DFIRe.
+Deletes a case from DFIRe.
 
 #### Base Command
 
@@ -241,7 +241,7 @@ There is no context output for this command.
 ### dfire-case-note-list
 
 ***
-List notes for a case.
+Lists notes for a case.
 
 #### Base Command
 
@@ -261,12 +261,12 @@ List notes for a case.
 | DFIRe.CaseNote.case | Number | The case ID. |
 | DFIRe.CaseNote.note | String | The note content. |
 | DFIRe.CaseNote.author_name | String | The note author. |
-| DFIRe.CaseNote.created_at | Date | Note creation timestamp. |
+| DFIRe.CaseNote.created_at | Date | The note creation timestamp. |
 
 ### dfire-case-note-create
 
 ***
-Create a note on a case.
+Creates a note on a case.
 
 #### Base Command
 
@@ -291,7 +291,7 @@ Create a note on a case.
 ### dfire-indicator-list
 
 ***
-List indicators from the global IOC registry.
+Lists indicators from the global IOC registry.
 
 #### Base Command
 
@@ -301,17 +301,17 @@ List indicators from the global IOC registry.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of indicators to return. Default is 50. | Optional |
-| offset | Offset for pagination. Default is 0. | Optional |
-| search | Search term to filter indicators. | Optional |
-| stix_type | Filter by STIX type. Possible values are: ipv4-addr, ipv6-addr, domain-name, url, email-addr, email-message, file, process, windows-registry-key, network-traffic, user-account, mac-addr, software, artifact, autonomous-system, directory, mutex, x509-certificate. | Optional |
-| classification | Filter by classification. Possible values are: unknown, benign, suspicious, malicious. | Optional |
-| confidence | Filter by confidence level. Possible values are: low, medium, high. | Optional |
-| tlp | Filter by TLP designation. Possible values are: clear, green, amber, amber_strict, red. | Optional |
-| is_published | Filter by published status. Possible values are: true, false. | Optional |
-| is_revoked | Filter by revoked status. Possible values are: true, false. | Optional |
-| parent | Filter by parent indicator ID (returns children of this indicator). | Optional |
-| ordering | Order results by field (e.g. "created_at", "-confidence"). | Optional |
+| limit | The maximum number of indicators to return. Default is 50. | Optional |
+| offset | The offset for pagination. Default is 0. | Optional |
+| search | The search term by which to filter indicators. | Optional |
+| stix_type | The STIX type by which to filter indicators. Possible values are: ipv4-addr, ipv6-addr, domain-name, url, email-addr, email-message, file, process, windows-registry-key, network-traffic, user-account, mac-addr, software, artifact, autonomous-system, directory, mutex, x509-certificate. | Optional |
+| classification | The classification by which to filter indicators. Possible values are: unknown, benign, suspicious, malicious. | Optional |
+| confidence | The confidence level by which to filter indicators. Possible values are: low, medium, high. | Optional |
+| tlp | The TLP designation by which to filter indicators. Possible values are: clear, green, amber, amber_strict, red. | Optional |
+| is_published | Whether to filter indicators by published status. Possible values are: true, false. | Optional |
+| is_revoked | Whether to filter indicators by revoked status. Possible values are: true, false. | Optional |
+| parent | The ID of the parent indicator by which to filter results to return its child indicators. | Optional |
+| ordering | The field by which to order results, for example, "created_at", or "-confidence" for descending order. | Optional |
 
 #### Context Output
 
@@ -319,20 +319,20 @@ List indicators from the global IOC registry.
 | --- | --- | --- |
 | DFIRe.Indicator.id | Number | The indicator ID. |
 | DFIRe.Indicator.value | String | The IOC value. |
-| DFIRe.Indicator.stix_type | String | STIX 2.1 SCO type. |
-| DFIRe.Indicator.classification | String | Classification \(unknown/benign/suspicious/malicious\). |
-| DFIRe.Indicator.confidence | String | Confidence level. |
-| DFIRe.Indicator.tlp | String | TLP designation. |
+| DFIRe.Indicator.stix_type | String | The STIX 2.1 SCO type. |
+| DFIRe.Indicator.classification | String | The indicator classification \(unknown/benign/suspicious/malicious\). |
+| DFIRe.Indicator.confidence | String | The indicator confidence level. |
+| DFIRe.Indicator.tlp | String | The indicator TLP designation. |
 | DFIRe.Indicator.is_published | Boolean | Whether the indicator is published. |
 | DFIRe.Indicator.is_revoked | Boolean | Whether the indicator is revoked. |
-| DFIRe.Indicator.case_count | Number | Number of associated cases. |
-| DFIRe.Indicator.first_seen | Date | First seen timestamp. |
-| DFIRe.Indicator.created_at | Date | Creation timestamp. |
+| DFIRe.Indicator.case_count | Number | The number of associated cases for the indicator. |
+| DFIRe.Indicator.first_seen | Date | The indicator first seen timestamp. |
+| DFIRe.Indicator.created_at | Date | The indicator creation timestamp. |
 
 ### dfire-indicator-get
 
 ***
-Get details of a specific indicator.
+Retrieves details of a specific indicator.
 
 #### Base Command
 
@@ -348,28 +348,28 @@ Get details of a specific indicator.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Indicator.id | Number | The indicator ID. |
+| DFIRe.Indicator.id | Number | The DFIRe indicator ID. |
 | DFIRe.Indicator.value | String | The IOC value. |
-| DFIRe.Indicator.value_normalized | String | Normalized IOC value. |
-| DFIRe.Indicator.stix_type | String | STIX 2.1 SCO type. |
-| DFIRe.Indicator.classification | String | Classification. |
-| DFIRe.Indicator.confidence | String | Confidence level. |
-| DFIRe.Indicator.tlp | String | TLP designation. |
-| DFIRe.Indicator.tags | Unknown | Tags assigned to the indicator. |
-| DFIRe.Indicator.public_notes | String | Public notes. |
-| DFIRe.Indicator.is_published | Boolean | Whether published. |
-| DFIRe.Indicator.is_revoked | Boolean | Whether revoked. |
-| DFIRe.Indicator.parent | Number | Parent indicator ID. |
-| DFIRe.Indicator.case_count | Number | Number of associated cases. |
-| DFIRe.Indicator.children_count | Number | Number of child indicators. |
-| DFIRe.Indicator.first_seen | Date | First seen timestamp. |
-| DFIRe.Indicator.last_seen | Date | Last seen timestamp. |
-| DFIRe.Indicator.created_at | Date | Creation timestamp. |
+| DFIRe.Indicator.value_normalized | String | The normalized IOC value. |
+| DFIRe.Indicator.stix_type | String | The STIX 2.1 SCO type. |
+| DFIRe.Indicator.classification | String | The indicator classification. |
+| DFIRe.Indicator.confidence | String | The indicator confidence level. |
+| DFIRe.Indicator.tlp | String | The indicator TLP designation. |
+| DFIRe.Indicator.tags | Unknown | The tags assigned to the indicator. |
+| DFIRe.Indicator.public_notes | String | The indicator public notes. |
+| DFIRe.Indicator.is_published | Boolean | Whether the indicator is published. |
+| DFIRe.Indicator.is_revoked | Boolean | Whether the indicator is revoked. |
+| DFIRe.Indicator.parent | Number | The parent indicator ID. |
+| DFIRe.Indicator.case_count | Number | The number of associated cases for the indicator. |
+| DFIRe.Indicator.children_count | Number | The number of child indicators. |
+| DFIRe.Indicator.first_seen | Date | The indicator first seen timestamp. |
+| DFIRe.Indicator.last_seen | Date | The indicator last seen timestamp. |
+| DFIRe.Indicator.created_at | Date | The indicator creation timestamp. |
 
 ### dfire-indicator-create
 
 ***
-Create a new indicator in the global IOC registry.
+Creates a new indicator in the global IOC registry.
 
 #### Base Command
 
@@ -380,27 +380,27 @@ Create a new indicator in the global IOC registry.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | value | The IOC value (IP, domain, hash, URL, etc.). | Required |
-| stix_type | STIX 2.1 SCO type. Possible values are: ipv4-addr, ipv6-addr, domain-name, url, email-addr, email-message, file, process, windows-registry-key, network-traffic, user-account, mac-addr, software, artifact, autonomous-system, directory, mutex, x509-certificate. | Required |
-| classification | IOC classification. Possible values are: unknown, benign, suspicious, malicious. | Optional |
-| confidence | Confidence level. Possible values are: low, medium, high. | Optional |
-| tlp | TLP designation. Possible values are: clear, green, amber, amber_strict, red. | Optional |
-| tags | Comma-separated tags. | Optional |
-| public_notes | Public notes about the indicator. | Optional |
-| valid_until | Auto-revoke date (ISO 8601). | Optional |
+| stix_type | The STIX 2.1 SCO type. Possible values are: ipv4-addr, ipv6-addr, domain-name, url, email-addr, email-message, file, process, windows-registry-key, network-traffic, user-account, mac-addr, software, artifact, autonomous-system, directory, mutex, x509-certificate. | Required |
+| classification | The indicator classification. Possible values are: unknown, benign, suspicious, malicious. | Optional |
+| confidence | The indicator confidence level. Possible values are: low, medium, high. | Optional |
+| tlp | The incidator TLP designation. Possible values are: clear, green, amber, amber_strict, red. | Optional |
+| tags | A comma-separated list of indicator tags. | Optional |
+| public_notes | The public notes about the indicator. | Optional |
+| valid_until | The indicator auto-revoke date (ISO 8601). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DFIRe.Indicator.id | Number | The created indicator ID. |
-| DFIRe.Indicator.value | String | The IOC value. |
-| DFIRe.Indicator.stix_type | String | STIX type. |
-| DFIRe.Indicator.is_existing | Boolean | Whether the indicator already existed. |
+| DFIRe.Indicator.value | String | The indicator value. |
+| DFIRe.Indicator.stix_type | String | The indicator STIX type. |
+| DFIRe.Indicator.is_existing | Boolean | Whether the indicator already exists. |
 
 ### dfire-indicator-update
 
 ***
-Update an existing indicator.
+Updates an existing indicator.
 
 #### Base Command
 
@@ -411,12 +411,12 @@ Update an existing indicator.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator_id | The indicator ID to update. | Required |
-| classification | New classification. Possible values are: unknown, benign, suspicious, malicious. | Optional |
-| confidence | New confidence level. Possible values are: low, medium, high. | Optional |
-| tlp | New TLP designation. Possible values are: clear, green, amber, amber_strict, red. | Optional |
-| tags | New comma-separated tags (replaces existing). | Optional |
-| public_notes | New public notes. | Optional |
-| valid_until | New auto-revoke date (ISO 8601). Set empty to clear. | Optional |
+| classification | The new indicator classification. Possible values are: unknown, benign, suspicious, malicious. | Optional |
+| confidence | The new indicator confidence level. Possible values are: low, medium, high. | Optional |
+| tlp | The new indicator TLP designation. Possible values are: clear, green, amber, amber_strict, red. | Optional |
+| tags | A comma-separated list of new indicator tags (replaces the existing). | Optional |
+| public_notes | The new indicator public notes. | Optional |
+| valid_until | The new indicator auto-revoke date (ISO 8601). Set it to empty to clear. | Optional |
 
 #### Context Output
 
@@ -424,12 +424,12 @@ Update an existing indicator.
 | --- | --- | --- |
 | DFIRe.Indicator.id | Number | The indicator ID. |
 | DFIRe.Indicator.value | String | The IOC value. |
-| DFIRe.Indicator.classification | String | Updated classification. |
+| DFIRe.Indicator.classification | String | The updated indicator classification. |
 
 ### dfire-indicator-delete
 
 ***
-Delete an indicator from the global IOC registry.
+Deletes an indicator from the global IOC registry.
 
 #### Base Command
 
@@ -448,7 +448,7 @@ There is no context output for this command.
 ### dfire-item-type-list
 
 ***
-List available evidence item types and their IDs.
+Lists available evidence item types and their IDs.
 
 #### Base Command
 
@@ -469,7 +469,7 @@ There are no input arguments for this command.
 ### dfire-item-flag-list
 
 ***
-List available item flags and their IDs.
+Lists available item flags and their IDs.
 
 #### Base Command
 
@@ -491,7 +491,7 @@ There are no input arguments for this command.
 ### dfire-item-list
 
 ***
-List evidence items, optionally filtered by case.
+Lists evidence items, optionally filtered by case.
 
 #### Base Command
 
@@ -501,25 +501,25 @@ List evidence items, optionally filtered by case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Filter items by case ID. | Optional |
+| case_id | The case ID by which to filter evidence items. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Item.uuid | String | The item UUID. |
-| DFIRe.Item.name | String | The item name. |
-| DFIRe.Item.display_title | String | The item display title. |
-| DFIRe.Item.item_type_name | String | The item type name. |
-| DFIRe.Item.case | Number | The associated case ID. |
-| DFIRe.Item.location | String | The item location. |
-| DFIRe.Item.attachment_count | Number | Number of attachments. |
-| DFIRe.Item.created_at | Date | Creation timestamp. |
+| DFIRe.Item.uuid | String | The evidence item UUID. |
+| DFIRe.Item.name | String | The evidence item name. |
+| DFIRe.Item.display_title | String | The evidence item display title. |
+| DFIRe.Item.item_type_name | String | The evidence item type name. |
+| DFIRe.Item.case | Number | The evidence item associated case ID. |
+| DFIRe.Item.location | String | The evidence item location. |
+| DFIRe.Item.attachment_count | Number | The number of attachments to the evidence item. |
+| DFIRe.Item.created_at | Date | The evidence item creation timestamp. |
 
 ### dfire-item-get
 
 ***
-Get details of a specific evidence item.
+Retrieves details of a specific evidence item.
 
 #### Base Command
 
@@ -529,25 +529,25 @@ Get details of a specific evidence item.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item_id | The item ID. | Required |
+| item_id | The evidence item ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Item.uuid | String | The item UUID. |
-| DFIRe.Item.name | String | The item name. |
-| DFIRe.Item.display_title | String | The item display title. |
-| DFIRe.Item.item_type_name | String | The item type name. |
-| DFIRe.Item.case | Number | The associated case ID. |
-| DFIRe.Item.location | String | The item location. |
-| DFIRe.Item.attachment_count | Number | Number of attachments. |
-| DFIRe.Item.created_at | Date | Creation timestamp. |
+| DFIRe.Item.uuid | String | The evidence item UUID. |
+| DFIRe.Item.name | String | The evidence item name. |
+| DFIRe.Item.display_title | String | The evidence item display title. |
+| DFIRe.Item.item_type_name | String | The evidence item type name. |
+| DFIRe.Item.case | Number | The evidence item associated case ID. |
+| DFIRe.Item.location | String | The evidence item location. |
+| DFIRe.Item.attachment_count | Number | The number of attachments for the evidence item. |
+| DFIRe.Item.created_at | Date | The evidence item creation timestamp. |
 
 ### dfire-item-create
 
 ***
-Create a new evidence item on a case.
+Creates a new evidence item on a case.
 
 #### Base Command
 
@@ -557,27 +557,27 @@ Create a new evidence item on a case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The case ID to add the item to. | Required |
-| item_type | The item type ID. | Required |
-| location | The item location (e.g. storage location, lab). | Required |
-| name | Friendly name/label for the item. | Optional |
-| owner_id | Legal entity ID of the item owner. | Optional |
-| primary_user_id | Legal entity ID of the primary user. | Optional |
-| collected_by | User ID of the collector. | Optional |
-| parent_item | UUID of the parent item. | Optional |
+| case_id | The case ID to add the evidence item to. | Required |
+| item_type | The evidence item type ID. | Required |
+| location | The evidence item location (e.g. storage location, lab). | Required |
+| name | The friendly name/label for the evidence item. | Optional |
+| owner_id | The legal entity ID of the evidence item owner. | Optional |
+| primary_user_id | The legal entity ID of the primary user. | Optional |
+| collected_by | The user ID of the collector. | Optional |
+| parent_item | The UUID of the parent evidence item. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Item.uuid | String | The created item UUID. |
-| DFIRe.Item.name | String | The item name. |
+| DFIRe.Item.uuid | String | The created evidence item UUID. |
+| DFIRe.Item.name | String | The evidence item name. |
 | DFIRe.Item.case | Number | The case ID. |
 
 ### dfire-attachment-list
 
 ***
-List attachments, optionally filtered by evidence item UUID.
+Lists attachments, optionally filtered by evidence item UUID.
 
 #### Base Command
 
@@ -587,27 +587,27 @@ List attachments, optionally filtered by evidence item UUID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item_uuid | Filter attachments by evidence item UUID. | Optional |
+| item_uuid | The evidence item UUID by which to filter attachments. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DFIRe.Attachment.id | Number | The attachment ID. |
-| DFIRe.Attachment.filename | String | The filename. |
-| DFIRe.Attachment.mime_type | String | The MIME type. |
-| DFIRe.Attachment.size | Number | File size in bytes. |
-| DFIRe.Attachment.category | String | Attachment category. |
-| DFIRe.Attachment.case | Number | The associated case ID. |
-| DFIRe.Attachment.item | String | The associated item UUID. |
-| DFIRe.Attachment.hash_sha256 | String | SHA-256 hash of the plaintext file. |
-| DFIRe.Attachment.uploaded_by_name | String | Who uploaded the file. |
-| DFIRe.Attachment.uploaded_at | Date | Upload timestamp. |
+| DFIRe.Attachment.filename | String | The attachment filename. |
+| DFIRe.Attachment.mime_type | String | The attachment MIME type. |
+| DFIRe.Attachment.size | Number | The attachment file size in bytes. |
+| DFIRe.Attachment.category | String | The attachment category. |
+| DFIRe.Attachment.case | Number | The attachment associated case ID. |
+| DFIRe.Attachment.item | String | The attachment associated evidence item UUID. |
+| DFIRe.Attachment.hash_sha256 | String | The SHA-256 hash of the plaintext file attachment. |
+| DFIRe.Attachment.uploaded_by_name | String | Who uploaded the file attachment. |
+| DFIRe.Attachment.uploaded_at | Date | The attachment upload timestamp. |
 
 ### dfire-attachment-get
 
 ***
-Get details of a specific attachment.
+Gets details of a specific attachment.
 
 #### Base Command
 
@@ -623,21 +623,21 @@ Get details of a specific attachment.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Attachment.id | Number | The attachment ID. |
-| DFIRe.Attachment.filename | String | The filename. |
-| DFIRe.Attachment.mime_type | String | The MIME type. |
-| DFIRe.Attachment.size | Number | File size in bytes. |
-| DFIRe.Attachment.category | String | Attachment category. |
-| DFIRe.Attachment.description | String | User-provided description. |
-| DFIRe.Attachment.hash_sha256 | String | SHA-256 hash of the plaintext file. |
-| DFIRe.Attachment.status | String | Upload/encryption status. |
-| DFIRe.Attachment.storage_location | String | Storage backend \(local, s3, smb\). |
-| DFIRe.Attachment.uploaded_at | Date | Upload timestamp. |
+| DFIRe.Attachment.id | Number | The DFIRe attachment ID. |
+| DFIRe.Attachment.filename | String | The attachment filename. |
+| DFIRe.Attachment.mime_type | String | The attachment MIME type. |
+| DFIRe.Attachment.size | Number | The attachment file size in bytes. |
+| DFIRe.Attachment.category | String | The attachment category. |
+| DFIRe.Attachment.description | String | The attachment user-provided description. |
+| DFIRe.Attachment.hash_sha256 | String | The SHA-256 hash of the plaintext file attachment. |
+| DFIRe.Attachment.status | String | The attachment upload/encryption status. |
+| DFIRe.Attachment.storage_location | String | The attachment storage location \(local, s3, smb\). |
+| DFIRe.Attachment.uploaded_at | Date | The attachment upload timestamp. |
 
 ### dfire-attachment-upload
 
 ***
-Upload a file as an attachment to a case or evidence item.
+Uploads a file as an attachment to a case or evidence item.
 
 #### Base Command
 
@@ -648,23 +648,23 @@ Upload a file as an attachment to a case or evidence item.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | The War Room entry ID of the file to upload. | Required |
-| case_id | Case ID to associate the attachment with. | Optional |
-| item_uuid | Evidence item UUID to associate the attachment with. | Optional |
-| filename | Override the filename (defaults to the uploaded file name). | Optional |
-| category | Attachment category. `general` routes to the encrypted file store and is what most playbooks want. `evidence` is reserved for evidence photos and routes to the image gallery, not the file store. Possible values are: general, evidence. Default is general. | Optional |
+| case_id | The case ID to associate the attachment with. | Optional |
+| item_uuid | The evidence item UUID to associate the attachment with. | Optional |
+| filename | The name with which to override the filename. (default is the uploaded file name). | Optional |
+| category | The attachment category. `general` routes to the encrypted file store and is relevant for most playbooks. `evidence` is reserved for evidence photos and routes to the image gallery, not the file store. Possible values are: general, evidence. Default is general. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DFIRe.Attachment.id | Number | The created attachment ID. |
-| DFIRe.Attachment.filename | String | The filename. |
-| DFIRe.Attachment.size | Number | File size in bytes. |
+| DFIRe.Attachment.filename | String | The attachment filename. |
+| DFIRe.Attachment.size | Number | The attachment file size in bytes. |
 
 ### dfire-attachment-delete
 
 ***
-Delete an attachment.
+Deletes an attachment.
 
 #### Base Command
 
@@ -683,7 +683,7 @@ There is no context output for this command.
 ### dfire-timeline-list
 
 ***
-List timeline events for a case (newest first).
+Lists timeline events for a case (newest first).
 
 #### Base Command
 
@@ -699,17 +699,17 @@ List timeline events for a case (newest first).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.TimelineEvent.id | Number | The event ID. |
-| DFIRe.TimelineEvent.event_type | String | The event type. |
-| DFIRe.TimelineEvent.subject | String | The event subject. |
-| DFIRe.TimelineEvent.details | String | The event details. |
-| DFIRe.TimelineEvent.event_datetime | Date | When the event occurred. |
-| DFIRe.TimelineEvent.created_by_name | String | Who created the event. |
+| DFIRe.TimelineEvent.id | Number | The timeline event ID. |
+| DFIRe.TimelineEvent.event_type | String | The timeline event type. |
+| DFIRe.TimelineEvent.subject | String | The timeline event subject. |
+| DFIRe.TimelineEvent.details | String | The timeline event details. |
+| DFIRe.TimelineEvent.event_datetime | Date | When the timeline event occurred. |
+| DFIRe.TimelineEvent.created_by_name | String | Who created the timeline event. |
 
 ### dfire-timeline-create
 
 ***
-Add a manual timeline event to a case.
+Adds a manual timeline event to a case.
 
 #### Base Command
 
@@ -720,22 +720,22 @@ Add a manual timeline event to a case.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The case ID. | Required |
-| subject | The event subject line. | Required |
-| details | The event description. | Optional |
-| event_datetime | When the event occurred (ISO 8601). Defaults to now. | Optional |
+| subject | The timeline event subject line. | Required |
+| details | The timeline event description. | Optional |
+| event_datetime | When the timeline event occurred (ISO 8601). Default is now. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.TimelineEvent.id | Number | The created event ID. |
-| DFIRe.TimelineEvent.subject | String | The event subject. |
-| DFIRe.TimelineEvent.event_datetime | Date | The event timestamp. |
+| DFIRe.TimelineEvent.id | Number | The created timeline event ID. |
+| DFIRe.TimelineEvent.subject | String | The timeline event subject. |
+| DFIRe.TimelineEvent.event_datetime | Date | The timeline event timestamp. |
 
 ### dfire-user-list
 
 ***
-List users in the DFIRe tenant. Useful for looking up user IDs for assignments.
+Lists users in the DFIRe tenant. Useful for looking up user IDs for assignments.
 
 #### Base Command
 
@@ -749,17 +749,17 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.User.id | Number | The user ID. |
-| DFIRe.User.username | String | The username. |
-| DFIRe.User.full_name | String | The user's full name. |
-| DFIRe.User.email | String | The user's email. |
-| DFIRe.User.is_active | Boolean | Whether the user is active. |
-| DFIRe.User.groups | Unknown | Groups the user belongs to. |
+| DFIRe.User.id | Number | The DFIRe user ID. |
+| DFIRe.User.username | String | The DFIRe username. |
+| DFIRe.User.full_name | String | The DFIRe user's full name. |
+| DFIRe.User.email | String | The DFIRe user's email. |
+| DFIRe.User.is_active | Boolean | Whether the DFIRe user is active. |
+| DFIRe.User.groups | Unknown | Groups the DFIRe user belongs to. |
 
 ### dfire-case-indicator-list
 
 ***
-List indicators associated with a case.
+Lists indicators associated with a case.
 
 #### Base Command
 
@@ -778,17 +778,17 @@ List indicators associated with a case.
 | DFIRe.CaseIndicator.id | Number | The association ID. |
 | DFIRe.CaseIndicator.case | Number | The case ID. |
 | DFIRe.CaseIndicator.indicator.id | Number | The indicator ID. |
-| DFIRe.CaseIndicator.indicator.value | String | The IOC value. |
-| DFIRe.CaseIndicator.indicator.stix_type | String | STIX type. |
-| DFIRe.CaseIndicator.context | String | Case-private notes about this IOC. |
-| DFIRe.CaseIndicator.source | String | How the indicator was added. |
-| DFIRe.CaseIndicator.created_at | Date | Association timestamp. |
-| DFIRe.CaseIndicator.case_count | Number | Total cases this indicator appears in. |
+| DFIRe.CaseIndicator.indicator.value | String | The indicator value. |
+| DFIRe.CaseIndicator.indicator.stix_type | String | The indicator STIX type. |
+| DFIRe.CaseIndicator.context | String | The case private notes about the associated indicator. |
+| DFIRe.CaseIndicator.source | String | How the associated indicator was added. |
+| DFIRe.CaseIndicator.created_at | Date | The association timestamp. |
+| DFIRe.CaseIndicator.case_count | Number | The number of cases this indicator appears in. |
 
 ### dfire-case-indicator-add
 
 ***
-Add an indicator to a case. Creates the indicator if it does not exist.
+Adds an indicator to a case. Creates the indicator if it does not exist.
 
 #### Base Command
 
@@ -799,16 +799,16 @@ Add an indicator to a case. Creates the indicator if it does not exist.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The case ID. | Required |
-| value | The IOC value. | Required |
-| stix_type | STIX 2.1 SCO type. Possible values are: ipv4-addr, ipv6-addr, domain-name, url, email-addr, email-message, file, process, windows-registry-key, network-traffic, user-account, mac-addr, software, artifact, autonomous-system, directory, mutex, x509-certificate. | Required |
-| classification | IOC classification. Possible values are: unknown, benign, suspicious, malicious. Default is unknown. | Optional |
-| confidence | Confidence level. Possible values are: low, medium, high. Default is low. | Optional |
-| tlp | TLP designation. Possible values are: clear, green, amber, amber_strict, red. Default is amber. | Optional |
-| context | Case-private notes about this IOC. | Optional |
-| tags | Comma-separated tags. | Optional |
-| source | How this IOC was obtained. Possible values are: manual, automated, threat_intel, sandbox, enrichment, import. | Optional |
-| source_reference | Free-form reference identifying the source (URL, ticket, report name, etc.). | Optional |
-| valid_until | Auto-revoke after this ISO-8601 datetime (e.g. "2026-12-31T00:00:00Z"). | Optional |
+| value | The indicator value. | Required |
+| stix_type | The indicator STIX 2.1 SCO type. Possible values are: ipv4-addr, ipv6-addr, domain-name, url, email-addr, email-message, file, process, windows-registry-key, network-traffic, user-account, mac-addr, software, artifact, autonomous-system, directory, mutex, x509-certificate. | Required |
+| classification | The indicator classification. Possible values are: unknown, benign, suspicious, malicious. Default is unknown. | Optional |
+| confidence | The indicator confidence level. Possible values are: low, medium, high. Default is low. | Optional |
+| tlp | The indicator TLP designation. Possible values are: clear, green, amber, amber_strict, red. Default is amber. | Optional |
+| context | The case private notes about the indicator. | Optional |
+| tags | A comma-separated list of indicator tags. | Optional |
+| source | The source from which the indicator was obtained. Possible values are: manual, automated, threat_intel, sandbox, enrichment, import. | Optional |
+| source_reference | The free-form reference identifying the source (URL, ticket, report name, etc.). | Optional |
+| valid_until | The ISO-8601 datetime after which to automatically invalidate the indicator, for example, "2026-12-31T00:00:00Z". | Optional |
 | decompose | Whether to auto-decompose the indicator (URL→domain, email→domain). Possible values are: true, false. Default is true. | Optional |
 | publish | Whether to publish the indicator immediately after creation. Possible values are: true, false. Default is false. | Optional |
 
@@ -818,12 +818,12 @@ Add an indicator to a case. Creates the indicator if it does not exist.
 | --- | --- | --- |
 | DFIRe.CaseIndicator.id | Number | The association ID. |
 | DFIRe.CaseIndicator.indicator.id | Number | The indicator ID. |
-| DFIRe.CaseIndicator.indicator.value | String | The IOC value. |
+| DFIRe.CaseIndicator.indicator.value | String | The indicator value. |
 
 ### dfire-case-indicator-remove
 
 ***
-Remove an indicator association from a case.
+Removes an indicator association from a case.
 
 #### Base Command
 
@@ -843,7 +843,7 @@ There is no context output for this command.
 ### dfire-ioc-extract
 
 ***
-Extract candidate IOCs from a block of text. Returns suggestions only — does not add them to any case.
+Extracts candidate IOCs from a block of text. Returns suggestions only — does not add them to any case.
 
 #### Base Command
 
@@ -853,18 +853,18 @@ Extract candidate IOCs from a block of text. Returns suggestions only — does n
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| text | Text to scan for IOCs. | Required |
+| text | The text to scan to extract indicators from. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.IOCExtraction.candidates | Unknown | List of extracted IOC candidates. |
+| DFIRe.IOCExtraction.candidates | Unknown | The list of extracted indicator candidates. |
 
 ### dfire-indicator-check
 
 ***
-Batch-check whether IOCs already exist in the global registry.
+Batch-checks whether IOCs already exist in the global registry.
 
 #### Base Command
 
@@ -874,20 +874,20 @@ Batch-check whether IOCs already exist in the global registry.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicators | JSON array of {value, stix_type} objects (mutually exclusive with values+stix_type). | Optional |
-| values | Comma-separated IOC values to check (used with stix_type). | Optional |
-| stix_type | STIX type to use when checking the values arg. Possible values are: ipv4-addr, ipv6-addr, domain-name, url, email-addr, email-message, file, process, windows-registry-key, network-traffic, user-account, mac-addr, software, artifact, autonomous-system, directory, mutex, x509-certificate. | Optional |
+| indicators | The JSON array of {value, stix_type} objects (mutually exclusive with values+stix_type). | Optional |
+| values | A comma-separated indicator values to check (used with stix_type). | Optional |
+| stix_type | The STIX type to use when checking the values argument. Possible values are: ipv4-addr, ipv6-addr, domain-name, url, email-addr, email-message, file, process, windows-registry-key, network-traffic, user-account, mac-addr, software, artifact, autonomous-system, directory, mutex, x509-certificate. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.IndicatorCheck.results | Unknown | Existence/metadata for each submitted indicator. |
+| DFIRe.IndicatorCheck.results | Unknown | The status and details of each submitted indicator. |
 
 ### dfire-indicator-enrich
 
 ***
-Trigger external enrichment for an indicator.
+Triggers external enrichment for an indicator.
 
 #### Base Command
 
@@ -898,8 +898,8 @@ Trigger external enrichment for an indicator.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator_id | The indicator ID. | Required |
-| providers | Comma-separated provider names (omit to run all applicable). | Optional |
-| force | Re-enrich even if cached results exist. Possible values are: true, false. | Optional |
+| providers | A comma-separated list of provider names (omit this to run all providers). | Optional |
+| force | Whether to re-enrich even if cached results exist. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -910,7 +910,7 @@ Trigger external enrichment for an indicator.
 ### dfire-indicator-enrichment-list
 
 ***
-Get cached enrichment results for an indicator.
+Retrieves cached enrichment results for an indicator.
 
 #### Base Command
 
@@ -926,12 +926,12 @@ Get cached enrichment results for an indicator.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Enrichment.enrichments | Unknown | Enrichment records. |
+| DFIRe.Enrichment.enrichments | Unknown | The enrichment records. |
 
 ### dfire-indicator-publish
 
 ***
-Publish an indicator (make it visible to TAXII consumers and STIX exports).
+Publishes an indicator (making it visible to TAXII consumers and STIX exports).
 
 #### Base Command
 
@@ -947,13 +947,13 @@ Publish an indicator (make it visible to TAXII consumers and STIX exports).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Indicator.id | Number | The indicator ID. |
+| DFIRe.Indicator.id | Number | The DFIRe indicator ID. |
 | DFIRe.Indicator.is_published | Boolean | Whether the indicator is published. |
 
 ### dfire-indicator-unpublish
 
 ***
-Unpublish an indicator.
+Unpublishes an indicator.
 
 #### Base Command
 
@@ -969,13 +969,13 @@ Unpublish an indicator.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Indicator.id | Number | The indicator ID. |
+| DFIRe.Indicator.id | Number | The DFIRe indicator ID. |
 | DFIRe.Indicator.is_published | Boolean | Whether the indicator is published. |
 
 ### dfire-indicator-revoke
 
 ***
-Revoke an indicator.
+Revokes an indicator.
 
 #### Base Command
 
@@ -991,13 +991,13 @@ Revoke an indicator.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Indicator.id | Number | The indicator ID. |
+| DFIRe.Indicator.id | Number | The DFIRe indicator ID. |
 | DFIRe.Indicator.is_revoked | Boolean | Whether the indicator is revoked. |
 
 ### dfire-indicator-unrevoke
 
 ***
-Unrevoke an indicator.
+Unrevokes an indicator.
 
 #### Base Command
 
@@ -1013,13 +1013,13 @@ Unrevoke an indicator.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Indicator.id | Number | The indicator ID. |
+| DFIRe.Indicator.id | Number | The DFIRe indicator ID. |
 | DFIRe.Indicator.is_revoked | Boolean | Whether the indicator is revoked. |
 
 ### dfire-indicator-decompose
 
 ***
-Auto-decompose an indicator (URL→domain, email→domain, etc.).
+Auto-decomposes an indicator (URL→domain, email→domain, etc.).
 
 #### Base Command
 
@@ -1035,12 +1035,12 @@ Auto-decompose an indicator (URL→domain, email→domain, etc.).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Indicator.id | Number | The indicator ID. |
+| DFIRe.Indicator.id | Number | The DFIRe indicator ID. |
 
 ### dfire-indicator-add-tags
 
 ***
-Merge a list of tags into the indicator's existing tag set.
+Merges a list of tags into the indicator's existing tag set.
 
 #### Base Command
 
@@ -1051,19 +1051,19 @@ Merge a list of tags into the indicator's existing tag set.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator_id | The indicator ID. | Required |
-| tags | Comma-separated tags to add. | Required |
+| tags | A comma-separated list of tags to add. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Indicator.id | Number | The indicator ID. |
-| DFIRe.Indicator.tags | Unknown | Updated tag list. |
+| DFIRe.Indicator.id | Number | The DFIRe indicator ID. |
+| DFIRe.Indicator.tags | Unknown | The updated tag list. |
 
 ### dfire-indicator-correlated-list
 
 ***
-List indicators that appear in multiple cases.
+Lists indicators that appear in multiple cases.
 
 #### Base Command
 
@@ -1077,12 +1077,12 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.IndicatorCorrelated.results | Unknown | Correlated indicators across cases. |
+| DFIRe.IndicatorCorrelated.results | Unknown | The indicators correlated across cases. |
 
 ### dfire-indicator-bulk-classify
 
 ***
-Bulk-update classification for multiple indicators.
+Bulk-updates classification for multiple indicators.
 
 #### Base Command
 
@@ -1092,19 +1092,19 @@ Bulk-update classification for multiple indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_ids | Comma-separated indicator IDs. | Required |
-| classification | New classification. Possible values are: unknown, benign, suspicious, malicious. | Required |
+| indicator_ids | A comma-separated list of indicator IDs. | Required |
+| classification | The new indicator classification. Possible values are: unknown, benign, suspicious, malicious. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.BulkResult | Unknown | Bulk operation result. |
+| DFIRe.BulkResult | Unknown | The bulk operation result. |
 
 ### dfire-indicator-bulk-confidence
 
 ***
-Bulk-update confidence for multiple indicators.
+The bulk-update confidence for multiple indicators.
 
 #### Base Command
 
@@ -1114,19 +1114,19 @@ Bulk-update confidence for multiple indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_ids | Comma-separated indicator IDs. | Required |
-| confidence | New confidence level. Possible values are: low, medium, high. | Required |
+| indicator_ids | A comma-separated list of indicator IDs. | Required |
+| confidence | The new indicator confidence level. Possible values are: low, medium, high. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.BulkResult | Unknown | Bulk operation result. |
+| DFIRe.BulkResult | Unknown | The bulk operation result. |
 
 ### dfire-indicator-bulk-tag
 
 ***
-Bulk add/remove/set tags on multiple indicators.
+Bulk adds/removes/sets tags on multiple indicators.
 
 #### Base Command
 
@@ -1136,20 +1136,20 @@ Bulk add/remove/set tags on multiple indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_ids | Comma-separated indicator IDs. | Required |
-| tags | Comma-separated tags. | Required |
-| mode | How to apply the tags. Possible values are: add, remove, set. Default is add. | Optional |
+| indicator_ids | A comma-separated list of indicator IDs. | Required |
+| tags | A comma-separated list of indicator tags. | Required |
+| mode | The action to perform on the tags (add, remove, set). Possible values are: add, remove, set. Default is add. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.BulkResult | Unknown | Bulk operation result. |
+| DFIRe.BulkResult | Unknown | The bulk operation result. |
 
 ### dfire-indicator-bulk-tlp
 
 ***
-Bulk-update TLP designation for multiple indicators.
+Bulk-updates TLP designation for multiple indicators.
 
 #### Base Command
 
@@ -1159,19 +1159,19 @@ Bulk-update TLP designation for multiple indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_ids | Comma-separated indicator IDs. | Required |
-| tlp | New TLP designation. Possible values are: clear, green, amber, amber_strict, red. | Required |
+| indicator_ids | A comma-separated list of indicator IDs. | Required |
+| tlp | The new indicator TLP designation. Possible values are: clear, green, amber, amber_strict, red. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.BulkResult | Unknown | Bulk operation result. |
+| DFIRe.BulkResult | Unknown | The bulk operation result. |
 
 ### dfire-indicator-bulk-publish
 
 ***
-Bulk-publish indicators.
+Bulk-publishes indicators.
 
 #### Base Command
 
@@ -1181,20 +1181,20 @@ Bulk-publish indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_ids | Comma-separated indicator IDs. | Required |
+| indicator_ids | A comma-separated list of indicator IDs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.BulkPublishResponse.published_count | Number | Number of indicators published. |
-| DFIRe.BulkPublishResponse.skipped_revoked | Number | Number skipped because revoked. |
-| DFIRe.BulkPublishResponse.skipped_red | Number | Number skipped because TLP:RED. |
+| DFIRe.BulkPublishResponse.published_count | Number | The number of indicators published. |
+| DFIRe.BulkPublishResponse.skipped_revoked | Number | The number of indicators skipped because they were revoked. |
+| DFIRe.BulkPublishResponse.skipped_red | Number | The number of indicators skipped because of TLP status RED. |
 
 ### dfire-indicator-bulk-revoke
 
 ***
-Bulk-revoke indicators.
+Bulk-revokes indicators.
 
 #### Base Command
 
@@ -1204,18 +1204,18 @@ Bulk-revoke indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_ids | Comma-separated indicator IDs. | Required |
+| indicator_ids | A comma-separated list of indicator IDs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.BulkResult | Unknown | Bulk operation result. |
+| DFIRe.BulkResult | Unknown | The bulk operation result. |
 
 ### dfire-indicator-bulk-delete
 
 ***
-Bulk-delete indicators.
+Bulk-deletes indicators.
 
 #### Base Command
 
@@ -1225,18 +1225,18 @@ Bulk-delete indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_ids | Comma-separated indicator IDs. | Required |
+| indicator_ids | A comma-separated list of indicator IDs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.BulkResult | Unknown | Bulk operation result. |
+| DFIRe.BulkResult | Unknown | The bulk operation result. |
 
 ### dfire-case-generate-summary
 
 ***
-Trigger AI-generated executive summary for a case.
+Triggers an AI-generated executive summary for a case.
 
 #### Base Command
 
@@ -1252,12 +1252,12 @@ Trigger AI-generated executive summary for a case.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseSummary | Unknown | Summary result. |
+| DFIRe.CaseSummary | Unknown | The summary result. |
 
 ### dfire-case-chat
 
 ***
-Send a chat message to the case AI assistant.
+Sends a chat message to the case AI assistant.
 
 #### Base Command
 
@@ -1274,12 +1274,12 @@ Send a chat message to the case AI assistant.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseChat | Unknown | Chat response. |
+| DFIRe.CaseChat | Unknown | The chat response. |
 
 ### dfire-case-update-report
 
 ***
-Update the text of an AI-generated report attached to a case (e.g. an executive summary).
+Updates the text of an AI-generated report attached to a case (e.g. an executive summary).
 
 #### Base Command
 
@@ -1290,19 +1290,19 @@ Update the text of an AI-generated report attached to a case (e.g. an executive 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The case ID the report belongs to. | Required |
-| report_id | ID of the generated report to update. | Required |
-| report_text | New report text content. | Required |
+| report_id | The ID of the generated report to update. | Required |
+| report_text | The new report text content. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseReport | Unknown | Updated report. |
+| DFIRe.CaseReport | Unknown | The updated report. |
 
 ### dfire-case-can-report-list
 
 ***
-List CAN (Case Activity Notice) reports for a case.
+Lists CAN (Case Activity Notice) reports for a case.
 
 #### Base Command
 
@@ -1318,12 +1318,12 @@ List CAN (Case Activity Notice) reports for a case.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CANReport.id | Number | CAN report ID. |
+| DFIRe.CANReport.id | Number | The CAN report ID. |
 
 ### dfire-case-can-report-generate
 
 ***
-Generate a new CAN report for a case.
+Generates a new CAN report for a case.
 
 #### Base Command
 
@@ -1334,18 +1334,18 @@ Generate a new CAN report for a case.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The case ID. | Required |
-| body | Optional JSON body describing the report parameters. | Optional |
+| body | The optional JSON body describing the report parameters. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CANReport.id | Number | Generated report ID. |
+| DFIRe.CANReport.id | Number | The generated report ID. |
 
 ### dfire-case-investigation-report-get
 
 ***
-Get the investigation report for a case.
+Retrieves the investigation report for a case.
 
 #### Base Command
 
@@ -1361,12 +1361,12 @@ Get the investigation report for a case.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.InvestigationReport | Unknown | Investigation report. |
+| DFIRe.InvestigationReport | Unknown | The investigation report. |
 
 ### dfire-case-investigation-report-generate
 
 ***
-Generate AI content for a single section of a case's investigation report. Returns preview content; does not auto-save.
+Generates AI content for a single section of a case's investigation report. Returns preview content; does not auto-save.
 
 #### Base Command
 
@@ -1377,19 +1377,19 @@ Generate AI content for a single section of a case's investigation report. Retur
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The case ID. | Required |
-| section_id | ID of the report section to generate content for. | Required |
+| section_id | The ID of the report section to generate content for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.InvestigationReport.content | String | Generated section content. |
-| DFIRe.InvestigationReport.model | String | Model used to generate the content. |
+| DFIRe.InvestigationReport.content | String | The generated section content. |
+| DFIRe.InvestigationReport.model | String | The model used to generate the content. |
 
 ### dfire-case-investigation-report-finalize
 
 ***
-Finalize the investigation report for a case.
+Finalizes the investigation report for a case.
 
 #### Base Command
 
@@ -1405,12 +1405,12 @@ Finalize the investigation report for a case.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.InvestigationReport | Unknown | Finalized investigation report. |
+| DFIRe.InvestigationReport | Unknown | The finalized investigation report. |
 
 ### dfire-case-investigation-report-ready-for-qa
 
 ***
-Mark a single section of the investigation report as ready for QA review.
+Marks a single section of the investigation report as ready for QA review.
 
 #### Base Command
 
@@ -1421,18 +1421,18 @@ Mark a single section of the investigation report as ready for QA review.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The case ID. | Required |
-| section_id | ID of the report section to mark ready for QA. | Required |
+| section_id | The ID of the report section to mark ready for QA. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.InvestigationReport | Unknown | Investigation report section after the state change. |
+| DFIRe.InvestigationReport | Unknown | The investigation report section after the state change. |
 
 ### dfire-case-timeline-change-phase
 
 ***
-Move a case to a new incident-response phase.
+Moves a case to a new response phase in the timeline.
 
 #### Base Command
 
@@ -1443,20 +1443,20 @@ Move a case to a new incident-response phase.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The case ID. | Required |
-| phase_id | Target phase ID. | Optional |
-| phase_name | Target phase name (used if phase_id is omitted). | Optional |
-| note | Optional note explaining the phase change. | Optional |
+| phase_id | The target phase ID. | Optional |
+| phase_name | The target phase name (used if phase_id is omitted). | Optional |
+| note | The optional note explaining the phase change. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.TimelineEvent.id | Number | Created phase-change timeline event ID. |
+| DFIRe.TimelineEvent.id | Number | The created phase change timeline event ID. |
 
 ### dfire-case-todo-list
 
 ***
-List todos for a case.
+Lists todos for a case.
 
 #### Base Command
 
@@ -1472,14 +1472,14 @@ List todos for a case.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseTodo.id | Number | Todo ID. |
-| DFIRe.CaseTodo.title | String | Todo title. |
-| DFIRe.CaseTodo.status | String | Todo status. |
+| DFIRe.CaseTodo.id | Number | The todo ID. |
+| DFIRe.CaseTodo.title | String | The todo title. |
+| DFIRe.CaseTodo.status | String | The todo status. |
 
 ### dfire-case-todo-get
 
 ***
-Get a single todo with full details.
+Retrieves a single todo with full details.
 
 #### Base Command
 
@@ -1496,12 +1496,12 @@ Get a single todo with full details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseTodo.id | Number | Todo ID. |
+| DFIRe.CaseTodo.id | Number | The todo ID. |
 
 ### dfire-case-todo-assign
 
 ***
-Assign a todo to a user.
+Assigns a todo to a user.
 
 #### Base Command
 
@@ -1513,19 +1513,19 @@ Assign a todo to a user.
 | --- | --- | --- |
 | case_id | The case ID. | Required |
 | todo_id | The todo ID. | Required |
-| assignee_id | User ID of the assignee. | Optional |
+| user_id | The user ID of the assignee. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseTodo.id | Number | Todo ID. |
-| DFIRe.CaseTodo.assignee_name | String | Assignee display name. |
+| DFIRe.CaseTodo.id | Number | The todo ID. |
+| DFIRe.CaseTodo.assignee_name | String | The assignee display name. |
 
 ### dfire-case-todo-note-set
 
 ***
-Set or replace the note on a todo.
+Sets or replaces the note on a todo.
 
 #### Base Command
 
@@ -1537,18 +1537,18 @@ Set or replace the note on a todo.
 | --- | --- | --- |
 | case_id | The case ID. | Required |
 | todo_id | The todo ID. | Required |
-| note | New note content. | Required |
+| note | The new note content. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseTodo.id | Number | Todo ID. |
+| DFIRe.CaseTodo.id | Number | The todo ID. |
 
 ### dfire-case-todo-attach-runbook
 
 ***
-Attach a runbook to a todo.
+Attaches a runbook to a todo.
 
 #### Base Command
 
@@ -1560,19 +1560,19 @@ Attach a runbook to a todo.
 | --- | --- | --- |
 | case_id | The case ID. | Required |
 | todo_id | The todo ID. | Required |
-| runbook_slug | Runbook slug to attach. | Required |
+| runbook_slug | The runbook slug to attach. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseTodo.id | Number | Todo ID. |
-| DFIRe.CaseTodo.runbook_slug | String | Attached runbook slug. |
+| DFIRe.CaseTodo.id | Number | The todo ID. |
+| DFIRe.CaseTodo.runbook_slug | String | The attached runbook slug. |
 
 ### dfire-case-todo-detach-runbook
 
 ***
-Detach the runbook from a todo.
+Detaches the runbook from a todo.
 
 #### Base Command
 
@@ -1589,12 +1589,12 @@ Detach the runbook from a todo.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseTodo.id | Number | Todo ID. |
+| DFIRe.CaseTodo.id | Number | The todo ID. |
 
 ### dfire-case-timer-list
 
 ***
-List SLA timers for a case.
+Lists the SLA timers for a case.
 
 #### Base Command
 
@@ -1610,14 +1610,14 @@ List SLA timers for a case.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseTimer.id | Number | Timer ID. |
-| DFIRe.CaseTimer.name | String | Timer name. |
-| DFIRe.CaseTimer.framework | String | Compliance framework. |
+| DFIRe.CaseTimer.id | Number | The timer ID. |
+| DFIRe.CaseTimer.name | String | The timer name. |
+| DFIRe.CaseTimer.framework | String | The compliance framework. |
 
 ### dfire-case-timer-get
 
 ***
-Get a single SLA timer.
+Retrieves a single SLA timer.
 
 #### Base Command
 
@@ -1634,12 +1634,12 @@ Get a single SLA timer.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseTimer.id | Number | Timer ID. |
+| DFIRe.CaseTimer.id | Number | The timer ID. |
 
 ### dfire-case-timer-complete
 
 ***
-Mark a case SLA timer as complete.
+Marks a case SLA timer as complete.
 
 #### Base Command
 
@@ -1656,12 +1656,12 @@ Mark a case SLA timer as complete.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseTimer.id | Number | Timer ID. |
+| DFIRe.CaseTimer.id | Number | The timer ID. |
 
 ### dfire-case-timer-reset
 
 ***
-Reset a case SLA timer.
+Resets a case SLA timer.
 
 #### Base Command
 
@@ -1678,12 +1678,12 @@ Reset a case SLA timer.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.CaseTimer.id | Number | Timer ID. |
+| DFIRe.CaseTimer.id | Number | The timer ID. |
 
 ### dfire-case-get-by-number
 
 ***
-Look up a case by its human-readable case number.
+Looks up a case by its human-readable case number.
 
 #### Base Command
 
@@ -1705,7 +1705,7 @@ Look up a case by its human-readable case number.
 ### dfire-item-resolve-short-id
 
 ***
-Resolve an 8-character item short ID to its full UUID and parent case ID.
+Resolves an 8-character item short ID to its full UUID and parent case ID.
 
 #### Base Command
 
@@ -1715,7 +1715,7 @@ Resolve an 8-character item short ID to its full UUID and parent case ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| short_id | First 8 characters of the item UUID. | Required |
+| short_id | The first 8 characters of the item UUID. | Required |
 
 #### Context Output
 
@@ -1727,7 +1727,7 @@ Resolve an 8-character item short ID to its full UUID and parent case ID.
 ### dfire-incident-category-list
 
 ***
-List ENISA incident categories (useful for picklists).
+Lists ENISA incident categories (useful for picklists).
 
 #### Base Command
 
@@ -1741,13 +1741,13 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.IncidentCategory.id | Number | Category ID. |
-| DFIRe.IncidentCategory.name | String | Category name. |
+| DFIRe.IncidentCategory.id | Number | The category ID. |
+| DFIRe.IncidentCategory.name | String | The category name. |
 
 ### dfire-incident-phase-list
 
 ***
-List configured incident-response phases.
+Lists configured incident-response phases.
 
 #### Base Command
 
@@ -1761,13 +1761,13 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.IncidentPhase.id | Number | Phase ID. |
-| DFIRe.IncidentPhase.name | String | Phase name. |
+| DFIRe.IncidentPhase.id | Number | The phase ID. |
+| DFIRe.IncidentPhase.name | String | The phase name. |
 
 ### dfire-outcome-verdict-list
 
 ***
-List case outcome verdicts (true positive, false positive, etc.).
+Lists case outcome verdicts (true positive, false positive, etc.).
 
 #### Base Command
 
@@ -1781,13 +1781,13 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.OutcomeVerdict.id | Number | Verdict ID. |
-| DFIRe.OutcomeVerdict.name | String | Verdict name. |
+| DFIRe.OutcomeVerdict.id | Number | The verdict ID. |
+| DFIRe.OutcomeVerdict.name | String | The verdict name. |
 
 ### dfire-project-list
 
 ***
-List projects.
+Lists projects.
 
 #### Base Command
 
@@ -1801,13 +1801,13 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Project.id | Number | Project ID. |
-| DFIRe.Project.name | String | Project name. |
+| DFIRe.Project.id | Number | The project ID. |
+| DFIRe.Project.name | String | The project name. |
 
 ### dfire-runbook-list
 
 ***
-List available runbooks (used for todo runbook attachments).
+Lists available runbooks (used for todo runbook attachments).
 
 #### Base Command
 
@@ -1821,13 +1821,13 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Runbook.slug | String | Runbook slug. |
-| DFIRe.Runbook.name | String | Runbook name. |
+| DFIRe.Runbook.slug | String | The runbook slug. |
+| DFIRe.Runbook.name | String | The runbook name. |
 
 ### dfire-group-list
 
 ***
-List user groups.
+Lists user groups.
 
 #### Base Command
 
@@ -1841,5 +1841,5 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DFIRe.Group.id | Number | Group ID. |
-| DFIRe.Group.name | String | Group name. |
+| DFIRe.Group.id | Number | The user group ID. |
+| DFIRe.Group.name | String | The user group name. |
