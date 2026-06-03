@@ -21,9 +21,7 @@ EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
 MAX_PAGINATION_DURATION_SECONDS = 90  # Lowered from 120 to leave more margin within the 5-min Docker timeout
-# Halved from 10000 to bound per-thread peak memory (~150MB vs ~300MB) when
-# the 3 worker threads overlap during ship. ~10s slower per 100K events.
-MAX_PAGE_SIZE = 5000
+MAX_PAGE_SIZE = 10000  # Armis recommended max page size per request
 TOKEN_TTL_SECONDS = 30 * 60  # Armis token TTL is exactly 30 minutes (confirmed by Armis)
 TOKEN_REFRESH_BUFFER_SECONDS = 5 * 60  # Refresh 5 minutes before expiry (at 25 min mark)
 BULK_ENRICHMENT_BATCH_SIZE = 1000  # IDs per bulk enrichment query (Armis-recommended)
@@ -1544,24 +1542,24 @@ def main():  # pragma: no cover
     #   - activities/devices use DATE_FORMAT without timezone (e.g. "2026-06-01T13:31:52")
     # Both are accepted by arg_to_datetime so this is defensive but exact-format-match.
     # Setting *_last_fetch_next_field=0 resets pagination cursors to start fresh.
-    _stress_test_marker = "stress_test_v1_done"
+    _stress_test_marker = "stress_test_v2_done"
     _stress_ctx = demisto.getIntegrationContext()
     if _stress_ctx.get(_stress_test_marker) != "done":
-        demisto.info("=== STRESS TEST: overriding last_run to fetch ~1 week of backlog ===")
+        demisto.info("=== STRESS TEST v2: overriding last_run to May 10 (heavy alert window) with 10K pages ===")
         last_run = {
-            "alerts_last_fetch_time": "2026-05-26T09:00:00+00:00",
+            "alerts_last_fetch_time": "2026-05-10T00:00:00+00:00",
             "alerts_last_fetch_ids": [],
             "alerts_last_fetch_next_field": 0,
-            "activity_last_fetch_time": "2026-05-26T09:00:00",
+            "activity_last_fetch_time": "2026-05-10T00:00:00",
             "activity_last_fetch_ids": [],
             "activity_last_fetch_next_field": 0,
-            "devices_last_fetch_time": "2026-05-26T09:00:00",
+            "devices_last_fetch_time": "2026-05-10T00:00:00",
             "devices_last_fetch_ids": [],
             "devices_last_fetch_next_field": 0,
         }
         _stress_ctx[_stress_test_marker] = "done"
         demisto.setIntegrationContext(_stress_ctx)
-        demisto.info("=== STRESS TEST: marker set, last_run overridden — subsequent cycles will run normally ===")
+        demisto.info("=== STRESS TEST v2: marker set, last_run overridden — subsequent cycles will run normally ===")
 
     access_token = demisto.getIntegrationContext().get("access_token")
     api_key = params.get("credentials", {}).get("password")
