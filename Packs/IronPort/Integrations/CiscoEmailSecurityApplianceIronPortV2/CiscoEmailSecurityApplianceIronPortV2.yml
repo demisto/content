@@ -1824,7 +1824,7 @@ script:
             - "true"
             - "false"
         - name: order
-          description: The 1-based position in the filter list. Defaults to append-to-end when omitted.
+          description: The 1-based position in the filter list. If omitted, or if the value exceeds the current number of filters, the filter is appended to the end of the list.
     - name: cisco-esa-message-filter-update
       description: Update an existing message filter. Only the supplied fields (`active`, `order`) are sent — at least one must be provided.
       arguments:
@@ -1850,7 +1850,7 @@ script:
             - "true"
             - "false"
         - name: order
-          description: The new 1-based position in the filter list.
+          description: The new 1-based position in the filter list. Must be within the range of existing filter positions (1 to the current filter count).
     - name: cisco-esa-message-filter-delete
       description: Delete a message filter.
       arguments:

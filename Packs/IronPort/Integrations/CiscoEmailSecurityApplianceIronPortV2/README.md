@@ -2504,7 +2504,7 @@ Create a new message filter. If the appliance accepts the filter but flags it as
 | filter_name | The name for the new filter. | Required |
 | rules_and_actions | The full Cisco filter DSL: `if (&lt;conditions&gt;) { &lt;actions&gt;; }`. See the Cisco AsyncOS for Email Security Admin Guide for the DSL reference. | Required |
 | active | Whether the filter should be active on creation. Possible values are: true, false. Default is true. | Optional |
-| order | The 1-based position in the filter list. Defaults to append-to-end when omitted. | Optional |
+| order | The 1-based position in the filter list. If omitted, or if the value exceeds the current number of filters, the filter is appended to the end of the list. | Optional |
 
 #### Context Output
 
@@ -2528,7 +2528,7 @@ Update an existing message filter. Only the supplied fields (`active`, `order`) 
 | host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
 | filter_name | The name of the filter to update. | Required |
 | active | Whether to enable or disable the filter. Possible values are: true, false. | Optional |
-| order | The new 1-based position in the filter list. | Optional |
+| order | The new 1-based position in the filter list. Must be within the range of existing filter positions (1 to the current filter count). | Optional |
 
 #### Context Output
 
