@@ -983,6 +983,112 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.TaskID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.StartDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.EndDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GravityZone.MemoryDump.DownloadURL
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1207,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 1a5d2d2f-eeb6-4f89-b015-f8f3a8490992
+    type: regular
+    task:
+      id: 1a5d2d2f-eeb6-4f89-b015-f8f3a8490992
+      version: -1
+      name: gz-endpoint-memory-dump-status
+      script: GravityZone|||gz-endpoint-memory-dump-status
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      endpoint_id:
+        simple: ${GravityZone.MemoryDump.EndpointID}
+      polling:
+        simple: "true"
+      task_id:
+        simple: ${GravityZone.MemoryDump.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1724,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: f918a659-13d9-4844-8fce-2763bd6f6e74
+    type: condition
+    task:
+      id: f918a659-13d9-4844-8fce-2763bd6f6e74
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
       - "23"
     separatecontext: false
     conditions:
@@ -991,44 +1097,44 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.EndpointMemoryDump.TaskID
+              simple: GravityZone.MemoryDump.TaskID
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.EndpointMemoryDump.Status
+              simple: GravityZone.MemoryDump.Status
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.EndpointMemoryDump.EndpointID
+              simple: GravityZone.MemoryDump.EndpointID
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.EndpointMemoryDump.Hostname
+              simple: GravityZone.MemoryDump.Hostname
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.EndpointMemoryDump.StartDate
+              simple: GravityZone.MemoryDump.StartDate
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.EndpointMemoryDump.EndDate
+              simple: GravityZone.MemoryDump.EndDate
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GravityZone.EndpointMemoryDump.DownloadURL
+              simple: GravityZone.MemoryDump.DownloadURL
             iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1207,
-          "y": 1400
+          "x": 1724,
+          "y": 1417
         }
       }
     note: false
