@@ -2710,11 +2710,6 @@ def message_filter_list_command(client: Client, args: dict[str, Any]) -> Command
 
     host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
 
-    demisto.debug(
-        "cisco-esa-message-filter-list: calling Cisco with "
-        f"filter_name={filter_name!r}, mode={mode!r}, host_name={host_name!r}, group_name={group_name!r}"
-    )
-
     response = client.message_filter_list_request(
         filter_name=filter_name or None,
         mode=mode,
@@ -2792,11 +2787,6 @@ def message_filter_create_command(client: Client, args: dict[str, Any]) -> Comma
 
     host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
 
-    demisto.debug(
-        "cisco-esa-message-filter-create: calling Cisco with "
-        f"filter_name={filter_name!r}, mode={mode!r}, host_name={host_name!r}, group_name={group_name!r}"
-    )
-
     response = client.message_filter_create_request(
         filter_name=filter_name,
         rules_and_actions=rules_and_actions,
@@ -2810,7 +2800,7 @@ def message_filter_create_command(client: Client, args: dict[str, Any]) -> Comma
     readable_output = f"Filter {filter_name} was added successfully."
     warning = (response.get("meta") or {}).get("warning")
     if warning:
-        demisto.debug(f"cisco-esa-message-filter-create: appliance returned meta.warning={warning!r} for filter={filter_name!r}")
+        demisto.debug(f"appliance returned meta.warning={warning!r} for filter={filter_name!r}")
         readable_output += f"\n\n**Warning:** {warning}"
 
     return CommandResults(
@@ -2840,11 +2830,6 @@ def message_filter_update_command(client: Client, args: dict[str, Any]) -> Comma
     order = arg_to_number(args.get("order"))
 
     host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
-
-    demisto.debug(
-        "cisco-esa-message-filter-update: calling Cisco with "
-        f"filter_name={filter_name!r}, mode={mode!r}, host_name={host_name!r}, group_name={group_name!r}"
-    )
 
     response = client.message_filter_update_request(
         filter_name=filter_name,
