@@ -553,6 +553,209 @@ def process_case_response(resp):
     return reply
 
 
+def _is_or_connector(block: dict) -> bool:
+    """Port of BiocIndicatorComponent.isOrConnector()."""
+    return block.get("render_type") == "connector" and block.get("pretty_name") == "OR"
+
+
+def _find_closing_parenthesis_after(data: list[dict], start_index: int) -> int:
+    """Port of BiocIndicatorComponent.findClosingParenthesisAfter()."""
+    closing_index = start_index
+    for i in range(start_index, len(data)):
+        if _is_or_connector(data[i]):
+            closing_index = i - 1
+            break
+    if closing_index == start_index:
+        closing_index = len(data) - 1
+    return closing_index
+
+
+def _add_parenthesis_metadata(data: list[dict]) -> None:
+    """Port of BiocIndicatorComponent.addParenthesisMetadata().
+
+    Mutates the (already deep-copied) token list in place, wrapping OR-groups in
+    parentheses by prefixing/suffixing the relevant tokens' `pretty_name`.
+    """
+    indexes_with_parenthesis: list[int] = []
+    value_before_index: int | None = None
+    or_block_start_before_index = 0
+    for i, block in enumerate(data):
+        if block.get("render_type") == "value":
+            value_before_index = i
+
+        if _is_or_connector(block):
+            or_index = i
+            try:
+                if (
+                    value_before_index is not None
+                    and or_block_start_before_index < len(data)
+                    and value_before_index < len(data)
+                    and or_block_start_before_index not in indexes_with_parenthesis
+                    and value_before_index not in indexes_with_parenthesis
+                ):
+                    # Add wrapping parenthesis PREVIOUS the 'OR' operator
+                    data[or_block_start_before_index]["pretty_name"] = "(" + str(
+                        data[or_block_start_before_index].get("pretty_name", "")
+                    )
+                    data[value_before_index]["pretty_name"] = str(data[value_before_index].get("pretty_name", "")) + ")"
+                    indexes_with_parenthesis.append(or_block_start_before_index)
+                    indexes_with_parenthesis.append(value_before_index)
+                if (
+                    i + 1 < len(data)
+                    and i + 3 < len(data)
+                    and (i + 1) not in indexes_with_parenthesis
+                    and (i + 3) not in indexes_with_parenthesis
+                ):
+                    # Add wrapping parenthesis AFTER the 'OR' operator
+                    closing_index = _find_closing_parenthesis_after(data, or_index + 1)
+                    data[i + 1]["pretty_name"] = "(" + str(data[i + 1].get("pretty_name", ""))
+                    data[closing_index]["pretty_name"] = str(data[closing_index].get("pretty_name", "")) + ")"
+                    indexes_with_parenthesis.append(i + 1)
+                    indexes_with_parenthesis.append(closing_index)
+            except (IndexError, KeyError):
+                # cannot add parenthesis before and after OR
+                pass
+            or_block_start_before_index = i
+
+
+def render_bioc_description(indicator_data: list[dict], render_type: str = "DESCRIPTION_PIPE", hide_and: bool = False) -> str:  # noqa: C901
+    """Render a BIOC/IOC structured `description` (list of dicts) into plain text.
+
+    Python port of the front-end `BiocIndicatorComponent.createIndicatorHtml()`
+    plain-text (`ruleInnerTitle`) path. The XDR BIOC issue `description` returned
+    by /api/webapp/get_data (table_name=ALERTS_VIEW_TABLE) is a list of token
+    dicts, each with `render_type` (entity|attribute|operator|connector|value|
+    introduction), `pretty_name`, and optionally `dml_ui`. This produces the same
+    readable string the UI shows in the description cell - text only, no markup.
+
+    Args:
+        indicator_data: The structured indicator token list.
+        render_type: DESCRIPTION_PIPE / DESCRIPTION_NEWLINE / IOC / EVENT - controls
+            attribute separators, matching the UI.
+        hide_and: When True, suppresses the implicit "AND" entity connector.
+
+    Returns:
+        The rendered plain-text description.
+    """
+    entity_connector = "AND"
+    data = copy.deepcopy(indicator_data)
+    _add_parenthesis_metadata(data)
+
+    inner_title = ""
+    has_open_brackets = False
+    count_open_nested_brackets = 0
+    previous_entity_is_dml = False
+    last_index = len(data) - 1
+
+    for i, block in enumerate(data):
+        render_block_type = block.get("render_type")
+        text = str(block.get("pretty_name", ""))
+
+        if render_block_type == "connector":
+            inner_title += f"{text} " if text == "," else f" {text} "
+
+        elif render_block_type == "entity":
+            not_first_entity = last_index != i and i != 0
+            if not_first_entity:
+                if has_open_brackets and block.get("dml_ui") is not True:
+                    close_nested_brackets = ""
+                    if block.get("dml_ui") is False and count_open_nested_brackets > 0:
+                        close_nested_brackets = "]" * count_open_nested_brackets
+                        count_open_nested_brackets = 0
+                    inner_title += f" ]{close_nested_brackets} {entity_connector} "
+                    has_open_brackets = False
+                elif has_open_brackets and previous_entity_is_dml and count_open_nested_brackets > 0:
+                    count_open_nested_brackets -= 1
+                    inner_title += f" ] {entity_connector} "
+                else:
+                    previous_block = data[i - 1] if i - 1 >= 0 else None
+                    added_space = ""
+                    if (
+                        block.get("dml_ui") is True
+                        and previous_block
+                        and previous_block.get("render_type") != "entity"
+                    ) or not has_open_brackets:
+                        added_space = " "
+                    added_connector = (
+                        ""
+                        if (previous_block and previous_block.get("render_type") == "entity") or hide_and
+                        else entity_connector
+                    )
+                    inner_title += f"{added_space}{added_connector}{added_space}"
+            inner_title += f"{text} "
+            next_block = data[i + 1] if i + 1 <= last_index else None
+            if (not not_first_entity) and i == 0 and block.get("pretty_name") == "All Actions":
+                inner_title += f" {entity_connector}"
+            if next_block and (
+                next_block.get("render_type") == "attribute"
+                or (next_block.get("render_type") == "entity" and next_block.get("dml_ui") is True)
+            ):
+                inner_title += " [ "
+                has_open_brackets = True
+                if block.get("dml_ui") is True:
+                    count_open_nested_brackets += 1
+            previous_entity_is_dml = bool(block.get("dml_ui"))
+
+        elif render_block_type == "introduction":
+            intro = text.strip()
+            if intro and intro.endswith("-"):
+                intro = intro[:-1]
+            inner_title += f"{intro}"
+
+        elif render_block_type == "attribute":
+            if i > 0 and render_type in ("IOC", "EVENT"):
+                inner_title += f" {text}"
+            elif render_type in ("DESCRIPTION_PIPE", "DESCRIPTION_NEWLINE"):
+                inner_title += f"{chr(10) if i > 0 else ''}{text}"
+            else:
+                inner_title += f"{text}"
+
+        elif render_block_type == "operator":
+            inner_title += f" {text} "
+
+        elif render_block_type == "value":
+            inner_title += f"{text}"
+
+        if i == last_index and has_open_brackets:
+            inner_title += " ]"
+            has_open_brackets = False
+
+    return inner_title
+
+
+def render_bioc_issue_description(issue: dict | str) -> dict | str:
+    """Render a BIOC issue's structured `description` into plain text, in place.
+
+    The backend (/api/webapp/get_data, table_name=ALERTS_VIEW_TABLE) returns the
+    `description` of an XDR BIOC issue as a list of indicator "render link" dicts
+    (see `render_bioc_description`). Other sources (and XQL BIOCs) return a plain
+    string. To match what the UI shows, we render ONLY BIOC issues whose
+    description is a structured list, leaving all other issues untouched.
+
+    A BIOC issue is identified by its source field (internal value "BIOC", or the
+    UI pretty values "XDR BIOC" / "XDR Analytics BIOC") AND a description that is
+    a list. Both the pre-rename (`alert_*`) and post-rename (`issue_*`) key names
+    are handled so this is safe to call before or after `alert_to_issue`.
+
+    Args:
+        issue: A single issue dict from the core-get-issues response.
+
+    Returns:
+        The same issue dict, with its description rendered to text when applicable.
+    """
+    if not isinstance(issue, dict):
+        return issue
+
+    source = issue.get("issue_source") or issue.get("alert_source") or ""
+    is_bioc = "BIOC" in str(source)
+
+    for key in ("description", "issue_description", "alert_description"):
+        value = issue.get(key)
+        if is_bioc and isinstance(value, list):
+            issue[key] = render_bioc_description(value)
+    return issue
+
+
 def issue_to_alert(args: dict | str) -> dict | str:
     return replace_substring(args, "issue", "alert")
 
@@ -4040,7 +4243,9 @@ def get_issues_command(client: Client, args: dict) -> list[CommandResults]:
     response: list[CommandResults] = get_issues_by_filter_command(client, args)
     output_keys = argToList(args.pop("output_keys", []))
     if isinstance(response[0].outputs, list) and response[0].outputs:
-        response[0].outputs = [alert_to_issue(output) for output in response[0].outputs]
+        # Rename alert_* keys to issue_*, then render the structured BIOC description
+        # (a list of indicator render-links) into plain text - matching the UI.
+        response[0].outputs = [render_bioc_issue_description(alert_to_issue(output)) for output in response[0].outputs]
 
         if output_keys:
             response[0].outputs = filter_context_fields(output_keys, response[0].outputs)

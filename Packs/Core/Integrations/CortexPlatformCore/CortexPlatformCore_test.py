@@ -12314,3 +12314,149 @@ class TestGetPlatformSpecificProfileDefaults:
         assert result["agent_settings"] == "Default"  # Still defaults
         assert result["restrictions"] == "Default"  # Still defaults
         assert result["exceptions"] == "Default (No Exceptions)"  # Still defaults
+
+
+# ---------------------------------------------------------------------------
+# BIOC issue description rendering (render_bioc_description / render_bioc_issue_description)
+# ---------------------------------------------------------------------------
+
+
+def test_render_bioc_description_simple_attribute_operator_value():
+    """
+    GIVEN: A structured BIOC indicator with a single attribute = value clause.
+    WHEN:  render_bioc_description is called.
+    THEN:  The plain text mirrors the UI ("<attr> <op> <value>").
+    """
+    from CortexPlatformCore import render_bioc_description
+
+    indicator = [
+        {"render_type": "attribute", "pretty_name": "Action File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "evil.exe"},
+    ]
+
+    assert render_bioc_description(indicator) == "Action File Name = evil.exe"
+
+
+def test_render_bioc_description_entity_with_brackets_and_and():
+    """
+    GIVEN: Two entities each with an attribute clause.
+    WHEN:  render_bioc_description is called.
+    THEN:  AND connector and [ ] brackets are inserted like the UI.
+    """
+    from CortexPlatformCore import render_bioc_description
+
+    indicator = [
+        {"render_type": "entity", "pretty_name": "Actor Process"},
+        {"render_type": "attribute", "pretty_name": "Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "a.exe"},
+        {"render_type": "entity", "pretty_name": "Causality Actor"},
+        {"render_type": "attribute", "pretty_name": "Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "b.exe"},
+    ]
+
+    result = render_bioc_description(indicator)
+    assert "AND" in result
+    assert "[" in result and "]" in result
+    assert "a.exe" in result and "b.exe" in result
+
+
+def test_render_bioc_description_or_group_parentheses():
+    """
+    GIVEN: An indicator containing an OR connector.
+    WHEN:  render_bioc_description is called.
+    THEN:  The OR group is wrapped in parentheses (addParenthesisMetadata).
+    """
+    from CortexPlatformCore import render_bioc_description
+
+    indicator = [
+        {"render_type": "attribute", "pretty_name": "File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "a.exe"},
+        {"render_type": "connector", "pretty_name": "OR"},
+        {"render_type": "attribute", "pretty_name": "File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "b.exe"},
+    ]
+
+    result = render_bioc_description(indicator)
+    assert "OR" in result
+    assert "(" in result and ")" in result
+
+
+def test_render_bioc_issue_description_only_bioc_with_list():
+    """
+    GIVEN: A BIOC issue whose description is a structured list.
+    WHEN:  render_bioc_issue_description is called.
+    THEN:  The description is rendered to a plain string.
+    """
+    from CortexPlatformCore import render_bioc_issue_description
+
+    issue = {
+        "issue_source": "XDR BIOC",
+        "description": [
+            {"render_type": "attribute", "pretty_name": "Action File Name"},
+            {"render_type": "operator", "pretty_name": "="},
+            {"render_type": "value", "pretty_name": "evil.exe"},
+        ],
+    }
+
+    result = render_bioc_issue_description(issue)
+    assert result["description"] == "Action File Name = evil.exe"
+    assert isinstance(result["description"], str)
+
+
+def test_render_bioc_issue_description_non_bioc_untouched():
+    """
+    GIVEN: A non-BIOC issue (even if description were a list).
+    WHEN:  render_bioc_issue_description is called.
+    THEN:  The description is left unchanged.
+    """
+    from CortexPlatformCore import render_bioc_issue_description
+
+    description_list = [
+        {"render_type": "attribute", "pretty_name": "Action File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "evil.exe"},
+    ]
+    issue = {"issue_source": "XDR Analytics", "description": list(description_list)}
+
+    result = render_bioc_issue_description(issue)
+    assert result["description"] == description_list  # unchanged list
+
+
+def test_render_bioc_issue_description_xql_bioc_string_untouched():
+    """
+    GIVEN: An XQL BIOC issue whose description is already a plain string.
+    WHEN:  render_bioc_issue_description is called.
+    THEN:  The string description is left unchanged (only lists are rendered).
+    """
+    from CortexPlatformCore import render_bioc_issue_description
+
+    issue = {"issue_source": "XDR BIOC", "description": "dataset = xdr_data | filter ..."}
+
+    result = render_bioc_issue_description(issue)
+    assert result["description"] == "dataset = xdr_data | filter ..."
+
+
+def test_render_bioc_issue_description_handles_alert_key_before_rename():
+    """
+    GIVEN: A BIOC issue still using pre-rename keys (alert_source/alert_description).
+    WHEN:  render_bioc_issue_description is called.
+    THEN:  The alert_description list is rendered to text.
+    """
+    from CortexPlatformCore import render_bioc_issue_description
+
+    issue = {
+        "alert_source": "BIOC",
+        "alert_description": [
+            {"render_type": "attribute", "pretty_name": "Action File Name"},
+            {"render_type": "operator", "pretty_name": "="},
+            {"render_type": "value", "pretty_name": "evil.exe"},
+        ],
+    }
+
+    result = render_bioc_issue_description(issue)
+    assert result["alert_description"] == "Action File Name = evil.exe"
