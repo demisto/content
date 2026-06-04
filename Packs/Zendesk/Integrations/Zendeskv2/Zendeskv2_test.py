@@ -1123,3 +1123,146 @@ class TestFetchIncidents:
             assert demisto_incidents_mock.call_args[0][0][0]["attachment"] == [
                 {"path": "77fe1c6d-3096-4f1c-80c7-4e7c8573d580", "name": "TestFile.json"}
             ]
+
+
+class TestCommandArgumentHandling:
+    """Verifies that command methods which accept ``**kwargs`` tolerate the
+    canonical, redundant and unexpected keyword arguments that ``demisto.args()``
+    may forward when a command is invoked from the platform.
+    """
+
+    EXTRA_REDUNDANT_ARGS = {"verbose": "true", "using": "default"}
+    EXTRA_UNEXPECTED_ARGS = {"nonexistent_param": "value", "another_unknown": 42}
+
+    @pytest.mark.parametrize(
+        "func_name, required_args",
+        [
+            pytest.param(
+                "zendesk_user_delete",
+                {"user_id": "1"},
+                id="zendesk-user-delete",
+            ),
+            pytest.param(
+                "zendesk_ticket_delete",
+                {"ticket_id": "10"},
+                id="zendesk-ticket-delete",
+            ),
+            pytest.param(
+                "zendesk_attachment_get_command",
+                {"attachment_id": 123},
+                id="zendesk-attachment-get",
+            ),
+            pytest.param(
+                "zendesk_search",
+                {"query": "type:ticket"},
+                id="zendesk-search",
+            ),
+        ],
+    )
+    class TestSimpleClientCommands:
+        """Commands invoked on the ZendeskClient instance with all I/O mocked."""
+
+        @staticmethod
+        @pytest.fixture
+        def stub_http(mocker, zendesk_client):
+            """Mock ``_http_request`` and the search-results helper so command
+            methods can be invoked without any real network I/O."""
+            mocker.patch.object(zendesk_client, "_http_request", return_value={})
+            mocker.patch.object(
+                zendesk_client,
+                "_ZendeskClient__zendesk_search_results",
+                return_value=[],
+            )
+            mocker.patch.object(
+                zendesk_client,
+                "zendesk_attachment_get",
+                return_value=[],
+            )
+            mocker.patch.object(zendesk_client, "get_file_entries", return_value=[])
+
+        def test_with_required_args_only(self, zendesk_client, stub_http, func_name, required_args):
+            """Calling the command with only the canonical/required args must succeed."""
+            func = getattr(zendesk_client, func_name)
+            func(**required_args)
+
+        def test_with_redundant_args(self, zendesk_client, stub_http, func_name, required_args):
+            """Extra args that are not declared parameters but are commonly passed by
+            ``demisto.args()`` (e.g. ``verbose``, ``using``) must be tolerated via
+            ``**kwargs`` and not raise ``TypeError``."""
+            func = getattr(zendesk_client, func_name)
+            args = {**required_args, **TestCommandArgumentHandling.EXTRA_REDUNDANT_ARGS}
+            func(**args)
+
+        def test_with_unexpected_args(self, zendesk_client, stub_http, func_name, required_args):
+            """Completely unknown keyword arguments must be swallowed by ``**kwargs``
+            and not raise ``TypeError``."""
+            func = getattr(zendesk_client, func_name)
+            args = {**required_args, **TestCommandArgumentHandling.EXTRA_UNEXPECTED_ARGS}
+            func(**args)
+
+    class TestZendeskTicketAttachmentAdd:
+
+        @staticmethod
+        @pytest.fixture
+        def stub_attachment_add(mocker, zendesk_client, tmp_path):
+            file_on_disk = tmp_path / "uploaded.txt"
+            file_on_disk.write_bytes(b"payload")
+            mocker.patch.object(
+                demisto,
+                "getFilePath",
+                return_value={"path": str(file_on_disk), "name": "uploaded.txt"},
+            )
+            mocker.patch.object(
+                zendesk_client,
+                "_http_request",
+                return_value={"upload": {"token": "tok"}},
+            )
+
+        REQUIRED_ARGS = {"file_id": "fid", "ticket_id": 10, "comment": "hi"}
+
+        def test_with_required_args_only(self, zendesk_client, stub_attachment_add):
+            zendesk_client.zendesk_ticket_attachment_add(**self.REQUIRED_ARGS)
+
+        def test_with_filename_arg(self, zendesk_client, stub_attachment_add):
+            """The renamed ``filename`` param (was ``file_name`` on master) must be
+            accepted as a keyword arg."""
+            zendesk_client.zendesk_ticket_attachment_add(filename="custom.txt", **self.REQUIRED_ARGS)
+
+        def test_with_redundant_args(self, zendesk_client, stub_attachment_add):
+            zendesk_client.zendesk_ticket_attachment_add(
+                **self.REQUIRED_ARGS, **TestCommandArgumentHandling.EXTRA_REDUNDANT_ARGS
+            )
+
+        def test_with_unexpected_args(self, zendesk_client, stub_attachment_add):
+            zendesk_client.zendesk_ticket_attachment_add(
+                **self.REQUIRED_ARGS, **TestCommandArgumentHandling.EXTRA_UNEXPECTED_ARGS
+            )
+
+    class TestGetModifiedRemoteData:
+
+        @staticmethod
+        @pytest.fixture
+        def stub_modified_remote(mocker, zendesk_client):
+            mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+            mocker.patch.object(demisto, "setIntegrationContext")
+            mocker.patch.object(
+                Zendeskv2,
+                "UpdatedTickets",
+                return_value=mocker.Mock(tickets=lambda: [], next_run=lambda: {}),
+            )
+            mocker.patch.object(Zendeskv2, "get_last_mirror_run", return_value={})
+            mocker.patch.object(Zendeskv2, "set_last_mirror_run")
+            mocker.patch.object(Zendeskv2, "return_results")
+
+        def test_with_required_args_only(self, zendesk_client, stub_modified_remote):
+            zendesk_client.get_modified_remote_data(lastUpdate="2024-01-01T00:00:00Z")
+
+        def test_with_redundant_args(self, zendesk_client, stub_modified_remote):
+            zendesk_client.get_modified_remote_data(
+                lastUpdate="2024-01-01T00:00:00Z", **TestCommandArgumentHandling.EXTRA_REDUNDANT_ARGS
+            )
+
+        def test_with_unexpected_args(self, zendesk_client, stub_modified_remote):
+            zendesk_client.get_modified_remote_data(
+                lastUpdate="2024-01-01T00:00:00Z", **TestCommandArgumentHandling.EXTRA_UNEXPECTED_ARGS
+            )
