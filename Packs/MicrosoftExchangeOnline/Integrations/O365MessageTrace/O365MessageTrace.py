@@ -9,6 +9,7 @@ from typing import Any
 
 urllib3.disable_warnings()
 
+
 # ============================================================================
 # Constants
 # ============================================================================
@@ -72,7 +73,7 @@ class Client:
             self_deployed=True,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
-            auth_code=auth_code,
+            auth_code=auth_code or "",
             redirect_uri=redirect_uri or "https://localhost/myapp",
             grant_type=grant_type,
             scope=Config.GRAPH_SCOPE,
@@ -104,14 +105,14 @@ class Client:
         """
         if next_link:
             demisto.debug(f"[API] Following @odata.nextLink: {next_link}")
-            return self.ms_client.http_request(method="GET", full_url=next_link, url_suffix="",ok_codes=[200])
+            return self.ms_client.http_request(method="GET", full_url=next_link, url_suffix="", ok_codes=[200])
 
         params = {
             "$filter": f"receivedDateTime ge {start_date} and receivedDateTime le {end_date}",
             "$top": page_size,
         }
         demisto.debug(f"[API] First page request | params={params}")
-        return self.ms_client.http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params,ok_codes=[200])
+        return self.ms_client.http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params, ok_codes=[200])
 
 
 # ============================================================================
@@ -142,7 +143,7 @@ def deduplicate_events(events: list[dict], seen_ids: set[str]) -> list[dict]:
     new_events: list[dict] = []
     duplicates = 0
     for event in events:
-        event_id = event.get('id')
+        event_id = event.get("id")
         if event_id and event_id in seen_ids:
             duplicates += 1
             continue
@@ -221,7 +222,7 @@ def fetch_events_sequential(
 # ============================================================================
 # Commands
 # ============================================================================
-def test_module(client: Client) -> str:
+def module_health_check(client: Client) -> str:
     """Validate credentials and Graph connectivity by fetching a tiny window.
 
     Raises:
@@ -251,7 +252,7 @@ def test_module(client: Client) -> str:
         raise
 
 
-def test_auth_command(client: Client) -> CommandResults:
+def auth_test_command(client: Client) -> CommandResults:
     """Tests connectivity to Microsoft.
 
     Used to validate the authentication flow (especially the authorization-code
@@ -268,9 +269,7 @@ def test_auth_command(client: Client) -> CommandResults:
             page_size=1,
         )
     except Exception as e:
-        raise DemistoException(
-            f"Authentication was not successful. Verify the configuration parameters. Error: {e}"
-        ) from e
+        raise DemistoException(f"Authentication was not successful. Verify the configuration parameters. Error: {e}") from e
     return CommandResults(readable_output="Authentication was successful.")
 
 
@@ -338,16 +337,13 @@ def fetch_events(client: Client, max_events: int) -> None:
     new_seen_ids: list[str] = seen_ids
 
     if new_events:
-        # Reverse events so the latest event is the last one
-        new_events.reverse()
-        latest_time: str | None = new_events[-1].get("_time")
+        # Find the latest (max) _time across all new events, regardless of input order
+        event_times = [t for event in new_events if (t := event.get("_time"))]
+        latest_time: str | None = max(event_times) if event_times else None
 
         if latest_time:
             new_last_fetch = latest_time
-            ids_at_latest = [
-                eid for event in new_events
-                if event.get("_time") == latest_time and (eid := event.get('id'))
-            ]
+            ids_at_latest = [eid for event in new_events if event.get("_time") == latest_time and (eid := event.get("id"))]
             # If the high-water mark hasn't moved, merge with the existing seen_ids
             if latest_time == last_fetch_str:
                 new_seen_ids = list(set(seen_ids) | set(ids_at_latest))
@@ -388,12 +384,12 @@ def main() -> None:  # pragma: no cover
 
     # ----- Certificate auth -----
     creds_certificate = params.get("creds_certificate") or {}
-    certificate_thumbprint = (
-        creds_certificate.get("identifier") if isinstance(creds_certificate, dict) else None
-    ) or params.get("certificate_thumbprint")
-    private_key_raw = (
-        creds_certificate.get("password") if isinstance(creds_certificate, dict) else None
-    ) or params.get("private_key")
+    certificate_thumbprint = (creds_certificate.get("identifier") if isinstance(creds_certificate, dict) else None) or params.get(
+        "certificate_thumbprint"
+    )
+    private_key_raw = (creds_certificate.get("password") if isinstance(creds_certificate, dict) else None) or params.get(
+        "private_key"
+    )
     private_key = replace_spaces_in_credential(private_key_raw) if private_key_raw else None
 
     # ----- Self-deployed authorization-code flow -----
@@ -442,9 +438,9 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "test-module":
-            return_results(test_module(client))
+            return_results(module_health_check(client))
         elif command == "o365-message-trace-auth-test":
-            return_results(test_auth_command(client))
+            return_results(auth_test_command(client))
         elif command == "o365-message-trace-auth-reset":
             return_results(reset_auth())
         elif command == "o365-message-trace-get-events":

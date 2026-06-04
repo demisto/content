@@ -76,8 +76,8 @@ grant_type=client_credentials&scope=https://graph.microsoft.com/.default&client_
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Microsoft Graph base URL. | True |
-| Tenant ID | Customer Azure AD tenant ID (GUID). | False |
-| Client ID | The Application (Client) ID registered in Azure AD. | False |
+| Tenant ID | Customer Azure AD tenant ID (GUID). | True |
+| Client ID | The Application (Client) ID registered in Azure AD. | True |
 | Client Secret | The client secret for the Azure AD application. | False |
 | Certificate Thumbprint | Used for certificate authentication, as it appears in the "Certificates & secrets" page of the app. | False |
 | Private Key | The private key of the registered certificate. | False |

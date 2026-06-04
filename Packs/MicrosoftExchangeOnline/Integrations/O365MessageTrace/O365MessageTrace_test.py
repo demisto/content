@@ -1,6 +1,7 @@
 """Unit tests for the O365 Message Trace integration."""
+
 from datetime import datetime, timedelta, UTC
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -9,14 +10,14 @@ from O365MessageTrace import (
     Client,
     Config,
     add_time_field,
+    auth_test_command,
     deduplicate_events,
     fetch_events,
     fetch_events_sequential,
     format_datetime_for_filter,
     get_events_command,
+    module_health_check,
     parse_datetime,
-    test_auth_command,
-    test_module,
 )
 
 
@@ -205,8 +206,10 @@ class TestFetchEventsSequential:
         # Only one call should be made because limit reached after first page
         assert mock_client.ms_client.http_request.call_count == 1
 
-    def test_breaks_on_exception(self, mock_client):
+    def test_breaks_on_exception(self, mock_client, mocker):
         mock_client.ms_client.http_request.side_effect = Exception("API failure")
+        # demisto.error writes to stdout in the mock - patch to keep test output clean
+        mocker.patch.object(O365MessageTrace.demisto, "error")
         start = datetime(2025, 1, 1, tzinfo=UTC)
         end = start + timedelta(minutes=5)
 
@@ -225,14 +228,14 @@ class TestFetchEventsSequential:
 
 
 # ============================================================================
-# test_module tests
+# module_health_check tests
 # ============================================================================
-class TestTestModule:
+class TestModuleHealthCheck:
     def test_returns_ok_on_success(self, mock_client):
         mock_client.ms_client.grant_type = "client_credentials"
         mock_client.ms_client.http_request.return_value = {"value": []}
 
-        assert test_module(mock_client) == "ok"
+        assert module_health_check(mock_client) == "ok"
 
     def test_raises_for_authorization_code_flow(self, mock_client):
         from O365MessageTrace import AUTHORIZATION_CODE, DemistoException
@@ -240,20 +243,20 @@ class TestTestModule:
         mock_client.ms_client.grant_type = AUTHORIZATION_CODE
 
         with pytest.raises(DemistoException, match="Test module is not available"):
-            test_module(mock_client)
+            module_health_check(mock_client)
 
     def test_returns_authorization_error_on_401(self, mock_client):
         mock_client.ms_client.grant_type = "client_credentials"
         mock_client.ms_client.http_request.side_effect = Exception("Got 401 Unauthorized")
 
-        result = test_module(mock_client)
+        result = module_health_check(mock_client)
         assert "Authorization Error" in result
 
     def test_returns_authorization_error_on_403(self, mock_client):
         mock_client.ms_client.grant_type = "client_credentials"
         mock_client.ms_client.http_request.side_effect = Exception("403 Forbidden")
 
-        result = test_module(mock_client)
+        result = module_health_check(mock_client)
         assert "Authorization Error" in result
 
     def test_reraises_unexpected_errors(self, mock_client):
@@ -261,17 +264,17 @@ class TestTestModule:
         mock_client.ms_client.http_request.side_effect = Exception("network timeout")
 
         with pytest.raises(Exception, match="network timeout"):
-            test_module(mock_client)
+            module_health_check(mock_client)
 
 
 # ============================================================================
-# test_auth_command tests
+# auth_test_command tests
 # ============================================================================
-class TestTestAuthCommand:
+class TestAuthTestCommand:
     def test_returns_success_message(self, mock_client):
         mock_client.ms_client.http_request.return_value = {"value": []}
 
-        result = test_auth_command(mock_client)
+        result = auth_test_command(mock_client)
 
         assert result.readable_output == "Authentication was successful."
 
@@ -281,7 +284,7 @@ class TestTestAuthCommand:
         mock_client.ms_client.http_request.side_effect = Exception("boom")
 
         with pytest.raises(DemistoException, match="Authentication was not successful"):
-            test_auth_command(mock_client)
+            auth_test_command(mock_client)
 
 
 # ============================================================================

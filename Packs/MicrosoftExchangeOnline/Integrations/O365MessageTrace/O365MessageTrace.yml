@@ -1,7 +1,4 @@
 category: Analytics & SIEM
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: O365 Message Trace
   version: -1
@@ -15,14 +12,14 @@ configuration:
   additionalinfo: Microsoft Graph base URL.
 - name: tenant_id
   display: Tenant ID
-  required: false
+  required: true
   type: 0
   section: Connect
   additionalinfo: Customer Azure AD tenant ID (GUID).
 - name: credentials_client_id
   displaypassword: Client ID
   hiddenusername: true
-  required: false
+  required: true
   type: 9
   section: Connect
   additionalinfo: The Application (Client) ID registered in Azure AD.
@@ -181,3 +178,6 @@ supportedModules:
 - xsiam
 tests:
 - No tests (auto formatted)
+sectionorder:
+- Connect
+- Collect
