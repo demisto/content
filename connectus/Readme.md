@@ -1,5 +1,14 @@
 Note, this folder should not be merged to master.
 
+> **Setup — symlink the skill into `.roo`.** The connectus-migration skill's source of truth is [`connectus/connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1). The agent loads skills from `.roo/skills/<skill-name>/SKILL.md`, so you must create a symlink there pointing back at the canonical file in this folder rather than copying it (a copy would drift out of sync). Create it with:
+>
+> ```bash
+> mkdir -p .roo/skills/connectus-migration
+> ln -s ../../../connectus/connectus-migration-SKILL.md .roo/skills/connectus-migration/SKILL.md
+> ```
+>
+> Verify with `ls -la .roo/skills/connectus-migration/SKILL.md` — it should show `SKILL.md -> ../../../connectus/connectus-migration-SKILL.md`.
+
 > **Architecture note.** The CLI entry script [`connectus/workflow_state.py`](workflow_state.py:1) delegates to the package at [`connectus/workflow_state/`](workflow_state/__init__.py:1), which hosts the CLI entrypoint, validators, state machine, CSV I/O, display helpers, and config loader. The canonical Python import is `from workflow_state import …`.
 
 ## Authentication Type Catalog

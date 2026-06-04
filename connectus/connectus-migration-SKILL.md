@@ -225,7 +225,7 @@ which is then applied verbatim).
 |---|---|---|---|
 | 1 | `set-auth` | `Auth Details` | The full JSON payload; a per-`auth_types[]`-entry evidence table that MUST include, for each profile, the **XSOAR fields** (the `xsoar_param_map` keys) it consumes alongside the role each field plays, the YML param + code site that justifies the type, and any `verify_connection_skip` / `interpolated` flags. Any XSOAR field that appears in more than one profile MUST be **highlighted** (🔶 marker by default) and called out in a mandatory overlap note beneath the table (see [§1.2](#12-researching-auth-details--the-four-sources-of-truth) for the table format and highlight conventions); the `other_connection` list. Note that this call resets the workflow + wipes the downstream Params\* columns AND runs the auth-parity test on the candidate payload — the cell is **rejected** unless parity passes or short-circuits structurally (see [§1.12 Auth-parity gate inside `set-auth`](#112-auth-parity-gate-inside-set-auth)). If the gate fails, treat the printed diff as the next problem to solve (most often: a non-standard auth header that needs a `_apply_ucp_<type>` override on the integration's `Client`, or a multi-auth integration with a startup validator that needs `is_ucp_enabled()` gating) — see the same §1.12 for the troubleshooting playbook. |
 | 2 | `set-params-to-commands` | `Params to Commands` | The full JSON payload; the analyzer's per-command findings vs. the final list (call out any commands where you overrode the analyzer); the auth-ignore set pulled from `auth-params`. **Include a per-param scores table** (max `rollup_confidence`, top source, and your decision) so the user can see what the analyzer proved vs. what you elevated by source review — explicitly flag the "investigated myself" rows (analyzer score below your inclusion bar) and why. Get scores via a throwaway `--with-diagnostics` run. See [analyzer-manual §12.4](analyzer-manual.md) for the table format and §11/§12 for arg-seeding + the params-access spy (the `dynamic_access` 0.9 source). |
-| 3 | `set-param-defaults` | `Params for test with default in code` | The full JSON payload AND, for each entry, a one-line attribution: **(a)** *param `foo`: code fallback added — was `params.get("foo")`, now `params.get("foo") or "<yml default>"`, default sourced from YML `defaultvalue`.* **(b)** *param `foo`: NO YML default; proposed default `<value>` — please confirm/edit/skip before the code edit is applied.* **(c)** *param `foo`: code already supplies fallback `<existing default>`; recorded for the cell, no code edit.* Branch (b) is the only sub-confirmation that pauses the workflow per-param (within the same outer pause-before-`set-param-defaults` step). The skill MUST collect all branch-(b) confirmations before applying any `.py` edits, AND before calling `set-param-defaults`. If any branch-(b) param is rejected, drop it from the JSON and skip its code edit. |
+| 3 | `set-param-defaults` | `Params for test with default in code` | The full JSON payload AND, for each entry, a one-line attribution: **(a)** *param `foo`: YML `defaultvalue` is `<yml default>` — use as code fallback? confirm / edit / reject (move to `other_connection`).* **(b)** *param `foo`: NO YML default; proposed default `<value>` — confirm / edit / reject (move to `other_connection`).* **(c)** *param `foo`: code already supplies fallback `<existing default>`; recorded for the cell, no code edit.* Branches (a) AND (b) are per-param sub-confirmations that pause the workflow (within the same outer pause-before-`set-param-defaults` step) — the YML default in branch (a) is NEVER accepted silently. The skill MUST collect all branch-(a)/(b) confirmations before applying any `.py` edits, AND before calling `set-param-defaults`. If a branch-(a)/(b) param is **rejected**, drop it from the JSON, skip its code edit, add it to `other_connection`, and re-apply via `set-auth` first (note: `set-auth` resets the workflow — see Step 3a "Rejecting a default"). |
 | 4 | `set-params-to-capabilities` | `Params to Capabilities` | The full JSON payload from the mapping helper; any `MANUAL_COMMAND_TO_CAPABILITY_JSON` overrides applied and why. |
 
 ### Final-summary confirmation (end of conversion)
@@ -1107,15 +1107,16 @@ For each YML param that qualifies, apply exactly one of these three branches:
 
 **(a) YML declares a `defaultvalue` AND the Python code does NOT already supply a fallback** (no `or "..."`/`or <literal>` after `params.get("foo")` or `demisto.params().get("foo")` or equivalent).
 
-- Edit the integration's `.py` file: change `params.get("foo")` to `params.get("foo") or "<yml default>"`. Use the exact YML default value verbatim (preserve type — strings stay quoted, numbers stay unquoted, booleans become `True`/`False`).
-- Record the YML default value under key `"foo"` in the JSON payload for this cell.
-- Rationale: under UCP / the connectus runtime, the YML default is not necessarily injected; the code-side `or "<default>"` keeps `test-module` working in both the XSOAR environment AND under connectus.
+- **PAUSE and ask the user to confirm the chosen default** (this is the per-param confirmation interaction). Even though the YML supplies a `defaultvalue`, the skill must NOT silently accept it — present it for approval: "Param `foo` is consumed by `test-module`. The YML `defaultvalue` is `<yml default>` — use this as the code fallback? Confirm, edit, or reject (move to `other_connection`)."
+- **If confirmed (or edited):** edit the integration's `.py` file: change `params.get("foo")` to `params.get("foo") or "<confirmed default>"`. Use the value verbatim (preserve type — strings stay quoted, numbers stay unquoted, booleans become `True`/`False`). Record the confirmed default value under key `"foo"` in the JSON payload for this cell.
+- **If rejected:** do NOT add a code fallback and do NOT record the param in this cell. Instead the param moves to `other_connection` in `Auth Details` — see [Rejecting a default — move the param to `other_connection`](#rejecting-a-default--move-the-param-to-other_connection) below.
+- Rationale: under UCP / the connectus runtime, the YML default is not necessarily injected; the code-side `or "<default>"` keeps `test-module` working in both the XSOAR environment AND under connectus. The confirmation step exists because the YML default is not always the value `test-module` should use under connectus — when it isn't, the param belongs in `other_connection` instead.
 
 **(b) YML declares NO `defaultvalue`.**
 
-- **PAUSE and ask the user** (this is the per-param confirmation interaction; see §B.2): "Param `foo` is consumed by `test-module` but has no YML default. Propose a reasonable default value: `<your suggestion>`. Confirm, edit, or skip?"
-- Once confirmed, edit the integration's `.py` to add the same `or "<confirmed default>"` fallback as branch (a).
-- Record the confirmed default under key `"foo"` in the JSON payload.
+- **PAUSE and ask the user** (this is the per-param confirmation interaction): "Param `foo` is consumed by `test-module` but has no YML default. Propose a reasonable default value: `<your suggestion>`. Confirm, edit, or reject (move to `other_connection`)?"
+- **If confirmed (or edited):** edit the integration's `.py` to add the same `or "<confirmed default>"` fallback as branch (a). Record the confirmed default under key `"foo"` in the JSON payload.
+- **If rejected:** do NOT add a code fallback and do NOT record the param in this cell. Instead the param moves to `other_connection` in `Auth Details` — see [Rejecting a default — move the param to `other_connection`](#rejecting-a-default--move-the-param-to-other_connection) below.
 - Suggest a default that matches the param's semantics. Recommended starters:
   - **`false`** for booleans (`type:8`).
   - **`50`** for incident/page limits.
@@ -1154,6 +1155,21 @@ Don't dump the JSON payload at this stage — that's for the final `set-param-de
 
 > **`params.get("foo", "bar")` vs `params.get("foo") or "bar"`.** Branch (c) accepts either form, but the two are NOT semantically equivalent: `params.get("foo", "bar")` returns `"bar"` only when `foo` is absent, whereas `params.get("foo") or "bar"` also returns `"bar"` when `foo` is the empty string `""`, `0`, or `False`. The rule's intent is the `or` semantics (UCP supplies `foo = ""` rather than absent), so when the migration is ADDING a fallback (branches (a) and (b)) it standardizes on the `or` form. When the integration's existing code already uses the safe two-arg form, leave it alone — do NOT rewrite into the `or` form.
 
+#### Rejecting a default — move the param to `other_connection`
+
+This applies to branches **(a)** and **(b)** — the two cases where the skill is about to add a NEW code fallback. When the user **rejects** the proposed default (i.e. decides the chosen default is not good for the connectus runtime), the param does NOT get a code fallback and does NOT belong in the `Params for test with default in code` cell. Instead it is reclassified as **connection metadata** and added to the `other_connection` list of the integration's `Auth Details` (Step 1).
+
+Procedure for each rejected param:
+
+1. **Drop it from this cell.** Do not add a `or "<default>"` fallback in the `.py`, and do not include the param id as a key in the `set-param-defaults` JSON payload.
+2. **Add it to `other_connection`.** Take the param id and append it to the sorted `other_connection` list inside the current `Auth Details` JSON (read the current value from the Step-0 `context` output's `data_columns["Auth Details"]`). Keep `other_connection` sorted and de-duplicated.
+3. **Re-apply via `set-auth`.** Run `set-auth "<Integration ID>" '<updated Auth Details JSON>'` with the param now present in `other_connection`. Follow the normal Step 1 pause-and-confirm + dry-run flow — this is a `set-auth` write, so present the evidence table and the updated `other_connection` list to the user before applying.
+4. **Mind the reset.** `set-auth` **resets the workflow back to `generated manifest` and wipes the downstream `Params*` columns** (including any `Params for test with default in code` work already done for the OTHER params in this batch). Because of this, **collect ALL branch-(a)/(b) confirmations and rejections for the whole integration FIRST**, then:
+   - If there is at least one rejection, do the `set-auth` re-apply (Step 1) for all rejected params **before** re-running Steps 2 and 3a for the surviving params. This avoids losing the param-defaults cell to a later reset.
+   - If there are no rejections, proceed straight to `set-param-defaults` as normal.
+
+> **Why `other_connection` and not an `auth_types[]` secret.** A rejected param here is a required, non-auth, test-module-consumed param whose value should come from the connection configuration rather than a code-side default. That is exactly what `other_connection` is for (URL, proxy, host, region, port, and other connection metadata — see [§1.2.5](#125-building-the-other_connection-list)). It is NOT a credential, so it does not go into any `auth_types[]` entry's `xsoar_param_map`.
+
 #### Discovery procedure (operational)
 
 1. Fetch the canonical qualification list:
@@ -1162,14 +1178,15 @@ Don't dump the JSON payload at this stage — that's for the final `set-param-de
    python3 connectus/workflow_state.py test-module-params "<Integration ID>"
    ```
 
-2. If the list is empty, the payload is `{}` — call `set-param-defaults "<id>" '{}'` and proceed to Step 3b. Skip steps 3–5 below.
+2. If the list is empty, the payload is `{}` — call `set-param-defaults "<id>" '{}'` and proceed to Step 3b. Skip steps 3–6 below.
 3. For each param in the list, classify into branch (a) / (b) / (c) by reading the integration's `.py` and YML `required:` field. This reuses the YML/.py already read during Step 1 / available via the Step-0 `context` call — not a fresh read. The point of this read is **only** to determine the per-param branch — NOT to re-derive whether the param qualifies. Specifically:
    - Look for the param's read site (`params.get("foo")` or `demisto.params().get("foo")`).
-   - **Branch (a):** YML declares `defaultvalue` for `foo`, code reads without fallback (`params.get("foo")` with no `or ...` and no two-arg form). → Edit code to add `or "<yml default>"`. Record YML default in JSON.
-   - **Branch (b):** YML declares NO `defaultvalue` for `foo`. → Pause and ask the user for a proposed default; edit code; record confirmed default in JSON.
+   - **Branch (a):** YML declares `defaultvalue` for `foo`, code reads without fallback (`params.get("foo")` with no `or ...` and no two-arg form). → **Pause and ask the user to confirm the YML default.** On confirm/edit: edit code to add `or "<confirmed default>"` and record it in JSON. On reject: move the param to `other_connection` (see [Rejecting a default](#rejecting-a-default--move-the-param-to-other_connection)).
+   - **Branch (b):** YML declares NO `defaultvalue` for `foo`. → Pause and ask the user for a proposed default. On confirm/edit: edit code; record confirmed default in JSON. On reject: move the param to `other_connection` (see [Rejecting a default](#rejecting-a-default--move-the-param-to-other_connection)).
    - **Branch (c):** Code already supplies a fallback (`params.get("foo", "bar")` or `params.get("foo") or "bar"`). → No code edit. Record the effective default in JSON.
-4. After all per-param branches are decided, verify the cumulative `.py` diff with `git diff` before calling `set-param-defaults`.
-5. Collect the JSON payload (one key per qualifying param) and call `set-param-defaults`.
+4. **If any branch-(a)/(b) param was rejected,** add each rejected param to `other_connection` and re-apply via `set-auth` FIRST (this resets the workflow — see [Rejecting a default](#rejecting-a-default--move-the-param-to-other_connection)), then re-run Steps 2 and 3a for the surviving params.
+5. After all per-param branches are decided, verify the cumulative `.py` diff with `git diff` before calling `set-param-defaults`.
+6. Collect the JSON payload (one key per confirmed qualifying param — rejected params are excluded) and call `set-param-defaults`.
 
 Example payload:
 
@@ -1188,7 +1205,8 @@ Example payload:
 - [ ] Every key in the JSON corresponds to a YML param with `required: true`. No `required: false` (or absent) params appear.
 - [ ] (Implied by the previous check, since `set-params-to-commands` already enforced it in Step 2:) no key in the JSON appears in `Auth Details`.
 - [ ] For every key: either the integration's `.py` already supplies a fallback (branch c), OR the migration has just added a `or "<default>"` fallback in `.py` (branches a and b). Verify the edit with a `git diff` of the integration's `.py` BEFORE running `set-param-defaults`.
-- [ ] For every branch-(b) key: the user explicitly confirmed the chosen default.
+- [ ] For every branch-(a) and branch-(b) key: the user explicitly confirmed the chosen default.
+- [ ] No rejected param appears as a key in the JSON. Every rejected branch-(a)/(b) param was instead added to `other_connection` and re-applied via `set-auth` (and the workflow reset it triggered was handled before this step).
 - [ ] If the required-only filtered list is empty, the payload is `{}` (empty object) — branches (a/b/c) do not apply.
 
 ```bash
