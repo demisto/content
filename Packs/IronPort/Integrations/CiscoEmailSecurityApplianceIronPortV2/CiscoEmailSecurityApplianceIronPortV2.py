@@ -2753,9 +2753,21 @@ def message_filter_list_command(client: Client, args: dict[str, Any]) -> Command
         removeNull=False,
     )
 
+    # Only enable overwrite when listing the full collection. When the user
+    # requested a single filter by name, fall back to the keyed merge behavior
+    # so that a one-row lookup does not wipe the rest of the array.
+    if not filter_name:
+        return CommandResults(
+            outputs_prefix="CiscoESA.MessageFilter",
+            outputs_key_field="name",
+            outputs=rows,
+            raw_response=response,
+            readable_output=readable_output,
+            replace_existing=True,
+        )
+
     return CommandResults(
-        # NOTE: `(true)` forces a full overwrite of the LastQuery context on each run.
-        outputs_prefix="CiscoESA.MessageFilter(true)",
+        outputs_prefix="CiscoESA.MessageFilter",
         outputs_key_field="name",
         outputs=rows,
         raw_response=response,

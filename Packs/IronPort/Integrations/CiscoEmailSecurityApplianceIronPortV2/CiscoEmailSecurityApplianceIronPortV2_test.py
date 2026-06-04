@@ -1430,8 +1430,8 @@ def test_message_filter_list_command_all(requests_mock, mock_client):
     When:
      - cisco-esa-message-filter-list is called.
     Then:
-     - Outputs prefix is CiscoESA.MessageFilter(true) (predicate forces overwrite).
-     - Outputs key field is 'name'.
+     - Outputs prefix is CiscoESA.MessageFilter with replace_existing=True
+       (full-array overwrite semantics; deleted filters drop out).
      - All rows from the fixture's data array are returned.
      - device_type=esa is passed in the underlying request.
     """
@@ -1443,8 +1443,8 @@ def test_message_filter_list_command_all(requests_mock, mock_client):
 
     result = message_filter_list_command(mock_client, {})
 
-    assert result.outputs_prefix == "CiscoESA.MessageFilter(true)"
-    assert result.outputs_key_field == "name"
+    assert result.outputs_prefix == "CiscoESA.MessageFilter"
+    assert result.replace_existing is True
     assert result.outputs == mock_response["data"]
     assert len(result.outputs) == 3
     assert {row["name"] for row in result.outputs} == {"F1", "F2", "F3"}
@@ -1460,7 +1460,8 @@ def test_message_filter_list_command_specific(requests_mock, mock_client):
      - cisco-esa-message-filter-list is called.
     Then:
      - Endpoint includes the filter name.
-     - Outputs prefix is CiscoESA.MessageFilter(true) (predicate forces overwrite).
+     - Outputs prefix is CiscoESA.MessageFilter; replace_existing is False
+       (single-row lookup must not wipe the collection).
      - Outputs contain the single returned row (no extra wrapping).
      - Title in HR mentions the filter name.
     """
@@ -1472,11 +1473,32 @@ def test_message_filter_list_command_specific(requests_mock, mock_client):
 
     result = message_filter_list_command(mock_client, {"filter_name": "F1"})
 
-    assert result.outputs_prefix == "CiscoESA.MessageFilter(true)"
+    assert result.outputs_prefix == "CiscoESA.MessageFilter"
+    assert result.replace_existing is False
     assert result.outputs == mock_response["data"]
     assert len(result.outputs) == 1
     assert result.outputs[0]["name"] == "F1"
     assert "F1" in result.readable_output
+
+
+def test_message_filter_list_command_emits_overwrite_dt_form(requests_mock, mock_client):
+    """
+    Scenario: List-all emits the parent-level DT-predicate context shape so the
+    server overwrites only the MessageFilter sub-key, preserving CiscoESA siblings.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_filter_list_command
+
+    mock_response = load_mock_response("message_filter_list_all.json")
+    url = f"{BASE_URL}/config/message_filters"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = message_filter_list_command(mock_client, {})
+    entry_context = result.to_context()["EntryContext"]
+
+    assert "CiscoESA(true)" in entry_context
+    assert list(entry_context["CiscoESA(true)"].keys()) == ["MessageFilter"]
+    assert entry_context["CiscoESA(true)"]["MessageFilter"] == mock_response["data"]
+    assert "CiscoESA.MessageFilter(true)" not in entry_context
 
 
 def test_message_filter_list_command_with_active_true_filter(requests_mock, mock_client):
