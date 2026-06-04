@@ -3814,7 +3814,7 @@ def qradar_reference_data_delete_command(client: Client, args: dict) -> CommandR
     - reference_data_type (Required): The type of reference data set to delete.
       Valid values are `maps` or `map_of_sets`, `tables`.
     - reference_data_name (Required): The name of the reference data set to delete.
-    - reference_data_purge: If `true`, only the contents of the reference data set are purged and the set remains.
+    - reference_data_purge_only: If `true`, only the contents of the reference data set are purged and the set remains.
 
     Args:
         client (Client): QRadar client to perform the API call.
@@ -3825,14 +3825,14 @@ def qradar_reference_data_delete_command(client: Client, args: dict) -> CommandR
     """
     reference_data_type = args.get("reference_data_type", None)
     reference_data_name = args.get("reference_data_name", None)
-    reference_data_purge = args.get("reference_data_purge", False)
+    reference_data_purge_only = args.get("reference_data_purge_only", True)
 
     if reference_data_name is None:
         raise ValueError("reference_data_name is required")
     if reference_data_type not in ["maps", "map_of_sets", "tables"]:
         raise ValueError("invalid value for reference_data_type. Acceptable options are maps or map_of_sets")
 
-    response = client.reference_data_delete(reference_data_name, reference_data_type, reference_data_purge)
+    response = client.reference_data_delete(reference_data_name, reference_data_type, reference_data_purge_only)
 
     return CommandResults(
         readable_output=f"Reference data set '{reference_data_name}' delete request submitted.",

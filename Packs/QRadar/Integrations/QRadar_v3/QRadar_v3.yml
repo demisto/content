@@ -198,7 +198,7 @@ script:
         required: true
         description: The reference data payload to upload. This should be the value format expected by QRadar for the chosen reference data type.
   - name: qradar-reference-data-delete
-    description: Delete or purge a QRadar reference data map or map of sets.
+    description: Purges data from a QRadar reference data object. Optionally deletes the reference data object.
     arguments:
       - name: reference_data_type
         required: true
@@ -211,8 +211,8 @@ script:
       - name: reference_data_name
         required: true
         description: The name of the reference data set to delete or purge.
-      - name: reference_data_purge
-        defaultValue: 'false'
+      - name: reference_data_purge_only
+        defaultValue: 'true'
         auto: PREDEFINED
         predefined:
         - 'true'
