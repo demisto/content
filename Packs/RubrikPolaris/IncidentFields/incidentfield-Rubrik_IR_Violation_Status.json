@@ -1,30 +1,39 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Rubrik DSPM Violation",
         "Rubrik IR Violation"
     ],
     "caseInsensitive": true,
-    "cliName": "rubriklowriskhits",
+    "cliName": "rubrikirviolationstatus",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_rubriklowriskhits",
+    "id": "incident_rubrikirviolationstatus",
     "isReadOnly": false,
     "locked": false,
-    "name": "Rubrik Low Risk Hits",
+    "name": "Rubrik IR Violation Status",
     "neverSetAsRequired": false,
+    "openEnded": false,
     "ownerOnly": false,
     "required": false,
+    "script": "RubrikPushIRViolationStatus",
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "number",
+    "type": "singleSelect",
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "selectValues": [
+        "",
+        "OPEN",
+        "IN_PROGRESS",
+        "REMEDIATED",
+        "DISMISSED",
+        "CLOSED"
+    ]
 }
