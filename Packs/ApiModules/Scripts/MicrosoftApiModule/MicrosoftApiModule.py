@@ -915,6 +915,20 @@ class MicrosoftClient(BaseClient):
         Returns:
             str: Access token that will be added to authorization header.
         """
+        # UCP (ConnectUs) short-circuit: when the integration instance runs in
+        # UCP mode, the access token is injected per-request by the platform via
+        # demisto.getUCPCredentials() rather than minted through the normal
+        # oproxy / self-deployed OAuth flows. In that case skip the entire token
+        # acquisition + integration-context caching machinery below and return
+        # the injected token directly. This keeps every Microsoft integration
+        # (which all authenticate through this single seam) UCP-aware without
+        # any per-integration changes. See get_ucp_access_token() for the
+        # credential-extraction details.
+        if should_use_ucp_auth():
+            ucp_token = self.get_ucp_access_token()
+            if ucp_token:
+                return ucp_token
+
         integration_context = get_integration_context()
         refresh_token = integration_context.get("current_refresh_token", "")
         # Set keywords. Default without the scope prefix.
@@ -964,6 +978,51 @@ class MicrosoftClient(BaseClient):
             return self.resource_to_access_token[resource]
 
         return access_token
+
+    def get_ucp_access_token(self) -> str:
+        """
+        Extract the access token injected by the UCP (ConnectUs) platform.
+
+        When the integration instance runs in UCP mode, the platform supplies
+        the already-minted credential per-request through
+        ``demisto.getUCPCredentials()`` (wrapped by
+        ``CommonServerPython.get_ucp_credentials()``), so the normal Microsoft
+        OAuth token-retrieval flows are bypassed entirely.
+
+        The credential envelope is the standard UCP shape. For Microsoft
+        integrations (which present a single bearer token to the Graph / Azure
+        APIs) the token may arrive under either the ``oauth2`` or the
+        ``api_key`` shape depending on how the connection profile is
+        classified:
+
+            {"type": "oauth2",  "oauth2":  {"access_token": "<token>", ...}}
+            {"type": "api_key", "api_key": {"key": "<token>"}}
+
+        Returns:
+            str: The injected access token, or an empty string if no UCP
+                 credential could be resolved (the caller then falls back to
+                 the normal OAuth flow).
+        """
+        try:
+            credentials = get_ucp_credentials() or {}
+        except Exception as e:  # noqa: BLE001 - never let UCP lookup break auth
+            demisto.debug(f"MicrosoftApiModule: failed to fetch UCP credentials, falling back to OAuth flow: {e}")
+            return ""
+
+        # Bearer-token style (the common case for Microsoft Graph/Azure).
+        oauth2 = credentials.get("oauth2") or {}
+        token = oauth2.get("access_token", "")
+        if token:
+            return token
+
+        # API-key style (token carried verbatim as the key).
+        api_key = credentials.get("api_key") or {}
+        token = api_key.get("key", "")
+        if token:
+            return token
+
+        demisto.debug("MicrosoftApiModule: UCP enabled but no usable token found in credentials envelope.")
+        return ""
 
     def _raise_authentication_error(self, oproxy_response: requests.Response):
         """
