@@ -369,7 +369,7 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 3. ☐ Extract every auth-related param from the YML `configuration` section — see [1.3](#13-yml-analysis-procedure)
 4. ☐ Read the Python code to determine the actual auth mechanism(s) used at runtime — see [1.4](#14-python-code-analysis--specific-patterns)
 5. ☐ Cross-reference each YML param with where/how it is consumed in code — see [1.5](#15-cross-reference-yml-params-with-code-usage)
-6. ☐ Classify each connection via the [decision table](#121-classification-decision-table); build each entry per [1.2.2](#122-building-each-auth_types-entry); note that profile relations are implicit per [1.2.3](#123-profile-relations-are-implicit-no-config-expression) (no `config` expression to compose)
+6. ☐ Classify each connection via the [decision table](#121-classification-decision-table); build each entry per [1.2.2](#122-building-each-auth_types-entry); note that profile relations are implicit per [1.2.3](#123-profile-relations-are-implicit-no-config-expression) (no `config` expression to compose). **Before settling on more than one `auth_types[]` entry, run the XOR-vs-AND gate (§1.2.2a): 2+ entries means the user picks EXACTLY ONE. If the credential sets are actually used together/additively (built into one `Client` at once, or one set required + others optional add-ons), collapse them into a SINGLE `Passthrough` profile instead — see [§1.2.2a](#122a-multi-secret-auth-flows).**
 7. ☐ Extract the **connection-adjacent** YML params (URL, proxy, insecure, port, host, region, …) into the sorted `other_connection` list — see [1.2.5](#125-building-the-other_connection-list)
 8. ☐ Sanity-check against [Known Misclassification Patterns](#16-known-misclassification-patterns) and the [Decision Tree](#19-decision-tree-for-auth-type)
 9. ☐ Run the [Pre-flight self-check](#111-pre-flight-self-check)
@@ -565,6 +565,18 @@ Each `auth_types[]` entry describes **one complete UCP connection type** — one
 #### 1.2.2a Multi-secret auth flows
 
 Every entry in `auth_types[]` is **one self-contained, mutually-exclusive profile**. The only inter-profile relation is exclusive-OR (implicit when `len(auth_types) >= 2`). AND-ed secrets within a single auth flow live inside **one profile's** `xsoar_param_map` — never as separate profiles.
+
+> **STOP — ask this BEFORE you create a second `auth_types[]` entry.** When an integration has more than one credential set, the most common (and silent) mistake is to make one entry per credential set. That tells the UCP runtime **"pick exactly one"** (exclusive-OR), which is only correct if the sets are genuine *alternatives*. Ask:
+>
+> **"Are these credential sets ALTERNATIVES (user picks one), or are they used TOGETHER?"**
+>
+> Answer it from the source code, not the YML `required` flags:
+> - **ALTERNATIVES (XOR)** → the code branches: it reads set A *or* set B for the same purpose; configuring both is meaningless or rejected. → Keep them as **separate entries**.
+> - **USED TOGETHER (AND)** → the `Client(...)` constructor receives several sets at once; a single code path mints/uses tokens from set A *and* set B; OR one set is **required** and the others are **optional add-ons** that layer extra capability (a bot token, webhook-validation secrets, a hunting key) on top of the primary. → Collapse into **ONE `Passthrough` profile** (`interpolated: true`) whose `xsoar_param_map` carries **all** the secrets.
+>
+> There is no `and` / `any` / concurrent inter-profile relation — so "used together" can ONLY be expressed as a single lumped `Passthrough` profile. When in doubt, lump into one `Passthrough`: under-splitting is safe (the secrets bag still carries everything), over-splitting actively lies to the runtime about mutual exclusivity.
+>
+> _Worked example — Zoom._ Account OAuth (`account_id` + `client_id` + `client_secret`, **required**) + Bot OAuth (`botJID` + `bot_client_id` + `bot_client_secret`, optional Team-Chat add-on) + inbound webhook tokens (`secret_token` + `verification_token`, optional mirroring). The `Client` is built with all of them at once and one `get_oauth_token()` call mints both the account and bot tokens — so they are **AND, not XOR** → **one** `Passthrough` profile holding all eight leaves, NOT three profiles.
 
 ##### Picking the profile `type` for a multi-field auth flow
 
@@ -936,6 +948,7 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 - [ ] Every credentials-typed (YML type `9`) auth param appears in `xsoar_param_map` as the appropriate leaves, with `<id>.identifier` suppressed if YML `hiddenusername: true` and `<id>.password` suppressed if YML `hiddenpassword: true`. (See §1.3.)
 - [ ] Every map value matches the role-enum for its entry's `type` (APIKey: `"key"`; Plain: `"username"`/`"password"`; OAuth/Passthrough: any non-empty string).
 - [ ] Any entry with 2+ map keys whose roles DON'T fit the canonical `plain` profile's `username`+`password` shape is classified as `Passthrough`, not as `APIKey` or `OAuth2*`. See §1.2.2a (multi-secret rule).
+- [ ] **XOR-vs-AND gate (run whenever `len(auth_types) >= 2`).** A multi-entry `auth_types[]` means **EXCLUSIVE-OR — the user picks exactly one profile**. Before keeping 2+ entries, prove from the source code that the credential sets are genuine *alternatives* (the code reads one OR the other; configuring both is meaningless/rejected). If instead the sets are used **together / additively** (the `Client(...)` is constructed with several of them at once; one code path mints tokens from set A *and* set B; one set is required and another is an optional add-on layered on top), they are **AND, not XOR** → collapse them into **ONE `Passthrough` profile** whose `xsoar_param_map` holds all the secrets (see §1.2.2a "Multi-flow → one `Passthrough`"). When unsure, default to one `Passthrough` — there is no `any`/concurrent relation, so multiple entries can only ever mean "pick one," which is wrong for additive credentials.
 - [ ] Any OAuth2 Authorization Code flow (browser redirect, `code` + `redirect_uri`, `oauth-start`/`oauth-complete` commands) is classified as `Passthrough` — there is no canonical `oauth2_authorization_code` profile shape; the user-facing config lives on the profile itself, not in `metadata.auth.parameter`.
 - [ ] Every non-`NoneRequired` entry has a non-empty `xsoar_param_map` (even if `interpolated: true`).
 - [ ] Every entry whose `type` is NOT `Plain` or `APIKey` has `interpolated: true`. Only `Plain` and `APIKey` entries may be non-interpolated.
