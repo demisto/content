@@ -14,23 +14,26 @@ urllib3.disable_warnings()
 # ============================================================================
 # Constants
 # ============================================================================
-VENDOR = "Microsoft"
-PRODUCT = "o365_message_trace"
+class Config:
+    """Global static configuration."""
 
-DEFAULT_BASE_URL = "https://graph.microsoft.com"
-GRAPH_SCOPE = "https://graph.microsoft.com/.default"
-LOGIN_URL = "https://login.microsoftonline.com"
-MANAGED_IDENTITIES_TOKEN_URL = "http://169.254.169.254/metadata/identity/oauth2/token"
-MANAGED_IDENTITIES_API_VERSION = "2018-02-01"
+    VENDOR = "microsoft"
+    PRODUCT = "o365_message_trace"
 
-MESSAGE_TRACES_PATH = "/v1.0/admin/exchange/tracing/messageTraces"
+    DEFAULT_BASE_URL = "https://graph.microsoft.com"
+    GRAPH_SCOPE = "https://graph.microsoft.com/.default"
+    LOGIN_URL = "https://login.microsoftonline.com"
+    MANAGED_IDENTITIES_TOKEN_URL = "http://169.254.169.254/metadata/identity/oauth2/token"
+    MANAGED_IDENTITIES_API_VERSION = "2018-02-01"
 
-DATE_FORMAT_FILTER = "%Y-%m-%dT%H:%M:%SZ"
+    MESSAGE_TRACES_PATH = "/v1.0/admin/exchange/tracing/messageTraces"
 
-DEFAULT_MAX_EVENTS = 50000
-DEFAULT_PAGE_SIZE = 1000  # API default/maximum per page
-DEFAULT_FIRST_FETCH_MINUTES = 10
-TOKEN_CONTEXT_NAMESPACE = "o365_message_trace"
+    DATE_FORMAT_FILTER = "%Y-%m-%dT%H:%M:%SZ"
+
+    DEFAULT_MAX_EVENTS = 50000
+    DEFAULT_PAGE_SIZE = 1000  # API default/maximum per page
+    DEFAULT_FIRST_FETCH_MINUTES = 10
+    TOKEN_CONTEXT_NAMESPACE = "o365_message_trace"
 
 
 # ============================================================================
@@ -45,7 +48,7 @@ class AzureManagedIdentityAuthHandler(AuthHandler):  # type: ignore[misc] # Auth
     ``ContentClientApiModule``.
     """
 
-    def __init__(self, resource: str = DEFAULT_BASE_URL, client_id: str | None = None):
+    def __init__(self, resource: str = Config.DEFAULT_BASE_URL, client_id: str | None = None):
         super().__init__()
         self.resource = resource
         self.client_id = client_id  # optional - for user-assigned managed identities
@@ -68,7 +71,7 @@ class AzureManagedIdentityAuthHandler(AuthHandler):  # type: ignore[misc] # Auth
 
     async def _refresh_token(self, client: "ContentClient") -> None:  # type: ignore[name-defined]
         params: dict[str, str] = {
-            "api-version": MANAGED_IDENTITIES_API_VERSION,
+            "api-version": Config.MANAGED_IDENTITIES_API_VERSION,
             "resource": self.resource,
         }
         if self.client_id:
@@ -77,7 +80,7 @@ class AzureManagedIdentityAuthHandler(AuthHandler):  # type: ignore[misc] # Auth
         async with httpx.AsyncClient(verify=client._verify, timeout=httpx.Timeout(30.0)) as imds_client:
             try:
                 response = await imds_client.get(
-                    MANAGED_IDENTITIES_TOKEN_URL,
+                    Config.MANAGED_IDENTITIES_TOKEN_URL,
                     params=params,
                     headers={"Metadata": "True"},
                 )
@@ -127,13 +130,13 @@ class Client(ContentClient):  # type: ignore[misc] # ContentClient comes from Co
             if not (tenant_id and client_id and client_secret):
                 raise DemistoException("Tenant ID, Client ID and Client Secret are required when not using Azure Managed Identity.")
             demisto.debug("[Auth] Using OAuth2 client credentials")
-            token_url = f"{LOGIN_URL}/{tenant_id}/oauth2/v2.0/token"
+            token_url = f"{Config.LOGIN_URL}/{tenant_id}/oauth2/v2.0/token"
             auth_handler = OAuth2ClientCredentialsHandler(
                 token_url=token_url,
                 client_id=client_id,
                 client_secret=client_secret,
-                scope=GRAPH_SCOPE,
-                context_store=ContentClientContextStore(namespace=TOKEN_CONTEXT_NAMESPACE),
+                scope=Config.GRAPH_SCOPE,
+                context_store=ContentClientContextStore(namespace=Config.TOKEN_CONTEXT_NAMESPACE),
             )
 
         retry_policy = RetryPolicy(  # type: ignore[call-arg]
@@ -159,7 +162,7 @@ class Client(ContentClient):  # type: ignore[misc] # ContentClient comes from Co
         start_date: str | None = None,
         end_date: str | None = None,
         next_link: str | None = None,
-        page_size: int = DEFAULT_PAGE_SIZE,
+        page_size: int = Config.DEFAULT_PAGE_SIZE,
     ) -> dict[str, Any]:
         """Fetch a single page of message-trace records.
 
@@ -176,7 +179,7 @@ class Client(ContentClient):  # type: ignore[misc] # ContentClient comes from Co
             "$top": page_size,
         }
         demisto.debug(f"[API] First page request | params={params}")
-        return self._http_request(method="GET", url_suffix=MESSAGE_TRACES_PATH, params=params)
+        return self._http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params)
 
 
 # ============================================================================
@@ -196,7 +199,7 @@ def parse_datetime(value: str | None, default: datetime | None = None) -> dateti
 
 def format_datetime_for_filter(dt: datetime) -> str:
     """Format a datetime in the form expected by the Graph $filter clause."""
-    return dt.strftime(DATE_FORMAT_FILTER)
+    return dt.strftime(Config.DATE_FORMAT_FILTER)
 
 
 def deduplicate_events(events: list[dict], seen_ids: set[str]) -> list[dict]:
@@ -257,7 +260,7 @@ def fetch_events_sequential(
                 start_date=start_str,
                 end_date=end_str,
                 next_link=next_link,
-                page_size=DEFAULT_PAGE_SIZE,
+                page_size=Config.DEFAULT_PAGE_SIZE,
             )
         except Exception as e:
             demisto.error(f"[Fetch] Failed to fetch page for window {start_str} -> {end_str}: {e}")
@@ -313,13 +316,13 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
     end_dt = parse_datetime(end_time, default=datetime.now(UTC))
-    start_dt = parse_datetime(start_time, default=end_dt - timedelta(minutes=DEFAULT_FIRST_FETCH_MINUTES))
+    start_dt = parse_datetime(start_time, default=end_dt - timedelta(minutes=Config.DEFAULT_FIRST_FETCH_MINUTES))
 
     events = fetch_events_sequential(client, start_dt, end_dt, max_events=limit)
     add_time_field(events)
 
     if should_push_events and events:
-        send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
 
     readable = tableToMarkdown(
         "O365 Message Trace Events",
@@ -347,8 +350,8 @@ def fetch_events(client: Client, max_events: int) -> None:
     if last_fetch_str:
         start_dt = parse_datetime(last_fetch_str)
     else:
-        start_dt = end_dt - timedelta(minutes=DEFAULT_FIRST_FETCH_MINUTES)
-        demisto.debug(f"[Fetch] First run - looking back {DEFAULT_FIRST_FETCH_MINUTES} minutes from now")
+        start_dt = end_dt - timedelta(minutes=Config.DEFAULT_FIRST_FETCH_MINUTES)
+        demisto.debug(f"[Fetch] First run - looking back {Config.DEFAULT_FIRST_FETCH_MINUTES} minutes from now")
 
     # Fetch all events in the window sequentially
     events = fetch_events_sequential(client, start_dt, end_dt, max_events=max_events)
@@ -362,7 +365,7 @@ def fetch_events(client: Client, max_events: int) -> None:
 
     if new_events:
         add_time_field(new_events)
-        send_events_to_xsiam(events=new_events, vendor=VENDOR, product=PRODUCT)
+        send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Fetch] Sent {len(new_events)} events to XSIAM")
 
     # Compute the new high-water mark: latest receivedDateTime + IDs at that timestamp
@@ -403,7 +406,7 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f"[Main] Command={command}")
 
-    base_url = (params.get("url") or DEFAULT_BASE_URL).rstrip("/")
+    base_url = (params.get("url") or Config.DEFAULT_BASE_URL).rstrip("/")
     tenant_id = params.get("tenant_id", "")
 
     credentials_client_id = params.get("credentials_client_id") or {}
@@ -421,7 +424,7 @@ def main() -> None:
     use_managed_identity = argToBoolean(params.get("use_managed_identity", False))
     verify = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-    max_events = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_EVENTS
+    max_events = arg_to_number(params.get("max_fetch")) or Config.DEFAULT_MAX_EVENTS
 
 
 
