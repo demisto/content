@@ -1774,7 +1774,7 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
         )
     # API is limited to 100 alerts per request, doing the request in batches of 100.
     for index in range(0, len(alerts_list), 100):
-        alerts_sublist = alerts_list[index: index + 100]
+        alerts_sublist = alerts_list[index : index + 100]
         demisto.debug(f"{alerts_sublist=}, {severity=}, {status=}, {comment=}")
         array_of_sublist_ids = client.update_alerts_in_xdr_request(alerts_sublist, severity, status, comment)
         array_of_all_ids += array_of_sublist_ids
@@ -2916,9 +2916,7 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if status_arg:
         status = status_mapper.get(status_arg.strip().lower())
         if not status:
-            raise DemistoException(
-                f"Invalid status '{status_arg}'. Supported values are: New, In Progress, Resolved."
-            )
+            raise DemistoException(f"Invalid status '{status_arg}'. Supported values are: New, In Progress, Resolved.")
     else:
         status = None
 
@@ -2944,8 +2942,7 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     # Enforce the API's conditional rules client-side with clear error messages.
     if (resolve_reason or resolve_comment) and not is_resolving:
         raise DemistoException(
-            "The 'resolve_reason' and 'resolve_comment' arguments can only be provided when "
-            "'status' is set to 'Resolved'."
+            "The 'resolve_reason' and 'resolve_comment' arguments can only be provided when " "'status' is set to 'Resolved'."
         )
     if is_resolving and not resolve_reason:
         raise DemistoException("The 'resolve_reason' argument is required when resolving a case (status 'Resolved').")
