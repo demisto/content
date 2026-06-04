@@ -22244,7 +22244,7 @@ This error originates from the **Qualys API**, which enforces account-level limi
 - A **rate limit** on the number of API requests allowed per rolling time window.
 - A **concurrency limit** on the number of simultaneous API requests.
 
-When a limit is exceeded, Qualys returns HTTP `409` and indicates how many seconds to wait before retrying. The integration reads this wait time from the Qualys response and automatically retries the request once after waiting, which reduces how often this error surfaces. However, the error cannot be fully eliminated, because it depends on the Qualys account's quota - if the quota is still exhausted after the wait, the error is returned.
+When a limit is exceeded, Qualys returns HTTP `409` and indicates how many seconds to wait before retrying. The integration reads this wait time from the Qualys response and automatically retries the request once after waiting, which reduces how often this error surfaces. However, the error cannot be fully eliminated because it depends on the Qualys account's quota. If the quota is still exhausted after the wait, the error is returned.
 
 **Recommended actions:**
 

@@ -2182,7 +2182,10 @@ class TestRateLimitRetry:
         [
             ("40", 42),  # header value + buffer
             ("100", Qualysv2.RATE_LIMIT_MAX_WAIT_SEC),  # capped
-            ("not-a-number", Qualysv2.RATE_LIMIT_DEFAULT_WAIT_SEC),  # unparseable -> default
+            (
+                "not-a-number",
+                Qualysv2.RATE_LIMIT_DEFAULT_WAIT_SEC + Qualysv2.RATE_LIMIT_WAIT_BUFFER_SEC,
+            ),  # unparseable -> default
             (None, Qualysv2.RATE_LIMIT_DEFAULT_WAIT_SEC + Qualysv2.RATE_LIMIT_WAIT_BUFFER_SEC),  # missing header -> default
         ],
     )

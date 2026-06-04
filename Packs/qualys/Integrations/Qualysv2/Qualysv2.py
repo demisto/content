@@ -1662,8 +1662,8 @@ class Client(BaseClient):
             if getattr(response, "status_code", None) != RATE_LIMIT_STATUS_CODE:
                 raise
             wait_seconds = self._get_rate_limit_wait_seconds(response)
-            demisto.info(
-                f"[RateLimit] Hit Qualys rate limit (HTTP {RATE_LIMIT_STATUS_CODE}). "
+            demisto.debug(
+                f"[HTTP Error] Hit Qualys rate limit (HTTP {RATE_LIMIT_STATUS_CODE}). "
                 f"Waiting {wait_seconds}s before retrying once."
             )
             time.sleep(wait_seconds)  # pylint: disable=E9003
@@ -1678,7 +1678,7 @@ class Client(BaseClient):
         try:
             wait_seconds = int(raw_wait) + RATE_LIMIT_WAIT_BUFFER_SEC
         except (TypeError, ValueError):
-            wait_seconds = RATE_LIMIT_DEFAULT_WAIT_SEC
+            wait_seconds = RATE_LIMIT_DEFAULT_WAIT_SEC + RATE_LIMIT_WAIT_BUFFER_SEC
         return min(wait_seconds, RATE_LIMIT_MAX_WAIT_SEC)
 
     @logger
