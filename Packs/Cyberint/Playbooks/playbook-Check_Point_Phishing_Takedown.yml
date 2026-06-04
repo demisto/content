@@ -314,9 +314,9 @@ tasks:
       version: -1
       name: Annotate incident - takedown requested
       description: Tags the incident to indicate that a Cyberint takedown request has been submitted and is being tracked.
-      script: '|||setIncident'
+      scriptName: setIncident
       type: regular
-      iscommand: true
+      iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
@@ -397,9 +397,9 @@ tasks:
       version: -1
       name: Annotate incident - takedown status updated
       description: Tags the incident to indicate that the Cyberint takedown request has reached a terminal status.
-      script: '|||setIncident'
+      scriptName: setIncident
       type: regular
-      iscommand: true
+      iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
