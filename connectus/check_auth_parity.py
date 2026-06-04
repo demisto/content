@@ -1253,6 +1253,7 @@ def run_old(
     docker_cfg: _ccp.DockerConfig | None,
     seed_overrides: dict[str, Any] | None = None,
     integration_id: str | None = None,
+    seed_args: dict[str, dict[str, str]] | None = None,
 ) -> RunResult:
     """Execute the integration with sentinels seeded into ``demisto.params()``.
 
@@ -1272,6 +1273,7 @@ def run_old(
         ucp_enabled=False,
         ucp_credentials=None,
         integration_id=integration_id,
+        seed_args=seed_args,
     )
 
 
@@ -1287,6 +1289,7 @@ def run_new(
     docker_cfg: _ccp.DockerConfig | None,
     seed_overrides: dict[str, Any] | None = None,
     integration_id: str | None = None,
+    seed_args: dict[str, dict[str, str]] | None = None,
 ) -> RunResult:
     """Execute the integration with ``xsoar_param_map`` keys omitted and UCP on.
 
@@ -1319,6 +1322,7 @@ def run_new(
         ucp_enabled=True,
         ucp_credentials=ucp_shape,
         integration_id=integration_id,
+        seed_args=seed_args,
     )
 
 
@@ -1333,6 +1337,7 @@ def _execute_run(
     ucp_enabled: bool,
     ucp_credentials: dict[str, Any] | None,
     integration_id: str | None = None,
+    seed_args: dict[str, dict[str, str]] | None = None,
 ) -> RunResult:
     """Shared run pipeline for old + new: prep content, exec child, read proxy."""
     # Belt-and-suspenders: BOTH the URL-rewrite seeder AND the env-var
@@ -1355,7 +1360,44 @@ def _execute_run(
         except _ccp.DynamicPrepError as exc:
             return _crashed_run(rc=-1, stderr=f"prepare-content failed: {exc}")
         _write_ucp_patch(mock_dir, ucp_enabled, ucp_credentials)
+        # Provide a real on-disk file for file-upload commands. Such
+        # commands resolve a war-room entry id via demisto.getFilePath()
+        # and open() the returned path before issuing any HTTP request;
+        # with the default empty mock path they crash on open() (a
+        # file-resolution failure unrelated to auth placement). The mock's
+        # getFilePath honors CHECK_FILE_PATH when set.
+        upload_stub = tmp / "auth_parity_upload_stub.bin"
+        upload_stub.write_bytes(b"auth-parity-upload-stub")
+        extra_env["CHECK_FILE_PATH"] = str(upload_stub)
         proxy_url = f"http://127.0.0.1:{proxy.port}"
+        # Seed demisto.args() from the command's YML ``arguments`` so
+        # handlers with REQUIRED arguments (file ids, site ids, etc.) run
+        # far enough to issue their HTTP request instead of crashing on a
+        # missing arg before any call is made. Reuses the same arg-value
+        # builder as check_command_params (YML defaultValue → first
+        # predefined → SENTINEL_ARG_<name>).
+        #
+        # Only REQUIRED args are seeded. Optional args are deliberately
+        # left unset so the handler takes its natural "argument absent"
+        # path: seeding an optional arg that carries a format validator
+        # (e.g. a ``next_page_url`` the integration asserts is a real URL)
+        # with a sentinel string makes the command crash on arg
+        # validation before any HTTP call — a false negative unrelated to
+        # auth placement. Required args have no such "absent" path, so
+        # they must be seeded for the handler to run at all.
+        # Operator --seed-arg overrides (scoped to this command) are always
+        # honored, even for optional args, so conditionally-required args
+        # (e.g. a command that needs EITHER site_id OR next_page_url) can be
+        # supplied to reach the HTTP call.
+        cmd_seed_args = (seed_args or {}).get(command, {})
+        all_command_args = _ccp.get_command_args(yml_data, command)
+        args_to_seed = [
+            a for a in all_command_args
+            if a.get("required") or a.get("name") in cmd_seed_args
+        ]
+        command_args = _ccp.build_arg_values(
+            args_to_seed, seed_args=cmd_seed_args
+        )
         try:
             rc, stdout, stderr, timed_out = _ccp.run_integration(
                 unified_path=unified,
@@ -1366,6 +1408,7 @@ def _execute_run(
                 timeout=timeout,
                 docker_cfg=docker_cfg,
                 image=(docker_cfg.resolve_image_for(yml_data) if docker_cfg else None),
+                args=command_args,
                 extra_env=extra_env,
                 extra_mounts=([(str(cert_dir), str(cert_dir), "ro")] if cert_dir else None),
             )
@@ -1568,13 +1611,27 @@ def _write_ucp_patch(
 
 
 def _connection_skip_status(
-    entry: AuthEntry, py_source: str, yml_data: dict[str, Any]
+    entry: AuthEntry, py_source: str, yml_data: dict[str, Any],
+    force_run: bool = False,
 ) -> str | None:
-    """Return a ``skipped_*`` status for this entry, or ``None`` to run it."""
+    """Return a ``skipped_*`` status for this entry, or ``None`` to run it.
+
+    The ``interpolated`` and ``Passthrough``/``NoneRequired`` skips are
+    intrinsic to the profile (there is genuinely nothing testable) and
+    are honored even under ``force_run``. The ``skipped_signed`` /
+    ``skipped_mtls`` heuristics, however, are static detections that
+    fire on the *presence* of a signing import or a type:14 cert param
+    anywhere in the integration — they wrongly suppress a perfectly
+    testable non-cert/non-signed profile (e.g. an API-token profile on
+    a Microsoft integration that also declares a cert-thumbprint slot).
+    ``force_run`` overrides those two so the live run proceeds.
+    """
     if entry.interpolated:
         return "skipped_interpolated"
     if entry.type in (AuthType.Passthrough, AuthType.NoneRequired):
         return "skipped_passthrough"
+    if force_run:
+        return None
     if detect_signed_auth(py_source):
         return "skipped_signed"
     if detect_mtls(yml_data):
@@ -1855,9 +1912,11 @@ def check_connection_parity(
     docker_cfg: _ccp.DockerConfig | None,
     seed_overrides: dict[str, Any] | None = None,
     integration_id: str | None = None,
+    force_run: bool = False,
+    seed_args: dict[str, dict[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Run old + new for each command, collect diffs, classify status."""
-    skip = _connection_skip_status(entry, py_source, yml_data)
+    skip = _connection_skip_status(entry, py_source, yml_data, force_run=force_run)
     if skip is not None:
         return {"status": skip, "commands": {}, "diagnostics": {}}
 
@@ -1874,6 +1933,7 @@ def check_connection_parity(
             docker_cfg=docker_cfg,
             seed_overrides=seed_overrides,
             integration_id=integration_id,
+            seed_args=seed_args,
         )
         commands_block[command] = {"status": cmd_block["status"]}
         diagnostics_commands[command] = cmd_diag
@@ -1901,6 +1961,7 @@ def _run_one_command(
     docker_cfg: _ccp.DockerConfig | None,
     seed_overrides: dict[str, Any] | None = None,
     integration_id: str | None = None,
+    seed_args: dict[str, dict[str, str]] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Run old + new for one command — isolated per-command exception handling."""
     proxy = CaptureProxy(port=0)
@@ -1913,6 +1974,7 @@ def _run_one_command(
                 entry.name, proxy, timeout, docker_cfg,
                 seed_overrides=seed_overrides,
                 integration_id=integration_id,
+                seed_args=seed_args,
             )
         except Exception as exc:  # noqa: BLE001 — per-command isolation
             old = _crashed_run(rc=-1, stderr=f"run_old exception: {exc}")
@@ -1922,6 +1984,7 @@ def _run_one_command(
                 entry.name, entry, proxy, timeout, docker_cfg,
                 seed_overrides=seed_overrides,
                 integration_id=integration_id,
+                seed_args=seed_args,
             )
         except Exception as exc:  # noqa: BLE001 — per-command isolation
             new = _crashed_run(rc=-1, stderr=f"run_new exception: {exc}")
@@ -1990,6 +2053,8 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
     docker_cfg: _ccp.DockerConfig | None,
     display_name_override: str | None = None,
     seed_overrides: dict[str, Any] | None = None,
+    force_run: bool = False,
+    seed_args: dict[str, dict[str, str]] | None = None,
 ) -> dict[str, Any]:
     """End-to-end orchestrator for one integration. Returns the §5.2 JSON.
 
@@ -2022,6 +2087,19 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
             secrets with format validation, OIDC issuer URLs, etc.).
             For YML ``type:9`` credentials widgets, the dotted-leaf
             form ``NAME.identifier`` / ``NAME.password`` is supported.
+        force_run: When True, bypass the "cannot verify" structural
+            gates (``ERROR_NO_BASECLIENT`` /
+            ``APIMODULE_INTEGRATION_CANNOT_VERIFY`` /
+            ``MULTI_SECRET_PASSTHROUGH``) and proceed with the live
+            parity run anyway. This is the operator escape hatch for
+            integrations the static detector wrongly flags as
+            unverifiable — most notably ``*ApiModule``-based
+            integrations (MicrosoftApiModule, OktaApiModule, …) whose
+            ``Client`` subclasses ``BaseClient`` transitively and so
+            never shows a literal ``BaseClient`` token in their own
+            ``.py``. The ``ERROR_NON_PYTHON`` gate is NOT bypassed (a
+            non-Python integration genuinely cannot be run by this
+            harness).
     """
     yml_path, py_path = _ccp.find_integration_files(integration_path)
     yml_data = _ccp.load_yml(yml_path)
@@ -2074,7 +2152,15 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
     assert py_path is not None  # narrowed by detect_non_python
     py_source = py_path.read_text(encoding="utf-8", errors="replace")
 
-    if detect_no_baseclient(py_source):
+    # --force-run bypasses the no-baseclient / apimodule "cannot verify"
+    # structural gate. The static detector textually scans the integration's
+    # OWN .py for a ``BaseClient`` token; ``*ApiModule``-based integrations
+    # (MicrosoftApiModule, OktaApiModule, …) inherit BaseClient transitively
+    # through the ApiModule's Client class and so legitimately have no such
+    # token, producing a false "cannot verify". When the operator knows the
+    # integration is in fact BaseClient-backed, force_run lets the live run
+    # proceed instead of short-circuiting.
+    if not force_run and detect_no_baseclient(py_source):
         # FIXES-TODO #12 (LOCKED 2026-05-31): refine the diagnostic for
         # integrations whose ``Client`` subclasses a class defined in a
         # shared ``*ApiModule`` (MicrosoftApiModule, OktaApiModule, …).
@@ -2103,7 +2189,7 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
     # the clean path and wins) but is otherwise a more specific diagnostic
     # than the per-connection interpolation gate below.
     multi_secret_keys = detect_multi_secret_passthrough(details)
-    if multi_secret_keys is not None:
+    if not force_run and multi_secret_keys is not None:
         return _emit_hard_error(
             display, MULTI_SECRET_PASSTHROUGH,
             _msg_multi_secret_passthrough(multi_secret_keys),
@@ -2130,6 +2216,8 @@ def check_auth_parity(  # noqa: PLR0911 — many early-return hard-error gates
         timeout=timeout,
         docker_cfg=docker_cfg,
         seed_overrides=seed_overrides,
+        force_run=force_run,
+        seed_args=seed_args,
     )
 
 
@@ -2170,6 +2258,8 @@ def _run_all_connections(
     timeout: int,
     docker_cfg: _ccp.DockerConfig | None,
     seed_overrides: dict[str, Any] | None = None,
+    force_run: bool = False,
+    seed_args: dict[str, dict[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Iterate over auth entries, collect per-connection results."""
     auth_parity: dict[str, Any] = {}
@@ -2189,6 +2279,8 @@ def _run_all_connections(
             docker_cfg=docker_cfg,
             seed_overrides=seed_overrides,
             integration_id=display,
+            force_run=force_run,
+            seed_args=seed_args,
         )
         auth_parity[entry.name] = {
             "status": per_conn["status"], "commands": per_conn["commands"],
@@ -2303,6 +2395,35 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--commands", nargs="+", default=None)
     parser.add_argument("--connection", default=None,
                         help="Restrict the test to one auth_types[].name.")
+    parser.add_argument(
+        "--force-run", action="store_true",
+        help=(
+            "Bypass the 'cannot verify' structural gates "
+            "(ERROR_NO_BASECLIENT / APIMODULE_INTEGRATION_CANNOT_VERIFY / "
+            "MULTI_SECRET_PASSTHROUGH) and run the live parity test anyway. "
+            "Use for integrations the static detector wrongly flags as "
+            "unverifiable, e.g. *ApiModule-based integrations "
+            "(MicrosoftApiModule, OktaApiModule, ...) whose Client "
+            "subclasses BaseClient transitively. The ERROR_NON_PYTHON gate "
+            "is never bypassed."
+        ),
+    )
+    parser.add_argument(
+        "--seed-arg",
+        action="append",
+        default=None,
+        metavar="CMD:NAME=VALUE",
+        help=(
+            "Seed a single command argument value for the parity run, "
+            "scoped to one command. Repeatable. Required YML arguments are "
+            "auto-seeded already; use this for conditionally-required "
+            "arguments (e.g. a command that needs EITHER site_id OR "
+            "next_page_url) or to override an auto-seeded value so the "
+            "handler runs far enough to issue its HTTP request. Mirrors the "
+            "same flag on check_command_params.py. Example: "
+            "--seed-arg msgraph-list-drives-in-site:site_id=test-site-id"
+        ),
+    )
     parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT_S)
     parser.add_argument("--docker", choices=("auto", "always", "never"), default="auto")
     parser.add_argument("--docker-image", default=_ccp.DEFAULT_DOCKER_IMAGE)
@@ -2451,6 +2572,14 @@ def main(argv: list[str] | None = None) -> int:
         sys.stderr.write(f"error: {exc}\n")
         return 2
 
+    # Parse repeatable --seed-arg CMD:NAME=VALUE flags (mirrors the same
+    # parser in check_command_params.py).
+    try:
+        seed_args = _ccp.parse_seed_args(args.seed_arg)
+    except ValueError as exc:
+        sys.stderr.write(f"error: {exc}\n")
+        return 2
+
     docker_cfg = _ccp.DockerConfig(
         mode=args.docker, default_image=args.docker_image,
         use_integration_docker=args.use_integration_docker,
@@ -2466,6 +2595,8 @@ def main(argv: list[str] | None = None) -> int:
             docker_cfg=docker_cfg,
             display_name_override=args.display_name,
             seed_overrides=seed_overrides,
+            force_run=args.force_run,
+            seed_args=seed_args,
         )
     except ValueError as exc:
         # build_param_values raises ValueError for operator-input

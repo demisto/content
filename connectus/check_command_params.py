@@ -4362,7 +4362,14 @@ _DEMISTOMOCK_TEMPLATE = textwrap.dedent(
         def log(self, *a, **k): return None
         def getLicenseID(self): return ""
         def demistoVersion(self): return {"version": "8.0.0", "buildNumber": "0"}
-        def getFilePath(self, *a, **k): return {"path": "", "name": ""}
+        def getFilePath(self, *a, **k):
+            # File-upload commands resolve a war-room entry id to a local
+            # path via getFilePath and then open() it before any HTTP call.
+            # With an empty path they crash on open(). When the harness sets
+            # CHECK_FILE_PATH to a real (temp) file, return it so those
+            # commands run far enough to issue their request.
+            _p = _os.environ.get("CHECK_FILE_PATH", "")
+            return {"path": _p, "name": _os.path.basename(_p) if _p else ""}
         def getLastMirrorRun(self): return {}
         def setLastMirrorRun(self, *a, **k): return None
         def investigation(self): return {"id": "0"}
@@ -4404,7 +4411,9 @@ _DEMISTOMOCK_TEMPLATE = textwrap.dedent(
     def setLastRun(*a, **k): return None
     def getLicenseID(): return ""
     def demistoVersion(): return {"version": "8.0.0", "buildNumber": "0"}
-    def getFilePath(*a, **k): return {"path": "", "name": ""}
+    def getFilePath(*a, **k):
+        _p = _os.environ.get("CHECK_FILE_PATH", "")
+        return {"path": _p, "name": _os.path.basename(_p) if _p else ""}
     def getLastMirrorRun(): return {}
     def setLastMirrorRun(*a, **k): return None
     def investigation(): return {"id": "0"}
