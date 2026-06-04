@@ -1803,6 +1803,272 @@ def test_return_error_get_modified_remote_data_not_implemented(mocker):
     assert demisto.results.call_args[0][0]['Contents'] == err_msg
 
 
+# ── is_caller_agentix tests ──────────────────────────────────────────
+
+def test_is_caller_agentix_true(mocker):
+    """
+    Given
+    - demisto.caller() returns 'agentix'
+    When
+    - is_caller_agentix is called
+    Then
+    - It returns True
+    """
+    from CommonServerPython import is_caller_agentix, AGENTIX_CALLER
+    mocker.patch.object(demisto, 'caller', create=True, return_value=AGENTIX_CALLER)
+    assert is_caller_agentix() is True
+
+
+def test_is_caller_agentix_false_other_caller(mocker):
+    """
+    Given
+    - demisto.caller() returns a non-agentix value
+    When
+    - is_caller_agentix is called
+    Then
+    - It returns False
+    """
+    from CommonServerPython import is_caller_agentix
+    mocker.patch.object(demisto, 'caller', create=True, return_value='playbook')
+    assert is_caller_agentix() is False
+
+
+def test_is_caller_agentix_no_caller_method(mocker):
+    """
+    Given
+    - demisto has no 'caller' attribute (older server)
+    When
+    - is_caller_agentix is called
+    Then
+    - It returns False without raising
+    """
+    from CommonServerPython import is_caller_agentix
+    if hasattr(demisto, 'caller'):
+        mocker.patch.object(demisto, 'caller', create=True, side_effect=AttributeError)
+    assert is_caller_agentix() is False
+
+
+# ── ContentError.build_message tests ─────────────────────────────────
+
+def test_content_error_build_message_missing_arg():
+    """
+    Given
+    - A ContentMissingArgError built with an argument name
+    When
+    - build_message is called
+    Then
+    - It returns the unified, auto-generated message
+    """
+    from CommonServerPython import ContentMissingArgError
+    err = ContentMissingArgError('time')
+    assert err.build_message() == "Required argument 'time' was not provided."
+    assert str(err) == "Required argument 'time' was not provided."
+
+
+def test_content_error_build_message_invalid_arg():
+    from CommonServerPython import ContentInvalidArgError
+    err = ContentInvalidArgError('mode', value='fast', allowed_values=['slow', 'medium'])
+    msg = err.build_message()
+    assert "Invalid value for argument 'mode'" in msg
+    assert "got 'fast'" in msg
+    assert "Allowed values: slow, medium" in msg
+
+
+def test_content_error_build_message_resource_not_found():
+    from CommonServerPython import ContentResourceNotFoundError
+    err = ContentResourceNotFoundError('endpoint', identifier='abc-123')
+    assert err.build_message() == "endpoint 'abc-123' not found"
+    err_no_id = ContentResourceNotFoundError('incident')
+    assert err_no_id.build_message() == "incident not found"
+
+
+def test_content_error_build_message_custom_overrides_auto():
+    """
+    Given
+    - A ContentMissingArgError with an explicit custom message
+    When
+    - build_message is called
+    Then
+    - The custom message is returned instead of the auto-generated one
+    """
+    from CommonServerPython import ContentMissingArgError
+    err = ContentMissingArgError('time', message='Please provide the time argument.')
+    assert err.build_message() == 'Please provide the time argument.'
+
+
+def test_content_error_build_message_extra_arg():
+    from CommonServerPython import ContentExtraArgError
+    err = ContentExtraArgError(['foo', 'bar'])
+    assert err.build_message() == "Unexpected argument(s): foo, bar"
+
+
+def test_content_error_build_message_conflicting_args_mutually_exclusive():
+    """
+    Given
+    - A ContentConflictingArgsError with mutually exclusive arguments
+    When
+    - build_message is called
+    Then
+    - The message explains the conflict and the valid resolution
+    """
+    from CommonServerPython import ContentConflictingArgsError
+    err = ContentConflictingArgsError(arguments=['start_time', 'last_n_days'])
+    msg = err.build_message()
+    assert "Conflicting arguments: 'start_time', 'last_n_days'." in msg
+    assert "mutually exclusive" in msg
+    assert "Provide only one of: 'start_time', 'last_n_days'." in msg
+
+
+def test_content_error_build_message_conflicting_args_reason_resolution():
+    from CommonServerPython import ContentConflictingArgsError
+    err = ContentConflictingArgsError(
+        arguments=['a', 'b'],
+        reason='a requires b to be empty.',
+        resolution='Provide a without b, or b without a.',
+    )
+    msg = err.build_message()
+    assert "Conflicting arguments: 'a', 'b'." in msg
+    assert 'a requires b to be empty.' in msg
+    assert 'Provide a without b, or b without a.' in msg
+
+
+def test_content_error_build_message_conflicting_args_custom_message():
+    from CommonServerPython import ContentConflictingArgsError
+    err = ContentConflictingArgsError('Totally custom conflict text', arguments=['a', 'b'])
+    assert err.build_message() == 'Totally custom conflict text'
+
+
+def test_content_error_build_message_api_error_with_status():
+    from CommonServerPython import ContentApiError
+    err = ContentApiError(status_code=500)
+    msg = err.build_message()
+    assert 'external API' in msg
+    assert '(HTTP 500)' in msg
+
+
+def test_content_error_build_message_auth_default():
+    from CommonServerPython import ContentAuthError, ContentErrorCode
+    err = ContentAuthError()
+    assert err.build_message() == "Authentication failed. Check your credentials or API key."
+    assert err.error_code == ContentErrorCode.AUTH_ERROR
+
+
+def test_content_error_build_message_rate_limit_retry_after():
+    from CommonServerPython import ContentRateLimitError
+    err = ContentRateLimitError(retry_after=30)
+    msg = err.build_message()
+    assert "rate limit exceeded" in msg
+    assert "Retry after 30 seconds." in msg
+    assert err.details.get('retry_after_seconds') == 30
+
+
+def test_content_error_build_message_timeout_and_connection_defaults():
+    from CommonServerPython import ContentTimeoutError, ContentConnectionError
+    assert ContentTimeoutError().build_message() == "The request timed out. Please try again."
+    assert ContentConnectionError().build_message() == \
+        "Unable to connect to the service. Check network connectivity."
+
+
+def test_content_error_build_message_simple_defaults():
+    """
+    Given
+    - The simple ContentError subclasses without an explicit message
+    When
+    - build_message is called
+    Then
+    - Each returns its category-specific default message
+    """
+    from CommonServerPython import (
+        ContentConflictError, ContentParseError, ContentPermissionError, ContentExecutionError,
+    )
+    assert ContentConflictError().build_message() == \
+        "The operation conflicts with the current state of the resource."
+    assert ContentParseError().build_message() == "Failed to parse the response data."
+    assert ContentPermissionError().build_message() == \
+        "Permission denied. You do not have the required permissions to perform this action."
+    assert ContentExecutionError().build_message() == "The command or script execution failed."
+
+
+def test_content_error_simple_subclass_custom_message_overrides_default():
+    from CommonServerPython import ContentExecutionError
+    err = ContentExecutionError('Custom execution failure detail')
+    assert err.build_message() == 'Custom execution failure detail'
+
+
+# ── return_error message-selection tests ─────────────────────────────
+
+def test_return_error_agentix_uses_auto_message(mocker):
+    """
+    Given
+    - Caller is Agentix and a ContentError is passed as error
+    When
+    - return_error is called with an explicit (different) message
+    Then
+    - The automatic, unified message from the ContentError is surfaced
+    """
+    from CommonServerPython import return_error, ContentMissingArgError
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=True)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('A human-friendly explanation', error=ContentMissingArgError('time'))
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == "Required argument 'time' was not provided."
+
+
+def test_return_error_non_agentix_prefers_explicit_message(mocker):
+    """
+    Given
+    - Caller is not Agentix and a ContentError is passed as error
+    When
+    - return_error is called with an explicit message
+    Then
+    - The explicit message is surfaced (not the automatic one)
+    """
+    from CommonServerPython import return_error, ContentMissingArgError
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=False)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('A human-friendly explanation', error=ContentMissingArgError('time'))
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == 'A human-friendly explanation'
+
+
+def test_return_error_non_agentix_falls_back_to_auto(mocker):
+    """
+    Given
+    - Caller is not Agentix, a ContentError is passed, and no explicit message
+    When
+    - return_error is called with an empty message
+    Then
+    - The automatic, unified message is surfaced
+    """
+    from CommonServerPython import return_error, ContentMissingArgError
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=False)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('', error=ContentMissingArgError('time'))
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == "Required argument 'time' was not provided."
+
+
+def test_return_error_agentix_no_content_error_uses_message(mocker):
+    """
+    Given
+    - Caller is Agentix but no ContentError is available
+    When
+    - return_error is called with a plain message
+    Then
+    - The explicit message is surfaced as a fallback
+    """
+    from CommonServerPython import return_error
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=True)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('Plain error message')
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == 'Plain error message'
+
+
 def test_indicator_type_by_server_version_6_2(mocker, clear_version_cache):
     """
     Given

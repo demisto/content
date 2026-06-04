@@ -655,7 +655,32 @@ class ContentErrorCode(object):
 # Key used inside the ``ExtendedPayload`` dict of an error entry to carry
 # the content error type.  Defined as a module-level constant so the name
 # can be changed in one place.
-CONTENT_ERROR_TYPE_KEY = 'content_error_type'
+EXTENDED_PAYLOAD_ERROR_CODE_KEY = 'error_code'
+
+# Value returned by ``demisto.caller()`` when the script/command is executed
+# from an Agentix (LLM agent) flow.  Used to decide whether ``return_error``
+# should surface the automatic, machine-friendly error message instead of a
+# human-authored one.
+AGENTIX_CALLER = 'agentix'
+
+
+def is_caller_agentix():
+    """Check whether the current execution was triggered by an Agentix agent.
+
+    Uses ``demisto.caller()`` (when available) and compares it to
+    :data:`AGENTIX_CALLER`.  Safe to call on older servers that do not expose
+    the ``caller`` method - in that case it returns ``False``.
+
+    :return: ``True`` if the caller is Agentix, ``False`` otherwise.
+    :rtype: ``bool``
+    """
+    try:
+        if not hasattr(demisto, 'caller'):
+            return False
+        return demisto.caller() == AGENTIX_CALLER
+    except Exception as exc:
+        demisto.debug('is_caller_agentix failed to determine caller: {}'.format(exc))
+        return False
 
 
 class FeedIndicatorType(object):
@@ -1459,13 +1484,13 @@ def get_content_error_type(execute_command_result):
     """
     if isinstance(execute_command_result, dict):
         extended = execute_command_result.get('ExtendedPayload') or {}
-        return extended.get(CONTENT_ERROR_TYPE_KEY)
+        return extended.get(EXTENDED_PAYLOAD_ERROR_CODE_KEY)
 
     if isinstance(execute_command_result, list):
         for entry in execute_command_result:
             if isinstance(entry, dict) and entry.get('Type') == entryTypes['error']:
                 extended = entry.get('ExtendedPayload') or {}
-                error_type = extended.get(CONTENT_ERROR_TYPE_KEY)
+                error_type = extended.get(EXTENDED_PAYLOAD_ERROR_CODE_KEY)
                 if error_type:
                     return error_type
     return None
@@ -8178,17 +8203,83 @@ def return_outputs(readable_output, outputs=None, raw_response=None, timeline=No
     demisto.results(return_entry)
 
 
+def _get_auto_error_message(error):
+    """Return the automatic (unified) error message for a content error, if any.
+
+    Looks for a :class:`ContentError` first in the ``error`` argument and then
+    in the currently-handled exception, and returns its unified message built
+    by :meth:`ContentError.build_message`.
+
+    :type error: ``str`` or ``Exception``
+    :param error: The ``error`` value passed to :func:`return_error`.
+
+    :return: The automatic message, or ``None`` if no content error is available.
+    :rtype: ``str`` or ``None``
+    """
+    content_error = None
+    if isinstance(error, ContentError):
+        content_error = error
+    else:
+        exc = sys.exc_info()[1]
+        if isinstance(exc, ContentError):
+            content_error = exc
+    if content_error is None:
+        return None
+    try:
+        return content_error.build_message()
+    except Exception as exc:
+        demisto.debug('_get_auto_error_message failed to build message: {}'.format(exc))
+        return str(content_error)
+
+
+def _select_error_message(message, error):
+    """Choose which message ``return_error`` should surface.
+
+    Selection rules:
+      * **Agentix caller** → always use the automatic, unified message built
+        from the :class:`ContentError` (when one is available); otherwise fall
+        back to the explicitly-passed ``message``.
+      * **Non-Agentix caller** → prefer the explicitly-passed ``message``; if
+        none was provided, fall back to the automatic message.
+
+    :type message: ``str``
+    :param message: The explicit message passed to :func:`return_error`.
+
+    :type error: ``str`` or ``Exception``
+    :param error: The ``error`` value passed to :func:`return_error`.
+
+    :return: The message to display in the error entry.
+    :rtype: ``str``
+    """
+    auto_message = _get_auto_error_message(error)
+    if is_caller_agentix():
+        # Agentix prefers the machine-friendly, standardized message.
+        return auto_message or message
+    # Non-Agentix: respect an explicit message, otherwise use the auto one.
+    if message:
+        return message
+    return auto_message or message
+
+
 def return_error(message, error='', outputs=None):
     """
         Returns error entry with given message and exits the script
 
         :type message: ``str``
-        :param message: The message to return to the entry (required)
+        :param message: The message to return to the entry (required).
+            Message selection: when the caller is Agentix
+            (see :func:`is_caller_agentix`), the automatic, unified message
+            built from the :class:`ContentError` is used (falling back to this
+            ``message`` if none is available).  Otherwise this explicit
+            ``message`` is used, falling back to the automatic message when it
+            is empty.
 
         :type error: ``str`` or Exception
         :param error: The raw error message to log (optional).
             When *error* is a :class:`ContentError`, its ``error_code`` is
-            automatically attached to the error entry via ``ExtendedPayload``.
+            automatically attached to the error entry via ``ExtendedPayload``
+            and its :meth:`ContentError.build_message` provides the automatic,
+            unified message used for Agentix callers.
 
         :type outputs: ``dict or None``
         :param outputs: the outputs that will be returned to playbook/investigation context (optional)
@@ -8201,6 +8292,9 @@ def return_error(message, error='', outputs=None):
         is_server_handled = is_command and (demisto.command() in FETCH_COMMANDS or demisto.command() == LONG_RUNNING_COMMAND)
     except Exception:
         is_server_handled = False
+    # Decide which message to surface based on the caller (Agentix vs. others)
+    # and whether a ContentError with an automatic, unified message is present.
+    message = _select_error_message(message, error)
     message = LOG(message)
     if error:
         LOG(str(error))
@@ -8246,7 +8340,7 @@ def return_error(message, error='', outputs=None):
         if not _error_type:
             _error_type = _classify_error_message(message)
         if _error_type:
-            error_entry['ExtendedPayload'] = {CONTENT_ERROR_TYPE_KEY: _error_type}
+            error_entry['ExtendedPayload'] = {EXTENDED_PAYLOAD_ERROR_CODE_KEY: _error_type}
 
         demisto.results(error_entry)
         sys.exit(0)
@@ -11151,10 +11245,34 @@ class ContentError(DemistoException):
 
     error_code = ContentErrorCode.INTERNAL_ERROR  # type: str
 
-    def __init__(self, message, *, error_code=None, details=None, **kwargs):
+    # Default, auto-generated message used by ``build_message`` when no explicit
+    # message is supplied.  Subclasses override this (or ``build_message``) to
+    # provide a category-specific default.
+    _default_message = 'An error occurred.'  # type: str
+
+    def __init__(self, message=None, *, error_code=None, details=None, **kwargs):
         self.error_code = error_code or self.__class__.error_code
         self.details = details or {}
-        super().__init__(message, error_type=self.error_code, **kwargs)
+        # Stores an explicit, caller-supplied message (if any) so that
+        # ``build_message`` can fall back to it.  Subclasses that auto-generate
+        # their message pass ``message=None`` and override ``build_message``.
+        self._custom_message = message
+        super().__init__(self.build_message(), error_type=self.error_code, **kwargs)
+
+    def build_message(self):
+        """Build the unified, human-readable message for this error.
+
+        The base implementation returns the explicit message passed to
+        ``__init__`` when one was provided, otherwise it falls back to the
+        class-level :attr:`_default_message`.  Each subclass overrides this
+        method to construct a consistent message from its own type-specific
+        arguments (e.g. the missing argument name, the resource identifier,
+        the HTTP status code).
+
+        :return: The unified error message.
+        :rtype: ``str``
+        """
+        return self._custom_message or self._default_message
 
 
 class ContentMissingArgError(ContentError):
@@ -11171,10 +11289,10 @@ class ContentMissingArgError(ContentError):
 
     def __init__(self, arg_name, message=None):
         self.arg_name = arg_name
-        super().__init__(
-            message or f"Required argument '{arg_name}' was not provided.",
-            details={"argument": arg_name},
-        )
+        super().__init__(message, details={"argument": arg_name})
+
+    def build_message(self):
+        return self._custom_message or "Required argument '{}' was not provided.".format(self.arg_name)
 
 
 class ContentInvalidArgError(ContentError):
@@ -11197,13 +11315,9 @@ class ContentInvalidArgError(ContentError):
 
     def __init__(self, arg_name, *, value=None, reason=None, allowed_values=None):
         self.arg_name = arg_name
-        parts = [f"Invalid value for argument '{arg_name}'"]
-        if value is not None:
-            parts.append(f": got '{value}'")
-        if reason:
-            parts.append(f". {reason}")
-        if allowed_values:
-            parts.append(f". Allowed values: {', '.join(str(v) for v in allowed_values)}")
+        self.value = value
+        self.reason = reason
+        self.allowed_values = allowed_values
 
         details = {"argument": arg_name}
         if value is not None:
@@ -11211,7 +11325,19 @@ class ContentInvalidArgError(ContentError):
         if allowed_values:
             details["allowed_values"] = [str(v) for v in allowed_values]
 
-        super().__init__("".join(parts), details=details)
+        super().__init__(None, details=details)
+
+    def build_message(self):
+        if self._custom_message:
+            return self._custom_message
+        parts = ["Invalid value for argument '{}'".format(self.arg_name)]
+        if self.value is not None:
+            parts.append(": got '{}'".format(self.value))
+        if self.reason:
+            parts.append(". {}".format(self.reason))
+        if self.allowed_values:
+            parts.append(". Allowed values: {}".format(', '.join(str(v) for v in self.allowed_values)))
+        return "".join(parts)
 
 
 class ContentExtraArgError(ContentError):
@@ -11225,26 +11351,91 @@ class ContentExtraArgError(ContentError):
 
     def __init__(self, arg_names):
         self.arg_names = list(arg_names)
-        super().__init__(
-            f"Unexpected argument(s): {', '.join(self.arg_names)}",
-            details={"arguments": self.arg_names},
-        )
+        super().__init__(None, details={"arguments": self.arg_names})
+
+    def build_message(self):
+        return self._custom_message or "Unexpected argument(s): {}".format(', '.join(self.arg_names))
 
 
 class ContentConflictingArgsError(ContentError):
     """Raised when arguments contradict each other.
 
-    :type message: ``str``
-    :param message: Description of the conflict.
+    Builds a smart, actionable message that explains *which* arguments
+    conflict, *why* they conflict, and *what* a valid combination looks like.
+
+    There are two common conflict shapes, selected automatically:
+
+    * **Mutually exclusive** (``mutually_exclusive=True`` – the default when
+      ``arguments`` are given): only one of the listed arguments may be
+      provided at a time.  The message tells the user to pick exactly one.
+    * **Free-form**: when ``reason`` / ``resolution`` are supplied (or a custom
+      ``message`` is passed), those are used to describe the conflict and the
+      valid path forward.
 
     :type arguments: ``list``
-    :param arguments: Names of the conflicting arguments.
+    :param arguments: Names of the conflicting arguments that were supplied together.
+
+    :type message: ``str``
+    :param message: Optional fully-custom message (overrides auto-generation).
+
+    :type reason: ``str``
+    :param reason: Optional explanation of *why* the arguments conflict.
+
+    :type resolution: ``str``
+    :param resolution: Optional explanation of *what* would be a valid combination.
+        When omitted and the conflict is mutually exclusive, a sensible
+        "provide only one of ..." resolution is generated automatically.
+
+    :type mutually_exclusive: ``bool``
+    :param mutually_exclusive: Whether the listed arguments are mutually
+        exclusive. Defaults to ``True`` when ``arguments`` are provided.
     """
 
     error_code = ContentErrorCode.CONFLICTING_ARGUMENTS
 
-    def __init__(self, message, *, arguments=None):
-        super().__init__(message, details={"arguments": arguments or []})
+    def __init__(self, message=None, *, arguments=None, reason=None, resolution=None, mutually_exclusive=None):
+        self.arguments = list(arguments or [])
+        self.reason = reason
+        self.resolution = resolution
+        # Default to mutual exclusivity when a list of arguments is provided
+        # and the caller did not explicitly say otherwise.
+        self.mutually_exclusive = bool(self.arguments) if mutually_exclusive is None else mutually_exclusive
+
+        details = {"arguments": self.arguments}  # type: dict
+        if reason:
+            details["reason"] = reason
+        if resolution:
+            details["resolution"] = resolution
+
+        super().__init__(message, details=details)
+
+    def _quoted_args(self):
+        return ', '.join("'{}'".format(a) for a in self.arguments)
+
+    def build_message(self):
+        if self._custom_message:
+            return self._custom_message
+
+        parts = []
+        # 1. What conflicts.
+        if self.arguments:
+            parts.append("Conflicting arguments: {}.".format(self._quoted_args()))
+        else:
+            parts.append("Conflicting arguments were provided.")
+
+        # 2. Why they conflict.
+        if self.reason:
+            parts.append(self.reason)
+        elif self.mutually_exclusive and self.arguments:
+            parts.append("These arguments are mutually exclusive and cannot be used together.")
+
+        # 3. What would be valid.
+        if self.resolution:
+            parts.append(self.resolution)
+        elif self.mutually_exclusive and self.arguments:
+            parts.append("Provide only one of: {}.".format(self._quoted_args()))
+
+        return ' '.join(parts)
 
 
 class ContentResourceNotFoundError(ContentError):
@@ -11265,20 +11456,24 @@ class ContentResourceNotFoundError(ContentError):
     def __init__(self, resource_type, identifier=None, message=None):
         self.resource_type = resource_type
         self.identifier = identifier
-        msg = message or (
-            f"{resource_type} '{identifier}' not found" if identifier
-            else f"{resource_type} not found"
-        )
-        super().__init__(msg, details={
+        super().__init__(message, details={
             "resource_type": resource_type,
             "identifier": str(identifier) if identifier else None,
         })
+
+    def build_message(self):
+        if self._custom_message:
+            return self._custom_message
+        if self.identifier:
+            return "{} '{}' not found".format(self.resource_type, self.identifier)
+        return "{} not found".format(self.resource_type)
 
 
 class ContentConflictError(ContentError):
     """Raised when there is a resource state conflict (e.g. already exists)."""
 
     error_code = ContentErrorCode.CONFLICT
+    _default_message = "The operation conflicts with the current state of the resource."
 
 
 class ContentApiError(ContentError):
@@ -11307,6 +11502,9 @@ class ContentApiError(ContentError):
 
     error_code = ContentErrorCode.API_ERROR
 
+    # Default, auto-generated message used when no explicit message is supplied.
+    _default_message = "An error occurred while communicating with the external API."
+
     _ERROR_TYPE_TO_CODE = {
         ErrorTypes.AUTH_ERROR: ContentErrorCode.AUTH_ERROR,
         ErrorTypes.QUOTA_ERROR: ContentErrorCode.QUOTA_ERROR,
@@ -11317,7 +11515,8 @@ class ContentApiError(ContentError):
         ErrorTypes.TIMEOUT_ERROR: ContentErrorCode.TIMEOUT_ERROR,
     }
 
-    def __init__(self, message, *, status_code=None, api_error_type=None, response_body=None):
+    def __init__(self, message=None, *, status_code=None, api_error_type=None, response_body=None):
+        self.status_code = status_code
         details = {}  # type: dict
         if status_code:
             details["status_code"] = status_code
@@ -11342,18 +11541,23 @@ class ContentApiError(ContentError):
 
         super().__init__(message, details=details)
 
+    def build_message(self):
+        if self._custom_message:
+            return self._custom_message
+        message = self._default_message
+        if self.status_code:
+            message = "{} (HTTP {})".format(message, self.status_code)
+        return message
+
 
 class ContentAuthError(ContentApiError):
     """Raised when authentication fails (401/403)."""
 
     error_code = ContentErrorCode.AUTH_ERROR
+    _default_message = "Authentication failed. Check your credentials or API key."
 
     def __init__(self, message=None, **kwargs):
-        super().__init__(
-            message or "Authentication failed. Check your credentials or API key.",
-            api_error_type=ErrorTypes.AUTH_ERROR,
-            **kwargs,
-        )
+        super().__init__(message, api_error_type=ErrorTypes.AUTH_ERROR, **kwargs)
 
 
 class ContentRateLimitError(ContentApiError):
@@ -11364,61 +11568,61 @@ class ContentRateLimitError(ContentApiError):
     """
 
     error_code = ContentErrorCode.QUOTA_ERROR
+    _default_message = "API rate limit exceeded. Please retry later."
 
     def __init__(self, message=None, *, retry_after=None, **kwargs):
-        details_extra = {}
+        self.retry_after = retry_after
+        super().__init__(message, api_error_type=ErrorTypes.QUOTA_ERROR, **kwargs)
         if retry_after:
-            details_extra["retry_after_seconds"] = retry_after
-        super().__init__(
-            message or "API rate limit exceeded. Please retry later.",
-            api_error_type=ErrorTypes.QUOTA_ERROR,
-            **kwargs,
-        )
-        self.details.update(details_extra)
+            self.details["retry_after_seconds"] = retry_after
+
+    def build_message(self):
+        if self._custom_message:
+            return self._custom_message
+        if self.retry_after:
+            return "{} Retry after {} seconds.".format(self._default_message, self.retry_after)
+        return self._default_message
 
 
 class ContentTimeoutError(ContentApiError):
     """Raised when an API request times out."""
 
     error_code = ContentErrorCode.TIMEOUT_ERROR
+    _default_message = "The request timed out. Please try again."
 
     def __init__(self, message=None, **kwargs):
-        super().__init__(
-            message or "The request timed out. Please try again.",
-            api_error_type=ErrorTypes.TIMEOUT_ERROR,
-            **kwargs,
-        )
+        super().__init__(message, api_error_type=ErrorTypes.TIMEOUT_ERROR, **kwargs)
 
 
 class ContentConnectionError(ContentApiError):
     """Raised when unable to connect to the service."""
 
     error_code = ContentErrorCode.CONNECTION_ERROR
+    _default_message = "Unable to connect to the service. Check network connectivity."
 
     def __init__(self, message=None, **kwargs):
-        super().__init__(
-            message or "Unable to connect to the service. Check network connectivity.",
-            api_error_type=ErrorTypes.CONNECTION_ERROR,
-            **kwargs,
-        )
+        super().__init__(message, api_error_type=ErrorTypes.CONNECTION_ERROR, **kwargs)
 
 
 class ContentParseError(ContentError):
     """Raised when response data cannot be parsed."""
 
     error_code = ContentErrorCode.PARSE_ERROR
+    _default_message = "Failed to parse the response data."
 
 
 class ContentPermissionError(ContentError):
     """Raised when the user lacks required permissions."""
 
     error_code = ContentErrorCode.PERMISSION_ERROR
+    _default_message = "Permission denied. You do not have the required permissions to perform this action."
 
 
 class ContentExecutionError(ContentError):
     """Raised when a command or script execution fails."""
 
     error_code = ContentErrorCode.EXECUTION_ERROR
+    _default_message = "The command or script execution failed."
 
 
 class GetRemoteDataArgs:
