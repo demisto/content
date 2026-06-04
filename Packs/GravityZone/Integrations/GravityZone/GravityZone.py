@@ -2038,32 +2038,23 @@ def _build_memory_dump_results(
         )
 
     status = MEMORY_DUMP_STATUS_PROCESSED if task_output.get("status") == TASK_STATUS_PROCESSED else MEMORY_DUMP_STATUS_PENDING
-    subtask_start_date = memory_dump_subtask.get("startDate")
     subtask_end_date = memory_dump_subtask.get("endDate")
-    task_start_date = task_output.get("startDate")
-    task_end_date = task_output.get("endDate")
     subtask_error_code = memory_dump_subtask.get("errorCode")
     subtask_error = memory_dump_subtask.get("errorMessage")
-
-    # Use API-provided task/subtask times only; avoid synthetic current timestamps
-    # that can collapse playbook Duration to 0 when one of the fields is missing.
-    resolved_start_date = subtask_start_date or task_start_date
-    resolved_end_date = subtask_end_date or task_end_date
 
     endpoint_output = generate_task_output(
         task_id=task_id,
         task_type=COMMAND_CREATE_MEMORY_DUMP,
         endpoint_id=endpoint_id,
         status=status,
-        end_date=resolved_end_date,
+        end_date=subtask_end_date,
         host_name=endpoint_hostname,
         error_code=subtask_error_code,
         error=subtask_error,
-        start_date=resolved_start_date,
+        start_date=memory_dump_subtask.get("startDate"),
     )
-    endpoint_output["StartDate"] = f"{resolved_start_date}Z" if resolved_start_date else ""
-    endpoint_output["EndDate"] = f"{resolved_end_date}Z" if resolved_end_date else ""
     if status == MEMORY_DUMP_STATUS_PENDING:
+        endpoint_output["EndDate"] = f"{subtask_end_date}Z" if subtask_end_date else ""
         endpoint_output["ErrorCode"] = subtask_error_code or ""
         endpoint_output["Error"] = subtask_error or ""
     endpoint_output["DownloadURL"] = download_url
