@@ -1201,7 +1201,6 @@ class TestCommandArgumentHandling:
             func(**args)
 
     class TestZendeskTicketAttachmentAdd:
-
         @staticmethod
         @pytest.fixture
         def stub_attachment_add(mocker, zendesk_client, tmp_path):
@@ -1229,9 +1228,7 @@ class TestCommandArgumentHandling:
             zendesk_client.zendesk_ticket_attachment_add(filename="custom.txt", **self.REQUIRED_ARGS)
 
         def test_with_redundant_args(self, zendesk_client, stub_attachment_add):
-            zendesk_client.zendesk_ticket_attachment_add(
-                **self.REQUIRED_ARGS, **TestCommandArgumentHandling.EXTRA_REDUNDANT_ARGS
-            )
+            zendesk_client.zendesk_ticket_attachment_add(**self.REQUIRED_ARGS, **TestCommandArgumentHandling.EXTRA_REDUNDANT_ARGS)
 
         def test_with_unexpected_args(self, zendesk_client, stub_attachment_add):
             zendesk_client.zendesk_ticket_attachment_add(
@@ -1239,7 +1236,6 @@ class TestCommandArgumentHandling:
             )
 
     class TestGetModifiedRemoteData:
-
         @staticmethod
         @pytest.fixture
         def stub_modified_remote(mocker, zendesk_client):
@@ -1248,7 +1244,7 @@ class TestCommandArgumentHandling:
             mocker.patch.object(
                 Zendeskv2,
                 "UpdatedTickets",
-                return_value=mocker.Mock(tickets=lambda: [], next_run=lambda: {}),
+                return_value=mocker.Mock(tickets=list, next_run=dict),
             )
             mocker.patch.object(Zendeskv2, "get_last_mirror_run", return_value={})
             mocker.patch.object(Zendeskv2, "set_last_mirror_run")
