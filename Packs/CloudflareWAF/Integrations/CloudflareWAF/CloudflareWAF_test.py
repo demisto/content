@@ -542,3 +542,177 @@ def test_get_headers_missing_authentication():
     params = {}
     with pytest.raises(ValueError, match="Missing authentication parameters"):
         get_headers(params)
+
+
+def test_cloudflare_waf_ruleset_list_command(requests_mock, mock_client):
+    """
+    Scenario: List rulesets.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - cloudflare-waf-ruleset-list called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+
+    from CloudflareWAF import cloudflare_waf_ruleset_list_command
+
+    mock_response = load_mock_response("list_ruleset.json")
+    url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = cloudflare_waf_ruleset_list_command(mock_client, {})
+
+    assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "ruleset_id_1"
+    assert result.outputs[1]["id"] == "ruleset_id_2"
+
+
+def test_cloudflare_waf_ruleset_list_command_with_zone(requests_mock, mock_client):
+    """
+    Scenario: List rulesets at zone level.
+    Given:
+     - User has provided valid credentials.
+     - Zone ID is specified.
+    When:
+     - cloudflare-waf-ruleset-list called with zone_id.
+    Then:
+     - Ensure the zone-level endpoint is used.
+     - Ensure outputs prefix is correct.
+    """
+
+    from CloudflareWAF import cloudflare_waf_ruleset_list_command
+
+    mock_response = load_mock_response("list_ruleset.json")
+    url = f"{BASE_URL}zones/{ZONE_ID}/rulesets"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = cloudflare_waf_ruleset_list_command(mock_client, {"zone_id": ZONE_ID})
+
+    assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+    assert len(result.outputs) == 2
+
+
+def test_cloudflare_waf_ruleset_get_command(requests_mock, mock_client):
+    """
+    Scenario: Get a specific ruleset.
+    Given:
+     - User has provided valid credentials.
+     - Ruleset ID.
+    When:
+     - cloudflare-waf-ruleset-get called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure rules are included in the output.
+    """
+
+    from CloudflareWAF import cloudflare_waf_ruleset_get_command
+
+    mock_response = load_mock_response("get_ruleset.json")
+    ruleset_id = "ruleset_id_1"
+    url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets/{ruleset_id}"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = cloudflare_waf_ruleset_get_command(mock_client, {"ruleset_id": ruleset_id})
+
+    assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+    assert result.outputs["id"] == "ruleset_id_1"
+    assert result.outputs["name"] == "Cloudflare Managed Ruleset"
+    assert len(result.outputs["rules"]) == 2
+    assert result.outputs["rules"][0]["id"] == "rule_id_1"
+
+
+def test_cloudflare_waf_ruleset_create_command(requests_mock, mock_client):
+    """
+    Scenario: Create a new ruleset.
+    Given:
+     - User has provided valid credentials.
+     - Ruleset name, kind, and phase.
+    When:
+     - cloudflare-waf-ruleset-create called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+
+    from CloudflareWAF import cloudflare_waf_ruleset_create_command
+
+    mock_response = load_mock_response("create_ruleset.json")
+    url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets"
+    requests_mock.post(url=url, json=mock_response)
+
+    result = cloudflare_waf_ruleset_create_command(
+        mock_client,
+        {
+            "name": "New Custom Ruleset",
+            "kind": "custom",
+            "phase": "http_request_firewall_custom",
+            "description": "A new custom ruleset",
+            "rules": '[{"action": "block", "expression": "(ip.src eq 10.0.0.1)", "description": "Block internal IP"}]',
+        },
+    )
+
+    assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+    assert result.outputs["id"] == "ruleset_id_new"
+    assert result.outputs["name"] == "New Custom Ruleset"
+
+
+def test_cloudflare_waf_ruleset_update_command(requests_mock, mock_client):
+    """
+    Scenario: Update an existing ruleset.
+    Given:
+     - User has provided valid credentials.
+     - Ruleset ID and updated fields.
+    When:
+     - cloudflare-waf-ruleset-update called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+
+    from CloudflareWAF import cloudflare_waf_ruleset_update_command
+
+    mock_response = load_mock_response("update_ruleset.json")
+    ruleset_id = "ruleset_id_1"
+    url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets/{ruleset_id}"
+    requests_mock.put(url=url, json=mock_response)
+
+    result = cloudflare_waf_ruleset_update_command(
+        mock_client,
+        {
+            "ruleset_id": ruleset_id,
+            "name": "Updated Ruleset Name",
+            "description": "Updated description",
+        },
+    )
+
+    assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+    assert result.outputs["id"] == "ruleset_id_1"
+    assert result.outputs["name"] == "Updated Ruleset Name"
+
+
+def test_cloudflare_waf_ruleset_delete_command(requests_mock, mock_client):
+    """
+    Scenario: Delete a ruleset.
+    Given:
+     - User has provided valid credentials.
+     - Ruleset ID.
+    When:
+     - cloudflare-waf-ruleset-delete called.
+    Then:
+     - Ensure the readable output confirms deletion.
+    """
+
+    from CloudflareWAF import cloudflare_waf_ruleset_delete_command
+
+    ruleset_id = "ruleset_id_1"
+    url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets/{ruleset_id}"
+    requests_mock.delete(url=url, status_code=204)
+
+    result = cloudflare_waf_ruleset_delete_command(mock_client, {"ruleset_id": ruleset_id})
+
+    assert result.readable_output == f"Ruleset {ruleset_id} was successfully deleted."
