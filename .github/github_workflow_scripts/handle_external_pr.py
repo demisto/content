@@ -47,13 +47,23 @@ WELCOME_MSG_WITH_GFORM = (
     "reviewed.\nFor your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) "
     "to the contributions SLAs document."
 )
-
+XSIAM_ITEMS_MSG = (
+    """Since this PR includes XSIAM content items, we require additional information before we can proceed with the review and evaluation.
+    Please provide the following:
+* If this is a new integration, update the PR description with the vendor/platform details and the required configuration/setup steps.
+* For log samples, please choose one of the following options:
+  1. Provide the tenant ID and dataset name associated with the sample logs, or
+  2. Coordinate with your TAC, Account Team, or Professional Services (PS) team to securely forward the log samples.
+Please note that without this information, we may not be able to evaluate the contribution, and the PR review process cannot continue.
+"""
+)
 XSOAR_SUPPORT_LEVEL_LABEL = "Xsoar Support Level"
 PARTNER_SUPPORT_LEVEL_LABEL = "Partner Support Level"
 COMMUNITY_SUPPORT_LEVEL_LABEL = "Community Support Level"
 CONTRIBUTION_LABEL = "Contribution"
 EXTERNAL_LABEL = "External PR"
 SECURITY_LABEL = "Security Review"
+XSIAM_CONTENT_LABEL = "XSIAM Content"
 TIM_LABEL = "TIM Review"
 TIM_TAGS = "Threat Intelligence Management"
 TIM_CATEGORIES = "Data Enrichment & Threat Intelligence"
@@ -68,6 +78,13 @@ SECURITY_CONTENT_ITEMS = [
     "Wizards",
     "Dashboards",
     "Triggers",
+]
+XSIAM_CONTENT = [
+    "ModelingRules",
+    "ParsingRules",
+    "CorrelationRules",
+    "Dashboards",
+    "XSIAMDashboards"
 ]
 PR_AUTHOR_PATTERN = "## Contributor\n@(.*)"
 LABELS_TO_SKIP_PR_REVIEW = {"contribution on hold"}
@@ -243,9 +260,9 @@ def get_highest_support_label(packs_support_levels: set[str]) -> str:
         return COMMUNITY_SUPPORT_LEVEL_LABEL
 
 
-def is_requires_security_reviewer(pr_files: list[str]) -> bool:
+def is_requires_specific_reviewer(pr_files: list[str], content_items) -> bool:
     """
-    Checks whether a security engineer is needed in the review.
+    Checks whether a specific engineer is needed in the review. For example Security engineer or XSIAM content items engineer
 
     Arguments:
         - `pr_files`: ``List[str]``: The list of files changed in the Pull Request. Will be used to determine
@@ -255,7 +272,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     """
 
     for pr_file in pr_files:
-        for item in SECURITY_CONTENT_ITEMS:
+        for item in content_items:
             if item in Path(pr_file).parts:
                 return True
 
@@ -582,7 +599,7 @@ def main():
     reviewers = [content_reviewer]
 
     # Add a security architect reviewer if the PR contains security content items
-    if is_requires_security_reviewer(pr_files):
+    if is_requires_specific_reviewer(pr_files, SECURITY_CONTENT_ITEMS):
         if isinstance(security_reviewer, list):
             security_reviewer = determine_random_reviewer(security_reviewer, content_repo)
         # else security_reviewer is a string of a single reviewer, just add it to the list of reviewers
@@ -591,6 +608,18 @@ def main():
             reviewers.append(security_reviewer)
             pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
+
+    # Add an xsiam items reviewer if the PR contains xsiam content items
+    if is_requires_specific_reviewer(pr_files, XSIAM_CONTENT):
+        # if isinstance(security_reviewer, list):
+        #     security_reviewer = determine_random_reviewer(security_reviewer, content_repo)
+        # # else security_reviewer is a string of a single reviewer, just add it to the list of reviewers
+        # print(f"The selected security reviewer {security_reviewer}")
+        # if security_reviewer:
+        #     reviewers.append(security_reviewer)
+        #     pr.add_to_assignees(security_reviewer)
+        pr.add_to_labels(XSIAM_CONTENT_LABEL)
+        pr.create_issue_comment(XSIAM_ITEMS_MSG)
 
     # adding TIM reviewer
     if is_tim_reviewer_needed(pr_files, support_label, pr.head.ref, remote_fork_owner, repo_name):

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+from pathlib import Path
 
 import urllib3
 from blessings import Terminal
@@ -21,7 +22,13 @@ urllib3.disable_warnings(InsecureRequestWarning)
 print = timestamped_print
 INTERNAL_LABEL = "Internal PR"
 
-
+XSIAM_CONTENT = [
+    "ModelingRules",
+    "ParsingRules",
+    "CorrelationRules",
+    "Dashboards",
+    "XSIAMDashboards"
+]
 def replace_related_with_fixes_in_pr_body(body: str) -> str:
     """
     Replace any 'related:' or 'relates:' keywords in the PR body with 'fixes:',
@@ -46,6 +53,23 @@ def replace_related_with_fixes_in_pr_body(body: str) -> str:
 
     return edited_body
 
+def seperate_pr_files(pr_files: dict):
+    xsoar_files = []
+    xsiam_files = []
+
+    for file_path, file in pr_files.items():
+        is_xsiam = False  # reset per file
+
+        for item in XSIAM_CONTENT:
+            if item in Path(file_path).parts:
+                xsiam_files.append(file)
+                is_xsiam = True
+                break
+
+        if not is_xsiam:
+            xsoar_files.append(file)
+
+    return xsoar_files, xsiam_files
 
 def main():
     """Creates Internal PRs from Merged External PRs
@@ -76,6 +100,8 @@ def main():
     content_repo = gh.get_repo(f"{org_name}/{repo_name}")
     pr_number = payload.get("pull_request", {}).get("number")
     merged_pr = content_repo.get_pull(pr_number)
+    pr_files = {file.filename: file for file in merged_pr.get_files()}
+    xsoar_files, xsiam_files = seperate_pr_files(pr_files)
     merged_pr_url = merged_pr.html_url
     body = f"## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n"
     title = merged_pr.title
