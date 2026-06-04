@@ -3,6 +3,7 @@ commonfields:
   version: -1
 name: Threatmon
 display: Threatmon
+provider: ThreatMon
 sectionorder:
 - Connect
 - Collect
