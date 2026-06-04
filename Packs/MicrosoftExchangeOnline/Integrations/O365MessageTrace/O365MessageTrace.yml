@@ -120,6 +120,14 @@ script:
     description: Generate the login URL used for authorization code flow.
     execution: false
     name: o365-message-trace-generate-login-url
+  - arguments: []
+    description: Tests connectivity to Microsoft.
+    execution: false
+    name: o365-message-trace-auth-test
+  - arguments: []
+    description: Run this command if for some reason you need to rerun the authentication process. This will clear the saved access token / refresh token from the integration context, so on the next run a fresh authorization code (or client-credentials token) will be requested.
+    execution: false
+    name: o365-message-trace-auth-reset
   - name: o365-message-trace-get-events
     description: Manually retrieve Message Trace events. Intended for development and debugging. Use with caution as it may cause event duplication when push to XSIAM is enabled.
     arguments:

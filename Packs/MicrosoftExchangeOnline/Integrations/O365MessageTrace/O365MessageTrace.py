@@ -222,8 +222,19 @@ def fetch_events_sequential(
 # Commands
 # ============================================================================
 def test_module(client: Client) -> str:
-    """Validate credentials and Graph connectivity by fetching a tiny window."""
+    """Validate credentials and Graph connectivity by fetching a tiny window.
+
+    Raises:
+        DemistoException: If using the authorization code flow, since test-module cannot access the
+            integration context required by that flow. The ``o365-message-trace-auth-test`` command
+            should be used instead.
+    """
     demisto.debug("[Test] Starting test-module")
+    if hasattr(client.ms_client, "grant_type") and client.ms_client.grant_type == AUTHORIZATION_CODE:
+        raise DemistoException(
+            "Test module is not available for the authorization code flow. "
+            "Use the o365-message-trace-auth-test command instead."
+        )
     try:
         end = datetime.now(UTC)
         start = end - timedelta(minutes=5)
@@ -238,6 +249,29 @@ def test_module(client: Client) -> str:
         if "401" in error_message or "403" in error_message:
             return f"Authorization Error: verify Tenant ID, Client ID and authentication credentials. Details: {error_message}"
         raise
+
+
+def test_auth_command(client: Client) -> CommandResults:
+    """Tests connectivity to Microsoft.
+
+    Used to validate the authentication flow (especially the authorization-code
+    flow) after the integration has been configured, since the standard
+    test-module cannot access the integration context.
+    """
+    demisto.debug("[Auth Test] Starting o365-message-trace-auth-test")
+    try:
+        end = datetime.now(UTC)
+        start = end - timedelta(minutes=5)
+        client.get_message_traces_page(
+            start_date=format_datetime_for_filter(start),
+            end_date=format_datetime_for_filter(end),
+            page_size=1,
+        )
+    except Exception as e:
+        raise DemistoException(
+            f"Authentication was not successful. Verify the configuration parameters. Error: {e}"
+        ) from e
+    return CommandResults(readable_output="Authentication was successful.")
 
 
 def get_events_command(client: Client, args: dict) -> CommandResults:
@@ -409,6 +443,10 @@ def main() -> None:  # pragma: no cover
 
         if command == "test-module":
             return_results(test_module(client))
+        elif command == "o365-message-trace-auth-test":
+            return_results(test_auth_command(client))
+        elif command == "o365-message-trace-auth-reset":
+            return_results(reset_auth())
         elif command == "o365-message-trace-get-events":
             return_results(get_events_command(client, args))
         elif command == "fetch-events":
