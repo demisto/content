@@ -832,7 +832,7 @@ class MicrosoftClient(BaseClient):
         default_headers = {"Content-Type": "application/json", "Accept": "application/json"}
         
         if not should_use_ucp_auth():
-            default_headers['Authorization'] = self.get_access_token(resource=resource, scope=scope)
+            default_headers['Authorization'] = f'Bearer {self.get_access_token(resource=resource, scope=scope)}'
 
         if headers:
             default_headers |= headers
