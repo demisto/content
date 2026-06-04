@@ -41,11 +41,17 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  supportedModules:
+  - xsiam
+  - agentix
   section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  supportedModules:
+  - xsiam
+  - agentix
   section: Collect
 - display: Fetch Interval (minutes)
   name: fetchInterval
@@ -53,6 +59,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 script:
   script: ''
   type: python
