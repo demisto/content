@@ -42,7 +42,6 @@ configuration:
   additionalinfo: 'Whether to use the system proxy settings.'
   section: Connect
 - name: isFetchEvents
-  display: Fetch incidents
   type: 8
   required: false
   additionalinfo: 'Whether to fetch incidents from iZOOlogic.'
@@ -83,7 +82,7 @@ description: Fetches and manages incidents from iZOOlogic, enabling automated in
 script:
   commands:
   - name: izoologic-get-events
-    description: Gets events from iZOOlogic. Use for development and debugging only, as it may exceed API rate limits.
+    description: Gets events from iZOOlogic. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     arguments:
     - name: limit
       description: The maximum number of events to return per type.
@@ -93,7 +92,7 @@ script:
     - name: end_time
       description: 'The time to filter events detected at or before. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").'
     - name: event_type
-      description: 'Filter by events type(s). If not specified, uses the types configured in the integration parameters.'
+      description: 'The event types to filter by, as a comma-separated list. If not specified, uses the types configured in the integration parameters.'
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -109,7 +108,7 @@ script:
       - email
       - executive
     - name: should_push_events
-      description: The flag that indicates whether to push events to Cortex XSIAM. Pushing events is supported on Cortex XSIAM only. When set to false, or on non-XSIAM platforms, events are displayed without being pushed.
+      description: The flag that indicates whether to push events to Cortex XSIAM. Pushing events is supported on Cortex XSIAM only. When set to false, or on non-Cortex XSIAM platforms, events are displayed without being pushed.
       auto: PREDEFINED
       predefined:
       - 'true'

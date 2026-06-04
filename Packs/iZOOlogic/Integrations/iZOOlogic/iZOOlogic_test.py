@@ -332,9 +332,11 @@ class TestAddTimeToEvents:
         assert events[0]["source_log_type"] == "Phishing"
 
     def test_missing_created_on(self):
+        # When createdOn is missing, _time falls back to the current UTC time
+        # so that every event is guaranteed to have a _time value.
         events = [{"incidentID": "1"}]
         add_time_to_events(events)
-        assert "_time" not in events[0]
+        assert events[0]["_time"]  # unconditionally assigned
         assert events[0]["source_log_type"] == "Unknown"
 
     def test_empty_list(self):
@@ -357,7 +359,9 @@ class TestAddTimeToEvents:
 class TestCreateEvents:
     def test_create_events_calls_send_events_to_xsiam(self, mocker: MockerFixture):
         mock_send = mocker.patch("iZOOlogic.send_events_to_xsiam")
+        # Events are normalized by the caller (add_time_to_events) before create_events sends them.
         events = [{"incidentID": "abc", "incidentType": "Phishing", "createdOn": "100"}]
+        add_time_to_events(events)
         create_events(events)
         mock_send.assert_called_once()
         sent_events = mock_send.call_args[1]["events"]
@@ -586,6 +590,23 @@ class TestTestModule:
         with pytest.raises(DemistoException, match="timeout"):
             izoologic_test_module(mock_client)
 
+    def test_does_not_exhaust_pagination(
+        self,
+        mocker: MockerFixture,
+        mock_client: Client,
+        events_result_with_pagination: dict,
+        events_result: dict,
+    ):
+        """test-module fetches only the first page (one API call) even when more pages exist."""
+        mock_fetch = mocker.patch.object(
+            mock_client,
+            "fetch_events_page",
+            side_effect=[events_result_with_pagination, events_result],
+        )
+        assert izoologic_test_module(mock_client) == "ok"
+        # Only a single page is fetched — pagination is not exhausted.
+        mock_fetch.assert_called_once()
+
 
 # endregion
 
@@ -614,6 +635,24 @@ class TestFetchAllPages:
         results = _fetch_all_pages(mock_client, "1700000000", "1700100000", event_type=2)
         # Page 1: 2 events (with pagination), Page 2: 3 events (no pagination)
         assert len(results) == 5
+
+    def test_max_results_stops_pagination(
+        self,
+        mocker: MockerFixture,
+        mock_client: Client,
+        events_result_with_pagination: dict,
+        events_result: dict,
+    ):
+        """When max_results is set, pagination stops after the cap is reached."""
+        mock_fetch = mocker.patch.object(
+            mock_client,
+            "fetch_events_page",
+            side_effect=[events_result_with_pagination, events_result],
+        )
+        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", event_type=2, max_results=1)
+        # First page already yields >= 1 event, so no second page is fetched.
+        assert len(results) >= 1
+        mock_fetch.assert_called_once()
 
     def test_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
         mocker.patch.object(mock_client, "fetch_events_page", return_value=empty_result)
@@ -947,7 +986,7 @@ class TestGetEventsCommand:
 
 # endregion
 
-# region Fetch Events Command Tests (async)
+# region Fetch Events Command Tests
 
 
 class TestFetchEventsCommand:
@@ -957,7 +996,7 @@ class TestFetchEventsCommand:
         mock_send = mocker.patch("iZOOlogic.send_events_to_xsiam")
         mock_set = mocker.patch.object(demisto, "setLastRun")
 
-        asyncio.run(fetch_events_command(mock_client, 10000, [2]))
+        fetch_events_command(mock_client, 10000, [2])
 
         mock_send.assert_called_once()
         sent_events = mock_send.call_args[1]["events"]
@@ -974,13 +1013,13 @@ class TestFetchEventsCommand:
         events_result: dict,
         empty_result: dict,
     ):
-        """Test that multiple types are fetched (concurrently via asyncio.to_thread)."""
+        """Test that multiple types are fetched (concurrently via ThreadPoolExecutor)."""
         mocker.patch.object(mock_client, "fetch_events_page", side_effect=[events_result, empty_result])
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mock_send = mocker.patch("iZOOlogic.send_events_to_xsiam")
         mock_set = mocker.patch.object(demisto, "setLastRun")
 
-        asyncio.run(fetch_events_command(mock_client, 10000, [2, 3]))
+        fetch_events_command(mock_client, 10000, [2, 3])
 
         mock_send.assert_called_once()
         sent_events = mock_send.call_args[1]["events"]
@@ -995,7 +1034,7 @@ class TestFetchEventsCommand:
         mock_send = mocker.patch("iZOOlogic.send_events_to_xsiam")
         mocker.patch.object(demisto, "setLastRun")
 
-        asyncio.run(fetch_events_command(mock_client, 10000, [2]))
+        fetch_events_command(mock_client, 10000, [2])
         mock_send.assert_not_called()
 
     def test_exception_in_one_type_does_not_block_others(
@@ -1018,7 +1057,7 @@ class TestFetchEventsCommand:
         mock_set = mocker.patch.object(demisto, "setLastRun")
         mocker.patch.object(demisto, "error")
 
-        asyncio.run(fetch_events_command(mock_client, 10000, [2, 3]))
+        fetch_events_command(mock_client, 10000, [2, 3])
 
         # Type 2 should still succeed, type 3 error is logged
         last_run = mock_set.call_args[0][0]
@@ -1032,7 +1071,7 @@ class TestFetchEventsCommand:
         mocker.patch("iZOOlogic.send_events_to_xsiam")
         mock_set = mocker.patch.object(demisto, "setLastRun")
 
-        asyncio.run(fetch_events_command(mock_client, 10000, [2]))
+        fetch_events_command(mock_client, 10000, [2])
 
         last_run = mock_set.call_args[0][0]
         assert "5" in last_run  # Preserved
@@ -1067,12 +1106,8 @@ class TestMain:
         mock_func = mocker.MagicMock(return_value="ok")
         COMMAND_MAP[command] = mock_func
         mocker.patch("iZOOlogic.return_results")
-        if command == "fetch-events":
-            # fetch_events_command is async, mock asyncio.run
-            mocker.patch("iZOOlogic.asyncio.run")
         main()
-        if command != "fetch-events":
-            mock_func.assert_called_once()
+        mock_func.assert_called_once()
 
     def test_main_unknown_command(self, mocker: MockerFixture):
         mocker.patch("ContentClientApiModule.support_multithreading")

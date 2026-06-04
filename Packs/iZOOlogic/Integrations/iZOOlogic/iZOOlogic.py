@@ -1,6 +1,6 @@
-import asyncio
 import threading
 import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, UTC
 from typing import Any
 
@@ -19,6 +19,8 @@ Integration for fetching threat events from the iZOOlogic API.
 # Constants and helpers
 # =================================
 INTEGRATION_NAME = "iZOOlogic"
+VENDOR = "iZOOlogic"
+PRODUCT = "iZOOlogic"
 
 
 class ApiPaths:
@@ -37,7 +39,7 @@ class Config:
     DEFAULT_MAX_FETCH_PER_TYPE = 5000
 
     # Fetch defaults
-    DEFAULT_FROM_TIME = "5 minutes ago"
+    DEFAULT_FROM_TIME = "1 minute ago"
     DEFAULT_FETCH_COMMAND_FROM_TIME = "1 day ago"
 
     # Max date range for API (31 days)
@@ -204,35 +206,41 @@ def add_time_to_events(events: list[dict]) -> None:
     """Add _time and source_log_type fields to events for XSIAM ingestion.
 
     Converts the ``createdOn`` Unix timestamp to ISO 8601 format and sets it as ``_time``.
+    If ``createdOn`` is missing or cannot be parsed, ``_time`` falls back to the current
+    UTC time so that every event is guaranteed to have a ``_time`` value.
     Also sets ``source_log_type`` to the event type for each event.
 
     Args:
         events: List of event dictionaries from the API. Modified in place.
     """
+    time_format = "%Y-%m-%dT%H:%M:%SZ"
     for event in events:
         created_on = event.get("createdOn", "")
+        event_time = datetime.now(tz=UTC)
         if created_on:
             try:
-                dt = datetime.fromtimestamp(int(created_on), tz=UTC)
-                event["_time"] = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+                event_time = datetime.fromtimestamp(int(created_on), tz=UTC)
             except (ValueError, TypeError, OSError):
-                demisto.debug(f"[Time] Failed to parse createdOn: {created_on}")
+                demisto.debug(f"[Time] Failed to parse createdOn: {created_on}. Falling back to current time.")
 
+        event["_time"] = event_time.strftime(time_format)
         event["source_log_type"] = event.get("incidentType", "Unknown")
 
 
 def create_events(events: list[dict]) -> None:
-    """Format events and send them to XSIAM.
+    """Send already-normalized events to XSIAM.
+
+    Callers must normalize events with ``add_time_to_events`` beforehand so that
+    each event has the ``_time`` and ``source_log_type`` fields set.
 
     Args:
-        events: List of raw event dictionaries from the API.
+        events: List of normalized event dictionaries.
     """
-    demisto.debug(f"[Create Events] Formatting and sending {len(events)} XSIAM events.")
-    add_time_to_events(events)
+    demisto.debug(f"[Create Events] Sending {len(events)} XSIAM events.")
     send_events_to_xsiam(
         events=events,
-        vendor=INTEGRATION_NAME,
-        product=INTEGRATION_NAME,
+        vendor=VENDOR,
+        product=PRODUCT,
     )
 
 
@@ -645,8 +653,10 @@ class Client(ContentClient):
 def test_module(client: Client) -> str:
     """Test API connectivity by authenticating and fetching events.
 
-    Uses _fetch_all_pages with midnight UTC of today as fromdate.
-    An empty result (no events) still proves connectivity — the test passes.
+    Uses the same ``_fetch_all_pages`` code path as production, but caps the
+    fetch at a single event (``max_results=1``) so it stops after the first
+    page instead of exhausting pagination. An empty result (no events) still
+    proves connectivity — the test passes.
 
     Args:
         client: The iZOOlogic client.
@@ -659,7 +669,8 @@ def test_module(client: Client) -> str:
         from_date = snap_to_day_boundary_utc(get_current_unix_timestamp(), "start")
         to_date = get_current_unix_timestamp()
 
-        _fetch_all_pages(client, from_date=from_date, to_date=to_date)
+        # Only one event is needed to verify connectivity; stop after the first page.
+        _fetch_all_pages(client, from_date=from_date, to_date=to_date, max_results=1)
 
         demisto.debug("[Test Module] Success")
         return "ok"
@@ -682,12 +693,15 @@ def _fetch_all_pages(
     executive_name: str | None = None,
     client_ref_id: str | None = None,
     client_code: str | None = None,
+    max_results: int | None = None,
 ) -> list[dict]:
-    """Fetch ALL pages of events until pagination is exhausted.
+    """Fetch pages of events until pagination is exhausted (or a cap is reached).
 
     Loops through all pages using opaque nextPage tokens until nextPage is null
-    or the API returns an empty page. No max_results cap — fetches everything
-    in the time window.
+    or the API returns an empty page. By default there is no cap — it fetches
+    everything in the time window. When ``max_results`` is provided, pagination
+    stops as soon as at least that many events have been collected (used by
+    test_module to avoid exhausting pagination).
 
     Used by all commands: test_module, get_events_command, fetch_events_command,
     and search_incidents_command.
@@ -702,9 +716,11 @@ def _fetch_all_pages(
         executive_name: Optional executive name to filter by.
         client_ref_id: Optional client reference ID for specific event lookup.
         client_code: Optional client identifier to filter by.
+        max_results: Optional cap on the number of events to collect. When set,
+            stops paginating once at least this many events are gathered.
 
     Returns:
-        List of ALL raw event dictionaries from all pages.
+        List of raw event dictionaries collected across the fetched pages.
     """
     all_events: list[dict] = []
     page_token: str | None = None
@@ -733,6 +749,10 @@ def _fetch_all_pages(
             f"[FetchAll] Type {event_type or 'all'} | Page {page_count}: "
             f"+{len(page_events)} events (total: {len(all_events)})"
         )
+
+        # Stop early once the requested number of events has been collected.
+        if max_results is not None and len(all_events) >= max_results:
+            break
 
         page_token = result_obj.get("nextPage")
         if not page_token:
@@ -805,6 +825,10 @@ def get_events_command(
         all_events.extend(type_events[:limit])
 
     demisto.debug(f"[Command Result] Total events retrieved: {len(all_events)} (limit per type: {limit})")
+
+    # Normalize events (adds _time and source_log_type) so the command outputs
+    # the same parsed events that are ingested into XSIAM.
+    add_time_to_events(all_events)
 
     if should_push_events and all_events:
         create_events(list(all_events))
@@ -954,14 +978,15 @@ def _fetch_for_type(
     return type_key, consumed, updated_state
 
 
-async def fetch_events_command(
+def fetch_events_command(
     client: Client,
     max_fetch_per_type: int,
     event_type_codes: list[int],
 ) -> None:
     """Scheduled command to fetch events from iZOOlogic and send to XSIAM.
 
-    Fetches all event types concurrently using asyncio.to_thread().
+    Fetches all event types concurrently using a ThreadPoolExecutor (the API
+    calls are blocking I/O, so threads parallelize them effectively).
     Each type maintains its own last_created_on and last_ids in last_run.
 
     The API returns events sorted descending by createdOn with day-level filtering.
@@ -980,34 +1005,36 @@ async def fetch_events_command(
     last_run = demisto.getLastRun()
     demisto.debug(f"[Fetch Events] Starting with last_run keys: {list(last_run.keys())}")
 
-    # Launch concurrent fetches for all types
-    tasks = [
-        asyncio.to_thread(
-            _fetch_for_type,
-            client,
-            type_code,
-            last_run.get(str(type_code), {}),  # type: ignore[arg-type]
-            max_fetch_per_type,
-        )
-        for type_code in event_type_codes
-    ]
-
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-
-    # Process results
+    # Launch concurrent fetches for all types. The client makes blocking HTTP
+    # calls, so a thread pool parallelizes the per-type fetches effectively.
     all_events: list[dict] = []
     updated_last_run: dict = dict(last_run)
 
-    for result in results:
-        if isinstance(result, Exception):
-            demisto.error(f"[Fetch Events] Error fetching type: {result!s}")
-            continue
+    with ThreadPoolExecutor(max_workers=len(event_type_codes) or 1) as executor:
+        future_to_type = {
+            executor.submit(
+                _fetch_for_type,
+                client,
+                type_code,
+                last_run.get(str(type_code), {}),  # type: ignore[arg-type]
+                max_fetch_per_type,
+            ): type_code
+            for type_code in event_type_codes
+        }
 
-        type_key, consumed_events, updated_state = result  # type: ignore[misc]
-        all_events.extend(consumed_events)
-        updated_last_run[type_key] = updated_state
+        for future in as_completed(future_to_type):
+            try:
+                type_key, consumed_events, updated_state = future.result()
+            except Exception as error:
+                # Isolate per-type failures so other types still succeed.
+                demisto.error(f"[Fetch Events] Error fetching type {future_to_type[future]}: {error!s}")
+                continue
+
+            all_events.extend(consumed_events)
+            updated_last_run[type_key] = updated_state
 
     if all_events:
+        add_time_to_events(all_events)
         create_events(all_events)
 
     demisto.setLastRun(updated_last_run)
@@ -1274,7 +1301,7 @@ def main() -> None:
             result = command_func(client)
             return_results(result)
         elif command == "fetch-events":
-            asyncio.run(command_func(client, config["max_fetch"], config["event_type_codes"]))
+            command_func(client, config["max_fetch"], config["event_type_codes"])
         elif command == "izoologic-get-events":
             result = command_func(client, args, config["event_type_codes"])
             return_results(result)

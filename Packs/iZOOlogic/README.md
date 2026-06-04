@@ -2,7 +2,7 @@
 
 ## What does this pack do?
 
-This content pack fetches and manages incidents from iZOOlogic, enabling automated ingestion, incident creation, and advanced filtering for brand protection and threat management.
+This content pack fetches and manages incidents from iZOOlogic to automate ingestion, incident creation, and advanced filtering for brand protection and threat management.
 
 This pack includes an integration that connects to the iZOOlogic API to:
 
