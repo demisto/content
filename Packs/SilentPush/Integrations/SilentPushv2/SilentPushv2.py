@@ -328,31 +328,26 @@ JOB_STATUS_IMPUT = [
 
 NAMESERVER_REPUTATION_OUTPUTS = [
     OutputArgument(
-        name="nameserver", output_type=int, description="The nameserver associated with the reputation history entry."
+        name="nameserver", description="The nameserver associated with the reputation history entry."
     ),
     OutputArgument(
         name="reputation_data.date",
-        output_type=int,
         description="Date of the reputation history entry (in YYYYMMDD format).",
     ),
     OutputArgument(
         name="reputation_data.ns_server",
-        output_type=str,
         description="Name of the nameserver associated with the reputation history entry.",
     ),
     OutputArgument(
         name="reputation_data.ns_server_reputation",
-        output_type=int,
         description="Reputation score of the nameserver on the specified date.",
     ),
     OutputArgument(
         name="reputation_data.ns_server_reputation_explain.ns_server_domain_density",
-        output_type=int,
         description="Number of domains associated with the nameserver.",
     ),
     OutputArgument(
         name="reputation_data.ns_server_reputation_explain.ns_server_domains_listed",
-        output_type=int,
         description="Number of domains listed in reputation databases.",
     ),
 ]
