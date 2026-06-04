@@ -29,9 +29,6 @@
                                         }
                                     }
                                 }
-                            },
-                            {
-                                "operator": "Max"
                             }
                         ]
                     }
@@ -66,7 +63,7 @@
                 "Assigned User": {
                     "simple": "summary.assignedApplicationUserName"
                 },
-                "Source Create Time": {
+                "Source Create time": {
                     "complex": {
                         "root": "activities",
                         "filters": [
@@ -210,34 +207,34 @@
                         "accessor": "activity_details.quarantine_attempts.state"
                     }
                 },
-                "uuid": {
+                "UUID": {
                     "simple": "id"
                 },
-                "title": {
+                "Title": {
                     "simple": "title"
                 },
-                "state": {
+                "State": {
                     "simple": "state"
                 },
-                "starttime": {
+                "Start Time": {
                     "simple": "createdAt"
                 },
-                "lastupdatetime": {
+                "Last Update Time": {
                     "simple": "updatedAt"
                 },
-                "teamname": {
+                "Team name": {
                     "simple": "assignedTeamName"
                 },
-                "alertsource": {
+                "Log Source Type": {
                     "complex": {
                         "root": "sourcesData",
                         "accessor": "type"
                     }
                 },
-                "verdict": {
+                "Verdict": {
                     "simple": "dispositions"
                 },
-                "externalconfidence": {
+                "External Confidence": {
                     "simple": "clearConfidences"
                 }
             }
