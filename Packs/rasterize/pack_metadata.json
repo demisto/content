@@ -20,21 +20,10 @@
         "platform"
     ],
     "supportedModules": [
-        "ENT_PLUS",
-        "X1",
-        "X3",
-        "X5",
         "agentix",
-        "agentix_xsiam",
-        "asm",
-        "cloud",
-        "cloud_appsec",
-        "cloud_posture",
-        "cloud_runtime_security",
         "edr",
-        "email_security",
-        "exposure_management",
-        "tim",
+        "cloud",
+        "cloud_runtime_security",
         "xsiam"
     ]
 }
