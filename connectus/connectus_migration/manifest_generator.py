@@ -32,6 +32,133 @@ main = typer.Typer()
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Connector id / title naming convention (per guide §3.3.1)
+# ---------------------------------------------------------------------------
+# Capability families classified for suffix derivation. The "collection"
+# umbrella covers every fetch capability regardless of which specific
+# fetch capabilities are exposed.
+_COLLECTION_CAP_IDS: frozenset[str] = frozenset(
+    {
+        "log-collection",
+        "fetch-issues",
+        "fetch-assets-and-vulnerabilities",
+        "threat-intelligence-and-enrichment",
+        "fetch-secrets",
+    }
+)
+_AUTOMATION_CAP_ID = "automation-and-remediation"
+
+
+def derive_connector_suffix(mapped_params: dict) -> tuple[str, str]:
+    """Compute the connector-id / title suffix from declared capabilities.
+
+    Per guide §3.3.1 *Suffix derivation*:
+
+      - Only ``automation-and-remediation``      → ``"Automation"``
+      - Only one or more collection capabilities → ``"Collection"``
+      - Both automation AND ≥1 collection        → ``"Automation and Collection"``
+
+    Returns ``(id_form, title_form)``:
+      - id_form: lowercase, dashes (e.g. ``"automation-and-collection"``)
+      - title_form: Title Case, spaces (e.g. ``"Automation and Collection"``)
+
+    Args:
+        mapped_params: The full mapper output dict — bucket-key →
+            param-list. The function looks at the keys (excluding
+            ``general_configurations``) and resolves each through
+            :func:`slugify_capability_name` to get its canonical id.
+
+    Raises:
+        ValueError: if ``mapped_params`` declares zero capabilities
+            (per guide §3.3.1 *Flags*: "If the connector declares zero
+            capabilities, raise a flag — every connector must expose at
+            least one capability family.").
+    """
+    declared_cap_ids = {
+        slugify_capability_name(cap_name)
+        for cap_name in mapped_params
+        if cap_name != "general_configurations"
+    }
+    if not declared_cap_ids:
+        raise ValueError(
+            "Cannot derive connector id suffix: mapped_params declares "
+            "zero capabilities. Per guide §3.3.1, every connector must "
+            "expose at least one capability family."
+        )
+
+    has_automation = _AUTOMATION_CAP_ID in declared_cap_ids
+    has_collection = bool(declared_cap_ids & _COLLECTION_CAP_IDS)
+
+    if has_automation and has_collection:
+        return "automation-and-collection", "Automation and Collection"
+    if has_automation:
+        return "automation", "Automation"
+    # Only collection capabilities (or unknown ones that shouldn't reach
+    # here — slugify_capability_name would have raised earlier).
+    return "collection", "Collection"
+
+
+def _vendor_to_id_slug(vendor: str) -> str:
+    """Lowercase + dash-separate the vendor name for use in the connector id.
+
+    Per guide §3.3.1 *Vendor prefix*: id form is lowercased, spaces
+    replaced with dashes, any other non-``[a-z0-9-]`` character stripped
+    or replaced with a dash. Collapses runs of dashes.
+    """
+    s = vendor.strip().lower()
+    s = re.sub(r"[^a-z0-9-]+", "-", s)
+    s = re.sub(r"-+", "-", s).strip("-")
+    return s
+
+
+def _vendor_to_title(vendor: str) -> str:
+    """Render the vendor name in Title Case for use in metadata.title.
+
+    Per guide §3.3.1: the title form preserves spaces and uses Title
+    Case. ``Palo Alto Networks`` ↔ ``palo alto networks`` round-trips.
+    """
+    return " ".join(w.capitalize() for w in vendor.strip().split())
+
+
+def derive_connector_id_and_title(
+    vendor: str, mapped_params: dict
+) -> tuple[str, str]:
+    """Derive the connector id and title per guide §3.3.1.
+
+    Combines the vendor prefix with the capability suffix.
+
+    Args:
+        vendor: Vendor name (e.g. ``"Okta"``, ``"Palo Alto Networks"``).
+            Must be a non-empty string containing at least one
+            ``[A-Za-z0-9]`` character — otherwise per guide §3.3.1
+            *Flags* the connector id cannot be cleanly rendered and a
+            manual id is required.
+        mapped_params: The full mapper output dict (see
+            :func:`derive_connector_suffix`).
+
+    Returns:
+        ``(connector_id, connector_title)`` — e.g.
+        ``("okta-automation-and-collection", "Okta Automation and Collection")``.
+
+    Raises:
+        ValueError: if ``vendor`` is empty/unparseable, or if
+            ``mapped_params`` declares zero capabilities.
+    """
+    vendor_id = _vendor_to_id_slug(vendor)
+    if not vendor_id:
+        raise ValueError(
+            f"Vendor name '{vendor}' cannot be rendered as a connector id "
+            f"slug (no [a-z0-9] characters after normalization). Per "
+            f"guide §3.3.1 *Flags*, this requires manual id selection."
+        )
+    suffix_id, suffix_title = derive_connector_suffix(mapped_params)
+    return (
+        f"{vendor_id}-{suffix_id}",
+        f"{_vendor_to_title(vendor)} {suffix_title}",
+    )
+
+
 def title_to_slug(title: str) -> str:
     """Derive a connector directory slug from its human title.
 
@@ -116,6 +243,34 @@ def get_pack_tags(integration_path: Path) -> list[str]:
         )
         return []
     return tags
+
+
+def get_pack_id(integration_path: Path) -> str:
+    """Extract the pack id from the integration's filesystem path.
+
+    Per AGENTS.md: every integration lives under
+    ``Packs/<PackName>/Integrations/<IntegrationName>/<IntegrationName>.yml``.
+    The pack id is the ``<PackName>`` segment — i.e. the parent of
+    ``Integrations``. Used by :func:`build_handler_yaml` to populate
+    ``triggering.labels.xsoar-pack-id`` per guide §3.8.
+
+    Returns an empty string if the path is not in the expected structure
+    (e.g., tmp_path fixtures in tests that don't simulate the full
+    Packs/ tree). Callers can then fall back to the integration id per
+    guide §4.6 reference.
+
+    Args:
+        integration_path: Path to the integration YML.
+
+    Returns:
+        The pack id (parent-of-parent-of-parent directory name) or
+        empty string if not derivable.
+    """
+    try:
+        # <pack_root>/Integrations/<IntegrationName>/<IntegrationName>.yml
+        return integration_path.parent.parent.parent.name
+    except (AttributeError, IndexError):
+        return ""
 
 
 def merge_tags_case_insensitive(existing: list[str], new: list[str]) -> list[str]:
@@ -212,8 +367,9 @@ def build_connector_yaml(
 ) -> dict:
     """Build the dict for a brand-new connector.yaml.
 
-    All TBD fields (description, category, domain, vendor) are set to empty
-    strings. Per-task spec:
+    All TBD fields (description, domain, vendor) are set to empty
+    strings; ``categories`` defaults to an empty array. Per-task spec
+    and Section 3.3 of the migration guide:
       - publisher: "Palo Alto Networks" (hardcoded)
       - author_image: pass-through of ``author_image_filename`` (filename
         relative to the connector root; e.g. ``"salesforce.png"``). Defaults
@@ -221,7 +377,11 @@ def build_connector_yaml(
       - ownership.team: "xsoar"
       - ownership.maintainers: ["@xsoar-content"]
       - version: "1.0.0"
-      - settings.allow_skip_verification: False
+      - settings.allow_skip_verification: True (per guide §3.3: "Always
+        true unless the vendor explicitly requires successful verification")
+      - metadata.categories: [] (per guide §3.3 + connector.schema — plural
+        array, NOT the singular ``category`` field). Caller-provided
+        categories can be merged via ``manual_connector_fields``.
     """
     return {
         "id": title_to_slug(connector_title),
@@ -229,7 +389,7 @@ def build_connector_yaml(
             "title": connector_title,
             "description": "",
             "version": "1.0.0",
-            "category": "",
+            "categories": [],
             "tags": list(pack_tags),
             "domain": "",
             "vendor": "",
@@ -241,7 +401,7 @@ def build_connector_yaml(
             },
         },
         "settings": {
-            "allow_skip_verification": False,
+            "allow_skip_verification": True,
         },
     }
 
@@ -280,33 +440,101 @@ def _copy_author_image(
 def derive_handler_id(integration_id: str) -> str:
     """Derive the handler id from the integration's commonfields.id.
 
-    Format: ``"xsoar_" + integration_id.lower().replace(" ", "")``.
+    Per guide §3.8 + §4.6 Salesforce reference: format is
+    ``"xsoar-" + integration_id.lower()`` with internal whitespace
+    runs collapsed to single dashes. The previous behaviour
+    (underscore separator + spaces removed) does not match the
+    convention used by every reference connector in the spec.
 
     Examples:
-        derive_handler_id("Salesforce") → "xsoar_salesforce"
-        derive_handler_id("My Integration") → "xsoar_myintegration"
-        derive_handler_id("CrowdStrike Falcon") → "xsoar_crowdstrikefalcon"
+        derive_handler_id("Salesforce") → "xsoar-salesforce"
+        derive_handler_id("My Integration") → "xsoar-my-integration"
+        derive_handler_id("CrowdStrike Falcon") → "xsoar-crowdstrike-falcon"
+        derive_handler_id("EWS v2") → "xsoar-ews-v2"
     """
-    return f"xsoar_{integration_id.strip().lower().replace(' ', '')}"
+    # Lowercase + collapse internal whitespace runs to single dashes.
+    slug = re.sub(r"\s+", "-", integration_id.strip().lower())
+    return f"xsoar-{slug}"
+
+
+# ---------------------------------------------------------------------------
+# Canonical capability ids (per guide §3.4 + CO119 validator)
+# ---------------------------------------------------------------------------
+# The mapper (``connector_param_mapper.py``) emits ONE of six bucket keys
+# for each non-general capability. The connectus spec REQUIRES the exact
+# canonical id for each — and the CO119 IsCapabilityNameValid validator
+# will reject anything else.
+#
+# Bucket key (from mapper) → canonical capability id (manifest).
+#
+# IMPORTANT: keys here must match the constants in
+# ``connector_param_mapper.py``:
+#   - AUTOMATION_CAPABILITY                 = "Automation"
+#   - FETCH_ISSUES_CAPABILITIES             = "Fetch Issues"
+#   - FETCH_EVENTS_CAPABILITIES             = "Log Collection"
+#   - FETCH_SECRETS_CAPABILITIES            = "Fetch Secrets"
+#   - FETCH_INDICATORS_CAPABILITIES         = "Threat Intelligence & Enrichment"
+#   - FETCH_ASSETS_CAPABILITIES             = "Fetch Assets and Vulnerabilities"
+CANONICAL_CAPABILITY_IDS: dict[str, str] = {
+    "Automation": "automation-and-remediation",
+    "Fetch Issues": "fetch-issues",
+    "Log Collection": "log-collection",
+    "Fetch Secrets": "fetch-secrets",
+    "Threat Intelligence & Enrichment": "threat-intelligence-and-enrichment",
+    "Fetch Assets and Vulnerabilities": "fetch-assets-and-vulnerabilities",
+}
+
+# Display titles for each canonical capability id. Used to populate the
+# REQUIRED ``title`` field on every capability entry (capabilities.schema
+# requires id + title + default_enabled + required).
+CANONICAL_CAPABILITY_TITLES: dict[str, str] = {
+    "automation-and-remediation": "Automation and Remediation",
+    "fetch-issues": "Fetch Issues",
+    "log-collection": "Log Collection",
+    "fetch-secrets": "Fetch Secrets",
+    "threat-intelligence-and-enrichment": "Threat Intelligence and Enrichment",
+    "fetch-assets-and-vulnerabilities": "Fetch Assets and Vulnerabilities",
+}
 
 
 def slugify_capability_name(name: str) -> str:
-    """Convert a capability name to its kebab-case ID.
+    """Convert a mapper bucket key to its canonical capability id.
 
-    Lowercases, replaces any non-alphanumeric run with a single dash,
-    and strips leading/trailing dashes.
+    The mapper (``connector_param_mapper.py``) emits one of six bucket
+    keys; the manifest requires the exact canonical id per guide §3.4.
+    This mapping is hardcoded (NOT a generic slugifier) because the
+    canonical ids include literal ``and`` segments (e.g.
+    ``automation-and-remediation``, ``threat-intelligence-and-enrichment``)
+    that a regex-based slugifier would drop.
+
+    Raises:
+        ValueError: if ``name`` is not one of the six known bucket keys.
+            Callers (e.g. the entry-point flows) should fail loudly rather
+            than silently emit a non-canonical id that will fail CO119.
 
     Examples:
+        slugify_capability_name("Automation")
+            → "automation-and-remediation"
         slugify_capability_name("Fetch Issues") → "fetch-issues"
         slugify_capability_name("Threat Intelligence & Enrichment")
-            → "threat-intelligence-enrichment"
-        slugify_capability_name("Automation") → "automation"
+            → "threat-intelligence-and-enrichment"
     """
-    s = name.strip().lower()
-    s = re.sub(r"[^a-z0-9]+", "-", s)  # any non-alphanumeric → dash
-    s = re.sub(r"-+", "-", s)  # collapse multiple dashes
-    s = s.strip("-")  # strip leading/trailing
-    return s
+    canonical = CANONICAL_CAPABILITY_IDS.get(name)
+    if canonical is None:
+        raise ValueError(
+            f"Unknown capability bucket key '{name}'. "
+            f"Expected one of: {sorted(CANONICAL_CAPABILITY_IDS.keys())}. "
+            f"This usually means the upstream mapper emitted a bucket key "
+            f"that the manifest generator does not recognise — add the "
+            f"mapping in CANONICAL_CAPABILITY_IDS if a new capability has "
+            f"been introduced."
+        )
+    return canonical
+
+
+# Per guide §3.8 + §4.6 (Salesforce reference). The default backend
+# workload every XSOAR handler runs in.
+DEFAULT_HANDLER_WORKLOADS: list[str] = ["xsoar-pod"]
 
 
 def build_handler_yaml(
@@ -316,55 +544,92 @@ def build_handler_yaml(
     mapped_params: dict[str, Any],
     auth_methods: dict[str, Any],
     cap_name_to_handler_cap_id: dict[str, str] | None = None,
+    pack_id: str = "",
 ) -> dict:
     """Build the dict for a brand-new handler.yaml.
 
     Reads from the integration YML:
-      - ``commonfields.id`` for the handler id (transformed via derive_handler_id)
+      - ``commonfields.id`` for the handler id (transformed via
+        :func:`derive_handler_id` → ``xsoar-<integration-id>`` form)
       - ``display`` for the description template
 
     Builds the ``capabilities`` list from ``mapped_params`` (excluding the
-    ``general_configurations`` key). Each capability gets the same
-    ``auth_options`` derived from ``auth_methods["auth_types"]``.
+    ``general_configurations`` key). Each capability uses one of the two
+    shapes defined by handler.schema:
 
-    By default the cap ``id`` is the bare slug (``slugify_capability_name``).
-    When ``cap_name_to_handler_cap_id`` is provided it acts as an override
-    mapping: for each cap name present in the mapping, the corresponding
-    value is used as the cap id (used by the append path to reference
-    sub-cap ids like ``<handler_id>-<cap_slug>``). Cap names not in the
-    mapping fall back to the bare slug.
+      - **Authenticated shape** (when ``auth_methods.auth_types`` is
+        non-empty): ``{id, auth_options: [{id, scopes, workloads}]}``
+        where ``workloads`` lives on each auth_option (per AuthOption
+        schema). NO capability-level ``workloads``.
 
-    All other fields are hardcoded per the spec:
-      - module: "xsoar"
-      - ownership.team: "xsoar", maintainers: ["@xsoar-content"]
-      - enabled: True
-      - triggering.type: "PUB_SUB", labels.xsoar-content-id: "", args: {}
-      - test_connection: type=endpoint, host=xsoar-api, endpoint=/test/api/
+      - **Anonymous shape** (when ``auth_methods.auth_types`` is empty):
+        ``{id, auth: "none", workloads: ["xsoar-pod"]}``. NO
+        ``auth_options``. Required by the schema's oneOf — empty
+        ``auth_options: []`` would fail ``minItems: 1``.
+
+    By default the cap ``id`` is the canonical slug
+    (:func:`slugify_capability_name`). When ``cap_name_to_handler_cap_id``
+    is provided it acts as an override mapping (used by the append path
+    to reference sub-cap ids).
+
+    All other fields per guide §3.8 + §4.6 Salesforce reference:
+      - ``module: "xsoar"``
+      - ``ownership.team: "xsoar"`` + ``maintainers: ["@xsoar-content"]``
+        (matches CO114 / CO123 expectations).
+      - ``enabled: True``
+      - ``triggering.type: "PUB_SUB"``, with two labels:
+        ``xsoar-integration-id`` (the raw integration id) and
+        ``xsoar-pack-id`` (pack id from caller; falls back to the
+        integration id when omitted, matching the Salesforce reference).
+      - ``test_connection``: ``type: service``, ``service: xsoar``,
+        ``endpoint: /settings/integration/connector/verification`` per
+        guide §3.8. Every XSOAR handler routes its verification through
+        the platform's standard service endpoint.
     """
     integration_id = integration_yml.get("commonfields", {}).get("id", "")
     integration_display = integration_yml.get("display", "")
     handler_id = derive_handler_id(integration_id)
 
-    # Build auth_options once (shared across all capabilities)
+    # Build auth_options per the AuthOption schema (workloads required).
+    auth_types = auth_methods.get("auth_types", [])
     auth_options = [
-        {"id": at.get("name", ""), "scopes": ["api"]}
-        for at in auth_methods.get("auth_types", [])
+        {
+            "id": at.get("name", ""),
+            "scopes": ["api"],
+            "workloads": list(DEFAULT_HANDLER_WORKLOADS),
+        }
+        for at in auth_types
     ]
+    has_auth = len(auth_options) > 0
 
     cap_id_overrides = cap_name_to_handler_cap_id or {}
 
-    # Build capabilities list — skip "general_configurations" key
+    # Build capabilities list — skip "general_configurations" key.
     capabilities = []
     for cap_name in mapped_params:
         if cap_name == "general_configurations":
             continue
         cap_id = cap_id_overrides.get(cap_name) or slugify_capability_name(cap_name)
-        capabilities.append(
-            {
+        if has_auth:
+            # Authenticated shape: auth_options carries workloads.
+            cap_entry: dict = {
                 "id": cap_id,
-                "auth_options": list(auth_options),  # copy to avoid shared mutation
+                "auth_options": [dict(opt) for opt in auth_options],
             }
-        )
+        else:
+            # Anonymous shape: no auth_options, capability-level
+            # workloads + auth='none' discriminator.
+            cap_entry = {
+                "id": cap_id,
+                "auth": "none",
+                "workloads": list(DEFAULT_HANDLER_WORKLOADS),
+            }
+        capabilities.append(cap_entry)
+
+    # triggering.labels: per Salesforce §4.6 reference. ``xsoar-pack-id``
+    # defaults to the integration id when caller omits it (matches the
+    # reference's behavior of using identical values for both labels).
+    effective_pack_id = pack_id or integration_id
 
     return {
         "id": handler_id,
@@ -385,15 +650,16 @@ def build_handler_yaml(
         "triggering": {
             "type": "PUB_SUB",
             "labels": {
-                "xsoar-content-id": "",
+                "xsoar-integration-id": integration_id,
+                "xsoar-pack-id": effective_pack_id,
             },
             "args": {},
         },
         "capabilities": capabilities,
         "test_connection": {
-            "type": "endpoint",
-            "host": "xsoar-api",
-            "endpoint": "/test/api/",
+            "type": "service",
+            "service": "xsoar",
+            "endpoint": "/settings/integration/connector/verification",
         },
     }
 
@@ -596,9 +862,18 @@ def emit_field_for_param(
 
     Resolution policy (Q1=a / Q2=a / Q3=c / Q4=a / Q5=a):
 
+      - **Platform-hidden filter** (per guide §3.1 *Assumptions #4*): if
+        the underlying yml param declares ``hidden: [platform]`` (the
+        marketplace-keyed form indicating the param is hidden on the
+        Platform marketplace), this function returns an EMPTY list. The
+        param is excluded from the manifest entirely. Callers must
+        handle empty results by skipping the field emission.
       - If ``yml_params_by_name`` is missing or doesn't contain ``name``,
         log a warning and fall back to the bare-id shape ``{"id": name}``
-        (with dedup-rename applied when requested).
+        (with dedup-rename applied when requested). This bare-id path
+        cannot apply the platform-hidden filter (no yml metadata to
+        check) — so any platform-hidden filtering MUST happen via the
+        rich path.
       - Otherwise, dispatch through :func:`map_xsoar_param_to_connectus_field`
         which returns a list of rich field dicts (one for most types, two
         for type 9 / credentials).
@@ -632,8 +907,25 @@ def emit_field_for_param(
             )
         return [{"id": _maybe_rename(name)}]
 
+    yml_param = yml_params_by_name[name]
+
+    # Platform-hidden filter (guide §3.1 *Assumptions #4*): skip params
+    # XSOAR marks as hidden on the Platform marketplace. Per
+    # :func:`_is_hidden_on_platform`, BOTH ``hidden: true`` (boolean form
+    # = hidden in every marketplace including platform) AND
+    # ``hidden: [..., "platform", ...]`` (marketplace-keyed form) qualify.
+    # This keeps us in lockstep with the mapper's
+    # ``_collect_hidden_params`` which uses the same rule to drop these
+    # params from capability routing.
+    if _is_hidden_on_platform(yml_param):
+        logger.info(
+            f"[manifest_generator] Skipping param '{name}' (handler='{handler_id}'): "
+            f"marked hidden on platform marketplace per guide §3.1 #4."
+        )
+        return []
+
     # Rich path: materialize via the type-aware dispatcher.
-    raw_fields = map_xsoar_param_to_connectus_field(yml_params_by_name[name])
+    raw_fields = map_xsoar_param_to_connectus_field(yml_param)
 
     out: list[dict] = []
     for raw in raw_fields:
@@ -1357,6 +1649,102 @@ CAPABILITIES_SCHEMA_DIRECTIVE = (
 )
 
 
+# ---------------------------------------------------------------------------
+# Mandatory general_configurations fields (per guide §3.4 + §3.7)
+# ---------------------------------------------------------------------------
+# Every connector MUST emit these two fields in
+# ``capabilities.yaml`` → ``general_configurations[].configurations[0].fields``,
+# regardless of whether they appear in the integration's XSOAR yml.
+#
+# Source of truth: guide §4.3 (Salesforce reference, lines 1318-1365 of the
+# migration guide). These are NOT user-configurable from the integration
+# yml — they are platform-mandated and rendered identically across every
+# connector.
+
+
+def _instance_name_field() -> dict:
+    """Build the mandatory ``instance_name`` field for general_configurations.
+
+    Per guide §3.4 + §4.3 Salesforce reference. The shape includes:
+      - ``metadata.connector.parameter: "instance_name"`` — tells the BE
+        this field maps to the connector-level instance name slot.
+      - ``validations`` — pattern (alphanumerics + space/underscore/dash)
+        + async uniqueness check.
+      - ``create_modifiers.required: true`` / ``edit_modifiers.required: true``
+        — both surfaces require a value.
+
+    Returns a fresh dict on every call so callers can mutate safely.
+    """
+    return {
+        "id": "instance_name",
+        "title": "Instance name",
+        "field_type": "input",
+        "metadata": {"connector": {"parameter": "instance_name"}},
+        "validations": [
+            {
+                "trigger": "change",
+                "rules": [
+                    {
+                        "type": "pattern",
+                        "value": "^[a-zA-Z0-9 _-]+$",
+                        "message": (
+                            "Only alphanumeric characters, spaces, "
+                            "underscores, and hyphens are allowed."
+                        ),
+                    },
+                    {"type": "async", "validation_type": "uniqueness"},
+                ],
+            }
+        ],
+        "options": {
+            "placeholder": "Please Enter Name for an Instance",
+            "create_modifiers": {
+                "required": True,
+                "read_only": False,
+                "hidden": False,
+            },
+            "edit_modifiers": {
+                "required": True,
+                "read_only": False,
+                "hidden": False,
+            },
+        },
+    }
+
+
+def _integration_log_level_field() -> dict:
+    """Build the mandatory ``integrationLogLevel`` field for general_configurations.
+
+    Per guide §3.4 + §3.7 + §4.3 Salesforce reference. This is a BE-managed
+    field (``metadata.xsoar.config_type: "backend"``) — the values are
+    consumed by the platform's logging layer, NOT by the integration code.
+
+    Default value is "Off" per the Salesforce reference. The 3 select
+    options (Off / Debug / Verbose) are platform-defined and identical
+    across every connector.
+
+    Returns a fresh dict on every call so callers can mutate safely.
+    """
+    return {
+        "id": "integrationLogLevel",
+        "title": "Integration Log Level",
+        "field_type": "select",
+        "metadata": {"xsoar": {"config_type": "backend"}},
+        "options": {
+            "description": "Set the log level for the integration",
+            "placeholder": "Select log level",
+            "default_value": "Off",
+            "values": [
+                {"key": "Off", "value": "Off"},
+                {"key": "Debug", "value": "Debug"},
+                {"key": "Verbose", "value": "Verbose"},
+            ],
+            "create_modifiers": {"required": False, "hidden": False},
+            "edit_modifiers": {"required": False, "hidden": False},
+        },
+    }
+
+
 def build_capabilities_yaml(
     mapped_params: dict[str, Any],
     yml_params_by_name: dict[str, dict] | None = None,
@@ -1366,27 +1754,61 @@ def build_capabilities_yaml(
 ) -> dict:
     """Build the dict for capabilities.yaml.
 
-    When ``yml_params_by_name`` is provided, each ``general_configurations``
-    field is materialized via :func:`emit_field_for_param` — a rich dict
-    with ``title``, ``field_type``, ``options`` (default_value, mask,
-    create/edit_modifiers, etc.) sourced from the underlying XSOAR yml
-    param. Type 9 (credentials) params expand into two fields. Missing yml
-    entries fall back to a bare ``{"id": name}`` shape with a warning
-    (per Q3=c).
+    Per guide §3.4 + §4.3 (Salesforce reference), every capabilities.yaml
+    MUST include two mandatory ``general_configurations`` fields prepended
+    before any user-supplied params:
+      - ``instance_name`` (FE-tagged via ``metadata.connector.parameter``)
+      - ``integrationLogLevel`` (BE-tagged via
+        ``metadata.xsoar.config_type: "backend"``)
+
+    Each capability entry includes the REQUIRED schema fields
+    (capabilities.schema: id + title + default_enabled + required):
+      - ``title`` — from CANONICAL_CAPABILITY_TITLES lookup
+      - ``default_enabled: true`` (per Salesforce reference §4.3)
+      - ``required: false`` (per guide §3.4: "Always false")
+
+    Mandatory-field dedup: if the upstream mapper happens to also place a
+    user-param literally named ``instance_name`` or ``integrationLogLevel``
+    into ``general_configurations``, the platform-mandated version wins
+    (the user-param is skipped and a warning is logged). This is rare in
+    practice but defensive against malformed mapper output.
+
+    When ``yml_params_by_name`` is provided, each user-supplied
+    ``general_configurations`` field is materialized via
+    :func:`emit_field_for_param` — a rich dict with ``title``,
+    ``field_type``, ``options`` (default_value, mask, create/edit_modifiers,
+    etc.) sourced from the underlying XSOAR yml param. Type 9 (credentials)
+    params expand into two fields. Missing yml entries fall back to a bare
+    ``{"id": name}`` shape with a warning (per Q3=c).
 
     Dedup-via-rename (per Q1=a/Q2=a/Q3=a/Q4=b design): when ``handler_id``
-    + ``handler_dir`` are supplied, any ``general_configurations`` field id
-    that collides with an entry in ``existing_ids`` is renamed and a
-    serializer entry is registered. Capability ids are NOT deduped here —
-    capability id collisions are handled by the append flow's promote-to-
-    sub-capability path, not by this builder.
+    + ``handler_dir`` are supplied, any user-supplied
+    ``general_configurations`` field id that collides with an entry in
+    ``existing_ids`` is renamed and a serializer entry is registered.
+    Capability ids are NOT deduped here — capability id collisions are
+    handled by the append flow's promote-to-sub-capability path.
 
     Backwards-compatible: callers omitting all extra args get bare-id
-    fields with no dedup side-effects.
+    fields with no dedup side-effects (but the two mandatory fields are
+    ALWAYS emitted).
     """
+    # Mandatory fields always come first — order matters for the FE render.
+    general_fields: list[dict] = [
+        _instance_name_field(),
+        _integration_log_level_field(),
+    ]
+    reserved_ids = {"instance_name", "integrationLogLevel"}
+
     general_params = mapped_params.get("general_configurations", []) or []
-    general_fields: list[dict] = []
     for p in general_params:
+        if p in reserved_ids:
+            logger.warning(
+                "[manifest_generator] User-param '%s' in general_configurations "
+                "collides with a platform-mandated field — skipping the "
+                "user-param (the platform version takes precedence).",
+                p,
+            )
+            continue
         general_fields.extend(
             emit_field_for_param(
                 p,
@@ -1401,7 +1823,16 @@ def build_capabilities_yaml(
     for cap_name in mapped_params:
         if cap_name == "general_configurations":
             continue
-        capabilities.append({"id": slugify_capability_name(cap_name)})
+        cap_id = slugify_capability_name(cap_name)
+        capabilities.append(
+            {
+                "id": cap_id,
+                "title": CANONICAL_CAPABILITY_TITLES[cap_id],
+                # Per guide §3.4 + §4.3 Salesforce reference.
+                "default_enabled": True,
+                "required": False,
+            }
+        )
 
     return {
         "metadata": {
@@ -1612,8 +2043,18 @@ def append_capability_to_files(
     )
 
     # Case 3: capability does not exist anywhere — add at top level.
+    #
+    # Per Batch 2 (A.2.5 + A.2.6 + capabilities.schema): every capability
+    # entry MUST include id + title + default_enabled + required.
     if existing_cap is None:
-        capabilities_data.setdefault("capabilities", []).append({"id": cap_slug})
+        capabilities_data.setdefault("capabilities", []).append(
+            {
+                "id": cap_slug,
+                "title": CANONICAL_CAPABILITY_TITLES[cap_slug],
+                "default_enabled": True,
+                "required": False,
+            }
+        )
         configurations_data.setdefault("configurations", []).append(
             {
                 "id": cap_slug,
@@ -1714,18 +2155,17 @@ def merge_general_configurations(
 def build_summary_yaml(connector_title: str) -> dict:
     """Build the dict for a brand-new summary.yaml.
 
-    Per spec, all fields are simple:
+    Per spec and the worked Salesforce reference (guide §4.5):
       - title: hardcoded "Summary"
       - description: templated as f"Summary for connector {connector_title}"
-      - link: empty string (TBD)
-      - next_steps: empty string (TBD)
+      - link and next_steps are OPTIONAL per summary.schema and are
+        omitted from the default output (callers can add them via
+        ``manual_summary_fields`` deep-merge).
     """
     return {
         "metadata": {
             "title": "Summary",
             "description": f"Summary for connector {connector_title}",
-            "link": "",
-            "next_steps": "",
         },
     }
 
@@ -1837,8 +2277,17 @@ def _map_type_4(yml_param: dict) -> dict:
 
 
 def _map_type_8(yml_param: dict) -> dict:
-    """XSOAR type 8 — Boolean → connectus `toggle`. Coerces default_value to bool."""
-    field = {"id": yml_param["name"], "field_type": "toggle"}
+    """XSOAR type 8 — Boolean → connectus ``checkbox``.
+
+    Per guide Appendix A: type 8 maps to ``checkbox`` (NOT ``toggle``).
+    The two field types render differently in the UI — ``checkbox`` is
+    an opt-in tickbox, ``toggle`` is an on/off slider. The platform
+    (BE + FE) expects ``checkbox`` for XSOAR boolean params.
+
+    Coerces ``defaultvalue`` to bool (the XSOAR yml uses string "true"
+    / "false" or Python bool).
+    """
+    field = {"id": yml_param["name"], "field_type": "checkbox"}
     options = field.setdefault("options", {})
     if "defaultvalue" in yml_param and yml_param["defaultvalue"] is not None:
         options["default_value"] = _coerce_toggle_default(yml_param["defaultvalue"])
@@ -1965,19 +2414,67 @@ def _map_type_16(yml_param: dict) -> dict:
     return field
 
 
+# Hardcoded enum values per guide Appendix A. These are platform-defined
+# for the two Feed-related XSOAR types and are NOT sourced from the
+# integration yml's ``options:`` list (the yml options for these types
+# are explicitly IGNORED by the migration script).
+
+# Per guide Appendix A type 17: "Feed Expiration Policy".
+FEED_EXPIRATION_POLICY_VALUES: list[dict] = [
+    {"key": "Indicator Type", "value": "Indicator Type"},
+    {"key": "Time Interval", "value": "Time Interval"},
+    {"key": "Never Expire", "value": "Never Expire"},
+    {"key": "When removed from the feed", "value": "When removed from the feed"},
+]
+
+# Per guide Appendix A type 18: "Indicator / Feed Reputation". The
+# "new mapped values" — the legacy XSOAR values were
+# None/Good/Suspicious/Bad. The platform consumer (BE+FE) expects the
+# Unknown/Benign/Suspicious/Malicious form below.
+INDICATOR_REPUTATION_VALUES: list[dict] = [
+    {"key": "Unknown", "value": "Unknown"},
+    {"key": "Benign", "value": "Benign"},
+    {"key": "Suspicious", "value": "Suspicious"},
+    {"key": "Malicious", "value": "Malicious"},
+]
+
+
 def _map_type_17(yml_param: dict) -> dict:
-    """XSOAR type 17 — Date → connectus `input` (no native date picker)."""
-    field = {"id": yml_param["name"], "field_type": "input"}
+    """XSOAR type 17 — Feed Expiration Policy → connectus ``select``.
+
+    Per guide Appendix A: hardcoded display labels (the yml's
+    ``options`` list, if any, is IGNORED). Only added when
+    ``script.Feed: true``; the integration yml's ``defaultvalue`` is
+    preserved if present (via :func:`_apply_common_field_metadata`).
+
+    The previous behavior (treat type 17 as a generic Date ``input``)
+    was incorrect — guide Appendix A is the authoritative spec.
+    """
+    field = {
+        "id": yml_param["name"],
+        "field_type": "select",
+        "options": {"values": list(FEED_EXPIRATION_POLICY_VALUES)},
+    }
     _apply_common_field_metadata(field, yml_param)
     return field
 
 
 def _map_type_18(yml_param: dict) -> dict:
-    """XSOAR type 18 — Grouped single-select → connectus `select` (categories flattened)."""
+    """XSOAR type 18 — Indicator / Feed Reputation → connectus ``select``.
+
+    Per guide Appendix A: hardcoded values (Unknown / Benign /
+    Suspicious / Malicious) — these are the "new mapped values". The
+    legacy XSOAR values None/Good/Suspicious/Bad are NOT preserved.
+    The yml's ``options`` list is IGNORED.
+
+    The previous behavior (treat type 18 as a generic "Grouped
+    single-select" pulling values from the yml) was incorrect — guide
+    Appendix A is the authoritative spec.
+    """
     field = {
         "id": yml_param["name"],
         "field_type": "select",
-        "options": {"values": _build_select_values(yml_param, label_key="value")},
+        "options": {"values": list(INDICATOR_REPUTATION_VALUES)},
     }
     _apply_common_field_metadata(field, yml_param)
     return field
@@ -1991,6 +2488,30 @@ def _map_type_19(yml_param: dict) -> dict:
         "options": {"is_number_input": True},
     }
     _apply_common_field_metadata(field, yml_param)
+    return field
+
+
+def _map_type_22(yml_param: dict) -> dict:
+    """XSOAR type 22 — Copy to Clipboard → connectus ``label``.
+
+    Per guide Appendix A (rare type, in informal use): type 22 renders
+    the param's value as a read-only display that the user can copy.
+    The connectus ``label`` field type (defined in
+    field.schema.json's ``FieldType`` enum) is the closest semantic
+    match — it renders a static element with no input affordance.
+
+    Note: ``label`` fields don't carry the standard create/edit
+    modifiers, mask, or is_number_input options.
+    """
+    field = {"id": yml_param["name"], "field_type": "label"}
+    # Apply title (display) + description (additionalinfo) but skip
+    # default_value / modifiers (the label has no editable surface).
+    title = yml_param.get("display")
+    if title:
+        field["title"] = title
+    additional_info = yml_param.get("additionalinfo")
+    if additional_info:
+        field.setdefault("options", {})["description"] = additional_info
     return field
 
 
@@ -2009,6 +2530,7 @@ MAPPERS: dict[int, Callable] = {
     17: _map_type_17,
     18: _map_type_18,
     19: _map_type_19,
+    22: _map_type_22,
 }
 
 
@@ -2103,13 +2625,18 @@ def create_manifest_from_scratch(
         yaml.safe_dump(connector_data, fh)
     logger.info(f"[manifest_generator] Generated {connector_yaml_path}")
 
-    # Generate handler.yaml for this integration
+    # Generate handler.yaml for this integration. Pack id is sourced
+    # from the integration path (per AGENTS.md pack-tree layout) and
+    # threaded through to populate triggering.labels.xsoar-pack-id per
+    # guide §3.8.
+    pack_id = get_pack_id(integration_path)
     handler_data = build_handler_yaml(
         integration_yml,
         connector_title,
         pack_tags,
         mapped_params,
         auth_methods,
+        pack_id=pack_id,
     )
     handler_data = deep_merge_dicts(handler_data, manual_handler_fields or {})
     handler_id = handler_data["id"]
@@ -2174,16 +2701,23 @@ def create_manifest_from_scratch(
         yaml.safe_dump(configurations_data, fh)
     logger.info(f"[manifest_generator] Generated {configurations_yaml_path}")
 
-    # Generate serializer.yaml stub (per-handler placeholder) — only if
-    # the dedup step did not already create a dict-based serializer.yaml.
+    # Per Batch 7 (Part A.7.1) + guide §3.9: serializer.yaml is OPTIONAL
+    # and is only emitted when at least one field_mappings entry exists
+    # (the dedup step writes it on-demand via
+    # :func:`register_serializer_entry`). The previous behavior of
+    # writing a 1-line "# TODO: serializer config" stub for every
+    # handler violated serializer.schema's ``anyOf`` (requires
+    # field_mappings OR computed_fields with ≥1 item).
     serializer_yaml_path = handler_yaml_path.parent / "serializer.yaml"
-    if not serializer_yaml_path.exists():
-        write_serializer_yaml(serializer_yaml_path)
-        logger.info(f"[manifest_generator] Generated {serializer_yaml_path}")
+    if serializer_yaml_path.exists():
+        logger.info(
+            f"[manifest_generator] Serializer.yaml present at "
+            f"{serializer_yaml_path} (populated by dedup step)"
+        )
     else:
         logger.info(
-            f"[manifest_generator] Serializer.yaml already present at "
-            f"{serializer_yaml_path} (populated by dedup step); not overwriting"
+            f"[manifest_generator] No dedup collisions for handler — "
+            f"serializer.yaml not generated (optional per guide §3.9)."
         )
 
     # TODO: generate connection.yaml
@@ -2362,7 +2896,9 @@ def add_handler_to_existing_connector(
         )
         cap_name_to_handler_cap_id[cap_name] = handler_cap_id
 
-    # Generate handler.yaml for this new integration (with sub-cap-aware ids).
+    # Generate handler.yaml for this new integration (with sub-cap-aware
+    # ids). Pack id from the integration path → triggering.labels.xsoar-pack-id.
+    pack_id = get_pack_id(integration_path)
     handler_data = build_handler_yaml(
         integration_yml,
         connector_title,
@@ -2370,21 +2906,26 @@ def add_handler_to_existing_connector(
         mapped_params,
         auth_methods,
         cap_name_to_handler_cap_id=cap_name_to_handler_cap_id,
+        pack_id=pack_id,
     )
     handler_data = deep_merge_dicts(handler_data, manual_handler_fields or {})
     write_handler_yaml(handler_yaml_path, handler_data)
     logger.info(f"[manifest_generator] Generated {handler_yaml_path}")
 
-    # Generate serializer.yaml stub (per-handler placeholder) — skip if the
-    # dedup pass already created a dict-based serializer.yaml.
+    # Per Batch 7 (Part A.7.1) + guide §3.9: serializer.yaml is OPTIONAL.
+    # The dedup pass writes it on-demand when collision-rename produces
+    # a field_mappings entry. See same comment in
+    # :func:`create_manifest_from_scratch`.
     serializer_yaml_path = handler_yaml_path.parent / "serializer.yaml"
-    if not serializer_yaml_path.exists():
-        write_serializer_yaml(serializer_yaml_path)
-        logger.info(f"[manifest_generator] Generated {serializer_yaml_path}")
+    if serializer_yaml_path.exists():
+        logger.info(
+            f"[manifest_generator] Serializer.yaml present at "
+            f"{serializer_yaml_path} (populated by dedup step)"
+        )
     else:
         logger.info(
-            f"[manifest_generator] Serializer.yaml already present at "
-            f"{serializer_yaml_path} (populated by dedup step); not overwriting"
+            f"[manifest_generator] No dedup collisions for handler — "
+            f"serializer.yaml not generated (optional per guide §3.9)."
         )
 
     # Write capabilities.yaml back (with schema directive).
