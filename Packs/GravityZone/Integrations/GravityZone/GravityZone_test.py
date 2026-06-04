@@ -5,7 +5,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
-from CommonServerPython import CommandResults
+from CommonServerPython import CommandResults, EntryType
 
 
 SERVER_URL = "https://localhost"
@@ -648,6 +648,26 @@ def test_extract_memory_dump_summary_ignores_non_processed_subtask_for_download_
     assert download_url == ""
 
 
+def test_extract_memory_dump_summary_returns_none_when_endpoint_not_found():
+    from GravityZone import _extract_memory_dump_summary
+
+    task_output = {
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "status": 3,
+                "downloadURL": "https://example.com/memory-dump",
+            }
+        ]
+    }
+
+    endpoint_id, endpoint_hostname, subtask, download_url = _extract_memory_dump_summary(task_output, "endpoint-missing")
+    assert endpoint_id == "endpoint-missing"
+    assert endpoint_hostname == ""
+    assert subtask is None
+    assert download_url == ""
+
+
 def test_extract_memory_dump_task_id_from_string_result():
     from GravityZone import _extract_memory_dump_task_id
 
@@ -727,6 +747,42 @@ def test_build_memory_dump_results_omits_download_url_when_unavailable():
         "Error": "",
         "DownloadURL": "",
     }
+
+
+def test_build_memory_dump_results_returns_error_when_endpoint_not_found():
+    from GravityZone import _build_memory_dump_results
+
+    task_output = {
+        "status": 3,
+        "subtasks": [
+            {
+                "endpointId": "endpoint-1",
+                "endpointName": "host-1",
+                "status": 3,
+                "startDate": "2026-05-25T10:00:00",
+                "endDate": "2026-05-25T10:01:00",
+            }
+        ],
+    }
+
+    result = _build_memory_dump_results(task_output, "TASK_ID", "endpoint-missing")
+
+    assert result.entry_type == EntryType.ERROR
+    assert result.readable_output == "Invalid Endpoint ID. Available endpoint IDs for task 'TASK_ID': ['endpoint-1']"
+
+
+def test_build_memory_dump_results_returns_error_when_task_has_no_results():
+    from GravityZone import _build_memory_dump_results
+
+    task_output = {
+        "status": 3,
+        "subtasks": [],
+    }
+
+    result = _build_memory_dump_results(task_output, "TASK_ID", "")
+
+    assert result.entry_type == EntryType.ERROR
+    assert result.readable_output == "Task 'TASK_ID' has no memory dump results."
 
 
 def test_generate_processed_task_command_result_maps_memory_dump_task_type():

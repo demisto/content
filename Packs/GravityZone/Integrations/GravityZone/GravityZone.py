@@ -1973,7 +1973,10 @@ def _build_users_loggedin_results(task_output: dict[str, Any], endpoint_id: str)
     )
 
 
-def _extract_memory_dump_summary(task_output: dict[str, Any], endpoint_id: str) -> tuple[str, str, dict[str, Any], str]:
+def _extract_memory_dump_summary(
+    task_output: dict[str, Any],
+    endpoint_id: str,
+) -> tuple[str, str, dict[str, Any] | None, str]:
     resolved_endpoint_id = endpoint_id
     resolved_hostname = ""
     fallback_subtask: dict[str, Any] = {}
@@ -2005,7 +2008,7 @@ def _extract_memory_dump_summary(task_output: dict[str, Any], endpoint_id: str) 
         if resolved_endpoint_id and subtask_endpoint_id == resolved_endpoint_id and subtask_hostname:
             resolved_hostname = subtask_hostname
 
-    return resolved_endpoint_id, resolved_hostname, (processed_subtask or fallback_subtask), download_url
+    return resolved_endpoint_id, resolved_hostname, (processed_subtask or fallback_subtask or None), download_url
 
 
 def _build_memory_dump_results(
@@ -2016,6 +2019,24 @@ def _build_memory_dump_results(
 ) -> CommandResults:
     """Build endpoint-scoped command results for memory dump status polling."""
     endpoint_id, endpoint_hostname, memory_dump_subtask, download_url = _extract_memory_dump_summary(task_output, endpoint_id)
+
+    if memory_dump_subtask is None:
+        available_endpoint_ids = [
+            subtask.get("endpointId") for subtask in task_output.get("subtasks", []) if subtask.get("endpointId")
+        ]
+        if endpoint_id:
+            return CommandResults(
+                raw_response=task_output,
+                readable_output=f"Invalid Endpoint ID. Available endpoint IDs for task '{task_id}': {available_endpoint_ids}",
+                entry_type=EntryType.ERROR,
+            )
+
+        return CommandResults(
+            raw_response=task_output,
+            readable_output=f"Task '{task_id}' has no memory dump results.",
+            entry_type=EntryType.ERROR,
+        )
+
     status = MEMORY_DUMP_STATUS_PROCESSED if task_output.get("status") == TASK_STATUS_PROCESSED else MEMORY_DUMP_STATUS_PENDING
     subtask_end_date = memory_dump_subtask.get("endDate")
     subtask_error_code = memory_dump_subtask.get("errorCode")
