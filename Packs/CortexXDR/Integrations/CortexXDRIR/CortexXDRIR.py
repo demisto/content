@@ -1774,7 +1774,7 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
         )
     # API is limited to 100 alerts per request, doing the request in batches of 100.
     for index in range(0, len(alerts_list), 100):
-        alerts_sublist = alerts_list[index : index + 100]
+        alerts_sublist = alerts_list[index: index + 100]
         demisto.debug(f"{alerts_sublist=}, {severity=}, {status=}, {comment=}")
         array_of_sublist_ids = client.update_alerts_in_xdr_request(alerts_sublist, severity, status, comment)
         array_of_all_ids += array_of_sublist_ids
@@ -2877,7 +2877,13 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Update-existing-case
-    Updates an existing case.
+    Updates an existing case via the public_api/v1/case/update/{case-id} endpoint.
+
+    Maps user-friendly argument values to the exact API strings and enforces the
+    API's conditional rules client-side:
+      - resolve_reason / resolve_comment are only valid when status is "Resolved".
+      - resolving (status "Resolved") requires a resolve_reason.
+      - at least one valid field must be sent (an empty update_data returns 400).
 
     Args:
     - client (Client): The client to use for the request.
@@ -2886,23 +2892,100 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Returns:
     - CommandResults: A CommandResults object.
     """
+    # Maps friendly status inputs to the exact API strings expected by status_progress.
+    status_mapper = {
+        "new": "New",
+        "in_progress": "In Progress",
+        "in progress": "In Progress",
+        "under_investigation": "In Progress",
+        "resolved": "Resolved",
+    }
+    # Maps snake_case resolve reasons to the exact API strings (all six supported).
     resolve_reason_mapper = {
         "resolved_known_issue": "Resolved - Known Issue",
         "resolved_duplicate": "Resolved - Duplicate Case",
         "resolved_false_positive": "Resolved - False Positive",
+        "resolved_true_positive": "Resolved - True Positive",
+        "resolved_security_testing": "Resolved - Security Testing",
         "resolved_other": "Resolved - Other",
     }
 
     case_id = args.get("case_id", "")  # required
-    status = args.get("status", "").upper() if args.get("status") else None
-    resolve_reason = resolve_reason_mapper.get(args.get("resolve_reason", ""))
-    resolve_comment = args.get("resolve_comment")
 
+    status_arg = args.get("status", "")
+    if status_arg:
+        status = status_mapper.get(status_arg.strip().lower())
+        if not status:
+            raise DemistoException(
+                f"Invalid status '{status_arg}'. Supported values are: New, In Progress, Resolved."
+            )
+    else:
+        status = None
+
+    resolve_reason_arg = args.get("resolve_reason")
+    if resolve_reason_arg:
+        resolve_reason = resolve_reason_mapper.get(resolve_reason_arg.strip().lower())
+        if not resolve_reason:
+            raise DemistoException(
+                f"Invalid resolve_reason '{resolve_reason_arg}'. Supported values are: "
+                f"{', '.join(sorted(resolve_reason_mapper))}."
+            )
+    else:
+        resolve_reason = None
+
+    resolve_comment = args.get("resolve_comment")
+    user_severity = args.get("user_severity")
+    assigned_user = args.get("assigned_user")
+    notes = args.get("notes")
+    custom_fields_arg = args.get("custom_fields")
+
+    is_resolving = status == "Resolved"
+
+    # Enforce the API's conditional rules client-side with clear error messages.
+    if (resolve_reason or resolve_comment) and not is_resolving:
+        raise DemistoException(
+            "The 'resolve_reason' and 'resolve_comment' arguments can only be provided when "
+            "'status' is set to 'Resolved'."
+        )
+    if is_resolving and not resolve_reason:
+        raise DemistoException("The 'resolve_reason' argument is required when resolving a case (status 'Resolved').")
+
+    # assign_params drops None / empty values, which keeps null values out of the payload.
     update_data = assign_params(
         status_progress=status,
         resolve_reason=resolve_reason,
         resolve_comment=resolve_comment,
+        assigned_user=assigned_user,
+        notes=notes,
     )
+
+    # user_severity must allow an explicit empty string "" (used to clear the severity),
+    # so it is handled separately to avoid being dropped by assign_params.
+    if user_severity is not None:
+        update_data["user_severity"] = user_severity
+
+    # custom_fields lets users send tenant-defined fields directly inside update_data.
+    # We only validate that the input is a valid JSON object (a dict); field names/values
+    # are the user's responsibility and are NOT validated by the integration.
+    if custom_fields_arg is not None:
+        try:
+            parsed_custom_fields = json.loads(custom_fields_arg)
+        except (ValueError, TypeError):
+            raise DemistoException("The 'custom_fields' argument must be a valid JSON object.")
+        if not isinstance(parsed_custom_fields, dict):
+            raise DemistoException("The 'custom_fields' argument must be a valid JSON object.")
+        # Standard documented fields are authoritative: skip any custom_fields key that
+        # collides with a standard field already set in update_data (no silent override).
+        for key, value in parsed_custom_fields.items():
+            if key in update_data:
+                continue
+            update_data[key] = value
+
+    if not update_data:
+        raise DemistoException(
+            "No fields to update were provided. Provide at least one of: status, resolve_reason, "
+            "resolve_comment, user_severity, assigned_user, notes, custom_fields."
+        )
 
     client.update_case(case_id, request_data={"request_data": {"update_data": update_data}})
 

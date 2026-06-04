@@ -3933,96 +3933,96 @@ script:
     description: Returns a list of assets.
     name: xdr-asset-list
     outputs:
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_id
-        description: The unique identifier of the asset.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_name
-        description: The name of the asset (e.g., image SHA).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_strong_id
-        description: The strong identifier (SHA256) of the asset.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_provider
-        description: The provider of the asset.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_external_provider_id
-        description: External provider ID (if applicable).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_first_observed
-        description: Timestamp when the asset was first observed.
-        type: Date
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_last_observed
-        description: Timestamp when the asset was last observed.
-        type: Date
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_id
-        description: The ID of the asset type (e.g., CORE_IMAGE).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_name
-        description: The name of the asset type.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_category
-        description: The category of the asset (e.g., Container Image).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_class
-        description: The class of the asset (e.g., Compute).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_development_cycle_stages
-        description: The development cycle stages (e.g., RUNTIME).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_architecture
-        description: The architecture of the image (e.g., amd64).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_digest
-        description: The image digest hash.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_identifier
-        description: The image identifier.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_names
-        description: List of names/tags associated with the image.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os
-        description: The OS version of the image.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os_distribution
-        description: The OS distribution (e.g., UBUNTU).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os_family
-        description: The OS family (e.g., Linux).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os_release
-        description: The OS release name (e.g., noble).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_labels
-        description: Labels associated with the image.
-        type: Unknown
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers
-        description: List of layers making up the image.
-        type: Unknown
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers_created_at
-        description: Timestamp of when the layer was created.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers_instruction
-        description: The instruction used to create the layer (e.g., RUN, ADD).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers_size
-        description: The size of the layer in bytes.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_related_cases_cases_breakdown
-        description: Breakdown of related cases by severity.
-        type: Unknown
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_related_cases_critical_cases
-        description: Count of critical cases.
-        type: Number
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_related_issues_issues_breakdown
-        description: Breakdown of related issues by severity.
-        type: Unknown
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_relations
-        description: Relations to other assets.
-        type: Unknown
-      - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_group_ids
-        description: Group IDs associated with the asset.
-        type: Number
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_id
+      description: The unique identifier of the asset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_name
+      description: The name of the asset (e.g., image SHA).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_strong_id
+      description: The strong identifier (SHA256) of the asset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_provider
+      description: The provider of the asset.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_external_provider_id
+      description: External provider ID (if applicable).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_first_observed
+      description: Timestamp when the asset was first observed.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_last_observed
+      description: Timestamp when the asset was last observed.
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_id
+      description: The ID of the asset type (e.g., CORE_IMAGE).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_name
+      description: The name of the asset type.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_category
+      description: The category of the asset (e.g., Container Image).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_type_class
+      description: The class of the asset (e.g., Compute).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_development_cycle_stages
+      description: The development cycle stages (e.g., RUNTIME).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_architecture
+      description: The architecture of the image (e.g., amd64).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_digest
+      description: The image digest hash.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_identifier
+      description: The image identifier.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_names
+      description: List of names/tags associated with the image.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os
+      description: The OS version of the image.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os_distribution
+      description: The OS distribution (e.g., UBUNTU).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os_family
+      description: The OS family (e.g., Linux).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_os_release
+      description: The OS release name (e.g., noble).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_labels
+      description: Labels associated with the image.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers
+      description: List of layers making up the image.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers_created_at
+      description: Timestamp of when the layer was created.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers_instruction
+      description: The instruction used to create the layer (e.g., RUN, ADD).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_image_layers_size
+      description: The size of the layer in bytes.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_related_cases_cases_breakdown
+      description: Breakdown of related cases by severity.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_related_cases_critical_cases
+      description: Count of critical cases.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_related_issues_issues_breakdown
+      description: Breakdown of related issues by severity.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_relations
+      description: Relations to other assets.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Asset.xdm_asset_group_ids
+      description: Group IDs associated with the asset.
+      type: Number
   - name: xdr-asset-schema-get
     description: Gets the schema of the asset inventory.
     outputs:
@@ -4093,39 +4093,39 @@ script:
     description: Returns a list of asset groups.
     name: xdr-asset-group-list
     outputs:
-      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_ID
-        description: The unique identifier of the asset group.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_NAME
-        description: The name of the asset group.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_TYPE
-        description: The type of the asset group (Static or Dynamic).
-        type: String
-      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_FILTER
-        description: The filter query string used to define the members of the XDM asset group.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_DESCRIPTION
-        description: The description of the asset group.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_CREATION_TIME
-        description: The timestamp when the group was created (Epoch).
-        type: Date
-      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_LAST_UPDATE_TIME
-        description: The timestamp when the group was last updated (Epoch).
-        type: Date
-      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_CREATED_BY_PRETTY
-        description: The user or API key that created the group.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_MODIFIED_BY_PRETTY
-        description: The user or API key that last modified the group.
-        type: String
-      - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_MEMBERSHIP_PREDICATE
-        description: The JSON object defining the search criteria for dynamic groups.
-        type: Unknown
-      - contextPath: PaloAltoNetworksXDR.AssetGroup.IS_USED_BY_SBAC
-        description: Indicates whether this asset group is currently utilized to define Scope-Based Access Control (SBAC) rules.
-        type: Boolean
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_ID
+      description: The unique identifier of the asset group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_NAME
+      description: The name of the asset group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_TYPE
+      description: The type of the asset group (Static or Dynamic).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_FILTER
+      description: The filter query string used to define the members of the XDM asset group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_DESCRIPTION
+      description: The description of the asset group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_CREATION_TIME
+      description: The timestamp when the group was created (Epoch).
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_LAST_UPDATE_TIME
+      description: The timestamp when the group was last updated (Epoch).
+      type: Date
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_CREATED_BY_PRETTY
+      description: The user or API key that created the group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_MODIFIED_BY_PRETTY
+      description: The user or API key that last modified the group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.XDM_ASSET_GROUP_MEMBERSHIP_PREDICATE
+      description: The JSON object defining the search criteria for dynamic groups.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.AssetGroup.IS_USED_BY_SBAC
+      description: Indicates whether this asset group is currently utilized to define Scope-Based Access Control (SBAC) rules.
+      type: Boolean
   - arguments:
     - description: The ID of the asset group to update.
       name: group_id
@@ -4306,22 +4306,38 @@ script:
       name: case_id
       required: true
     - auto: PREDEFINED
-      description: The status to set for the case. if the status is updated to "resolved", resolve_reason must be provided.
+      description: The status to set for the case. When set to "resolved", the resolve_reason argument is required.
       name: status
       predefined:
       - new
       - under_investigation
       - resolved
     - auto: PREDEFINED
-      description: The reason for resolving the case.
+      description: The reason for resolving the case. Can only be provided when status is set to "resolved", and is required when resolving.
       name: resolve_reason
       predefined:
       - resolved_known_issue
       - resolved_duplicate
       - resolved_false_positive
+      - resolved_true_positive
+      - resolved_security_testing
       - resolved_other
-    - description: A comment explaining the resolution.
+    - description: A free-text comment explaining the resolution. Can only be provided when status is set to "resolved".
       name: resolve_comment
+    - auto: PREDEFINED
+      description: The user-defined severity to set for the case. Provide an empty string to clear the severity.
+      name: user_severity
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+    - description: A valid Cortex XDR user email address to assign the case to.
+      name: assigned_user
+    - description: A free-text note for the case, used for operational or intermediate comments (e.g., a ServiceNow Ticket ID).
+      name: notes
+    - description: 'A JSON object string of tenant-defined custom fields to update on the case. The keys must be the exact custom field names as configured in your Cortex XDR tenant, and the values must match each field''s configuration. It is the user''s responsibility to ensure the custom field names are valid/correct for the tenant; the integration does not validate field names, only that the input is valid JSON. Example: {"my_custom_field": "value", "another_field": 42}.'
+      name: custom_fields
     description: Updates an existing case with the specified details.
     name: xdr-case-update
   - arguments:
@@ -5125,11 +5141,11 @@ script:
       auto: PREDEFINED
       isArray: true
       predefined:
-        - BIOC
-        - Correlation
-        - Analytics
-        - System
-        - IOC
+      - BIOC
+      - Correlation
+      - Analytics
+      - System
+      - IOC
     - name: domain
       description: A comma-separated list of domains.
       isArray: true
@@ -5137,34 +5153,34 @@ script:
       description: "A comma-separated list of severities. Possible values: 'critical', 'high', 'medium', 'low', 'info'."
       auto: PREDEFINED
       predefined:
-        - info
-        - low
-        - medium
-        - high
-        - critical
+      - info
+      - low
+      - medium
+      - high
+      - critical
     - name: insert_time
       description: Filter by issues inserted after this time.
     - name: status
       description: "A comma-separated list of statuses. Possible values: 'new', 'in_progress', 'resolved'."
       auto: PREDEFINED
       predefined:
-        - new
-        - in_progress
-        - resolved
+      - new
+      - in_progress
+      - resolved
       isArray: true
     - name: sort_field
       description: The field to sort by.
       auto: PREDEFINED
       predefined:
-        - issue_id
-        - severity
-        - observation_time
+      - issue_id
+      - severity
+      - observation_time
     - name: sort_order
       description: The sort order.
       auto: PREDEFINED
       predefined:
-        - asc
-        - desc
+      - asc
+      - desc
     - name: limit
       description: The maximum number of results to return.
     - name: page_size
@@ -5281,14 +5297,14 @@ script:
       description: Whether the issue is excluded.
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: is_starred
       description: Whether the issue is starred.
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: assigned_to
       description: The user assigned to the issue.
     - name: assigned_to_pretty
@@ -5298,11 +5314,11 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-        - critical
-        - info
-        - low
-        - medium
-        - high
+      - critical
+      - info
+      - low
+      - medium
+      - high
     - name: normalized_fields_json
       description: The JSON to add to the "normalized_fields" field in the API.
     - name: custom_fields_json
@@ -5324,29 +5340,29 @@ script:
       description: The severity.
       auto: PREDEFINED
       predefined:
-        - critical
-        - info
-        - low
-        - medium
-        - high
+      - critical
+      - info
+      - low
+      - medium
+      - high
     - name: status
       description: The status.
       auto: PREDEFINED
       predefined:
-        - new
-        - in_progress
-        - resolved
+      - new
+      - in_progress
+      - resolved
     - name: resolve_reason
       description: The resolve reason.
       auto: PREDEFINED
       predefined:
-        - resolved_threat_handled
-        - resolved_known_issue
-        - resolved_duplicate
-        - resolved_false_positive
-        - resolved_other
-        - resolved_true_positive
-        - resolved_security_testing
+      - resolved_threat_handled
+      - resolved_known_issue
+      - resolved_duplicate
+      - resolved_false_positive
+      - resolved_other
+      - resolved_true_positive
+      - resolved_security_testing
     - name: resolve_comment
       description: The resolve comment.
   dockerimage: demisto/python3:3.12.13.9059085
