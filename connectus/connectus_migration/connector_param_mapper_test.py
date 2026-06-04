@@ -788,10 +788,7 @@ class TestManualMapping:
         )
         assert "Custom Cap" in result
         assert "lookback" in result["Custom Cap"]
-        # 'Log Collection' receives no params (fetch-events was rerouted) and
-        # is dropped by Step 2.7 cleanup; tolerate its absence and assert the
-        # real intent — 'lookback' never landed in it.
-        assert "lookback" not in result.get("Log Collection", [])
+        assert "lookback" not in result["Log Collection"]
 
     def test_manual_mapping_multi_target_routes_to_all_listed(self):
         """

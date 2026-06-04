@@ -255,21 +255,17 @@ def _apply_manual_mapping(
         return handled_commands
 
     commands_section: dict = command_params.get("commands") or {}
-    placed_per_cap: dict[str, set] = {}
     for cmd_name, capability_list in manual_command_to_capability.items():
         # Ensure each capability exists.
         for cap in capability_list:
             if cap not in result:
                 result[cap] = []
+            else:
+                result[cap].append(cmd_name)
         # Route this command's params to each listed capability.
-        params = commands_section.get(cmd_name) or []
-        for cap in capability_list:
-            cap_set = placed_per_cap.setdefault(cap, set(result[cap]))
-            for param in params:
-                if param not in cap_set:
-                    result[cap].append(param)
-                    cap_set.add(param)
-        handled_commands.add(cmd_name)
+        for cmd_params in commands_section.values():
+            if cmd_name in cmd_params:
+                cmd_params.remove(cmd_name)
     return handled_commands
 
 
@@ -513,10 +509,7 @@ def _filter_hidden_params(
         )
 
 
-def _cleanup_empty_capabilities(
-    result: dict[str, list[str]],
-    protected_capabilities: set | None = None,
-) -> None:
+def _cleanup_empty_capabilities(result: dict[str, list[str]]) -> None:
     """Step 2.7 — Remove any capability bucket with an empty param list.
 
     Mutates ``result`` in place. Applies to ALL keys, including
@@ -530,21 +523,9 @@ def _cleanup_empty_capabilities(
         params, which can also empty a bucket if all of its params were
         hidden.
 
-    ``protected_capabilities`` names buckets that were explicitly created by
-    a manual command-to-capability override (Step 2.1.5). These are the user's
-    declared source of truth, so they are preserved even when empty (e.g. when
-    their params were demoted to ``general_configurations`` by dedup). All
-    other empty buckets — including an empty ``general_configurations`` and
-    auto-routed capabilities — are still removed.
-
     Logs the removed capability names at INFO level for traceability.
     """
-    protected = protected_capabilities or set()
-    empty_keys = [
-        cap
-        for cap, params in result.items()
-        if len(params) == 0 and cap not in protected
-    ]
+    empty_keys = [cap for cap, params in result.items() if len(params) == 0]
     for cap in empty_keys:
         del result[cap]
     if empty_keys:
@@ -654,15 +635,8 @@ def map_params_to_capabilities(
         )
         _filter_hidden_params(result, to_remove, kept_by_carveout)
 
-    # Step 2.7 (NEW) - cleanup empty capabilities (including general_configurations).
-    # Capabilities declared by a manual override are the source of truth and are
-    # preserved even when emptied by dedup.
-    protected_capabilities: set = {
-        cap
-        for capability_list in manual_command_to_capability.values()
-        for cap in capability_list
-    }
-    _cleanup_empty_capabilities(result, protected_capabilities)
+    # Step 2.7 (NEW) - cleanup empty capabilities (including general_configurations)
+    _cleanup_empty_capabilities(result)
 
     return result
 
