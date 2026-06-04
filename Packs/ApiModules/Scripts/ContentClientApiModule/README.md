@@ -767,6 +767,11 @@ print(f"General errors: {metrics.general_error}")
 ```
 
 ### Diagnostic Mode
+> **Warning - `diagnostic_mode` is for debugging only**
+>
+> Intended for short, supervised debugging sessions only - a single fetch cycle or command run, on verbose log levels.
+>
+> Request traces retain full response bodies in memory, so leaving `diagnostic_mode` enabled on high-volume or long-running integrations may exhaust container memory.
 
 Enable detailed request tracing for troubleshooting:
 
