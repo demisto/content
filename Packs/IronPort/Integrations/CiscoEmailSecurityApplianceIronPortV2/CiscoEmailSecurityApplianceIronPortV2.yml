@@ -119,7 +119,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.3982393
+  dockerimage: demisto/python3:3.12.13.9059085
   isfetch: true
   commands:
     - name: cisco-esa-spam-quarantine-message-search
@@ -1750,6 +1750,125 @@ script:
         - contextPath: CiscoESA.MessageRemediation.message_details.msg_read
           description: Indicates whether the message was read (0 = unread, 1 = read, or N/A).
           type: String
+    - name: cisco-esa-message-filter-list
+      description: Retrieve all message filters or a specific message filter by name. Message filters are evaluated early in the Work Queue, before security engines. This command manages Message Filters only. For more granular, per-policy control over message handling, use Content Filters in the Cisco AsyncOS web UI.
+      arguments:
+        - name: mode
+          description: The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: filter_name
+          description: The name of a specific message filter to retrieve. When omitted, all filters in scope are returned.
+        - name: active
+          description: Whether to return only active or only inactive filters. Ignored when `filter_name` is supplied.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: limit
+          description: The maximum number of filters to return. Ignored when `filter_name` is supplied.
+          defaultValue: "50"
+      outputs:
+        - contextPath: CiscoESA.MessageFilter.name
+          description: The filter name.
+          type: String
+        - contextPath: CiscoESA.MessageFilter.active
+          description: Whether the filter is active (`"true"` / `"false"`).
+          type: String
+        - contextPath: CiscoESA.MessageFilter.valid
+          description: Whether Cisco AsyncOS parsed the filter as valid (`"true"` / `"false"`).
+          type: String
+        - contextPath: CiscoESA.MessageFilter.order
+          description: The 1-based position in the execution order.
+          type: Number
+        - contextPath: CiscoESA.MessageFilter.rules_and_actions
+          description: The full Cisco filter DSL body.
+          type: String
+        - contextPath: CiscoESA.MessageFilter.invalid_reason
+          description: The reason the filter is marked as invalid. Present only when `valid` is `"false"`.
+          type: String
+    - name: cisco-esa-message-filter-create
+      description: 'Create a new message filter. If the appliance accepts the filter but flags it as invalid (e.g. unknown listener/interface), the command returns success and surfaces the appliance warning in the human-readable output. For details on Cisco''s filter rule language, see "Using Message Filters to Enforce Email Policies" in the Cisco Secure Email Gateway 16.0 Admin Guide: https://www.cisco.com/c/en/us/td/docs/security/esa/esa16-0/user_guide/b_ESA_Admin_Guide_16-0/b_ESA_Admin_Guide_12_1_chapter_01000.html. This command manages Message Filters only. For more granular, per-policy control over message handling, use Content Filters in the Cisco AsyncOS web UI.'
+      arguments:
+        - name: mode
+          description: The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: filter_name
+          description: The name for the new filter.
+          required: true
+        - name: rules_and_actions
+          description: 'The full Cisco filter DSL: `if (<conditions>) { <actions>; }`. See the Cisco AsyncOS for Email Security Admin Guide for the DSL reference.'
+          required: true
+        - name: active
+          description: Whether the filter should be active on creation.
+          defaultValue: "true"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: order
+          description: The 1-based position in the filter list. If omitted, or if the value exceeds the current number of filters, the filter is appended to the end of the list.
+    - name: cisco-esa-message-filter-update
+      description: Update an existing message filter. Only the supplied fields (`active`, `order`) are sent — at least one must be provided. This command manages Message Filters only. For more granular, per-policy control over message handling, use Content Filters in the Cisco AsyncOS web UI.
+      arguments:
+        - name: mode
+          description: The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: filter_name
+          description: The name of the filter to update.
+          required: true
+        - name: active
+          description: Whether to enable or disable the filter.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: order
+          description: The new 1-based position in the filter list. Must be within the range of existing filter positions (1 to the current filter count).
+    - name: cisco-esa-message-filter-delete
+      description: Delete a message filter. This command manages Message Filters only. For more granular, per-policy control over message handling, use Content Filters in the Cisco AsyncOS web UI.
+      arguments:
+        - name: mode
+          description: The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: filter_name
+          description: The name of the filter to delete.
+          required: true
 fromversion: 6.5.0
 tests:
   - CiscoESA_dictionary_commands_tpb
