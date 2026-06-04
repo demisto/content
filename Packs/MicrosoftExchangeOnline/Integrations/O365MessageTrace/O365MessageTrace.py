@@ -1,11 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
-from ContentClientApiModule import *  # noqa: F401,F403
+from MicrosoftApiModule import *  # noqa: E402
 
-import time
 import urllib3
-import httpx
 from datetime import datetime, timedelta, UTC
 from typing import Any
 
@@ -20,137 +18,71 @@ class Config:
     VENDOR = "microsoft"
     PRODUCT = "o365_message_trace"
 
-    DEFAULT_BASE_URL = "https://graph.microsoft.com"
+    APP_NAME = "o365-message-trace"
+    GRAPH_RESOURCE = "https://graph.microsoft.com"
     GRAPH_SCOPE = "https://graph.microsoft.com/.default"
-    LOGIN_URL = "https://login.microsoftonline.com"
-    MANAGED_IDENTITIES_TOKEN_URL = "http://169.254.169.254/metadata/identity/oauth2/token"
-    MANAGED_IDENTITIES_API_VERSION = "2018-02-01"
 
-    MESSAGE_TRACES_PATH = "/v1.0/admin/exchange/tracing/messageTraces"
+    MESSAGE_TRACES_PATH = "v1.0/admin/exchange/tracing/messageTraces"
 
     DATE_FORMAT_FILTER = "%Y-%m-%dT%H:%M:%SZ"
 
     DEFAULT_MAX_EVENTS = 50000
     DEFAULT_PAGE_SIZE = 1000  # API default/maximum per page
     DEFAULT_FIRST_FETCH_MINUTES = 10
-    TOKEN_CONTEXT_NAMESPACE = "o365_message_trace"
-
-
-# ============================================================================
-# Auth handler for Azure Managed Identity (extends ContentClientApiModule)
-# ============================================================================
-class AzureManagedIdentityAuthHandler(AuthHandler):  # type: ignore[misc] # AuthHandler comes from ContentClientApiModule
-    """Auth handler that fetches a token from the Azure Instance Metadata Service.
-
-    Used when running inside an Azure VM/Function/AKS with a managed identity
-    assigned. Tokens are cached and refreshed 60 seconds before expiry, mirroring
-    the behavior of :class:`OAuth2ClientCredentialsHandler` from
-    ``ContentClientApiModule``.
-    """
-
-    def __init__(self, resource: str = Config.DEFAULT_BASE_URL, client_id: str | None = None):
-        super().__init__()
-        self.resource = resource
-        self.client_id = client_id  # optional - for user-assigned managed identities
-        self.name = "azure_managed_identity"
-        self._access_token: str | None = None
-        self._expires_at: float = 0
-
-    async def on_request(self, client: "ContentClient", request: httpx.Request) -> None:  # type: ignore[name-defined]
-        if self._should_refresh():
-            await self._refresh_token(client)
-        if self._access_token:
-            request.headers["Authorization"] = f"Bearer {self._access_token}"
-
-    async def on_auth_failure(self, client: "ContentClient", response: httpx.Response) -> bool:  # type: ignore[name-defined]
-        await self._refresh_token(client)
-        return True
-
-    def _should_refresh(self) -> bool:
-        return not self._access_token or time.monotonic() >= self._expires_at - 60
-
-    async def _refresh_token(self, client: "ContentClient") -> None:  # type: ignore[name-defined]
-        params: dict[str, str] = {
-            "api-version": Config.MANAGED_IDENTITIES_API_VERSION,
-            "resource": self.resource,
-        }
-        if self.client_id:
-            params["client_id"] = self.client_id
-
-        async with httpx.AsyncClient(verify=client._verify, timeout=httpx.Timeout(30.0)) as imds_client:
-            try:
-                response = await imds_client.get(
-                    Config.MANAGED_IDENTITIES_TOKEN_URL,
-                    params=params,
-                    headers={"Metadata": "True"},
-                )
-                response.raise_for_status()
-                token_data = response.json()
-            except Exception as e:
-                raise ContentClientAuthenticationError(f"Managed Identity token fetch failed: {e}") from e
-
-        access_token = token_data.get("access_token")
-        if not access_token:
-            raise ContentClientAuthenticationError(f"No access_token in IMDS response: {token_data}")
-
-        self._access_token = access_token
-        self._expires_at = time.monotonic() + int(token_data.get("expires_in", 3600))
-        demisto.debug(f"[Auth/IMDS] Token refreshed, valid for {token_data.get('expires_in')}s")
 
 
 # ============================================================================
 # Client
 # ============================================================================
-class Client(ContentClient):  # type: ignore[misc] # ContentClient comes from ContentClientApiModule
+class Client:
     """Microsoft Graph client for O365 Message Trace events.
 
-    Extends :class:`ContentClient` from ``ContentClientApiModule`` and selects
-    between OAuth2 client-credentials and Azure Managed Identity auth based on
-    integration parameters.
+    Wraps :class:`MicrosoftClient` from ``MicrosoftApiModule`` so that the
+    integration supports all standard Microsoft authentication methods:
+    client credentials, certificate (thumbprint + private key),
+    authorization-code (self-deployed) and Azure Managed Identities.
     """
 
     def __init__(
         self,
-        base_url: str,
         tenant_id: str,
-        client_id: str,
-        client_secret: str,
-        use_managed_identity: bool,
+        auth_id: str,
+        enc_key: str | None,
+        app_name: str,
+        base_url: str,
         verify: bool,
         proxy: bool,
+        certificate_thumbprint: str | None = None,
+        private_key: str | None = None,
+        auth_code: str | None = None,
+        redirect_uri: str | None = None,
+        managed_identities_client_id: str | None = None,
+        azure_cloud: AzureCloud = AZURE_WORLDWIDE_CLOUD,
     ):
-        auth_handler: AuthHandler  # type: ignore[name-defined]
-        if use_managed_identity:
-            demisto.debug("[Auth] Using Azure Managed Identity")
-            auth_handler = AzureManagedIdentityAuthHandler(
-                resource=base_url,
-                client_id=client_id or None,
-            )
-        else:
-            if not (tenant_id and client_id and client_secret):
-                raise DemistoException("Tenant ID, Client ID and Client Secret are required when not using Azure Managed Identity.")
-            demisto.debug("[Auth] Using OAuth2 client credentials")
-            token_url = f"{Config.LOGIN_URL}/{tenant_id}/oauth2/v2.0/token"
-            auth_handler = OAuth2ClientCredentialsHandler(
-                token_url=token_url,
-                client_id=client_id,
-                client_secret=client_secret,
-                scope=Config.GRAPH_SCOPE,
-                context_store=ContentClientContextStore(namespace=Config.TOKEN_CONTEXT_NAMESPACE),
-            )
-
-        retry_policy = RetryPolicy(  # type: ignore[call-arg]
-            max_attempts=4,
-            retryable_status_codes=(429, 500, 502, 503, 504),
-        )
-
-        super().__init__(
+        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
+        demisto.debug(f"[Auth] Using grant type: {grant_type}")
+        self.ms_client = MicrosoftClient(
+            tenant_id=tenant_id,
+            auth_id=auth_id,
+            enc_key=enc_key,
+            app_name=app_name,
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            auth_handler=auth_handler,
-            retry_policy=retry_policy,
-            client_name="O365MessageTrace",
+            self_deployed=True,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
+            auth_code=auth_code,
+            redirect_uri=redirect_uri or "https://localhost/myapp",
+            grant_type=grant_type,
+            scope=Config.GRAPH_SCOPE,
+            azure_cloud=azure_cloud,
+            azure_ad_endpoint=azure_cloud.endpoints.active_directory,
+            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, f"/{tenant_id}/oauth2/v2.0/token"),
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.graph,
+            command_prefix=Config.APP_NAME,
+            retry_on_rate_limit=True,
             timeout=60,
         )
 
@@ -172,14 +104,14 @@ class Client(ContentClient):  # type: ignore[misc] # ContentClient comes from Co
         """
         if next_link:
             demisto.debug(f"[API] Following @odata.nextLink: {next_link}")
-            return self._http_request(method="GET", full_url=next_link)
+            return self.ms_client.http_request(method="GET", full_url=next_link, url_suffix="",ok_codes=[200])
 
         params = {
             "$filter": f"receivedDateTime ge {start_date} and receivedDateTime le {end_date}",
             "$top": page_size,
         }
         demisto.debug(f"[API] First page request | params={params}")
-        return self._http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params)
+        return self.ms_client.http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params,ok_codes=[200])
 
 
 # ============================================================================
@@ -304,7 +236,7 @@ def test_module(client: Client) -> str:
     except Exception as e:
         error_message = str(e)
         if "401" in error_message or "403" in error_message:
-            return f"Authorization Error: verify Tenant ID, Client ID and Client Secret. Details: {error_message}"
+            return f"Authorization Error: verify Tenant ID, Client ID and authentication credentials. Details: {error_message}"
         raise
 
 
@@ -328,6 +260,7 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
         "O365 Message Trace Events",
         events,
         removeNull=True,
+        headerTransform=pascalToSpace,
         headers=["id", "receivedDateTime", "senderAddress", "recipientAddress", "subject", "status"],
     )
     return CommandResults(
@@ -360,8 +293,6 @@ def fetch_events(client: Client, max_events: int) -> None:
     # Deduplicate against previous run's high-water-mark IDs
     new_events = deduplicate_events(events, set(seen_ids))
     demisto.debug(f"[Fetch] {len(new_events)} new events after dedup")
-
-
 
     if new_events:
         add_time_field(new_events)
@@ -400,13 +331,13 @@ def fetch_events(client: Client, max_events: int) -> None:
 # ============================================================================
 # Main
 # ============================================================================
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
     demisto.debug(f"[Main] Command={command}")
 
-    base_url = (params.get("url") or Config.DEFAULT_BASE_URL).rstrip("/")
+    # ----- Tenant / Auth ID / Secret (support both creds objects and legacy plain params) -----
     tenant_id = params.get("tenant_id", "")
 
     credentials_client_id = params.get("credentials_client_id") or {}
@@ -421,25 +352,59 @@ def main() -> None:
     else:
         client_secret = params.get("client_secret", "")
 
-    use_managed_identity = argToBoolean(params.get("use_managed_identity", False))
+    # ----- Certificate auth -----
+    creds_certificate = params.get("creds_certificate") or {}
+    certificate_thumbprint = (
+        creds_certificate.get("identifier") if isinstance(creds_certificate, dict) else None
+    ) or params.get("certificate_thumbprint")
+    private_key_raw = (
+        creds_certificate.get("password") if isinstance(creds_certificate, dict) else None
+    ) or params.get("private_key")
+    private_key = replace_spaces_in_credential(private_key_raw) if private_key_raw else None
+
+    # ----- Self-deployed authorization-code flow -----
+    auth_code_param = params.get("auth_code") or {}
+    if isinstance(auth_code_param, dict):
+        auth_code = auth_code_param.get("password")
+    else:
+        auth_code = auth_code_param
+    redirect_uri = params.get("redirect_uri")
+
+    # ----- Managed Identities -----
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+
+    # ----- Common settings -----
+    azure_cloud = get_azure_cloud(params, "O365MessageTrace")
+    base_url = (params.get("url") or urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, "/")).rstrip("/") + "/"
     verify = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     max_events = arg_to_number(params.get("max_fetch")) or Config.DEFAULT_MAX_EVENTS
 
-
-
-
-
+    # ----- Validation -----
+    if not managed_identities_client_id:
+        if not tenant_id or not client_id:
+            raise DemistoException("Tenant ID and Client ID (Application ID) are required.")
+        if not client_secret and not (certificate_thumbprint and private_key) and not auth_code:
+            raise DemistoException(
+                "An authentication credential must be provided: Client Secret, "
+                "Certificate Thumbprint + Private Key, or Authorization Code."
+            )
 
     try:
         client = Client(
-            base_url=base_url,
             tenant_id=tenant_id,
-            client_id=client_id,
-            client_secret=client_secret,
-            use_managed_identity=use_managed_identity,
+            auth_id=client_id,
+            enc_key=client_secret or None,
+            app_name=Config.APP_NAME,
+            base_url=base_url,
             verify=verify,
             proxy=proxy,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
+            auth_code=auth_code,
+            redirect_uri=redirect_uri,
+            managed_identities_client_id=managed_identities_client_id,
+            azure_cloud=azure_cloud,
         )
 
         if command == "test-module":
@@ -448,6 +413,9 @@ def main() -> None:
             return_results(get_events_command(client, args))
         elif command == "fetch-events":
             fetch_events(client, max_events=max_events)
+        elif demisto.command() == "o365-message-trace-generate-login-url":
+            return_results(generate_login_url(client.ms_client))
+
         else:
             raise NotImplementedError(f"Command '{command}' is not implemented.")
     except Exception as e:

@@ -15,30 +15,71 @@ configuration:
   additionalinfo: Microsoft Graph base URL.
 - name: tenant_id
   display: Tenant ID
-  required: true
+  required: false
   type: 0
   section: Connect
   additionalinfo: Customer Azure AD tenant ID (GUID).
 - name: credentials_client_id
   displaypassword: Client ID
   hiddenusername: true
-  required: true
+  required: false
   type: 9
   section: Connect
   additionalinfo: The Application (Client) ID registered in Azure AD.
 - name: credentials
   displaypassword: Client Secret
   hiddenusername: true
-  required: true
+  required: false
   type: 9
   section: Connect
   additionalinfo: The client secret for the Azure AD application.
-- name: use_managed_identity
-  display: When running on an Azure VM with assigned identity.
+- name: creds_certificate
+  display: Certificate Thumbprint
+  displaypassword: Private Key
+  type: 9
+  section: Connect
   required: false
+  additionalinfo: Used for certificate authentication, as it appears in the "Certificates & secrets" page of the app. The private key of the registered certificate.
+- name: certificate_thumbprint
+  display: Certificate Thumbprint
+  type: 4
+  section: Connect
+  hidden: true
+  required: false
+  additionalinfo: Used for certificate authentication, as it appears in the "Certificates & secrets" page of the app.
+- name: private_key
+  display: Private Key
+  type: 14
+  section: Connect
+  hidden: true
+  required: false
+  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+- name: redirect_uri
+  display: Application redirect URI (for self-deployed mode)
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: The redirect URI configured in the Azure AD application. Required for the self-deployed authorization-code flow.
+- name: auth_code
+  displaypassword: Authorization code
+  hiddenusername: true
+  type: 9
+  section: Connect
+  required: false
+  additionalinfo: The authorization code received from the Azure portal during the self-deployed authorization-code flow.
+- name: use_managed_identities
+  display: Use Azure Managed Identities
   type: 8
   section: Connect
-  additionalinfo: Use Azure Managed Identity for authentication instead of client secret.
+  required: false
+  additionalinfo: When running on an Azure VM with assigned identity.
+- name: managed_identities_client_id
+  displaypassword: Azure Managed Identities Client ID
+  hiddenusername: true
+  type: 9
+  section: Connect
+  required: false
+  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on an Azure VM.
 - name: max_fetch
   display: Maximum number of events per fetch
   required: false
@@ -75,6 +116,10 @@ display: O365 Message Trace
 name: O365 Message Trace
 script:
   commands:
+  - arguments: []
+    description: Generate the login URL used for authorization code flow.
+    execution: false
+    name: o365-message-trace-generate-login-url
   - name: o365-message-trace-get-events
     description: Manually retrieve Message Trace events. Intended for development and debugging. Use with caution as it may cause event duplication when push to XSIAM is enabled.
     arguments:
@@ -119,7 +164,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:0.125.0.7178097
+  dockerimage: demisto/crypto:1.0.0.8187750
 fromversion: 8.4.0
 marketplaces:
 - marketplacev2
