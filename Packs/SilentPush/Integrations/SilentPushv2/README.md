@@ -107,7 +107,7 @@ add indicators to the feed
 | SilentPush.AddIndicators.SilentPush.Feed.invalid_indicators | Unknown | List of indicators that were considered invalid and not added to the feed. | 
 
 #### Command example
-```!silentpush-add-indicators feed_uuid=c20664f4-6516-40d9-bd4a-e089ef67684e indicators=silenpush.com,173.245.58.236```
+```!silentpush-add-indicators feed_uuid=c20664f4-6516-40d9-bd4a-e089ef67684e indicators=example.com,198.51.100.1```
 #### Human Readable Output
 
 
@@ -138,7 +138,7 @@ updates tags to the indicators
 | SilentPush.AddIndicatorTags.SilentPush.Feed.tags | String | The tags assigned to the indicator. | 
 
 #### Command example
-```!silentpush-add-indicator-tags feed_uuid=c20664f4-6516-40d9-bd4a-e089ef67684e indicator_name=silenpush.com tags=Tag3,Tag4```
+```!silentpush-add-indicator-tags feed_uuid=c20664f4-6516-40d9-bd4a-e089ef67684e indicator_name=example.com tags=Tag3,Tag4```
 #### Human Readable Output
 
 
@@ -325,7 +325,7 @@ enriches IPs or Domains in a bulk
 | SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_reputation_score | Number | A numerical risk score \(typically 0-100, with higher values indicating higher risk\). | 
 
 #### Command example
-```!silentpush-bulk-enrich resource=ipv4 value=173.245.58.236 explain=1 scan_data=1```
+```!silentpush-bulk-enrich resource=ipv4 value=198.51.100.1 explain=1 scan_data=1```
 #### Human Readable Output
 
 
@@ -357,7 +357,7 @@ queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, A
 | SilentPush.DensityLookup.SilentPush.Lookup.nssrv | String | The name server \(NS\) for the query result. | 
 
 #### Command example
-```!silentpush-density-lookup qtype=nssrv query=silenpush.com```
+```!silentpush-density-lookup qtype=nssrv query=example.com```
 #### Human Readable Output
 
 
@@ -412,7 +412,7 @@ performs a forward PADNS lookup using various filtering parameters.
 | SilentPush.PADNSLookup.SilentPush.PADNS.type | String | The type of the DNS record \(e.g., NS\). | 
 
 #### Command example
-```!silentpush-forward-padns-lookup qtype=a query=silentpush.com```
+```!silentpush-forward-padns-lookup qtype=a query=example.com```
 #### Human Readable Output
 
 
@@ -441,7 +441,7 @@ retrieves Autonomous System Numbers (ASNs) associated with a domain.
 | SilentPush.DomainASNs.SilentPush.ASN.asns | Unknown | Dictionary of Autonomous System Numbers \(ASNs\) associated with the domain. | 
 
 #### Command example
-```!silentpush-get-asns-for-domain domain=silentpush.com```
+```!silentpush-get-asns-for-domain domain=example.com```
 #### Human Readable Output
 
 
@@ -535,7 +535,7 @@ get certificate data collected from domain scanning.
 | SilentPush.Certificate.SilentPush.Enrichment.job_status | String | Status of the job. | 
 
 #### Command example
-```!silentpush-get-domain-certificates domain=silentpush.com```
+```!silentpush-get-domain-certificates domain=example.com```
 #### Human Readable Output
 
 
@@ -755,7 +755,7 @@ retrieves the reputation information for an IPv4.
 | SilentPush.IPv4Reputation.SilentPush.Reputation.names_num_listed | Number | The number of domain names linked to this IP that are flagged or listed in security threat databases. | 
 
 #### Command example
-```!silentpush-get-ipv4-reputation ipv4=173.245.58.236```
+```!silentpush-get-ipv4-reputation ipv4=198.51.100.1```
 #### Human Readable Output
 
 
@@ -861,7 +861,7 @@ Get IP diversity (number of IP addresses pointed to over time) for the query to 
 | SilentPush.IPdiversityLookup.SilentPush.Diversity.timeline | Unknown | timeline of \{ip, first_seen, last_seen\}. | 
 
 #### Command example
-```!silentpush-ip-diversity-lookup qtype=a query=silenpush.com```
+```!silentpush-ip-diversity-lookup qtype=a query=example.com```
 #### Human Readable Output
 
 
@@ -969,7 +969,7 @@ get domain information along with Silent Push risk score and live whois informat
 | SilentPush.Domain.SilentPush.Enrichment.sp_risk_score_explain | Unknown | The age of the domain in days. | 
 
 #### Command example
-```!silentpush-list-domain-information domains=silentpush.com,docs.silentpush.com```
+```!silentpush-list-domain-information domains=example.com,docs.example.com```
 #### Human Readable Output
 
 
@@ -1035,7 +1035,7 @@ get IP4 information along with Silent Push risk score
 | SilentPush.IP4.SilentPush.Enrichment.sp_risk_score_explain | Unknown | The age of the domain in days. | 
 
 #### Command example
-```!silentpush-list-ip4-information ips=173.245.58.236,173.245.58.237```
+```!silentpush-list-ip4-information ips=198.51.100.1,173.245.58.237```
 #### Human Readable Output
 
 
@@ -1099,12 +1099,6 @@ get IP6 information along with Silent Push risk score
 | SilentPush.IP6.SilentPush.Enrichment.listing_score_feeds_explain | Unknown | The age of the domain in days. | 
 | SilentPush.IP6.SilentPush.Enrichment.sp_risk_score | Number | The age of the domain in days. | 
 | SilentPush.IP6.SilentPush.Enrichment.sp_risk_score_explain | Unknown | The age of the domain in days. | 
-
-#### Command example
-```!silentpush-list-ip6-information ips=2606:4700:4700::1111,2a02:4780:37:b262:f807:71a8:e3ee:9b64```
-#### Human Readable Output
-
-
 
 ### silentpush-live-url-scan
 
@@ -1224,7 +1218,7 @@ scan a URL to retrieve hosting metadata.
 | SilentPush.URLScan.SilentPush.Web.js_ssdeep | Unknown | List of ssdeep fuzzy hashes of JavaScript files. | 
 
 #### Command example
-```!silentpush-live-url-scan url=https://www.silentpush.com region=EU proxy=mu platform=Mobile```
+```!silentpush-live-url-scan url=https://www.example.com region=EU platform=Mobile```
 #### Human Readable Output
 
 
@@ -1286,7 +1280,7 @@ searches passive DNS data for records matching both query and answer.
 | SilentPush.MultiConditionalPADNSLookup.SilentPush.PADNS.type | String | The type of the DNS record \(e.g., NS\). | 
 
 #### Command example
-```!silentpush-multi-conditional-padns-lookup qtype=ns query=silenpush.com answer=a.dns-servers.net.ru last_seen_after=2021-07-01```
+```!silentpush-multi-conditional-padns-lookup qtype=ns query=example.com answer=a.dns-servers.net.ru last_seen_after=2021-07-01```
 #### Human Readable Output
 
 
@@ -1309,12 +1303,6 @@ retry another command which returned a Job ID
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!silentpush-retry-job job_id=c20664f4-6516-40d9-bd4a-e089ef67684e```
-#### Human Readable Output
-
-
-
 ### silentpush-reverse-padns-lookup
 
 ***
@@ -1365,7 +1353,7 @@ retrieve reverse Passive DNS data for specific DNS record types.
 | SilentPush.ReversePADNSLookup.SilentPush.PADNS.type | String | The type of the DNS record \(e.g., NS\). | 
 
 #### Command example
-```!silentpush-reverse-padns-lookup qtype=a query=173.245.58.236```
+```!silentpush-reverse-padns-lookup qtype=a query=198.51.100.1```
 #### Human Readable Output
 
 
@@ -1397,7 +1385,7 @@ runs the threat check on the specified
 | SilentPush.RunThreatCheck.SilentPush.Feed.query | String | The original value that was checked. | 
 
 #### Command example
-```!silentpush-run-threat-check data=iofa query=173.245.58.236 type=ip user_identifier=c20664f4-6516-40d9-bd4a-e089ef67684e```
+```!silentpush-run-threat-check data=iofa query=198.51.100.1 type=ip user_identifier=c20664f4-6516-40d9-bd4a-e089ef67684e```
 #### Human Readable Output
 
 
@@ -1560,7 +1548,7 @@ search Silent Push scan data repositories using SPQL queries.
 | SilentPush.ScanData.SilentPush.Web.url | String | The URL scanned. | 
 
 #### Command example
-```!silentpush-search-scan-data query=domain=silentpush.com fields=scan_date,domain,ip,user-agent sort=scan_date/desc,domain/asc limit=10```
+```!silentpush-search-scan-data query=domain=example.com fields=scan_date,domain,ip,user-agent sort=scan_date/desc,domain/asc limit=10```
 #### Human Readable Output
 
 
@@ -1602,7 +1590,7 @@ get Whois information
 | SilentPush.whois.SilentPush.Whois.zipcode | String | Zip code | 
 
 #### Command example
-```!silentpush-whois domain=silenpush.com```
+```!silentpush-whois domain=example.com```
 #### Human Readable Output
 
 
