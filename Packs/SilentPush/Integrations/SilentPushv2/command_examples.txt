@@ -11,7 +11,7 @@
 !silentpush-list-domain-information domains=example.com,docs.example.com
 !silentpush-list-ip4-information ips=198.51.100.1,198.51.100.2
 !silentpush-list-ip6-information ips=2606:4700:4700::1111,2a02:4780:37:b262:f807:71a8:e3ee:9b64
-!silentpush-search-domains name_server=ns1.example.com min_asn_diversity=2 limit=3 timeline=1
+!silentpush-search-domains nsname=ns1.example.com asn_diversity_min=2 limit=3 timeline=1
 !silentpush-get-asns-for-domain domain=example.com
 !silentpush-get-domain-certificates domain=example.com
 !silentpush-search-scan-data query=domain=example.com fields=scan_date,domain,ip,user-agent sort=scan_date/desc,domain/asc limit=10

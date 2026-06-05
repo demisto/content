@@ -928,6 +928,12 @@ Search for IP Diversity patterns, with optional name server and domain name patt
 | SilentPush.IPDiversityPatterns.SilentPush.Diversity.ip_diversity_groups | Number | The number of unique IP groups associated with the domain. | 
 | SilentPush.IPDiversityPatterns.SilentPush.Diversity.timeline | Unknown | timeline of \{ip, first_seen, last_seen\}. | 
 
+#### Command example
+```!silentpush-ip-diversity-patterns nsname=ns1.example.com asn_diversity_min=2```
+#### Human Readable Output
+
+
+
 ### silentpush-list-domain-information
 
 ***
@@ -1093,6 +1099,12 @@ get IP6 information along with Silent Push risk score
 | SilentPush.IP6.SilentPush.Enrichment.listing_score_feeds_explain | Unknown | The age of the domain in days. | 
 | SilentPush.IP6.SilentPush.Enrichment.sp_risk_score | Number | The age of the domain in days. | 
 | SilentPush.IP6.SilentPush.Enrichment.sp_risk_score_explain | Unknown | The age of the domain in days. | 
+
+#### Command example
+```!silentpush-list-ip6-information ips=2606:4700:4700::1111,2a02:4780:37:b262:f807:71a8:e3ee:9b64```
+#### Human Readable Output
+
+
 
 ### silentpush-live-url-scan
 
@@ -1451,6 +1463,12 @@ search for domains with optional filters.
 | SilentPush.IPDiversityPatterns.SilentPush.Diversity.ip_diversity_all | Number | The total number of unique IPs associated with the domain. | 
 | SilentPush.IPDiversityPatterns.SilentPush.Diversity.ip_diversity_groups | Number | The number of unique IP groups associated with the domain. | 
 | SilentPush.IPDiversityPatterns.SilentPush.Diversity.timeline | Unknown | timeline of \{ip, first_seen, last_seen\}. | 
+
+#### Command example
+```!silentpush-search-domains nsname=ns1.example.com asn_diversity_min=2 limit=3 timeline=1```
+#### Human Readable Output
+
+
 
 ### silentpush-search-scan-data
 
