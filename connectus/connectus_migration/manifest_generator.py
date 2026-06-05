@@ -1018,41 +1018,17 @@ def register_renamed_field_serializer_entry(
     Thin wrapper around :func:`register_serializer_entry` so the intent
     "this is a rename bridge" reads clearly at call sites — and so the
     rename-bridge pattern lives in one named function instead of being
-    open-coded everywhere. The ``adjust_checkbox_trigger``,
-    ``dedup_field_id_and_register``, and ``add_secret_capability``
-    sub-cap paths all need this.
+    open-coded everywhere. The ``dedup_field_id_and_register`` and
+    ``add_secret_capability`` sub-cap paths all need this.
     """
     register_serializer_entry(
         handler_dir, new_id=renamed_id, original_id=original_id
     )
 
 
-def adjust_checkbox_trigger(capability_id: str, param_id: str) -> None:
-    """Hook for the triggers.yaml generator (not yet implemented).
-
-    Intended future behavior: emit a trigger of the form
-
-        - conditions:
-            type: capability_condition
-            id: <capability_id>
-            behavior: selected
-            operator: eq
-            value: true
-          effects:
-            - id: <param_id>
-              action:
-                hidden: false
-                required: true
-
-    so the (otherwise hidden) toggle ``param_id`` is revealed and
-    required when the user selects the capability ``capability_id``.
-    For now this is a no-op stub.
-    """
-    # TODO: wire to triggers.yaml emission once the triggers builder is
-    # implemented. Schema reference at
-    # ../../../unified-connectors-content/schema/triggers.schema.json
-    # (capability_condition leaf + EffectAction hidden/required).
-    pass
+# NOTE: adjust_checkbox_trigger was removed per user decision — triggers
+# emission is deferred. The three capability builders (add_secret_capability,
+# add_log_collection_capability, add_assets_capability) no longer call it.
 
 
 def _resolve_title_from_yml(
@@ -1111,9 +1087,6 @@ def add_secret_capability(
          renamed connector id back to the original yml name
          ``isFetchCredentials`` (D2 — uses the generic
          :func:`register_renamed_field_serializer_entry`).
-      3. Calls :func:`adjust_checkbox_trigger` with the chosen
-         ``capability_id`` and ``param_id`` — currently a no-op stub.
-
     Title resolution (D3): if ``yml_params_by_name`` carries an entry
     for ``isFetchCredentials`` and that entry has a non-empty
     ``display``, use it. Otherwise fall back to the constant
@@ -1150,7 +1123,7 @@ def add_secret_capability(
     field = build_synthetic_hidden_toggle(
         field_id=field_id,
         title=title,
-        default_value=False,
+        default_value=True,
         required=False,
     )
 
@@ -1171,9 +1144,6 @@ def add_secret_capability(
             original_id=ISFETCHCREDENTIALS_PARAM_NAME,
             renamed_id=field_id,
         )
-
-    # --- §6. Trigger hook (D1+D3 combined) ------------------------------
-    adjust_checkbox_trigger(capability_id=capability_id, param_id=field_id)
 
     return {
         "capability_id": capability_id,
@@ -1220,7 +1190,7 @@ def _build_isfetchevents_field(
         return build_synthetic_hidden_toggle(
             field_id=field_id,
             title=title,
-            default_value=False,
+            default_value=True,
             required=False,
         )
     field = _map_type_8(yml_param)
@@ -1229,57 +1199,146 @@ def _build_isfetchevents_field(
     return field
 
 
+# ---------------------------------------------------------------------------
+# Duration field type (per plans/duration-field-type.md)
+# ---------------------------------------------------------------------------
+# Fetch-interval fields render as a multi-unit ``duration`` picker rather
+# than a bare numeric input. The author declares which unit boxes render
+# via ``options.units`` (ordered, render left-to-right) and an optional
+# per-unit ``options.default_value`` object (omitted units default to 0).
+#
+# XSOAR expresses fetch-interval defaults as a single integer count of
+# MINUTES (e.g. ``"1"``, ``"720"``, ``"1440"``). We render days / hours /
+# minutes boxes and decompose the minute count across them.
+_MINUTES_PER_HOUR = 60
+_MINUTES_PER_DAY = 24 * _MINUTES_PER_HOUR
+
+# Render order of the duration boxes (left-to-right). Closed enum per the
+# field-options schema (``days|hours|minutes|seconds``); seconds is not
+# meaningful for minute-granularity fetch intervals so it is not rendered.
+DURATION_UNITS: list[str] = ["days", "hours", "minutes"]
+
+
+def _minutes_to_duration_default(total_minutes: int) -> dict[str, int]:
+    """Decompose a minute count into a ``duration`` per-unit default object.
+
+    The XSOAR fetch-interval default is a single integer in MINUTES. This
+    helper splits it across the rendered duration boxes (days / hours /
+    minutes), emitting ONLY the non-zero units (omitted units default to
+    ``0`` per the duration field contract — guide
+    ``plans/duration-field-type.md`` §2).
+
+    A non-positive count (``0`` or negative — a meaningless interval) is
+    coerced to the minimum sensible value of **1 minute**, matching the
+    "no default → 1 minute" rule applied by the callers.
+
+    Examples:
+        _minutes_to_duration_default(5)    → {"minutes": 5}
+        _minutes_to_duration_default(60)   → {"hours": 1}
+        _minutes_to_duration_default(720)  → {"hours": 12}
+        _minutes_to_duration_default(1440) → {"days": 1}
+        _minutes_to_duration_default(1500) → {"days": 1, "hours": 1}
+        _minutes_to_duration_default(0)    → {"minutes": 1}
+    """
+    if total_minutes <= 0:
+        return {"minutes": 1}
+
+    days, remainder = divmod(total_minutes, _MINUTES_PER_DAY)
+    hours, minutes = divmod(remainder, _MINUTES_PER_HOUR)
+
+    default: dict[str, int] = {}
+    if days:
+        default["days"] = days
+    if hours:
+        default["hours"] = hours
+    if minutes:
+        default["minutes"] = minutes
+    return default
+
+
+def _coerce_interval_minutes(raw: Any) -> int | None:
+    """Parse a raw XSOAR ``defaultvalue`` into an integer minute count.
+
+    Returns ``None`` when the value is missing or cannot be parsed as an
+    integer (so callers fall back to the "1 minute" rule). XSOAR stores
+    the value as a string like ``"720"``, but tolerate ints/floats too.
+    """
+    if raw is None:
+        return None
+    try:
+        return int(str(raw).strip())
+    except (TypeError, ValueError):
+        return None
+
+
 def _build_numeric_fetch_interval_field(
     yml_param: dict | None,
     field_id: str,
     title: str,
     fallback_default: str,
 ) -> dict:
-    """Generic numeric "fetch interval"-style field builder.
+    """Generic "fetch interval" field builder → connectus ``duration``.
 
-    Shape (matches :func:`_map_type_19`'s output for XSOAR type-19
-    numeric params): connectus ``input`` field with
-    ``options.is_number_input: true``. The connectus schema has no
-    dedicated ``number`` type — numeric inputs are ``input`` with the
-    ``is_number_input`` flag set (a known wart documented in
-    ``unified-connectors-content/plans/deferred-validation-gaps.md``).
+    Shape (per ``plans/duration-field-type.md``): a connectus
+    ``duration`` field with ``options.units`` = :data:`DURATION_UNITS`
+    (days / hours / minutes boxes) and ``options.default_value`` as a
+    per-unit object.
 
-    Default-value handling (E1=a / E2=a):
-      - If ``yml_param`` is provided AND carries a non-None
-        ``defaultvalue``, use it verbatim (XSOAR convention is a
-        string like ``"1"`` or ``"720"``).
-      - Otherwise, inject ``fallback_default`` so the user always
-        sees a value, never blank.
+    Default-value handling — the XSOAR ``defaultvalue`` is an integer
+    count of MINUTES which we convert to the duration object via
+    :func:`_minutes_to_duration_default`:
+      - If ``yml_param`` carries a parseable ``defaultvalue``, convert
+        that minute count (e.g. ``"60"`` → ``{"hours": 1}``).
+      - Otherwise (no yml param, or yml param without a usable
+        ``defaultvalue``), default to **1 minute** (``{"minutes": 1}``).
+        ``fallback_default`` is the minute count (as a string, e.g.
+        ``"1"`` for events / ``"720"`` for assets) used when the param
+        is entirely synthetic (no yml).
 
     Visibility / requiredness:
       - If ``yml_param`` is provided, honor its ``hidden`` and
-        ``required`` keys via :func:`_apply_common_field_metadata`
-        (already invoked by ``_map_type_19``).
+        ``required`` keys via :func:`_apply_common_field_metadata`.
       - If no yml_param, default to visible + optional.
 
     Reused by :func:`_build_eventfetchinterval_field` (fallback ``"1"``)
     and :func:`_build_assetsfetchinterval_field` (fallback ``"720"``).
     """
     if yml_param is None:
+        minutes = _coerce_interval_minutes(fallback_default)
+        default_value = _minutes_to_duration_default(
+            minutes if minutes is not None else 1
+        )
         return {
             "id": field_id,
             "title": title,
-            "field_type": "input",
+            "field_type": "duration",
             "options": {
-                "is_number_input": True,
-                "default_value": fallback_default,
+                "units": list(DURATION_UNITS),
+                "default_value": default_value,
                 "create_modifiers": {"required": False, "hidden": False},
                 "edit_modifiers": {"required": False, "hidden": False},
             },
         }
+
+    # yml-driven path: reuse _map_type_19 only to honor hidden/required
+    # metadata, then convert it into a duration field.
     field = _map_type_19(yml_param)
     field["id"] = field_id
     field["title"] = title
-    # E2=a: inject fallback default when the yml carries the param but
-    # without an explicit defaultvalue.
+    field["field_type"] = "duration"
+
     options = field.setdefault("options", {})
-    if "default_value" not in options:
-        options["default_value"] = fallback_default
+    # _map_type_19 emits the numeric-input flag; the duration field does
+    # not use it.
+    options.pop("is_number_input", None)
+    options["units"] = list(DURATION_UNITS)
+
+    # Convert the yml minute count (if any) into a per-unit object; when
+    # absent or unparseable, fall back to 1 minute.
+    minutes = _coerce_interval_minutes(yml_param.get("defaultvalue"))
+    options["default_value"] = _minutes_to_duration_default(
+        minutes if minutes is not None else 1
+    )
     return field
 
 
@@ -1311,7 +1370,9 @@ def add_log_collection_capability(
     """Build the per-capability template dict for the ``Log Collection``
     capability with up to two fields: ``isFetchEvents`` (toggle, hidden
     by default unless the yml overrides) and ``eventFetchInterval``
-    (numeric input, visible by default, default ``"1"``).
+    (``duration`` picker, visible by default, default 1 minute when no
+    yml default; a yml ``defaultvalue`` in minutes is converted into a
+    per-unit object — see :func:`_build_numeric_fetch_interval_field`).
 
     Caller contract (mirrors :func:`add_secret_capability`):
       - ``capability_id`` is the connector-side capability id. Pass
@@ -1359,9 +1420,7 @@ def add_log_collection_capability(
          writes a serializer field_mappings entry for EACH emitted
          field that was renamed (0, 1, or 2 entries depending on
          which fields the scenario emitted).
-      3. Calls :func:`adjust_checkbox_trigger` for ``isFetchEvents``
-         only when ``is_long_running_capability=False`` (trigger
-         suppression rule).
+      3. (Trigger emission deferred — ``adjust_checkbox_trigger`` removed.)
 
     Returns:
       A dict shaped::
@@ -1462,15 +1521,6 @@ def add_log_collection_capability(
                 renamed_id=efi_field_id,
             )
 
-    # --- §7. Trigger suppression rule (point 3 of the spec) -------------
-    # Trigger fires ONLY for the non-long-running case. In B/C the
-    # long-running Rule 7 pinning already gates the capability, so a
-    # reveal-when-selected trigger would be redundant.
-    if not is_long_running_capability:
-        adjust_checkbox_trigger(
-            capability_id=capability_id, param_id=ifc_field_id
-        )
-
     return {
         "capability_id": capability_id,
         "fields": fields,
@@ -1521,8 +1571,10 @@ def add_assets_capability(
     """Build the per-capability template dict for the ``Fetch Assets and
     Vulnerabilities`` capability with two fields: ``isFetchAssets``
     (always synthetic hidden toggle, default ``False``) and
-    ``assetsFetchInterval`` (numeric input, visible by default, fallback
-    ``"720"`` per E1=a).
+    ``assetsFetchInterval`` (``duration`` picker, visible by default,
+    falling back to 12 hours = 720 minutes when no yml default; a yml
+    ``defaultvalue`` in minutes is converted into a per-unit object —
+    see :func:`_build_numeric_fetch_interval_field`).
 
     Unlike :func:`add_log_collection_capability`, this builder does NOT
     take an ``is_long_running_capability`` flag — per the spec there is
@@ -1544,10 +1596,10 @@ def add_assets_capability(
       |----------------------|----------------|---------------------------------------------------|
       | isFetchAssets        | (irrelevant)   | always synthetic hidden toggle, default False;    |
       |                      |                | title may use yml.display via _resolve_title_from_yml |
-      | assetsFetchInterval  | yes            | yml-driven via _map_type_19; fallback "720"       |
-      |                      |                | injected if yml carries the param but no          |
-      |                      |                | defaultvalue (E2=a)                               |
-      | assetsFetchInterval  | no             | pure synthetic visible numeric input, default "720" |
+      | assetsFetchInterval  | yes            | duration field; yml defaultvalue (minutes)        |
+      |                      |                | converted to a per-unit object. No defaultvalue   |
+      |                      |                | → 1 minute ({minutes: 1}).                         |
+      | assetsFetchInterval  | no             | synthetic visible duration, fallback 12h (720 min)|
 
     Side effects:
       1. Strips both ``isFetchAssets`` AND ``assetsFetchInterval`` from
@@ -1555,9 +1607,7 @@ def add_assets_capability(
          param-mapping pass doesn't re-emit them.
       2. Sub-cap rename bridges (per emitted field whose id was
          renamed) via :func:`register_renamed_field_serializer_entry`.
-      3. ALWAYS calls :func:`adjust_checkbox_trigger` for the
-         ``isFetchAssets`` field — there is no trigger-suppression
-         rule for the fetch-assets capability.
+      3. (Trigger emission deferred — ``adjust_checkbox_trigger`` removed.)
 
     Returns the template dict ``{"capability_id": ..., "fields": [...]}``
     with exactly 2 entries in ``fields``.
@@ -1598,7 +1648,7 @@ def add_assets_capability(
     ifa_field = build_synthetic_hidden_toggle(
         field_id=ifa_field_id,
         title=ifa_title,
-        default_value=False,
+        default_value=True,
         required=False,
     )
     # assetsFetchInterval: yml-driven if present, else synthetic fallback.
@@ -1632,15 +1682,907 @@ def add_assets_capability(
                 renamed_id=afi_field_id,
             )
 
-    # --- §7. Trigger hook (ALWAYS fires for isFetchAssets) --------------
-    # Per spec: no long-running suppression rule for fetch-assets.
-    adjust_checkbox_trigger(
-        capability_id=capability_id, param_id=ifa_field_id
+    return {
+        "capability_id": capability_id,
+        "fields": fields,
+    }
+
+
+# ------------------------------------------------------------------ #
+# Threat Intelligence & Enrichment capability builder
+# ------------------------------------------------------------------ #
+
+# Default human-readable titles for the synthetic / fallback emission
+# paths in ``add_indicators_capability``.
+_FEED_DEFAULT_TITLE = "Fetch indicators"
+_FEEDFETCHINTERVAL_DEFAULT_TITLE = "Feed Fetch Interval"
+_FEEDRELIABILITY_DEFAULT_TITLE = "Source Reliability"
+_FEEDEXPIRATIONPOLICY_DEFAULT_TITLE = ""  # module.go does not set a display
+_FEEDEXPIRATIONINTERVAL_DEFAULT_TITLE = ""  # no display name per spec
+_FEEDREPUTATION_DEFAULT_TITLE = "Indicator Verdict"
+_FEEDBYPASSEXCLUSIONLIST_DEFAULT_TITLE = "Bypass exclusion list"
+
+# Fallback default for feedFetchInterval when the yml doesn't carry the
+# param. DefaultFeedFetchTime = 4 * time.Hour = 240 minutes (module.go).
+FEEDFETCHINTERVAL_FALLBACK_DEFAULT = "240"  # string per XSOAR convention
+
+# The original XSOAR yml param names for the feed capability params.
+# Stripped from mapper results by ``add_indicators_capability`` so we
+# don't emit them twice.
+FEED_PARAM_NAME = "feed"
+FEEDRELIABILITY_PARAM_NAME = "feedReliability"
+FEEDEXPIRATIONPOLICY_PARAM_NAME = "feedExpirationPolicy"
+FEEDEXPIRATIONINTERVAL_PARAM_NAME = "feedExpirationInterval"
+FEEDREPUTATION_PARAM_NAME = "feedReputation"
+FEEDBYPASSEXCLUSIONLIST_PARAM_NAME = "feedBypassExclusionList"
+FEEDFETCHINTERVAL_PARAM_NAME = "feedFetchInterval"
+
+# All feed param names that are stripped from mapped_params by the builder.
+_FEED_STRIPPED_PARAMS: frozenset[str] = frozenset(
+    {
+        FEED_PARAM_NAME,
+        FEEDRELIABILITY_PARAM_NAME,
+        FEEDEXPIRATIONPOLICY_PARAM_NAME,
+        FEEDEXPIRATIONINTERVAL_PARAM_NAME,
+        FEEDREPUTATION_PARAM_NAME,
+        FEEDBYPASSEXCLUSIONLIST_PARAM_NAME,
+        FEEDFETCHINTERVAL_PARAM_NAME,
+    }
+)
+
+# ---------------------------------------------------------------------------
+# Fallback option values + defaults sourced from module.go / feedIndicator.go
+# ---------------------------------------------------------------------------
+# Public feed reliabilities (sorted alphabetically, matching
+# GetAllPublicFeedReliabilities() in feedIndicator.go).
+FEED_RELIABILITY_OPTIONS: list[dict] = [
+    {"key": "A - Completely reliable", "value": "A - Completely reliable"},
+    {"key": "B - Usually reliable", "value": "B - Usually reliable"},
+    {"key": "C - Fairly reliable", "value": "C - Fairly reliable"},
+    {"key": "D - Not usually reliable", "value": "D - Not usually reliable"},
+    {"key": "E - Unreliable", "value": "E - Unreliable"},
+    {"key": "F - Reliability cannot be judged", "value": "F - Reliability cannot be judged"},
+]
+FEED_RELIABILITY_DEFAULT = "F - Reliability cannot be judged"
+FEED_RELIABILITY_ADDITIONAL_INFO = (
+    "Reliability of the source providing the intelligence data"
+)
+
+# feedBypassExclusionList additionalinfo (module.go line 411).
+FEED_BYPASS_EXCLUSION_ADDITIONAL_INFO = (
+    "When selected, the exclusion list is ignored for indicators from "
+    "this feed. This means that if an indicator from this feed is on the "
+    "exclusion list, the indicator might still be added to the system."
+)
+
+# feedReputation default (module.go: ReputationNotSet = "").
+FEED_REPUTATION_DEFAULT = ""
+
+# feedReputation additionalinfo (module.go line 692).
+FEED_REPUTATION_ADDITIONAL_INFO = (
+    "Indicators from this integration instance will be marked with this verdict"
+)
+
+# feedExpirationPolicy default (expiration.go: ExpirationPolicyByIndicatorType).
+FEED_EXPIRATION_POLICY_DEFAULT = "indicatorType"
+
+# feedExpirationInterval default (module.go line 710: "20160" = 2 weeks).
+FEED_EXPIRATION_INTERVAL_DEFAULT = "20160"
+
+
+# ---------------------------------------------------------------------------
+# Per-field builders for the indicators capability
+# ---------------------------------------------------------------------------
+
+
+def _build_feed_toggle_field(
+    field_id: str,
+    title: str,
+) -> dict:
+    """Build the ``feed`` checkbox field — always default ``True``, hidden.
+
+    Per spec: the ``feed`` param is always emitted as a hidden checkbox
+    with ``default_value: true``. The yml's hidden/default values are
+    IGNORED — this is a hardcoded synthetic field.
+    """
+    return {
+        "id": field_id,
+        "title": title,
+        "field_type": "checkbox",
+        "options": {
+            "default_value": True,
+            "create_modifiers": {"required": False, "hidden": True},
+            "edit_modifiers": {"required": False, "hidden": True},
+        },
+    }
+
+
+def _build_feedfetchinterval_field(
+    yml_param: dict | None,
+    field_id: str,
+    title: str,
+) -> dict:
+    """Thin wrapper over :func:`_build_numeric_fetch_interval_field`
+    bound to the indicators capability's ``"240"`` fallback default
+    (DefaultFeedFetchTime = 4 hours = 240 minutes).
+    """
+    return _build_numeric_fetch_interval_field(
+        yml_param=yml_param,
+        field_id=field_id,
+        title=title,
+        fallback_default=FEEDFETCHINTERVAL_FALLBACK_DEFAULT,
     )
+
+
+def _build_feedreliability_field(
+    yml_param: dict | None,
+    field_id: str,
+    title: str,
+) -> dict:
+    """Build the ``feedReliability`` select field.
+
+    When ``yml_param`` is provided, honor its ``hidden``, ``required``,
+    ``defaultvalue``, ``additionalinfo``, and ``options`` (if any).
+    When absent, fall back to the module.go defaults:
+      - options = public feed reliabilities (A through F)
+      - default = "F - Reliability cannot be judged"
+      - required = True
+      - additionalinfo = reliability description
+    """
+    if yml_param is not None:
+        # yml-driven path: delegate to _map_type_15 for the select shape,
+        # then overlay our fallback defaults for missing keys.
+        field = _map_type_15(yml_param)
+        field["id"] = field_id
+        field["title"] = title
+        options = field.setdefault("options", {})
+        # If yml didn't carry options, inject the platform defaults.
+        if not options.get("values"):
+            options["values"] = list(FEED_RELIABILITY_OPTIONS)
+        if "default_value" not in options:
+            options["default_value"] = FEED_RELIABILITY_DEFAULT
+        if "description" not in options:
+            options["description"] = FEED_RELIABILITY_ADDITIONAL_INFO
+        # feedReliability is required by default per module.go.
+        if not yml_param.get("required"):
+            # Only override if yml didn't explicitly set required.
+            for mod_key in ("create_modifiers", "edit_modifiers"):
+                mod = options.get(mod_key, {})
+                mod["required"] = True
+                options[mod_key] = mod
+        return field
+
+    # Synthetic fallback path.
+    return {
+        "id": field_id,
+        "title": title,
+        "field_type": "select",
+        "options": {
+            "values": list(FEED_RELIABILITY_OPTIONS),
+            "default_value": FEED_RELIABILITY_DEFAULT,
+            "description": FEED_RELIABILITY_ADDITIONAL_INFO,
+            "create_modifiers": {"required": True, "hidden": False},
+            "edit_modifiers": {"required": True, "hidden": False},
+        },
+    }
+
+
+def _build_feedexpirationpolicy_field(
+    yml_param: dict | None,
+    field_id: str,
+    title: str,
+) -> dict:
+    """Build the ``feedExpirationPolicy`` select field (type 17).
+
+    When ``yml_param`` is provided, delegate to :func:`_map_type_17`
+    (hardcoded platform values). When absent, build a synthetic select
+    with the same hardcoded values and the module.go default
+    ``"indicatorType"``.
+    """
+    if yml_param is not None:
+        field = _map_type_17(yml_param)
+        field["id"] = field_id
+        if title:
+            field["title"] = title
+        options = field.setdefault("options", {})
+        if "default_value" not in options:
+            options["default_value"] = FEED_EXPIRATION_POLICY_DEFAULT
+        return field
+
+    # Synthetic fallback path.
+    result: dict = {
+        "id": field_id,
+        "field_type": "select",
+        "options": {
+            "values": list(FEED_EXPIRATION_POLICY_VALUES),
+            "default_value": FEED_EXPIRATION_POLICY_DEFAULT,
+            "create_modifiers": {"required": False, "hidden": False},
+            "edit_modifiers": {"required": False, "hidden": False},
+        },
+    }
+    if title:
+        result["title"] = title
+    return result
+
+
+def _build_feedexpirationinterval_field(
+    yml_param: dict | None,
+    field_id: str,
+) -> dict:
+    """Build the ``feedExpirationInterval`` numeric input field.
+
+    Per spec: **no display name** (title omitted or empty), **hidden by
+    default** (revealed via a trigger when ``feedExpirationPolicy ==
+    interval``). Default ``"20160"`` (2 weeks in minutes) from module.go.
+
+    When ``yml_param`` is provided, honor its ``defaultvalue`` and
+    ``additionalinfo`` but force hidden=True regardless.
+    """
+    if yml_param is not None:
+        field = _map_type_19(yml_param)
+        field["id"] = field_id
+        # No display name per spec.
+        field.pop("title", None)
+        options = field.setdefault("options", {})
+        if "default_value" not in options:
+            options["default_value"] = FEED_EXPIRATION_INTERVAL_DEFAULT
+        # Force hidden — the trigger reveals it.
+        for mod_key in ("create_modifiers", "edit_modifiers"):
+            mod = options.setdefault(mod_key, {})
+            mod["hidden"] = True
+        return field
+
+    # Synthetic fallback path.
+    return {
+        "id": field_id,
+        "field_type": "input",
+        "options": {
+            "is_number_input": True,
+            "default_value": FEED_EXPIRATION_INTERVAL_DEFAULT,
+            "create_modifiers": {"required": False, "hidden": True},
+            "edit_modifiers": {"required": False, "hidden": True},
+        },
+    }
+
+
+def _build_feedreputation_field(
+    yml_param: dict | None,
+    field_id: str,
+    title: str,
+) -> dict:
+    """Build the ``feedReputation`` select field (type 18).
+
+    When ``yml_param`` is provided, delegate to :func:`_map_type_18`
+    (hardcoded platform values). When absent, build a synthetic select
+    with the same hardcoded values and the module.go default ``""``
+    (ReputationNotSet).
+    """
+    if yml_param is not None:
+        field = _map_type_18(yml_param)
+        field["id"] = field_id
+        field["title"] = title
+        options = field.setdefault("options", {})
+        if "default_value" not in options:
+            options["default_value"] = FEED_REPUTATION_DEFAULT
+        if "description" not in options:
+            options["description"] = FEED_REPUTATION_ADDITIONAL_INFO
+        return field
+
+    # Synthetic fallback path.
+    return {
+        "id": field_id,
+        "title": title,
+        "field_type": "select",
+        "options": {
+            "values": list(INDICATOR_REPUTATION_VALUES),
+            "default_value": FEED_REPUTATION_DEFAULT,
+            "description": FEED_REPUTATION_ADDITIONAL_INFO,
+            "create_modifiers": {"required": False, "hidden": False},
+            "edit_modifiers": {"required": False, "hidden": False},
+        },
+    }
+
+
+def _build_feedbypassexclusionlist_field(
+    yml_param: dict | None,
+    field_id: str,
+    title: str,
+) -> dict:
+    """Build the ``feedBypassExclusionList`` checkbox field.
+
+    When ``yml_param`` is provided, delegate to :func:`_map_type_8`.
+    When absent, build a synthetic checkbox with the module.go
+    additionalinfo text and no default.
+    """
+    if yml_param is not None:
+        field = _map_type_8(yml_param)
+        field["id"] = field_id
+        field["title"] = title
+        options = field.setdefault("options", {})
+        if "description" not in options:
+            options["description"] = FEED_BYPASS_EXCLUSION_ADDITIONAL_INFO
+        return field
+
+    # Synthetic fallback path.
+    return {
+        "id": field_id,
+        "title": title,
+        "field_type": "checkbox",
+        "options": {
+            "description": FEED_BYPASS_EXCLUSION_ADDITIONAL_INFO,
+            "create_modifiers": {"required": False, "hidden": False},
+            "edit_modifiers": {"required": False, "hidden": False},
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
+# Trigger builder for feedExpirationInterval reveal
+# ---------------------------------------------------------------------------
+
+
+def _build_feed_expiration_interval_trigger(
+    expiration_policy_field_id: str,
+    expiration_interval_field_id: str,
+) -> dict:
+    """Build the trigger that reveals ``feedExpirationInterval`` when
+    ``feedExpirationPolicy == 'interval'``.
+
+    Per the user-provided format and the triggers.yaml schema:
+
+    .. code-block:: yaml
+
+        - conditions:
+              id: feedExpirationPolicy
+              behavior: value
+              operator: eq
+              value: 'interval'
+          effects:
+            - id: feedExpirationInterval
+              action:
+                hidden: false
+
+    Both field ids are passed in so the sub-cap path can use the renamed
+    ids (e.g. ``<capability_id>_feedExpirationPolicy``).
+    """
+    return {
+        "conditions": {
+            "id": expiration_policy_field_id,
+            "behavior": "value",
+            "operator": "eq",
+            "value": "interval",
+        },
+        "effects": [
+            {
+                "id": expiration_interval_field_id,
+                "action": {
+                    "hidden": False,
+                },
+            },
+        ],
+    }
+
+
+def add_indicators_capability(
+    *,
+    capability_id: str,
+    is_sub_capability: bool,
+    mapped_params: dict[str, list[str]],
+    yml_params_by_name: dict[str, dict] | None = None,
+    handler_dir: Path | None = None,
+) -> dict:
+    """Build the per-capability template dict for the ``Threat Intelligence
+    & Enrichment`` capability with up to 7 fields:
+
+      1. ``feed`` — checkbox, always default true + hidden true
+      2. ``feedFetchInterval`` — duration picker (fallback 240 min = 4h)
+      3. ``feedReliability`` — select (required, fallback Undetermined)
+      4. ``feedExpirationPolicy`` — select (type 17 hardcoded values)
+      5. ``feedExpirationInterval`` — numeric input (hidden, no display,
+         revealed via trigger when feedExpirationPolicy == interval)
+      6. ``feedReputation`` — select (type 18 hardcoded values)
+      7. ``feedBypassExclusionList`` — checkbox
+
+    Caller contract (mirrors the other ``add_<capability>_capability``
+    builders):
+      - ``capability_id``: connector-side capability id. Pass
+        ``"threat-intelligence-and-enrichment"`` for the top-level case
+        or a sub-cap id for the sub-cap case.
+      - ``is_sub_capability``: flips the field-id naming (each emitted
+        field's id becomes ``f"{capability_id}_{original_name}"``).
+
+    **Note on ``tlp_color`` and ``feedTags``**: these are NOT handled by
+    this builder. They are left in ``mapped_params`` for the standard
+    :func:`emit_field_for_param` / :func:`build_configurations_yaml`
+    path, which only emits them if they are explicitly present in the
+    integration yml.
+
+    Side effects:
+      1. Strips all 7 feed param names from every bucket of
+         ``mapped_params`` in place so the standard param-mapping pass
+         doesn't re-emit them.
+      2. Sub-cap rename bridges (per emitted field whose id was renamed)
+         via :func:`register_renamed_field_serializer_entry`.
+
+    Returns:
+      A dict shaped::
+
+          {
+              "capability_id": <capability_id>,
+              "fields": [<emitted_fields>],
+              "triggers": [<trigger_dicts>],
+          }
+
+      The ``triggers`` list contains 0 or 1 entries (the
+      feedExpirationInterval reveal trigger). The caller collects
+      triggers from all builders and writes them to ``triggers.yaml``.
+    """
+    # --- §1. Resolve the connector-side field ids (sub-cap rename) ------
+    def _field_id(original: str) -> str:
+        return f"{capability_id}_{original}" if is_sub_capability else original
+
+    feed_field_id = _field_id(FEED_PARAM_NAME)
+    ffi_field_id = _field_id(FEEDFETCHINTERVAL_PARAM_NAME)
+    fr_field_id = _field_id(FEEDRELIABILITY_PARAM_NAME)
+    fep_field_id = _field_id(FEEDEXPIRATIONPOLICY_PARAM_NAME)
+    fei_field_id = _field_id(FEEDEXPIRATIONINTERVAL_PARAM_NAME)
+    frep_field_id = _field_id(FEEDREPUTATION_PARAM_NAME)
+    fbe_field_id = _field_id(FEEDBYPASSEXCLUSIONLIST_PARAM_NAME)
+
+    # --- §2. Resolve titles (generic helper) ----------------------------
+    feed_title = _resolve_title_from_yml(
+        yml_params_by_name, FEED_PARAM_NAME, fallback=_FEED_DEFAULT_TITLE
+    )
+    ffi_title = _resolve_title_from_yml(
+        yml_params_by_name, FEEDFETCHINTERVAL_PARAM_NAME,
+        fallback=_FEEDFETCHINTERVAL_DEFAULT_TITLE,
+    )
+    fr_title = _resolve_title_from_yml(
+        yml_params_by_name, FEEDRELIABILITY_PARAM_NAME,
+        fallback=_FEEDRELIABILITY_DEFAULT_TITLE,
+    )
+    fep_title = _resolve_title_from_yml(
+        yml_params_by_name, FEEDEXPIRATIONPOLICY_PARAM_NAME,
+        fallback=_FEEDEXPIRATIONPOLICY_DEFAULT_TITLE,
+    )
+    # feedExpirationInterval has no display name per spec — always empty.
+    frep_title = _resolve_title_from_yml(
+        yml_params_by_name, FEEDREPUTATION_PARAM_NAME,
+        fallback=_FEEDREPUTATION_DEFAULT_TITLE,
+    )
+    fbe_title = _resolve_title_from_yml(
+        yml_params_by_name, FEEDBYPASSEXCLUSIONLIST_PARAM_NAME,
+        fallback=_FEEDBYPASSEXCLUSIONLIST_DEFAULT_TITLE,
+    )
+
+    # --- §3. Look up yml params (may be None) ---------------------------
+    def _yml(name: str) -> dict | None:
+        return yml_params_by_name.get(name) if yml_params_by_name else None
+
+    # --- §4. Build the 7 fields -----------------------------------------
+    fields: list[dict] = []
+
+    # 1. feed — always synthetic (hardcoded true + hidden)
+    fields.append(_build_feed_toggle_field(
+        field_id=feed_field_id, title=feed_title,
+    ))
+
+    # 2. feedFetchInterval — duration picker
+    fields.append(_build_feedfetchinterval_field(
+        yml_param=_yml(FEEDFETCHINTERVAL_PARAM_NAME),
+        field_id=ffi_field_id, title=ffi_title,
+    ))
+
+    # 3. feedReliability — select (required)
+    fields.append(_build_feedreliability_field(
+        yml_param=_yml(FEEDRELIABILITY_PARAM_NAME),
+        field_id=fr_field_id, title=fr_title,
+    ))
+
+    # 4. feedExpirationPolicy — select (type 17)
+    fields.append(_build_feedexpirationpolicy_field(
+        yml_param=_yml(FEEDEXPIRATIONPOLICY_PARAM_NAME),
+        field_id=fep_field_id, title=fep_title,
+    ))
+
+    # 5. feedExpirationInterval — numeric input (hidden, no display)
+    fields.append(_build_feedexpirationinterval_field(
+        yml_param=_yml(FEEDEXPIRATIONINTERVAL_PARAM_NAME),
+        field_id=fei_field_id,
+    ))
+
+    # 6. feedReputation — select (type 18)
+    fields.append(_build_feedreputation_field(
+        yml_param=_yml(FEEDREPUTATION_PARAM_NAME),
+        field_id=frep_field_id, title=frep_title,
+    ))
+
+    # 7. feedBypassExclusionList — checkbox
+    fields.append(_build_feedbypassexclusionlist_field(
+        yml_param=_yml(FEEDBYPASSEXCLUSIONLIST_PARAM_NAME),
+        field_id=fbe_field_id, title=fbe_title,
+    ))
+
+    # --- §5. Strip all feed param names from mapper results -------------
+    for cap_name in list(mapped_params.keys()):
+        names = mapped_params.get(cap_name) or []
+        mapped_params[cap_name] = [
+            n for n in names if n not in _FEED_STRIPPED_PARAMS
+        ]
+
+    # --- §6. Sub-cap rename bridges (per emitted field) -----------------
+    if is_sub_capability and handler_dir is not None:
+        _original_to_renamed = {
+            FEED_PARAM_NAME: feed_field_id,
+            FEEDFETCHINTERVAL_PARAM_NAME: ffi_field_id,
+            FEEDRELIABILITY_PARAM_NAME: fr_field_id,
+            FEEDEXPIRATIONPOLICY_PARAM_NAME: fep_field_id,
+            FEEDEXPIRATIONINTERVAL_PARAM_NAME: fei_field_id,
+            FEEDREPUTATION_PARAM_NAME: frep_field_id,
+            FEEDBYPASSEXCLUSIONLIST_PARAM_NAME: fbe_field_id,
+        }
+        for original, renamed in _original_to_renamed.items():
+            if renamed != original:
+                register_renamed_field_serializer_entry(
+                    handler_dir,
+                    original_id=original,
+                    renamed_id=renamed,
+                )
+
+    # --- §7. Build the feedExpirationInterval reveal trigger -------------
+    triggers: list[dict] = [
+        _build_feed_expiration_interval_trigger(
+            expiration_policy_field_id=fep_field_id,
+            expiration_interval_field_id=fei_field_id,
+        )
+    ]
 
     return {
         "capability_id": capability_id,
         "fields": fields,
+        "triggers": triggers,
+    }
+
+
+# ------------------------------------------------------------------ #
+# Fetch Issues capability builder
+# ------------------------------------------------------------------ #
+
+# Default human-readable titles for the synthetic / fallback emission
+# paths in ``add_fetch_issues_capability``.
+_ISFETCH_DEFAULT_TITLE = "Fetch incidents"
+_INCIDENTTYPE_DEFAULT_TITLE = "Incident type"
+_INCIDENTFETCHINTERVAL_DEFAULT_TITLE = "Incidents Fetch Interval"
+_MAPPER_INCOMING_DEFAULT_TITLE = "Incoming Mapper"
+_CLASSIFIER_DEFAULT_TITLE = "Classifier"
+_LONGRUNNING_DEFAULT_TITLE = "Long running instance"
+
+# Fallback default for incidentFetchInterval when the yml doesn't carry
+# the param. DefaultIncidentFetchTime = 1 * time.Minute = 1 minute.
+INCIDENTFETCHINTERVAL_FALLBACK_DEFAULT = "1"  # string per XSOAR convention
+
+# The original XSOAR yml param names for the fetch-issues capability params.
+# Stripped from mapper results by ``add_fetch_issues_capability`` so we
+# don't emit them twice.
+ISFETCH_PARAM_NAME = "isFetch"
+INCIDENTTYPE_PARAM_NAME = "incidentType"
+INCIDENTFETCHINTERVAL_PARAM_NAME = "incidentFetchInterval"
+ALERTFETCHINTERVAL_PARAM_NAME = "alertFetchInterval"
+LONGRUNNING_PARAM_NAME = "longRunning"
+
+# Connector-side field ids for the dynamic fields (mapper + classifier).
+# These are NOT XSOAR config param names — they are connector-level field
+# ids that map to the XSOAR instance-level fields via the dynamic values
+# mechanism.
+MAPPER_INCOMING_FIELD_ID = "mapper_incoming"
+CLASSIFIER_FIELD_ID = "classifier"
+
+# All fetch-issues param names that are stripped from mapped_params.
+_FETCH_ISSUES_STRIPPED_PARAMS: frozenset[str] = frozenset(
+    {
+        ISFETCH_PARAM_NAME,
+        INCIDENTTYPE_PARAM_NAME,
+        INCIDENTFETCHINTERVAL_PARAM_NAME,
+        ALERTFETCHINTERVAL_PARAM_NAME,
+    }
+)
+
+
+# ---------------------------------------------------------------------------
+# Per-field builders for the fetch-issues capability
+# ---------------------------------------------------------------------------
+
+
+def _build_isfetch_field(
+    field_id: str,
+    title: str,
+) -> dict:
+    """Build the ``isFetch`` checkbox field — always default ``True``, hidden.
+
+    Per spec: the ``isFetch`` param is always emitted as a hidden checkbox
+    with ``default_value: true``. The yml's hidden/default values are
+    IGNORED — this is a hardcoded synthetic field.
+    """
+    return {
+        "id": field_id,
+        "title": title,
+        "field_type": "checkbox",
+        "options": {
+            "default_value": True,
+            "create_modifiers": {"required": False, "hidden": True},
+            "edit_modifiers": {"required": False, "hidden": True},
+        },
+    }
+
+
+def _build_incidentfetchinterval_field(
+    yml_param: dict | None,
+    field_id: str,
+    title: str,
+) -> dict:
+    """Thin wrapper over :func:`_build_numeric_fetch_interval_field`
+    bound to the fetch-issues capability's ``"1"`` fallback default
+    (DefaultIncidentFetchTime = 1 minute).
+    """
+    return _build_numeric_fetch_interval_field(
+        yml_param=yml_param,
+        field_id=field_id,
+        title=title,
+        fallback_default=INCIDENTFETCHINTERVAL_FALLBACK_DEFAULT,
+    )
+
+
+def _build_dynamic_select_field(
+    *,
+    field_id: str,
+    title: str,
+    dynamic_field_type: str,
+    integration_id: str,
+    default_value: str | None = None,
+    required: bool = False,
+    hidden: bool = False,
+    description: str = "",
+) -> dict:
+    """Build a dynamic ``select`` field whose options are fetched at runtime
+    by the XSOAR provider.
+
+    Per ``plans/dynamic-field-values.md``: the field carries
+    ``metadata.dynamic_values`` with ``provider: "xsoar"`` and
+    ``trigger: ["on_create", "on_edit"]``. ``options.values`` is NOT set
+    (forbidden when dynamic_values is present). ``options.default_value``
+    is a literal pre-selection hint (applied only if the fetched list
+    contains the key; silently ignored otherwise).
+
+    Args:
+        field_id: Connector-side field id.
+        title: Human-readable label.
+        dynamic_field_type: The XSOAR dynamic field type string
+            (e.g. ``"incident-type"``, ``"mapper-incoming"``,
+            ``"classifier"``).
+        integration_id: The ``commonfields.id`` of the integration —
+            passed as ``params.integrationID`` to the XSOAR provider.
+        default_value: Optional literal pre-selection hint.
+        required: Whether the field is required.
+        hidden: Whether the field is hidden.
+        description: Optional description text.
+    """
+    field: dict = {
+        "id": field_id,
+        "title": title,
+        "field_type": "select",
+        "metadata": {
+            "dynamic_values": {
+                "provider": "xsoar",
+                "trigger": ["on_create", "on_edit"],
+                "params": {
+                    "integrationID": integration_id,
+                    "dynamicField": dynamic_field_type,
+                },
+            },
+        },
+        "options": {
+            "searchable": True,
+            "clearable": True,
+            "create_modifiers": {"required": required, "hidden": hidden},
+            "edit_modifiers": {"required": required, "hidden": hidden},
+        },
+    }
+    if default_value:
+        field["options"]["default_value"] = default_value
+    if description:
+        field["options"]["description"] = description
+    return field
+
+
+def _build_longrunning_field(
+    field_id: str,
+    title: str,
+) -> dict:
+    """Build the ``longRunning`` checkbox field — hidden, default ``True``.
+
+    Only emitted for long-running integrations mapped to Fetch Issues.
+    """
+    return {
+        "id": field_id,
+        "title": title,
+        "field_type": "checkbox",
+        "options": {
+            "default_value": True,
+            "create_modifiers": {"required": False, "hidden": True},
+            "edit_modifiers": {"required": False, "hidden": True},
+        },
+    }
+
+
+def add_fetch_issues_capability(
+    *,
+    capability_id: str,
+    is_sub_capability: bool,
+    is_long_running: bool,
+    mapped_params: dict[str, list[str]],
+    integration_yml: dict,
+    yml_params_by_name: dict[str, dict] | None = None,
+    handler_dir: Path | None = None,
+) -> dict:
+    """Build the per-capability template dict for the ``Fetch Issues``
+    capability with up to 6 fields:
+
+      1. ``isFetch`` — checkbox, always default true + hidden true
+      2. ``incidentType`` — dynamic select (``incident-type``)
+      3. ``incidentFetchInterval`` — duration picker (fallback 1 min)
+      4. ``mapper_incoming`` — dynamic select (``mapper-incoming``),
+         default from ``integration_yml["defaultmapperin"]``
+      5. ``classifier`` — dynamic select (``classifier``),
+         default from ``integration_yml["defaultclassifier"]``
+      6. ``longRunning`` — checkbox, hidden + default true
+         (only when ``is_long_running=True``)
+
+    Caller contract (mirrors the other ``add_<capability>_capability``
+    builders):
+      - ``capability_id``: connector-side capability id. Pass
+        ``"fetch-issues"`` for the top-level case or a sub-cap id.
+      - ``is_sub_capability``: flips the field-id naming.
+      - ``is_long_running``: when True, adds the ``longRunning`` hidden
+        checkbox and strips ``longRunning`` from ``mapped_params``.
+      - ``integration_yml``: the full integration YAML dict — needed for
+        ``commonfields.id`` (dynamic field ``integrationID`` param),
+        ``defaultmapperin``, and ``defaultclassifier``.
+
+    Side effects:
+      1. Strips ``isFetch``, ``incidentType``, ``incidentFetchInterval``,
+         ``alertFetchInterval`` from every bucket of ``mapped_params``.
+         When ``is_long_running=True``, also strips ``longRunning``.
+      2. Sub-cap rename bridges via serializer for each renamed field.
+
+    Returns:
+      ``{"capability_id", "fields", "triggers"}`` — triggers is always
+      empty for fetch-issues (no conditional reveal needed).
+    """
+    integration_id = (integration_yml.get("commonfields") or {}).get("id", "")
+
+    # --- §1. Resolve the connector-side field ids (sub-cap rename) ------
+    def _field_id(original: str) -> str:
+        return f"{capability_id}_{original}" if is_sub_capability else original
+
+    isfetch_field_id = _field_id(ISFETCH_PARAM_NAME)
+    inctype_field_id = _field_id(INCIDENTTYPE_PARAM_NAME)
+    incfi_field_id = _field_id(INCIDENTFETCHINTERVAL_PARAM_NAME)
+    mapper_field_id = _field_id(MAPPER_INCOMING_FIELD_ID)
+    classifier_field_id = _field_id(CLASSIFIER_FIELD_ID)
+    lr_field_id = _field_id(LONGRUNNING_PARAM_NAME) if is_long_running else ""
+
+    # --- §2. Resolve titles (generic helper) ----------------------------
+    isfetch_title = _resolve_title_from_yml(
+        yml_params_by_name, ISFETCH_PARAM_NAME,
+        fallback=_ISFETCH_DEFAULT_TITLE,
+    )
+    inctype_title = _resolve_title_from_yml(
+        yml_params_by_name, INCIDENTTYPE_PARAM_NAME,
+        fallback=_INCIDENTTYPE_DEFAULT_TITLE,
+    )
+    incfi_title = _resolve_title_from_yml(
+        yml_params_by_name, INCIDENTFETCHINTERVAL_PARAM_NAME,
+        fallback=_INCIDENTFETCHINTERVAL_DEFAULT_TITLE,
+    )
+
+    # --- §3. Look up yml params and integration-level defaults ----------
+    def _yml(name: str) -> dict | None:
+        return yml_params_by_name.get(name) if yml_params_by_name else None
+
+    # incidentType default from yml config param's defaultvalue (if present).
+    inctype_yml = _yml(INCIDENTTYPE_PARAM_NAME)
+    inctype_default = (
+        inctype_yml.get("defaultvalue")
+        if inctype_yml and inctype_yml.get("defaultvalue")
+        else None
+    )
+
+    # mapper_incoming default from integration yml top-level field.
+    mapper_default = integration_yml.get("defaultmapperin") or None
+    # classifier default from integration yml top-level field.
+    classifier_default = integration_yml.get("defaultclassifier") or None
+
+    # --- §4. Build the fields -------------------------------------------
+    fields: list[dict] = []
+
+    # 1. isFetch — always synthetic (hardcoded true + hidden)
+    fields.append(_build_isfetch_field(
+        field_id=isfetch_field_id, title=isfetch_title,
+    ))
+
+    # 2. incidentType — dynamic select
+    fields.append(_build_dynamic_select_field(
+        field_id=inctype_field_id,
+        title=inctype_title,
+        dynamic_field_type="incident-type",
+        integration_id=integration_id,
+        default_value=inctype_default,
+    ))
+
+    # 3. incidentFetchInterval — duration picker
+    fields.append(_build_incidentfetchinterval_field(
+        yml_param=_yml(INCIDENTFETCHINTERVAL_PARAM_NAME),
+        field_id=incfi_field_id, title=incfi_title,
+    ))
+
+    # 4. mapper_incoming — dynamic select
+    fields.append(_build_dynamic_select_field(
+        field_id=mapper_field_id,
+        title=_MAPPER_INCOMING_DEFAULT_TITLE,
+        dynamic_field_type="mapper-incoming",
+        integration_id=integration_id,
+        default_value=mapper_default,
+    ))
+
+    # 5. classifier — dynamic select
+    fields.append(_build_dynamic_select_field(
+        field_id=classifier_field_id,
+        title=_CLASSIFIER_DEFAULT_TITLE,
+        dynamic_field_type="classifier",
+        integration_id=integration_id,
+        default_value=classifier_default,
+    ))
+
+    # 6. longRunning — only for long-running integrations
+    if is_long_running:
+        fields.append(_build_longrunning_field(
+            field_id=lr_field_id,
+            title=_LONGRUNNING_DEFAULT_TITLE,
+        ))
+
+    # --- §5. Strip fetch-issues param names from mapper results ---------
+    stripped = set(_FETCH_ISSUES_STRIPPED_PARAMS)
+    if is_long_running:
+        stripped.add(LONGRUNNING_PARAM_NAME)
+    for cap_name in list(mapped_params.keys()):
+        names = mapped_params.get(cap_name) or []
+        mapped_params[cap_name] = [
+            n for n in names if n not in stripped
+        ]
+
+    # --- §6. Sub-cap rename bridges (per emitted field) -----------------
+    if is_sub_capability and handler_dir is not None:
+        _original_to_renamed = {
+            ISFETCH_PARAM_NAME: isfetch_field_id,
+            INCIDENTTYPE_PARAM_NAME: inctype_field_id,
+            INCIDENTFETCHINTERVAL_PARAM_NAME: incfi_field_id,
+            MAPPER_INCOMING_FIELD_ID: mapper_field_id,
+            CLASSIFIER_FIELD_ID: classifier_field_id,
+        }
+        if is_long_running:
+            _original_to_renamed[LONGRUNNING_PARAM_NAME] = lr_field_id
+        for original, renamed in _original_to_renamed.items():
+            if renamed != original:
+                register_renamed_field_serializer_entry(
+                    handler_dir,
+                    original_id=original,
+                    renamed_id=renamed,
+                )
+
+    return {
+        "capability_id": capability_id,
+        "fields": fields,
+        "triggers": [],
     }
 
 
@@ -1754,12 +2696,16 @@ def build_capabilities_yaml(
 ) -> dict:
     """Build the dict for capabilities.yaml.
 
-    Per guide §3.4 + §4.3 (Salesforce reference), every capabilities.yaml
-    MUST include two mandatory ``general_configurations`` fields prepended
-    before any user-supplied params:
-      - ``instance_name`` (FE-tagged via ``metadata.connector.parameter``)
-      - ``integrationLogLevel`` (BE-tagged via
-        ``metadata.xsoar.config_type: "backend"``)
+    Per guide §3.4 + §4.3 (Salesforce reference), capabilities.yaml
+    MUST include the mandatory ``instance_name`` field in
+    ``general_configurations`` (FE-tagged via
+    ``metadata.connector.parameter``).
+
+    ``integrationLogLevel`` and user-mapped ``general_configurations``
+    params are emitted in ``configurations.yaml`` (NOT here) — each
+    inside a ``view_group``-pinned field group per handler. See
+    :func:`build_per_handler_general_config` and
+    :func:`build_configurations_yaml`.
 
     Each capability entry includes the REQUIRED schema fields
     (capabilities.schema: id + title + default_enabled + required):
@@ -1767,57 +2713,14 @@ def build_capabilities_yaml(
       - ``default_enabled: true`` (per Salesforce reference §4.3)
       - ``required: false`` (per guide §3.4: "Always false")
 
-    Mandatory-field dedup: if the upstream mapper happens to also place a
-    user-param literally named ``instance_name`` or ``integrationLogLevel``
-    into ``general_configurations``, the platform-mandated version wins
-    (the user-param is skipped and a warning is logged). This is rare in
-    practice but defensive against malformed mapper output.
-
-    When ``yml_params_by_name`` is provided, each user-supplied
-    ``general_configurations`` field is materialized via
-    :func:`emit_field_for_param` — a rich dict with ``title``,
-    ``field_type``, ``options`` (default_value, mask, create/edit_modifiers,
-    etc.) sourced from the underlying XSOAR yml param. Type 9 (credentials)
-    params expand into two fields. Missing yml entries fall back to a bare
-    ``{"id": name}`` shape with a warning (per Q3=c).
-
-    Dedup-via-rename (per Q1=a/Q2=a/Q3=a/Q4=b design): when ``handler_id``
-    + ``handler_dir`` are supplied, any user-supplied
-    ``general_configurations`` field id that collides with an entry in
-    ``existing_ids`` is renamed and a serializer entry is registered.
-    Capability ids are NOT deduped here — capability id collisions are
-    handled by the append flow's promote-to-sub-capability path.
-
     Backwards-compatible: callers omitting all extra args get bare-id
-    fields with no dedup side-effects (but the two mandatory fields are
-    ALWAYS emitted).
+    fields with no dedup side-effects.
     """
-    # Mandatory fields always come first — order matters for the FE render.
+    # Only instance_name lives in capabilities.yaml general_configurations.
+    # integrationLogLevel + user-mapped params → configurations.yaml.
     general_fields: list[dict] = [
         _instance_name_field(),
-        _integration_log_level_field(),
     ]
-    reserved_ids = {"instance_name", "integrationLogLevel"}
-
-    general_params = mapped_params.get("general_configurations", []) or []
-    for p in general_params:
-        if p in reserved_ids:
-            logger.warning(
-                "[manifest_generator] User-param '%s' in general_configurations "
-                "collides with a platform-mandated field — skipping the "
-                "user-param (the platform version takes precedence).",
-                p,
-            )
-            continue
-        general_fields.extend(
-            emit_field_for_param(
-                p,
-                yml_params_by_name,
-                handler_id=handler_id,
-                handler_dir=handler_dir,
-                existing_ids=existing_ids,
-            )
-        )
 
     capabilities = []
     for cap_name in mapped_params:
@@ -1855,6 +2758,184 @@ def write_capabilities_yaml(
     with open(capabilities_yaml_path, "w") as fh:
         fh.write(CAPABILITIES_SCHEMA_DIRECTIVE)
         yaml.safe_dump(capabilities_data, fh)
+
+
+# ---------------------------------------------------------------------------
+# Per-handler general_configurations fields
+# ---------------------------------------------------------------------------
+# Per the grouped-example reference, every handler added to a connector
+# gets two fields in configurations.yaml → general_configurations, each
+# inside a view_group-pinned field group where view_group id = handler id.
+# Both fields are prefixed with the handler id for global uniqueness
+# (Appendix C) and bridged back to their canonical names via serializer
+# field_mappings.
+
+# Canonical base param names (the XSOAR runtime expects these).
+_INTEGRATION_LOG_LEVEL_PARAM = "integrationLogLevel"
+_DEFAULT_IGNORE_PARAM = "defaultIgnore"
+
+
+def _per_handler_log_level_field(handler_id: str) -> dict:
+    """Build the per-handler ``integrationLogLevel`` field.
+
+    Per the grouped-example reference: each handler gets its own
+    ``<handler_id>_integrationLogLevel`` select field in
+    ``configurations.yaml`` → ``general_configurations``, pinned to
+    the handler's ``view_group``. The handler's ``serializer.yaml``
+    maps the prefixed id back to ``integrationLogLevel``.
+
+    Shape matches the grouped-example reference (lines 100-124 of
+    ``configurations.yaml``).
+    """
+    return {
+        "id": f"{handler_id}_{_INTEGRATION_LOG_LEVEL_PARAM}",
+        "title": "Integration Log Level",
+        "field_type": "select",
+        "metadata": {
+            "xsoar": {
+                "config_type": "backend",
+            },
+        },
+        "options": {
+            "description": f"Set the log level for the {handler_id} integration.",
+            "placeholder": "Select log level",
+            "default_value": "Off",
+            "values": [
+                {"key": "Off", "label": "Off"},
+                {"key": "Debug", "label": "Debug"},
+                {"key": "Verbose", "label": "Verbose"},
+            ],
+            "create_modifiers": {"required": False, "hidden": False},
+            "edit_modifiers": {"required": False, "hidden": False},
+        },
+    }
+
+
+def _per_handler_default_ignore_field(handler_id: str) -> dict:
+    """Build the per-handler ``defaultIgnore`` checkbox field.
+
+    Per the grouped-example reference (lines 325-338 of
+    ``configurations.yaml``): "Do not use in CLI by default" — a
+    visible checkbox, always default ``false``, backend-managed.
+
+    Shape matches the grouped-example reference.
+    """
+    return {
+        "id": f"{handler_id}_{_DEFAULT_IGNORE_PARAM}",
+        "title": "Do not use in CLI by default",
+        "field_type": "checkbox",
+        "metadata": {
+            "xsoar": {
+                "config_type": "backend",
+            },
+        },
+        "options": {
+            "default_value": False,
+            "create_modifiers": {"required": False, "hidden": False},
+            "edit_modifiers": {"required": False, "hidden": False},
+        },
+    }
+
+
+def build_per_handler_general_config(
+    handler_id: str,
+    handler_dir: Path,
+    mapped_params: dict[str, Any] | None = None,
+    yml_params_by_name: dict[str, dict] | None = None,
+    existing_ids: set[str] | None = None,
+) -> dict:
+    """Build the per-handler general_configurations field group entry.
+
+    Returns a dict shaped::
+
+        {
+            "view_group": "<handler_id>",
+            "relevant_for_capabilities": [<cap_ids>],
+            "fields": [
+                <integrationLogLevel field>,
+                <defaultIgnore field>,
+                <user-mapped general_configurations params...>,
+            ],
+        }
+
+    The ``relevant_for_capabilities`` list contains the canonical
+    capability ids that this handler serves (derived from
+    ``mapped_params`` keys, excluding ``general_configurations``).
+
+    User-mapped ``general_configurations`` params (from
+    ``mapped_params["general_configurations"]``) are emitted here
+    (NOT in capabilities.yaml) — each materialized via
+    :func:`emit_field_for_param` with dedup support.
+
+    Also registers serializer ``field_mappings`` entries for the
+    ``integrationLogLevel`` and ``defaultIgnore`` fields so the XSOAR
+    runtime receives the canonical param names.
+
+    The caller is responsible for:
+      1. Adding the returned dict to
+         ``configurations_data["general_configurations"]["configurations"]``.
+      2. Adding a ``view_groups`` registry entry
+         ``{"id": handler_id, "label": handler_id}`` to
+         ``configurations_data["view_groups"]``.
+    """
+    log_level = _per_handler_log_level_field(handler_id)
+    default_ignore = _per_handler_default_ignore_field(handler_id)
+
+    # Register serializer mappings so the XSOAR runtime sees the
+    # canonical param names.
+    register_renamed_field_serializer_entry(
+        handler_dir,
+        original_id=_INTEGRATION_LOG_LEVEL_PARAM,
+        renamed_id=log_level["id"],
+    )
+    register_renamed_field_serializer_entry(
+        handler_dir,
+        original_id=_DEFAULT_IGNORE_PARAM,
+        renamed_id=default_ignore["id"],
+    )
+
+    fields: list[dict] = [log_level, default_ignore]
+
+    # User-mapped general_configurations params — emitted here (in
+    # configurations.yaml) rather than in capabilities.yaml, each
+    # pinned to this handler's view_group.
+    reserved_ids = {"instance_name", "integrationLogLevel", "defaultIgnore"}
+    if mapped_params:
+        general_params = mapped_params.get("general_configurations", []) or []
+        for p in general_params:
+            if p in reserved_ids:
+                logger.warning(
+                    "[manifest_generator] User-param '%s' in "
+                    "general_configurations collides with a "
+                    "platform-mandated field — skipping.",
+                    p,
+                )
+                continue
+            fields.extend(
+                emit_field_for_param(
+                    p,
+                    yml_params_by_name,
+                    handler_id=handler_id,
+                    handler_dir=handler_dir,
+                    existing_ids=existing_ids,
+                )
+            )
+
+    # Compute relevant_for_capabilities from mapped_params keys.
+    cap_ids: list[str] = []
+    if mapped_params:
+        for cap_name in mapped_params:
+            if cap_name == "general_configurations":
+                continue
+            cap_ids.append(slugify_capability_name(cap_name))
+
+    result: dict = {
+        "view_group": handler_id,
+        "fields": fields,
+    }
+    if cap_ids:
+        result["relevant_for_capabilities"] = cap_ids
+    return result
 
 
 def build_configurations_yaml(
@@ -1896,12 +2977,16 @@ def build_configurations_yaml(
                     existing_ids=existing_ids,
                 )
             )
-        configurations.append(
-            {
-                "id": cap_id,
-                "configurations": [{"fields": fields}],
-            }
-        )
+        entry: dict = {
+            "id": cap_id,
+            "configurations": [{"fields": fields}],
+        }
+        # Per grouped-example reference: each per-capability entry
+        # carries ``view_group: <handler_id>`` so the FE knows which
+        # tile to render it under.
+        if handler_id:
+            entry["view_group"] = handler_id
+        configurations.append(entry)
 
     return {
         "metadata": {
@@ -2168,6 +3253,44 @@ def build_summary_yaml(connector_title: str) -> dict:
             "description": f"Summary for connector {connector_title}",
         },
     }
+
+
+# ---------------------------------------------------------------------------
+# triggers.yaml emission
+# ---------------------------------------------------------------------------
+TRIGGERS_SCHEMA_DIRECTIVE = (
+    "# yaml-language-server: $schema=../../schema/triggers.schema.json\n"
+)
+
+
+def build_triggers_yaml(triggers: list[dict]) -> dict:
+    """Build the dict for a triggers.yaml file.
+
+    Per the triggers.schema.json, the top-level key is ``triggers``
+    containing an array of trigger objects (each with ``conditions`` +
+    ``effects``).
+
+    Args:
+        triggers: List of trigger dicts (each shaped per the schema:
+            ``{conditions: ..., effects: [...]}``) collected from
+            capability builders.
+
+    Returns:
+        A dict ready for ``yaml.safe_dump``.
+    """
+    return {"triggers": list(triggers)}
+
+
+def write_triggers_yaml(triggers_yaml_path: Path, triggers_data: dict) -> None:
+    """Write a triggers.yaml file with the schema directive line prepended.
+
+    Only call this when ``triggers_data["triggers"]`` is non-empty —
+    callers should skip the write entirely when no triggers exist.
+    """
+    triggers_yaml_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(triggers_yaml_path, "w") as fh:
+        fh.write(TRIGGERS_SCHEMA_DIRECTIVE)
+        yaml.safe_dump(triggers_data, fh)
 
 
 # ---------------------------------------------------------------------------
@@ -2693,6 +3816,24 @@ def create_manifest_from_scratch(
         handler_dir=handler_dir,
         existing_ids=existing_field_ids,
     )
+
+    # Per-handler general_configurations: add integrationLogLevel +
+    # defaultIgnore fields in a view_group-pinned field group. Also
+    # register the view_groups registry entry.
+    per_handler_gc = build_per_handler_general_config(
+        handler_id,
+        handler_dir,
+        mapped_params=mapped_params,
+        yml_params_by_name=yml_params_by_name,
+        existing_ids=existing_field_ids,
+    )
+    configurations_data.setdefault("general_configurations", {}).setdefault(
+        "configurations", []
+    ).append(per_handler_gc)
+    configurations_data.setdefault("view_groups", []).append(
+        {"id": handler_id, "label": handler_id}
+    )
+
     configurations_data = deep_merge_dicts(
         configurations_data, manual_configurations_fields or {}
     )
@@ -2719,6 +3860,46 @@ def create_manifest_from_scratch(
             f"[manifest_generator] No dedup collisions for handler — "
             f"serializer.yaml not generated (optional per guide §3.9)."
         )
+
+    # Collect triggers from capability builders and write triggers.yaml
+    # when at least one trigger exists.
+    all_triggers: list[dict] = []
+
+    # Invoke the indicators capability builder when the TI&E bucket is
+    # present in mapped_params.
+    ti_bucket_key = "Threat Intelligence & Enrichment"
+    if ti_bucket_key in mapped_params:
+        ti_result = add_indicators_capability(
+            capability_id=slugify_capability_name(ti_bucket_key),
+            is_sub_capability=False,
+            mapped_params=mapped_params,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=handler_dir,
+        )
+        all_triggers.extend(ti_result.get("triggers", []))
+
+    # Invoke the fetch-issues capability builder when the Fetch Issues
+    # bucket is present in mapped_params.
+    fi_bucket_key = "Fetch Issues"
+    if fi_bucket_key in mapped_params:
+        script = integration_yml.get("script") or {}
+        fi_is_long_running = script.get("longRunning") is True
+        fi_result = add_fetch_issues_capability(
+            capability_id=slugify_capability_name(fi_bucket_key),
+            is_sub_capability=False,
+            is_long_running=fi_is_long_running,
+            mapped_params=mapped_params,
+            integration_yml=integration_yml,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=handler_dir,
+        )
+        all_triggers.extend(fi_result.get("triggers", []))
+
+    if all_triggers:
+        triggers_data = build_triggers_yaml(all_triggers)
+        triggers_yaml_path = connector_dir / "triggers.yaml"
+        write_triggers_yaml(triggers_yaml_path, triggers_data)
+        logger.info(f"[manifest_generator] Generated {triggers_yaml_path}")
 
     # TODO: generate connection.yaml
     # TODO: generate connection.yaml from auth_methods
@@ -2912,10 +4093,34 @@ def add_handler_to_existing_connector(
     write_handler_yaml(handler_yaml_path, handler_data)
     logger.info(f"[manifest_generator] Generated {handler_yaml_path}")
 
+    # Per-handler general_configurations: add integrationLogLevel +
+    # defaultIgnore fields in a view_group-pinned field group. Also
+    # register the view_groups registry entry (dedup: skip if already
+    # present from a prior handler addition).
+    new_handler_dir = handler_yaml_path.parent
+    per_handler_gc = build_per_handler_general_config(
+        new_handler_id,
+        new_handler_dir,
+        mapped_params=mapped_params,
+        yml_params_by_name=yml_params_by_name,
+        existing_ids=existing_field_ids,
+    )
+    configurations_data.setdefault("general_configurations", {}).setdefault(
+        "configurations", []
+    ).append(per_handler_gc)
+    existing_vg_ids = {
+        vg.get("id")
+        for vg in configurations_data.get("view_groups", [])
+    }
+    if new_handler_id not in existing_vg_ids:
+        configurations_data.setdefault("view_groups", []).append(
+            {"id": new_handler_id, "label": new_handler_id}
+        )
+
     # Per Batch 7 (Part A.7.1) + guide §3.9: serializer.yaml is OPTIONAL.
     # The dedup pass writes it on-demand when collision-rename produces
-    # a field_mappings entry. See same comment in
-    # :func:`create_manifest_from_scratch`.
+    # a field_mappings entry. The per-handler general_config above also
+    # writes serializer entries (for integrationLogLevel + defaultIgnore).
     serializer_yaml_path = handler_yaml_path.parent / "serializer.yaml"
     if serializer_yaml_path.exists():
         logger.info(
@@ -2942,6 +4147,56 @@ def add_handler_to_existing_connector(
     with open(configurations_yaml_path, "w") as fh:
         yaml.safe_dump(configurations_data, fh)
     logger.info(f"[manifest_generator] Updated {configurations_yaml_path}")
+
+    # Collect triggers from capability builders and write triggers.yaml
+    # when at least one trigger exists.
+    all_triggers: list[dict] = []
+
+    # Invoke the indicators capability builder when the TI&E bucket is
+    # present in mapped_params.
+    ti_bucket_key = "Threat Intelligence & Enrichment"
+    if ti_bucket_key in mapped_params:
+        ti_result = add_indicators_capability(
+            capability_id=slugify_capability_name(ti_bucket_key),
+            is_sub_capability=False,
+            mapped_params=mapped_params,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=new_handler_dir,
+        )
+        all_triggers.extend(ti_result.get("triggers", []))
+
+    # Invoke the fetch-issues capability builder when the Fetch Issues
+    # bucket is present in mapped_params.
+    fi_bucket_key = "Fetch Issues"
+    if fi_bucket_key in mapped_params:
+        script = integration_yml.get("script") or {}
+        fi_is_long_running = script.get("longRunning") is True
+        fi_result = add_fetch_issues_capability(
+            capability_id=slugify_capability_name(fi_bucket_key),
+            is_sub_capability=False,
+            is_long_running=fi_is_long_running,
+            mapped_params=mapped_params,
+            integration_yml=integration_yml,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=new_handler_dir,
+        )
+        all_triggers.extend(fi_result.get("triggers", []))
+
+    if all_triggers:
+        triggers_data = build_triggers_yaml(all_triggers)
+        triggers_yaml_path = connector_dir / "triggers.yaml"
+        # For the append path, merge with existing triggers if present.
+        if triggers_yaml_path.is_file():
+            with open(triggers_yaml_path) as fh:
+                first_line = fh.readline()
+                rest = fh.read()
+                if not first_line.startswith("# yaml-language-server"):
+                    rest = first_line + rest
+            existing_triggers_data = yaml.safe_load(io.StringIO(rest)) or {}
+            existing_list = existing_triggers_data.get("triggers", []) or []
+            triggers_data["triggers"] = existing_list + triggers_data["triggers"]
+        write_triggers_yaml(triggers_yaml_path, triggers_data)
+        logger.info(f"[manifest_generator] Updated {triggers_yaml_path}")
 
     # TODO: append to connection.yaml (skip existing profile ids)
     # TODO: generate connection.yaml from auth_methods

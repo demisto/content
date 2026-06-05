@@ -182,10 +182,25 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
         result[FETCH_ASSETS_CAPABILITIES] = []
 
     # Rule 6 - Automation
-    for command_name in command_names:
-        if not any(pattern in command_name for pattern in EXCLUDED_AUTOMATION_PATTERNS):
-            result[AUTOMATION_CAPABILITY] = []
-            break
+    # An integration gets the Automation capability when it has at least one
+    # command that is NOT a fetch command (i.e., not matching any pattern in
+    # EXCLUDED_AUTOMATION_PATTERNS: issues/secrets/events/incidents/assets/
+    # indicators fetches).
+    #
+    # Event-collector sub-rule: when the integration is an event collector
+    # (``script.isfetchevents is True``), Automation is added ONLY when the
+    # integration exposes enough commands — total command count >= 3 — in
+    # addition to having a non-fetch command. Pure/light event collectors
+    # (1-2 commands) do not get Automation.
+    has_non_fetch_command = any(
+        not any(pattern in command_name for pattern in EXCLUDED_AUTOMATION_PATTERNS)
+        for command_name in command_names
+    )
+    is_event_collector = script.get("isfetchevents") is True
+    if has_non_fetch_command and (
+        not is_event_collector or len(command_names) >= 3
+    ):
+        result[AUTOMATION_CAPABILITY] = []
 
     # Rule 7 - Long-running suggested capability
     # If the integration declares longRunning AND its id is in the
@@ -509,32 +524,6 @@ def _filter_hidden_params(
         )
 
 
-def _cleanup_empty_capabilities(result: dict[str, list[str]]) -> None:
-    """Step 2.7 — Remove any capability bucket with an empty param list.
-
-    Mutates ``result`` in place. Applies to ALL keys, including
-    ``general_configurations`` (so an empty default bucket is also dropped).
-
-    This is the final cleanup pass that catches buckets emptied by either:
-      - Step 2.4 (``_deduplicate``) — moves duplicated params to
-        ``general_configurations`` and clears them from the originating
-        capabilities, which can leave those capabilities empty.
-      - Step 2.6 (``_filter_hidden_params``) — strips hidden-on-platform
-        params, which can also empty a bucket if all of its params were
-        hidden.
-
-    Logs the removed capability names at INFO level for traceability.
-    """
-    empty_keys = [cap for cap, params in result.items() if len(params) == 0]
-    for cap in empty_keys:
-        del result[cap]
-    if empty_keys:
-        logger.info(
-            f"Removed empty capabilities from the final result: "
-            f"{sorted(empty_keys)}"
-        )
-
-
 def _route_long_running_param(
     result: dict[str, list[str]],
     integration_yml: dict | None,
@@ -635,8 +624,8 @@ def map_params_to_capabilities(
         )
         _filter_hidden_params(result, to_remove, kept_by_carveout)
 
-    # Step 2.7 (NEW) - cleanup empty capabilities (including general_configurations)
-    _cleanup_empty_capabilities(result)
+    # NOTE: empty capability buckets (including general_configurations) are
+    # intentionally preserved in the final result — no cleanup pass is run.
 
     return result
 

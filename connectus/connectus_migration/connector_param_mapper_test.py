@@ -57,10 +57,12 @@ class TestDecideCapabilities:
     def test_log_collection_normal(self):
         """
         Given: A YML with isfetchevents=True, a name that does NOT contain
-               'eventcollector', and no 'get-events' style command.
+               'eventcollector', three commands and no 'get-events' style
+               command.
         When:  decide_capabilities is called.
         Then:  Both 'Log Collection' and 'Automation' are present (no early
-               exit, because non-excluded commands exist).
+               exit; event-collector sub-rule is satisfied because there are
+               >= 3 commands with non-fetch commands).
         """
         # isfetchevents true but name has no eventcollector and no get-events cmd
         yml = _build_yml(
@@ -70,21 +72,25 @@ class TestDecideCapabilities:
                 "commands": [
                     {"name": "siem-get-alert"},
                     {"name": "siem-list-cases"},
+                    {"name": "siem-do-action"},
                 ],
             },
         )
         result = decide_capabilities(yml)
         assert "Log Collection" in result
-        assert "Automation" in result  # has non-excluded commands
+        assert "Automation" in result  # event collector with >= 3 commands
 
     def test_log_collection_early_exit_event_collector_name(self):
         """
-        Given: A pure event-collector YML (isfetchevents=True only) whose
-               name contains 'event collector' (with a space) AND has at least
-               one non-get-events command.
+        Given: An event-collector YML (isfetchevents=True only) whose name
+               contains 'event collector' (with a space) AND has exactly one
+               non-get-events command.
         When:  decide_capabilities is called.
-        Then:  Rule 2 short-circuits and returns the minimal mapping
-               {general_configurations, Log Collection}.
+        Then:  Rule 2's early-exit does NOT fire (the single command is not a
+               get-events command, so _is_pure_event_collector returns False).
+               'Log Collection' is present. Because this is an event collector
+               with fewer than 3 commands, the event-collector sub-rule
+               suppresses 'Automation'.
         """
         yml = _build_yml(
             name="My Event Collector",
@@ -97,7 +103,6 @@ class TestDecideCapabilities:
         assert result == {
             "general_configurations": [],
             "Log Collection": [],
-            "Automation": [],
         }
 
     def test_log_collection_no_early_exit_when_only_get_events_commands(self):
@@ -279,10 +284,13 @@ class TestDecideCapabilities:
     def test_event_collector_with_isfetchassets_keeps_both_capabilities(self):
         """
         Given: A multi-purpose collector YML with isfetchevents=True AND
-               isfetchassets=True whose name contains 'eventcollector'.
+               isfetchassets=True whose name contains 'eventcollector', with
+               only TWO commands.
         When:  decide_capabilities is called.
         Then:  Rule 2's early-exit must NOT fire — both 'Log Collection' and
-               'Fetch Assets and Vulnerabilities' must remain.
+               'Fetch Assets and Vulnerabilities' must remain. Because the
+               integration IS an event collector with fewer than 3 commands,
+               the event-collector sub-rule suppresses 'Automation'.
         """
         yml = _build_yml(
             name="Jamf Protect Event Collector",
@@ -298,24 +306,27 @@ class TestDecideCapabilities:
         result = decide_capabilities(yml)
         assert "Log Collection" in result
         assert "Fetch Assets and Vulnerabilities" in result
-        assert "Automation" in result
+        # Event collector with only 2 commands → Automation NOT added.
+        assert "Automation" not in result
         assert "general_configurations" in result
 
     def test_pure_event_collector_still_short_circuits(self):
         """
         Given: A pure event-collector YML where isfetchevents is the only
                fetch flag, the name contains 'event collector' (with space),
-               and there is at least one non-get-events command.
+               and the ONLY command is a get-events command (no other
+               commands).
         When:  decide_capabilities is called.
-        Then:  Rule 2's early-exit fires (regression guard for the
-               multi-purpose fix above).
+        Then:  Rule 2's early-exit fires and returns the minimal mapping
+               {general_configurations, Log Collection} (regression guard for
+               the multi-purpose fix above). 'Automation' is never added
+               because the early-exit returns before Rule 6.
         """
         yml = _build_yml(
             name="My Event Collector",
             script={
                 "isfetchevents": True,
                 "commands": [
-                    {"name": "do-something"},
                     {"name": "vendor-get-events"},
                 ],
             },
@@ -324,7 +335,6 @@ class TestDecideCapabilities:
         assert result == {
             "general_configurations": [],
             "Log Collection": [],
-            "Automation": [],
         }
 
 
@@ -369,8 +379,9 @@ class TestMapParamsToCapabilities:
         result = map_params_to_capabilities(
             capabilities, command_params, param_defaults
         )
-        # general_configurations bucket is dropped by Step 2.7 cleanup when empty
-        assert "api_key" not in result.get("general_configurations", [])
+        # Empty buckets are preserved (no cleanup pass), so the key remains.
+        assert "general_configurations" in result
+        assert "api_key" not in result["general_configurations"]
 
     def test_single_capability_shortcut(self):
         """
@@ -444,7 +455,7 @@ class TestMapParamsToCapabilities:
                COMMAND_TO_CAPABILITY.
         When:  map_params_to_capabilities is called.
         Then:  All vendor params fall back to 'Automation' and 'Fetch Issues'
-               remains empty.
+               remains (empty), since empty buckets are preserved.
         """
         capabilities = {
             "general_configurations": [],
@@ -463,8 +474,8 @@ class TestMapParamsToCapabilities:
             capabilities, command_params, param_defaults
         )
         assert sorted(result["Automation"]) == ["a", "b"]
-        # Empty 'Fetch Issues' bucket is dropped by Step 2.7 cleanup
-        assert "Fetch Issues" not in result
+        # Empty buckets are preserved (no cleanup pass).
+        assert result["Fetch Issues"] == []
 
     def test_multi_capability_missing_target_logs_warning(self, caplog):
         """
@@ -492,10 +503,10 @@ class TestMapParamsToCapabilities:
         result = map_params_to_capabilities(
             capabilities, command_params, param_defaults
         )
-        # The param should not be placed anywhere; empty buckets are dropped
-        # by Step 2.7 cleanup, so use .get() for defensive lookups.
-        assert "missing_param" not in result.get("Automation", [])
-        assert "missing_param" not in result.get("general_configurations", [])
+        # The param should not be placed anywhere; empty buckets are preserved
+        # (no cleanup pass), so look them up directly.
+        assert "missing_param" not in result["Automation"]
+        assert "missing_param" not in result["general_configurations"]
         # And a warning should have been logged
         assert "missing_param" in caplog.text
         assert "Fetch Issues" in caplog.text
@@ -610,8 +621,8 @@ class TestMapParamsToCapabilities:
             capabilities, command_params, param_defaults
         )
         assert result["Automation"] == ["indicators_param"]
-        # Empty 'Fetch Issues' bucket is dropped by Step 2.7 cleanup
-        assert "Fetch Issues" not in result
+        # Empty buckets are preserved (no cleanup pass).
+        assert result["Fetch Issues"] == []
 
     def test_dedup_param_in_multiple_capabilities_moves_to_general(self):
         """
@@ -640,10 +651,9 @@ class TestMapParamsToCapabilities:
             capabilities, command_params, param_defaults
         )
         assert "shared" in result["general_configurations"]
-        # After dedup, 'Fetch Issues' has no params left → dropped by Step 2.7
-        # cleanup. 'Automation' still has 'unique' so it survives.
-        assert "shared" not in result.get("Fetch Issues", [])
-        assert "Fetch Issues" not in result
+        # After dedup, 'Fetch Issues' has no params left but is preserved
+        # (no cleanup pass). 'Automation' still has 'unique'.
+        assert result["Fetch Issues"] == []
         assert "shared" not in result["Automation"]
         assert "unique" in result["Automation"]
 
@@ -674,9 +684,8 @@ class TestMapParamsToCapabilities:
             capabilities, command_params, param_defaults
         )
         assert result["general_configurations"].count("url") == 1
-        # After dedup, 'Fetch Issues' is empty → dropped by Step 2.7 cleanup
-        assert "url" not in result.get("Fetch Issues", [])
-        assert "Fetch Issues" not in result
+        # After dedup, 'Fetch Issues' is empty but preserved (no cleanup pass).
+        assert result["Fetch Issues"] == []
 
 
 # ---------------------------------------------------------------------------
@@ -1465,8 +1474,8 @@ class TestLongRunningRouting:
         assert "longRunningPort" in result["Log Collection"]
         # The command's other params are also routed there
         assert "listenerUrl" in result["Log Collection"]
-        # And longRunningPort is NOT in general_configurations (which is
-        # dropped entirely by Step 2.7 cleanup when empty)
+        # And longRunningPort is NOT in general_configurations (empty buckets
+        # are preserved, so the key still exists but without the param).
         assert "longRunningPort" not in result.get("general_configurations", [])
 
     def test_no_long_running_flag_dict_ignored(self):
@@ -1562,20 +1571,21 @@ class TestLongRunningRouting:
 
 
 # ---------------------------------------------------------------------------
-# Step 2.7 — cleanup empty capabilities
+# Empty capabilities are preserved (no cleanup pass)
 # ---------------------------------------------------------------------------
-class TestCleanupEmptyCapabilities:
-    """Tests for the Step 2.7 cleanup that removes any capability bucket with
-    an empty param list, including ``general_configurations``."""
+class TestEmptyCapabilitiesPreserved:
+    """Tests verifying that empty capability buckets (including
+    ``general_configurations``) are PRESERVED in the final result — the
+    previous Step 2.7 cleanup pass has been removed."""
 
-    def test_capability_emptied_by_dedup_is_removed(self):
+    def test_capability_emptied_by_dedup_is_preserved(self):
         """
         Given: A param routed to two capabilities so dedup moves it to
                general_configurations, leaving one of the source capabilities
                empty.
         When:  map_params_to_capabilities is called.
-        Then:  The emptied capability is removed from the final result by
-               Step 2.7 cleanup.
+        Then:  The emptied capability remains in the final result (empty);
+               no cleanup pass removes it.
         """
         capabilities = {
             "general_configurations": [],
@@ -1596,17 +1606,17 @@ class TestCleanupEmptyCapabilities:
         result = map_params_to_capabilities(
             capabilities, command_params, param_defaults
         )
-        assert "Fetch Issues" not in result
-        assert "Automation" not in result
+        assert result["Fetch Issues"] == []
+        assert result["Automation"] == []
         assert result["general_configurations"] == ["shared"]
 
-    def test_capability_emptied_by_hidden_filter_is_removed(self):
+    def test_capability_emptied_by_hidden_filter_is_preserved(self):
         """
         Given: A capability that contains only params that are hidden on
                the platform (via integration_yml).
         When:  map_params_to_capabilities is called with the integration_yml.
-        Then:  Step 2.6 hidden filter strips all params, then Step 2.7
-               cleanup removes the now-empty capability.
+        Then:  Step 2.6 hidden filter strips all params, but the now-empty
+               capability is preserved (no cleanup pass).
         """
         integration_yml = {
             "name": "X",
@@ -1632,18 +1642,19 @@ class TestCleanupEmptyCapabilities:
             param_defaults,
             integration_yml=integration_yml,
         )
-        # Step 2.6 stripped 'vendor_arg' from Automation; Step 2.7 removed it.
-        assert "Automation" not in result
-        assert "general_configurations" not in result
+        # Step 2.6 stripped 'vendor_arg' from Automation; the empty bucket and
+        # the empty general_configurations are both preserved.
+        assert result["Automation"] == []
+        assert result["general_configurations"] == []
 
-    def test_empty_general_configurations_is_also_removed(self):
+    def test_empty_general_configurations_is_preserved(self):
         """
         Given: A capabilities setup that ends with an empty
                general_configurations bucket (no test-module-without-default
                and no duplicates to demote).
         When:  map_params_to_capabilities is called.
-        Then:  Step 2.7 cleanup removes general_configurations too (per the
-               Q2=b spec — empty general_configurations is NOT exempt).
+        Then:  general_configurations is preserved (empty), even when all
+               params landed under another capability.
         """
         capabilities = {
             "general_configurations": [],
@@ -1661,15 +1672,15 @@ class TestCleanupEmptyCapabilities:
         )
         # Automation has 'only_param' so it stays
         assert result["Automation"] == ["only_param"]
-        # general_configurations is empty → removed
-        assert "general_configurations" not in result
+        # general_configurations is empty but preserved
+        assert result["general_configurations"] == []
 
     def test_non_empty_capabilities_are_preserved(self):
         """
         Given: A capabilities mapping where every bucket ends with at least
                one param.
         When:  map_params_to_capabilities is called.
-        Then:  No bucket is removed by Step 2.7 cleanup; all keys present.
+        Then:  All keys are present with their expected params.
         """
         capabilities = {
             "general_configurations": [],
@@ -1695,11 +1706,14 @@ class TestCleanupEmptyCapabilities:
         assert result["Fetch Issues"] == ["incident_query"]
         assert result["Automation"] == ["arg1"]
 
-    def test_cleanup_logs_removed_keys(self, caplog):
+    def test_all_params_under_general_configurations_keeps_empty_buckets(self):
         """
-        Given: A run that produces at least one empty capability.
-        When:  map_params_to_capabilities is called at INFO log level.
-        Then:  An INFO log message names the removed capability key(s).
+        Given: A capabilities mapping with extra buckets, where every command
+               param has no default and is shared so it collapses into
+               general_configurations, leaving the other buckets empty.
+        When:  map_params_to_capabilities is called.
+        Then:  The empty non-general buckets are still present in the result
+               (matching the new "don't clean up empty capabilities" rule).
         """
         capabilities = {
             "general_configurations": [],
@@ -1709,17 +1723,112 @@ class TestCleanupEmptyCapabilities:
         command_params = {
             "integration": "X",
             "commands": {
-                "vendor-action": ["only_param"],
+                # 'common' is routed to Fetch Issues and Automation, then
+                # deduped into general_configurations.
+                "fetch-incidents": ["common"],
+                "vendor-action": ["common"],
             },
         }
-        param_defaults = {"only_param": 1}
-        caplog.set_level("INFO")
+        param_defaults = {"common": 1}
         result = map_params_to_capabilities(
             capabilities, command_params, param_defaults
         )
-        # Fetch Issues and general_configurations both end up empty
-        assert "Removed empty capabilities" in caplog.text
-        assert "Fetch Issues" in caplog.text
-        assert "general_configurations" in caplog.text
-        # Sanity: Automation survives
-        assert result["Automation"] == ["only_param"]
+        assert result["general_configurations"] == ["common"]
+        assert result["Fetch Issues"] == []
+        assert result["Automation"] == []
+
+
+# ---------------------------------------------------------------------------
+# Rule 6 — Automation for event collectors (command-count threshold)
+# ---------------------------------------------------------------------------
+class TestAutomationEventCollectorRule:
+    """Tests for the event-collector sub-rule of Rule 6: an event collector
+    (``script.isfetchevents`` is True) only gets the ``Automation`` capability
+    when it has at least one non-fetch command AND a total of >= 3 commands."""
+
+    def test_event_collector_two_commands_no_automation(self):
+        """
+        Given: An event collector (isfetchevents=True) with only TWO commands,
+               at least one of which is a non-fetch command.
+        When:  decide_capabilities is called.
+        Then:  'Automation' is NOT added (fewer than 3 commands).
+        """
+        yml = _build_yml(
+            name="SomeSiem",
+            script={
+                "isfetchevents": True,
+                "commands": [
+                    {"name": "siem-do-action"},
+                    {"name": "siem-list"},
+                ],
+            },
+        )
+        result = decide_capabilities(yml)
+        assert "Log Collection" in result
+        assert "Automation" not in result
+
+    def test_event_collector_three_commands_adds_automation(self):
+        """
+        Given: An event collector (isfetchevents=True) with THREE commands,
+               including non-fetch commands.
+        When:  decide_capabilities is called.
+        Then:  'Automation' IS added (>= 3 commands and a non-fetch command
+               exists).
+        """
+        yml = _build_yml(
+            name="SomeSiem",
+            script={
+                "isfetchevents": True,
+                "commands": [
+                    {"name": "siem-do-action"},
+                    {"name": "siem-list"},
+                    {"name": "siem-get-thing"},
+                ],
+            },
+        )
+        result = decide_capabilities(yml)
+        assert "Log Collection" in result
+        assert "Automation" in result
+
+    def test_event_collector_three_fetch_commands_no_automation(self):
+        """
+        Given: An event collector with THREE commands that are ALL fetch-style
+               (matching EXCLUDED_AUTOMATION_PATTERNS), so there is no
+               non-fetch command.
+        When:  decide_capabilities is called.
+        Then:  'Automation' is NOT added — the non-fetch-command requirement
+               still applies even when the count is >= 3.
+        """
+        yml = _build_yml(
+            name="SomeSiem",
+            script={
+                "isfetchevents": True,
+                "commands": [
+                    {"name": "vendor-get-events"},
+                    {"name": "vendor-other-get-events"},
+                    {"name": "vendor-get-indicators"},
+                ],
+            },
+        )
+        result = decide_capabilities(yml)
+        assert "Log Collection" in result
+        assert "Automation" not in result
+
+    def test_non_event_collector_one_command_adds_automation(self):
+        """
+        Given: A NON event-collector integration (isfetchevents not set) with a
+               single non-fetch command.
+        When:  decide_capabilities is called.
+        Then:  'Automation' is added — the >= 3 threshold only applies to event
+               collectors.
+        """
+        yml = _build_yml(
+            name="SomeIntegration",
+            script={
+                "commands": [
+                    {"name": "vendor-do-action"},
+                ],
+            },
+        )
+        result = decide_capabilities(yml)
+        assert "Automation" in result
