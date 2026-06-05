@@ -15,6 +15,10 @@ configuration:
   name: credentials
   type: 9
   required: false
+- display: The Threat Check key
+  name: threat-check-key
+  type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -3006,12 +3010,6 @@ script:
     - name: type
       isArray: false
       description: The type of the value being queried (e.g., ip, domain).
-      required: true
-      secret: false
-      default: false
-    - name: user_identifier
-      isArray: false
-      description: The unique identifier for the user making the request.
       required: true
       secret: false
       default: false

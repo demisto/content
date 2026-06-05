@@ -314,7 +314,6 @@ RUN_THREAT_CHECK_INPUTS = [
     InputArgument(name="data", description="The name of the data source to query.", required=True),
     InputArgument(name="query", description="The value to check for threats (e.g., IP or domain).", required=True),
     InputArgument(name="type", description="The type of the value being queried (e.g., ip, domain).", required=True),
-    InputArgument(name="user_identifier", description="The unique identifier for the user making the request.", required=True),
 ]
 GET_DATA_EXPORTS_INPUTS = [
     InputArgument(name="export_type", description="The export type (iofa, organisation, etc)", required=True),
@@ -1531,6 +1530,12 @@ metadata_collector = YMLMetadataCollector(
             required=False,
             key_type=ParameterTypes.AUTH,
         ),
+        ConfKey(
+            name="threat-check-key",
+            display="The Threat Check key",
+            required=False,
+            key_type=ParameterTypes.AUTH,
+        ),
         ConfKey(name="proxy", display="Use system proxy settings", required=False, key_type=ParameterTypes.BOOLEAN),
         ConfKey(
             name="insecure",
@@ -1550,7 +1555,7 @@ class Client(BaseClient):
     Client class to interact with the SilentPush API.
     """
 
-    def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False):
+    def __init__(self, base_url: str, api_key: str, threat_check_key: str, verify: bool = True, proxy: bool = False):
         """
         Initializes the client with the necessary parameters.
 
@@ -1564,6 +1569,7 @@ class Client(BaseClient):
         self.base_url = full_base_url
         self.verify = verify
         self.proxies = handle_proxy() if proxy else None
+        self.threat_check_key = threat_check_key
         self._headers = {
             "X-API-Key": api_key,
             "Content-Type": "application/json",
@@ -2019,7 +2025,7 @@ class Client(BaseClient):
         params = {
             "t": args.get("type"),
             "d": args.get("data"),
-            "u": args.get("user_identifier"),
+            "u": self.threat_check_key,
             "q": args.get("query")
         }
         remove_nulls_from_dictionary(params)
@@ -2952,7 +2958,7 @@ def run_threat_check_command(client: Client, args: dict[str, Any]) -> CommandRes
         outputs_prefix="SilentPush.RunThreatCheck",
         outputs_key_field="query",
         outputs=result,
-        readable_output=f"Threat check for query '{ip}' completed successfully",
+        readable_output=tableToMarkdown(f"Threat check for query '{ip}' completed successfully", result),
         raw_response=result,
     )
 
@@ -3044,10 +3050,17 @@ def main() -> None:
     try:
         params = demisto.params()
         api_key = params.get("credentials", {}).get("password")
+        threat_check_key = params.get("threat-check-key", {}).get("password")
         base_url = params.get("url", "https://api.silentpush.com")
         verify_ssl = not params.get("insecure", False)
         proxy = params.get("proxy", False)
-        client = Client(base_url=base_url, api_key=api_key, verify=verify_ssl, proxy=proxy)
+        client = Client(
+            base_url=base_url,
+            api_key=api_key,
+            threat_check_key=threat_check_key,
+            verify=verify_ssl,
+            proxy=proxy
+        )
         command = commands_map[demisto.command()]
         results = command(client, demisto.args())
         return_results(results)
