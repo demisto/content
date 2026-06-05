@@ -509,9 +509,9 @@ tasks:
       version: -1
       name: Escalate - raise incident severity
       description: Escalates the incident by raising its severity to High and tagging it for analyst review.
-      scriptName: setIncident
+      script: Builtin|||setIncident
       type: regular
-      iscommand: false
+      iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
@@ -543,9 +543,9 @@ tasks:
       version: -1
       name: Benign - tag incident as reviewed
       description: No malicious indicator was found. Tags the incident as enriched and benign so analysts can safely suppress or fast-track it.
-      scriptName: setIncident
+      script: Builtin|||setIncident
       type: regular
-      iscommand: false
+      iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
