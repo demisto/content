@@ -99,59 +99,59 @@ Runs reputation check on one or more IP addresses.
 
 ```json
 {
-  "DBotScore": {
-    "Indicator": "8.8.8.8",
-    "Reliability": "A - Completely reliable",
-    "Score": 3,
-    "Type": "ip",
-    "Vendor": "IPQualityScore"
-  },
-  "IP": {
-    "ASN": 15169,
-    "Address": "8.8.8.8",
-    "Geo": {
-      "Country": "US",
-      "Location": "37.39:-122.07"
-    },
-    "Hostname": "dns.google",
-    "Malicious": {
-      "Description": null,
-      "Vendor": "IPQualityScore"
-    }
-  },
-  "IPQualityScore": {
-    "IP": {
-      "ASN": 15169,
-      "ISP": "Google",
-      "Malicious": {
+    "DBotScore": {
+        "Indicator": "8.8.8.8",
+        "Reliability": "A - Completely reliable",
+        "Score": 3,
+        "Type": "ip",
         "Vendor": "IPQualityScore"
-      },
-      "abuse_velocity": "high",
-      "active_tor": false,
-      "active_vpn": false,
-      "address": "8.8.8.8",
-      "bot_status": true,
-      "city": "Mountain View",
-      "connection_type": "Data Center",
-      "country_code": "US",
-      "fraud_score": 100,
-      "host": "dns.google",
-      "is_crawler": false,
-      "latitude": 37.39,
-      "longitude": -122.07,
-      "message": "Success",
-      "mobile": false,
-      "organization": "Google",
-      "proxy": true,
-      "recent_abuse": true,
-      "region": "California",
-      "request_id": "4DpK9WpOZGPFSPg",
-      "success": true,
-      "timezone": "America/Los_Angeles",
-      "tor": false,
-      "vpn": true
+    },
+    "IP": {
+        "ASN": 15169,
+        "Address": "8.8.8.8",
+        "Geo": {
+            "Country": "US",
+            "Location": "37.39:-122.07"
+        },
+        "Hostname": "dns.google",
+        "Malicious": {
+            "Description": null,
+            "Vendor": "IPQualityScore"
+        }
+    },
+    "IPQualityScore": {
+        "IP": {
+            "ASN": 15169,
+            "ISP": "Google",
+            "Malicious": {
+                "Vendor": "IPQualityScore"
+            },
+            "abuse_velocity": "high",
+            "active_tor": false,
+            "active_vpn": false,
+            "address": "8.8.8.8",
+            "bot_status": true,
+            "city": "Mountain View",
+            "connection_type": "Data Center",
+            "country_code": "US",
+            "fraud_score": 100,
+            "host": "dns.google",
+            "is_crawler": false,
+            "latitude": 37.39,
+            "longitude": -122.07,
+            "message": "Success",
+            "mobile": false,
+            "organization": "Google",
+            "proxy": true,
+            "recent_abuse": true,
+            "region": "California",
+            "request_id": "4DpK9WpOZGPFSPg",
+            "success": true,
+            "timezone": "America/Los_Angeles",
+            "tor": false,
+            "vpn": true
+        }
     }
-  }
 }
 ```
 
@@ -220,64 +220,64 @@ Runs reputation check on one or more email addresses.
 
 #### Command Example
 
-`!ipqs-email-reputation email="noreply@ipqualityscore.com"`
+`!ipqs-email-reputation email="noreply@example.com"`
 
 #### Context Example
 
 ```json
 {
-  "DBotScore": {
-    "Indicator": "noreply@ipqualityscore.com",
-    "Reliability": "A - Completely reliable",
-    "Score": 3,
-    "Type": "email",
-    "Vendor": "IPQualityScore"
-  },
-  "Email": {
-    "Address": "noreply@ipqualityscore.com",
-    "Domain": "ipqualityscore.com"
-  },
-  "IPQualityScore": {
-    "Email": {
-      "Malicious": {
+    "DBotScore": {
+        "Indicator": "noreply@ipqualityscore.com",
+        "Reliability": "A - Completely reliable",
+        "Score": 3,
+        "Type": "email",
         "Vendor": "IPQualityScore"
-      },
-      "address": "noreply@ipqualityscore.com",
-      "catch_all": true,
-      "common": false,
-      "deliverability": "low",
-      "disposable": false,
-      "dns_valid": true,
-      "domain_age": {
-        "human": "10 years ago",
-        "iso": "2011-04-14T23:26:37-04:00",
-        "timestamp": 1302837997
-      },
-      "first_name": "Corporate",
-      "first_seen": {
-        "human": "2 years ago",
-        "iso": "2019-05-06T02:09:06-04:00",
-        "timestamp": 1557122946
-      },
-      "fraud_score": 95,
-      "frequent_complainer": false,
-      "generic": true,
-      "honeypot": true,
-      "leaked": false,
-      "message": "Success.",
-      "overall_score": 3,
-      "recent_abuse": true,
-      "request_id": "4DpK9WpOZGQDnr7",
-      "sanitized_email": "noreply@ipqualityscore.com",
-      "smtp_score": 2,
-      "spam_trap_score": "medium",
-      "success": true,
-      "suggested_domain": "N/A",
-      "suspect": true,
-      "timed_out": false,
-      "valid": true
+    },
+    "Email": {
+        "Address": "noreply@ipqualityscore.com",
+        "Domain": "ipqualityscore.com"
+    },
+    "IPQualityScore": {
+        "Email": {
+            "Malicious": {
+                "Vendor": "IPQualityScore"
+            },
+            "address": "noreply@ipqualityscore.com",
+            "catch_all": true,
+            "common": false,
+            "deliverability": "low",
+            "disposable": false,
+            "dns_valid": true,
+            "domain_age": {
+                "human": "10 years ago",
+                "iso": "2011-04-14T23:26:37-04:00",
+                "timestamp": 1302837997
+            },
+            "first_name": "Corporate",
+            "first_seen": {
+                "human": "2 years ago",
+                "iso": "2019-05-06T02:09:06-04:00",
+                "timestamp": 1557122946
+            },
+            "fraud_score": 95,
+            "frequent_complainer": false,
+            "generic": true,
+            "honeypot": true,
+            "leaked": false,
+            "message": "Success.",
+            "overall_score": 3,
+            "recent_abuse": true,
+            "request_id": "4DpK9WpOZGQDnr7",
+            "sanitized_email": "noreply@ipqualityscore.com",
+            "smtp_score": 2,
+            "spam_trap_score": "medium",
+            "success": true,
+            "suggested_domain": "N/A",
+            "suspect": true,
+            "timed_out": false,
+            "valid": true
+        }
     }
-  }
 }
 ```
 
@@ -343,51 +343,51 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Command Example
 
-`!ipqs-url-reputation url="https://google.com"`
+`!ipqs-url-reputation url="https://www.example.com"`
 
 #### Context Example
 
 ```json
 {
-  "DBotScore": {
-    "Indicator": "https://google.com",
-    "Reliability": "A - Completely reliable",
-    "Score": 0,
-    "Type": "url",
-    "Vendor": "IPQualityScore"
-  },
-  "IPQualityScore": {
-    "Url": {
-      "adult": false,
-      "content_type": "text/html; charset=UTF-8",
-      "dns_valid": true,
-      "domain": "google.com",
-      "domain_age": {
-        "human": "24 years ago",
-        "iso": "1997-09-15T00:00:00-04:00",
-        "timestamp": 874296000
-      },
-      "domain_rank": 1,
-      "ip_address": "172.217.11.142",
-      "malware": false,
-      "message": "Success.",
-      "page_size": 39242,
-      "parking": false,
-      "phishing": false,
-      "request_id": "4DpK9WpOZGQFSPi",
-      "risk_score": 0,
-      "server": " gws\r\n",
-      "spamming": false,
-      "status_code": 200,
-      "success": true,
-      "suspicious": false,
-      "unsafe": false,
-      "url": "https://google.com"
+    "DBotScore": {
+        "Indicator": "https://google.com",
+        "Reliability": "A - Completely reliable",
+        "Score": 0,
+        "Type": "url",
+        "Vendor": "IPQualityScore"
+    },
+    "IPQualityScore": {
+        "Url": {
+            "adult": false,
+            "content_type": "text/html; charset=UTF-8",
+            "dns_valid": true,
+            "domain": "google.com",
+            "domain_age": {
+                "human": "24 years ago",
+                "iso": "1997-09-15T00:00:00-04:00",
+                "timestamp": 874296000
+            },
+            "domain_rank": 1,
+            "ip_address": "172.217.11.142",
+            "malware": false,
+            "message": "Success.",
+            "page_size": 39242,
+            "parking": false,
+            "phishing": false,
+            "request_id": "4DpK9WpOZGQFSPi",
+            "risk_score": 0,
+            "server": " gws\r\n",
+            "spamming": false,
+            "status_code": 200,
+            "success": true,
+            "suspicious": false,
+            "unsafe": false,
+            "url": "https://google.com"
+        }
+    },
+    "URL": {
+        "Data": "https://google.com"
     }
-  },
-  "URL": {
-    "Data": "https://google.com"
-  }
 }
 ```
 
@@ -460,89 +460,89 @@ Runs reputation check on one or more phone numbers.
 
 #### Command Example
 
-`!ipqs-phone-reputation phone="+91 9000000000"`
+`!ipqs-phone-reputation phone="+15555555555"`
 
 #### Context Example
 
 ```json
 {
-  "DBotScore": {
-    "Indicator": "+916300445124",
-    "Reliability": "A - Completely reliable",
-    "Score": 0,
-    "Type": "phone",
-    "Vendor": "IPQualityScore"
-  },
-  "IPQualityScore": {
-    "Phone": {
-      "message": "Phone is valid.",
-      "success": true,
-      "formatted": "+916300445124",
-      "local_format": "063004 45124",
-      "valid": true,
-      "fraud_score": 0,
-      "recent_abuse": false,
-      "VOIP": false,
-      "prepaid": false,
-      "risky": false,
-      "active": true,
-      "carrier": "Reliance (JIO)",
-      "line_type": "Wireless",
-      "country": "IN",
-      "city": "N/A",
-      "zip_code": "N/A",
-      "region": "India",
-      "dialing_code": 91,
-      "active_status": "N/A",
-      "sms_domain": "N/A",
-      "associated_email_addresses": {
-        "status": "No associated emails found.",
-        "emails": []
-      },
-      "user_activity": "high",
-      "mnc": "854",
-      "mcc": "405",
-      "leaked": true,
-      "spammer": false,
-      "request_id": "gOODapX9Cj",
-      "name": "CHETHAN SWAROOP",
-      "timezone": "Asia/Kolkata",
-      "do_not_call": false,
-      "tcpa_blacklist": false,
-      "accurate_country_code": false,
-      "sms_email": "N/A",
-      "number_recycling": {
-        "message": "Number recycling feature disabled. Please contact support to activate.",
-        "recently_recycled": null,
-        "last_ported_date": null,
-        "ported": null
-      },
-      "identity_data": [
-        {
-          "names": [
-            {
-              "first_name": "CHETHAN",
-              "last_name": "SWAROOP",
-              "middle_name": ""
-            }
-          ],
-          "addresses": [],
-          "email_addresses": [],
-          "phone_numbers": [
-            {
-              "formatted_phone_number": "+916300445124",
-              "country": "IN"
-            }
-          ],
-          "age": [],
-          "source": "marketing_databases"
+    "DBotScore": {
+        "Indicator": "+916300445124",
+        "Reliability": "A - Completely reliable",
+        "Score": 0,
+        "Type": "phone",
+        "Vendor": "IPQualityScore"
+    },
+    "IPQualityScore": {
+        "Phone": {
+            "message": "Phone is valid.",
+            "success": true,
+            "formatted": "+916300445124",
+            "local_format": "063004 45124",
+            "valid": true,
+            "fraud_score": 0,
+            "recent_abuse": false,
+            "VOIP": false,
+            "prepaid": false,
+            "risky": false,
+            "active": true,
+            "carrier": "Reliance (JIO)",
+            "line_type": "Wireless",
+            "country": "IN",
+            "city": "N/A",
+            "zip_code": "N/A",
+            "region": "India",
+            "dialing_code": 91,
+            "active_status": "N/A",
+            "sms_domain": "N/A",
+            "associated_email_addresses": {
+                "status": "No associated emails found.",
+                "emails": []
+            },
+            "user_activity": "high",
+            "mnc": "854",
+            "mcc": "405",
+            "leaked": true,
+            "spammer": false,
+            "request_id": "gOODapX9Cj",
+            "name": "CHETHAN SWAROOP",
+            "timezone": "Asia/Kolkata",
+            "do_not_call": false,
+            "tcpa_blacklist": false,
+            "accurate_country_code": false,
+            "sms_email": "N/A",
+            "number_recycling": {
+                "message": "Number recycling feature disabled. Please contact support to activate.",
+                "recently_recycled": null,
+                "last_ported_date": null,
+                "ported": null
+            },
+            "identity_data": [
+                {
+                    "names": [
+                        {
+                            "first_name": "CHETHAN",
+                            "last_name": "SWAROOP",
+                            "middle_name": ""
+                        }
+                    ],
+                    "addresses": [],
+                    "email_addresses": [],
+                    "phone_numbers": [
+                        {
+                            "formatted_phone_number": "+916300445124",
+                            "country": "IN"
+                        }
+                    ],
+                    "age": [],
+                    "source": "marketing_databases"
+                }
+            ]
         }
-      ]
+    },
+    "Phone": {
+        "Number": "+916300445124"
     }
-  },
-  "Phone": {
-    "Number": "+916300445124"
-  }
 }
 ```
 
@@ -599,31 +599,31 @@ Checks if a username has been exposed in known data breaches.
 
 ```json
 {
-  "DBotScore": {
-    "Indicator": "testuser123",
-    "Reliability": "A - Completely reliable",
-    "Score": 0,
-    "Type": "username",
-    "Vendor": "IPQualityScore"
-  },
-  "IPQualityScore": {
-    "Username": {
-      "success": true,
-      "message": "Success",
-      "request_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-      "source": [],
-      "exposed": false,
-      "first_seen": {
-        "human": "just now",
-        "timestamp": 1776841128,
-        "iso": "2026-04-22T02:58:48-04:00"
-      },
-      "request_id": "gOOSmfym49"
+    "DBotScore": {
+        "Indicator": "testuser123",
+        "Reliability": "A - Completely reliable",
+        "Score": 0,
+        "Type": "username",
+        "Vendor": "IPQualityScore"
+    },
+    "IPQualityScore": {
+        "Username": {
+            "success": true,
+            "message": "Success",
+            "request_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "source": [],
+            "exposed": false,
+            "first_seen": {
+                "human": "just now",
+                "timestamp": 1776841128,
+                "iso": "2026-04-22T02:58:48-04:00"
+            },
+            "request_id": "gOOSmfym49"
+        }
+    },
+    "Account": {
+        "Username": "testuser123"
     }
-  },
-  "Account": {
-    "Username": "testuser123"
-  }
 }
 ```
 
@@ -680,33 +680,33 @@ Checks if a password has been exposed in known data breaches.
 
 ```json
 {
-  "DBotScore": {
-    "Indicator": "abc@123",
-    "Reliability": "A - Completely reliable",
-    "Score": 3,
-    "Type": "password",
-    "Vendor": "IPQualityScore"
-  },
-  "IPQualityScore": {
-    "Leak": {
-      "Password": {
-        "success": true,
-        "message": "Success",
-        "request_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-        "source": ["Exploit Antipublic", "Dark Web Leaks"],
-        "exposed": true,
-        "first_seen": {
-          "human": "3 years ago",
-          "timestamp": 1681115849,
-          "iso": "2023-04-10T04:37:29-04:00"
-        },
-        "request_id": "gOOeuEg77u"
-      }
+    "DBotScore": {
+        "Indicator": "abc@123",
+        "Reliability": "A - Completely reliable",
+        "Score": 3,
+        "Type": "password",
+        "Vendor": "IPQualityScore"
+    },
+    "IPQualityScore": {
+        "Leak": {
+            "Password": {
+                "success": true,
+                "message": "Success",
+                "request_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+                "source": ["Exploit Antipublic", "Dark Web Leaks"],
+                "exposed": true,
+                "first_seen": {
+                    "human": "3 years ago",
+                    "timestamp": 1681115849,
+                    "iso": "2023-04-10T04:37:29-04:00"
+                },
+                "request_id": "gOOeuEg77u"
+            }
+        }
+    },
+    "Password": {
+        "Data": "abc@123"
     }
-  },
-  "Password": {
-    "Data": "abc@123"
-  }
 }
 ```
 
@@ -764,34 +764,34 @@ Checks if an email address has been exposed in known data breaches.
 
 ```json
 {
-  "DBotScore": {
-    "Indicator": "user@example.com",
-    "Reliability": "A - Completely reliable",
-    "Score": 3,
-    "Type": "email",
-    "Vendor": "IPQualityScore"
-  },
-  "IPQualityScore": {
-    "Leak": {
-      "Email": {
-        "success": true,
-        "message": "Success",
-        "request_hash": "d2b6ff2e611edf5bb40014608a84d75a5b30773272248c28fa79db3bd5739677",
-        "source": ["Dark Web Leaks"],
-        "exposed": true,
-        "first_seen": {
-          "human": "6 years ago",
-          "timestamp": 1591641120,
-          "iso": "2020-06-08T14:32:00-04:00"
-        },
-        "plain_text_password": false,
-        "request_id": "gOOsrUX4lK"
-      }
+    "DBotScore": {
+        "Indicator": "user@example.com",
+        "Reliability": "A - Completely reliable",
+        "Score": 3,
+        "Type": "email",
+        "Vendor": "IPQualityScore"
+    },
+    "IPQualityScore": {
+        "Leak": {
+            "Email": {
+                "success": true,
+                "message": "Success",
+                "request_hash": "d2b6ff2e611edf5bb40014608a84d75a5b30773272248c28fa79db3bd5739677",
+                "source": ["Dark Web Leaks"],
+                "exposed": true,
+                "first_seen": {
+                    "human": "6 years ago",
+                    "timestamp": 1591641120,
+                    "iso": "2020-06-08T14:32:00-04:00"
+                },
+                "plain_text_password": false,
+                "request_id": "gOOsrUX4lK"
+            }
+        }
+    },
+    "Email": {
+        "Address": "user@example.com"
     }
-  },
-  "Email": {
-    "Address": "user@example.com"
-  }
 }
 ```
 

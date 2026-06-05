@@ -24,25 +24,20 @@ This pack has been extended with:
 
 ---
 
-## What Does This Pack Do?
-
-This pack enables automated threat analysis and enrichment:
-
-- Performs real-time threat hunting and enrichment
-- Provides IP reputation analysis (proxy, VPN, abuse detection)
-- Detects invalid, disposable, or high-risk email addresses
-- Analyzes URLs and domains for phishing and malware
-- Scans files and URLs for malware using IPQS Malware Scanner
-- Identifies compromised credentials:
-  - Username leaks
-  - Password leaks
-  - Email breaches
-- Evaluates domain reputation (age, parked domains)
-- Assigns risk scores for quick threat prioritization
-
----
-
 ## Use Cases
+
+The playbooks included in this pack provide automated threat analysis and enrichment capabilities, including:
+
+- Threat hunting and investigation
+- IP reputation and risk analysis
+- Email validation and fraud detection
+- URL and domain analysis for phishing and malware
+- Malware scanning for files and URLs
+- Credential exposure monitoring
+- Domain reputation analysis
+- Threat prioritization using risk scores
+
+### Common Use Cases
 
 - Threat intelligence enrichment
 - Fraud detection and prevention
@@ -50,8 +45,6 @@ This pack enables automated threat analysis and enrichment:
 - Malware analysis workflows
 - Credential exposure monitoring
 - Phishing detection
-
----
 
 ## Getting Started
 
@@ -61,5 +54,4 @@ Simply plug in your **IPQS API key** to enable real-time scoring with Cortex XSO
 
 ## Additional Information
 
-For more information, please visit:  
-https://xsoar.pan.dev/docs/reference/integrations/ip-quality-score
+For more information, please visit [IPQualityScore Documentation](https://www.ipqualityscore.com/documentation).

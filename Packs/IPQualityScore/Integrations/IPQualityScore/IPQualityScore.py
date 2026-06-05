@@ -786,69 +786,64 @@ def file_command(
     entry_ids = argToList(args.get("entry_id"))
     if not entry_ids:
         raise DemistoException("entry_id is required for file scan.")
-
-    results: list[CommandResults] = []
-
-    for entry_id in entry_ids:
-        file_info = demisto.getFilePath(entry_id)
-        file_path = file_info.get("path")
-        file_name = file_info.get("name") or entry_id
-
-        if not file_path:
-            raise DemistoException(
-                f"Could not resolve file path for entry ID: {entry_id}",
-            )
-
-        lookup_response = client.malware_file_request(
-            is_lookup=True,
-            file_path=file_path,
+    if len(entry_ids) > 1:
+        raise DemistoException(
+            "Only one entry_id may be submitted for a new file scan request. " "Polling multiple files is not supported.",
         )
 
-        if lookup_response.get("status") == "cached":
-            scan_result = normalize_scan_result(lookup_response)
-            results.append(
-                build_file_scan_command_result(
-                    scan_result=scan_result,
-                    file_name=file_name,
-                    suspicious_threshold=suspicious_threshold,
-                    malicious_threshold=malicious_threshold,
-                    parsed_reliability=parsed_reliability,
-                ),
-            )
-            continue
+    entry_id = entry_ids[0]
+    file_info = demisto.getFilePath(entry_id)
+    file_path = file_info.get("path")
+    file_name = file_info.get("name") or entry_id
 
-        scan_result = client.malware_file_request(
-            is_lookup=False,
-            file_path=file_path,
-        )
-        request_id = scan_result.get("request_id")
-
-        if scan_result.get("status") == "pending":
-            if not request_id:
-                raise DemistoException("File scan is pending but request_id is missing.")
-
-            pending_args = dict(args)
-            pending_args["entry_id"] = entry_id
-
-            return build_pending_result(
-                args=pending_args,
-                result=scan_result,
-                request_id=request_id,
-                outputs_prefix="IPQualityScore.FileScan",
-            )
-
-        scan_result = normalize_scan_result(scan_result)
-        results.append(
-            build_file_scan_command_result(
-                scan_result=scan_result,
-                file_name=file_name,
-                suspicious_threshold=suspicious_threshold,
-                malicious_threshold=malicious_threshold,
-                parsed_reliability=parsed_reliability,
-            ),
+    if not file_path:
+        raise DemistoException(
+            f"Could not resolve file path for entry ID: {entry_id}",
         )
 
-    return results
+    lookup_response = client.malware_file_request(
+        is_lookup=True,
+        file_path=file_path,
+    )
+
+    if lookup_response.get("status") == "cached":
+        scan_result = normalize_scan_result(lookup_response)
+        return build_file_scan_command_result(
+            scan_result=scan_result,
+            file_name=file_name,
+            suspicious_threshold=suspicious_threshold,
+            malicious_threshold=malicious_threshold,
+            parsed_reliability=parsed_reliability,
+        )
+
+    scan_result = client.malware_file_request(
+        is_lookup=False,
+        file_path=file_path,
+    )
+    request_id = scan_result.get("request_id")
+
+    if scan_result.get("status") == "pending":
+        if not request_id:
+            raise DemistoException("File scan is pending but request_id is missing.")
+
+        pending_args = dict(args)
+        pending_args["entry_id"] = entry_id
+
+        return build_pending_result(
+            args=pending_args,
+            result=scan_result,
+            request_id=request_id,
+            outputs_prefix="IPQualityScore.FileScan",
+        )
+
+    scan_result = normalize_scan_result(scan_result)
+    return build_file_scan_command_result(
+        scan_result=scan_result,
+        file_name=file_name,
+        suspicious_threshold=suspicious_threshold,
+        malicious_threshold=malicious_threshold,
+        parsed_reliability=parsed_reliability,
+    )
 
 
 def url_file_command(
@@ -889,64 +884,58 @@ def url_file_command(
     urls = argToList(args.get("url"), ",")
     if not urls:
         raise DemistoException("url is required for URL malware scan.")
-
-    results: list[CommandResults] = []
-
-    for raw_url in urls:
-        url_value = validate_url_or_domain(raw_url)
-
-        lookup_response = client.malware_url_request(
-            is_lookup=True,
-            url=url_value,
+    if len(urls) > 1:
+        raise DemistoException(
+            "Only one URL may be submitted for a new URL file scan request. " "Polling multiple URLs is not supported.",
         )
 
-        if lookup_response.get("status") == "cached":
-            lookup_response["url"] = url_value
-            scan_result = normalize_scan_result(lookup_response)
-            results.append(
-                build_url_file_scan_command_result(
-                    scan_result=scan_result,
-                    url_value=url_value,
-                    suspicious_threshold=suspicious_threshold,
-                    malicious_threshold=malicious_threshold,
-                    parsed_reliability=parsed_reliability,
-                ),
-            )
-            continue
+    url_value = validate_url_or_domain(urls[0])
 
-        scan_result = client.malware_url_request(
-            is_lookup=False,
-            url=url_value,
-        )
-        request_id = scan_result.get("request_id")
+    lookup_response = client.malware_url_request(
+        is_lookup=True,
+        url=url_value,
+    )
 
-        if scan_result.get("status") == "pending":
-            if not request_id:
-                raise DemistoException("URL scan is pending but request_id is missing.")
-
-            pending_args = dict(args)
-            pending_args["url"] = url_value
-
-            return build_pending_result(
-                args=pending_args,
-                result=scan_result,
-                request_id=request_id,
-                outputs_prefix="IPQualityScore.URLFileScan",
-            )
-
-        scan_result["url"] = url_value
-        scan_result = normalize_scan_result(scan_result)
-        results.append(
-            build_url_file_scan_command_result(
-                scan_result=scan_result,
-                url_value=url_value,
-                suspicious_threshold=suspicious_threshold,
-                malicious_threshold=malicious_threshold,
-                parsed_reliability=parsed_reliability,
-            ),
+    if lookup_response.get("status") == "cached":
+        lookup_response["url"] = url_value
+        scan_result = normalize_scan_result(lookup_response)
+        return build_url_file_scan_command_result(
+            scan_result=scan_result,
+            url_value=url_value,
+            suspicious_threshold=suspicious_threshold,
+            malicious_threshold=malicious_threshold,
+            parsed_reliability=parsed_reliability,
         )
 
-    return results
+    scan_result = client.malware_url_request(
+        is_lookup=False,
+        url=url_value,
+    )
+    request_id = scan_result.get("request_id")
+
+    if scan_result.get("status") == "pending":
+        if not request_id:
+            raise DemistoException("URL scan is pending but request_id is missing.")
+
+        pending_args = dict(args)
+        pending_args["url"] = url_value
+
+        return build_pending_result(
+            args=pending_args,
+            result=scan_result,
+            request_id=request_id,
+            outputs_prefix="IPQualityScore.URLFileScan",
+        )
+
+    scan_result["url"] = url_value
+    scan_result = normalize_scan_result(scan_result)
+    return build_url_file_scan_command_result(
+        scan_result=scan_result,
+        url_value=url_value,
+        suspicious_threshold=suspicious_threshold,
+        malicious_threshold=malicious_threshold,
+        parsed_reliability=parsed_reliability,
+    )
 
 
 def test_module(client: Client) -> str:

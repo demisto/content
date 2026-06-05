@@ -1,3 +1,5 @@
+name: IPQualityScore
+display: IPQualityScore
 category: Data Enrichment & Threat Intelligence
 provider: IPQualityScore
 sectionorder:
@@ -94,8 +96,6 @@ configuration:
     type: 15
     section: Collect
 description: Proactively Prevent Fraud.
-display: IPQualityScore
-name: IPQualityScore
 script:
   commands:
     - arguments:
@@ -171,7 +171,7 @@ script:
           type: String
           description: Status of associated email addresses.
         - contextPath: IPQualityScore.Phone.associated_email_addresses.emails
-          type: Unknown
+          type: String
           description: List of associated emails.
         - contextPath: IPQualityScore.Phone.user_activity
           type: String
@@ -222,7 +222,7 @@ script:
           type: Boolean
           description: Was the number ported?
         - contextPath: IPQualityScore.Phone.identity_data
-          type: Unknown
+          type: String
           description: Identity data array.
     - arguments:
         - default: true
@@ -570,7 +570,7 @@ script:
           type: String
           description: Unique hash for the request.
         - contextPath: IPQualityScore.Username.source
-          type: Unknown
+          type: String
           description: List of sources where the username was found (can be empty).
         - contextPath: IPQualityScore.Username.exposed
           type: Boolean
@@ -606,7 +606,7 @@ script:
           type: String
           description: Unique hash for the request.
         - contextPath: IPQualityScore.Password.source
-          type: Unknown
+          type: String
           description: List of sources where the password was found (can be empty).
         - contextPath: IPQualityScore.Password.exposed
           type: Boolean
@@ -642,7 +642,7 @@ script:
           type: String
           description: Unique hash for the request.
         - contextPath: IPQualityScore.Email.source
-          type: Unknown
+          type: String
           description: List of sources where the email was found (can be empty).
         - contextPath: IPQualityScore.Email.exposed
           type: Boolean
@@ -764,7 +764,6 @@ script:
         - name: url
           description: URL to scan for malware.
           required: true
-          isArray: true
         - name: request_id
           description: Internal request ID used for polling.
           required: false
@@ -828,7 +827,7 @@ script:
           type: String
           description: Unique request ID for the scan.
         - contextPath: IPQualityScore.URLFileScan.scan_date
-          type: Unknown
+          type: Date
           description: Date and time when the scan was performed.
         # 🔷 Standard URL Context (XSOAR)
         - contextPath: URL.Data
