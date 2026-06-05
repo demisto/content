@@ -549,9 +549,11 @@ def test_cloudflare_waf_ruleset_list_command(requests_mock, mock_client):
     Scenario: List rulesets.
     Given:
      - User has provided valid credentials.
+     - Default zone_id is configured on the client.
     When:
-     - cloudflare-waf-ruleset-list called.
+     - cloudflare-waf-ruleset-list called without explicit zone_id.
     Then:
+     - Ensure the zone-level endpoint is used (falls back to client zone_id).
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
@@ -560,7 +562,7 @@ def test_cloudflare_waf_ruleset_list_command(requests_mock, mock_client):
     from CloudflareWAF import cloudflare_waf_ruleset_list_command
 
     mock_response = load_mock_response("list_ruleset.json")
-    url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets"
+    url = f"{BASE_URL}zones/{ZONE_ID}/rulesets"
     requests_mock.get(url=url, json=mock_response)
 
     result = cloudflare_waf_ruleset_list_command(mock_client, {})
@@ -571,26 +573,30 @@ def test_cloudflare_waf_ruleset_list_command(requests_mock, mock_client):
     assert result.outputs[1]["id"] == "ruleset_id_2"
 
 
-def test_cloudflare_waf_ruleset_list_command_with_zone(requests_mock, mock_client):
+def test_cloudflare_waf_ruleset_list_command_account_level(requests_mock):
     """
-    Scenario: List rulesets at zone level.
+    Scenario: List rulesets at account level.
     Given:
      - User has provided valid credentials.
-     - Zone ID is specified.
+     - No zone_id is configured on the client or passed as argument.
     When:
-     - cloudflare-waf-ruleset-list called with zone_id.
+     - cloudflare-waf-ruleset-list called.
     Then:
-     - Ensure the zone-level endpoint is used.
+     - Ensure the account-level endpoint is used.
      - Ensure outputs prefix is correct.
     """
 
     from CloudflareWAF import cloudflare_waf_ruleset_list_command
 
+    client_no_zone = Client(
+        account_id=ACCOUNT_ID, zone_id=None, credentials=CREDENTIALS, base_url=BASE_URL, proxy=False, insecure=True
+    )
+
     mock_response = load_mock_response("list_ruleset.json")
-    url = f"{BASE_URL}zones/{ZONE_ID}/rulesets"
+    url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets"
     requests_mock.get(url=url, json=mock_response)
 
-    result = cloudflare_waf_ruleset_list_command(mock_client, {"zone_id": ZONE_ID})
+    result = cloudflare_waf_ruleset_list_command(client_no_zone, {})
 
     assert result.outputs_prefix == "CloudflareWAF.Ruleset"
     assert len(result.outputs) == 2
@@ -614,7 +620,7 @@ def test_cloudflare_waf_ruleset_get_command(requests_mock, mock_client):
 
     mock_response = load_mock_response("get_ruleset.json")
     ruleset_id = "ruleset_id_1"
-    url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets/{ruleset_id}"
+    url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}"
     requests_mock.get(url=url, json=mock_response)
 
     result = cloudflare_waf_ruleset_get_command(mock_client, {"ruleset_id": ruleset_id})
@@ -642,7 +648,7 @@ def test_cloudflare_waf_ruleset_create_command(requests_mock, mock_client):
     from CloudflareWAF import cloudflare_waf_ruleset_create_command
 
     mock_response = load_mock_response("create_ruleset.json")
-    url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets"
+    url = f"{BASE_URL}zones/{ZONE_ID}/rulesets"
     requests_mock.post(url=url, json=mock_response)
 
     result = cloudflare_waf_ruleset_create_command(
@@ -678,7 +684,7 @@ def test_cloudflare_waf_ruleset_update_command(requests_mock, mock_client):
 
     mock_response = load_mock_response("update_ruleset.json")
     ruleset_id = "ruleset_id_1"
-    url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets/{ruleset_id}"
+    url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}"
     requests_mock.put(url=url, json=mock_response)
 
     result = cloudflare_waf_ruleset_update_command(
@@ -710,7 +716,7 @@ def test_cloudflare_waf_ruleset_delete_command(requests_mock, mock_client):
     from CloudflareWAF import cloudflare_waf_ruleset_delete_command
 
     ruleset_id = "ruleset_id_1"
-    url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets/{ruleset_id}"
+    url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}"
     requests_mock.delete(url=url, status_code=204)
 
     result = cloudflare_waf_ruleset_delete_command(mock_client, {"ruleset_id": ruleset_id})
