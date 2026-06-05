@@ -260,7 +260,16 @@ def test_attach_full_emits_proxy_insecure_engine():
         profiles, "Foo", ["host", "proxy", "insecure"]
     )
     ids = [f["id"] for f in profiles[0]["configurations"][0]["fields"]]
-    assert ids == ["proxy", "insecure", "engine_mode", "engine", "engine_group"]
+    # "host" (rest of other_connection) is now emitted FIRST, per-profile,
+    # before proxy/insecure/engine.
+    assert ids == [
+        "host",
+        "proxy",
+        "insecure",
+        "engine_mode",
+        "engine",
+        "engine_group",
+    ]
     assert len(trig) == 2
 
 
@@ -319,8 +328,41 @@ def test_attach_multi_profile_dedup_and_serializer_bridge():
     assert ("foo_engine_group", "engineGroup") in bridged
 
 
+def test_rest_fields_duplicated_per_profile_with_serializer_bridge():
+    # The rest of other_connection (host) is duplicated into EVERY profile:
+    # profile 1 keeps the bare id; profile 2+ get a prefixed id + a serializer
+    # bridge back to the original XSOAR param name (same model as proxy).
+    profiles = [
+        {"id": "plain.foo", "configurations": [{"fields": []}]},
+        {"id": "api_key.foo", "configurations": [{"fields": []}]},
+    ]
+    bridges: list[tuple[str, str, str]] = []
+
+    def bridge(handler_dir: Path, new_id: str, original_id: str) -> None:
+        bridges.append((str(handler_dir), new_id, original_id))
+
+    def mapper(p: dict) -> list[dict]:
+        return [{"id": p["name"], "field_type": "input", "options": {}}]
+
+    cb.attach_per_profile_connection_fields(
+        profiles,
+        "Foo",
+        ["host"],
+        yml_params_by_name={"host": {"name": "host", "type": 0}},
+        handler_dir=Path("/tmp/h"),
+        serializer_bridge=bridge,
+        field_mapper=mapper,
+    )
+    first_ids = [f["id"] for f in profiles[0]["configurations"][0]["fields"]]
+    second_ids = [f["id"] for f in profiles[1]["configurations"][0]["fields"]]
+    assert "host" in first_ids
+    assert "foo_host" in second_ids
+    bridged = {(b[1], b[2]) for b in bridges}
+    assert ("foo_host", "host") in bridged
+
+
 # ---------------------------------------------------------------------------
-# Part D — view_groups + general_configurations
+# Part D — view_groups
 # ---------------------------------------------------------------------------
 def test_build_view_groups_registry():
     reg = cb.build_view_groups_registry([("EWS O365", "EWS O365")])
@@ -333,33 +375,27 @@ def test_build_view_groups_registry():
     ]
 
 
-def test_build_general_configurations_rest_only():
-    yml = {
-        "host": {"name": "host", "type": 0, "display": "Host URL"},
-        "proxy": {"name": "proxy", "type": 8},
-    }
+def test_rest_fields_emitted_per_profile_single_profile():
+    # Rest of other_connection (host) is emitted INSIDE the auth profile
+    # (not in general_configurations). One profile -> bare id, no bridge.
+    profiles = [{"id": "passthrough.foo", "configurations": [{"fields": []}]}]
 
     def mapper(p: dict) -> list[dict]:
         return [{"id": p["name"], "field_type": "input", "options": {}}]
 
-    block = cb.build_connection_general_configurations(
-        "EWSO365", ["host", "proxy"], yml, mapper
+    cb.attach_per_profile_connection_fields(
+        profiles,
+        "Foo",
+        ["host", "proxy", "insecure"],
+        yml_params_by_name={"host": {"name": "host", "type": 0}},
+        field_mapper=mapper,
     )
-    assert block["view_group"] == "ewso365"
-    # proxy is per-profile, excluded here; only host remains, id-prefixed
-    ids = [f["id"] for f in block["fields"]]
-    assert ids == ["ewso365_host"]
-    assert block["fields"][0]["options"]["mask"] is False
-
-
-def test_build_general_configurations_none_when_empty():
-    def mapper(p: dict) -> list[dict]:
-        return [{"id": p["name"], "field_type": "input", "options": {}}]
-
-    block = cb.build_connection_general_configurations(
-        "Foo", ["proxy", "insecure"], {}, mapper
-    )
-    assert block is None
+    ids = [f["id"] for f in profiles[0]["configurations"][0]["fields"]]
+    assert ids[0] == "host"
+    assert "proxy" in ids and "insecure" in ids
+    host_field = profiles[0]["configurations"][0]["fields"][0]
+    assert host_field["metadata"]["event"]["publish"] is True
+    assert host_field["options"]["mask"] is False
 
 
 # ---------------------------------------------------------------------------
@@ -399,11 +435,13 @@ def test_build_connection_yaml_microsoft_graph_end_to_end():
         field_mapper=mapper,
     )
     assert conn["profiles"][0]["id"] == "passthrough.microsoft_graph"
-    # host went to general_configurations (the rest of other_connection)
-    gc = conn["general_configurations"]["configurations"][0]
-    assert gc["view_group"] == "microsoft-graph"
-    assert [f["id"] for f in gc["fields"]] == ["microsoftgraph_host"]
-    # proxy/insecure/engine are per-profile
+    # connection.yaml has NO general_configurations — every non-auth field is
+    # per-profile now.
+    assert "general_configurations" not in conn
+    # host (rest of other_connection) + proxy/insecure/engine all live inside
+    # the profile, AFTER the auth credential fields. host precedes proxy.
     prof_ids = [f["id"] for f in conn["profiles"][0]["configurations"][0]["fields"]]
+    assert "host" in prof_ids
     assert "proxy" in prof_ids and "insecure" in prof_ids and "engine_mode" in prof_ids
+    assert prof_ids.index("host") < prof_ids.index("proxy")
     assert len(triggers) == 2

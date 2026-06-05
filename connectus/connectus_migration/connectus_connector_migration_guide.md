@@ -367,8 +367,8 @@ Schema: [`schema/definitions/field-options.schema.json`](schema/definitions/fiel
 | `description` | string | ❌ | Secondary text below the field. |
 | `help_text` | markdown | ❌ | Tooltip on info-icon hover (Markdown). |
 | `placeholder` | string | ❌ | Ghost text in the input. |
-| `default_value` | any | ❌ | Initial value. For `select` it must match one of `values[].value`; for `multi_select` it must be an array of keys, each matching one `values[].key`. For `checkbox_group` it is an array of `{key, value}` pairs. **When the field declares `metadata.dynamic_values`** (see §2.16), `default_value` is a literal pre-selection hint — applied only if the runtime-fetched list contains the literal key, otherwise silently ignored. |
-| `values` | array | ❌ | Options for select-style fields. **Different shape per field type**: `select` uses `{key, value}`; `multi_select` uses `{key, label}`. **Must be absent** when `metadata.dynamic_values` is declared. |
+| `default_value` | any | ❌ | Initial value. For `select` it must match one of `values[].key`; for `multi_select` it must be an array of keys, each matching one `values[].key`. For `checkbox_group` it is an array of `{key, value}` pairs. **When the field declares `metadata.dynamic_values`** (see §2.16), `default_value` is a literal pre-selection hint — applied only if the runtime-fetched list contains the literal key, otherwise silently ignored. |
+| `values` | array | ❌ | Options for select-style fields. **Per the live `field-options.schema.json` both `select` and `multi_select` use the `{key, label}` shape** (`SelectValuesItem` / `MultiSelectValuesItem`, each requiring `key` + `label`). **Must be absent** when `metadata.dynamic_values` is declared. |
 | `hint` | string | ❌ | Hint text beneath the input. |
 | `layout` | object | ❌ | `cols` (≤ 6 for `input`/`text_area`/`select`/`multi_select`) and `row_span`. |
 | `create_modifiers` | object | ❌ | `{required, hidden, read_only}` applied on instance creation. |
@@ -788,7 +788,7 @@ General configuration section is in progress and currently an open
 | 12 (Long Text/TextArea) | `text_area` | `false` | Multi-line text. |
 | 13 (Incident Type) | `select` + `metadata.dynamic_values` | `false` | Option list fetched at runtime from the XSOAR provider. **User-visible field** — do NOT mark it `metadata.xsoar.config_type: "backend"`. Use `params: {integrationID: "<id>", dynamicField: "incident-type"}`. |
 | 14 (Encrypted TextArea) | `text_area` | `true` | Masked textarea. |
-| 15 (Single Select) | `select` | `false` | Options from YML `options` array as `{key, value}` pairs. |
+| 15 (Single Select) | `select` | `false` | Options from YML `options` array as `{key, label}` pairs. |
 | 16 (Multi Select) | `multi_select` | `false` | Use the native `multi_select` field type. Items in `values` use `{key, label}` shape; `default_value` is an array of keys. See README [Multi-Select Example](README.md:1681). |
 | 17 (Feed Expiration Policy) | `select` | `false` | Single-select with fixed options. Only added when `script.Feed: true`. |
 | 18 (Feed Reputation) | `select` | `false` | New mapped values: `Unknown` / `Benign` / `Suspicious` / `Malicious` (not the legacy None/Good/Suspicious/Bad). Only added when `script.Feed: true`. |
@@ -805,7 +805,7 @@ General configuration section is in progress and currently an open
 6. **Default value**: use `defaultvalue` from the YML. For marketplace-specific defaults (e.g., `defaultvalue:platform: "something"`), use the platform-specific value.
 7. **Required**: use `required` from the YML.
 8. **Description/tooltip**: use `additionalinfo` from the YML as `options.description` or `options.help_text`.
-9. **Options for select fields**: convert YML `options` array to `{key, value}` pairs in `options.values` (or `{key, label}` for `multi_select`).
+9. **Options for select fields**: convert YML `options` array to `{key, label}` pairs in `options.values` (both `select` and `multi_select` use the `{key, label}` shape per the live schema).
 10. **Hidden fields on platform**: if a parameter has `hidden: [platform]` or equivalent, exclude it from the manifest entirely.
 11. **Marketplace-specific values**: if a parameter has marketplace-specific overrides (e.g., `defaultvalue:platform: "value"`), use the platform-specific value.
 12. **Auth-related params are OUT OF SCOPE**: skip params like `proxy` (omit entirely for integrations listed in [Appendix G](#appendix-g-engine--enginegroup--proxy-exclusion-list)), `insecure`, type 9 credentials, and domain/URL fields used for auth connection.
@@ -1629,7 +1629,7 @@ Also refer to the file [`plans/integration-parameter-and-types-overrides.md`](pl
 | 12 | Long Text / TextArea | `text_area` | `false` | Multi-line text. |
 | 13 | Incident Type | `select` + `metadata.dynamic_values` | `false` | Option list fetched at runtime via the XSOAR provider (`dynamicField: "incident-type"`). **User-visible field** — do NOT mark `metadata.xsoar.config_type: "backend"`. |
 | 14 | Encrypted Text Area | `text_area` | `true` | Masked textarea. Example: SSHKey. |
-| 15 | Single Select / Dropdown | `select` | `false` | Options from YML `options` array as `{key, value}` pairs. |
+| 15 | Single Select / Dropdown | `select` | `false` | Options from YML `options` array as `{key, label}` pairs. |
 | 16 | Multi Select | `multi_select` | `false` | Native UCP field type. Items in `values` use `{key, label}`; `default_value` is an array of keys. See README [Multi-Select Example](README.md:1681). |
 | 17 | Feed Expiration Policy | `select` | `false` | Hardcoded display labels: `Indicator Type` / `Time Interval` / `Never Expire` / `When removed from the feed`. Only added when `script.Feed: true`. |
 | 18 | Indicator / Feed Reputation | `select` | `false` | New mapped values: `Unknown` / `Benign` / `Suspicious` / `Malicious` (not the legacy None/Good/Suspicious/Bad). Only added when `script.Feed: true`. |

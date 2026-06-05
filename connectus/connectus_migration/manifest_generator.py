@@ -245,6 +245,114 @@ def get_pack_tags(integration_path: Path) -> list[str]:
     return tags
 
 
+def get_pack_categories(integration_path: Path) -> list[str]:
+    """Extract the list of categories from the integration's pack metadata.
+
+    Walks up 3 levels from the integration YML path to find the pack root,
+    then reads ``pack_metadata.json``'s ``categories`` field. Returns an
+    empty list if the file doesn't exist or the field is missing/invalid.
+
+    Per guide §3.3, ``connector.yaml`` ``metadata.categories`` is the union
+    of all relevant packs' ``categories`` (the connector schema requires at
+    least one). Callers should flag an empty result for manual review.
+
+    Args:
+        integration_path: Path to the integration YML.
+
+    Returns:
+        List of category strings as declared in pack_metadata.json. Empty
+        if not available.
+    """
+    pack_root = integration_path.parent.parent.parent
+    metadata_path = pack_root / "pack_metadata.json"
+    if not metadata_path.is_file():
+        logger.warning(
+            f"[manifest_generator] pack_metadata.json not found at {metadata_path}; "
+            f"defaulting to empty categories list."
+        )
+        return []
+    try:
+        with open(metadata_path) as fh:
+            data = json.load(fh)
+    except Exception as exc:
+        logger.warning(
+            f"[manifest_generator] Failed to parse {metadata_path}: {exc}; "
+            f"defaulting to empty categories list."
+        )
+        return []
+    categories = data.get("categories", [])
+    if not isinstance(categories, list):
+        logger.warning(
+            f"[manifest_generator] pack_metadata.json 'categories' is not a list "
+            f"at {metadata_path}; defaulting to empty categories list."
+        )
+        return []
+    return categories
+
+
+def get_supported_modules(
+    integration_yml: dict, integration_path: Path
+) -> list[str]:
+    """Resolve the integration's supported license modules.
+
+    Per guide §3.3 / §3.4 + §3.1 item 14: licenses come from the
+    integration YML's ``supportedModules`` field; if absent, from the
+    parent pack's ``pack_metadata.json`` ``supported_modules`` field. If
+    neither is found, returns an empty list (caller flags for manual
+    intervention — capabilities.schema permits an empty
+    ``required_license`` but the migration guide wants an explicit set).
+
+    The returned values are used verbatim as ``config.required_license``
+    entries, so they must already match the capabilities.schema license
+    enum. Any value not in the enum will fail validation downstream —
+    callers/reviewers should reconcile non-conforming module names.
+
+    Args:
+        integration_yml: The loaded integration YML dict.
+        integration_path: Path to the integration YML (used to locate the
+            parent pack's pack_metadata.json fallback).
+
+    Returns:
+        List of license/module strings. Empty if none declared.
+    """
+    modules = integration_yml.get("supportedModules")
+    if isinstance(modules, list) and modules:
+        return list(modules)
+
+    pack_root = integration_path.parent.parent.parent
+    metadata_path = pack_root / "pack_metadata.json"
+    if not metadata_path.is_file():
+        logger.warning(
+            f"[manifest_generator] No supportedModules on integration and no "
+            f"pack_metadata.json at {metadata_path}; required_license will be "
+            f"empty. Flag for manual intervention (guide §3.3)."
+        )
+        return []
+    try:
+        with open(metadata_path) as fh:
+            data = json.load(fh)
+    except Exception as exc:
+        logger.warning(
+            f"[manifest_generator] Failed to parse {metadata_path}: {exc}; "
+            f"required_license will be empty."
+        )
+        return []
+    pack_modules = data.get("supported_modules", [])
+    if not isinstance(pack_modules, list):
+        logger.warning(
+            f"[manifest_generator] pack_metadata.json 'supported_modules' is not "
+            f"a list at {metadata_path}; required_license will be empty."
+        )
+        return []
+    if not pack_modules:
+        logger.warning(
+            f"[manifest_generator] Neither integration supportedModules nor pack "
+            f"supported_modules found for {integration_path}; required_license "
+            f"will be empty. Flag for manual intervention (guide §3.3)."
+        )
+    return pack_modules
+
+
 def get_pack_id(integration_path: Path) -> str:
     """Extract the pack id from the integration's filesystem path.
 
@@ -364,12 +472,13 @@ def build_connector_yaml(
     connector_title: str,
     pack_tags: list[str],
     author_image_filename: str = "",
+    vendor: str = "",
+    mapped_params: dict | None = None,
+    categories: list[str] | None = None,
 ) -> dict:
     """Build the dict for a brand-new connector.yaml.
 
-    All TBD fields (description, domain, vendor) are set to empty
-    strings; ``categories`` defaults to an empty array. Per-task spec
-    and Section 3.3 of the migration guide:
+    Per-task spec and Section 3.3 of the migration guide:
       - publisher: "Palo Alto Networks" (hardcoded)
       - author_image: pass-through of ``author_image_filename`` (filename
         relative to the connector root; e.g. ``"salesforce.png"``). Defaults
@@ -379,20 +488,41 @@ def build_connector_yaml(
       - version: "1.0.0"
       - settings.allow_skip_verification: True (per guide §3.3: "Always
         true unless the vendor explicitly requires successful verification")
-      - metadata.categories: [] (per guide §3.3 + connector.schema — plural
-        array, NOT the singular ``category`` field). Caller-provided
-        categories can be merged via ``manual_connector_fields``.
+      - metadata.domain: always "" (out of scope for grouped connectors).
+
+    Vendor-driven fields (per user decision on review point 1):
+      - ``vendor`` populates ``metadata.vendor`` verbatim.
+      - ``metadata.description`` = ``"integration for <vendor> products."``.
+      - ``id`` and ``metadata.title`` are derived via
+        :func:`derive_connector_id_and_title` (vendor prefix + capability
+        suffix) when both ``vendor`` and ``mapped_params`` are supplied.
+        Otherwise they fall back to the legacy stub form (slug/title of
+        ``connector_title``) so existing callers keep working.
+      - ``metadata.categories`` is the caller-provided ``categories`` list
+        (schema requires ≥1 entry — callers that cannot source any should
+        flag for manual review; this builder leaves the list as-is).
     """
+    # Derive id/title from the vendor + declared capabilities when we have
+    # enough information; otherwise keep the legacy stub behaviour.
+    if vendor and mapped_params:
+        connector_id, metadata_title = derive_connector_id_and_title(
+            vendor, mapped_params
+        )
+    else:
+        connector_id, metadata_title = title_to_slug(connector_title), connector_title
+
+    description = f"integration for {vendor} products." if vendor else ""
+
     return {
-        "id": title_to_slug(connector_title),
+        "id": connector_id,
         "metadata": {
-            "title": connector_title,
-            "description": "",
+            "title": metadata_title,
+            "description": description,
             "version": "1.0.0",
-            "categories": [],
+            "categories": list(categories or []),
             "tags": list(pack_tags),
             "domain": "",
-            "vendor": "",
+            "vendor": vendor,
             "publisher": "Palo Alto Networks",
             "author_image": author_image_filename,
             "ownership": {
@@ -495,6 +625,34 @@ CANONICAL_CAPABILITY_TITLES: dict[str, str] = {
     "threat-intelligence-and-enrichment": "Threat Intelligence and Enrichment",
     "fetch-assets-and-vulnerabilities": "Fetch Assets and Vulnerabilities",
 }
+
+# Placeholder per-capability descriptions. capabilities.schema REQUIRES a
+# non-empty ``description`` on every Capability (guide §3.4 marks these as
+# "IN PROGRESS — Tech team / PM / tech-writer to write them up"). We emit a
+# generic placeholder so the manifest validates; flag for tech-writer review.
+CANONICAL_CAPABILITY_DESCRIPTIONS: dict[str, str] = {
+    "automation-and-remediation": (
+        "Run automation and remediation commands for this connector."
+    ),
+    "fetch-issues": "Fetch issues from this connector.",
+    "log-collection": "Collect logs and events from this connector.",
+    "fetch-secrets": "Fetch secrets and credentials from this connector.",
+    "threat-intelligence-and-enrichment": (
+        "Fetch threat intelligence indicators and enrich data from this connector."
+    ),
+    "fetch-assets-and-vulnerabilities": (
+        "Fetch assets and vulnerabilities from this connector."
+    ),
+}
+
+# Fetch capabilities that, per guide §3.4 note 6, must only be shown to
+# customers holding an ``agentix`` or ``xsiam`` license. The connector's
+# ``config.required_license`` for these capabilities is intersected with
+# {agentix, xsiam}.
+_LICENSE_RESTRICTED_FETCH_CAPS: frozenset[str] = frozenset(
+    {"fetch-issues", "log-collection", "fetch-assets-and-vulnerabilities"}
+)
+_AGENTIX_XSIAM_LICENSES: tuple[str, ...] = ("agentix", "xsiam")
 
 # ---------------------------------------------------------------------------
 # Capability-scoped handler actions (per connectus handler.schema Action)
@@ -601,20 +759,27 @@ def make_sub_capability_id(handler_id: str, cap_name: str) -> str:
     return f"{handler_id}-{slugify_capability_name(cap_name)}"
 
 
-def build_sub_capability_entry(sub_cap_id: str, cap_name: str) -> dict:
+def build_sub_capability_entry(
+    sub_cap_id: str, cap_name: str, required: bool = False
+) -> dict:
     """Build a schema-complete ``SubCapability`` entry.
 
     capabilities.schema requires ``id`` + ``title`` + ``default_enabled`` +
     ``required`` on every sub-capability. The title reuses the canonical
-    capability family title; ``default_enabled``/``required`` mirror the
-    parent defaults (per guide §3.4 + §4.3 Salesforce reference).
+    capability family title.
+
+    Per guide §3.4: ``default_enabled`` is **always False** on a
+    sub-capability (the user opts in explicitly). Per guide §3.1 item 13:
+    when a capability has exactly ONE sub-capability it must be marked
+    ``required: true`` (so selecting the parent implies the lone sub-cap);
+    callers pass ``required=True`` in that case.
     """
     cap_slug = slugify_capability_name(cap_name)
     return {
         "id": sub_cap_id,
         "title": CANONICAL_CAPABILITY_TITLES[cap_slug],
-        "default_enabled": True,
-        "required": False,
+        "default_enabled": False,
+        "required": required,
     }
 
 
@@ -693,10 +858,26 @@ def build_handler_yaml(
     handler_id = derive_handler_id(integration_id)
 
     # Build auth_options per the AuthOption schema (workloads required).
+    #
+    # CRITICAL handler↔connection linkage (design §3): each auth_option's
+    # ``id`` MUST equal the connection.yaml profile id produced by
+    # :func:`derive_profile_id` (same integration_id + same seen-set ordering
+    # as :func:`build_connection_yaml`), and — for the grouped model — each
+    # option carries ``view_group`` = the integration's tile id
+    # (:func:`slugify_view_group_id`). The connection page is
+    # handler-authoritative for tiles.
+    # ``id`` is the connection profile id produced by
+    # :func:`derive_profile_id` so handler and connection.yaml stay in
+    # lockstep (the same seen-set ordering as :func:`build_connection_yaml`).
+    # ``derive_profile_id`` is tolerant of legacy name-only entries (no
+    # ``type``) and only raises on a present-but-unrecognized ``type``.
     auth_types = auth_methods.get("auth_types", [])
+    handler_view_group = slugify_view_group_id(integration_id)
+    seen_profile_ids: set[str] = set()
     auth_options = [
         {
-            "id": at.get("name", ""),
+            "id": derive_profile_id(at, integration_id, seen_profile_ids),
+            "view_group": handler_view_group,
             "scopes": ["api"],
             "workloads": list(DEFAULT_HANDLER_WORKLOADS),
         }
@@ -783,17 +964,54 @@ HANDLER_SCHEMA_DIRECTIVE = (
     "# yaml-language-server: $schema=../../../../../schema/handler.schema.json\n"
 )
 
+# Schema directives for the connector-root files (one ``../`` per directory
+# level from the file to the repo-root ``schema/`` dir). connector.yaml and
+# summary.yaml both live at ``connectors/<vendor>/`` → two levels up.
+CONNECTOR_SCHEMA_DIRECTIVE = (
+    "# yaml-language-server: $schema=../../schema/connector.schema.json\n"
+)
+SUMMARY_SCHEMA_DIRECTIVE = (
+    "# yaml-language-server: $schema=../../schema/summary.schema.json\n"
+)
+
+
+class _NoAliasDumper(yaml.SafeDumper):
+    """A SafeDumper that never emits YAML anchors/aliases (``&id001`` /
+    ``*id001``).
+
+    The default ``yaml.safe_dump`` deduplicates repeated object references
+    (e.g. the shared ``scopes``/``workloads`` lists reused across handler
+    capabilities) into anchors + aliases. That is valid YAML but brittle
+    and hard to hand-review in a generated manifest, so we force every
+    occurrence to be written out in full.
+    """
+
+    def ignore_aliases(self, data: Any) -> bool:  # noqa: D401 - simple override
+        return True
+
+
+def _dump_yaml(data: Any, fh: Any) -> None:
+    """Dump ``data`` to ``fh`` with the no-alias dumper and stable key sort.
+
+    Single choke-point so every manifest file is serialized identically
+    (no anchors/aliases) — keeps output deterministic and review-friendly.
+    """
+    yaml.dump(data, fh, Dumper=_NoAliasDumper, default_flow_style=False)
+
 
 def write_handler_yaml(handler_yaml_path: Path, handler_data: dict) -> None:
     """Write a handler.yaml file with the schema directive line prepended.
 
     The schema directive is a yaml-language-server VS Code hint and should
-    appear as the first line of the file, before any YAML content.
+    appear as the first line of the file, before any YAML content. The
+    body is serialized with :class:`_NoAliasDumper` so repeated list
+    references (shared ``scopes``/``workloads``) are written out in full
+    rather than collapsed into ``&id001`` / ``*id001`` anchors.
     """
     handler_yaml_path.parent.mkdir(parents=True, exist_ok=True)
     with open(handler_yaml_path, "w") as fh:
         fh.write(HANDLER_SCHEMA_DIRECTIVE)
-        yaml.safe_dump(handler_data, fh)
+        _dump_yaml(handler_data, fh)
 
 
 SERIALIZER_PLACEHOLDER = "# TODO: serializer config\n"
@@ -1851,12 +2069,12 @@ _FEED_STRIPPED_PARAMS: frozenset[str] = frozenset(
 # Public feed reliabilities (sorted alphabetically, matching
 # GetAllPublicFeedReliabilities() in feedIndicator.go).
 FEED_RELIABILITY_OPTIONS: list[dict] = [
-    {"key": "A - Completely reliable", "value": "A - Completely reliable"},
-    {"key": "B - Usually reliable", "value": "B - Usually reliable"},
-    {"key": "C - Fairly reliable", "value": "C - Fairly reliable"},
-    {"key": "D - Not usually reliable", "value": "D - Not usually reliable"},
-    {"key": "E - Unreliable", "value": "E - Unreliable"},
-    {"key": "F - Reliability cannot be judged", "value": "F - Reliability cannot be judged"},
+    {"key": "A - Completely reliable", "label": "A - Completely reliable"},
+    {"key": "B - Usually reliable", "label": "B - Usually reliable"},
+    {"key": "C - Fairly reliable", "label": "C - Fairly reliable"},
+    {"key": "D - Not usually reliable", "label": "D - Not usually reliable"},
+    {"key": "E - Unreliable", "label": "E - Unreliable"},
+    {"key": "F - Reliability cannot be judged", "label": "F - Reliability cannot be judged"},
 ]
 FEED_RELIABILITY_DEFAULT = "F - Reliability cannot be judged"
 FEED_RELIABILITY_ADDITIONAL_INFO = (
@@ -2792,14 +3010,37 @@ def _integration_log_level_field() -> dict:
             "placeholder": "Select log level",
             "default_value": "Off",
             "values": [
-                {"key": "Off", "value": "Off"},
-                {"key": "Debug", "value": "Debug"},
-                {"key": "Verbose", "value": "Verbose"},
+                {"key": "Off", "label": "Off"},
+                {"key": "Debug", "label": "Debug"},
+                {"key": "Verbose", "label": "Verbose"},
             ],
             "create_modifiers": {"required": False, "hidden": False},
             "edit_modifiers": {"required": False, "hidden": False},
         },
     }
+
+
+def _required_license_for_capability(
+    cap_id: str, supported_modules: list[str] | None
+) -> list[str]:
+    """Compute ``config.required_license`` for a capability.
+
+    Base list is the integration's / pack's ``supported_modules`` (already
+    normalized to the capabilities.schema license enum by the caller). For
+    the license-restricted fetch capabilities (guide §3.4 note 6) the list
+    is intersected with ``{agentix, xsiam}`` so those capabilities are only
+    visible to customers holding one of those licenses.
+
+    Returns a (possibly empty) list — an empty list is valid per
+    capabilities.schema (means "always visible").
+    """
+    base = list(supported_modules or [])
+    if cap_id in _LICENSE_RESTRICTED_FETCH_CAPS:
+        if base:
+            return [lic for lic in base if lic in _AGENTIX_XSIAM_LICENSES]
+        # No declared modules → default to the agentix/xsiam restriction.
+        return list(_AGENTIX_XSIAM_LICENSES)
+    return base
 
 
 def build_capabilities_yaml(
@@ -2808,6 +3049,7 @@ def build_capabilities_yaml(
     handler_id: str = "",
     handler_dir: Path | None = None,
     existing_ids: set[str] | None = None,
+    supported_modules: list[str] | None = None,
 ) -> dict:
     """Build the dict for capabilities.yaml.
 
@@ -2845,20 +3087,35 @@ def build_capabilities_yaml(
         parent_entry: dict = {
             "id": cap_id,
             "title": CANONICAL_CAPABILITY_TITLES[cap_id],
+            # capabilities.schema REQUIRES a non-empty description (guide
+            # §3.4 — placeholder, flag for tech-writer review).
+            "description": CANONICAL_CAPABILITY_DESCRIPTIONS[cap_id],
             # Per guide §3.4 + §4.3 Salesforce reference.
             "default_enabled": True,
             "required": False,
         }
+        # config.required_license — aggregate of the integration's
+        # supported_modules, intersected with {agentix, xsiam} for the
+        # license-restricted fetch capabilities (guide §3.4 note 6).
+        required_license = _required_license_for_capability(
+            cap_id, supported_modules
+        )
+        parent_entry["config"] = {"required_license": required_license}
+
         # Capabilities are ALWAYS modelled as parent + one sub-capability,
         # even on a fresh connector. The parent carries the canonical family
         # id/title; the lone sub-capability is keyed by this handler's sub-cap
         # id ``<handler_id>-<cap_slug>`` (the id the handler.yaml and
         # configurations.yaml entries reference). The bare-slug fallback only
         # applies when no handler_id is supplied (legacy callers).
+        #
+        # Per guide §3.1 item 13: a capability with exactly ONE
+        # sub-capability marks that lone sub-cap ``required: true`` so
+        # selecting the parent implies the sub-cap.
         if handler_id:
             sub_cap_id = make_sub_capability_id(handler_id, cap_name)
             parent_entry["sub_capabilities"] = [
-                build_sub_capability_entry(sub_cap_id, cap_name)
+                build_sub_capability_entry(sub_cap_id, cap_name, required=True)
             ]
         capabilities.append(parent_entry)
 
@@ -3132,7 +3389,7 @@ def build_configurations_yaml(
     return {
         "metadata": {
             "title": "Configuration",
-            "description": "Adjust and refine your configurations",
+            "description": "Adjust and refine your configuration",
         },
         "configurations": configurations,
     }
@@ -3445,6 +3702,24 @@ def write_triggers_yaml(triggers_yaml_path: Path, triggers_data: dict) -> None:
         yaml.safe_dump(triggers_data, fh)
 
 
+CONNECTION_SCHEMA_DIRECTIVE = (
+    "# yaml-language-server: $schema=../../schema/connection.schema.json\n"
+)
+
+
+def write_connection_yaml(connection_yaml_path: Path, connection_data: dict) -> None:
+    """Write a connection.yaml file with the schema directive line prepended.
+
+    Mirrors :func:`write_capabilities_yaml` / :func:`write_triggers_yaml` —
+    connection.yaml lives at the connector root, so the directive uses the
+    same ``../../schema/`` relative prefix.
+    """
+    connection_yaml_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(connection_yaml_path, "w") as fh:
+        fh.write(CONNECTION_SCHEMA_DIRECTIVE)
+        yaml.safe_dump(connection_data, fh)
+
+
 # ---------------------------------------------------------------------------
 # XSOAR param type → connectus field mapping
 # ---------------------------------------------------------------------------
@@ -3628,13 +3903,14 @@ def _map_type_12(yml_param: dict) -> dict:
     return field
 
 
-def _build_select_values(yml_param: dict, label_key: str = "value") -> list[dict]:
+def _build_select_values(yml_param: dict, label_key: str = "label") -> list[dict]:
     """Build connectus `options.values` from the YAML's `options:` list.
 
-    Each connectus item is `{key: ..., value/label: ...}` depending on the
-    target field type:
-    - select uses {key, value}  → label_key="value"
-    - multi_select uses {key, label} → label_key="label"
+    Each connectus item is `{key: ..., label: ...}`. Per the live
+    field-options schema (``SelectValuesItem`` / ``MultiSelectValuesItem``)
+    BOTH ``select`` and ``multi_select`` use the ``{key, label}`` shape —
+    ``label_key`` is retained for call-site clarity but defaults to
+    ``"label"``.
     """
     items = []
     for v in yml_param.get("options", []) or []:
@@ -3647,7 +3923,7 @@ def _map_type_13(yml_param: dict) -> dict:
     field = {
         "id": yml_param["name"],
         "field_type": "select",
-        "options": {"values": _build_select_values(yml_param, label_key="value")},
+        "options": {"values": _build_select_values(yml_param, label_key="label")},
     }
     _apply_common_field_metadata(field, yml_param)
     return field
@@ -3661,11 +3937,11 @@ def _map_type_14(yml_param: dict) -> dict:
 
 
 def _map_type_15(yml_param: dict) -> dict:
-    """XSOAR type 15 — Single-select → connectus `select` with `{key, value}` items."""
+    """XSOAR type 15 — Single-select → connectus `select` with `{key, label}` items."""
     field = {
         "id": yml_param["name"],
         "field_type": "select",
-        "options": {"values": _build_select_values(yml_param, label_key="value")},
+        "options": {"values": _build_select_values(yml_param, label_key="label")},
     }
     _apply_common_field_metadata(field, yml_param)
     return field
@@ -3696,10 +3972,10 @@ def _map_type_16(yml_param: dict) -> dict:
 
 # Per guide Appendix A type 17: "Feed Expiration Policy".
 FEED_EXPIRATION_POLICY_VALUES: list[dict] = [
-    {"key": "Indicator Type", "value": "Indicator Type"},
-    {"key": "Time Interval", "value": "Time Interval"},
-    {"key": "Never Expire", "value": "Never Expire"},
-    {"key": "When removed from the feed", "value": "When removed from the feed"},
+    {"key": "Indicator Type", "label": "Indicator Type"},
+    {"key": "Time Interval", "label": "Time Interval"},
+    {"key": "Never Expire", "label": "Never Expire"},
+    {"key": "When removed from the feed", "label": "When removed from the feed"},
 ]
 
 # Per guide Appendix A type 18: "Indicator / Feed Reputation". The
@@ -3707,10 +3983,10 @@ FEED_EXPIRATION_POLICY_VALUES: list[dict] = [
 # None/Good/Suspicious/Bad. The platform consumer (BE+FE) expects the
 # Unknown/Benign/Suspicious/Malicious form below.
 INDICATOR_REPUTATION_VALUES: list[dict] = [
-    {"key": "Unknown", "value": "Unknown"},
-    {"key": "Benign", "value": "Benign"},
-    {"key": "Suspicious", "value": "Suspicious"},
-    {"key": "Malicious", "value": "Malicious"},
+    {"key": "Unknown", "label": "Unknown"},
+    {"key": "Benign", "label": "Benign"},
+    {"key": "Suspicious", "label": "Suspicious"},
+    {"key": "Malicious", "label": "Malicious"},
 ]
 
 
@@ -3884,12 +4160,21 @@ def derive_profile_id(
     gets ``_<slug(name)>`` appended so ids stay unique. ``seen_profile_ids`` is
     mutated in place to track emitted ids.
     """
-    profile_type = AUTH_TYPE_TO_PROFILE_TYPE.get(auth_type_entry.get("type", ""))
-    if profile_type is None:
-        raise ValueError(
-            f"Unknown auth_types[].type '{auth_type_entry.get('type')}'. "
-            f"Expected one of {sorted(AUTH_TYPE_TO_PROFILE_TYPE)}."
-        )
+    raw_type = auth_type_entry.get("type")
+    if raw_type is None:
+        # Legacy / name-only auth_type (no ``type``): derive a stable id from
+        # the entry name so handler + connection stay in lockstep without a
+        # canonical profile type. Real workflow outputs always carry ``type``.
+        name_slug = _slug_word(auth_type_entry.get("name", "") or "auth")
+        profile_type = name_slug or "auth"
+    else:
+        profile_type = AUTH_TYPE_TO_PROFILE_TYPE.get(raw_type)
+        if profile_type is None:
+            # ``type`` present but unrecognized → genuinely bad input.
+            raise ValueError(
+                f"Unknown auth_types[].type '{raw_type}'. "
+                f"Expected one of {sorted(AUTH_TYPE_TO_PROFILE_TYPE)}."
+            )
     purpose = _slug_word(integration_id)
     if len(purpose) < 3:
         purpose = f"{purpose}_xsoar"
@@ -3973,11 +4258,18 @@ def build_connection_profile(
     Non-auth proxy / insecure / engine fields are attached separately by
     :func:`attach_per_profile_connection_fields` (design D-D8 home 1).
     """
-    profile_type = AUTH_TYPE_TO_PROFILE_TYPE.get(auth_type_entry.get("type", ""))
-    if profile_type is None:
-        raise ValueError(
-            f"Unknown auth_types[].type '{auth_type_entry.get('type')}'."
-        )
+    raw_type = auth_type_entry.get("type")
+    if raw_type is None:
+        # Legacy / name-only auth_type: behave like a free-form (passthrough)
+        # profile — roles pass through unchanged and the title is derived.
+        profile_type = "passthrough"
+    else:
+        profile_type = AUTH_TYPE_TO_PROFILE_TYPE.get(raw_type)
+        if profile_type is None:
+            raise ValueError(
+                f"Unknown auth_types[].type '{raw_type}'. "
+                f"Expected one of {sorted(AUTH_TYPE_TO_PROFILE_TYPE)}."
+            )
     profile_id = derive_profile_id(auth_type_entry, integration_id, seen_profile_ids)
     xsoar_param_map = auth_type_entry.get("xsoar_param_map") or {}
     map_keys = set(xsoar_param_map.keys())
@@ -4313,6 +4605,12 @@ def build_engine_triggers(
 # stays filesystem-free). Signature: (handler_dir, new_id, original_id).
 SerializerBridge = Callable[[Path, str, str], None]
 
+# Materializes connectus field dict(s) from one XSOAR yml param dict. Bound to
+# ``map_xsoar_param_to_connectus_field`` at call sites. Declared here (above
+# ``attach_per_profile_connection_fields``) so per-profile rest-field emission
+# can be typed.
+FieldMapper = Callable[[dict], list[dict]]
+
 
 def _maybe_prefixed_id(
     base_id: str,
@@ -4339,6 +4637,26 @@ def _maybe_prefixed_id(
     return renamed
 
 
+def _materialize_rest_connection_fields(
+    pid: str,
+    yml_params_by_name: dict[str, dict] | None,
+    field_mapper: FieldMapper | None,
+) -> list[dict]:
+    """Materialize the connectus field(s) for a non-auth "rest" connection
+    param (server URL / host / port / region / ...).
+
+    Mirrors the body of the former
+    :func:`build_connection_general_configurations`: uses ``field_mapper``
+    when the integration YML carries the param, else falls back to a bare
+    ``input`` field. The caller is responsible for id-prefixing + serializer
+    bridging + ``event`` metadata.
+    """
+    yml = (yml_params_by_name or {}).get(pid)
+    if yml is None or field_mapper is None:
+        return [{"id": pid, "field_type": "input", "options": {}}]
+    return field_mapper(yml)
+
+
 def attach_per_profile_connection_fields(
     profiles: list[dict],
     integration_id: str,
@@ -4346,23 +4664,38 @@ def attach_per_profile_connection_fields(
     yml_params_by_name: dict[str, dict] | None = None,
     handler_dir: Path | None = None,
     serializer_bridge: SerializerBridge | None = None,
+    field_mapper: FieldMapper | None = None,
 ) -> list[dict]:
-    """Append proxy / insecure / engine fields into EACH profile (D-D8 home 1).
+    """Append the non-auth connection fields into EACH profile (D-D8 home 1).
+
+    Per the "no general_configurations" rule, ALL non-auth connection fields
+    live inside each auth profile:
+      - the **rest** of ``other_connection`` (server URL / host / port /
+        region / ...) — materialized via ``field_mapper`` and emitted FIRST,
+      - then ``proxy`` / ``insecure`` switches,
+      - then the engine 3-field pattern.
+
+    Every field is duplicated into every profile. A shared ``existing_ids``
+    set means the FIRST profile keeps the bare id and every subsequent
+    profile gets a ``<prefix>_<id>`` id plus a ``serializer.yaml``
+    ``field_mappings`` bridge back to the original XSOAR param name (C-D4).
 
     Returns the list of engine-visibility triggers (Part C.4) to merge into
     ``triggers.yaml`` — one rule-pair per profile that emitted engine fields.
 
     Honors Appendix G (no proxy + no engine) and Appendix H (no engine_group).
-    Multi-profile id collisions get a per-integration-prefixed id + serializer
-    bridge via ``serializer_bridge`` (C-D4).
     """
     excl = engine_exclusion_class(integration_id)
     prefix = _slug_word(integration_id)
 
-    # Which other_connection ids are proxy / insecure (Part B detection).
+    # Classify other_connection: proxy / insecure / engine are special; the
+    # REST (host/url/port/region) are generic non-auth fields.
     proxy_ids = [p for p in other_connection if classify_connection_param(p) == "proxy"]
     insecure_ids = [
         p for p in other_connection if classify_connection_param(p) == "insecure"
+    ]
+    rest_ids = [
+        p for p in other_connection if classify_connection_param(p) is None
     ]
 
     # Track ids already used across profiles for dedup-via-rename.
@@ -4374,6 +4707,33 @@ def attach_per_profile_connection_fields(
         if not cfgs:
             cfgs.append({"fields": []})
         target_fields = cfgs[0].setdefault("fields", [])
+
+        # --- rest of other_connection (host / url / port / region / ...) ---
+        # Emitted FIRST so the server/host fields render at the top of the
+        # profile form. Each materialized field is id-prefixed on the 2nd+
+        # profile and bridged back to its original XSOAR param name. They
+        # carry metadata.event.publish so the handler receives the value in
+        # the lifecycle event (they have no auth tag, so this is schema-valid).
+        for pid in rest_ids:
+            for raw in _materialize_rest_connection_fields(
+                pid, yml_params_by_name, field_mapper
+            ):
+                original_id = raw.get("id", pid)
+                field = dict(raw)
+                fid = _maybe_prefixed_id(
+                    original_id,
+                    prefix,
+                    existing_ids,
+                    handler_dir,
+                    serializer_bridge,
+                    original_id,
+                )
+                field["id"] = fid
+                options = field.setdefault("options", {})
+                options.setdefault("mask", False)
+                metadata = field.setdefault("metadata", {})
+                metadata.setdefault("event", {"publish": True})
+                target_fields.append(field)
 
         # --- proxy (skip entirely for Appendix G) ---
         if excl != "excluded":
@@ -4469,54 +4829,6 @@ def build_view_groups_registry(
     return registry
 
 
-FieldMapper = Callable[[dict], list[dict]]
-
-
-def build_connection_general_configurations(
-    integration_id: str,
-    rest_other_connection: list[str],
-    yml_params_by_name: dict[str, dict] | None,
-    field_mapper: FieldMapper,
-    handler_dir: Path | None = None,
-    serializer_bridge: SerializerBridge | None = None,
-) -> dict | None:
-    """Build ONE ``general_configurations`` block (Part D) for one integration's
-    tile, holding the REST of ``other_connection`` (server URL / host / port /
-    region / ...) — NOT proxy/insecure/engine (those are per-profile).
-
-    Each field is materialized via ``field_mapper`` (the manifest's
-    ``map_xsoar_param_to_connectus_field``), id-prefixed with the integration
-    prefix, and bridged back to the original XSOAR param name via
-    ``serializer_bridge``. Returns ``None`` when no "rest" fields remain.
-    """
-    prefix = integration_field_prefix(integration_id)
-    tile = slugify_view_group_id(integration_id)
-    fields: list[dict] = []
-
-    for pid in rest_other_connection:
-        if classify_connection_param(pid) is not None:
-            continue  # proxy / insecure are per-profile, never here.
-        yml = (yml_params_by_name or {}).get(pid)
-        if yml is None:
-            mapped = [{"id": pid, "field_type": "input", "options": {}}]
-        else:
-            mapped = field_mapper(yml)
-        for raw in mapped:
-            original_id = raw.get("id", pid)
-            field = dict(raw)
-            new_id = f"{prefix}_{original_id}"
-            field["id"] = new_id
-            options = field.setdefault("options", {})
-            options.setdefault("mask", False)
-            if handler_dir is not None and serializer_bridge is not None:
-                serializer_bridge(handler_dir, new_id, original_id)
-            fields.append(field)
-
-    if not fields:
-        return None
-    return {"view_group": tile, "fields": fields}
-
-
 def build_connection_yaml(
     auth_methods: dict,
     integration_id: str,
@@ -4555,7 +4867,11 @@ def build_connection_yaml(
         for entry in auth_types
     ]
 
-    # Part B/C — attach proxy/insecure/engine per profile (event.publish).
+    # Part B/C/D — attach ALL non-auth connection fields per profile: the rest
+    # of other_connection (host/url/port) first, then proxy/insecure, then the
+    # engine 3-field pattern. connection.yaml intentionally has NO
+    # general_configurations — every non-auth field is duplicated into each
+    # profile (id-prefixed + serializer-bridged on the 2nd+ profile).
     triggers = attach_per_profile_connection_fields(
         profiles,
         integration_id,
@@ -4563,6 +4879,7 @@ def build_connection_yaml(
         yml_params_by_name=yml_params_by_name,
         handler_dir=handler_dir,
         serializer_bridge=serializer_bridge,
+        field_mapper=field_mapper,
     )
 
     connection: dict[str, Any] = {
@@ -4578,28 +4895,65 @@ def build_connection_yaml(
         "profiles": profiles,
     }
 
-    # Part D — general_configurations for the REST of other_connection.
-    if field_mapper is not None:
-        rest = [
-            pid
-            for pid in other_connection
-            if classify_connection_param(pid) is None
-        ]
-        block = build_connection_general_configurations(
-            integration_id,
-            rest,
-            yml_params_by_name,
-            field_mapper,
-            handler_dir=handler_dir,
-            serializer_bridge=serializer_bridge,
-        )
-        if block is not None:
-            connection["general_configurations"] = {
-                "description": "Per-integration non-auth connection settings.",
-                "configurations": [block],
-            }
-
     return connection, triggers
+
+
+def merge_connection_data(
+    existing: dict,
+    new_connection: dict,
+) -> dict:
+    """Merge the new handler's connection dict (delta) into an existing
+    ``connection.yaml`` dict for the append path.
+
+    Strategy 1 (per user direction): the append case only adds the new
+    handler's auth profiles, its view-group(s) and its
+    general_configurations rows — everything else (top-level metadata,
+    prior profiles/view_groups) is owned by the from-scratch path and is
+    left untouched.
+
+    Mutates and returns ``existing``:
+      - ``profiles[]``: append new profiles whose ``id`` is not already
+        present (skip duplicates).
+      - ``view_groups[]``: union by ``id`` (skip duplicates).
+      - ``general_configurations.configurations[]``: append the new
+        handler's configuration block(s).
+      - ``metadata``: only seeded from ``new_connection`` when the existing
+        file had none (e.g. first-ever connection.yaml on this connector).
+
+    Field-id collisions across profiles are handled upstream by
+    :func:`build_connection_yaml` via the serializer bridge (the new
+    handler's profile field ids were already deduped against
+    ``existing`` because the caller threads ``connection_data`` through
+    :func:`collect_existing_field_ids` before building).
+    """
+    if not existing.get("metadata") and new_connection.get("metadata"):
+        existing["metadata"] = new_connection["metadata"]
+
+    # Profiles — append, skip duplicate ids.
+    existing_profiles = existing.setdefault("profiles", [])
+    existing_profile_ids = {p.get("id") for p in existing_profiles}
+    for profile in new_connection.get("profiles", []) or []:
+        if profile.get("id") in existing_profile_ids:
+            continue
+        existing_profiles.append(profile)
+        existing_profile_ids.add(profile.get("id"))
+
+    # View-groups — union by id.
+    new_vgs = new_connection.get("view_groups", []) or []
+    if new_vgs:
+        existing_vgs = existing.setdefault("view_groups", [])
+        existing_vg_ids = {vg.get("id") for vg in existing_vgs}
+        for vg in new_vgs:
+            if vg.get("id") in existing_vg_ids:
+                continue
+            existing_vgs.append(vg)
+            existing_vg_ids.add(vg.get("id"))
+
+    # connection.yaml intentionally has NO general_configurations — every
+    # non-auth connection field lives inside each auth profile (emitted by
+    # attach_per_profile_connection_fields). Nothing to merge here.
+
+    return existing
 
 
 # ---------------------------------------------------------------------------
@@ -4613,6 +4967,7 @@ def create_manifest_from_scratch(
     mapped_params: dict[str, Any],
     auth_methods: dict[str, Any],
     author_image_path: Path | None = None,
+    vendor: str = "",
     manual_connector_fields: dict | None = None,
     manual_handler_fields: dict | None = None,
     manual_summary_fields: dict | None = None,
@@ -4640,13 +4995,6 @@ def create_manifest_from_scratch(
             f"{list(manual_serializer_fields.keys())} but serializer.yaml is a "
             "string stub — overrides will NOT be applied until serializer becomes dict-based."
         )
-    if manual_connection_fields:
-        logger.info(
-            "[manifest_generator] manual_connection_fields received with keys "
-            f"{list(manual_connection_fields.keys())} but connection.yaml is not yet "
-            "implemented — overrides will NOT be applied until that file is built."
-        )
-
     # Create the connector directory if it doesn't exist
     connector_dir.mkdir(parents=True, exist_ok=True)
 
@@ -4659,15 +5007,30 @@ def create_manifest_from_scratch(
             connector_dir, connector_id, author_image_path
         )
 
-    # Generate connector.yaml
+    # Generate connector.yaml. vendor (when supplied) drives id/title
+    # derivation + description; categories come from the pack metadata
+    # (schema requires >=1 — flag when none are found).
     pack_tags = get_pack_tags(integration_path)
+    pack_categories = get_pack_categories(integration_path)
+    if vendor and not pack_categories:
+        logger.warning(
+            "[manifest_generator] No categories found in pack_metadata.json for "
+            f"{integration_path}; connector.yaml metadata.categories will be empty, "
+            "which FAILS connector.schema (minItems: 1). Flag for manual review."
+        )
     connector_data = build_connector_yaml(
-        connector_title, pack_tags, author_image_filename=author_image_filename
+        connector_title,
+        pack_tags,
+        author_image_filename=author_image_filename,
+        vendor=vendor,
+        mapped_params=mapped_params,
+        categories=pack_categories,
     )
     connector_data = deep_merge_dicts(connector_data, manual_connector_fields or {})
     connector_yaml_path = connector_dir / "connector.yaml"
     with open(connector_yaml_path, "w") as fh:
-        yaml.safe_dump(connector_data, fh)
+        fh.write(CONNECTOR_SCHEMA_DIRECTIVE)
+        _dump_yaml(connector_data, fh)
     logger.info(f"[manifest_generator] Generated {connector_yaml_path}")
 
     # Generate handler.yaml for this integration. Pack id is sourced
@@ -4697,7 +5060,8 @@ def create_manifest_from_scratch(
     summary_data = deep_merge_dicts(summary_data, manual_summary_fields or {})
     summary_yaml_path = connector_dir / "summary.yaml"
     with open(summary_yaml_path, "w") as fh:
-        yaml.safe_dump(summary_data, fh)
+        fh.write(SUMMARY_SCHEMA_DIRECTIVE)
+        _dump_yaml(summary_data, fh)
     logger.info(f"[manifest_generator] Generated {summary_yaml_path}")
 
     # Dedup bookkeeping: from-scratch starts with an empty set; both
@@ -4715,13 +5079,16 @@ def create_manifest_from_scratch(
         if p.get("name")
     }
 
-    # Generate capabilities.yaml
+    # Generate capabilities.yaml. supported_modules drives each
+    # capability's config.required_license (guide §3.4).
+    supported_modules = get_supported_modules(integration_yml, integration_path)
     capabilities_data = build_capabilities_yaml(
         mapped_params,
         yml_params_by_name=yml_params_by_name,
         handler_id=handler_id,
         handler_dir=handler_dir,
         existing_ids=existing_field_ids,
+        supported_modules=supported_modules,
     )
     capabilities_data = deep_merge_dicts(
         capabilities_data, manual_capabilities_fields or {}
@@ -4817,14 +5184,50 @@ def create_manifest_from_scratch(
         )
         all_triggers.extend(fi_result.get("triggers", []))
 
+    # Generate connection.yaml (Parts A–D) — profiles from auth_types,
+    # per-profile proxy/insecure/engine (event.publish), and a
+    # general_configurations block for the rest of other_connection. The
+    # field_mapper reuses the existing param→field materializer and the
+    # serializer_bridge reuses the existing serializer registration so
+    # cross-file field-id collisions are renamed + bridged. Engine
+    # visibility triggers are folded into the connector's single
+    # triggers.yaml.
+    #
+    # connection.yaml is OPTIONAL (README "connection.yaml is optional"):
+    # when there are no auth_types the connector is anonymous (handler uses
+    # the auth='none' shape) and no connection.yaml is emitted. This mirrors
+    # :func:`build_handler_yaml`'s anonymous branch.
+    if auth_methods.get("auth_types"):
+        integration_id = integration_yml.get("commonfields", {}).get("id", "")
+        integration_display = integration_yml.get("display", "")
+        connection_data, engine_triggers = build_connection_yaml(
+            auth_methods,
+            integration_id,
+            connector_title=connector_title,
+            yml_params_by_name=yml_params_by_name,
+            field_mapper=map_xsoar_param_to_connectus_field,
+            handler_dir=handler_dir,
+            serializer_bridge=register_serializer_entry,
+            integration_display=integration_display,
+        )
+        all_triggers.extend(engine_triggers)
+        connection_data = deep_merge_dicts(
+            connection_data, manual_connection_fields or {}
+        )
+        connection_yaml_path = connector_dir / "connection.yaml"
+        write_connection_yaml(connection_yaml_path, connection_data)
+        logger.info(f"[manifest_generator] Generated {connection_yaml_path}")
+    else:
+        logger.info(
+            "[manifest_generator] No auth_types — anonymous connector; "
+            "connection.yaml not generated (optional per schema)."
+        )
+
     if all_triggers:
         triggers_data = build_triggers_yaml(all_triggers)
         triggers_yaml_path = connector_dir / "triggers.yaml"
         write_triggers_yaml(triggers_yaml_path, triggers_data)
         logger.info(f"[manifest_generator] Generated {triggers_yaml_path}")
-
-    # TODO: generate connection.yaml
-    # TODO: generate connection.yaml from auth_methods
 
 
 def add_handler_to_existing_connector(
@@ -4866,12 +5269,6 @@ def add_handler_to_existing_connector(
             f"{list(manual_serializer_fields.keys())} but serializer.yaml is a "
             "string stub — overrides will NOT be applied until serializer becomes dict-based."
         )
-    if manual_connection_fields:
-        logger.info(
-            "[manifest_generator] manual_connection_fields received with keys "
-            f"{list(manual_connection_fields.keys())} but connection.yaml is not yet "
-            "implemented — overrides will NOT be applied until that file is built."
-        )
     # Note: manual_summary_fields is accepted for API uniformity but the
     # append path does not touch summary.yaml.
     _ = manual_summary_fields
@@ -4900,7 +5297,8 @@ def add_handler_to_existing_connector(
     connector_data = deep_merge_dicts(connector_data, manual_connector_fields or {})
 
     with open(connector_yaml_path, "w") as fh:
-        yaml.safe_dump(connector_data, fh)
+        fh.write(CONNECTOR_SCHEMA_DIRECTIVE)
+        _dump_yaml(connector_data, fh)
     logger.info(f"[manifest_generator] Updated {connector_yaml_path}")
 
     # Pre-flight: pre-compute the new handler id and check the handler.yaml
@@ -5104,6 +5502,45 @@ def add_handler_to_existing_connector(
         )
         all_triggers.extend(fi_result.get("triggers", []))
 
+    # Build the NEW handler's connection delta (Parts A–D) and merge it into
+    # the existing connection.yaml: append new auth profiles, union the new
+    # view-group, and append the new general_configurations rows. The new
+    # handler's profile/general-config field ids were already deduped against
+    # the prior connection.yaml because ``connection_data`` was threaded
+    # through :func:`collect_existing_field_ids` above; the serializer_bridge
+    # registers field_mappings for any renamed ids. Engine visibility
+    # triggers are folded into ``all_triggers`` before the merge-write below.
+    #
+    # When the new handler is anonymous (no auth_types) it contributes no
+    # connection profiles; connection.yaml is left untouched (and not
+    # created when it did not already exist), mirroring the from-scratch
+    # anonymous branch.
+    if auth_methods.get("auth_types"):
+        integration_id = integration_yml.get("commonfields", {}).get("id", "")
+        integration_display = integration_yml.get("display", "")
+        new_connection, engine_triggers = build_connection_yaml(
+            auth_methods,
+            integration_id,
+            connector_title=connector_title,
+            yml_params_by_name=yml_params_by_name,
+            field_mapper=map_xsoar_param_to_connectus_field,
+            handler_dir=new_handler_dir,
+            serializer_bridge=register_serializer_entry,
+            integration_display=integration_display,
+        )
+        all_triggers.extend(engine_triggers)
+        merge_connection_data(connection_data, new_connection)
+        connection_data = deep_merge_dicts(
+            connection_data, manual_connection_fields or {}
+        )
+        write_connection_yaml(connection_yaml_path, connection_data)
+        logger.info(f"[manifest_generator] Updated {connection_yaml_path}")
+    else:
+        logger.info(
+            "[manifest_generator] New handler is anonymous (no auth_types) — "
+            "connection.yaml left untouched."
+        )
+
     if all_triggers:
         triggers_data = build_triggers_yaml(all_triggers)
         triggers_yaml_path = connector_dir / "triggers.yaml"
@@ -5119,9 +5556,6 @@ def add_handler_to_existing_connector(
             triggers_data["triggers"] = existing_list + triggers_data["triggers"]
         write_triggers_yaml(triggers_yaml_path, triggers_data)
         logger.info(f"[manifest_generator] Updated {triggers_yaml_path}")
-
-    # TODO: append to connection.yaml (skip existing profile ids)
-    # TODO: generate connection.yaml from auth_methods
 
 
 # ---------------------------------------------------------------------------
@@ -5167,6 +5601,18 @@ def generate_manifest(
             "connector's root as <connector_id><source_suffix>. Used to "
             "populate connector.yaml's metadata.author_image field. "
             "From-scratch path only — silently ignored on the append path."
+        ),
+    ),
+    vendor: str = typer.Option(
+        "",
+        "--vendor",
+        help=(
+            "Vendor name (e.g. 'Microsoft Graph', 'Okta'). Drives "
+            "connector.yaml metadata.vendor, the description "
+            "('integration for <vendor> products.'), and the id/title "
+            "capability-suffix derivation (guide §3.3.1). From-scratch "
+            "path only. When omitted, the legacy stub id/title/description "
+            "are emitted."
         ),
     ),
     manual_connector_fields: str = typer.Option(
@@ -5270,6 +5716,7 @@ def generate_manifest(
             mapped_params=mapped_params_dict,
             auth_methods=auth_methods_dict,
             author_image_path=author_image_path,
+            vendor=vendor,
             manual_connector_fields=manual_connector_fields_dict,
             manual_handler_fields=manual_handler_fields_dict,
             manual_summary_fields=manual_summary_fields_dict,

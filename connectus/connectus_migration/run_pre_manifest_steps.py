@@ -27,6 +27,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import subprocess
 import sys
@@ -46,6 +47,7 @@ MANIFEST_GENERATOR = (
     REPO_ROOT / "connectus" / "connectus_migration" / "manifest_generator.py"
 )
 IGNORE_PARAMS_FILE = REPO_ROOT / "connectus" / "default_ignore_params.txt"
+AUTHOR_IMAGE_CSV = REPO_ROOT / "connectus" / "connector-id-to-author-image.csv"
 
 DEFAULT_OUT_DIR = REPO_ROOT / ".tmp_premanifest"
 
@@ -103,6 +105,78 @@ def _visible(param: dict) -> bool:
     hidden = param.get("hidden")
     # hidden may be a bool or a non-empty list of marketplaces — both hide it.
     return not bool(hidden)
+
+
+def _lookup_author_image(connector_id: str) -> Path | None:
+    """Resolve the author image path for ``connector_id`` from the CSV.
+
+    ``connector_id`` is the workflow's connector id (``context.connector_id``)
+    — which is what the CSV is keyed by — and may differ from the workflow
+    ``integration_id`` (e.g. integration ``"Microsoft Graph"`` maps to
+    connector ``"Microsoft Security"``).
+
+    The CSV (``connector-id-to-author-image.csv``) maps a "Connector ID"
+    to a repo-relative "Author image path". Matching is best-effort:
+
+      1. Exact match on Connector ID (case-insensitive).
+      2. Fallback: case-insensitive substring/contains match in either
+         direction (e.g. ``"Microsoft Graph"`` → ``"Microsoft MS Graph"``).
+
+    Returns the resolved absolute :class:`Path` to the image, or ``None``
+    when no row matches or the mapped image file does not exist (a warning
+    is printed in both skip cases — the manifest is still generated, just
+    without an author image).
+    """
+    if not AUTHOR_IMAGE_CSV.is_file():
+        print(f"  [author-image] CSV not found: {AUTHOR_IMAGE_CSV} — skipping")
+        return None
+
+    target = connector_id.strip().lower()
+    rows: list[tuple[str, str]] = []
+    with open(AUTHOR_IMAGE_CSV, newline="") as fh:
+        reader = csv.DictReader(fh)
+        for row in reader:
+            csv_connector_id = (row.get("Connector ID") or "").strip()
+            image_path = (row.get("Author image path") or "").strip()
+            if csv_connector_id and image_path:
+                rows.append((csv_connector_id, image_path))
+
+    # 1. Exact (case-insensitive) match.
+    image_rel: str | None = None
+    for csv_connector_id, image_path in rows:
+        if csv_connector_id.lower() == target:
+            image_rel = image_path
+            break
+
+    # 2. Fallback: case-insensitive substring/contains match.
+    if image_rel is None:
+        for csv_connector_id, image_path in rows:
+            cid = csv_connector_id.lower()
+            if target in cid or cid in target:
+                image_rel = image_path
+                print(
+                    f"  [author-image] no exact match for '{connector_id}'; "
+                    f"using closest '{csv_connector_id}'"
+                )
+                break
+
+    if image_rel is None:
+        print(
+            f"  [author-image] no Connector ID match for '{connector_id}' "
+            f"in CSV — skipping author image"
+        )
+        return None
+
+    image_path = (REPO_ROOT / image_rel).resolve()
+    if not image_path.is_file():
+        print(
+            f"  [author-image] mapped image not found: {image_path} — "
+            f"skipping author image"
+        )
+        return None
+
+    print(f"  [author-image] {image_path.relative_to(REPO_ROOT)}")
+    return image_path
 
 
 # ---------------------------------------------------------------------------
@@ -496,23 +570,31 @@ def step_3c_generate_manifest(
     generated_root = out_dir / "generated_manifest"
     generated_root.mkdir(parents=True, exist_ok=True)
 
-    proc = _run(
-        [
-            sys.executable,
-            str(MANIFEST_GENERATOR),
-            str(yml_path),
-            connector_title,
-            json.dumps(params_to_capabilities),
-            json.dumps(auth_details),
-            "--connectors-root",
-            str(generated_root),
-        ],
-        timeout=LONG_TIMEOUT,
-    )
+    # Author image is keyed by the connector id (context.connector_id),
+    # not the workflow integration_id — they can differ (e.g. integration
+    # 'Microsoft Graph' → connector 'Microsoft Security').
+    connector_id = context.get("connector_id") or integration_id
+    author_image_path = _lookup_author_image(connector_id)
+
+    cmd = [
+        sys.executable,
+        str(MANIFEST_GENERATOR),
+        str(yml_path),
+        connector_title,
+        json.dumps(params_to_capabilities),
+        json.dumps(auth_details),
+        "--connectors-root",
+        str(generated_root),
+    ]
+    if author_image_path is not None:
+        cmd += ["--author-image-path", str(author_image_path)]
+
+    proc = _run(cmd, timeout=LONG_TIMEOUT)
     result = {
         "connector_title": connector_title,
         "connectors_root": str(generated_root),
         "integration_path": str(yml_path),
+        "author_image_path": str(author_image_path) if author_image_path else "",
         "returncode": proc.returncode,
         "stdout": proc.stdout.strip(),
         "stderr": proc.stderr.strip(),

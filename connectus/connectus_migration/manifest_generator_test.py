@@ -14,6 +14,7 @@ import yaml
 from manifest_generator import (
     ASSETSFETCHINTERVAL_FALLBACK_DEFAULT,
     ASSETSFETCHINTERVAL_PARAM_NAME,
+    CANONICAL_CAPABILITY_DESCRIPTIONS,
     CAPABILITIES_SCHEMA_DIRECTIVE,
     DURATION_UNITS,
     EVENTFETCHINTERVAL_FALLBACK_DEFAULT,
@@ -1200,18 +1201,27 @@ def test_build_capabilities_yaml_shape() -> None:
     assert fields[0]["field_type"] == "input"
     assert fields[0]["metadata"]["connector"]["parameter"] == "instance_name"
     assert len(fields) == 1
+    # Called without handler_id -> no sub_capabilities; parents now carry
+    # description + config.required_license (review point 7). fetch-issues
+    # is license-restricted -> agentix/xsiam; TI&E is unrestricted -> [].
     assert data["capabilities"] == [
         {
             "id": "fetch-issues",
             "title": "Fetch Issues",
+            "description": CANONICAL_CAPABILITY_DESCRIPTIONS["fetch-issues"],
             "default_enabled": True,
             "required": False,
+            "config": {"required_license": ["agentix", "xsiam"]},
         },
         {
             "id": "threat-intelligence-and-enrichment",
             "title": "Threat Intelligence and Enrichment",
+            "description": CANONICAL_CAPABILITY_DESCRIPTIONS[
+                "threat-intelligence-and-enrichment"
+            ],
             "default_enabled": True,
             "required": False,
+            "config": {"required_license": []},
         },
     ]
 
@@ -1318,7 +1328,7 @@ def test_build_configurations_yaml_shape() -> None:
 
     assert data["metadata"] == {
         "title": "Configuration",
-        "description": "Adjust and refine your configurations",
+        "description": "Adjust and refine your configuration",
     }
     assert data["configurations"] == [
         {
@@ -1595,22 +1605,30 @@ def test_create_manifest_from_scratch_generates_capabilities_yaml_with_schema_di
         {
             "id": "fetch-issues",
             "title": "Fetch Issues",
+            "description": CANONICAL_CAPABILITY_DESCRIPTIONS["fetch-issues"],
             "default_enabled": True,
             "required": False,
+            "config": {"required_license": ["agentix", "xsiam"]},
             "sub_capabilities": [
                 build_sub_capability_entry(
-                    "xsoar-salesforce-fetch-issues", "Fetch Issues"
+                    "xsoar-salesforce-fetch-issues", "Fetch Issues", required=True
                 )
             ],
         },
         {
             "id": "automation-and-remediation",
             "title": "Automation and Remediation",
+            "description": CANONICAL_CAPABILITY_DESCRIPTIONS[
+                "automation-and-remediation"
+            ],
             "default_enabled": True,
             "required": False,
+            "config": {"required_license": []},
             "sub_capabilities": [
                 build_sub_capability_entry(
-                    "xsoar-salesforce-automation-and-remediation", "Automation"
+                    "xsoar-salesforce-automation-and-remediation",
+                    "Automation",
+                    required=True,
                 )
             ],
         },
@@ -1658,7 +1676,7 @@ def test_create_manifest_from_scratch_generates_configurations_yaml_without_sche
 
     assert data["metadata"] == {
         "title": "Configuration",
-        "description": "Adjust and refine your configurations",
+        "description": "Adjust and refine your configuration",
     }
     # Per-capability entries now carry view_group.
     cfg_entries = data["configurations"]
@@ -1718,9 +1736,22 @@ def test_create_manifest_from_scratch_handler_capabilities_populated(
     # entry carries its own ``workloads`` (the per-handler default
     # ``["xsoar-pod"]``). The previous design that left workloads off
     # would fail the AuthOption schema (workloads is REQUIRED).
+    # Each auth_option ``id`` is the connection profile id
+    # (``<profile_type>.<integration_slug>``) and carries ``view_group`` =
+    # the integration tile id so handler and connection.yaml stay in lockstep.
     expected_auth_options = [
-        {"id": "oauth2", "scopes": ["api"], "workloads": ["xsoar-pod"]},
-        {"id": "api_key", "scopes": ["api"], "workloads": ["xsoar-pod"]},
+        {
+            "id": "oauth2.salesforce",
+            "view_group": "salesforce",
+            "scopes": ["api"],
+            "workloads": ["xsoar-pod"],
+        },
+        {
+            "id": "api_key.salesforce",
+            "view_group": "salesforce",
+            "scopes": ["api"],
+            "workloads": ["xsoar-pod"],
+        },
     ]
     # Per Batch 2 (A.2.3): canonical capability ids — Automation →
     # automation-and-remediation.
@@ -1806,27 +1837,39 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
         first_line = fh.readline()
         capabilities_data = yaml.safe_load(fh)
     assert first_line == CAPABILITIES_SCHEMA_DIRECTIVE
-    # Per Batch 2: canonical capability ids + required schema fields.
+    # Per Batch 2 + review point 7: canonical capability ids + required
+    # schema fields, now including description + config.required_license,
+    # sub-cap default_enabled:false, and lone sub-cap required:true.
+    # No supported_modules supplied -> fetch-issues defaults to the
+    # agentix/xsiam restriction; automation-and-remediation gets [].
     assert capabilities_data["capabilities"] == [
         {
             "id": "fetch-issues",
             "title": "Fetch Issues",
+            "description": CANONICAL_CAPABILITY_DESCRIPTIONS["fetch-issues"],
             "default_enabled": True,
             "required": False,
+            "config": {"required_license": ["agentix", "xsiam"]},
             "sub_capabilities": [
                 build_sub_capability_entry(
-                    "xsoar-salesforce-fetch-issues", "Fetch Issues"
+                    "xsoar-salesforce-fetch-issues", "Fetch Issues", required=True
                 )
             ],
         },
         {
             "id": "automation-and-remediation",
             "title": "Automation and Remediation",
+            "description": CANONICAL_CAPABILITY_DESCRIPTIONS[
+                "automation-and-remediation"
+            ],
             "default_enabled": True,
             "required": False,
+            "config": {"required_license": []},
             "sub_capabilities": [
                 build_sub_capability_entry(
-                    "xsoar-salesforce-automation-and-remediation", "Automation"
+                    "xsoar-salesforce-automation-and-remediation",
+                    "Automation",
+                    required=True,
                 )
             ],
         },
@@ -1867,15 +1910,23 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
         handler_data = yaml.safe_load(fh)
     # Capabilities are always sub-capabilities — handler references the
     # ``xsoar-salesforce-<cap_slug>`` sub-cap ids.
+    _expected_auth_options = [
+        {
+            "id": "oauth2.salesforce",
+            "view_group": "salesforce",
+            "scopes": ["api"],
+            "workloads": ["xsoar-pod"],
+        }
+    ]
     assert handler_data["capabilities"] == [
         {
             "id": "xsoar-salesforce-fetch-issues",
-            "auth_options": [{"id": "oauth2", "scopes": ["api"], "workloads": ["xsoar-pod"]}],
+            "auth_options": _expected_auth_options,
             "actions": _expected_action("fetch-issues"),
         },
         {
             "id": "xsoar-salesforce-automation-and-remediation",
-            "auth_options": [{"id": "oauth2", "scopes": ["api"], "workloads": ["xsoar-pod"]}],
+            "auth_options": _expected_auth_options,
         },
     ]
 
@@ -1934,7 +1985,7 @@ def _write_existing_configurations_yaml(
     payload = {
         "metadata": {
             "title": "Configuration",
-            "description": "Adjust and refine your configurations",
+            "description": "Adjust and refine your configuration",
         },
         "configurations": configurations,
     }
@@ -2134,7 +2185,14 @@ def test_append_handler_with_new_capability_adds_to_all_files(
     assert new_handler_data["capabilities"] == [
         {
             "id": "xsoar-my-integration-fetch-issues",
-            "auth_options": [{"id": "oauth2", "scopes": ["api"], "workloads": ["xsoar-pod"]}],
+            "auth_options": [
+                {
+                    "id": "oauth2.my_integration",
+                    "view_group": "my-integration",
+                    "scopes": ["api"],
+                    "workloads": ["xsoar-pod"],
+                }
+            ],
             "actions": _expected_action("fetch-issues"),
         },
     ]
@@ -2461,7 +2519,14 @@ def test_append_handler_case2_promotes_existing_flat_capability(
     assert new_handler_data["capabilities"] == [
         {
             "id": "xsoar-jira-fetch-issues",
-            "auth_options": [{"id": "api_key", "scopes": ["api"], "workloads": ["xsoar-pod"]}],
+            "auth_options": [
+                {
+                    "id": "api_key.jira",
+                    "view_group": "jira",
+                    "scopes": ["api"],
+                    "workloads": ["xsoar-pod"],
+                }
+            ],
             "actions": _expected_action("fetch-issues"),
         }
     ]
@@ -3027,7 +3092,7 @@ def test_add_handler_to_existing_connector_applies_manual_handler_fields(
     assert data["metadata"]["version"] == "1.0.0"
 
 
-def test_serializer_and_connection_manual_fields_logged_but_not_applied(
+def test_serializer_manual_fields_logged_and_connection_manual_fields_applied(
     tmp_path: Path, caplog: pytest.LogCaptureFixture
 ) -> None:
     integration_yml = _make_pack_with_integration(
@@ -3044,22 +3109,28 @@ def test_serializer_and_connection_manual_fields_logged_but_not_applied(
             integration_path=integration_yml,
             connector_title="My Connector",
             mapped_params={},
-            auth_methods={},
+            auth_methods={"auth_types": [{"type": "APIKey", "name": "k"}]},
             manual_serializer_fields={"foo": "bar"},
             manual_connection_fields={"baz": "qux"},
         )
 
-    # INFO log messages emitted
+    # serializer.yaml is still a string stub — manual_serializer_fields are
+    # logged but NOT applied.
     log_messages = "\n".join(rec.getMessage() for rec in caplog.records)
     assert "manual_serializer_fields received" in log_messages
     assert "serializer.yaml is a string stub" in log_messages
-    assert "manual_connection_fields received" in log_messages
-    assert "connection.yaml is not yet" in log_messages
 
-    # Per Batch 7 (Part A.7.1): serializer.yaml is OPTIONAL and is NOT
-    # generated when no field_mappings collide. The manual_serializer_fields
-    # override is therefore not applied to disk (and the log message
-    # surfaces that nothing was written).
+    # connection.yaml IS now generated (auth_types present) and
+    # manual_connection_fields ARE deep-merged onto it.
+    connection_yaml_path = connector_dir / "connection.yaml"
+    assert connection_yaml_path.exists()
+    with open(connection_yaml_path) as fh:
+        fh.readline()  # skip schema directive
+        connection_data = yaml.safe_load(fh)
+    assert connection_data.get("baz") == "qux"
+    # Sanity: the auth profile was emitted too.
+    assert connection_data["profiles"][0]["id"] == "api_key.myint"
+
     serializer_yaml_path = (
         connector_dir
         / "components"
@@ -3558,8 +3629,9 @@ def test_emit_field_for_param_rich_type_15_select_with_options_values():
     field = emit_field_for_param("auth_type", {"auth_type": yml})[0]
     assert field["field_type"] == "select"
     values = field["options"]["values"]
-    assert {"key": "Client Credentials", "value": "Client Credentials"} in values
-    assert {"key": "Authorization Code", "value": "Authorization Code"} in values
+    # Live field-options.schema requires {key, label} for select fields.
+    assert {"key": "Client Credentials", "label": "Client Credentials"} in values
+    assert {"key": "Authorization Code", "label": "Authorization Code"} in values
 
 
 def test_emit_field_for_param_type_9_credentials_splits_into_two_fields():
@@ -5980,3 +6052,419 @@ def test_create_manifest_from_scratch_with_fetch_issues_capability(tmp_path: Pat
     assert (connector_dir / "connector.yaml").exists()
     assert (connector_dir / "capabilities.yaml").exists()
     assert (connector_dir / "configurations.yaml").exists()
+
+
+# ---------------------------------------------------------------------------
+# connection.yaml wiring — create_manifest_from_scratch + append path
+# ---------------------------------------------------------------------------
+def _read_connection_yaml(connector_dir: Path) -> dict:
+    """Load connector_dir/connection.yaml stripping the schema directive."""
+    path = connector_dir / "connection.yaml"
+    with open(path) as fh:
+        fh.readline()  # skip schema directive
+        return yaml.safe_load(fh)
+
+
+def _real_shape_auth_methods() -> dict:
+    """A real-workflow-shaped auth_methods (type + xsoar_param_map +
+    other_connection) exercising Parts A–D + engine triggers."""
+    return {
+        "auth_types": [
+            {
+                "type": "Passthrough",
+                "name": "passthrough",
+                "xsoar_param_map": {
+                    "creds.identifier": "username",
+                    "creds.password": "password",
+                },
+            }
+        ],
+        # host → general_configurations (Part D); proxy/insecure → per-profile
+        # (Part B); engine emitted per-profile (Part C, MyInt is not excluded).
+        "other_connection": ["host", "proxy", "insecure"],
+    }
+
+
+def test_create_manifest_from_scratch_generates_connection_yaml(tmp_path: Path):
+    integration_yml_path = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "myconnector"
+
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={
+            "commonfields": {"id": "MyInt"},
+            "display": "My Integration",
+            "configuration": [
+                {"name": "host", "type": 0, "display": "Host URL"},
+                {"name": "creds", "type": 9, "display": "Credentials"},
+            ],
+        },
+        integration_path=integration_yml_path,
+        connector_title="My Connector",
+        mapped_params={"general_configurations": []},
+        auth_methods=_real_shape_auth_methods(),
+    )
+
+    conn = _read_connection_yaml(connector_dir)
+
+    # Part A — one auth profile, id == handler auth_option id.
+    assert [p["id"] for p in conn["profiles"]] == ["passthrough.myint"]
+
+    # view_groups registry — one tile per integration.
+    assert [vg["id"] for vg in conn["view_groups"]] == ["myint"]
+
+    # ALL non-auth connection fields (host + proxy/insecure/engine) are
+    # attached to the profile with event.publish — connection.yaml has NO
+    # general_configurations.
+    assert "general_configurations" not in conn
+    profile_field_ids = {
+        f["id"]
+        for cfg in conn["profiles"][0]["configurations"]
+        for f in cfg["fields"]
+    }
+    assert "proxy" in profile_field_ids
+    assert "insecure" in profile_field_ids
+    assert "engine_mode" in profile_field_ids
+    # host (the rest of other_connection) is now per-profile too.
+    assert "host" in profile_field_ids
+
+    # Handler auth_option id is in lockstep with the profile id + carries
+    # the view_group tile.
+    handler_yaml = (
+        connector_dir
+        / "components"
+        / "handlers"
+        / "xsoar-myint"
+        / "handler.yaml"
+    )
+    with open(handler_yaml) as fh:
+        fh.readline()
+        handler_data = yaml.safe_load(fh)
+    # No capabilities mapped → handler still emits no caps; verify the
+    # connection profile id matches what build_handler_yaml would derive.
+    from manifest_generator import derive_profile_id
+
+    assert (
+        derive_profile_id(
+            {"type": "Passthrough", "name": "passthrough"}, "MyInt"
+        )
+        == "passthrough.myint"
+    )
+
+    # Engine visibility triggers folded into the single triggers.yaml.
+    triggers_yaml = connector_dir / "triggers.yaml"
+    assert triggers_yaml.exists()
+
+
+def test_create_manifest_from_scratch_anonymous_skips_connection_yaml(
+    tmp_path: Path,
+):
+    integration_yml_path = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "anon"
+
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={"commonfields": {"id": "MyInt"}, "display": "MyInt"},
+        integration_path=integration_yml_path,
+        connector_title="My Connector",
+        mapped_params={"general_configurations": []},
+        auth_methods={"auth_types": []},
+    )
+
+    # No auth_types → anonymous connector → no connection.yaml.
+    assert not (connector_dir / "connection.yaml").exists()
+
+
+def test_append_handler_adds_profile_view_group_and_general_config(
+    tmp_path: Path,
+):
+    # First, create a connector from scratch (handler A with one profile).
+    integration_a_path = _make_pack_with_integration(
+        tmp_path, "PackA", "IntA", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "shared"
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={
+            "commonfields": {"id": "IntA"},
+            "display": "Integration A",
+            "configuration": [
+                {"name": "host", "type": 0, "display": "Host URL"},
+                {"name": "creds", "type": 9, "display": "Credentials"},
+            ],
+        },
+        integration_path=integration_a_path,
+        connector_title="Shared Connector",
+        mapped_params={"general_configurations": []},
+        auth_methods={
+            "auth_types": [
+                {
+                    "type": "Passthrough",
+                    "name": "passthrough",
+                    "xsoar_param_map": {"creds.password": "password"},
+                }
+            ],
+            "other_connection": ["host"],
+        },
+    )
+    conn_before = _read_connection_yaml(connector_dir)
+    assert [p["id"] for p in conn_before["profiles"]] == ["passthrough.inta"]
+    assert [vg["id"] for vg in conn_before["view_groups"]] == ["inta"]
+
+    # Now append handler B (different integration) with its own profile.
+    integration_b_path = _make_pack_with_integration(
+        tmp_path, "PackB", "IntB", {"tags": []}
+    )
+    add_handler_to_existing_connector(
+        connector_dir=connector_dir,
+        integration_yml={
+            "commonfields": {"id": "IntB"},
+            "display": "Integration B",
+            "configuration": [
+                {"name": "server", "type": 0, "display": "Server URL"},
+                {"name": "apikey", "type": 4, "display": "API Key"},
+            ],
+        },
+        integration_path=integration_b_path,
+        connector_title="Shared Connector",
+        mapped_params={"general_configurations": []},
+        auth_methods={
+            "auth_types": [
+                {
+                    "type": "APIKey",
+                    "name": "api_key",
+                    "xsoar_param_map": {"apikey": "key"},
+                }
+            ],
+            "other_connection": ["server"],
+        },
+    )
+
+    conn_after = _read_connection_yaml(connector_dir)
+
+    # Both profiles present (A preserved, B appended).
+    assert [p["id"] for p in conn_after["profiles"]] == [
+        "passthrough.inta",
+        "api_key.intb",
+    ]
+    # Both view-group tiles present.
+    assert {vg["id"] for vg in conn_after["view_groups"]} == {"inta", "intb"}
+
+    # connection.yaml has NO general_configurations — each handler's non-auth
+    # field lives inside its own auth profile. IntA's "host" is in the
+    # passthrough profile; IntB's "server" is in the api_key profile.
+    assert "general_configurations" not in conn_after
+    profiles_by_id = {p["id"]: p for p in conn_after["profiles"]}
+    inta_fields = {
+        f["id"]
+        for cfg in profiles_by_id["passthrough.inta"]["configurations"]
+        for f in cfg["fields"]
+    }
+    intb_fields = {
+        f["id"]
+        for cfg in profiles_by_id["api_key.intb"]["configurations"]
+        for f in cfg["fields"]
+    }
+    assert any(fid.endswith("host") for fid in inta_fields)
+    assert any(fid.endswith("server") for fid in intb_fields)
+
+
+def test_append_handler_anonymous_leaves_connection_untouched(tmp_path: Path):
+    integration_a_path = _make_pack_with_integration(
+        tmp_path, "PackA", "IntA", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "shared2"
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={
+            "commonfields": {"id": "IntA"},
+            "display": "Integration A",
+            "configuration": [
+                {"name": "creds", "type": 9, "display": "Credentials"},
+            ],
+        },
+        integration_path=integration_a_path,
+        connector_title="Shared Connector",
+        mapped_params={"general_configurations": []},
+        auth_methods={
+            "auth_types": [
+                {
+                    "type": "Passthrough",
+                    "name": "passthrough",
+                    "xsoar_param_map": {"creds.password": "password"},
+                }
+            ],
+            "other_connection": [],
+        },
+    )
+    before = _read_connection_yaml(connector_dir)
+
+    integration_b_path = _make_pack_with_integration(
+        tmp_path, "PackB", "IntB", {"tags": []}
+    )
+    add_handler_to_existing_connector(
+        connector_dir=connector_dir,
+        integration_yml={"commonfields": {"id": "IntB"}, "display": "IntB"},
+        integration_path=integration_b_path,
+        connector_title="Shared Connector",
+        mapped_params={"general_configurations": []},
+        auth_methods={"auth_types": []},
+    )
+    after = _read_connection_yaml(connector_dir)
+
+    # Anonymous new handler contributes nothing to connection.yaml.
+    assert [p["id"] for p in after["profiles"]] == [
+        p["id"] for p in before["profiles"]
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Review point 1 — vendor-driven connector.yaml
+# ---------------------------------------------------------------------------
+def test_get_pack_categories_returns_categories_from_metadata(tmp_path: Path) -> None:
+    from manifest_generator import get_pack_categories
+
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"categories": ["Case Management"]}
+    )
+    assert get_pack_categories(integration_yml) == ["Case Management"]
+
+
+def test_get_pack_categories_empty_when_missing(tmp_path: Path) -> None:
+    from manifest_generator import get_pack_categories
+
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", pack_metadata=None
+    )
+    assert get_pack_categories(integration_yml) == []
+
+
+def test_get_supported_modules_prefers_integration_field(tmp_path: Path) -> None:
+    from manifest_generator import get_supported_modules
+
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"supported_modules": ["xsoar"]}
+    )
+    # Integration YML field wins over the pack metadata fallback.
+    assert get_supported_modules(
+        {"supportedModules": ["agentix", "xsiam"]}, integration_yml
+    ) == ["agentix", "xsiam"]
+
+
+def test_get_supported_modules_falls_back_to_pack_metadata(tmp_path: Path) -> None:
+    from manifest_generator import get_supported_modules
+
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"supported_modules": ["xsoar", "xsiam"]}
+    )
+    assert get_supported_modules({}, integration_yml) == ["xsoar", "xsiam"]
+
+
+def test_required_license_for_capability_restricts_fetch_caps() -> None:
+    from manifest_generator import _required_license_for_capability
+
+    # fetch-issues is license-restricted: intersect with {agentix, xsiam}.
+    assert _required_license_for_capability(
+        "fetch-issues", ["xsoar", "xsiam", "edr"]
+    ) == ["xsiam"]
+    # No modules declared -> default to the agentix/xsiam restriction.
+    assert _required_license_for_capability("log-collection", []) == [
+        "agentix",
+        "xsiam",
+    ]
+    # Non-restricted capability passes the base list through verbatim.
+    assert _required_license_for_capability(
+        "automation-and-remediation", ["xsoar", "edr"]
+    ) == ["xsoar", "edr"]
+
+
+def test_build_connector_yaml_vendor_drives_id_title_description() -> None:
+    """Review point 1: vendor + mapped_params drive id/title via the
+    §3.3.1 suffix derivation, and description is templated from vendor."""
+    data = build_connector_yaml(
+        connector_title="Microsoft Graph",
+        pack_tags=[],
+        vendor="Microsoft Graph",
+        mapped_params={"Fetch Issues": ["p"], "Automation": ["q"]},
+        categories=["Analytics & SIEM"],
+    )
+    meta = data["metadata"]
+    # Fetch (collection) + automation -> "automation-and-collection".
+    assert data["id"] == "microsoft-graph-automation-and-collection"
+    assert meta["title"] == "Microsoft Graph Automation and Collection"
+    assert meta["description"] == "integration for Microsoft Graph products."
+    assert meta["vendor"] == "Microsoft Graph"
+    assert meta["domain"] == ""
+    assert meta["categories"] == ["Analytics & SIEM"]
+
+
+def test_build_connector_yaml_no_vendor_keeps_legacy_stub() -> None:
+    """Backward-compat: without vendor, id/title fall back to the title
+    slug and description stays empty (legacy behavior)."""
+    data = build_connector_yaml("My Connector", pack_tags=[])
+    assert data["id"] == "myconnector"
+    assert data["metadata"]["title"] == "My Connector"
+    assert data["metadata"]["description"] == ""
+    assert data["metadata"]["vendor"] == ""
+
+
+def test_create_manifest_from_scratch_connector_yaml_has_schema_directive(
+    tmp_path: Path,
+) -> None:
+    """Review point 11: connector.yaml starts with the yaml-language-server
+    schema directive line."""
+    from manifest_generator import CONNECTOR_SCHEMA_DIRECTIVE
+
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "myconnector"
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={"name": "MyInt"},
+        integration_path=integration_yml,
+        connector_title="My Connector",
+        mapped_params={},
+        auth_methods={},
+    )
+    with open(connector_dir / "connector.yaml") as fh:
+        assert fh.readline() == CONNECTOR_SCHEMA_DIRECTIVE
+    with open(connector_dir / "summary.yaml") as fh:
+        from manifest_generator import SUMMARY_SCHEMA_DIRECTIVE
+
+        assert fh.readline() == SUMMARY_SCHEMA_DIRECTIVE
+
+
+def test_create_manifest_from_scratch_handler_yaml_has_no_yaml_aliases(
+    tmp_path: Path,
+) -> None:
+    """Review point 10: handler.yaml must not contain YAML anchors/aliases
+    (&idNNN / *idNNN) even when scopes/workloads lists are shared across
+    capabilities."""
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "myconnector"
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={
+            "commonfields": {"id": "MyInt"},
+            "display": "My Integration",
+        },
+        integration_path=integration_yml,
+        connector_title="My Connector",
+        mapped_params={"Fetch Issues": ["a"], "Automation": ["b"]},
+        auth_methods={
+            "auth_types": [{"type": "Passthrough", "name": "passthrough"}]
+        },
+    )
+    handler_path = (
+        connector_dir / "components" / "handlers" / "xsoar-myint" / "handler.yaml"
+    )
+    text = handler_path.read_text()
+    assert "&id" not in text
+    assert "*id" not in text
