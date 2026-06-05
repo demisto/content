@@ -789,7 +789,7 @@ retrieves historical reputation data for a specified nameserver,including reputa
 | SilentPush.NameserverReputation.SilentPush.Reputation.ns_server_domains_listed | Number | Number of domains listed in reputation databases. | 
 
 #### Command example
-```!silentpush-get-nameserver-reputation nameserver=a.dns-servers.net.ru```
+```!silentpush-get-nameserver-reputation nameserver=ns1.example.com```
 #### Human Readable Output
 
 
@@ -928,12 +928,6 @@ Search for IP Diversity patterns, with optional name server and domain name patt
 | SilentPush.IPDiversityPatterns.SilentPush.Diversity.ip_diversity_groups | Number | The number of unique IP groups associated with the domain. | 
 | SilentPush.IPDiversityPatterns.SilentPush.Diversity.timeline | Unknown | timeline of \{ip, first_seen, last_seen\}. | 
 
-#### Command example
-```!silentpush-ip-diversity-patterns nsname=a.dns-servers.net.ru asn_diversity_min=2```
-#### Human Readable Output
-
-
-
 ### silentpush-list-domain-information
 
 ***
@@ -1035,7 +1029,7 @@ get IP4 information along with Silent Push risk score
 | SilentPush.IP4.SilentPush.Enrichment.sp_risk_score_explain | Unknown | The age of the domain in days. | 
 
 #### Command example
-```!silentpush-list-ip4-information ips=198.51.100.1,173.245.58.237```
+```!silentpush-list-ip4-information ips=198.51.100.1,198.51.100.2```
 #### Human Readable Output
 
 
@@ -1280,7 +1274,7 @@ searches passive DNS data for records matching both query and answer.
 | SilentPush.MultiConditionalPADNSLookup.SilentPush.PADNS.type | String | The type of the DNS record \(e.g., NS\). | 
 
 #### Command example
-```!silentpush-multi-conditional-padns-lookup qtype=ns query=example.com answer=a.dns-servers.net.ru last_seen_after=2021-07-01```
+```!silentpush-multi-conditional-padns-lookup qtype=ns query=example.com answer=ns1.example.com last_seen_after=2021-07-01```
 #### Human Readable Output
 
 
@@ -1303,6 +1297,12 @@ retry another command which returned a Job ID
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!silentpush-retry-job job_id=c20664f4-6516-40d9-bd4a-e089ef67684e```
+#### Human Readable Output
+
+
+
 ### silentpush-reverse-padns-lookup
 
 ***
@@ -1451,12 +1451,6 @@ search for domains with optional filters.
 | SilentPush.IPDiversityPatterns.SilentPush.Diversity.ip_diversity_all | Number | The total number of unique IPs associated with the domain. | 
 | SilentPush.IPDiversityPatterns.SilentPush.Diversity.ip_diversity_groups | Number | The number of unique IP groups associated with the domain. | 
 | SilentPush.IPDiversityPatterns.SilentPush.Diversity.timeline | Unknown | timeline of \{ip, first_seen, last_seen\}. | 
-
-#### Command example
-```!silentpush-search-domains name_server=a.dns-servers.net.ru min_asn_diversity=2 limit=3 timeline=1```
-#### Human Readable Output
-
-
 
 ### silentpush-search-scan-data
 

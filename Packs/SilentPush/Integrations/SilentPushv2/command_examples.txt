@@ -1,17 +1,17 @@
-!silentpush-get-nameserver-reputation nameserver=a.dns-servers.net.ru
+!silentpush-get-nameserver-reputation nameserver=ns1.example.com
 !silentpush-get-subnet-reputation subnet=192.35.168.0/23
 !silentpush-get-ipv4-reputation ipv4=198.51.100.1
 !silentpush-forward-padns-lookup qtype=a query=example.com
 !silentpush-reverse-padns-lookup qtype=a query=198.51.100.1
-!silentpush-multi-conditional-padns-lookup qtype=ns query=example.com answer=a.dns-servers.net.ru last_seen_after=2021-07-01
+!silentpush-multi-conditional-padns-lookup qtype=ns query=example.com answer=ns1.example.com last_seen_after=2021-07-01
 !silentpush-density-lookup qtype=nssrv query=example.com
 !silentpush-ip-diversity-lookup qtype=a query=example.com
 !silentpush-get-enrichment-data resource=ipv6 value=2a02:4780:37:b262:f807:71a8:e3ee:9b64
 !silentpush-bulk-enrich resource=ipv4 value=198.51.100.1 explain=1 scan_data=1
 !silentpush-list-domain-information domains=example.com,docs.example.com
-!silentpush-list-ip4-information ips=198.51.100.1,173.245.58.237
+!silentpush-list-ip4-information ips=198.51.100.1,198.51.100.2
 !silentpush-list-ip6-information ips=2606:4700:4700::1111,2a02:4780:37:b262:f807:71a8:e3ee:9b64
-!silentpush-search-domains name_server=a.dns-servers.net.ru min_asn_diversity=2 limit=3 timeline=1
+!silentpush-search-domains name_server=ns1.example.com min_asn_diversity=2 limit=3 timeline=1
 !silentpush-get-asns-for-domain domain=example.com
 !silentpush-get-domain-certificates domain=example.com
 !silentpush-search-scan-data query=domain=example.com fields=scan_date,domain,ip,user-agent sort=scan_date/desc,domain/asc limit=10
@@ -24,4 +24,4 @@
 !silentpush-get-data-exports export_type=organisation file_name=filename file_type=csv
 !silentpush-whois domain=example.com
 !silentpush-retry-job job_id=c20664f4-6516-40d9-bd4a-e089ef67684e
-!silentpush-ip-diversity-patterns nsname=a.dns-servers.net.ru asn_diversity_min=2
+!silentpush-ip-diversity-patterns nsname=ns1.example.com asn_diversity_min=2
