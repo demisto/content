@@ -496,6 +496,58 @@ CANONICAL_CAPABILITY_TITLES: dict[str, str] = {
     "fetch-assets-and-vulnerabilities": "Fetch Assets and Vulnerabilities",
 }
 
+# ---------------------------------------------------------------------------
+# Capability-scoped handler actions (per connectus handler.schema Action)
+# ---------------------------------------------------------------------------
+# Each capability family that supports a "reset last run" style UI action is
+# mapped to its single Action descriptor. The Action shape is
+# ``{type, display, description}`` where ``type`` is a member of the closed
+# handler.schema enum:
+#   reset_integration_context, reset_assets_last_run, reset_incidents_last_run,
+#   reset_feed_last_run, reset_events_last_run
+#
+# ``reset_integration_context`` is intentionally NOT emitted here — it is a
+# connector-specific rule (Microsoft Teams, across all capabilities) that is
+# deferred until the generator gains connector-identity-aware action logic.
+#
+# Keyed by canonical capability id (the value side of
+# ``CANONICAL_CAPABILITY_IDS``). Capability families without a reset action
+# (``automation-and-remediation``, ``fetch-secrets``) are deliberately absent.
+CAPABILITY_ACTIONS: dict[str, dict] = {
+    "fetch-assets-and-vulnerabilities": {
+        "type": "reset_assets_last_run",
+        "display": "Reset Assets Last Run",
+        "description": (
+            "Clears the saved last-run cursor for asset and vulnerability "
+            "collection, forcing the next fetch to start from the beginning."
+        ),
+    },
+    "fetch-issues": {
+        "type": "reset_incidents_last_run",
+        "display": "Reset Incidents Last Run",
+        "description": (
+            "Clears the saved last-run cursor for issue/incident collection, "
+            "forcing the next fetch to start from the beginning."
+        ),
+    },
+    "threat-intelligence-and-enrichment": {
+        "type": "reset_feed_last_run",
+        "display": "Reset Feed Last Run",
+        "description": (
+            "Clears the saved last-run cursor for threat intelligence feed "
+            "collection, forcing the next fetch to start from the beginning."
+        ),
+    },
+    "log-collection": {
+        "type": "reset_events_last_run",
+        "display": "Reset Events Last Run",
+        "description": (
+            "Clears the saved last-run cursor for log/event collection, "
+            "forcing the next fetch to start from the beginning."
+        ),
+    },
+}
+
 
 def slugify_capability_name(name: str) -> str:
     """Convert a mapper bucket key to its canonical capability id.
@@ -535,6 +587,56 @@ def slugify_capability_name(name: str) -> str:
 # Per guide §3.8 + §4.6 (Salesforce reference). The default backend
 # workload every XSOAR handler runs in.
 DEFAULT_HANDLER_WORKLOADS: list[str] = ["xsoar-pod"]
+
+
+def make_sub_capability_id(handler_id: str, cap_name: str) -> str:
+    """Compute the sub-capability id for a (handler, capability-family) pair.
+
+    Format is ``"<handler_id>-<cap_slug>"`` where ``cap_slug`` is the
+    canonical capability id (:func:`slugify_capability_name`). This is the
+    single source of truth for sub-cap id derivation, used by both the
+    from-scratch path and the append path so a connector is *always* modelled
+    as parent-capability + sub-capability (never a flat top-level capability).
+    """
+    return f"{handler_id}-{slugify_capability_name(cap_name)}"
+
+
+def build_sub_capability_entry(sub_cap_id: str, cap_name: str) -> dict:
+    """Build a schema-complete ``SubCapability`` entry.
+
+    capabilities.schema requires ``id`` + ``title`` + ``default_enabled`` +
+    ``required`` on every sub-capability. The title reuses the canonical
+    capability family title; ``default_enabled``/``required`` mirror the
+    parent defaults (per guide §3.4 + §4.3 Salesforce reference).
+    """
+    cap_slug = slugify_capability_name(cap_name)
+    return {
+        "id": sub_cap_id,
+        "title": CANONICAL_CAPABILITY_TITLES[cap_slug],
+        "default_enabled": True,
+        "required": False,
+    }
+
+
+def _actions_for_capability(cap_name: str) -> list[dict]:
+    """Return the handler ``actions[]`` list for a mapper capability bucket key.
+
+    ``cap_name`` is one of the six mapper bucket keys (e.g. ``"Fetch Issues"``).
+    It is resolved through :func:`slugify_capability_name` to its canonical
+    capability id and then looked up in :data:`CAPABILITY_ACTIONS`.
+
+    Keying off the bucket key (rather than the possibly-decorated handler cap
+    id) means this works identically on the from-scratch path (bare canonical
+    slug) and the append path (sub-cap id ``<handler_id>-<cap_slug>``) — the
+    capability family is the same in both cases.
+
+    Returns a fresh one-element list when the capability family defines a reset
+    action, else an empty list (callers omit the ``actions`` key entirely so
+    action-free capabilities stay byte-identical to the pre-actions output).
+    """
+    canonical = slugify_capability_name(cap_name)
+    action = CAPABILITY_ACTIONS.get(canonical)
+    return [dict(action)] if action else []
 
 
 def build_handler_yaml(
@@ -609,7 +711,14 @@ def build_handler_yaml(
     for cap_name in mapped_params:
         if cap_name == "general_configurations":
             continue
-        cap_id = cap_id_overrides.get(cap_name) or slugify_capability_name(cap_name)
+        # Capabilities are ALWAYS modelled as sub-capabilities. When the
+        # caller supplies an override (append path), use it; otherwise
+        # (from-scratch path) default to this handler's own sub-cap id
+        # ``<handler_id>-<cap_slug>`` so the handler references the sub-cap
+        # entry that capabilities.yaml/configurations.yaml emit.
+        cap_id = cap_id_overrides.get(cap_name) or make_sub_capability_id(
+            handler_id, cap_name
+        )
         if has_auth:
             # Authenticated shape: auth_options carries workloads.
             cap_entry: dict = {
@@ -624,6 +733,12 @@ def build_handler_yaml(
                 "auth": "none",
                 "workloads": list(DEFAULT_HANDLER_WORKLOADS),
             }
+        # Attach capability-scoped UI actions (e.g. reset_*_last_run) when the
+        # capability family defines one. The key is omitted entirely for
+        # action-free families so their output is unchanged.
+        actions = _actions_for_capability(cap_name)
+        if actions:
+            cap_entry["actions"] = actions
         capabilities.append(cap_entry)
 
     # triggering.labels: per Salesforce §4.6 reference. ``xsoar-pack-id``
@@ -2727,15 +2842,25 @@ def build_capabilities_yaml(
         if cap_name == "general_configurations":
             continue
         cap_id = slugify_capability_name(cap_name)
-        capabilities.append(
-            {
-                "id": cap_id,
-                "title": CANONICAL_CAPABILITY_TITLES[cap_id],
-                # Per guide §3.4 + §4.3 Salesforce reference.
-                "default_enabled": True,
-                "required": False,
-            }
-        )
+        parent_entry: dict = {
+            "id": cap_id,
+            "title": CANONICAL_CAPABILITY_TITLES[cap_id],
+            # Per guide §3.4 + §4.3 Salesforce reference.
+            "default_enabled": True,
+            "required": False,
+        }
+        # Capabilities are ALWAYS modelled as parent + one sub-capability,
+        # even on a fresh connector. The parent carries the canonical family
+        # id/title; the lone sub-capability is keyed by this handler's sub-cap
+        # id ``<handler_id>-<cap_slug>`` (the id the handler.yaml and
+        # configurations.yaml entries reference). The bare-slug fallback only
+        # applies when no handler_id is supplied (legacy callers).
+        if handler_id:
+            sub_cap_id = make_sub_capability_id(handler_id, cap_name)
+            parent_entry["sub_capabilities"] = [
+                build_sub_capability_entry(sub_cap_id, cap_name)
+            ]
+        capabilities.append(parent_entry)
 
     return {
         "metadata": {
@@ -2921,13 +3046,20 @@ def build_per_handler_general_config(
                 )
             )
 
-    # Compute relevant_for_capabilities from mapped_params keys.
+    # Compute relevant_for_capabilities from mapped_params keys. Capabilities
+    # are modelled as sub-capabilities, so this references the sub-cap ids
+    # ``<handler_id>-<cap_slug>`` this handler serves (falling back to the bare
+    # slug only when no handler_id is supplied).
     cap_ids: list[str] = []
     if mapped_params:
         for cap_name in mapped_params:
             if cap_name == "general_configurations":
                 continue
-            cap_ids.append(slugify_capability_name(cap_name))
+            cap_ids.append(
+                make_sub_capability_id(handler_id, cap_name)
+                if handler_id
+                else slugify_capability_name(cap_name)
+            )
 
     result: dict = {
         "view_group": handler_id,
@@ -2965,7 +3097,16 @@ def build_configurations_yaml(
     for cap_name, params in mapped_params.items():
         if cap_name == "general_configurations":
             continue
-        cap_id = slugify_capability_name(cap_name)
+        # Capabilities are ALWAYS modelled as sub-capabilities — key each
+        # per-capability configuration entry by the sub-cap id
+        # ``<handler_id>-<cap_slug>`` so it matches the sub-capability emitted
+        # in capabilities.yaml and referenced by handler.yaml. Falls back to
+        # the bare slug only when no handler_id is supplied (legacy callers).
+        cap_id = (
+            make_sub_capability_id(handler_id, cap_name)
+            if handler_id
+            else slugify_capability_name(cap_name)
+        )
         fields: list[dict] = []
         for p in (params or []):
             fields.extend(
@@ -3116,7 +3257,7 @@ def append_capability_to_files(
         return result
 
     cap_slug = slugify_capability_name(cap_name)
-    new_sub_cap_id = f"{new_handler_id}-{cap_slug}"
+    new_sub_cap_id = make_sub_capability_id(new_handler_id, cap_name)
 
     existing_cap = next(
         (
@@ -3127,10 +3268,14 @@ def append_capability_to_files(
         None,
     )
 
-    # Case 3: capability does not exist anywhere — add at top level.
+    # Case 3: capability does not exist anywhere — create the parent
+    # capability with a single sub-capability (NOT a flat top-level
+    # capability). Capabilities are ALWAYS modelled as parent + sub-capability,
+    # so even a brand-new capability is added as a sub-capability and the
+    # handler/configurations reference the sub-cap id.
     #
-    # Per Batch 2 (A.2.5 + A.2.6 + capabilities.schema): every capability
-    # entry MUST include id + title + default_enabled + required.
+    # Per capabilities.schema: every (sub-)capability entry MUST include
+    # id + title + default_enabled + required.
     if existing_cap is None:
         capabilities_data.setdefault("capabilities", []).append(
             {
@@ -3138,15 +3283,18 @@ def append_capability_to_files(
                 "title": CANONICAL_CAPABILITY_TITLES[cap_slug],
                 "default_enabled": True,
                 "required": False,
+                "sub_capabilities": [
+                    build_sub_capability_entry(new_sub_cap_id, cap_name)
+                ],
             }
         )
         configurations_data.setdefault("configurations", []).append(
             {
-                "id": cap_slug,
+                "id": new_sub_cap_id,
                 "configurations": [{"fields": _emit_fields(cap_params)}],
             }
         )
-        return cap_slug
+        return new_sub_cap_id
 
     has_sub_caps = bool(existing_cap.get("sub_capabilities"))
 
@@ -3156,7 +3304,7 @@ def append_capability_to_files(
             connector_dir, cap_slug
         )
         existing_handler_id = existing_handler_path.parent.name
-        existing_sub_cap_id = f"{existing_handler_id}-{cap_slug}"
+        existing_sub_cap_id = make_sub_capability_id(existing_handler_id, cap_name)
 
         # Step 2.1: rename cap id inside the existing handler.yaml.
         rename_handler_capability_id(
@@ -3164,7 +3312,9 @@ def append_capability_to_files(
         )
 
         # Step 2.2: introduce sub_capabilities on the parent in capabilities.yaml.
-        existing_cap["sub_capabilities"] = [{"id": existing_sub_cap_id}]
+        existing_cap["sub_capabilities"] = [
+            build_sub_capability_entry(existing_sub_cap_id, cap_name)
+        ]
 
         # Step 2.3: rename the existing top-level entry in configurations.yaml
         # (per spec: drop parent's entry — the renamed entry IS the new sub-cap entry).
@@ -3174,7 +3324,9 @@ def append_capability_to_files(
                 break
 
     # Case 1 (or fall-through after promotion): append the new sub-cap.
-    existing_cap.setdefault("sub_capabilities", []).append({"id": new_sub_cap_id})
+    existing_cap.setdefault("sub_capabilities", []).append(
+        build_sub_capability_entry(new_sub_cap_id, cap_name)
+    )
     configurations_data.setdefault("configurations", []).append(
         {
             "id": new_sub_cap_id,
@@ -3678,6 +3830,776 @@ def map_xsoar_param_to_connectus_field(yml_param: dict) -> list[dict]:
     if isinstance(result, dict):
         return [result]
     return result
+
+
+# ===========================================================================
+# connection.yaml builders  (see plans/connection-auth-types-design.md)
+# Part A: auth_types -> profiles[] | Part B: proxy/insecure |
+# Part C: engine 3-field + Appendix G/H + triggers | Part D: view_groups +
+# general_configurations (rest of other_connection)
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# Part A — classification → connection profile type
+# ---------------------------------------------------------------------------
+# auth_types[].type (4-value classifier enum) → connection.yaml profile type.
+AUTH_TYPE_TO_PROFILE_TYPE: dict[str, str] = {
+    "APIKey": "api_key",
+    "Plain": "plain",
+    "Passthrough": "passthrough",
+}
+
+# (profile_type, classifier-role) → connection.yaml metadata.auth.parameter.
+# Only canonical types need a remap; passthrough roles pass through verbatim.
+ROLE_TO_AUTH_PARAMETER: dict[tuple[str, str], str] = {
+    ("api_key", "key"): "api_key",
+}
+
+# Fixed human titles for the canonical profile types (design OQ-4).
+_PROFILE_TYPE_TITLES: dict[str, str] = {
+    "api_key": "API Key",
+    "plain": "Username & Password",
+}
+
+
+def _slug_word(text: str) -> str:
+    """Lowercase + collapse non-word chars, keeping ``[a-z0-9_]``.
+
+    Used for the connection-profile id purpose segment, which the
+    connection schema requires to match ``[\\w]{3,}`` after the dot.
+    """
+    s = re.sub(r"[^a-zA-Z0-9_]+", "_", text.strip().lower())
+    s = re.sub(r"_+", "_", s).strip("_")
+    return s
+
+
+def derive_profile_id(
+    auth_type_entry: dict,
+    integration_id: str,
+    seen_profile_ids: set[str] | None = None,
+) -> str:
+    """Compute the connection-profile id ``<profile_type>.<slug(integration_id)>``.
+
+    D2a collision guard: a 2nd+ profile of the same type within one integration
+    gets ``_<slug(name)>`` appended so ids stay unique. ``seen_profile_ids`` is
+    mutated in place to track emitted ids.
+    """
+    profile_type = AUTH_TYPE_TO_PROFILE_TYPE.get(auth_type_entry.get("type", ""))
+    if profile_type is None:
+        raise ValueError(
+            f"Unknown auth_types[].type '{auth_type_entry.get('type')}'. "
+            f"Expected one of {sorted(AUTH_TYPE_TO_PROFILE_TYPE)}."
+        )
+    purpose = _slug_word(integration_id)
+    if len(purpose) < 3:
+        purpose = f"{purpose}_xsoar"
+    candidate = f"{profile_type}.{purpose}"
+    if seen_profile_ids is not None and candidate in seen_profile_ids:
+        name_slug = _slug_word(auth_type_entry.get("name", "") or "alt")
+        candidate = f"{profile_type}.{purpose}_{name_slug}"
+    if seen_profile_ids is not None:
+        seen_profile_ids.add(candidate)
+    return candidate
+
+
+def _connection_field_id_from_map_key(map_key: str, sibling_keys: set[str]) -> str:
+    """Derive the connectus field id for one ``xsoar_param_map`` key (D3, map-only).
+
+    ``<param>.identifier`` -> ``<param>_username``;
+    ``<param>.password`` -> ``<param>_password`` when the sibling ``.identifier``
+    is present in this map, else bare ``<param>``;
+    non-dotted (flat secret) -> the key verbatim.
+    """
+    if "." not in map_key:
+        return map_key
+    param, _, leaf = map_key.partition(".")
+    if leaf == "identifier":
+        return f"{param}_username"
+    if leaf == "password":
+        if f"{param}.identifier" in sibling_keys:
+            return f"{param}_password"
+        return param
+    return f"{param}_{leaf}"
+
+
+def _auth_parameter_for_role(profile_type: str, role: str) -> str:
+    """Map a classifier role to ``metadata.auth.parameter``.
+
+    Canonical types remap via :data:`ROLE_TO_AUTH_PARAMETER` (e.g. APIKey's
+    ``key`` -> ``api_key``); ``plain`` roles and ``passthrough`` free-form roles
+    pass through unchanged.
+    """
+    return ROLE_TO_AUTH_PARAMETER.get((profile_type, role), role)
+
+
+def _connection_profile_title(profile_type: str, connector_title: str) -> str:
+    """Human title for a profile (OQ-4: fixed for canonical, derived for passthrough)."""
+    if profile_type in _PROFILE_TYPE_TITLES:
+        return _PROFILE_TYPE_TITLES[profile_type]
+    base = connector_title.strip() or "Connection"
+    return f"{base} Credentials"
+
+
+def _connection_field_title(
+    field_id: str, yml_params_by_name: dict[str, dict] | None
+) -> str:
+    """Best-effort human title for a connection auth field (enrichment-only)."""
+    if yml_params_by_name:
+        base = field_id
+        for suffix in ("_username", "_password"):
+            if field_id.endswith(suffix):
+                base = field_id[: -len(suffix)]
+                break
+        yml = yml_params_by_name.get(base)
+        if yml:
+            if field_id.endswith("_password") or field_id == base:
+                label = yml.get("displaypassword") or yml.get("display")
+            else:
+                label = yml.get("display")
+            if label and str(label).strip():
+                return str(label)
+    return field_id.replace("_", " ").strip().title() or field_id
+
+
+def build_connection_profile(
+    auth_type_entry: dict,
+    integration_id: str,
+    connector_title: str = "",
+    yml_params_by_name: dict[str, dict] | None = None,
+    seen_profile_ids: set[str] | None = None,
+) -> dict:
+    """Build ONE ``connection.yaml`` ``profiles[]`` entry (Part A — auth fields only).
+
+    Non-auth proxy / insecure / engine fields are attached separately by
+    :func:`attach_per_profile_connection_fields` (design D-D8 home 1).
+    """
+    profile_type = AUTH_TYPE_TO_PROFILE_TYPE.get(auth_type_entry.get("type", ""))
+    if profile_type is None:
+        raise ValueError(
+            f"Unknown auth_types[].type '{auth_type_entry.get('type')}'."
+        )
+    profile_id = derive_profile_id(auth_type_entry, integration_id, seen_profile_ids)
+    xsoar_param_map = auth_type_entry.get("xsoar_param_map") or {}
+    map_keys = set(xsoar_param_map.keys())
+
+    fields: list[dict] = []
+    for map_key in sorted(xsoar_param_map.keys()):
+        role = xsoar_param_map[map_key]
+        field_id = _connection_field_id_from_map_key(map_key, map_keys)
+        auth_parameter = _auth_parameter_for_role(profile_type, role)
+        is_username = auth_parameter == "username"
+        fields.append(
+            {
+                "id": field_id,
+                "title": _connection_field_title(field_id, yml_params_by_name),
+                "field_type": "input",
+                "metadata": {"auth": {"parameter": auth_parameter}},
+                "options": {
+                    "mask": not is_username,
+                    "create_modifiers": {"required": True, "hidden": False},
+                    "edit_modifiers": {"required": True, "hidden": False},
+                },
+            }
+        )
+
+    return {
+        "id": profile_id,
+        "type": profile_type,
+        "title": _connection_profile_title(profile_type, connector_title),
+        "description": (
+            f"Authentication profile for "
+            f"{connector_title or integration_id} ({profile_type})."
+        ),
+        "configurations": [{"fields": fields}],
+    }
+
+
+# ---------------------------------------------------------------------------
+# Part B — proxy / insecure detection + field builders
+# ---------------------------------------------------------------------------
+# Normalized synonym sets (lower + strip _/- before matching).
+PROXY_SYNONYMS: frozenset[str] = frozenset({"proxy", "useproxy"})
+# `trust` REMOVED (B-D5). Matched by whole-token equality (B.4), not substring.
+INSECURE_SYNONYMS: frozenset[str] = frozenset(
+    {"insecure", "unsecure", "verify", "secure"}
+)
+
+_PROXY_DEFAULT_TITLE = "Use system proxy settings"
+_INSECURE_DEFAULT_TITLE = "Trust any certificate (not secure)"
+
+
+def _normalize_param_id(pid: str) -> str:
+    """Lowercase + remove ``_``/``-`` for exact (proxy) matching."""
+    return re.sub(r"[_-]+", "", pid.strip().lower())
+
+
+def _tokenize_param_id(pid: str) -> list[str]:
+    """Split on ``_``/``-`` boundaries, lowercased (insecure token matching)."""
+    return [t for t in re.split(r"[_-]+", pid.strip().lower()) if t]
+
+
+def classify_connection_param(pid: str) -> str | None:
+    """Classify an ``other_connection`` id as ``"proxy"`` / ``"insecure"`` / None.
+
+    - proxy: normalized id in :data:`PROXY_SYNONYMS` (exact).
+    - insecure: any whole token in :data:`INSECURE_SYNONYMS` (B.4 — avoids the
+      ``secure`` ⊂ ``insecure`` substring hazard).
+    """
+    if _normalize_param_id(pid) in PROXY_SYNONYMS:
+        return "proxy"
+    if any(tok in INSECURE_SYNONYMS for tok in _tokenize_param_id(pid)):
+        return "insecure"
+    return None
+
+
+def _bool_switch_field(
+    *,
+    field_id: str,
+    title: str,
+    description: str = "",
+) -> dict:
+    """Build a non-secret boolean ``switch`` connection field (Part B / D-D8 home 1).
+
+    Carries ``metadata.event.publish: true`` (legal inside a profile) AND
+    ``metadata.xsoar.config_type: "backend"`` (backend-managed toggle). Always
+    ``default_value: false`` (B-D6), ``mask: false``, optional + visible.
+    """
+    options: dict[str, Any] = {
+        "mask": False,
+        "default_value": False,
+        "create_modifiers": {"required": False, "hidden": False},
+        "edit_modifiers": {"required": False, "hidden": False},
+    }
+    if description:
+        options["description"] = description
+    return {
+        "id": field_id,
+        "title": title,
+        "field_type": "switch",
+        "metadata": {
+            "event": {"publish": True},
+            "xsoar": {"config_type": "backend"},
+        },
+        "options": options,
+    }
+
+
+def _resolve_title(
+    yml_params_by_name: dict[str, dict] | None,
+    yml_param_name: str,
+    fallback: str,
+) -> str:
+    """Prefer the YML ``display`` for the param, else the fallback."""
+    if yml_params_by_name and (yml := yml_params_by_name.get(yml_param_name)):
+        display = yml.get("display") or ""
+        if str(display).strip():
+            return str(display)
+    return fallback
+
+
+def build_proxy_field(
+    pid: str, yml_params_by_name: dict[str, dict] | None = None
+) -> dict:
+    """Build the ``proxy`` switch field (id == original yml id, verbatim)."""
+    return _bool_switch_field(
+        field_id=pid,
+        title=_resolve_title(yml_params_by_name, pid, _PROXY_DEFAULT_TITLE),
+        description=_field_description(yml_params_by_name, pid),
+    )
+
+
+def build_insecure_field(
+    pid: str, yml_params_by_name: dict[str, dict] | None = None
+) -> dict:
+    """Build the ``insecure`` switch field (id == original yml id, verbatim)."""
+    return _bool_switch_field(
+        field_id=pid,
+        title=_resolve_title(yml_params_by_name, pid, _INSECURE_DEFAULT_TITLE),
+        description=_field_description(yml_params_by_name, pid),
+    )
+
+
+def _field_description(
+    yml_params_by_name: dict[str, dict] | None, pid: str
+) -> str:
+    """Pull ``additionalinfo`` (else empty) for a field's description."""
+    if yml_params_by_name and (yml := yml_params_by_name.get(pid)):
+        info = yml.get("additionalinfo") or ""
+        if str(info).strip():
+            return str(info)
+    return ""
+
+
+# ---------------------------------------------------------------------------
+# Part C — engine 3-field pattern + carve-out lists + visibility triggers
+# ---------------------------------------------------------------------------
+# Appendix G — emit NO engine fields AND no proxy. (lowercased for matching)
+ENGINE_PROXY_EXCLUDED: frozenset[str] = frozenset(
+    s.lower()
+    for s in {
+        "EDL",
+        "ExportIndicators",
+        "PingCastle",
+        "Publish List",
+        "Simple API Proxy",
+        "Syslog v2",
+        "TAXII Server",
+        "TAXII2 Server",
+        "Web File Repository",
+        "Workday_IAM_Event_Generator",
+        "XSOAR-Web-Server",
+        "Microsoft Teams",
+        "AWS-SNS-Listener",
+        "AWS",
+        "Azure",
+        "GCP",
+    }
+)
+
+# Appendix H — single-engine: emit engine_mode (2-opt) + engine, NO engine_group.
+SINGLE_ENGINE_INTEGRATIONS: frozenset[str] = frozenset(
+    s.lower()
+    for s in {"saml", "slack", "sharedagent", "syslog", "mattermost", "duo"}
+)
+
+# Engine field id stems (prefixed per integration when emitted).
+ENGINE_MODE = "engine_mode"
+ENGINE = "engine"
+ENGINE_GROUP = "engine_group"
+
+# Serializer field_name targets back to the XSOAR param names.
+ENGINE_SERIALIZER_TARGETS: dict[str, str] = {
+    ENGINE_MODE: "engine_mode",
+    ENGINE: "engine",
+    ENGINE_GROUP: "engineGroup",  # camelCase XSOAR param name (D-D3)
+}
+
+_ENGINE_MODE_VALUES_FULL = [
+    {"key": "no_engine", "label": "No engine"},
+    {"key": "engine", "label": "Engine"},
+    {"key": "engine_group", "label": "Engine Group"},
+]
+_ENGINE_MODE_VALUES_SINGLE = [
+    {"key": "no_engine", "label": "No engine"},
+    {"key": "engine", "label": "Engine"},
+]
+
+
+def engine_exclusion_class(integration_id: str) -> str:
+    """Return ``"excluded"`` (Appendix G) / ``"single"`` (Appendix H) / ``"full"``.
+
+    G wins over H. Case-insensitive exact match on ``commonfields.id``.
+    """
+    key = integration_id.strip().lower()
+    if key in ENGINE_PROXY_EXCLUDED:
+        return "excluded"
+    if key in SINGLE_ENGINE_INTEGRATIONS:
+        return "single"
+    return "full"
+
+
+def _engine_common_metadata(
+    integration_id: str, dynamic_field: str
+) -> dict:
+    """metadata block for a dynamic engine select: event.publish + backend +
+    dynamic_values (engine / engine-group)."""
+    return {
+        "event": {"publish": True},
+        "xsoar": {"config_type": "backend"},
+        "dynamic_values": {
+            "provider": "xsoar",
+            "trigger": ["on_create", "on_edit"],
+            "params": {
+                "integrationID": integration_id,
+                "dynamicField": dynamic_field,
+            },
+        },
+    }
+
+
+def build_engine_mode_field(field_id: str, *, single_engine: bool) -> dict:
+    """Static ``engine_mode`` select (2-option for Appendix H, else 3-option)."""
+    values = (
+        _ENGINE_MODE_VALUES_SINGLE if single_engine else _ENGINE_MODE_VALUES_FULL
+    )
+    return {
+        "id": field_id,
+        "title": "Engine",
+        "field_type": "select",
+        "metadata": {
+            "event": {"publish": True},
+            "xsoar": {"config_type": "backend"},
+        },
+        "options": {
+            "mask": False,
+            "default_value": "no_engine",
+            "values": [dict(v) for v in values],
+            "create_modifiers": {"required": True, "hidden": False},
+            "edit_modifiers": {"required": True, "hidden": False},
+        },
+    }
+
+
+def build_engine_field(field_id: str, integration_id: str) -> dict:
+    """Dynamic ``engine`` select (dynamicField: engine)."""
+    return {
+        "id": field_id,
+        "title": "Engine",
+        "field_type": "select",
+        "metadata": _engine_common_metadata(integration_id, "engine"),
+        "options": {
+            "mask": False,
+            "placeholder": "Select an engine",
+            "create_modifiers": {"required": False, "hidden": False},
+            "edit_modifiers": {"required": False, "hidden": False},
+        },
+    }
+
+
+def build_engine_group_field(field_id: str, integration_id: str) -> dict:
+    """Dynamic ``engine_group`` select (dynamicField: engine-group)."""
+    return {
+        "id": field_id,
+        "title": "Engine Group",
+        "field_type": "select",
+        "metadata": _engine_common_metadata(integration_id, "engine-group"),
+        "options": {
+            "mask": False,
+            "placeholder": "Select an engine group",
+            "create_modifiers": {"required": False, "hidden": False},
+            "edit_modifiers": {"required": False, "hidden": False},
+        },
+    }
+
+
+def build_engine_triggers(
+    *, mode_id: str, engine_id: str | None, engine_group_id: str | None
+) -> list[dict]:
+    """Visibility triggers: hide ``engine`` unless mode==engine; hide
+    ``engine_group`` unless mode==engine_group. References the (possibly
+    prefixed) per-profile ids."""
+    triggers: list[dict] = []
+    if engine_id:
+        triggers.append(
+            {
+                "conditions": {
+                    "id": mode_id,
+                    "behavior": "value",
+                    "operator": "neq",
+                    "value": "engine",
+                },
+                "effects": [{"id": engine_id, "action": {"hidden": True}}],
+            }
+        )
+    if engine_group_id:
+        triggers.append(
+            {
+                "conditions": {
+                    "id": mode_id,
+                    "behavior": "value",
+                    "operator": "neq",
+                    "value": "engine_group",
+                },
+                "effects": [{"id": engine_group_id, "action": {"hidden": True}}],
+            }
+        )
+    return triggers
+
+
+# ---------------------------------------------------------------------------
+# Part C/B — attach per-profile non-auth fields (proxy/insecure/engine)
+# ---------------------------------------------------------------------------
+# Type for the serializer-bridge callback the caller supplies (so this module
+# stays filesystem-free). Signature: (handler_dir, new_id, original_id).
+SerializerBridge = Callable[[Path, str, str], None]
+
+
+def _maybe_prefixed_id(
+    base_id: str,
+    integration_prefix: str,
+    existing_ids: set[str],
+    handler_dir: Path | None,
+    serializer_bridge: SerializerBridge | None,
+    serializer_target: str | None = None,
+) -> str:
+    """Return ``base_id`` if free, else ``<prefix>_<base_id>`` + register a
+    serializer bridge mapping the prefixed id back to ``serializer_target``
+    (defaults to ``base_id``). Mutates ``existing_ids``.
+
+    This is the per-profile collision dedup (C-D4): the first profile keeps the
+    bare id; subsequent profiles get a prefixed id + serializer mapping.
+    """
+    if base_id not in existing_ids:
+        existing_ids.add(base_id)
+        return base_id
+    renamed = f"{integration_prefix}_{base_id}"
+    existing_ids.add(renamed)
+    if handler_dir is not None and serializer_bridge is not None:
+        serializer_bridge(handler_dir, renamed, serializer_target or base_id)
+    return renamed
+
+
+def attach_per_profile_connection_fields(
+    profiles: list[dict],
+    integration_id: str,
+    other_connection: list[str],
+    yml_params_by_name: dict[str, dict] | None = None,
+    handler_dir: Path | None = None,
+    serializer_bridge: SerializerBridge | None = None,
+) -> list[dict]:
+    """Append proxy / insecure / engine fields into EACH profile (D-D8 home 1).
+
+    Returns the list of engine-visibility triggers (Part C.4) to merge into
+    ``triggers.yaml`` — one rule-pair per profile that emitted engine fields.
+
+    Honors Appendix G (no proxy + no engine) and Appendix H (no engine_group).
+    Multi-profile id collisions get a per-integration-prefixed id + serializer
+    bridge via ``serializer_bridge`` (C-D4).
+    """
+    excl = engine_exclusion_class(integration_id)
+    prefix = _slug_word(integration_id)
+
+    # Which other_connection ids are proxy / insecure (Part B detection).
+    proxy_ids = [p for p in other_connection if classify_connection_param(p) == "proxy"]
+    insecure_ids = [
+        p for p in other_connection if classify_connection_param(p) == "insecure"
+    ]
+
+    # Track ids already used across profiles for dedup-via-rename.
+    existing_ids: set[str] = set()
+    all_triggers: list[dict] = []
+
+    for profile in profiles:
+        cfgs = profile.setdefault("configurations", [{"fields": []}])
+        if not cfgs:
+            cfgs.append({"fields": []})
+        target_fields = cfgs[0].setdefault("fields", [])
+
+        # --- proxy (skip entirely for Appendix G) ---
+        if excl != "excluded":
+            for pid in proxy_ids:
+                fid = _maybe_prefixed_id(
+                    pid, prefix, existing_ids, handler_dir, serializer_bridge, pid
+                )
+                field = build_proxy_field(pid, yml_params_by_name)
+                field["id"] = fid
+                target_fields.append(field)
+
+        # --- insecure (always, per Part B; Appendix G does NOT skip it) ---
+        for pid in insecure_ids:
+            fid = _maybe_prefixed_id(
+                pid, prefix, existing_ids, handler_dir, serializer_bridge, pid
+            )
+            field = build_insecure_field(pid, yml_params_by_name)
+            field["id"] = fid
+            target_fields.append(field)
+
+        # --- engine 3-field (skip for Appendix G; no engine_group for H) ---
+        if excl == "excluded":
+            continue
+
+        mode_fid = _maybe_prefixed_id(
+            ENGINE_MODE, prefix, existing_ids, handler_dir, serializer_bridge,
+            ENGINE_SERIALIZER_TARGETS[ENGINE_MODE],
+        )
+        engine_fid = _maybe_prefixed_id(
+            ENGINE, prefix, existing_ids, handler_dir, serializer_bridge,
+            ENGINE_SERIALIZER_TARGETS[ENGINE],
+        )
+        single = excl == "single"
+        target_fields.append(
+            build_engine_mode_field(mode_fid, single_engine=single)
+        )
+        target_fields.append(build_engine_field(engine_fid, integration_id))
+
+        group_fid: str | None = None
+        if not single:
+            group_fid = _maybe_prefixed_id(
+                ENGINE_GROUP, prefix, existing_ids, handler_dir,
+                serializer_bridge, ENGINE_SERIALIZER_TARGETS[ENGINE_GROUP],
+            )
+            target_fields.append(
+                build_engine_group_field(group_fid, integration_id)
+            )
+
+        all_triggers.extend(
+            build_engine_triggers(
+                mode_id=mode_fid, engine_id=engine_fid, engine_group_id=group_fid
+            )
+        )
+
+    return all_triggers
+
+
+# ---------------------------------------------------------------------------
+# Part D — view_groups registry + general_configurations (rest of other_connection)
+# ---------------------------------------------------------------------------
+def slugify_view_group_id(integration_id: str) -> str:
+    """Tile id for an integration (lowercase, dashes)."""
+    s = integration_id.strip().lower()
+    s = re.sub(r"[^a-z0-9-]+", "-", s)
+    s = re.sub(r"-+", "-", s).strip("-")
+    return s
+
+
+def integration_field_prefix(integration_id: str) -> str:
+    """Field-id prefix for an integration (lowercase, no separators)."""
+    return _slug_word(integration_id).replace("_", "")
+
+
+def build_view_groups_registry(
+    integrations: list[tuple[str, str]],
+) -> list[dict]:
+    """Build the ``view_groups`` registry — one ``{id,label,help_text}`` per
+    integration. ``integrations`` is a list of ``(integration_id, display)``.
+    """
+    registry: list[dict] = []
+    for integration_id, display in integrations:
+        tile = slugify_view_group_id(integration_id)
+        label = display or integration_id
+        registry.append(
+            {
+                "id": tile,
+                "label": label,
+                "help_text": (
+                    f"Connection settings for the {label} integration."
+                ),
+            }
+        )
+    return registry
+
+
+FieldMapper = Callable[[dict], list[dict]]
+
+
+def build_connection_general_configurations(
+    integration_id: str,
+    rest_other_connection: list[str],
+    yml_params_by_name: dict[str, dict] | None,
+    field_mapper: FieldMapper,
+    handler_dir: Path | None = None,
+    serializer_bridge: SerializerBridge | None = None,
+) -> dict | None:
+    """Build ONE ``general_configurations`` block (Part D) for one integration's
+    tile, holding the REST of ``other_connection`` (server URL / host / port /
+    region / ...) — NOT proxy/insecure/engine (those are per-profile).
+
+    Each field is materialized via ``field_mapper`` (the manifest's
+    ``map_xsoar_param_to_connectus_field``), id-prefixed with the integration
+    prefix, and bridged back to the original XSOAR param name via
+    ``serializer_bridge``. Returns ``None`` when no "rest" fields remain.
+    """
+    prefix = integration_field_prefix(integration_id)
+    tile = slugify_view_group_id(integration_id)
+    fields: list[dict] = []
+
+    for pid in rest_other_connection:
+        if classify_connection_param(pid) is not None:
+            continue  # proxy / insecure are per-profile, never here.
+        yml = (yml_params_by_name or {}).get(pid)
+        if yml is None:
+            mapped = [{"id": pid, "field_type": "input", "options": {}}]
+        else:
+            mapped = field_mapper(yml)
+        for raw in mapped:
+            original_id = raw.get("id", pid)
+            field = dict(raw)
+            new_id = f"{prefix}_{original_id}"
+            field["id"] = new_id
+            options = field.setdefault("options", {})
+            options.setdefault("mask", False)
+            if handler_dir is not None and serializer_bridge is not None:
+                serializer_bridge(handler_dir, new_id, original_id)
+            fields.append(field)
+
+    if not fields:
+        return None
+    return {"view_group": tile, "fields": fields}
+
+
+def build_connection_yaml(
+    auth_methods: dict,
+    integration_id: str,
+    connector_title: str = "",
+    yml_params_by_name: dict[str, dict] | None = None,
+    field_mapper: FieldMapper | None = None,
+    handler_dir: Path | None = None,
+    serializer_bridge: SerializerBridge | None = None,
+    integration_display: str = "",
+) -> tuple[dict, list[dict]]:
+    """Assemble the full ``connection.yaml`` dict for a single-integration
+    (one-tile) grouped connector, plus the engine-visibility triggers.
+
+    Returns ``(connection_dict, triggers)``. Raises ``ValueError`` when
+    ``auth_types`` is empty (D9 — never-expected for this generator).
+    """
+    auth_types = auth_methods.get("auth_types") or []
+    if not auth_types:
+        raise ValueError(
+            f"connection.yaml for '{integration_id}': auth_types is empty. "
+            f"At least one auth profile was expected (NoneRequired is out of "
+            f"scope for this generator)."
+        )
+    other_connection = list(auth_methods.get("other_connection") or [])
+
+    # Part A — auth-only profiles.
+    seen_profile_ids: set[str] = set()
+    profiles = [
+        build_connection_profile(
+            entry,
+            integration_id,
+            connector_title=connector_title,
+            yml_params_by_name=yml_params_by_name,
+            seen_profile_ids=seen_profile_ids,
+        )
+        for entry in auth_types
+    ]
+
+    # Part B/C — attach proxy/insecure/engine per profile (event.publish).
+    triggers = attach_per_profile_connection_fields(
+        profiles,
+        integration_id,
+        other_connection,
+        yml_params_by_name=yml_params_by_name,
+        handler_dir=handler_dir,
+        serializer_bridge=serializer_bridge,
+    )
+
+    connection: dict[str, Any] = {
+        "metadata": {
+            "title": "Connection",
+            "description": (
+                "Enter the credentials to securely authorize the connection"
+            ),
+        },
+        "view_groups": build_view_groups_registry(
+            [(integration_id, integration_display or connector_title)]
+        ),
+        "profiles": profiles,
+    }
+
+    # Part D — general_configurations for the REST of other_connection.
+    if field_mapper is not None:
+        rest = [
+            pid
+            for pid in other_connection
+            if classify_connection_param(pid) is None
+        ]
+        block = build_connection_general_configurations(
+            integration_id,
+            rest,
+            yml_params_by_name,
+            field_mapper,
+            handler_dir=handler_dir,
+            serializer_bridge=serializer_bridge,
+        )
+        if block is not None:
+            connection["general_configurations"] = {
+                "description": "Per-integration non-auth connection settings.",
+                "configurations": [block],
+            }
+
+    return connection, triggers
 
 
 # ---------------------------------------------------------------------------

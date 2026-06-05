@@ -57,7 +57,11 @@ from manifest_generator import (
     add_indicators_capability,
     add_log_collection_capability,
     add_secret_capability,
+    CAPABILITY_ACTIONS,
+    _actions_for_capability,
     append_capability_to_files,
+    build_sub_capability_entry,
+    make_sub_capability_id,
     build_per_handler_general_config,
     build_capabilities_yaml,
     build_configurations_yaml,
@@ -1358,18 +1362,185 @@ def test_build_handler_yaml_capabilities_with_empty_auth_methods() -> None:
     # ``auth_methods``, capabilities use the anonymous shape (auth='none'
     # + capability-level workloads), NOT empty auth_options (which fails
     # the schema's minItems: 1 on auth_options).
+    # ``fetch-issues`` carries a capability-scoped reset action;
+    # ``automation-and-remediation`` is action-free (no ``actions`` key).
+    # Capabilities are always sub-capabilities — handler references the
+    # ``xsoar-salesforce-<cap_slug>`` sub-cap ids.
     assert data["capabilities"] == [
         {
-            "id": "fetch-issues",
+            "id": "xsoar-salesforce-fetch-issues",
             "auth": "none",
             "workloads": ["xsoar-pod"],
+            "actions": [
+                {
+                    "type": "reset_incidents_last_run",
+                    "display": "Reset Incidents Last Run",
+                    "description": CAPABILITY_ACTIONS["fetch-issues"]["description"],
+                }
+            ],
         },
         {
-            "id": "automation-and-remediation",
+            "id": "xsoar-salesforce-automation-and-remediation",
             "auth": "none",
             "workloads": ["xsoar-pod"],
         },
     ]
+
+
+# ---------------------------------------------------------------------------
+# build_handler_yaml — capability-scoped actions[]
+# ---------------------------------------------------------------------------
+_INTEGRATION_YML_FOR_ACTIONS = {
+    "commonfields": {"id": "Salesforce"},
+    "display": "Salesforce",
+}
+
+
+def _expected_action(canonical_cap_id: str) -> list[dict]:
+    """The expected ``actions`` list a handler capability of this family emits.
+
+    Mirrors :data:`CAPABILITY_ACTIONS` so handler-output assertions stay in
+    sync with the generator without re-hardcoding the strings.
+    """
+    return [dict(CAPABILITY_ACTIONS[canonical_cap_id])]
+
+
+@pytest.mark.parametrize(
+    ("bucket_key", "expected_cap_id", "expected_type", "expected_display"),
+    [
+        (
+            "Fetch Assets and Vulnerabilities",
+            "fetch-assets-and-vulnerabilities",
+            "reset_assets_last_run",
+            "Reset Assets Last Run",
+        ),
+        (
+            "Fetch Issues",
+            "fetch-issues",
+            "reset_incidents_last_run",
+            "Reset Incidents Last Run",
+        ),
+        (
+            "Threat Intelligence & Enrichment",
+            "threat-intelligence-and-enrichment",
+            "reset_feed_last_run",
+            "Reset Feed Last Run",
+        ),
+        (
+            "Log Collection",
+            "log-collection",
+            "reset_events_last_run",
+            "Reset Events Last Run",
+        ),
+    ],
+)
+def test_build_handler_yaml_emits_capability_action(
+    bucket_key: str,
+    expected_cap_id: str,
+    expected_type: str,
+    expected_display: str,
+) -> None:
+    """Each of the four deterministic capability families emits its single
+    reset action with type + display + description."""
+    mapped_params = {
+        "general_configurations": ["url"],
+        bucket_key: ["some_param"],
+    }
+    data = build_handler_yaml(
+        _INTEGRATION_YML_FOR_ACTIONS, "Salesforce", [], mapped_params, {}
+    )
+    (cap_entry,) = data["capabilities"]
+    # Capabilities are always sub-capabilities — the handler references the
+    # sub-cap id ``xsoar-salesforce-<cap_slug>``.
+    assert cap_entry["id"] == f"xsoar-salesforce-{expected_cap_id}"
+    assert cap_entry["actions"] == [
+        {
+            "type": expected_type,
+            "display": expected_display,
+            "description": CAPABILITY_ACTIONS[expected_cap_id]["description"],
+        }
+    ]
+
+
+@pytest.mark.parametrize(
+    "bucket_key", ["Automation", "Fetch Secrets"]
+)
+def test_build_handler_yaml_omits_actions_for_action_free_families(
+    bucket_key: str,
+) -> None:
+    """Capability families without a defined reset action must NOT carry an
+    ``actions`` key — output stays byte-identical to the pre-actions shape."""
+    mapped_params = {
+        "general_configurations": ["url"],
+        bucket_key: ["some_param"],
+    }
+    data = build_handler_yaml(
+        _INTEGRATION_YML_FOR_ACTIONS, "Salesforce", [], mapped_params, {}
+    )
+    (cap_entry,) = data["capabilities"]
+    assert "actions" not in cap_entry
+
+
+def test_build_handler_yaml_action_coexists_with_auth_options() -> None:
+    """In the authenticated shape, the action sits alongside auth_options."""
+    auth_methods = {"auth_types": [{"name": "oauth2.client.credentials.identity"}]}
+    mapped_params = {
+        "general_configurations": ["url"],
+        "Log Collection": ["events_limit"],
+    }
+    data = build_handler_yaml(
+        _INTEGRATION_YML_FOR_ACTIONS,
+        "Salesforce",
+        [],
+        mapped_params,
+        auth_methods,
+    )
+    (cap_entry,) = data["capabilities"]
+    assert cap_entry["id"] == "xsoar-salesforce-log-collection"
+    assert "auth_options" in cap_entry
+    assert cap_entry["actions"][0]["type"] == "reset_events_last_run"
+
+
+def test_build_handler_yaml_action_resolves_through_sub_cap_override() -> None:
+    """On the append path, the handler cap id is a sub-cap id
+    (``<handler>-<cap_slug>``) via cap_name_to_handler_cap_id, but the action
+    still resolves from the family bucket key."""
+    mapped_params = {
+        "general_configurations": ["url"],
+        "Fetch Assets and Vulnerabilities": ["assets_limit"],
+    }
+    override = {
+        "Fetch Assets and Vulnerabilities": (
+            "xsoar-salesforce-fetch-assets-and-vulnerabilities"
+        )
+    }
+    data = build_handler_yaml(
+        _INTEGRATION_YML_FOR_ACTIONS,
+        "Salesforce",
+        [],
+        mapped_params,
+        {},
+        cap_name_to_handler_cap_id=override,
+    )
+    (cap_entry,) = data["capabilities"]
+    assert cap_entry["id"] == (
+        "xsoar-salesforce-fetch-assets-and-vulnerabilities"
+    )
+    assert cap_entry["actions"][0]["type"] == "reset_assets_last_run"
+
+
+def test_actions_for_capability_returns_fresh_copies() -> None:
+    """The helper must return fresh dicts so callers can't mutate the shared
+    CAPABILITY_ACTIONS registry."""
+    first = _actions_for_capability("Fetch Issues")
+    first[0]["display"] = "MUTATED"
+    second = _actions_for_capability("Fetch Issues")
+    assert second[0]["display"] == "Reset Incidents Last Run"
+
+
+def test_actions_for_capability_empty_for_action_free_family() -> None:
+    assert _actions_for_capability("Automation") == []
+    assert _actions_for_capability("Fetch Secrets") == []
 
 
 # ---------------------------------------------------------------------------
@@ -1418,18 +1589,30 @@ def test_create_manifest_from_scratch_generates_capabilities_yaml_with_schema_di
     assert [f["id"] for f in fields] == ["instance_name"]
     # Per Batch 2 (A.2.3 + A.2.5 + A.2.6): canonical capability ids with
     # required schema fields (title/default_enabled/required).
+    # Capabilities are always modelled as parent + one sub-capability. The
+    # lone sub-capability is keyed by the handler's sub-cap id.
     assert data["capabilities"] == [
         {
             "id": "fetch-issues",
             "title": "Fetch Issues",
             "default_enabled": True,
             "required": False,
+            "sub_capabilities": [
+                build_sub_capability_entry(
+                    "xsoar-salesforce-fetch-issues", "Fetch Issues"
+                )
+            ],
         },
         {
             "id": "automation-and-remediation",
             "title": "Automation and Remediation",
             "default_enabled": True,
             "required": False,
+            "sub_capabilities": [
+                build_sub_capability_entry(
+                    "xsoar-salesforce-automation-and-remediation", "Automation"
+                )
+            ],
         },
     ]
 
@@ -1480,7 +1663,8 @@ def test_create_manifest_from_scratch_generates_configurations_yaml_without_sche
     # Per-capability entries now carry view_group.
     cfg_entries = data["configurations"]
     assert len(cfg_entries) == 1
-    assert cfg_entries[0]["id"] == "fetch-issues"
+    # Per-capability config entries are keyed by the sub-cap id.
+    assert cfg_entries[0]["id"] == "xsoar-salesforce-fetch-issues"
     assert cfg_entries[0]["view_group"] == "xsoar-salesforce"
     assert cfg_entries[0]["configurations"] == [
         {"fields": [{"id": "fetch_limit"}, {"id": "first_fetch"}]}
@@ -1541,9 +1725,13 @@ def test_create_manifest_from_scratch_handler_capabilities_populated(
     # Per Batch 2 (A.2.3): canonical capability ids — Automation →
     # automation-and-remediation.
     assert data["capabilities"] == [
-        {"id": "fetch-issues", "auth_options": expected_auth_options},
         {
-            "id": "automation-and-remediation",
+            "id": "xsoar-salesforce-fetch-issues",
+            "auth_options": expected_auth_options,
+            "actions": _expected_action("fetch-issues"),
+        },
+        {
+            "id": "xsoar-salesforce-automation-and-remediation",
             "auth_options": expected_auth_options,
         },
     ]
@@ -1625,12 +1813,22 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
             "title": "Fetch Issues",
             "default_enabled": True,
             "required": False,
+            "sub_capabilities": [
+                build_sub_capability_entry(
+                    "xsoar-salesforce-fetch-issues", "Fetch Issues"
+                )
+            ],
         },
         {
             "id": "automation-and-remediation",
             "title": "Automation and Remediation",
             "default_enabled": True,
             "required": False,
+            "sub_capabilities": [
+                build_sub_capability_entry(
+                    "xsoar-salesforce-automation-and-remediation", "Automation"
+                )
+            ],
         },
     ]
     # Only instance_name in capabilities.yaml general_configurations.
@@ -1660,21 +1858,23 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
     with open(configurations_yaml) as fh:
         configurations_data = yaml.safe_load(fh)
     assert [c["id"] for c in configurations_data["configurations"]] == [
-        "fetch-issues",
-        "automation-and-remediation",
+        "xsoar-salesforce-fetch-issues",
+        "xsoar-salesforce-automation-and-remediation",
     ]
 
     with open(handler_yaml) as fh:
         fh.readline()  # skip schema directive
         handler_data = yaml.safe_load(fh)
-    # Per Batch 2: handler.yaml capability ids use canonical names.
+    # Capabilities are always sub-capabilities — handler references the
+    # ``xsoar-salesforce-<cap_slug>`` sub-cap ids.
     assert handler_data["capabilities"] == [
         {
-            "id": "fetch-issues",
+            "id": "xsoar-salesforce-fetch-issues",
             "auth_options": [{"id": "oauth2", "scopes": ["api"], "workloads": ["xsoar-pod"]}],
+            "actions": _expected_action("fetch-issues"),
         },
         {
-            "id": "automation-and-remediation",
+            "id": "xsoar-salesforce-automation-and-remediation",
             "auth_options": [{"id": "oauth2", "scopes": ["api"], "workloads": ["xsoar-pod"]}],
         },
     ]
@@ -1886,11 +2086,12 @@ def test_append_handler_with_new_capability_adds_to_all_files(
         auth_methods={"auth_types": [{"name": "oauth2"}]},
     )
 
-    # capabilities.yaml — both caps at top level, no sub-caps.
+    # capabilities.yaml — the pre-existing (flat) automation cap is untouched;
+    # the brand-new Fetch Issues cap (Case 3) is added as parent + one
+    # sub-capability (capabilities are ALWAYS modelled as sub-capabilities).
     with open(connector_dir / "capabilities.yaml") as fh:
         fh.readline()  # skip directive
         cap_data = yaml.safe_load(fh)
-    # Per Batch 2: canonical capability ids + required schema fields.
     assert cap_data["capabilities"] == [
         {
             "id": "automation-and-remediation",
@@ -1903,20 +2104,23 @@ def test_append_handler_with_new_capability_adds_to_all_files(
             "title": "Fetch Issues",
             "default_enabled": True,
             "required": False,
+            "sub_capabilities": [
+                build_sub_capability_entry(
+                    "xsoar-my-integration-fetch-issues", "Fetch Issues"
+                )
+            ],
         },
     ]
-    for c in cap_data["capabilities"]:
-        assert "sub_capabilities" not in c
 
-    # configurations.yaml — both top-level entries.
+    # configurations.yaml — the new entry is keyed by the sub-cap id.
     with open(connector_dir / "configurations.yaml") as fh:
         cfg_data = yaml.safe_load(fh)
     assert [c["id"] for c in cfg_data["configurations"]] == [
         "automation-and-remediation",
-        "fetch-issues",
+        "xsoar-my-integration-fetch-issues",
     ]
 
-    # New handler's cap entry id is the bare slug (Case 3).
+    # New handler's cap entry id is the sub-cap id (Case 3).
     new_handler_yaml = (
         connector_dir
         / "components"
@@ -1928,7 +2132,11 @@ def test_append_handler_with_new_capability_adds_to_all_files(
         fh.readline()
         new_handler_data = yaml.safe_load(fh)
     assert new_handler_data["capabilities"] == [
-        {"id": "fetch-issues", "auth_options": [{"id": "oauth2", "scopes": ["api"], "workloads": ["xsoar-pod"]}]},
+        {
+            "id": "xsoar-my-integration-fetch-issues",
+            "auth_options": [{"id": "oauth2", "scopes": ["api"], "workloads": ["xsoar-pod"]}],
+            "actions": _expected_action("fetch-issues"),
+        },
     ]
 
 
@@ -2044,10 +2252,14 @@ def test_append_handler_to_capability_already_split_adds_subcap_only(
         cap_data = yaml.safe_load(fh)
     parent = cap_data["capabilities"][0]
     assert parent["id"] == "fetch-issues"
+    # The two pre-existing sub-caps are untouched (bare-id, as written by the
+    # fixture); the newly-appended sub-cap is a schema-complete entry.
     assert parent["sub_capabilities"] == [
         {"id": "xsoar-one-fetch-issues"},
         {"id": "xsoar-two-fetch-issues"},
-        {"id": "xsoar-my-integration-fetch-issues"},
+        build_sub_capability_entry(
+            "xsoar-my-integration-fetch-issues", "Fetch Issues"
+        ),
     ]
 
     with open(connector_dir / "configurations.yaml") as fh:
@@ -2077,6 +2289,7 @@ def test_append_handler_to_capability_already_split_adds_subcap_only(
             "id": "xsoar-my-integration-fetch-issues",
             "auth": "none",
             "workloads": ["xsoar-pod"],
+            "actions": _expected_action("fetch-issues"),
         },
     ]
 
@@ -2190,12 +2403,18 @@ def test_append_handler_case2_promotes_existing_flat_capability(
     with open(connector_dir / "capabilities.yaml") as fh:
         fh.readline()
         cap_data = yaml.safe_load(fh)
+    # Both sub-caps (the promoted existing one + the new one) are
+    # schema-complete entries.
     assert cap_data["capabilities"] == [
         {
             "id": "fetch-issues",
             "sub_capabilities": [
-                {"id": "xsoar-existing-fetch-issues"},
-                {"id": "xsoar-jira-fetch-issues"},
+                build_sub_capability_entry(
+                    "xsoar-existing-fetch-issues", "Fetch Issues"
+                ),
+                build_sub_capability_entry(
+                    "xsoar-jira-fetch-issues", "Fetch Issues"
+                ),
             ],
         }
     ]
@@ -2236,10 +2455,14 @@ def test_append_handler_case2_promotes_existing_flat_capability(
     with open(new_handler_yaml) as fh:
         fh.readline()
         new_handler_data = yaml.safe_load(fh)
+    # New handler.yaml is built via build_handler_yaml, so its sub-cap entry
+    # carries the family's reset action. The existing handler (renamed in
+    # place via rename_handler_capability_id) does NOT gain actions.
     assert new_handler_data["capabilities"] == [
         {
             "id": "xsoar-jira-fetch-issues",
             "auth_options": [{"id": "api_key", "scopes": ["api"], "workloads": ["xsoar-pod"]}],
+            "actions": _expected_action("fetch-issues"),
         }
     ]
 
@@ -2369,8 +2592,10 @@ def test_append_handler_case2_with_two_caps_only_promotes_relevant(
         c for c in cap_data["capabilities"] if c["id"] == "fetch-issues"
     )
     assert fetch_after["sub_capabilities"] == [
-        {"id": "xsoar-existing-fetch-issues"},
-        {"id": "xsoar-jira-fetch-issues"},
+        build_sub_capability_entry(
+            "xsoar-existing-fetch-issues", "Fetch Issues"
+        ),
+        build_sub_capability_entry("xsoar-jira-fetch-issues", "Fetch Issues"),
     ]
 
     # automation handlers' files are byte-identical.
@@ -2453,21 +2678,31 @@ def test_append_handler_with_mix_of_3_cases(tmp_path: Path) -> None:
         fh.readline()
         cap_data = yaml.safe_load(fh)
     by_id = {c["id"]: c for c in cap_data["capabilities"]}
+    # Case 2 (promotion): existing flat cap promoted → both sub-caps are
+    # schema-complete entries.
     assert by_id["fetch-issues"]["sub_capabilities"] == [
-        {"id": "xsoar-flat-fetch-issues"},
-        {"id": "xsoar-jira-fetch-issues"},
+        build_sub_capability_entry("xsoar-flat-fetch-issues", "Fetch Issues"),
+        build_sub_capability_entry("xsoar-jira-fetch-issues", "Fetch Issues"),
     ]
+    # Case 1 (already split): existing bare-id sub-cap untouched; new one is a
+    # schema-complete entry.
     assert by_id["automation-and-remediation"]["sub_capabilities"] == [
         {"id": "xsoar-split-automation-and-remediation"},
-        {"id": "xsoar-jira-automation-and-remediation"},
+        build_sub_capability_entry(
+            "xsoar-jira-automation-and-remediation", "Automation"
+        ),
     ]
-    # Case 3: brand-new capability — emitted at top level with the new
-    # required schema fields (title/default_enabled/required) per Batch 2.
+    # Case 3: brand-new capability — now emitted as parent + one sub-capability
+    # (capabilities are ALWAYS modelled as sub-capabilities).
     assert by_id["log-collection"]["id"] == "log-collection"
     assert by_id["log-collection"]["title"] == "Log Collection"
     assert by_id["log-collection"]["default_enabled"] is True
     assert by_id["log-collection"]["required"] is False
-    assert "sub_capabilities" not in by_id["log-collection"]
+    assert by_id["log-collection"]["sub_capabilities"] == [
+        build_sub_capability_entry(
+            "xsoar-jira-log-collection", "Log Collection"
+        )
+    ]
 
     # configurations.yaml
     with open(connector_dir / "configurations.yaml") as fh:
@@ -2478,7 +2713,9 @@ def test_append_handler_with_mix_of_3_cases(tmp_path: Path) -> None:
     assert "xsoar-jira-fetch-issues" in cfg_ids
     assert "xsoar-split-automation-and-remediation" in cfg_ids
     assert "xsoar-jira-automation-and-remediation" in cfg_ids
-    assert "log-collection" in cfg_ids
+    # Case 3 config entry is keyed by the sub-cap id.
+    assert "log-collection" not in cfg_ids
+    assert "xsoar-jira-log-collection" in cfg_ids
 
     # Existing flat handler renamed.
     flat_yaml = (
@@ -2499,11 +2736,12 @@ def test_append_handler_with_mix_of_3_cases(tmp_path: Path) -> None:
         fh.readline()
         new_data = yaml.safe_load(fh)
     new_ids = [c["id"] for c in new_data["capabilities"]]
-    # Per Batch 2: Automation bucket → canonical id with -and-remediation.
+    # Capabilities are always sub-capabilities — all three (including the
+    # brand-new Case 3 log-collection) use the sub-cap id.
     assert new_ids == [
         "xsoar-jira-fetch-issues",
         "xsoar-jira-automation-and-remediation",
-        "log-collection",
+        "xsoar-jira-log-collection",
     ]
 
 
@@ -2591,19 +2829,30 @@ def test_append_capability_to_files_returns_correct_handler_cap_id_case3(
         configurations_data=cfg_data,
         connector_dir=tmp_path,
     )
-    assert result == "fetch-issues"
-    # Per Batch 2: Case 3 capability emission includes the required
-    # schema fields (title + default_enabled + required).
+    # Case 3 now returns the sub-cap id (capabilities are ALWAYS modelled as
+    # sub-capabilities).
+    assert result == "xsoar-new-fetch-issues"
+    # Case 3 creates the parent capability with a single schema-complete
+    # sub-capability.
     assert cap_data["capabilities"] == [
         {
             "id": "fetch-issues",
             "title": "Fetch Issues",
             "default_enabled": True,
             "required": False,
+            "sub_capabilities": [
+                build_sub_capability_entry(
+                    "xsoar-new-fetch-issues", "Fetch Issues"
+                )
+            ],
         }
     ]
+    # Config entry is keyed by the sub-cap id.
     assert cfg_data["configurations"] == [
-        {"id": "fetch-issues", "configurations": [{"fields": [{"id": "p"}]}]}
+        {
+            "id": "xsoar-new-fetch-issues",
+            "configurations": [{"fields": [{"id": "p"}]}],
+        }
     ]
 
 
