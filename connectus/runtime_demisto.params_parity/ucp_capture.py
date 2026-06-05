@@ -441,6 +441,7 @@ def _build_salesforce_iam_payload(
     profile_id: str,
     domain_value: str,
     auth_values: dict,
+    config_overrides: dict | None = None,
 ) -> dict:
     """Build the POST /instances payload for the Salesforce / Salesforce-IAM MVP.
 
@@ -498,17 +499,47 @@ def _build_salesforce_iam_payload(
         )
 
     # Pull default values from the configuration step, scoped to the selected capability.
+    # Also collect the SET of field ids the connector declares — we use it to filter
+    # `config_overrides` because UCP rejects POSTs with keys outside its schema.
     config_step = creation_view["steps"][2]
     configuration: dict[str, Any] = {}
+    accepted_field_ids: set[str] = set()
     for section in config_step.get("sections", []):
         if section.get("capability_id") != selected_capability:
             continue
         for row in section.get("data", []):
             for field in row.get("fields", []):
                 field_id = field.get("id")
+                if not field_id:
+                    continue
+                accepted_field_ids.add(field_id)
                 default_val = field.get("options", {}).get("default_value")
-                if field_id and default_val is not None:
+                if default_val is not None:
                     configuration[field_id] = default_val
+
+    # Apply caller-supplied overrides — but ONLY for field ids the connector
+    # actually declares. The bidirectional-push contract: the orchestrator
+    # passes the same pre-computed dummy dict to BOTH the INTEGRATION and
+    # CONNECTOR sides; overrides that the connector doesn't declare here are
+    # silently skipped (and the diff later reports them as
+    # MISSING_IN_CONNECTOR — a real connector bug to fix).
+    if config_overrides:
+        applied = 0
+        skipped: list[str] = []
+        for k, v in config_overrides.items():
+            if k in accepted_field_ids:
+                configuration[k] = v
+                applied += 1
+            else:
+                skipped.append(k)
+        log.info(
+            "Applied %d/%d config_overrides to UCP payload "
+            "(skipped %d non-connector-declared fields: %s)",
+            applied,
+            len(config_overrides),
+            len(skipped),
+            ", ".join(sorted(skipped)) if skipped else "<none>",
+        )
 
     return {
         "instance_id": instance_id,
