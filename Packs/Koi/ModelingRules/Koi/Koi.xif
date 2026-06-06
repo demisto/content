@@ -1,0 +1,101 @@
+// Koi modeling rule — single MODEL block per dataset, with per-type
+// filter|alter chains underneath (Okta reference pattern). Each filter
+// scopes the subsequent alter to a specific source_log_type.
+//
+// v2 alert mapping notes (XQL-validated against koi_koi_raw):
+//   * Reads the columns PROMOTED by the parsing rule (item_id, device_id,
+//     mcp_*, …) instead of re-walking finding_info/resources JSON. DRY,
+//     and it makes MCP-server alerts map for free once they ingest.
+//   * xdm.alert.category is an ENUM (XDM_CONST.THREAT_CATEGORY) — the Koi
+//     OCSF class_name ("Application Security Posture Finding") is free
+//     text, so it goes to xdm.alert.subcategory, NOT category. Leaving
+//     category unset is correct until we have a real enum mapping.
+//   * xdm.alert.severity is a String (there is no XDM_CONST.SEVERITY_*).
+//     Koi already emits the canonical ladder (Informational/Low/Medium/
+//     High/Critical), so a to_string() passthrough is enough.
+//   * event.id = koi_event_id (per-occurrence UUID); original_alert_id =
+//     finding_uid (the finding identity). These are deliberately distinct.
+[MODEL: dataset=koi_koi_raw]
+filter source_log_type = "Alerts"
+| alter
+    // ── identity ──────────────────────────────────────────────
+    xdm.event.id                = koi_event_id,
+    xdm.event.type              = alert_type,
+    xdm.alert.original_alert_id = finding_uid,
+    xdm.alert.name              = finding_title,
+    xdm.alert.description       = message,
+    xdm.alert.severity          = to_string(severity),
+    xdm.alert.subcategory       = class_name,
+    xdm.alert.risks             = arraycreate(alert_type, risk_level),
+    // ── target host (device the item is installed on) ─────────
+    xdm.target.host.device_id   = device_id,
+    xdm.target.host.hostname    = alert_hostname,
+    xdm.target.host.fqdn        = alert_hostname,
+    xdm.target.host.os          = device_os_obs,
+    xdm.target.host.os_family   = if(device_os_obs = "windows", XDM_CONST.OS_FAMILY_WINDOWS,
+                                     device_os_obs = "mac",     XDM_CONST.OS_FAMILY_MACOS,
+                                     device_os_obs = "linux",   XDM_CONST.OS_FAMILY_LINUX,
+                                     to_string(null)),
+    // ── user (last logged-on user on that device) ─────────────
+    xdm.source.user.username    = device_last_user,
+    // ── target resource (the flagged item / MCP server) ───────
+    // id  : extension uses item_id; MCP also carries item.id, but fall
+    //       back to the numeric mcp_id if item_id is ever absent.
+    // name: prefer the MCP package name, else the item id.
+    // type: extension | mcp_server (from observable item.type).
+    // sub : MCP locality (local|remote) when present.
+    xdm.target.resource.id      = coalesce(item_id, to_string(mcp_id)),
+    xdm.target.resource.name    = coalesce(mcp_package_name, item_id),
+    xdm.target.resource.type    = item_type,
+    xdm.target.resource.sub_type = mcp_type,
+    // ── observer (Koi as the detecting product) ───────────────
+    xdm.observer.vendor         = _vendor,
+    xdm.observer.product        = _product;
+
+// Audit block v2 (pack v1.3.14) — XQL-validated against koi_koi_raw.
+// Koi audit events are FLAT (no observables/resources). Mapping mirrors
+// the AWS-CloudTrail / Monday audit→XDM patterns:
+//   * event.operation — normalized CRUD enum from `action`.
+//   * event.operation_sub_type — raw verb (free string), kept verbatim.
+//   * event.original_event_type — raw vendor `type` (remediation/extensions/…).
+//   * source.user.user_type — SERVICE_ACCOUNT for the "Koi" system actor,
+//     REGULAR for human admin emails (category=user & triggered_by!=Koi).
+//   * target.resource.* — the object acted on (item/policy/guardrail).
+//   * target.host.* — the managed device (only item events carry hostname).
+//   * marketplace → resource.sub_type (npm/vscode are ecosystems, NOT OSes,
+//     so they must NOT go into os_family).
+filter source_log_type = "Audit"
+| alter
+    xdm.event.id                  = _id,
+    xdm.event.type                = action,
+    xdm.event.original_event_type = type,
+    xdm.event.operation_sub_type  = action,
+    xdm.event.description         = message,
+    xdm.event.operation = if(
+        action = "created",      XDM_CONST.OPERATION_TYPE_CREATE,
+        action = "installed",    XDM_CONST.OPERATION_TYPE_CREATE,
+        action = "updated",      XDM_CONST.OPERATION_TYPE_UPDATE,
+        action = "enabled",      XDM_CONST.OPERATION_TYPE_UPDATE,
+        action = "disabled",     XDM_CONST.OPERATION_TYPE_UPDATE,
+        action = "uninstalled",  XDM_CONST.OPERATION_TYPE_DELETE,
+        action ~= "(?i)remediation.*", XDM_CONST.OPERATION_TYPE_EXECUTION,
+        to_string(null)),
+    // No explicit success/fail flag in Koi audit; default SUCCESS, but keep
+    // the failure regex so a future failure verb is caught automatically.
+    xdm.event.outcome = if(action ~= "(?i).*(failed|error|deny|denied|reject).*",
+                          XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_SUCCESS),
+    // Actor (initiator). "Koi" is the system/service agent; an email is human.
+    xdm.source.user.username  = triggered_by,
+    xdm.source.user.user_type = if(category = "user" and triggered_by != "Koi",
+                                   XDM_CONST.USER_TYPE_REGULAR,
+                                   XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+    // Target object acted upon.
+    xdm.target.resource.id       = object_id,
+    xdm.target.resource.name     = object_name,
+    xdm.target.resource.type     = object_type,
+    xdm.target.resource.sub_type = marketplace,
+    // Managed device (present on item events; null for policy/guardrail).
+    xdm.target.host.hostname  = hostname,
+    // Observer — Koi as the auditing product.
+    xdm.observer.vendor  = _vendor,
+    xdm.observer.product = _product;

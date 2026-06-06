@@ -1,0 +1,15 @@
+{
+    "koi_koi_raw": {
+        "source_log_type": {"type": "string", "is_array": false},
+        "finding_info": {"type": "string", "is_array": false},
+        "resources": {"type": "string", "is_array": false},
+        "severity": {"type": "string", "is_array": false},
+        "class_name": {"type": "string", "is_array": false},
+        "message": {"type": "string", "is_array": false},
+        "action": {"type": "string", "is_array": false},
+        "type": {"type": "string", "is_array": false},
+        "triggered_by": {"type": "string", "is_array": false},
+        "object_id": {"type": "string", "is_array": false},
+        "object_type": {"type": "string", "is_array": false}
+    }
+}

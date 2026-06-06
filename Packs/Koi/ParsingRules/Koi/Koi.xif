@@ -1,0 +1,183 @@
+// Koi parsing rule v1.3.8 — XQL-verified extraction logic.
+//
+// Strategy: cache to_json_string(resources/observables) once via a
+// chained alter, then use coalesce-of-positions with json_extract_scalar.
+// This pattern is identical in normal XQL and XQLi, so it can be
+// prototyped against the live dataset before deploying (which is how
+// this version was validated).
+//
+// Why coalesce-of-positions instead of arraymap+@element: @element is
+// XQLi-only and can't be tested in XQL. coalesce+if works in both
+// contexts, so we have a tight test loop.
+//
+// Position bounds: observables seen up to 6 elements (testing 0..7);
+// resources seen 2 elements (testing 0..3).
+
+[INGEST:vendor="koi", product="koi", target_dataset="koi_koi_raw", no_hit=keep]
+filter source_log_type = "Audit"
+| alter _time = created_at;
+
+filter source_log_type = "Alerts"
+| alter
+    // finding_info — single object, no cast needed.
+    finding_uid           = json_extract_scalar(finding_info, "$.uid"),
+    finding_title         = json_extract_scalar(finding_info, "$.title"),
+    finding_created_time  = json_extract_scalar(finding_info, "$.created_time"),
+    alert_type            = arrayindex(json_extract_scalar_array(finding_info, "$.types"), 0),
+    // Cache JSON-string form of array-typed columns for downstream use.
+    resources_str         = to_json_string(resources),
+    observables_str       = to_json_string(observables)
+| alter
+    // observables[] — match by .name across positions 0..7.
+    item_id = coalesce(
+        if(json_extract_scalar(observables_str, "$.0.name")="item.id", json_extract_scalar(observables_str, "$.0.value"), null),
+        if(json_extract_scalar(observables_str, "$.1.name")="item.id", json_extract_scalar(observables_str, "$.1.value"), null),
+        if(json_extract_scalar(observables_str, "$.2.name")="item.id", json_extract_scalar(observables_str, "$.2.value"), null),
+        if(json_extract_scalar(observables_str, "$.3.name")="item.id", json_extract_scalar(observables_str, "$.3.value"), null),
+        if(json_extract_scalar(observables_str, "$.4.name")="item.id", json_extract_scalar(observables_str, "$.4.value"), null),
+        if(json_extract_scalar(observables_str, "$.5.name")="item.id", json_extract_scalar(observables_str, "$.5.value"), null),
+        if(json_extract_scalar(observables_str, "$.6.name")="item.id", json_extract_scalar(observables_str, "$.6.value"), null),
+        if(json_extract_scalar(observables_str, "$.7.name")="item.id", json_extract_scalar(observables_str, "$.7.value"), null)),
+    item_type = coalesce(
+        if(json_extract_scalar(observables_str, "$.0.name")="item.type", json_extract_scalar(observables_str, "$.0.value"), null),
+        if(json_extract_scalar(observables_str, "$.1.name")="item.type", json_extract_scalar(observables_str, "$.1.value"), null),
+        if(json_extract_scalar(observables_str, "$.2.name")="item.type", json_extract_scalar(observables_str, "$.2.value"), null),
+        if(json_extract_scalar(observables_str, "$.3.name")="item.type", json_extract_scalar(observables_str, "$.3.value"), null),
+        if(json_extract_scalar(observables_str, "$.4.name")="item.type", json_extract_scalar(observables_str, "$.4.value"), null),
+        if(json_extract_scalar(observables_str, "$.5.name")="item.type", json_extract_scalar(observables_str, "$.5.value"), null),
+        if(json_extract_scalar(observables_str, "$.6.name")="item.type", json_extract_scalar(observables_str, "$.6.value"), null),
+        if(json_extract_scalar(observables_str, "$.7.name")="item.type", json_extract_scalar(observables_str, "$.7.value"), null)),
+    alert_item_version = coalesce(
+        if(json_extract_scalar(observables_str, "$.0.name")="item.version", json_extract_scalar(observables_str, "$.0.value"), null),
+        if(json_extract_scalar(observables_str, "$.1.name")="item.version", json_extract_scalar(observables_str, "$.1.value"), null),
+        if(json_extract_scalar(observables_str, "$.2.name")="item.version", json_extract_scalar(observables_str, "$.2.value"), null),
+        if(json_extract_scalar(observables_str, "$.3.name")="item.version", json_extract_scalar(observables_str, "$.3.value"), null),
+        if(json_extract_scalar(observables_str, "$.4.name")="item.version", json_extract_scalar(observables_str, "$.4.value"), null),
+        if(json_extract_scalar(observables_str, "$.5.name")="item.version", json_extract_scalar(observables_str, "$.5.value"), null),
+        if(json_extract_scalar(observables_str, "$.6.name")="item.version", json_extract_scalar(observables_str, "$.6.value"), null),
+        if(json_extract_scalar(observables_str, "$.7.name")="item.version", json_extract_scalar(observables_str, "$.7.value"), null)),
+    device_os_obs = coalesce(
+        if(json_extract_scalar(observables_str, "$.0.name")="device.os", json_extract_scalar(observables_str, "$.0.value"), null),
+        if(json_extract_scalar(observables_str, "$.1.name")="device.os", json_extract_scalar(observables_str, "$.1.value"), null),
+        if(json_extract_scalar(observables_str, "$.2.name")="device.os", json_extract_scalar(observables_str, "$.2.value"), null),
+        if(json_extract_scalar(observables_str, "$.3.name")="device.os", json_extract_scalar(observables_str, "$.3.value"), null),
+        if(json_extract_scalar(observables_str, "$.4.name")="device.os", json_extract_scalar(observables_str, "$.4.value"), null),
+        if(json_extract_scalar(observables_str, "$.5.name")="device.os", json_extract_scalar(observables_str, "$.5.value"), null),
+        if(json_extract_scalar(observables_str, "$.6.name")="device.os", json_extract_scalar(observables_str, "$.6.value"), null),
+        if(json_extract_scalar(observables_str, "$.7.name")="device.os", json_extract_scalar(observables_str, "$.7.value"), null)),
+    device_serial = coalesce(
+        if(json_extract_scalar(observables_str, "$.0.name")="device.serial", json_extract_scalar(observables_str, "$.0.value"), null),
+        if(json_extract_scalar(observables_str, "$.1.name")="device.serial", json_extract_scalar(observables_str, "$.1.value"), null),
+        if(json_extract_scalar(observables_str, "$.2.name")="device.serial", json_extract_scalar(observables_str, "$.2.value"), null),
+        if(json_extract_scalar(observables_str, "$.3.name")="device.serial", json_extract_scalar(observables_str, "$.3.value"), null),
+        if(json_extract_scalar(observables_str, "$.4.name")="device.serial", json_extract_scalar(observables_str, "$.4.value"), null),
+        if(json_extract_scalar(observables_str, "$.5.name")="device.serial", json_extract_scalar(observables_str, "$.5.value"), null),
+        if(json_extract_scalar(observables_str, "$.6.name")="device.serial", json_extract_scalar(observables_str, "$.6.value"), null),
+        if(json_extract_scalar(observables_str, "$.7.name")="device.serial", json_extract_scalar(observables_str, "$.7.value"), null)),
+
+    // resources[] — match by .type across positions 0..3.
+    device_id = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="device", json_extract_scalar(resources_str, "$.0.data.id"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="device", json_extract_scalar(resources_str, "$.1.data.id"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="device", json_extract_scalar(resources_str, "$.2.data.id"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="device", json_extract_scalar(resources_str, "$.3.data.id"), null)),
+    alert_hostname = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="device", json_extract_scalar(resources_str, "$.0.data.hostname"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="device", json_extract_scalar(resources_str, "$.1.data.hostname"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="device", json_extract_scalar(resources_str, "$.2.data.hostname"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="device", json_extract_scalar(resources_str, "$.3.data.hostname"), null)),
+    device_last_seen = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="device", json_extract_scalar(resources_str, "$.0.data.last_seen"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="device", json_extract_scalar(resources_str, "$.1.data.last_seen"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="device", json_extract_scalar(resources_str, "$.2.data.last_seen"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="device", json_extract_scalar(resources_str, "$.3.data.last_seen"), null)),
+    device_last_user = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="device", json_extract_scalar(resources_str, "$.0.data.last_logged_on_user"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="device", json_extract_scalar(resources_str, "$.1.data.last_logged_on_user"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="device", json_extract_scalar(resources_str, "$.2.data.last_logged_on_user"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="device", json_extract_scalar(resources_str, "$.3.data.last_logged_on_user"), null)),
+
+    mcp_package_name = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="mcp", json_extract_scalar(resources_str, "$.0.data.package_name"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="mcp", json_extract_scalar(resources_str, "$.1.data.package_name"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="mcp", json_extract_scalar(resources_str, "$.2.data.package_name"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="mcp", json_extract_scalar(resources_str, "$.3.data.package_name"), null)),
+    mcp_package_type = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="mcp", json_extract_scalar(resources_str, "$.0.data.package_type"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="mcp", json_extract_scalar(resources_str, "$.1.data.package_type"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="mcp", json_extract_scalar(resources_str, "$.2.data.package_type"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="mcp", json_extract_scalar(resources_str, "$.3.data.package_type"), null)),
+    mcp_transport = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="mcp", json_extract_scalar(resources_str, "$.0.data.transport"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="mcp", json_extract_scalar(resources_str, "$.1.data.transport"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="mcp", json_extract_scalar(resources_str, "$.2.data.transport"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="mcp", json_extract_scalar(resources_str, "$.3.data.transport"), null)),
+    mcp_installation_method = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="mcp", json_extract_scalar(resources_str, "$.0.data.installation_method"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="mcp", json_extract_scalar(resources_str, "$.1.data.installation_method"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="mcp", json_extract_scalar(resources_str, "$.2.data.installation_method"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="mcp", json_extract_scalar(resources_str, "$.3.data.installation_method"), null)),
+    mcp_url = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="mcp", json_extract_scalar(resources_str, "$.0.data.url"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="mcp", json_extract_scalar(resources_str, "$.1.data.url"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="mcp", json_extract_scalar(resources_str, "$.2.data.url"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="mcp", json_extract_scalar(resources_str, "$.3.data.url"), null)),
+    mcp_risk_status = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="mcp", json_extract_scalar(resources_str, "$.0.data.risk_status"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="mcp", json_extract_scalar(resources_str, "$.1.data.risk_status"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="mcp", json_extract_scalar(resources_str, "$.2.data.risk_status"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="mcp", json_extract_scalar(resources_str, "$.3.data.risk_status"), null)),
+
+    // ── v1.3.9 additions: 8 newly-promoted columns ─────────────
+    // koi_event_id: Koi's per-occurrence UUID (distinct from finding_uid
+    // which is the FINDING identity). Useful for occurrence-level dedup
+    // and counting separate firings of the same finding.
+    koi_event_id = coalesce(
+        if(json_extract_scalar(observables_str, "$.0.name")="event.id", json_extract_scalar(observables_str, "$.0.value"), null),
+        if(json_extract_scalar(observables_str, "$.1.name")="event.id", json_extract_scalar(observables_str, "$.1.value"), null),
+        if(json_extract_scalar(observables_str, "$.2.name")="event.id", json_extract_scalar(observables_str, "$.2.value"), null),
+        if(json_extract_scalar(observables_str, "$.3.name")="event.id", json_extract_scalar(observables_str, "$.3.value"), null),
+        if(json_extract_scalar(observables_str, "$.4.name")="event.id", json_extract_scalar(observables_str, "$.4.value"), null),
+        if(json_extract_scalar(observables_str, "$.5.name")="event.id", json_extract_scalar(observables_str, "$.5.value"), null),
+        if(json_extract_scalar(observables_str, "$.6.name")="event.id", json_extract_scalar(observables_str, "$.6.value"), null),
+        if(json_extract_scalar(observables_str, "$.7.name")="event.id", json_extract_scalar(observables_str, "$.7.value"), null)),
+
+    // Device lifecycle fields from resources[type=device].data
+    device_status = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="device", json_extract_scalar(resources_str, "$.0.data.status"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="device", json_extract_scalar(resources_str, "$.1.data.status"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="device", json_extract_scalar(resources_str, "$.2.data.status"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="device", json_extract_scalar(resources_str, "$.3.data.status"), null)),
+    device_registered_at = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="device", json_extract_scalar(resources_str, "$.0.data.registered_at"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="device", json_extract_scalar(resources_str, "$.1.data.registered_at"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="device", json_extract_scalar(resources_str, "$.2.data.registered_at"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="device", json_extract_scalar(resources_str, "$.3.data.registered_at"), null)),
+    device_network_user = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="device", json_extract_scalar(resources_str, "$.0.data.network_user"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="device", json_extract_scalar(resources_str, "$.1.data.network_user"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="device", json_extract_scalar(resources_str, "$.2.data.network_user"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="device", json_extract_scalar(resources_str, "$.3.data.network_user"), null)),
+
+    // MCP-specific fields from resources[type=mcp]
+    mcp_type = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="mcp", json_extract_scalar(resources_str, "$.0.data.mcp_type"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="mcp", json_extract_scalar(resources_str, "$.1.data.mcp_type"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="mcp", json_extract_scalar(resources_str, "$.2.data.mcp_type"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="mcp", json_extract_scalar(resources_str, "$.3.data.mcp_type"), null)),
+    mcp_risk_level = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="mcp", json_extract_scalar(resources_str, "$.0.data.risk_level"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="mcp", json_extract_scalar(resources_str, "$.1.data.risk_level"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="mcp", json_extract_scalar(resources_str, "$.2.data.risk_level"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="mcp", json_extract_scalar(resources_str, "$.3.data.risk_level"), null)),
+    mcp_id = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="mcp", json_extract_scalar(resources_str, "$.0.data.mcp_id"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="mcp", json_extract_scalar(resources_str, "$.1.data.mcp_id"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="mcp", json_extract_scalar(resources_str, "$.2.data.mcp_id"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="mcp", json_extract_scalar(resources_str, "$.3.data.mcp_id"), null)),
+    // mcp_criticality lives on the resource wrapper, not under .data
+    mcp_criticality = coalesce(
+        if(json_extract_scalar(resources_str, "$.0.type")="mcp", json_extract_scalar(resources_str, "$.0.criticality"), null),
+        if(json_extract_scalar(resources_str, "$.1.type")="mcp", json_extract_scalar(resources_str, "$.1.criticality"), null),
+        if(json_extract_scalar(resources_str, "$.2.type")="mcp", json_extract_scalar(resources_str, "$.2.criticality"), null),
+        if(json_extract_scalar(resources_str, "$.3.type")="mcp", json_extract_scalar(resources_str, "$.3.criticality"), null));

@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "id": "finding-1",
+      "name": "Known malicious extension",
+      "risk": "critical",
+      "description": "Extension matches a known-malicious signature in the Koi catalog"
+    },
+    {
+      "id": "finding-2",
+      "name": "Excessive permissions",
+      "risk": "medium",
+      "description": "Extension requests permissions beyond its stated functionality"
+    }
+  ],
+  "total_count": 2
+}

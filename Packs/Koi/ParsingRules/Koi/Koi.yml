@@ -1,0 +1,8 @@
+fromversion: 6.10.0
+id: Koi_ParsingRule
+name: Koi Parsing Rule
+rules: ''
+samples: ''
+supportedModules:
+- xsiam
+tags: []

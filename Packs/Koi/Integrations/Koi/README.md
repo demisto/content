@@ -583,3 +583,397 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Allowlist item 'example-extension' (marketplace: vscode) was added successfully.
+
+### koi-devices-list
+
+***
+List devices registered with Koi.
+
+#### Base Command
+
+`koi-devices-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Page number for pagination (1-based). When provided, fetches a single page and ignores limit. | Optional |
+| page_size | Number of results per page (default: 50, max: 500). | Optional |
+| limit | Maximum total devices to return when auto-paginating (default: 50, max: 1000). Default is 50. | Optional |
+| status | Filter devices by status. Possible values are: active, stale. | Optional |
+| last_seen_gte | Return devices last seen on/after this date (ISO 8601). | Optional |
+| last_seen_lte | Return devices last seen on/before this date (ISO 8601). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Koi.Device.id | String | Device unique identifier. |
+| Koi.Device.hostname | String | Device hostname. |
+| Koi.Device.os | String | Device operating system. |
+| Koi.Device.status | String | Device status \(active / stale / archived\). |
+| Koi.Device.last_seen | Date | Most recent check-in time. |
+| Koi.Device.last_logged_on_user | String | Last logged-on user. |
+| Koi.Device.serial | String | Device serial number. |
+| Koi.Device.registered_at | Date | Device registration time. |
+
+### koi-device-inventory-get
+
+***
+List items installed on a single device.
+
+#### Base Command
+
+`koi-device-inventory-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | The Koi device ID to fetch inventory for. | Required |
+| page | Page number for pagination (1-based). | Optional |
+| page_size | Number of results per page (default: 50, max: 500). | Optional |
+| limit | Max items when auto-paginating (default: 50, max: 1000). Default is 50. | Optional |
+| finding_id | Filter inventory items by finding ID. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Koi.DeviceInventory.device_id | String | Parent device ID \(decorated by the integration for join convenience\). |
+| Koi.DeviceInventory.item_id | String | Item identifier. |
+| Koi.DeviceInventory.item_display_name | String | Item display name. |
+| Koi.DeviceInventory.version | String | Installed item version. |
+| Koi.DeviceInventory.marketplace | String | Marketplace. |
+| Koi.DeviceInventory.platform | String | Platform. |
+| Koi.DeviceInventory.publisher | String | Publisher name. |
+| Koi.DeviceInventory.risk_level | String | Risk level \(low / medium / high / critical / pending\). |
+| Koi.DeviceInventory.activation_status | String | Activation status \(enabled / disabled / N/A\). |
+| Koi.DeviceInventory.first_seen | Date | First seen timestamp. |
+| Koi.DeviceInventory.last_seen | Date | Last seen timestamp. |
+| Koi.DeviceInventory.local_full_path | String | Local install path on the device. |
+
+### koi-runtime-policies-list
+
+***
+List agent runtime (hardening) enforcement policies.
+
+#### Base Command
+
+`koi-runtime-policies-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Page number for pagination (1-based). | Optional |
+| page_size | Number of results per page (default: 50, max: 500). | Optional |
+| limit | Max policies when auto-paginating (default: 50, max: 1000). Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Koi.RuntimePolicy.id | String | Runtime policy ID. |
+| Koi.RuntimePolicy.display_name | String | Policy display name. |
+| Koi.RuntimePolicy.description | String | Policy description. |
+| Koi.RuntimePolicy.agents | Unknown | List of agents the policy applies to \(e.g. cursor, claude_code, codex, gemini_cli\). |
+| Koi.RuntimePolicy.enforcement_mode | String | Enforcement mode \(block / ask\). |
+| Koi.RuntimePolicy.enabled | Boolean | Whether the policy is enabled. |
+| Koi.RuntimePolicy.group_ids | Unknown | Device groups the policy is scoped to. |
+| Koi.RuntimePolicy.rules | Unknown | Rule tree \(command / file_path / mcp_tool / skill / url / ip\). |
+| Koi.RuntimePolicy.created_by | String | Creator email. |
+| Koi.RuntimePolicy.created_at | Date | Creation timestamp. |
+| Koi.RuntimePolicy.updated_at | Date | Last update timestamp. |
+
+### koi-runtime-policy-get
+
+***
+Get a single runtime policy by ID. Returns the full rule tree.
+
+#### Base Command
+
+`koi-runtime-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | The runtime policy ID to fetch. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Koi.RuntimePolicy.id | String | Runtime policy ID. |
+| Koi.RuntimePolicy.display_name | String | Policy display name. |
+| Koi.RuntimePolicy.rules | Unknown | Full rule tree with values and operators per rule type. |
+
+### koi-findings-list
+
+***
+List finding (detection) definitions. Use to resolve finding IDs returned by other endpoints.
+
+#### Base Command
+
+`koi-findings-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Page number for pagination (1-based). | Optional |
+| page_size | Number of results per page (default: 50, max: 500). | Optional |
+| limit | Max findings when auto-paginating (default: 50, max: 1000). Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Koi.Finding.id | String | Finding definition ID \(e.g. RansomwareBehaviorDetected\). |
+| Koi.Finding.name | String | Human-readable finding name. |
+| Koi.Finding.risk | Number | Risk score \(0-10\). |
+| Koi.Finding.description | String | Finding description. |
+
+### koi-approval-requests-list
+
+***
+List approval requests with optional filtering.
+
+#### Base Command
+
+`koi-approval-requests-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Page number for pagination (1-based). | Optional |
+| page_size | Number of results per page (default: 50, max: 500). | Optional |
+| limit | Max requests when auto-paginating (default: 50, max: 1000). Default is 50. | Optional |
+| approval_status | Filter by approval status. Possible values are: pending, approved, rejected. | Optional |
+| marketplace | Filter by marketplace. | Optional |
+| requested_by | Filter by requester email. | Optional |
+| created_at_gte | Return requests created on/after this date (ISO 8601). | Optional |
+| created_at_lte | Return requests created on/before this date (ISO 8601). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Koi.ApprovalRequest.id | String | Approval request ID. |
+| Koi.ApprovalRequest.approval_status | String | Status \(pending / approved / rejected\). |
+| Koi.ApprovalRequest.marketplace | String | Marketplace. |
+| Koi.ApprovalRequest.name | String | Item display name. |
+| Koi.ApprovalRequest.item_id | String | Item ID. |
+| Koi.ApprovalRequest.version | String | Item version. |
+| Koi.ApprovalRequest.requested_by | String | Requester email. |
+| Koi.ApprovalRequest.justification | String | Requester-provided justification. |
+| Koi.ApprovalRequest.created_at | Date | Creation time. |
+| Koi.ApprovalRequest.resolved_at | Date | Resolution time. |
+| Koi.ApprovalRequest.reject_reason | String | Rejection reason if rejected. |
+
+### koi-remediations-list
+
+***
+List remediation suggestions with filtering.
+
+#### Base Command
+
+`koi-remediations-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Page number for pagination (1-based). | Optional |
+| page_size | Number of results per page (default: 50, max: 500). | Optional |
+| limit | Max remediations when auto-paginating (default: 50, max: 1000). Default is 50. | Optional |
+| status | Filter remediations by status. Possible values are: open, pending, remediated, dismissed. | Optional |
+| risk_level | Filter by risk level. Possible values are: low, medium, high, critical, pending. | Optional |
+| platform | Filter by platform. | Optional |
+| hostname | Filter by hostname. | Optional |
+| reason | Filter by remediation reason. | Optional |
+| sort_by | Sort field. Possible values are: item_display_name, hostname, risk_level, platform. | Optional |
+| sort_direction | Sort direction. Possible values are: asc, desc. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Koi.Remediation.device_id | String | Device ID. |
+| Koi.Remediation.hostname | String | Device hostname. |
+| Koi.Remediation.item_id | String | Item ID. |
+| Koi.Remediation.item_display_name | String | Item display name. |
+| Koi.Remediation.version | String | Item version. |
+| Koi.Remediation.platform | String | Platform. |
+| Koi.Remediation.risk_level | String | Risk level. |
+| Koi.Remediation.status | String | Status \(open / pending / remediated / dismissed\). |
+| Koi.Remediation.reason | String | Remediation reason. |
+| Koi.Remediation.triggered_at | Date | When the remediation was triggered. |
+| Koi.Remediation.triggered_by | String | Who triggered it. |
+| Koi.Remediation.last_script_run | Date | Last script execution time. |
+| Koi.Remediation.dismissed_at | Date | Dismissal time. |
+| Koi.Remediation.dismissed_by | String | Who dismissed it. |
+
+### koi-groups-list
+
+***
+List device groups (max 9 per tenant).
+
+#### Base Command
+
+`koi-groups-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Page number for pagination (1-based). | Optional |
+| page_size | Number of results per page (default: 50, max: 500). | Optional |
+| limit | Max groups when auto-paginating (default: 50, max: 1000). Note: tenants are capped at 9 groups by Koi. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Koi.Group.id | Number | Group ID. |
+| Koi.Group.name | String | Group name. |
+| Koi.Group.devices | Unknown | List of devices in the group \(id \+ name pairs\). |
+| Koi.Group.created_at | Date | Creation timestamp. |
+
+### koi-users-list
+
+***
+List Koi users (endpoint is unpaginated — returns the full list).
+
+#### Base Command
+
+`koi-users-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Koi.User.id | String | User ID. |
+| Koi.User.email | String | User email. |
+| Koi.User.first_name | String | First name. |
+| Koi.User.last_name | String | Last name. |
+| Koi.User.role | String | User role. |
+| Koi.User.status | String | User status \(enabled / disabled\). |
+| Koi.User.created_at | Date | Creation timestamp. |
+
+### koi-koidex-search
+
+***
+Search the Koi catalog database for items by marketplace + term.
+
+#### Base Command
+
+`koi-koidex-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| marketplace | The marketplace to search in (e.g. vscode, npm, chrome_web_store, chocolatey, hugging_face). | Required |
+| search_term | The search term to match against item names. | Required |
+| page | Page number for pagination (1-based). | Optional |
+| page_size | Number of results per page (default: 50, max: 500). | Optional |
+| limit | Max items when auto-paginating (default: 50, max: 1000). Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Koi.KoidexItem.item_id | String | Item ID in the Koi catalog. |
+| Koi.KoidexItem.item_display_name | String | Display name. |
+| Koi.KoidexItem.marketplace | String | Marketplace. |
+| Koi.KoidexItem.package_name | String | Package name. |
+| Koi.KoidexItem.version | String | Version. |
+| Koi.KoidexItem.installs | Number | Install count \(catalog-wide\). |
+
+### koi-koidex-risk-report
+
+***
+Risk + compliance report for a single catalog item.
+
+#### Base Command
+
+`koi-koidex-risk-report`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| item_id | The catalog item ID. | Required |
+| marketplace | The marketplace the item lives in. | Required |
+| version | Optional version (if omitted, the catalog's default version is used). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Koi.KoidexRiskReport.item_id | String | Item ID. |
+| Koi.KoidexRiskReport.item_display_name | String | Display name. |
+| Koi.KoidexRiskReport.marketplace | String | Marketplace. |
+| Koi.KoidexRiskReport.version | String | Version. |
+| Koi.KoidexRiskReport.risk | Number | Risk score \(0-10\). |
+| Koi.KoidexRiskReport.risk_level | String | Risk bucket \(low / medium / high / critical / pending\). |
+| Koi.KoidexRiskReport.findings | Unknown | Findings block \(findings list \+ total_count\). |
+| Koi.KoidexRiskReport.compliance | Unknown | Compliance block \(rules list \+ total_count\). |
+| Koi.KoidexRiskReport.ai_risk_summary | String | AI-generated risk summary text \(may be empty\). |
+
+### koi-fetch-context-get
+
+***
+Diagnostic: prints the integration fetch state (last_run / high-water-mark) and integration context, flagging a future HWM that silently stalls the scheduled fetch. Read-only.
+
+#### Base Command
+
+`koi-fetch-context-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| KOI.FetchContext.now_utc | Date | Current UTC time at command execution \(ISO 8601\). |
+| KOI.FetchContext.future_hwm_log_types | Unknown | Log types whose last_fetch high-water-mark is set in the future \(these silently stall the scheduled fetch\). |
+| KOI.FetchContext.last_run | Unknown | Raw integration fetch state \(demisto.getLastRun\(\)\). |
+| KOI.FetchContext.integration_context | Unknown | Raw integration context \(demisto.getIntegrationContext\(\)\). |
+
+### koi-fetch-context-set
+
+***
+Maintenance: modifies the integration fetch state (demisto.setLastRun()) to recover from a stuck high-water-mark without redeploying or using the UI reset. Requires at least one action argument.
+
+#### Base Command
+
+`koi-fetch-context-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| clear_future_hwm | If true, any last_fetch high-water-mark set in the future is reset to the current time (recovers a future-HWM stall). Possible values are: true, false. Default is false. | Optional |
+| last_fetch_alerts | Set the Alerts high-water-mark to this time (ISO 8601 or relative, e.g. "2 days ago"). | Optional |
+| last_fetch_audit | Set the Audit high-water-mark to this time (ISO 8601 or relative, e.g. "2 days ago"). | Optional |
+| clear_previous_ids | If true, clears the cross-cycle dedup id sets (previous_ids_*). Possible values are: true, false. Default is false. | Optional |
+| reset_all | If true, clears the ENTIRE last_run. The next fetch starts from First Fetch Time Range and may re-ingest/duplicate the overlap window. Use with caution. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| KOI.FetchContextUpdate.changes | Unknown | Human-readable list of changes applied to the fetch state. |
+| KOI.FetchContextUpdate.last_run_after | Unknown | The resulting integration fetch state after the update. |

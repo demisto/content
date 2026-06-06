@@ -1,0 +1,21 @@
+{
+  "items": [
+    {
+      "item_id": "cjpalhdlnbpafiamejdnhcphjbkeiagm",
+      "item_display_name": "uBlock Origin",
+      "marketplace": "chrome_web_store",
+      "package_name": "ublock-origin",
+      "version": "1.54.0",
+      "installs": 10000000
+    },
+    {
+      "item_id": "gighmmpiobklfepjocnamgkkbiglidom",
+      "item_display_name": "AdBlock",
+      "marketplace": "chrome_web_store",
+      "package_name": "adblock",
+      "version": "5.7.0",
+      "installs": 5000000
+    }
+  ],
+  "total_count": 2
+}

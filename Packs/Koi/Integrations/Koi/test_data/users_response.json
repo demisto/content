@@ -1,0 +1,23 @@
+{
+  "users": [
+    {
+      "id": "user-1",
+      "email": "admin@example.com",
+      "first_name": "Alice",
+      "last_name": "Admin",
+      "role": "admin",
+      "status": "active",
+      "created_at": "2025-01-01T10:00:00Z"
+    },
+    {
+      "id": "user-2",
+      "email": "analyst@example.com",
+      "first_name": "Bob",
+      "last_name": "Analyst",
+      "role": "analyst",
+      "status": "active",
+      "created_at": "2025-01-02T11:00:00Z"
+    }
+  ],
+  "total_count": 2
+}

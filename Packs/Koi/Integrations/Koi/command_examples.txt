@@ -23,3 +23,23 @@
 !koi-inventory-search filter_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID page=1 page_size=100
 !koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode version=1.2.3 limit=50
 !koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode page=1 page_size=100
+!koi-devices-list limit=50 status=active
+!koi-devices-list page=1 page_size=100 last_seen_gte="7 days ago"
+!koi-device-inventory-get device_id=DEVICE-123 limit=50
+!koi-device-inventory-get device_id=DEVICE-123 page=1 page_size=100 finding_id=FINDING-1
+!koi-runtime-policies-list limit=50
+!koi-runtime-policies-list page=1 page_size=100
+!koi-runtime-policy-get policy_id=rp-1
+!koi-findings-list limit=50
+!koi-approval-requests-list limit=50 approval_status=pending
+!koi-approval-requests-list page=1 page_size=100 marketplace=chrome_web_store requested_by="user@org.com"
+!koi-remediations-list limit=50 status=open risk_level=high
+!koi-remediations-list page=1 page_size=100 platform=chrome sort_by=triggered_at sort_direction=desc
+!koi-groups-list limit=50
+!koi-users-list
+!koi-koidex-search marketplace=chrome_web_store search_term=ublock limit=50
+!koi-koidex-risk-report item_id=cjpalhdlnbpafiamejdnhcphjbkeiagm marketplace=chrome_web_store
+!koi-koidex-risk-report item_id=cjpalhdlnbpafiamejdnhcphjbkeiagm marketplace=chrome_web_store version=1.54.0
+!koi-fetch-context-get
+!koi-fetch-context-set clear_future_hwm=true
+!koi-fetch-context-set last_fetch_alerts="2 days ago"

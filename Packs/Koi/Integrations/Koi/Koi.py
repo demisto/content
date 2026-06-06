@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -6,10 +8,10 @@ from datetime import datetime, timedelta, UTC
 from enum import Enum
 from typing import Any
 
-import demistomock as demisto  # noqa: F401
+
 import urllib3
-from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa
+
+
 from ContentClientApiModule import *
 
 # Disable insecure warnings
@@ -43,6 +45,16 @@ class ApiPaths:
     BLOCKLIST = f"{BASE}/policies/blocklist"
     INVENTORY = f"{BASE}/inventory"
     INVENTORY_SEARCH = f"{BASE}/inventory/search"
+    # Tier-1 expansion (v1.2.0) — read-only surface across sections 2,4,5,6,7,9,11,13.
+    APPROVAL_REQUESTS = f"{BASE}/approval-requests"
+    DEVICES = f"{BASE}/devices"
+    FINDINGS = f"{BASE}/findings"
+    GROUPS = f"{BASE}/groups"
+    RUNTIME_POLICIES = f"{BASE}/hardening/runtime-policies"
+    KOIDEX_SEARCH = f"{BASE}/koidex/search"
+    KOIDEX_RISK_REPORT = f"{BASE}/koidex/risk-report"
+    REMEDIATIONS = f"{BASE}/remediations"
+    USERS = f"{BASE}/users"
 
     @classmethod
     def policy(cls, policy_id: int) -> str:
@@ -51,13 +63,40 @@ class ApiPaths:
 
     @classmethod
     def inventory_item(cls, item_id: str) -> str:
-        """Return the path for a specific inventory item by ID."""
-        return f"{cls.INVENTORY}/{item_id}"
+        """Return the path for a specific inventory item by ID.
+
+        item_id is URL-encoded because Koi accepts identifiers that
+        contain `/` (npm scoped packages: `@scope/name`) and full URLs
+        (remote MCP servers: `https://...`). Without encoding, Koi's
+        router treats the slashes as path separators and returns 404.
+        """
+        from urllib.parse import quote
+
+        return f"{cls.INVENTORY}/{quote(item_id, safe='')}"
 
     @classmethod
     def inventory_item_endpoints(cls, item_id: str) -> str:
-        """Return the path for the endpoints of a specific inventory item."""
-        return f"{cls.INVENTORY}/{item_id}/endpoints"
+        """Return the path for the endpoints of a specific inventory item.
+        Same URL-encoding rationale as `inventory_item`."""
+        from urllib.parse import quote
+
+        return f"{cls.INVENTORY}/{quote(item_id, safe='')}/endpoints"
+
+    @classmethod
+    def device_inventory(cls, device_id: str) -> str:
+        """Items installed on a specific device. URL-encoding the id
+        guards against future device-id schemes that include reserved
+        characters."""
+        from urllib.parse import quote
+
+        return f"{cls.DEVICES}/{quote(device_id, safe='')}/inventory"
+
+    @classmethod
+    def runtime_policy(cls, policy_id: str) -> str:
+        """A single runtime (hardening) policy by ID."""
+        from urllib.parse import quote
+
+        return f"{cls.RUNTIME_POLICIES}/{quote(policy_id, safe='')}"
 
 
 class Config:
@@ -80,7 +119,7 @@ class Config:
     # Fetch defaults
     DEFAULT_MAX_FETCH = 5000
     # Default lookback time for first fetch or get-events command
-    DEFAULT_FROM_TIME = "5 minutes ago"
+    DEFAULT_FROM_TIME = "3 days ago"
 
     # API sort direction for chronological ordering
     SORT_DIRECTION = "asc"
@@ -259,51 +298,188 @@ def add_time_to_events(events: list[dict], log_type: LogType) -> None:
         event["source_log_type"] = log_type.title
 
 
-def get_event_id(event: dict) -> str | None:
-    """Extract the event ID from an event dictionary.
+def _extract_observable_value(event: dict, name: str) -> str:
+    """Return the .value for a named observable, or empty string."""
+    obs = event.get("observables")
+    if isinstance(obs, list):
+        for o in obs:
+            if isinstance(o, dict) and o.get("name") == name:
+                return str(o.get("value") or "")
+    return ""
+
+
+def _extract_resource_data_id(event: dict, resource_type: str) -> str:
+    """Return the .data.id for the first resource of the given type, or empty."""
+    resources = event.get("resources")
+    if isinstance(resources, list):
+        for r in resources:
+            if isinstance(r, dict) and r.get("type") == resource_type:
+                data = r.get("data") or {}
+                if isinstance(data, dict) and data.get("id"):
+                    return str(data["id"])
+    return ""
+
+
+def get_event_id(event: dict, log_type: LogType | None = None) -> str | None:
+    """Extract a stable per-occurrence event identifier for dedup across
+    fetch cycles.
+
+    History (bug #001 / #004 from the bug tracker):
+      * v1.1.0 (Cortex original): only looked at top-level id/uuid/alert_id —
+        returned None for every Koi event, disabled dedup entirely → 21×
+        duplication at HWM boundary.
+      * v1.1.1: added nested finding_info.uid path → dedup re-enabled but
+        keyed only by FINDING identity, not per-occurrence.
+      * v1.3.11 (this): one finding can fire on many (device, item) tuples
+        and Koi emits each as a separate event with identical
+        finding_info.uid + observables.event.id. Collapsing them all to
+        `alert:<finding_uid>` was over-aggressive: we kept the first 99
+        on first run but then dedup-dropped 0 vs. the expected 99 on
+        subsequent runs (silently lost per-item granularity). New key
+        adds device + item + time to make each occurrence distinct.
+
+    Strategy:
+      * Alerts (OCSF): composite key
+            alert:<finding_uid>|<device_id>|<item_id>|<time>
+        where:
+          - finding_uid = finding_info.uid
+          - device_id   = first resources[type=device].data.id
+          - item_id     = first observables[name=item.id].value
+          - time        = top-level `time` (epoch ms)
+        Missing components are replaced with empty string. As long as
+        finding_uid is present, an id is returned.
+      * Audit: deterministic SHA-1 of
+        (created_at, type, action, object_id, triggered_by, message).
+        Already per-occurrence-stable; no change in this version.
 
     Args:
         event: The event dictionary.
+        log_type: Optional LogType to select the strategy.
 
     Returns:
-        The event ID string, or None if not found.
+        The event ID string, or None if no identifying signal is present.
     """
-    for id_field in ("id", "alert_id", "log_id", "uuid"):
-        event_id = event.get(id_field)
-        if event_id:
-            return str(event_id)
+    # Top-level fields — kept for forward compat in case Koi adds them.
+    for id_field in ("id", "alert_id", "log_id", "uuid", "event_id"):
+        eid = event.get(id_field)
+        if eid:
+            return str(eid)
+
+    if log_type == LogType.ALERTS or "finding_info" in event:
+        # OCSF alerts: composite key (finding_uid, device_id, item_id, time)
+        # so 99 distinct per-item occurrences of one finding stay distinct.
+        finding_info = event.get("finding_info")
+        finding_uid = ""
+        if isinstance(finding_info, dict):
+            for key in ("uid", "id", "alert_id"):
+                v = finding_info.get(key)
+                if v:
+                    finding_uid = str(v)
+                    break
+        if finding_uid:
+            device_id = _extract_resource_data_id(event, "device")
+            item_id = _extract_observable_value(event, "item.id")
+            time_val = str(event.get("time") or "")
+            return f"alert:{finding_uid}|{device_id}|{item_id}|{time_val}"
+
+    if log_type == LogType.AUDIT or "created_at" in event:
+        # Audit: stable composite. Include `message` because a few audit
+        # event types fire multiple distinct actions at the same
+        # (created_at, type, action, object_id, triggered_by) tuple
+        # (e.g., extension policy bulk-apply events).
+        parts = (
+            str(event.get("created_at") or ""),
+            str(event.get("type") or ""),
+            str(event.get("action") or ""),
+            str(event.get("object_id") or ""),
+            str(event.get("triggered_by") or ""),
+            str(event.get("message") or ""),
+        )
+        if any(parts):
+            import hashlib
+
+            digest = hashlib.sha1("|".join(parts).encode()).hexdigest()[:16]
+            return f"audit:{digest}"
     return None
 
 
-def deduplicate_events(events: list[dict], last_fetched_ids: list[str]) -> list[dict]:
-    """Remove already-processed events based on previously fetched IDs.
+def deduplicate_events(
+    events: list[dict],
+    last_fetched_ids: list[str],
+    log_type: LogType | None = None,
+) -> list[dict]:
+    """Two-stage dedup for one fetch cycle's results.
+
+    Stage 1 (within-batch): the same API response can carry the same
+    logical event more than once. We observed this on Koi alert clusters
+    where multi-page or duplicate-payload responses delivered the same
+    (finding_uid, device_id, item_id, time) tuple twice in one batch.
+    Cross-cycle dedup alone would let both copies through on the
+    first encounter because neither matches `last_fetched_ids` yet.
+
+    Stage 2 (cross-cycle): drop events whose id is already in
+    `last_fetched_ids` (the at-HWM IDs from prior fetches), the
+    classic HWM-boundary-overlap defense.
+
+    Both stages key off `get_event_id(event, log_type)` so adding a new
+    discriminator field (composite key change) automatically tightens
+    both within-batch and cross-cycle dedup.
 
     Args:
         events: List of events to deduplicate.
         last_fetched_ids: List of event IDs from the previous run.
+        log_type: Source log type; forwarded to get_event_id so the
+            type-specific identifier strategy is applied (alerts use
+            composite key, audit uses a composite hash).
 
     Returns:
-        List of new (non-duplicate) events.
+        List of new (non-duplicate) events. Order preserved per first-
+        occurrence within the input batch.
     """
     if not events:
         demisto.debug("[Dedup] No events to process")
         return events
 
-    if not last_fetched_ids:
-        demisto.debug("[Dedup] No deduplication needed (first run - no previous IDs)")
-        return events
+    fetched_ids_set = set(last_fetched_ids or [])
 
-    demisto.debug(f"[Dedup] Checking {len(events)} events against {len(last_fetched_ids)} previously fetched IDs")
+    # Stage 1: within-batch dedup. Track ids we've seen in THIS batch.
+    seen_in_batch: set[str] = set()
+    after_batch_dedup: list[dict] = []
+    within_batch_skipped = 0
+    no_id_kept = 0
+    for event in events:
+        eid = get_event_id(event, log_type)
+        if eid is None:
+            # No identifier — can't dedup; keep the event so we don't
+            # accidentally drop legitimate data when the dedup key is
+            # missing (defensive: drop later only when we KNOW it's
+            # a dup).
+            after_batch_dedup.append(event)
+            no_id_kept += 1
+            continue
+        if eid in seen_in_batch:
+            within_batch_skipped += 1
+            continue
+        seen_in_batch.add(eid)
+        after_batch_dedup.append(event)
 
-    fetched_ids_set = set(last_fetched_ids)
-    new_events = [event for event in events if get_event_id(event) not in fetched_ids_set]
+    if within_batch_skipped:
+        demisto.debug(f"[Dedup] Within-batch: removed {within_batch_skipped} duplicate events from {len(events)} total")
+    if no_id_kept:
+        demisto.debug(f"[Dedup] Within-batch: kept {no_id_kept} events with no dedup key (cannot safely drop)")
 
-    skipped_count = len(events) - len(new_events)
-    if skipped_count > 0:
-        demisto.debug(f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain.")
+    # Stage 2: cross-cycle dedup against last_fetched_ids.
+    if not fetched_ids_set:
+        demisto.debug(f"[Dedup] No prior IDs — within-batch dedup only. {len(after_batch_dedup)} events remain.")
+        return after_batch_dedup
+
+    demisto.debug(f"[Dedup] Cross-cycle: checking {len(after_batch_dedup)} against {len(fetched_ids_set)} prior IDs")
+    new_events = [e for e in after_batch_dedup if get_event_id(e, log_type) not in fetched_ids_set]
+    cross_cycle_skipped = len(after_batch_dedup) - len(new_events)
+    if cross_cycle_skipped:
+        demisto.debug(f"[Dedup] Cross-cycle: removed {cross_cycle_skipped} duplicates. {len(new_events)} new events remain.")
     else:
-        demisto.debug("[Dedup] No duplicates found.")
-
+        demisto.debug("[Dedup] Cross-cycle: no duplicates found.")
     return new_events
 
 
@@ -998,6 +1174,189 @@ class Client(ContentClient):
         send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[API] Successfully sent {len(events)} events to XSIAM")
 
+    # ── v1.2.0 tier-1 read-only expansion ─────────────────────────
+    # Eleven new endpoint wrappers. Same shape as `get_policies`:
+    # build params, call _http_request, return raw dict. Pagination +
+    # filter merging happen in the command layer via _paginate_simple.
+
+    def get_devices(
+        self,
+        page: int,
+        page_size: int,
+        status: str | None = None,
+        last_seen_gte: str | None = None,
+        last_seen_lte: str | None = None,
+    ) -> dict[str, Any]:
+        """List devices. status ∈ {active, stale}."""
+        params: dict[str, Any] = {"page": page, "page_size": page_size}
+        if status:
+            params["status"] = status
+        if last_seen_gte:
+            params["last_seen_gte"] = last_seen_gte
+        if last_seen_lte:
+            params["last_seen_lte"] = last_seen_lte
+        demisto.debug(f"[API] Fetching devices | Params: {params}")
+        return self._http_request(method="GET", url_suffix=ApiPaths.DEVICES, params=params)
+
+    def get_device_inventory(
+        self,
+        device_id: str,
+        page: int,
+        page_size: int,
+        finding_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Items installed on a single device."""
+        params: dict[str, Any] = {"page": page, "page_size": page_size}
+        if finding_id:
+            params["finding_id"] = finding_id
+        url_suffix = ApiPaths.device_inventory(device_id)
+        demisto.debug(f"[API] Fetching inventory for device {device_id} | Params: {params}")
+        return self._http_request(method="GET", url_suffix=url_suffix, params=params)
+
+    def get_runtime_policies(
+        self,
+        page: int,
+        page_size: int,
+    ) -> dict[str, Any]:
+        """Agent runtime / hardening enforcement policies."""
+        params = {"page": page, "page_size": page_size}
+        demisto.debug(f"[API] Fetching runtime policies | Params: {params}")
+        return self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.RUNTIME_POLICIES,
+            params=params,
+        )
+
+    def get_runtime_policy(self, policy_id: str) -> dict[str, Any]:
+        """Single hardening policy by ID. Returns the full rule tree."""
+        url_suffix = ApiPaths.runtime_policy(policy_id)
+        demisto.debug(f"[API] Fetching runtime policy {policy_id}")
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def get_findings(self, page: int, page_size: int) -> dict[str, Any]:
+        """Catalog of detection definitions (risk + description)."""
+        params = {"page": page, "page_size": page_size}
+        demisto.debug(f"[API] Fetching findings | Params: {params}")
+        return self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.FINDINGS,
+            params=params,
+        )
+
+    def get_approval_requests(
+        self,
+        page: int,
+        page_size: int,
+        approval_status: str | None = None,
+        marketplace: str | None = None,
+        requested_by: str | None = None,
+        created_at_gte: str | None = None,
+        created_at_lte: str | None = None,
+    ) -> dict[str, Any]:
+        """Pending/approved/rejected approval requests."""
+        params: dict[str, Any] = {"page": page, "page_size": page_size}
+        for k, v in (
+            ("approval_status", approval_status),
+            ("marketplace", marketplace),
+            ("requested_by", requested_by),
+            ("created_at_gte", created_at_gte),
+            ("created_at_lte", created_at_lte),
+        ):
+            if v:
+                params[k] = v
+        demisto.debug(f"[API] Fetching approval requests | Params: {params}")
+        return self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.APPROVAL_REQUESTS,
+            params=params,
+        )
+
+    def get_remediations(
+        self,
+        page: int,
+        page_size: int,
+        status: str | None = None,
+        risk_level: str | None = None,
+        platform: str | None = None,
+        hostname: str | None = None,
+        reason: str | None = None,
+        sort_by: str | None = None,
+        sort_direction: str | None = None,
+    ) -> dict[str, Any]:
+        """Remediation queue. status ∈ {open, pending, remediated, dismissed}."""
+        params: dict[str, Any] = {"page": page, "page_size": page_size}
+        for k, v in (
+            ("status", status),
+            ("risk_level", risk_level),
+            ("platform", platform),
+            ("hostname", hostname),
+            ("reason", reason),
+            ("sort_by", sort_by),
+            ("sort_direction", sort_direction),
+        ):
+            if v:
+                params[k] = v
+        demisto.debug(f"[API] Fetching remediations | Params: {params}")
+        return self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.REMEDIATIONS,
+            params=params,
+        )
+
+    def get_groups(self, page: int, page_size: int) -> dict[str, Any]:
+        """Device groups (max 9 per customer)."""
+        params = {"page": page, "page_size": page_size}
+        demisto.debug(f"[API] Fetching groups | Params: {params}")
+        return self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.GROUPS,
+            params=params,
+        )
+
+    def get_users(self) -> dict[str, Any]:
+        """All users. Endpoint is not paginated — single GET returns the
+        complete list."""
+        demisto.debug("[API] Fetching users")
+        return self._http_request(method="GET", url_suffix=ApiPaths.USERS)
+
+    def get_koidex_search(
+        self,
+        marketplace: str,
+        search_term: str,
+        page: int,
+        page_size: int,
+    ) -> dict[str, Any]:
+        """Search the Koi catalog database for items by name/term."""
+        params = {
+            "marketplace": marketplace,
+            "search_term": search_term,
+            "page": page,
+            "page_size": page_size,
+        }
+        demisto.debug(f"[API] Koidex search | Params: {params}")
+        return self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.KOIDEX_SEARCH,
+            params=params,
+        )
+
+    def get_koidex_risk_report(
+        self,
+        item_id: str,
+        marketplace: str,
+        version: str | None = None,
+    ) -> dict[str, Any]:
+        """Full risk + compliance report for an item from the Koi catalog."""
+        params: dict[str, Any] = {"item_id": item_id, "marketplace": marketplace}
+        if version:
+            params["version"] = version
+        demisto.debug(f"[API] Koidex risk-report | Params: {params}")
+        return self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.KOIDEX_RISK_REPORT,
+            params=params,
+        )
+
 
 # endregion
 
@@ -1188,6 +1547,7 @@ def _fetch_single_log_type(
     last_run: dict[str, str | list[str]],
     max_events: int,
     audit_types: list[str] | None,
+    first_fetch_time: str | None = None,
 ) -> FetchResult:
     """Fetch and process events for a single log type.
 
@@ -1209,6 +1569,8 @@ def _fetch_single_log_type(
         last_run: Immutable copy of the current last_run state dict.
         max_events: Maximum events to fetch per type.
         audit_types: Optional audit type filter (only applied for AUDIT log type).
+        first_fetch_time: Optional lookback for the first fetch (e.g., "3 days ago").
+            Overrides Config.DEFAULT_FROM_TIME when no last_run state exists.
 
     Returns:
         FetchResult containing new_events, last_run_updates, and any error message.
@@ -1230,8 +1592,8 @@ def _fetch_single_log_type(
                 f"[Fetch] {log_type.type_string}: Continuing from {time_input}. " f"Prev ID count: {len(last_fetched_ids)}"
             )
         else:
-            time_input = Config.DEFAULT_FROM_TIME
-            demisto.debug(f"[Fetch] {log_type.type_string}: First run - starting from default time")
+            time_input = first_fetch_time or Config.DEFAULT_FROM_TIME
+            demisto.debug(f"[Fetch] {log_type.type_string}: First run - starting from '{time_input}'")
 
         created_after = get_formatted_utc_time(time_input)
 
@@ -1252,8 +1614,9 @@ def _fetch_single_log_type(
         # Events are already sorted chronologically by the API (sort_direction=asc).
         event_times: list[str] = [extract_time_from_event(event, log_type) or "" for event in events]
 
-        # Deduplicate
-        new_events = deduplicate_events(events, last_fetched_ids)
+        # Deduplicate (log_type matters: audit IDs are synthesized from
+        # the event payload because Koi audit responses have no native id).
+        new_events = deduplicate_events(events, last_fetched_ids, log_type)
 
         if new_events:
             add_time_to_events(new_events, log_type)
@@ -1270,7 +1633,7 @@ def _fetch_single_log_type(
             ids_at_last_timestamp: list[str] = [
                 event_id
                 for event, event_time in zip(events, event_times)
-                if event_time == new_last_run_time and (event_id := get_event_id(event))
+                if event_time == new_last_run_time and (event_id := get_event_id(event, log_type))
             ]
 
             # If the HWM timestamp hasn't changed, merge with previous IDs to prevent duplicates
@@ -1324,6 +1687,9 @@ def fetch_events_command(client: Client) -> None:
 
     audit_types_filter = argToList(params.get("audit_types_filter")) or None
 
+    first_fetch = params.get("first_fetch", "").strip()
+    first_fetch_time = f"{first_fetch} ago" if first_fetch and "ago" not in first_fetch else first_fetch
+
     # Single read of last_run state — no race condition
     last_run = demisto.getLastRun()
     demisto.debug(f"[Fetch] Starting with last_run: {last_run}")
@@ -1345,6 +1711,7 @@ def fetch_events_command(client: Client) -> None:
                 last_run=dict(last_run),
                 max_events=max_events_to_fetch,
                 audit_types=audit_types_filter,
+                first_fetch_time=first_fetch_time or None,
             ): log_type
             for log_type in log_types
         }
@@ -1359,11 +1726,16 @@ def fetch_events_command(client: Client) -> None:
     # Merge results — collect all new events and last_run updates
     all_new_events: list[dict] = []
     updated_last_run: dict[str, str | list[str]] = dict(last_run)
+    per_type_counts: dict[str, int] = {}
+    per_type_errors: dict[str, str] = {}
 
     for result in results:
+        type_label = result.log_type.type_string
         if result.error:
-            demisto.debug(f"[Fetch] {result.log_type.type_string}: Skipped due to error: {result.error}")
+            per_type_errors[type_label] = result.error
+            demisto.debug(f"[Fetch] {type_label}: Skipped due to error: {result.error}")
             continue
+        per_type_counts[type_label] = len(result.new_events)
         all_new_events.extend(result.new_events)
         updated_last_run.update(result.last_run_updates)
 
@@ -1371,9 +1743,30 @@ def fetch_events_command(client: Client) -> None:
     if all_new_events:
         client.send_events(all_new_events)
 
+    # ── Always-advance execution-time markers ─────────────────────
+    # These update on every cycle regardless of whether events arrived,
+    # so operators can tell from `last_run` that the scheduler IS firing
+    # at the configured interval (vs. the HWM advancing only when Koi
+    # has new events to give us). Separate keys from `last_fetch_<type>`
+    # so the dedup machinery isn't disturbed.
+    now_iso = datetime.now(UTC).strftime(Config.DATE_FORMAT)
+    updated_last_run["last_execution_time"] = now_iso
+    for log_type in log_types:
+        updated_last_run[f"last_execution_{log_type.type_string}"] = now_iso
+
     # Single write of last_run state — preserves progress from successful types
     demisto.setLastRun(updated_last_run)
-    demisto.debug(f"[Fetch] Last run updated: {updated_last_run}")
+
+    # Operator-facing summary: distinguishes "ran, found nothing" from
+    # "didn't run at all". Combined with last_execution_time, the
+    # operator can spot a scheduling issue vs. a quiet Koi tenant.
+    summary_parts = [f"executed_at={now_iso}"]
+    for type_label, count in per_type_counts.items():
+        summary_parts.append(f"{type_label.lower()}_new={count}")
+    for type_label, err in per_type_errors.items():
+        summary_parts.append(f"{type_label.lower()}_error={err[:60]!r}")
+    demisto.debug(f"[Fetch] Cycle summary: {' '.join(summary_parts)}")
+    demisto.debug(f"[Fetch] Last run state: {updated_last_run}")
 
 
 def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2247,13 +2640,753 @@ def _fetch_item_endpoints_with_pagination(
 
 # endregion
 
+# region v1.2.0 tier-1 expansion command implementations
+# =================================
+# 11 new read-only commands covering API sections 2, 4, 5, 6, 7, 9, 11, 13.
+# Each follows the existing convention: validate args, call the matching
+# client.get_X() method, build a tableToMarkdown summary + CommandResults.
+# A single _paginate_list_endpoint helper keeps the auto-paginate logic
+# DRY across the eight list-style endpoints.
+# =================================
+
+
+def _paginate_list_endpoint(
+    fetch_one_page,
+    result_key: str,
+    limit: int,
+    page_size: int = Config.MAX_PAGE_SIZE,
+) -> list[dict]:
+    """Generic auto-paginator for list endpoints.
+
+    `fetch_one_page` is a callable taking (page, page_size) and returning
+    the raw dict response. `result_key` is the top-level key under which
+    the items list lives ("devices", "items", "policies", ...).
+    """
+    out: list[dict] = []
+    page = Config.DEFAULT_PAGE
+    while len(out) < limit:
+        response = fetch_one_page(page=page, page_size=page_size)
+        batch = response.get(result_key, []) if isinstance(response, dict) else []
+        if not batch:
+            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
+            break
+        out.extend(batch)
+        demisto.debug(f"[Pagination] Page {page}: +{len(batch)} ({result_key}). Total: {len(out)}")
+        if len(batch) < page_size:
+            demisto.debug("[Pagination] Last page (partial). Stopping.")
+            break
+        page += 1
+    if len(out) > limit:
+        out = out[:limit]
+    demisto.debug(f"[Pagination] Returning {len(out)} {result_key}")
+    return out
+
+
+def _validate_pagination_args(args: dict[str, Any]) -> tuple[int | None, int, int | None]:
+    """Parse + validate the common pagination args (page, page_size, limit).
+    Raises DemistoException on out-of-range values."""
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+    if page_size > Config.MAX_PAGE_SIZE:
+        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+    if limit_arg and limit_arg > Config.MAX_LIMIT:
+        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+    return page_arg, page_size, limit_arg
+
+
+def koi_devices_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List devices registered with Koi."""
+    demisto.debug("[Command] koi-devices-list triggered")
+    page_arg, page_size, limit_arg = _validate_pagination_args(args)
+    status = args.get("status")
+    last_seen_gte = args.get("last_seen_gte")
+    last_seen_lte = args.get("last_seen_lte")
+
+    if page_arg:
+        response = client.get_devices(
+            page=page_arg,
+            page_size=page_size,
+            status=status,
+            last_seen_gte=last_seen_gte,
+            last_seen_lte=last_seen_lte,
+        )
+        devices = response.get("devices", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        devices = _paginate_list_endpoint(
+            lambda page, page_size: client.get_devices(
+                page=page,
+                page_size=page_size,
+                status=status,
+                last_seen_gte=last_seen_gte,
+                last_seen_lte=last_seen_lte,
+            ),
+            result_key="devices",
+            limit=limit,
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Devices",
+        devices,
+        headers=["id", "hostname", "os", "status", "last_seen", "last_logged_on_user", "serial", "registered_at"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Device",
+        outputs_key_field="id",
+        outputs=devices,
+    )
+
+
+def koi_device_inventory_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List items installed on a single device."""
+    demisto.debug("[Command] koi-device-inventory-get triggered")
+    device_id = args.get("device_id")
+    if not device_id:
+        raise DemistoException("device_id is required.")
+    page_arg, page_size, limit_arg = _validate_pagination_args(args)
+    finding_id = args.get("finding_id")
+
+    if page_arg:
+        response = client.get_device_inventory(
+            device_id=device_id,
+            page=page_arg,
+            page_size=page_size,
+            finding_id=finding_id,
+        )
+        items = response.get("inventory", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_list_endpoint(
+            lambda page, page_size: client.get_device_inventory(
+                device_id=device_id,
+                page=page,
+                page_size=page_size,
+                finding_id=finding_id,
+            ),
+            result_key="inventory",
+            limit=limit,
+        )
+
+    # Decorate each item with the parent device id so downstream
+    # automations can join without re-querying.
+    for it in items:
+        it["device_id"] = device_id
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Device Inventory — {device_id}",
+        items,
+        headers=[
+            "item_id",
+            "item_display_name",
+            "version",
+            "marketplace",
+            "platform",
+            "publisher",
+            "risk_level",
+            "activation_status",
+            "first_seen",
+            "last_seen",
+            "local_full_path",
+        ],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.DeviceInventory",
+        outputs_key_field="item_id",
+        outputs=items,
+    )
+
+
+def koi_runtime_policies_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List agent runtime (hardening) policies."""
+    demisto.debug("[Command] koi-runtime-policies-list triggered")
+    page_arg, page_size, limit_arg = _validate_pagination_args(args)
+
+    if page_arg:
+        response = client.get_runtime_policies(page=page_arg, page_size=page_size)
+        policies = response.get("policies", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        policies = _paginate_list_endpoint(
+            lambda page, page_size: client.get_runtime_policies(page=page, page_size=page_size),
+            result_key="policies",
+            limit=limit,
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Runtime Policies",
+        policies,
+        headers=[
+            "id",
+            "display_name",
+            "description",
+            "agents",
+            "enforcement_mode",
+            "enabled",
+            "group_ids",
+            "created_by",
+            "created_at",
+            "updated_at",
+        ],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.RuntimePolicy",
+        outputs_key_field="id",
+        outputs=policies,
+    )
+
+
+def koi_runtime_policy_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single runtime policy by ID (returns the full rule tree)."""
+    demisto.debug("[Command] koi-runtime-policy-get triggered")
+    policy_id = args.get("policy_id")
+    if not policy_id:
+        raise DemistoException("policy_id is required.")
+    policy = client.get_runtime_policy(policy_id=policy_id)
+
+    # Render the rule tree as a sub-table so operators can see the
+    # enforcement payload without dropping to raw JSON.
+    summary_rows = [
+        {
+            "id": policy.get("id"),
+            "display_name": policy.get("display_name"),
+            "enforcement_mode": policy.get("enforcement_mode"),
+            "enabled": policy.get("enabled"),
+            "agents": policy.get("agents"),
+            "rules_count": len(policy.get("rules", []) or []),
+        }
+    ]
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Runtime Policy — {policy.get('display_name', policy_id)}",
+        summary_rows,
+        headers=["id", "display_name", "enforcement_mode", "enabled", "agents", "rules_count"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.RuntimePolicy",
+        outputs_key_field="id",
+        outputs=policy,
+    )
+
+
+def koi_findings_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List finding (detection) definitions."""
+    demisto.debug("[Command] koi-findings-list triggered")
+    page_arg, page_size, limit_arg = _validate_pagination_args(args)
+
+    if page_arg:
+        response = client.get_findings(page=page_arg, page_size=page_size)
+        items = response.get("items", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_list_endpoint(
+            lambda page, page_size: client.get_findings(page=page, page_size=page_size),
+            result_key="items",
+            limit=limit,
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Findings",
+        items,
+        headers=["id", "name", "risk", "description"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Finding",
+        outputs_key_field="id",
+        outputs=items,
+    )
+
+
+def koi_approval_requests_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List approval requests."""
+    demisto.debug("[Command] koi-approval-requests-list triggered")
+    page_arg, page_size, limit_arg = _validate_pagination_args(args)
+    approval_status = args.get("approval_status")
+    marketplace = args.get("marketplace")
+    requested_by = args.get("requested_by")
+    created_at_gte = args.get("created_at_gte")
+    created_at_lte = args.get("created_at_lte")
+
+    if page_arg:
+        response = client.get_approval_requests(
+            page=page_arg,
+            page_size=page_size,
+            approval_status=approval_status,
+            marketplace=marketplace,
+            requested_by=requested_by,
+            created_at_gte=created_at_gte,
+            created_at_lte=created_at_lte,
+        )
+        items = response.get("items", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_list_endpoint(
+            lambda page, page_size: client.get_approval_requests(
+                page=page,
+                page_size=page_size,
+                approval_status=approval_status,
+                marketplace=marketplace,
+                requested_by=requested_by,
+                created_at_gte=created_at_gte,
+                created_at_lte=created_at_lte,
+            ),
+            result_key="items",
+            limit=limit,
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Approval Requests",
+        items,
+        headers=[
+            "id",
+            "approval_status",
+            "marketplace",
+            "name",
+            "item_id",
+            "version",
+            "requested_by",
+            "justification",
+            "created_at",
+            "resolved_at",
+            "reject_reason",
+        ],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.ApprovalRequest",
+        outputs_key_field="id",
+        outputs=items,
+    )
+
+
+def koi_remediations_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List remediation suggestions."""
+    demisto.debug("[Command] koi-remediations-list triggered")
+    page_arg, page_size, limit_arg = _validate_pagination_args(args)
+    filters = {
+        "status": args.get("status"),
+        "risk_level": args.get("risk_level"),
+        "platform": args.get("platform"),
+        "hostname": args.get("hostname"),
+        "reason": args.get("reason"),
+        "sort_by": args.get("sort_by"),
+        "sort_direction": args.get("sort_direction"),
+    }
+
+    if page_arg:
+        response = client.get_remediations(page=page_arg, page_size=page_size, **filters)
+        items = response.get("items", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_list_endpoint(
+            lambda page, page_size: client.get_remediations(
+                page=page,
+                page_size=page_size,
+                **filters,
+            ),
+            result_key="items",
+            limit=limit,
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Remediations",
+        items,
+        headers=[
+            "device_id",
+            "hostname",
+            "item_id",
+            "item_display_name",
+            "version",
+            "platform",
+            "risk_level",
+            "status",
+            "reason",
+            "triggered_at",
+            "triggered_by",
+            "last_script_run",
+            "dismissed_at",
+            "dismissed_by",
+        ],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Remediation",
+        outputs_key_field="item_id",
+        outputs=items,
+    )
+
+
+def koi_groups_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List device groups."""
+    demisto.debug("[Command] koi-groups-list triggered")
+    page_arg, page_size, limit_arg = _validate_pagination_args(args)
+
+    if page_arg:
+        response = client.get_groups(page=page_arg, page_size=page_size)
+        groups = response.get("groups", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        groups = _paginate_list_endpoint(
+            lambda page, page_size: client.get_groups(page=page, page_size=page_size),
+            result_key="groups",
+            limit=limit,
+        )
+
+    # Flatten device count for the table — full devices array remains in outputs.
+    table_rows = [
+        {
+            "id": g.get("id"),
+            "name": g.get("name"),
+            "device_count": len(g.get("devices", []) or []),
+            "created_at": g.get("created_at"),
+        }
+        for g in groups
+    ]
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Groups",
+        table_rows,
+        headers=["id", "name", "device_count", "created_at"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Group",
+        outputs_key_field="id",
+        outputs=groups,
+    )
+
+
+def koi_users_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List users. Endpoint is unpaginated — single GET returns all rows."""
+    demisto.debug("[Command] koi-users-list triggered")
+    response = client.get_users()
+    users = response.get("users", []) if isinstance(response, dict) else []
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Users",
+        users,
+        headers=["id", "email", "first_name", "last_name", "role", "status", "created_at"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.User",
+        outputs_key_field="id",
+        outputs=users,
+    )
+
+
+def koi_koidex_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Search the Koi catalog database for items by name/term."""
+    demisto.debug("[Command] koi-koidex-search triggered")
+    marketplace = args.get("marketplace")
+    search_term = args.get("search_term")
+    if not marketplace or not search_term:
+        raise DemistoException("marketplace and search_term are required.")
+    page_arg, page_size, limit_arg = _validate_pagination_args(args)
+
+    if page_arg:
+        response = client.get_koidex_search(
+            marketplace=marketplace,
+            search_term=search_term,
+            page=page_arg,
+            page_size=page_size,
+        )
+        items = response.get("items", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_list_endpoint(
+            lambda page, page_size: client.get_koidex_search(
+                marketplace=marketplace,
+                search_term=search_term,
+                page=page,
+                page_size=page_size,
+            ),
+            result_key="items",
+            limit=limit,
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Koidex Search — {marketplace}/{search_term}",
+        items,
+        headers=["item_id", "item_display_name", "marketplace", "package_name", "version", "installs"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.KoidexItem",
+        outputs_key_field="item_id",
+        outputs=items,
+    )
+
+
+def koi_koidex_risk_report_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Risk + compliance report for a single catalog item."""
+    demisto.debug("[Command] koi-koidex-risk-report triggered")
+    item_id = args.get("item_id")
+    marketplace = args.get("marketplace")
+    version = args.get("version")
+    if not item_id or not marketplace:
+        raise DemistoException("item_id and marketplace are required.")
+
+    report = client.get_koidex_risk_report(
+        item_id=item_id,
+        marketplace=marketplace,
+        version=version,
+    )
+
+    # Operator-facing summary row — the full report goes to outputs.
+    findings_block = report.get("findings") or {}
+    compliance_block = report.get("compliance") or {}
+    summary = [
+        {
+            "item_id": report.get("item_id"),
+            "item_display_name": report.get("item_display_name"),
+            "marketplace": report.get("marketplace"),
+            "version": report.get("version"),
+            "risk_level": report.get("risk_level"),
+            "risk": report.get("risk"),
+            "findings_count": findings_block.get("total_count", len(findings_block.get("findings", []) or [])),
+            "compliance_count": compliance_block.get("total_count", len(compliance_block.get("rules", []) or [])),
+        }
+    ]
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Koidex Risk Report — {item_id}",
+        summary,
+        headers=[
+            "item_id",
+            "item_display_name",
+            "marketplace",
+            "version",
+            "risk_level",
+            "risk",
+            "findings_count",
+            "compliance_count",
+        ],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.KoidexRiskReport",
+        outputs_key_field="item_id",
+        outputs=report,
+    )
+
+
+# endregion
+
 # region Main router
 # =================================
 # Main router
 # =================================
 
+# region Fetch-state diagnostics & maintenance
+
+
+def _hwm_future_log_types(last_run: dict[str, Any], now: datetime) -> list[str]:
+    """Return log_type strings whose last_fetch_<type> HWM is set in the future.
+
+    A future high-water-mark silently stalls the scheduled fetch: it queries
+    the KOI API with ``created_after=<future>`` and gets nothing back, so
+    ``koi_koi_raw`` stops updating until wall-clock time passes the HWM.
+    """
+    future: list[str] = []
+    for log_type in LogType:
+        hwm = last_run.get(f"last_fetch_{log_type.type_string}")
+        if isinstance(hwm, str) and hwm:
+            try:
+                hwm_dt = datetime.strptime(hwm, Config.DATE_FORMAT).replace(tzinfo=UTC)
+            except ValueError:
+                continue
+            if hwm_dt > now:
+                future.append(log_type.type_string)
+    return future
+
+
+def koi_fetch_context_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Read-only diagnostic: print the integration's fetch state and context.
+
+    Surfaces both demisto-managed stores:
+      * ``demisto.getLastRun()``  — the per-instance fetch state where the
+        scheduled fetch's high-water-mark lives (``last_fetch_<type>``,
+        ``previous_ids_<type>``, ``last_execution_*``).
+      * ``demisto.getIntegrationContext()`` — the general key/value store.
+
+    Highlights a FUTURE high-water-mark, the failure mode where the scheduled
+    fetch returns nothing while a manual ``koi-get-events`` (which ignores the
+    HWM) still works. Does not modify any state.
+    """
+    last_run = demisto.getLastRun() or {}
+    integration_context = demisto.getIntegrationContext() or {}
+    params = demisto.params()
+    now = datetime.now(UTC)
+    now_str = now.strftime(Config.DATE_FORMAT)
+
+    per_type_rows: list[dict[str, Any]] = []
+    for log_type in LogType:
+        ts = log_type.type_string
+        hwm = last_run.get(f"last_fetch_{ts}")
+        prev_ids = last_run.get(f"previous_ids_{ts}") or []
+        last_exec = last_run.get(f"last_execution_{ts}")
+        status = "unset (first run uses first_fetch)"
+        if isinstance(hwm, str) and hwm:
+            try:
+                hwm_dt = datetime.strptime(hwm, Config.DATE_FORMAT).replace(tzinfo=UTC)
+                delta_h = (hwm_dt - now).total_seconds() / 3600.0
+                status = (
+                    f"FUTURE by {delta_h:.1f}h - scheduled fetch returns nothing"
+                    if delta_h > 0
+                    else f"{abs(delta_h):.1f}h in the past (ok)"
+                )
+            except ValueError:
+                status = "unparseable"
+        per_type_rows.append(
+            {
+                "Log Type": log_type.title,
+                "HWM (last_fetch)": hwm or "-",
+                "HWM vs now": status,
+                "previous_ids": len(prev_ids) if isinstance(prev_ids, list) else "n/a",
+                "last_execution": last_exec or "never",
+            }
+        )
+
+    future = _hwm_future_log_types(last_run, now)
+    params_view = {
+        "url": params.get("url"),
+        "event_types_to_fetch": params.get("event_types_to_fetch"),
+        "audit_types_filter": params.get("audit_types_filter") or "(none)",
+        "first_fetch": params.get("first_fetch") or "(default)",
+        "max_fetch": params.get("max_fetch"),
+    }
+
+    md = [
+        f"# KOI - Fetch Context (diagnostic)\n"
+        f"**now (UTC):** {now_str}  |  **last_execution_time:** {last_run.get('last_execution_time', 'never')}"
+    ]
+    if future:
+        md.append(
+            f"> **WARNING - stuck FUTURE high-water-mark for: {', '.join(future)}.** "
+            f"The scheduled fetch queries `created_after=<HWM>`; with the HWM ahead of now the KOI API "
+            f"returns nothing and `koi_koi_raw` stops updating. Recover with "
+            f"`!koi-fetch-context-set clear_future_hwm=true` (or set a specific HWM)."
+        )
+    md.append(
+        tableToMarkdown(
+            "High-water-mark state per log type",
+            per_type_rows,
+            headers=["Log Type", "HWM (last_fetch)", "HWM vs now", "previous_ids", "last_execution"],
+        )
+    )
+    md.append(tableToMarkdown("Fetch parameters", [params_view], headers=list(params_view)))
+    md.append("### Raw last_run\n```json\n" + json.dumps(last_run, indent=2, default=str, sort_keys=True) + "\n```")
+    if integration_context:
+        md.append(
+            "### Raw integration_context\n```json\n"
+            + json.dumps(integration_context, indent=2, default=str, sort_keys=True)
+            + "\n```"
+        )
+
+    outputs = {
+        "now_utc": now_str,
+        "future_hwm_log_types": future,
+        "last_run": last_run,
+        "integration_context": integration_context,
+    }
+    return CommandResults(
+        readable_output="\n\n".join(md),
+        outputs_prefix="KOI.FetchContext",
+        outputs=outputs,
+        raw_response=outputs,
+    )
+
+
+def koi_fetch_context_set_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Maintenance: modify the integration's fetch state via ``demisto.setLastRun()``.
+
+    Recovers a stuck high-water-mark without redeploying or using the UI reset.
+    At least one action argument is required.
+
+    Args (all optional, but one is required):
+        clear_future_hwm: 'true' resets any future ``last_fetch_<type>`` to now.
+        last_fetch_alerts: Set the Alerts HWM (ISO 8601 or relative, e.g. "2 days ago").
+        last_fetch_audit: Set the Audit HWM (ISO 8601 or relative).
+        clear_previous_ids: 'true' clears the cross-cycle dedup sets (previous_ids_*).
+        reset_all: 'true' clears the ENTIRE last_run (next fetch uses first_fetch;
+            may re-ingest and duplicate the overlap window). Use with caution.
+    """
+    clear_future = argToBoolean(args.get("clear_future_hwm", "false"))
+    clear_prev = argToBoolean(args.get("clear_previous_ids", "false"))
+    reset_all = argToBoolean(args.get("reset_all", "false"))
+    set_alerts = args.get("last_fetch_alerts")
+    set_audit = args.get("last_fetch_audit")
+
+    if not any([clear_future, clear_prev, reset_all, set_alerts, set_audit]):
+        raise DemistoException(
+            "No action specified. Provide at least one of: clear_future_hwm, "
+            "last_fetch_alerts, last_fetch_audit, clear_previous_ids, reset_all."
+        )
+
+    before = demisto.getLastRun() or {}
+    now = datetime.now(UTC)
+    now_str = now.strftime(Config.DATE_FORMAT)
+    changes: list[str] = []
+
+    if reset_all:
+        after: dict[str, Any] = {}
+        changes.append("reset_all: cleared the entire last_run (next fetch uses first_fetch)")
+    else:
+        after = dict(before)
+        if clear_future:
+            future = _hwm_future_log_types(before, now)
+            for ts in future:
+                changes.append(f"clear_future_hwm: last_fetch_{ts} {before.get(f'last_fetch_{ts}')} -> {now_str}")
+                after[f"last_fetch_{ts}"] = now_str
+            if not future:
+                changes.append("clear_future_hwm: no future HWM found (nothing to do)")
+        for ts, val in (("alerts", set_alerts), ("audit", set_audit)):
+            if val:
+                normalized = get_formatted_utc_time(val)
+                changes.append(f"set last_fetch_{ts} -> {normalized}")
+                after[f"last_fetch_{ts}"] = normalized
+        if clear_prev:
+            for log_type in LogType:
+                key = f"previous_ids_{log_type.type_string}"
+                if key in after:
+                    after[key] = []
+                    changes.append(f"cleared {key}")
+
+    demisto.setLastRun(after)
+
+    md = ["# KOI - Fetch Context updated", "**Changes applied:**"]
+    md += [f"- {c}" for c in changes]
+    md.append("### last_run before\n```json\n" + json.dumps(before, indent=2, default=str, sort_keys=True) + "\n```")
+    md.append("### last_run after\n```json\n" + json.dumps(after, indent=2, default=str, sort_keys=True) + "\n```")
+    return CommandResults(
+        readable_output="\n\n".join(md),
+        outputs_prefix="KOI.FetchContextUpdate",
+        outputs={"changes": changes, "last_run_after": after},
+        raw_response={"before": before, "after": after, "changes": changes},
+    )
+
+
+# endregion
+
+
 COMMAND_MAP: dict[str, Any] = {
     "test-module": test_module,
+    "koi-fetch-context-get": koi_fetch_context_get_command,
+    "koi-fetch-context-set": koi_fetch_context_set_command,
     "koi-get-events": get_events_command,
     "fetch-events": fetch_events_command,
     "koi-policy-list": koi_policy_list_command,
@@ -2268,6 +3401,18 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-inventory-item-get": koi_inventory_item_get_command,
     "koi-inventory-search": koi_inventory_search_command,
     "koi-inventory-item-endpoints-list": koi_inventory_item_endpoints_list_command,
+    # v1.2.0 tier-1 expansion — read-only commands across §2/§4/§5/§6/§7/§9/§11/§13.
+    "koi-devices-list": koi_devices_list_command,
+    "koi-device-inventory-get": koi_device_inventory_get_command,
+    "koi-runtime-policies-list": koi_runtime_policies_list_command,
+    "koi-runtime-policy-get": koi_runtime_policy_get_command,
+    "koi-findings-list": koi_findings_list_command,
+    "koi-approval-requests-list": koi_approval_requests_list_command,
+    "koi-remediations-list": koi_remediations_list_command,
+    "koi-groups-list": koi_groups_list_command,
+    "koi-users-list": koi_users_list_command,
+    "koi-koidex-search": koi_koidex_search_command,
+    "koi-koidex-risk-report": koi_koidex_risk_report_command,
 }
 
 

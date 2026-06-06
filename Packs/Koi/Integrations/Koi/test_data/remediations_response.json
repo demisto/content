@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "device_id": "device-123",
+      "hostname": "laptop-01",
+      "item_id": "abcdefghijklmnop",
+      "item_display_name": "Suspicious Extension",
+      "version": "2.0.1",
+      "platform": "chrome",
+      "risk_level": "high",
+      "status": "open",
+      "reason": "malicious",
+      "triggered_at": "2025-03-01T10:00:00Z",
+      "triggered_by": "Koi",
+      "last_script_run": null,
+      "dismissed_at": null,
+      "dismissed_by": null
+    },
+    {
+      "device_id": "device-456",
+      "hostname": "desktop-02",
+      "item_id": "qrstuvwxyz",
+      "item_display_name": "Outdated Package",
+      "version": "0.1.0",
+      "platform": "npm",
+      "risk_level": "medium",
+      "status": "dismissed",
+      "reason": "vulnerable",
+      "triggered_at": "2025-02-15T08:30:00Z",
+      "triggered_by": "secops@example.com",
+      "last_script_run": "2025-02-16T09:00:00Z",
+      "dismissed_at": "2025-02-17T10:00:00Z",
+      "dismissed_by": "admin@example.com"
+    }
+  ],
+  "total_count": 2
+}

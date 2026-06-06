@@ -92,6 +92,15 @@ configuration:
   required: false
   hidden:
   - xsoar
+- name: first_fetch
+  display: First Fetch Time Range
+  type: 0
+  defaultvalue: 3 days
+  additionalinfo: 'Lookback window for the FIRST fetch only (e.g., "3 days", "7 days", "1 hour"). After the first run, subsequent fetches always continue from the last-fetched event timestamp (HWM) and never re-apply this value. This is NOT the cadence: how often fetch-events runs is controlled by the instance''s "Events Fetch Interval" setting, not by this parameter.'
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
 description: KOI is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats.
 display: KOI
 name: KOI
@@ -983,6 +992,508 @@ script:
     - contextPath: Koi.Inventory.Endpoint.last_seen
       description: The date the item was last seen on this endpoint in ISO 8601 format.
       type: Date
+  - name: koi-devices-list
+    arguments:
+    - name: page
+      description: Page number for pagination (1-based). When provided, fetches a single page and ignores limit.
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'Maximum total devices to return when auto-paginating (default: 50, max: 1000).'
+      defaultValue: '50'
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - active
+      - stale
+      description: Filter devices by status.
+    - name: last_seen_gte
+      description: Return devices last seen on/after this date (ISO 8601).
+    - name: last_seen_lte
+      description: Return devices last seen on/before this date (ISO 8601).
+    outputs:
+    - contextPath: Koi.Device.id
+      description: Device unique identifier.
+      type: String
+    - contextPath: Koi.Device.hostname
+      description: Device hostname.
+      type: String
+    - contextPath: Koi.Device.os
+      description: Device operating system.
+      type: String
+    - contextPath: Koi.Device.status
+      description: Device status (active / stale / archived).
+      type: String
+    - contextPath: Koi.Device.last_seen
+      description: Most recent check-in time.
+      type: Date
+    - contextPath: Koi.Device.last_logged_on_user
+      description: Last logged-on user.
+      type: String
+    - contextPath: Koi.Device.serial
+      description: Device serial number.
+      type: String
+    - contextPath: Koi.Device.registered_at
+      description: Device registration time.
+      type: Date
+    description: List devices registered with Koi.
+  - name: koi-device-inventory-get
+    arguments:
+    - name: device_id
+      required: true
+      description: The Koi device ID to fetch inventory for.
+    - name: page
+      description: Page number for pagination (1-based).
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'Max items when auto-paginating (default: 50, max: 1000).'
+      defaultValue: '50'
+    - name: finding_id
+      description: Filter inventory items by finding ID.
+    outputs:
+    - contextPath: Koi.DeviceInventory.device_id
+      description: Parent device ID (decorated by the integration for join convenience).
+      type: String
+    - contextPath: Koi.DeviceInventory.item_id
+      description: Item identifier.
+      type: String
+    - contextPath: Koi.DeviceInventory.item_display_name
+      description: Item display name.
+      type: String
+    - contextPath: Koi.DeviceInventory.version
+      description: Installed item version.
+      type: String
+    - contextPath: Koi.DeviceInventory.marketplace
+      description: Marketplace.
+      type: String
+    - contextPath: Koi.DeviceInventory.platform
+      description: Platform.
+      type: String
+    - contextPath: Koi.DeviceInventory.publisher
+      description: Publisher name.
+      type: String
+    - contextPath: Koi.DeviceInventory.risk_level
+      description: Risk level (low / medium / high / critical / pending).
+      type: String
+    - contextPath: Koi.DeviceInventory.activation_status
+      description: Activation status (enabled / disabled / N/A).
+      type: String
+    - contextPath: Koi.DeviceInventory.first_seen
+      description: First seen timestamp.
+      type: Date
+    - contextPath: Koi.DeviceInventory.last_seen
+      description: Last seen timestamp.
+      type: Date
+    - contextPath: Koi.DeviceInventory.local_full_path
+      description: Local install path on the device.
+      type: String
+    description: List items installed on a single device.
+  - name: koi-runtime-policies-list
+    arguments:
+    - name: page
+      description: Page number for pagination (1-based).
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'Max policies when auto-paginating (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.RuntimePolicy.id
+      description: Runtime policy ID.
+      type: String
+    - contextPath: Koi.RuntimePolicy.display_name
+      description: Policy display name.
+      type: String
+    - contextPath: Koi.RuntimePolicy.description
+      description: Policy description.
+      type: String
+    - contextPath: Koi.RuntimePolicy.agents
+      description: List of agents the policy applies to (e.g. cursor, claude_code, codex, gemini_cli).
+      type: Unknown
+    - contextPath: Koi.RuntimePolicy.enforcement_mode
+      description: Enforcement mode (block / ask).
+      type: String
+    - contextPath: Koi.RuntimePolicy.enabled
+      description: Whether the policy is enabled.
+      type: Boolean
+    - contextPath: Koi.RuntimePolicy.group_ids
+      description: Device groups the policy is scoped to.
+      type: Unknown
+    - contextPath: Koi.RuntimePolicy.rules
+      description: Rule tree (command / file_path / mcp_tool / skill / url / ip).
+      type: Unknown
+    - contextPath: Koi.RuntimePolicy.created_by
+      description: Creator email.
+      type: String
+    - contextPath: Koi.RuntimePolicy.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: Koi.RuntimePolicy.updated_at
+      description: Last update timestamp.
+      type: Date
+    description: List agent runtime (hardening) enforcement policies.
+  - name: koi-runtime-policy-get
+    arguments:
+    - name: policy_id
+      required: true
+      description: The runtime policy ID to fetch.
+    outputs:
+    - contextPath: Koi.RuntimePolicy.id
+      description: Runtime policy ID.
+      type: String
+    - contextPath: Koi.RuntimePolicy.display_name
+      description: Policy display name.
+      type: String
+    - contextPath: Koi.RuntimePolicy.rules
+      description: Full rule tree with values and operators per rule type.
+      type: Unknown
+    description: Get a single runtime policy by ID. Returns the full rule tree.
+  - name: koi-findings-list
+    arguments:
+    - name: page
+      description: Page number for pagination (1-based).
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'Max findings when auto-paginating (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.Finding.id
+      description: Finding definition ID (e.g. RansomwareBehaviorDetected).
+      type: String
+    - contextPath: Koi.Finding.name
+      description: Human-readable finding name.
+      type: String
+    - contextPath: Koi.Finding.risk
+      description: Risk score (0-10).
+      type: Number
+    - contextPath: Koi.Finding.description
+      description: Finding description.
+      type: String
+    description: List finding (detection) definitions. Use to resolve finding IDs returned by other endpoints.
+  - name: koi-approval-requests-list
+    arguments:
+    - name: page
+      description: Page number for pagination (1-based).
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'Max requests when auto-paginating (default: 50, max: 1000).'
+      defaultValue: '50'
+    - name: approval_status
+      auto: PREDEFINED
+      predefined:
+      - pending
+      - approved
+      - rejected
+      description: Filter by approval status.
+    - name: marketplace
+      description: Filter by marketplace.
+    - name: requested_by
+      description: Filter by requester email.
+    - name: created_at_gte
+      description: Return requests created on/after this date (ISO 8601).
+    - name: created_at_lte
+      description: Return requests created on/before this date (ISO 8601).
+    outputs:
+    - contextPath: Koi.ApprovalRequest.id
+      description: Approval request ID.
+      type: String
+    - contextPath: Koi.ApprovalRequest.approval_status
+      description: Status (pending / approved / rejected).
+      type: String
+    - contextPath: Koi.ApprovalRequest.marketplace
+      description: Marketplace.
+      type: String
+    - contextPath: Koi.ApprovalRequest.name
+      description: Item display name.
+      type: String
+    - contextPath: Koi.ApprovalRequest.item_id
+      description: Item ID.
+      type: String
+    - contextPath: Koi.ApprovalRequest.version
+      description: Item version.
+      type: String
+    - contextPath: Koi.ApprovalRequest.requested_by
+      description: Requester email.
+      type: String
+    - contextPath: Koi.ApprovalRequest.justification
+      description: Requester-provided justification.
+      type: String
+    - contextPath: Koi.ApprovalRequest.created_at
+      description: Creation time.
+      type: Date
+    - contextPath: Koi.ApprovalRequest.resolved_at
+      description: Resolution time.
+      type: Date
+    - contextPath: Koi.ApprovalRequest.reject_reason
+      description: Rejection reason if rejected.
+      type: String
+    description: List approval requests with optional filtering.
+  - name: koi-remediations-list
+    arguments:
+    - name: page
+      description: Page number for pagination (1-based).
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'Max remediations when auto-paginating (default: 50, max: 1000).'
+      defaultValue: '50'
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - pending
+      - remediated
+      - dismissed
+      description: Filter remediations by status.
+    - name: risk_level
+      auto: PREDEFINED
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+      - pending
+      description: Filter by risk level.
+    - name: platform
+      description: Filter by platform.
+    - name: hostname
+      description: Filter by hostname.
+    - name: reason
+      description: Filter by remediation reason.
+    - name: sort_by
+      auto: PREDEFINED
+      predefined:
+      - item_display_name
+      - hostname
+      - risk_level
+      - platform
+      description: Sort field.
+    - name: sort_direction
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Sort direction.
+    outputs:
+    - contextPath: Koi.Remediation.device_id
+      description: Device ID.
+      type: String
+    - contextPath: Koi.Remediation.hostname
+      description: Device hostname.
+      type: String
+    - contextPath: Koi.Remediation.item_id
+      description: Item ID.
+      type: String
+    - contextPath: Koi.Remediation.item_display_name
+      description: Item display name.
+      type: String
+    - contextPath: Koi.Remediation.version
+      description: Item version.
+      type: String
+    - contextPath: Koi.Remediation.platform
+      description: Platform.
+      type: String
+    - contextPath: Koi.Remediation.risk_level
+      description: Risk level.
+      type: String
+    - contextPath: Koi.Remediation.status
+      description: Status (open / pending / remediated / dismissed).
+      type: String
+    - contextPath: Koi.Remediation.reason
+      description: Remediation reason.
+      type: String
+    - contextPath: Koi.Remediation.triggered_at
+      description: When the remediation was triggered.
+      type: Date
+    - contextPath: Koi.Remediation.triggered_by
+      description: Who triggered it.
+      type: String
+    - contextPath: Koi.Remediation.last_script_run
+      description: Last script execution time.
+      type: Date
+    - contextPath: Koi.Remediation.dismissed_at
+      description: Dismissal time.
+      type: Date
+    - contextPath: Koi.Remediation.dismissed_by
+      description: Who dismissed it.
+      type: String
+    description: List remediation suggestions with filtering.
+  - name: koi-groups-list
+    arguments:
+    - name: page
+      description: Page number for pagination (1-based).
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'Max groups when auto-paginating (default: 50, max: 1000). Note: tenants are capped at 9 groups by Koi.'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.Group.id
+      description: Group ID.
+      type: Number
+    - contextPath: Koi.Group.name
+      description: Group name.
+      type: String
+    - contextPath: Koi.Group.devices
+      description: List of devices in the group (id + name pairs).
+      type: Unknown
+    - contextPath: Koi.Group.created_at
+      description: Creation timestamp.
+      type: Date
+    description: List device groups (max 9 per tenant).
+  - name: koi-users-list
+    arguments: []
+    outputs:
+    - contextPath: Koi.User.id
+      description: User ID.
+      type: String
+    - contextPath: Koi.User.email
+      description: User email.
+      type: String
+    - contextPath: Koi.User.first_name
+      description: First name.
+      type: String
+    - contextPath: Koi.User.last_name
+      description: Last name.
+      type: String
+    - contextPath: Koi.User.role
+      description: User role.
+      type: String
+    - contextPath: Koi.User.status
+      description: User status (enabled / disabled).
+      type: String
+    - contextPath: Koi.User.created_at
+      description: Creation timestamp.
+      type: Date
+    description: List Koi users (endpoint is unpaginated — returns the full list).
+  - name: koi-koidex-search
+    arguments:
+    - name: marketplace
+      required: true
+      description: The marketplace to search in (e.g. vscode, npm, chrome_web_store, chocolatey, hugging_face).
+    - name: search_term
+      required: true
+      description: The search term to match against item names.
+    - name: page
+      description: Page number for pagination (1-based).
+    - name: page_size
+      description: 'Number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'Max items when auto-paginating (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.KoidexItem.item_id
+      description: Item ID in the Koi catalog.
+      type: String
+    - contextPath: Koi.KoidexItem.item_display_name
+      description: Display name.
+      type: String
+    - contextPath: Koi.KoidexItem.marketplace
+      description: Marketplace.
+      type: String
+    - contextPath: Koi.KoidexItem.package_name
+      description: Package name.
+      type: String
+    - contextPath: Koi.KoidexItem.version
+      description: Version.
+      type: String
+    - contextPath: Koi.KoidexItem.installs
+      description: Install count (catalog-wide).
+      type: Number
+    description: Search the Koi catalog database for items by marketplace + term.
+  - name: koi-koidex-risk-report
+    arguments:
+    - name: item_id
+      required: true
+      description: The catalog item ID.
+    - name: marketplace
+      required: true
+      description: The marketplace the item lives in.
+    - name: version
+      description: Optional version (if omitted, the catalog's default version is used).
+    outputs:
+    - contextPath: Koi.KoidexRiskReport.item_id
+      description: Item ID.
+      type: String
+    - contextPath: Koi.KoidexRiskReport.item_display_name
+      description: Display name.
+      type: String
+    - contextPath: Koi.KoidexRiskReport.marketplace
+      description: Marketplace.
+      type: String
+    - contextPath: Koi.KoidexRiskReport.version
+      description: Version.
+      type: String
+    - contextPath: Koi.KoidexRiskReport.risk
+      description: Risk score (0-10).
+      type: Number
+    - contextPath: Koi.KoidexRiskReport.risk_level
+      description: Risk bucket (low / medium / high / critical / pending).
+      type: String
+    - contextPath: Koi.KoidexRiskReport.findings
+      description: Findings block (findings list + total_count).
+      type: Unknown
+    - contextPath: Koi.KoidexRiskReport.compliance
+      description: Compliance block (rules list + total_count).
+      type: Unknown
+    - contextPath: Koi.KoidexRiskReport.ai_risk_summary
+      description: AI-generated risk summary text (may be empty).
+      type: String
+    description: Risk + compliance report for a single catalog item.
+  - name: koi-fetch-context-get
+    arguments: []
+    outputs:
+    - contextPath: KOI.FetchContext.now_utc
+      description: Current UTC time at command execution (ISO 8601).
+      type: Date
+    - contextPath: KOI.FetchContext.future_hwm_log_types
+      description: Log types whose last_fetch high-water-mark is set in the future (these silently stall the scheduled fetch).
+      type: Unknown
+    - contextPath: KOI.FetchContext.last_run
+      description: Raw integration fetch state (demisto.getLastRun()).
+      type: Unknown
+    - contextPath: KOI.FetchContext.integration_context
+      description: Raw integration context (demisto.getIntegrationContext()).
+      type: Unknown
+    description: 'Diagnostic: prints the integration fetch state (last_run / high-water-mark) and integration context, flagging a future HWM that silently stalls the scheduled fetch. Read-only.'
+  - name: koi-fetch-context-set
+    arguments:
+    - name: clear_future_hwm
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: If true, any last_fetch high-water-mark set in the future is reset to the current time (recovers a future-HWM stall).
+      defaultValue: 'false'
+    - name: last_fetch_alerts
+      description: Set the Alerts high-water-mark to this time (ISO 8601 or relative, e.g. "2 days ago").
+    - name: last_fetch_audit
+      description: Set the Audit high-water-mark to this time (ISO 8601 or relative, e.g. "2 days ago").
+    - name: clear_previous_ids
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: If true, clears the cross-cycle dedup id sets (previous_ids_*).
+      defaultValue: 'false'
+    - name: reset_all
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: If true, clears the ENTIRE last_run. The next fetch starts from First Fetch Time Range and may re-ingest/duplicate the overlap window. Use with caution.
+      defaultValue: 'false'
+    outputs:
+    - contextPath: KOI.FetchContextUpdate.changes
+      description: Human-readable list of changes applied to the fetch state.
+      type: Unknown
+    - contextPath: KOI.FetchContextUpdate.last_run_after
+      description: The resulting integration fetch state after the update.
+      type: Unknown
+    description: 'Maintenance: modifies the integration fetch state (demisto.setLastRun()) to recover from a stuck high-water-mark without redeploying or using the UI reset. Requires at least one action argument.'
   runonce: false
   script: '-'
   type: python

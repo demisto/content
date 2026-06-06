@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, UTC
 from pathlib import Path
 
 import pytest
@@ -35,6 +35,21 @@ from Koi import (
     koi_inventory_item_get_command,
     koi_inventory_search_command,
     koi_inventory_item_endpoints_list_command,
+    koi_devices_list_command,
+    koi_device_inventory_get_command,
+    koi_runtime_policies_list_command,
+    koi_runtime_policy_get_command,
+    koi_findings_list_command,
+    koi_approval_requests_list_command,
+    koi_remediations_list_command,
+    koi_groups_list_command,
+    koi_users_list_command,
+    koi_koidex_search_command,
+    koi_koidex_risk_report_command,
+    koi_fetch_context_get_command,
+    koi_fetch_context_set_command,
+    _validate_pagination_args,
+    _paginate_list_endpoint,
     parse_filter_from_args,
     resolve_items_from_args,
     parse_list_items_from_entry_id,
@@ -1190,7 +1205,7 @@ class TestConfig:
         assert Config.MAX_PAGE_SIZE == 500
         assert Config.DEFAULT_MAX_FETCH == 5000
         assert Config.MAX_PAGES_PER_FETCH == 10
-        assert Config.DEFAULT_FROM_TIME == "5 minutes ago"
+        assert Config.DEFAULT_FROM_TIME == "3 days ago"
 
 
 # endregion
@@ -3514,6 +3529,588 @@ class TestClientSendEvents:
         mock_client.send_events([])
 
         mock_send_to_xsiam.assert_called_once_with(events=[], vendor=Config.VENDOR, product=Config.PRODUCT)
+
+
+# endregion
+
+# region Fixtures for v1.3.0 tier-1 read-only commands
+
+
+@pytest.fixture
+def devices_response() -> dict:
+    """Fixture for a mock devices API response."""
+    return load_test_data("devices_response.json")
+
+
+@pytest.fixture
+def device_inventory_response() -> dict:
+    """Fixture for a mock device-inventory API response."""
+    return load_test_data("device_inventory_response.json")
+
+
+@pytest.fixture
+def runtime_policies_response() -> dict:
+    """Fixture for a mock runtime-policies list API response."""
+    return load_test_data("runtime_policies_response.json")
+
+
+@pytest.fixture
+def runtime_policy_response() -> dict:
+    """Fixture for a mock single runtime-policy API response."""
+    return load_test_data("runtime_policy_response.json")
+
+
+@pytest.fixture
+def findings_response() -> dict:
+    """Fixture for a mock findings API response."""
+    return load_test_data("findings_response.json")
+
+
+@pytest.fixture
+def approval_requests_response() -> dict:
+    """Fixture for a mock approval-requests API response."""
+    return load_test_data("approval_requests_response.json")
+
+
+@pytest.fixture
+def remediations_response() -> dict:
+    """Fixture for a mock remediations API response."""
+    return load_test_data("remediations_response.json")
+
+
+@pytest.fixture
+def groups_response() -> dict:
+    """Fixture for a mock groups API response."""
+    return load_test_data("groups_response.json")
+
+
+@pytest.fixture
+def users_response() -> dict:
+    """Fixture for a mock users API response."""
+    return load_test_data("users_response.json")
+
+
+@pytest.fixture
+def koidex_search_response() -> dict:
+    """Fixture for a mock koidex-search API response."""
+    return load_test_data("koidex_search_response.json")
+
+
+@pytest.fixture
+def koidex_risk_report_response() -> dict:
+    """Fixture for a mock koidex risk-report API response."""
+    return load_test_data("koidex_risk_report_response.json")
+
+
+# endregion
+
+# region koi-devices-list
+
+
+class TestKoiDevicesListCommand:
+    """Tests for the koi-devices-list command."""
+
+    def test_devices_list_single_page(self, mock_client, devices_response, mocker):
+        """page provided -> single-page mode with default page_size and filters forwarded."""
+        mocker.patch.object(mock_client, "get_devices", return_value=devices_response)
+        result = koi_devices_list_command(mock_client, {"page": "1", "status": "active"})
+
+        assert result.outputs_prefix == "Koi.Device"
+        assert result.outputs_key_field == "id"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["id"] == "device-123"
+        kwargs = mock_client.get_devices.call_args.kwargs
+        assert kwargs["page"] == 1
+        assert kwargs["page_size"] == Config.DEFAULT_PAGE_SIZE
+        assert kwargs["status"] == "active"
+
+    def test_devices_list_auto_paginate_default(self, mock_client, devices_response, mocker):
+        """No page -> auto-paginate; partial page stops after one call."""
+        mocker.patch.object(mock_client, "get_devices", return_value=devices_response)
+        result = koi_devices_list_command(mock_client, {})
+
+        assert len(result.outputs) == 2
+        assert mock_client.get_devices.call_count == 1
+        kwargs = mock_client.get_devices.call_args.kwargs
+        assert kwargs["page_size"] == Config.MAX_PAGE_SIZE
+
+    def test_devices_list_outputs_and_readable(self, mock_client, devices_response, mocker):
+        mocker.patch.object(mock_client, "get_devices", return_value=devices_response)
+        result = koi_devices_list_command(mock_client, {"page": "1"})
+        assert "Devices" in result.readable_output
+        assert "laptop-01" in result.readable_output
+
+    def test_devices_list_page_size_exceeds_max(self, mock_client):
+        with pytest.raises(DemistoException, match="page_size .* exceeds the maximum allowed value"):
+            koi_devices_list_command(mock_client, {"page": "1", "page_size": "501"})
+
+    def test_devices_list_limit_exceeds_max(self, mock_client):
+        with pytest.raises(DemistoException, match="limit .* exceeds the maximum allowed value"):
+            koi_devices_list_command(mock_client, {"limit": "1001"})
+
+
+# endregion
+
+# region koi-device-inventory-get
+
+
+class TestKoiDeviceInventoryGetCommand:
+    """Tests for the koi-device-inventory-get command."""
+
+    def test_device_inventory_get_decorates_device_id(self, mock_client, device_inventory_response, mocker):
+        mocker.patch.object(mock_client, "get_device_inventory", return_value=device_inventory_response)
+        result = koi_device_inventory_get_command(mock_client, {"device_id": "device-123", "page": "1"})
+
+        assert result.outputs_prefix == "Koi.DeviceInventory"
+        assert result.outputs_key_field == "item_id"
+        assert len(result.outputs) == 2
+        # Every item is decorated with the parent device id.
+        assert all(item["device_id"] == "device-123" for item in result.outputs)
+        kwargs = mock_client.get_device_inventory.call_args.kwargs
+        assert kwargs["device_id"] == "device-123"
+
+    def test_device_inventory_get_requires_device_id(self, mock_client):
+        with pytest.raises(DemistoException, match="device_id is required"):
+            koi_device_inventory_get_command(mock_client, {})
+
+    def test_device_inventory_get_readable(self, mock_client, device_inventory_response, mocker):
+        mocker.patch.object(mock_client, "get_device_inventory", return_value=device_inventory_response)
+        result = koi_device_inventory_get_command(mock_client, {"device_id": "device-123"})
+        assert "uBlock Origin" in result.readable_output
+
+
+# endregion
+
+# region koi-runtime-policies-list / koi-runtime-policy-get
+
+
+class TestKoiRuntimePoliciesListCommand:
+    """Tests for the koi-runtime-policies-list command."""
+
+    def test_runtime_policies_list_single_page(self, mock_client, runtime_policies_response, mocker):
+        mocker.patch.object(mock_client, "get_runtime_policies", return_value=runtime_policies_response)
+        result = koi_runtime_policies_list_command(mock_client, {"page": "1"})
+
+        assert result.outputs_prefix == "Koi.RuntimePolicy"
+        assert result.outputs_key_field == "id"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["id"] == "rp-1"
+
+    def test_runtime_policies_list_auto_paginate(self, mock_client, runtime_policies_response, mocker):
+        mocker.patch.object(mock_client, "get_runtime_policies", return_value=runtime_policies_response)
+        result = koi_runtime_policies_list_command(mock_client, {})
+        assert len(result.outputs) == 2
+        assert "Runtime Policies" in result.readable_output
+
+    def test_runtime_policies_list_limit_exceeds_max(self, mock_client):
+        with pytest.raises(DemistoException, match="limit .* exceeds the maximum allowed value"):
+            koi_runtime_policies_list_command(mock_client, {"limit": "1001"})
+
+
+class TestKoiRuntimePolicyGetCommand:
+    """Tests for the koi-runtime-policy-get command."""
+
+    def test_runtime_policy_get_success(self, mock_client, runtime_policy_response, mocker):
+        mocker.patch.object(mock_client, "get_runtime_policy", return_value=runtime_policy_response)
+        result = koi_runtime_policy_get_command(mock_client, {"policy_id": "rp-1"})
+
+        assert result.outputs_prefix == "Koi.RuntimePolicy"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "rp-1"
+        # Summary table reports the rule count without dumping the full tree.
+        assert "Block unsigned binaries" in result.readable_output
+        mock_client.get_runtime_policy.assert_called_once_with(policy_id="rp-1")
+
+    def test_runtime_policy_get_requires_policy_id(self, mock_client):
+        with pytest.raises(DemistoException, match="policy_id is required"):
+            koi_runtime_policy_get_command(mock_client, {})
+
+
+# endregion
+
+# region koi-findings-list
+
+
+class TestKoiFindingsListCommand:
+    """Tests for the koi-findings-list command."""
+
+    def test_findings_list_success(self, mock_client, findings_response, mocker):
+        mocker.patch.object(mock_client, "get_findings", return_value=findings_response)
+        result = koi_findings_list_command(mock_client, {"page": "1"})
+
+        assert result.outputs_prefix == "Koi.Finding"
+        assert result.outputs_key_field == "id"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["risk"] == "critical"
+        assert "Findings" in result.readable_output
+
+    def test_findings_list_auto_paginate(self, mock_client, findings_response, mocker):
+        mocker.patch.object(mock_client, "get_findings", return_value=findings_response)
+        result = koi_findings_list_command(mock_client, {})
+        assert len(result.outputs) == 2
+
+
+# endregion
+
+# region koi-approval-requests-list
+
+
+class TestKoiApprovalRequestsListCommand:
+    """Tests for the koi-approval-requests-list command."""
+
+    def test_approval_requests_list_single_page(self, mock_client, approval_requests_response, mocker):
+        mocker.patch.object(mock_client, "get_approval_requests", return_value=approval_requests_response)
+        result = koi_approval_requests_list_command(mock_client, {"page": "1", "approval_status": "pending"})
+
+        assert result.outputs_prefix == "Koi.ApprovalRequest"
+        assert result.outputs_key_field == "id"
+        assert len(result.outputs) == 2
+        kwargs = mock_client.get_approval_requests.call_args.kwargs
+        assert kwargs["approval_status"] == "pending"
+
+    def test_approval_requests_list_readable(self, mock_client, approval_requests_response, mocker):
+        mocker.patch.object(mock_client, "get_approval_requests", return_value=approval_requests_response)
+        result = koi_approval_requests_list_command(mock_client, {})
+        assert "Approval Requests" in result.readable_output
+        assert "Grammarly" in result.readable_output
+
+
+# endregion
+
+# region koi-remediations-list
+
+
+class TestKoiRemediationsListCommand:
+    """Tests for the koi-remediations-list command."""
+
+    def test_remediations_list_single_page(self, mock_client, remediations_response, mocker):
+        mocker.patch.object(mock_client, "get_remediations", return_value=remediations_response)
+        result = koi_remediations_list_command(mock_client, {"page": "1", "status": "open"})
+
+        assert result.outputs_prefix == "Koi.Remediation"
+        assert result.outputs_key_field == "item_id"
+        assert len(result.outputs) == 2
+        kwargs = mock_client.get_remediations.call_args.kwargs
+        assert kwargs["status"] == "open"
+        assert kwargs["risk_level"] is None
+
+    def test_remediations_list_auto_paginate(self, mock_client, remediations_response, mocker):
+        mocker.patch.object(mock_client, "get_remediations", return_value=remediations_response)
+        result = koi_remediations_list_command(mock_client, {})
+        assert len(result.outputs) == 2
+        assert "Remediations" in result.readable_output
+
+    def test_remediations_list_page_size_exceeds_max(self, mock_client):
+        with pytest.raises(DemistoException, match="page_size .* exceeds the maximum allowed value"):
+            koi_remediations_list_command(mock_client, {"page": "1", "page_size": "501"})
+
+
+# endregion
+
+# region koi-groups-list
+
+
+class TestKoiGroupsListCommand:
+    """Tests for the koi-groups-list command."""
+
+    def test_groups_list_success(self, mock_client, groups_response, mocker):
+        mocker.patch.object(mock_client, "get_groups", return_value=groups_response)
+        result = koi_groups_list_command(mock_client, {"page": "1"})
+
+        assert result.outputs_prefix == "Koi.Group"
+        assert result.outputs_key_field == "id"
+        # Full devices array stays in outputs...
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["devices"]
+        # ...while the readable table flattens it to a count.
+        assert "Groups" in result.readable_output
+        assert "Engineering" in result.readable_output
+
+    def test_groups_list_auto_paginate(self, mock_client, groups_response, mocker):
+        mocker.patch.object(mock_client, "get_groups", return_value=groups_response)
+        result = koi_groups_list_command(mock_client, {})
+        assert len(result.outputs) == 2
+
+
+# endregion
+
+# region koi-users-list
+
+
+class TestKoiUsersListCommand:
+    """Tests for the koi-users-list command (unpaginated endpoint)."""
+
+    def test_users_list_success(self, mock_client, users_response, mocker):
+        mocker.patch.object(mock_client, "get_users", return_value=users_response)
+        result = koi_users_list_command(mock_client, {})
+
+        assert result.outputs_prefix == "Koi.User"
+        assert result.outputs_key_field == "id"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["email"] == "admin@example.com"
+        assert "Users" in result.readable_output
+        # Endpoint is unpaginated: a single GET, no page args.
+        mock_client.get_users.assert_called_once_with()
+
+    def test_users_list_handles_non_dict_response(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "get_users", return_value=[])
+        result = koi_users_list_command(mock_client, {})
+        assert result.outputs == []
+
+
+# endregion
+
+# region koi-koidex-search / koi-koidex-risk-report
+
+
+class TestKoiKoidexSearchCommand:
+    """Tests for the koi-koidex-search command."""
+
+    def test_koidex_search_success(self, mock_client, koidex_search_response, mocker):
+        mocker.patch.object(mock_client, "get_koidex_search", return_value=koidex_search_response)
+        result = koi_koidex_search_command(mock_client, {"marketplace": "chrome_web_store", "search_term": "ublock", "page": "1"})
+
+        assert result.outputs_prefix == "Koi.KoidexItem"
+        assert result.outputs_key_field == "item_id"
+        assert len(result.outputs) == 2
+        kwargs = mock_client.get_koidex_search.call_args.kwargs
+        assert kwargs["marketplace"] == "chrome_web_store"
+        assert kwargs["search_term"] == "ublock"
+
+    def test_koidex_search_requires_marketplace_and_term(self, mock_client):
+        with pytest.raises(DemistoException, match="marketplace and search_term are required"):
+            koi_koidex_search_command(mock_client, {"marketplace": "npm"})
+        with pytest.raises(DemistoException, match="marketplace and search_term are required"):
+            koi_koidex_search_command(mock_client, {"search_term": "x"})
+
+
+class TestKoiKoidexRiskReportCommand:
+    """Tests for the koi-koidex-risk-report command."""
+
+    def test_koidex_risk_report_success(self, mock_client, koidex_risk_report_response, mocker):
+        mocker.patch.object(mock_client, "get_koidex_risk_report", return_value=koidex_risk_report_response)
+        result = koi_koidex_risk_report_command(
+            mock_client, {"item_id": "cjpalhdlnbpafiamejdnhcphjbkeiagm", "marketplace": "chrome_web_store"}
+        )
+
+        assert result.outputs_prefix == "Koi.KoidexRiskReport"
+        assert result.outputs_key_field == "item_id"
+        # Full report goes to outputs; summary table reports the counts.
+        assert result.outputs["risk_level"] == "low"
+        assert "Koidex Risk Report" in result.readable_output
+
+    def test_koidex_risk_report_requires_item_id_and_marketplace(self, mock_client):
+        with pytest.raises(DemistoException, match="item_id and marketplace are required"):
+            koi_koidex_risk_report_command(mock_client, {"item_id": "x"})
+
+
+# endregion
+
+# region koi-fetch-context-get / koi-fetch-context-set
+
+
+class TestKoiFetchContextGetCommand:
+    """Tests for the koi-fetch-context-get diagnostic command."""
+
+    def test_fetch_context_get_reports_state(self, mock_client, mocker):
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_execution_time": "2025-01-01T00:00:00Z"})
+        mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+        mocker.patch.object(demisto, "params", return_value={"max_fetch": "5000"})
+
+        result = koi_fetch_context_get_command(mock_client, {})
+
+        assert result.outputs_prefix == "KOI.FetchContext"
+        assert result.outputs["future_hwm_log_types"] == []
+        assert "Fetch Context" in result.readable_output
+
+    def test_fetch_context_get_flags_future_hwm(self, mock_client, mocker):
+        future = (datetime.now(UTC) + timedelta(days=2)).strftime(Config.DATE_FORMAT)
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch_alerts": future})
+        mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+        mocker.patch.object(demisto, "params", return_value={})
+
+        result = koi_fetch_context_get_command(mock_client, {})
+
+        # The future Alerts HWM is detected and surfaced as a warning.
+        assert "alerts" in result.outputs["future_hwm_log_types"]
+        assert "WARNING" in result.readable_output
+
+
+class TestKoiFetchContextSetCommand:
+    """Tests for the koi-fetch-context-set maintenance command."""
+
+    def test_fetch_context_set_requires_an_action(self, mock_client, mocker):
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        with pytest.raises(DemistoException, match="No action specified"):
+            koi_fetch_context_set_command(mock_client, {})
+
+    def test_fetch_context_set_reset_all_clears_last_run(self, mock_client, mocker):
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch_alerts": "2025-01-01T00:00:00Z"})
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        koi_fetch_context_set_command(mock_client, {"reset_all": "true"})
+
+        set_last_run.assert_called_once_with({})
+
+    def test_fetch_context_set_clear_future_hwm(self, mock_client, mocker):
+        future = (datetime.now(UTC) + timedelta(days=2)).strftime(Config.DATE_FORMAT)
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch_alerts": future})
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        koi_fetch_context_set_command(mock_client, {"clear_future_hwm": "true"})
+
+        # The future Alerts HWM is pulled back to ~now (no longer in the future).
+        saved = set_last_run.call_args.args[0]
+        new_hwm = datetime.strptime(saved["last_fetch_alerts"], Config.DATE_FORMAT).replace(tzinfo=UTC)
+        assert new_hwm <= datetime.now(UTC)
+
+    def test_fetch_context_set_specific_alerts_hwm(self, mock_client, mocker):
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        koi_fetch_context_set_command(mock_client, {"last_fetch_alerts": "2 days ago"})
+
+        saved = set_last_run.call_args.args[0]
+        assert "last_fetch_alerts" in saved
+
+
+# endregion
+
+# region Pagination helpers
+
+
+class TestValidatePaginationArgs:
+    """Tests for the shared _validate_pagination_args helper."""
+
+    def test_defaults(self):
+        page, page_size, limit = _validate_pagination_args({})
+        assert page is None
+        assert page_size == Config.DEFAULT_PAGE_SIZE
+        assert limit is None
+
+    def test_parses_values(self):
+        page, page_size, limit = _validate_pagination_args({"page": "3", "page_size": "100", "limit": "200"})
+        assert (page, page_size, limit) == (3, 100, 200)
+
+    def test_page_size_over_max_raises(self):
+        with pytest.raises(DemistoException, match="page_size .* exceeds"):
+            _validate_pagination_args({"page_size": "501"})
+
+    def test_limit_over_max_raises(self):
+        with pytest.raises(DemistoException, match="limit .* exceeds"):
+            _validate_pagination_args({"limit": "1001"})
+
+
+class TestPaginateListEndpoint:
+    """Tests for the generic _paginate_list_endpoint auto-paginator."""
+
+    def test_stops_on_partial_page(self):
+        calls = []
+
+        def fetch(page, page_size):
+            calls.append(page)
+            return {"items": [{"id": i} for i in range(10)]}  # < page_size -> last page
+
+        out = _paginate_list_endpoint(fetch, result_key="items", limit=100)
+        assert len(out) == 10
+        assert calls == [Config.DEFAULT_PAGE]
+
+    def test_trims_to_limit(self):
+        def fetch(page, page_size):
+            return {"items": [{"id": i} for i in range(page_size)]}
+
+        out = _paginate_list_endpoint(fetch, result_key="items", limit=5)
+        assert len(out) == 5
+
+    def test_stops_on_empty(self):
+        def fetch(page, page_size):
+            return {"items": []}
+
+        out = _paginate_list_endpoint(fetch, result_key="items", limit=100)
+        assert out == []
+
+
+# endregion
+
+# region Client methods for v1.3.0 commands
+
+
+class TestClientTier1Requests:
+    """Verify request shape (method, url_suffix, params) for the new client methods."""
+
+    def test_get_devices_request(self, mock_client, devices_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=devices_response)
+        result = mock_client.get_devices(page=1, page_size=50, status="active")
+        kwargs = mock_client._http_request.call_args.kwargs
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == ApiPaths.DEVICES
+        assert kwargs["params"]["status"] == "active"
+        assert result == devices_response
+
+    def test_get_device_inventory_url_encodes_id(self, mock_client, device_inventory_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=device_inventory_response)
+        mock_client.get_device_inventory(device_id="a/b", page=1, page_size=50)
+        kwargs = mock_client._http_request.call_args.kwargs
+        # The "/" in the device id must be percent-encoded, not treated as a path sep.
+        assert kwargs["url_suffix"] == f"{ApiPaths.DEVICES}/a%2Fb/inventory"
+
+    def test_get_runtime_policies_request(self, mock_client, runtime_policies_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=runtime_policies_response)
+        mock_client.get_runtime_policies(page=1, page_size=50)
+        kwargs = mock_client._http_request.call_args.kwargs
+        assert kwargs["url_suffix"] == ApiPaths.RUNTIME_POLICIES
+
+    def test_get_runtime_policy_url_encodes_id(self, mock_client, runtime_policy_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=runtime_policy_response)
+        mock_client.get_runtime_policy(policy_id="a/b")
+        kwargs = mock_client._http_request.call_args.kwargs
+        assert kwargs["url_suffix"] == f"{ApiPaths.RUNTIME_POLICIES}/a%2Fb"
+
+    def test_get_findings_request(self, mock_client, findings_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=findings_response)
+        mock_client.get_findings(page=1, page_size=50)
+        kwargs = mock_client._http_request.call_args.kwargs
+        assert kwargs["url_suffix"] == ApiPaths.FINDINGS
+
+    def test_get_approval_requests_omits_none_params(self, mock_client, approval_requests_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=approval_requests_response)
+        mock_client.get_approval_requests(page=1, page_size=50, approval_status="pending", marketplace=None)
+        params = mock_client._http_request.call_args.kwargs["params"]
+        assert params["approval_status"] == "pending"
+        assert "marketplace" not in params  # None filters are dropped
+
+    def test_get_remediations_request(self, mock_client, remediations_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=remediations_response)
+        mock_client.get_remediations(page=1, page_size=50, status="open")
+        kwargs = mock_client._http_request.call_args.kwargs
+        assert kwargs["url_suffix"] == ApiPaths.REMEDIATIONS
+        assert kwargs["params"]["status"] == "open"
+
+    def test_get_groups_request(self, mock_client, groups_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=groups_response)
+        mock_client.get_groups(page=1, page_size=50)
+        assert mock_client._http_request.call_args.kwargs["url_suffix"] == ApiPaths.GROUPS
+
+    def test_get_users_request(self, mock_client, users_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=users_response)
+        mock_client.get_users()
+        kwargs = mock_client._http_request.call_args.kwargs
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == ApiPaths.USERS
+
+    def test_get_koidex_search_request(self, mock_client, koidex_search_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=koidex_search_response)
+        mock_client.get_koidex_search(marketplace="npm", search_term="left-pad", page=1, page_size=50)
+        params = mock_client._http_request.call_args.kwargs["params"]
+        assert params["marketplace"] == "npm"
+        assert params["search_term"] == "left-pad"
+
+    def test_get_koidex_risk_report_request(self, mock_client, koidex_risk_report_response, mocker):
+        mocker.patch.object(mock_client, "_http_request", return_value=koidex_risk_report_response)
+        mock_client.get_koidex_risk_report(item_id="abc", marketplace="npm", version="1.0.0")
+        params = mock_client._http_request.call_args.kwargs["params"]
+        assert params["item_id"] == "abc"
+        assert params["version"] == "1.0.0"
 
 
 # endregion

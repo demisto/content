@@ -1,0 +1,21 @@
+{
+  "item_id": "cjpalhdlnbpafiamejdnhcphjbkeiagm",
+  "item_display_name": "uBlock Origin",
+  "marketplace": "chrome_web_store",
+  "version": "1.54.0",
+  "risk_level": "low",
+  "risk": 12,
+  "findings": {
+    "total_count": 1,
+    "findings": [
+      {"id": "finding-1", "name": "Broad host permissions", "risk": "low"}
+    ]
+  },
+  "compliance": {
+    "total_count": 2,
+    "rules": [
+      {"id": "soc2-1", "name": "Data residency", "status": "pass"},
+      {"id": "soc2-2", "name": "Telemetry disclosure", "status": "pass"}
+    ]
+  }
+}

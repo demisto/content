@@ -1,0 +1,25 @@
+{
+  "devices": [
+    {
+      "id": "device-123",
+      "hostname": "laptop-01",
+      "os": "windows",
+      "status": "active",
+      "last_seen": "2024-11-01T14:00:00Z",
+      "last_logged_on_user": "john.doe",
+      "serial": "ABC123XYZ",
+      "registered_at": "2024-01-01T10:00:00Z"
+    },
+    {
+      "id": "device-456",
+      "hostname": "desktop-02",
+      "os": "mac",
+      "status": "stale",
+      "last_seen": "2024-09-15T08:30:00Z",
+      "last_logged_on_user": "jane.smith",
+      "serial": "DEF456UVW",
+      "registered_at": "2024-02-15T08:30:00Z"
+    }
+  ],
+  "total_count": 2
+}

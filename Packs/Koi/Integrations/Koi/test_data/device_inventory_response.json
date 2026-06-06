@@ -1,0 +1,31 @@
+{
+  "inventory": [
+    {
+      "item_id": "abcdefghijklmnop",
+      "item_display_name": "uBlock Origin",
+      "version": "1.54.0",
+      "marketplace": "chrome_web_store",
+      "platform": "chrome",
+      "publisher": "Raymond Hill",
+      "risk_level": "low",
+      "activation_status": "enabled",
+      "first_seen": "2024-01-01T10:00:00Z",
+      "last_seen": "2024-11-01T14:00:00Z",
+      "local_full_path": "/Users/john/Library/Application Support/Google/Chrome/Extensions/abc"
+    },
+    {
+      "item_id": "@modelcontextprotocol/server-filesystem",
+      "item_display_name": "MCP Filesystem Server",
+      "version": "0.6.2",
+      "marketplace": "npm",
+      "platform": "npm",
+      "publisher": "Anthropic",
+      "risk_level": "high",
+      "activation_status": "enabled",
+      "first_seen": "2024-08-01T09:00:00Z",
+      "last_seen": "2024-11-01T14:00:00Z",
+      "local_full_path": "/Users/john/.npm/server-filesystem"
+    }
+  ],
+  "total_count": 2
+}
