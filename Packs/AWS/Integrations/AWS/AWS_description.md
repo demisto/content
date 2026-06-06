@@ -35,10 +35,7 @@ For Cortex XSOAR / Cortex XSIAM (version < 3.0), the configured IAM user or assu
 
 1. Identify the commands you plan to run (for example, `aws-ec2-instances-describe`).
 2. Open the integration's command reference on the [Amazon Web Services page on xsoar.pan.dev](https://xsoar.pan.dev/docs/reference/integrations/aws).
-3. For each command, map it to its AWS API action and grant the matching IAM permission. The mapping follows AWS naming conventions — for example:
-   - `aws-ec2-instances-describe` → `ec2:DescribeInstances`
-   - `aws-s3-bucket-policy-put` → `s3:PutBucketPolicy`
-   - `aws-iam-access-key-update` → `iam:UpdateAccessKey`
+3. For Cortex XSOAR / Cortex XSIAM, the configured IAM user or assumed role must have the IAM permissions required by the specific commands you intend to run. Each command's required permission corresponds to its underlying AWS API action.
 4. Grant only the permissions for the commands you use, following the principle of least privilege.
 
 For the full, authoritative list of AWS IAM actions, see the [AWS Service Authorization Reference](https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html).

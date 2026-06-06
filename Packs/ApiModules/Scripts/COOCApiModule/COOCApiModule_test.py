@@ -1183,5 +1183,5 @@ def test_get_timeout_negative_raises(bad_timeout):
     from COOCApiModule import get_timeout
     from CommonServerPython import DemistoException
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(DemistoException, match="Timeout values must not be negative."):
         get_timeout(bad_timeout)
