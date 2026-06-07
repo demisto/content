@@ -1232,6 +1232,74 @@ def test_file_function_return_timeout_warning(mocker):
     )
 
 
+def test_file_function_return_demistoException_500():
+    """
+    Given
+    - A client configured with should_error=True.
+    - The client's HTTP request method is mocked to raise a DemistoException with status 500.
+
+    When
+    - Calling file_command with a file hash.
+
+    Then
+    - Ensure the DemistoException is re-raised (existing behavior when should_error=True).
+    """
+    client = Client(
+        base_url="aa",
+        headers={},
+        verify=True,
+        proxy=False,
+        default_threshold="5",
+        min_valid_sources="2",
+        max_indicator_relationships="1",
+        reliability="",
+        should_error=True,
+    )
+    client._http_request = MagicMock()
+    res = MagicMock()
+    res.status_code = 500
+    res.text = "Error in API call [500] - Internal Server Error"
+    client._http_request.side_effect = DemistoException("Error in API call [500] - Internal Server Error", res=res)
+    with pytest.raises(DemistoException) as e:
+        file_command(client, file="11111111111111111111111111111111")
+    assert e.value.args[0] == "Error in API call [500] - Internal Server Error"
+
+
+def test_file_function_return_demistoException_warning_500():
+    """
+    Given
+    - A client configured with should_error=False.
+    - The client's HTTP request method is mocked to raise a DemistoException with status 500
+      (e.g. when one of the underlying file API endpoints returns Internal Server Error).
+
+    When
+    - Calling file_command with a file hash.
+
+    Then
+    - Ensure the function does not raise and instead returns a graceful "unknown" DBot score
+      result, mirroring the existing 504 handling.
+    """
+    client = Client(
+        base_url="aa",
+        headers={},
+        verify=True,
+        proxy=False,
+        default_threshold="5",
+        min_valid_sources="2",
+        max_indicator_relationships="1",
+        reliability="",
+        should_error=False,
+    )
+    client._http_request = MagicMock()
+    res = MagicMock()
+    res.status_code = 500
+    res.text = "Error in API call [500] - Internal Server Error"
+    client._http_request.side_effect = DemistoException("Error in API call [500] - Internal Server Error", res=res)
+    result = file_command(client, file="11111111111111111111111111111111")
+    assert len(result) == 1
+    assert "11111111111111111111111111111111" in result[0].readable_output
+
+
 def test_url_function_return_timeout_warning(mocker):
     """
     Given
