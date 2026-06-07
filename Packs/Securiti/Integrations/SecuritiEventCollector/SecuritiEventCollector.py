@@ -157,25 +157,6 @@ def get_events_for_type(
 ) -> tuple[list[dict], dict]:
     """Fetch audit trail events with full pagination handling.
 
-    Pagination strategy (hybrid time-based + offset for special case):
-
-    Normal flow:
-    - Start with from_time and offset=0 (or start_offset if resuming from special case).
-    - Paginate by incrementing offset within the fetch cycle.
-    - On the first page, dedup against last_run_ids to remove events already fetched.
-    - When offset reaches API_MAX_OFFSET (10,000), advance from_time to the last
-      event's event_time, reset offset to 0, and track boundary IDs for dedup.
-
-    Special case (all events on a full page share the same timestamp at offset boundary):
-    - We CANNOT advance from_time because there may be more events at this timestamp.
-    - Instead, we save the current offset in last_run and stop the fetch cycle.
-    - On the next fetch, start_offset will be non-zero, allowing us to resume from
-      the exact position without losing any events.
-
-    last_run state:
-    - Normal: {"from_time": X, "last_fetched_ids": [...]}
-    - Special case: {"from_time": X, "offset": Y, "last_fetched_ids": []}
-
     Args:
         client: The Securiti API client.
         from_time: Epoch timestamp in milliseconds to start fetching from.
