@@ -421,7 +421,7 @@ def main() -> None:  # pragma: no cover
     try:
         client = Client(
             tenant_id=tenant_id,
-            auth_id=client_id,
+            auth_id=client_id or "",
             enc_key=client_secret or None,
             app_name=Config.APP_NAME,
             base_url=base_url,
