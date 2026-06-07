@@ -121,7 +121,8 @@ steps:
     kind: checkpoint
     optional: false
     setter: null
-    description: "Run `make validate` on the generated manifest."
+    gate: make_validate
+    description: "Run `make validate` on the generated manifest. Self-executing gate: `markpass` RUNS `make validate` in the ConnectUs repo (the shared-workspace sibling `unified-connectors-content`, overridable via $CONNECTUS_REPO_DIR) and only passes the checkpoint if it exits 0. Validates all connectors (JSON Schema + OPA). No bypass."
 
   - name: "Release Notes"
     kind: data

@@ -1494,19 +1494,29 @@ machine enforces this and tells you what's missing.
 
 ### Step 7: `run manifest make validate`
 
-Run the manifest's `make validate` step:
-
-```bash
-demisto-sdk validate -i Packs/<PackName>/Integrations/<IntegrationName>/
-```
-
-When it passes:
+This is a **self-executing gate**: `markpass` RUNS `make validate` in the
+ConnectUs repo and only writes the checkpoint marker if it exits 0 (no
+bypass — mirrors the `precommit` gate at Step 9 and the auth-parity gate
+inside `set-auth`).
 
 ```bash
 python3 connectus/workflow_state.py markpass "<Integration ID>" "run manifest make validate"
 ```
 
-If it fails, fix the issues. To reset:
+Under the hood this runs `make validate` (JSON Schema + OPA validation of
+all connectors) from the ConnectUs repo root. The ConnectUs repo is the
+**shared-workspace sibling** of the content repo, resolved as
+`<parent-of-content-repo>/unified-connectors-content`. Override the
+location with the `CONNECTUS_REPO_DIR` env var when the layout differs:
+
+```bash
+CONNECTUS_REPO_DIR=/path/to/unified-connectors-content \
+  python3 connectus/workflow_state.py markpass "<Integration ID>" "run manifest make validate"
+```
+
+If `make validate` fails, the markpass is rejected with the command's exit
+code and an output tail — fix the connector manifest in the ConnectUs repo
+and re-run the markpass. To explicitly reset the checkpoint:
 
 ```bash
 python3 connectus/workflow_state.py fail "<Integration ID>" "run manifest make validate"

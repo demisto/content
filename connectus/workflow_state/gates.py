@@ -15,6 +15,7 @@ Design of record: ``connectus/self_executing_gates_design.md``.
 """
 from __future__ import annotations
 
+import os
 import subprocess
 from dataclasses import dataclass
 from typing import Callable, Optional
@@ -29,6 +30,39 @@ def _repo_root() -> str:
     """
     from workflow_state.csv_io import BASE_DIR
     return BASE_DIR
+
+
+# Default directory name of the ConnectUs ("unified connectors") repo,
+# which lives as a SIBLING of the content repo in the shared workspace
+# (e.g. ``/Users/<you>/dev/unified-connectors-content`` next to
+# ``/Users/<you>/dev/content``). The ``make validate`` step runs against
+# this repo's Makefile, not the content repo.
+_CONNECTUS_REPO_DIRNAME = "unified-connectors-content"
+
+# Env var to override the auto-resolved ConnectUs repo path (e.g. when the
+# sibling layout differs, or for tests). When set, it wins over the
+# sibling-of-content-repo default.
+_CONNECTUS_REPO_ENV = "CONNECTUS_REPO_DIR"
+
+
+def _connectus_repo_root() -> str:
+    """Resolve the ConnectUs repo root (where ``make validate`` runs).
+
+    Resolution order:
+
+    1. ``$CONNECTUS_REPO_DIR`` if set (explicit override).
+    2. The sibling of the content repo named ``unified-connectors-content``
+       (the shared-workspace convention).
+
+    The path is returned as-is even if it does not exist on disk — the
+    gate runner surfaces a "could not be launched" verdict (cwd missing)
+    rather than this resolver guessing further.
+    """
+    override = os.environ.get(_CONNECTUS_REPO_ENV)
+    if override and override.strip():
+        return os.path.abspath(override.strip())
+    parent = os.path.dirname(_repo_root())
+    return os.path.join(parent, _CONNECTUS_REPO_DIRNAME)
 
 
 # How many bytes of captured stdout/stderr to surface in a verdict. Keeps
@@ -67,10 +101,10 @@ class GateSpec:
 # Gate registry
 # ---------------------------------------------------------------------------
 #
-# Only the ``precommit`` gate is ACTIVE in Phase 1. ``param_parity`` and
-# ``make_validate`` are deferred (see the design doc §6.1 / §6.3) and are
-# intentionally NOT registered yet — wiring them in later is purely
-# additive (register a GateSpec here + add ``gate:`` to the YAML step).
+# ``precommit`` and ``make_validate`` are ACTIVE. ``param_parity`` is
+# deferred (see the design doc §6.3) and is intentionally NOT registered
+# yet — wiring it in later is purely additive (register a GateSpec here +
+# add ``gate:`` to the YAML step).
 
 GATES: dict[str, GateSpec] = {
     "precommit": GateSpec(
@@ -86,6 +120,21 @@ GATES: dict[str, GateSpec] = {
         # generous. Override per-call with the CLI --timeout= flag.
         default_timeout=1800,
         description="demisto-sdk pre-commit (lint + unit tests + validate)",
+    ),
+    "make_validate": GateSpec(
+        name="make_validate",
+        # `make validate` validates all connectors (JSON Schema + OPA) in
+        # the ConnectUs repo. The integration dir (`abs_dir`) is NOT used —
+        # the connectors live in the sibling ConnectUs repo, not the
+        # content repo, so this gate keys off that repo's Makefile instead.
+        build_argv=lambda abs_dir, iid: ["make", "validate"],
+        # Run from the ConnectUs repo root (the shared-workspace sibling),
+        # where the Makefile with the `validate` target lives.
+        build_cwd=lambda abs_dir, iid: _connectus_repo_root(),
+        # JSON Schema + OPA validation over all connectors — fast relative
+        # to the docker-backed precommit gate, but allow headroom.
+        default_timeout=600,
+        description="make validate (ConnectUs repo: JSON Schema + OPA)",
     ),
 }
 

@@ -43,10 +43,14 @@ class TestRegistry:
         assert gates.is_known_gate("precommit")
         assert "precommit" in gates.known_gate_names()
 
+    def test_make_validate_gate_registered(self) -> None:
+        assert gates.is_known_gate("make_validate")
+        assert "make_validate" in gates.known_gate_names()
+
     def test_deferred_gates_not_registered(self) -> None:
-        # param_parity and make_validate are deferred (design §6.1/§6.3).
+        # param_parity remains deferred (design §6.3). make_validate is now
+        # ACTIVE — it runs `make validate` in the ConnectUs repo.
         assert not gates.is_known_gate("param_parity")
-        assert not gates.is_known_gate("make_validate")
 
     def test_no_bypass_helper_exists(self) -> None:
         # There must be no env-var bypass for checkpoint gates.
@@ -66,6 +70,32 @@ class TestRunGate:
         # argv targets the integration dir.
         called_argv = m.call_args.args[0]
         assert called_argv == ["demisto-sdk", "pre-commit", "-i", "/abs/dir"]
+
+    def test_make_validate_argv_and_cwd(self, monkeypatch) -> None:
+        # The make_validate gate ignores the integration dir and runs
+        # `make validate` from the ConnectUs repo root.
+        monkeypatch.setenv(gates._CONNECTUS_REPO_ENV, "/some/connectus/repo")
+        completed = subprocess.CompletedProcess(
+            args=["make"], returncode=0, stdout="all good", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("make_validate", "/abs/integration/dir", "MyInt")
+        assert verdict["allow"] is True
+        assert verdict["gate"] == "make_validate"
+        # argv is `make validate`, NOT keyed off the integration dir.
+        assert m.call_args.args[0] == ["make", "validate"]
+        # cwd is the ConnectUs repo (from the env override), not abs_dir.
+        assert m.call_args.kwargs["cwd"] == "/some/connectus/repo"
+
+    def test_make_validate_default_repo_is_content_sibling(self, monkeypatch) -> None:
+        # With no override, the ConnectUs repo resolves to a sibling of the
+        # content repo named `unified-connectors-content`.
+        monkeypatch.delenv(gates._CONNECTUS_REPO_ENV, raising=False)
+        resolved = gates._connectus_repo_root()
+        import os
+        parent = os.path.dirname(gates._repo_root())
+        assert resolved == os.path.join(parent, "unified-connectors-content")
+        assert os.path.basename(resolved) == "unified-connectors-content"
 
     def test_fail_on_nonzero_exit(self) -> None:
         completed = subprocess.CompletedProcess(
@@ -154,6 +184,11 @@ class TestLoaderGateParsing:
         cfg = load_config()
         step = cfg.step_by_name["precommit/validate/unit tests passed"]
         assert step.gate == "precommit"
+
+    def test_default_yaml_binds_make_validate_gate(self) -> None:
+        cfg = load_config()
+        step = cfg.step_by_name["run manifest make validate"]
+        assert step.gate == "make_validate"
 
     def test_checkpoint_without_gate_defaults_none(self) -> None:
         cfg = load_config()
