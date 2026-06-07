@@ -6,7 +6,6 @@ from GSuiteApiModule import (
     DemistoException,
     GSuiteClient,
     UcpException,
-    get_ucp_service_account,
 )
 
 with open("test_data/service_account_json.txt") as f:
@@ -416,13 +415,13 @@ class TestGetUcpServiceAccount:
         """get_ucp_service_account should unwrap a nested service-account file."""
         sa = {"type": "service_account", "project_id": "p"}
         _patch_ucp_fetch(mocker, sa)
-        assert get_ucp_service_account() == ("method-1", sa)
+        assert GSuiteClient.get_ucp_service_account() == ("method-1", sa)
 
     def test_string_content(self, mocker):
         """String content should be parsed into a dict."""
         sa = {"type": "service_account", "project_id": "p"}
         _patch_ucp_fetch(mocker, json.dumps(sa))
-        assert get_ucp_service_account() == ("method-1", sa)
+        assert GSuiteClient.get_ucp_service_account() == ("method-1", sa)
 
     def test_top_level_fallback(self, mocker):
         """When no nested 'content', the type sub-dict itself is the service account."""
@@ -430,13 +429,13 @@ class TestGetUcpServiceAccount:
         mocker.patch("GSuiteApiModule.resolve_ucp_capability", return_value="cap")
         mocker.patch("GSuiteApiModule.get_ucp_method_unique_id", return_value="method-1")
         mocker.patch("GSuiteApiModule.get_ucp_credentials", return_value={"type": "service_account", "service_account": sa})
-        assert get_ucp_service_account() == ("method-1", sa)
+        assert GSuiteClient.get_ucp_service_account() == ("method-1", sa)
 
     def test_empty_content_raises(self, mocker):
         """Empty service-account content should raise UcpException."""
         _patch_ucp_fetch(mocker, {})
         with pytest.raises(UcpException):
-            get_ucp_service_account()
+            GSuiteClient.get_ucp_service_account()
 
 
 class TestGSuiteClientUcp:
