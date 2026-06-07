@@ -1297,8 +1297,9 @@ The following XSOAR `script` flags are dev-mode/internal and have no effect on t
 ### 3.8 Handler YAML
 
 1. Each integration gets its own `handler.yaml`.
-2. All handlers live under `connectors/<vendor>/components/handlers/<integration-id>/`.
-3. The file name is always `handler.yaml`.
+2. All handlers live under `connectors/<vendor>/components/handlers/<handler-folder>/`.
+3. **Handler folder name == integration id, normalized** — the `<handler-folder>` MUST equal the integration `commonfields.id`, **lowercased with spaces replaced by dashes** (e.g. `Salesforce IAM` → `components/handlers/salesforce-iam/`; `EWS v2` → `components/handlers/ews-v2/`). No other characters are added or removed.
+4. The file name is always `handler.yaml`.
 
 #### Rules for handler.yaml
 
@@ -1485,7 +1486,7 @@ capabilities:
 - When connection-profile fields need to be mapped to integration-expected parameter names.
 - A serializer YAML is **not required**.
 
-**Where to create the serializer**: same directory as the handler YAML — `components/handlers/<integration-id>/serializer.yaml`.
+**Where to create the serializer**: same directory as the handler YAML — `components/handlers/<handler-folder>/serializer.yaml`, where `<handler-folder>` is the integration id lowercased with spaces replaced by dashes (see §3.8 item 3).
 
 **Field ID naming rule**: use the original integration param name when it is unique across all integrations in the connector. Only prefix with an integration-specific prefix when there is a genuine duplicate (e.g., `proxy` appears in three integrations → `slackv3_proxy`, `iam_proxy`, `ec_proxy`).
 
