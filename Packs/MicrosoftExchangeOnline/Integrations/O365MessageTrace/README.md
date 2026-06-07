@@ -70,6 +70,7 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=client_credentials&scope=https://graph.microsoft.com/.default&client_id={client_id}&client_secret={client_secret}
 ```
+
 Azure Managed Identity authentication is also supported by enabling the **Use Azure Managed Identity** parameter (only available when running inside Azure).
 
 ### Required API Permissions
@@ -82,7 +83,6 @@ The Azure AD application must be granted the following Microsoft Graph applicati
 
 - [Microsoft Graph - Get message traces](https://learn.microsoft.com/en-us/exchange/monitoring/trace-an-email-message/graph-api-message-trace#get-beta-admin-exchange-tracing-messageTraces)
 - [Paging Microsoft Graph data in your app](https://learn.microsoft.com/en-us/graph/paging)
-
 
 ## Configure O365 Message Trace in Cortex XSIAM
 
@@ -187,22 +187,22 @@ Manually retrieve Message Trace events. Intended for development and debugging. 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events to return. Default is 50. | Optional | 
-| start_time | The start time to filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z"). | Optional | 
-| end_time | The end time to filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional | 
-| should_push_events | Whether the command sends the retrieved events to XSIAM. If false, it only displays them. Possible values are: true, false. Default is false. | Optional | 
+| limit | The maximum number of events to return. Default is 50. | Optional |
+| start_time | The start time to filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z"). | Optional |
+| end_time | The end time to filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional |
+| should_push_events | Whether the command sends the retrieved events to XSIAM. If false, it only displays them. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365MessageTrace.Event.id | String | The unique identifier of the message trace event. | 
-| O365MessageTrace.Event.receivedDateTime | Date | The timestamp when the message was received \(e.g., "2020-01-01T00:11:22Z"\). | 
-| O365MessageTrace.Event.senderAddress | String | The sender email address. | 
-| O365MessageTrace.Event.recipientAddress | String | The recipient email address. | 
-| O365MessageTrace.Event.subject | String | The subject of the message. | 
-| O365MessageTrace.Event.status | String | The delivery status of the message \(e.g., Delivered, Pending, Failed, Quarantined\). | 
-| O365MessageTrace.Event._time | Date | The XSIAM event timestamp in ISO 8601 format \(e.g., "2020-01-01T00:11:22Z"\). | 
+| O365MessageTrace.Event.id | String | The unique identifier of the message trace event. |
+| O365MessageTrace.Event.receivedDateTime | Date | The timestamp when the message was received \(e.g., "2020-01-01T00:11:22Z"\). |
+| O365MessageTrace.Event.senderAddress | String | The sender email address. |
+| O365MessageTrace.Event.recipientAddress | String | The recipient email address. |
+| O365MessageTrace.Event.subject | String | The subject of the message. |
+| O365MessageTrace.Event.status | String | The delivery status of the message \(e.g., Delivered, Pending, Failed, Quarantined\). |
+| O365MessageTrace.Event._time | Date | The XSIAM event timestamp in ISO 8601 format \(e.g., "2020-01-01T00:11:22Z"\). |
 
 #### Command example
 
