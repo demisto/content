@@ -762,9 +762,9 @@ The following opens were identified while consolidating the legacy XSOAR FE/BE o
 
 | Field | Rule |
 |---|---|
-| `id` | Derived from the vendor name plus a capability suffix (see §3.3.1 "Connector ID and title — naming convention" below). Lowercase, words separated by dashes (e.g. `okta-automation-and-collection`). |
+| `id` | Taken from the **Connector ID in the master CSV** of integrations and connectors, normalized to lowercase with spaces replaced by dashes (see §3.3.1 "Connector ID and title — naming convention" below). `id` and `metadata.title` encode the **same** name, differing only in formatting. |
 | `enabled` | always true, unless want to disable the connector |
-| `metadata.title` | Derived from the vendor name plus a capability suffix (see §3.3.1 "Connector ID and title — naming convention" below). Title Case, words separated by spaces (e.g. `Okta Automation and Collection`). |
+| `metadata.title` | The **same name** as `id`, rendered in Title Case with spaces (see §3.3.1). |
 | `metadata.description` | Collect all descriptions from `relevant_packs_jsons` and suggest a generic connector description based on that. Flag this for review by a technical content writer. |
 | `metadata.version` | Always `1.0.0` for new connectors. |
 | `metadata.categories` | **Array.** Union of all `categories` from `relevant_packs_jsons`, deduplicated. At least one entry required. |
@@ -779,44 +779,49 @@ The following opens were identified while consolidating the legacy XSOAR FE/BE o
 
 #### 3.3.1 Connector ID and title — naming convention
 
-The connector `id` (in [`connector.yaml`](#21-connectoryaml)) and `metadata.title` MUST encode the same information — the vendor name plus a suffix that reflects which top-level capability families the connector exposes. They differ only in formatting:
+The connector `id` (in [`connector.yaml`](#21-connectoryaml)) and `metadata.title` MUST encode the **same** name. They differ only in formatting.
 
-- **`id`** — lowercase, words separated by dashes, no spaces (e.g. `okta-automation-and-collection`). Must satisfy the schema's min-3-char rule and OPA validation.
-- **`metadata.title`** — Title Case, words separated by spaces (e.g. `Okta Automation and Collection`).
+##### Core rules
 
-##### Suffix derivation
+1. **`id` and `metadata.title` are the same name** — just formatted differently.
+2. **Source of the name** — base both on the **Connector ID given in the master CSV** of integrations and connectors. This is the authoritative source; do not invent a name from the vendor unless the CSV has no entry (in which case raise a flag for manual naming).
+3. **`id` formatting** — lowercase, spaces replaced with dashes (e.g. `palo alto networks` → `palo-alto-networks`). Must satisfy the schema's min-3-char rule and OPA validation.
+4. **`metadata.title` formatting** — Title Case, spaces allowed (e.g. `Palo Alto Networks`).
 
-Inspect the set of capabilities the connector ends up declaring in [`capabilities.yaml`](#25-capabilitiesyaml) and compute the suffix as follows:
+##### Example
 
-| Capability set declared on the connector | Suffix (title form) | Suffix (id form) |
+| Master-CSV Connector ID | `id` | `metadata.title` |
 |---|---|---|
-| Only `automation-and-remediation` | `Automation` | `automation` |
-| Only one or more **collection** capabilities — any of `log-collection`, `fetch-issues`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, `fetch-secrets` | `Collection` | `collection` |
-| Both `automation-and-remediation` AND at least one **collection** capability | `Automation and Collection` | `automation-and-collection` |
+| `Okta` | `okta` | `Okta` |
+| `Palo Alto Networks` | `palo-alto-networks` | `Palo Alto Networks` |
+| `Salesforce` | `salesforce` | `Salesforce` |
 
-"Collection" is a deliberately broad umbrella that covers **every** fetch capability (`log-collection`, `fetch-issues`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, `fetch-secrets`) — even if the connector exposes several of them, the suffix is still the single word `Collection`. The suffix does NOT enumerate which collection capabilities are present.
+##### Collision handling — suffix fallback
 
-##### Vendor prefix
+5. **If a connector with this `id` already exists**, you must disambiguate by appending a capability-based suffix to **both** `id` and `metadata.title`, **and raise a flag** for review. The suffix reflects which capability families the connector exposes:
 
-The vendor prefix is the vendor name (the same value used for [`metadata.vendor`](#21-connectoryaml)) rendered as:
+   | Capability set declared on the connector | `metadata.title` suffix | `id` suffix |
+   |---|---|---|
+   | Both `automation-and-remediation` AND at least one **collection** capability | `Automation and Collection` | `automation-and-collection` |
+   | Only `automation-and-remediation` | `Automation` | `automation` |
+   | Only one or more **collection** capabilities (any of `log-collection`, `fetch-issues`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, `fetch-secrets`) | `Collection` | `collection` |
 
-- **`id`**: lowercased, spaces replaced with dashes, any other non-`[a-z0-9-]` character stripped or replaced with a dash (e.g. `Palo Alto Networks` → `palo-alto-networks`).
-- **`metadata.title`**: Title Case, spaces preserved (e.g. `palo alto networks` → `Palo Alto Networks`).
+   "Collection" is a deliberately broad umbrella covering **every** fetch capability — even if the connector exposes several, the suffix is still the single word `Collection`; it does NOT enumerate which collection capabilities are present.
 
-##### Worked examples
+   **Collision-suffix examples** (only when `<vendor>` is already taken):
 
-| Vendor | Capabilities declared | `id` | `metadata.title` |
-|---|---|---|---|
-| Okta | `automation-and-remediation` + `log-collection` | `okta-automation-and-collection` | `Okta Automation and Collection` |
-| Okta | `automation-and-remediation` only | `okta-automation` | `Okta Automation` |
-| Okta | `log-collection` only | `okta-collection` | `Okta Collection` |
-| Salesforce | `automation-and-remediation` only | `salesforce-automation` | `Salesforce Automation` |
-| Palo Alto Networks | `automation-and-remediation` + `fetch-issues` + `threat-intelligence-and-enrichment` | `palo-alto-networks-automation-and-collection` | `Palo Alto Networks Automation and Collection` |
+   | Vendor | Capabilities declared | `id` | `metadata.title` |
+   |---|---|---|---|
+   | Okta | `automation-and-remediation` + `log-collection` | `okta-automation-and-collection` | `Okta Automation and Collection` |
+   | Okta | `automation-and-remediation` only | `okta-automation` | `Okta Automation` |
+   | Okta | `log-collection` only | `okta-collection` | `Okta Collection` |
 
 ##### Flags
 
-- If the connector declares **zero** capabilities, raise a flag — every connector must expose at least one capability family.
-- If the vendor name cannot be cleanly rendered as a slug (e.g. contains characters outside `[A-Za-z0-9 ]`), raise a flag for manual review of the chosen `id`.
+- If the **master CSV has no Connector ID** for this set of integrations, raise a flag for manual naming.
+- If the chosen `id` **collides** with an existing connector, apply the suffix fallback above **and raise a flag**.
+- If the connector declares **zero** capabilities, raise a flag — every connector must expose at least one capability family (and the suffix fallback cannot be computed).
+- If the name cannot be cleanly rendered as a slug (e.g. contains characters outside `[A-Za-z0-9 ]`), raise a flag for manual review of the chosen `id`.
 
 ### 3.4 capabilities.yaml Rules
 
