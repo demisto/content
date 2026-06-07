@@ -230,7 +230,7 @@ def fetch_events_sequential(
 # ============================================================================
 # Commands
 # ============================================================================
-def module_health_check(client: Client) -> str:
+def test_module(client: Client) -> str:
     """Validate credentials and Graph connectivity by fetching a tiny window.
 
     Raises:
@@ -444,7 +444,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == "test-module":
-            return_results(module_health_check(client))
+            return_results(test_module(client))
         elif command == "o365-message-trace-auth-test":
             return_results(auth_test_command(client))
         elif command == "o365-message-trace-auth-reset":

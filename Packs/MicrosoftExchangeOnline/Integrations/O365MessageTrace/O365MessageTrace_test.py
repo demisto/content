@@ -16,7 +16,7 @@ from O365MessageTrace import (
     fetch_events_sequential,
     format_datetime_for_filter,
     get_events_command,
-    module_health_check,
+    test_module,
     parse_datetime,
 )
 
@@ -254,14 +254,14 @@ class TestFetchEventsSequential:
 
 
 # ============================================================================
-# module_health_check tests
+# test_module tests
 # ============================================================================
 class TestModuleHealthCheck:
     def test_returns_ok_on_success(self, mock_client):
         mock_client.grant_type = "client_credentials"
         mock_client.http_request.return_value = {"value": []}
 
-        assert module_health_check(mock_client) == "ok"
+        assert test_module(mock_client) == "ok"
 
     def test_raises_for_authorization_code_flow(self, mock_client):
         from O365MessageTrace import AUTHORIZATION_CODE, DemistoException
@@ -269,20 +269,20 @@ class TestModuleHealthCheck:
         mock_client.grant_type = AUTHORIZATION_CODE
 
         with pytest.raises(DemistoException, match="Test module is not available"):
-            module_health_check(mock_client)
+            test_module(mock_client)
 
     def test_returns_authorization_error_on_401(self, mock_client):
         mock_client.grant_type = "client_credentials"
         mock_client.http_request.side_effect = Exception("Got 401 Unauthorized")
 
-        result = module_health_check(mock_client)
+        result = test_module(mock_client)
         assert "Authorization Error" in result
 
     def test_returns_authorization_error_on_403(self, mock_client):
         mock_client.grant_type = "client_credentials"
         mock_client.http_request.side_effect = Exception("403 Forbidden")
 
-        result = module_health_check(mock_client)
+        result = test_module(mock_client)
         assert "Authorization Error" in result
 
     def test_reraises_unexpected_errors(self, mock_client):
@@ -290,7 +290,7 @@ class TestModuleHealthCheck:
         mock_client.http_request.side_effect = Exception("network timeout")
 
         with pytest.raises(Exception, match="network timeout"):
-            module_health_check(mock_client)
+            test_module(mock_client)
 
 
 # ============================================================================
