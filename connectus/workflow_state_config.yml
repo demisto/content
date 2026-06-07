@@ -97,6 +97,12 @@ steps:
     preserve_on_reset: false
     description: "JSON object mapping YML param name -> default value (any JSON type). Empty object {} is valid. Consumed by connector_param_mapper.py as the PARAM_DEFAULTS_JSON argument, and consumed by check_auth_parity.py as the first-precedence source of non-auth required param values."
 
+  - name: "UCP param-default review"
+    kind: checkpoint
+    optional: false
+    setter: null
+    description: "Audit the integration for ConnectUs param-default-removal breakage. Under ConnectUs, params no longer arrive with framework-injected type defaults (unchecked checkbox was False, empty numeric was 0; now absent/None). Run `python3 connectus/check_param_defaults.py --integration-id <id> --human`. It emits three buckets: UNSAFE (provable breaks — a strict converter like argToBoolean/arg_to_number/int/float on a defaultless param read), UNCERTAIN ('params still to be checked by AI' — cross-function flow, dynamic access, **params splats, custom wrappers, and checkbox reads that escape a pure-boolean context), and SAFE. Flow: the AI PRESENTS the UNSAFE + UNCERTAIN lists to the user, investigates each, FIXES the code (add a `.get(name, <default>)` / `... or <default>` fallback, or move the param to other_connection), UPDATES connectus-migration-SKILL.md when a new pattern is learned, then markpasses. Non-Python (JS/PS) integrations short-circuit as 'not analyzed: non-Python'. This is a present->fix->markpass checkpoint, NOT a self-executing gate."
+
   - name: "Params to Capabilities"
     kind: data
     optional: false

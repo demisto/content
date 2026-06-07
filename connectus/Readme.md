@@ -175,6 +175,7 @@ State is **purely derived from row contents** — there is no separate "current 
 | 2 | `Auth Details` | data (JSON; `auth_types[]` + optional `other_connection` — see [`column-schemas.md`](column-schemas.md)) | `set-auth` — **rejects the cell unless the auth-parity test passes or structurally short-circuits** (see [`check_auth_parity.py`](check_auth_parity.py); no separate `auth parity test passes` checkpoint anymore) |
 | 3 | `Params to Commands` | data (JSON) | `set-params-to-commands` |
 | 4 | `Params for test with default in code` | data (JSON) | `set-param-defaults` |
+| 4.5 | `UCP param-default review` | checkpoint | `markpass` — run [`check_param_defaults.py`](check_param_defaults.py) `--integration-id <id> --human`, present the **unsafe** + **uncertain** ("params still to be checked by AI") lists, fix the code (add `.get(name, <default>)` / `... or <default>`, or move to `other_connection`), then markpass. Audits ConnectUs param-default removal: a strict converter (`argToBoolean`/`arg_to_number`/`int`/…) on a defaultless param read raises now that unset params arrive `None`/absent. Non-Python short-circuits. See SKILL §3a.5. |
 | 5 | `Shadowed Integration Commands` | data (JSON) | `set-shadowed-commands` |
 | 6 | `Params to Capabilities` | data (JSON) | `set-params-to-capabilities` |
 | 7 | `generated manifest` | checkpoint | `markpass` |

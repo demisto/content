@@ -6429,6 +6429,22 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--single-capability-test-module-only",
+        action="store_true",
+        help=(
+            "OPTIMIZATION (requires --integration-id). When the integration "
+            "resolves to exactly ONE collected capability (read back from the "
+            "'Collect Capabilities' cell), narrow analysis to 'test-module' "
+            "only. Rationale: with a single capability, every command trivially "
+            "routes to that one capability in 'Params to Capabilities', so the "
+            "only per-command param analysis still needed for the connection is "
+            "the connectivity test. When the capability count is 0 (not yet "
+            "collected) or >1, this flag is a no-op and a full analysis runs. "
+            "Has no effect if --commands is also passed (explicit filter wins). "
+            "Mirrors the auto-runner heuristic in run_pre_manifest_steps.py."
+        ),
+    )
+    parser.add_argument(
         "--timeout",
         type=int,
         default=DEFAULT_DYNAMIC_TIMEOUT_S,
@@ -6785,6 +6801,53 @@ def main(argv: list[str] | None = None) -> int:
     except FileNotFoundError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
+    # Single-capability optimization: when the integration resolves to exactly
+    # one collected capability, every command trivially routes to it in
+    # 'Params to Capabilities', so only 'test-module' needs per-command
+    # analysis for the connection. Narrow the commands_filter accordingly.
+    # An explicit --commands always wins; capability count of 0 (not yet
+    # collected) or >1 is a no-op (full analysis). Mirrors the harness
+    # heuristic in run_pre_manifest_steps.step_2_params_to_commands.
+    commands_filter = args.commands
+    if args.single_capability_test_module_only:
+        if args.integration_id is None:
+            print(
+                "ERROR: --single-capability-test-module-only requires "
+                "--integration-id (the capability count is read from the "
+                "integration's 'Collect Capabilities' cell).",
+                file=sys.stderr,
+            )
+            return 2
+        if commands_filter is not None:
+            print(
+                "[optimize] --single-capability-test-module-only ignored: "
+                "explicit --commands filter takes precedence.",
+                file=sys.stderr,
+            )
+        else:
+            try:
+                from workflow_state import collected_capabilities
+                caps = collected_capabilities(args.integration_id)
+            except Exception as exc:  # noqa: BLE001 — degrade to full analysis
+                print(
+                    f"[optimize] could not read collected capabilities "
+                    f"({type(exc).__name__}: {exc}); running full analysis.",
+                    file=sys.stderr,
+                )
+                caps = []
+            if len(caps) == 1:
+                print(
+                    f"[optimize] single capability ({caps[0]!r}) — "
+                    "analyzing test-module only.",
+                    file=sys.stderr,
+                )
+                commands_filter = ["test-module"]
+            else:
+                print(
+                    f"[optimize] capability count is {len(caps)} "
+                    "(not exactly 1) — running full analysis.",
+                    file=sys.stderr,
+                )
     try:
         seed_overrides = parse_seed_overrides(args.seed_param)
     except ValueError as exc:
@@ -6834,7 +6897,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         result = analyze_integration(
             integration_path=integration_path,
-            commands_filter=args.commands,
+            commands_filter=commands_filter,
             static_only=args.static_only,
             ignore=ignore,
             timeout=args.timeout,

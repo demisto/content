@@ -16,6 +16,7 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 | 1.5 | Collect Capabilities | `capabilities_collector.py <yml> -o <path>` → `set-capabilities` | §1.5 |
 | 2 | Params to Commands | run analyzer w/ `--integration-id` → `set-params-to-commands` | §2 |
 | 3a | Param defaults | `set-param-defaults "<id>" '<json>'` (required-only) | §3a |
+| 3a.5 | UCP param-default review | `check_param_defaults.py --integration-id <id> --human` → present → fix → `markpass "UCP param-default review"` | §3a.5 |
 | 3b | Params to Capabilities | mapper → `set-params-to-capabilities` | §3b |
 | 3c | Generated manifest | `markpass "generated manifest"` | §3c |
 | 7 | Validate manifest | `demisto-sdk validate` → `markpass "run manifest make validate"` | §7 |
@@ -25,7 +26,7 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 | 11 | Code reviewed | `markpass "code reviewed"` | §11 |
 | 12 | Code merged | `markpass "code merged"` | §12 |
 
-> **Step order note.** The live CSV workflow has **13 steps**, and `Collect Capabilities` is step **#3** — a hard prerequisite gate that the state machine enforces **before** `Params to Commands`. Do `set-capabilities` first or `set-params-to-commands` will be rejected with `current step is #3 'Collect Capabilities'`.
+> **Step order note.** The live CSV workflow has **14 steps**, and `Collect Capabilities` is step **#3** — a hard prerequisite gate that the state machine enforces **before** `Params to Commands`. Do `set-capabilities` first or `set-params-to-commands` will be rejected with `current step is #3 'Collect Capabilities'`. The `UCP param-default review` checkpoint (Step 3a.5) sits right after `Params for test with default in code` and before `Params to Capabilities`.
 
 **Pause for user approval ONLY on the 4 JSON-write setters** (`set-auth`, `set-params-to-commands`, `set-param-defaults`, `set-params-to-capabilities`). Everything else (reads, `markpass`, `fail`, `set-capabilities`, analyzer/validate/pre-commit runs) runs straight through. `set-capabilities` is deterministically generated from YML fetch flags by `capabilities_collector.py`, so it is a run-through (no pause). Setter output already echoes `Current step:` — do NOT re-run `status` to confirm.
 
@@ -1061,6 +1062,12 @@ Define which integration commands need which parameter IDs (excluding connection
 - **The auth-aware ignore list is auto-unioned by the analyzer.** When the analyzer is run with `--integration-id "<Integration ID>"` (the canonical invocation above), the standalone `auth-params` call is NOT needed — the analyzer auto-unions every YML param id already declared in `Auth Details` (both the auth-secret params projected from `auth_types[].xsoar_param_map.keys()` — dotted leaves collapse to the segment before the first `.` — and every entry in `other_connection`) into its ignore set. These params MUST NOT appear in `Params to Commands` — `set-params-to-commands` will hard-reject the call if any of them does. `auth-params` / `context.auth_ignore_params` remain available for human display only.
 - Hidden YML params (`hidden: true` or `hidden: [<list>]`) MUST NOT appear in any per-command list. The `set-params-to-commands` validator does not currently enforce this; it is the analyst's responsibility per skill §1.3.
 
+> **Single-capability shortcut (run-through optimization).** When the `Collect Capabilities` cell (Step 1.5) resolved to **exactly one** capability (e.g. `["Automation"]`), every command trivially routes to that single capability in `Params to Capabilities` (Step 3b uses `connector_param_mapper.py`'s `_single_capability_shortcut`). The only command whose per-command param analysis is still needed for the connection is `test-module`. Pass `--single-capability-test-module-only` to the analyzer to skip analyzing the other commands:
+> ```bash
+> python3 connectus/check_command_params.py --integration-id "<Integration ID>" --static-only --single-capability-test-module-only
+> ```
+> The flag is **self-guarding**: it requires `--integration-id` (it reads the capability count from the cell), it is a **no-op** when the capability count is 0 (not yet collected) or >1 (a full analysis runs), and an explicit `--commands` always wins. The resulting cell contains just `{"test-module": [...]}`, which is exactly what `test_module_params` / Step 3a and the auth-parity command selection (Step 10) consume — and it directly tells you which non-auth params `test-module` needs. The auto-runner harness ([`run_pre_manifest_steps.py`](connectus_migration/run_pre_manifest_steps.py:1)) applies this same heuristic automatically; the standalone flag brings the manual flow to parity. This remains a run-through step (no extra approval beyond the standard pre-`set-params-to-commands` confirmation).
+
 ```bash
 python3 connectus/workflow_state.py set-params-to-commands "<Integration ID>" '<JSON>'
 ```
@@ -1258,6 +1265,110 @@ top-level object, non-empty string keys, any JSON value. Full schema in
 [`column-schemas.md`](column-schemas.md) §`Params for test with default in code`.
 
 > **Reset semantics.** Not preserved on any reset path — see [Error Recovery Commands](#error-recovery-commands).
+
+
+### Step 3a.5: `UCP param-default review` (checkpoint)
+
+**Why.** Under ConnectUs, integration parameters no longer arrive with the
+type-based defaults the XSOAR/XSIAM framework used to inject. Previously an
+unchecked checkbox arrived as `False` and an empty numeric field as `0`; now
+an unset param arrives **absent / `None` / `""`**. Code that converts a
+defaultless param read with a strict converter
+(`argToBoolean`, `arg_to_number`, `arg_to_bool_or_none`, `int`, `float`,
+`bool`) will then **raise at runtime** (`argToBoolean(None)` and `int(None)`
+both throw). Step 3a fixes the *required test-module* params; this step audits
+whether the **rest** of the code is safe under default removal.
+
+**This is a present → fix → markpass checkpoint, NOT a self-executing gate.**
+The script is the AI's evidence tool; the AI presents, fixes, updates this
+skill, and only then markpasses.
+
+#### 1. Run the analyzer
+
+```bash
+python3 connectus/check_param_defaults.py --integration-id "<Integration ID>" --human
+```
+
+It is a read-only static (stdlib `ast`) pass — seconds, no docker. It also
+accepts a positional integration directory for standalone runs. Output is a
+JSON envelope on stdout (`integration`, `pass`, `unsafe`, `uncertain`,
+`safe_count`, optional `note`) plus a human summary on stderr (`--human`).
+Exit `0` when `pass` (nothing unsafe, nothing uncertain), `1` otherwise.
+
+Three buckets:
+
+- **UNSAFE** — a provable break: a strict converter on a *literal* defaultless
+  param read (`argToBoolean(params.get("x"))`, `int(params["limit"])`), inline
+  or via a single-function local var. **Must be fixed.**
+- **UNCERTAIN** — **"params still to be checked by AI."** Every static-analysis
+  blind spot lands here BY NAME instead of being silently passed: cross-function
+  value flow, dynamic / non-literal access (`params.get(var)`), `**params`
+  splats, custom read wrappers (`get_param("x")`), and previously-defaulted
+  checkbox params whose bare read **escapes a pure-boolean context** (i.e. used
+  somewhere other than an `if`/`while`/`not`/`and`/`or` test — see the
+  truthy-safe note below). **Each must be manually investigated.**
+- **SAFE** (not listed individually; counted in `safe_count`) —
+  `params.get("x", False)`, `... or <default>`, command-arg reads
+  (`args.get(...)` are out of scope), and checkbox reads used ONLY for their
+  truthiness.
+
+> **Truthy/falsey checkbox reads are SAFE (do not over-flag).** A boolean
+> param read bare and used only in a truthy context — `if params.get("fetch"):`,
+> `not params.get("x")`, `a and params.get("x")` — behaves **identically**
+> whether the value is the old injected `False` or the new absent `None`
+> (both are falsey). The analyzer already treats these as safe. Only a read
+> that **escapes** such a context (compared with `== False` / `is False`,
+> stored/returned/passed onward, used arithmetically) is surfaced as uncertain.
+
+#### 2. Present to the user
+
+Present BOTH the `unsafe` list and the `uncertain` ("still to be checked")
+list, each entry with its `param`, `site` (`file:line`), and `reason`. State
+plainly which are provable breaks and which need your judgment. For non-Python
+integrations the verdict is `pass: true` with `note: "not analyzed:
+non-Python (...)"` — tell the user it was not analyzed and markpass.
+
+#### 3. Investigate and fix
+
+For every **UNSAFE** entry and every **UNCERTAIN** entry you confirm is a real
+risk, fix the code at the read site:
+
+- Add a default: `params.get("x", <default>)` or `params.get("x") or <default>`.
+- OR, if the param is connection metadata, move it to `other_connection` in
+  `Auth Details` (see [Rejecting a default](#rejecting-a-default--move-the-param-to-other_connection)).
+- Verify each edit with `git diff` before markpassing.
+
+Genuinely-safe findings the analyzer cannot prove may be suppressed with an
+inline `# noqa: ucp-param-default` on the read line, or via
+`--ignore-params NAME ...` / `--ignore-params-file PATH`. Suppress only with a
+recorded reason — an ignored param is recorded as resolved, not dropped.
+
+#### 4. UPDATE THIS SKILL
+
+When you learn a new pattern — a custom read wrapper the analyzer flags as
+uncertain, a converter not yet enumerated, a recurring false positive — **add
+it here** so the next migration handles it deterministically. This is part of
+the checkpoint, not optional.
+
+#### 5. Markpass
+
+Once every unsafe and confirmed-uncertain finding is fixed (or justified and
+ignored):
+
+```bash
+python3 connectus/workflow_state.py markpass "<Integration ID>" "UCP param-default review"
+```
+
+> **Confidence & scope (honest).** Python loud/crash class ≈ **90%** (inline
+> defaultless converts) — high. Python overall ≈ **70–80%** with the YML-aware
+> tier. The irreducible residue — interprocedural indirection, dynamic access,
+> the semantic ambiguity of the silent class, non-Python — is exactly what the
+> UNCERTAIN bucket hands to you, and what the runtime param-parity test
+> (Step 10) ultimately backstops. JS/PS are not statically analyzed (no stdlib
+> AST) and short-circuit.
+
+> **Reset semantics.** A plain checkpoint with no data cell; cleared like any
+> checkpoint on a reset that reaches it. Re-run the script and re-markpass.
 
 
 ### Step 3b: Set `Params to Capabilities` (data column)

@@ -275,47 +275,47 @@ GoogleCalendar,Packs/GoogleCalendar/Integrations/GoogleCalendar/GoogleCalendar.y
 GoogleCloudLogging,Packs/GoogleCloudLogging/Integrations/GoogleCloudLogging/GoogleCloudLogging.yml,Google GCP,,,,,,,,,,,,,
 GoogleCloudTranslate,Packs/GoogleCloudTranslate/Integrations/GoogleCloudTranslate/GoogleCloudTranslate.yml,Google GCP,,,,,,,,,,,,,
 GoogleDocs,Packs/GoogleDocs/Integrations/GoogleDocs/GoogleDocs.yml,Google Google Workspace,,,,,,,,,,,,,
-  ""commands"": {
-    ""fetch-incidents"": [
-      ""drive_item_search_field"",
-      ""drive_item_search_value"",
-      ""first_fetch"",
-      ""max_fetch""
-    ],
-    ""google-drive-activity-list"": [],
-    ""google-drive-changes-list"": [],
-    ""google-drive-create"": [],
-    ""google-drive-drive-create"": [],
-    ""google-drive-drive-delete"": [],
-    ""google-drive-drive-get"": [],
-    ""google-drive-drives-list"": [],
-    ""google-drive-file-copy"": [],
-    ""google-drive-file-create"": [],
-    ""google-drive-file-delete"": [],
-    ""google-drive-file-download"": [],
-    ""google-drive-file-get"": [],
-    ""google-drive-file-get-parents"": [],
-    ""google-drive-file-modify-label"": [],
-    ""google-drive-file-move"": [],
-    ""google-drive-file-permission-create"": [],
-    ""google-drive-file-permission-delete"": [],
-    ""google-drive-file-permission-update"": [],
-    ""google-drive-file-permissions-list"": [],
-    ""google-drive-file-replace-existing"": [],
-    ""google-drive-file-upload"": [],
-    ""google-drive-files-list"": [],
-    ""google-drive-get-file-labels"": [],
-    ""google-drive-get-labels"": [],
-    ""test-module"": [
-      ""drive_item_search_field"",
-      ""drive_item_search_value"",
-      ""first_fetch"",
-      ""isFetch"",
-      ""max_fetch""
-    ]
-  },
-  ""integration"": ""Google Drive""
-}",{},"{
+"  """"commands"""": {",,,,,,,,,,,,,,,
+"    """"fetch-incidents"""": [",,,,,,,,,,,,,,,
+"      """"drive_item_search_field""""",,,,,,,,,,,,,,,
+"      """"drive_item_search_value""""",,,,,,,,,,,,,,,
+"      """"first_fetch""""",,,,,,,,,,,,,,,
+"      """"max_fetch""""",,,,,,,,,,,,,,,
+    ],,,,,,,,,,,,,,,
+"    """"google-drive-activity-list"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-changes-list"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-create"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-drive-create"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-drive-delete"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-drive-get"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-drives-list"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-copy"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-create"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-delete"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-download"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-get"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-get-parents"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-modify-label"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-move"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-permission-create"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-permission-delete"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-permission-update"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-permissions-list"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-replace-existing"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-file-upload"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-files-list"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-get-file-labels"""": []",,,,,,,,,,,,,,,
+"    """"google-drive-get-labels"""": []",,,,,,,,,,,,,,,
+"    """"test-module"""": [",,,,,,,,,,,,,,,
+"      """"drive_item_search_field""""",,,,,,,,,,,,,,,
+"      """"drive_item_search_value""""",,,,,,,,,,,,,,,
+"      """"first_fetch""""",,,,,,,,,,,,,,,
+"      """"isFetch""""",,,,,,,,,,,,,,,
+"      """"max_fetch""""",,,,,,,,,,,,,,,
+    ],,,,,,,,,,,,,,,
+  },,,,,,,,,,,,,,,
+"  """"integration"""": """"Google Drive""""",,,,,,,,,,,,,,,
+"}""",{},"{
   ""general_configurations"": [
     ""isFetch"",
     ""first_fetch"",
@@ -325,7 +325,7 @@ GoogleDocs,Packs/GoogleDocs/Integrations/GoogleDocs/GoogleDocs.yml,Google Google
   ],
   ""Fetch Issues"": [],
   ""Automation"": []
-}",✅,,,,,,
+}",,,,,,,,,,,,,
 GoogleGemini,Packs/GoogleGemini/Integrations/GoogleGemini/GoogleGemini.yml,Google Google AI,,,,,,,,,,,,,
 GoogleKubernetesEngine,Packs/GoogleKubernetesEngine/Integrations/GoogleKubernetesEngine/GoogleKubernetesEngine.yml,Google GCP,,,,,,,,,,,,,
 GoogleMaps,Packs/GoogleMaps/Integrations/GoogleMaps/GoogleMaps.yml,Google GoogleMaps,,,,,,,,,,,,,
@@ -408,7 +408,54 @@ Microsoft Graph Calendar,Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGrap
 Microsoft Graph Device Management,Packs/MicrosoftGraphDeviceManagement/Integrations/MicrosoftGraphDeviceManagement/MicrosoftGraphDeviceManagement.yml,Microsoft MS Graph,,,,,,,,,,,,,
 Microsoft Graph Groups,Packs/MicrosoftGraphGroups/Integrations/MicrosoftGraphGroups/MicrosoftGraphGroups.yml,Microsoft Entra ID,,,,,,,,,,,,,
 Microsoft Graph Mail Single User,Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphListener/MicrosoftGraphListener.yml,Microsoft MS Graph,,,,,,,,,,,,,
-Microsoft Graph User,Packs/MicrosoftGraphUser/Integrations/MicrosoftGraphUser/MicrosoftGraphUser.yml,Microsoft Entra ID,,,,,,,,,,,,,
+Microsoft Graph User,Packs/MicrosoftGraphUser/Integrations/MicrosoftGraphUser/MicrosoftGraphUser.yml,Microsoft Entra ID,juschwartz,"{
+  ""auth_types"": [
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""auth_code"",
+      ""interpolated"": true,
+      ""verify_connection_skip"": true,
+      ""xsoar_param_map"": {
+        ""creds_auth_code.password"": ""authorization_code"",
+        ""redirect_uri"": ""redirect_uri"",
+        ""creds_tenant_id.password"": ""tenant_id"",
+        ""creds_auth_id.password"": ""client_id""
+      }
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""client_creds_cert"",
+      ""interpolated"": true,
+      ""xsoar_param_map"": {
+        ""creds_certificate.identifier"": ""certificate_thumbprint"",
+        ""creds_certificate.password"": ""private_key"",
+        ""creds_tenant_id.password"": ""tenant_id"",
+        ""creds_auth_id.password"": ""client_id""
+      }
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""client_creds_secret"",
+      ""interpolated"": true,
+      ""xsoar_param_map"": {
+        ""creds_enc_key.password"": ""client_secret"",
+        ""creds_tenant_id.password"": ""tenant_id"",
+        ""creds_auth_id.password"": ""client_id""
+      }
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""managed_identity"",
+      ""interpolated"": true,
+      ""xsoar_param_map"": {
+        ""managed_identities_client_id.password"": ""managed_identities_client_id""
+      }
+    }
+  ],
+  ""other_connection"": [""azure_cloud"", ""host"", ""insecure"", ""proxy""]
+}","[
+  ""Automation""
+]",,,,,,,,,,
 Microsoft Intune Feed,Packs/FeedMicrosoftIntune/Integrations/FeedMicrosoftIntune/FeedMicrosoftIntune.yml,Microsoft Security,,,,,,,,,,,,,
 Microsoft Management Activity API (O365 Azure Events),Packs/MicrosoftManagementActivity/Integrations/MicrosoftManagementActivity/MicrosoftManagementActivity.yml,Microsoft Microsoft 365,,,,,,,,,,,,,
 Microsoft Teams,Packs/MicrosoftTeams/Integrations/MicrosoftTeams/MicrosoftTeams.yml,Microsoft Microsoft 365,,,,,,,,,,,,,

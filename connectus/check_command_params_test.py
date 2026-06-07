@@ -605,6 +605,141 @@ class TestB3DockerImageResolution:
 
 
 # =============================================================================
+# Single-capability optimization (--single-capability-test-module-only)
+# =============================================================================
+
+
+class TestSingleCapabilityFlagParsing:
+    def test_flag_parsed_true(self) -> None:
+        args = ccp._parse_args(
+            ["dummy/path", "--static-only", "--single-capability-test-module-only"]
+        )
+        assert args.single_capability_test_module_only is True
+
+    def test_flag_default_false(self) -> None:
+        args = ccp._parse_args(["dummy/path", "--static-only"])
+        assert args.single_capability_test_module_only is False
+
+
+class TestSingleCapabilityNarrowing:
+    """Exercises the commands_filter narrowing inside ``main()``.
+
+    ``analyze_integration`` is replaced by a spy that records the
+    ``commands_filter`` it receives, so each case asserts what the optimizer
+    decided without running a real analysis.
+    """
+
+    @pytest.fixture
+    def spy_main(self, monkeypatch: pytest.MonkeyPatch, tmp_path):
+        captured: dict = {}
+
+        intpath = tmp_path / "MyInt"
+        intpath.mkdir()
+
+        monkeypatch.setattr(
+            ccp, "resolve_integration_path", lambda _id: intpath
+        )
+        monkeypatch.setattr(
+            ccp, "compose_ignore_set", lambda *a, **k: set()
+        )
+
+        def _fake_analyze(*args, **kwargs):
+            captured["commands_filter"] = kwargs.get("commands_filter")
+            return {"integration": "MyInt", "commands": {"test-module": []}}
+
+        monkeypatch.setattr(ccp, "analyze_integration", _fake_analyze)
+        return captured
+
+    def _set_caps(self, monkeypatch: pytest.MonkeyPatch, caps):
+        import workflow_state
+        monkeypatch.setattr(
+            workflow_state, "collected_capabilities", lambda _id: caps
+        )
+
+    def test_single_capability_narrows_to_test_module(
+        self, spy_main, monkeypatch
+    ) -> None:
+        self._set_caps(monkeypatch, ["Automation"])
+        rc = ccp.main(
+            [
+                "--integration-id",
+                "MyInt",
+                "--static-only",
+                "--single-capability-test-module-only",
+            ]
+        )
+        assert rc == 0
+        assert spy_main["commands_filter"] == ["test-module"]
+
+    def test_multiple_capabilities_runs_full(
+        self, spy_main, monkeypatch
+    ) -> None:
+        self._set_caps(monkeypatch, ["Fetch Issues", "Automation"])
+        rc = ccp.main(
+            [
+                "--integration-id",
+                "MyInt",
+                "--static-only",
+                "--single-capability-test-module-only",
+            ]
+        )
+        assert rc == 0
+        assert spy_main["commands_filter"] is None
+
+    def test_zero_capabilities_runs_full(self, spy_main, monkeypatch) -> None:
+        self._set_caps(monkeypatch, [])
+        rc = ccp.main(
+            [
+                "--integration-id",
+                "MyInt",
+                "--static-only",
+                "--single-capability-test-module-only",
+            ]
+        )
+        assert rc == 0
+        assert spy_main["commands_filter"] is None
+
+    def test_explicit_commands_takes_precedence(
+        self, spy_main, monkeypatch
+    ) -> None:
+        self._set_caps(monkeypatch, ["Automation"])
+        rc = ccp.main(
+            [
+                "--integration-id",
+                "MyInt",
+                "--static-only",
+                "--single-capability-test-module-only",
+                "--commands",
+                "msgraph-user-get",
+            ]
+        )
+        assert rc == 0
+        assert spy_main["commands_filter"] == ["msgraph-user-get"]
+
+    def test_requires_integration_id(self, spy_main, monkeypatch, tmp_path) -> None:
+        # Explicit (valid) path but no --integration-id → the flag has no
+        # capability cell to read, so it must error rc=2 before analyzing.
+        valid_dir = tmp_path / "MyInt"  # created by spy_main fixture
+        rc = ccp.main(
+            [
+                str(valid_dir),
+                "--static-only",
+                "--single-capability-test-module-only",
+            ]
+        )
+        assert rc == 2
+        assert "commands_filter" not in spy_main
+
+    def test_flag_off_runs_full_even_with_single_capability(
+        self, spy_main, monkeypatch
+    ) -> None:
+        self._set_caps(monkeypatch, ["Automation"])
+        rc = ccp.main(["--integration-id", "MyInt", "--static-only"])
+        assert rc == 0
+        assert spy_main["commands_filter"] is None
+
+
+# =============================================================================
 # B4 — per-command stderr breadcrumbs
 # =============================================================================
 

@@ -200,6 +200,43 @@ def test_module_params(integration_id: str) -> list[str]:
     return sorted(value)
 
 
+def collected_capabilities(integration_id: str) -> list[str]:
+    """Return the capability names recorded in the ``Collect Capabilities`` cell.
+
+    Reads the ``Collect Capabilities`` cell, parses it as JSON, and returns
+    the list of capability-name strings. This is the canonical reader used by
+    the params analyzer to detect the *single-capability* case (Step 1.5 →
+    Step 2 optimization): when an integration resolves to exactly one
+    capability, every command trivially routes to that one capability, so the
+    only command whose per-param analysis is still needed for the connection
+    is ``test-module``.
+
+    Unlike :func:`test_module_params`, a missing/empty/unparseable cell is
+    treated as "no capabilities collected yet" and returns ``[]`` (rather than
+    raising). This makes the helper safe to call before Step 1.5 has run: the
+    caller falls back to a full analysis, which is the safe default. (This
+    mirrors the harness behaviour in ``run_pre_manifest_steps._collected_capability_count``.)
+    """
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        return []
+
+    raw = rows[idx].get("Collect Capabilities", "").strip()
+    if not raw:
+        return []
+
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return []
+
+    if not isinstance(parsed, list):
+        return []
+
+    return [c for c in parsed if isinstance(c, str) and c]
+
+
 # ---------------------------------------------------------------------------
 # Programmatic dict-returning API
 # ---------------------------------------------------------------------------

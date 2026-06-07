@@ -109,6 +109,7 @@ from workflow_state.api import (
     _project_xsoar_param_to_yml_id,
     assign_connector,
     auth_param_ids,
+    collected_capabilities,
     fail_integration_step,
     get_integration_files,
     get_integration_status,
@@ -226,6 +227,7 @@ __all__ = [
     # API
     "assign_connector",
     "auth_param_ids",
+    "collected_capabilities",
     "fail_integration_step",
     "get_integration_files",
     "get_integration_status",
