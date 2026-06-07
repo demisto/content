@@ -9,6 +9,23 @@ Note, this folder should not be merged to master.
 >
 > Verify with `ls -la .roo/skills/connectus-migration/SKILL.md` — it should show `SKILL.md -> ../../../connectus/connectus-migration-SKILL.md`.
 
+### Adding the skill via Roo settings
+
+You can also register the skill through the Roo UI instead of creating the symlink by hand:
+
+1. Open the Roo extension **Settings** (the gear icon in the Roo panel).
+2. Go to the **Skills** section and choose **Add new skill** — give it the name `connectus-migration`. This creates the skill folder `.roo/skills/connectus-migration/`.
+3. Replace the generated `.roo/skills/connectus-migration/SKILL.md` with a **symlink** pointing back at the canonical source of truth in this folder, [`connectus/connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1), so the registered skill never drifts from the canonical file:
+
+   ```bash
+   rm -f .roo/skills/connectus-migration/SKILL.md
+   ln -s ../../../connectus/connectus-migration-SKILL.md .roo/skills/connectus-migration/SKILL.md
+   ```
+
+4. Verify the link with `ls -la .roo/skills/connectus-migration/SKILL.md` — it should show `SKILL.md -> ../../../connectus/connectus-migration-SKILL.md`.
+
+> **Why a symlink and not a copy.** The canonical skill text lives at [`connectus/connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1). A copy would silently drift out of sync as the skill evolves; the symlink guarantees Roo always loads the latest canonical version.
+
 > **Architecture note.** The CLI entry script [`connectus/workflow_state.py`](workflow_state.py:1) delegates to the package at [`connectus/workflow_state/`](workflow_state/__init__.py:1), which hosts the CLI entrypoint, validators, state machine, CSV I/O, display helpers, and config loader. The canonical Python import is `from workflow_state import …`.
 
 ## Authentication Type Catalog

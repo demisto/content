@@ -156,6 +156,7 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 5. **Use `set-auth` to update Auth Details.** When correcting auth classifications, use `python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>'`. This validates the JSON schema and automatically resets the workflow back to the first checkpoint (`generated manifest`).
 6. If a checkpoint does not pass, it might be because a previous step was not done well — go back to it via `fail` or `reset-to`. Both verbs **preserve** `Params to Commands` only (it is the sole column carrying `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml)) so per-command param research survives a failed checkpoint. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept; the api response includes the same names in `result["preserved"]`. **`set-auth` is NOT covered by this carve-out** — auth changes invalidate downstream artifacts, so `set-auth` continues to wipe `Params to Commands` by design (see Step 1 below). Plain `reset` (the "wipe the whole row" verb) also wipes it; preservation is for `reset-to`/`fail` only.
 7. Try to be efficient in what needs input from the user. If you have an option to read files instead of grep, or batch commands to the cli, it is better.
+8. **NEVER use the Neo4j graph (`idex_graph_query`) or `demisto-sdk graph` to resolve, search for, or look up integrations in the ConnectUs migration workflow.** The graph is unrelated to this workflow and is frequently not running. The ONLY source of truth for resolving an integration (its ID, file path, connector, and workflow state) is the [`connectus/workflow_state.py`](workflow_state.py) CLI against [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv). To find an integration by a partial/informal name (e.g. "aha"), run `python3 connectus/workflow_state.py list` and match against the result, then use `context "<Integration ID>"`. Do NOT fall back to graph queries, `find`/`ls`/`grep` over the repo, or any other discovery mechanism for this purpose.
 
 ## Cross-cutting Decisions
 
@@ -306,6 +307,8 @@ that session and do not re-prompt about it.
 ## Step 0: Identify the Integration
 
 When the user asks to migrate an integration, first identify it. **The primary recommendation is one `context` call** — it returns state + file paths + Auth Details + Params cells + the auth-ignore set in one shot, replacing separate `status` + `show-step` + `files` round-trips:
+
+> **Lookup source of truth.** Resolve the integration ONLY via the `workflow_state.py` CLI (`list` to find a partial/informal name, then `context "<id>"`). NEVER use the Neo4j graph (`idex_graph_query`) or `demisto-sdk graph`, and never `find`/`ls`/`grep` the repo to locate it — see Critical Rule 8.
 
 ```bash
 # One call: state + file paths + data columns + auth-ignore set as one JSON
