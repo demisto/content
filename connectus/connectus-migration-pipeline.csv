@@ -248,7 +248,6 @@ GSuiteAuditor,Packs/GsuiteAuditor/Integrations/GsuiteAuditor/GsuiteAuditor.yml,G
 Gamma,Packs/Gamma/Integrations/Gamma/Gamma.yml,Gamma,,,,,,,,,,,,,
 Generic MCP,Packs/GenericMCP/Integrations/GenericMCP/GenericMCP.yml,Generic MCP,,,,,,,,,,,,,
 Generic SQL,Packs/GenericSQL/Integrations/GenericSQL/GenericSQL.yml,Generic SQL,,,,,,,,,,,,,
-Generic Webhook,Packs/GenericWebhook/Integrations/GenericWebhook/GenericWebhook.yml,Generic Webhook,,,,,,,,,,,,,
 GenesysCloud,Packs/GenesysCloud/Integrations/GenesysCloud/GenesysCloud.yml,Genesys,,,,,,,,,,,,,
 Genetec Security Center Event Collector,Packs/GenetecSecurityCenter/Integrations/GenetecSecurityCenterEventCollector/GenetecSecurityCenterEventCollector.yml,Genetec Physical Security,,,,,,,,,,,,,
 Giphy,Packs/Giphy/Integrations/Giphy/Giphy.yml,Giphy,,,,,,,,,,,,,
@@ -276,7 +275,58 @@ GoogleCalendar,Packs/GoogleCalendar/Integrations/GoogleCalendar/GoogleCalendar.y
 GoogleCloudLogging,Packs/GoogleCloudLogging/Integrations/GoogleCloudLogging/GoogleCloudLogging.yml,Google GCP,,,,,,,,,,,,,
 GoogleCloudTranslate,Packs/GoogleCloudTranslate/Integrations/GoogleCloudTranslate/GoogleCloudTranslate.yml,Google GCP,,,,,,,,,,,,,
 GoogleDocs,Packs/GoogleDocs/Integrations/GoogleDocs/GoogleDocs.yml,Google Google Workspace,,,,,,,,,,,,,
-GoogleDrive,Packs/GoogleDrive/Integrations/GoogleDrive/GoogleDrive.yml,Google Google Workspace,,,,,,,,,,,,,
+GoogleDrive,Packs/GoogleDrive/Integrations/GoogleDrive/GoogleDrive.yml,Google Google Workspace,juschwartz,"{""auth_types"":[{""type"":""Passthrough"",""name"":""service_account"",""interpolated"":true,""xsoar_param_map"":{""user_creds.password"":""credentials_file"",""user_creds.identifier"":""subject_email"",""user_service_account_json"":""credentials_file"",""user_id"":""subject_email""}}],""other_connection"":[""insecure"",""proxy""]}","[""Fetch Issues"", ""Automation""]","{
+  ""commands"": {
+    ""fetch-incidents"": [
+      ""drive_item_search_field"",
+      ""drive_item_search_value"",
+      ""first_fetch"",
+      ""max_fetch""
+    ],
+    ""google-drive-activity-list"": [],
+    ""google-drive-changes-list"": [],
+    ""google-drive-create"": [],
+    ""google-drive-drive-create"": [],
+    ""google-drive-drive-delete"": [],
+    ""google-drive-drive-get"": [],
+    ""google-drive-drives-list"": [],
+    ""google-drive-file-copy"": [],
+    ""google-drive-file-create"": [],
+    ""google-drive-file-delete"": [],
+    ""google-drive-file-download"": [],
+    ""google-drive-file-get"": [],
+    ""google-drive-file-get-parents"": [],
+    ""google-drive-file-modify-label"": [],
+    ""google-drive-file-move"": [],
+    ""google-drive-file-permission-create"": [],
+    ""google-drive-file-permission-delete"": [],
+    ""google-drive-file-permission-update"": [],
+    ""google-drive-file-permissions-list"": [],
+    ""google-drive-file-replace-existing"": [],
+    ""google-drive-file-upload"": [],
+    ""google-drive-files-list"": [],
+    ""google-drive-get-file-labels"": [],
+    ""google-drive-get-labels"": [],
+    ""test-module"": [
+      ""drive_item_search_field"",
+      ""drive_item_search_value"",
+      ""first_fetch"",
+      ""isFetch"",
+      ""max_fetch""
+    ]
+  },
+  ""integration"": ""Google Drive""
+}",{},"{
+  ""general_configurations"": [
+    ""isFetch"",
+    ""first_fetch"",
+    ""max_fetch"",
+    ""drive_item_search_field"",
+    ""drive_item_search_value""
+  ],
+  ""Fetch Issues"": [],
+  ""Automation"": []
+}",✅,,,,,,
 GoogleGemini,Packs/GoogleGemini/Integrations/GoogleGemini/GoogleGemini.yml,Google Google AI,,,,,,,,,,,,,
 GoogleKubernetesEngine,Packs/GoogleKubernetesEngine/Integrations/GoogleKubernetesEngine/GoogleKubernetesEngine.yml,Google GCP,,,,,,,,,,,,,
 GoogleMaps,Packs/GoogleMaps/Integrations/GoogleMaps/GoogleMaps.yml,Google GoogleMaps,,,,,,,,,,,,,
@@ -371,7 +421,7 @@ MicrosoftGraphApplications,Packs/MicrosoftGraphApplications/Integrations/Microso
 MicrosoftGraphIdentityandAccess,Packs/MicrosoftGraphIdentityandAccess/Integrations/MicrosoftGraphIdentityandAccess/MicrosoftGraphIdentityandAccess.yml,Microsoft Entra ID,,,,,,,,,,,,,
 MicrosoftGraphMail,Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphMail/MicrosoftGraphMail.yml,Microsoft Microsoft 365,,,,,,,,,,,,,
 MicrosoftPolicyAndComplianceAuditLog,Packs/Office365AndAzureAuditLog/Integrations/MicrosoftPolicyAndComplianceAuditLog/MicrosoftPolicyAndComplianceAuditLog.yml,Microsoft Security,,,,,,,,,,,,,
-Microsoft_Graph_Files,Packs/MicrosoftGraphFiles/Integrations/MicrosoftGraphFiles/MicrosoftGraphFiles.yml,Microsoft Microsoft 365,,,,,,,,,,,,,
+Microsoft_Graph_Files,Packs/MicrosoftGraphFiles/Integrations/MicrosoftGraphFiles/MicrosoftGraphFiles.yml,Microsoft Microsoft 365,juschwartz,,,,,,,,,,,,
 Mimecast Event Collector v2,Packs/Mimecast/Integrations/MimecastEventCollectorV2/MimecastEventCollectorV2.yml,Mimecast,,,,,,,,,,,,,
 MimecastV2,Packs/Mimecast/Integrations/MimecastV2/MimecastV2.yml,Mimecast,,,,,,,,,,,,,
 MondayEventCollector,Packs/Monday/Integrations/MondayEventCollector/MondayEventCollector.yml,Monday.com,,,,,,,,,,,,,

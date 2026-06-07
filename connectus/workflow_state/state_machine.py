@@ -141,9 +141,11 @@ def reset_after(
             names are returned in the second tuple element so the
             caller can warn the user). When ``False`` (the default),
             preserve flags are ignored and every later step is cleared.
-            This default matches the ``set-auth``/``apply_step_action``
-            cascade behavior: auth changes invalidate every downstream
-            artifact and must wipe Params* too.
+            NOTE: the ``set-auth``/``apply_step_action`` cascade now
+            passes ``respect_preserve=True`` so the capability-mapping
+            columns survive an Auth Details re-apply. The
+            ``respect_preserve=False`` default here remains for the plain
+            whole-row ``reset`` verb, which still wipes everything.
 
     Returns:
         ``(cleared, preserved)`` — both lists of column names. ``cleared``
@@ -240,7 +242,10 @@ def apply_step_action(
       - If ``target`` is BEHIND current (or already done): write the new
         value AND ``reset_after(target)`` — UNLESS ``target.cascade_on_set``
         is False (the YAML-driven assignee carve-out), in which case the
-        write is performed without resetting.
+        write is performed without resetting. The cascade reset HONORS
+        ``preserve_on_reset``: tagged columns (e.g. the capability-mapping
+        columns) survive even a ``set-auth`` reset; only ``reset`` (the
+        whole-row wipe) ignores the flag.
       - For ``flag`` steps: setting the same value is a no-op (no reset).
     """
     cfg = get_config()
@@ -278,9 +283,17 @@ def apply_step_action(
         return [], False
 
     row[target.name] = new_value
-    # set-auth/markpass cascade: do NOT honor preserve_on_reset.
-    # Auth-classification changes invalidate every downstream artifact.
-    cleared, _preserved = reset_after(row, target, respect_preserve=False)
+    # set-auth/markpass cascade now HONORS preserve_on_reset. Columns
+    # explicitly tagged preserve_on_reset (e.g. "Collect Capabilities",
+    # "Params to Commands", "Params to Capabilities") survive this cascade
+    # so that re-applying Auth Details — which the Step 3b elevation flow
+    # does to inject a required test-module param into other_connection —
+    # resets the workflow back to the Auth Details step WITHOUT discarding
+    # the capability-mapping work. Everything not tagged is still wiped,
+    # since auth-classification changes invalidate the rest of the
+    # downstream artifacts. Plain ``reset`` (the "wipe the whole row" verb)
+    # still ignores the flag.
+    cleared, _preserved = reset_after(row, target, respect_preserve=True)
     return cleared, False
 
 

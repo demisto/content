@@ -6,6 +6,8 @@ import yaml
 
 from connector_param_mapper import (
     _filter_hidden_params,
+    _handle_test_module,
+    _required_param_names,
     decide_capabilities,
     map_params_to_capabilities,
 )
@@ -1832,3 +1834,164 @@ class TestAutomationEventCollectorRule:
         )
         result = decide_capabilities(yml)
         assert "Automation" in result
+
+
+# ---------------------------------------------------------------------------
+# Step 2.1 — required test-module params elevated to the connection
+# (other_connection in Auth Details), non-required keep general_configurations
+# ---------------------------------------------------------------------------
+class TestRequiredParamNames:
+    def test_collects_only_required_true(self):
+        yml = {
+            "configuration": [
+                {"name": "url", "required": True},
+                {"name": "proxy", "required": False},
+                {"name": "insecure"},  # missing -> not required
+                {"name": "token", "required": True},
+            ]
+        }
+        assert _required_param_names(yml) == {"url", "token"}
+
+    def test_none_yml_returns_empty(self):
+        assert _required_param_names(None) == set()
+
+    def test_required_string_true_is_not_required(self):
+        # Only the JSON boolean True counts; the string "true" does not.
+        yml = {"configuration": [{"name": "url", "required": "true"}]}
+        assert _required_param_names(yml) == set()
+
+
+class TestTestModuleElevation:
+    def test_required_test_module_param_elevated_not_in_general(self):
+        """
+        Given: A required test-module param with no default.
+        When:  the mapper runs with the YML passed in.
+        Then:  it is returned as elevated, kept out of every capability
+               bucket (including general_configurations).
+        """
+        integration_yml = {
+            "name": "X",
+            "configuration": [{"name": "url", "required": True}],
+            "script": {"commands": []},
+        }
+        capabilities = {"general_configurations": [], "Automation": []}
+        command_params = {
+            "integration": "X",
+            "commands": {"test-module": ["url"], "vendor-action": ["arg1"]},
+        }
+        param_defaults = {"arg1": "x"}
+        elevated: list[str] = []
+        result = map_params_to_capabilities(
+            capabilities,
+            command_params,
+            param_defaults,
+            integration_yml=integration_yml,
+            elevated_out=elevated,
+        )
+        assert elevated == ["url"]
+        all_params = [p for params in result.values() for p in params]
+        assert "url" not in all_params
+
+    def test_non_required_test_module_param_goes_to_general(self):
+        """
+        Given: A NON-required test-module param with no default.
+        When:  the mapper runs with the YML passed in.
+        Then:  it keeps the historical behavior — lands in
+               general_configurations and is NOT elevated.
+        """
+        integration_yml = {
+            "name": "X",
+            "configuration": [{"name": "lookback", "required": False}],
+            "script": {"commands": []},
+        }
+        capabilities = {"general_configurations": [], "Automation": []}
+        command_params = {
+            "integration": "X",
+            "commands": {"test-module": ["lookback"]},
+        }
+        elevated: list[str] = []
+        result = map_params_to_capabilities(
+            capabilities,
+            command_params,
+            {},
+            integration_yml=integration_yml,
+            elevated_out=elevated,
+        )
+        assert elevated == []
+        assert "lookback" in result["general_configurations"]
+
+    def test_required_test_module_param_with_default_not_elevated(self):
+        """A required test-module param that HAS a default is not elevated
+        (the default already covers the connection-test path)."""
+        integration_yml = {
+            "name": "X",
+            "configuration": [{"name": "first_fetch", "required": True}],
+            "script": {"commands": []},
+        }
+        capabilities = {"general_configurations": [], "Automation": []}
+        command_params = {
+            "integration": "X",
+            "commands": {"test-module": ["first_fetch"]},
+        }
+        param_defaults = {"first_fetch": "3 days"}
+        elevated: list[str] = []
+        map_params_to_capabilities(
+            capabilities,
+            command_params,
+            param_defaults,
+            integration_yml=integration_yml,
+            elevated_out=elevated,
+        )
+        assert elevated == []
+
+    def test_elevated_param_stripped_even_when_under_other_command(self):
+        """A required test-module param that ALSO appears under a real
+        command must still be stripped from capabilities (elevated wins)."""
+        integration_yml = {
+            "name": "X",
+            "configuration": [{"name": "url", "required": True}],
+            "script": {"commands": []},
+        }
+        capabilities = {"general_configurations": [], "Automation": []}
+        command_params = {
+            "integration": "X",
+            "commands": {
+                "test-module": ["url"],
+                "vendor-action": ["url", "arg1"],
+            },
+        }
+        param_defaults = {"arg1": "x"}
+        elevated: list[str] = []
+        result = map_params_to_capabilities(
+            capabilities,
+            command_params,
+            param_defaults,
+            integration_yml=integration_yml,
+            elevated_out=elevated,
+        )
+        assert elevated == ["url"]
+        all_params = [p for params in result.values() for p in params]
+        assert "url" not in all_params
+
+    def test_handle_test_module_returns_sorted_elevated(self):
+        """_handle_test_module returns the elevated names sorted."""
+        integration_yml = {
+            "configuration": [
+                {"name": "zeta", "required": True},
+                {"name": "alpha", "required": True},
+            ]
+        }
+        result = {"general_configurations": []}
+        command_params = {"commands": {"test-module": ["zeta", "alpha"]}}
+        elevated = _handle_test_module(result, command_params, {}, integration_yml)
+        assert elevated == ["alpha", "zeta"]
+        assert result["general_configurations"] == []
+
+    def test_no_yml_keeps_legacy_general_behavior(self):
+        """Without a YML, required-ness is unknown → nothing is elevated and
+        test-module params fall back to general_configurations (legacy)."""
+        result = {"general_configurations": []}
+        command_params = {"commands": {"test-module": ["url"]}}
+        elevated = _handle_test_module(result, command_params, {}, None)
+        assert elevated == []
+        assert result["general_configurations"] == ["url"]

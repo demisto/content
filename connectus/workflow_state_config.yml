@@ -102,8 +102,8 @@ steps:
     optional: false
     setter: set-params-to-capabilities
     json_schema: {"validator": "params_to_capabilities"}
-    preserve_on_reset: false
-    description: "Bare capability dict produced by connectus/connectus_migration/connector_param_mapper.py. Top-level keys are capability names (closed enum) plus 'general_configurations'; each value is a flat list of YML config param ids. See column-schemas.md for the schema."
+    preserve_on_reset: true
+    description: "Bare capability dict produced by connectus/connectus_migration/connector_param_mapper.py. Top-level keys are capability names (closed enum) plus 'general_configurations'; each value is a flat list of YML config param ids. See column-schemas.md for the schema. Preserved across reset-to/fail (still wiped by plain reset) so that re-applying Auth Details — which resets the workflow when a required test-module param is elevated into other_connection — does not discard the capability mapping. NOTE: set-auth's reset must therefore honor preserve_on_reset for this column (it is NOT included in set-auth's hard-wipe of the downstream Params* columns)."
 
   - name: "generated manifest"
     kind: checkpoint

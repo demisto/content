@@ -13,6 +13,7 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 |---|------|---------|---|
 | 0 | Identify | `context "<id>"` (one call: state + files + auth-ignore set) | Step 0 |
 | 1 | Auth Details | `set-auth "<id>" '<json>' --dry-run` → then apply | §1 |
+| 1.5 | Collect Capabilities | `capabilities_collector.py <yml> -o <path>` → `set-capabilities` | §1.5 |
 | 2 | Params to Commands | run analyzer w/ `--integration-id` → `set-params-to-commands` | §2 |
 | 3a | Param defaults | `set-param-defaults "<id>" '<json>'` (required-only) | §3a |
 | 3b | Params to Capabilities | mapper → `set-params-to-capabilities` | §3b |
@@ -24,7 +25,9 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 | 11 | Code reviewed | `markpass "code reviewed"` | §11 |
 | 12 | Code merged | `markpass "code merged"` | §12 |
 
-**Pause for user approval ONLY on the 4 JSON-write setters** (`set-auth`, `set-params-to-commands`, `set-param-defaults`, `set-params-to-capabilities`). Everything else (reads, `markpass`, `fail`, analyzer/validate/pre-commit runs) runs straight through. Setter output already echoes `Current step:` — do NOT re-run `status` to confirm.
+> **Step order note.** The live CSV workflow has **13 steps**, and `Collect Capabilities` is step **#3** — a hard prerequisite gate that the state machine enforces **before** `Params to Commands`. Do `set-capabilities` first or `set-params-to-commands` will be rejected with `current step is #3 'Collect Capabilities'`.
+
+**Pause for user approval ONLY on the 4 JSON-write setters** (`set-auth`, `set-params-to-commands`, `set-param-defaults`, `set-params-to-capabilities`). Everything else (reads, `markpass`, `fail`, `set-capabilities`, analyzer/validate/pre-commit runs) runs straight through. `set-capabilities` is deterministically generated from YML fetch flags by `capabilities_collector.py`, so it is a run-through (no pause). Setter output already echoes `Current step:` — do NOT re-run `status` to confirm.
 
 **Need depth?** Auth research/examples → [`auth-examples.md`](auth-examples.md) · Auth gate blocked → [`auth-parity-troubleshooting.md`](auth-parity-troubleshooting.md) · Per-command params → [`analyzer-manual.md`](analyzer-manual.md) · JSON shapes → [`column-schemas.md`](column-schemas.md).
 
@@ -1024,6 +1027,33 @@ Runs all commands in one invocation (Docker + internal capture proxy). Default s
 
 > Full reference (all flags, output schema, status enum, the complete decision tree §6/§6a–§6h, blind spots, `--seed-param` recovery loop, runtime expectations, non-Python handling): **[`connectus/analyzer-manual.md`](analyzer-manual.md)**.
 
+### Step 1.5: Set `Collect Capabilities` (data column — gate before Params to Commands)
+
+`Collect Capabilities` is step **#3** in the live CSV workflow and the state machine **enforces it before `Params to Commands`** (step #4). If you skip it, `set-params-to-commands` is rejected with `current step is #3 'Collect Capabilities'`.
+
+This column is **deterministically generated** from the integration's YML fetch flags — there is no judgment call, so it is a **run-through** (do NOT pause for user approval; it is not one of the 4 JSON-write setters).
+
+**Shape:** a flat JSON array of capability-name strings from the closed enum (`Fetch Assets and Vulnerabilities`, `Fetch Issues`, `Log Collection`, `Fetch Secrets`, `Threat Intelligence & Enrichment`, `Automation`). `[]` is valid. NOTE: `general_configurations` is NOT allowed here (that value belongs only to `Params to Capabilities`).
+
+**Generate it with the collector helper, then apply.** `capabilities_collector.py` is a single-command Typer app — invoke it with the YML path directly, with **NO subcommand name**:
+
+```bash
+# Generate (writes the array to a workspace path — NOT /tmp, which the sandbox blocks)
+python3 connectus/connectus_migration/capabilities_collector.py \
+  Packs/<PackName>/Integrations/<Name>/<Name>.yml \
+  -o connectus/connectus_migration/_caps.json
+
+# Apply (paste the generated array verbatim), then clean up the temp file
+python3 connectus/workflow_state.py set-capabilities "<Integration ID>" '["Fetch Issues", "Automation"]'
+rm -f connectus/connectus_migration/_caps.json
+```
+
+How the collector maps YML → capabilities (so you can sanity-check): `isfetch:true` → `Fetch Issues`; `isfetchevents:true` → `Log Collection`; `isFetchCredentials` → `Fetch Secrets`; `feed:true` → `Threat Intelligence & Enrichment`; `isfetchassets:true` → `Fetch Assets and Vulnerabilities`; plus `Automation` when there is ≥1 non-fetch command. (Source: [`capabilities_collector.py`](connectus_migration/capabilities_collector.py) `collect_capabilities()`.)
+
+> **Gotchas that cost time if missed:**
+> - The helper takes **no subcommand** — `capabilities_collector.py <yml> -o <path>`, NOT `capabilities_collector.py generate-capabilities-list <yml>`.
+> - Write `-o` to a **workspace path**; `/tmp` is denied by the sandbox.
+
 ### Step 2: Set Params to Commands (workflow data column)
 
 Define which integration commands need which parameter IDs (excluding connection-level params). See [`connectus/column-schemas.md`](column-schemas.md) for the JSON shape.
@@ -1034,6 +1064,12 @@ Define which integration commands need which parameter IDs (excluding connection
 ```bash
 python3 connectus/workflow_state.py set-params-to-commands "<Integration ID>" '<JSON>'
 ```
+
+> **The setter reads the JSON from a positional argument, NOT stdin.** Piping the analyzer directly into it (`analyzer | set-params-to-commands "<id>"`) fails. Capture the analyzer output into a shell variable first, then pass it as the argument:
+> ```bash
+> OUT=$(python3 connectus/check_command_params.py --integration-id "<Integration ID>" [--seed-param ...] 2>/dev/null)
+> python3 connectus/workflow_state.py set-params-to-commands "<Integration ID>" "$OUT"
+> ```
 
 Derive the contents from the integration's existing YAML `configuration` and `script.commands` sections, plus any per-command param usage in the Python code.
 
@@ -1268,6 +1304,50 @@ of capability names as values, for example:
 ```json
 {"long-running-execution": ["Log Collection"]}
 ```
+
+#### Elevating required test-module params to the connection
+
+The mapper applies two rules to `test-module` params that have **no
+default** (i.e. not in the `Params for test with default in code` cell):
+
+1. **Required → elevate to the connection, NOT general.** A `test-module`
+   param whose YML `configuration` entry is `required: true` is needed to
+   even run the connection test, so it belongs on the connection
+   (`other_connection` in `Auth Details`) — **not** in
+   `general_configurations`. The mapper keeps it out of every capability
+   bucket and lists it for elevation. (It cannot live in the
+   `Params to Capabilities` cell anyway — that column's closed enum has no
+   `other_connection` key.)
+2. **Non-required → unchanged.** A non-required `test-module` param (no
+   default) keeps the historical behavior: it lands in
+   `general_configurations`. Anything else routes via the normal
+   per-command "other decisions".
+
+The mapper writes the elevation list to a sidecar file next to its
+output: `<output>.elevated.json` (a flat JSON array, `[]` when nothing
+needs elevating), and logs it at INFO. **After running the mapper, do the
+elevation when that list is non-empty:**
+
+1. Read the current `Auth Details` from the Step-0 `context` output
+   (`data_columns["Auth Details"]`).
+2. Append each elevated param id to that JSON's `other_connection` list;
+   keep it sorted ascending and de-duplicated.
+3. Re-apply via `set-auth "<Integration ID>" '<updated Auth Details JSON>'`
+   (normal Step 1 pause-and-confirm + `--dry-run` first). This is the
+   "inject into Auth Details" step.
+
+> **`set-auth` resets the workflow — but the capability mapping
+> survives.** Re-applying `Auth Details` cascades a reset back to the
+> Auth Details step. Because `Params to Capabilities` (and
+> `Collect Capabilities` / `Params to Commands`) are
+> `preserve_on_reset: true`, the `set-auth` cascade now **honors**
+> `preserve_on_reset` and keeps those columns intact. So: persist the
+> capability mapping with `set-params-to-capabilities` FIRST (below),
+> then do the elevation `set-auth` — the mapping is preserved, and you
+> just re-walk the cheap data steps (`Params to Commands`,
+> `Params for test with default in code`, `Params to Capabilities` are
+> all retained) up to the manifest checkpoint. Plain `reset` (whole-row
+> wipe) still clears everything.
 
 #### Persist the mapper's output verbatim
 

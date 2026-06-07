@@ -177,8 +177,9 @@ class TestResetAfter:
         assert preserved == []
 
     def test_reset_after_default_ignores_preserve_flag(self, tmp_path) -> None:
-        """Default ``respect_preserve=False`` matches the set-auth cascade behaviour:
-        every later step is wiped regardless of preserve_on_reset."""
+        """Default ``respect_preserve=False`` (used by the plain whole-row
+        ``reset`` verb) wipes every later step regardless of
+        preserve_on_reset."""
         cfg = _write_and_load(tmp_path, _PRESERVE_FIXTURE_YAML)
         row = {
             "Integration ID": "X",
@@ -242,18 +243,19 @@ class TestResetAfter:
 
 
 class TestPreserveOnResetIntegration:
-    """End-to-end behaviour: set-auth still wipes preserved columns,
-    but a hypothetical reset-to (callers that pass respect_preserve=True)
-    keeps them.
+    """End-to-end behaviour: the set-auth cascade now HONORS
+    preserve_on_reset (tagged columns survive an Auth Details re-apply),
+    while non-tagged downstream columns are still wiped.
     """
 
-    def test_apply_step_action_set_auth_cascade_still_wipes_preserved(
+    def test_apply_step_action_set_auth_cascade_preserves_tagged(
         self, tmp_path
     ) -> None:
-        """The set-auth cascade goes through apply_step_action, which calls
-        reset_after with the default (respect_preserve=False). Even
-        a preserve_on_reset=true column gets wiped — by design (auth changes
-        invalidate downstream artifacts)."""
+        """The set-auth cascade goes through apply_step_action, which now calls
+        reset_after with respect_preserve=True. A preserve_on_reset=true
+        column survives the cascade (so the Step 3b elevation flow can
+        re-apply Auth Details without discarding the capability mapping),
+        while non-tagged downstream columns are still wiped."""
         cfg = _write_and_load(tmp_path, _PRESERVE_FIXTURE_YAML)
         row = {
             "Integration ID": "X",
@@ -266,8 +268,10 @@ class TestPreserveOnResetIntegration:
         cleared, no_op = apply_step_action(row, target, "new", verb="set-alpha")
         assert no_op is False
         assert row["alpha"] == "new"
-        # Even preserve_on_reset=true beta is wiped on set-alpha cascade.
-        assert row["beta"] == ""
+        # preserve_on_reset=true beta survives the set-alpha cascade.
+        assert row["beta"] == '["preserved-data"]'
+        # Non-tagged downstream columns are still wiped.
         assert row["gamma"] == ""
         assert row["delta"] == ""
-        assert "beta" in cleared
+        assert "beta" not in cleared
+        assert "gamma" in cleared and "delta" in cleared

@@ -220,27 +220,90 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
 # ---------------------------------------------------------------------------
 # Step 2: Map params to capabilities
 # ---------------------------------------------------------------------------
+def _required_param_names(integration_yml: dict | None) -> set[str]:
+    """Return the set of YML config param names marked ``required: true``.
+
+    A param is "required" only when its YML ``configuration[]`` entry has
+    ``required`` set to the JSON boolean ``true``. Missing / ``false`` /
+    any non-``True`` value is treated as NOT required.
+    """
+    required: set[str] = set()
+    if integration_yml is None:
+        return required
+    for param in integration_yml.get("configuration", []) or []:
+        if param.get("required") is True:
+            name = param.get("name")
+            if name:
+                required.add(name)
+    return required
+
+
 def _handle_test_module(
     result: dict[str, list[str]],
     command_params: dict,
     param_defaults: dict,
-) -> None:
-    """Step 2.1 - Add params from ``test-module`` without a default to
-    ``general_configurations``.
+    integration_yml: dict | None = None,
+) -> list[str]:
+    """Step 2.1 - Elevate REQUIRED ``test-module`` params (without a default)
+    to the connection (``other_connection`` in Auth Details) instead of
+    routing them into ``general_configurations``.
 
-    Uses a local ``general_set`` for O(1) membership checks instead of
-    repeatedly scanning the underlying list.
+    Two-correction behavior (vs. the historical "every test-module param
+    without a default → general_configurations" rule):
+
+    1. **Required test-module params are elevated to the connection, not
+       general.** A REQUIRED ``test-module`` param that has no default
+       belongs on the connection (the integration needs it to even
+       authenticate / run the connection test), so it must NOT land in
+       ``general_configurations``. It is returned in the elevation list so
+       the caller (Step 3b) can inject it into the integration's
+       ``Auth Details.other_connection`` via ``set-auth``. It is also kept
+       out of every capability bucket so it never appears in the persisted
+       ``Params to Capabilities`` cell (whose closed enum has no
+       ``other_connection`` key anyway).
+    2. **Required-only elevation; non-required keep the old behavior.** Only
+       params whose YML ``configuration`` entry is ``required: true`` are
+       elevated. A NON-required ``test-module`` param (no default) keeps the
+       historical behavior — it is added to ``general_configurations`` —
+       because a param that appears only under ``test-module`` is never
+       placed by the downstream command-routing "other decisions", so
+       dropping it would lose it entirely.
+
+    Params already supplied with a default (``param_defaults``) and pinned
+    long-running params are neither elevated nor added to general.
+
+    Returns the sorted list of param names elevated to ``other_connection``
+    (may be empty). The caller uses it to drive the Auth Details injection.
     """
     commands_section: dict = command_params.get("commands") or {}
     test_module_params: list[str] = commands_section.get("test-module", []) or []
+    required_names: set[str] = _required_param_names(integration_yml)
     general_set: set = set(result["general_configurations"])
+    elevated: set[str] = set()
     for param in test_module_params:
         if param in PINNED_LONG_RUNNING_PARAMS:
-            # Pinned params are owned by Rule 7 — never add to general_configurations
+            # Pinned params are owned by Rule 7 — never touched here.
             continue
-        if param not in param_defaults and param not in general_set:
+        if param in param_defaults:
+            # Has a code/test default — not a connection-required param.
+            continue
+        if param in required_names:
+            # Correction 1: required test-module params elevate to the
+            # connection (other_connection), never into a capability bucket.
+            elevated.add(param)
+        elif param not in general_set:
+            # Correction 2: non-required test-module params keep the old
+            # general_configurations behavior.
             result["general_configurations"].append(param)
             general_set.add(param)
+
+    if elevated:
+        # Make sure no elevated param lingers in any capability bucket
+        # (e.g. if it was seeded there before this step ran).
+        for capability in list(result.keys()):
+            result[capability] = [p for p in result[capability] if p not in elevated]
+
+    return sorted(elevated)
 
 
 def _apply_manual_mapping(
@@ -577,13 +640,20 @@ def map_params_to_capabilities(
     param_defaults: dict,
     manual_command_to_capability: dict[str, list[str]] | None = None,
     integration_yml: dict | None = None,
+    elevated_out: list[str] | None = None,
 ) -> dict[str, list[str]]:
     """Apply Step 2 - populate the capabilities mapping with parameter names
     derived from the supplied ``command_params`` and ``param_defaults`` JSON
     inputs. ``manual_command_to_capability`` (optional) overrides automatic
     routing for any listed commands. ``integration_yml`` (optional) enables
-    Step 2.0 (long-running param routing) and Step 2.6 (filtering out params
-    hidden on the Cortex Platform)."""
+    Step 2.0 (long-running param routing), Step 2.1 elevation of required
+    test-module params to the connection, and Step 2.6 (filtering out params
+    hidden on the Cortex Platform).
+
+    If ``elevated_out`` is provided, the sorted list of REQUIRED test-module
+    params elevated to the connection (``other_connection`` in Auth Details)
+    is written into it. These params are also guaranteed NOT to appear in any
+    capability bucket of the returned dict (see ``_handle_test_module``)."""
     manual_command_to_capability = manual_command_to_capability or {}
     integration_id: str = ""
     if integration_yml is not None:
@@ -596,8 +666,12 @@ def map_params_to_capabilities(
     # long-running capability (if applicable).
     _route_long_running_param(result, integration_yml, param_defaults, integration_id)
 
-    # Step 2.1
-    _handle_test_module(result, command_params, param_defaults)
+    # Step 2.1 - elevate REQUIRED test-module params (no default) to the
+    # connection (other_connection). They are stripped from `result` and
+    # returned so the caller can inject them into Auth Details.
+    elevated: list[str] = _handle_test_module(
+        result, command_params, param_defaults, integration_yml
+    )
 
     # Step 2.1.5 - manual override (source of truth for listed commands)
     handled_commands = _apply_manual_mapping(
@@ -623,6 +697,25 @@ def map_params_to_capabilities(
             integration_yml, param_defaults
         )
         _filter_hidden_params(result, to_remove, kept_by_carveout)
+
+    # Final elevation strip: routing (2.2/2.3) may have re-added an elevated
+    # param that also appears under a non-test-module command. Elevated params
+    # live on the connection ONLY, so strip them from every capability bucket
+    # one more time after all routing is done.
+    if elevated:
+        elevated_set = set(elevated)
+        for capability in list(result.keys()):
+            result[capability] = [
+                p for p in result[capability] if p not in elevated_set
+            ]
+        logger.info(
+            f"Elevated required test-module params to the connection "
+            f"(other_connection in Auth Details), excluded from "
+            f"Params to Capabilities: {elevated}"
+        )
+
+    if elevated_out is not None:
+        elevated_out[:] = elevated
 
     # NOTE: empty capability buckets (including general_configurations) are
     # intentionally preserved in the final result — no cleanup pass is run.
@@ -673,18 +766,41 @@ def generate_param_mapping(
         integration_yml: dict = yaml.safe_load(f)
 
     capabilities = decide_capabilities(integration_yml)
+    elevated: list[str] = []
     result = map_params_to_capabilities(
         capabilities,
         command_params,
         param_defaults,
         manual_command_to_capability,
-        integration_yml=integration_yml,  # NEW: enables Step 2.6
+        integration_yml=integration_yml,  # enables Step 2.1 elevation + Step 2.6
+        elevated_out=elevated,
     )
 
     with open(output_path, "w") as f:
         json.dump(result, f, indent=2)
 
     logger.info(f"Param mapping written to {output_path}")
+
+    # Surface the required test-module params that must be elevated to the
+    # connection (other_connection in Auth Details). Step 3b reads this
+    # sidecar, injects them into the integration's Auth Details, and re-applies
+    # via set-auth (which resets the workflow back to the Auth Details step;
+    # the capability mapping survives because Params to Capabilities is
+    # preserve_on_reset=true).
+    elevated_path = output_path.with_suffix(output_path.suffix + ".elevated.json")
+    with open(elevated_path, "w") as f:
+        json.dump(elevated, f, indent=2)
+    if elevated:
+        logger.info(
+            f"{len(elevated)} param(s) must be elevated to other_connection "
+            f"in Auth Details: {elevated}. Elevation list written to "
+            f"{elevated_path}."
+        )
+    else:
+        logger.info(
+            f"No required test-module params to elevate. Empty elevation list "
+            f"written to {elevated_path}."
+        )
 
 
 if __name__ == "__main__":
