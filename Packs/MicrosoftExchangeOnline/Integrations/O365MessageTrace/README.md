@@ -76,20 +76,20 @@ grant_type=client_credentials&scope=https://graph.microsoft.com/.default&client_
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The Microsoft Graph base URL. | True |
-| Tenant ID | The customer Azure AD tenant ID (GUID). | True |
-| Client ID | The Application (Client) ID registered in Azure AD. | True |
+| Tenant ID | The customer Azure AD tenant ID \(GUID\). | True |
+| Client ID | The Application \(Client\) ID registered in Azure AD. | True |
 | Client Secret | The client secret for the Azure AD application. | False |
-| Certificate Thumbprint | Used for certificate authentication, as it appears in the "Certificates & secrets" page of the app. | False |
-| Private Key | The private key of the registered certificate. | False |
+| Certificate Thumbprint | The private key of the registered certificate used for certificate authentication, as it appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+| Private Key |  | False |
 | Application redirect URI (for self-deployed mode) | The redirect URI configured in the Azure AD application. Required for the self-deployed authorization-code flow. | False |
 | Authorization code | The authorization code received from the Azure portal during the self-deployed authorization-code flow. | False |
-| Use Azure Managed Identities | Use Azure Managed Identities for authentication (only when running on an Azure VM). | False |
-| Azure Managed Identities Client ID | The Managed Identities client ID for authentication. | False |
-| Maximum number of events per fetch | The maximum number of events to fetch in a single fetch cycle. Default: `50000`. | False |
-| Fetch events | Enable event collection. | False |
-| Events Fetch Interval | How often to fetch events (in minutes). Default: `1`. | False |
-| Trust any certificate (not secure) | Skip certificate verification. | False |
-| Use system proxy settings | Use the configured system proxy. | False |
+| Use Azure Managed Identities | Whether to use Azure Managed Identities when running on an Azure VM with assigned identity. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on an Azure VM. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Maximum number of events per fetch | The maximum number of events to fetch in a single fetch cycle. | False |
+| Fetch events |  | False |
+| Events Fetch Interval |  | False |
 
 ## Commands
 
@@ -174,22 +174,22 @@ Manually retrieve Message Trace events. Intended for development and debugging. 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events to return. Default is `50`. | Optional |
-| start_time | Filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., `10 minutes ago`, `2024-01-01T00:00:00Z`). | Optional |
-| end_time | Filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., `now`, `2024-01-01T00:00:00Z`). | Optional |
-| should_push_events | If `true`, the command sends the retrieved events to Cortex XSIAM. Otherwise, it only displays them. Possible values: `true`, `false`. Default is `false`. | Optional |
+| limit | The maximum number of events to return. Default is 50. | Optional | 
+| start_time | The start time to filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z"). | Optional | 
+| end_time | The end time to filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional | 
+| should_push_events | Whether the command sends the retrieved events to XSIAM. If false, it only displays them. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365MessageTrace.Event.id | String | The unique identifier of the message trace event. |
-| O365MessageTrace.Event.receivedDateTime | Date | The timestamp when the message was received. |
-| O365MessageTrace.Event.senderAddress | String | The sender email address. |
-| O365MessageTrace.Event.recipientAddress | String | The recipient email address. |
-| O365MessageTrace.Event.subject | String | The subject of the message. |
-| O365MessageTrace.Event.status | String | The delivery status of the message (e.g., Delivered, Pending, Failed, Quarantined). |
-| O365MessageTrace.Event._time | Date | The Cortex XSIAM event timestamp (ISO 8601). |
+| O365MessageTrace.Event.id | String | The unique identifier of the message trace event. | 
+| O365MessageTrace.Event.receivedDateTime | Date | The timestamp when the message was received \(e.g., "2020-01-01T00:11:22Z"\). | 
+| O365MessageTrace.Event.senderAddress | String | The sender email address. | 
+| O365MessageTrace.Event.recipientAddress | String | The recipient email address. | 
+| O365MessageTrace.Event.subject | String | The subject of the message. | 
+| O365MessageTrace.Event.status | String | The delivery status of the message \(e.g., Delivered, Pending, Failed, Quarantined\). | 
+| O365MessageTrace.Event._time | Date | The XSIAM event timestamp in ISO 8601 format \(e.g., "2020-01-01T00:11:22Z"\). | 
 
 #### Command example
 
