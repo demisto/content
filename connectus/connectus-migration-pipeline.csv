@@ -275,7 +275,6 @@ GoogleCalendar,Packs/GoogleCalendar/Integrations/GoogleCalendar/GoogleCalendar.y
 GoogleCloudLogging,Packs/GoogleCloudLogging/Integrations/GoogleCloudLogging/GoogleCloudLogging.yml,Google GCP,,,,,,,,,,,,,
 GoogleCloudTranslate,Packs/GoogleCloudTranslate/Integrations/GoogleCloudTranslate/GoogleCloudTranslate.yml,Google GCP,,,,,,,,,,,,,
 GoogleDocs,Packs/GoogleDocs/Integrations/GoogleDocs/GoogleDocs.yml,Google Google Workspace,,,,,,,,,,,,,
-GoogleDrive,Packs/GoogleDrive/Integrations/GoogleDrive/GoogleDrive.yml,Google Google Workspace,juschwartz,"{""auth_types"":[{""type"":""Passthrough"",""name"":""service_account"",""interpolated"":true,""xsoar_param_map"":{""user_creds.password"":""credentials_file"",""user_creds.identifier"":""subject_email"",""user_service_account_json"":""credentials_file"",""user_id"":""subject_email""}}],""other_connection"":[""insecure"",""proxy""]}","[""Fetch Issues"", ""Automation""]","{
   ""commands"": {
     ""fetch-incidents"": [
       ""drive_item_search_field"",
@@ -421,7 +420,6 @@ MicrosoftGraphApplications,Packs/MicrosoftGraphApplications/Integrations/Microso
 MicrosoftGraphIdentityandAccess,Packs/MicrosoftGraphIdentityandAccess/Integrations/MicrosoftGraphIdentityandAccess/MicrosoftGraphIdentityandAccess.yml,Microsoft Entra ID,,,,,,,,,,,,,
 MicrosoftGraphMail,Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphMail/MicrosoftGraphMail.yml,Microsoft Microsoft 365,,,,,,,,,,,,,
 MicrosoftPolicyAndComplianceAuditLog,Packs/Office365AndAzureAuditLog/Integrations/MicrosoftPolicyAndComplianceAuditLog/MicrosoftPolicyAndComplianceAuditLog.yml,Microsoft Security,,,,,,,,,,,,,
-Microsoft_Graph_Files,Packs/MicrosoftGraphFiles/Integrations/MicrosoftGraphFiles/MicrosoftGraphFiles.yml,Microsoft Microsoft 365,juschwartz,,,,,,,,,,,,
 Mimecast Event Collector v2,Packs/Mimecast/Integrations/MimecastEventCollectorV2/MimecastEventCollectorV2.yml,Mimecast,,,,,,,,,,,,,
 MimecastV2,Packs/Mimecast/Integrations/MimecastV2/MimecastV2.yml,Mimecast,,,,,,,,,,,,,
 MondayEventCollector,Packs/Monday/Integrations/MondayEventCollector/MondayEventCollector.yml,Monday.com,,,,,,,,,,,,,

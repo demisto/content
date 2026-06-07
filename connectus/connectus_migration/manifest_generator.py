@@ -3148,29 +3148,33 @@ def write_capabilities_yaml(
 # Per the grouped-example reference, every handler added to a connector
 # gets two fields in configurations.yaml → general_configurations, each
 # inside a view_group-pinned field group where view_group id = handler id.
-# Both fields are prefixed with the handler id for global uniqueness
-# (Appendix C) and bridged back to their canonical names via serializer
-# field_mappings.
+# By default both fields keep their bare canonical ids
+# (``integrationLogLevel`` / ``defaultIgnore``) with NO handler-id prefix
+# and NO serializer entry. Only when the bare id collides with another
+# emitted field is it renamed to ``<handler_id>_<id>`` and bridged back to
+# its canonical name via a serializer ``field_mappings`` entry.
 
 # Canonical base param names (the XSOAR runtime expects these).
 _INTEGRATION_LOG_LEVEL_PARAM = "integrationLogLevel"
 _DEFAULT_IGNORE_PARAM = "defaultIgnore"
 
 
-def _per_handler_log_level_field(handler_id: str) -> dict:
+def _per_handler_log_level_field(handler_id: str, field_id: str) -> dict:
     """Build the per-handler ``integrationLogLevel`` field.
 
-    Per the grouped-example reference: each handler gets its own
-    ``<handler_id>_integrationLogLevel`` select field in
+    Each handler gets an ``integrationLogLevel`` select field in
     ``configurations.yaml`` → ``general_configurations``, pinned to
-    the handler's ``view_group``. The handler's ``serializer.yaml``
-    maps the prefixed id back to ``integrationLogLevel``.
+    the handler's ``view_group``. ``field_id`` is the resolved
+    connector id (bare ``integrationLogLevel`` by default, or
+    ``<handler_id>_integrationLogLevel`` only when the bare id
+    collides — in which case the caller registers the serializer
+    mapping back to ``integrationLogLevel``).
 
     Shape matches the grouped-example reference (lines 100-124 of
     ``configurations.yaml``).
     """
     return {
-        "id": f"{handler_id}_{_INTEGRATION_LOG_LEVEL_PARAM}",
+        "id": field_id,
         "title": "Integration Log Level",
         "field_type": "select",
         "metadata": {
@@ -3193,17 +3197,19 @@ def _per_handler_log_level_field(handler_id: str) -> dict:
     }
 
 
-def _per_handler_default_ignore_field(handler_id: str) -> dict:
+def _per_handler_default_ignore_field(field_id: str) -> dict:
     """Build the per-handler ``defaultIgnore`` checkbox field.
 
     Per the grouped-example reference (lines 325-338 of
     ``configurations.yaml``): "Do not use in CLI by default" — a
     visible checkbox, always default ``false``, backend-managed.
+    ``field_id`` is the resolved connector id (bare ``defaultIgnore``
+    by default, or ``<handler_id>_defaultIgnore`` only on collision).
 
     Shape matches the grouped-example reference.
     """
     return {
-        "id": f"{handler_id}_{_DEFAULT_IGNORE_PARAM}",
+        "id": field_id,
         "title": "Do not use in CLI by default",
         "field_type": "checkbox",
         "metadata": {
@@ -3249,9 +3255,11 @@ def build_per_handler_general_config(
     (NOT in capabilities.yaml) — each materialized via
     :func:`emit_field_for_param` with dedup support.
 
-    Also registers serializer ``field_mappings`` entries for the
-    ``integrationLogLevel`` and ``defaultIgnore`` fields so the XSOAR
-    runtime receives the canonical param names.
+    The ``integrationLogLevel`` and ``defaultIgnore`` fields keep their
+    bare canonical ids by default (no prefix, no serializer entry). Only
+    on an id collision are they renamed to ``<handler_id>_<id>`` and a
+    serializer ``field_mappings`` entry registered so the XSOAR runtime
+    still receives the canonical param name.
 
     The caller is responsible for:
       1. Adding the returned dict to
@@ -3260,21 +3268,23 @@ def build_per_handler_general_config(
          ``{"id": handler_id, "label": handler_id}`` to
          ``configurations_data["view_groups"]``.
     """
-    log_level = _per_handler_log_level_field(handler_id)
-    default_ignore = _per_handler_default_ignore_field(handler_id)
+    # Resolve the connector field ids via collision-based dedup: by default
+    # these keep their bare canonical ids (``integrationLogLevel`` /
+    # ``defaultIgnore``) with NO prefix and NO serializer entry. Only when
+    # the bare id already collides with another emitted field does
+    # ``dedup_field_id_and_register`` rename it to ``<handler_id>_<id>`` and
+    # append the serializer ``field_mappings`` bridge back to the canonical
+    # name. ``existing_ids`` is mutated in place.
+    ids = existing_ids if existing_ids is not None else set()
+    log_level_id = dedup_field_id_and_register(
+        ids, handler_id, handler_dir, _INTEGRATION_LOG_LEVEL_PARAM
+    )
+    default_ignore_id = dedup_field_id_and_register(
+        ids, handler_id, handler_dir, _DEFAULT_IGNORE_PARAM
+    )
 
-    # Register serializer mappings so the XSOAR runtime sees the
-    # canonical param names.
-    register_renamed_field_serializer_entry(
-        handler_dir,
-        original_id=_INTEGRATION_LOG_LEVEL_PARAM,
-        renamed_id=log_level["id"],
-    )
-    register_renamed_field_serializer_entry(
-        handler_dir,
-        original_id=_DEFAULT_IGNORE_PARAM,
-        renamed_id=default_ignore["id"],
-    )
+    log_level = _per_handler_log_level_field(handler_id, log_level_id)
+    default_ignore = _per_handler_default_ignore_field(default_ignore_id)
 
     fields: list[dict] = [log_level, default_ignore]
 

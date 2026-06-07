@@ -1040,9 +1040,9 @@ def test_create_manifest_from_scratch_generates_serializer_yaml_alongside_handle
         auth_methods={},
     )
 
-    # Per-handler general_config always registers 2 serializer entries
-    # (integrationLogLevel + defaultIgnore), so serializer.yaml is
-    # always created even with empty mapped_params.
+    # With no collisions, the per-handler general_config fields keep their
+    # bare canonical ids (integrationLogLevel + defaultIgnore) and register
+    # NO serializer entries, so serializer.yaml is not created.
     serializer_yaml_path = (
         connector_dir
         / "components"
@@ -1050,14 +1050,7 @@ def test_create_manifest_from_scratch_generates_serializer_yaml_alongside_handle
         / "xsoar-salesforce"
         / "serializer.yaml"
     )
-    assert serializer_yaml_path.is_file()
-    serializer_data = _read_serializer_dict(
-        connector_dir / "components" / "handlers" / "xsoar-salesforce"
-    )
-    mappings = serializer_data.get("field_mappings", [])
-    mapping_ids = {m["id"] for m in mappings}
-    assert "xsoar-salesforce_integrationLogLevel" in mapping_ids
-    assert "xsoar-salesforce_defaultIgnore" in mapping_ids
+    assert not serializer_yaml_path.exists()
 
 
 # ---------------------------------------------------------------------------
@@ -1086,19 +1079,16 @@ def test_add_handler_to_existing_connector_generates_serializer_yaml(
         auth_methods={},
     )
 
-    # Per-handler general_config always registers serializer entries.
+    # With no collisions, the per-handler general_config fields keep their
+    # bare canonical ids and register NO serializer entries — so
+    # serializer.yaml is not created.
     handler_dir = (
         connector_dir / "components" / "handlers" / "xsoar-my-integration"
     )
     handler_yaml_path = handler_dir / "handler.yaml"
     serializer_yaml_path = handler_dir / "serializer.yaml"
     assert handler_yaml_path.is_file()
-    assert serializer_yaml_path.is_file()
-    serializer_data = _read_serializer_dict(handler_dir)
-    mappings = serializer_data.get("field_mappings", [])
-    mapping_ids = {m["id"] for m in mappings}
-    assert "xsoar-my-integration_integrationLogLevel" in mapping_ids
-    assert "xsoar-my-integration_defaultIgnore" in mapping_ids
+    assert not serializer_yaml_path.exists()
 
 
 def test_add_handler_to_existing_connector_raises_if_serializer_already_exists(
@@ -1267,8 +1257,8 @@ def test_per_handler_integration_log_level_shape_matches_reference() -> None:
     in capabilities.yaml."""
     from manifest_generator import _per_handler_log_level_field
 
-    log = _per_handler_log_level_field("xsoar-test")
-    assert log["id"] == "xsoar-test_integrationLogLevel"
+    log = _per_handler_log_level_field("xsoar-test", "integrationLogLevel")
+    assert log["id"] == "integrationLogLevel"
     assert log["title"] == "Integration Log Level"
     assert log["field_type"] == "select"
     assert log["metadata"] == {"xsoar": {"config_type": "backend"}}
@@ -1300,13 +1290,14 @@ def test_build_per_handler_general_config_skips_user_param_colliding_with_mandat
         )
     field_ids = [f["id"] for f in result["fields"]]
     # integrationLogLevel + defaultIgnore are always first (platform-mandated).
+    # With no collisions they keep their bare canonical ids (no prefix).
     # instance_name and integrationLogLevel from user params are skipped.
     # Only "url" from user params should appear.
-    assert "xsoar-test_integrationLogLevel" in field_ids
-    assert "xsoar-test_defaultIgnore" in field_ids
+    assert "integrationLogLevel" in field_ids
+    assert "defaultIgnore" in field_ids
     assert "url" in field_ids  # user param that didn't collide
-    # No duplicate instance_name or integrationLogLevel from user params.
-    assert field_ids.count("xsoar-test_integrationLogLevel") == 1
+    # No duplicate integrationLogLevel from user params.
+    assert field_ids.count("integrationLogLevel") == 1
     assert any(
         "collides with a platform-mandated field" in rec.message
         for rec in caplog.records
@@ -1818,10 +1809,11 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
     # Per Batch 7 (Part A.7.1) + guide §3.9: serializer.yaml is OPTIONAL.
     # With user params ``url``/``verify_ssl``/``proxy``/``fetch_limit``/
     # ``timeout`` all unique (no collision between general_configurations
-    # and the per-capability buckets), no field_mappings entries are
-    # Per-handler general_config always writes serializer entries
-    # (integrationLogLevel + defaultIgnore mappings).
-    assert serializer_yaml.exists()
+    # and the per-capability buckets), AND the platform-mandated
+    # integrationLogLevel/defaultIgnore fields keeping their bare canonical
+    # ids (no collision), no field_mappings entries are written — so
+    # serializer.yaml is not created.
+    assert not serializer_yaml.exists()
 
     # Spot-check shapes
     with open(connector_yaml) as fh:
@@ -1891,8 +1883,8 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
     handler_gc = [e for e in gc_entries if e.get("view_group") == "xsoar-salesforce"]
     assert len(handler_gc) >= 1
     handler_field_ids = [f["id"] for f in handler_gc[0]["fields"]]
-    assert "xsoar-salesforce_integrationLogLevel" in handler_field_ids
-    assert "xsoar-salesforce_defaultIgnore" in handler_field_ids
+    assert "integrationLogLevel" in handler_field_ids
+    assert "defaultIgnore" in handler_field_ids
     # User-mapped params (url, verify_ssl, proxy) also present.
     assert "url" in handler_field_ids or any(
         "url" in fid for fid in handler_field_ids
@@ -1930,8 +1922,9 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
         },
     ]
 
-    # Per-handler general_config always writes serializer entries.
-    assert serializer_yaml.exists()
+    # No field-id collisions in this pipeline, so no serializer entries are
+    # written and serializer.yaml is not created.
+    assert not serializer_yaml.exists()
 
 
 # ---------------------------------------------------------------------------
@@ -3138,8 +3131,9 @@ def test_serializer_manual_fields_logged_and_connection_manual_fields_applied(
         / "xsoar-myint"
         / "serializer.yaml"
     )
-    # Per-handler general_config always writes serializer entries.
-    assert serializer_yaml_path.exists()
+    # With no field-id collisions, no serializer entries are written, so
+    # serializer.yaml is not created.
+    assert not serializer_yaml_path.exists()
 
 
 # ---------------------------------------------------------------------------
@@ -3833,8 +3827,8 @@ def test_register_renamed_field_serializer_entry_writes_bridge(tmp_path: Path):
 def test_build_per_handler_general_config_shape(tmp_path: Path):
     """build_per_handler_general_config returns a view_group-pinned
     field group with exactly 2 fields: integrationLogLevel (select)
-    and defaultIgnore (checkbox). Both field ids are prefixed with
-    the handler id for global uniqueness."""
+    and defaultIgnore (checkbox). With no collisions, both field ids
+    keep their bare canonical names (no handler-id prefix)."""
     handler_dir = tmp_path / "handler"
     handler_dir.mkdir()
     result = build_per_handler_general_config("xsoar-salesforce", handler_dir)
@@ -3844,7 +3838,7 @@ def test_build_per_handler_general_config_shape(tmp_path: Path):
     assert len(fields) == 2
 
     log_level = fields[0]
-    assert log_level["id"] == "xsoar-salesforce_integrationLogLevel"
+    assert log_level["id"] == "integrationLogLevel"
     assert log_level["title"] == "Integration Log Level"
     assert log_level["field_type"] == "select"
     assert log_level["metadata"]["xsoar"]["config_type"] == "backend"
@@ -3853,21 +3847,44 @@ def test_build_per_handler_general_config_shape(tmp_path: Path):
     assert log_level["options"]["default_value"] == "Off"
 
     default_ignore = fields[1]
-    assert default_ignore["id"] == "xsoar-salesforce_defaultIgnore"
+    assert default_ignore["id"] == "defaultIgnore"
     assert default_ignore["title"] == "Do not use in CLI by default"
     assert default_ignore["field_type"] == "checkbox"
     assert default_ignore["metadata"]["xsoar"]["config_type"] == "backend"
     assert default_ignore["options"]["default_value"] is False
 
 
-def test_build_per_handler_general_config_registers_serializer_entries(
+def test_build_per_handler_general_config_no_serializer_entries_without_collision(
     tmp_path: Path,
 ):
-    """build_per_handler_general_config writes 2 serializer field_mappings
-    entries bridging the prefixed ids back to the canonical param names."""
+    """build_per_handler_general_config does NOT write serializer
+    field_mappings entries when the canonical ids don't collide — the
+    bare ids are used directly, so no bridge is needed and serializer.yaml
+    is not created."""
     handler_dir = tmp_path / "handler"
     handler_dir.mkdir()
     build_per_handler_general_config("xsoar-myint", handler_dir)
+
+    assert not (handler_dir / "serializer.yaml").exists()
+
+
+def test_build_per_handler_general_config_prefixes_and_bridges_on_collision(
+    tmp_path: Path,
+):
+    """When the canonical ids already collide (pre-seeded existing_ids),
+    build_per_handler_general_config renames to ``<handler_id>_<id>`` and
+    registers serializer field_mappings entries bridging back to the
+    canonical param names."""
+    handler_dir = tmp_path / "handler"
+    handler_dir.mkdir()
+    existing = {"integrationLogLevel", "defaultIgnore"}
+    result = build_per_handler_general_config(
+        "xsoar-myint", handler_dir, existing_ids=existing
+    )
+
+    field_ids = [f["id"] for f in result["fields"]]
+    assert "xsoar-myint_integrationLogLevel" in field_ids
+    assert "xsoar-myint_defaultIgnore" in field_ids
 
     serializer_data = _read_serializer_dict(handler_dir)
     mappings = serializer_data.get("field_mappings", [])
@@ -3911,8 +3928,8 @@ def test_from_scratch_emits_per_handler_general_config_in_configurations_yaml(
     handler_gc = [e for e in gc_entries if e.get("view_group") == "xsoar-myint"]
     assert len(handler_gc) == 1
     field_ids = [f["id"] for f in handler_gc[0]["fields"]]
-    assert "xsoar-myint_integrationLogLevel" in field_ids
-    assert "xsoar-myint_defaultIgnore" in field_ids
+    assert "integrationLogLevel" in field_ids
+    assert "defaultIgnore" in field_ids
 
 
 def test_add_secret_capability_top_level_uses_plain_field_id():
