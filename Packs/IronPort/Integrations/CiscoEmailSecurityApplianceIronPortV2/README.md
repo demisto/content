@@ -2369,3 +2369,254 @@ Retrieve metadata about the SMTP connection and transmission behavior of specifi
 >|---|---|
 >| 16 Nov 2018 11:01:08 (GMT) | ICID 19213 sender_group: RELAYLIST sender_ip: 1.11.11.1, <br/>                 sbrs: not enabled |
 >| 16 Nov 2018 11:01:08 (GMT) | Protocol SMTP interface Management  (IP 10.76.71.196) on <br/>                 incoming connection (ICID 19213) from sender IP 1.11.11.1. Reverse DNS<br/>                 host vm30bsd0199.com verified yes. |
+
+### cisco-esa-message-filter-list
+
+***
+Retrieve all message filters or a specific message filter by name. Message filters are evaluated early in the Work Queue, before security engines. This command manages Message Filters only. For more granular, per-policy control over message handling, use Content Filters in the Cisco AsyncOS web UI.
+
+#### Base Command
+
+`cisco-esa-message-filter-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mode | The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
+| host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
+| filter_name | The name of a specific message filter to retrieve. When omitted, all filters in scope are returned. | Optional |
+| active | Whether to return only active or only inactive filters. Ignored when `filter_name` is supplied. Possible values are: true, false. | Optional |
+| limit | The maximum number of filters to return. Ignored when `filter_name` is supplied. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoESA.MessageFilter.name | String | The filter name. |
+| CiscoESA.MessageFilter.active | String | Whether the filter is active \(\`"true"\` / \`"false"\`\). |
+| CiscoESA.MessageFilter.valid | String | Whether Cisco AsyncOS parsed the filter as valid \(\`"true"\` / \`"false"\`\). |
+| CiscoESA.MessageFilter.order | Number | The 1-based position in the execution order. |
+| CiscoESA.MessageFilter.rules_and_actions | String | The full Cisco filter DSL body. |
+| CiscoESA.MessageFilter.invalid_reason | String | The reason the filter is marked as invalid. Present only when \`valid\` is \`"false"\`. |
+
+#### Command example
+
+```!cisco-esa-message-filter-list```
+
+#### Context Example
+
+```json
+{
+    "CiscoESA": {
+        "MessageFilter": [
+            {
+                "active": "true",
+                "name": "URL_QUARANTINE_MALICIOUS",
+                "order": 1,
+                "rules_and_actions": "if (recv-listener == \"MailFlow\") AND (url-reputation(-10.00, -6.00 , \"bypass_urls\", 1, 1)) { quarantine(\"URL_MALICIOUS\"); }",
+                "valid": "true"
+            },
+            {
+                "active": "true",
+                "name": "URL_REWRITE_SUSPICIOUS",
+                "order": 2,
+                "rules_and_actions": "if (recv-listener == \"MailFlow\") AND (url-reputation(-6.00, -5.60 , \"bypass_urls\", 0, 1)) { url-reputation-proxy-redirect(-6.00, -5.60,\"\",0); }",
+                "valid": "true"
+            },
+            {
+                "active": "false",
+                "name": "BLOCKED_LIST_QUARANTINE",
+                "order": 3,
+                "rules_and_actions": "if recv-listener == \"MailFlow\" { quarantine(\"BLOCKED_LIST\"); }",
+                "valid": "true"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cisco ESA — Message Filters (mode: cluster)
+>
+>|Name|Active|Order|Rules And Actions|Validation Warning|
+>|---|---|---|---|---|
+>| URL_QUARANTINE_MALICIOUS | true | 1 | if (recv-listener == "MailFlow") AND (url-reputation(-10.00, -6.00 , "bypass_urls", 1, 1)) { quarantine("URL_MALICIOUS"); } |  |
+>| URL_REWRITE_SUSPICIOUS | true | 2 | if (recv-listener == "MailFlow") AND (url-reputation(-6.00, -5.60 , "bypass_urls", 0, 1)) { url-reputation-proxy-redirect(-6.00, -5.60,"",0); } |  |
+>| BLOCKED_LIST_QUARANTINE | false | 3 | if recv-listener == "MailFlow" { quarantine("BLOCKED_LIST"); } |  |
+
+#### Command example
+
+```!cisco-esa-message-filter-list active=true limit=5```
+
+#### Context Example
+
+```json
+{
+    "CiscoESA": {
+        "MessageFilter": [
+            {
+                "active": "true",
+                "name": "URL_QUARANTINE_MALICIOUS",
+                "order": 1,
+                "rules_and_actions": "if (recv-listener == \"MailFlow\") AND (url-reputation(-10.00, -6.00 , \"bypass_urls\", 1, 1)) { quarantine(\"URL_MALICIOUS\"); }",
+                "valid": "true"
+            },
+            {
+                "active": "true",
+                "name": "URL_REWRITE_SUSPICIOUS",
+                "order": 2,
+                "rules_and_actions": "if (recv-listener == \"MailFlow\") AND (url-reputation(-6.00, -5.60 , \"bypass_urls\", 0, 1)) { url-reputation-proxy-redirect(-6.00, -5.60,\"\",0); }",
+                "valid": "true"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cisco ESA — Message Filters (mode: cluster)
+>
+>|Name|Active|Order|Rules And Actions|
+>|---|---|---|---|
+>| URL_QUARANTINE_MALICIOUS | true | 1 | if (recv-listener == "MailFlow") AND (url-reputation(-10.00, -6.00 , "bypass_urls", 1, 1)) { quarantine("URL_MALICIOUS"); } |  |
+>| URL_REWRITE_SUSPICIOUS | true | 2 | if (recv-listener == "MailFlow") AND (url-reputation(-6.00, -5.60 , "bypass_urls", 0, 1)) { url-reputation-proxy-redirect(-6.00, -5.60,"",0); } |  |
+
+### cisco-esa-message-filter-create
+
+***
+Create a new message filter. If the appliance accepts the filter but flags it as invalid (e.g. unknown listener/interface), the command returns success and surfaces the appliance warning in the human-readable output. For details on Cisco's filter rule language, see "Using Message Filters to Enforce Email Policies" in the Cisco Secure Email Gateway 16.0 Admin Guide: https://www.cisco.com/c/en/us/td/docs/security/esa/esa16-0/user_guide/b_ESA_Admin_Guide_16-0/b_ESA_Admin_Guide_12_1_chapter_01000.html. This command manages Message Filters only. For more granular, per-policy control over message handling, use Content Filters in the Cisco AsyncOS web UI.
+
+#### Base Command
+
+`cisco-esa-message-filter-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mode | The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
+| host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
+| filter_name | The name for the new filter. | Required |
+| rules_and_actions | The full Cisco filter DSL: `if (&lt;conditions&gt;) { &lt;actions&gt;; }`. See the Cisco AsyncOS for Email Security Admin Guide for the DSL reference. | Required |
+| active | Whether the filter should be active on creation. Possible values are: true, false. Default is true. | Optional |
+| order | The 1-based position in the filter list. If omitted, or if the value exceeds the current number of filters, the filter is appended to the end of the list. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### cisco-esa-message-filter-update
+
+***
+Update an existing message filter. Only the supplied fields (`active`, `order`) are sent — at least one must be provided. This command manages Message Filters only. For more granular, per-policy control over message handling, use Content Filters in the Cisco AsyncOS web UI.
+
+#### Base Command
+
+`cisco-esa-message-filter-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mode | The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
+| host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
+| filter_name | The name of the filter to update. | Required |
+| active | Whether to enable or disable the filter. Possible values are: true, false. | Optional |
+| order | The new 1-based position in the filter list. Must be within the range of existing filter positions (1 to the current filter count). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!cisco-esa-message-filter-update filter_name=example_filter active=false```
+
+#### Human Readable Output
+
+>Filter example_filter was successfully updated.
+
+#### Command example
+
+```!cisco-esa-message-filter-update filter_name=example_filter order=2```
+
+#### Human Readable Output
+
+>Filter example_filter was successfully updated.
+
+### cisco-esa-message-filter-delete
+
+***
+Delete a message filter. This command manages Message Filters only. For more granular, per-policy control over message handling, use Content Filters in the Cisco AsyncOS web UI.
+
+#### Base Command
+
+`cisco-esa-message-filter-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| mode | The configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, 'group' to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`). Possible values are: cluster, group, machine. Default is cluster. | Optional |
+| group_name | The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`. | Optional |
+| host_name | The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'. | Optional |
+| filter_name | The name of the filter to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!cisco-esa-message-filter-delete filter_name=example_filter```
+
+#### Human Readable Output
+
+>Filter example_filter was deleted successfully.
+
+## Troubleshooting
+
+### Filter created but marked invalid (unknown Listener)
+
+**Symptom**
+
+A `cisco-esa-message-filter-create` (or `cisco-esa-message-filter-update`) call completes without raising an error, but the human-readable output includes a warning from the appliance similar to:
+
+> Filter `<FILTER_NAME>` has been marked invalid for these reasons: Listener '`<LISTENER_NAME>`' unknown;.
+
+On the Cisco Email Security Appliance the filter exists, but it is flagged as invalid and will not run against mail flow.
+
+**Cause**
+
+The `rules_and_actions` value passed to the command references a Listener name (for example, `recv-listener == "InboundMail"`) that does not exist on the target appliance. The appliance accepts the filter definition but refuses to activate it because it cannot resolve the Listener.
+
+**How to find the correct Listener name**
+
+The Listener is configured on the **Cisco Email Security Appliance** itself — not in Cortex XSOAR. Use either of the following on the appliance:
+
+- **Appliance web UI:** Navigate to **Network → IP Interfaces** and look at the **Listener** column to see the Listener names bound to each interface. Common values are `IncomingMail`, `Default`, `Inbound`, or `Public`.
+- **Appliance CLI:** Run `listenerconfig`, then use `SETUP` or `DISPLAY` to list the configured Listeners.
+
+**How to fix**
+
+1. Delete the invalid filter:
+
+   ```
+   !cisco-esa-message-filter-delete filter_name=<FILTER_NAME>
+   ```
+
+2. Re-create the filter using a Listener name that exists on the appliance. For example:
+
+   ```
+   !cisco-esa-message-filter-create filter_name=URL_QUARANTINE_MALICIOUS \
+     rules_and_actions="if (recv-listener == \"MailFlow\") and (url-reputation(-10.00, -6.00, \"bypass_urls\", 1, 1)) { quarantine(\"URL_MALICIOUS\"); }" \
+     active=true
+   ```
+
+For details on Cisco's filter rule language, see [Using Message Filters to Enforce Email Policies](https://www.cisco.com/c/en/us/td/docs/security/esa/esa16-0/user_guide/b_ESA_Admin_Guide_16-0/b_ESA_Admin_Guide_12_1_chapter_01000.html) in the Cisco Secure Email Gateway 16.0 Admin Guide.
