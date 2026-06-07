@@ -26,9 +26,13 @@ from O365MessageTrace import (
 # ============================================================================
 @pytest.fixture
 def mock_client() -> Client:
-    """Return a Client whose ``ms_client`` is a MagicMock (no real HTTP calls)."""
-    client = Client.__new__(Client)  # bypass __init__ to avoid building MicrosoftClient
-    client.ms_client = MagicMock()
+    """Return a Client whose ``http_request`` is a MagicMock (no real HTTP calls).
+
+    Bypasses ``__init__`` to avoid building the real :class:`MicrosoftClient`
+    machinery (token retrieval, integration context, etc.).
+    """
+    client = Client.__new__(Client)  # bypass __init__
+    client.http_request = MagicMock()  # type: ignore[method-assign]
     return client
 
 
@@ -110,10 +114,17 @@ class TestAddTimeField:
         assert sample_events[0]["_time"] == "2025-01-01T10:00:00Z"
         assert sample_events[1]["_time"] == "2025-01-01T10:01:00Z"
 
-    def test_no_time_field_when_received_missing(self):
+    def test_fallback_time_field_when_received_missing(self):
+        """Event Collectors require ``_time`` on every event - a fallback must be added."""
         events = [{"id": "evt-1"}]
         add_time_field(events)
-        assert "_time" not in events[0]
+        assert "_time" in events[0]
+        assert events[0]["_time"]  # non-empty
+
+    def test_fallback_time_field_when_received_empty(self):
+        events = [{"id": "evt-1", "receivedDateTime": ""}]
+        add_time_field(events)
+        assert events[0]["_time"]  # non-empty fallback value
 
 
 # ============================================================================
@@ -121,11 +132,11 @@ class TestAddTimeField:
 # ============================================================================
 class TestGetMessageTracesPage:
     def test_uses_next_link_when_provided(self, mock_client):
-        mock_client.ms_client.http_request.return_value = {"value": [], "@odata.nextLink": None}
+        mock_client.http_request.return_value = {"value": [], "@odata.nextLink": None}
 
         mock_client.get_message_traces_page(next_link="https://graph.microsoft.com/next-page")
 
-        mock_client.ms_client.http_request.assert_called_once_with(
+        mock_client.http_request.assert_called_once_with(
             method="GET",
             full_url="https://graph.microsoft.com/next-page",
             url_suffix="",
@@ -133,7 +144,7 @@ class TestGetMessageTracesPage:
         )
 
     def test_uses_filter_when_no_next_link(self, mock_client):
-        mock_client.ms_client.http_request.return_value = {"value": []}
+        mock_client.http_request.return_value = {"value": []}
 
         mock_client.get_message_traces_page(
             start_date="2025-01-01T00:00:00Z",
@@ -141,7 +152,7 @@ class TestGetMessageTracesPage:
             page_size=500,
         )
 
-        call_args = mock_client.ms_client.http_request.call_args
+        call_args = mock_client.http_request.call_args
         assert call_args.kwargs["method"] == "GET"
         assert call_args.kwargs["url_suffix"] == Config.MESSAGE_TRACES_PATH
         assert call_args.kwargs["ok_codes"] == [200]
@@ -159,21 +170,21 @@ class TestFetchEventsSequential:
         end = datetime(2025, 1, 1, tzinfo=UTC)
         start = end + timedelta(hours=1)
         assert fetch_events_sequential(mock_client, start, end, max_events=100) == []
-        mock_client.ms_client.http_request.assert_not_called()
+        mock_client.http_request.assert_not_called()
 
     def test_returns_empty_when_window_is_zero(self, mock_client):
         moment = datetime(2025, 1, 1, tzinfo=UTC)
         assert fetch_events_sequential(mock_client, moment, moment, max_events=100) == []
 
     def test_collects_single_page(self, mock_client, sample_events):
-        mock_client.ms_client.http_request.return_value = {"value": sample_events}
+        mock_client.http_request.return_value = {"value": sample_events}
         start = datetime(2025, 1, 1, tzinfo=UTC)
         end = start + timedelta(minutes=5)
 
         result = fetch_events_sequential(mock_client, start, end, max_events=100)
 
         assert result == sample_events
-        assert mock_client.ms_client.http_request.call_count == 1
+        assert mock_client.http_request.call_count == 1
 
     def test_follows_next_link_across_pages(self, mock_client):
         page1 = {
@@ -181,7 +192,7 @@ class TestFetchEventsSequential:
             "@odata.nextLink": "https://graph.microsoft.com/next",
         }
         page2 = {"value": [{"id": "evt-2", "receivedDateTime": "2025-01-01T10:01:00Z"}]}
-        mock_client.ms_client.http_request.side_effect = [page1, page2]
+        mock_client.http_request.side_effect = [page1, page2]
 
         start = datetime(2025, 1, 1, tzinfo=UTC)
         end = start + timedelta(minutes=5)
@@ -189,14 +200,14 @@ class TestFetchEventsSequential:
 
         assert len(result) == 2
         assert [e["id"] for e in result] == ["evt-1", "evt-2"]
-        assert mock_client.ms_client.http_request.call_count == 2
+        assert mock_client.http_request.call_count == 2
 
     def test_stops_at_max_events(self, mock_client):
         page1 = {
             "value": [{"id": f"evt-{i}"} for i in range(5)],
             "@odata.nextLink": "https://graph.microsoft.com/next",
         }
-        mock_client.ms_client.http_request.return_value = page1
+        mock_client.http_request.return_value = page1
 
         start = datetime(2025, 1, 1, tzinfo=UTC)
         end = start + timedelta(minutes=5)
@@ -204,21 +215,36 @@ class TestFetchEventsSequential:
 
         assert len(result) == 3
         # Only one call should be made because limit reached after first page
-        assert mock_client.ms_client.http_request.call_count == 1
+        assert mock_client.http_request.call_count == 1
 
-    def test_breaks_on_exception(self, mock_client, mocker):
-        mock_client.ms_client.http_request.side_effect = Exception("API failure")
-        # demisto.error writes to stdout in the mock - patch to keep test output clean
+    def test_reraises_when_first_page_fails(self, mock_client, mocker):
+        """If the very first page fails we must propagate so lastRun is NOT advanced."""
+        mock_client.http_request.side_effect = Exception("API failure")
+        mocker.patch.object(O365MessageTrace.demisto, "error")
+        start = datetime(2025, 1, 1, tzinfo=UTC)
+        end = start + timedelta(minutes=5)
+
+        with pytest.raises(Exception, match="API failure"):
+            fetch_events_sequential(mock_client, start, end, max_events=100)
+
+    def test_returns_partial_when_later_page_fails(self, mock_client, mocker):
+        """If a later page fails we keep the events collected so far."""
+        page1 = {
+            "value": [{"id": "evt-1", "receivedDateTime": "2025-01-01T10:00:00Z"}],
+            "@odata.nextLink": "https://graph.microsoft.com/next",
+        }
+        mock_client.http_request.side_effect = [page1, Exception("page 2 failure")]
         mocker.patch.object(O365MessageTrace.demisto, "error")
         start = datetime(2025, 1, 1, tzinfo=UTC)
         end = start + timedelta(minutes=5)
 
         result = fetch_events_sequential(mock_client, start, end, max_events=100)
 
-        assert result == []
+        assert len(result) == 1
+        assert result[0]["id"] == "evt-1"
 
     def test_handles_missing_value_key(self, mock_client):
-        mock_client.ms_client.http_request.return_value = {}
+        mock_client.http_request.return_value = {}
         start = datetime(2025, 1, 1, tzinfo=UTC)
         end = start + timedelta(minutes=5)
 
@@ -232,36 +258,36 @@ class TestFetchEventsSequential:
 # ============================================================================
 class TestModuleHealthCheck:
     def test_returns_ok_on_success(self, mock_client):
-        mock_client.ms_client.grant_type = "client_credentials"
-        mock_client.ms_client.http_request.return_value = {"value": []}
+        mock_client.grant_type = "client_credentials"
+        mock_client.http_request.return_value = {"value": []}
 
         assert module_health_check(mock_client) == "ok"
 
     def test_raises_for_authorization_code_flow(self, mock_client):
         from O365MessageTrace import AUTHORIZATION_CODE, DemistoException
 
-        mock_client.ms_client.grant_type = AUTHORIZATION_CODE
+        mock_client.grant_type = AUTHORIZATION_CODE
 
         with pytest.raises(DemistoException, match="Test module is not available"):
             module_health_check(mock_client)
 
     def test_returns_authorization_error_on_401(self, mock_client):
-        mock_client.ms_client.grant_type = "client_credentials"
-        mock_client.ms_client.http_request.side_effect = Exception("Got 401 Unauthorized")
+        mock_client.grant_type = "client_credentials"
+        mock_client.http_request.side_effect = Exception("Got 401 Unauthorized")
 
         result = module_health_check(mock_client)
         assert "Authorization Error" in result
 
     def test_returns_authorization_error_on_403(self, mock_client):
-        mock_client.ms_client.grant_type = "client_credentials"
-        mock_client.ms_client.http_request.side_effect = Exception("403 Forbidden")
+        mock_client.grant_type = "client_credentials"
+        mock_client.http_request.side_effect = Exception("403 Forbidden")
 
         result = module_health_check(mock_client)
         assert "Authorization Error" in result
 
     def test_reraises_unexpected_errors(self, mock_client):
-        mock_client.ms_client.grant_type = "client_credentials"
-        mock_client.ms_client.http_request.side_effect = Exception("network timeout")
+        mock_client.grant_type = "client_credentials"
+        mock_client.http_request.side_effect = Exception("network timeout")
 
         with pytest.raises(Exception, match="network timeout"):
             module_health_check(mock_client)
@@ -272,7 +298,7 @@ class TestModuleHealthCheck:
 # ============================================================================
 class TestAuthTestCommand:
     def test_returns_success_message(self, mock_client):
-        mock_client.ms_client.http_request.return_value = {"value": []}
+        mock_client.http_request.return_value = {"value": []}
 
         result = auth_test_command(mock_client)
 
@@ -281,7 +307,7 @@ class TestAuthTestCommand:
     def test_raises_demisto_exception_on_failure(self, mock_client):
         from O365MessageTrace import DemistoException
 
-        mock_client.ms_client.http_request.side_effect = Exception("boom")
+        mock_client.http_request.side_effect = Exception("boom")
 
         with pytest.raises(DemistoException, match="Authentication was not successful"):
             auth_test_command(mock_client)
@@ -292,7 +318,7 @@ class TestAuthTestCommand:
 # ============================================================================
 class TestGetEventsCommand:
     def test_returns_command_results_without_pushing(self, mock_client, sample_events, mocker):
-        mock_client.ms_client.http_request.return_value = {"value": sample_events}
+        mock_client.http_request.return_value = {"value": sample_events}
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
 
         args = {
@@ -305,13 +331,15 @@ class TestGetEventsCommand:
 
         assert result.outputs_prefix == "O365MessageTrace.Event"
         assert result.outputs_key_field == "id"
-        assert len(result.outputs) == 2
+        outputs = result.outputs
+        assert isinstance(outputs, list)
+        assert len(outputs) == 2
         # _time should have been added
-        assert all("_time" in e for e in result.outputs)
+        assert all("_time" in e for e in outputs)
         send_mock.assert_not_called()
 
     def test_pushes_events_when_requested(self, mock_client, sample_events, mocker):
-        mock_client.ms_client.http_request.return_value = {"value": sample_events}
+        mock_client.http_request.return_value = {"value": sample_events}
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
 
         args = {
@@ -329,7 +357,7 @@ class TestGetEventsCommand:
         assert len(call_kwargs["events"]) == 2
 
     def test_does_not_push_when_no_events(self, mock_client, mocker):
-        mock_client.ms_client.http_request.return_value = {"value": []}
+        mock_client.http_request.return_value = {"value": []}
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
 
         args = {"limit": "10", "should_push_events": "true"}
@@ -339,10 +367,19 @@ class TestGetEventsCommand:
 
     def test_uses_default_limit_and_window(self, mock_client, mocker):
         """When no args supplied, the command should still execute and produce CommandResults."""
-        mock_client.ms_client.http_request.return_value = {"value": []}
+        mock_client.http_request.return_value = {"value": []}
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
 
         result = get_events_command(mock_client, {})
+
+        assert result.outputs == []
+
+    def test_accepts_event_type_argument(self, mock_client, mocker):
+        """The standard ``event_type`` argument must be accepted (and ignored)."""
+        mock_client.http_request.return_value = {"value": []}
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+
+        result = get_events_command(mock_client, {"event_type": "message_trace"})
 
         assert result.outputs == []
 
@@ -355,7 +392,7 @@ class TestFetchEvents:
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
         set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": sample_events}
+        mock_client.http_request.return_value = {"value": sample_events}
 
         fetch_events(mock_client, max_events=100)
 
@@ -371,12 +408,12 @@ class TestFetchEvents:
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": sample_events}
+        mock_client.http_request.return_value = {"value": sample_events}
 
         fetch_events(mock_client, max_events=100)
 
         # First http call params should contain the last_fetch start
-        first_call_params = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]
+        first_call_params = mock_client.http_request.call_args_list[0].kwargs["params"]
         assert "2025-01-01T09:00:00Z" in first_call_params["$filter"]
 
     def test_deduplicates_against_seen_ids(self, mock_client, sample_events, mocker):
@@ -384,7 +421,7 @@ class TestFetchEvents:
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": sample_events}
+        mock_client.http_request.return_value = {"value": sample_events}
 
         fetch_events(mock_client, max_events=100)
 
@@ -397,7 +434,7 @@ class TestFetchEvents:
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
         mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": []}
+        mock_client.http_request.return_value = {"value": []}
 
         fetch_events(mock_client, max_events=100)
 
@@ -407,7 +444,7 @@ class TestFetchEvents:
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
         set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": sample_events}
+        mock_client.http_request.return_value = {"value": sample_events}
 
         fetch_events(mock_client, max_events=100)
 
@@ -425,10 +462,22 @@ class TestFetchEvents:
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": new_events}
+        mock_client.http_request.return_value = {"value": new_events}
 
         fetch_events(mock_client, max_events=100)
 
         new_state = set_last_run.call_args.args[0]
         assert new_state["last_fetch"] == "2025-01-01T10:00:00Z"
         assert set(new_state["seen_ids"]) == {"evt-old", "evt-new"}
+
+    def test_first_page_failure_does_not_advance_last_run(self, mock_client, mocker):
+        """If the very first page errors out, lastRun must NOT be advanced (data-loss protection)."""
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace.demisto, "error")
+        mock_client.http_request.side_effect = Exception("API failure on first page")
+
+        with pytest.raises(Exception, match="API failure"):
+            fetch_events(mock_client, max_events=100)
+
+        set_last_run.assert_not_called()

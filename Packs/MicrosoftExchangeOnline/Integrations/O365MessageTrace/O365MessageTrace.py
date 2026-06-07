@@ -3,11 +3,9 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 
-import urllib3
+import traceback
 from datetime import datetime, timedelta, UTC
 from typing import Any
-
-urllib3.disable_warnings()
 
 
 # ============================================================================
@@ -20,7 +18,6 @@ class Config:
     PRODUCT = "o365_message_trace"
 
     APP_NAME = "o365-message-trace"
-    GRAPH_RESOURCE = "https://graph.microsoft.com"
     GRAPH_SCOPE = "https://graph.microsoft.com/.default"
 
     MESSAGE_TRACES_PATH = "v1.0/admin/exchange/tracing/messageTraces"
@@ -29,17 +26,17 @@ class Config:
 
     DEFAULT_MAX_EVENTS = 50000
     DEFAULT_PAGE_SIZE = 1000  # API default/maximum per page
-    DEFAULT_FIRST_FETCH_MINUTES = 10
+    DEFAULT_FIRST_FETCH_MINUTES = 1
 
 
 # ============================================================================
 # Client
 # ============================================================================
-class Client:
+class Client(MicrosoftClient):
     """Microsoft Graph client for O365 Message Trace events.
 
-    Wraps :class:`MicrosoftClient` from ``MicrosoftApiModule`` so that the
-    integration supports all standard Microsoft authentication methods:
+    Inherits from :class:`MicrosoftClient` (from ``MicrosoftApiModule``) so that
+    the integration supports all standard Microsoft authentication methods:
     client credentials, certificate (thumbprint + private key),
     authorization-code (self-deployed) and Azure Managed Identities.
     """
@@ -62,7 +59,7 @@ class Client:
     ):
         grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         demisto.debug(f"[Auth] Using grant type: {grant_type}")
-        self.ms_client = MicrosoftClient(
+        super().__init__(
             tenant_id=tenant_id,
             auth_id=auth_id,
             enc_key=enc_key,
@@ -105,14 +102,14 @@ class Client:
         """
         if next_link:
             demisto.debug(f"[API] Following @odata.nextLink: {next_link}")
-            return self.ms_client.http_request(method="GET", full_url=next_link, url_suffix="", ok_codes=[200])
+            return self.http_request(method="GET", full_url=next_link, url_suffix="", ok_codes=[200])
 
         params = {
             "$filter": f"receivedDateTime ge {start_date} and receivedDateTime le {end_date}",
             "$top": page_size,
         }
         demisto.debug(f"[API] First page request | params={params}")
-        return self.ms_client.http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params, ok_codes=[200])
+        return self.http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params, ok_codes=[200])
 
 
 # ============================================================================
@@ -156,10 +153,10 @@ def deduplicate_events(events: list[dict], seen_ids: set[str]) -> list[dict]:
 
 def add_time_field(events: list[dict]) -> None:
     """Add the XSIAM-required ``_time`` field to each event."""
+    fallback_time = datetime.now(UTC).strftime(Config.DATE_FORMAT_FILTER)
     for event in events:
         received = event.get("receivedDateTime")
-        if received:
-            event["_time"] = received
+        event["_time"] = received if received else fallback_time
 
 
 # ============================================================================
@@ -175,6 +172,11 @@ def fetch_events_sequential(
 
     Iterates through all available pages using ``@odata.nextLink`` until either
     ``max_events`` is reached or no more pages remain.
+
+    If the first page fails the exception is re-raised so the calling
+    ``fetch_events`` cycle aborts and ``lastRun`` is not advanced (preventing
+    data loss). If a later page fails we keep the events collected so far and
+    log the failure - the next fetch cycle will resume from the high-water mark.
     """
     if end <= start:
         demisto.debug(f"[Fetch] Empty time range ({start.isoformat()} -> {end.isoformat()}). Skipping.")
@@ -196,7 +198,13 @@ def fetch_events_sequential(
                 page_size=Config.DEFAULT_PAGE_SIZE,
             )
         except Exception as e:
-            demisto.error(f"[Fetch] Failed to fetch page for window {start_str} -> {end_str}: {e}")
+            demisto.error(f"[Fetch] Failed to fetch page for window {start_str} -> {end_str}: {e}\n{traceback.format_exc()}")
+            # No events collected yet - propagate so lastRun is NOT updated
+            # and we retry the same window on the next fetch cycle.
+            if not collected:
+                raise
+            # We already have some events from previous pages - stop here and
+            # let the caller persist what we have.
             break
 
         page_events = response.get("value", []) or []
@@ -231,7 +239,7 @@ def module_health_check(client: Client) -> str:
             should be used instead.
     """
     demisto.debug("[Test] Starting test-module")
-    if hasattr(client.ms_client, "grant_type") and client.ms_client.grant_type == AUTHORIZATION_CODE:
+    if hasattr(client, "grant_type") and client.grant_type == AUTHORIZATION_CODE:
         raise DemistoException(
             "Test module is not available for the authorization code flow. "
             "Use the o365-message-trace-auth-test command instead."
@@ -448,11 +456,12 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             fetch_events(client, max_events=max_events)
         elif demisto.command() == "o365-message-trace-generate-login-url":
-            return_results(generate_login_url(client.ms_client))
+            return_results(generate_login_url(client))
 
         else:
             raise NotImplementedError(f"Command '{command}' is not implemented.")
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute '{command}' command. Error: {e}")
 
 

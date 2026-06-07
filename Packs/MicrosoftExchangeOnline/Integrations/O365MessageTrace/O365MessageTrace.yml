@@ -9,13 +9,13 @@ configuration:
   defaultvalue: https://graph.microsoft.com
   type: 0
   section: Connect
-  additionalinfo: Microsoft Graph base URL.
+  additionalinfo: The Microsoft Graph base URL.
 - name: tenant_id
   display: Tenant ID
   required: true
   type: 0
   section: Connect
-  additionalinfo: Customer Azure AD tenant ID (GUID).
+  additionalinfo: The customer Azure AD tenant ID (GUID).
 - name: credentials_client_id
   displaypassword: Client ID
   hiddenusername: true
@@ -36,21 +36,21 @@ configuration:
   type: 9
   section: Connect
   required: false
-  additionalinfo: Used for certificate authentication, as it appears in the "Certificates & secrets" page of the app. The private key of the registered certificate.
+  additionalinfo: The private key of the registered certificate used for certificate authentication, as it appears in the "Certificates & secrets" page of the app.
 - name: certificate_thumbprint
   display: Certificate Thumbprint
   type: 4
   section: Connect
   hidden: true
   required: false
-  additionalinfo: Used for certificate authentication, as it appears in the "Certificates & secrets" page of the app.
+  additionalinfo: The certificate thumbprint used for certificate authentication, as it appears in the "Certificates & secrets" page of the app.
 - name: private_key
   display: Private Key
   type: 14
   section: Connect
   hidden: true
   required: false
-  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  additionalinfo: The private key of the registered certificate used for certificate authentication.
 - name: redirect_uri
   display: Application redirect URI (for self-deployed mode)
   type: 0
@@ -69,7 +69,7 @@ configuration:
   type: 8
   section: Connect
   required: false
-  additionalinfo: When running on an Azure VM with assigned identity.
+  additionalinfo: Whether to use Azure Managed Identities when running on an Azure VM with assigned identity.
 - name: managed_identities_client_id
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
@@ -77,18 +77,6 @@ configuration:
   section: Connect
   required: false
   additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on an Azure VM.
-- name: max_fetch
-  display: Maximum number of events per fetch
-  required: false
-  defaultvalue: '50000'
-  type: 0
-  section: Collect
-  additionalinfo: The maximum number of events to fetch in a single fetch cycle.
-- name: isFetchEvents
-  display: Fetch events
-  required: false
-  type: 8
-  section: Collect
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -101,6 +89,18 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- name: max_fetch
+  display: Maximum number of events per fetch
+  required: false
+  defaultvalue: '50000'
+  type: 0
+  section: Collect
+  additionalinfo: The maximum number of events to fetch in a single fetch cycle.
+- name: isFetchEvents
+  display: Fetch events
+  required: false
+  type: 8
+  section: Collect
 - defaultvalue: '1'
   display: Events Fetch Interval
   name: eventFetchInterval
@@ -126,17 +126,17 @@ script:
     execution: false
     name: o365-message-trace-auth-reset
   - name: o365-message-trace-get-events
-    description: Manually retrieve Message Trace events. Intended for development and debugging. Use with caution as it may cause event duplication when push to XSIAM is enabled.
+    description: Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     arguments:
     - name: limit
       description: The maximum number of events to return.
       defaultValue: '50'
     - name: start_time
-      description: Filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z").
+      description: The start time to filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z").
     - name: end_time
-      description: Filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").
+      description: The end time to filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").
     - name: should_push_events
-      description: If true, the command sends the retrieved events to XSIAM. Otherwise, it only displays them.
+      description: Whether the command sends the retrieved events to XSIAM. If false, it only displays them.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -147,7 +147,7 @@ script:
       description: The unique identifier of the message trace event.
       type: String
     - contextPath: O365MessageTrace.Event.receivedDateTime
-      description: The timestamp when the message was received.
+      description: The timestamp when the message was received (e.g., "2020-01-01T00:11:22Z").
       type: Date
     - contextPath: O365MessageTrace.Event.senderAddress
       description: The sender email address.
@@ -162,7 +162,7 @@ script:
       description: The delivery status of the message (e.g., Delivered, Pending, Failed, Quarantined).
       type: String
     - contextPath: O365MessageTrace.Event._time
-      description: The XSIAM event timestamp (ISO 8601).
+      description: The XSIAM event timestamp in ISO 8601 format (e.g., "2020-01-01T00:11:22Z").
       type: Date
   isfetchevents: true
   runonce: false

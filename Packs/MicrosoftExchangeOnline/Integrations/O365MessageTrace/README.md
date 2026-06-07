@@ -51,7 +51,7 @@ POST https://graph.microsoft.com/v1.0/servicePrincipals
 
 ## Authentication
 
-Microsoft integrations (Graph and Azure) in Cortex use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication.
+Microsoft integrations (Graph and Azure) in Cortex XSIAM use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication.
 
 This integration uses the **[Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)** authentication method.
 
@@ -71,12 +71,12 @@ Content-Type: application/x-www-form-urlencoded
 grant_type=client_credentials&scope=https://graph.microsoft.com/.default&client_id={client_id}&client_secret={client_secret}
 ```
 
-## Configure O365 Message Trace in Cortex
+## Configure O365 Message Trace in Cortex XSIAM
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | Microsoft Graph base URL. | True |
-| Tenant ID | Customer Azure AD tenant ID (GUID). | True |
+| Server URL | The Microsoft Graph base URL. | True |
+| Tenant ID | The customer Azure AD tenant ID (GUID). | True |
 | Client ID | The Application (Client) ID registered in Azure AD. | True |
 | Client Secret | The client secret for the Azure AD application. | False |
 | Certificate Thumbprint | Used for certificate authentication, as it appears in the "Certificates & secrets" page of the app. | False |
@@ -177,7 +177,7 @@ Manually retrieve Message Trace events. Intended for development and debugging. 
 | limit | The maximum number of events to return. Default is `50`. | Optional |
 | start_time | Filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., `10 minutes ago`, `2024-01-01T00:00:00Z`). | Optional |
 | end_time | Filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., `now`, `2024-01-01T00:00:00Z`). | Optional |
-| should_push_events | If `true`, the command sends the retrieved events to XSIAM. Otherwise, it only displays them. Possible values: `true`, `false`. Default is `false`. | Optional |
+| should_push_events | If `true`, the command sends the retrieved events to Cortex XSIAM. Otherwise, it only displays them. Possible values: `true`, `false`. Default is `false`. | Optional |
 
 #### Context Output
 
@@ -189,7 +189,7 @@ Manually retrieve Message Trace events. Intended for development and debugging. 
 | O365MessageTrace.Event.recipientAddress | String | The recipient email address. |
 | O365MessageTrace.Event.subject | String | The subject of the message. |
 | O365MessageTrace.Event.status | String | The delivery status of the message (e.g., Delivered, Pending, Failed, Quarantined). |
-| O365MessageTrace.Event._time | Date | The XSIAM event timestamp (ISO 8601). |
+| O365MessageTrace.Event._time | Date | The Cortex XSIAM event timestamp (ISO 8601). |
 
 #### Command example
 
