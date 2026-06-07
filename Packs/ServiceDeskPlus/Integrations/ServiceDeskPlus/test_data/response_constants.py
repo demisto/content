@@ -630,3 +630,34 @@ RESPONSE_UPDATE_NOTE = {
         "created_time": {"display_value": "2023-01-01 10:00:00"}
     }
 }
+
+# Simulates the ManageEngine API response when mandatory fields (e.g. technician,
+# resolution) are missing and the server rejects the status change with a warning.
+RESPONSE_WARNING_MISSING_FIELDS = {
+    "response_status": {
+        "messages": [
+            {
+                "fields": ["technician", "resolution"],
+                "status_code": 4003,
+                "type": "warning",
+            }
+        ],
+        "status": "warning",
+        "status_code": 3000,
+    }
+}
+
+# Simulates a generic failure response (no request body returned).
+RESPONSE_FAILURE_GENERIC = {
+    "response_status": {
+        "messages": [
+            {
+                "message": "Operation failed due to an internal error.",
+                "status_code": 4000,
+                "type": "failed",
+            }
+        ],
+        "status": "failed",
+        "status_code": 4000,
+    }
+}

@@ -336,6 +336,76 @@ def create_human_readable(output: dict) -> dict:
     return hr
 
 
+def check_response_status(result: dict) -> None:
+    """
+    Inspects the ``response_status`` field returned by the ManageEngine API.
+
+    The API always returns HTTP 200, even when the requested operation was
+    rejected by the server (e.g. mandatory fields are missing).  Failures and
+    warnings are signalled exclusively through the JSON body.
+
+    When the status is not a clean success (status_code 2000 / status
+    "success") this function raises a ``DemistoException`` that contains the
+    human-readable server messages so the caller sees a proper error/warning
+    entry instead of a misleading "successfully updated/closed" message.
+
+    The ``response_status`` object uses a two-tier code system:
+
+    * **Top-level ``status_code``** — overall outcome of the API call.
+      ``2000`` = success, ``3000`` = warning/partial, ``4000`` = failure.
+    * **Per-message ``status_code``** (inside ``messages[]``) — the specific
+      reason for each individual problem.  ``4003`` means a mandatory field
+      validation failed; the ``fields`` list names the offending fields.
+
+    Example warning response (mandatory fields missing before closing a request)::
+
+        {
+            "response_status": {
+                "messages": [
+                    {
+                        "fields": ["technician", "resolution"],
+                        "status_code": 4003,
+                        "type": "warning"
+                    }
+                ],
+                "status": "warning",
+                "status_code": 3000
+            }
+        }
+
+    Args:
+        result: The full JSON response dict returned by ``http_request``.
+
+    Raises:
+        DemistoException: If the API response indicates a warning or failure.
+    """
+    response_status = result.get("response_status")
+
+    # If the response has no response_status field at all, treat it as success.
+    if not response_status:
+        return
+
+    status = response_status.get("status", "success")
+    status_code = response_status.get("status_code", 2000)
+
+    # 2000 / "success" means the operation completed without issues
+    if status == "success" and status_code == 2000:
+        return
+
+    messages = response_status.get("messages", [])
+    message_texts = []
+    for msg in messages:
+        text = msg.get("message") or ", ".join(str(f) for f in msg.get("fields", []))
+        if text:
+            message_texts.append(f"[{msg.get('type', 'error').upper()}] {text}")
+
+    details = "; ".join(message_texts) if message_texts else f"status_code={status_code}"
+    raise DemistoException(
+        f"ManageEngine Service Desk Plus API returned a non-success response "
+        f"(status={status!r}, status_code={status_code}): {details}"
+    )
+
+
 def resolution_human_readable(output: dict) -> dict:
     """
     Creates the human readable dictionary from the output of the resolution of the request
@@ -564,6 +634,7 @@ def update_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     params = {"input_data": f"{query}"}
     request_id = args.get("request_id")
     result = client.http_request("PUT", url_suffix=f"requests/{request_id}", params=params)
+    check_response_status(result)
     request = result.get("request", None)
     output = {}
     context: dict = defaultdict(list)
@@ -736,6 +807,7 @@ def close_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     input_data = {"request": {"closure_info": closure_info}}
     params = {"input_data": f"{input_data}"}
     result = client.http_request("PUT", url_suffix=f"requests/{request_id}/_close", params=params)
+    check_response_status(result)
     hr = f"### Successfully closed request {request_id}"
     return hr, {}, result
 
