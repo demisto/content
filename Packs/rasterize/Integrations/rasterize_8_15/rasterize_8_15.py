@@ -1294,7 +1294,7 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
         if IS_LIGHTWEIGHT:
             page_loaded_normally = wait_for_page_load_with_memory_guard(
                 tab_ready_event=tab_ready_event,
-                wait_for_page_load_with_memory_guard=navigation_timeout,
+                navigation_timeout=navigation_timeout,
                 tab_id=tab.id,
                 path=path,
             )
@@ -1305,14 +1305,14 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
                 )
             elif not tab_ready_event.is_set():
                 return_warning(
-                    f"Warning: Rasterize failed to navigate to the specified path due to a timeout of {navigation_timeout} seconds,"
-                    f" some content might be missing .\n{path=}"
+                    f"Warning: Rasterize failed to navigate to the specified path due to a timeout "
+                    f"of {navigation_timeout} seconds, some content might be missing .\n{path=}"
                 )
         else:
             if not tab_ready_event.wait(navigation_timeout):
                 return_warning(
-                    f"Warning: Rasterize failed to navigate to the specified path due to a timeout of {navigation_timeout} seconds,"
-                    f" some content might be missing .\n{path=}"
+                    f"Warning: Rasterize failed to navigate to the specified path due to a timeout "
+                    f"of {navigation_timeout} seconds, some content might be missing .\n{path=}"
                 )
 
         demisto.debug(f"After waiting for tab_ready_event on {tab.id=}, {path=}")

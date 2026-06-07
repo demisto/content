@@ -1,4 +1,4 @@
-import rasterize
+import rasterize_8_15 as rasterize
 from rasterize_8_15 import *
 import demistomock as demisto
 from CommonServerPython import entryTypes
@@ -17,7 +17,7 @@ import json
 # disable warning from urllib3. these are emitted when python driver can't connect to chrome yet
 logging.getLogger("urllib3").setLevel(logging.ERROR)
 
-RETURN_ERROR_TARGET = "rasterize.return_error"
+RETURN_ERROR_TARGET = "rasterize_8_15.return_error"
 
 
 def util_read_tsv(file_path):
@@ -56,7 +56,7 @@ def test_rasterize_email_image(caplog, capfd, mocker):
 
 
 def test_rasterize_email_image_array(caplog, capfd, mocker):
-    mocker.patch("rasterize.demisto.command", return_value="rasterize-email")
+    mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-email")
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
         f.write(
             '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -70,7 +70,7 @@ def test_rasterize_email_image_array(caplog, capfd, mocker):
 
 
 def test_rasterize_email_pdf(caplog, capfd, mocker):
-    mocker.patch("rasterize.demisto.command", return_value="rasterize-pdf")
+    mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-pdf")
     with capfd.disabled() and NamedTemporaryFile("w+") as f:
         f.write(
             '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -102,7 +102,7 @@ def test_get_chrome_options():
 
 
 def test_rasterize_large_html(capfd, mocker):
-    mocker.patch("rasterize.demisto.command", return_value="rasterize-html")
+    mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-html")
     with capfd.disabled():
         path = os.path.realpath("test_data/large.html")
         mocker.patch.object(rasterize, "support_multithreading")
@@ -111,14 +111,14 @@ def test_rasterize_large_html(capfd, mocker):
 
 
 def test_rasterize_html(mocker, capfd):
-    mocker.patch("rasterize.demisto.command", return_value="rasterize-html")
+    mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-html")
     with capfd.disabled():
         path = os.path.realpath("test_data/file.html")
         mocker.patch.object(demisto, "args", return_value={"EntryID": "test"})
         mocker.patch.object(demisto, "getFilePath", return_value={"path": path})
         mocker.patch.object(os, "rename")
         mocker.patch.object(os.path, "realpath", return_value=f"{os.getcwd()}/test_data/file.html")
-        mocker_output = mocker.patch("rasterize.return_results")
+        mocker_output = mocker.patch("rasterize_8_15.return_results")
         mocker.patch.object(rasterize, "support_multithreading")
         rasterize_html_command()
         assert mocker_output.call_args.args[0]["File"] == "email.png"
@@ -285,7 +285,7 @@ class TestRasterizeIncludeUrl:
             - Verify that it runs as expected.
         """
         mocker.patch("os.remove")
-        mocker.patch("rasterize.demisto.command", return_value="rasterize-image")
+        mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-image")
         with capfd.disabled(), NamedTemporaryFile("w+") as f:
             f.write(
                 '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8">'
@@ -308,7 +308,7 @@ def test_log_warning():
     Then    make sure the level is ERROR
     """
     import logging
-    from rasterize import pypdf_logger
+    from rasterize_8_15 import pypdf_logger
 
     assert pypdf_logger.level == logging.ERROR
     assert pypdf_logger.level == logging.ERROR
@@ -337,7 +337,7 @@ def test_poppler_version():
 
 
 def test_get_list_item():
-    from rasterize import get_list_item
+    from rasterize_8_15 import get_list_item
 
     my_list = ["a", "b", "c"]
 
@@ -349,7 +349,7 @@ def test_get_list_item():
 
 
 def test_add_filename_suffix():
-    from rasterize import add_filename_suffix
+    from rasterize_8_15 import add_filename_suffix
 
     my_list = ["a", "b", "c"]
     my_list_with_suffix = add_filename_suffix(my_list, "sfx")
@@ -360,7 +360,7 @@ def test_add_filename_suffix():
 
 
 def test_get_output_filenames():
-    from rasterize import get_list_item, add_filename_suffix
+    from rasterize_8_15 import get_list_item, add_filename_suffix
 
     file_name = ["foo_01", "foo_02", "foo_03"]
     file_names = argToList(file_name)
@@ -379,7 +379,7 @@ def test_chrome_manager_case_chrome_instances_file_is_empty(mocker):
     When    chrome instances file is empty
     Then    make sure code running into case 1 calling generate_new_chrome_instance which return browser and chrome port.
     """
-    from rasterize import chrome_manager
+    from rasterize_8_15 import chrome_manager
 
     instance_id = "new_instance_id"
     chrome_options = "new_chrome_options"
@@ -410,7 +410,7 @@ def test_chrome_manager_case_chromes_options_exist_and_instance_id_not_linked(mo
     When    chrome instances file is not empty and instance id is not linked to the chrome options
     Then    make sure code running into case 2 and calling generate_new_chrome_instance which return browser and chrome port.
     """
-    from rasterize import chrome_manager, read_json_file
+    from rasterize_8_15 import chrome_manager, read_json_file
 
     instance_id = "instance_id_that_does_not_exist"
     chrome_options = "chrome_options2"
@@ -442,7 +442,7 @@ def test_chrome_manager_case_new_chrome_options_and_instance_id(mocker):
     When    chrome instances file is not empty
     Then    make sure code running into case 3 and calling generate_new_chrome_instance which return browser and chrome port.
     """
-    from rasterize import chrome_manager, read_json_file
+    from rasterize_8_15 import chrome_manager, read_json_file
 
     instance_id = "instance_id_that_does_not_exist"
     chrome_options = "chrome_options_that_does_not_exist"
@@ -476,7 +476,7 @@ def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
     Then    make sure code running into case 4, terminating old chrome port, generating new one,
             and update the chrome instances file.
     """
-    from rasterize import chrome_manager, read_json_file
+    from rasterize_8_15 import chrome_manager, read_json_file
 
     instance_id = "22222222-2222-2222-2222-222222222222"  # exist
     chrome_options = "chrome_options_that_does_not_exist"
@@ -511,7 +511,7 @@ def test_chrome_manager_case_instance_id_and_chrome_options_exist_and_linked(moc
     When    chrome instances file is not empty, and instance id and chrome options linked.
     Then    make sure code running into case 5 and using the browser that already in used.
     """
-    from rasterize import chrome_manager, read_json_file
+    from rasterize_8_15 import chrome_manager, read_json_file
 
     instance_id = "22222222-2222-2222-2222-222222222222"  # exist
     chrome_options = "chrome_options2"
@@ -544,7 +544,7 @@ def test_generate_chrome_port():
     When    needed to generate new chrome port
     Then    make sure the function generate valid chrome port.
     """
-    from rasterize import generate_chrome_port
+    from rasterize_8_15 import generate_chrome_port
 
     port = generate_chrome_port()
     assert 0 <= len(port) <= 5
@@ -556,7 +556,7 @@ def test_generate_chrome_port_no_port_available(mocker):
     When    needed to generate new chrome port
     Then    make sure the function will raise an error and return None
     """
-    from rasterize import generate_chrome_port
+    from rasterize_8_15 import generate_chrome_port
 
     rasterize.FIRST_CHROME_PORT = 0
     rasterize.MAX_CHROMES_COUNT = 0
@@ -572,7 +572,7 @@ def test_get_chrome_browser_error(mocker: MockerFixture):
     When    Launching a pychrome browser.
     Then    Make sure the error is caught and debugged properly.
     """
-    from rasterize import get_chrome_browser
+    from rasterize_8_15 import get_chrome_browser
 
     def raise_connection_error(url):
         raise requests.exceptions.ConnectionError("connection error")
@@ -597,7 +597,7 @@ def test_backoff(mocker):
     When    Launching a pychrome browser.
     Then    Make sure to wait the required amount.
     """
-    from rasterize import backoff
+    from rasterize_8_15 import backoff
 
     sleep_mock = mocker.patch("time.sleep")
 
@@ -613,11 +613,11 @@ def test_is_mailto_urls(mocker: MockerFixture):
     When    Attempting to make a screenshot.
     Then    Make sure the correct output is returned.
     """
-    from rasterize import screenshot_image
+    from rasterize_8_15 import screenshot_image
 
     mock_handler = MockPychromeEventHandler()
     mock_handler.is_mailto = True
-    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
+    mocker.patch("rasterize_8_15.navigate_to_path", return_value=mock_handler)
     res = screenshot_image(None, MockTab(), "url", None, None)
 
     assert res == (None, 'URLs that start with "mailto:" cannot be rasterized.\nURL: url')
@@ -651,7 +651,7 @@ def test_screenshot_image_local_file(mocker: MockerFixture):
     """The function returns an error when attempting to rasterize a local file"""
     mock_browser = mocker.Mock()
     mock_tab = mocker.Mock()
-    mocker.patch("rasterize.demisto.command", return_value="rasterize-test")
+    mocker.patch("rasterize_8_15.demisto.command", return_value="rasterize-test")
 
     local_file_path = "file:///path/to/local/file.html"
 
@@ -676,11 +676,11 @@ def test_is_private_network_urls(mocker: MockerFixture):
     When    Attempting to make a screenshot.
     Then    Make sure the correct output is returned.
     """
-    from rasterize import screenshot_image
+    from rasterize_8_15 import screenshot_image
 
     mock_handler = MockPychromeEventHandler()
     mock_handler.is_private_network_url = True
-    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
+    mocker.patch("rasterize_8_15.navigate_to_path", return_value=mock_handler)
 
     res = screenshot_image(None, MockTab(), "url", None, None)
 
@@ -703,7 +703,7 @@ def test_increase_counter_chrome_instances_file(mocker):
     Then:
         - The function writes to the correct file and increase the "RASTERIZATION_COUNT" by 1
     """
-    from rasterize import increase_counter_chrome_instances_file, RASTERIZATION_COUNT
+    from rasterize_8_15 import increase_counter_chrome_instances_file, RASTERIZATION_COUNT
     from unittest.mock import mock_open
 
     mocker.patch("os.path.exists", return_value=True)
@@ -727,7 +727,7 @@ def test_add_new_chrome_instance(mocker):
     Then:
         - The function writes to the correct file the new chrome instance.
     """
-    from rasterize import add_new_chrome_instance
+    from rasterize_8_15 import add_new_chrome_instance
     from unittest.mock import mock_open
 
     mocker.patch("os.path.exists", return_value=True)
@@ -758,7 +758,7 @@ def test_terminate_port_chrome_instances_file(mocker):
     Then:
         - The function writes to the correct file the data without the port to terminate.
     """
-    from rasterize import terminate_port_chrome_instances_file
+    from rasterize_8_15 import terminate_port_chrome_instances_file
     from unittest.mock import mock_open
 
     mocker.patch("os.path.exists", return_value=True)
@@ -781,7 +781,7 @@ def test_write_chrome_instances_empty(mocker):
     Then:
         - The function creates and writes to the correct file, calls json.dump with the expected arguments.
     """
-    from rasterize import write_chrome_instances_file
+    from rasterize_8_15 import write_chrome_instances_file
     from unittest.mock import mock_open
 
     mock_file_content = util_load_json("test_data/chrome_instances.json")
@@ -802,7 +802,7 @@ def test_read_json_file(mocker):
     Then:
         - The function reads the JSON file and returns the correct content.
     """
-    from rasterize import read_json_file
+    from rasterize_8_15 import read_json_file
 
     mocker.patch("os.path.exists", return_value=True)
     mock_file_content = util_load_json("test_data/chrome_instances.json")
@@ -819,7 +819,7 @@ def test_rasterize_mailto(capfd, mocker):
     Then:
         - Verify that perform_rasterize exit with the expected error message.
     """
-    mocker_output = mocker.patch("rasterize.return_results")
+    mocker_output = mocker.patch("rasterize_8_15.return_results")
 
     with pytest.raises(SystemExit) as excinfo, capfd.disabled():
         perform_rasterize(path="mailto:some.person@gmail.com", width=250, height=250, rasterize_type=RasterizeType.PNG)
@@ -840,7 +840,7 @@ def test_rasterize_private_network(capfd: pytest.CaptureFixture, mocker: MockerF
     Then:
         - Verify that perform_rasterize exit with the expected error message.
     """
-    mocker_output = mocker.patch("rasterize.return_results")
+    mocker_output = mocker.patch("rasterize_8_15.return_results")
 
     with pytest.raises(SystemExit) as excinfo, capfd.disabled():
         perform_rasterize(path="0.0.0.8/test", width=250, height=250, rasterize_type=RasterizeType.PNG)
@@ -904,7 +904,7 @@ def test_handle_request_paused(mocker: MockerFixture):
         - Verify that tab.Fetch.failRequest executed with the correct requestId and errorReason Aborted
     """
 
-    mocker.patch("rasterize.BLOCKED_URLS", ["cloudflare.com"])
+    mocker.patch("rasterize_8_15.BLOCKED_URLS", ["cloudflare.com"])
     kwargs = {"requestId": "1", "request": {"url": "cloudflare.com"}}
     mock_tab = MagicMock(spec=pychrome.Tab)
     mock_fetch = mocker.MagicMock()
@@ -1063,7 +1063,7 @@ def test_chrome_manager_one_port_use_same_port(mocker):
     Then:
         - The function writes to the correct file the data and selects a port that already use the given chrome_option.
     """
-    from rasterize import chrome_manager_one_port, read_json_file
+    from rasterize_8_15 import chrome_manager_one_port, read_json_file
 
     instance_id = "22222222-2222-2222-2222-222222222221"  # not exist
     chrome_options = "chrome_options2"
@@ -1094,7 +1094,7 @@ def test_chrome_manager_one_port_open_new_port(mocker):
     Then:
         - The function terminate all the ports that are open in chrome_manager, and opens a new chrome port to use.
     """
-    from rasterize import chrome_manager_one_port, read_json_file
+    from rasterize_8_15 import chrome_manager_one_port, read_json_file
 
     instance_id = "22222222-2222-2222-2222-222222222221"  # not exist
     chrome_options = "new_chrome_options"
@@ -1128,7 +1128,7 @@ def test_rasterize_email_command_default_arge(mocker):
     When: The rasterize_email_command function is called
     Then: The function should generate a PNG (default) image and return it as a file result
     """
-    from rasterize import rasterize_email_command
+    from rasterize_8_15 import rasterize_email_command
 
     mock_args = {
         "htmlBody": "<p>Test email body</p>",
@@ -1136,9 +1136,9 @@ def test_rasterize_email_command_default_arge(mocker):
         "height": "1500px",
     }
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mock_perform_rasterize = mocker.patch("rasterize.perform_rasterize", return_value=[("image_data", None)])
-    mock_file_result = mocker.patch("rasterize.fileResult", return_value={"Type": "image"})
-    mock_uuid = mocker.patch("rasterize.uuid.uuid4", return_value="abcd-1234")
+    mock_perform_rasterize = mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("image_data", None)])
+    mock_file_result = mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "image"})
+    mock_uuid = mocker.patch("rasterize_8_15.uuid.uuid4", return_value="abcd-1234")
     mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1161,12 +1161,12 @@ def test_rasterize_email_command_png(mocker):
     When: The rasterize_email_command function is called
     Then: The function should generate a PNG image and return it as a file result
     """
-    from rasterize import rasterize_email_command
+    from rasterize_8_15 import rasterize_email_command
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "width": "800", "height": "600", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize.perform_rasterize", return_value=[("image_data", None)])
-    mock_file_result = mocker.patch("rasterize.fileResult", return_value={"Type": "image"})
+    mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("image_data", None)])
+    mock_file_result = mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "image"})
     mock_results = mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1181,12 +1181,12 @@ def test_rasterize_email_command_pdf(mocker):
     When: The rasterize_email_command function is called
     Then: The function should generate a PDF file and return it as a file result
     """
-    from rasterize import rasterize_email_command
+    from rasterize_8_15 import rasterize_email_command
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "width": "800", "height": "600", "type": "pdf", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize.perform_rasterize", return_value=[("pdf_data", None)])
-    mock_file_result = mocker.patch("rasterize.fileResult", return_value={"Type": "file"})
+    mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("pdf_data", None)])
+    mock_file_result = mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "file"})
     mock_results = mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1201,12 +1201,12 @@ def test_rasterize_email_command_full_screen(mocker):
     When: The rasterize_email_command function is called
     Then: The perform_rasterize function should be called with full_screen=True
     """
-    from rasterize import rasterize_email_command
+    from rasterize_8_15 import rasterize_email_command
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "full_screen": "true", "type": "png", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mock_perform_rasterize = mocker.patch("rasterize.perform_rasterize", return_value=[("image_data", None)])
-    mock_file_result = mocker.patch("rasterize.fileResult", return_value={"Type": "image"})
+    mock_perform_rasterize = mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("image_data", None)])
+    mock_file_result = mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "image"})
     mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1229,12 +1229,12 @@ def test_rasterize_email_command_offline_mode(mocker):
     When: The rasterize_email_command function is called
     Then: The perform_rasterize function should be called with offline_mode=True
     """
-    from rasterize import rasterize_email_command
+    from rasterize_8_15 import rasterize_email_command
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "offline": "true", "type": "png", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mock_perform_rasterize = mocker.patch("rasterize.perform_rasterize", return_value=[("image_data", None)])
-    mocker.patch("rasterize.fileResult", return_value={"Type": "image"})
+    mock_perform_rasterize = mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("image_data", None)])
+    mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "image"})
     mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1256,12 +1256,12 @@ def test_rasterize_email_command_custom_navigation_timeout(mocker):
     When: The rasterize_email_command function is called
     Then: The perform_rasterize function should be called with the specified navigation_timeout
     """
-    from rasterize import rasterize_email_command
+    from rasterize_8_15 import rasterize_email_command
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "max_page_load_time": "30", "type": "png", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mock_perform_rasterize = mocker.patch("rasterize.perform_rasterize", return_value=[("image_data", None)])
-    mocker.patch("rasterize.fileResult", return_value={"Type": "image"})
+    mock_perform_rasterize = mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("image_data", None)])
+    mocker.patch("rasterize_8_15.fileResult", return_value={"Type": "image"})
     mocker.patch.object(demisto, "results")
 
     rasterize_email_command()
@@ -1283,11 +1283,11 @@ def test_rasterize_email_command_error_handling(mocker):
     When: The rasterize_email_command function is called
     Then: The function should log the error and return an error message
     """
-    from rasterize import rasterize_email_command
+    from rasterize_8_15 import rasterize_email_command
 
     mock_args = {"htmlBody": "<p>Test email body</p>", "type": "png", "file_name": "test_email"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize.perform_rasterize", side_effect=Exception("Test error"))
+    mocker.patch("rasterize_8_15.perform_rasterize", side_effect=Exception("Test error"))
     mock_error = mocker.patch.object(demisto, "error")
 
     with pytest.raises(SystemExit):
@@ -1302,7 +1302,7 @@ def test_extract_content_from_tab_html(mocker):
     When: Calling extract_content_from_tab
     Then: Should return markdown-formatted content and final URL
     """
-    from rasterize import extract_content_from_tab
+    from rasterize_8_15 import extract_content_from_tab
 
     mock_tab = mocker.Mock()
     mock_tab.id = "test_tab_id"
@@ -1324,7 +1324,7 @@ def test_extract_content_from_tab_json(mocker):
     When: Calling extract_content_from_tab
     Then: Should return formatted JSON and final URL
     """
-    from rasterize import extract_content_from_tab
+    from rasterize_8_15 import extract_content_from_tab
 
     mock_tab = mocker.Mock()
     mock_tab.id = "test_tab_id"
@@ -1344,7 +1344,7 @@ def test_extract_content_from_tab_empty_content(mocker, capfd):
     When: Calling extract_content_from_tab
     Then: Should raise DemistoException
     """
-    from rasterize import extract_content_from_tab
+    from rasterize_8_15 import extract_content_from_tab
 
     mock_tab = mocker.Mock()
     mock_tab.id = "test_tab_id"
@@ -1364,7 +1364,7 @@ def test_extract_content_from_tab_exception(mocker, capfd):
     When: Calling extract_content_from_tab
     Then: Should return error message
     """
-    from rasterize import extract_content_from_tab
+    from rasterize_8_15 import extract_content_from_tab
 
     mock_tab = mocker.Mock()
     mock_tab.id = "test_tab_id"
@@ -1385,7 +1385,7 @@ def test_extract_text_content_success(mocker, capfd):
     When: Calling extract_text_content
     Then: Should return extracted content and final URL
     """
-    from rasterize import extract_text_content
+    from rasterize_8_15 import extract_text_content
 
     mock_browser = mocker.Mock()
     mock_tab = mocker.Mock()
@@ -1395,8 +1395,8 @@ def test_extract_text_content_success(mocker, capfd):
     mock_handler.is_mailto = False
     mock_handler.is_private_network_url = False
 
-    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
-    mocker.patch("rasterize.extract_content_from_tab", return_value=("# Test Content", "https://example.com"))
+    mocker.patch("rasterize_8_15.navigate_to_path", return_value=mock_handler)
+    mocker.patch("rasterize_8_15.extract_content_from_tab", return_value=("# Test Content", "https://example.com"))
 
     with capfd.disabled():
         content, url = extract_text_content(mock_browser, mock_tab, "https://example.com", 0, 30)
@@ -1411,7 +1411,7 @@ def test_extract_text_content_mailto_url(mocker, capfd):
     When: Calling extract_text_content
     Then: Should return None and error message
     """
-    from rasterize import extract_text_content
+    from rasterize_8_15 import extract_text_content
 
     mock_browser = mocker.Mock()
     mock_tab = mocker.Mock()
@@ -1422,7 +1422,7 @@ def test_extract_text_content_mailto_url(mocker, capfd):
     mock_handler.is_private_network_url = False
     mock_handler.document_url = "mailto:test@example.com"
 
-    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
+    mocker.patch("rasterize_8_15.navigate_to_path", return_value=mock_handler)
 
     with capfd.disabled():
         content, error_msg = extract_text_content(mock_browser, mock_tab, "mailto:test@example.com", 0, 30)
@@ -1438,7 +1438,7 @@ def test_extract_text_content_private_network(mocker, capfd):
     When: Calling extract_text_content
     Then: Should return None and error message
     """
-    from rasterize import extract_text_content
+    from rasterize_8_15 import extract_text_content
 
     mock_browser = mocker.Mock()
     mock_tab = mocker.Mock()
@@ -1449,7 +1449,7 @@ def test_extract_text_content_private_network(mocker, capfd):
     mock_handler.is_private_network_url = True
     mock_handler.document_url = "http://192.168.1.1"
 
-    mocker.patch("rasterize.navigate_to_path", return_value=mock_handler)
+    mocker.patch("rasterize_8_15.navigate_to_path", return_value=mock_handler)
 
     with capfd.disabled():
         content, error_msg = extract_text_content(mock_browser, mock_tab, "http://192.168.1.1", 0, 30)
@@ -1465,12 +1465,12 @@ def test_rasterize_extract_command_success(mocker):
     When: Calling rasterize_extract_command
     Then: Should return CommandResults with extracted content
     """
-    from rasterize import rasterize_extract_command
+    from rasterize_8_15 import rasterize_extract_command
 
     mock_args = {"url": "https://example.com", "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize.perform_rasterize", return_value=[("# Test Content", "https://example.com")])
-    mock_return_results = mocker.patch("rasterize.return_results")
+    mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("# Test Content", "https://example.com")])
+    mock_return_results = mocker.patch("rasterize_8_15.return_results")
 
     rasterize_extract_command()
 
@@ -1487,16 +1487,16 @@ def test_rasterize_extract_command_multiple_urls(mocker):
     When: Calling rasterize_extract_command
     Then: Should return CommandResults for each URL
     """
-    from rasterize import rasterize_extract_command
+    from rasterize_8_15 import rasterize_extract_command
 
     urls = ["https://example1.com", "https://example2.com"]
     mock_args = {"url": urls, "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
     mocker.patch(
-        "rasterize.perform_rasterize",
+        "rasterize_8_15.perform_rasterize",
         return_value=[("# Content 1", "https://example1.com"), ("# Content 2", "https://example2.com")],
     )
-    mock_return_results = mocker.patch("rasterize.return_results")
+    mock_return_results = mocker.patch("rasterize_8_15.return_results")
 
     rasterize_extract_command()
 
@@ -1513,12 +1513,12 @@ def test_rasterize_extract_command_extraction_error(mocker):
     When: Calling rasterize_extract_command
     Then: Should return error CommandResults
     """
-    from rasterize import rasterize_extract_command
+    from rasterize_8_15 import rasterize_extract_command
 
     mock_args = {"url": "https://example.com", "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize.perform_rasterize", return_value=[("Extraction Error: Test error", "https://example.com")])
-    mock_return_results = mocker.patch("rasterize.return_results")
+    mocker.patch("rasterize_8_15.perform_rasterize", return_value=[("Extraction Error: Test error", "https://example.com")])
+    mock_return_results = mocker.patch("rasterize_8_15.return_results")
 
     rasterize_extract_command()
 
@@ -1535,12 +1535,12 @@ def test_rasterize_extract_command_string_error(mocker):
     When: Calling rasterize_extract_command
     Then: Should return error CommandResults
     """
-    from rasterize import rasterize_extract_command
+    from rasterize_8_15 import rasterize_extract_command
 
     mock_args = {"url": "https://example.com", "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch("rasterize.perform_rasterize", return_value=["Error: Connection failed"])
-    mock_return_results = mocker.patch("rasterize.return_results")
+    mocker.patch("rasterize_8_15.perform_rasterize", return_value=["Error: Connection failed"])
+    mock_return_results = mocker.patch("rasterize_8_15.return_results")
 
     rasterize_extract_command()
 
