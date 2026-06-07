@@ -1,7 +1,14 @@
 import json
 
 import pytest
-from GSuiteApiModule import COMMON_MESSAGES, DemistoException, GSuiteClient
+from GSuiteApiModule import (
+    COMMON_MESSAGES,
+    DemistoException,
+    GSuiteClient,
+    GSuiteCredentialApplier,
+    UcpCredentialSelector,
+    UcpException,
+)
 
 with open("test_data/service_account_json.txt") as f:
     TEST_JSON = f.read()
@@ -386,3 +393,138 @@ def test_strip_dict():
     sample_input = {"key1": "  VALUE_1 ", "key2": ""}
     sample_output = {"key1": "VALUE_1"}
     assert GSuiteClient.strip_dict(sample_input) == sample_output
+
+
+# ---------------------------------------------------------------------------
+# UCP (ConnectUs) support tests
+# ---------------------------------------------------------------------------
+
+
+def _file_credentials(content):
+    """Build a UCP file/service-account credential envelope."""
+    return {"type": "service_account", "service_account": {"content": content}}
+
+
+class TestUcpCredentialSelector:
+    def test_resolve_capability_default(self, mocker):
+        """resolve_capability should delegate to resolve_ucp_capability with no sub_capability."""
+        mocker.patch("GSuiteApiModule.resolve_ucp_capability", return_value="automation-and-remediation")
+        selector = UcpCredentialSelector()
+        assert selector.resolve_capability() == ("automation-and-remediation", None)
+
+    def test_method_unique_id(self, mocker):
+        """method_unique_id should resolve via get_ucp_method_unique_id."""
+        mocker.patch("GSuiteApiModule.resolve_ucp_capability", return_value="cap")
+        get_id = mocker.patch("GSuiteApiModule.get_ucp_method_unique_id", return_value="method-1")
+        selector = UcpCredentialSelector()
+        assert selector.method_unique_id() == "method-1"
+        get_id.assert_called_once_with("cap", None)
+
+    def test_fetch(self, mocker):
+        """fetch should return (method_unique_id, credentials)."""
+        mocker.patch("GSuiteApiModule.resolve_ucp_capability", return_value="cap")
+        mocker.patch("GSuiteApiModule.get_ucp_method_unique_id", return_value="method-1")
+        creds = _file_credentials({"type": "service_account"})
+        get_creds = mocker.patch("GSuiteApiModule.get_ucp_credentials", return_value=creds)
+        selector = UcpCredentialSelector()
+        assert selector.fetch() == ("method-1", creds)
+        get_creds.assert_called_once_with("method-1")
+
+    def test_invalidate(self, mocker):
+        """invalidate should delegate to invalidate_ucp_credentials."""
+        invalidate = mocker.patch("GSuiteApiModule.invalidate_ucp_credentials")
+        UcpCredentialSelector().invalidate("method-1")
+        invalidate.assert_called_once_with("method-1")
+
+
+class TestGSuiteCredentialApplier:
+    def test_apply_file_nested_content(self):
+        """extract_service_account_dict should unwrap a nested service-account file."""
+        sa = {"type": "service_account", "project_id": "p"}
+        creds = _file_credentials(sa)
+        assert GSuiteCredentialApplier().extract_service_account_dict(creds) == sa
+
+    def test_apply_file_string_content(self):
+        """String content should be parsed into a dict."""
+        sa = {"type": "service_account", "project_id": "p"}
+        creds = _file_credentials(json.dumps(sa))
+        assert GSuiteCredentialApplier().extract_service_account_dict(creds) == sa
+
+    def test_apply_file_top_level_fallback(self):
+        """When no nested 'content', the type sub-dict itself is the service account."""
+        creds = {"type": "service_account", "service_account": {"type": "service_account", "project_id": "p"}}
+        result = GSuiteCredentialApplier().extract_service_account_dict(creds)
+        assert result == {"type": "service_account", "project_id": "p"}
+
+    def test_unsupported_type_raises(self, mocker):
+        """A non-file credential type should raise UcpException."""
+        mocker.patch.object(GSuiteCredentialApplier, "apply_file")
+        with pytest.raises(UcpException):
+            GSuiteCredentialApplier().extract_service_account_dict({"type": "api_key", "api_key": {"key": "x"}})
+
+    def test_empty_content_raises(self):
+        """Empty service-account content should raise UcpException."""
+        with pytest.raises(UcpException):
+            GSuiteCredentialApplier().extract_service_account_dict(_file_credentials({}))
+
+
+class TestGSuiteClientUcp:
+    def test_init_fetches_from_ucp_when_no_service_account(self, mocker):
+        """When no service_account_dict and UCP is active, credentials come from UCP."""
+        sa = GSuiteClient.safe_load_non_strict_json(TEST_JSON)
+        mocker.patch("GSuiteApiModule.should_use_ucp_auth", return_value=True)
+        from_info = mocker.patch("GSuiteApiModule.service_account.Credentials.from_service_account_info")
+        selector = mocker.MagicMock()
+        selector.fetch.return_value = ("method-1", _file_credentials(sa))
+
+        client = GSuiteClient(None, proxy=False, verify=False, ucp_selector=selector)
+
+        selector.fetch.assert_called_once()
+        from_info.assert_called_once_with(info=sa)
+        assert client._ucp_method_id == "method-1"
+
+    def test_init_uses_params_when_not_ucp(self, mocker):
+        """When a service_account_dict is provided, UCP is not consulted."""
+        sa = GSuiteClient.safe_load_non_strict_json(TEST_JSON)
+        mocker.patch("GSuiteApiModule.service_account.Credentials.from_service_account_info")
+
+        client = GSuiteClient(sa, proxy=False, verify=False)
+
+        assert client._ucp_method_id is None
+        assert client._ucp_selector is None
+
+    def test_invalidate_on_auth_error(self, mocker):
+        """A 401/403 response should invalidate the cached UCP credentials."""
+        sa = GSuiteClient.safe_load_non_strict_json(TEST_JSON)
+        mocker.patch("GSuiteApiModule.should_use_ucp_auth", return_value=True)
+        mocker.patch("GSuiteApiModule.service_account.Credentials.from_service_account_info")
+        selector = mocker.MagicMock()
+        selector.fetch.return_value = ("method-1", _file_credentials(sa))
+        client = GSuiteClient(None, proxy=False, verify=False, ucp_selector=selector)
+
+        response = (mocker.MagicMock(status=401), b"{}")
+        client._maybe_invalidate_ucp_credentials(response)
+
+        selector.invalidate.assert_called_once_with("method-1")
+
+    def test_no_invalidate_on_success(self, mocker):
+        """A 200 response should not invalidate credentials."""
+        sa = GSuiteClient.safe_load_non_strict_json(TEST_JSON)
+        mocker.patch("GSuiteApiModule.should_use_ucp_auth", return_value=True)
+        mocker.patch("GSuiteApiModule.service_account.Credentials.from_service_account_info")
+        selector = mocker.MagicMock()
+        selector.fetch.return_value = ("method-1", _file_credentials(sa))
+        client = GSuiteClient(None, proxy=False, verify=False, ucp_selector=selector)
+
+        client._maybe_invalidate_ucp_credentials((mocker.MagicMock(status=200), b"{}"))
+
+        selector.invalidate.assert_not_called()
+
+    def test_no_invalidate_when_not_ucp(self, mocker):
+        """Non-UCP clients never invalidate."""
+        sa = GSuiteClient.safe_load_non_strict_json(TEST_JSON)
+        mocker.patch("GSuiteApiModule.should_use_ucp_auth", return_value=False)
+        mocker.patch("GSuiteApiModule.service_account.Credentials.from_service_account_info")
+        client = GSuiteClient(sa, proxy=False, verify=False)
+        # Should be a no-op (no selector); just ensure it does not raise.
+        client._maybe_invalidate_ucp_credentials((mocker.MagicMock(status=401), b"{}"))

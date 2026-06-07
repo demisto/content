@@ -2078,16 +2078,21 @@ def main() -> None:  # pragma: no cover
         params["user_id"] = user_id
         params["user_service_account_json"] = account_json
 
-        if not account_json:
+        # In UCP (ConnectUs) mode the service-account JSON is provided by the
+        # connection profile, so the integration parameter is optional.
+        using_ucp = should_use_ucp_auth()
+
+        if not account_json and not using_ucp:
             raise DemistoException("Please fill out the User's Service Account JSON field.")
 
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(account_json)
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(account_json) if account_json else None
         verify_certificate = not params.get("insecure", False)
         proxy = params.get("proxy", False)
 
         headers = {"Content-Type": "application/json"}
 
-        # prepare client class object
+        # prepare client class object. When service_account_dict is None and UCP
+        # is active, GSuiteClient fetches the credentials from the UCP profile.
         gsuite_client = GSuiteClient(
             service_account_dict,
             base_url="https://www.googleapis.com/",

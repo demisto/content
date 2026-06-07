@@ -34,6 +34,115 @@ COMMON_MESSAGES: dict[str, str] = {
     "UNEXPECTED_ERROR": "An unexpected error occurred.",
 }
 
+# UCP credential type strings that carry a service-account JSON file.
+UCP_FILE_CREDENTIAL_TYPES = ("file", "service_account")
+# UCP credential type strings that carry an OAuth2 access token.
+UCP_OAUTH2_CREDENTIAL_TYPES = ("oauth2", "oauth2_client_credentials", "oauth2_authorization_code")
+
+
+class UcpCredentialSelector:
+    """Transport-agnostic UCP credential *selection* building block.
+
+    Encapsulates the logic of choosing the correct UCP connection profile
+    (capability -> sub_capability -> profile -> credential object) and fetching
+    its credentials, by delegating to the importable free functions in
+    ``CommonServerPython`` (``resolve_ucp_capability``,
+    ``get_ucp_method_unique_id``, ``get_ucp_credentials`` and
+    ``invalidate_ucp_credentials``).
+
+    This class is intentionally independent of any HTTP transport so it can be
+    reused by clients that are not based on ``BaseClient`` (for example,
+    ``GSuiteClient`` which authenticates via the google-auth library).
+
+    Override ``resolve_capability`` to provide an integration-specific
+    sub_capability mapping.
+    """
+
+    def resolve_capability(self) -> tuple:
+        """Resolve the ``(capability, sub_capability)`` for the current command.
+
+        :return: Tuple of ``(capability, sub_capability)``.
+        :rtype: ``tuple``
+        """
+        return resolve_ucp_capability(), None
+
+    def method_unique_id(self) -> str:
+        """Resolve the connection-profile ``method_unique_id`` to use.
+
+        :return: The resolved ``method_unique_id``.
+        :rtype: ``str``
+        """
+        capability, sub_capability = self.resolve_capability()
+        return get_ucp_method_unique_id(capability, sub_capability)
+
+    def fetch(self) -> tuple:
+        """Resolve the profile and fetch its credential object from UCP.
+
+        :return: Tuple of ``(method_unique_id, credentials_dict)``.
+        :rtype: ``tuple``
+        """
+        method_id = self.method_unique_id()
+        return method_id, get_ucp_credentials(method_id)
+
+    def invalidate(self, method_unique_id: str) -> None:
+        """Invalidate the cached credentials for a profile (e.g. after a 401).
+
+        :param method_unique_id: The ``method_unique_id`` to invalidate.
+        :return: None
+        """
+        invalidate_ucp_credentials(method_unique_id)
+
+
+class GSuiteCredentialApplier:
+    """UCP *apply-per-type* building block for GSuite-based clients.
+
+    Maps a UCP credential object to a service-account JSON dict that GSuite
+    integrations feed into ``service_account.Credentials.from_service_account_info``.
+
+    Each per-type method is individually overridable so a specific integration
+    can adjust how a credential type is interpreted without touching the
+    dispatch logic.
+    """
+
+    def extract_service_account_dict(self, credentials: dict[str, Any]) -> dict[str, Any]:
+        """Dispatch on the credential ``type`` and return a service-account dict.
+
+        :param credentials: The credential dict from ``get_ucp_credentials()``.
+        :return: The service-account JSON dict for ``from_service_account_info``.
+        :rtype: ``dict``
+        :raises UcpException: If the credential type is unsupported or empty.
+        """
+        cred_type = credentials.get("type")
+        if cred_type in UCP_FILE_CREDENTIAL_TYPES:
+            return self.apply_file(credentials)
+        demisto.error(
+            '[UCP][GSuiteApiModule.py] GSuiteCredentialApplier: Unsupported credential type: "{}". '
+            "Supported types for GSuite: {}.".format(cred_type, UCP_FILE_CREDENTIAL_TYPES)
+        )
+        raise UcpException()
+
+    def apply_file(self, credentials: dict[str, Any]) -> dict[str, Any]:
+        """Extract the service-account JSON dict from a file credential.
+
+        The UCP envelope nests the payload under a key named after the type
+        (e.g. ``credentials['service_account']``) with the JSON under
+        ``content``; for backward compatibility we fall back to the top level.
+
+        :param credentials: The credential dict from ``get_ucp_credentials()``.
+        :return: The service-account JSON dict.
+        :rtype: ``dict``
+        :raises UcpException: If no service-account content is present.
+        """
+        cred_type = credentials.get("type")
+        file_data = credentials.get(cred_type, credentials) if cred_type else credentials
+        content = file_data.get("content", file_data)
+        if isinstance(content, str):
+            content = GSuiteClient.safe_load_non_strict_json(content)
+        if not content:
+            demisto.error("[UCP][GSuiteApiModule.py] GSuiteCredentialApplier: service-account content is empty.")
+            raise UcpException()
+        return content
+
 
 class GSuiteClient:
     """
@@ -42,23 +151,39 @@ class GSuiteClient:
 
     def __init__(
         self,
-        service_account_dict: dict[str, str],
+        service_account_dict: dict[str, str] | None,
         proxy: bool,
         verify: bool,
         base_url: str = "",
         headers: dict[str, str] | None = None,
         user_id: str = "",
+        ucp_selector: "UcpCredentialSelector | None" = None,
+        ucp_applier: "GSuiteCredentialApplier | None" = None,
     ):
         self.headers = headers
-        try:
-            self.credentials = service_account.Credentials.from_service_account_info(info=service_account_dict)
-        except Exception:
-            raise ValueError(COMMON_MESSAGES["JSON_PARSE_ERROR"])
         self.proxy = proxy
         self.verify = verify
         self.authorized_http: Any = None
         self.base_url = base_url
         self.user_id = user_id
+
+        # UCP (ConnectUs) support: when running in UCP mode, the service-account
+        # JSON is fetched from the selected connection profile instead of from
+        # the integration parameters. The selector is retained so the cached
+        # credentials can be invalidated and refreshed after an auth error.
+        self._ucp_selector = ucp_selector
+        self._ucp_method_id: str | None = None
+        if not service_account_dict and should_use_ucp_auth():
+            selector = ucp_selector or UcpCredentialSelector()
+            self._ucp_selector = selector
+            self._ucp_method_id, ucp_creds = selector.fetch()
+            applier = ucp_applier or GSuiteCredentialApplier()
+            service_account_dict = applier.extract_service_account_dict(ucp_creds)
+
+        try:
+            self.credentials = service_account.Credentials.from_service_account_info(info=service_account_dict)
+        except Exception:
+            raise ValueError(COMMON_MESSAGES["JSON_PARSE_ERROR"])
 
     def set_authorized_http(self, scopes: list[str], subject: str | None = None, timeout: int = 60) -> None:
         """
@@ -111,7 +236,27 @@ class GSuiteClient:
 
         with GSuiteClient.http_exception_handler():
             response = self.authorized_http.request(headers=self.headers, method=method, uri=url, body=body)
+            self._maybe_invalidate_ucp_credentials(response)
             return GSuiteClient.validate_and_extract_response(response)
+
+    def _maybe_invalidate_ucp_credentials(self, response: tuple) -> None:
+        """Invalidate cached UCP credentials when the response is an auth error.
+
+        In UCP mode an expired/rotated credential is signalled by a 401/403.
+        Dropping the cache entry forces the next request to fetch fresh
+        credentials from the connection profile.
+
+        :param response: Tuple of ``(httplib2.Response, content)``.
+        :return: None
+        """
+        if not self._ucp_selector or not self._ucp_method_id:
+            return
+        try:
+            status = response[0].status
+        except (IndexError, AttributeError):
+            return
+        if status in (401, 403):
+            self._ucp_selector.invalidate(self._ucp_method_id)
 
     @staticmethod
     def handle_http_error(error: httplib2.socks.HTTPError) -> None:
