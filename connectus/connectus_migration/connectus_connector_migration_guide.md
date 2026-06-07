@@ -19,7 +19,7 @@
 - [Appendix B: Authentication Architecture — Frontend Transformation](#appendix-b-authentication-architecture--frontend-transformation)
 - [Appendix C: Field ID Uniqueness Rule](#appendix-c-field-id-uniqueness-rule)
 - [Appendix D: Excluded Integrations (Out of Scope)](#appendix-d-excluded-integrations-out-of-scope)
-- [Appendix E: Integrations Requiring Manual Migration](#appendix-e-integrations-requiring-manual-migration)
+- [Appendix E: Integrations Requiring Manual Intervention](#appendix-e-integrations-requiring-manual-migration)
 - [Appendix F: Joint Migration With the SaaS Team](#appendix-f-joint-migration-with-the-saas-team)
 - [Appendix G: Engine / EngineGroup / Proxy Exclusion List](#appendix-g-engine--enginegroup--proxy-exclusion-list)
 - [Appendix H: Single-Engine Integrations](#appendix-h-single-engine-integrations)
@@ -85,7 +85,7 @@ connectors/<vendor>/
 
 ## Section 2: Connector Specification Reference
 
-> **🕒 Last synced with [README.md](../README.md) and [schema/](../schema/) on 2026-05-27.**
+> **🕒 Last synced with [README.md](../README.md) and [schema/](../schema/) on 2026-06-05.**
 > Re-check freshness against `README.md` and `schema/*.schema.json` before relying on this section.
 
 This section is a compact mirror of the live spec in [`README.md`](README.md:1) and the JSON schemas under [`schema/`](schema/). When in doubt, the schemas are the source of truth.
@@ -134,7 +134,7 @@ Defines authentication profiles. Schema: [`schema/connection.schema.json`](schem
 | `oauth2_jwt_bearer` | OAuth 2.0 JWT Bearer Flow | Server-to-server using a JWT assertion. |
 | `plain` | Username & Password | Basic authentication. |
 | `api_key` | API Key | Token-based authentication. |
-| `external_auth` | Custom Plugin-Based Authentication | Custom auth flows implemented via external auth handlers in `unified-connector-platform`. |
+| `passthrough` | Store-and-forward credentials (no IDP) | Stores an arbitrary, content-defined set of credential fields encrypted and returns them verbatim to the handler on `getCredentials` — no token exchange. Used during mass migration when a connection cannot be cleanly mapped to a typed profile. See §2.6.1. |
 
 #### Profile Schema
 
@@ -144,7 +144,7 @@ Defines authentication profiles. Schema: [`schema/connection.schema.json`](schem
 | `type` | string | ✅ | Authentication type (see table above). |
 | `title` | string | ✅ | Display name. |
 | `description` | string | ✅ | Profile description. |
-| `configurations` | FieldGroup[] | Conditional | Required for `external_auth` and for any profile carrying auth-input fields (e.g. `oauth2_client_credentials`, `plain`, `api_key`, `oauth2_jwt_bearer`). For `oauth2_authorization_code` profiles all credentials come from `{SAAS_REGISTRY.*}` and `configurations` is typically omitted. Fields inside must include `metadata.auth.parameter` (see §2.6). |
+| `configurations` | FieldGroup[] | Conditional | Required for `passthrough` and for any profile carrying auth-input fields (e.g. `oauth2_client_credentials`, `plain`, `api_key`, `oauth2_jwt_bearer`). For `oauth2_authorization_code` profiles all credentials come from `{SAAS_REGISTRY.*}` and `configurations` is typically omitted. Fields inside must include `metadata.auth.parameter` (see §2.6). |
 
 ### 2.3 OAuth2-Specific Fields
 
@@ -217,9 +217,121 @@ Fields within authentication profile configurations **must** include `metadata.a
 | `api_key` | `api_key` |
 | `oauth2_authorization_code` | *(none — credentials come from `{SAAS_REGISTRY.*}`)* |
 | `oauth2_jwt_bearer` | `subject_email`, `credentials_file` |
-| `external_auth` | *(handler-defined — see note below)* |
+| `passthrough` | *(free-form — defined per connector in YAML; no enum, no PR-time contract. See §2.6.1.)* |
 
-> **External auth note**: For `external_auth` profiles, the `auth.parameter` values are **defined by the handler implementation**, not predefined by the platform. Examples include `application_key` (Datadog dual-key auth). When you add a new `external_auth` plugin, you must also add its parameter names to the `auth.parameter` enum in [`schema/definitions/field.schema.json`](schema/definitions/field.schema.json) so validation accepts them.
+#### 2.6.1 Passthrough Profile
+
+The `passthrough` profile type lets a connector store and forward an arbitrary, per-connector set of credential fields **without** any IDP/token exchange. Because this is a **mass migration**, we cannot always map a legacy integration's connection to a specific typed profile (`oauth2_*` / `plain` / `api_key` / `oauth2_jwt_bearer`). `passthrough` is the escape hatch: configure whatever fields the connection needs in the profile, and the platform returns them all back, verbatim, on `getCredentials`.
+
+##### Data Flow (all profile types)
+
+1. Backend reads the profile `type` (e.g., `oauth2_client_credentials`).
+2. Backend finds fields by their `metadata.auth.parameter` value (e.g., `parameter: "client_key"`).
+3. Backend maps user-entered values to the correct auth parameters using the parameter tag, **not** the field ID.
+4. For `passthrough` profiles, the backend **skips token exchange entirely** and returns the decrypted user inputs verbatim to the handler on `getCredentials`, keyed by `metadata.auth.parameter`.
+
+##### Semantics
+
+| Behavior | Description |
+|---|---|
+| Storage | Each field value is encrypted on save (same encryption pipeline as other profile types). |
+| Token exchange | **None.** The platform never contacts an IDP for `passthrough` profiles. |
+| `getCredentials` | Returns the decrypted user inputs to the handler **as-is**, keyed by `metadata.auth.parameter`. The handler is responsible for using them (Basic auth header, custom header, mTLS material, etc.). |
+| Field shape | 100% YAML-defined. Any field type allowed by the schema (`input`, `select`, `checkbox`, `checkbox_group`, etc.) is supported. Field names (`auth.parameter` values) are free-form — no enum. |
+| Test connection | Must be implemented entirely by the handler (no platform-side validation of the credentials at save time). |
+| Refresh / rotation | None — the platform performs no auth flow for this type. Any rotation is a handler concern or a user-driven re-save. |
+
+##### When to use `passthrough` vs a typed profile
+
+| Choose… | When… |
+|---|---|
+| **Typed flow** (`oauth2_*`, `plain`, `api_key`, `oauth2_jwt_bearer`) | The platform should manage the credential lifecycle (token exchange, refresh, expiry tracking). Use whenever the connector cleanly fits one of these standard shapes. |
+| **`passthrough`** | The platform's only job is "store these fields encrypted, give them back to the handler when asked." Ideal for mass-migration waves where each connector has a different credential shape but the handler can use the raw inputs directly. No platform code change required per connector. |
+
+##### Wire contract — `getCredentials` response
+
+For a `passthrough` profile, the platform returns a payload of the form:
+
+```json
+{
+  "profile_id": "passthrough.acme_api",
+  "profile_type": "passthrough",
+  "parameters": {
+    "client_id": "<decrypted user value>",
+    "client_secret": "<decrypted user value>",
+    "accept_user_certificate": true
+  }
+}
+```
+
+Keys in `parameters` come from `metadata.auth.parameter`, **not** from `field.id`. Values preserve the original field type (string, boolean, number, array for multi-select, etc.). Handlers consuming a `passthrough` profile should validate field presence and types defensively at runtime — there is **no PR-time contract enforcement** for `passthrough` (unlike `plain` / `api_key` / `oauth2_*`, which require named parameters via OPA validation).
+
+##### Security notes
+
+- Raw secrets are decrypted on every `getCredentials` call. A compromised handler leaks the actual secret (there is no platform-issued short-lived token to revoke). Audit logging on `getCredentials` is recommended for all `passthrough` profiles.
+- Set `options.mask: true` on every sensitive field so the UI does not echo the value.
+- Treat `auth.parameter` names as **immutable** once a connector is published — renaming a parameter silently breaks stored credentials (no migration framework today).
+
+##### Example
+
+```yaml
+profiles:
+  - id: "passthrough.acme_api"
+    type: "passthrough"
+    title: "Acme API Credentials"
+    description: "Stores Acme client credentials and TLS preferences. Values are returned as-is to the handler."
+    configurations:
+      - fields:
+          - id: "acme_client_id"
+            title: "Client ID"
+            field_type: "input"
+            metadata:
+              auth:
+                parameter: "client_id"
+            options:
+              mask: false
+              create_modifiers:
+                required: true
+              edit_modifiers:
+                required: true
+          - id: "acme_client_secret"
+            title: "Client Secret"
+            field_type: "input"
+            metadata:
+              auth:
+                parameter: "client_secret"
+            options:
+              mask: true
+              create_modifiers:
+                required: true
+              edit_modifiers:
+                required: true
+          - id: "acme_accept_user_cert"
+            title: "Accept User Certificate"
+            field_type: "checkbox"
+            metadata:
+              auth:
+                parameter: "accept_user_certificate"
+            options:
+              mask: false
+              default_value: false
+              create_modifiers:
+                required: false
+              edit_modifiers:
+                required: false
+```
+
+Handlers reference a passthrough profile in `auth_options` exactly as they reference any other profile, with no special syntax:
+
+```yaml
+# components/handlers/<module>/handler.yaml
+capabilities:
+  - id: "automation"
+    auth_options:
+      - id: "passthrough.acme_api"
+        workloads:
+          - "acme-api"
+```
 
 ### 2.7 configurations.yaml
 
@@ -242,16 +354,29 @@ Defines how a specific handler uses the connector. Schema: [`schema/handler.sche
 | `metadata.version` | semver | ✅ | Handler version. |
 | `metadata.description` | string | ✅ | Handler description. |
 | `metadata.module` | string | ❌ | Module name (e.g., `"xsoar"`, `"discovery"`). Determines which handler-specific metadata keys are forwarded to this handler. |
+| `metadata.tags` | string[] | ❌ | Handler tags. |
+| `metadata.labels` | object | ❌ | Handler-specific metadata labels. Free-form key/value pairs forwarded to the handler at runtime. |
 | `metadata.ownership` | Ownership | ✅ | Team and maintainers. |
 | `enabled` | boolean | ✅ | Whether the handler is active. |
 | `triggering.type` | string | ✅ | `PUB_SUB` or `ZERO_SCALE`. |
-| `triggering.labels` | object | ❌ | Handler-specific labels (e.g., `xsoar-integration-id`, `xsoar-pack-id`). |
-| `capabilities` | HandlerCapability[] | ✅ | Capability-auth mappings. |
+| `triggering.labels` | object | ❌ | Handler-specific labels (e.g., `xsoar-integration-id`, `xsoar-pack-id`, `xsoar-long-running-credentials-profile-id`). |
+| `capabilities` | HandlerCapability[] | ✅ | Capability-auth mappings. Each capability entry MAY declare an `actions[]` array for instance-level operations exposed in the UI (see "Action Schema" below). |
+| `test_connection` | TestConnection | Conditional | Connection-test configuration. **Required** unless every `auth_options[].id` in the file is `"none"` (fully-anonymous handler) — in that case `test_connection` may be omitted because there are no credentials to test. |
 | `test_connection.type` | string | ✅ | `endpoint` or `service`. |
 | `test_connection.host` | string | Conditional | Required when `type: endpoint`. Supports `{tenant_id}` interpolation. |
 | `test_connection.service` | string | Conditional | Required when `type: service` (e.g., `"xsoar"`). |
 | `test_connection.endpoint` | string | ✅ | API endpoint path for the verification call. |
 | `test_connection.headers` | object | ❌ | HTTP headers (used with `type: endpoint`). |
+
+#### Action Schema
+
+Actions are declared directly on each `capabilities[]` entry via `capabilities[].actions[]`. They surface as instance-level operations the user can trigger from the UI (e.g., "Reset Issues Last Run"). Migrated XSOAR handlers always place actions on the **sub-capability** level (see §3.8 for the mapping from XSOAR fetch flags to action types).
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `type` | string | ✅ | Action type identifier. Must be one of: `reset_integration_context`, `reset_assets_last_run`, `reset_incidents_last_run`, `reset_feed_last_run`, `reset_events_last_run`. |
+| `display` | string | ❌ | Pretty display name shown in the UI. When omitted, the platform supplies a default. |
+| `description` | string | ❌ | Human-readable description of what the action does. When omitted, the platform supplies a default. |
 
 ### 2.9 serializer.yaml
 
@@ -369,6 +494,7 @@ Schema: [`schema/definitions/field-options.schema.json`](schema/definitions/fiel
 | `placeholder` | string | ❌ | Ghost text in the input. |
 | `default_value` | any | ❌ | Initial value. For `select` it must match one of `values[].key`; for `multi_select` it must be an array of keys, each matching one `values[].key`. For `checkbox_group` it is an array of `{key, value}` pairs. **When the field declares `metadata.dynamic_values`** (see §2.16), `default_value` is a literal pre-selection hint — applied only if the runtime-fetched list contains the literal key, otherwise silently ignored. |
 | `values` | array | ❌ | Options for select-style fields. **Per the live `field-options.schema.json` both `select` and `multi_select` use the `{key, label}` shape** (`SelectValuesItem` / `MultiSelectValuesItem`, each requiring `key` + `label`). **Must be absent** when `metadata.dynamic_values` is declared. |
+| `empty_values_message` | string | ❌ | Message displayed when a `select` or `multi_select` field has **no options to show** at runtime (e.g., `dynamic_values` returns an empty list, or static `values` is empty). **Only valid on `select` and `multi_select`** field types (enforced by JSON Schema). Note: this is the "no options at all" placeholder text — it is **not** the same as prepending a selectable empty/"No issue type" option (see §3.2.2 item 12, which remains open). |
 | `hint` | string | ❌ | Hint text beneath the input. |
 | `layout` | object | ❌ | `cols` (≤ 6 for `input`/`text_area`/`select`/`multi_select`) and `row_span`. |
 | `create_modifiers` | object | ❌ | `{required, hidden, read_only}` applied on instance creation. |
@@ -419,17 +545,102 @@ The `metadata` object on a field is a free-form enrichment bag. Keys are classif
 | **Handler-specific** | Keys matching handler directory names (e.g., `xsoar`, `cwp`, `discovery`) | Forwarded only to the matching handler. |
 | **Common enrichment** | All other keys | Forwarded to all handlers. |
 
-#### `metadata.event.publish` (connection-profile fields only)
+#### `metadata.event.publish` — Publishing Field Values in Lifecycle Events (connection-profile fields only)
 
-The optional `metadata.event.publish: true` flag opts a **connection-profile field** into the create/edit lifecycle pub/sub event payload, so handlers receive the value without an extra round-trip to get-credentials.
+Connection profiles often carry **non-secret operational parameters** alongside credentials — for example, an engine selector, a "Trust Any Certificate" toggle, a proxy hostname, or a region. By default, connection-profile field values are **not** sent over the pub/sub message — they are only available to the handler via the **get-credentials** API. But there are scenarios where the XSOAR BE needs these values **before creating the instance** (e.g., `engine`, `proxy`, `insecure`/trust-any-cert), which means an extra get-credentials round-trip isn't viable.
 
-| Rule | Detail |
-|------|--------|
-| Scope | Only valid on fields inside `connection.yaml profiles[].configurations[].fields[]`. Forbidden in `connection.yaml general_configurations`, all of `configurations.yaml`, and all of `capabilities.yaml`. |
-| Mutual exclusion | Cannot coexist with `metadata.auth` on the same field — auth parameters are secrets and must always flow through get-credentials. |
-| Shape | `{ publish: <boolean> }` — modelled as an object so it can grow future options without a breaking change. |
+The optional `metadata.event.publish: true` flag opts a connection-profile field into the **create/edit lifecycle pub/sub event payload**, so handlers (and the BE) receive the value directly, without an extra round-trip to get-credentials.
 
-See README [Publishing Field Values in Lifecycle Events](README.md:412).
+> **Migration rule**: `engine` / `engine_group`, `proxy`, and `insecure` (Trust Any Certificate) fields that live inside a **connection profile** MUST carry `metadata.event.publish: true`, because the XSOAR BE needs these values at instance-creation time. See §3.6.
+
+##### Shape
+
+```yaml
+metadata:
+  event:
+    publish: true
+```
+
+`metadata.event` is a platform-internal metadata key (joining `auth`, `connector`, and `dynamic_values`). The `event` key itself is **stripped** before per-handler pub/sub message construction — but the field's **user-entered value** is included in the lifecycle event payload.
+
+##### Scope and Rules
+
+| Rule | Detail / Enforcement |
+|------|----------------------|
+| Scope | Only valid on fields inside `connection.yaml profiles[].configurations[].fields[]`. Forbidden in `connection.yaml general_configurations`, all of `configurations.yaml`, and all of `capabilities.yaml` (JSON Schema). |
+| Mutual exclusion | `metadata.event` and `metadata.auth` are **mutually exclusive** on the same field — auth parameters are secrets and must always flow through get-credentials, never through the lifecycle event payload (JSON Schema `if/then/not`). |
+| Shape | Exactly `{ publish: <boolean> }` (`additionalProperties: false`) — modelled as an object so it can grow future options without a breaking change. |
+
+##### Metadata Forwarded with the Published Value
+
+When the platform constructs the lifecycle event for handler **H**, for each connection-profile field whose `metadata.event.publish == true`, it applies the standard [three-category classification](#217-field-metadata) to the field's other metadata keys:
+
+- **Platform-internal keys** (`auth`, `connector`, `dynamic_values`, `event`) — stripped.
+- **Handler-specific keys** (`xsoar`, `cwp`, `discovery`, …) — included **only** if the key matches H's module name. This lets a connection-profile field carry per-handler backend labels (`metadata.xsoar.config_type`, `metadata.xsoar.credentials_type`, etc.) that travel alongside the value to the right handler.
+- **Common enrichment keys** (everything else) — included for every handler.
+
+##### Example
+
+```yaml
+profiles:
+  - id: "oauth2_client_credentials.salesforce"
+    type: "oauth2_client_credentials"
+    title: "OAuth 2.0 Client Credentials Flow"
+    configurations:
+      - fields:
+          - id: "client_key"
+            title: "Consumer Key (Client ID)"
+            field_type: "input"
+            metadata:
+              auth:
+                parameter: "client_key"          # secret → get-credentials, NOT in event
+            options:
+              mask: false
+              create_modifiers: { required: true }
+              edit_modifiers:   { required: true }
+
+          - id: "trust_any_cert"
+            title: "Trust Any Certificate"
+            field_type: "switch"
+            metadata:
+              event:
+                publish: true                    # ★ value flows into the lifecycle event
+              xsoar:                              # handler-specific label → xsoar only
+                config_type: "backend"
+                credentials_type: "taxii_server"
+            options:
+              mask: false
+              default_value: false
+              create_modifiers: { required: false }
+              edit_modifiers:   { required: false }
+```
+
+**Resulting lifecycle event published to the `xsoar` handler:**
+
+```json
+{
+  "lifecycle": "on_create",
+  "profile_id": "oauth2_client_credentials.salesforce",
+  "fields": {
+    "trust_any_cert": {
+      "value": false,
+      "metadata": {
+        "xsoar": {
+          "config_type": "backend",
+          "credentials_type": "taxii_server"
+        }
+      }
+    }
+  }
+}
+```
+
+- `client_key` is **absent** — it's a secret (carries `metadata.auth.parameter`) and must be fetched via get-credentials.
+- `trust_any_cert` is **present** because `metadata.event.publish: true` opted it in.
+- The `event` and `auth` keys are stripped (platform-internal).
+- `metadata.xsoar` accompanies the value because it's a handler-specific key matching the target module.
+
+> **Note**: A field with `metadata.event.publish: true` is rejected by the validator if it also carries `metadata.auth.parameter`. Auth parameters are secrets — they always flow through get-credentials, never through the lifecycle event payload.
 
 ### 2.18 Validation Rules
 
@@ -485,23 +696,39 @@ Items still requiring a design or platform decision. Resolved items have been mo
 4. 🟡 **IN PROGRESS** — Platform documentation site per connector for `metadata.documentation` in [`connector.yaml`](README.md:103). Tech team to tell us how to generate these. --> no block
 5. 🟡 **IN PROGRESS** — Tech team to create a tool that generates the `help` sections for each connector onboarding step and for the connector catalog.
 6. 🟡 **IN PROGRESS** — Credentials vaults will be supported. Still in progress.
-7. 🔴 **IN PROGRESS** — "Reset last run" and "Reset context" actions on an instance. Design is in progress. --> blocks
-9. 🔴 **OPEN** — Capability-as-target in triggers. Triggers v2 (see §3.5 and [`schema/triggers.schema.json`](schema/triggers.schema.json)) can **read** capability state via `capability_condition`, but `effect.id` resolves to a **field** id — there is no capability-targeting effect today. The fetch-mutex problem (`log-collection` / `fetch-issues` / `threat-intelligence-and-enrichment` mutually exclusive) and "auto-enable capability B when A is chosen" are therefore only partially expressible — see §3.5 for current workarounds.
-10. 🟡 **OPEN** — Server-style integrations (EDL, Taxii) that act as a server need special handling. Decision required: what integrations are they, and what flag to pass to BE? --> no block
-11. 🔴 **OPEN** — There will be a list of integrations that need manual migration as they are complex. LLM to create an appendix; **SAP BTP** should be added to the appendix as it has complex triggers around auth options.
+7. 🟢 **RESOLVED** — "Reset last run" / "Reset context" actions on an instance. Now supported via `handler.yaml capabilities[].actions[]` — see §2.8 Action Schema and §3.8 "Actions per sub-capability" rules. Action types: `reset_integration_context`, `reset_assets_last_run`, `reset_incidents_last_run`, `reset_feed_last_run`, `reset_events_last_run`.
+8. 🟡 **PARTIALLY RESOLVED — Capability/sub-capability as target in triggers.** Triggers v2 (see §3.5 and [`schema/triggers.schema.json`](schema/triggers.schema.json)) can both **read** capability state (via a `behavior: selected` condition leaf) and **target** a capability/sub-capability id in an `effect.id`. This means the **gating direction is now fully supported**: you can disable/hide/lock/require capability B (or any field) based on capability A's state. Example — disable `sub_capability_1` whenever the `automation` capability is off:
+
+    ```yaml
+    triggers:
+      - conditions:
+          id: automation
+          behavior: selected
+          operator: eq
+          value: false
+        effects:
+          - id: sub_capability_1
+            action:
+              enabled: false
+            message: "sub_capability_1 requires Automation to be enabled."
+    ```
+
+    **Remaining gap**: there is still no way to **flip a capability's selected state** ("auto-enable capability B when A is chosen"). `EffectAction` only exposes the boolean *modifiers* `hidden` / `required` / `read_only` / `enabled` (where `enabled` controls UI interactivity — interactive vs. greyed-out — **not** the on/off selection state). There is no `selected` / `default_enabled` write flag on the effect side, so true auto-selection cannot be expressed today. Track separately.
+9. 🟢 **RESOLVED** — Server-style integrations (EDL, Taxii, etc.) that act as a server need special handling. Both open questions are now answered by [Appendix I — Server-Style Integrations](#appendix-i-server-style-integrations): (a) **which integrations** — the canonical in-scope list (EDL, TAXII Server, TAXII2 Server, Microsoft Teams, AWS-SNS-Listener, Zoom) plus the forward-looking criteria for adding more; and (b) **what flag to pass to BE** — credential pinning via the `xsoar-long-running-credentials-profile-id` label under `triggering.labels`, mapping the integration's `type: 9` `credentials` param to a [`connection.yaml`](README.md:162) profile. --> no block
+10. 🔴 **OPEN** — There will be a list of integrations that need manual migration as they are complex. LLM to create an appendix; **SAP BTP** should be added to the appendix as it has complex triggers around auth options.
 
 ##### Opens raised from FE/BE override analysis
 
 The following opens were identified while consolidating the legacy XSOAR FE/BE override behaviors catalogued in [`plans/integration-parameter-and-types-overrides.md`](plans/integration-parameter-and-types-overrides.md:1) into the manifest model.
 
-12. 🔴 **OPEN** — Allow `effect.message` on any trigger, not only capability triggers. The [`schema/triggers.schema.json`](schema/triggers.schema.json:1) today restricts `effect.message` to triggers whose `conditions` tree contains at least one `capability_condition` (see [`plans/triggers-v2.md`](plans/triggers-v2.md:1)). We need to express user-facing messages for purely field-driven triggers — example: when `proxy` is disabled because no `engine` / `engine_group` is selected, the UI must show *"Use system proxy settings is enabled only when an engine is selected"*. Request a schema relax from Adi to drop the capability-only restriction on `effect.message`.
-13. 🔴 **OPEN** — "No issue type" empty-option pattern for `incidentType` / `alertType` dynamic dropdowns. Today the FE prepends a *"No issue type"* option whose stored value is `""`. We need to decide how to express this in the manifest — likely as a per-provider convention on `metadata.dynamic_values` (e.g., the platform always prepends an empty option whose label comes from the field's `placeholder` or a new `dynamic_values.empty_label` field). Open with Shahar and Guy.
-14. 🟡 **PARTIALLY RESOLVED** — Engine 3-field pattern — location inside [`connection.yaml`](README.md:162) TBD. Shape, field IDs (`engine_mode` / `engine` / `engine_group`), radio options, `dynamic_values` config, and visibility triggers are **locked** — see §3.7 "Engine handling — 3-field pattern". Open question: which [`connection.yaml`](README.md:162) sub-section the three fields live in (`general_configurations` vs per-profile) pending profile-design finalization.
-15. 🟡 **IN PROGRESS** — `duration-picker` field type still pending. Affects every `type: 19` (interval) parameter (`incidentFetchInterval`, `alertFetchInterval`, `eventFetchInterval`, `assetsFetchInterval`, `feedFetchInterval`, `feedExpirationInterval`). For now: emit these as `field_type: "duration-picker"` per the migration rules — connectors with these fields will be blocked from production until the field type ships. Cross-references existing item 2.
-16. 🔴 **OPEN** — No field-level `advanced: true` collapsible-section concept in the manifest. Legacy XSOAR has `advanced: true` per parameter and a per-section "Show Advanced Settings" toggle. The manifest organizes fields by capability instead, with no notion of collapsible advanced sections within a capability. Decide whether to add `options.advanced: true` to the field schema or to drop the concept entirely.
-17. 🔴 **OPEN** — `mail-listener` always-checked synthetic fetch toggle. The legacy FE `SYSTEM_ALWAYS_FETCH_BRANDS` list contains `mail-listener` — it forces the Fetch Settings section to always render with a disabled, always-checked fetch toggle. Believed to be an internal server-managed integration, but to be confirmed with engineering management before deciding if a manifest needs to be authored for it.
-18. 🟡 **IN PROGRESS** — `resetContext` / "Reset Last Run" actions. Cross-references existing item 7 above ("Reset last run" / "Reset context" actions on an instance) — surfaced again from the FE/BE override analysis; no new wording, just tracked here so this batch is self-contained.
-19. 🟡 **XSOAR `type: 9` credentials — hidden-leaf and display-name semantics.**
+11. 🔴 **OPEN** — Allow `effect.message` on any trigger, not only capability triggers. The [`schema/triggers.schema.json`](schema/triggers.schema.json:1) today restricts `effect.message` to triggers whose `conditions` tree contains at least one `capability_condition` (see [`plans/triggers-v2.md`](plans/triggers-v2.md:1)). We need to express user-facing messages for purely field-driven triggers — example: when `proxy` is disabled because no `engine` / `engine_group` is selected, the UI must show *"Use system proxy settings is enabled only when an engine is selected"*. Request a schema relax from Adi to drop the capability-only restriction on `effect.message`.
+12. 🔴 **OPEN** — "No issue type" empty-option pattern for `incidentType` / `alertType` dynamic dropdowns. Today the FE prepends a *"No issue type"* option whose stored value is `""`. We need to decide how to express this in the manifest — likely as a per-provider convention on `metadata.dynamic_values` (e.g., the platform always prepends an empty option whose label comes from the field's `placeholder` or a new `dynamic_values.empty_label` field). Open with Shahar and Guy. **Note**: the new `options.empty_values_message` field option (see §2.15) is *adjacent but does not resolve this* — it only supplies placeholder text shown when a `select`/`multi_select` has **no options at all**; it does **not** prepend a *selectable* empty option whose stored value is `""`. This open still needs a real decision.
+13. 🟡 **PARTIALLY RESOLVED** — Engine 3-field pattern — location inside [`connection.yaml`](README.md:162) TBD. Shape, field IDs (`engine_mode` / `engine` / `engine_group`), radio options, `dynamic_values` config, and visibility triggers are **locked** — see §3.7 "Engine handling — 3-field pattern". Open question: which [`connection.yaml`](README.md:162) sub-section the three fields live in (`general_configurations` vs per-profile) pending profile-design finalization.
+14. 🟡 **IN PROGRESS** — `duration-picker` field type still pending. Affects every `type: 19` (interval) parameter (`incidentFetchInterval`, `alertFetchInterval`, `eventFetchInterval`, `assetsFetchInterval`, `feedFetchInterval`, `feedExpirationInterval`). For now: emit these as `field_type: "duration-picker"` per the migration rules — connectors with these fields will be blocked from production until the field type ships. Cross-references existing item 2.
+15. 🔴 **OPEN** — No field-level `advanced: true` collapsible-section concept in the manifest. Legacy XSOAR has `advanced: true` per parameter and a per-section "Show Advanced Settings" toggle. The manifest organizes fields by capability instead, with no notion of collapsible advanced sections within a capability. Decide whether to add `options.advanced: true` to the field schema or to drop the concept entirely.
+16. 🔴 **OPEN** — `mail-listener` always-checked synthetic fetch toggle. The legacy FE `SYSTEM_ALWAYS_FETCH_BRANDS` list contains `mail-listener` — it forces the Fetch Settings section to always render with a disabled, always-checked fetch toggle. Believed to be an internal server-managed integration, but to be confirmed with engineering management before deciding if a manifest needs to be authored for it.
+17. 🟢 **RESOLVED** — `resetContext` / "Reset Last Run" actions. Resolved together with item 7 — see `handler.yaml capabilities[].actions[]` in §2.8 + §3.8.
+18. 🟡 **XSOAR `type: 9` credentials — hidden-leaf and display-name semantics.**
 
     - **`hiddenusername: true`** — the identifier leaf is suppressed.
       Do **NOT** include `<id>.identifier` as a key in
@@ -519,8 +746,9 @@ The following opens were identified while consolidating the legacy XSOAR FE/BE o
       "API Key" / "Token" / "Secret Key" in the form.
 
     --> no blocks
-20. 🟢 **NOTE** — `SYSTEM_OPTIONAL_FETCH_BRANDS` (elasticsearch, google, kafka, esm, syslog, crowdstrike-streaming-api) is a legacy XSOAR runtime fallback for integrations missing a proper `integrationScript`. **Not a migration concern** — the manifest always declares capabilities explicitly. Documented here for transparency only; no action. TODO verify with Guy that its actually only for XSOAR.
-21. 🔴 **Cooc (cross-org / common-org code) integrations — scoping TBD.** Meeting scheduled with Judah to define how cooc integrations are migrated (which connector they belong to, whether they share a `connector.yaml` or get their own, how shared handlers/serializers are organized). Until that meeting concludes, defer any integration whose source file lives under a `cooc/` or `Packs/CommonScripts/`-style shared path. --> blocks
+19. 🟢 **NOTE** — `SYSTEM_OPTIONAL_FETCH_BRANDS` (elasticsearch, google, kafka, esm, syslog, crowdstrike-streaming-api) is a legacy XSOAR runtime fallback for integrations missing a proper `integrationScript`. **Not a migration concern** — the manifest always declares capabilities explicitly. Documented here for transparency only; no action. TODO verify with Guy that its actually only for XSOAR.
+20. 🔴 **Cooc (cross-org / common-org code) integrations — scoping TBD.** Meeting scheduled with Judah to define how cooc integrations are migrated (which connector they belong to, whether they share a `connector.yaml` or get their own, how shared handlers/serializers are organized). Until that meeting concludes, defer any integration whose source file lives under a `cooc/` or `Packs/CommonScripts/`-style shared path. --> blocks
+21. 🟡 **OPEN — Per-integration overrides for handler action `display` / `description`.** Per Decision (2026-06-05), the migration LLM omits `display` and `description` on every `capabilities[].actions[]` entry — the platform supplies canonical defaults. Some integrations may eventually want vendor-specific wording (e.g., "Reset Mailbox Last Sync" instead of the default "Reset Issues Last Run" for the EWS family). Track which integrations need overrides and add a per-integration override list when product / tech-writers weigh in. --> no blocks
 
 ### 3.3 connector.yaml Rules
 
@@ -592,7 +820,7 @@ The vendor prefix is the vendor name (the same value used for [`metadata.vendor`
 
 ### 3.4 capabilities.yaml Rules
 
-**Every capability must have at least one sub-capability** per the migration model (see assumption §3.1 item 12). When only one sub-capability exists under a parent capability, document the open UX question: how does the UI behave when the user enables the parent — should the single sub-capability auto-select? See §3.2.2 item 7.
+**Every capability must have at least one sub-capability** per the migration model (see assumption §3.1 item 13). When only one sub-capability exists under a parent capability, document the open UX question: how does the UI behave when the user enables the parent — should the single sub-capability auto-select? See §3.2.2 item 7.
 
 #### Capability Mappings
 
@@ -613,7 +841,7 @@ The vendor prefix is the vendor name (the same value used for [`metadata.vendor`
 4. If a single integration contains both `isFeed` and/or `isfetch` (or any other fetch capability: `log-collection`, `fetch-issues`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`) and/or `isFetchCredentials`, raise a flag. This is allowed but should be brought to attention.
 5. When `isFetchEvents` or `isFetchAssets` exist → omit the corresponding checkbox parameter (e.g., `isFetchEvents`, `isFetchAssets`). Choosing the capability/sub-capability implies the feature is enabled. Only add the other fields (e.g., `eventFetchInterval`, `assetsFetchInterval`, `longRunning`, classifier, mapper, alertType, etc.).
 6. The capabilities `fetch-issues`, `log-collection`, and `fetch-assets-and-vulnerabilities` should only be shown to customers with licenses `agentix` or `xsiam`. This is enforced via `config.required_license`.
-7. **Fetch mutex**: today's legacy logic is `if (isFetchIncidents && isFeed) || (isFetchIncidents && isFetchEvents) || (isFetchEvents && isFeed) { return error("Cannot add module which both fetches incidents and indicators") }`. This rule should be enforced via [`triggers.yaml`](README.md:833) — see §3.5 for the concrete trigger pattern and current limitations.
+7. **Fetch mutex (generalized)** — a connector instance cannot enable more than one fetch capability at a time. The mutex covers **all five** fetch capabilities: `log-collection`, `fetch-issues`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, `fetch-secrets`. This generalizes (and replaces) the legacy XSOAR check `if (isFetchIncidents && isFeed) || (isFetchIncidents && isFetchEvents) || (isFetchEvents && isFeed) { return error(...) }` which only covered three of the five flags. **Behavior**: instead of failing instance creation with an error, the UI proactively prevents the conflict by marking the non-chosen fetch sub-capabilities as `read_only: true` while one is active, and replacing their description with the message *"Select only one fetch option for this sub-capability"*. Enforced via [`triggers.yaml`](README.md:833) — see §3.5 for the concrete trigger pattern.
 
 #### Rules for capabilities.yaml — metadata
 
@@ -693,7 +921,41 @@ Common migration scenarios where triggers are needed:
 
 - **Capability → field gating** — show or require a field only when a given capability is enabled (e.g., reveal `feedExpirationInterval` only when `threat-intelligence-and-enrichment` is on **AND** `feedExpirationPolicy == "interval"`).
 - **Field → field gating** — show `longRunningPort` only when `longRunning == true` **AND** no `engine` / `engineGroup` is selected **AND** the integration is in the engine-excluded list.
-- **Fetch-mutex** — enforce that only one of the fetch capabilities (`log-collection` / `fetch-issues` / `threat-intelligence-and-enrichment`) can be enabled at a time, by setting `read_only: true` + `enabled: false` on representative fields under the non-chosen fetch capabilities and surfacing a `message` explaining why. **Current limitation**: triggers can only target **fields**, not capability checkboxes directly, so the lock must be applied to representative configuration fields under each fetch capability (see §3.2.2 item 9).
+- **Fetch-mutex (generalized — all 5 fetch capabilities)** — only ONE fetch capability may be enabled at a time. The mutex pool covers `log-collection`, `fetch-issues`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, and `fetch-secrets`. For every fetch sub-capability the connector declares, author one trigger per *other* fetch sub-capability in the connector (per-integration when sub-capabilities are integration-scoped — see §3.4 sub-capability id convention). Trigger shape:
+    - `conditions`: a `capability_condition` checking that one of the *other* fetch sub-capabilities is `on`.
+    - `effects`: target the current sub-capability by id (`effect.id: <sub_capability_id>`), `action: { read_only: true }`, and `message: "Select only one fetch option for this sub-capability"`.
+  When the locking condition turns off, the trigger reverses (the effect is reversible per §2.10), so the sub-capability becomes selectable again.
+
+  **Worked YAML fragment** (assumes per-integration sub-capabilities `fetch-issues_<i>` and `log-collection_<i>` exist for integration `<i>`):
+
+  ```yaml
+  triggers:
+    # While log-collection is on, lock fetch-issues for the same integration.
+    - conditions:
+        type: capability_condition
+        id: log-collection_<i>
+        behavior: state
+        value: on
+      effects:
+        - id: fetch-issues_<i>
+          action:
+            read_only: true
+          message: "Select only one fetch option for this sub-capability"
+
+    # Symmetric — while fetch-issues is on, lock log-collection.
+    - conditions:
+        type: capability_condition
+        id: fetch-issues_<i>
+        behavior: state
+        value: on
+      effects:
+        - id: log-collection_<i>
+          action:
+            read_only: true
+          message: "Select only one fetch option for this sub-capability"
+  ```
+
+  Repeat for every pair `(A, B)` where both A and B are fetch sub-capabilities of the same integration. For `n` fetch sub-capabilities under one integration the migration emits `n × (n - 1)` triggers (each direction must be a separate trigger because `effect.id` is a single value).
 
 **For the full spec**, see the [`README.md`](README.md:1) "triggers.yaml" section, the schema at [`schema/triggers.schema.json`](schema/triggers.schema.json:1), and the in-repo design doc at [`plans/triggers-v2.md`](plans/triggers-v2.md:1) for condition variants, operators, effect shape, validation rules, and worked YAML examples.
 
@@ -721,9 +983,43 @@ General configuration section is in progress and currently an open
 #### Profiles
 
 1. A list of objects, each defining a connection profile.
-2. If an integration requires more than one auth method simultaneously (e.g., Slack v3 requires three API keys at the same time), we will define it as "passthrough" auth type. this is still in progress.
+2. If an integration's connection cannot be cleanly mapped to a typed profile (`oauth2_*` / `plain` / `api_key` / `oauth2_jwt_bearer`) — including integrations that require more than one auth input simultaneously (e.g., Slack v3 needs three API keys at once) — use the **`passthrough`** profile type. It stores whatever fields you declare and returns them verbatim to the handler on `getCredentials` with no IDP/token exchange. See §2.6.1 for the full spec.
 3. For each profile, use the [Profile Schema](#22-connectionyaml) in §2.2 and the auth-parameter tagging rules in §2.6.
-4. Fields that are related to connection but not to the auth (i.e. proxy, engine, trust any cert) will reside within the profile. The exact implementation details are still TBD and an open. 
+4. Fields that are related to connection but **not** to the auth (i.e. `proxy`, `engine` / `engine_group`, `insecure` / Trust Any Certificate) reside **within the profile**.
+   - **MANDATORY `metadata.event.publish: true`**: these operational fields MUST carry `metadata.event.publish: true` (see §2.17). Connection-profile field values are normally only available via get-credentials, but the XSOAR BE needs `engine` / `proxy` / `insecure` **before** creating the instance — `event.publish` ships their values in the create/edit lifecycle pub/sub event so the BE gets them up front.
+   - These fields carry **no** `metadata.auth.parameter` (they are not secrets), which is why `event.publish` is allowed on them — the two keys are mutually exclusive (§2.17).
+
+   **Worked fragment** (engine + proxy + insecure inside a profile):
+
+   ```yaml
+   # connection.yaml (profile fragment)
+   configurations:
+     - fields:
+         - id: "proxy"
+           title: "Use system proxy settings"
+           field_type: "checkbox"
+           metadata:
+             event:
+               publish: true
+             xsoar:
+               config_type: "backend"
+           options:
+             mask: false
+             default_value: false
+         - id: "insecure"
+           title: "Trust Any Certificate (Not Secure)"
+           field_type: "checkbox"
+           metadata:
+             event:
+               publish: true
+             xsoar:
+               config_type: "backend"
+           options:
+             mask: false
+             default_value: false
+   ```
+
+   > The exact connection.yaml sub-section the engine 3-field pattern lives in is still TBD — see §3.2.2 item 13 and §3.7 "Engine handling — 3-field pattern" — but wherever the engine/proxy/insecure fields land inside a profile, the `metadata.event.publish: true` requirement above applies.
 
 ### 3.7 Configurations YAML
 
@@ -818,8 +1114,8 @@ These were previously managed by FE/BE custom code and must now be explicitly de
 |---|---|---|---|---|
 | `integrationLogLevel` | [`capabilities.yaml`](README.md:509) → `general_configurations` | `select` | `"backend"` | Always present. Options: Off/Debug/Verbose. |
 | `defaultIgnore` | [`configurations.yaml`](README.md:719) → under `automation-and-remediation` capability | `checkbox` | `"backend"` | "Do not use in CLI by default". |
-| `engine` | [`configurations.yaml`](README.md:719) | `select` + `metadata.dynamic_values` | `"backend"` | Backend-managed. Always emitted, unless the integration is in [Appendix G — Engine / EngineGroup / Proxy Exclusion List](#appendix-g-engine--enginegroup--proxy-exclusion-list). Use `metadata.dynamic_values: {provider: "xsoar", trigger: ["on_create","on_edit"], params: {integrationID: "<id>", dynamicField: "engine"}}`. |
-| `engineGroup` | [`configurations.yaml`](README.md:719) | `select` + `metadata.dynamic_values` | `"backend"` | Backend-managed. Always emitted, unless the integration is in [Appendix G — Engine / EngineGroup / Proxy Exclusion List](#appendix-g-engine--enginegroup--proxy-exclusion-list). Same shape as `engine`, with `dynamicField: "engine-group"`. |
+| `engine` | [`configurations.yaml`](README.md:719) | `select` + `metadata.dynamic_values` | `"backend"` | Backend-managed. Always emitted, unless the integration is in [Appendix G — Engine / EngineGroup / Proxy Exclusion List](#appendix-g-engine--enginegroup--proxy-exclusion-list). Use `metadata.dynamic_values: {provider: "xsoar", trigger: ["on_create","on_edit"], params: {integrationID: "<id>", dynamicField: "engine"}}`. MUST set `options.empty_values_message: "No engines available"` (see the 3-field pattern below). |
+| `engineGroup` | [`configurations.yaml`](README.md:719) | `select` + `metadata.dynamic_values` | `"backend"` | Backend-managed. Always emitted, unless the integration is in [Appendix G — Engine / EngineGroup / Proxy Exclusion List](#appendix-g-engine--enginegroup--proxy-exclusion-list). Same shape as `engine`, with `dynamicField: "engine-group"`. MUST set `options.empty_values_message: "No engine groups available"` (see the 3-field pattern below). |
 | `mappingId` | [`configurations.yaml`](README.md:719) → under relevant capability | `select` + `metadata.dynamic_values` | `"backend"` | "Classifier" — added when `isFetch: true`. Use `dynamicField: "classifier"`. |
 | `incomingMapperId` | [`configurations.yaml`](README.md:719) → under relevant capability | `select` + `metadata.dynamic_values` | `"backend"` | Display: "Mapper (incoming)" — added when `isFetch: true`. Use `dynamicField: "mapper-incoming"`. |
 | `outgoingMapperId` | **OUT OF SCOPE** | — | — | Mirroring not supported on Platform. |
@@ -829,20 +1125,24 @@ These were previously managed by FE/BE custom code and must now be explicitly de
 
 ##### Engine handling — 3-field pattern
 
-Every migrated integration that previously declared XSOAR `engine` and/or `engineGroup` parameters emits a **three-field pattern** that replaces both. Exact location inside [`connection.yaml`](README.md:162) is still **TBD** (see Open Item 14 in §3.2.2) — pending finalization of profile design — but the **field shape, IDs, options, and visibility logic are locked**.
+Every migrated integration that previously declared XSOAR `engine` and/or `engineGroup` parameters emits a **three-field pattern** that replaces both. Exact location inside [`connection.yaml`](README.md:162) is still **TBD** (see Open Item 13 in §3.2.2) — pending finalization of profile design — but the **field shape, IDs, options, and visibility logic are locked**.
 
 **Fields (declared somewhere in [`connection.yaml`](README.md:162)):**
 
-| ID | Type | Purpose | Default | Required |
-|----|------|---------|---------|----------|
-| `engine_mode` | `select` (horizontal radio when supported) | Selector for engine routing | `no_engine` | true |
-| `engine` | `select` + `dynamic_values` (provider `xsoar`, `dynamicField: engine`) | Specific engine | — | false |
-| `engine_group` | `select` + `dynamic_values` (provider `xsoar`, `dynamicField: engine-group`) | Engine group | — | false |
+| ID | Type | Purpose | Default | Required | `empty_values_message` |
+|----|------|---------|---------|----------|------------------------|
+| `engine_mode` | `select` (horizontal radio when supported) | Selector for engine routing | `no_engine` | true | — (static options) |
+| `engine` | `select` + `dynamic_values` (provider `xsoar`, `dynamicField: engine`) | Specific engine | — | false | `"No engines available"` |
+| `engine_group` | `select` + `dynamic_values` (provider `xsoar`, `dynamicField: engine-group`) | Engine group | — | false | `"No engine groups available"` |
 
 `engine_mode` options (keys + labels):
 - `no_engine` — "No engine"
 - `engine` — "Engine"
 - `engine_group` — "Engine Group"
+
+**Empty-state messages (MANDATORY):** because `engine` and `engine_group` are dynamic dropdowns whose option lists are fetched at runtime, they MUST set [`options.empty_values_message`](#215-field-options) so the user gets clear feedback when the tenant has none configured:
+- `engine` → `options.empty_values_message: "No engines available"`
+- `engine_group` → `options.empty_values_message: "No engine groups available"`
 
 **Visibility via [`triggers.yaml`](README.md:833):**
 - Hide `engine` when `engine_mode != "engine"`.
@@ -875,6 +1175,8 @@ Every migrated integration that previously declared XSOAR `engine` and/or `engin
       trigger: [on_create, on_edit]
       params:
         dynamicField: engine
+  options:
+    empty_values_message: "No engines available"
 
 - id: engine_group
   field_type: select
@@ -885,6 +1187,8 @@ Every migrated integration that previously declared XSOAR `engine` and/or `engin
       trigger: [on_create, on_edit]
       params:
         dynamicField: engine-group
+  options:
+    empty_values_message: "No engine groups available"
 ```
 
 ```yaml
@@ -1099,6 +1403,74 @@ test_connection:
   endpoint: "/settings/integration/connector/verification"
 ```
 
+#### Actions per sub-capability
+
+Each handler emits an `actions[]` array on the relevant sub-capability `capabilities[]` entry based on the XSOAR integration YML's fetch flags. The mapping is mechanical:
+
+| XSOAR YML flag | Sub-capability the action is placed on | `actions[].type` |
+|---|---|---|
+| `isfetch: true` (Platform) | `fetch-issues_<integration>` | `reset_incidents_last_run` |
+| `isfetchevents: true` (Platform) | `log-collection_<integration>` | `reset_events_last_run` |
+| `isfetchassets: true` (Platform) | `fetch-assets-and-vulnerabilities_<integration>` | `reset_assets_last_run` |
+| `feed: true` (a.k.a. `isFeed`) (Platform) | `threat-intelligence-and-enrichment_<integration>` | `reset_feed_last_run` |
+| `isFetchCredentials: true` (Platform) | `fetch-secrets_<integration>` | *(none — no `reset_*_last_run` defined for credentials)* |
+| **Microsoft Teams ONLY** — manually added | `automation-and-remediation_microsoft-teams` | `reset_integration_context` |
+
+**Migration rules**:
+
+1. **One action per fetch sub-capability.** An integration that declares multiple fetch flags (e.g., `isfetch + isfetchevents + isfetchassets`) emits one handler with multiple `capabilities[]` entries, each carrying its own `actions[]`. The integration's automation sub-capability entry receives NO actions (unless it's Microsoft Teams — see below).
+2. **Sub-capability placement only.** Actions are never placed on the parent capability id (`automation-and-remediation`, `fetch-issues`, etc.) — always on the per-integration sub-capability id (`<capability>_<integration-slug>`).
+3. **`reset_integration_context` is Microsoft-Teams-only.** This action is NOT derived from any XSOAR flag. Manually add it to the Microsoft Teams handler's `automation-and-remediation_microsoft-teams` capability entry. Do NOT emit it for any other integration.
+4. **`display` and `description` are OMITTED by default.** Both are optional in the schema; the platform supplies canonical defaults. Per Decision (2026-06-05), the migration LLM does not pass `display`/`description` — flagged as an [open](#322-opens) for future per-integration overrides if/when product decides specific integrations need custom wording.
+5. **Permission-style flags**: `isFeed` may be hidden on Platform (`hidden:platform: true`) — same exclusion rule as for the parent capability applies. If the flag is hidden on Platform, do NOT emit the action either.
+
+**Worked example** — an integration that has commands + `isfetch + isfetchevents` on Platform:
+
+```yaml
+capabilities:
+  # Automation sub-cap — no actions
+  - id: "automation-and-remediation_my-integration"
+    auth_options:
+      - id: "oauth2_client_credentials.my_profile"
+        view_group: "my-integration"
+        workloads:
+          - "xsoar-pod"
+
+  # Fetch-issues sub-cap — reset_incidents_last_run action
+  - id: "fetch-issues_my-integration"
+    auth_options:
+      - id: "oauth2_client_credentials.my_profile"
+        view_group: "my-integration"
+        workloads:
+          - "xsoar-pod"
+    actions:
+      - type: "reset_incidents_last_run"
+
+  # Log-collection sub-cap — reset_events_last_run action
+  - id: "log-collection_my-integration"
+    auth_options:
+      - id: "oauth2_client_credentials.my_profile"
+        view_group: "my-integration"
+        workloads:
+          - "xsoar-pod"
+    actions:
+      - type: "reset_events_last_run"
+```
+
+**Worked example — Microsoft Teams** (manual `reset_integration_context`):
+
+```yaml
+capabilities:
+  - id: "automation-and-remediation_microsoft-teams"
+    auth_options:
+      - id: "oauth2_client_credentials.shared_oauth"
+        view_group: "microsoft-teams"
+        workloads:
+          - "xsoar-pod"
+    actions:
+      - type: "reset_integration_context"
+```
+
 ### 3.9 Serializer YAML
 
 **When to use a serializer**:
@@ -1219,6 +1591,8 @@ settings:
 ```
 
 ### 4.2 connection.yaml
+
+> **⚠️ Reconciliation note (`general_configurations.domain`)**: The Salesforce reference below emits a `domain` field under `general_configurations`. This predates the Grouped-connector scoping rule in §3.6 ("Rules — general_configurations"), which states that for **Grouped connectors** (one vendor → many handlers — and Salesforce *is* a Grouped connector, per Appendix F) the `general_configurations.domain` block is **OUT OF SCOPE** because each handler manages its own URL/domain logic. **§3.6 is authoritative**: do **not** copy this `domain` block when migrating a Grouped connector. It is retained here only to keep the historical Salesforce example intact and to illustrate the field shape for the Standard-connector case. (The reference also relies on a per-handler [`serializer.yaml`](README.md:1381) to remap `domain` to each integration's expected param — see §4.7/§4.8.)
 
 ```yaml
 # yaml-language-server: $schema=../../schema/connection.schema.json
@@ -1666,13 +2040,14 @@ The following integrations are excluded from the migration. If the LLM encounter
 | `Cortex Core - IR` | Same as `Cortex Core - IOC`. Internal Cortex integration; do not migrate. |
 | Server-style integrations (e.g., mail-listener) | Long-running inbound listeners; require credential-pinning via `triggering.labels`. See [Appendix I](#appendix-i-server-style-integrations). |
 
-## Appendix E: Integrations Requiring Manual Migration
+## Appendix E: Integrations Requiring Manual Intervention
 
 The following integrations require manual migration because their authentication, configuration, or runtime behavior is too complex for the automated migration rules. The LLM must skip these in the automated pass and flag them in the Decisions Needed section.
 
 | Integration | Reason |
 |---|---|
 | **SAP BTP** | Complex conditional auth-option triggers — the integration's connection screen needs to show/hide auth fields based on multiple inter-dependent selections that today cannot be expressed cleanly in [`connection.yaml`](README.md:162) + [`triggers.yaml`](README.md:833). Migrate manually and consult the connection-screen designs before authoring. |
+| **Microsoft Teams** | Requires a `reset_integration_context` action on the `automation-and-remediation_microsoft-teams` sub-capability. The action is NOT derivable from any XSOAR YML flag — it is Microsoft-Teams-only and must be added manually by the migration author per the §3.8 "Actions per sub-capability" rules. Microsoft Teams also triggers Appendix G (no engine/proxy fields) and Appendix I (server-style — `xsoar-long-running-credentials-profile-id` label on the handler); ensure all three carve-outs are applied. |
 
 This list will grow as additional complex cases are identified during the migration program.
 
