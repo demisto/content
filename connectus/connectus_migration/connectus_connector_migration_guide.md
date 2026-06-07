@@ -787,6 +787,7 @@ The connector `id` (in [`connector.yaml`](#21-connectoryaml)) and `metadata.titl
 2. **Source of the name** — base both on the **Connector ID given in the master CSV** of integrations and connectors. This is the authoritative source; do not invent a name from the vendor unless the CSV has no entry (in which case raise a flag for manual naming).
 3. **`id` formatting** — lowercase, spaces replaced with dashes (e.g. `palo alto networks` → `palo-alto-networks`). Must satisfy the schema's min-3-char rule and OPA validation.
 4. **`metadata.title` formatting** — Title Case, spaces allowed (e.g. `Palo Alto Networks`).
+5. **Connector folder name == `id`** — the connector's directory under `connectors/` MUST be named **exactly** the connector `id` (e.g. `id: "palo-alto-networks"` → `connectors/palo-alto-networks/`). If a collision suffix is applied (rule 6), the folder name uses the suffixed `id` too (e.g. `connectors/okta-automation/`).
 
 ##### Example
 
@@ -798,7 +799,7 @@ The connector `id` (in [`connector.yaml`](#21-connectoryaml)) and `metadata.titl
 
 ##### Collision handling — suffix fallback
 
-5. **If a connector with this `id` already exists**, you must disambiguate by appending a capability-based suffix to **both** `id` and `metadata.title`, **and raise a flag** for review. The suffix reflects which capability families the connector exposes:
+6. **If a connector with this `id` already exists**, you must disambiguate by appending a capability-based suffix to **both** `id` and `metadata.title`, **and raise a flag** for review. The suffix reflects which capability families the connector exposes:
 
    | Capability set declared on the connector | `metadata.title` suffix | `id` suffix |
    |---|---|---|
