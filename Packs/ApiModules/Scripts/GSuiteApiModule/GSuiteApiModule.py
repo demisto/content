@@ -34,35 +34,36 @@ COMMON_MESSAGES: dict[str, str] = {
     "UNEXPECTED_ERROR": "An unexpected error occurred.",
 }
 
-def get_ucp_service_account() -> tuple[str, dict[str, Any]]:
-    """Fetch the service-account JSON for the active UCP connection profile.
-
-    GSuite only supports service-account (file) credentials, so there is no
-    per-type dispatch: we resolve the profile, fetch its credential object and
-    unwrap the service-account JSON.
-
-    :return: Tuple of ``(method_unique_id, service_account_dict)``.
-    :rtype: ``tuple``
-    :raises UcpException: If no service-account content is present.
-    """
-    method_id = get_ucp_method_unique_id(resolve_ucp_capability())
-    credentials = get_ucp_credentials(method_id)
-
-    cred_type = credentials.get("type")
-    file_data = credentials.get(cred_type, credentials) if cred_type else credentials
-    content = file_data.get("content", file_data)
-    if isinstance(content, str):
-        content = GSuiteClient.safe_load_non_strict_json(content)
-    if not content:
-        demisto.error("[UCP][GSuiteApiModule.py] service-account content is empty.")
-        raise UcpException()
-    return method_id, content
-
-
 class GSuiteClient:
     """
     Client to use in integration with powerful http_request.
     """
+
+    @staticmethod
+    def get_ucp_service_account() -> tuple[str, dict[str, Any]]:
+        """Fetch the service-account JSON for the active UCP connection profile.
+
+        GSuite only supports service-account (file) credentials, so there is no
+        per-type dispatch: we resolve the profile, fetch its credential object
+        and unwrap the service-account JSON. Override in a subclass to customize
+        profile resolution or how the service-account JSON is extracted.
+
+        :return: Tuple of ``(method_unique_id, service_account_dict)``.
+        :rtype: ``tuple``
+        :raises UcpException: If no service-account content is present.
+        """
+        method_id = get_ucp_method_unique_id(resolve_ucp_capability())
+        credentials = get_ucp_credentials(method_id)
+
+        cred_type = credentials.get("type")  # for now the only type we support
+        file_data = credentials.get(cred_type, credentials) if cred_type else credentials  
+        content = file_data.get("content", file_data)
+        if isinstance(content, str):
+            content = GSuiteClient.safe_load_non_strict_json(content)
+        if not content:
+            demisto.error("[UCP][GSuiteApiModule.py] service-account content is empty.")
+            raise UcpException()
+        return method_id, content
 
     def __init__(
         self,
@@ -86,7 +87,7 @@ class GSuiteClient:
         # credentials can be invalidated and refreshed after an auth error.
         self._ucp_method_id: str | None = None
         if not service_account_dict and should_use_ucp_auth():
-            self._ucp_method_id, service_account_dict = get_ucp_service_account()
+            self._ucp_method_id, service_account_dict = self.get_ucp_service_account()
 
         try:
             self.credentials = service_account.Credentials.from_service_account_info(info=service_account_dict)
@@ -144,10 +145,10 @@ class GSuiteClient:
 
         with GSuiteClient.http_exception_handler():
             response = self.authorized_http.request(headers=self.headers, method=method, uri=url, body=body)
-            self._maybe_invalidate_ucp_credentials(response)
+            self._invalidate_ucp_credentials(response)
             return GSuiteClient.validate_and_extract_response(response)
 
-    def _maybe_invalidate_ucp_credentials(self, response: tuple) -> None:
+    def _invalidate_ucp_credentials(self, response: tuple) -> None:
         """Invalidate cached UCP credentials when the response is an auth error.
 
         In UCP mode an expired/rotated credential is signalled by a 401/403.

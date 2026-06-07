@@ -2085,7 +2085,7 @@ def main() -> None:  # pragma: no cover
         if not account_json and not using_ucp:
             raise DemistoException("Please fill out the User's Service Account JSON field.")
 
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(account_json) if account_json else None
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(account_json) if not using_ucp else None
         verify_certificate = not params.get("insecure", False)
         proxy = params.get("proxy", False)
 
