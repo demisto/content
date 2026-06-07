@@ -32,12 +32,12 @@ class Config:
 # ============================================================================
 # Client
 # ============================================================================
-class Client(MicrosoftClient):
+class Client:
     """Microsoft Graph client for O365 Message Trace events.
 
-    Inherits from :class:`MicrosoftClient` (from ``MicrosoftApiModule``) so that
-    the integration supports all standard Microsoft authentication methods:
-    client credentials, certificate (thumbprint + private key),
+    Composes an instance of :class:`MicrosoftClient` (from ``MicrosoftApiModule``)
+    so that the integration supports all standard Microsoft authentication
+    methods: client credentials, certificate (thumbprint + private key),
     authorization-code and Azure Managed Identities.
     """
 
@@ -59,30 +59,32 @@ class Client(MicrosoftClient):
     ):
         grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         demisto.debug(f"[Auth] Using grant type: {grant_type}")
-        super().__init__(
-            tenant_id=tenant_id,
-            auth_id=auth_id,
-            enc_key=enc_key,
-            app_name=app_name,
-            base_url=base_url,
-            verify=verify,
-            proxy=proxy,
-            self_deployed=True,
-            certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key,
-            auth_code=auth_code or "",
-            redirect_uri=redirect_uri,
-            grant_type=grant_type,
-            scope=Config.GRAPH_SCOPE,
-            azure_cloud=azure_cloud,
-            azure_ad_endpoint=azure_cloud.endpoints.active_directory,
-            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, f"/{tenant_id}/oauth2/v2.0/token"),
-            managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.graph,
-            command_prefix=Config.APP_NAME,
-            retry_on_rate_limit=True,
-            timeout=60,
-        )
+        client_args = {
+            "tenant_id": tenant_id,
+            "auth_id": auth_id,
+            "enc_key": enc_key,
+            "app_name": app_name,
+            "base_url": base_url,
+            "verify": verify,
+            "proxy": proxy,
+            "self_deployed": True,
+            "certificate_thumbprint": certificate_thumbprint,
+            "private_key": private_key,
+            "auth_code": auth_code or "",
+            "redirect_uri": redirect_uri,
+            "grant_type": grant_type,
+            "scope": Config.GRAPH_SCOPE,
+            "resource": Resources.graph,
+            "azure_cloud": azure_cloud,
+            "azure_ad_endpoint": azure_cloud.endpoints.active_directory,
+            "token_retrieval_url": urljoin(azure_cloud.endpoints.active_directory, f"/{tenant_id}/oauth2/v2.0/token"),
+            "managed_identities_client_id": managed_identities_client_id,
+            "managed_identities_resource_uri": Resources.graph,
+            "command_prefix": Config.APP_NAME,
+            "retry_on_rate_limit": True,
+            "timeout": 60,
+        }
+        self.ms_client = MicrosoftClient(**client_args)
 
     # ------------------------------------------------------------------
     # API calls
@@ -102,14 +104,14 @@ class Client(MicrosoftClient):
         """
         if next_link:
             demisto.debug(f"[API] Following @odata.nextLink: {next_link}")
-            return self.http_request(method="GET", full_url=next_link, url_suffix="", ok_codes=[200])
+            return self.ms_client.http_request(method="GET", full_url=next_link, url_suffix="", ok_codes=[200])
 
         params = {
             "$filter": f"receivedDateTime ge {start_date} and receivedDateTime le {end_date}",
             "$top": page_size,
         }
         demisto.debug(f"[API] First page request | params={params}")
-        return self.http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params, ok_codes=[200])
+        return self.ms_client.http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params, ok_codes=[200])
 
 
 # ============================================================================
@@ -239,7 +241,7 @@ def test_module(client: Client) -> str:
             should be used instead.
     """
     demisto.debug("[Test] Starting test-module")
-    if hasattr(client, "grant_type") and client.grant_type == AUTHORIZATION_CODE:
+    if client.ms_client.grant_type == AUTHORIZATION_CODE:
         raise DemistoException(
             "Test module is not available for the authorization code flow. "
             "Use the o365-message-trace-auth-test command instead."
@@ -379,7 +381,7 @@ def main() -> None:  # pragma: no cover
     tenant_id = params.get("tenant_id", "")
 
     credentials_client_id = params.get("credentials_client_id") or {}
-    client_id = credentials_client_id.get("password") or params.get("client_id", "")
+    client_id = credentials_client_id.get("password")
 
 
     credentials = params.get("credentials") or {}
@@ -445,7 +447,7 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             fetch_events(client, max_events=max_events)
         elif demisto.command() == "o365-message-trace-generate-login-url":
-            return_results(generate_login_url(client))
+            return_results(generate_login_url(client.ms_client))
 
         else:
             raise NotImplementedError(f"Command '{command}' is not implemented.")
