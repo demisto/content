@@ -56,7 +56,7 @@ For more information, see this [article](https://xsoar.pan.dev/docs/reference/ar
 
 Note: Make sure the neccessary permissions and roles are applied to the application and the user.
 
-
+For more information, see this [article](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorization-code-flow).
 
 
 ### Create the service principal by using Microsoft Graph Explorer
