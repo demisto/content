@@ -37,13 +37,6 @@ configuration:
   section: Connect
   required: false
   additionalinfo: The private key of the registered certificate used for certificate authentication, as it appears in the "Certificates & secrets" page of the app.
-- name: private_key
-  display: Private Key
-  type: 14
-  section: Connect
-  hidden: true
-  required: false
-  additionalinfo: The private key of the registered certificate used for certificate authentication.
 - name: redirect_uri
   display: Application redirect URI
   type: 0

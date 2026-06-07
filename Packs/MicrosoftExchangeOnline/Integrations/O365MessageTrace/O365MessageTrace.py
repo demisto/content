@@ -26,7 +26,7 @@ class Config:
 
     DEFAULT_MAX_EVENTS = 50000
     DEFAULT_PAGE_SIZE = 1000  # API default/maximum per page
-    DEFAULT_FIRST_FETCH_MINUTES = 1
+    DEFAULT_FIRST_FETCH_MINUTES = 1000 #TODO: change to 1
 
 
 # ============================================================================
@@ -379,31 +379,22 @@ def main() -> None:  # pragma: no cover
     tenant_id = params.get("tenant_id", "")
 
     credentials_client_id = params.get("credentials_client_id") or {}
-    if isinstance(credentials_client_id, dict):
-        client_id = credentials_client_id.get("password") or params.get("client_id", "")
-    else:
-        client_id = params.get("client_id", "")
+    client_id = credentials_client_id.get("password") or params.get("client_id", "")
+
 
     credentials = params.get("credentials") or {}
-    if isinstance(credentials, dict):
-        client_secret = credentials.get("password") or params.get("client_secret", "")
-    else:
-        client_secret = params.get("client_secret", "")
+    client_secret = credentials.get("password") or params.get("client_secret", "")
 
     # ----- Certificate auth -----
     creds_certificate = params.get("creds_certificate") or {}
-    certificate_thumbprint = creds_certificate.get("identifier") if isinstance(creds_certificate, dict) else None
-    private_key_raw = (creds_certificate.get("password") if isinstance(creds_certificate, dict) else None) or params.get(
-        "private_key"
-    )
+    certificate_thumbprint = creds_certificate.get("identifier")
+    private_key_raw = creds_certificate.get("password")
     private_key = replace_spaces_in_credential(private_key_raw) if private_key_raw else None
 
     # ----- Self-deployed authorization-code flow -----
     auth_code_param = params.get("auth_code") or {}
-    if isinstance(auth_code_param, dict):
-        auth_code = auth_code_param.get("password")
-    else:
-        auth_code = auth_code_param
+    auth_code = auth_code_param.get("password")
+
     redirect_uri = params.get("redirect_uri")
 
     # ----- Managed Identities -----
