@@ -63,6 +63,7 @@ from workflow_state.types import Step
 from workflow_state.validators import (
     get_named_validator,
     validate_auth_detail,
+    validate_capabilities,
     validate_param_defaults,
     validate_params_to_capabilities,
     validate_params_to_commands,
@@ -618,6 +619,18 @@ def cmd_set_params_to_commands(args: list[str]) -> None:
                     print(f"ERROR: {e.message}")
                     sys.exit(1)
     _set_json_data_step(args, "Params to Commands", "set-params-to-commands")
+
+
+def cmd_set_capabilities(args: list[str]) -> None:
+    if len(args) >= 2:
+        raw = " ".join(args[1:])
+        schema_errors = validate_capabilities(raw)
+        if schema_errors:
+            print("ERROR: Collect Capabilities does not match the required schema.")
+            for err in schema_errors:
+                print(f"  - {err}")
+            sys.exit(1)
+    _set_json_data_step(args, "Collect Capabilities", "set-capabilities")
 
 
 def cmd_set_param_defaults(args: list[str]) -> None:
@@ -2143,6 +2156,7 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "next": cmd_next,
     "set-assignee": cmd_set_assignee,
     "set-auth": cmd_set_auth,
+    "set-capabilities": cmd_set_capabilities,
     "set-params-to-commands": cmd_set_params_to_commands,
     "set-param-defaults": cmd_set_param_defaults,
     "set-shadowed-commands": cmd_set_shadowed_commands,
@@ -2198,6 +2212,7 @@ __all__ = sorted({
     "_parse_next_flags",
     "_git_user_name",
     "validate_auth_detail",
+    "validate_capabilities",
     "validate_params_to_commands",
     "validate_param_defaults",
     "validate_params_to_capabilities",

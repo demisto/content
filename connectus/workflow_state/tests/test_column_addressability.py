@@ -29,16 +29,16 @@ from workflow_state.config_loader import _reset_config_for_testing
 
 # ---------------------------------------------------------------------------
 # Schema canaries — these encode the expected column positions in the
-# bundled YAML (3 identity columns + 12 steps as of 2026-05-31, after
-# FIXES-TODO combined #4+#6+New_RN dropped 2 steps and added 1). If the
-# YAML shifts, fix these numbers in lock-step with the column references
-# below.
+# bundled YAML (3 identity columns + 13 steps as of 2026-06-07, after the
+# 'Collect Capabilities' step was inserted at step #3, before
+# 'Params to Commands'). If the YAML shifts, fix these numbers in lock-step
+# with the column references below.
 # ---------------------------------------------------------------------------
 
-_EXPECTED_TOTAL_COLS = 15
+_EXPECTED_TOTAL_COLS = 16
 _COL_INTEGRATION_ID = 1          # identity (allowed for show-step)
 _COL_AUTH_DETAILS = 5            # step #2 → CSV column 5
-_COL_GENERATED_MANIFEST = 9      # step #6 → CSV column 9 (first checkpoint, after Params for test + Params to Capabilities)
+_COL_GENERATED_MANIFEST = 10     # step #7 → CSV column 10 (first checkpoint, after Collect Capabilities + Params for test + Params to Capabilities)
 
 
 @pytest.fixture(autouse=True)
@@ -62,6 +62,7 @@ def temp_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     row["Connector ID"] = "ConnX"
     row["assignee"] = "tester"
     row["Auth Details"] = "{}"
+    row["Collect Capabilities"] = "[]"
     row["Params to Commands"] = "{}"
     row["Params for test with default in code"] = "{}"
     row["Params to Capabilities"] = "{}"

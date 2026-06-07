@@ -261,6 +261,75 @@ def validate_params_to_capabilities(value: str) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# Collect Capabilities
+# ---------------------------------------------------------------------------
+
+# Closed enum of capability names produced by
+# connectus/connectus_migration/capabilities_collector.py (collect_capabilities).
+# Mirrors the constants defined there (lines 12-17). Note: unlike
+# "Params to Capabilities", "general_configurations" is NOT a valid capability
+# here — collect_capabilities never emits it.
+_CAPABILITIES_ALLOWED: frozenset[str] = frozenset({
+    "Fetch Assets and Vulnerabilities",
+    "Fetch Issues",
+    "Log Collection",
+    "Fetch Secrets",
+    "Threat Intelligence & Enrichment",
+    "Automation",
+})
+
+
+def validate_capabilities(value: str) -> list[str]:
+    """Validate ``Collect Capabilities`` JSON shape. Returns errors ([] = valid).
+
+    Strict shape (a flat, de-duplicated list of capability names, exactly as
+    connectus/connectus_migration/capabilities_collector.py:collect_capabilities
+    returns it)::
+
+        ["Fetch Issues", "Automation", ...]
+
+    Rules:
+      * Must be a JSON array (list). Empty ``[]`` is valid (an integration may
+        legitimately resolve to zero capabilities).
+      * Each entry is a non-empty string drawn from the closed enum
+        ``_CAPABILITIES_ALLOWED``.
+      * No duplicate entries.
+    """
+    errors: list[str] = []
+    try:
+        payload = json.loads(value)
+    except json.JSONDecodeError as e:
+        return [f"Invalid JSON: {e}"]
+
+    if not isinstance(payload, list):
+        return [f"Expected a JSON array, got {type(payload).__name__}"]
+
+    allowed = _CAPABILITIES_ALLOWED
+    seen: set = set()
+    for i, cap in enumerate(payload):
+        if not isinstance(cap, str):
+            errors.append(
+                f"capabilities[{i}]: must be a string, got "
+                f"{type(cap).__name__}"
+            )
+            continue
+        if cap == "":
+            errors.append(f"capabilities[{i}]: must be a non-empty string")
+            continue
+        if cap not in allowed:
+            errors.append(
+                f"capabilities[{i}]: unknown capability {cap!r}; allowed "
+                f"values are {sorted(allowed)}"
+            )
+            continue
+        if cap in seen:
+            errors.append(f"capabilities[{i}]: duplicate capability {cap!r}")
+            continue
+        seen.add(cap)
+    return errors
+
+
+# ---------------------------------------------------------------------------
 # Shadowed Integration Commands
 # ---------------------------------------------------------------------------
 
@@ -540,6 +609,7 @@ ValidatorFn = Callable[[str], list[str]]
 
 _NAMED_VALIDATORS: dict[str, ValidatorFn] = {
     "auth_details": validate_auth_detail,
+    "capabilities": validate_capabilities,
     "params_to_commands": validate_params_to_commands,
     "param_defaults": validate_param_defaults,
     "params_to_capabilities": validate_params_to_capabilities,

@@ -6,6 +6,7 @@ Runs every deterministic pre-step needed before exercising
 Steps (each persists its raw output to a temp folder):
     0  — Identify the integration            (workflow_state.py context)
     1  — Classify auth + set Auth Details     (heuristic → workflow_state.py set-auth)
+    1b — Collect Capabilities                 (capabilities_collector.py → set-capabilities)
     2  — Set Params to Commands               (check_command_params.py → set-params-to-commands)
     3a — Set Params for test default in code  (test-module-params → set-param-defaults)
     3b — Set Params to Capabilities           (connector_param_mapper.py → set-params-to-capabilities)
@@ -42,6 +43,9 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW_STATE = REPO_ROOT / "connectus" / "workflow_state.py"
 ANALYZER = REPO_ROOT / "connectus" / "check_command_params.py"
+CAPABILITIES_COLLECTOR = (
+    REPO_ROOT / "connectus" / "connectus_migration" / "capabilities_collector.py"
+)
 MAPPER = REPO_ROOT / "connectus" / "connectus_migration" / "connector_param_mapper.py"
 MANIFEST_GENERATOR = (
     REPO_ROOT / "connectus" / "connectus_migration" / "manifest_generator.py"
@@ -379,23 +383,124 @@ def step_1_auth(integration_id: str, context: dict, out_dir: Path) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Step 1b — Collect Capabilities
+# ---------------------------------------------------------------------------
+def step_1b_collect_capabilities(
+    integration_id: str, context: dict, out_dir: Path
+) -> list[str]:
+    """Collect the integration's expected capabilities and persist them.
+
+    Runs ``capabilities_collector.py`` against the integration YML to derive
+    the flat list of capability names, then persists it to the
+    ``Collect Capabilities`` workflow cell via ``set-capabilities``.
+
+    The persisted cell is what ``step_2_params_to_commands`` reads back (via
+    ``show-step``) to drive the single-capability optimization, so this step
+    MUST run before step 2.
+    """
+    print(f"[1b] collect capabilities + set-capabilities '{integration_id}'")
+    yml_path = (REPO_ROOT / context["file_paths"]["yml"]).resolve()
+    capabilities_out = out_dir / "_capabilities.json"
+
+    # capabilities_collector.py is a single-command Typer app, so it has NO
+    # subcommand name — the YML path is the first positional argument.
+    collect = _run(
+        [
+            sys.executable,
+            str(CAPABILITIES_COLLECTOR),
+            str(yml_path),
+            "-o",
+            str(capabilities_out),
+        ],
+        timeout=SHORT_TIMEOUT,
+    )
+    if collect.returncode != 0:
+        raise RuntimeError(
+            f"capabilities_collector failed:\n{collect.stderr or collect.stdout}"
+        )
+    if not capabilities_out.is_file():
+        raise RuntimeError(
+            f"capabilities_collector did not produce output file "
+            f"{capabilities_out}\n--- stdout ---\n{collect.stdout}\n"
+            f"--- stderr ---\n{collect.stderr}"
+        )
+    capabilities = json.loads(capabilities_out.read_text())
+    _save_output(out_dir, "1b", "capabilities_collector", capabilities)
+
+    proc = _run(
+        [
+            sys.executable,
+            str(WORKFLOW_STATE),
+            "set-capabilities",
+            integration_id,
+            json.dumps(capabilities),
+        ],
+        timeout=SHORT_TIMEOUT,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"set-capabilities failed:\n{proc.stderr or proc.stdout}"
+        )
+    return capabilities
+
+
+def _collected_capability_count(integration_id: str) -> int:
+    """Read the persisted ``Collect Capabilities`` cell and count entries.
+
+    Reads the raw cell via ``workflow_state.py show-step --raw`` (the
+    machine-consumer contract) and returns the number of capabilities. A
+    missing/empty cell or unparseable value yields ``0`` so the caller falls
+    back to a full analysis (the safe default).
+    """
+    proc = _run(
+        [
+            sys.executable,
+            str(WORKFLOW_STATE),
+            "show-step",
+            "--raw",
+            integration_id,
+            "Collect Capabilities",
+        ],
+        timeout=SHORT_TIMEOUT,
+    )
+    if proc.returncode != 0:
+        return 0
+    raw = proc.stdout.strip()
+    if not raw:
+        return 0
+    try:
+        capabilities = json.loads(raw)
+    except json.JSONDecodeError:
+        return 0
+    return len(capabilities) if isinstance(capabilities, list) else 0
+
+
+# ---------------------------------------------------------------------------
 # Step 2 — Set Params to Commands
 # ---------------------------------------------------------------------------
 def step_2_params_to_commands(integration_id: str, out_dir: Path) -> dict:
-    """Run the analyzer (static-only) and persist Params to Commands."""
+    """Run the analyzer (static-only) and persist Params to Commands.
+
+    Optimization: when the integration resolves to exactly one capability
+    (read back from the ``Collect Capabilities`` cell), only ``test-module``
+    is analyzed (``--commands test-module``). A single-capability connector
+    needs Params to Commands solely for its connectivity test, so analyzing
+    the remaining commands is wasted work.
+    """
     print(f"[2] Analyze + set-params-to-commands '{integration_id}'")
-    analyze = _run(
-        [
-            sys.executable,
-            str(ANALYZER),
-            "--ignore-params-file",
-            str(IGNORE_PARAMS_FILE),
-            "--integration-id",
-            integration_id,
-            "--static-only",
-        ],
-        timeout=LONG_TIMEOUT,
-    )
+    analyzer_cmd = [
+        sys.executable,
+        str(ANALYZER),
+        "--ignore-params-file",
+        str(IGNORE_PARAMS_FILE),
+        "--integration-id",
+        integration_id,
+        "--static-only",
+    ]
+    if _collected_capability_count(integration_id) == 1:
+        print("  [optimize] single capability — analyzing test-module only")
+        analyzer_cmd += ["--commands", "test-module"]
+    analyze = _run(analyzer_cmd, timeout=LONG_TIMEOUT)
     if analyze.returncode != 0:
         raise RuntimeError(f"analyzer failed:\n{analyze.stderr or analyze.stdout}")
     params_to_commands = _parse_json_stdout(analyze)
@@ -627,6 +732,7 @@ def main() -> int:
     print(f"=== Pre-manifest setup for '{integration_id}' → {out_dir} ===")
     context = step_0_identify(integration_id, out_dir)
     auth_details = step_1_auth(integration_id, context, out_dir)
+    step_1b_collect_capabilities(integration_id, context, out_dir)
     params_to_commands = step_2_params_to_commands(integration_id, out_dir)
     param_defaults = step_3a_param_defaults(integration_id, out_dir)
     params_to_capabilities = step_3b_params_to_capabilities(

@@ -72,6 +72,14 @@ steps:
     json_schema: {"validator": "auth_details"}
     description: "Record the auth classification JSON (validated against the Auth Details schema). On commit, set-auth invokes connectus/check_auth_parity.py with this payload; the cell is rejected unless parity passes or structurally short-circuits (NO_BASECLIENT / NON_PYTHON / ALL_INTERPOLATED / CONNECTION_INTERPOLATED / INTEGRATION_REJECTS_HTTP)."
 
+  - name: "Collect Capabilities"
+    kind: data
+    optional: false
+    setter: set-capabilities
+    json_schema: {"validator": "capabilities"}
+    preserve_on_reset: true
+    description: "Flat, de-duplicated JSON list of the integration's expected capability names (closed enum, no 'general_configurations'), produced by connectus/connectus_migration/capabilities_collector.py:collect_capabilities. Drives the single-capability optimization in run_pre_manifest_steps.py: when exactly one capability is collected, Params to Commands is analyzed for test-module only. Preserved across reset-to/fail (still wiped by set-auth and plain reset)."
+
   - name: "Params to Commands"
     kind: data
     optional: false
