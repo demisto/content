@@ -89,12 +89,12 @@ The Azure AD application must be granted the following Microsoft Graph applicati
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The Microsoft Graph base URL. | True |
-| Tenant ID | The customer Azure AD tenant ID \(GUID\). | True |
-| Client ID | The Application \(Client\) ID registered in Azure AD. | True |
+| Tenant ID | The Azure AD tenant ID \(GUID\). | False |
+| Client ID | The Application \(Client\) ID registered in Azure AD. | False |
 | Client Secret | The client secret for the Azure AD application. | False |
 | Certificate Thumbprint | The private key of the registered certificate used for certificate authentication, as it appears in the "Certificates &amp;amp; secrets" page of the app. | False |
 | Private Key |  | False |
-| Application redirect URI (for self-deployed mode) | The redirect URI configured in the Azure AD application. Required for the self-deployed authorization-code flow. | False |
+| Application redirect URI | The redirect URI configured in the Azure AD application. Required for the self-deployed authorization-code flow. | False |
 | Authorization code | The authorization code received from the Azure portal during the self-deployed authorization-code flow. | False |
 | Use Azure Managed Identities | Whether to use Azure Managed Identities when running on an Azure VM with assigned identity. | False |
 | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on an Azure VM. | False |

@@ -12,7 +12,7 @@ configuration:
   additionalinfo: The Microsoft Graph base URL.
 - name: tenant_id
   display: Tenant ID
-  required: true
+  required: false
   type: 0
   section: Connect
   additionalinfo: The Azure AD tenant ID (GUID).

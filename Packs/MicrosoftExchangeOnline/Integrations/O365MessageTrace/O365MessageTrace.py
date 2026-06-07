@@ -26,7 +26,7 @@ class Config:
 
     DEFAULT_MAX_EVENTS = 50000
     DEFAULT_PAGE_SIZE = 1000  # API default/maximum per page
-    DEFAULT_FIRST_FETCH_MINUTES = 1000 #TODO: change to 1
+    DEFAULT_FIRST_FETCH_MINUTES = 1
 
 
 # ============================================================================
@@ -382,7 +382,6 @@ def main() -> None:  # pragma: no cover
 
     credentials_client_id = params.get("credentials_client_id") or {}
     client_id = credentials_client_id.get("password")
-
 
     credentials = params.get("credentials") or {}
     client_secret = credentials.get("password") or params.get("client_secret", "")
