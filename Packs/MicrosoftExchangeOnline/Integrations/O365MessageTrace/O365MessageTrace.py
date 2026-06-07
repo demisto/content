@@ -38,7 +38,7 @@ class Client(MicrosoftClient):
     Inherits from :class:`MicrosoftClient` (from ``MicrosoftApiModule``) so that
     the integration supports all standard Microsoft authentication methods:
     client credentials, certificate (thumbprint + private key),
-    authorization-code (self-deployed) and Azure Managed Identities.
+    authorization-code and Azure Managed Identities.
     """
 
     def __init__(
@@ -71,7 +71,7 @@ class Client(MicrosoftClient):
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             auth_code=auth_code or "",
-            redirect_uri=redirect_uri or "https://localhost/myapp",
+            redirect_uri=redirect_uri,
             grant_type=grant_type,
             scope=Config.GRAPH_SCOPE,
             azure_cloud=azure_cloud,
@@ -392,9 +392,7 @@ def main() -> None:  # pragma: no cover
 
     # ----- Certificate auth -----
     creds_certificate = params.get("creds_certificate") or {}
-    certificate_thumbprint = (creds_certificate.get("identifier") if isinstance(creds_certificate, dict) else None) or params.get(
-        "certificate_thumbprint"
-    )
+    certificate_thumbprint = creds_certificate.get("identifier") if isinstance(creds_certificate, dict) else None
     private_key_raw = (creds_certificate.get("password") if isinstance(creds_certificate, dict) else None) or params.get(
         "private_key"
     )

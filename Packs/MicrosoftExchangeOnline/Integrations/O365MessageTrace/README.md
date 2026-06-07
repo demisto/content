@@ -70,6 +70,19 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=client_credentials&scope=https://graph.microsoft.com/.default&client_id={client_id}&client_secret={client_secret}
 ```
+Azure Managed Identity authentication is also supported by enabling the **Use Azure Managed Identity** parameter (only available when running inside Azure).
+
+### Required API Permissions
+
+The Azure AD application must be granted the following Microsoft Graph application permission (admin consent required):
+
+- `ExchangeMessageTrace.Read.All`
+
+### Reference
+
+- [Microsoft Graph - Get message traces](https://learn.microsoft.com/en-us/exchange/monitoring/trace-an-email-message/graph-api-message-trace#get-beta-admin-exchange-tracing-messageTraces)
+- [Paging Microsoft Graph data in your app](https://learn.microsoft.com/en-us/graph/paging)
+
 
 ## Configure O365 Message Trace in Cortex XSIAM
 

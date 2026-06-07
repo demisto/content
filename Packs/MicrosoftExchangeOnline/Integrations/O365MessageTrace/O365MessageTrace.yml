@@ -15,11 +15,11 @@ configuration:
   required: true
   type: 0
   section: Connect
-  additionalinfo: The customer Azure AD tenant ID (GUID).
+  additionalinfo: The Azure AD tenant ID (GUID).
 - name: credentials_client_id
   displaypassword: Client ID
   hiddenusername: true
-  required: true
+  required: false
   type: 9
   section: Connect
   additionalinfo: The Application (Client) ID registered in Azure AD.
@@ -37,13 +37,6 @@ configuration:
   section: Connect
   required: false
   additionalinfo: The private key of the registered certificate used for certificate authentication, as it appears in the "Certificates & secrets" page of the app.
-- name: certificate_thumbprint
-  display: Certificate Thumbprint
-  type: 4
-  section: Connect
-  hidden: true
-  required: false
-  additionalinfo: The certificate thumbprint used for certificate authentication, as it appears in the "Certificates & secrets" page of the app.
 - name: private_key
   display: Private Key
   type: 14
@@ -52,7 +45,7 @@ configuration:
   required: false
   additionalinfo: The private key of the registered certificate used for certificate authentication.
 - name: redirect_uri
-  display: Application redirect URI (for self-deployed mode)
+  display: Application redirect URI
   type: 0
   section: Connect
   required: false
