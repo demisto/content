@@ -16,7 +16,7 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TypedDict
 
-from typing_extensions import NotRequired
+from typing_extensions import NotRequired  # noqa: UP035
 from zipfile import ZIP_DEFLATED, ZipFile
 from pathlib import Path
 
