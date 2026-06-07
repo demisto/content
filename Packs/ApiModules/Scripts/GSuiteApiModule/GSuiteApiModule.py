@@ -50,49 +50,15 @@ class GSuiteClient:
         user_id: str = "",
     ):
         self.headers = headers
-        self.credentials = None
         try:
             self.credentials = service_account.Credentials.from_service_account_info(info=service_account_dict)
         except Exception:
-            # Under UCP the service-account JSON is not supplied via
-            # demisto.params() at construction time; it is injected at
-            # request-build time by _maybe_apply_ucp_credentials(). Defer the
-            # failure in that case. Outside UCP, an unparsable/empty dict is a
-            # real configuration error.
-            if not should_use_ucp_auth():
-                raise ValueError(COMMON_MESSAGES["JSON_PARSE_ERROR"])
+            raise ValueError(COMMON_MESSAGES["JSON_PARSE_ERROR"])
         self.proxy = proxy
         self.verify = verify
         self.authorized_http: Any = None
         self.base_url = base_url
         self.user_id = user_id
-
-    def _maybe_apply_ucp_credentials(self) -> None:
-        """Overwrite ``self.credentials`` from UCP at request-build time.
-
-        This mirrors ``BaseClient._http_request``'s UCP injection: it is
-        gated on :func:`should_use_ucp_auth`, fetches the credential from the
-        UCP functions (:func:`get_ucp_credentials`) and overwrites the
-        credential the outgoing request will use — rather than relying on the
-        value passed via ``demisto.params()`` at construction time.
-
-        For GSuite the "credential in the request" is the service-account JSON
-        (the "API key"), which is delivered in the ``api_key.key`` slot of the
-        UCP credential dict (the ``APIKey`` UCP shape). When UCP is not in use
-        this is a no-op, so the legacy params-driven path is unchanged.
-        """
-        if not should_use_ucp_auth():
-            return
-        ucp_creds = get_ucp_credentials()
-        # The APIKey UCP shape nests the secret under api_key.key; fall back to
-        # a top-level "key" for robustness against shape variations.
-        api_key_data = ucp_creds.get("api_key", ucp_creds) if ucp_creds else {}
-        raw_json = api_key_data.get("key") if isinstance(api_key_data, dict) else None
-        if not raw_json:
-            demisto.error("[UCP] GSuiteClient: service-account JSON missing from UCP credentials")
-            raise UcpException()
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(raw_json)
-        self.credentials = service_account.Credentials.from_service_account_info(info=service_account_dict)
 
     def set_authorized_http(self, scopes: list[str], subject: str | None = None, timeout: int = 60) -> None:
         """
@@ -104,9 +70,6 @@ class GSuiteClient:
 
         :return: None.
         """
-        # UCP: overwrite the credential from the UCP functions at request-build
-        # time (no-op unless UCP is active), mirroring BaseClient._http_request.
-        self._maybe_apply_ucp_credentials()
         self.credentials = self.credentials.with_scopes(scopes)
         if subject:
             self.credentials = self.credentials.with_subject(subject)
