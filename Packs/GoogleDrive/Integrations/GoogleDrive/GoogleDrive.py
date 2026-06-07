@@ -2078,7 +2078,11 @@ def main() -> None:  # pragma: no cover
         params["user_id"] = user_id
         params["user_service_account_json"] = account_json
 
-        if not account_json:
+        # Under UCP the service-account JSON ("API key") is injected into the
+        # client by the platform via the UCP functions, so it is intentionally
+        # absent from demisto.params(). Skip the params-presence guard in that
+        # case so the secret is not short-circuited before the client is built.
+        if not account_json and not is_ucp_enabled():
             raise DemistoException("Please fill out the User's Service Account JSON field.")
 
         service_account_dict = GSuiteClient.safe_load_non_strict_json(account_json)
