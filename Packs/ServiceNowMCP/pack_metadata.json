@@ -21,6 +21,8 @@
         "platform"
     ],
     "supportedModules": [
+        "asm",
+        "exposure_management",
         "agentix",
         "cloud",
         "cloud_runtime_security",
