@@ -1,0 +1,22 @@
+--- .github/github_workflow_scripts/utils.py
++++ .github/github_workflow_scripts/utils.py
+@@ -211,6 +211,19 @@
+     return reviewer
+ 
+ 
++def get_mapping_reviewer(content_roles: dict[str, Any]) -> list[str]:
++    """
++    Retrieve the mapping reviewer from content roles JSON/`dict`.
++
++    Args:
++        - `content_roles` (``dict[str, Any]``): The current content team roles and members.
++
++    Return:
++        - `list[str]` of mapping reviewer GitHub usernames.
++    """
++    return content_roles.get(MAPPING_REVIEWER_KEY, [])
++
++
+ def get_content_roles_from_blob() -> dict[str, Any] | None:
+     """
+     Helper method to retrieve the 'content_roles.json` from
