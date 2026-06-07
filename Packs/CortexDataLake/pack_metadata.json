@@ -19,6 +19,11 @@
         "Strata Logging Service XSOAR Connector"
     ],
     "marketplaces": [
+        "xsoar",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
         "xsoar"
     ]
 }
