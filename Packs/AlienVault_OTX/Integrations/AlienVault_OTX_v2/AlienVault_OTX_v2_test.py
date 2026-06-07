@@ -1297,6 +1297,7 @@ def test_file_function_return_demistoException_warning_500():
     client._http_request.side_effect = DemistoException("Error in API call [500] - Internal Server Error", res=res)
     result = file_command(client, file="11111111111111111111111111111111")
     assert len(result) == 1
+    assert result[0].indicator.dbot_score.score == 0
     assert "11111111111111111111111111111111" in result[0].readable_output
 
 
