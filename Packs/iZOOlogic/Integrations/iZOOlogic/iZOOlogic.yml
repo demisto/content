@@ -92,7 +92,7 @@ script:
     - name: end_time
       description: 'The time to filter events detected at or before. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").'
     - name: event_type
-      description: 'The event types to filter by, as a comma-separated list. If not specified, uses the types configured in the integration parameters.'
+      description: 'The event types to filter by, as a comma-separated list. If not specified, the command uses the types configured in the integration parameters.'
       isArray: true
       auto: PREDEFINED
       predefined:

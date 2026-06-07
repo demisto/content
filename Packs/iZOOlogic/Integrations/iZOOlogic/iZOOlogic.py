@@ -202,8 +202,8 @@ def parse_date(date_string: str) -> datetime:
     return parsed_datetime
 
 
-def add_time_to_events(events: list[dict]) -> None:
-    """Add _time and source_log_type fields to events for XSIAM ingestion.
+def enrich_events(events: list[dict]) -> None:
+    """Enrich events with the _time and source_log_type fields for XSIAM ingestion.
 
     Converts the ``createdOn`` Unix timestamp to ISO 8601 format and sets it as ``_time``.
     If ``createdOn`` is missing or cannot be parsed, ``_time`` falls back to the current
@@ -230,7 +230,7 @@ def add_time_to_events(events: list[dict]) -> None:
 def create_events(events: list[dict]) -> None:
     """Send already-normalized events to XSIAM.
 
-    Callers must normalize events with ``add_time_to_events`` beforehand so that
+    Callers must normalize events with ``enrich_events`` beforehand so that
     each event has the ``_time`` and ``source_log_type`` fields set.
 
     Args:
@@ -450,8 +450,9 @@ class IZOOlogicAuthHandler(AuthHandler):
         """Authenticate with the iZOOlogic API and store the token.
 
         Uses a threading.Lock to ensure thread safety when concurrent fetches
-        run via asyncio.to_thread. The double-check on self._token prevents
-        redundant auth calls when multiple threads queue up on the lock.
+        run via the ThreadPoolExecutor in fetch_events_command. The double-check
+        on self._token prevents redundant auth calls when multiple threads queue
+        up on the lock.
         """
         with self._auth_lock:
             if self._token:
@@ -650,27 +651,30 @@ class Client(ContentClient):
 # =================================
 
 
-def test_module(client: Client) -> str:
-    """Test API connectivity by authenticating and fetching events.
+def test_module(client: Client, event_type_codes: list[int]) -> str:
+    """Test API connectivity by authenticating and fetching events per type.
 
-    Uses the same ``_fetch_all_pages`` code path as production, but caps the
-    fetch at a single event (``max_results=1``) so it stops after the first
-    page instead of exhausting pagination. An empty result (no events) still
-    proves connectivity — the test passes.
+    Validates the full configuration: for each configured event type it fetches
+    a single event (``max_results=1``) via the same ``_fetch_all_pages`` code
+    path as production. An empty result (no events) still proves connectivity —
+    the test passes. This catches a type that the configured credentials cannot
+    access, not just generic connectivity.
 
     Args:
         client: The iZOOlogic client.
+        event_type_codes: Configured event type codes to validate.
 
     Returns:
         'ok' if test passed, otherwise raises an exception.
     """
-    demisto.debug("[Test Module] Starting...")
+    demisto.debug(f"[Test Module] Starting for {len(event_type_codes)} configured type(s)...")
     try:
         from_date = snap_to_day_boundary_utc(get_current_unix_timestamp(), "start")
         to_date = get_current_unix_timestamp()
 
-        # Only one event is needed to verify connectivity; stop after the first page.
-        _fetch_all_pages(client, from_date=from_date, to_date=to_date, max_results=1)
+        # Validate each configured type; one event per type is enough to verify access.
+        for type_code in event_type_codes:
+            _fetch_all_pages(client, from_date=from_date, to_date=to_date, event_type=type_code, max_results=1)
 
         demisto.debug("[Test Module] Success")
         return "ok"
@@ -694,14 +698,22 @@ def _fetch_all_pages(
     client_ref_id: str | None = None,
     client_code: str | None = None,
     max_results: int | None = None,
+    from_ts: str | None = None,
+    to_ts: str | None = None,
+    last_ids: list[str] | None = None,
 ) -> list[dict]:
-    """Fetch pages of events until pagination is exhausted (or a cap is reached).
+    """Fetch events for a single type: page, filter, dedup, sort, and cap.
 
-    Loops through all pages using opaque nextPage tokens until nextPage is null
-    or the API returns an empty page. By default there is no cap — it fetches
-    everything in the time window. When ``max_results`` is provided, pagination
-    stops as soon as at least that many events have been collected (used by
-    test_module to avoid exhausting pagination).
+    The API filters by whole UTC days and returns events newest-first. This
+    function performs the full shared pipeline so all commands behave the same:
+      1. Page through the API, trimming each page to the precise ``[from_ts, to_ts]``
+         range (the API only filters by day).
+      2. Stop paging early once an event strictly older than ``from_ts`` appears
+         (everything later is older too); events exactly at ``from_ts`` are kept.
+      3. Drop events whose IDs are in ``last_ids`` (already consumed at the
+         watermark) — only when ``last_ids`` is provided.
+      4. Sort ascending by ``createdOn`` and keep the oldest ``max_results``, so
+         callers always get the *earliest* events in the range (never the latest).
 
     Used by all commands: test_module, get_events_command, fetch_events_command,
     and search_incidents_command.
@@ -716,17 +728,22 @@ def _fetch_all_pages(
         executive_name: Optional executive name to filter by.
         client_ref_id: Optional client reference ID for specific event lookup.
         client_code: Optional client identifier to filter by.
-        max_results: Optional cap on the number of events to collect. When set,
-            stops paginating once at least this many events are gathered.
+        max_results: Optional cap on the number of (oldest) events to return.
+        from_ts: Optional precise lower bound (inclusive) as a Unix timestamp.
+        to_ts: Optional precise upper bound (inclusive) as a Unix timestamp.
+        last_ids: Optional IDs already consumed at ``from_ts`` to deduplicate.
 
     Returns:
-        List of raw event dictionaries collected across the fetched pages.
+        In-range events, sorted ascending by createdOn, capped to max_results.
     """
     all_events: list[dict] = []
     page_token: str | None = None
     page_count = 0
+    from_threshold = int(from_ts) if from_ts else None
+    to_threshold = int(to_ts) if to_ts else None
+    should_continue = True
 
-    while True:
+    while should_continue:
         result_obj = client.fetch_events_page(
             from_date=from_date,
             to_date=to_date,
@@ -743,23 +760,73 @@ def _fetch_all_pages(
         if not page_events:
             break
 
-        all_events.extend(page_events)
+        # Trim to the precise range (the API only filters by day).
+        in_range = [event for event in page_events if _is_in_range(event, from_threshold, to_threshold)]
+        all_events.extend(in_range)
         page_count += 1
         demisto.debug(
             f"[FetchAll] Type {event_type or 'all'} | Page {page_count}: "
-            f"+{len(page_events)} events (total: {len(all_events)})"
+            f"+{len(in_range)} in-range events (total: {len(all_events)})"
         )
 
-        # Stop early once the requested number of events has been collected.
-        if max_results is not None and len(all_events) >= max_results:
-            break
+        # Stop once an event is older than from_ts (newest-first). max_results is
+        # applied after sorting, not here, so we get the oldest events.
+        reached_watermark = from_threshold is not None and any(
+            int(event.get("createdOn", "0")) < from_threshold for event in page_events
+        )
+        if reached_watermark:
+            demisto.debug(f"[FetchAll] Type {event_type or 'all'} | Reached lower-bound watermark, stopping pagination.")
 
         page_token = result_obj.get("nextPage")
-        if not page_token:
-            break
+        should_continue = bool(page_token) and not reached_watermark
+
+    if last_ids:  # drop IDs already consumed at the watermark (stateful callers)
+        all_events = filter_by_ids(all_events, last_ids)
+
+    all_events.sort(key=lambda event: int(event.get("createdOn", "0")))  # oldest first
+    if max_results is not None:
+        all_events = all_events[:max_results]
 
     demisto.debug(f"[FetchAll] Type {event_type or 'all'} | Done: {len(all_events)} events " f"across {page_count} pages")
     return all_events
+
+
+def _is_in_range(event: dict, from_threshold: int | None, to_threshold: int | None) -> bool:
+    """Return whether an event's createdOn falls within the inclusive bounds."""
+    created_on = int(event.get("createdOn", "0"))
+    if from_threshold and created_on < from_threshold:
+        return False
+    return not (to_threshold and created_on > to_threshold)
+
+
+def _resolve_fetch_window(from_input: str, to_input: str | None) -> tuple[str, str, str]:
+    """Resolve a fetch time window shared by get-events and incident-fetch.
+
+    Converts the inputs to Unix timestamps, snaps ``from_date`` to the start of
+    its UTC day (the API filters by day), defaults ``to_date`` to now, validates
+    the range, and snaps ``to_date`` to end-of-day when both land on the same day
+    (otherwise the API rejects an equal from/to range).
+
+    Args:
+        from_input: Start time (ISO 8601 or relative).
+        to_input: End time (ISO 8601 or relative), or None for now.
+
+    Returns:
+        Tuple of (from_ts, from_date, to_date) as Unix timestamp strings, where
+        from_ts is the precise requested start (before the day snap).
+    """
+    from_ts = date_to_unix_timestamp(from_input)
+    from_date = snap_to_day_boundary_utc(from_ts, "start")
+    to_date = date_to_unix_timestamp(to_input) if to_input else get_current_unix_timestamp()
+
+    validate_date_range(from_date, to_date)
+
+    # When from_date and to_date land on the same UTC day, snap to_date to
+    # end-of-day so the API accepts the [Day, Day] range.
+    if int(to_date) == int(from_date):
+        to_date = snap_to_day_boundary_utc(to_date, "end")
+
+    return from_ts, from_date, to_date
 
 
 def get_events_command(
@@ -793,18 +860,7 @@ def get_events_command(
     event_type_arg = argToList(args.get("event_type"))
     type_codes = resolve_type_codes(event_type_arg) if event_type_arg else default_type_codes
 
-    from_ts = date_to_unix_timestamp(start_time_input)
-    from_date = snap_to_day_boundary_utc(from_ts, "start")
-    to_date = date_to_unix_timestamp(end_time_input) if end_time_input else get_current_unix_timestamp()
-
-    validate_date_range(from_date, to_date)
-
-    # When from_date and to_date are both at midnight of the same day, the API
-    # rejects the request ("from date should not be greater than or equal to
-    # to date").  Snap to_date to 23:59:59 so the API floors it to the same
-    # day, producing the valid range [Day, Day].
-    if int(to_date) == int(from_date):
-        to_date = snap_to_day_boundary_utc(to_date, "end")
+    from_ts, from_date, to_date = _resolve_fetch_window(start_time_input, end_time_input)
 
     demisto.debug(
         f"[Command Params] From: {from_date} (requested: {from_ts}), To: {to_date}, Limit: {limit}, Types: {type_codes}"
@@ -817,18 +873,17 @@ def get_events_command(
             from_date=from_date,
             to_date=to_date,
             event_type=type_code,
+            from_ts=from_ts,
+            to_ts=to_date,
+            max_results=limit,
         )
-        # Client-side filter: the API returns all events in the
-        # [ceil(fromdate)_day, floor(todate)_day] day range, so discard
-        # events outside the precise requested timestamp range.
-        type_events = [e for e in type_events if int(from_ts) <= int(e.get("createdOn", "0")) <= int(to_date)]
-        all_events.extend(type_events[:limit])
+        all_events.extend(type_events)
 
     demisto.debug(f"[Command Result] Total events retrieved: {len(all_events)} (limit per type: {limit})")
 
     # Normalize events (adds _time and source_log_type) so the command outputs
     # the same parsed events that are ingested into XSIAM.
-    add_time_to_events(all_events)
+    enrich_events(all_events)
 
     if should_push_events and all_events:
         create_events(list(all_events))
@@ -847,39 +902,6 @@ def get_events_command(
         outputs_key_field="incidentID",
         outputs=all_events,
     )
-
-
-def _filter_and_dedup(
-    raw_events: list[dict],
-    last_created_on: str | None,
-    last_ids: list[str],
-    type_key: str,
-) -> list[dict]:
-    """Filter out already-seen events and deduplicate by ID.
-
-    Steps:
-    1. Discard events with ``createdOn`` strictly before ``last_created_on``.
-    2. For events at exactly ``last_created_on``, remove those in ``last_ids``.
-
-    Args:
-        raw_events: Raw events from the API.
-        last_created_on: Timestamp of the last consumed event (or None on first run).
-        last_ids: IDs already consumed at ``last_created_on``.
-        type_key: Type key string used for debug logging.
-
-    Returns:
-        Filtered and deduplicated list of events.
-    """
-    if last_created_on:
-        threshold = int(last_created_on)
-        before_count = len(raw_events)
-        raw_events = [inc for inc in raw_events if int(inc.get("createdOn", "0")) >= threshold]
-        demisto.debug(f"[Fetch] Type {type_key}: Time filter (>= {threshold}): {before_count} -> {len(raw_events)}")
-
-    if last_ids and last_created_on:
-        raw_events = filter_by_ids(raw_events, last_ids)
-
-    return raw_events
 
 
 def _compute_new_state(
@@ -958,22 +980,23 @@ def _fetch_for_type(
 
     validate_date_range(from_date, to_date)
 
-    raw_events = _fetch_all_pages(client, from_date, to_date, type_code)
+    # _fetch_all_pages filters to >= last_created_on, dedups last_ids, sorts
+    # ascending, and caps to the oldest max_fetch_per_type events.
+    consumed = _fetch_all_pages(
+        client,
+        from_date,
+        to_date,
+        type_code,
+        from_ts=last_created_on,
+        last_ids=last_ids,
+        max_results=max_fetch_per_type,
+    )
 
-    if not raw_events:
-        demisto.debug(f"[Fetch] Type {type_key}: No events found.")
+    if not consumed:
+        demisto.debug(f"[Fetch] Type {type_key}: No new events.")
         return type_key, [], {"last_created_on": to_date, "last_ids": []}
 
-    raw_events = _filter_and_dedup(raw_events, last_created_on, last_ids, type_key)
-
-    if not raw_events:
-        demisto.debug(f"[Fetch] Type {type_key}: All events filtered out.")
-        return type_key, [], {"last_created_on": to_date, "last_ids": []}
-
-    raw_events.sort(key=lambda inc: int(inc.get("createdOn", "0")))
-    consumed = raw_events[:max_fetch_per_type]
     demisto.debug(f"[Fetch] Type {type_key}: Consuming {len(consumed)} events")
-
     updated_state = _compute_new_state(consumed, type_key)
     return type_key, consumed, updated_state
 
@@ -989,13 +1012,11 @@ def fetch_events_command(
     calls are blocking I/O, so threads parallelize them effectively).
     Each type maintains its own last_created_on and last_ids in last_run.
 
-    The API returns events sorted descending by createdOn with day-level filtering.
-    For each type, we:
-    1. Fetch ALL pages (exhaust pagination)
-    2. Client-side filter by last_created_on timestamp
-    3. Sort ascending by createdOn
-    4. Slice to max_fetch_per_type
-    5. Advance last_created_on to the max createdOn of consumed events
+    For each type, ``_fetch_for_type`` delegates to ``_fetch_all_pages`` which
+    pages the API, filters to the precise time window, stops early at the
+    last_run watermark, dedups by last_ids, sorts ascending by createdOn, and
+    caps to max_fetch_per_type. This command then enriches and pushes the
+    consumed events and advances each type's last_run state.
 
     Args:
         client: The iZOOlogic client.
@@ -1027,14 +1048,16 @@ def fetch_events_command(
                 type_key, consumed_events, updated_state = future.result()
             except Exception as error:
                 # Isolate per-type failures so other types still succeed.
-                demisto.error(f"[Fetch Events] Error fetching type {future_to_type[future]}: {error!s}")
+                demisto.error(
+                    f"[Fetch Events] Error fetching type {future_to_type[future]}: {error!s}\n" f"{traceback.format_exc()}"
+                )
                 continue
 
             all_events.extend(consumed_events)
             updated_last_run[type_key] = updated_state
 
     if all_events:
-        add_time_to_events(all_events)
+        enrich_events(all_events)
         create_events(all_events)
 
     demisto.setLastRun(updated_last_run)
@@ -1192,15 +1215,7 @@ def search_incidents_command(client: Client, args: dict[str, Any]) -> CommandRes
     from_date_input = args.get("from_date", Config.DEFAULT_FETCH_COMMAND_FROM_TIME)
     to_date_input = args.get("to_date")
 
-    from_ts = date_to_unix_timestamp(from_date_input)
-    from_date = snap_to_day_boundary_utc(from_ts, "start")
-    to_date = date_to_unix_timestamp(to_date_input) if to_date_input else get_current_unix_timestamp()
-
-    validate_date_range(from_date, to_date)
-
-    # When from_date and to_date are both at midnight of the same day, snap to_date to end of day
-    if int(to_date) == int(from_date):
-        to_date = snap_to_day_boundary_utc(to_date, "end")
+    from_ts, from_date, to_date = _resolve_fetch_window(from_date_input, to_date_input)
 
     # Optional: incident_type (name only, mapped to integer code)
     incident_type: int | None = None
@@ -1237,6 +1252,8 @@ def search_incidents_command(client: Client, args: dict[str, Any]) -> CommandRes
         executive_name=executive_name,
         client_ref_id=client_ref_id,
         client_code=client_code,
+        from_ts=from_ts,
+        to_ts=to_date,
     )
 
     demisto.debug(f"[Command Result] Total incidents retrieved: {len(all_incidents)}")
@@ -1298,7 +1315,7 @@ def main() -> None:
         command_func = COMMAND_MAP[command]
 
         if command == "test-module":
-            result = command_func(client)
+            result = command_func(client, config["event_type_codes"])
             return_results(result)
         elif command == "fetch-events":
             command_func(client, config["max_fetch"], config["event_type_codes"])

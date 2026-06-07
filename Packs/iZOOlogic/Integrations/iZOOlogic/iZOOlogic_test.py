@@ -1,5 +1,6 @@
 import asyncio
 import json
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock
 
@@ -18,14 +19,15 @@ from iZOOlogic import (
     get_current_unix_timestamp,
     snap_to_day_boundary_utc,
     parse_date,
-    add_time_to_events,
+    enrich_events,
     create_events,
     filter_by_ids,
     validate_date_range,
     resolve_type_codes,
     parse_integration_params,
     _fetch_all_pages,
-    _filter_and_dedup,
+    _is_in_range,
+    _resolve_fetch_window,
     _compute_new_state,
     _fetch_for_type,
     _resolve_code_by_name,
@@ -324,10 +326,10 @@ class TestSnapToDayBoundaryUtc:
 # region Add Time To Events / Create Events Tests
 
 
-class TestAddTimeToEvents:
+class TestEnrichEvents:
     def test_adds_time_and_source_log_type(self):
         events = [{"incidentID": "abc", "incidentType": "Phishing", "createdOn": "100"}]
-        add_time_to_events(events)
+        enrich_events(events)
         assert events[0]["_time"] == "1970-01-01T00:01:40Z"
         assert events[0]["source_log_type"] == "Phishing"
 
@@ -335,13 +337,15 @@ class TestAddTimeToEvents:
         # When createdOn is missing, _time falls back to the current UTC time
         # so that every event is guaranteed to have a _time value.
         events = [{"incidentID": "1"}]
-        add_time_to_events(events)
+        enrich_events(events)
         assert events[0]["_time"]  # unconditionally assigned
+        # Verify the fallback _time matches the expected ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ).
+        datetime.strptime(events[0]["_time"], "%Y-%m-%dT%H:%M:%SZ")
         assert events[0]["source_log_type"] == "Unknown"
 
     def test_empty_list(self):
         events: list[dict] = []
-        add_time_to_events(events)
+        enrich_events(events)
         assert events == []
 
     def test_multiple_events(self):
@@ -349,7 +353,7 @@ class TestAddTimeToEvents:
             {"incidentID": "1", "incidentType": "Phishing", "createdOn": "100"},
             {"incidentID": "2", "incidentType": "Malware", "createdOn": "200"},
         ]
-        add_time_to_events(events)
+        enrich_events(events)
         assert events[0]["_time"] == "1970-01-01T00:01:40Z"
         assert events[0]["source_log_type"] == "Phishing"
         assert events[1]["_time"] == "1970-01-01T00:03:20Z"
@@ -361,7 +365,7 @@ class TestCreateEvents:
         mock_send = mocker.patch("iZOOlogic.send_events_to_xsiam")
         # Events are normalized by the caller (add_time_to_events) before create_events sends them.
         events = [{"incidentID": "abc", "incidentType": "Phishing", "createdOn": "100"}]
-        add_time_to_events(events)
+        enrich_events(events)
         create_events(events)
         mock_send.assert_called_once()
         sent_events = mock_send.call_args[1]["events"]
@@ -573,39 +577,54 @@ class TestClient:
 class TestTestModule:
     def test_success(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
         mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
-        assert izoologic_test_module(mock_client) == "ok"
+        assert izoologic_test_module(mock_client, [2]) == "ok"
 
     def test_success_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
         """Empty result still proves connectivity — test passes."""
         mocker.patch.object(mock_client, "fetch_events_page", return_value=empty_result)
-        assert izoologic_test_module(mock_client) == "ok"
+        assert izoologic_test_module(mock_client, [2]) == "ok"
 
     @pytest.mark.parametrize("error_msg", ["401 Unauthorized", "403 Forbidden", "unauthorized"])
     def test_auth_failure(self, mocker: MockerFixture, mock_client: Client, error_msg: str):
         mocker.patch.object(mock_client, "fetch_events_page", side_effect=DemistoException(error_msg))
-        assert "Authorization Error" in izoologic_test_module(mock_client)
+        assert "Authorization Error" in izoologic_test_module(mock_client, [2])
 
     def test_other_error_raises(self, mocker: MockerFixture, mock_client: Client):
         mocker.patch.object(mock_client, "fetch_events_page", side_effect=DemistoException("timeout"))
         with pytest.raises(DemistoException, match="timeout"):
-            izoologic_test_module(mock_client)
+            izoologic_test_module(mock_client, [2])
 
-    def test_does_not_exhaust_pagination(
+    def test_caps_results_to_one(
         self,
         mocker: MockerFixture,
         mock_client: Client,
         events_result_with_pagination: dict,
         events_result: dict,
     ):
-        """test-module fetches only the first page (one API call) even when more pages exist."""
-        mock_fetch = mocker.patch.object(
+        """test-module caps the fetch at a single event (max_results=1) and still returns ok."""
+        mocker.patch.object(
             mock_client,
             "fetch_events_page",
             side_effect=[events_result_with_pagination, events_result],
         )
-        assert izoologic_test_module(mock_client) == "ok"
-        # Only a single page is fetched — pagination is not exhausted.
-        mock_fetch.assert_called_once()
+        assert izoologic_test_module(mock_client, [2]) == "ok"
+
+    def test_validates_each_configured_type(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """test-module fetches one event per configured type, filtering by each type code."""
+        mock_fetch = mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+
+        assert izoologic_test_module(mock_client, [1, 2, 3]) == "ok"
+
+        # One API call per configured type, each filtered by its event_type code.
+        assert mock_fetch.call_count == 3
+        called_types = [call.kwargs["event_type"] for call in mock_fetch.call_args_list]
+        assert called_types == [1, 2, 3]
+
+    def test_no_configured_types_still_ok(self, mocker: MockerFixture, mock_client: Client):
+        """With no configured types, test-module makes no fetch calls but still returns ok."""
+        mock_fetch = mocker.patch.object(mock_client, "fetch_events_page")
+        assert izoologic_test_module(mock_client, []) == "ok"
+        mock_fetch.assert_not_called()
 
 
 # endregion
@@ -636,22 +655,41 @@ class TestFetchAllPages:
         # Page 1: 2 events (with pagination), Page 2: 3 events (no pagination)
         assert len(results) == 5
 
-    def test_max_results_stops_pagination(
+    def test_max_results_caps_oldest(
         self,
         mocker: MockerFixture,
         mock_client: Client,
         events_result_with_pagination: dict,
         events_result: dict,
     ):
-        """When max_results is set, pagination stops after the cap is reached."""
-        mock_fetch = mocker.patch.object(
+        """max_results caps to the oldest N after sorting (pagination still exhausts)."""
+        mocker.patch.object(
             mock_client,
             "fetch_events_page",
             side_effect=[events_result_with_pagination, events_result],
         )
         results = _fetch_all_pages(mock_client, "1700000000", "1700100000", event_type=2, max_results=1)
-        # First page already yields >= 1 event, so no second page is fetched.
-        assert len(results) >= 1
+        # Returns exactly one event — the oldest across all pages (createdOn 1700000000).
+        assert len(results) == 1
+        assert results[0]["createdOn"] == "1700000000"
+
+    def test_watermark_stops_pagination(
+        self,
+        mocker: MockerFixture,
+        mock_client: Client,
+        events_result_with_pagination: dict,
+        events_result: dict,
+    ):
+        """Pagination stops early once an event older than from_ts appears on a page."""
+        mock_fetch = mocker.patch.object(
+            mock_client,
+            "fetch_events_page",
+            side_effect=[events_result_with_pagination, events_result],
+        )
+        # Page 1 (events_result_with_pagination) has createdOn 1700001100, 1700001000.
+        # With from_ts just above the lower value, the page contains an older event,
+        # so pagination stops after the first call.
+        _fetch_all_pages(mock_client, "1700000000", "1700100000", event_type=2, from_ts="1700001050")
         mock_fetch.assert_called_once()
 
     def test_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
@@ -665,40 +703,132 @@ class TestFetchAllPages:
         results = _fetch_all_pages(mock_client, "1700000000", "1700100000")
         assert len(results) == 3
 
+    def test_from_ts_filters_older_events(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Events with createdOn below from_ts are dropped (precise lower bound)."""
+        # Fixture createdOn values: 1700000200, 1700000100, 1700000000.
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", event_type=2, from_ts="1700000100")
+        ids = [inc["incidentID"] for inc in results]
+        # Only events at/after 1700000100 remain (def456, abc123); 1700000000 dropped.
+        assert ids == ["def456", "abc123"]
+
+    def test_to_ts_filters_newer_events(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Events with createdOn above to_ts are dropped (precise upper bound)."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", event_type=2, to_ts="1700000100")
+        ids = [inc["incidentID"] for inc in results]
+        # Only events at/before 1700000100 remain (ghi789, def456); 1700000200 dropped.
+        assert ids == ["ghi789", "def456"]
+
+    def test_results_sorted_ascending(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """Results are returned sorted ascending by createdOn (oldest first)."""
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        results = _fetch_all_pages(mock_client, "1700000000", "1700100000", event_type=2)
+        created = [inc["createdOn"] for inc in results]
+        assert created == ["1700000000", "1700000100", "1700000200"]
+
 
 # endregion
+
+# region In-Range Helper Tests
+
+
+class TestIsInRange:
+    @pytest.mark.parametrize(
+        "created_on, from_threshold, to_threshold, expected",
+        [
+            # No bounds — everything is in range.
+            ("150", None, None, True),
+            # Lower bound only — inclusive at the boundary.
+            ("100", 100, None, True),
+            ("99", 100, None, False),
+            ("101", 100, None, True),
+            # Upper bound only — inclusive at the boundary.
+            ("200", None, 200, True),
+            ("201", None, 200, False),
+            ("199", None, 200, True),
+            # Both bounds — inside, on edges, and outside.
+            ("150", 100, 200, True),
+            ("100", 100, 200, True),
+            ("200", 100, 200, True),
+            ("99", 100, 200, False),
+            ("201", 100, 200, False),
+        ],
+    )
+    def test_is_in_range(self, created_on: str, from_threshold: int | None, to_threshold: int | None, expected: bool):
+        assert _is_in_range({"createdOn": created_on}, from_threshold, to_threshold) is expected
+
+    def test_missing_created_on_defaults_to_zero(self):
+        """An event without createdOn is treated as createdOn=0."""
+        assert _is_in_range({}, 100, 200) is False
+        assert _is_in_range({}, None, None) is True
+
+
+# endregion
+
+# region Resolve Fetch Window Tests
+
+
+class TestResolveFetchWindow:
+    def test_same_day_snaps_to_end_of_day(self):
+        """When from and to land on the same UTC day, to_date snaps to end-of-day."""
+        from_ts, from_date, to_date = _resolve_fetch_window("2023-11-14T10:00:00Z", "2023-11-14T12:00:00Z")
+        # from_ts is the precise requested start (before the day snap).
+        assert from_ts == date_to_unix_timestamp("2023-11-14T10:00:00Z")
+        # from_date is snapped to start-of-day; to_date snapped to end-of-day so the
+        # API accepts the equal [Day, Day] range.
+        assert from_date == snap_to_day_boundary_utc(from_ts, "start")
+        assert int(to_date) > int(from_date)
+
+    def test_default_to_date_is_now(self, mocker: MockerFixture):
+        """When to_input is None, to_date defaults to the current timestamp."""
+        mocker.patch("iZOOlogic.get_current_unix_timestamp", return_value="1700100000")
+        from_ts, from_date, to_date = _resolve_fetch_window("2023-11-14T10:00:00Z", None)
+        assert to_date == "1700100000"
+        assert from_ts == date_to_unix_timestamp("2023-11-14T10:00:00Z")
+
+    def test_inverted_range_raises(self):
+        """A from after to (different days) raises via validate_date_range."""
+        with pytest.raises(DemistoException, match="is before"):
+            _resolve_fetch_window("2023-11-20T00:00:00Z", "2023-11-10T00:00:00Z")
+
 
 # region Filter and Dedup Tests
 
 
-class TestFilterAndDedup:
+class TestFetchAllPagesDedup:
     @pytest.mark.parametrize(
-        "last_created_on, last_ids, expected_ids",
+        "last_ids, expected_ids",
         [
-            # First run — no filtering
-            (None, [], ["a", "b", "c"]),
-            # Time filter only — discard before threshold
-            ("200", [], ["b", "c"]),
-            # Time filter + dedup — discard before threshold and matching IDs
-            ("200", ["b"], ["c"]),
-            # All deduped out
-            ("200", ["b", "c"], []),
-            # Dedup at boundary with no time filter effect
-            ("100", ["a"], ["b", "c"]),
+            # No previously-seen IDs — nothing removed.
+            ([], ["a", "b", "c"]),
+            # Remove a single previously-seen ID.
+            (["b"], ["a", "c"]),
+            # Remove multiple previously-seen IDs.
+            (["a", "c"], ["b"]),
+            # All IDs already seen.
+            (["a", "b", "c"], []),
         ],
     )
-    def test_filter_and_dedup(
+    def test_fetch_all_pages_dedups_last_ids(
         self,
-        last_created_on: str | None,
+        mocker: MockerFixture,
+        mock_client: Client,
         last_ids: list[str],
         expected_ids: list[str],
     ):
-        raw = [
-            {"incidentID": "a", "createdOn": "100"},
-            {"incidentID": "b", "createdOn": "200"},
-            {"incidentID": "c", "createdOn": "300"},
-        ]
-        result = _filter_and_dedup(raw, last_created_on, last_ids, type_key="1")
+        # _fetch_all_pages drops events whose IDs are in last_ids and returns the
+        # rest sorted ascending by createdOn.
+        page = {
+            "incidents": [
+                {"incidentID": "a", "createdOn": "100"},
+                {"incidentID": "b", "createdOn": "200"},
+                {"incidentID": "c", "createdOn": "300"},
+            ],
+            "nextPage": None,
+        }
+        mocker.patch.object(mock_client, "fetch_events_page", return_value=page)
+        result = _fetch_all_pages(mock_client, "100", "300", event_type=2, last_ids=last_ids)
         assert [inc["incidentID"] for inc in result] == expected_ids
 
 
@@ -876,16 +1006,20 @@ class TestFetchForType:
 
 
 class TestGetEventsCommand:
+    # Window bracketing the fixture events' createdOn (1700000000-1700000200) so they
+    # survive the in-range filter now applied inside _fetch_all_pages.
+    FIXTURE_WINDOW = {"start_time": "2023-11-14T00:00:00Z", "end_time": "2023-11-14T23:59:59Z"}
+
     def test_basic(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
         mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
-        result = get_events_command(mock_client, {"limit": "10"}, [2])
+        result = get_events_command(mock_client, {"limit": "10", **self.FIXTURE_WINDOW}, [2])
         assert isinstance(result, CommandResults)
         assert result.outputs_prefix == "iZOOlogic.Incident"
 
     def test_slices_to_limit(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
         """Test that get-events slices results to the limit per type."""
         mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
-        result = get_events_command(mock_client, {"limit": "2"}, [2])
+        result = get_events_command(mock_client, {"limit": "2", **self.FIXTURE_WINDOW}, [2])
         assert len(result.outputs) <= 2  # type: ignore[arg-type]
 
     def test_invalid_limit(self, mocker: MockerFixture, mock_client: Client):
@@ -929,7 +1063,7 @@ class TestGetEventsCommand:
     def test_multiple_types(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
         """Fetches events for each type code — API called once per type."""
         mock_fetch = mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
-        result = get_events_command(mock_client, {"limit": "10"}, [2, 3])
+        result = get_events_command(mock_client, {"limit": "10", **self.FIXTURE_WINDOW}, [2, 3])
         # Verify fetch_events_page was called for each type
         called_types = [call.kwargs["event_type"] for call in mock_fetch.call_args_list]
         assert 2 in called_types
@@ -939,7 +1073,7 @@ class TestGetEventsCommand:
     def test_outputs_key_field(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
         """Verify outputs_key_field is set correctly."""
         mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
-        result = get_events_command(mock_client, {"limit": "10"}, [2])
+        result = get_events_command(mock_client, {"limit": "10", **self.FIXTURE_WINDOW}, [2])
         assert result.outputs_key_field == "incidentID"
 
     def test_should_push_events_overridden_on_non_xsiam(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
@@ -949,7 +1083,7 @@ class TestGetEventsCommand:
         mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
         mock_create = mocker.patch("iZOOlogic.create_events")
 
-        result = get_events_command(mock_client, {"limit": "10", "should_push_events": "true"}, [2])
+        result = get_events_command(mock_client, {"limit": "10", "should_push_events": "true", **self.FIXTURE_WINDOW}, [2])
 
         # Events should NOT be pushed (create_events should not be called)
         mock_create.assert_not_called()
@@ -1401,10 +1535,13 @@ class TestCreateIncidentCommand:
 
 
 class TestSearchIncidentsCommand:
+    # Fixtures use createdOn in [1700000000, 1700000200]; this window covers them.
+    FIXTURE_WINDOW = {"from_date": "2023-11-14T00:00:00Z", "to_date": "2023-11-14T23:59:59Z"}
+
     def test_basic_no_args(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
-        """Fetch with default args (no filters) returns incidents."""
+        """Fetch within the fixture window (no filters) returns incidents."""
         mocker.patch.object(mock_client, "fetch_events_page", return_value=incidents_result)
-        result = search_incidents_command(mock_client, {})
+        result = search_incidents_command(mock_client, dict(self.FIXTURE_WINDOW))
 
         assert isinstance(result, CommandResults)
         assert result.outputs_prefix == "iZOOlogic.Incident"
@@ -1416,8 +1553,7 @@ class TestSearchIncidentsCommand:
         mock_fetch = mocker.patch.object(mock_client, "fetch_events_page", return_value=incidents_result)
 
         args = {
-            "from_date": "2024-01-01T00:00:00Z",
-            "to_date": "2024-01-02T00:00:00Z",
+            **self.FIXTURE_WINDOW,
             "incident_type": "phishing",
             "threat_type": "critical threat",
             "brand_code": "BRAND001",
@@ -1464,7 +1600,7 @@ class TestSearchIncidentsCommand:
 
     def test_readable_output_has_headers(self, mocker: MockerFixture, mock_client: Client, incidents_result: dict):
         mocker.patch.object(mock_client, "fetch_events_page", return_value=incidents_result)
-        result = search_incidents_command(mock_client, {})
+        result = search_incidents_command(mock_client, dict(self.FIXTURE_WINDOW))
 
         assert "iZOOlogic Incidents" in result.readable_output
         assert "Incident ID" in result.readable_output
