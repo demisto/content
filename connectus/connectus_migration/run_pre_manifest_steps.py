@@ -526,6 +526,14 @@ def step_2_params_to_commands(integration_id: str, out_dir: Path) -> dict:
 # ---------------------------------------------------------------------------
 # Step 3a — Set Params for test with default in code
 # ---------------------------------------------------------------------------
+# Checkpoint step (no setter, no gate) that sits between the
+# ``set-param-defaults`` data step and ``set-params-to-capabilities``. It is
+# a manual "present → fix → markpass" review in the real workflow; for this
+# structural harness there is no code to review, so we markpass it
+# unconditionally to satisfy the state-machine ordering gate before step 3b.
+UCP_PARAM_DEFAULT_REVIEW_STEP = "UCP param-default review"
+
+
 def step_3a_param_defaults(integration_id: str, out_dir: Path) -> dict:
     """Persist Params-for-test defaults.
 
@@ -533,6 +541,12 @@ def step_3a_param_defaults(integration_id: str, out_dir: Path) -> dict:
     unless ``test-module-params`` reports required params. Since this is a
     structural-test harness, we keep it empty — the manifest generator
     consumes the cell but does not require non-empty values here.
+
+    After persisting the defaults this also ``markpass``-es the downstream
+    ``UCP param-default review`` checkpoint (a no-setter, no-gate manual
+    review step). The harness performs no source-level review, so it advances
+    the checkpoint unconditionally — otherwise the state-machine ordering gate
+    blocks step 3b's ``set-params-to-capabilities``.
     """
     print(f"[3a] test-module-params + set-param-defaults '{integration_id}'")
     tm_proc = _run(
@@ -573,6 +587,27 @@ def step_3a_param_defaults(integration_id: str, out_dir: Path) -> dict:
     if proc.returncode != 0:
         raise RuntimeError(
             f"set-param-defaults failed:\n{proc.stderr or proc.stdout}"
+        )
+
+    # Advance the manual 'UCP param-default review' checkpoint. It has no
+    # setter and no self-executing gate, so a plain markpass cannot fail on
+    # its own merits — but it MUST be passed here so the ordering gate lets
+    # step 3b's set-params-to-capabilities through.
+    print(f"  [markpass] {UCP_PARAM_DEFAULT_REVIEW_STEP} '{integration_id}'")
+    review = _run(
+        [
+            sys.executable,
+            str(WORKFLOW_STATE),
+            "markpass",
+            integration_id,
+            UCP_PARAM_DEFAULT_REVIEW_STEP,
+        ],
+        timeout=SHORT_TIMEOUT,
+    )
+    if review.returncode != 0:
+        raise RuntimeError(
+            f"markpass '{UCP_PARAM_DEFAULT_REVIEW_STEP}' failed:\n"
+            f"{review.stderr or review.stdout}"
         )
     return param_defaults
 
@@ -724,7 +759,7 @@ def main() -> int:
     )
     args = parser.parse_args()
     
-    integration_id = "Microsoft Graph"
+    integration_id = "Azure Sentinel"
     out_dir = Path(args.out_dir)
     if not out_dir.is_absolute():
         out_dir = REPO_ROOT / out_dir

@@ -991,12 +991,57 @@ class _NoAliasDumper(yaml.SafeDumper):
 
 
 def _dump_yaml(data: Any, fh: Any) -> None:
-    """Dump ``data`` to ``fh`` with the no-alias dumper and stable key sort.
+    """Dump ``data`` to ``fh`` with the no-alias dumper, preserving key order.
 
     Single choke-point so every manifest file is serialized identically
     (no anchors/aliases) — keeps output deterministic and review-friendly.
+
+    ``sort_keys=False`` is REQUIRED: the builder dicts construct top-level
+    keys in their canonical manifest order (``metadata`` →
+    ``general_configurations`` → body). PyYAML's default ``sort_keys=True``
+    would alphabetize them, pushing ``general_configurations`` after the
+    body and ``metadata`` to the bottom — which is not the shape the
+    connector schema/examples expect.
     """
-    yaml.dump(data, fh, Dumper=_NoAliasDumper, default_flow_style=False)
+    yaml.dump(
+        data,
+        fh,
+        Dumper=_NoAliasDumper,
+        default_flow_style=False,
+        sort_keys=False,
+    )
+
+
+# Canonical top-level key order for configurations.yaml, matching the
+# connector examples (metadata → view_groups → general_configurations →
+# configurations). The builder appends general_configurations / view_groups
+# AFTER the per-capability configurations list, so without this reorder the
+# user-visible order would be metadata → configurations → general_configurations
+# → view_groups. Any key not listed here is appended after, in its existing
+# relative order.
+_CONFIGURATIONS_KEY_ORDER = (
+    "metadata",
+    "view_groups",
+    "general_configurations",
+    "configurations",
+)
+
+
+def _ordered_configurations(data: dict) -> dict:
+    """Return ``data`` with top-level keys in the canonical configurations order.
+
+    Preserves all values untouched (nested ordering is left as-is). Keys not in
+    :data:`_CONFIGURATIONS_KEY_ORDER` keep their original relative position at
+    the end.
+    """
+    ordered: dict = {}
+    for key in _CONFIGURATIONS_KEY_ORDER:
+        if key in data:
+            ordered[key] = data[key]
+    for key, value in data.items():
+        if key not in ordered:
+            ordered[key] = value
+    return ordered
 
 
 def write_handler_yaml(handler_yaml_path: Path, handler_data: dict) -> None:
@@ -1135,7 +1180,7 @@ def register_serializer_entry(
 
     with open(serializer_path, "w") as fh:
         fh.write(SERIALIZER_SCHEMA_DIRECTIVE)
-        yaml.safe_dump(existing, fh)
+        _dump_yaml(existing, fh)
 
 
 def _strip_leading_comments(text: str) -> str:
@@ -3139,7 +3184,7 @@ def write_capabilities_yaml(
     capabilities_yaml_path.parent.mkdir(parents=True, exist_ok=True)
     with open(capabilities_yaml_path, "w") as fh:
         fh.write(CAPABILITIES_SCHEMA_DIRECTIVE)
-        yaml.safe_dump(capabilities_data, fh)
+        _dump_yaml(capabilities_data, fh)
 
 
 # ---------------------------------------------------------------------------
@@ -3405,6 +3450,96 @@ def build_configurations_yaml(
     }
 
 
+def inject_synthetic_capability_fields(
+    configurations_data: dict,
+    cap_name: str,
+    synthetic_fields: list[dict],
+    handler_id: str = "",
+) -> None:
+    """Prepend builder-produced synthetic fields into a sub-capability entry.
+
+    Capability builders such as :func:`add_fetch_issues_capability` and
+    :func:`add_indicators_capability` return their platform-mandated fields
+    (e.g. ``isFetch`` / ``incidentType`` / ``incidentFetchInterval`` /
+    ``mapper-incoming`` / ``classifier`` for fetch-issues) SEPARATELY from
+    ``mapped_params`` — and strip the corresponding raw param names from
+    ``mapped_params`` so they are not emitted twice. Those returned fields
+    must still be written into the matching ``configurations.yaml``
+    sub-capability entry, otherwise they are silently lost (the historical
+    bug: callers only consumed the builder's ``triggers`` and discarded its
+    ``fields``).
+
+    This injects ``synthetic_fields`` at the FRONT of the matching sub-cap
+    entry's first field group (so the platform fields render before any
+    remaining user-mapped params). The entry is matched by re-deriving its id
+    from ``cap_name`` the same way :func:`build_configurations_yaml` does
+    (``make_sub_capability_id(handler_id, cap_name)`` when ``handler_id`` is
+    set, else the bare slug). When no matching entry exists yet (e.g. the
+    bucket had no raw params so it was skipped), a new entry is created.
+    """
+    if not synthetic_fields:
+        return
+
+    cap_id = (
+        make_sub_capability_id(handler_id, cap_name)
+        if handler_id
+        else slugify_capability_name(cap_name)
+    )
+
+    entries = configurations_data.setdefault("configurations", [])
+    target = next((e for e in entries if e.get("id") == cap_id), None)
+
+    if target is None:
+        target = {"id": cap_id, "configurations": [{"fields": []}]}
+        if handler_id:
+            target["view_group"] = handler_id
+        entries.append(target)
+
+    groups = target.setdefault("configurations", [{"fields": []}])
+    if not groups:
+        groups.append({"fields": []})
+    first_group = groups[0]
+    existing = first_group.setdefault("fields", [])
+    # Prepend, skipping any field id already present (idempotent / no dupes).
+    existing_ids = {f.get("id") for f in existing}
+    to_add = [f for f in synthetic_fields if f.get("id") not in existing_ids]
+    first_group["fields"] = to_add + existing
+
+
+def _inject_append_capability_fields(
+    configurations_data: dict,
+    sub_cap_id: str | None,
+    handler_id: str,
+    synthetic_fields: list[dict],
+) -> None:
+    """Inject synthetic capability fields by an already-resolved sub-cap id.
+
+    The append path resolves each capability's sub-cap id up front
+    (``cap_name_to_handler_cap_id``); this matches the configurations sub-cap
+    entry by that exact id and prepends the builder's synthetic fields. When
+    no matching entry exists yet, a new view_group-pinned entry is created.
+    """
+    if not synthetic_fields or not sub_cap_id:
+        return
+
+    entries = configurations_data.setdefault("configurations", [])
+    target = next((e for e in entries if e.get("id") == sub_cap_id), None)
+    if target is None:
+        target = {"id": sub_cap_id, "configurations": [{"fields": []}]}
+        if handler_id:
+            target["view_group"] = handler_id
+        entries.append(target)
+
+    groups = target.setdefault("configurations", [{"fields": []}])
+    if not groups:
+        groups.append({"fields": []})
+    first_group = groups[0]
+    existing = first_group.setdefault("fields", [])
+    existing_ids = {f.get("id") for f in existing}
+    to_add = [f for f in synthetic_fields if f.get("id") not in existing_ids]
+    first_group["fields"] = to_add + existing
+
+
 def find_existing_handler_for_capability(
     connector_dir: Path, cap_id: str
 ) -> Path:
@@ -3472,7 +3607,7 @@ def rename_handler_capability_id(
     with open(handler_yaml_path, "w") as fh:
         if has_directive:
             fh.write(first_line)
-        yaml.safe_dump(data, fh)
+        _dump_yaml(data, fh)
 
 
 def append_capability_to_files(
@@ -3695,7 +3830,7 @@ def build_triggers_yaml(triggers: list[dict]) -> dict:
             capability builders.
 
     Returns:
-        A dict ready for ``yaml.safe_dump``.
+        A dict ready for serialization via :func:`_dump_yaml`.
     """
     return {"triggers": list(triggers)}
 
@@ -3709,7 +3844,7 @@ def write_triggers_yaml(triggers_yaml_path: Path, triggers_data: dict) -> None:
     triggers_yaml_path.parent.mkdir(parents=True, exist_ok=True)
     with open(triggers_yaml_path, "w") as fh:
         fh.write(TRIGGERS_SCHEMA_DIRECTIVE)
-        yaml.safe_dump(triggers_data, fh)
+        _dump_yaml(triggers_data, fh)
 
 
 CONNECTION_SCHEMA_DIRECTIVE = (
@@ -3727,7 +3862,7 @@ def write_connection_yaml(connection_yaml_path: Path, connection_data: dict) -> 
     connection_yaml_path.parent.mkdir(parents=True, exist_ok=True)
     with open(connection_yaml_path, "w") as fh:
         fh.write(CONNECTION_SCHEMA_DIRECTIVE)
-        yaml.safe_dump(connection_data, fh)
+        _dump_yaml(connection_data, fh)
 
 
 # ---------------------------------------------------------------------------
@@ -4307,6 +4442,12 @@ def build_connection_profile(
     return {
         "id": profile_id,
         "type": profile_type,
+        # Pin the profile to the integration's connection-page tile. This is
+        # the same id the handler's ``auth_options[].view_group`` uses
+        # (:func:`slugify_view_group_id`), so the connection profile and the
+        # handler reference the same tile — matching the grouped-example shape
+        # where each auth profile carries its view_group.
+        "view_group": slugify_view_group_id(integration_id),
         "title": _connection_profile_title(profile_type, connector_title),
         "description": (
             f"Authentication profile for "
@@ -5107,6 +5248,51 @@ def create_manifest_from_scratch(
     write_capabilities_yaml(capabilities_yaml_path, capabilities_data)
     logger.info(f"[manifest_generator] Generated {capabilities_yaml_path}")
 
+    # Collect triggers from capability builders and write triggers.yaml
+    # when at least one trigger exists.
+    all_triggers: list[dict] = []
+
+    # Run the capability builders (TI&E + fetch-issues) BEFORE building
+    # configurations.yaml. Each builder:
+    #   * STRIPS its platform-managed raw param names from ``mapped_params``
+    #     (so they aren't emitted as plain per-cap fields), and
+    #   * RETURNS the synthetic field set to render for that capability.
+    # We capture the returned fields here keyed by the mapped_params bucket
+    # name, then inject them into the matching sub-cap entry after
+    # ``build_configurations_yaml`` runs. (Historically the returned fields
+    # were discarded — only triggers were consumed — so fetch-issues
+    # connectors emitted NONE of isFetch / incidentType / incidentFetchInterval
+    # / mapper-incoming / classifier. This restores them.)
+    synthetic_cap_fields: dict[str, list[dict]] = {}
+
+    ti_bucket_key = "Threat Intelligence & Enrichment"
+    if ti_bucket_key in mapped_params:
+        ti_result = add_indicators_capability(
+            capability_id=slugify_capability_name(ti_bucket_key),
+            is_sub_capability=False,
+            mapped_params=mapped_params,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=handler_dir,
+        )
+        all_triggers.extend(ti_result.get("triggers", []))
+        synthetic_cap_fields[ti_bucket_key] = ti_result.get("fields", [])
+
+    fi_bucket_key = "Fetch Issues"
+    if fi_bucket_key in mapped_params:
+        script = integration_yml.get("script") or {}
+        fi_is_long_running = script.get("longRunning") is True
+        fi_result = add_fetch_issues_capability(
+            capability_id=slugify_capability_name(fi_bucket_key),
+            is_sub_capability=False,
+            is_long_running=fi_is_long_running,
+            mapped_params=mapped_params,
+            integration_yml=integration_yml,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=handler_dir,
+        )
+        all_triggers.extend(fi_result.get("triggers", []))
+        synthetic_cap_fields[fi_bucket_key] = fi_result.get("fields", [])
+
     # Generate configurations.yaml (no schema directive)
     configurations_data = build_configurations_yaml(
         mapped_params,
@@ -5115,6 +5301,12 @@ def create_manifest_from_scratch(
         handler_dir=handler_dir,
         existing_ids=existing_field_ids,
     )
+
+    # Inject the builder-produced synthetic fields into their sub-cap entries.
+    for cap_name, fields in synthetic_cap_fields.items():
+        inject_synthetic_capability_fields(
+            configurations_data, cap_name, fields, handler_id=handler_id
+        )
 
     # Per-handler general_configurations: add integrationLogLevel +
     # defaultIgnore fields in a view_group-pinned field group. Also
@@ -5138,7 +5330,7 @@ def create_manifest_from_scratch(
     )
     configurations_yaml_path = connector_dir / "configurations.yaml"
     with open(configurations_yaml_path, "w") as fh:
-        yaml.safe_dump(configurations_data, fh)
+        _dump_yaml(_ordered_configurations(configurations_data), fh)
     logger.info(f"[manifest_generator] Generated {configurations_yaml_path}")
 
     # Per Batch 7 (Part A.7.1) + guide §3.9: serializer.yaml is OPTIONAL
@@ -5160,39 +5352,9 @@ def create_manifest_from_scratch(
             f"serializer.yaml not generated (optional per guide §3.9)."
         )
 
-    # Collect triggers from capability builders and write triggers.yaml
-    # when at least one trigger exists.
-    all_triggers: list[dict] = []
-
-    # Invoke the indicators capability builder when the TI&E bucket is
-    # present in mapped_params.
-    ti_bucket_key = "Threat Intelligence & Enrichment"
-    if ti_bucket_key in mapped_params:
-        ti_result = add_indicators_capability(
-            capability_id=slugify_capability_name(ti_bucket_key),
-            is_sub_capability=False,
-            mapped_params=mapped_params,
-            yml_params_by_name=yml_params_by_name,
-            handler_dir=handler_dir,
-        )
-        all_triggers.extend(ti_result.get("triggers", []))
-
-    # Invoke the fetch-issues capability builder when the Fetch Issues
-    # bucket is present in mapped_params.
-    fi_bucket_key = "Fetch Issues"
-    if fi_bucket_key in mapped_params:
-        script = integration_yml.get("script") or {}
-        fi_is_long_running = script.get("longRunning") is True
-        fi_result = add_fetch_issues_capability(
-            capability_id=slugify_capability_name(fi_bucket_key),
-            is_sub_capability=False,
-            is_long_running=fi_is_long_running,
-            mapped_params=mapped_params,
-            integration_yml=integration_yml,
-            yml_params_by_name=yml_params_by_name,
-            handler_dir=handler_dir,
-        )
-        all_triggers.extend(fi_result.get("triggers", []))
+    # NOTE: the TI&E + fetch-issues capability builders already ran above
+    # (before build_configurations_yaml) so their synthetic fields could be
+    # injected into configurations.yaml; ``all_triggers`` was populated there.
 
     # Generate connection.yaml (Parts A–D) — profiles from auth_types,
     # per-profile proxy/insecure/engine (event.publish), and a
@@ -5470,20 +5632,17 @@ def add_handler_to_existing_connector(
     write_capabilities_yaml(capabilities_yaml_path, capabilities_data)
     logger.info(f"[manifest_generator] Updated {capabilities_yaml_path}")
 
-    # Write configurations.yaml back (no schema directive).
-    configurations_data = deep_merge_dicts(
-        configurations_data, manual_configurations_fields or {}
-    )
-    with open(configurations_yaml_path, "w") as fh:
-        yaml.safe_dump(configurations_data, fh)
-    logger.info(f"[manifest_generator] Updated {configurations_yaml_path}")
-
     # Collect triggers from capability builders and write triggers.yaml
     # when at least one trigger exists.
     all_triggers: list[dict] = []
 
-    # Invoke the indicators capability builder when the TI&E bucket is
-    # present in mapped_params.
+    # Run the capability builders (TI&E + fetch-issues) and capture their
+    # synthetic fields BEFORE writing configurations.yaml, so the platform
+    # fetch fields (isFetch / incidentType / incidentFetchInterval /
+    # mapper-incoming / classifier) are injected into the new handler's
+    # sub-cap entry rather than discarded. Inject by the SUB-CAP id the new
+    # handler actually uses (``cap_name_to_handler_cap_id``), which may differ
+    # from the bare-slug default.
     ti_bucket_key = "Threat Intelligence & Enrichment"
     if ti_bucket_key in mapped_params:
         ti_result = add_indicators_capability(
@@ -5494,9 +5653,13 @@ def add_handler_to_existing_connector(
             handler_dir=new_handler_dir,
         )
         all_triggers.extend(ti_result.get("triggers", []))
+        _inject_append_capability_fields(
+            configurations_data,
+            cap_name_to_handler_cap_id.get(ti_bucket_key),
+            new_handler_id,
+            ti_result.get("fields", []),
+        )
 
-    # Invoke the fetch-issues capability builder when the Fetch Issues
-    # bucket is present in mapped_params.
     fi_bucket_key = "Fetch Issues"
     if fi_bucket_key in mapped_params:
         script = integration_yml.get("script") or {}
@@ -5511,6 +5674,20 @@ def add_handler_to_existing_connector(
             handler_dir=new_handler_dir,
         )
         all_triggers.extend(fi_result.get("triggers", []))
+        _inject_append_capability_fields(
+            configurations_data,
+            cap_name_to_handler_cap_id.get(fi_bucket_key),
+            new_handler_id,
+            fi_result.get("fields", []),
+        )
+
+    # Write configurations.yaml back (no schema directive).
+    configurations_data = deep_merge_dicts(
+        configurations_data, manual_configurations_fields or {}
+    )
+    with open(configurations_yaml_path, "w") as fh:
+        _dump_yaml(_ordered_configurations(configurations_data), fh)
+    logger.info(f"[manifest_generator] Updated {configurations_yaml_path}")
 
     # Build the NEW handler's connection delta (Parts A–D) and merge it into
     # the existing connection.yaml: append new auth profiles, union the new

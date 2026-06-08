@@ -1675,8 +1675,22 @@ def test_create_manifest_from_scratch_generates_configurations_yaml_without_sche
     # Per-capability config entries are keyed by the sub-cap id.
     assert cfg_entries[0]["id"] == "xsoar-salesforce-fetch-issues"
     assert cfg_entries[0]["view_group"] == "xsoar-salesforce"
-    assert cfg_entries[0]["configurations"] == [
-        {"fields": [{"id": "fetch_limit"}, {"id": "first_fetch"}]}
+    # The Fetch Issues capability injects its platform-mandated synthetic
+    # fields (isFetch, incidentType, incidentFetchInterval, mapper-incoming,
+    # classifier) at the FRONT of the sub-cap, followed by the raw mapped
+    # params. We assert by id/order (the exact field shapes are covered by the
+    # dedicated add_fetch_issues_capability tests).
+    field_ids = [
+        f["id"] for f in cfg_entries[0]["configurations"][0]["fields"]
+    ]
+    assert field_ids == [
+        "isFetch",
+        "incidentType",
+        "incidentFetchInterval",
+        "mapper_incoming",
+        "classifier",
+        "fetch_limit",
+        "first_fetch",
     ]
 
 
@@ -2321,7 +2335,17 @@ def test_append_handler_to_capability_already_split_adds_subcap_only(
         "xsoar-my-integration-fetch-issues",
     ]
     new_entry = cfg_data["configurations"][-1]
-    assert new_entry["configurations"] == [{"fields": [{"id": "new_p"}]}]
+    # The Fetch Issues capability injects its platform-mandated synthetic
+    # fields ahead of the raw mapped param ``new_p``.
+    new_field_ids = [f["id"] for f in new_entry["configurations"][0]["fields"]]
+    assert new_field_ids == [
+        "isFetch",
+        "incidentType",
+        "incidentFetchInterval",
+        "mapper_incoming",
+        "classifier",
+        "new_p",
+    ]
 
     # New handler's cap id is the sub-cap id.
     new_handler_yaml = (
@@ -2477,12 +2501,22 @@ def test_append_handler_case2_promotes_existing_flat_capability(
     assert "fetch-issues" not in cfg_ids
     assert cfg_ids == ["xsoar-existing-fetch-issues", "xsoar-jira-fetch-issues"]
     existing_cfg = cfg_data["configurations"][0]
+    # The promoted existing sub-cap is left untouched (no re-injection).
     assert existing_cfg["configurations"] == [
         {"fields": [{"id": "old_param1"}, {"id": "old_param2"}]}
     ]
     new_cfg = cfg_data["configurations"][1]
-    assert new_cfg["configurations"] == [
-        {"fields": [{"id": "new_param1"}, {"id": "new_param2"}]}
+    # The new sub-cap gets the Fetch Issues synthetic fields prepended ahead
+    # of the raw mapped params.
+    new_field_ids = [f["id"] for f in new_cfg["configurations"][0]["fields"]]
+    assert new_field_ids == [
+        "isFetch",
+        "incidentType",
+        "incidentFetchInterval",
+        "mapper_incoming",
+        "classifier",
+        "new_param1",
+        "new_param2",
     ]
 
     # Existing handler.yaml — cap id renamed.
