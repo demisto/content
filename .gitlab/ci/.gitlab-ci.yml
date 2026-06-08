@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "CIAC-13184-without-orphans"
+  CURRENT_BRANCH_NAME: "CIAC-13184"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "CIAC-13184-without-orphans"
+    ref: "CIAC-13184"
     project: "${CI_PROJECT_NAMESPACE}/infra"
