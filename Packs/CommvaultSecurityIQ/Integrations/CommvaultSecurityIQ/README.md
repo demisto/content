@@ -20,7 +20,7 @@ This integration was integrated and tested with version 6.9.0 of CommvaultSecuri
    | Forwarding Rule| False|
    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)| False|
    | Max events to fetch| False|
-   | Webhook Listener Credentials| Required only when Forwarding Rule = Webhook|
+   | Webhook Listener Username| False|
 
 ##### Note :- If "Fetch Incidents" parameter is selected then make sure "Long running instance" capability of the integration is disabled
 
