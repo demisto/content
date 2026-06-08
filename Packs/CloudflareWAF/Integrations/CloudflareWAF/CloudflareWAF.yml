@@ -1,3 +1,5 @@
+display: Cloudflare WAF
+name: CloudflareWAF
 sectionorder:
 - Connect
 - Collect
@@ -59,8 +61,6 @@ configuration:
   required: false
   section: Connect
 description: Cloudflare WAF integration allows customers to manage firewall rules, filters, and IP-lists. It also allows to retrieve zones list for each account.
-display: Cloudflare WAF
-name: CloudflareWAF
 script:
   commands:
   - arguments:
@@ -672,7 +672,7 @@ script:
   - arguments:
     - description: Zone identifier. If provided, lists zone-level rulesets. If not provided, lists account-level rulesets. The value set in the instance configuration is used by default.
       name: zone_id
-    description: List all rulesets at the account or zone level.
+    description: The command lists all rulesets at the account or zone level.
     name: cloudflare-waf-ruleset-list
     outputs:
     - contextPath: CloudflareWAF.Ruleset.id
@@ -702,7 +702,7 @@ script:
       required: true
     - description: Zone identifier. If provided, gets a zone-level ruleset. If not provided, gets an account-level ruleset. The value set in the instance configuration is used by default.
       name: zone_id
-    description: Get a specific ruleset by ID, including its list of rules.
+    description: The command retrieves a specific ruleset by ID, including its list of rules.
     name: cloudflare-waf-ruleset-get
     outputs:
     - contextPath: CloudflareWAF.Ruleset.id
@@ -791,7 +791,7 @@ script:
       name: rules
     - description: Zone identifier. If provided, creates a zone-level ruleset. If not provided, creates an account-level ruleset. The value set in the instance configuration is used by default.
       name: zone_id
-    description: Create a new ruleset at the account or zone level.
+    description: The command creates a new ruleset at the account or zone level.
     name: cloudflare-waf-ruleset-create
     outputs:
     - contextPath: CloudflareWAF.Ruleset.id
@@ -827,7 +827,7 @@ script:
       name: rules
     - description: Zone identifier. If provided, updates a zone-level ruleset. If not provided, updates an account-level ruleset. The value set in the instance configuration is used by default.
       name: zone_id
-    description: Update an existing ruleset by ID. Note that this replaces the entire ruleset configuration.
+    description: The command updates an existing ruleset by ID. Note that this replaces the entire ruleset configuration.
     name: cloudflare-waf-ruleset-update
     outputs:
     - contextPath: CloudflareWAF.Ruleset.id
@@ -857,7 +857,7 @@ script:
       required: true
     - description: Zone identifier. If provided, deletes a zone-level ruleset. If not provided, deletes an account-level ruleset. The value set in the instance configuration is used by default.
       name: zone_id
-    description: Delete a ruleset by ID.
+    description: The command deletes a ruleset by ID.
     name: cloudflare-waf-ruleset-delete
     outputs: []
   dockerimage: demisto/python3:3.12.8.3296088

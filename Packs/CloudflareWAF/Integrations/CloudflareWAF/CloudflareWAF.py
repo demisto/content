@@ -1339,7 +1339,9 @@ def cloudflare_waf_ruleset_get_command(client: Client, args: dict[str, Any]) -> 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    ruleset_id = args["ruleset_id"]
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
     zone_id = args.get("zone_id", client.zone_id)
 
     response = client.cloudflare_waf_ruleset_get_request(ruleset_id, zone_id=zone_id)
@@ -1405,14 +1407,25 @@ def cloudflare_waf_ruleset_create_command(client: Client, args: dict[str, Any]) 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    name = args["name"]
-    kind = args["kind"]
-    phase = args["phase"]
+    name = args.get("name")
+    if not name:
+        raise ValueError("name is required.")
+    kind = args.get("kind")
+    if not kind:
+        raise ValueError("kind is required.")
+    phase = args.get("phase")
+    if not phase:
+        raise ValueError("phase is required.")
     zone_id = args.get("zone_id", client.zone_id)
     description = args.get("description")
     rules_json = args.get("rules")
 
-    rules = json.loads(rules_json) if rules_json else None
+    rules = None
+    if rules_json:
+        try:
+            rules = json.loads(rules_json)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to parse rules JSON: {e}")
 
     response = client.cloudflare_waf_ruleset_create_request(
         name=name,
@@ -1461,13 +1474,20 @@ def cloudflare_waf_ruleset_update_command(client: Client, args: dict[str, Any]) 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    ruleset_id = args["ruleset_id"]
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
     zone_id = args.get("zone_id", client.zone_id)
     name = args.get("name")
     description = args.get("description")
     rules_json = args.get("rules")
 
-    rules = json.loads(rules_json) if rules_json else None
+    rules = None
+    if rules_json:
+        try:
+            rules = json.loads(rules_json)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to parse rules JSON: {e}")
 
     response = client.cloudflare_waf_ruleset_update_request(
         ruleset_id=ruleset_id,
@@ -1498,7 +1518,9 @@ def cloudflare_waf_ruleset_delete_command(client: Client, args: dict[str, Any]) 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    ruleset_id = args["ruleset_id"]
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
     zone_id = args.get("zone_id", client.zone_id)
 
     client.cloudflare_waf_ruleset_delete_request(ruleset_id, zone_id=zone_id)
