@@ -14,7 +14,7 @@ This integration enables using Elastic Security for SIEM for security operations
 | Password |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Client type | In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
+| Client type | In some hosted Elasticsearch environments, the standard Elasticsearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
 | Request timeout (in seconds). |  | False |
 
 ## Commands
