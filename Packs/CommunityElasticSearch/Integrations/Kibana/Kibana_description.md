@@ -25,7 +25,7 @@ To use **API Key Authentication**:
 * Enter your **API key ID** into the *API key ID* field.
 * Enter your **API key** into the *API key* field.
 
-For more info about API Key management see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-create-api-key.html)
+For more information about API Key management, see the [Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-create-api-key.html).
 
 **Note:** Optionally, you can choose **Basic Auth** type and use the *Username* and *Password* fields to enter the API key ID and API key.
 Example:
