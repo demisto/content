@@ -418,9 +418,8 @@ def main() -> None:  # pragma: no cover
                     "Tenant ID, Client ID, Client Secret, Authorization code and Application redirect URI "
                     "are required for the authorization code flow."
                 )
-        elif grant_type == CLIENT_CREDENTIALS:
-            if not tenant_id or not client_id or not client_secret:
-                raise DemistoException("Tenant ID, Client ID and Client Secret are required for the client credentials flow.")
+        elif grant_type == CLIENT_CREDENTIALS and (not tenant_id or not client_id or not client_secret):
+            raise DemistoException("Tenant ID, Client ID and Client Secret are required for the client credentials flow.")
         if not client_secret and not (certificate_thumbprint and private_key) and not auth_code:
             raise DemistoException(
                 "An authentication credential must be provided: Client Secret, "
