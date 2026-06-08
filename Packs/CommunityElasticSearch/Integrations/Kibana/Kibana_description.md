@@ -30,7 +30,7 @@ For more information about API Key management, see the [Elasticsearch documentat
 **Note:** Optionally, you can choose **Basic Auth** type and use the *Username* and *Password* fields to enter the API key ID and API key.
 Example:
 For *API Key ID* kQme5aOx enter: _api_key_id:kQme5aOx
-for *API Key* ui2lp2axT enter: ui2lp2axT
+For *API Key* ui2lp2axT enter: ui2lp2axT
 
 ### Bearer Auth (http)
 
