@@ -1097,7 +1097,7 @@ Provides data enrichment for ips.
   - **Resolution**: Add the relevant WHOIS TLD provider to your firewall or proxy allowlist.
 
 - Connection timeout errors when running in a FedRAMP High environment.
-  - The Whois integration connects to external WHOIS servers over TCP port 43. According to the [FedRAMP High network requirements](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-3.x-Documentation/FedRamp-and-the-US-Federal-Government-required-resources), outbound traffic from engines is only permitted on port 443. Port 43 is not allowed, which causes the connection to time out.
+  - The Whois integration connects to external WHOIS servers over TCP port 43. On FedRAMP High tenants, outbound traffic from engines is only permitted on port 443, so port 43 connections are blocked and the integration times out. For more information, refer to the documentation on outbound engine IPs for [Cortex XSOAR SaaS](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-SaaS-Documentation/Enable-access-to-Palo-Alto-Networks-resources) and [Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-3.x-Documentation/FedRamp-and-the-US-Federal-Government-required-resources).
   - **Resolution**: Configure a SOCKS5 proxy in the **Proxy URL** field (for example, `socks5h://your-proxy-host:1080`) that is reachable on port 443 and can forward traffic to external WHOIS servers on port 43. Note that this proxy setting affects all commands except the `ip` command. A standard HTTP proxy is not sufficient, as most HTTP proxies do not support the CONNECT method on non-standard ports such as port 43.
 
 - Rate-limiting or IP blocking errors when querying WHOIS servers.
