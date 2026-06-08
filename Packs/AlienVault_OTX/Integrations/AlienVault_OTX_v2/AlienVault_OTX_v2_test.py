@@ -1260,9 +1260,8 @@ def test_file_function_return_demistoException_500():
     res.status_code = 500
     res.text = "Error in API call [500] - Internal Server Error"
     client._http_request.side_effect = DemistoException("Error in API call [500] - Internal Server Error", res=res)
-    with pytest.raises(DemistoException) as e:
+    with pytest.raises(DemistoException, match=r"Error in API call \[500\] - Internal Server Error"):
         file_command(client, file="11111111111111111111111111111111")
-    assert e.value.args[0] == "Error in API call [500] - Internal Server Error"
 
 
 def test_file_function_return_demistoException_warning_500():
