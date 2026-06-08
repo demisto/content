@@ -11,58 +11,69 @@ configuration:
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Long running instance ( Only select it, if Fetch Incidents was not selected )
   name: longRunning
   required: false
   type: 8
+  section: Collect
 - display: Commvault Webservice Url
   name: CVWebserviceUrl
   required: true
   type: 0
+  section: Connect
 - display: Commvault API Token
   name: CommvaultAPIToken
   hiddenusername: true
   displaypassword: API Token
   required: true
   type: 9
+  section: Connect
 - display: Azure KeyVault Url
   name: AzureKeyVaultUrl
   hiddenusername: true
   displaypassword: AzureKeyVaultUrl
   required: false
   type: 9
+  section: Connect
 - display: Azure KeyVault Tenant ID
   name: AzureKeyVaultTenantId
   hiddenusername: true
   displaypassword: Azure KeyVault Tenant ID
   required: false
   type: 9
+  section: Connect
 - display: Azure KeyVault Client Secret
   name: AzureKeyVaultClientSecret
   hiddenusername: true
   displaypassword: Azure KeyVault Client Secret
   required: false
   type: 9
+  section: Connect
 - display: Azure KeyVault Client ID
   name: AzureKeyVaultClientId
   required: false
   type: 4
+  section: Connect
 - display: 'Port mapping (<port> or <host port>:<docker port>) '
   name: longRunningPort
   required: false
   type: 0
   additionalinfo: Only for Long running Integration
+  section: Connect
 - display: Incident type
   name: incidentType
   defaultvalue: Commvault Suspicious File Activity
   required: false
   type: 13
+  section: Collect
 - defaultvalue: '60'
   display: Incidents Fetch Interval
   additionalinfo: Only for Fetch Incidents
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
 - display: Forwarding Rule
   additionalinfo: Only for Long running Integration
   name: forwardingRule
@@ -71,18 +82,21 @@ configuration:
   - Webhook
   required: false
   type: 15
+  section: Collect
 - defaultvalue: 1 day
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   additionalinfo: Only for Fetch Incidents
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Max events to fetch
   additionalinfo: Maximum events that can be fetch is 200 (Only for Fetch Incidents)
   name: max_fetch
   required: false
   type: 0
   defaultvalue: '50'
+  section: Collect
 - name: creds_certificate
   display: Certificate
   type: 9
