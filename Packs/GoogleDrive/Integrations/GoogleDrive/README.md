@@ -1165,14 +1165,6 @@ Deletes a permission. When the ignore_not_found argument is set to "true", a Not
 | GoogleDrive.FilePermission.FilePermission.fileId | String | The ID of the file whose permission was targeted. |
 | GoogleDrive.FilePermission.FilePermission.id | String | The ID of the deleted permission. |
 | GoogleDrive.FilePermission.FilePermission.alreadyRemoved | Boolean | Whether the permission was already removed. Set to "true" when ignore_not_found is set to "true" and the vendor returned Not Found. |
-| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional |
-| user_id | The user's primary email address. | Optional |
-| permission_id | The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command. | Optional |
-| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
 
 ### google-drive-file-modify-label
 
