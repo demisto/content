@@ -2036,6 +2036,78 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     )
 
 
+    """
+    Return a copy of the given dictionary with values of sensitive keys redacted.
+
+    :param data: The dictionary to sanitize (e.g. integration params).
+
+    :return: A new dictionary with sensitive values replaced by '***'.
+    """
+    sensitive_keywords = ("password", "secret", "token", "credential", "service_account", "key", "identifier")
+    masked: dict[str, Any] = {}
+    for key, value in data.items():
+        if isinstance(value, dict):
+            masked[key] = mask_sensitive_values(value)
+        elif any(keyword in key.lower() for keyword in sensitive_keywords) and value:
+            masked[key] = "***"
+        else:
+            masked[key] = value
+    return masked
+
+
+@logger
+def connectus_info_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
+    """
+    google-drive-connectus-info
+    Print ConnectUs (UCP) connection information and integration parameters available
+    in the demisto object. Sensitive values are masked.
+
+    :param client: Client object (unused, kept for command signature consistency).
+    :param args: Command arguments.
+
+    :return: Command Result.
+    """
+    using_ucp = should_use_ucp_auth()
+
+    connectus_info: dict[str, Any] = {"ucp_enabled": using_ucp}
+
+    if using_ucp:
+        with GSuiteClient.http_exception_handler():
+            capability = resolve_ucp_capability()
+            connectus_info["capability"] = capability
+            connectus_info["method_unique_id"] = get_ucp_method_unique_id(capability)
+    else:
+        connectus_info["note"] = "ConnectUs (UCP) is not enabled for this instance."
+
+    masked_params = mask_sensitive_values(demisto.params())
+
+    outputs = {
+        "ConnectUs": connectus_info,
+        "metadata": demisto.unifiedConnectorMetadata(),
+        "Params": masked_params,
+    }
+
+    readable_output = tableToMarkdown(
+        "ConnectUs Information",
+        connectus_info,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    readable_output += tableToMarkdown(
+        "Integration Parameters (sensitive values masked)",
+        masked_params,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="GoogleDrive.ConnectUsInfo",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=outputs,
+    )
+
+
 def main() -> None:  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2067,6 +2139,7 @@ def main() -> None:  # pragma: no cover
         "google-drive-file-get-parents": file_get_parents,
         "google-drive-file-move": file_move_command,
         "google-drive-file-create": file_create_command,
+        "google-drive-connectus-info": connectus_info_command,
     }
     command = demisto.command()
 
