@@ -113,7 +113,7 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the query parameter format: 'cloud_provider=aws&amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13"
+  additionalinfo: "The Indicator of Attack (IOA) fetch query. This is an FQL filter that is combined with the time-range filter using AND. For example: cloud_provider:'aws'. For more information, see the Falcon Query Language (FQL) documentation at: https://www.falconpy.io/Usage/Falcon-Query-Language.html."
   hidden:
   - marketplacev2
   - platform
@@ -306,7 +306,7 @@ configuration:
   advanced: false
   required: false
   additionalinfo: |-
-      The asset sources to ingest into the Cortex Unified Asset Inventory.
+    The asset sources to ingest into the Cortex Unified Asset Inventory.
   options:
   - Spotlight
   - CNAPP Alerts
@@ -2922,10 +2922,12 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - description: Maximum number of items to return (1-5000).
+    - description: The maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages.
       defaultValue: '50'
       type: String
       name: limit
+    - description: "Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Provide this value to fetch the next page of vulnerabilities. Expires in 120 seconds."
+      name: next_token
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-search-vulnerability
     outputs:
@@ -3069,6 +3071,9 @@ script:
       type: String
     - contextPath: CrowdStrike.Vulnerability.cve.name
       description: The vulnerability name.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityNextToken
+      description: "Pagination cursor returned by CrowdStrike when more results are available. Pass this value back as the `next_token` argument on the next invocation. Absent when no more pages exist. Expires in 120 seconds."
       type: String
   - arguments:
     - description: Deprecated. Use cve instead.
@@ -5331,3 +5336,10 @@ tests:
 defaultclassifier: CrowdStrike Falcon
 defaultmapperin: CrowdStrike Falcon-Mapper
 defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
+supportedModules:
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security
+- exposure_management

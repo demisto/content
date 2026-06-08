@@ -23,7 +23,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### azure-nsg-security-rule-update
 
 ***
-Update a security rule. If one does not exist, it will be created. The command is deprecated, please use azure-vn-security-rule-update.
+Update a security rule. If one does not exist, it will be created. The command is deprecated, please use azure-vn-security-rule-update. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write.
 
 #### Base Command
 
@@ -71,7 +71,7 @@ Update a security rule. If one does not exist, it will be created. The command i
 ### azure-storage-account-update
 
 ***
-Updates a specific account storage.
+Updates a specific account storage. Required Permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write.
 
 #### Base Command
 
@@ -81,8 +81,8 @@ Updates a specific account storage.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Optional |
-| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The subscription ID. | Required |
 | account_name | The name of the storage account. | Required |
 | sku | Gets or sets the SKU name, Required for account creation; optional for update. Possible values are: Premium_LRS, Premium_ZRS, Standard_GRS, Standard_GZRS, Standard_LRS, Standard_RAGRS, Standard_RAGZRS, Standard_ZRS. | Optional |
 | kind | Indicates the type of storage account, Required for account creation; optional for update. Possible values are: Storage, StorageV2, BlobStorage, FileStorage, BlockBlobStorage. | Optional |
@@ -111,35 +111,35 @@ Updates a specific account storage.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.StorageAccount.id | String | Fully qualified resource ID for the resource. |
-| Azure.StorageAccount.kind | String | The kind of storage account. |
-| Azure.StorageAccount.location | String | The geo-location where the resource lives. |
-| Azure.StorageAccount.name | String | The name of the resource. |
-| Azure.StorageAccount.properties.isHnsEnabled | Boolean | Account HierarchicalNamespace enabled if sets to true. |
-| Azure.StorageAccount.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
-| Azure.StorageAccount.properties.minimumTlsVersion | String | Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0. |
-| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Entra ID \(Azure AD\). |
-| Azure.StorageAccount.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
-| Azure.StorageAccount.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
-| Azure.StorageAccount.properties.primaryLocation | String | The storage account primary data center location. |
-| Azure.StorageAccount.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
-| Azure.StorageAccount.properties.routingPreference.routingChoice | String | The kind of network routing the user chose. |
-| Azure.StorageAccount.properties.routingPreference.publishMicrosoftEndpoints | Boolean | Whether Microsoft routing storage endpoints are to be published. |
-| Azure.StorageAccount.properties.routingPreference.publishInternetEndpoints | Boolean | Whether internet routing storage endpoints are to be published. |
-| Azure.StorageAccount.properties.encryption | String | Encryption settings to be used for server-side encryption for the storage account. |
-| Azure.StorageAccount.properties.secondaryLocation | String | The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS. |
-| Azure.StorageAccount.properties.statusOfPrimary | String | Whether the storage account primary location is available or unavailable. |
-| Azure.StorageAccount.properties.statusOfSecondary | String | Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS. |
-| Azure.StorageAccount.properties.supportsHttpsTrafficOnly | Boolean | If set to true, allows https traffic only to storage service. |
-| Azure.StorageAccount.sku.name | String | The SKU name. Required for account creation; optional for update. |
-| Azure.StorageAccount.sku.tier | String | The SKU tier. This is based on the SKU name. |
-| Azure.StorageAccount.tags | unknown | Resource tags. |
-| Azure.StorageAccount.type | String | The storage account type. |
+| Azure.Storage.StorageAccounts.id | String | Fully qualified resource ID for the resource. |
+| Azure.Storage.StorageAccounts.kind | String | The kind of storage account. |
+| Azure.Storage.StorageAccounts.location | String | The geo-location where the resource lives. |
+| Azure.Storage.StorageAccounts.name | String | The name of the resource. |
+| Azure.Storage.StorageAccounts.properties.isHnsEnabled | Boolean | Account HierarchicalNamespace enabled if sets to true. |
+| Azure.Storage.StorageAccounts.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
+| Azure.Storage.StorageAccounts.properties.minimumTlsVersion | String | The minimum TLS version to be permitted on requests to storage. Default is TLS 1.0. |
+| Azure.Storage.StorageAccounts.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Azure Active Directory \(Azure AD\). |
+| Azure.Storage.StorageAccounts.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
+| Azure.Storage.StorageAccounts.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
+| Azure.Storage.StorageAccounts.properties.primaryLocation | String | The storage account primary data center location. |
+| Azure.Storage.StorageAccounts.properties.provisioningState | String | The status of the storage account at the time the operation was called. |
+| Azure.Storage.StorageAccounts.properties.routingPreference.routingChoice | String | The kind of network routing the user chose. |
+| Azure.Storage.StorageAccounts.properties.routingPreference.publishMicrosoftEndpoints | Boolean | Whether Microsoft routing storage endpoints are to be published. |
+| Azure.Storage.StorageAccounts.properties.routingPreference.publishInternetEndpoints | Boolean | Whether internet routing storage endpoints are to be published. |
+| Azure.Storage.StorageAccounts.properties.encryption | String | Encryption settings to be used for server-side encryption for the storage account. |
+| Azure.Storage.StorageAccounts.properties.secondaryLocation | String | The geo-replicated secondary location for the storage account. Only available if the accountType is Standard_GRS or Standard_RAGRS. |
+| Azure.Storage.StorageAccounts.properties.statusOfPrimary | String | Whether the storage account primary location is available or unavailable. |
+| Azure.Storage.StorageAccounts.properties.statusOfSecondary | String | Whether the storage account secondary location is available or unavailable. Only available if the SKU name is Standard_GRS or Standard_RAGRS. |
+| Azure.Storage.StorageAccounts.properties.supportsHttpsTrafficOnly | Boolean | If set to true, allows https traffic only to storage service. |
+| Azure.Storage.StorageAccounts.sku.name | String | The SKU name. Required for account creation; optional for update. |
+| Azure.Storage.StorageAccounts.sku.tier | String | The SKU tier. This is based on the SKU name. |
+| Azure.Storage.StorageAccounts.tags | unknown | Resource tags. |
+| Azure.Storage.StorageAccounts.type | String | The storage account type. |
 
 ### azure-storage-blob-service-properties-set
 
 ***
-Sets properties for the blob service in a specific account storage.
+Sets properties for the blob service in a specific account storage. The command is deprecated, please use azure-storage-blob-service-property-set. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/read, Microsoft.Storage/storageAccounts/blobServices/write.
 
 #### Base Command
 
@@ -149,8 +149,8 @@ Sets properties for the blob service in a specific account storage.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Optional |
-| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The subscription ID. | Required |
 | account_name | The name of the storage account. | Required |
 | delete_rentention_policy_enabled | Whether DeleteRetentionPolicy is enabled. Possible values are: true, false. | Optional |
 | delete_rentention_policy_days | The number of days the deleted item should be retained. | Optional |
@@ -173,7 +173,7 @@ Sets properties for the blob service in a specific account storage.
 ### azure-policy-assignment-create
 
 ***
-Creates a policy assignment.
+Creates a policy assignment. Required Permissions: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write.
 
 #### Base Command
 
@@ -185,7 +185,7 @@ Creates a policy assignment.
 | --- | --- | --- |
 | name | Name of the policy assignment. | Required |
 | subscription_id | Subscription ID. | Required |
-| scope | The scope of the policy assignment. | Optional |
+| scope | The scope of the policy assignment. | Required |
 | policy_definition_id | The ID of the policy definition or policy set definition being assigned. | Optional |
 | display_name | The assignment display name. | Optional |
 | parameters | The JSON object for policy properties parameters and their values. | Optional |
@@ -195,25 +195,25 @@ Creates a policy assignment.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.PolicyAssignment.ID | string | The resource ID of the policy assignment. |
-| Azure.PolicyAssignment.Name | string | The name of the policy assignment. |
-| Azure.PolicyAssignment.Type | string | The type of the resource \(e.g., 'Microsoft.Authorization/policyAssignments'\). |
-| Azure.PolicyAssignment.Location | string | The location of the policy assignment. |
-| Azure.PolicyAssignment.Identity | unknown | The managed identity associated with the policy assignment. |
-| Azure.PolicyAssignment.Properties.DisplayName | string | The display name of the policy assignment. |
-| Azure.PolicyAssignment.Properties.Description | string | The description of the policy assignment. |
-| Azure.PolicyAssignment.Properties.PolicyDefinitionId | string | The ID of the policy definition or policy set definition being assigned. |
-| Azure.PolicyAssignment.Properties.Scope | string | The scope of the policy assignment. |
-| Azure.PolicyAssignment.Properties.NotScopes | unknown | The list of scopes that are excluded from the policy assignment. |
-| Azure.PolicyAssignment.Properties.Parameters | unknown | The parameter values for the assigned policy rule. |
-| Azure.PolicyAssignment.Properties.Metadata | unknown | The metadata associated with the policy assignment. |
-| Azure.PolicyAssignment.Properties.EnforcementMode | string | The policy assignment enforcement mode \(e.g., 'Default' or 'DoNotEnforce'\). |
-| Azure.PolicyAssignment.Properties.latestDefinitionVersion | string | The latest version of the policy definition available. This is only present if requested via the $expand query parameter. |
-| Azure.PolicyAssignment.Properties.NonComplianceMessages | unknown | The messages that describe why a resource is non-compliant with the policy. |
-| Azure.PolicyAssignment.Properties.DefinitionVersion | string | The version of the policy definition to use. |
-| Azure.PolicyAssignment.Properties.Overrides | unknown | The policy property value overrides. |
-| Azure.PolicyAssignment.Properties.ResourceSelectors | unknown | The resource selectors to filter policies by resource properties. |
-| Azure.PolicyAssignment.SystemData | unknown | The system metadata relating to this resource. |
+| Azure.Policy.PolicyAssignments.ID | string | The resource ID of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Name | string | The name of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Type | string | The type of the resource \(e.g., 'Microsoft.Authorization/policyAssignments'\). |
+| Azure.Policy.PolicyAssignments.Location | string | The location of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Identity | unknown | The managed identity associated with the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.DisplayName | string | The display name of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.Description | string | The description of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.PolicyDefinitionId | string | The ID of the policy definition or policy set definition being assigned. |
+| Azure.Policy.PolicyAssignments.Properties.Scope | string | The scope of the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.NotScopes | unknown | The list of scopes that are excluded from the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.Parameters | unknown | The parameter values for the assigned policy rule. |
+| Azure.Policy.PolicyAssignments.Properties.Metadata | unknown | The metadata associated with the policy assignment. |
+| Azure.Policy.PolicyAssignments.Properties.EnforcementMode | string | The policy assignment enforcement mode \(e.g., 'Default' or 'DoNotEnforce'\). |
+| Azure.Policy.PolicyAssignments.Properties.latestDefinitionVersion | string | The latest version of the policy definition available. This is only present if requested via the $expand query parameter. |
+| Azure.Policy.PolicyAssignments.Properties.NonComplianceMessages | unknown | The messages that describe why a resource is non-compliant with the policy. |
+| Azure.Policy.PolicyAssignments.Properties.DefinitionVersion | string | The version of the policy definition to use. |
+| Azure.Policy.PolicyAssignments.Properties.Overrides | unknown | The policy property value overrides. |
+| Azure.Policy.PolicyAssignments.Properties.ResourceSelectors | unknown | The resource selectors to filter policies by resource properties. |
+| Azure.Policy.PolicyAssignments.SystemData | unknown | The system metadata relating to this resource. |
 
 ### azure-postgres-config-set
 
@@ -242,7 +242,7 @@ There is no context output for this command.
 ### azure-webapp-config-set
 
 ***
-Updates the configuration settings of an existing Azure Web App.
+Updates the configuration settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-config-update. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write.
 
 #### Base Command
 
@@ -296,7 +296,7 @@ Updates the configuration settings of an existing Azure Web App.
 ### azure-webapp-auth-update
 
 ***
-Updates the authentication and authorization settings of an existing Azure Web App.
+Updates the authentication and authorization settings of an existing Azure Web App. The command is deprecated, please use azure-appservice-webapp-auth-settings-update. Required Permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write.
 
 #### Base Command
 
@@ -351,7 +351,7 @@ Updates the authentication and authorization settings of an existing Azure Web A
 ### azure-mysql-flexible-server-param-set
 
 ***
-Updates a configuration of a server.
+Updates a configuration of a server. Required Permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write.
 
 #### Base Command
 
@@ -375,7 +375,7 @@ There is no context output for this command.
 ### azure-monitor-log-profile-update
 
 ***
-Updates a log profile in Azure Monitoring REST API.
+Updates a log profile in Azure Monitoring REST API. Required Permissions: Microsoft.Insights/logprofiles/read, Microsoft.Insights/logprofiles/write.
 
 #### Base Command
 
@@ -386,7 +386,7 @@ Updates a log profile in Azure Monitoring REST API.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | log_profile_name | The name of the log profile to update. | Required |
-| subscription_id | subscription ID. | Optional |
+| subscription_id | subscription ID. | Required |
 | location | Resource location. | Optional |
 | retention_policy_days | Number of days to retain logs. | Optional |
 | retention_policy_enabled | Whether to enable the retention policy. Possible values are: true, false. | Optional |
@@ -395,22 +395,22 @@ Updates a log profile in Azure Monitoring REST API.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.LogProfile.id | String | The fully qualified Azure resource ID for the log profile. |
-| Azure.LogProfile.name | String | The name of the log profile. |
-| Azure.LogProfile.type | String | The type of the resource \(Microsoft.Insights/logProfiles\). |
-| Azure.LogProfile.location | String | The location of the log profile. |
-| Azure.LogProfile.tags | Object | Resource tags. |
-| Azure.LogProfile.properties.storageAccountId | String | The resource ID of the storage account to which diagnostic logs are delivered. |
-| Azure.LogProfile.properties.serviceBusRuleId | String | The service bus rule ID to which diagnostic logs are sent. |
-| Azure.LogProfile.properties.locations | Array | A list of regions for which events are collected. |
-| Azure.LogProfile.properties.categories | Array | A list of categories of logs that are collected. |
-| Azure.LogProfile.properties.retentionPolicy.enabled | Boolean | Specifies whether the retention policy is enabled. |
-| Azure.LogProfile.properties.retentionPolicy.days | Number | The number of days for the retention policy. |
+| Azure.Monitor.LogProfiles.id | String | The fully qualified Azure resource ID for the log profile. |
+| Azure.Monitor.LogProfiles.name | String | The name of the log profile. |
+| Azure.Monitor.LogProfiles.type | String | The type of the resource \(Microsoft.Insights/logProfiles\). |
+| Azure.Monitor.LogProfiles.location | String | The location of the log profile. |
+| Azure.Monitor.LogProfiles.tags | Object | Resource tags. |
+| Azure.Monitor.LogProfiles.properties.storageAccountId | String | The resource ID of the storage account to which diagnostic logs are delivered. |
+| Azure.Monitor.LogProfiles.properties.serviceBusRuleId | String | The service bus rule ID to which diagnostic logs are sent. |
+| Azure.Monitor.LogProfiles.properties.locations | Array | A list of regions for which events are collected. |
+| Azure.Monitor.LogProfiles.properties.categories | Array | A list of categories of logs that are collected. |
+| Azure.Monitor.LogProfiles.properties.retentionPolicy.enabled | Boolean | Specifies whether the retention policy is enabled. |
+| Azure.Monitor.LogProfiles.properties.retentionPolicy.days | Number | The number of days for the retention policy. |
 
 ### azure-disk-update
 
 ***
-Updates a disk.
+Updates a disk. The command is deprecated, please use azure-compute-disk-update. Required Permissions: Microsoft.Compute/disks/read, Microsoft.Compute/disks/write.
 
 #### Base Command
 
@@ -474,7 +474,7 @@ Updates a disk.
 ### azure-webapp-update
 
 ***
-Updates an Azure Web App.
+Updates an Azure Web App. The command is deprecated, please use azure-appservice-webapp-update. Required Permissions: Microsoft.Web/sites/read, Microsoft.Web/sites/write.
 
 #### Base Command
 
@@ -572,7 +572,7 @@ Updates an Azure Web App.
 ### azure-acr-update
 
 ***
-Updates a container registry.
+Updates a container registry. The command is deprecated, please use azure-cr-registry-update. Required Permissions: Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write.
 
 #### Base Command
 
@@ -643,7 +643,7 @@ There is no context output for this command.
 ### azure-key-vault-update
 
 ***
-Updates a key vault in the specified subscription. The command is deprecated, please use azure-keyvault-vault-update.
+Updates a key vault in the specified subscription. The command is deprecated, please use azure-keyvault-vault-update. Required Permissions: Microsoft.KeyVault/vaults/read, Microsoft.KeyVault/vaults/write.
 
 #### Base Command
 
@@ -693,7 +693,7 @@ Updates a key vault in the specified subscription. The command is deprecated, pl
 ### azure-sql-db-threat-policy-update
 
 ***
-Updates the database's threat detection policy. The command is deprecated, please use azure-sqldb-security-alert-policy-update.
+Updates the database's threat detection policy. The command is deprecated, please use azure-sqldb-security-alert-policy-update. Required Permissions: Microsoft.Sql/servers/databases/securityAlertPolicies/read, Microsoft.Sql/servers/databases/securityAlertPolicies/write.
 
 #### Base Command
 
@@ -733,7 +733,7 @@ Updates the database's threat detection policy. The command is deprecated, pleas
 ### azure-sql-db-transparent-data-encryption-set
 
 ***
-Updates a logical database's transparent data encryption configuration.
+Updates a logical database's transparent data encryption configuration. Required Permissions: Microsoft.Sql/servers/databases/transparentDataEncryption/read, Microsoft.Sql/servers/databases/transparentDataEncryption/write.
 
 #### Base Command
 
@@ -756,7 +756,7 @@ There is no context output for this command.
 ### azure-cosmos-db-update
 
 ***
-Updates the properties of an existing Azure Cosmos DB database account. The command is deprecated, please use azure-cosmosdb-db-account-update.
+Updates the properties of an existing Azure Cosmos DB database account. The command is deprecated, please use azure-cosmosdb-db-account-update. Required Permissions: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write.
 
 #### Base Command
 
@@ -823,7 +823,7 @@ Updates the properties of an existing Azure Cosmos DB database account. The comm
 ### azure-vm-instance-details-get
 
 ***
-Gets the properties of a given virtual machine. The command is deprecated, please use azure-compute-vm-get.
+Gets the properties of a given virtual machine. The command is deprecated, please use azure-compute-vm-get. Required Permissions: Microsoft.Compute/virtualMachines/read.
 
 #### Base Command
 
@@ -862,7 +862,7 @@ Gets the properties of a given virtual machine. The command is deprecated, pleas
 ### azure-nsg-security-groups-list
 
 ***
-List all network security groups. The command is deprecated, please use azure-vn-security-groups-list.
+List all network security groups. The command is deprecated, please use azure-vn-security-groups-list. Required Permissions: Microsoft.Network/networkSecurityGroups/read.
 
 #### Base Command
 
@@ -894,7 +894,7 @@ List all network security groups. The command is deprecated, please use azure-vn
 ### azure-nsg-security-rule-delete
 
 ***
-Delete a security rule. The command is deprecated, please use azure-vn-security-rule-delete.
+Delete a security rule. The command is deprecated, please use azure-vn-security-rule-delete. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/delete.
 
 #### Base Command
 
@@ -916,7 +916,7 @@ There is no context output for this command.
 ### azure-storage-blob-containers-update
 
 ***
-Run this command to update a specific blob container. The command is deprecated, please use azure-storage-blob-container-update.
+Run this command to update a specific blob container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write. The command is deprecated, please use azure-storage-blob-container-update.
 
 #### Base Command
 
@@ -949,7 +949,7 @@ Run this command to update a specific blob container. The command is deprecated,
 ### azure-vm-instance-start
 
 ***
-Powers on a given virtual machine. The command is deprecated, please use azure-compute-vm-start.
+Powers on a given virtual machine. The command is deprecated, please use azure-compute-vm-start. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/start/action.
 
 #### Base Command
 
@@ -974,7 +974,7 @@ Powers on a given virtual machine. The command is deprecated, please use azure-c
 ### azure-nsg-network-interfaces-list
 
 ***
-Gets network interfaces in a resource group. The command is deprecated, please use azure-vn-network-interfaces-list.
+Gets network interfaces in a resource group. The command is deprecated, please use azure-vn-network-interfaces-list. Required Permissions: Microsoft.Network/networkInterfaces/read.
 
 #### Base Command
 
@@ -1012,7 +1012,7 @@ Gets network interfaces in a resource group. The command is deprecated, please u
 ### azure-vm-network-interface-details-get
 
 ***
-Gets the properties of a given network interface. The command is deprecated, please use azure-vn-network-interface-get.
+Gets the properties of a given network interface. The command is deprecated, please use azure-vn-network-interface-get. Required Permissions: Microsoft.Network/networkInterfaces/read.
 
 #### Base Command
 
@@ -1048,7 +1048,7 @@ Gets the properties of a given network interface. The command is deprecated, ple
 ### azure-nsg-security-rule-get
 
 ***
-Get a specific rule. The command is deprecated, please use azure-vn-security-rule-get.
+Get a specific rule. The command is deprecated, please use azure-vn-security-rule-get. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read.
 
 #### Base Command
 
@@ -1087,7 +1087,7 @@ Get a specific rule. The command is deprecated, please use azure-vn-security-rul
 ### azure-nsg-public-ip-addresses-list
 
 ***
-Gets public IP addresses in a resource group. The command is deprecated, please use azure-vn-public-ip-addresses-list.
+Gets public IP addresses in a resource group. The command is deprecated, please use azure-vn-public-ip-addresses-list. Required Permissions: Microsoft.Network/publicIPAddresses/read.
 
 #### Base Command
 
@@ -1125,7 +1125,7 @@ Gets public IP addresses in a resource group. The command is deprecated, please 
 ### azure-storage-blob-service-properties-get
 
 ***
-Run this command to get the blob service properties of a specific account storage.
+Run this command to get the blob service properties of a specific account storage. The command is deprecated, please use azure-storage-blob-service-property-get. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/read, Microsoft.Storage/storageAccounts/blobServices/write.
 
 #### Base Command
 
@@ -1154,7 +1154,7 @@ Run this command to get the blob service properties of a specific account storag
 ### azure-vm-public-ip-details-get
 
 ***
-Gets the properties of a given public IP address. The command is deprecated, please use azure-vn-public-ip-address-get.
+Gets the properties of a given public IP address. The command is deprecated, please use azure-vn-public-ip-address-get. Required Permissions: Microsoft.Network/publicIPAddresses/read.
 
 #### Base Command
 
@@ -1188,7 +1188,7 @@ Gets the properties of a given public IP address. The command is deprecated, ple
 ### azure-nsg-security-rule-create
 
 ***
-Create a security rule. The command is deprecated, please use azure-vn-security-rule-create.
+Create a security rule. The command is deprecated, please use azure-vn-security-rule-create. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read, Microsoft.Network/networkSecurityGroups/securityRules/write.
 
 #### Base Command
 
@@ -1235,7 +1235,7 @@ Create a security rule. The command is deprecated, please use azure-vn-security-
 ### azure-nsg-resource-group-list
 
 ***
-Gets all resource groups for a subscription. The command is deprecated, please use azure-rm-resource-groups-list.
+Gets all resource groups for a subscription. The command is deprecated, please use azure-rm-resource-groups-list. Required Permissions: Microsoft.Resources/subscriptions/resourceGroups/read.
 
 #### Base Command
 
@@ -1269,7 +1269,7 @@ Gets all resource groups for a subscription. The command is deprecated, please u
 ### azure-vm-instance-power-off
 
 ***
-Powers off a given virtual machine. The command is deprecated, please use azure-compute-vm-power-off.
+Powers off a given virtual machine. The command is deprecated, please use azure-compute-vm-power-off. Required Permissions: Microsoft.Compute/virtualMachines/read, Microsoft.Compute/virtualMachines/poweroff/action.
 
 #### Base Command
 
@@ -1281,7 +1281,7 @@ Powers off a given virtual machine. The command is deprecated, please use azure-
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group to which the virtual machine belongs. | Required |
-| virtual_machine_name | The name of the virtual machine to power off.| Required |
+| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command.| Required |
 | skip_shutdown | Set to True to request non-graceful VM shutdown. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
@@ -1295,7 +1295,7 @@ Powers off a given virtual machine. The command is deprecated, please use azure-
 ### azure-billing-usage-list
 
 ***
-Returns actual usage and cost details for a given time period, optionally filtered by service name.
+Returns actual usage and cost details for a given time period, optionally filtered by service name. Required Permissions: Microsoft.Consumption/usageDetails/read.
 
 #### Base Command
 
@@ -1377,7 +1377,7 @@ Returns actual usage and cost details for a given time period, optionally filter
 ### azure-billing-forecast-list
 
 ***
-Returns cost forecast for a subscription over a given time range.
+Returns cost forecast for a subscription over a given time range. Required Permissions: Microsoft.CostManagement/forecast/read.
 
 #### Base Command
 
@@ -1412,7 +1412,7 @@ Returns cost forecast for a subscription over a given time range.
 ### azure-billing-budgets-list
 
 ***
-Lists configured budgets at the subscription or resource group scope.
+Lists configured budgets at the subscription or resource group scope. Required Permissions: Microsoft.Consumption/budgets/read.
 
 #### Base Command
 
@@ -1461,7 +1461,7 @@ Lists configured budgets at the subscription or resource group scope.
 ### azure-storage-container-property-get
 
 ***
-Retrieve properties for the specified Container.
+Retrieve properties for the specified Container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/read.
 
 #### Base Command
 
@@ -1480,18 +1480,18 @@ Retrieve properties for the specified Container.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.StorageContainer.Container.Property.last_modified | Date | Last modified time of the container. |
-| Azure.StorageContainer.Container.Property.etag | String | The entity tag for the container. |
-| Azure.StorageContainer.Container.Property.lease_status | String | The lease status of the container. |
-| Azure.StorageContainer.Container.Property.lease_state | String | The lease state of the container. |
-| Azure.StorageContainer.Container.Property.has_immutability_policy | String | Indicates whether the container has an immutability policy set on it. |
-| Azure.StorageContainer.Container.Property.has_legal_hold | String | Indicates whether the container has a legal hold. |
-| Azure.StorageContainer.Container.name | String | Container name. |
+| Azure.Storage.Container.Property.Last-Modified | Date | Last modified time of the container. |
+| Azure.Storage.Container.Property.Etag | String | The entity tag for the container. |
+| Azure.Storage.Container.Property.X-Ms-Lease-Status | String | The lease status of the container. |
+| Azure.Storage.Container.Property.X-Ms-Lease-State | String | The lease state of the container. |
+| Azure.Storage.Container.Property.X-Ms-Has-Immutability-Policy | String | Indicates whether the container has an immutability policy set on it. |
+| Azure.Storage.Container.Property.X-Ms-Has-Legal-Hold | String | Indicates whether the container has a legal hold. |
+| Azure.Storage.Container.ContainerName | String | Container name. |
 
 ### azure-storage-container-create
 
 ***
-Create a new Container under the specified account.
+Create a new Container under the specified account. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write.
 
 #### Base Command
 
@@ -1513,7 +1513,7 @@ There is no context output for this command.
 ### azure-storage-container-delete
 
 ***
-Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection.
+Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/delete.
 
 #### Base Command
 
@@ -1535,7 +1535,7 @@ There is no context output for this command.
 ### azure-storage-container-blob-create
 
 ***
-Create a new Blob under the specified Container. The command is deprecated, please use azure-storage-blob-create.
+Create a new Blob under the specified Container. The command is deprecated, please use azure-storage-blob-create. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
 
 #### Base Command
 
@@ -1559,7 +1559,7 @@ There is no context output for this command.
 ### azure-storage-container-blob-get
 
 ***
-Retrieve Blob from Container. The command is deprecated, please use azure-storage-blob-get.
+Retrieve Blob from Container. The command is deprecated, please use azure-storage-blob-get. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read.
 
 #### Base Command
 
@@ -1593,7 +1593,7 @@ Retrieve Blob from Container. The command is deprecated, please use azure-storag
 ### azure-storage-container-blob-tag-get
 
 ***
-Retrieve the tags of the specified Blob. The command is deprecated, please use azure-storage-blob-tag-get.
+Retrieve the tags of the specified Blob. The command is deprecated, please use azure-storage-blob-tag-get. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read.
 
 #### Base Command
 
@@ -1621,7 +1621,7 @@ Retrieve the tags of the specified Blob. The command is deprecated, please use a
 ### azure-storage-container-blob-tag-set
 
 ***
-Sets the tags for the specified Blob. The command replace the entire tags of the Blob and can be used to remove tags. The command is deprecated, please use azure-storage-blob-tag-set.
+Sets the tags for the specified Blob. The command replace the entire tags of the Blob and can be used to remove tags. The command is deprecated, please use azure-storage-blob-tag-set. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/read, Microsoft.Storage/storageAccounts/blobServices/containers/blobs/tags/write.
 
 #### Base Command
 
@@ -1645,7 +1645,7 @@ There is no context output for this command.
 ### azure-storage-container-blob-property-get
 
 ***
-Retrieve Blob properties. The command is deprecated, please use azure-storage-blob-property-get.
+Retrieve Blob properties. The command is deprecated, please use azure-storage-blob-property-get. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read.
 
 #### Base Command
 
@@ -1679,7 +1679,7 @@ Retrieve Blob properties. The command is deprecated, please use azure-storage-bl
 ### azure-storage-container-blob-property-set
 
 ***
-Set Blob properties.
+Set Blob properties. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write.
 
 #### Base Command
 
@@ -1710,7 +1710,7 @@ There is no context output for this command.
 ### azure-storage-container-public-access-block
 
 ***
-Block public access to a container.
+Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action.
 
 #### Base Command
 
@@ -1732,7 +1732,7 @@ There is no context output for this command.
 ### azure-nsg-security-rules-list
 
 ***
-Gets all security rules in a network security group. The command is deprecated, please use azure-vn-security-rules-list.
+Gets all security rules in a network security group. The command is deprecated, please use azure-vn-security-rules-list. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read.
 
 #### Base Command
 
@@ -1834,6 +1834,86 @@ Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage
 | Azure.Storage.Blob.name | String | Blob name. |
 | Azure.Storage.Blob.ContainerName | String | Container name. |
 
+### azure-compute-vm-list
+
+***
+Lists all the virtual machines in the specified subscription. Use the next_token argument to view the next page of results. Required Permissions: Microsoft.Compute/virtualMachines/read.
+
+#### Base Command
+
+`azure-compute-vm-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The name of the resource group. | Required |
+| next_token | The URI to fetch the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.VirtualMachines.type | String | The type of the resource. |
+| Azure.Compute.VirtualMachines.location | String | The location of the resource. |
+| Azure.Compute.VirtualMachines.tags | Unknown | The tags of the resource. |
+| Azure.Compute.VirtualMachines.id | String | The ID of the resource. |
+| Azure.Compute.VirtualMachines.name | String | The name of the resource. |
+| Azure.Compute.VirtualMachines.etag | String | The ETag of the virtual machine, used to prevent overwriting concurrent updates. |
+| Azure.Compute.VirtualMachines.extendedLocation | Unknown | The extended location of the Virtual Machine. |
+| Azure.Compute.VirtualMachines.identity | Unknown | The identity of the virtual machine, if configured. |
+| Azure.Compute.VirtualMachines.managedBy | Unknown | MThe ARM resource ID of the Virtual Machine Scale Set \(VMSS\) that manages the virtual machine, if applicable. Used for internal resource group delete optimization. |
+| Azure.Compute.VirtualMachines.placement | Unknown | The user-defined constraints for virtual machine hardware placement. This property cannot be changed once the VM is provisioned. Minimum api-version: 2024-11-01. |
+| Azure.Compute.VirtualMachines.plan | Unknown | Information about the marketplace image used to create the virtual machine. |
+| Azure.Compute.VirtualMachines.systemData | Unknown | Azure Resource Manager metadata containing createdBy and modifiedBy information. |
+| Azure.Compute.VirtualMachines.zones | Unknown. | The availability zones. |
+| Azure.Compute.VirtualMachines.properties.vmId | String | The unique ID of the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.availabilitySet | String | The availability set that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.hardwareProfile | Unknown | The hardware settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.storageProfile | Unknown | The storage settings for the virtual machine disks. |
+| Azure.Compute.VirtualMachines.properties.osProfile | Unknown | The operating system settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.networkProfile | Unknown | The network interfaces of the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.provisioningState | String | The provisioning state, which only appears in the response. |
+| Azure.Compute.VirtualMachines.properties.additionalCapabilities | Unknown | Additional capabilities enabled or disabled on the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.securityProfile | Unknown | The security settings for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.diagnosticsProfile | Unknown | The boot diagnostic settings state. |
+| Azure.Compute.VirtualMachines.properties.virtualMachineScaleSet | Unknown | The virtual machine scale set that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.proximityPlacementGroup | Unknown | The proximity placement group that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.scheduledEventsPolicy | Unknown | The Redeploy, Reboot, and ScheduledEventsAdditionalPublishingTargets Scheduled Event related configurations for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.priority | String | The priority for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.evictionPolicy | String | The eviction policy for the virtual machine. |
+| Azure.Compute.VirtualMachines.properties.billingProfile | Unknown | The billing related details of a Azure Spot virtual machine. |
+| Azure.Compute.VirtualMachines.properties.host | Unknown | The host that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.hostGroup | Unknown | The host group that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.licenseType | String | The license type for bringing your own license scenario. |
+| Azure.Compute.VirtualMachines.properties.extensionsTimeBudget | String | The time alloted for all extensions to start. |
+| Azure.Compute.VirtualMachines.properties.platformFaultDomain | Number | The fault domain that the virtual machine is in. |
+| Azure.Compute.VirtualMachines.properties.scheduledEventsProfile | Unknown | The scheduled event related configurations. |
+| Azure.Compute.VirtualMachines.properties.userData | String | The user data for the VM, which must be base-64 encoded. |
+| Azure.Compute.VirtualMachines.properties.capacityReservation | Unknown | The capacity reservation related details of a virtual machine. |
+| Azure.Compute.VirtualMachines.properties.applicationProfile | Unknown | The gallery applications that should be made available to the VM/VMSS. |
+| Azure.Compute.VirtualMachines.properties.timeCreated | Date | The time when the virtual machine was created. |
+| Azure.Compute.VirtualMachines.plan.name | String | The plan name. |
+| Azure.Compute.VirtualMachines.plan.publisher | String | The publisher of the plan. |
+| Azure.Compute.VirtualMachines.plan.product | String | The product of the plan. |
+| Azure.Compute.VirtualMachines.plan.promotionCode | String | The promotion code of the plan. |
+| Azure.Compute.VirtualMachines.resources.properties | Unknown | The properties of the resource. |
+| Azure.Compute.VirtualMachines.resources.id | String | The ID of the resource. |
+| Azure.Compute.VirtualMachines.resources.name | String | The name of the resource. |
+| Azure.Compute.VirtualMachines.resources.type | String | The type of the resource. |
+| Azure.Compute.VirtualMachines.resources.location | String | The location of the resource. |
+| Azure.Compute.VirtualMachines.resources.tags | Unknown | The tags of the resource. |
+| Azure.Compute.VirtualMachines.identity.principalId | String | The principal ID of the identity. |
+| Azure.Compute.VirtualMachines.identity.tenantId | String | The tenant ID of the identity. |
+| Azure.Compute.VirtualMachines.identity.type | String | The type of the identity. |
+| Azure.Compute.VirtualMachines.identity.userAssignedIdentities | String | The list of user assigned identities associated with the virtual machine. |
+| Azure.Compute.VirtualMachines.zones | String | The zones of the virtual machine. |
+| Azure.Compute.VirtualMachines.extendedLocation.name | String | The name of the extended location. |
+| Azure.Compute.VirtualMachines.extendedLocation.type | String | The type of the extended location. |
+| Azure.Compute.VirtualMachines.properties.instanceView | Unknown | The virtual machine instance view. |
+| Azure.Compute.VirtualMachinesNextToken | String | The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs. |
+
 ### azure-compute-vm-get
 
 ***
@@ -1849,7 +1929,7 @@ Gets the properties of a given virtual machine. Required Permissions: Microsoft.
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group to which the virtual machine belongs. | Required |
-| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 | expand | The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Possible values are: instanceView, userData, resiliencyView. Default is instanceView. | Optional |
 
 #### Context Output
@@ -1870,6 +1950,42 @@ Gets the properties of a given virtual machine. Required Permissions: Microsoft.
 | Azure.Compute.VirtualMachines.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. |
 | Azure.Compute.VirtualMachines.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. |
 
+### azure-vn-security-group-create
+
+***
+Creates a network security group. Required Permissions: Microsoft.Network/networkSecurityGroups/write.
+
+#### Base Command
+
+`azure-vn-security-group-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| security_group_name | The name of the network security group. | Required |
+| location | The location of the network security group. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.SecurityGroups.name | String | The security group's name. |
+| Azure.VirtualNetworks.SecurityGroups.id | String | The security group's ID. |
+| Azure.VirtualNetworks.SecurityGroups.etag | String | The security group's ETag. |
+| Azure.VirtualNetworks.SecurityGroups.type | String | The resource type. |
+| Azure.VirtualNetworks.SecurityGroups.location | String | The resource location. |
+| Azure.VirtualNetworks.SecurityGroups.properties.provisioningState | String | The provisioning state of the network security group resource. |
+| Azure.VirtualNetworks.SecurityGroups.properties.resourceGuid | String | The resource GUID property of the network security group resource. |
+| Azure.VirtualNetworks.SecurityGroups.properties.flushConnection | Boolean | When enabled, flows created from Network Security Group connections will be re-evaluated when rules are updates. Initial enablement will trigger re-evaluation. |
+| Azure.VirtualNetworks.SecurityGroups.properties.securityRules | Unknown | A collection of security rules of the network security group. |
+| Azure.VirtualNetworks.SecurityGroups.properties.defaultSecurityRules | Unknown | A collection of the default security rules of the network security group. |
+| Azure.VirtualNetworks.SecurityGroups.properties.flowLogs | Unknown | A collection of references to flow log resources. |
+| Azure.VirtualNetworks.SecurityGroups.properties.networkInterfaces | Unknown | A collection of references to network interfaces. |
+| Azure.VirtualNetworks.SecurityGroups.properties.subnets | Unknown | A collection of references to subnets. |
+
 ### azure-compute-vm-power-off
 
 ***
@@ -1882,10 +1998,10 @@ Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virt
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- |---| --- |
+| --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-rm-resource-groups-list` command. | Required |
-| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 | skip_shutdown | Set to True to request non-graceful VM shutdown. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
@@ -1911,7 +2027,7 @@ Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtu
 | --- | --- | --- |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | Resource Group to which the virtual machine belongs. | Required |
-| virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required |
+| virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 
 #### Context Output
 
@@ -2254,6 +2370,68 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 | Azure.VirtualNetworks.SecurityRules.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
 | Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
+
+### azure-vn-network-interface-update
+
+***
+Updates a network interface. Required Permissions: Microsoft.Network/networkInterfaces/read, Microsoft.Network/networkInterfaces/write, Microsoft.Network/virtualNetworks/subnets/join/action, Microsoft.Network/publicIPAddresses/join/action, Microsoft.Network/networkSecurityGroups/join/action, Microsoft.Network/loadBalancers/backendAddressPools/join/action.
+
+#### Base Command
+
+`azure-vn-network-interface-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group to which the network interface belongs. | Required |
+| network_interface_name | The name of the network interface to update. | Required |
+| location | The location of the network security group. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Optional |
+| enable_ip_forwarding | Whether to enable IP forwarding for the network interface. Possible values are: true, false. | Optional |
+| enable_accelerate_networking | Whether the network interface is configured for accelerated networking. Possible values are: true, false. | Optional |
+| auxiliary_mode | The auxiliary mode of the Network Interface resource. Possible values are: MaxConnections, Floating, AcceleratedConnections. | Optional |
+| auxiliary_sku | The auxiliary SKU of the Network Interface resource. Possible values are: A1, A2, A4, A8. | Optional |
+| dns_servers | A comma-separated list of DNS server IP addresses for the network interface. | Optional |
+| internal_dns_name_label | The internal DNS name label for the network interface. | Optional |
+| network_security_group_name | The name of the network security group. | Optional |
+| remove_network_security_group | Whether to remove the property networkSecurityGroup from the network interface. Possible values are: yes, no. Default is no. | Optional |
+| nic_type | The type of Network Interface resource. Possible values are: Standard, Elastic. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.VirtualNetworks.NetworkInterfaces.id | String | The network interface ID. |
+| Azure.VirtualNetworks.NetworkInterfaces.name | String | The network interface name. |
+| Azure.VirtualNetworks.NetworkInterfaces.location | String | The Azure region where the network interface is deployed. |
+| Azure.VirtualNetworks.NetworkInterfaces.etag | String | A unique read-only string that changes whenever the network interface resource is updated. |
+| Azure.VirtualNetworks.NetworkInterfaces.type | String | The resource type. |
+| Azure.VirtualNetworks.NetworkInterfaces.tags | Unknown | The resource tags. |
+| Azure.VirtualNetworks.NetworkInterfaces.extendedLocation | Unknown | The extended location of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.provisioningState | String | The current provisioning state of the network interface \(e.g., Succeeded, Updating, Failed\). |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.ipConfigurations | Unknown | The list of IP configurations for the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.dnsSettings | Unknown | The DNS configuration of the network interface, including DNS servers and domain name. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.macAddress | String | The MAC address of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.enableIPForwarding | Boolean | Whether IP forwarding is enabled for the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.enableAcceleratedNetworking | Boolean | Whether accelerated networking is enabled for the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup | Unknown | The network security group associated with the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.primary | Boolean | Whether this is a primary network interface on a virtual machine. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.virtualMachine | Unknown | The reference to a virtual machine. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.nicType | String | The type of network interface \(Standard or Elastic\). |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliaryMode | Unknown | The auxiliary mode of the Network Interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.auxiliarySku | Unknown | The auxiliary SKU of the Network Interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.defaultOutboundConnectivityEnabled | Boolean | Whether default outbound connectivity for nic was configured. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.disableTcpStateTracking | Boolean | Whether to disable TCP state tracking. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.dscpConfiguration | Unknown | A reference to the DSCP configuration to which the network interface is linked. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.hostedWorkloads | Unknown | A list of references to linked BareMetal resources. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.migrationPhase | Unknown | The migration phase of the Network Interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.privateEndpoint | Unknown | A reference to the private endpoint to which the network interface is linked. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.privateLinkService | Unknown | The privatelinkservice of the network interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.resourceGuid | String | The resource GUID property of the network interface resource. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations | Unknown | A list of TapConfigurations of the network interface. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.vnetEncryptionSupported | Boolean | Whether the virtual machine this nic is attached to supports encryption. |
+| Azure.VirtualNetworks.NetworkInterfaces.properties.workloadType | String | The workload type of the NetworkInterface for BareMetal resources. |
 
 ### azure-vn-security-rule-delete
 
@@ -2614,3 +2792,345 @@ Set Blob properties. Required permissions: Microsoft.Storage/storageAccounts/blo
 #### Context Output
 
 There is no context output for this command.
+
+### azure-appservice-webapp-config-update
+
+***
+Updates the configuration settings of an existing Azure Web App. Required permissions: Microsoft.Web/sites/config/write, Microsoft.Web/sites/config/read.
+
+#### Base Command
+
+`azure-appservice-webapp-config-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| name | Name of the Web App. | Required |
+| http20_enabled | Configures a web site to allow clients to connect over http2.0. Possible values are: true, false. | Optional |
+| remote_debugging_enabled | True if remote debugging is enabled; otherwise, false. Possible values are: true, false. | Optional |
+| min_tls_version | Configures the minimum version of TLS required for SSL requests. Possible values are: 1.0, 1.1, 1.2, 1.3. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.AppService.WebAppConfiguration.id | String | Resource ID. |
+| Azure.AppService.WebAppConfiguration.name | String | Resource name. |
+| Azure.AppService.WebAppConfiguration.type | String | Resource type. |
+| Azure.AppService.WebAppConfiguration.location | String | Resource location. |
+| Azure.AppService.WebAppConfiguration.properties.numberOfWorkers | Number | Number of workers. |
+| Azure.AppService.WebAppConfiguration.properties.defaultDocuments | Unknown | List of default documents. |
+| Azure.AppService.WebAppConfiguration.properties.netFrameworkVersion | String | .NET Framework version. |
+| Azure.AppService.WebAppConfiguration.properties.phpVersion | String | PHP version. |
+| Azure.AppService.WebAppConfiguration.properties.pythonVersion | String | Python version. |
+| Azure.AppService.WebAppConfiguration.properties.nodeVersion | String | Node.js version. |
+| Azure.AppService.WebAppConfiguration.properties.powerShellVersion | String | PowerShell version. |
+| Azure.AppService.WebAppConfiguration.properties.linuxFxVersion | String | Linux app framework and version. |
+| Azure.AppService.WebAppConfiguration.properties.windowsFxVersion | String | Windows container image name. |
+| Azure.AppService.WebAppConfiguration.properties.requestTracingEnabled | Boolean | Indicates whether request tracing is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.remoteDebuggingEnabled | Boolean | Indicates whether remote debugging is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.remoteDebuggingVersion | String | Remote debugging version. |
+| Azure.AppService.WebAppConfiguration.properties.http20Enabled | Boolean | Indicates whether HTTP/2 is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.minTlsVersion | String | Minimum TLS version required. |
+| Azure.AppService.WebAppConfiguration.properties.ftpsState | String | State of FTP / FTPS service. |
+| Azure.AppService.WebAppConfiguration.properties.webSocketsEnabled | Boolean | Indicates whether WebSockets are enabled. |
+| Azure.AppService.WebAppConfiguration.properties.alwaysOn | Boolean | Indicates whether Always On is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.managedPipelineMode | String | Managed pipeline mode. |
+| Azure.AppService.WebAppConfiguration.properties.loadBalancing | String | Site load balancing mode. |
+| Azure.AppService.WebAppConfiguration.properties.autoHealEnabled | Boolean | Indicates whether Auto Heal is enabled. |
+| Azure.AppService.WebAppConfiguration.properties.autoHealRules | Unknown | Auto Heal rules configuration. |
+| Azure.AppService.WebAppConfiguration.properties.cors | Unknown | Cross-Origin Resource Sharing \(CORS\) settings. |
+| Azure.AppService.WebAppConfiguration.properties.apiDefinition.url | String | URL of the API definition. |
+| Azure.AppService.WebAppConfiguration.properties.apiManagementConfig.id | String | Azure API management integration ID. |
+
+### azure-appservice-webapp-auth-settings-update
+
+***
+Updates the authentication and authorization settings of an existing Azure Web App. Required permissions: Microsoft.Web/sites/config/read, Microsoft.Web/sites/config/write.
+
+#### Base Command
+
+`azure-appservice-webapp-auth-settings-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| name | Name of the Web App. | Required |
+| enabled | True if the Authentication / Authorization feature is enabled for the current app; otherwise, false. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.AppService.WebAppAuthSettings.id | String | Resource ID. |
+| Azure.AppService.WebAppAuthSettings.name | String | Resource Name. |
+| Azure.AppService.WebAppAuthSettings.type | String | Resource type. |
+| Azure.AppService.WebAppAuthSettings.properties.enabled | Boolean | Indicates whether Authentication/Authorization is enabled for the app. |
+| Azure.AppService.WebAppAuthSettings.properties.runtimeVersion | String | The RuntimeVersion of the Authentication/Authorization feature. |
+| Azure.AppService.WebAppAuthSettings.properties.unauthenticatedClientAction | String | The action to take when an unauthenticated client attempts to access the app. |
+| Azure.AppService.WebAppAuthSettings.properties.tokenStoreEnabled | Boolean | Indicates whether the Azure App Service Authentication platform’s token store is enabled. |
+| Azure.AppService.WebAppAuthSettings.properties.allowedExternalRedirectUrls | Unknown | External URLs that are allowed to be redirected to as part of logging in or logging out of the app. |
+| Azure.AppService.WebAppAuthSettings.properties.defaultProvider | String | The default authentication provider to use when multiple providers are configured. |
+| Azure.AppService.WebAppAuthSettings.properties.clientId | String | The Client ID of the app used for AAD login. |
+| Azure.AppService.WebAppAuthSettings.properties.clientSecret | String | The client secret associated with the AAD app. |
+| Azure.AppService.WebAppAuthSettings.properties.clientSecretSettingName | String | The app setting that contains the client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.issuer | String | The OpenID Connect Issuer URI that represents the entity that issues access tokens. |
+| Azure.AppService.WebAppAuthSettings.properties.allowedAudiences | Unknown | The list of audiences that can receive the authentication tokens. |
+| Azure.AppService.WebAppAuthSettings.properties.additionalLoginParams | Unknown | Additional parameters to send to the authentication provider. |
+| Azure.AppService.WebAppAuthSettings.properties.isAadAutoProvisioned | Boolean | True if AAD is auto-provisioned; otherwise false. |
+| Azure.AppService.WebAppAuthSettings.properties.googleClientId | String | The Client ID of the app used for Google login. |
+| Azure.AppService.WebAppAuthSettings.properties.googleClientSecret | String | The client secret associated with the Google app. |
+| Azure.AppService.WebAppAuthSettings.properties.googleClientSecretSettingName | String | The app setting that contains the client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.facebookAppId | String | The App ID of the Facebook app used for login. |
+| Azure.AppService.WebAppAuthSettings.properties.facebookAppSecret | String | The app secret associated with the Facebook app. |
+| Azure.AppService.WebAppAuthSettings.properties.facebookAppSecretSettingName | String | The app setting that contains the Facebook app secret. |
+| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerKey | String | The OAuth 1.0a consumer key of the Twitter application used for login. |
+| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecret | String | The consumer secret associated with the Twitter application. |
+| Azure.AppService.WebAppAuthSettings.properties.twitterConsumerSecretSettingName | String | The app setting that contains the Twitter consumer secret. |
+| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientId | String | The OAuth 2.0 client ID for the Microsoft account provider. |
+| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecret | String | The client secret for the Microsoft account provider. |
+| Azure.AppService.WebAppAuthSettings.properties.microsoftAccountClientSecretSettingName | String | The app setting that contains the Microsoft account client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.appleClientId | String | The client ID for the Apple provider. |
+| Azure.AppService.WebAppAuthSettings.properties.appleClientSecret | String | The client secret for the Apple provider. |
+| Azure.AppService.WebAppAuthSettings.properties.appleClientSecretSettingName | String | The app setting that contains the Apple provider client secret. |
+| Azure.AppService.WebAppAuthSettings.properties.authFilePath | String | The path to the authentication configuration file. |
+
+### azure-compute-disk-update
+
+***
+Updates a disk. Required permissions: Microsoft.Compute/disks/read, Microsoft.Compute/disks/write.
+
+#### Base Command
+
+`azure-compute-disk-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| disk_name | The name of the managed disk that is being created. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters. | Required |
+| public_network_access | Policy for controlling export on the disk. Possible values are: Disabled, Enabled. | Optional |
+| network_access_policy | Policy for accessing the disk via network. Possible values are: AllowAll, AllowPrivate, DenyAll. | Optional |
+| data_access_auth_mode | Additional authentication requirements when exporting or uploading to a disk or snapshot. Possible values are: AzureActiveDirectory. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.Disks.id | String | Resource ID of the disk. |
+| Azure.Compute.Disks.name | String | Name of the disk. |
+| Azure.Compute.Disks.type | String | Type of the resource. |
+| Azure.Compute.Disks.location | String | Location of the disk. |
+| Azure.Compute.Disks.tags | Unknown | Resource tags. |
+| Azure.Compute.Disks.managedBy | String | ARM ID of the resource that manages the disk. |
+| Azure.Compute.Disks.sku | unknown | The disk SKU name. |
+| Azure.Compute.Disks.zones | unknown | A list of availability zones. |
+| Azure.Compute.Disks.properties.timeCreated | String | The time when the disk was created. |
+| Azure.Compute.Disks.properties.diskSizeGB | Number | Size of the disk in GB. |
+| Azure.Compute.Disks.properties.diskIopsReadWrite | Number | The number of IOPS allowed for this disk. |
+| Azure.Compute.Disks.properties.diskMBpsReadWrite | Number | The bandwidth allowed for this disk in MBps. |
+| Azure.Compute.Disks.properties.diskIOPSReadOnly | Number | The number of read-only IOPS for this disk. |
+| Azure.Compute.Disks.properties.diskMBpsReadOnly | Number | The read-only bandwidth for this disk in MBps. |
+| Azure.Compute.Disks.properties.diskSizeBytes | Number | The size of the disk in bytes. |
+| Azure.Compute.Disks.properties.networkAccessPolicy | String | Policy for accessing the disk via network. |
+| Azure.Compute.Disks.properties.publicNetworkAccess | String | Policy for export on the disk. |
+| Azure.Compute.Disks.properties.burstingEnabled | Boolean | Whether bursting is enabled on the disk. |
+| Azure.Compute.Disks.properties.optimization | String | The disk optimization setting. |
+| Azure.Compute.Disks.properties.diskState | String | The current state of the disk. |
+| Azure.Compute.Disks.properties.supportedCapabilities | unknown | Supported capabilities of the disk. |
+| Azure.Compute.Disks.properties.supportedPerformanceTiers | unknown | Supported performance tiers of the disk. |
+| Azure.Compute.Disks.properties.supportedDiskTypes | unknown | Supported disk types for the disk. |
+| Azure.Compute.Disks.properties.provisioningState | unknown | The provisioning state of the disk. |
+| Azure.Compute.Disks.properties.timeModified | unknown | The time when the disk was last modified. |
+| Azure.Compute.Disks.properties.diskAccessId | String | The ARM ID of the DiskAccess resource. |
+| Azure.Compute.Disks.properties.networkProfile | unknown | The network profile of the disk. |
+| Azure.Compute.Disks.properties.creationData | unknown | Disk creation data. |
+| Azure.Compute.Disks.properties.encryption | unknown | Encryption settings for the disk. |
+| Azure.Compute.Disks.properties.encryptionSettingsCollection | unknown | A collection of encryption settings. |
+| Azure.Compute.Disks.properties.encryptionType | String | The type of key used to encrypt the data on the disk. |
+| Azure.Compute.Disks.properties.securityProfile | unknown | Security profile for the disk. |
+| Azure.Compute.Disks.properties.tieringProfile | unknown | Tiering profile for the disk. |
+| Azure.Compute.Disks.properties.supportedTierList | unknown | List of supported tiers for the disk. |
+| Azure.Compute.Disks.properties.availabilityZone | String | Availability zone of the disk. |
+| Azure.Compute.Disks.properties.dataAccessAuthMode | String | Additional authentication requirements when exporting or uploading to a disk. |
+| Azure.Compute.Disks.properties.osType | String | The operating system type. |
+| Azure.Compute.Disks.properties.hyperVGeneration | String | The HyperVGenerationType of the virtual machine. |
+| Azure.Compute.Disks.properties.lastOwnershipUpdateTime | String | The last time ownership of the disk was updated. |
+
+### azure-appservice-webapp-update
+
+***
+Updates an Azure Web App. The required permissions are: Microsoft.Web/sites/read, Microsoft.Web/sites/write.
+
+#### Base Command
+
+`azure-appservice-webapp-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| name | Name of the Web App. | Required |
+| identity_type | Managed service identity type. Possible values are: None, SystemAssigned. | Optional |
+| https_only | Configures the web site to accept only https requests. Possible values are: true, false. | Optional |
+| client_cert_enabled | Whether client certificates are enabled. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.AppService.WebApp.id | String | Fully qualified resource ID for the web app. |
+| Azure.AppService.WebApp.name | String | The name of the web app. |
+| Azure.AppService.WebApp.type | String | The resource type, e.g., Microsoft.Web/sites. |
+| Azure.AppService.WebApp.location | String | Geographic location of the web app. |
+| Azure.AppService.WebApp.kind | String | The kind of the app, e.g., app, functionapp, etc. |
+| Azure.AppService.WebApp.tags | Unknown | Resource tags as key-value pairs. |
+| Azure.AppService.WebApp.identity.type | String | The type of managed identity \(SystemAssigned, UserAssigned, etc.\). |
+| Azure.AppService.WebApp.identity.principalId | String | The principal ID of the system-assigned identity. |
+| Azure.AppService.WebApp.identity.tenantId | String | The tenant ID of the system-assigned identity. |
+| Azure.AppService.WebApp.identity.userAssignedIdentities | Unknown | The list of user-assigned identities associated with the web app. |
+| Azure.AppService.WebApp.properties.state | String | Current state of the web app \(Running, Stopped, etc.\). |
+| Azure.AppService.WebApp.properties.enabled | Boolean | Whether the web app is enabled. |
+| Azure.AppService.WebApp.properties.defaultHostName | String | Default host name of the web app. |
+| Azure.AppService.WebApp.properties.hostNames | String | List of host names associated with the web app. |
+| Azure.AppService.WebApp.properties.repositorySiteName | String | Name of the repository site. |
+| Azure.AppService.WebApp.properties.clientAffinityEnabled | Boolean | Whether client affinity is enabled. |
+| Azure.AppService.WebApp.properties.clientCertEnabled | Boolean | Whether client certificates are enabled. |
+| Azure.AppService.WebApp.properties.clientCertExclusionPaths | String | Paths to exclude from client certificate authentication. |
+| Azure.AppService.WebApp.properties.hostingEnvironment | String | App Service Environment to use for the web app. |
+| Azure.AppService.WebApp.properties.serverFarmId | String | Resource ID of the associated App Service plan. |
+| Azure.AppService.WebApp.properties.reserved | Boolean | Whether the web app is on a Linux plan. |
+| Azure.AppService.WebApp.properties.isXenon | Boolean | Whether the web app is hosted in Xenon. |
+| Azure.AppService.WebApp.properties.hyperV | Boolean | Whether Hyper-V is enabled for the web app. |
+| Azure.AppService.WebApp.properties.siteConfig | Unknown | Configuration of the app. |
+
+### azure-cr-registry-update
+
+***
+Updates a container registry. Required permissions: Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write.
+
+#### Base Command
+
+`azure-cr-registry-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | Subscription ID. | Required |
+| registry_name | The name of the container registry. | Required |
+| allow_exports | Whether artifacts can be exported. Possible values are: disabled, enabled. | Optional |
+| public_network_access | Whether public network access is allowed for the container registry. Possible values are: disabled, enabled. | Optional |
+| anonymous_pull_enabled | Whether to enable registry-wide pulls from unauthenticated clients. Possible values are: true, false. | Optional |
+| authentication_as_arm_policy | Whether the policy is enabled or not. Possible values are: disabled, enabled. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ContainerRegistry.Registries.id | String | The resource ID. |
+| Azure.ContainerRegistry.Registries.identity | Unknown | The identity of the container registry. |
+| Azure.ContainerRegistry.Registries.location | String | The location of the resource. |
+| Azure.ContainerRegistry.Registries.name | String | The name of the resource. |
+| Azure.ContainerRegistry.Registries.properties.adminUserEnabled | Boolean | The value that indicates whether the admin user is enabled. |
+| Azure.ContainerRegistry.Registries.properties.anonymousPullEnabled | Boolean | Enables registry-wide pull from unauthenticated clients. |
+| Azure.ContainerRegistry.Registries.properties.creationDate | String | The creation date of the container registry in ISO8601 format. |
+| Azure.ContainerRegistry.Registries.properties.dataEndpointEnabled | Boolean | Enable a single data endpoint per region for serving data. |
+| Azure.ContainerRegistry.Registries.properties.dataEndpointHostNames | Unknown | List of host names that will serve data when dataEndpointEnabled is true. |
+| Azure.ContainerRegistry.Registries.properties.encryption | Unknown | The encryption settings of container registry. |
+| Azure.ContainerRegistry.Registries.properties.loginServer | String | The URL that can be used to log into the container registry. |
+| Azure.ContainerRegistry.Registries.properties.networkRuleBypassOptions | String | Whether to allow trusted Azure services to access a network restricted registry. |
+| Azure.ContainerRegistry.Registries.properties.networkRuleSet | Unknown | The network rule set for a container registry. |
+| Azure.ContainerRegistry.Registries.properties.policies | Unknown | The policies for a container registry. |
+| Azure.ContainerRegistry.Registries.properties.privateEndpointConnections | Unknown | List of private endpoint connections for a container registry. |
+| Azure.ContainerRegistry.Registries.properties.provisioningState | String | The provisioning state of the container registry at the time the operation was called. |
+| Azure.ContainerRegistry.Registries.properties.publicNetworkAccess | String | Whether or not public network access is allowed for the container registry. |
+| Azure.ContainerRegistry.Registries.properties.status | Unknown | The status of the container registry at the time the operation was called. |
+| Azure.ContainerRegistry.Registries.properties.zoneRedundancy | String | Whether or not zone redundancy is enabled for this container registry. |
+| Azure.ContainerRegistry.Registries.sku | Unknown | The SKU of the container registry. |
+| Azure.ContainerRegistry.Registries.systemData | Unknown | Metadata pertaining to creation and last modification of the resource. |
+| Azure.ContainerRegistry.Registries.tags | Unknown | The tags of the resource. |
+| Azure.ContainerRegistry.Registries.type | String | The type of the resource. |
+
+### azure-storage-blob-service-property-get
+
+***
+Run this command to get the blob service properties of a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/blobServices/read.
+
+#### Base Command
+
+`azure-storage-blob-service-property-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.BlobServices.id | String | Fully qualified resource ID for the resource. |
+| Azure.Storage.BlobServices.name | String | The name of the resource. |
+| Azure.Storage.BlobServices.type | String | The resource type. |
+| Azure.Storage.BlobServices.properties.lastAccessTimeTrackingPolicy | Unknown | The blob service property to configure last access time based tracking policy. |
+| Azure.Storage.BlobServices.properties.changeFeed | Unknown | The blob service properties for change feed events. |
+| Azure.Storage.BlobServices.properties.containerDeleteRetentionPolicy | Unknown | The blob service properties for container soft delete. |
+| Azure.Storage.BlobServices.properties.cors | Unknown | The CORS rules for the Blob service. |
+| Azure.Storage.BlobServices.properties.defaultServiceVersion | String | The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions. |
+| Azure.Storage.BlobServices.properties.deleteRetentionPolicy | Unknown | The blob service properties for blob soft delete. |
+| Azure.Storage.BlobServices.properties.isVersioningEnabled | Boolean | Whether versioning is enabled. |
+| Azure.Storage.BlobServices.properties.restorePolicy | Unknown | The blob service properties for blob restore policy. |
+| Azure.Storage.BlobServices.sku.name | String | The SKU name. |
+| Azure.Storage.BlobServices.sku.tier | String | The SKU tier. |
+
+### azure-storage-blob-service-property-set
+
+***
+Sets properties for the blob service in a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/blobServices/read, Microsoft.Storage/storageAccounts/blobServices/write.
+
+#### Base Command
+
+`azure-storage-blob-service-property-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The subscription ID. | Required |
+| account_name | The name of the storage account. | Required |
+| delete_retention_policy_enabled | Whether DeleteRetentionPolicy is enabled. Possible values are: true, false. | Optional |
+| delete_retention_policy_days | The number of days the deleted item should be retained. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Storage.BlobServices.id | String | The resource ID. |
+| Azure.Storage.BlobServices.name | String | The name of the resource. |
+| Azure.Storage.BlobServices.type | String | The type of the resource. |
+| Azure.Storage.BlobServices.properties.cors | Unknown | The CORS rules for the Blob service. |
+| Azure.Storage.BlobServices.properties.defaultServiceVersion | String | The default version to use for requests to the Blob service if an incoming request’s version is not specified. Possible values include version 2008-10-27 and all more recent versions. |
+| Azure.Storage.BlobServices.properties.deleteRetentionPolicy | Unknown | The service properties for soft delete. |
+| Azure.Storage.BlobServices.properties.isVersioningEnabled | Boolean | Whether versioning is enabled. |
+| Azure.Storage.BlobServices.properties.changeFeed | Unknown | The blob service properties for change feed events. |
+| Azure.Storage.BlobServices.properties.containerDeleteRetentionPolicy | Unknown | The blob service properties for container soft delete. |
+| Azure.Storage.BlobServices.properties.lastAccessTimeTrackingPolicy | Unknown | The blob service property to configure last access time based tracking policy. |
+| Azure.Storage.BlobServices.properties.restorePolicy | Unknown | The blob service properties for blob restore policy. |
+| Azure.Storage.BlobServices.sku.name | String | The SKU name. |
+| Azure.Storage.BlobServices.sku.tier | String | The SKU tier. |

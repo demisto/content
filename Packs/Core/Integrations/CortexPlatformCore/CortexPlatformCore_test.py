@@ -945,6 +945,113 @@ def test_search_assets_asset_type_empty():
     assert asset_type_entries == []
 
 
+def test_search_assets_page_size_zero_maps_to_max():
+    """
+    GIVEN:
+        page_size argument equal to 0.
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        The pagination limit sent to the API is the SEARCH_ASSETS_MAX_LIMIT
+        (preserving the legacy "0 means max" behavior on our side).
+    """
+    from CortexPlatformCore import Client, SEARCH_ASSETS_MAX_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {"page_size": "0"})
+
+    request_data = _get_request_data_from_webapp_call(mock_get_webapp_data)
+    paging = request_data["filter_data"]["paging"]
+    assert paging["from"] == 0
+    assert paging["to"] == SEARCH_ASSETS_MAX_LIMIT
+
+
+def test_search_assets_page_size_exceeds_max_raises():
+    """
+    GIVEN:
+        page_size argument larger than SEARCH_ASSETS_MAX_LIMIT.
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        A ValueError is raised with a message mentioning the max value,
+        and no request is sent to the API.
+    """
+    import pytest
+
+    from CortexPlatformCore import Client, SEARCH_ASSETS_MAX_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data") as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+        pytest.raises(ValueError, match=str(SEARCH_ASSETS_MAX_LIMIT)),
+    ):
+        search_assets_command(mock_client, {"page_size": str(SEARCH_ASSETS_MAX_LIMIT + 1)})
+
+    mock_get_webapp_data.assert_not_called()
+
+
+def test_search_assets_page_size_at_max_allowed():
+    """
+    GIVEN:
+        page_size argument exactly equal to SEARCH_ASSETS_MAX_LIMIT.
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        The request is sent successfully with the max limit and no error is raised.
+    """
+    from CortexPlatformCore import Client, SEARCH_ASSETS_MAX_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {"page_size": str(SEARCH_ASSETS_MAX_LIMIT)})
+
+    paging = _get_request_data_from_webapp_call(mock_get_webapp_data)["filter_data"]["paging"]
+    assert paging["to"] == SEARCH_ASSETS_MAX_LIMIT
+
+
+def test_search_assets_page_size_none_falls_back_to_default():
+    """
+    GIVEN:
+        An empty page_size value passed via args (which causes arg_to_number
+        to return None for that field).
+    WHEN:
+        search_assets_command is invoked.
+    THEN:
+        It does not raise a TypeError and falls back to SEARCH_ASSETS_DEFAULT_LIMIT.
+    """
+    from CortexPlatformCore import Client, SEARCH_ASSETS_DEFAULT_LIMIT, search_assets_command
+
+    mock_client = Client(base_url="", headers={})
+
+    from unittest import mock
+
+    with (
+        mock.patch.object(mock_client, "get_webapp_data", return_value={"reply": {"DATA": []}}) as mock_get_webapp_data,
+        mock.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[]),
+    ):
+        search_assets_command(mock_client, {"page_size": ""})
+
+    paging = _get_request_data_from_webapp_call(mock_get_webapp_data)["filter_data"]["paging"]
+    assert paging["to"] == SEARCH_ASSETS_DEFAULT_LIMIT
+
+
 def test_get_vulnerabilities_command_success(mocker: MockerFixture):
     """
     Given:
@@ -3909,91 +4016,178 @@ def test_extract_ids_multiple_valid_issues():
     assert result == ["12345", "67890", "11111"]
 
 
-def test_get_case_extra_data_with_all_fields_present(mocker):
+def test_extract_ids_skips_none_values():
     """
     Given:
-        A mock client and case data with all possible fields present.
+        Case extra data containing items where the ID field is None.
     When:
-        The get_case_extra_data function is called.
+        The extract_ids function is called.
+    Then:
+        Items with None IDs should be excluded instead of being cast to the string "None".
+    """
+    from CortexPlatformCore import extract_ids
+
+    case_extra_data: dict = {
+        "issues": {
+            "data": [
+                {"issue_id": "12345", "title": "Valid Issue"},
+                {"issue_id": None, "title": "None Issue"},
+                {"issue_id": "67890", "title": "Another Valid Issue"},
+            ]
+        }
+    }
+    result = extract_ids(case_extra_data)
+    assert result == ["12345", "67890"]
+
+
+def test_parse_single_case_extra_data_with_all_fields_present():
+    """
+    Given:
+        Case incident data with all possible fields present.
+    When:
+        The parse_single_case_extra_data function is called.
     Then:
         All fields should be correctly extracted and returned in the result.
     """
-    from CortexPlatformCore import get_case_extra_data
+    from CortexPlatformCore import parse_single_case_extra_data
 
-    mock_client = mocker.Mock()
-    mock_client._base_url = "original_url"
-
-    mock_case_data = {
-        "case": {
+    case_incident_data = {
+        "incident": {
+            "incident_id": "123",
             "notes": "Test notes",
             "xdr_url": "https://example.com/xdr",
             "starred_manually": True,
             "manual_description": "Case manual description",
             "detection_time": "2023-01-01T00:00:00Z",
         },
-        "manual_description": "Global manual description",
-        "network_artifacts": [{"id": "net1", "type": "ip"}],
-        "file_artifacts": [{"id": "file1", "hash": "abc123"}],
+        "alerts": {
+            "total_count": 2,
+            "data": [
+                {"alert_id": "issue1", "name": "Alert 1"},
+                {"alert_id": "issue2", "name": "Alert 2"},
+            ],
+        },
+        "network_artifacts": {"total_count": 1, "data": [{"id": "net1", "type": "ip"}]},
+        "file_artifacts": {"total_count": 1, "data": [{"id": "file1", "hash": "abc123"}]},
     }
 
-    mock_command_result = mocker.Mock()
-    mock_command_result.outputs = mock_case_data
-
-    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
-    mocker.patch("CortexPlatformCore.extract_ids", return_value=["issue1", "issue2"])
-
-    args = {"case_id": "123"}
-    result = get_case_extra_data(mock_client, args)
+    result = parse_single_case_extra_data(case_incident_data)
 
     assert result["issue_ids"] == ["issue1", "issue2"]
-    assert result["network_artifacts"] == [{"id": "net1", "type": "ip"}]
-    assert result["file_artifacts"] == [{"id": "file1", "hash": "abc123"}]
+    assert result["network_artifacts"] == {"total_count": 1, "data": [{"id": "net1", "type": "ip"}]}
+    assert result["file_artifacts"] == {"total_count": 1, "data": [{"id": "file1", "hash": "abc123"}]}
     assert result["notes"] == "Test notes"
     assert result["xdr_url"] == "https://example.com/xdr"
     assert result["starred_manually"] is True
-    assert result["manual_description"] == "Global manual description"
+    assert result["manual_description"] == "Case manual description"
     assert result["detection_time"] == "2023-01-01T00:00:00Z"
 
 
-def test_add_cases_extra_data_single_case(mocker):
+def test_add_cases_extra_data_empty_case_ids(mocker: MockerFixture):
     """
     Given:
-        A mock client and a list containing a single case.
+        A cases list where all case_id values are None.
     When:
         The add_cases_extra_data function is called.
     Then:
-        A list with one case containing extra data should be returned and get_case_extra_data should be called once.
+        The API should not be called and each case should get an empty CaseExtraData dict.
     """
     from CortexPlatformCore import add_cases_extra_data
 
     mock_client = mocker.Mock()
-    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
-    mock_get_case_extra_data.return_value = {"extra_field": "extra_value"}
+    cases_list = [{"case_id": None, "case_name": "Test"}]
+
+    result = add_cases_extra_data(mock_client, cases_list)
+
+    mock_client.get_multiple_cases_extra_data.assert_not_called()
+    assert result[0]["CaseExtraData"] == {}
+
+
+def test_add_cases_extra_data_single_case(mocker: MockerFixture):
+    """
+    Given:
+        A mock client and a list containing a single case with one alert.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        A list with one case containing CaseExtraData with issue_ids, extra incident fields, and artifacts.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_client.get_multiple_cases_extra_data.return_value = {
+        "reply": {
+            "incidents": [
+                {
+                    "incident": {
+                        "incident_id": "123",
+                        "notes": None,
+                        "xdr_url": "https://example.com",
+                        "detection_time": None,
+                        "starred_manually": False,
+                        "manual_description": None,
+                    },
+                    "alerts": {"total_count": 1, "data": [{"alert_id": "a1", "name": "Test Alert"}]},
+                    "network_artifacts": {"total_count": 0, "data": []},
+                    "file_artifacts": {"total_count": 0, "data": []},
+                }
+            ]
+        }
+    }
 
     case_data: list[dict] = [{"case_id": "123", "title": "Test Case"}]
     result = add_cases_extra_data(mock_client, case_data)
 
     assert len(result) == 1
     assert result[0]["case_id"] == "123"
-    assert result[0]["CaseExtraData"] == {"extra_field": "extra_value"}
-    mock_get_case_extra_data.assert_called_once_with(mock_client, {"case_id": "123", "limit": 1000})
+    extra = result[0]["CaseExtraData"]
+    assert extra["issue_ids"] == ["a1"]
+    assert extra["xdr_url"] == "https://example.com"
+    assert extra["notes"] is None
+    assert extra["starred_manually"] is False
+    assert extra["manual_description"] is None
+    assert extra["detection_time"] is None
+    assert extra["network_artifacts"] == {"total_count": 0, "data": []}
+    assert extra["file_artifacts"] == {"total_count": 0, "data": []}
+    mock_client.get_multiple_cases_extra_data.assert_called_once_with(["123"])
 
 
-def test_add_cases_extra_data_multiple_cases(mocker):
+def test_add_cases_extra_data_multiple_cases(mocker: MockerFixture):
     """
     Given:
         A mock client and a list containing multiple cases.
     When:
         The add_cases_extra_data function is called.
     Then:
-        A list with all cases containing their respective extra data should be
-        returned and get_case_extra_data should be called for each case.
+        A list with all cases containing their respective CaseExtraData from the single bulk API call.
     """
     from CortexPlatformCore import add_cases_extra_data
 
     mock_client = mocker.Mock()
-    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
-    mock_get_case_extra_data.side_effect = [{"extra_field1": "value1"}, {"extra_field2": "value2"}, {"extra_field3": "value3"}]
+    mock_client.get_multiple_cases_extra_data.return_value = {
+        "reply": {
+            "incidents": [
+                {
+                    "incident": {"incident_id": "123", "xdr_url": "https://example.com/123"},
+                    "alerts": {"total_count": 1, "data": [{"alert_id": "a1"}]},
+                    "network_artifacts": {"total_count": 0, "data": []},
+                    "file_artifacts": {"total_count": 0, "data": []},
+                },
+                {
+                    "incident": {"incident_id": "456", "xdr_url": "https://example.com/456"},
+                    "alerts": {"total_count": 0, "data": []},
+                    "network_artifacts": {"total_count": 0, "data": []},
+                    "file_artifacts": {"total_count": 0, "data": []},
+                },
+                {
+                    "incident": {"incident_id": "789", "xdr_url": "https://example.com/789"},
+                    "alerts": {"total_count": 2, "data": [{"alert_id": "a2"}, {"alert_id": "a3"}]},
+                    "network_artifacts": {"total_count": 0, "data": []},
+                    "file_artifacts": {"total_count": 0, "data": []},
+                },
+            ]
+        }
+    }
 
     case_data = [
         {"case_id": "123", "title": "Case 1"},
@@ -4003,31 +4197,97 @@ def test_add_cases_extra_data_multiple_cases(mocker):
     result = add_cases_extra_data(mock_client, case_data)
 
     assert len(result) == 3
-    assert result[0]["CaseExtraData"] == {"extra_field1": "value1"}
-    assert result[1]["CaseExtraData"] == {"extra_field2": "value2"}
-    assert result[2]["CaseExtraData"] == {"extra_field3": "value3"}
-    assert mock_get_case_extra_data.call_count == 3
+    for case in result:
+        assert "CaseExtraData" in case
+    assert result[0]["CaseExtraData"]["issue_ids"] == ["a1"]
+    assert result[0]["CaseExtraData"]["xdr_url"] == "https://example.com/123"
+    assert result[1]["CaseExtraData"]["issue_ids"] == []
+    assert result[2]["CaseExtraData"]["issue_ids"] == ["a2", "a3"]
+    mock_client.get_multiple_cases_extra_data.assert_called_once_with(["123", "456", "789"])
 
 
-def test_add_cases_extra_data_empty_list(mocker):
+def test_add_cases_extra_data_empty_list(mocker: MockerFixture):
     """
     Given:
         A mock client and an empty case list.
     When:
         The add_cases_extra_data function is called.
     Then:
-        An empty list should be returned and get_case_extra_data should not be called.
+        An empty list should be returned and the bulk API should still be called with an empty list.
     """
     from CortexPlatformCore import add_cases_extra_data
 
     mock_client = mocker.Mock()
-    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+    mock_client.get_multiple_cases_extra_data.return_value = {"reply": {"incidents": []}}
 
-    case_data = []
+    case_data: list[dict] = []
     result = add_cases_extra_data(mock_client, case_data)
 
     assert result == []
-    mock_get_case_extra_data.assert_not_called()
+
+
+def test_add_cases_extra_data_api_failure(mocker: MockerFixture):
+    """
+    Given:
+        A mock client that raises an exception when calling the bulk API.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        Each case should have an empty CaseExtraData dict as fallback.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_client.get_multiple_cases_extra_data.side_effect = Exception("API error")
+
+    case_data = [{"case_id": "123", "title": "Test Case"}]
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert len(result) == 1
+    assert result[0]["CaseExtraData"] == {}
+
+
+def test_add_cases_extra_data_partial_api_response(mocker: MockerFixture):
+    """
+    Given:
+        A mock client that returns extra data for only one of two requested cases.
+    When:
+        The add_cases_extra_data function is called with two cases.
+    Then:
+        The case with data should have populated CaseExtraData, and the missing case should get an empty dict.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_client.get_multiple_cases_extra_data.return_value = {
+        "reply": {
+            "incidents": [
+                {
+                    "incident": {
+                        "incident_id": "111",
+                        "notes": "Some notes",
+                        "xdr_url": "https://example.com",
+                        "detection_time": None,
+                        "starred_manually": False,
+                        "manual_description": None,
+                    },
+                    "alerts": {"total_count": 1, "data": [{"alert_id": "a1"}]},
+                    "network_artifacts": {"total_count": 0, "data": []},
+                    "file_artifacts": {"total_count": 0, "data": []},
+                }
+            ]
+        }
+    }
+
+    cases_list = [
+        {"case_id": "111", "case_name": "Case A"},
+        {"case_id": "222", "case_name": "Case B"},
+    ]
+    result = add_cases_extra_data(mock_client, cases_list)
+
+    assert result[0]["CaseExtraData"]["notes"] == "Some notes"
+    assert result[0]["CaseExtraData"]["issue_ids"] == ["a1"]
+    assert result[1]["CaseExtraData"] == {}
 
     def test_determine_assignee_filter_field_none(self):
         from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
@@ -9218,14 +9478,15 @@ def test_validate_custom_fields_cli_name_lookup(mocker):
     assert not error_messages
 
 
-def test_validate_custom_fields_multiselect_with_string_value_returns_error(mocker):
+def test_validate_custom_fields_multiselect_with_string_value_auto_converts(mocker):
     """
     GIVEN:
-        A multiSelect custom field provided with a string value instead of a list.
+        A multiSelect custom field provided with a plain string value instead of a list.
     WHEN:
         validate_custom_fields is called.
     THEN:
-        The field is excluded and a clear error message instructs the user to provide a list value.
+        The string is auto-converted to a single-element list and the field is accepted.
+        No error messages are returned.
     """
     from CortexPlatformCore import validate_custom_fields, Client
 
@@ -9249,9 +9510,8 @@ def test_validate_custom_fields_multiselect_with_string_value_returns_error(mock
     fields_to_validate = {"multi_field": "single_value"}
     valid_fields, error_messages = validate_custom_fields(fields_to_validate, client)
 
-    assert "multi_field" not in valid_fields
-    assert "multiSelect" in error_messages
-    assert "list" in error_messages
+    assert valid_fields == {"multi_field": ["single_value"]}
+    assert error_messages == ""
 
 
 def test_validate_custom_fields_multiselect_with_list_value_succeeds(mocker):
@@ -9378,6 +9638,95 @@ def test_validate_custom_fields_non_enum_types_accept_string_value(mocker, field
 
     assert "my_field" in valid_fields
     assert not error_messages
+
+
+@pytest.mark.parametrize(
+    "select_values, field_value, expected_valid_fields",
+    [
+        # All provided values are in the allowed set
+        (["aa", "bb", "cc", "dd"], ["aa", "cc"], {"testmulti": ["aa", "cc"]}),
+        # No selectValues defined (open-ended field) → accepted without enforcement
+        ([], ["any_value", "another_value"], {"testmulti": ["any_value", "another_value"]}),
+    ],
+)
+def test_validate_custom_fields_multiselect_valid_values(mocker, select_values, field_value, expected_valid_fields):
+    """
+    GIVEN:
+        A multiSelect custom field where all provided values are valid (either within the allowed set
+        or the field has no selectValues restriction).
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is accepted and no error messages are returned.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "testmulti",
+                    "CUSTOM_FIELD_CLI_NAME": "testmulti",
+                    "CUSTOM_FIELD_PRETTY_NAME": "testmulti",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                    "CUSTOM_FIELD_FIELD_DATA": {"selectValues": select_values},
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    valid_fields, error_messages = validate_custom_fields({"testmulti": field_value}, client)
+
+    assert valid_fields == expected_valid_fields
+    assert not error_messages
+
+
+@pytest.mark.parametrize(
+    "select_values, field_value, expected_error_substrings",
+    [
+        # Some values are not in the allowed set → error lists invalid values and the allowed set
+        (["aa", "bb", "cc", "dd"], ["aa", "zz", "xx"], ["zz", "xx", "aa", "Allowed values are"]),
+    ],
+)
+def test_validate_custom_fields_multiselect_invalid_values(mocker, select_values, field_value, expected_error_substrings):
+    """
+    GIVEN:
+        A multiSelect custom field where some provided values are not in the allowed set.
+    WHEN:
+        validate_custom_fields is called.
+    THEN:
+        The field is excluded from valid_fields and an error message lists the invalid values
+        and the full set of allowed values.
+    """
+    from CortexPlatformCore import validate_custom_fields, Client
+
+    client = Client(base_url="", headers={})
+
+    metadata_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "CUSTOM_FIELD_NAME": "testmulti",
+                    "CUSTOM_FIELD_CLI_NAME": "testmulti",
+                    "CUSTOM_FIELD_PRETTY_NAME": "testmulti",
+                    "CUSTOM_FIELD_IS_SYSTEM": False,
+                    "CUSTOM_FIELD_TYPE": "multiSelect",
+                    "CUSTOM_FIELD_FIELD_DATA": {"selectValues": select_values},
+                },
+            ]
+        }
+    }
+    mocker.patch.object(client, "get_custom_fields_metadata", return_value=metadata_response)
+
+    valid_fields, error_messages = validate_custom_fields({"testmulti": field_value}, client)
+
+    assert "testmulti" not in valid_fields
+    for substring in expected_error_substrings:
+        assert substring in error_messages
 
 
 # =========================================== TEST platform_http_request Method ===========================================#
@@ -10296,41 +10645,35 @@ def test_get_extra_data_for_case_id_command_invalid_case_id(mocker: MockerFixtur
         get_extra_data_for_case_id_command(mock_client, args)
 
 
-def test_get_cases_command_enrichment_fallback_over_10_cases(mocker: MockerFixture):
+def test_get_cases_command_enrichment_with_many_cases(mocker: MockerFixture):
     """
-    GIVEN:
+    Given:
         get_enriched_case_data=true and more than 10 cases are returned.
-    WHEN:
+    When:
         The get_cases_command function is called.
-    THEN:
-        - A warning entry (entry_type=1) is returned instead of an error (entry_type=4).
-        - Standard case data is still returned in the output.
+    Then:
+        All cases should be enriched via the bulk endpoint (no 10-case limit).
     """
     from CortexPlatformCore import get_cases_command
 
     mock_client = mocker.Mock()
-    # Return 11 cases to exceed the enrichment limit
     cases_data = [{"CASE_ID": i} for i in range(1, 12)]
     mock_client.get_webapp_data.return_value = {"reply": {"DATA": cases_data, "FILTER_COUNT": "11"}}
     mapped_cases = [{"case_id": str(i)} for i in range(1, 12)]
     mocker.patch("CortexPlatformCore.map_case_format", return_value=mapped_cases)
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
-    mocker.patch("CortexPlatformCore.demisto.info")
+    enriched_cases = [{"case_id": str(i), "CaseExtraData": {}} for i in range(1, 12)]
+    mocker.patch("CortexPlatformCore.add_cases_extra_data", return_value=enriched_cases)
 
     args = {"get_enriched_case_data": "true"}
     result = get_cases_command(mock_client, args)
 
-    # Should have 3 results: metadata + warning entry + standard case data
-    assert len(result) == 3
-    # result[0] is CasesMetadata
+    # Should have 2 results: metadata + enriched case data (no warning)
+    assert len(result) == 2
     assert result[0].outputs_prefix == "Core.CasesMetadata"
-    # result[1] is the warning (entry_type=1, not error entry_type=4)
-    assert result[1].entry_type == 1
-    assert "Note:" in result[1].readable_output
-    assert "standard case data" in result[1].readable_output
-    # result[2] contains the actual case data
-    assert result[2].outputs is not None
-    assert len(result[2].outputs) == 11
+    assert result[1].outputs_prefix == "Core.Case"
+    assert result[1].outputs is not None
+    assert len(result[1].outputs) == 11
 
 
 class TestProfileCommands:
