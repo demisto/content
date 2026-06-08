@@ -40,7 +40,7 @@ To use **Bearer Authentication**:
 * Enter your **Username** into the *Username* field.
 * Enter your **Password** into the *Password* field.
 
-For more info see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-get-token.html#security-api-get-token-prereqs)
+For more information, see the [Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-get-token.html#security-api-get-token-prereqs).
 
 ## Notes
 
