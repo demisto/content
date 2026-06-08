@@ -468,6 +468,130 @@ def deep_merge_dicts(base: dict, overrides: dict) -> dict:
     return result
 
 
+def compute_connector_id_and_title(
+    connector_title: str,
+    vendor: str = "",
+    mapped_params: dict | None = None,
+) -> tuple[str, str]:
+    """Compute the connector ``id`` and ``metadata.title`` for a new connector.
+
+    Single source of truth shared by :func:`build_connector_yaml` (which
+    writes these into ``connector.yaml``) and
+    :func:`check_connector_id_title_similarity` (which compares them against
+    existing connectors). Keeping the derivation in one place guarantees the
+    similarity check sees exactly the same id/title that will be written.
+
+    When both ``vendor`` and ``mapped_params`` are supplied, the id/title are
+    derived from the vendor prefix + capability suffix via
+    :func:`derive_connector_id_and_title`. Otherwise they fall back to the
+    legacy stub form: ``(title_to_slug(connector_title), connector_title)``.
+    """
+    if vendor and mapped_params:
+        return derive_connector_id_and_title(vendor, mapped_params)
+    return title_to_slug(connector_title), connector_title
+
+
+# ---------------------------------------------------------------------------
+# Connector id / title similarity guard (from-scratch flow)
+# ---------------------------------------------------------------------------
+def _normalize_for_similarity(value: str) -> str:
+    """Normalize an id/title for similarity comparison.
+
+    Lowercases the value and removes ALL whitespace so the comparison is
+    case-insensitive and space-insensitive (e.g. ``"Palo Alto"`` and
+    ``"paloalto"`` normalize to the same ``"paloalto"``).
+    """
+    return re.sub(r"\s+", "", (value or "").lower())
+
+
+def iterate_existing_connector_id_titles(
+    connectors_root: Path, skip_dir: Path | None = None
+):
+    """Yield ``(connector_path, existing_id, existing_title)`` for each
+    initialized connector under ``connectors_root``.
+
+    Walks ``<connectors_root>/*/connector.yaml``. The new connector's own
+    target directory (``skip_dir``) is skipped so a connector never matches
+    against itself. Connectors whose ``connector.yaml`` cannot be parsed are
+    skipped with a warning. ``existing_id`` comes from the top-level ``id``
+    key; ``existing_title`` from ``metadata.title`` — either may be an empty
+    string when absent.
+    """
+    if not connectors_root.is_dir():
+        return
+    skip_resolved = skip_dir.resolve() if skip_dir is not None else None
+    for connector_yaml_path in sorted(connectors_root.glob("*/connector.yaml")):
+        connector_dir = connector_yaml_path.parent
+        if skip_resolved is not None and connector_dir.resolve() == skip_resolved:
+            continue
+        try:
+            with open(connector_yaml_path) as fh:
+                data = yaml.safe_load(fh) or {}
+        except Exception as exc:
+            logger.warning(
+                f"[manifest_generator] Failed to parse {connector_yaml_path} "
+                f"during similarity check: {exc}; skipping."
+            )
+            continue
+        existing_id = data.get("id") or ""
+        existing_title = (data.get("metadata") or {}).get("title") or ""
+        yield connector_dir, existing_id, existing_title
+
+
+def _is_similar(new_value: str, existing_value: str) -> bool:
+    """Return True if the two values are "similar" per the spec rule.
+
+    After normalization (lowercase + no whitespace), values are similar when
+    one is a substring of the other (containment in either direction). Empty
+    normalized values never match (avoids flagging on a missing id/title).
+    """
+    new_norm = _normalize_for_similarity(new_value)
+    existing_norm = _normalize_for_similarity(existing_value)
+    if not new_norm or not existing_norm:
+        return False
+    return new_norm in existing_norm or existing_norm in new_norm
+
+
+def check_connector_id_title_similarity(
+    connector_dir: Path,
+    connector_title: str,
+    vendor: str = "",
+    mapped_params: dict | None = None,
+) -> None:
+    """Guard the from-scratch flow against id/title collisions.
+
+    Computes the new connector's ``id`` and ``title`` (via
+    :func:`compute_connector_id_and_title`, the same logic
+    :func:`build_connector_yaml` uses), then compares them against every
+    existing connector under ``connector_dir.parent`` (skipping the target
+    dir itself). A match is raised as a ``RuntimeError`` when the new id is
+    similar to an existing id, OR the new title is similar to an existing
+    title (similarity = case/space-insensitive substring containment in
+    either direction — see :func:`_is_similar`).
+
+    Raises:
+        RuntimeError: on the first detected similarity.
+    """
+    new_id, new_title = compute_connector_id_and_title(
+        connector_title, vendor=vendor, mapped_params=mapped_params
+    )
+    connectors_root = connector_dir.parent
+    for existing_dir, existing_id, existing_title in (
+        iterate_existing_connector_id_titles(connectors_root, skip_dir=connector_dir)
+    ):
+        if _is_similar(new_id, existing_id):
+            raise RuntimeError(
+                f"found similiray between the new connector id with {new_id} "
+                f"and connector {existing_dir} id with {existing_id}."
+            )
+        if _is_similar(new_title, existing_title):
+            raise RuntimeError(
+                f"found similiray between the new connector title with "
+                f"{new_title} and connector {existing_dir} title with "
+                f"{existing_title}."
+            )
+
+
 def build_connector_yaml(
     connector_title: str,
     pack_tags: list[str],
@@ -503,13 +627,12 @@ def build_connector_yaml(
         flag for manual review; this builder leaves the list as-is).
     """
     # Derive id/title from the vendor + declared capabilities when we have
-    # enough information; otherwise keep the legacy stub behaviour.
-    if vendor and mapped_params:
-        connector_id, metadata_title = derive_connector_id_and_title(
-            vendor, mapped_params
-        )
-    else:
-        connector_id, metadata_title = title_to_slug(connector_title), connector_title
+    # enough information; otherwise keep the legacy stub behaviour. Shared
+    # with the similarity check via compute_connector_id_and_title so both
+    # see the exact same values.
+    connector_id, metadata_title = compute_connector_id_and_title(
+        connector_title, vendor=vendor, mapped_params=mapped_params
+    )
 
     description = f"integration for {vendor} products." if vendor else ""
 
@@ -5182,6 +5305,15 @@ def create_manifest_from_scratch(
         f"{len(auth_methods.get('auth_types', []))} auth_types"
     )
 
+    # Guard against id/title collisions with any existing connector BEFORE
+    # writing any files (raises RuntimeError on a similarity).
+    check_connector_id_title_similarity(
+        connector_dir,
+        connector_title,
+        vendor=vendor,
+        mapped_params=mapped_params,
+    )
+
     if manual_serializer_fields:
         logger.info(
             "[manifest_generator] manual_serializer_fields received with keys "
@@ -5390,8 +5522,8 @@ def create_manifest_from_scratch(
         )
     else:
         logger.info(
-            f"[manifest_generator] No dedup collisions for handler — "
-            f"serializer.yaml not generated (optional per guide §3.9)."
+            "[manifest_generator] No dedup collisions for handler — "
+            "serializer.yaml not generated (optional per guide §3.9)."
         )
 
     # NOTE: the TI&E + fetch-issues capability builders already ran above
@@ -5663,8 +5795,8 @@ def add_handler_to_existing_connector(
         )
     else:
         logger.info(
-            f"[manifest_generator] No dedup collisions for handler — "
-            f"serializer.yaml not generated (optional per guide §3.9)."
+            "[manifest_generator] No dedup collisions for handler — "
+            "serializer.yaml not generated (optional per guide §3.9)."
         )
 
     # Write capabilities.yaml back (with schema directive).
