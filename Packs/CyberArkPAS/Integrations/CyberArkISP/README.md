@@ -154,6 +154,32 @@ For more information about CyberArk Identity Security Platform integration, refe
 - [SIEM Integration API](https://docs.cyberark.com/identity/latest/en/Content/Developer/SIEM-API.htm)
 - [Integrate the CyberArk Identity client credentials flow](https://docs.cyberark.com/identity/latest/en/Content/Developer/OAuth-client-creds.htm)
 
+### cyberark-isp-get-users
+
+***
+Manually fetches CyberArk Cloud Directory user snapshots via the Redrock Query API. For developing/debugging only. Use with caution if 'should_push_assets' is set to true, as it may interfere with the scheduled fetch cycle's snapshot sealing.
+
+#### Base Command
+
+`cyberark-isp-get-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of user records to retrieve. Default is 50. | Optional |
+| should_push_assets | Set to true to push the retrieved users to XSIAM as a snapshot in the cyberark_users_raw dataset. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CyberArkISP.User.ID | String | Unique identifier of the CyberArk Cloud Directory user. |
+| CyberArkISP.User.Username | String | Username \(login name\) of the user. |
+| CyberArkISP.User.DisplayName | String | Display name of the user. |
+| CyberArkISP.User.Email | String | Email address of the user. |
+| CyberArkISP.User.LastLogin | Date | Timestamp of the user's last login. |
+
 ### cyberark-isp-get-roles
 
 ***

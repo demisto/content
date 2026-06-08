@@ -9,7 +9,6 @@ description: CyberArk Identity Security Platform secures human and machine ident
 sectionorder:
 - Connect
 - Collect
-- Assets
 configuration:
 - name: url
   display: Audit Server URL
@@ -79,7 +78,7 @@ configuration:
   required: false
   type: 8
   defaultvalue: "false"
-  section: Assets
+  section: Collect
   additionalinfo: When enabled, the integration periodically fetches CyberArk Cloud Directory snapshots (Users, Groups, Roles, Applications) selected in 'Directory Data Collection' below.
 - name: directory_data_collection
   display: Directory Data Collection
@@ -91,13 +90,13 @@ configuration:
   - Groups
   - Roles
   - Applications
-  section: Assets
+  section: Collect
   additionalinfo: Select which CyberArk Cloud Directory data sources to fetch as snapshots. Each selected source produces its own dataset (cyberark_users_raw, cyberark_groups_raw, cyberark_roles_raw, cyberark_applications_raw). Has no effect unless 'Fetch Assets' is enabled.
 - name: max_assets_per_source_per_page
   display: Maximum number of records per Redrock page
   required: false
   type: 0
-  section: Assets
+  section: Collect
   advanced: true
   defaultvalue: "10000"
   additionalinfo: Maximum number of records to request per page from the Redrock API (default 10000). Snapshots are paginated automatically across multiple invocations within a fetch cycle when needed.
