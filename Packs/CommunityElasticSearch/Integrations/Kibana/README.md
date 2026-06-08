@@ -37,7 +37,7 @@ Used to list cases in Kibana
 | --- | --- | --- |
 | status | The status of the cases to retrieve. Possible values are: open, in-progress, closed. Default is open. | Optional | 
 | severity | The status of the cases to retrieve. Possible values are: critical, high, medium, low. | Optional | 
-| from_time | Earliest time to search from (i.e. 2025-10-02T00:27:58.162Z). | Optional | 
+| from_time | Earliest time to search from (e.g. 2025-10-02T00:27:58.162Z). | Optional | 
 
 #### Context Output
 
