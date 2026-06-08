@@ -1,6 +1,7 @@
 from pathlib import Path
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import gc
 import logging
 import psutil
 import base64
@@ -126,14 +127,16 @@ except Exception as e:
 
 # Memory pressure tolerance (in bytes): if available memory drops below this value while a page
 # is loading, wait_for_page_load_with_memory_guard will abort the wait and take a screenshot of
-# whatever has rendered so far, preventing an OOM kill.  Defaults to 200 MiB.
+# whatever has rendered so far, preventing an OOM kill.  Defaults to 400 MiB to leave headroom
+# for the post-load screenshot allocation (Chrome bitmap + base64 + decoded bytes can each be
+# 100-200 MB on heavy pages like cnn.com).
 # Can be overridden via the MEMORY_PRESSURE_TOLERANCE_MB environment variable.
 try:
-    _env_tolerance_mb = os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "200")
+    _env_tolerance_mb = os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "400")
     MEMORY_PRESSURE_TOLERANCE_BYTES = int(_env_tolerance_mb) * 1024 * 1024
 except Exception as e:
     demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_MB, {e}")
-    MEMORY_PRESSURE_TOLERANCE_BYTES = 200 * 1024 * 1024
+    MEMORY_PRESSURE_TOLERANCE_BYTES = 400 * 1024 * 1024
 
 # Polling for rasterization commands to complete
 DEFAULT_POLLING_INTERVAL = 0.1
@@ -166,17 +169,33 @@ class RasterizeType(Enum):
 _memory_log_lines: list[str] = []
 _memory_log_lock = threading.Lock()
 
+# Path to the on-disk memory log file.  Written with O_APPEND + immediate flush so every
+# line survives an OOM kill (the process is terminated before main()'s finally block runs,
+# meaning emit_memory_log_file() is never called).  The file is read back and returned to
+# the War Room by emit_memory_log_file() / rasterize_memory_log_command().
+_MEMORY_LOG_FILE_PATH = os.path.join(tempfile.gettempdir(), "rasterize_memory_log.txt")
+
 
 def _mem_log(level: str, message: str) -> None:
-    """Append a timestamped line to the in-memory memory log buffer and forward to demisto."""
+    """Append a timestamped line to the in-memory buffer AND flush it to disk immediately.
+
+    Writing to disk on every call ensures the diagnostics survive an OOM kill, because the
+    kernel terminates the process before Python's finally block (and therefore
+    emit_memory_log_file) can run.  debug-mode=true is also unreliable on the platform, so
+    we do not rely on demisto.debug() or demisto.info() as the sole output channel.
+    """
     ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # pylint: disable=E9003
     line = f"[{ts}] [{level}] {message}"
     with _memory_log_lock:
         _memory_log_lines.append(line)
-    if level == "INFO":
-        demisto.info(message)
-    else:
-        demisto.debug(message)
+        try:
+            with open(_MEMORY_LOG_FILE_PATH, "a", encoding="utf-8") as fh:
+                fh.write(line + "\n")
+                fh.flush()
+                os.fsync(fh.fileno())
+        except OSError:
+            pass  # Never let logging failures break the main flow
+    demisto.info(line)
 
 
 def get_container_working_set_bytes() -> int:
@@ -269,23 +288,23 @@ def compute_memory_based_limits(
         )
         return default_chromes, default_tabs, default_rasterizations
 
-    # How many Chrome instances can fit in the available memory?
-    safe_count = max(1, available_bytes // per_instance_bytes)
+    # # How many Chrome instances can fit in the available memory?
+    # safe_count = max(1, available_bytes // per_instance_bytes)
 
-    # Cap at the operator-configured maximums — never exceed them.
-    max_chromes = min(safe_count, default_chromes)
-    max_tabs = min(safe_count, default_tabs)
-    # Scale rasterizations proportionally: keep the same ratio as the original defaults.
-    ratio = safe_count / max(default_chromes, 1)
-    max_rasterizations = max(1, int(default_rasterizations * ratio))
+    # # Cap at the operator-configured maximums — never exceed them.
+    # max_chromes = min(safe_count, default_chromes)
+    # max_tabs = min(safe_count, default_tabs)
+    # # Scale rasterizations proportionally: keep the same ratio as the original defaults.
+    # ratio = safe_count / max(default_chromes, 1)
+    # max_rasterizations = max(1, int(default_rasterizations * ratio))
 
-    _mem_log(
-        "DEBUG",
-        f"compute_memory_based_limits: {available_bytes / (1024 * 1024):.1f} MiB available, "
-        f"{per_instance_bytes / (1024 * 1024):.1f} MiB per instance → "
-        f"{safe_count=}, {max_chromes=}, {max_tabs=}, {max_rasterizations=}",
-    )
-    return max_chromes, max_tabs, max_rasterizations
+    # _mem_log(
+    #     "DEBUG",
+    #     f"compute_memory_based_limits: {available_bytes / (1024 * 1024):.1f} MiB available, "
+    #     f"{per_instance_bytes / (1024 * 1024):.1f} MiB per instance → "
+    #     f"{safe_count=}, {max_chromes=}, {max_tabs=}, {max_rasterizations=}",
+    # )
+    return 1, 1, 1
 
 
 # endregion
@@ -1195,7 +1214,7 @@ def wait_for_page_load_with_memory_guard(
     tab_ready_event: Event,
     navigation_timeout: int,
     tolerance_bytes: int = MEMORY_PRESSURE_TOLERANCE_BYTES,
-    poll_interval: float = 1.0,
+    poll_interval: float = 0.25,
     tab_id: str = "",
     path: str = "",
 ) -> bool:
@@ -1425,6 +1444,25 @@ def screenshot_image(
 
     demisto.debug(f"{page_layout_metrics=} {tab.id=} {path=}.")
     css_content_size = page_layout_metrics["cssContentSize"]
+
+    # Pre-capture memory guard: captureScreenshot allocates a large bitmap in Chrome
+    # PLUS the base64 string PLUS the decoded bytes — typically 3-5x the final image
+    # size. If we're already low on memory, refuse to capture rather than getting OOM-killed.
+    if IS_LIGHTWEIGHT:
+        available_before_capture = get_container_available_memory_bytes()
+        if available_before_capture != -1 and available_before_capture <= MEMORY_PRESSURE_TOLERANCE_BYTES:
+            _mem_log(
+                "INFO",
+                f"screenshot_image: skipping capture — only "
+                f"{available_before_capture / (1024 * 1024):.1f} MiB available "
+                f"(<= {MEMORY_PRESSURE_TOLERANCE_BYTES / (1024 * 1024):.1f} MiB tolerance). "
+                f"{tab.id=}, {path=}",
+            )
+            return None, (
+                f"Skipped screenshot for {path}: insufficient memory "
+                f"({available_before_capture / (1024 * 1024):.1f} MiB available)."
+            )
+
     try:
         if full_screen:
             viewport = css_content_size
@@ -1450,6 +1488,9 @@ def screenshot_image(
     demisto.debug(f"heapUsage after screenshot {heapUsage=} on {tab.id=}, {path=}")
 
     captured_image = base64.b64decode(screenshot_data)
+    # Free the (large) base64 string immediately — we no longer need it after decoding.
+    del screenshot_data
+    gc.collect()
     if not captured_image:
         demisto.info(f"Empty snapshot, {screenshot_data=}, {tab.id=}, {path=}")
     else:
@@ -1779,7 +1820,7 @@ def perform_rasterize(
         return_error(message)
         return None
 
-    # In lightweight mode: refuse to start rasterization if the container is already under memory pressure.
+    # In lightweight mode: log current memory stats for diagnostics (no hard block on low memory).
     if IS_LIGHTWEIGHT:
         available_mem = get_container_available_memory_bytes()
         working_set = get_container_working_set_bytes()
@@ -1793,14 +1834,6 @@ def perform_rasterize(
                 f"threshold={MIN_MEMORY_FOR_CHROME_BYTES / (1024 * 1024):.1f} MiB, "
                 f"tolerance={MEMORY_PRESSURE_TOLERANCE_BYTES / (1024 * 1024):.1f} MiB",
             )
-            if available_mem < MIN_MEMORY_FOR_CHROME_BYTES:
-                message = (
-                    f"Insufficient memory to rasterize: only {available_mem // (1024 * 1024)} MiB available, "
-                    f"need at least {MIN_MEMORY_FOR_CHROME_BYTES // (1024 * 1024)} MiB."
-                )
-                demisto.error(message)
-                return_error(message)
-                return None
 
     # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
     browser, chrome_port = chrome_manager_one_port()
@@ -2292,6 +2325,61 @@ def get_width_height(args: dict[str, str]) -> tuple[int, int]:
     return width, height
 
 
+def _read_memory_log_text() -> str:
+    """Return the full memory log text.
+
+    Prefers the on-disk file (written by _mem_log on every call, survives OOM kill) over
+    the in-memory buffer.  Falls back to the in-memory buffer when the file does not exist
+    (e.g. first run with no prior OOM).
+    """
+    # Try the on-disk file first — it contains logs from the current AND any prior OOM-killed run.
+    try:
+        if os.path.exists(_MEMORY_LOG_FILE_PATH):
+            with open(_MEMORY_LOG_FILE_PATH, encoding="utf-8") as fh:
+                disk_text = fh.read().strip()
+            if disk_text:
+                return disk_text
+    except OSError:
+        pass
+
+    # Fall back to the in-memory buffer (no file yet).
+    with _memory_log_lock:
+        lines = list(_memory_log_lines)
+    return "\n".join(lines)
+
+
+def rasterize_memory_log_command() -> None:
+    """Return the memory diagnostic log as a War-Room file and a readable output entry.
+
+    Reads from the on-disk log file so that diagnostics written before an OOM kill are
+    included even though the in-memory buffer was lost when the process was terminated.
+    """
+    log_text = _read_memory_log_text()
+
+    if not log_text:
+        return_results(CommandResults(readable_output="No memory log entries collected yet."))
+        return
+
+    demisto.results(fileResult("memory_log.txt", log_text.encode("utf-8"), file_type=entryTypes["entryInfoFile"]))
+    return_results(CommandResults(readable_output=f"### Memory Log\n```\n{log_text}\n```"))
+
+
+def emit_memory_log_file() -> None:
+    """Attach the memory diagnostic log as a downloadable file in the War Room.
+
+    Called at the end of every rasterize command so operators always get a memory log
+    alongside the rasterization output, without having to run a separate command.
+    Reads from the on-disk file so logs from a prior OOM-killed invocation are included.
+    Does nothing if no log data exists.
+    """
+    log_text = _read_memory_log_text()
+
+    if not log_text:
+        return
+
+    demisto.results(fileResult("memory_log.txt", log_text.encode("utf-8"), file_type=entryTypes["entryInfoFile"]))
+
+
 def main():  # pragma: no cover
     command = demisto.command()
 
@@ -2338,6 +2426,9 @@ def main():  # pragma: no cover
         elif demisto.command() == "rasterize-extract":
             rasterize_extract_command()
 
+        elif demisto.command() == "rasterize-memory-log":
+            rasterize_memory_log_command()
+
         else:
             raise NotImplementedError(f"command {command} is not supported")
 
@@ -2345,7 +2436,11 @@ def main():  # pragma: no cover
         return_err_or_warn(f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}")
     finally:
         kill_zombie_processes()
+        # Emit the memory diagnostic log after every rasterize command (skip utility/meta commands).
+        if command not in ("test-module", "rasterize-memory-log"):
+            emit_memory_log_file()
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
+
