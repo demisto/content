@@ -34,6 +34,7 @@ COMMON_MESSAGES: dict[str, str] = {
     "UNEXPECTED_ERROR": "An unexpected error occurred.",
 }
 
+
 class GSuiteClient:
     """
     Client to use in integration with powerful http_request.
@@ -56,7 +57,7 @@ class GSuiteClient:
         credentials = get_ucp_credentials(method_id)
 
         cred_type = credentials.get("type")  # for now the only type we support
-        file_data = credentials.get(cred_type, credentials) if cred_type else credentials  
+        file_data = credentials.get(cred_type, credentials) if cred_type else credentials
         content = file_data.get("content", file_data)
         if isinstance(content, str):
             content = GSuiteClient.safe_load_non_strict_json(content)

@@ -122,7 +122,7 @@ class MsGraphClient:
     ):
         # Under UCP (ConnectUs) the auth secrets are not supplied via
         # demisto.params() - they are injected per-request by the platform
-        
+
         if not managed_identities_client_id and not should_use_ucp_auth():
             if not self_deployed and not enc_key:
                 raise DemistoException(
