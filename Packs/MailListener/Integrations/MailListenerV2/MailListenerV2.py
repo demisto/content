@@ -511,8 +511,10 @@ def fetch_mails(
     else:
         next_uid_to_fetch_from = uid_to_fetch_from
         demisto.debug(f"messages_uids IS empty, setting {next_uid_to_fetch_from=}")
-
+    demisto.debug(f"fetched mail: {fetched_email_objects}")
     ids_fetched = [mail.id for mail in fetched_email_objects]
+    for mail in fetched_email_objects:
+        demisto.debug(f"raw email: {mail.raw_json}")
     demisto.debug(f"fetched {len(fetched_email_objects)} emails, {ids_fetched=}")
     return fetched_email_objects, ids_fetched, next_uid_to_fetch_from
 
