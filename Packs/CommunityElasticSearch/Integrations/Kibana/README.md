@@ -10,7 +10,7 @@ This integration enables using Elastic Security for SIEM for security operations
 | Authorization type | Select the authentication type and enter the appropriate credentials:- Basic Auth: Enter Username and Password.- Bearer Auth: Enter Username and Password.- API Key Auth: Enter the API Key ID and API Key. | False |
 | API key ID |  | False |
 | API Key |  | False |
-| Username | Provide Username \+ Password instead of API key \+ API ID | False |
+| Username | Provide Username + Password instead of API key + API ID | False |
 | Password |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
