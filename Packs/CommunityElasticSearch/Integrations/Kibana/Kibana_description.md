@@ -7,7 +7,7 @@ This integration was tested with Elasticsearch versions 6.6.2, 7.3, 8.4.1, and 9
 
 ## Authentication
 
-There are 3 different authentication [methods](https://www.elastic.co/docs/api/doc/elasticsearch#doc-authentication)
+There are 3 different authentication [methods](https://www.elastic.co/docs/api/doc/elasticsearch#doc-authentication).
 
 ### Basic Auth (http)
 
