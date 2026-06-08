@@ -15,7 +15,7 @@ def get_assets(api_token):
     result = CommandResults(outputs=allassets, outputs_prefix="branddefense_assets")
     return_results(result)
 
-kdufhgks
+kdufhgks!
 def get_specific_asset(api_token, args):
     asset_id = args.get("assetid")
     url = "https://api.brandefense.io/api/v1/assets/" + str(asset_id)
