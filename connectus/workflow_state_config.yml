@@ -14,6 +14,7 @@ identity_columns:
   - {"name": "Integration ID", "description": "Unique human-readable id; primary key for find_row()."}
   - {"name": "Integration File Path", "description": "Repo-relative path to the integration's YML manifest."}
   - {"name": "Connector ID", "description": "ConnectUs connector this integration belongs to."}
+  - {"name": "Connector Folder Path", "description": "Repo-relative path (in the unified-connectors-content repo) to the connector directory, e.g. connectors/salesforce. Populated by whoever creates the connector via set-connector-path; blank until then. Consumed by the param-parity resolver."}
 
 # Sentinels and marker strings. These are the literal values written into
 # CSV cells by the engine. Changing them is a data migration, not a code

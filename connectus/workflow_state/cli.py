@@ -1009,6 +1009,37 @@ def cmd_set_assignee(args: list[str]) -> None:
         print(f"  Current step: #{cur.index} {cur.name}")
 
 
+def cmd_set_connector_path(args: list[str]) -> None:
+    """Set the ``Connector Folder Path`` identity column for an integration.
+
+    Repo-relative path (in the unified-connectors-content repo) to the
+    connector directory, e.g. ``connectors/salesforce``. Populated by
+    whoever creates the connector; consumed by the param-parity resolver.
+    Identity-column write: NO cascade reset.
+    """
+    if len(args) < 2:
+        print(
+            "Usage: workflow_state.py set-connector-path <integration_id> "
+            "<connector_folder_path>"
+        )
+        print('  e.g. set-connector-path "Salesforce IAM" connectors/salesforce')
+        sys.exit(1)
+
+    name = args[0]
+    connector_folder_path = " ".join(args[1:])
+
+    from workflow_state.api import set_integration_connector_path
+    result = set_integration_connector_path(name, connector_folder_path)
+    if "error" in result:
+        print(f"ERROR: {result['error']}")
+        sys.exit(1)
+
+    print(
+        f"Set Connector Folder Path for '{result['integration_id']}' to: "
+        f"{result['connector_folder_path']}"
+    )
+
+
 def cmd_set_assignee_by_connector(args: list[str]) -> None:
     """Bulk-assign every integration in a connector. NO cascade reset."""
     if len(args) < 2:
@@ -1989,6 +2020,7 @@ def cmd_context(args: list[str]) -> None:
     payload: dict[str, Any] = {
         "integration_id": status.get("name", integration_id),
         "connector_id": row.get("Connector ID", "").strip(),
+        "connector_folder_path": row.get("Connector Folder Path", "").strip(),
         "assignee": row.get("assignee", "").strip(),
         "file_paths": file_paths,
         "data_columns": data_columns,
@@ -2175,6 +2207,7 @@ COMMANDS: dict[str, Callable[[list[str]], None]] = {
     "list-by-connector": cmd_list_by_connector,
     "list-connectors": cmd_list_connectors,
     "set-assignee-by-connector": cmd_set_assignee_by_connector,
+    "set-connector-path": cmd_set_connector_path,
     "show-step": cmd_show_step,
     "files": cmd_files,
     "auth-params": cmd_auth_params,
