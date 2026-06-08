@@ -68,6 +68,7 @@ def format_status(row: dict[str, str]) -> str:
 
     file_path = row.get("Integration File Path", "").strip()
     connector_id = row.get("Connector ID", "").strip()
+    connector_folder_path = row.get("Connector Folder Path", "").strip()
     assignee = row.get("assignee", "").strip()
 
     lines.append(f"  Assignee:        {assignee if assignee else '(unassigned)'}")
@@ -78,6 +79,9 @@ def format_status(row: dict[str, str]) -> str:
             f"to list all source files)"
         )
     lines.append(f"  Connector ID:    {connector_id if connector_id else '(not set)'}")
+    lines.append(
+        f"  Connector Folder: {connector_folder_path if connector_folder_path else '(not set)'}"
+    )
     lines.append("")
 
     lines.append(f"  Workflow ([{done_count}/{total}]):")

@@ -470,6 +470,38 @@ def assign_connector(connector_id: str, assignee_name: str) -> dict:
     }
 
 
+def set_integration_connector_path(integration_id: str, connector_folder_path: str) -> dict:
+    """Set the ``Connector Folder Path`` identity column for an integration.
+
+    This is the repo-relative path (inside the unified-connectors-content
+    repo) to the connector directory, e.g. ``connectors/salesforce``. It is
+    populated by whoever creates the connector and is consumed by the
+    param-parity resolver to locate the connector's YAML files.
+
+    Like ``set-assignee``, this is an identity-column write: it does NOT
+    cascade-reset any workflow steps (identity columns are never part of
+    the workflow sequence).
+
+    Returns a result dict with ``integration_id`` and the written
+    ``connector_folder_path`` on success, or an ``error`` key on failure.
+    """
+    cleaned = (connector_folder_path or "").strip()
+    if not cleaned:
+        return {"error": "Connector Folder Path cannot be empty."}
+
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        return {"error": f"Integration '{integration_id}' not found."}
+
+    rows[idx]["Connector Folder Path"] = cleaned
+    save_csv(rows)
+    return {
+        "integration_id": rows[idx].get("Integration ID", integration_id),
+        "connector_folder_path": cleaned,
+    }
+
+
 def run_checkpoint_gate(
     integration_id: str,
     gate_name: str,

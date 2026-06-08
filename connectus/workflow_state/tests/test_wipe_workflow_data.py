@@ -72,9 +72,10 @@ def test_wipes_workflow_columns_preserves_identity(temp_csv: Path) -> None:
     header = list(cfg.all_columns)
     # Two rows: one totally clean, one with several workflow cells filled.
     n_workflow = len(cfg.workflow_columns)
-    row_clean = ["int-1", "Packs/X/x.yml", "ConnX"] + [""] * n_workflow
+    n_identity = len(cfg.identity_column_names)
+    row_clean = ["int-1", "Packs/X/x.yml", "ConnX", "connectors/x"] + [""] * n_workflow
     row_dirty_values = ["✅"] * n_workflow
-    row_dirty = ["int-2", "Packs/Y/y.yml", "ConnY"] + row_dirty_values
+    row_dirty = ["int-2", "Packs/Y/y.yml", "ConnY", "connectors/y"] + row_dirty_values
     _seed_csv(temp_csv, header, [row_clean, row_dirty])
 
     result = wipe_workflow_data(confirm=True, backup=False)
@@ -88,13 +89,13 @@ def test_wipes_workflow_columns_preserves_identity(temp_csv: Path) -> None:
     new_header, new_rows = _read_csv(temp_csv)
     assert new_header == header
     assert len(new_rows) == 2
-    # Identity columns intact.
-    assert new_rows[0][:3] == ["int-1", "Packs/X/x.yml", "ConnX"]
-    assert new_rows[1][:3] == ["int-2", "Packs/Y/y.yml", "ConnY"]
+    # Identity columns intact (now 4: + Connector Folder Path).
+    assert new_rows[0][:n_identity] == ["int-1", "Packs/X/x.yml", "ConnX", "connectors/x"]
+    assert new_rows[1][:n_identity] == ["int-2", "Packs/Y/y.yml", "ConnY", "connectors/y"]
     # Every workflow column is empty for every row.
     for r in new_rows:
         assert len(r) == len(header)
-        assert all(cell == "" for cell in r[3:])
+        assert all(cell == "" for cell in r[n_identity:])
 
 
 def test_writes_backup_when_requested(temp_csv: Path) -> None:
@@ -104,7 +105,7 @@ def test_writes_backup_when_requested(temp_csv: Path) -> None:
     _seed_csv(
         temp_csv,
         header,
-        [["int-1", "p/1.yml", "ConnA"] + [""] * n_workflow],
+        [["int-1", "p/1.yml", "ConnA", "connectors/a"] + [""] * n_workflow],
     )
     original_bytes = temp_csv.read_bytes()
 

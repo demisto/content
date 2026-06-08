@@ -113,7 +113,7 @@ class TestLoadDefault:
         # additionally inserted ``UCP param-default review`` (after ``Params
         # for test with default in code``) — so 13 → 14.
         assert len(cfg.steps) == 14
-        assert len(cfg.identity_columns) == 3
+        assert len(cfg.identity_columns) == 4
         # Markers match the expected sentinels.
         assert cfg.markers.check == "✅"
         assert cfg.markers.na == "N/A"
