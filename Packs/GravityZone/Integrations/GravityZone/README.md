@@ -1694,7 +1694,7 @@ Retrieves active logged-in sessions for an endpoint.
 ***
 Creates an endpoint memory dump task. When polling is true or not specified, waits for completion and returns the download URL. When polling is false, returns the task ID immediately.
 
-*Note*: Your company must obtain specific permissions to use the memory dump feature due to storage considerations. Please contact Bitdefender Support to enable this feature.
+*Note*: Please contact Bitdefender Enterprise Support to configure this feature.
 
 #### Base Command
 
