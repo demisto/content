@@ -759,7 +759,7 @@ def main() -> int:
     )
     args = parser.parse_args()
     
-    integration_id = "Azure Sentinel"
+    integration_id = "Akamai WAF SIEM"
     out_dir = Path(args.out_dir)
     if not out_dir.is_absolute():
         out_dir = REPO_ROOT / out_dir

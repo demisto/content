@@ -15,6 +15,6 @@ ProofpointEmailSecurity,ProofpointEmailSecurityEventCollector,Proofpoint Email S
 RetarusSecureEmailGateway,RetarusSecureEmailGateway,Retarus Secure Email Gateway,Packs/RetarusSecureEmailGateway/Integrations/RetarusSecureEmailGateway/RetarusSecureEmailGateway.yml,true,true,false,,Log Collection,matched markers: Log Collection
 SymantecCloudSecureWebGateway,SymantecCloudSecureWebGatewayEventCollector,Symantec Cloud Secure Web Gateway Event Collector,Packs/SymantecCloudSecureWebGateway/Integrations/SymantecCloudSecureWebGatewayEventCollector/SymantecCloudSecureWebGatewayEventCollector.yml,true,true,false,,Log Collection,matched markers: Log Collection
 SymantecEndpointSecurity,SymantecEndpointSecurity,Symantec Endpoint Security,Packs/SymantecEndpointSecurity/Integrations/SymantecEndpointSecurity/SymantecEndpointSecurity.yml,true,true,false,,Log Collection,matched markers: Log Collection
-EDL,EDL,Generic Export Indicators Service,Packs/EDL/Integrations/EDL/EDL.yml,true,true,true,,Threat Intelligence & Enrichment,matched markers: Indicator Export
-TAXIIServer,TAXII2Server,TAXII2 Server,Packs/TAXIIServer/Integrations/TAXII2Server/TAXII2Server.yml,true,true,true,,Threat Intelligence & Enrichment,matched markers: Indicator Export
-TAXIIServer,TAXIIServer,TAXII Server,Packs/TAXIIServer/Integrations/TAXIIServer/TAXIIServer.yml,true,true,true,,Threat Intelligence & Enrichment,matched markers: Indicator Export
+EDL,EDL,Generic Export Indicators Service,Packs/EDL/Integrations/EDL/EDL.yml,true,true,true,,Automation,matched markers: Indicator Export
+TAXIIServer,TAXII2Server,TAXII2 Server,Packs/TAXIIServer/Integrations/TAXII2Server/TAXII2Server.yml,true,true,true,,Automation,matched markers: Indicator Export
+TAXIIServer,TAXIIServer,TAXII Server,Packs/TAXIIServer/Integrations/TAXIIServer/TAXIIServer.yml,true,true,true,,Automation,matched markers: Indicator Export

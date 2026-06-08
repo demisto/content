@@ -71,6 +71,10 @@ from manifest_generator import (
     build_summary_yaml,
     build_synthetic_hidden_toggle,
     build_triggers_yaml,
+    build_fetch_mutex_triggers,
+    collect_fetch_sub_cap_ids,
+    _FETCH_MUTEX_BUCKET_KEYS,
+    _FETCH_MUTEX_MESSAGE,
     bump_minor_version,
     check_connector_id_title_similarity,
     collect_existing_field_ids,
@@ -5629,6 +5633,166 @@ def test_create_manifest_from_scratch_without_ti_capability_no_triggers_yaml(
 
     triggers_yaml_path = connector_dir / "triggers.yaml"
     assert not triggers_yaml_path.exists()
+
+
+# ============================================================
+# Fetch mutex: collect_fetch_sub_cap_ids / build_fetch_mutex_triggers
+# (guide §3.4 note 7 + §3.5)
+# ============================================================
+
+
+def test_fetch_mutex_bucket_keys_are_the_five_fetch_families():
+    """The mutex bucket-key set is exactly the five fetch (collection)
+    mapper bucket keys — never Automation."""
+    assert _FETCH_MUTEX_BUCKET_KEYS == {
+        "Fetch Issues",
+        "Log Collection",
+        "Fetch Assets and Vulnerabilities",
+        "Threat Intelligence & Enrichment",
+        "Fetch Secrets",
+    }
+    assert "Automation" not in _FETCH_MUTEX_BUCKET_KEYS
+
+
+def test_collect_fetch_sub_cap_ids_only_fetch_buckets():
+    """
+    Given: mapped_params with two fetch buckets + Automation + general.
+    When:  collect_fetch_sub_cap_ids runs for a handler.
+    Then:  Only the two fetch sub-cap ids are returned (sorted), Automation
+           and general_configurations are excluded.
+    """
+    mapped_params = {
+        "general_configurations": ["x"],
+        "Automation": ["cmd"],
+        "Fetch Issues": [],
+        "Log Collection": [],
+    }
+    result = collect_fetch_sub_cap_ids(mapped_params, "xsoar-myint")
+    assert result == sorted(
+        ["xsoar-myint-fetch-issues", "xsoar-myint-log-collection"]
+    )
+
+
+def test_collect_fetch_sub_cap_ids_single_fetch_bucket():
+    """A handler with one fetch bucket yields exactly one sub-cap id."""
+    mapped_params = {"general_configurations": [], "Fetch Issues": []}
+    assert collect_fetch_sub_cap_ids(mapped_params, "xsoar-myint") == [
+        "xsoar-myint-fetch-issues"
+    ]
+
+
+def test_collect_fetch_sub_cap_ids_no_fetch_bucket():
+    """A handler with only Automation yields no fetch sub-cap ids."""
+    mapped_params = {"general_configurations": [], "Automation": []}
+    assert collect_fetch_sub_cap_ids(mapped_params, "xsoar-myint") == []
+
+
+def test_build_fetch_mutex_triggers_empty_and_single():
+    """0 or 1 fetch sub-cap → no mutex triggers."""
+    assert build_fetch_mutex_triggers([]) == []
+    assert build_fetch_mutex_triggers(["only-one"]) == []
+
+
+def test_build_fetch_mutex_triggers_two_caps_shape():
+    """
+    Given: two fetch sub-cap ids.
+    When:  build_fetch_mutex_triggers runs.
+    Then:  Exactly 2 triggers (one per direction), each using the v2
+           capability-state condition (behavior: selected / operator: eq /
+           value: true), a read_only effect on the OTHER cap, and the mutex
+           message.
+    """
+    a = "xsoar-h-fetch-issues"
+    b = "xsoar-h-log-collection"
+    triggers = build_fetch_mutex_triggers([a, b])
+    assert len(triggers) == 2
+
+    # Each trigger condition reads one cap's selected state; the effect locks
+    # the OTHER cap.
+    pairs = {
+        (t["conditions"]["id"], t["effects"][0]["id"]) for t in triggers
+    }
+    assert pairs == {(a, b), (b, a)}
+
+    for t in triggers:
+        cond = t["conditions"]
+        assert cond["behavior"] == "selected"
+        assert cond["operator"] == "eq"
+        assert cond["value"] is True
+        eff = t["effects"][0]
+        assert eff["action"] == {"read_only": True}
+        assert eff["message"] == _FETCH_MUTEX_MESSAGE
+        # condition cap and effect cap must differ (never self-lock).
+        assert cond["id"] != eff["id"]
+
+
+def test_build_fetch_mutex_triggers_three_caps_count():
+    """n=3 fetch sub-caps → n*(n-1) = 6 triggers, no self-pairs."""
+    ids = ["a", "b", "c"]
+    triggers = build_fetch_mutex_triggers(ids)
+    assert len(triggers) == 6
+    for t in triggers:
+        assert t["conditions"]["id"] != t["effects"][0]["id"]
+
+
+def test_create_manifest_from_scratch_two_fetch_caps_emits_mutex_triggers(
+    tmp_path: Path,
+):
+    """
+    Given: a handler declaring BOTH Fetch Issues and Log Collection.
+    When:  create_manifest_from_scratch runs.
+    Then:  triggers.yaml contains the 2 per-handler fetch-mutex triggers
+           pairing the handler's fetch-issues ↔ log-collection sub-caps.
+    """
+    connector_dir = tmp_path / "connectors" / "dualfetch"
+    integration_yml = {
+        "commonfields": {"id": "DualFetch"},
+        "display": "Dual Fetch Integration",
+        "configuration": [],
+        "script": {"isfetch": True, "isfetchevents": True},
+    }
+    integration_path = (
+        tmp_path
+        / "Packs"
+        / "DualFetch"
+        / "Integrations"
+        / "DualFetch"
+        / "DualFetch.yml"
+    )
+    integration_path.parent.mkdir(parents=True, exist_ok=True)
+    integration_path.touch()
+
+    mapped_params = {
+        "general_configurations": [],
+        "Fetch Issues": [],
+        "Log Collection": [],
+    }
+
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml=integration_yml,
+        integration_path=integration_path,
+        connector_title="Dual Fetch",
+        mapped_params=mapped_params,
+        auth_methods={"auth_types": []},
+    )
+
+    triggers_yaml_path = connector_dir / "triggers.yaml"
+    assert triggers_yaml_path.exists()
+    body = triggers_yaml_path.read_text()[len(TRIGGERS_SCHEMA_DIRECTIVE):]
+    data = yaml.safe_load(body)
+
+    handler_id = "xsoar-dualfetch"
+    fi = f"{handler_id}-fetch-issues"
+    lc = f"{handler_id}-log-collection"
+
+    mutex_pairs = {
+        (t["conditions"]["id"], t["effects"][0]["id"])
+        for t in data["triggers"]
+        if t["effects"][0]["action"] == {"read_only": True}
+        and t["effects"][0].get("message") == _FETCH_MUTEX_MESSAGE
+    }
+    assert mutex_pairs == {(fi, lc), (lc, fi)}
 
 
 # ============================================================

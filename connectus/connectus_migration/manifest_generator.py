@@ -49,6 +49,22 @@ _COLLECTION_CAP_IDS: frozenset[str] = frozenset(
 )
 _AUTOMATION_CAP_ID = "automation-and-remediation"
 
+# ---------------------------------------------------------------------------
+# Fetch mutex (per guide 3.4 note 7 + 3.5)
+# ---------------------------------------------------------------------------
+# A single handler (== one integration) cannot enable more than one of its
+# OWN fetch capabilities at a time. The mutex covers all five fetch
+# capabilities. When one of the handler's fetch sub-capabilities is
+# selected, every OTHER fetch sub-capability of the SAME handler is marked
+# ``read_only: true`` so the user can pick only one.
+#
+# Scope is PER-HANDLER: we only ever pair fetch sub-capabilities that belong
+# to the same handler (e.g. ``log-collection_<handler>`` <-> ``fetch-issues_<handler>``).
+# We never pair across handlers, and never pair two sub-capabilities of the
+# same capability family (a handler maps each fetch family to exactly one
+# sub-capability).
+_FETCH_MUTEX_MESSAGE = "Select only one fetch option for this sub-capability"
+
 
 def derive_connector_suffix(mapped_params: dict) -> tuple[str, str]:
     """Compute the connector-id / title suffix from declared capabilities.
@@ -739,6 +755,17 @@ CANONICAL_CAPABILITY_IDS: dict[str, str] = {
     "Fetch Assets and Vulnerabilities": "fetch-assets-and-vulnerabilities",
 }
 
+# Mapper bucket keys that map to a *fetch* (collection) capability. Used by the
+# fetch-mutex logic (guide §3.4 note 7 + §3.5) to decide which of a handler's
+# capability buckets participate in the mutex. Derived from
+# ``CANONICAL_CAPABILITY_IDS`` ∩ ``_COLLECTION_CAP_IDS`` so it stays in lockstep
+# when a new fetch family is added.
+_FETCH_MUTEX_BUCKET_KEYS: frozenset[str] = frozenset(
+    bucket_key
+    for bucket_key, cap_id in CANONICAL_CAPABILITY_IDS.items()
+    if cap_id in _COLLECTION_CAP_IDS
+)
+
 # Display titles for each canonical capability id. Used to populate the
 # REQUIRED ``title`` field on every capability entry (capabilities.schema
 # requires id + title + default_enabled + required).
@@ -997,12 +1024,10 @@ def build_handler_yaml(
     # ``derive_profile_id`` is tolerant of legacy name-only entries (no
     # ``type``) and only raises on a present-but-unrecognized ``type``.
     auth_types = auth_methods.get("auth_types", [])
-    handler_view_group = slugify_view_group_id(integration_id)
     seen_profile_ids: set[str] = set()
     auth_options = [
         {
             "id": derive_profile_id(at, integration_id, seen_profile_ids),
-            "view_group": handler_view_group,
             "scopes": ["api"],
             "workloads": list(DEFAULT_HANDLER_WORKLOADS),
         }
@@ -3483,27 +3508,11 @@ def build_per_handler_general_config(
                 )
             )
 
-    # Compute relevant_for_capabilities from mapped_params keys. Capabilities
-    # are modelled as sub-capabilities, so this references the sub-cap ids
-    # ``<handler_id>-<cap_slug>`` this handler serves (falling back to the bare
-    # slug only when no handler_id is supplied).
-    cap_ids: list[str] = []
-    if mapped_params:
-        for cap_name in mapped_params:
-            if cap_name == "general_configurations":
-                continue
-            cap_ids.append(
-                make_sub_capability_id(handler_id, cap_name)
-                if handler_id
-                else slugify_capability_name(cap_name)
-            )
-
     result: dict = {
         "view_group": handler_id,
         "fields": fields,
     }
-    if cap_ids:
-        result["relevant_for_capabilities"] = cap_ids
+
     return result
 
 
@@ -3940,6 +3949,69 @@ def build_summary_yaml(connector_title: str) -> dict:
 TRIGGERS_SCHEMA_DIRECTIVE = (
     "# yaml-language-server: $schema=../../schema/triggers.schema.json\n"
 )
+
+
+def collect_fetch_sub_cap_ids(
+    mapped_params: dict[str, Any], handler_id: str
+) -> list[str]:
+    """Return the fetch sub-capability ids declared by ONE handler.
+
+    For each bucket key in ``mapped_params`` that is a fetch (collection)
+    capability (:data:`_FETCH_MUTEX_BUCKET_KEYS`), compute the handler's
+    sub-capability id via :func:`make_sub_capability_id`. The result drives
+    the per-handler fetch mutex (guide §3.4 note 7 + §3.5).
+
+    Order is deterministic (sorted by sub-cap id) so the emitted mutex
+    triggers are stable across runs. ``general_configurations`` and any
+    non-fetch capability bucket are ignored.
+    """
+    ids = {
+        make_sub_capability_id(handler_id, cap_name)
+        for cap_name in mapped_params
+        if cap_name in _FETCH_MUTEX_BUCKET_KEYS
+    }
+    return sorted(ids)
+
+
+def build_fetch_mutex_triggers(fetch_sub_cap_ids: list[str]) -> list[dict]:
+    """Build the per-handler fetch-mutex triggers (guide §3.4 note 7 + §3.5).
+
+    Given the fetch sub-capability ids of a SINGLE handler, emit one trigger
+    for every ordered pair ``(other, current)`` of distinct ids. Each trigger
+    locks ``current`` (``read_only: true``) while ``other`` is selected, so the
+    user can enable only one of the handler's fetch capabilities at a time.
+
+    For ``n`` fetch sub-capabilities this produces ``n × (n - 1)`` triggers
+    (each direction is a separate trigger because ``effect.id`` is a single
+    value). 0 or 1 fetch sub-capability → no triggers (an empty list).
+
+    Condition shape uses the Triggers v2 capability-state form
+    (``behavior: selected``, ``operator: eq``, ``value: true``); ``message``
+    is allowed because the condition tree contains a capability condition.
+    """
+    triggers: list[dict] = []
+    for other_id in fetch_sub_cap_ids:
+        for current_id in fetch_sub_cap_ids:
+            if other_id == current_id:
+                continue
+            triggers.append(
+                {
+                    "conditions": {
+                        "id": other_id,
+                        "behavior": "selected",
+                        "operator": "eq",
+                        "value": True,
+                    },
+                    "effects": [
+                        {
+                            "id": current_id,
+                            "action": {"read_only": True},
+                            "message": _FETCH_MUTEX_MESSAGE,
+                        }
+                    ],
+                }
+            )
+    return triggers
 
 
 def build_triggers_yaml(triggers: list[dict]) -> dict:
@@ -5569,6 +5641,14 @@ def create_manifest_from_scratch(
             "connection.yaml not generated (optional per schema)."
         )
 
+    # Fetch mutex (guide §3.4 note 7 + §3.5): this handler may declare more
+    # than one fetch capability. Emit per-handler mutex triggers so only one
+    # of THIS handler's fetch sub-capabilities can be selected at a time. The
+    # capability builders strip param *values* from ``mapped_params`` but keep
+    # the bucket *keys*, so the fetch sub-cap ids are still derivable here.
+    fetch_sub_cap_ids = collect_fetch_sub_cap_ids(mapped_params, handler_id)
+    all_triggers.extend(build_fetch_mutex_triggers(fetch_sub_cap_ids))
+
     if all_triggers:
         triggers_data = build_triggers_yaml(all_triggers)
         triggers_yaml_path = connector_dir / "triggers.yaml"
@@ -5901,6 +5981,20 @@ def add_handler_to_existing_connector(
             "[manifest_generator] New handler is anonymous (no auth_types) — "
             "connection.yaml left untouched."
         )
+
+    # Fetch mutex (guide §3.4 note 7 + §3.5): scope is PER-HANDLER, so we only
+    # pair the NEW handler's own fetch sub-capabilities — existing handlers'
+    # mutex triggers are already in triggers.yaml and are left untouched. The
+    # new handler's fetch sub-cap ids are exactly the fetch-bucket values in
+    # ``cap_name_to_handler_cap_id``.
+    new_handler_fetch_sub_cap_ids = sorted(
+        sub_cap_id
+        for cap_name, sub_cap_id in cap_name_to_handler_cap_id.items()
+        if cap_name in _FETCH_MUTEX_BUCKET_KEYS
+    )
+    all_triggers.extend(
+        build_fetch_mutex_triggers(new_handler_fetch_sub_cap_ids)
+    )
 
     if all_triggers:
         triggers_data = build_triggers_yaml(all_triggers)
