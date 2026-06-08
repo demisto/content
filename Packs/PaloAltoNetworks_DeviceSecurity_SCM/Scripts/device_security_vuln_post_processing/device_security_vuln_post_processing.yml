@@ -1,0 +1,15 @@
+comment: Device Security vulnerability post processing script to resolve the vulnerability incident in Device Security portal using API
+commonfields:
+  id: device-security-vuln-post-processing
+  version: -1
+enabled: true
+name: device-security-vuln-post-processing
+script: '-'
+tags:
+- device security
+- post-processing
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 5.0.0

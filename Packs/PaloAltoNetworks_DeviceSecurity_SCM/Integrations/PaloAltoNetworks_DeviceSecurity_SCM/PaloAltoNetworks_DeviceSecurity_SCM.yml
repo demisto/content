@@ -1,0 +1,394 @@
+commonfields:
+  id: Palo Alto Networks Device Security
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Palo Alto Networks Device Security
+display: Palo Alto Networks Device Security
+category: Network Security
+description: This is the Palo Alto Networks Device Security integration (previously Zingbox).
+configuration:
+- display: TSG ID
+  name: tsg_id
+  type: 0
+  required: false
+- display: Client ID
+  name: client_id
+  type: 4
+  required: false
+- display: Client Secret
+  name: client_secret
+  type: 4
+  required: false
+- display: Staging
+  name: is_staging
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  additionalinfo: Select if connecting to a staging/QA or non production environment
+- section: Connect
+  advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- section: Connect
+  advanced: true
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- section: Collect
+  display: First fetch time
+  name: first_fetch
+  defaultvalue: 7 days
+  type: 0
+  required: false
+  additionalinfo: 'The format: <number> <time unit>. e.g., 12 hours, 7 days, 2 seconds etc.'
+- section: Collect
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: '10'
+  type: 0
+  required: false
+  additionalinfo: Maximal number of events is 100
+- section: Collect
+  advanced: true
+  display: Fetch IoT Alerts
+  name: fetch_alerts
+  defaultvalue: 'true'
+  type: 8
+  required: false
+  additionalinfo: When selected, the integration fetches IoT alerts from the IoT Security Portal.
+- section: Collect
+  advanced: true
+  display: Fetch IoT Vulnerabilities
+  name: fetch_vulns
+  defaultvalue: 'true'
+  type: 8
+  required: false
+  additionalinfo: When selected, the integration fetches IoT vulnerabilities from the IoT Security Portal.
+- section: Connect
+  advanced: true
+  display: The timeout for querying APIs
+  name: api_timeout
+  defaultvalue: '60'
+  type: 0
+  required: false
+- section: Connect
+  display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- section: Collect
+  display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: device-security-get-device
+    arguments:
+    - name: id
+      required: true
+      description: The device uid (mac address).
+    outputs:
+    - contextPath: PaloAltoNetworksIoT.Device
+      description: Device details.
+      type: unknown
+    - contextPath: PaloAltoNetworksIoT.Device.hostname
+      description: The hostname of the device.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.ip_address
+      description: The IP address of the device.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.profile_type
+      description: 'The device profile type: Non_IoT vs IoT.'
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.profile_vertical
+      description: The device profile vertical.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.category
+      description: The device category.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.profile
+      description: The device profile.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.last_activity
+      description: The last activity timestamp of the device.
+      type: Date
+    - contextPath: PaloAltoNetworksIoT.Device.long_description
+      description: The long description of the device.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.vlan
+      description: The device VLAN ID.
+      type: Number
+    - contextPath: PaloAltoNetworksIoT.Device.site_name
+      description: The site which the device is in.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.risk_score
+      description: The device risk score.
+      type: Number
+    - contextPath: PaloAltoNetworksIoT.Device.risk_level
+      description: 'The device risk level: Low, Medium, High, Critical.'
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.subnet
+      description: The device subnet.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.first_seen_date
+      description: The first seen date of the device.
+      type: Date
+    - contextPath: PaloAltoNetworksIoT.Device.confidence_score
+      description: The device confidence score.
+      type: Number
+    - contextPath: PaloAltoNetworksIoT.Device.deviceid
+      description: The device ID.
+      type: Date
+    - contextPath: PaloAltoNetworksIoT.Device.location
+      description: The device location.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.vendor
+      description: The device vendor.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.model
+      description: The device model.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.description
+      description: The device description.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.asset_tag
+      description: The device asset tag (e.g. a sticky label at the bottom of the device).
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.os_group
+      description: The device OS group.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.Serial_Number
+      description: The device serial number.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.DHCP
+      description: 'Whether the device is in DHCP model: Valid values are Yes or No.'
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.wire_or_wireless
+      description: Is the device wired or wireless.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.department
+      description: The device department.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.Switch_Port
+      description: The port of the switch this device is connected to.
+      type: Number
+    - contextPath: PaloAltoNetworksIoT.Device.Switch_Name
+      description: The name of the switch this device is connected to.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.Switch_IP
+      description: The IP of the switch this device is connected to.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.Access_Point_IP
+      description: The IP of the access point this device is connected to.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.Access_Point_Name
+      description: The name of the access point this device is connected to.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.SSID
+      description: The SSID of the wireless network this device is connected to.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.MAC
+      description: The device MAC address.
+      type: Date
+    - contextPath: PaloAltoNetworksIoT.Device.display_tags
+      description: The user tags of the device.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.mac_address
+      description: The device MAC address.
+      type: String
+    description: Device security get device command - get a single device's details.
+  - name: device-security-get-device-by-ip
+    arguments:
+    - name: ip
+      required: true
+      description: The device ip (ip address).
+    outputs:
+    - contextPath: PaloAltoNetworksIoT.Device
+      description: Device details.
+      type: unknown
+    - contextPath: PaloAltoNetworksIoT.Device.hostname
+      description: The hostname of the device.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.ip_address
+      description: The IP address of the device.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.profile_type
+      description: 'The device profile type: Non_IoT vs IoT.'
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.profile_vertical
+      description: The device profile vertical.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.category
+      description: The device category.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.profile
+      description: The device profile.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.last_activity
+      description: The last activity timestamp of the device.
+      type: Date
+    - contextPath: PaloAltoNetworksIoT.Device.long_description
+      description: The long description of the device.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.vlan
+      description: The device VLAN ID.
+      type: Number
+    - contextPath: PaloAltoNetworksIoT.Device.site_name
+      description: The site which the device is in.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.risk_score
+      description: The device risk score.
+      type: Number
+    - contextPath: PaloAltoNetworksIoT.Device.risk_level
+      description: 'The device risk level: Low, Medium, High, Critical.'
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.subnet
+      description: The device subnet.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.first_seen_date
+      description: The first seen date of the device.
+      type: Date
+    - contextPath: PaloAltoNetworksIoT.Device.confidence_score
+      description: The device confidence score.
+      type: Number
+    - contextPath: PaloAltoNetworksIoT.Device.deviceid
+      description: The device ID.
+      type: Date
+    - contextPath: PaloAltoNetworksIoT.Device.location
+      description: The device location.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.vendor
+      description: The device vendor.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.model
+      description: The device model.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.description
+      description: The device description.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.asset_tag
+      description: The device asset tag (e.g. a sticky label at the bottom of the device).
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.os_group
+      description: The device OS group.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.Serial_Number
+      description: The device serial number.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.DHCP
+      description: 'Whether the device is in DHCP model: Valid values are Yes or No.'
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.wire_or_wireless
+      description: Is the device wired or wireless.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.department
+      description: The device department.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.Switch_Port
+      description: The port of the switch this device is connected to.
+      type: Number
+    - contextPath: PaloAltoNetworksIoT.Device.Switch_Name
+      description: The name of the switch this device is connected to.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.Switch_IP
+      description: The IP of the switch this device is connected to.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.Access_Point_IP
+      description: The IP of the access point this device is connected to.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.Access_Point_Name
+      description: The name of the access point this device is connected to.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.SSID
+      description: The SSID of the wireless network this device is connected to.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.MAC
+      description: The device MAC address.
+      type: Date
+    - contextPath: PaloAltoNetworksIoT.Device.display_tags
+      description: The user tags of the device.
+      type: String
+    - contextPath: PaloAltoNetworksIoT.Device.mac_address
+      description: The device MAC address.
+      type: String
+    description: Device security get device command - get a single device's details.
+  - name: device-security-list-devices
+    arguments:
+    - name: offset
+      description: The offset in the pagination.
+    - name: limit
+      description: The maximum size of the list of the devices.
+    outputs:
+    - contextPath: PaloAltoNetworksIoT.DeviceList
+      description: List of devices.
+      type: unknown
+    description: Device security list devices command.
+  - name: device-security-list-alerts
+    arguments:
+    - name: start_time
+      description: The start time in the format of ISO 8601 in UTC, e.g. 2018-11-06T08:56:41Z.
+    - name: offset
+      description: The offset in the pagination.
+    - name: limit
+      description: The maximum size of the list of the alerts.
+    outputs:
+    - contextPath: PaloAltoNetworksIoT.Alerts
+      description: List of alerts.
+      type: unknown
+    description: Device security list alerts command.
+  - name: device-security-list-vulns
+    arguments:
+    - name: start_time
+      description: The start time in the format of ISO 8601 in UTC, e.g. 2018-11-06T08:56:41Z.
+    - name: offset
+      description: The offset in the pagination.
+    - name: limit
+      description: The maximum size of the list of the vulnerabilities.
+    outputs:
+    - contextPath: PaloAltoNetworksIoT.Vulns
+      description: List of vulnerabilities.
+      type: unknown
+    description: Device security list vulnerabilities command.
+  - name: device-security-resolve-alert
+    arguments:
+    - name: id
+      required: true
+      description: The alert ID.
+    - name: reason
+      description: The alert resolution reason.
+    - name: reason_type
+      auto: PREDEFINED
+      predefined:
+      - No Action Needed
+      - Issue Mitigated
+      description: The alert resolution reason type (No Action Needed, Issue Mitigated).
+    description: Resolving a device security alert.
+  - name: device-security-resolve-vuln
+    arguments:
+    - name: id
+      required: true
+      description: The vulnerability ID.
+    - name: full_name
+      required: true
+      description: The vulnerability full name.
+    - name: reason
+      description: The vulnerability resolution reason.
+    description: Resolving a device security vulnerability.
+  isfetch: true
+  runonce: false
+  subtype: python3
+  dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 5.0.0
+tests:
+- PaloAltoNetworks_DeviceSecurity-Test
