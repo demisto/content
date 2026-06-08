@@ -25,6 +25,8 @@ Register an app in the Microsoft identity platform. For step-by-step instruction
 During registration, record the following information:
 
 - The **Application (client) ID**
+- The **Tenant ID** 
+
 - One of the following credentials:
   - A client secret
   - A certificate
@@ -32,27 +34,25 @@ During registration, record the following information:
 
 For more information, see this [article](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application).
 
-### Configuration using Client Credentials Flow
+### Configuration using Authorization Code Flow
 
 1. In your app, click Authentication > Platform configurations > Add a platform. Choose Web and add a Redirect URI. The Redirect URI is the address where Azure AD sends the login response. If you are not sure what to set, you can use https://localhost.
 
-2. Enter your redirect URI in the Redirect URI parameter field in the instance configuration in XSIAM.
+2. Enter your redirect URI in the Redirect URI parameter field in the instance configuration in Cortex XSIAM.
 
-3. Go to "Overview" section. Copy the "Application (client) ID" and paste it in the App/Client ID parameter field in the instance configuration in XSOAR/XSIAM.
+3. Go to "Overview" section. Copy the "Application (client) ID" and paste it in the App/Client ID parameter field in the instance configuration in Cortex XSIAM.
 
-4. Copy the "Directory (tenant) ID" and paste it in the Token/Tenant ID parameter field in the instance configuration in XSOAR/XSIAM.
+4. Copy the "Directory (tenant) ID" and paste it in the Token/Tenant ID parameter field in the instance configuration in Cortex XSIAM.
 
-5. In the application configuration go to "Certificates & secrets", click "New client secret", then "Add". Copy the secret value and paste it under the Client Secret parameter field in the XSOAR/XSIAM instance configuration.
+5. In the application configuration go to "Certificates & secrets", click "New client secret", then "Add". Copy the secret value and paste it under the Client Secret parameter field in the Cortex XSIAM instance configuration.
 
-6. Select the Use a self-deployed Azure Application checkbox in the integration instance configuration.
+6. Save the instance.
 
-7. Save the instance.
+7. Run the ***!o365-message-trace-generate-login-url*** command in the War Room and follow the instructions.
 
-8. Run the ***!o365-message-trace-generate-login-url*** command in the War Room and follow the instructions.
+8. Save the instance.
 
-9. Save the instance.
-
-10. Run the ***!o365-message-trace-auth-test*** command. The War Room prints a 'Success' message if the integration is configured correctly.
+9. Run the ***!o365-message-trace-auth-test*** command. The War Room prints a 'Success' message if the integration is configured correctly.
 
 Note: Make sure the neccessary permissions and roles are applied to the application and the user.
 

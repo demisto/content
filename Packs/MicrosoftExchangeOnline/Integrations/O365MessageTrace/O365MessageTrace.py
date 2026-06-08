@@ -246,6 +246,7 @@ def test_module(client: Client) -> str:
             "Test module is not available for the authorization code flow. "
             "Use the o365-message-trace-auth-test command instead."
         )
+
     try:
         end = datetime.now(UTC)
         start = end - timedelta(minutes=5)
@@ -375,7 +376,7 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    demisto.debug(f"[Main] Command={command}")
+    demisto.info(f"[Main] Command={command}")
 
     # ----- Tenant / Auth ID / Secret (support both creds objects and legacy plain params) -----
     tenant_id = params.get("tenant_id", "")
@@ -392,7 +393,7 @@ def main() -> None:  # pragma: no cover
     private_key_raw = creds_certificate.get("password")
     private_key = replace_spaces_in_credential(private_key_raw) if private_key_raw else None
 
-    # ----- Self-deployed authorization-code flow -----
+    # ----- Authorization-code flow -----
     auth_code_param = params.get("auth_code") or {}
     auth_code = auth_code_param.get("password")
 
@@ -410,8 +411,16 @@ def main() -> None:  # pragma: no cover
 
     # ----- Validation -----
     if not managed_identities_client_id:
-        if not tenant_id or not client_id:
-            raise DemistoException("Tenant ID and Client ID (Application ID) are required.")
+        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
+        if grant_type == AUTHORIZATION_CODE:
+            if not tenant_id or not client_id or not client_secret or not auth_code or not redirect_uri:
+                raise DemistoException(
+                    "Tenant ID, Client ID, Client Secret, Authorization code and Application redirect URI "
+                    "are required for the authorization code flow."
+                )
+        elif grant_type == CLIENT_CREDENTIALS:
+            if not tenant_id or not client_id or not client_secret:
+                raise DemistoException("Tenant ID, Client ID and Client Secret are required for the client credentials flow.")
         if not client_secret and not (certificate_thumbprint and private_key) and not auth_code:
             raise DemistoException(
                 "An authentication credential must be provided: Client Secret, "
