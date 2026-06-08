@@ -2606,7 +2606,7 @@ script:
       - "false"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether to move the file to Trash instead of permanently deleting it. When set to "true", the file is patched with trashed=true rather than issuing a hard delete. Omitting this argument preserves the existing hard-delete behavior.'
+      description: 'Whether to move the file to the Trash instead of permanently deleting it. If "true", the file is moved to the Trash. If "false", the file is permanently deleted.'
       name: soft_delete
       predefined:
       - "true"

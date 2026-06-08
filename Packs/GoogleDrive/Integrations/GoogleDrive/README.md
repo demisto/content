@@ -1025,17 +1025,16 @@ Permanently deletes a file owned by the user without moving it to the trash. If 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional |
-| user_id | The user's primary email address. | Optional |
-| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: true, false. Default is false. | Optional |
-| soft_delete | Whether to move the file to Trash instead of permanently deleting it. When set to "true", the file is patched with trashed=true rather than issuing a hard delete. Omitting this argument preserves the existing hard-delete behavior. Possible values are: true, false. Default is false. | Optional |
+| file_id | The ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: true, false. Default is false. | Optional | 
+| soft_delete | Whether to move the file to the Trash instead of permanently deleting it. If "true", the file is moved to the Trash. If "false", the file is permanently deleted. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleDrive.File.File.id | String | The ID of the deleted file. |
-
+| GoogleDrive.File.File.id | String | The ID of the deleted file. | 
 ### google-drive-file-permissions-list
 
 ***
@@ -1049,26 +1048,25 @@ Lists a file's or shared drive's permissions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional |
-| user_id | The user's primary email address. | Optional |
-| page_size | The maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive. Default is 100. | Optional |
-| page_token | The page token for shared drives. | Optional |
-| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: true, false. Default is false. | Optional |
-| use_domain_admin_access | Whether to issue the request as a domain administrator. If set to "true", all shared drives of the domain in which the requester is an administrator are returned. Possible values are: true, false. Default is false. | Optional |
+| file_id | The ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| page_size | The maximum number of shared drives to return. Acceptable values are 1 to 100, inclusive. Default is 100. | Optional | 
+| page_token | The page token for shared drives. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: true, false. Default is false. | Optional | 
+| use_domain_admin_access | Whether to issue the request as a domain administrator. If set to "true", all shared drives of the domain in which the requester is an administrator are returned. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleDrive.FilePermission.FilePermission.deleted | Boolean | Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions. |
-| GoogleDrive.FilePermission.FilePermission.displayName | String | The "pretty" name of the value of the permission. |
-| GoogleDrive.FilePermission.FilePermission.emailAddress | String | The email address of the user or group to which this permission refers. |
-| GoogleDrive.FilePermission.FilePermission.id | String | The ID of this permission. |
-| GoogleDrive.FilePermission.FilePermission.role | String | The role granted by this permission. |
-| GoogleDrive.FilePermission.FilePermission.type | String | The type of the grantee. |
-| GoogleDrive.FilePermission.FilePermission.photoLink | String | A link to the user's profile photo, if available. |
-| GoogleDrive.FilePermission.FilePermission.permissionDetails.permissionType | String | The permission type for this user. Possible values: "file", "member". Only populated for items in shared drives. |
-
+| GoogleDrive.FilePermission.FilePermission.deleted | Boolean | Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions. | 
+| GoogleDrive.FilePermission.FilePermission.displayName | String | The "pretty" name of the value of the permission. | 
+| GoogleDrive.FilePermission.FilePermission.emailAddress | String | The email address of the user or group to which this permission refers. | 
+| GoogleDrive.FilePermission.FilePermission.id | String | The ID of this permission. | 
+| GoogleDrive.FilePermission.FilePermission.role | String | The role granted by this permission. | 
+| GoogleDrive.FilePermission.FilePermission.type | String | The type of the grantee. | 
+| GoogleDrive.FilePermission.FilePermission.photoLink | String | A link to the user's profile photo, if available. | 
+| GoogleDrive.FilePermission.FilePermission.permissionDetails.permissionType | String | The permission type for this user. Possible values: "file", "member". Only populated for items in shared drives. | 
 ### google-drive-file-permission-create
 
 ***
@@ -1082,27 +1080,27 @@ Creates a permission for a file or shared drive.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional |
-| user_id | The user's primary email address. | Optional |
-| send_notification_email | Whether a confirmation email will be sent. Possible values are: true, false. Default is false. | Optional |
-| role | The role granted by this permission. Possible values: "owner", "organizer", "fileOrganizer", "writer", "commenter", and "reader". Possible values are: owner, organizer, fileOrganizer, writer, commenter, reader. Default is reader. | Optional |
-| type | The type of the grantee. When creating a permission, if type is user or group, you must provide an emailAddress for the user or group. When type is domain, you must provide a domain. No extra information is required for an anyone type. Possible values: "user", "group", "domain", and "anyone". Possible values are: user, group, domain, anyone. Default is anyone. | Optional |
-| domain | The domain to which this permission refers. | Optional |
-| email_address | The email address of the user or group to which this permission refers. | Optional |
-| transfer_ownership | Whether to transfer ownership of the file to the user identified by the role=owner permission. Required by the vendor when role=owner is specified on an existing file; omitting this argument preserves the existing command behavior. Possible values are: true, false. Default is false. | Optional |
-| move_to_new_owners_root | Whether to move the file to the new owner's root folder. Only takes effect when transfer_ownership is set to "true". Possible values are: true, false. Default is false. | Optional |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| send_notification_email | Whether a confirmation email will be sent. Possible values are: true, false. Default is false. | Optional | 
+| role | The role granted by this permission. Possible values: "owner", "organizer", "fileOrganizer", "writer", "commenter", and "reader". Possible values are: owner, organizer, fileOrganizer, writer, commenter, reader. Default is reader. | Optional | 
+| type | The type of the grantee. When creating a permission, if type is user or group, you must provide an emailAddress for the user or group. When type is domain, you must provide a domain. No extra information is required for an anyone type. Possible values: "user", "group", "domain", and "anyone". Possible values are: user, group, domain, anyone. Default is anyone. | Optional | 
+| domain | The domain to which this permission refers. | Optional | 
+| email_address | The email address of the user or group to which this permission refers. | Optional | 
+| transfer_ownership | Whether to transfer ownership of the file to the user identified by the role=owner permission. Required by the vendor when role=owner is specified on an existing file; omitting this argument preserves the existing command behavior. Possible values are: true, false. Default is false. | Optional | 
+| move_to_new_owners_root | Whether to move the file to the new owner's root folder. Only takes effect when transfer_ownership is set to "true". Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleDrive.FilePermission.FilePermission.deleted | Boolean | Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions. |
-| GoogleDrive.FilePermission.FilePermission.displayName | String | The "pretty" name of the value of the permission. |
-| GoogleDrive.FilePermission.FilePermission.emailAddress | String | The email address of the user or group to which this permission refers. |
-| GoogleDrive.FilePermission.FilePermission.id | String | The ID of this permission. |
-| GoogleDrive.FilePermission.FilePermission.role | String | The role granted by this permission. |
-| GoogleDrive.FilePermission.FilePermission.type | String | The type of the grantee. |
-| GoogleDrive.FilePermission.FilePermission.photoLink | String | A link to the user's profile photo, if available. |
+| GoogleDrive.FilePermission.FilePermission.deleted | Boolean | Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions. | 
+| GoogleDrive.FilePermission.FilePermission.displayName | String | The "pretty" name of the value of the permission. | 
+| GoogleDrive.FilePermission.FilePermission.emailAddress | String | The email address of the user or group to which this permission refers. | 
+| GoogleDrive.FilePermission.FilePermission.id | String | The ID of this permission. | 
+| GoogleDrive.FilePermission.FilePermission.role | String | The role granted by this permission. | 
+| GoogleDrive.FilePermission.FilePermission.type | String | The type of the grantee. | 
+| GoogleDrive.FilePermission.FilePermission.photoLink | String | A link to the user's profile photo, if available. | 
 
 | GoogleDrive.FilePermission.FilePermission.displayName | String | The "pretty" name of the value of the permission. |
 | GoogleDrive.FilePermission.FilePermission.emailAddress | String | The email address of the user or group to which this permission refers. |
@@ -1133,7 +1131,6 @@ Updates a permission with patch semantics.
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-
 ### google-drive-file-permission-delete
 
 ***
@@ -1147,19 +1144,19 @@ Deletes a permission. When the ignore_not_found argument is set to "true", a Not
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional |
-| user_id | The user's primary email address. | Optional |
-| permission_id | The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command. | Optional |
-| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: true, false. Default is false. | Optional |
-| ignore_not_found | Whether to treat a Not Found response from the vendor (for example, when the permission was already removed) as success and surface it via the alreadyRemoved output, instead of raising an error. Useful inside loops over a previously-listed permission set. Possible values are: true, false. Default is false. | Optional |
+| file_id | The ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional | 
+| user_id | The user's primary email address. | Optional | 
+| permission_id | The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: true, false. Default is false. | Optional | 
+| ignore_not_found | Whether to treat a Not Found response from the vendor (for example, when the permission was already removed) as success and surface it via the alreadyRemoved output, instead of raising an error. Useful inside loops over a previously-listed permission set. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleDrive.FilePermission.FilePermission.fileId | String | The ID of the file whose permission was targeted. |
-| GoogleDrive.FilePermission.FilePermission.id | String | The ID of the deleted permission. |
-| GoogleDrive.FilePermission.FilePermission.alreadyRemoved | Boolean | Whether the permission was already removed. Set to "true" when ignore_not_found is set to "true" and the vendor returned Not Found. |
+| GoogleDrive.FilePermission.FilePermission.fileId | String | The ID of the file whose permission was targeted. | 
+| GoogleDrive.FilePermission.FilePermission.id | String | The ID of the deleted permission. | 
+| GoogleDrive.FilePermission.FilePermission.alreadyRemoved | Boolean | Whether the permission was already removed. Set to "true" when ignore_not_found is set to "true" and the vendor returned Not Found. | 
 
 | file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Optional |
 | user_id | The user's primary email address. | Optional |
