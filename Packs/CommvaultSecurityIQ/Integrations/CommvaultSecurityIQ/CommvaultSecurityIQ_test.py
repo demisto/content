@@ -572,3 +572,93 @@ def test_setup_credentials_rebinds_token_header(mocker):
         assert token_auth.model.name == "X-Custom-Header"
     finally:
         token_auth.model.name = original_name
+
+
+def test_authenticate_webhook_request_header_mode_rejects_missing_token(mocker):
+    """
+    Given: Listener configured with username `_header:X-Token` (custom-header token mode).
+    When:  A request arrives with no token header at all (token=None) - the attacker case.
+    Then:  A 401 Response is returned (the listener is never left open when no header is sent).
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"credentials": {"identifier": "_header:X-Token", "password": "secret-token"}},
+    )
+    resp = _authenticate_webhook_request(credentials=None, token=None)
+    assert resp is not None
+    assert resp.status_code == 401
+
+
+def test_authenticate_webhook_request_header_mode_ignores_basic_auth(mocker):
+    """
+    Given: Listener configured in custom-header token mode (`_header:X-Token`).
+    When:  An attacker presents valid-looking HTTP Basic Auth but no matching token header.
+    Then:  A 401 Response is returned - Basic Auth cannot bypass the token requirement
+           (no cross-mode confusion).
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"credentials": {"identifier": "_header:X-Token", "password": "secret-token"}},
+    )
+    spoofed_basic = HTTPBasicCredentials(username="_header:X-Token", password="secret-token")
+    resp = _authenticate_webhook_request(credentials=spoofed_basic, token=None)
+    assert resp is not None
+    assert resp.status_code == 401
+
+
+def test_authenticate_webhook_request_header_mode_empty_password_rejects_all(mocker):
+    """
+    Given: Listener misconfigured with `_header:X-Token` but an EMPTY password (token).
+    When:  A request arrives with a non-empty token, and again with an empty token.
+    Then:  Both are rejected with 401 - an empty configured token never authorizes a request.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"credentials": {"identifier": "_header:X-Token", "password": ""}},
+    )
+    non_empty = _authenticate_webhook_request(credentials=None, token="anything")
+    assert non_empty is not None
+    assert non_empty.status_code == 401
+
+    empty = _authenticate_webhook_request(credentials=None, token="")
+    assert empty is not None
+    assert empty.status_code == 401
+
+
+def test_authenticate_webhook_request_basic_mode_empty_password_rejects(mocker):
+    """
+    Given: Listener configured for Basic Auth with an EMPTY password.
+    When:  A request supplies a wrong password, and again an empty password.
+    Then:  Both are rejected with 401 - an empty configured password never authorizes.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"credentials": {"identifier": "user", "password": ""}},
+    )
+    wrong = _authenticate_webhook_request(credentials=HTTPBasicCredentials(username="user", password="WRONG"), token=None)
+    assert wrong is not None
+    assert wrong.status_code == 401
+
+
+def test_setup_credentials_basic_auth_leaves_default_header(mocker):
+    """
+    Given: Listener configured for plain Basic Auth (no `_header:` prefix).
+    When:  setup_credentials runs at startup.
+    Then:  The APIKeyHeader name is left at its default ("Authorization") - no rebind occurs.
+    """
+    original_name = token_auth.model.name
+    try:
+        token_auth.model.name = "Authorization"
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"credentials": {"identifier": "webhook-user", "password": "s3cret"}},
+        )
+        setup_credentials()
+        assert token_auth.model.name == "Authorization"
+    finally:
+        token_auth.model.name = original_name
