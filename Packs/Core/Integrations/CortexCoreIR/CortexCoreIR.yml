@@ -221,7 +221,7 @@ script:
     - xsiam
     prettyname: Isolate Endpoint (deprecated)
     quickaction: true
-    hidden: false
+    hidden: true
     polling: true
     outputs:
     - contextPath: Core.Isolation.endpoint_id
