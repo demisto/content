@@ -25,6 +25,8 @@ Register an app in the Microsoft identity platform. For step-by-step instruction
 During registration, record the following information:
 
 - The **Application (client) ID**
+- The **Tenant ID** 
+
 - One of the following credentials:
   - A client secret
   - A certificate
