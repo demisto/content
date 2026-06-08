@@ -1,330 +1,150 @@
 #!/usr/bin/env python3
 
 import json
-from pathlib import Path
-import subprocess
-import re
 
 import urllib3
 from blessings import Terminal
 from github import Github
 from handle_external_pr import EXTERNAL_LABEL
-
+import re
 from utils import (
     get_env_var,
     timestamped_print,
     get_doc_reviewer,
-    get_mapping_reviewer,
     get_content_roles,
     post_ai_review_introduction,
     is_organization_member,
 )
-
 from urllib3.exceptions import InsecureRequestWarning
 
 urllib3.disable_warnings(InsecureRequestWarning)
-
 print = timestamped_print
 INTERNAL_LABEL = "Internal PR"
 
-XSIAM_CONTENT = [
-    "ModelingRules",
-    "ParsingRules",
-    "CorrelationRules",
-    "Dashboards",
-    "XSIAMDashboards",
-]
 
-
-# -----------------------------
-# Git utilities
-# -----------------------------
-def run_git_command(cmd, raise_on_error=True):
-    print(f"Running: {' '.join(cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True)
-
-    if result.returncode != 0 and raise_on_error:
-        print(f"Error: {result.stderr}")
-        raise Exception(f"Git command failed: {result.stderr}")
-
-    return result
-
-
-def prepare_git(head_branch: str):
-    token = get_env_var("CONTENTBOT_GH_ADMIN_TOKEN")
-
-    run_git_command(["git", "config", "--global", "user.name", "contentbot"], raise_on_error=False)
-    run_git_command(["git", "config", "--global", "user.email", "contentbot@demisto.com"], raise_on_error=False)
-
-    remote_url = f"https://x-access-token:{token}@github.com/demisto/content.git"
-    run_git_command(["git", "remote", "set-url", "origin", remote_url])
-
-    run_git_command(["git", "fetch", "origin", "master"])
-    run_git_command(["git", "fetch", "origin", head_branch])
-
-
-# -----------------------------
-# File separation
-# -----------------------------
-def seperate_pr_files(pr_files: dict):
-    xsoar_files = []
-    xsiam_files = []
-
-    for file_path, file in pr_files.items():
-        is_xsiam = any(
-            item in Path(file_path).parts for item in XSIAM_CONTENT
-        )
-
-        if is_xsiam:
-            xsiam_files.append(file)
-        else:
-            xsoar_files.append(file)
-
-    return xsoar_files, xsiam_files
-
-
-# -----------------------------
-# Branch splitting
-# -----------------------------
-def split_branch_with_git(head_branch, xsoar_files, xsiam_files):
-    prepare_git(head_branch)
-
-    main_branch = f"{head_branch}-main"
-    mapping_branch = f"{head_branch}-mapping"
-
-    # ---------------- mapping branch ----------------
-    run_git_command(["git", "checkout", "-b", mapping_branch, f"origin/{head_branch}"])
-
-    for file in xsoar_files:
-        filename = file.filename
-        if file.status == "added":
-            run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
-        elif file.status == "renamed":
-            run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
-            if hasattr(file, 'previous_filename') and file.previous_filename:
-                res = run_git_command(["git", "checkout", "origin/master", "--", file.previous_filename], raise_on_error=False)
-                if res.returncode != 0:
-                    run_git_command(["git", "rm", "--ignore-unmatch", file.previous_filename], raise_on_error=False)
-        else:
-            res = run_git_command(
-                ["git", "checkout", "origin/master", "--", filename],
-                raise_on_error=False,
-            )
-            if res.returncode != 0:
-                run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
-
-    if run_git_command(["git", "status", "--porcelain"]).stdout.strip():
-        run_git_command(["git", "commit", "-m", "Remove XSOAR files from mapping PR"])
-        run_git_command(["git", "push", "origin", mapping_branch])
-
-    # ---------------- main branch ----------------
-    run_git_command(["git", "checkout", "-b", main_branch, f"origin/{head_branch}"])
-
-    for file in xsiam_files:
-        filename = file.filename
-        if file.status == "added":
-            run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
-        elif file.status == "renamed":
-            run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
-            if hasattr(file, 'previous_filename') and file.previous_filename:
-                res = run_git_command(["git", "checkout", "origin/master", "--", file.previous_filename], raise_on_error=False)
-                if res.returncode != 0:
-                    run_git_command(["git", "rm", "--ignore-unmatch", file.previous_filename], raise_on_error=False)
-        else:
-            res = run_git_command(
-                ["git", "checkout", "origin/master", "--", filename],
-                raise_on_error=False,
-            )
-            if res.returncode != 0:
-                run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
-
-    if run_git_command(["git", "status", "--porcelain"]).stdout.strip():
-        run_git_command(["git", "commit", "-m", "Remove XSIAM files from main PR"])
-        run_git_command(["git", "push", "origin", main_branch])
-
-    return main_branch, mapping_branch
-
-
-# -----------------------------
-# PR body utils
-# -----------------------------
 def replace_related_with_fixes_in_pr_body(body: str) -> str:
+    """
+    Replace any 'related:' or 'relates:' keywords in the PR body with 'fixes:',
+    so that internal PR opened will be correctly connected to the relevant jira ticket.
+    Keeps the original text after the colon.
+    If none are found, appends 'fixes: ' at the end of the PR body.
+
+    Args:
+        body (str): The PR body text.
+
+    Returns:
+        str: The updated PR body.
+    """
+    # Match "related:" or "relates:" followed by optional space, and capture the rest
     pattern = r"(relates?:\s?)(.*)"
+    replacement = r"fixes: \2"
 
     if re.search(pattern, body, re.IGNORECASE):
-        return re.sub(pattern, r"fixes: \2", body, flags=re.IGNORECASE)
+        edited_body = re.sub(pattern, replacement, body, flags=re.IGNORECASE)
+    else:
+        edited_body = body + "\n\nfixes: link to the issue"
 
-    return body + "\n\nfixes: link to the issue"
-
-
-def get_mapping_pr_body(merged_pr_url: str, merged_pr_author: str, original_body: str) -> str:
-    body = f"## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n"
-
-    if "## Contributor" not in original_body:
-        body += f"## Contributor\r\n@{merged_pr_author}\r\n\r\n"
-
-    body_without_rn = re.sub(
-        r"(?i)##\s*Release Notes.*?(?=##\s|$)",
-        "",
-        original_body,
-        flags=re.DOTALL,
-    )
-
-    body += body_without_rn
-    return replace_related_with_fixes_in_pr_body(body)
+    return edited_body
 
 
-# -----------------------------
-# PR creation
-# -----------------------------
-def create_pr(repo, title, body, base, head, labels, assignees, reviewers, t):
-    pr = repo.create_pull(title=title, body=body, base=base, head=head, draft=False)
-
-    print(f"{t.cyan}Internal PR Created - {pr.html_url}{t.normal}")
-
-    for label in labels:
-        pr.add_to_labels(label)
-        print(f"{t.cyan}{label} label added{t.normal}")
-
-    if reviewers:
-        pr.create_review_request(reviewers=reviewers)
-
-    if assignees:
-        pr.add_to_assignees(*assignees)
-
-    return pr
-
-
-# -----------------------------
-# branch protection cleanup
-# -----------------------------
-def remove_branch_protection(repo, branch_name, t):
-    try:
-        branch = repo.get_branch(branch_name)
-        branch.remove_protection()
-        branch.remove_required_status_checks()
-        branch.remove_required_pull_request_reviews()
-    except Exception as e:
-        print(f"{t.red}Failed to remove protection from {branch_name}: {e}{t.normal}")
-
-
-# -----------------------------
-# main
-# -----------------------------
 def main():
+    """Creates Internal PRs from Merged External PRs
+
+    Performs the following operations:
+    1. Creates new PR.
+        A) Uses body of merged external PR as the body of the new PR.
+        B) Uses base branch of merged external PR as head branch of the new PR to master.
+        C) Adds 'docs-approved' label if it was on the merged external PR.
+        D) Requests review from the same users as on the merged external PR.
+        E) Add the same labels that the external PR had to the internal PR (including contribution label).
+        F) Assigns the same users as on the merged external PR.
+
+    Will use the following env vars:
+    - CONTENTBOT_GH_ADMIN_TOKEN: token to use to update the PR
+    - EVENT_PAYLOAD: json data from the pull_request event
+    """
     t = Terminal()
+    payload_str = get_env_var("EVENT_PAYLOAD")
+    if not payload_str:
+        raise ValueError("EVENT_PAYLOAD env variable not set or empty")
+    payload = json.loads(payload_str)
+    print(f"{t.cyan}Creation of Internal PR started{t.normal}")
 
-    payload = json.loads(get_env_var("EVENT_PAYLOAD"))
+    org_name = "demisto"
+    repo_name = "content"
     gh = Github(get_env_var("CONTENTBOT_GH_ADMIN_TOKEN"), verify=False)
-
-    repo = gh.get_repo("demisto/content")
-    pr_number = payload["pull_request"]["number"]
-    merged_pr = repo.get_pull(pr_number)
-
-    pr_files = {f.filename: f for f in merged_pr.get_files()}
-    xsoar_files, xsiam_files = seperate_pr_files(pr_files)
-
+    content_repo = gh.get_repo(f"{org_name}/{repo_name}")
+    pr_number = payload.get("pull_request", {}).get("number")
+    merged_pr = content_repo.get_pull(pr_number)
     merged_pr_url = merged_pr.html_url
-    title = merged_pr.title
-
     body = f"## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n"
-
+    title = merged_pr.title
     if "## Contributor" not in merged_pr.body:
-        author = merged_pr.user.login
-        body += f"## Contributor\r\n@{author}\r\n\r\n"
-
+        merged_pr_author = merged_pr.user.login
+        body += f"## Contributor\r\n@{merged_pr_author}\r\n\r\n"
     body += merged_pr.body
+
     body = replace_related_with_fixes_in_pr_body(body)
 
     base_branch = "master"
     head_branch = merged_pr.base.ref
+    pr = content_repo.create_pull(title=title, body=body, base=base_branch, head=head_branch, draft=False)
+    print(f"{t.cyan}Internal PR Created - {pr.html_url}{t.normal}")
 
-    labels = [l.name.replace(EXTERNAL_LABEL, INTERNAL_LABEL) for l in merged_pr.labels]
+    # labels should already contain the contribution label from the external PR.
+    # We want to replace the 'External PR' with 'Internal PR' label
+    labels = [label.name.replace(EXTERNAL_LABEL, INTERNAL_LABEL) for label in merged_pr.labels]
     labels.append("ready-for-pipeline-running")
+    for label in labels:
+        pr.add_to_labels(label)
+        print(f'{t.cyan}"{label}" label added to the Internal PR{t.normal}')
 
-    merged_by = getattr(merged_pr.merged_by, "login", None)
+    merged_by = merged_pr.merged_by.login
     reviewers, _ = merged_pr.get_review_requests()
-    reviewer_logins = [r.login for r in reviewers]
+    reviewers_logins = [reviewer.login for reviewer in reviewers]
+    # request reviews from the same people as in the merged PR
+    new_pr_reviewers = [merged_by] if merged_by else reviewers_logins
+    pr.create_review_request(reviewers=new_pr_reviewers)
+    print(f"{t.cyan}Requested review from {new_pr_reviewers}{t.normal}")
 
-    new_reviewers = [merged_by] if merged_by else reviewer_logins or []
+    # Set PR assignees
+    assignees = [assignee.login for assignee in merged_pr.assignees]
 
-    assignees = [a.login for a in merged_pr.assignees]
-
-    # tech writer removal
+    # Un-assign the tech writer (cause the docs reviewed has already been done on the external PR)
     content_roles = get_content_roles()
     if content_roles:
         try:
             doc_reviewer = get_doc_reviewer(content_roles)
+
             if doc_reviewer in assignees:
+                print(f"Unassigning tech writer '{doc_reviewer}' from internal PR...")
                 assignees.remove(doc_reviewer)
-        except Exception:
-            pass
+                print(f"Tech writer '{doc_reviewer}' unassigned")
 
-    main_branch = None
-    mapping_branch = None
+        except ValueError as ve:
+            print(f"{str(ve)}. Skipped tech writer unassignment.")
 
-    if xsiam_files and xsoar_files:
-        main_branch, mapping_branch = split_branch_with_git(head_branch, xsoar_files, xsiam_files)
+    else:
+        print("Unable to get content roles. Skipping tech writer unassignment...")
 
-    elif xsiam_files and not xsoar_files:
-        print(f"{t.cyan}Only XSIAM files → mapping only{t.normal}")
-        main_branch, mapping_branch = split_branch_with_git(head_branch, xsoar_files, xsiam_files)
-        main_branch = None
+    pr.add_to_assignees(*assignees)
+    print(f"{t.cyan}Assigned users {assignees}{t.normal}")
 
-    elif xsoar_files and not xsiam_files:
-        print(f"{t.cyan}Only XSOAR files → main only{t.normal}")
-        main_branch = f"{head_branch}-main"
-        mapping_branch = None
-        prepare_git(head_branch)
-        run_git_command(["git", "checkout", "-b", main_branch, f"origin/{head_branch}"])
-        run_git_command(["git", "push", "origin", main_branch])
+    # Post AI review introduction if any of the assigned reviewers is an organization member
+    org_member_reviewers = [reviewer for reviewer in new_pr_reviewers if is_organization_member(gh, reviewer)]
 
-    created = []
+    if org_member_reviewers:
+        print(f"{t.cyan}Found organization member reviewers: {org_member_reviewers}{t.normal}")
+        post_ai_review_introduction(pr, org_member_reviewers, t)
+    else:
+        print(f"{t.cyan}No organization member reviewers found, skipping AI review introduction{t.normal}")
 
-    if xsoar_files and main_branch:
-        try:
-            pr = create_pr(repo, title, body, base_branch, main_branch, labels, assignees, new_reviewers, t)
-
-            org_reviewers = [
-                r for r in new_reviewers if is_organization_member(gh, r)
-            ]
-            if org_reviewers:
-                post_ai_review_introduction(pr, org_reviewers, t)
-
-            created.append(pr)
-
-        except Exception as e:
-            print(f"{t.red}Main PR failed: {e}{t.normal}")
-
-    if xsiam_files and mapping_branch:
-        mapping_title = f"[Mapping] {title}"
-        mapping_body = get_mapping_pr_body(merged_pr_url, merged_pr.user.login, merged_pr.body)
-
-        mapping_labels = [l for l in labels if l != "ready-for-pipeline-running"]
-        mapping_labels.append("Mapping Contribution")
-
-        mapping_reviewers = get_mapping_reviewer(content_roles) if content_roles else []
-
-        try:
-            pr = create_pr(
-                repo,
-                mapping_title,
-                mapping_body,
-                base_branch,
-                mapping_branch,
-                mapping_labels,
-                mapping_reviewers,
-                mapping_reviewers,
-                t,
-            )
-
-            created.append(pr)
-
-        except Exception as e:
-            print(f"{t.red}Mapping PR failed: {e}{t.normal}")
-
-    for pr in created:
-        remove_branch_protection(repo, pr.head.ref, t)
+    # remove branch protections
+    print(f'{t.cyan}Removing protection from branch "{head_branch}"{t.normal}')
+    contrib_branch = content_repo.get_branch(head_branch)
+    contrib_branch.remove_protection()
+    contrib_branch.remove_required_status_checks()
+    contrib_branch.remove_required_pull_request_reviews()
 
 
 if __name__ == "__main__":
