@@ -166,7 +166,7 @@ def title_to_slug(title: str) -> str:
     from a connector's display title (e.g. ``"Microsoft Defender"``) to its
     directory name on disk (e.g. ``microsoftdefender``).
     """
-    return title.strip().lower().replace(" ", "")
+    return title.strip().lower().replace(" ", "-")
 
 
 def connector_exists(connector_dir: Path) -> bool:
@@ -529,6 +529,8 @@ def build_connector_yaml(
                 "team": "xsoar",
                 "maintainers": ["@xsoar-content"],
             },
+            "enabled": True,
+            "grouped": True,
         },
         "settings": {
             "allow_skip_verification": True,
