@@ -25,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### kibana-cases-find
 
 ***
-Used to list cases in Kibana
+List cases in Kibana
 
 #### Base Command
 
