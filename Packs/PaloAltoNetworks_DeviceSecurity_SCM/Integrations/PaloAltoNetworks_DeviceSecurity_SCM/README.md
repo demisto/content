@@ -1,7 +1,7 @@
 This is the Palo Alto Networks Device Security integration (previously Zingbox).
 This integration was integrated and tested with the Banff release of Palo Alto Networks Device Security.
 
-## Get your Palo Alto Networks Device Security Credentials 
+## Get your Palo Alto Networks Device Security Credentials
 
 This integration requires that API access be configured.
 To obtain the **Client ID** and **Client Secret**, please refer to the official **API User Guide**:

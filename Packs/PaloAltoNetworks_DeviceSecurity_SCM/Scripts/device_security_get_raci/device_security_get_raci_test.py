@@ -35,7 +35,10 @@ _CONFIG = {
             ],
             "raci": {"r": "INFOSEC", "i": ["DEVICE_SECURITY_OWNER", "SOC"]},
         },
-        {"device_security_raw_type": "Device Security Vulnerability", "raci": {"r": "DEVICE_SECURITY_OWNER", "i": ["INFOSEC", "SOC"]}},
+        {
+            "device_security_raw_type": "Device Security Vulnerability",
+            "raci": {"r": "DEVICE_SECURITY_OWNER", "i": ["INFOSEC", "SOC"]},
+        },
     ],
     "groups": {
         "DEFAULT": {"email": "default@example.com"},
@@ -55,13 +58,23 @@ _CONFIG = {
 
 _CONFIG_WITHOUT_DEFAULT = {
     "devices": [{"device_id": "Audio Streaming|Profusion Media Player.*", "owner": "IT_AUDIO_VIDEO"}],
-    "alerts": [{"device_security_raw_type": "Device Security Vulnerability", "raci": {"r": "DEVICE_SECURITY_OWNER", "i": ["INFOSEC", "SOC"]}}],
+    "alerts": [
+        {
+            "device_security_raw_type": "Device Security Vulnerability",
+            "raci": {"r": "DEVICE_SECURITY_OWNER", "i": ["INFOSEC", "SOC"]},
+        }
+    ],
     "groups": {},
 }
 
 _CONFIG_WITH_DEFAULT = {
     "devices": [{"device_id": "Audio Streaming|Profusion Media Player.*", "owner": "IT_AUDIO_VIDEO"}],
-    "alerts": [{"device_security_raw_type": "Device Security Vulnerability", "raci": {"r": "DEVICE_SECURITY_OWNER", "i": ["INFOSEC", "SOC"]}}],
+    "alerts": [
+        {
+            "device_security_raw_type": "Device Security Vulnerability",
+            "raci": {"r": "DEVICE_SECURITY_OWNER", "i": ["INFOSEC", "SOC"]},
+        }
+    ],
     "groups": {"DEFAULT": {"email": "default@example.com"}},
 }
 
@@ -115,7 +128,12 @@ def test_device_security_get_raci_no_default_email(monkeypatch):
     monkeypatch.setattr(device_security_get_raci, "get_device_security_config", lambda x: _CONFIG_WITHOUT_DEFAULT)
 
     outputs = get_raci(
-        {"alert_name": "", "raw_type": "Device Security Vulnerability", "category": "Audio Streaming", "profile": "Profusion Media Player"}
+        {
+            "alert_name": "",
+            "raw_type": "Device Security Vulnerability",
+            "category": "Audio Streaming",
+            "profile": "Profusion Media Player",
+        }
     ).outputs
     assert outputs == {
         "owner": "IT_AUDIO_VIDEO",
@@ -143,7 +161,12 @@ def test_device_security_get_raci_default_email(monkeypatch):
     monkeypatch.setattr(device_security_get_raci, "get_device_security_config", lambda x: _CONFIG_WITH_DEFAULT)
 
     outputs = get_raci(
-        {"alert_name": "", "raw_type": "Device Security Vulnerability", "category": "Audio Streaming", "profile": "Profusion Media Player"}
+        {
+            "alert_name": "",
+            "raw_type": "Device Security Vulnerability",
+            "category": "Audio Streaming",
+            "profile": "Profusion Media Player",
+        }
     ).outputs
     assert outputs == {
         "owner": "IT_AUDIO_VIDEO",

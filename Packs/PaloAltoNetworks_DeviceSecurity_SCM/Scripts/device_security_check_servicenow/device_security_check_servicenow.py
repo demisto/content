@@ -9,7 +9,11 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 def get_opened_device_security_incidents():
     resp = demisto.executeCommand(
         "getIncidents",
-        {"query": '-status:Closed and (type:"Device Security Alert" or type:"Device Security Vulnerability")', "sort": "created.desc", "size": 1000},
+        {
+            "query": '-status:Closed and (type:"Device Security Alert" or type:"Device Security Vulnerability")',
+            "sort": "created.desc",
+            "size": 1000,
+        },
     )
     if is_error(resp):
         raise Exception("error in getIncidents command")

@@ -580,9 +580,7 @@ def fetch_incidents(client, last_run, is_test=False):
                         break
                 if len(others) != max_fetch:
                     break
-        demisto.debug(
-            f"PaloAltoNetworks_DeviceSecurity - Number of incidents- vulnerability before filtering: {len(vulns)}"
-        )
+        demisto.debug(f"PaloAltoNetworks_DeviceSecurity - Number of incidents- vulnerability before filtering: {len(vulns)}")
         for vuln in vulns:
             detected_date = vuln["detected_date"]
             if detected_date and isinstance(detected_date, list):
@@ -651,7 +649,11 @@ def main():
     proxy = demisto.params().get("proxy", False)
 
     token_base_url = "https://auth.qa.appsvc.paloaltonetworks.com" if is_staging else "https://auth.apps.paloaltonetworks.com"
-    base_url = "https://qa.api.sase.paloaltonetworks.com/iot/pub/v1" if is_staging else "https://api.strata.paloaltonetworks.com/iot/pub/v1"
+    base_url = (
+        "https://qa.api.sase.paloaltonetworks.com/iot/pub/v1"
+        if is_staging
+        else "https://api.strata.paloaltonetworks.com/iot/pub/v1"
+    )
     access_token = get_scm_access_token(token_base_url, tsg_id, client_id, client_secret, verify_certificate, proxy)
     headers = {"Authorization": f"Bearer {access_token}"}
 
