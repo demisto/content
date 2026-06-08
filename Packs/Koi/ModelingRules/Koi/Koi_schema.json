@@ -10,6 +10,8 @@
         "type": {"type": "string", "is_array": false},
         "triggered_by": {"type": "string", "is_array": false},
         "object_id": {"type": "string", "is_array": false},
-        "object_type": {"type": "string", "is_array": false}
+        "object_type": {"type": "string", "is_array": false},
+        "koi_tenant_name": {"type": "string", "is_array": false},
+        "koi_customer_id": {"type": "string", "is_array": false}
     }
 }

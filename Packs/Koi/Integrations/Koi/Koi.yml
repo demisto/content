@@ -20,6 +20,12 @@ configuration:
   type: 14
   additionalinfo: 'The API key for authenticating with the KOI API. See the help section for instructions on creating an API key.'
   section: Connect
+- name: tenant_name
+  display: Tenant Name
+  type: 0
+  required: false
+  additionalinfo: 'Optional label for this KOI tenant (for example, "Production" or "PAET"). It is stamped on every collected event as koi_tenant_name so events from multiple KOI instances stay distinguishable in the koi_koi_raw dataset. The canonical tenant UUID (koi_customer_id) is captured automatically from the API key.'
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8

@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import base64
 import json
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -675,6 +676,8 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         if invalid:
             raise DemistoException(f"Invalid audit log type(s): {invalid}. Valid types: {VALID_AUDIT_TYPES}")
 
+    tenant_name = (params.get("tenant_name") or "").strip()
+
     demisto.debug(f"[Config] URL: {base_url}")
 
     return {
@@ -682,7 +685,38 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "api_key": api_key,
         "verify": verify_certificate,
         "proxy": proxy,
+        "tenant_name": tenant_name,
     }
+
+
+def extract_customer_id(api_key: str) -> str:
+    """Extract the KOI customer (tenant) id from the API key JWT.
+
+    KOI API keys are Hasura JWTs whose namespaced claims carry
+    ``x-hasura-customer-id`` (a UUID identifying the tenant). This is the only
+    place the tenant id is exposed: it is absent from the alert/audit payloads
+    and there is no tenant/account API endpoint. Returns an empty string if the
+    key is not a parseable JWT (e.g., a non-JWT token), so tagging degrades
+    gracefully rather than failing the integration.
+
+    Args:
+        api_key: The KOI API key (a JWT).
+
+    Returns:
+        The ``x-hasura-customer-id`` UUID, or empty string if unavailable.
+    """
+    try:
+        payload_b64 = api_key.split(".")[1]
+        payload_b64 += "=" * (-len(payload_b64) % 4)  # restore base64 padding
+        claims = json.loads(base64.urlsafe_b64decode(payload_b64))
+        hasura = next(
+            (v for k, v in claims.items() if "hasura" in k.lower() and isinstance(v, dict)),
+            {},
+        )
+        return str(hasura.get("x-hasura-customer-id", "") or "")
+    except Exception:
+        demisto.debug("[Tenant] Could not extract customer id from the API key JWT")
+        return ""
 
 
 # endregion
@@ -706,6 +740,7 @@ class Client(ContentClient):
         api_key: str,
         verify: bool,
         proxy: bool,
+        tenant_name: str = "",
     ):
         """Initialize the KOI client.
 
@@ -714,7 +749,16 @@ class Client(ContentClient):
             api_key: KOI API key for Bearer token authentication.
             verify: Whether to verify SSL certificates.
             proxy: Whether to use proxy settings.
+            tenant_name: Optional operator-set label for this KOI tenant,
+                stamped on every collected event alongside the customer id.
         """
+        # Tenant tagging: a friendly label (operator-set) plus the canonical
+        # customer UUID decoded from the API key JWT. Both are stamped on
+        # outbound events so multiple KOI instances stay distinguishable in
+        # the shared koi_koi_raw dataset.
+        self.tenant_name = tenant_name
+        self.customer_id = extract_customer_id(api_key)
+
         auth_handler = BearerTokenAuthHandler(token=api_key)
 
         retry_policy = RetryPolicy(  # type: ignore[call-arg]
@@ -1170,6 +1214,15 @@ class Client(ContentClient):
         Args:
             events: List of event dicts to send.
         """
+        # Stamp the originating tenant so events from multiple KOI instances
+        # remain distinguishable in the shared koi_koi_raw dataset.
+        if self.tenant_name or self.customer_id:
+            for event in events:
+                if self.tenant_name:
+                    event["koi_tenant_name"] = self.tenant_name
+                if self.customer_id:
+                    event["koi_customer_id"] = self.customer_id
+
         demisto.debug(f"[API] Sending {len(events)} events to XSIAM")
         send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[API] Successfully sent {len(events)} events to XSIAM")
@@ -3434,6 +3487,7 @@ def main() -> None:
             api_key=config["api_key"],
             verify=config["verify"],
             proxy=config["proxy"],
+            tenant_name=config["tenant_name"],
         )
 
         command_func = COMMAND_MAP[command]

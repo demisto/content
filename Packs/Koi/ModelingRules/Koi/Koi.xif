@@ -50,7 +50,10 @@ filter source_log_type = "Alerts"
     xdm.target.resource.sub_type = mcp_type,
     // ── observer (Koi as the detecting product) ───────────────
     xdm.observer.vendor         = _vendor,
-    xdm.observer.product        = _product;
+    xdm.observer.product        = _product,
+    // ── tenant (which KOI customer this event belongs to) ─────
+    xdm.observer.name              = coalesce(koi_tenant_name, koi_customer_id),
+    xdm.observer.unique_identifier = koi_customer_id;
 
 // Audit block v2 (pack v1.3.14) — XQL-validated against koi_koi_raw.
 // Koi audit events are FLAT (no observables/resources). Mapping mirrors
@@ -98,4 +101,7 @@ filter source_log_type = "Audit"
     xdm.target.host.hostname  = hostname,
     // Observer — Koi as the auditing product.
     xdm.observer.vendor  = _vendor,
-    xdm.observer.product = _product;
+    xdm.observer.product = _product,
+    // Tenant — which KOI customer this event belongs to.
+    xdm.observer.name              = coalesce(koi_tenant_name, koi_customer_id),
+    xdm.observer.unique_identifier = koi_customer_id;

@@ -55,6 +55,8 @@ from Koi import (
     parse_list_items_from_entry_id,
     get_formatted_utc_time,
     parse_date_or_use_current,
+    parse_integration_params,
+    extract_customer_id,
     main,
 )
 
@@ -139,6 +141,10 @@ def mock_client(mocker):
     """Fixture for a mocked Koi Client."""
     mocker.patch.object(Client, "__init__", return_value=None)
     client = Client.__new__(Client)
+    # Real __init__ sets these; the mocked client mirrors them so send_events
+    # (which reads them for tenant tagging) behaves like a real instance.
+    client.tenant_name = ""
+    client.customer_id = ""
     return client
 
 
@@ -4111,6 +4117,89 @@ class TestClientTier1Requests:
         params = mock_client._http_request.call_args.kwargs["params"]
         assert params["item_id"] == "abc"
         assert params["version"] == "1.0.0"
+
+
+# endregion
+
+# region Tenant tagging (v1.3.0)
+
+
+def _make_jwt(claims: dict) -> str:
+    """Build a fake JWT (header.payload.signature) carrying the given claims,
+    mirroring the KOI Hasura API-key format used by extract_customer_id."""
+    import base64 as _b64
+
+    def seg(d):
+        return _b64.urlsafe_b64encode(json.dumps(d).encode()).decode().rstrip("=")
+
+    return f"{seg({'alg': 'HS256', 'typ': 'JWT'})}.{seg(claims)}.signature"
+
+
+class TestExtractCustomerId:
+    """Tests for extracting the KOI tenant (customer) id from the API key JWT."""
+
+    def test_extracts_customer_id_from_hasura_claim(self):
+        jwt = _make_jwt({"claims.jwt.hasura.io": {"x-hasura-customer-id": "cust-abc-123", "x-hasura-default-role": "user"}})
+        assert extract_customer_id(jwt) == "cust-abc-123"
+
+    def test_returns_empty_for_non_jwt(self):
+        assert extract_customer_id("not-a-jwt-token") == ""
+
+    def test_returns_empty_when_no_hasura_claim(self):
+        assert extract_customer_id(_make_jwt({"iss": "test-issuer", "iat": 123})) == ""
+
+    def test_returns_empty_when_claim_lacks_customer_id(self):
+        jwt = _make_jwt({"some.hasura.claim": {"x-hasura-default-role": "user"}})
+        assert extract_customer_id(jwt) == ""
+
+
+class TestSendEventsTenantTagging:
+    """Tests that send_events stamps the originating tenant on each event."""
+
+    def test_stamps_both_tenant_fields(self, mock_client, mocker):
+        mock_client.tenant_name = "PAET"
+        mock_client.customer_id = "cust-123"
+        mock_send = mocker.patch("Koi.send_events_to_xsiam")
+        events = [{"id": "1"}, {"id": "2"}]
+
+        mock_client.send_events(events)
+
+        assert all(e["koi_tenant_name"] == "PAET" for e in events)
+        assert all(e["koi_customer_id"] == "cust-123" for e in events)
+        mock_send.assert_called_once()
+
+    def test_stamps_customer_id_only_when_name_unset(self, mock_client, mocker):
+        mock_client.tenant_name = ""
+        mock_client.customer_id = "cust-123"
+        mocker.patch("Koi.send_events_to_xsiam")
+        events = [{"id": "1"}]
+
+        mock_client.send_events(events)
+
+        assert events[0]["koi_customer_id"] == "cust-123"
+        assert "koi_tenant_name" not in events[0]
+
+    def test_no_stamp_when_neither_set(self, mock_client, mocker):
+        # The mock_client fixture defaults both to "" — no tenant info available.
+        mocker.patch("Koi.send_events_to_xsiam")
+        events = [{"id": "1"}]
+
+        mock_client.send_events(events)
+
+        assert "koi_tenant_name" not in events[0]
+        assert "koi_customer_id" not in events[0]
+
+
+class TestParseIntegrationParamsTenant:
+    """Tests that the Tenant Name param is parsed into the config."""
+
+    def test_tenant_name_parsed_and_stripped(self):
+        cfg = parse_integration_params({"url": "koi-server", "api_key": {"password": "k"}, "tenant_name": "  PAET  "})
+        assert cfg["tenant_name"] == "PAET"
+
+    def test_tenant_name_defaults_empty(self):
+        cfg = parse_integration_params({"url": "koi-server", "api_key": {"password": "k"}})
+        assert cfg["tenant_name"] == ""
 
 
 # endregion
