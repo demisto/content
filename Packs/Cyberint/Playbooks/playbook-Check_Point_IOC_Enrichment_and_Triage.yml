@@ -685,7 +685,7 @@ outputs:
   type: unknown
 tests:
 - Check Point - IOC Enrichment and Triage - Test
-fromversion: 6.9.0
+fromversion: 6.10.0
 marketplaces:
 - xsoar
 - marketplacev2

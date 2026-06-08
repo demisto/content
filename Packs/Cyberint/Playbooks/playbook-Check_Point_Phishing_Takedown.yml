@@ -442,9 +442,7 @@ tasks:
       - "11"
     scriptarguments:
       value:
-        simple: "Phishing takedown outcome for ${inputs.URL} (alert ${inputs.AlertID}): status=${Cyberint.takedowns_list.status}, status_reason=${Cyberint.takedowns_list.status_reason}, last_action=${Cyberint.takedowns_list.last_action_date}.
-
-If the status indicates pending details, supply the additional information Cyberint is requesting (e.g. registrar correspondence, brand/copyright proof). Wire this task to your notification integration (email, Slack, Microsoft Teams) to dispatch a real alert to the SOC."
+        simple: "Phishing takedown outcome for ${inputs.URL} (alert ${inputs.AlertID}): status=${Cyberint.takedowns_list.status}, status_reason=${Cyberint.takedowns_list.status_reason}, last_action=${Cyberint.takedowns_list.last_action_date}.\nIf the status indicates pending details, supply the additional information Cyberint is requesting (e.g. registrar correspondence, brand/copyright proof). Wire this task to your notification integration (email, Slack, Microsoft Teams) to dispatch a real alert to the SOC."
     separatecontext: false
     view: |-
       {
@@ -480,14 +478,7 @@ If the status indicates pending details, supply the additional information Cyber
       - "12"
     scriptarguments:
       value:
-        simple: "Phishing alert did not meet the configured automated-takedown thresholds.
-
-URL: ${inputs.URL}
-Alert ID: ${inputs.AlertID}
-Confidence: ${inputs.Confidence} (threshold ${inputs.ConfidenceThreshold})
-Severity: ${inputs.Severity} (minimum ${inputs.MinSeverity})
-
-Review the alert; if appropriate, submit a takedown request manually via cyberint-takedown-url customer=${inputs.CustomerID} url=${inputs.URL} reason=${inputs.Reason}."
+        simple: "Phishing alert did not meet the configured automated-takedown thresholds.\nURL: ${inputs.URL} Alert ID: ${inputs.AlertID} Confidence: ${inputs.Confidence} (threshold ${inputs.ConfidenceThreshold}) Severity: ${inputs.Severity} (minimum ${inputs.MinSeverity})\nReview the alert; if appropriate, submit a takedown request manually via cyberint-takedown-url customer=${inputs.CustomerID} url=${inputs.URL} reason=${inputs.Reason}."
     separatecontext: false
     view: |-
       {
@@ -705,7 +696,7 @@ outputs:
   type: unknown
 tests:
 - Check Point - Phishing Takedown - Test
-fromversion: 6.9.0
+fromversion: 6.10.0
 marketplaces:
 - xsoar
 - marketplacev2

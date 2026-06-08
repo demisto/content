@@ -1,7 +1,6 @@
 id: FeedCyberint
 version: -1
 name: FeedCyberint
-hidden: true
 starttaskid: "0"
 tasks:
   "0":
@@ -191,3 +190,4 @@ inputs: []
 outputs: []
 fromversion: 6.10.0
 description: ''
+hidden: true

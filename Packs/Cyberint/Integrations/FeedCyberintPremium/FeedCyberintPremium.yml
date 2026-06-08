@@ -8,7 +8,6 @@ commonfields:
   version: -1
 fromversion: 6.9.0
 category: Data Enrichment & Threat Intelligence
-provider: Check Point Software Technologies
 description: Use the Check Point EM IoC Intelligence Feed integration to ingest high-fidelity IOC indicators from the Cyberint Infinity External Risk Management (Argos) Premium IOC APIs and to enrich a single indicator on demand.
 configuration:
 - display: Cyberint API URL

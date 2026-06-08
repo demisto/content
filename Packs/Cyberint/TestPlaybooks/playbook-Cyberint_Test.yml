@@ -1,7 +1,6 @@
 id: playbook-Cyberint_Test
 version: -1
 name: playbook-Cyberint_Test
-hidden: true
 starttaskid: "0"
 tasks:
   "0":
@@ -500,4 +499,5 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: Cyberint playbook
+description: Cyberint playbook.
+hidden: true
