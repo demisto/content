@@ -469,7 +469,7 @@ script:
       description: Reputation score of the ASN.
       type: Number
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_takedown_reputation
-      description: Takedown reputation score of the ASN.
+      description: Takedown reputation score the ASN.
       type: Number
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.ips_in_asn
       description: Total number of IPs in the ASN with takedown reputation.
@@ -514,7 +514,7 @@ script:
       description: Indicates whether the IP hosts an open directory listing.
       type: Boolean
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_dsl_dynamic
-      description: Whether the IP is from a dynamic DSL pool.
+      description: Whether the IP is from dynamic DSL pool.
       type: Boolean
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_dsl_dynamic_score
       description: A score indicating how likely this IP is dynamic.
@@ -619,7 +619,7 @@ script:
       description: Cache-control header from the HTTP response.
       type: String
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.headers_date
-      description: Date header from the HTTP response.
+      description: Date header from HTTP response.
       type: String
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_title
       description: Title of the scanned HTML page.
@@ -1366,7 +1366,7 @@ script:
       description: Reputation score of the ASN.
       type: Number
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.asn_takedown_reputation
-      description: Takedown reputation score of the ASN.
+      description: Takedown reputation score the ASN.
       type: Number
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.ips_in_asn
       description: Total number of IPs in the ASN with takedown reputation.
@@ -1411,7 +1411,7 @@ script:
       description: Indicates whether the IP hosts an open directory listing.
       type: Boolean
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.ip_is_dsl_dynamic
-      description: Whether the IP is from a dynamic DSL pool.
+      description: Whether the IP is from dynamic DSL pool.
       type: Boolean
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.ip_is_dsl_dynamic_score
       description: A score indicating how likely this IP is dynamic.
@@ -1516,7 +1516,7 @@ script:
       description: Cache-control header from the HTTP response.
       type: String
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.headers_date
-      description: Date header from the HTTP response.
+      description: Date header from HTTP response.
       type: String
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.html_title
       description: Title of the scanned HTML page.
@@ -1883,7 +1883,7 @@ script:
       default: false
     - name: network
       isArray: false
-      description: The additional network and net mask, give option as 1.1.1.1/24, network parameter may be given multiple times and the search will be performed as an ‘or’ condition.
+      description: The additional network and net mask, give option as 1.1.1.1/24, network parameter may be given multiple times and the search will be performed as an 'or' condition.
       required: false
       secret: false
       default: false
@@ -1913,13 +1913,13 @@ script:
       default: false
     - name: nschange_from_ns
       isArray: false
-      description: The domain has changed name server from nsname, exact match, wildcards and ‘self’ options supported.
+      description: The domain has changed name server from nsname, exact match, wildcards and 'self' options supported.
       required: false
       secret: false
       default: false
     - name: nschange_to_ns
       isArray: false
-      description: The domain has changed name server to nsname, exact match, wildcards and ‘self’ options supported.
+      description: The domain has changed name server to nsname, exact match, wildcards and 'self' options supported.
       required: false
       secret: false
       default: false
@@ -2422,7 +2422,7 @@ script:
       description: SHA256 hash for the HTML body.
       type: String
     - contextPath: SilentPush.URLScan.SilentPush.Web.html_body_similarity
-      description: Similarity score of the HTML body.
+      description: Similarity score of HTML body.
       type: Number
     - contextPath: SilentPush.URLScan.SilentPush.Web.html_body_ssdeep
       description: ssdeep hash for the HTML body.
@@ -2512,7 +2512,7 @@ script:
       description: Indicates if the SSL certificate is valid.
       type: Boolean
     - contextPath: SilentPush.URLScan.SilentPush.Web.origin_ssl_wildcard
-      description: Indicates if the SSL certificate is a wildcard.
+      description: Indicates if the SSL certificate is wildcard.
       type: Boolean
     - contextPath: SilentPush.URLScan.SilentPush.Web.origin_subdomain
       description: Subdomain of the origin.
@@ -2590,13 +2590,13 @@ script:
       description: Count of SANs for the SSL certificate.
       type: Number
     - contextPath: SilentPush.URLScan.SilentPush.Web.ssl_serial_number
-      description: Serial number of the SSL certificate.
+      description: Serial number of SSL certificate.
       type: String
     - contextPath: SilentPush.URLScan.SilentPush.Web.ssl_sigalg
       description: Signature algorithm used for the SSL certificate.
       type: String
     - contextPath: SilentPush.URLScan.SilentPush.Web.ssl_subject_common_name
-      description: Subject common name for the SSL certificate.
+      description: Subject common name for SSL certificate.
       type: String
     - contextPath: SilentPush.URLScan.SilentPush.Web.ssl_subject_key_id
       description: Subject Key Identifier for SSL certificate.
@@ -3155,7 +3155,7 @@ script:
       default: false
     - name: network
       isArray: false
-      description: The additional network and net mask, give option as 1.1.1.1/24, network parameter may be given multiple times and the search will be performed as an ‘or’ condition.
+      description: The additional network and net mask, give option as 1.1.1.1/24, network parameter may be given multiple times and the search will be performed as an 'or' condition.
       required: false
       secret: false
       default: false
@@ -3185,13 +3185,13 @@ script:
       default: false
     - name: nschange_from_ns
       isArray: false
-      description: The domain has changed name server from nsname, exact match, wildcards and ‘self’ options supported.
+      description: The domain has changed name server from nsname, exact match, wildcards and 'self' options supported.
       required: false
       secret: false
       default: false
     - name: nschange_to_ns
       isArray: false
-      description: The domain has changed name server to nsname, exact match, wildcards and ‘self’ options supported.
+      description: The domain has changed name server to nsname, exact match, wildcards and 'self' options supported.
       required: false
       secret: false
       default: false
@@ -3325,7 +3325,7 @@ script:
       description: Indicates if app_ads.txt is used.
       type: Boolean
     - contextPath: SilentPush.ScanData.SilentPush.Web.adtech_sellers_json
-      description: Indicates if sellers.json is used.
+      description: Indicates if sellers.json used.
       type: Boolean
     - contextPath: SilentPush.ScanData.SilentPush.Web.body_analysis
       description: Body analysis for the scan data entry.

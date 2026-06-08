@@ -6,7 +6,6 @@ import pytest
 from SilentPushv2 import (
     Client,
     CommandResults,
-    ResourceType,
     get_nameserver_reputation_command,
     get_subnet_reputation_command,
     get_asns_for_domain_command,
@@ -54,7 +53,7 @@ def mock_client(mocker):
 
 def test_get_nameserver_reputation_command(mock_client, mocker):
     args = {"nameserver": "example.com", "explain": "true", "limit": 10}
-    mock_response = [{"ns_server": "example.com", "reputation": "good", "details": "No issues found", "date": '20240101'}]
+    mock_response = [{"ns_server": "example.com", "reputation": "good", "details": "No issues found", "date": "20240101"}]
     mock_client.get_reputation.return_value = ("Mocked Markdown Table", mock_response)
     result = get_nameserver_reputation_command(mock_client, args)
     mock_client.get_reputation.assert_called_once()
@@ -81,21 +80,20 @@ def test_get_subnet_reputation_command(mock_client, mocker):
 
 def test_get_ipv4_reputation_command(mock_client, mocker):
     args = {"ipv4": "1.1.1.1"}
-    mock_response = [{
-        'date': 20260526,
-        'ip': '1.1.1.1',
-        'ip_reputation': 0,
-        'ip_reputation_explain': {'ip_density': 23, 'names_num_listed': 0}
-    }]
+    mock_response = [
+        {
+            "date": 20260526,
+            "ip": "1.1.1.1",
+            "ip_reputation": 0,
+            "ip_reputation_explain": {"ip_density": 23, "names_num_listed": 0},
+        }
+    ]
     mock_client.get_reputation.return_value = ("Mocked Markdown Table", mock_response)
     result = get_ipv4_reputation_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.IPv4Reputation"
     assert result.outputs_key_field == "ip"
-    assert result.outputs == {
-        "IPv4": args.get("ipv4"),
-        "reputation_history": mock_response
-    }
+    assert result.outputs == {"IPv4": args.get("ipv4"), "reputation_history": mock_response}
     assert result.outputs["reputation_history"] == mock_response
     assert result.readable_output == "Mocked Markdown Table"
 
@@ -120,22 +118,24 @@ def test_get_asns_for_domain_command(mock_client, mocker):
 
 def test_list_domain_information_command(mock_client, mocker):
     args = {"domains": "example.com,example.org"}
-    mock_response = [{
-        "domain_string_frequency_probability": {},
-        "domain_urls": {},
-        "domaininfo": {},
-        "host_flags": [{}],
-        "ip_diversity": {},
-        "is_private_suffix": False,
-        "listing_score": 0,
-        "listing_score_explain": {},
-        "listing_score_feeds_explain": [],
-        "ns_reputation": {},
-        "nschanges": {"results_summary": {}},
-        "private_suffix_info": {},
-        "sp_risk_score": 36,
-        "sp_risk_score_explain": {"sp_risk_score_decider": "ns_reputation_score"}
-    }]
+    mock_response = [
+        {
+            "domain_string_frequency_probability": {},
+            "domain_urls": {},
+            "domaininfo": {},
+            "host_flags": [{}],
+            "ip_diversity": {},
+            "is_private_suffix": False,
+            "listing_score": 0,
+            "listing_score_explain": {},
+            "listing_score_feeds_explain": [],
+            "ns_reputation": {},
+            "nschanges": {"results_summary": {}},
+            "private_suffix_info": {},
+            "sp_risk_score": 36,
+            "sp_risk_score_explain": {"sp_risk_score_decider": "ns_reputation_score"},
+        }
+    ]
     mock_client.get_bulk_info.return_value = (mock_response, "Mocked Markdown Table")
     result = list_domain_information_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -147,15 +147,17 @@ def test_list_domain_information_command(mock_client, mocker):
 
 def test_list_ip4_information_command(mock_client, mocker):
     args = {"ips": "1.1.1.1,2.2.2.2"}
-    mock_response = [{
-        "asn": 11111,
-        "asn_allocation_age": 1111,
-        "asn_allocation_date": 20010101,
-        "asn_rank": 0,
-        "sp_risk_score": 0,
-        "sp_risk_score_explain": {},
-        "subnet": "1.1.1.0/24",
-    }]
+    mock_response = [
+        {
+            "asn": 11111,
+            "asn_allocation_age": 1111,
+            "asn_allocation_date": 20010101,
+            "asn_rank": 0,
+            "sp_risk_score": 0,
+            "sp_risk_score_explain": {},
+            "subnet": "1.1.1.0/24",
+        }
+    ]
     mock_client.get_bulk_info.return_value = (mock_response, "Mocked Markdown Table")
     result = list_ip4_information_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -167,15 +169,17 @@ def test_list_ip4_information_command(mock_client, mocker):
 
 def test_list_ip6_information_command(mock_client, mocker):
     args = {"ips": "2001:0db8:85a3:0000:0000:8a2e:0370:7334,2001:0db8:85a3:0000:0000:8a2e:0370:7335"}
-    mock_response = [{
-        "asn": 11111,
-        "asn_allocation_age": 1111,
-        "asn_allocation_date": 20010101,
-        "asn_rank": 0,
-        "sp_risk_score": 0,
-        "sp_risk_score_explain": {},
-        "subnet": "2001:db8:abcd:0012::/64",
-    }]
+    mock_response = [
+        {
+            "asn": 11111,
+            "asn_allocation_age": 1111,
+            "asn_allocation_date": 20010101,
+            "asn_rank": 0,
+            "sp_risk_score": 0,
+            "sp_risk_score_explain": {},
+            "subnet": "2001:db8:abcd:0012::/64",
+        }
+    ]
     mock_client.get_bulk_info.return_value = (mock_response, "Mocked Markdown Table")
     result = list_ip6_information_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -209,9 +213,7 @@ def test_bulk_enrich_command(mock_client, mocker):
     mock_response = [
         {
             "domain_string_frequency_probability": {},
-            "domain_urls": {
-                "results_summary": {}
-            },
+            "domain_urls": {"results_summary": {}},
             "domaininfo": {},
             "host_flags": [{}],
             "ip_diversity": {},
@@ -219,23 +221,15 @@ def test_bulk_enrich_command(mock_client, mocker):
             "listing_score": 0,
             "listing_score_explain": {},
             "listing_score_feeds_explain": [],
-            "ns_reputation": {
-                "ns_srv_reputation": [{}]
-            },
-            "nschanges": {
-                "results_summary": {}
-            },
+            "ns_reputation": {"ns_srv_reputation": [{}]},
+            "nschanges": {"results_summary": {}},
             "private_suffix_info": {},
             "sp_risk_score": 36,
-            "sp_risk_score_explain": {
-                "sp_risk_score_decider": "ns_reputation_score"
-            }
+            "sp_risk_score_explain": {"sp_risk_score_decider": "ns_reputation_score"},
         },
         {
             "domain_string_frequency_probability": {},
-            "domain_urls": {
-                "results_summary": {}
-            },
+            "domain_urls": {"results_summary": {}},
             "domaininfo": {},
             "host_flags": [{}],
             "ip_diversity": {},
@@ -244,15 +238,11 @@ def test_bulk_enrich_command(mock_client, mocker):
             "listing_score_explain": {},
             "listing_score_feeds_explain": [],
             "ns_reputation": {},
-            "nschanges": {
-                "results_summary": {}
-            },
+            "nschanges": {"results_summary": {}},
             "private_suffix_info": {},
             "sp_risk_score": 2,
-            "sp_risk_score_explain": {
-                "sp_risk_score_decider": "ns_entropy_score"
-            }
-        }
+            "sp_risk_score_explain": {"sp_risk_score_decider": "ns_entropy_score"},
+        },
     ]
     mock_client.fetch_bulk_info.return_value = mock_response
     result = bulk_enrich_command(mock_client, args)
@@ -260,8 +250,11 @@ def test_bulk_enrich_command(mock_client, mocker):
     assert result.outputs_prefix == "SilentPush.Bulk.Enrich"
     assert result.outputs_key_field == args.get("resource")
     assert result.outputs == mock_response
-    assert result.readable_output == """# IP Information Results
+    assert (
+        result.readable_output
+        == """# IP Information Results
 Mocked Readable Output"""
+    )
 
 
 def test_get_domain_certificates_command(mock_client, mocker):
@@ -303,18 +296,14 @@ def test_get_domain_certificates_command_no_domain(mock_client):
 def test_get_domain_certificates_command_job_status(mock_client, mocker):
     args = {"domain": "example.com", "limit": "5"}
     job_details = {
-        'get': 'https://api.silentpush.com/api/v1/merge-api/explore/job/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
-        'job_id': 'zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz',
-        'status': 'STARTED'
+        "get": "https://api.silentpush.com/api/v1/merge-api/explore/job/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "job_id": "zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz",
+        "status": "STARTED",
     }
     readable_output = tableToMarkdown(
-        f"# This task is taking longer, please try again later or use the 'retry job' command\n",
-        job_details,
-        removeNull=True
+        "# This task is taking longer, please try again later or use the 'retry job' command\n", job_details, removeNull=True
     )
-    mock_client._http_request.return_value = {
-        "job_status": job_details
-    }
+    mock_client._http_request.return_value = {"job_status": job_details}
     mock_client.format_job_command_response.return_value = CommandResults(
         outputs_prefix="SilentPush.Job",
         outputs_key_field="job_id",
@@ -466,13 +455,13 @@ def test_ipdiversity_lookup_command(mock_client, mocker):
                             "asname": "AKAMAI-AS, US",
                             "first_seen": "2026-05-21 04:26:11",
                             "ip": "184.31.91.132",
-                            "last_seen": "2026-05-26 15:24:06"
+                            "last_seen": "2026-05-26 15:24:06",
                         }
-                    ]
+                    ],
                 }
             ]
         },
-        "status_code": 200
+        "status_code": 200,
     }
     mock_client.lookup.return_value = (mock_response, "Mocked Markdown Table")
     result = ip_diversity_lookup_command(mock_client, args)
@@ -489,15 +478,10 @@ def test_ipdiversity_patterns_command(mock_client, mocker):
         "error": "None",
         "response": {
             "records": [
-                {
-                    "asn_diversity": 2,
-                    "host": "example.com",
-                    "ip_diversity_all": 2,
-                    "ip_diversity_groups": 1
-                },
+                {"asn_diversity": 2, "host": "example.com", "ip_diversity_all": 2, "ip_diversity_groups": 1},
             ]
         },
-        "status_code": 200
+        "status_code": 200,
     }
     mock_client._http_request.return_value = mock_response
     result = ip_diversity_patterns_command(mock_client, args)
@@ -522,11 +506,11 @@ def test_multi_conditional_padns_lookup_command(mock_client, mocker):
                     "nshash": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
                     "query": "example.com",
                     "ttl": 86400,
-                    "type": "A"
+                    "type": "A",
                 }
             ]
         },
-        "status_code": 200
+        "status_code": 200,
     }
     mock_client.lookup.return_value = (mock_response, "Mocked Markdown Table")
     result = multi_conditional_padns_lookup_command(mock_client, args)
@@ -677,11 +661,11 @@ def test_whois_command(mock_client, mocker):
                     "state": "None",
                     "updated": "Tue, 03 Dec 2024 21:03:37 GMT",
                     "whois_server": "whois.godaddy.com",
-                    "zipcode": "None"
+                    "zipcode": "None",
                 }
             ]
         },
-        "status_code": 200
+        "status_code": 200,
     }
     mock_client._http_request.return_value = mock_response
     result = whois_command(mock_client, args)
