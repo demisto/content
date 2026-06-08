@@ -16,7 +16,7 @@ configuration:
   name: is_aap_gateway
   type: 8
   required: false
-  additionalinfo: Check this if you are connecting to an Ansible Automation Platform 2.6+ Gateway.
+  additionalinfo: Whether to connect to an Ansible Automation Platform 2.6+ Gateway.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
