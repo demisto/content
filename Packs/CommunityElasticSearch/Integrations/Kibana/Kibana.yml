@@ -97,7 +97,7 @@ script:
       - low
     - description: The earliest time to search from (i.e. 2025-10-02T00:27:58.162Z).
       name: from_time
-    description: Used to list cases in Kibana.
+    description: List cases in Kibana.
     name: kibana-cases-find
     outputs:
     - contextPath: Kibana.Cases.Status
