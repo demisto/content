@@ -451,7 +451,10 @@ def test_fetch_with_look_back_buffer(requests_mock, mocker):
 
     next_run, incidents, _ = fetch_incidents(
         client=client,
-        last_run={"last_fetch": last_fetch_time},
+        # Include an empty `seen_ids` to mark this instance as already initialized
+        # for look-back/dedup tracking (NOT a legacy upgrade), so the look-back is
+        # applied immediately at its configured value.
+        last_run={"last_fetch": last_fetch_time, "seen_ids": {}},
         first_fetch_time="3 days",
         event_type_filter=ALL_EVENTS,
         threat_status="",
@@ -1365,3 +1368,227 @@ def test_validate_first_fetch_time_not_valid():
             "The First fetch time range is more than 7 days ago. Please update this parameter since "
             "Proofpoint supports a maximum 1 week fetch back."
         ) in str(e)
+
+
+# ---------------------------------------------------------------------------
+# Look-back ramp-up tests (legacy upgrade safety)
+# ---------------------------------------------------------------------------
+# When `look_back_minutes` is enabled but the dedup state (`seen_ids`) is
+# empty or only freshly initialized, applying the full look-back would cause
+# events to be re-fetched as duplicates. The integration solves this with a
+# `look_back_enabled_from` timestamp stored in `last_run`: the effective
+# look-back grows linearly with the elapsed wall-clock time since that stamp
+# and is capped at the configured `look_back_minutes`.
+# These tests assert the effective value passed to `get_fetch_times`.
+# ---------------------------------------------------------------------------
+
+
+def _spy_get_fetch_times(mocker):
+    """Patch ProofpointTAP_v2.get_fetch_times to capture its arguments while
+    delegating to the real implementation. Returns the spy mock object.
+    """
+    from ProofpointTAP_v2 import get_fetch_times as _real_get_fetch_times
+
+    return mocker.patch("ProofpointTAP_v2.get_fetch_times", side_effect=_real_get_fetch_times)
+
+
+def _make_client():
+    return Client(proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None)
+
+
+def test_lookback_legacy_instance_disables_lookback_and_stamps(requests_mock, mocker):
+    """
+    Given:
+     - A legacy instance whose last_run has `last_fetch` but no `seen_ids` key
+       (state from a version of the integration that predates the look-back
+       / seen_ids feature).
+     - look_back_minutes=30 (the new default).
+    When:
+     - fetch_incidents is called.
+    Then:
+     - get_fetch_times is called with look_back_minutes=0 for this cycle
+       (avoiding re-fetching the last 30 minutes as duplicates).
+     - next_run["look_back_enabled_from"] is stamped with the current time so
+       the ramp-up can grow on subsequent fetches.
+    """
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:01:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    spy = _spy_get_fetch_times(mocker)
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    next_run, _, _ = fetch_incidents(
+        client=_make_client(),
+        last_run={"last_fetch": last_fetch_time},  # no seen_ids -> legacy
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=30,
+    )
+
+    # Effective look_back for this fetch must be 0.
+    assert spy.call_args.args[1] == 0 or spy.call_args.kwargs.get("look_back_minutes") == 0
+    # Stamp persisted for the next cycle.
+    assert next_run.get("look_back_enabled_from") == current_time
+    # seen_ids is initialized in next_run regardless (so on the next fetch
+    # we are no longer "legacy", just "ramping up").
+    assert "seen_ids" in next_run
+
+
+def test_lookback_rampup_caps_effective_to_elapsed(requests_mock, mocker):
+    """
+    Given:
+     - An instance previously stamped with look_back_enabled_from=00:00:00.
+     - Current time is 00:10:00 -> elapsed = 10 minutes.
+     - Configured look_back_minutes=30.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - get_fetch_times is called with look_back_minutes=10 (capped to the
+       elapsed window in which seen_ids has actually been tracking events).
+     - The stamp is carried forward in next_run because ramp-up is not done.
+    """
+    last_fetch_time = "2010-01-01T00:09:00Z"
+    current_time = "2010-01-01T00:10:00Z"
+    enabled_from = "2010-01-01T00:00:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    spy = _spy_get_fetch_times(mocker)
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    next_run, _, _ = fetch_incidents(
+        client=_make_client(),
+        last_run={
+            "last_fetch": last_fetch_time,
+            "seen_ids": {},
+            "look_back_enabled_from": enabled_from,
+        },
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=30,
+    )
+
+    # Effective look-back equals elapsed minutes (10), not the configured 30.
+    passed_look_back = spy.call_args.args[1] if len(spy.call_args.args) >= 2 else spy.call_args.kwargs.get("look_back_minutes")
+    assert passed_look_back == 10
+    # Stamp is carried forward while ramp-up continues.
+    assert next_run.get("look_back_enabled_from") == enabled_from
+
+
+def test_lookback_rampup_completes_and_drops_stamp(requests_mock, mocker):
+    """
+    Given:
+     - An instance previously stamped with look_back_enabled_from=00:00:00.
+     - Current time is 01:00:00 -> elapsed = 60 minutes >= look_back_minutes.
+     - Configured look_back_minutes=30.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - get_fetch_times is called with the full configured look_back_minutes=30.
+     - The stamp is dropped from next_run (ramp-up complete, steady state).
+    """
+    last_fetch_time = "2010-01-01T00:55:00Z"
+    current_time = "2010-01-01T01:00:00Z"
+    enabled_from = "2010-01-01T00:00:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    spy = _spy_get_fetch_times(mocker)
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    next_run, _, _ = fetch_incidents(
+        client=_make_client(),
+        last_run={
+            "last_fetch": last_fetch_time,
+            "seen_ids": {},
+            "look_back_enabled_from": enabled_from,
+        },
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=30,
+    )
+
+    passed_look_back = spy.call_args.args[1] if len(spy.call_args.args) >= 2 else spy.call_args.kwargs.get("look_back_minutes")
+    assert passed_look_back == 30
+    # Stamp dropped now that ramp-up is complete.
+    assert "look_back_enabled_from" not in next_run
+
+
+def test_lookback_steady_state_uses_full_lookback(requests_mock, mocker):
+    """
+    Given:
+     - An upgraded instance with last_fetch AND a populated seen_ids,
+       and NO look_back_enabled_from stamp (i.e. steady state).
+     - Configured look_back_minutes=30.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - get_fetch_times is called with the full configured look_back_minutes=30.
+     - No look_back_enabled_from is introduced in next_run.
+    """
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:01:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    spy = _spy_get_fetch_times(mocker)
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    next_run, _, _ = fetch_incidents(
+        client=_make_client(),
+        last_run={
+            "last_fetch": last_fetch_time,
+            "seen_ids": {MOCK_DELIVERED_MESSAGE["GUID"]: "2010-01-01T00:00:00Z"},
+        },
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=30,
+    )
+
+    passed_look_back = spy.call_args.args[1] if len(spy.call_args.args) >= 2 else spy.call_args.kwargs.get("look_back_minutes")
+    assert passed_look_back == 30
+    assert "look_back_enabled_from" not in next_run
+
+
+def test_lookback_first_fetch_uses_full_lookback(requests_mock, mocker):
+    """
+    Given:
+     - A first-time fetch (empty last_run, no last_fetch, no seen_ids).
+     - Configured look_back_minutes=30.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - get_fetch_times is called with the full configured look_back_minutes=30
+       (first fetches have nothing prior to duplicate, so ramp-up is unneeded).
+     - No look_back_enabled_from is stamped in next_run.
+    """
+    current_time = "2010-01-01T00:05:00Z"
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    mocker.patch("ProofpointTAP_v2.parse_date_range", return_value=("2010-01-01T00:00:00Z", "never mind"))
+    spy = _spy_get_fetch_times(mocker)
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    next_run, _, _ = fetch_incidents(
+        client=_make_client(),
+        last_run={},  # first fetch
+        first_fetch_time="30 minutes",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=30,
+    )
+
+    passed_look_back = spy.call_args.args[1] if len(spy.call_args.args) >= 2 else spy.call_args.kwargs.get("look_back_minutes")
+    assert passed_look_back == 30
+    assert "look_back_enabled_from" not in next_run

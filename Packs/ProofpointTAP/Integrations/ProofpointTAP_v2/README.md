@@ -3,6 +3,17 @@
 Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and provide additional visibility into phishing and other malicious email attacks.
 This integration was integrated and tested with version v2 of Proofpoint TAP v2
 
+## Events Fetch Look-Back
+
+Proofpoint's SIEM API does not always index events the moment they occur. Indexing can lag by **up to ~30 minutes**, so an event that already happened may not yet be returned when the integration queries for it in real time. Without a safety mechanism, these late-indexed events can be permanently missed.
+
+The **Events Fetch Look-Back (minutes)** parameter solves this by overlapping fetch cycles:
+
+- **Why it's needed:** Compensates for the SIEM API indexing delay so events that are indexed after their occurrence time are still collected.
+- **How it works:** On every fetch cycle the integration re-queries the previous **N** minutes. Built-in deduplication ensures events already fetched are not ingested again, so no duplicates are created.
+- **Recommended usage:** A value of **30** minutes generally covers the typical indexing delay. Set it to **0** to disable look-back entirely.
+- **Existing instances:** For instances that were already configured **before version 1.3.0**, the look-back window is rolled out **gradually** rather than all at once. This prevents duplicate events from being created when look-back is first applied against historical data that was already fetched. No action is required on your part — the behavior is automatic and safe.
+
 ## Configure Proofpoint TAP v2 in Cortex
 
 | **Parameter** | **Description** | **Required** |
@@ -18,7 +29,7 @@ This integration was integrated and tested with version v2 of Proofpoint TAP v2
 | Maximum number of incident per fetch |  | False |
 | First fetch time range | First fetch time range \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 1 hour, 30 minutes\). Proofpoint supports a maximum 1 week fetch back. | False |
 | Advanced: Raw message encoding | The character encoding to apply on the message fetched (e.g. latin-1). Advanced configuration to be used only if instructed by XSOAR Support | False |
-| Events Fetch Look-Back (minutes) | The number of minutes to look back when fetching events, to account for Proofpoint SIEM API indexing delay. When set, each fetch cycle re-queries the previous N minutes to catch late-indexed events. Deduplication ensures no duplicates are created. Set to 0 to disable. | False |
+| Events Fetch Look-Back (minutes) | The number of minutes to look back when fetching events, to account for Proofpoint SIEM API indexing delay (up to ~30 min delay). When set, each fetch cycle re-queries the previous N minutes to catch late-indexed events. Deduplication ensures no duplicates are created. Set to 0 to disable. | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 

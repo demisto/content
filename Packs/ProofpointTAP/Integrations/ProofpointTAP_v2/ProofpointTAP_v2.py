@@ -18,7 +18,7 @@ BLOCKED_MESSAGES = "Blocked Messages"
 DELIVERED_MESSAGES = "Delivered Messages"
 
 DEFAULT_LIMIT = 50
-DEFAULT_LOOK_BACK_MINUTES = 0
+DEFAULT_LOOK_BACK_MINUTES = 30
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_SEEN_IDS = 10_000
 
@@ -670,11 +670,61 @@ def fetch_incidents(
 
     # Get the last fetch time, if exists
     start_query_time = last_run.get("last_fetch")
+    is_first_fetch = not start_query_time
     # Handle first time fetch, fetch incidents retroactively
-    if not start_query_time:
+    if is_first_fetch:
         start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
 
-    fetch_intervals = get_fetch_times(start_query_time, look_back_minutes)
+    # Look-back ramp-up for legacy / freshly-upgraded instances.
+    # Relevant for v1.3.0 and above (introduced with the look-back feature in v1.3.0).
+    # Purpose: gradually ramp up the look-back window for legacy / freshly-upgraded
+    # instances so events are not re-fetched as duplicates.
+    # NOTE: This block can (and should) be removed in the future once all existing
+    # instances have completed the gradual ramp-up and it is no longer relevant.
+    # ------------------------------------------------------------------
+    # Applying the full `look_back_minutes` immediately on an instance that has
+    # no (or recently-initialized) `seen_ids` state would cause events from the
+    # look-back window to be re-fetched as duplicates, because there is nothing
+    # in `seen_ids` to dedupe against.
+    #
+    # First-time fetches do not need ramp-up (no prior state to duplicate).
+    now = get_now()
+    look_back_enabled_from_str = last_run.get("look_back_enabled_from")
+    effective_look_back_minutes = look_back_minutes
+    carry_enabled_from: str | None = None
+
+    if look_back_minutes > 0 and not is_first_fetch:
+        if "seen_ids" not in last_run and look_back_enabled_from_str is None:
+            # Legacy instance: first fetch under the look-back feature.
+            carry_enabled_from = now.strftime(DATE_FORMAT)
+            effective_look_back_minutes = 0
+            demisto.debug(
+                f"Legacy instance detected (last_fetch present but no seen_ids in last_run); "
+                f"initializing look_back ramp-up from {carry_enabled_from} and skipping look_back "
+                f"of {look_back_minutes} minutes for this fetch to avoid duplicates."
+            )
+        elif look_back_enabled_from_str is not None:
+            # Ramp-up in progress: grow effective look-back with elapsed wall-clock time.
+            enabled_from_dt = datetime.strptime(look_back_enabled_from_str, DATE_FORMAT)
+            elapsed_minutes = int((now - enabled_from_dt).total_seconds() // 60)
+            ramp_minutes = max(0, min(look_back_minutes, elapsed_minutes))
+            effective_look_back_minutes = ramp_minutes
+            if ramp_minutes < look_back_minutes:
+                # Still ramping up — carry the stamp forward.
+                carry_enabled_from = look_back_enabled_from_str
+                demisto.debug(
+                    f"Look-back ramp-up active: enabled_from={look_back_enabled_from_str}, "
+                    f"elapsed={elapsed_minutes} min, effective look_back={ramp_minutes} "
+                    f"(target {look_back_minutes})."
+                )
+            else:
+                # Ramp-up complete — drop the stamp; steady-state full look-back from now on.
+                demisto.debug(
+                    f"Look-back ramp-up complete (elapsed={elapsed_minutes} min "
+                    f">= {look_back_minutes} min target); using full look_back and clearing stamp."
+                )
+
+    fetch_intervals = get_fetch_times(start_query_time, effective_look_back_minutes)
 
     # If no valid intervals, skip this fetch cycle
     if not fetch_intervals:
@@ -737,10 +787,13 @@ def fetch_incidents(
     # Advance last_fetch to end of last interval (real now, not shifted)
     end_query_time = fetch_intervals[-1][1]
 
-    next_run = {
+    next_run: dict = {
         "last_fetch": end_query_time,
         "seen_ids": seen_ids,
     }
+    # Carry the look-back ramp-up stamp forward while ramp-up is still in progress.
+    if carry_enabled_from is not None:
+        next_run["look_back_enabled_from"] = carry_enabled_from
 
     demisto.debug(
         f"Fetch summary: {len(fetch_intervals)} intervals, "
