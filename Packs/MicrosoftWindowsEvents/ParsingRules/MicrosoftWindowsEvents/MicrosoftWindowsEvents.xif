@@ -6,4 +6,6 @@ filter to_string(time_created) ~= ".*\d{2}:\d{2}:\d{2}.*" AND provider_name not 
     tmp_get_time_created = to_epoch(parse_timestamp("%FT%H:%M:%E*SZ",to_string(time_created)))
 | alter
     _time = if(subtract(tmp_get_time_created, tmp_get_time) < 0, to_timestamp(tmp_get_time_created), subtract(tmp_get_insert_time, tmp_get_time) < 0, to_timestamp(tmp_get_insert_time), to_timestamp(tmp_get_time))
+| alter
+    _scope = coalesce(_scope, event_data -> _scope, event_data -> ["_scope"], event_data -> scope)    
 | fields -tmp*;
