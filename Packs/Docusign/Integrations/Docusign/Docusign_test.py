@@ -11,6 +11,9 @@ from Docusign import (
     fetch_audit_user_data,
     UserDataClient,
     get_events_command,
+    get_scopes_per_type,
+    CUSTOMER_EVENTS_SCOPE,
+    USER_DATA_SCOPE,
     CUSTOMER_EVENTS_TYPE,
     USER_DATA_TYPE,
 )
@@ -527,3 +530,38 @@ class TestGetEventsCommand:
 
         with pytest.raises(DemistoException, match="Unknown event type"):
             get_events_command(mock_auth_client)
+
+
+class TestScopes:
+    """Regression tests for XSUP-70500: the JWT Grant requires the 'impersonation' scope
+    for every fetch type, otherwise DocuSign returns 400 {"error": "consent_required"}.
+    """
+
+    def test_baseline_jwt_scopes_in_all_scope_sets(self):
+        """
+        Given:
+            - The scope lists used to build the consent URL and the JWT.
+        When:
+            - Inspecting each fetch type's scopes.
+        Then:
+            - The DocuSign JWT Grant baseline scopes 'signature' and 'impersonation'
+              must be present in both, since all flows use the JWT Bearer grant.
+        """
+        for scope_set in (CUSTOMER_EVENTS_SCOPE, USER_DATA_SCOPE):
+            assert "signature" in scope_set
+            assert "impersonation" in scope_set
+
+    def test_get_scopes_per_type_audit_users_includes_impersonation(self):
+        """
+        Given:
+            - Only the 'Audit Users' fetch type is selected.
+        When:
+            - get_scopes_per_type resolves the required scopes.
+        Then:
+            - The resolved scopes include 'impersonation' (the XSUP-70500 regression).
+        """
+        scopes = get_scopes_per_type(USER_DATA_TYPE)
+        assert "impersonation" in scopes
+        assert "organization_read" in scopes
+        assert "user_read" in scopes
+        assert "signature" in scopes
