@@ -270,7 +270,33 @@ def test_attach_full_emits_proxy_insecure_engine():
         "engine",
         "engine_group",
     ]
-    assert len(trig) == 2
+    # 2 engine-hide triggers + 2 proxy-reveal triggers (proxy revealed when
+    # engine OR engine_group is_not_empty).
+    assert len(trig) == 4
+    proxy_reveal = [
+        t
+        for t in trig
+        if t["conditions"]["operator"] == "is_not_empty"
+        and t["effects"][0]["action"] == {"hidden": False}
+    ]
+    assert proxy_reveal == [
+        {
+            "conditions": {
+                "id": "engine",
+                "behavior": "value",
+                "operator": "is_not_empty",
+            },
+            "effects": [{"id": "proxy", "action": {"hidden": False}}],
+        },
+        {
+            "conditions": {
+                "id": "engine_group",
+                "behavior": "value",
+                "operator": "is_not_empty",
+            },
+            "effects": [{"id": "proxy", "action": {"hidden": False}}],
+        },
+    ]
 
 
 def test_attach_appendix_g_skips_proxy_and_engine_keeps_insecure():
@@ -295,7 +321,25 @@ def test_attach_appendix_h_single_engine_no_group():
     # single-engine: engine_mode 2-option
     mode = next(f for f in profiles[0]["configurations"][0]["fields"] if f["id"] == "engine_mode")
     assert [v["key"] for v in mode["options"]["values"]] == ["no_engine", "engine"]
-    assert len(trig) == 1
+    # single-engine: 1 engine-hide trigger + 1 proxy-reveal trigger (engine
+    # is_not_empty → proxy hidden:false). No engine_group → no second reveal.
+    assert len(trig) == 2
+    proxy_reveal = [
+        t
+        for t in trig
+        if t["conditions"]["operator"] == "is_not_empty"
+        and t["effects"][0]["action"] == {"hidden": False}
+    ]
+    assert proxy_reveal == [
+        {
+            "conditions": {
+                "id": "engine",
+                "behavior": "value",
+                "operator": "is_not_empty",
+            },
+            "effects": [{"id": "proxy", "action": {"hidden": False}}],
+        },
+    ]
 
 
 def test_attach_multi_profile_dedup_and_serializer_bridge():
@@ -444,4 +488,14 @@ def test_build_connection_yaml_microsoft_graph_end_to_end():
     assert "host" in prof_ids
     assert "proxy" in prof_ids and "insecure" in prof_ids and "engine_mode" in prof_ids
     assert prof_ids.index("host") < prof_ids.index("proxy")
-    assert len(triggers) == 2
+    # 2 engine-hide triggers (engine, engine_group) + 2 proxy-reveal triggers
+    # (proxy revealed when engine OR engine_group is_not_empty).
+    assert len(triggers) == 4
+    proxy_reveal = [
+        t
+        for t in triggers
+        if t["conditions"]["operator"] == "is_not_empty"
+        and t["effects"][0]["action"] == {"hidden": False}
+        and t["effects"][0]["id"] == "proxy"
+    ]
+    assert [t["conditions"]["id"] for t in proxy_reveal] == ["engine", "engine_group"]

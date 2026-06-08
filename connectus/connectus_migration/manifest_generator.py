@@ -4500,6 +4500,7 @@ def _bool_switch_field(
     field_id: str,
     title: str,
     description: str = "",
+    hidden = False
 ) -> dict:
     """Build a non-secret boolean ``switch`` connection field (Part B / D-D8 home 1).
 
@@ -4510,8 +4511,8 @@ def _bool_switch_field(
     options: dict[str, Any] = {
         "mask": False,
         "default_value": False,
-        "create_modifiers": {"required": False, "hidden": False},
-        "edit_modifiers": {"required": False, "hidden": False},
+        "create_modifiers": {"required": False, "hidden": hidden},
+        "edit_modifiers": {"required": False, "hidden": hidden},
     }
     if description:
         options["description"] = description
@@ -4548,6 +4549,7 @@ def build_proxy_field(
         field_id=pid,
         title=_resolve_title(yml_params_by_name, pid, _PROXY_DEFAULT_TITLE),
         description=_field_description(yml_params_by_name, pid),
+        hidden=True
     )
 
 
@@ -4716,11 +4718,23 @@ def build_engine_group_field(field_id: str, integration_id: str) -> dict:
 
 
 def build_engine_triggers(
-    *, mode_id: str, engine_id: str | None, engine_group_id: str | None
+    *,
+    mode_id: str,
+    engine_id: str | None,
+    engine_group_id: str | None,
+    proxy_ids: list[str] | None = None,
 ) -> list[dict]:
-    """Visibility triggers: hide ``engine`` unless mode==engine; hide
-    ``engine_group`` unless mode==engine_group. References the (possibly
-    prefixed) per-profile ids."""
+    """Visibility triggers for the engine 3-field pattern (+ proxy reveal).
+
+    - Hide ``engine`` unless mode==engine; hide ``engine_group`` unless
+      mode==engine_group. References the (possibly prefixed) per-profile ids.
+    - When ``proxy_ids`` is supplied, also emit "reveal proxy" triggers:
+      proxy is hidden by default, and is un-hidden (``hidden: false``) when an
+      engine is actually selected — i.e. when ``engine`` is_not_empty OR
+      ``engine_group`` is_not_empty. One reveal trigger is emitted per
+      (engine field, proxy field) pair, so each proxy field is revealed by
+      either engine selector.
+    """
     triggers: list[dict] = []
     if engine_id:
         triggers.append(
@@ -4746,6 +4760,24 @@ def build_engine_triggers(
                 "effects": [{"id": engine_group_id, "action": {"hidden": True}}],
             }
         )
+
+    # Reveal proxy when an engine value is present. Proxy ships hidden by
+    # default (see build_proxy_field), so these triggers un-hide it once the
+    # user picks an engine or engine group.
+    for engine_field_id in (engine_id, engine_group_id):
+        if not engine_field_id:
+            continue
+        for proxy_id in proxy_ids or []:
+            triggers.append(
+                {
+                    "conditions": {
+                        "id": engine_field_id,
+                        "behavior": "value",
+                        "operator": "is_not_empty",
+                    },
+                    "effects": [{"id": proxy_id, "action": {"hidden": False}}],
+                }
+            )
     return triggers
 
 
@@ -4887,6 +4919,10 @@ def attach_per_profile_connection_fields(
                 target_fields.append(field)
 
         # --- proxy (skip entirely for Appendix G) ---
+        # Capture the resolved (possibly prefixed) proxy field id(s) for THIS
+        # profile so the engine-trigger builder can emit "reveal proxy when an
+        # engine is selected" rules referencing the same ids.
+        profile_proxy_fids: list[str] = []
         if excl != "excluded":
             for pid in proxy_ids:
                 fid = _maybe_prefixed_id(
@@ -4895,6 +4931,7 @@ def attach_per_profile_connection_fields(
                 field = build_proxy_field(pid, yml_params_by_name)
                 field["id"] = fid
                 target_fields.append(field)
+                profile_proxy_fids.append(fid)
 
         # --- insecure (always, per Part B; Appendix G does NOT skip it) ---
         for pid in insecure_ids:
@@ -4935,7 +4972,10 @@ def attach_per_profile_connection_fields(
 
         all_triggers.extend(
             build_engine_triggers(
-                mode_id=mode_fid, engine_id=engine_fid, engine_group_id=group_fid
+                mode_id=mode_fid,
+                engine_id=engine_fid,
+                engine_group_id=group_fid,
+                proxy_ids=profile_proxy_fids,
             )
         )
 
