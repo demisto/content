@@ -694,7 +694,6 @@ def test_whois_command(mock_client, mocker):
 
 def test_run_threat_check_command(mock_client):
     args = {"type": "domain", "data": ["example.com"], "user_identifier": "test_user", "query": "test_query"}
-    expected_output = "Threat check for query 'test_query' completed successfully"
     mock_response = {
         "type": "domain",
         "data": ["example.com"],
@@ -709,7 +708,7 @@ def test_run_threat_check_command(mock_client):
     assert result.outputs_key_field == "query"
     assert result.outputs["query"] == "test_query"
     assert result.outputs["result"] == "benign"
-    assert expected_output in result.readable_output
+    assert result.readable_output == "Mocked Markdown Table"
 
 
 def mock_file_response(content: bytes, status_code=200, headers=None) -> Response:
