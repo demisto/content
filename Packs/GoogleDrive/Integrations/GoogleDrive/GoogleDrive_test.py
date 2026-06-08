@@ -412,6 +412,7 @@ def test_main_fetch_incidents(mocker):
     with open("test_data/fetch_incidents_output.json") as file:
         fetch_incidents_output = json.load(file)
     mocker.patch.object(demisto, "command", return_value="fetch-incidents")
+    mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "incidents")
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(

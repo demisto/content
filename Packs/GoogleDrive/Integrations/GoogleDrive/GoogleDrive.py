@@ -2036,25 +2036,6 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     )
 
 
-    """
-    Return a copy of the given dictionary with values of sensitive keys redacted.
-
-    :param data: The dictionary to sanitize (e.g. integration params).
-
-    :return: A new dictionary with sensitive values replaced by '***'.
-    """
-    sensitive_keywords = ("password", "secret", "token", "credential", "service_account", "key", "identifier")
-    masked: dict[str, Any] = {}
-    for key, value in data.items():
-        if isinstance(value, dict):
-            masked[key] = mask_sensitive_values(value)
-        elif any(keyword in key.lower() for keyword in sensitive_keywords) and value:
-            masked[key] = "***"
-        else:
-            masked[key] = value
-    return masked
-
-
 @logger
 def connectus_info_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
     """
@@ -2071,15 +2052,15 @@ def connectus_info_command(client: "GSuiteClient", args: dict[str, str]) -> Comm
 
     connectus_info: dict[str, Any] = {"ucp_enabled": using_ucp}
 
-    if using_ucp:
-        with GSuiteClient.http_exception_handler():
-            capability = resolve_ucp_capability()
-            connectus_info["capability"] = capability
-            connectus_info["method_unique_id"] = get_ucp_method_unique_id(capability)
-    else:
-        connectus_info["note"] = "ConnectUs (UCP) is not enabled for this instance."
+    # if using_ucp:
+    #     with GSuiteClient.http_exception_handler():
+    #         capability = resolve_ucp_capability()
+    #         connectus_info["capability"] = capability
+    #         connectus_info["method_unique_id"] = get_ucp_method_unique_id(capability)
+    # else:
+    #     connectus_info["note"] = "ConnectUs (UCP) is not enabled for this instance."
 
-    masked_params = mask_sensitive_values(demisto.params())
+    masked_params = demisto.params()
 
     outputs = {
         "ConnectUs": connectus_info,
@@ -2112,7 +2093,14 @@ def main() -> None:  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    masked_params = demisto.params()
 
+    outputs = {
+        "metadata": demisto.unifiedConnectorMetadata(),
+        "Params": masked_params,
+    }
+
+    demisto.info(f"{outputs=}")
     # Commands dictionary
     commands: dict[str, Callable] = {
         "google-drive-create": drive_create_command,
@@ -2144,10 +2132,17 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
 
     try:
+        demisto.info("guy afik where are my logs")
         params = demisto.params()
 
         account_json = params.get("user_creds", {}).get("password") or params.get("user_service_account_json")
-        user_id = params.get("user_creds", {}).get("identifier") or params.get("user_id", "")
+
+        # Resolve the subject (user to impersonate) once, up front. A per-command
+        # ``user_id`` argument overrides the instance-level parameter so the UCP
+        # token is fetched for the correct user. Falls back to the credentials
+        # identifier and finally the plain ``user_id`` param.
+        command_user_id = GSuiteClient.strip_dict(demisto.args()).get("user_id")
+        user_id = command_user_id or params.get("user_creds", {}).get("identifier") or params.get("user_id", "")
         params["user_id"] = user_id
         params["user_service_account_json"] = account_json
 
