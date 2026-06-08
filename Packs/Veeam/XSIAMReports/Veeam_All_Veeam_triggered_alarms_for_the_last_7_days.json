@@ -1,4 +1,6 @@
 {
+  "id": "e32e26a18441477599887e9e96068a11",
+  "name": "All Veeam triggered alarms for the last 7 days",
   "templates_data": [
     {
       "report_name": "All Veeam triggered alarms for the last 7 days",

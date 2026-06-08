@@ -1,4 +1,6 @@
 {
+  "id": "fbd5ec931030499886b595b972d9c3bc",
+  "name": "All Veeam security events for the last 7 days",
   "templates_data": [
     {
       "report_name": "All Veeam security events for the last 7 days",

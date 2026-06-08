@@ -1,4 +1,6 @@
 {
+  "id": "fe984e4ee65345ea837a955d65a6c3f2",
+  "name": "Veeam Security Activities",
   "dashboards_data": [
     {
       "name": "Veeam Security Activities",
@@ -1594,7 +1596,7 @@
     },
     {
       "widget_key": "xql_1721205591354",
-      "title": "Four-Eyes Authorization Events\u00a0by Operation",
+      "title": "Four-Eyes Authorization Events by Operation",
       "creation_time": 1727085303785,
       "description": "The breakdown of Veeam Backup & Replication four-eyes authorization events by operation.",
       "data": {

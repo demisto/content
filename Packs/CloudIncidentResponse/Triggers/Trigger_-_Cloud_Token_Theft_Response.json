@@ -1,4 +1,6 @@
 {
+  "id": "97afabe093f07ddf12a25da7c7498601",
+  "name": "Cloud Token Theft",
   "trigger_id": "97afabe093f07ddf12a25da7c7498601",
   "playbook_id": "Cloud Token Theft Response",
   "suggestion_reason": "Recommended for Alerts involving cloud token theft",

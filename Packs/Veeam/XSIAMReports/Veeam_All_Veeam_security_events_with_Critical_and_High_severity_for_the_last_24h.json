@@ -1,4 +1,6 @@
 {
+  "id": "5582a3167bab421595e9e9df9b257457",
+  "name": "All Veeam security events with Critical and High severity for the last 24h",
   "templates_data": [
     {
       "report_name": "All Veeam security events with Critical and High severity for the last 24h",

@@ -1,4 +1,6 @@
 {
+  "id": "c5e709240d634a42ad404f34a972f6bb",
+  "name": "All Veeam failed multi-factor authentication events for the last 24h",
   "templates_data": [
     {
       "report_name": "All Veeam failed multi-factor authentication events for the last 24h",
