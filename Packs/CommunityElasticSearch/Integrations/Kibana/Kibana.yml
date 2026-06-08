@@ -101,7 +101,7 @@ script:
     name: kibana-cases-find
     outputs:
     - contextPath: Kibana.Cases.Status
-      description: Status of the case in Kibana.
+      description: The status of the case in Kibana.
     - contextPath: Kibana.Cases.Version
       description: Version number of the case in Kibana.
     - contextPath: Kibana.Cases.ID
