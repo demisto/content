@@ -242,6 +242,15 @@ script:
       - THREAT_DETECTION
       - CLOUD_CONFIGURATION
       description: Get Issues of a specific type.
+    - description: Get Issues created after this date (ISO 8601, e.g. 2024-01-01T00:00:00Z). Narrows heavy queries to avoid timeouts.
+      name: created_after
+      required: false
+    - description: Get Issues created before this date (ISO 8601, e.g. 2024-01-01T00:00:00Z).
+      name: created_before
+      required: false
+    - description: Maximum number of Issues to return. When omitted, all matching Issues are returned. Returns the most severe Issues first.
+      name: limit
+      required: false
     outputs:
     - contextPath: Wiz.Manager.Issues.entitySnapshot
       description: All resource details.
