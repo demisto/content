@@ -1,3 +1,5 @@
+## Kibana
+
 This integration enables using Elastic Security for SIEM for security operations management and searching Elastic logs.
 
 The Kibana integration supports Elasticsearch 6.0.0 and later.
