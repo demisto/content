@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2026-05-28T13:45:23Z",
-    "categories": [],
+    "categories": [
+        "Analytics & SIEM"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
