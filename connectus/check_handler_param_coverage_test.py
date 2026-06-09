@@ -1,0 +1,367 @@
+"""Unit tests for ``check_handler_param_coverage``.
+
+The tests build minimal connector layouts under ``tmp_path`` so each scenario
+(hidden exclusion, serializer translation, view-group filtering, auth-profile
+inclusion, capability filtering) is isolated. A couple of tests also exercise
+the real Salesforce fixture under
+``runtime_demisto.params_parity/test_data`` to lock in end-to-end behavior.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+import yaml
+
+import check_handler_param_coverage as mod
+
+# ---------------------------------------------------------------------------
+# Fixture builders
+# ---------------------------------------------------------------------------
+HANDLER_REL = Path("components") / "handlers" / "xsoar-test"
+
+
+def _write_yaml(path: Path, doc: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w") as fh:
+        yaml.safe_dump(doc, fh)
+
+
+def _build_connector(
+    tmp_path: Path,
+    *,
+    handler: dict,
+    capabilities: dict | None = None,
+    configurations: dict | None = None,
+    connection: dict | None = None,
+    serializer: dict | None = None,
+) -> tuple[Path, Path]:
+    """Create a connector layout. Returns (connector_root, handler_dir)."""
+    connector_root = tmp_path / "myconnector"
+    handler_dir = connector_root / HANDLER_REL
+    _write_yaml(handler_dir / mod.HANDLER_FILE, handler)
+    if capabilities is not None:
+        _write_yaml(connector_root / mod.CAPABILITIES_FILE, capabilities)
+    if configurations is not None:
+        _write_yaml(connector_root / mod.CONFIGURATIONS_FILE, configurations)
+    if connection is not None:
+        _write_yaml(connector_root / mod.CONNECTION_FILE, connection)
+    if serializer is not None:
+        _write_yaml(handler_dir / mod.SERIALIZER_GLOB, serializer)
+    return connector_root, handler_dir
+
+
+def _write_integration_yml(tmp_path: Path, configuration: list[dict]) -> Path:
+    path = tmp_path / "integration.yml"
+    _write_yaml(path, {"name": "Test", "configuration": configuration})
+    return path
+
+
+# ---------------------------------------------------------------------------
+# _is_hidden / collect_yml_params
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    "param,expected",
+    [
+        ({"name": "a"}, False),
+        ({"name": "a", "hidden": False}, False),
+        ({"name": "a", "hidden": []}, False),
+        ({"name": "a", "hidden": True}, True),
+        ({"name": "a", "hidden": "platform"}, True),
+        ({"name": "a", "hidden": ["platform"]}, True),
+        ({"name": "a", "hidden": ["marketplacev2", "platform"]}, True),
+    ],
+)
+def test_is_hidden(param: dict, expected: bool) -> None:
+    assert mod._is_hidden(param) is expected
+
+
+def test_collect_yml_params_excludes_hidden() -> None:
+    cfg = [
+        {"name": "visible1"},
+        {"name": "visible2", "hidden": False},
+        {"name": "hidden_bool", "hidden": True},
+        {"name": "hidden_platform", "hidden": "platform"},
+        {"name": "hidden_list", "hidden": ["platform"]},
+        {"no_name": "ignored"},
+    ]
+    assert mod.collect_yml_params({"configuration": cfg}) == {"visible1", "visible2"}
+
+
+# ---------------------------------------------------------------------------
+# parse_handler
+# ---------------------------------------------------------------------------
+def test_parse_handler_extracts_view_group_caps_and_profiles() -> None:
+    handler = {
+        "id": "xsoar-test",
+        "capabilities": [
+            {
+                "id": "automation",
+                "auth_options": [
+                    {"id": "oauth2.test"},
+                    {"id": "apikey.test"},
+                ],
+            },
+            {"id": "fetch-issues", "auth_options": [{"id": "oauth2.test"}]},
+        ],
+    }
+    view_group, cap_ids, profile_ids = mod.parse_handler(handler)
+    assert view_group == "xsoar-test"
+    assert cap_ids == {"automation", "fetch-issues"}
+    assert profile_ids == {"oauth2.test", "apikey.test"}
+
+
+# ---------------------------------------------------------------------------
+# serializer + resolver
+# ---------------------------------------------------------------------------
+def test_load_serializer_mappings_and_resolve(tmp_path: Path) -> None:
+    handler = {"id": "xsoar-test", "capabilities": []}
+    _, handler_dir = _build_connector(
+        tmp_path,
+        handler=handler,
+        serializer={"field_mappings": [{"id": "domain", "field_name": "url"}]},
+    )
+    mappings = mod.load_serializer_mappings(handler_dir)
+    assert mappings == {"domain": "url"}
+    assert mod.resolve_param_name("domain", mappings) == "url"
+    assert mod.resolve_param_name("other", mappings) == "other"
+
+
+# ---------------------------------------------------------------------------
+# connector-root resolution
+# ---------------------------------------------------------------------------
+def test_resolve_connector_root(tmp_path: Path) -> None:
+    _, handler_dir = _build_connector(tmp_path, handler={"id": "xsoar-test"})
+    assert mod.resolve_connector_root(handler_dir) == (tmp_path / "myconnector").resolve()
+
+
+def test_resolve_connector_root_bad_layout(tmp_path: Path) -> None:
+    flat = tmp_path / "flat"
+    flat.mkdir()
+    with pytest.raises(mod.CoverageError):
+        mod.resolve_connector_root(flat)
+
+
+# ---------------------------------------------------------------------------
+# capability-config collector
+# ---------------------------------------------------------------------------
+def test_capability_config_filters_by_handler_capability_ids() -> None:
+    configurations = {
+        "configurations": [
+            {
+                "id": "automation",
+                "configurations": [{"fields": [{"id": "create_user"}]}],
+            },
+            {
+                "id": "other-cap",
+                "configurations": [{"fields": [{"id": "should_not_appear"}]}],
+            },
+        ]
+    }
+    ids = mod.collect_capability_config_field_ids({}, configurations, {"automation"})
+    assert ids == ["create_user"]
+
+
+def test_capability_config_includes_sub_capabilities() -> None:
+    capabilities = {
+        "capabilities": [
+            {
+                "id": "posture",
+                "configurations": [{"fields": [{"id": "parent_field"}]}],
+                "sub_capabilities": [
+                    {
+                        "id": "posture-remediation",
+                        "configurations": [{"fields": [{"id": "sub_field"}]}],
+                    }
+                ],
+            }
+        ]
+    }
+    ids = mod.collect_capability_config_field_ids(
+        capabilities, {}, {"posture-remediation"}
+    )
+    assert "sub_field" in ids
+
+
+# ---------------------------------------------------------------------------
+# general-configurations collector (view_group filtering)
+# ---------------------------------------------------------------------------
+def test_general_config_view_group_filtering() -> None:
+    doc = {
+        "general_configurations": {
+            "configurations": [
+                {"view_group": "xsoar-test", "fields": [{"id": "mine"}]},
+                {"view_group": "other-handler", "fields": [{"id": "theirs"}]},
+                {"fields": [{"id": "shared"}]},  # no view_group → shared
+            ]
+        }
+    }
+    ids = mod.collect_general_config_field_ids([doc], "xsoar-test")
+    assert set(ids) == {"mine", "shared"}
+    assert "theirs" not in ids
+
+
+# ---------------------------------------------------------------------------
+# auth-profile collector
+# ---------------------------------------------------------------------------
+def test_auth_profile_collector_filters_by_referenced_ids() -> None:
+    connection = {
+        "profiles": [
+            {
+                "id": "oauth2.test",
+                "configurations": [{"fields": [{"id": "client_key"}, {"id": "client_secret"}]}],
+            },
+            {
+                "id": "unused.test",
+                "configurations": [{"fields": [{"id": "unused_field"}]}],
+            },
+        ]
+    }
+    ids = mod.collect_auth_profile_field_ids(connection, {"oauth2.test"})
+    assert set(ids) == {"client_key", "client_secret"}
+    assert "unused_field" not in ids
+
+
+# ---------------------------------------------------------------------------
+# End-to-end check_coverage (tmp fixtures)
+# ---------------------------------------------------------------------------
+def _full_connector(tmp_path: Path):
+    handler = {
+        "id": "xsoar-test",
+        "capabilities": [
+            {"id": "automation", "auth_options": [{"id": "oauth2.test"}]},
+        ],
+    }
+    capabilities = {"capabilities": [{"id": "automation"}]}
+    configurations = {
+        "configurations": [
+            {
+                "id": "automation",
+                "configurations": [{"fields": [{"id": "create_user"}]}],
+            }
+        ],
+        "general_configurations": {
+            "configurations": [
+                {"view_group": "xsoar-test", "fields": [{"id": "log_level"}]},
+            ]
+        },
+    }
+    connection = {
+        "general_configurations": {
+            "configurations": [
+                {"view_group": "xsoar-test", "fields": [{"id": "domain"}]},
+            ]
+        },
+        "profiles": [
+            {
+                "id": "oauth2.test",
+                "configurations": [{"fields": [{"id": "client_key"}]}],
+            }
+        ],
+    }
+    serializer = {"field_mappings": [{"id": "domain", "field_name": "url"}]}
+    return _build_connector(
+        tmp_path,
+        handler=handler,
+        capabilities=capabilities,
+        configurations=configurations,
+        connection=connection,
+        serializer=serializer,
+    )
+
+
+def test_check_coverage_pass(tmp_path: Path) -> None:
+    _, handler_dir = _full_connector(tmp_path)
+    # All YML params map into the connector set: create_user, log_level,
+    # url (serializer-translated from domain), client_key.
+    yml = _write_integration_yml(
+        tmp_path,
+        [
+            {"name": "create_user"},
+            {"name": "log_level"},
+            {"name": "url"},
+            {"name": "client_key"},
+            {"name": "secret_hidden", "hidden": True},  # excluded
+        ],
+    )
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+def test_check_coverage_fail_lists_missing(tmp_path: Path) -> None:
+    _, handler_dir = _full_connector(tmp_path)
+    yml = _write_integration_yml(
+        tmp_path,
+        [
+            {"name": "create_user"},
+            {"name": "not_in_connector"},
+            {"name": "also_missing"},
+        ],
+    )
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is False
+    assert missing == {"not_in_connector", "also_missing"}
+
+
+def test_check_coverage_serializer_translation_required(tmp_path: Path) -> None:
+    """``domain`` connector id must be compared as the original ``url``."""
+    _, handler_dir = _full_connector(tmp_path)
+    # YML uses original name `url`; without serializer translation it'd be
+    # reported missing.
+    yml = _write_integration_yml(tmp_path, [{"name": "url"}])
+    passed, _ = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+
+    # The raw connector id `domain` is NOT a YML param name → reported missing.
+    yml2 = _write_integration_yml(tmp_path, [{"name": "domain"}])
+    passed2, missing2 = mod.check_coverage(handler_dir, yml2)
+    assert passed2 is False
+    assert missing2 == {"domain"}
+
+
+def test_check_coverage_bad_handler_path(tmp_path: Path) -> None:
+    yml = _write_integration_yml(tmp_path, [{"name": "a"}])
+    with pytest.raises(mod.CoverageError):
+        mod.check_coverage(tmp_path / "nope", yml)
+
+
+# ---------------------------------------------------------------------------
+# Real Salesforce fixture (integration test)
+# ---------------------------------------------------------------------------
+SALESFORCE_HANDLER = (
+    Path(__file__).parent
+    / "runtime_demisto.params_parity"
+    / "test_data"
+    / "connectors"
+    / "salesforce"
+    / "components"
+    / "handlers"
+    / "xsoar_sf"
+)
+
+
+@pytest.mark.skipif(
+    not SALESFORCE_HANDLER.is_dir(), reason="salesforce fixture not present"
+)
+def test_salesforce_fixture_collects_expected_params(tmp_path: Path) -> None:
+    connector_root = mod.resolve_connector_root(SALESFORCE_HANDLER)
+    capabilities_doc = mod.load_yaml(connector_root / mod.CAPABILITIES_FILE)
+    configurations_doc = mod.load_yaml(connector_root / mod.CONFIGURATIONS_FILE)
+    connection_doc = mod.load_yaml(connector_root / mod.CONNECTION_FILE)
+    handler_yaml = mod.load_yaml(SALESFORCE_HANDLER / mod.HANDLER_FILE)
+
+    params = mod.collect_connector_params(
+        SALESFORCE_HANDLER,
+        capabilities_doc,
+        configurations_doc,
+        connection_doc,
+        handler_yaml,
+    )
+    # automation-and-remediation capability fields.
+    assert "create_user_enabled" in params
+    # serializer translates connector `domain` → `InstanceURL`.
+    assert "InstanceURL" in params
+    # auth-profile field from the referenced oauth2 profile.
+    assert "client_key" in params
