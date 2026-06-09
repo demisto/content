@@ -156,3 +156,90 @@ def test_file_enrichment_script_end_to_end_with_files(mocker):
     wf2 = next(r for r in f2["Results"] if r["Brand"] == "WildFire-v2")
     assert wf2["Score"] == 1
     assert wf2.get("Reliability") == "Low"
+
+
+def _capture_built_commands(mocker, file_list):
+    """Helper: runs file_enrichment_script with mocks and returns the command batches exactly as
+    they were built by file_enrichment_script, captured before any brand/type filtering is applied."""
+    mocker.patch.object(demisto, "args", return_value={"file_hash": ",".join(file_list)})
+
+    def extractIndicators_side_effect(cmd, args=None, extract_contents=False, fail_on_error=True):
+        if cmd == "extractIndicators":
+            return [{"EntryContext": {"ExtractedIndicators": {"File": file_list}}}]
+        return []
+
+    mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=extractIndicators_side_effect)
+
+    class _MockSearcher:
+        def __iter__(self):
+            return iter([])
+
+    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_MockSearcher())
+    mocker.patch.object(
+        demisto,
+        "getModules",
+        return_value={
+            "wf": {"state": "active", "brand": "WildFire-v2"},
+            "core": {"state": "active", "brand": "Cortex Core - IR"},
+        },
+    )
+
+    captured = {}
+
+    def _fake_prepare_commands_batches(self, external_enrichment=False):
+        # Capture the commands as built (pre-filter) so the assertions are independent of
+        # the brand/type filtering performed by the real prepare_commands_batches.
+        captured["batches"] = self.commands
+        return self.commands
+
+    mocker.patch(
+        "AggregatedCommandApiModule.ReputationAggregatedCommand.prepare_commands_batches",
+        _fake_prepare_commands_batches,
+    )
+
+    def _fake_execute_list_of_batches(self, list_of_batches, brands_to_run=None, verbose=False):
+        return [[[({"Type": 1, "EntryContext": {}}, "", "")] for _ in batch] for batch in list_of_batches]
+
+    mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", _fake_execute_list_of_batches)
+
+    file_enrichment_script(
+        file_list=file_list,
+        external_enrichment=True,
+        verbose=False,
+        enrichment_brands=["WildFire-v2"],
+        additional_fields=False,
+    )
+    return captured["batches"]
+
+
+def test_prevalence_command_omitted_when_no_sha256(mocker):
+    """
+    Given:
+        - A single MD5 hash (no SHA256) as input.
+    When:
+        - file_enrichment_script builds the command batches.
+    Then:
+        - The core-get-hash-analytics-prevalence command is NOT included.
+    """
+    md5_hash = "d41d8cd98f00b204e9800998ecf8427e"
+    batches = _capture_built_commands(mocker, [md5_hash])
+
+    all_command_names = [cmd.name for batch in batches for cmd in batch]
+    assert "core-get-hash-analytics-prevalence" not in all_command_names
+
+
+def test_prevalence_command_included_when_sha256_present(mocker):
+    """
+    Given:
+        - A SHA256 hash as input.
+    When:
+        - file_enrichment_script builds the command batches.
+    Then:
+        - A single core-get-hash-analytics-prevalence command is included with the SHA256 value.
+    """
+    sha256_hash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    batches = _capture_built_commands(mocker, [sha256_hash])
+
+    prevalence_cmds = [cmd for batch in batches for cmd in batch if cmd.name == "core-get-hash-analytics-prevalence"]
+    assert len(prevalence_cmds) == 1
+    assert prevalence_cmds[0].args == {"sha256": [sha256_hash]}
