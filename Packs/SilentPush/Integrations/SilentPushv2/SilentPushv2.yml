@@ -1,36 +1,47 @@
 category: Data Enrichment & Threat Intelligence
 description: The Silent Push Platform uses first-party data and a proprietary scanning engine to enrich global DNS data with risk and reputation scoring, giving security teams the ability to join the dots across the entire IPv4 and IPv6 range, and identify adversary infrastructure before an attack is launched. The content pack integrates with the Silent Push system to gain insights into domain/IP information, reputations, enrichment, and infratag-related details. It also provides functionality to live-scan URLs and take screenshots of them. Additionally, it allows fetching future attack feeds from the Silent Push system.
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: SilentPush_v2
   version: -1
 name: SilentPush_v2
 display: SilentPush
+provider: SilentPush
 configuration:
 - display: Base URL
   name: url
   type: 0
   required: true
   defaultvalue: https://api.silentpush.com
+  section: Connect
 - display: API Key
   name: credentials
   type: 9
   required: false
+  section: Connect
 - display: The Threat Check key
   name: threat-check-key
   type: 9
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 script:
   commands:
   - deprecated: false
-    description: add the new feed
+    description: Add the new feed.
     name: silentpush-add-feed
     arguments:
     - name: name
@@ -89,7 +100,7 @@ script:
       description: Tags associated with the feed.
       type: Unknown
   - deprecated: false
-    description: add indicators to the feed
+    description: Add tags to the feed.
     name: silentpush-add-feed-tags
     arguments:
     - name: feed_uuid
@@ -112,7 +123,7 @@ script:
       description: List of indicators that were considered invalid and not added to the feed.
       type: Unknown
   - deprecated: false
-    description: add indicators to the feed
+    description: Add indicators to the feed.
     name: silentpush-add-indicators
     arguments:
     - name: feed_uuid
@@ -135,7 +146,7 @@ script:
       description: List of indicators that were considered invalid and not added to the feed.
       type: Unknown
   - deprecated: false
-    description: updates tags to the indicators
+    description: Updates tags on the indicators.
     name: silentpush-add-indicator-tags
     arguments:
     - name: feed_uuid
@@ -167,7 +178,7 @@ script:
       description: The tags assigned to the indicator.
       type: String
   - deprecated: false
-    description: enriches IPs or Domains in a bulk
+    description: Enriches IPs or domains in bulk.
     name: silentpush-bulk-enrich
     arguments:
     - name: resource
@@ -247,7 +258,7 @@ script:
       description: TLD zone of the domain.
       type: String
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.registrar
-      description: registrar of the domain.
+      description: Registrar of the domain.
       type: String
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.whois_age
       description: The age of the domain based on WHOIS records.
@@ -382,7 +393,7 @@ script:
       description: HTTP response code for the domain scan.
       type: String
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_body_murmur3
-      description: hash of the page content.
+      description: Hash of the page content.
       type: String
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_body_ssdeep
       description: SSDEEP hash (used for fuzzy matching similar HTML content).
@@ -520,13 +531,13 @@ script:
       description: A score indicating how likely this IP is dynamic.
       type: Number
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_ipfs_node
-      description: the InterPlanetary File System (IPFS), a decentralized file storage system.
+      description: Indicates whether the IP is an InterPlanetary File System (IPFS) node, a decentralized file storage system.
       type: Boolean
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_tor_exit_node
       description: Tor exit node (used for anonymous internet browsing).
       type: Boolean
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.continent_code
-      description: abbreviation for the continent where the IP is located.
+      description: Abbreviation for the continent where the IP is located.
       type: String
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.continent_name
       description: The full name of the continent.
@@ -670,7 +681,7 @@ script:
       description: A numerical risk score (typically 0-100, with higher values indicating higher risk).
       type: Number
   - deprecated: false
-    description: queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information.
+    description: Queries granular DNS/IP parameters (e.g., NS servers, MX servers, IP addresses, ASNs) for density information.
     name: silentpush-density-lookup
     arguments:
     - name: qtype
@@ -705,7 +716,7 @@ script:
       description: The name server (NS) for the query result.
       type: String
   - deprecated: false
-    description: performs a forward PADNS lookup using various filtering parameters.
+    description: Performs a forward PADNS lookup using various filtering parameters.
     name: silentpush-forward-padns-lookup
     arguments:
     - name: first_seen_after
@@ -816,18 +827,6 @@ script:
       required: false
       secret: false
       default: false
-    - name: subdomains
-      isArray: false
-      description: The flag to include subdomains in the lookup results.
-      required: false
-      secret: false
-      default: false
-    - name: regex
-      isArray: false
-      description: The regular expression to filter the DNS records.
-      required: false
-      secret: false
-      default: false
     outputs:
     - contextPath: SilentPush.PADNSLookup.SilentPush.PADNS.qname
       description: The DNS record name that was looked up.
@@ -860,18 +859,18 @@ script:
       description: The type of the DNS record (e.g., NS).
       type: String
   - deprecated: false
-    description: retrieves Autonomous System Numbers (ASNs) associated with a domain.
+    description: Retrieves Autonomous System Numbers (ASNs) associated with a domain.
     name: silentpush-get-asns-for-domain
     arguments:
     - name: domain
       isArray: false
-      description: The domain name to search
+      description: The domain name to search.
       required: true
       secret: false
       default: false
     - name: result_format
       isArray: false
-      description: 'The format of returned results: compact (default) = return ASN and AS Name only, full = return details of domain hosts in each ASN'
+      description: 'The format of returned results: compact (default) = return ASN and AS Name only, full = return details of domain hosts in each ASN.'
       required: false
       secret: false
       default: false
@@ -883,12 +882,12 @@ script:
       description: Dictionary of Autonomous System Numbers (ASNs) associated with the domain.
       type: Unknown
   - deprecated: false
-    description: 'runs the threat check on the specified '
+    description: Retrieves data exports from Silent Push.
     name: silentpush-get-data-exports
     arguments:
     - name: export_type
       isArray: false
-      description: The export type (iofa, organisation, etc)
+      description: The export type (iofa, organisation, etc).
       required: true
       secret: false
       default: false
@@ -924,7 +923,7 @@ script:
       description: The type of the report file.
       type: String
   - deprecated: false
-    description: get certificate data collected from domain scanning.
+    description: Get certificate data collected from domain scanning.
     name: silentpush-get-domain-certificates
     arguments:
     - name: prefer
@@ -1064,7 +1063,7 @@ script:
       description: Status of the job.
       type: String
   - deprecated: false
-    description: retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6).
+    description: Retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6).
     name: silentpush-get-enrichment-data
     arguments:
     - name: resource
@@ -1144,7 +1143,7 @@ script:
       description: TLD zone of the domain.
       type: String
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.registrar
-      description: registrar of the domain.
+      description: Registrar of the domain.
       type: String
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.whois_age
       description: The age of the domain based on WHOIS records.
@@ -1279,7 +1278,7 @@ script:
       description: HTTP response code for the domain scan.
       type: String
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.html_body_murmur3
-      description: hash of the page content.
+      description: Hash of the page content.
       type: String
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.html_body_ssdeep
       description: SSDEEP hash (used for fuzzy matching similar HTML content).
@@ -1417,13 +1416,13 @@ script:
       description: A score indicating how likely this IP is dynamic.
       type: Number
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.ip_is_ipfs_node
-      description: the InterPlanetary File System (IPFS), a decentralized file storage system.
+      description: Indicates whether the IP is an InterPlanetary File System (IPFS) node, a decentralized file storage system.
       type: Boolean
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.ip_is_tor_exit_node
       description: Tor exit node (used for anonymous internet browsing).
       type: Boolean
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.continent_code
-      description: abbreviation for the continent where the IP is located.
+      description: Abbreviation for the continent where the IP is located.
       type: String
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.continent_name
       description: The full name of the continent.
@@ -1567,7 +1566,7 @@ script:
       description: A numerical risk score (typically 0-100, with higher values indicating higher risk).
       type: Number
   - deprecated: false
-    description: retrieves the reputation information for an IPv4.
+    description: Retrieves the reputation information for an IPv4.
     name: silentpush-get-ipv4-reputation
     arguments:
     - name: ipv4
@@ -1605,7 +1604,7 @@ script:
       description: The number of domain names linked to this IP that are flagged or listed in security threat databases.
       type: Number
   - deprecated: false
-    description: retrieves historical reputation data for a specified nameserver,including reputation scores and optional detailed calculation information.
+    description: Retrieves historical reputation data for a specified nameserver, including reputation scores and optional detailed calculation information.
     name: silentpush-get-nameserver-reputation
     arguments:
     - name: nameserver
@@ -1646,12 +1645,12 @@ script:
       description: Number of domains listed in reputation databases.
       type: Number
   - deprecated: false
-    description: retrieves the reputation history for a specific subnet.
+    description: Retrieves the reputation history for a specific subnet.
     name: silentpush-get-subnet-reputation
     arguments:
     - name: subnet
       isArray: false
-      description: 'The IPv4 subnet in the format IP/NETMASK for which reputation information needs to be retrieved, i.e.: 192.35.168.0/23'
+      description: 'The IPv4 subnet in the format IP/NETMASK for which reputation information needs to be retrieved, i.e.: 192.35.168.0/23.'
       required: true
       secret: false
       default: false
@@ -1707,31 +1706,31 @@ script:
       default: false
     - name: window
       isArray: false
-      description: The use records with a last_seen more recently than days ago, default = 30
+      description: The use records with a last_seen more recently than days ago, default = 30.
       required: false
       secret: false
       default: false
     - name: asn
       isArray: false
-      description: Whether to include asn diversity, 0 = do not include, 1 (default) = include asn diversity
+      description: Whether to include asn diversity, 0 = do not include, 1 (default) = include asn diversity.
       required: false
       secret: false
       default: false
     - name: timeline
       isArray: false
-      description: Whether include timeline of {ip, first_seen, last_seen} (+asn if asn=1), 0 (default) = do not include, 1 = include timeline
+      description: Whether include timeline of {ip, first_seen, last_seen} (+asn if asn=1), 0 (default) = do not include, 1 = include timeline.
       required: false
       secret: false
       default: false
     - name: verbose
       isArray: false
-      description: Whether return ips, dates, timeline, (and asns if asn=1), 0 (default) = do not include, 1 = include all data
+      description: Whether return ips, dates, timeline, (and asns if asn=1), 0 (default) = do not include, 1 = include all data.
       required: false
       secret: false
       default: false
     - name: scope
       isArray: false
-      description: 'The exact or near match results by qtype, *scope=live is automatically set when timeline=1 or verbose=1. *for qtype = a: host - exact match (default when qtype=a), domain - match all hosts in this domain (domain extracted from {query}), subdomain - match all hosts at this subdomain level (i.e. *.{query}), live - calculate values from live data instead of pre-aggregated values - also switches to exact match only. *for qtype = aaaa, live - only this mode is supported for qtype=aaaa'
+      description: 'The exact or near match results by qtype, *scope=live is automatically set when timeline=1 or verbose=1. *for qtype = a: host - exact match (default when qtype=a), domain - match all hosts in this domain (domain extracted from {query}), subdomain - match all hosts at this subdomain level (i.e. *.{query}), live - calculate values from live data instead of pre-aggregated values - also switches to exact match only. *for qtype = aaaa, live - only this mode is supported for qtype=aaaa.'
       required: false
       secret: false
       default: false
@@ -1749,7 +1748,7 @@ script:
       description: The number of unique IP groups associated with the domain.
       type: Number
     - contextPath: SilentPush.IPdiversityLookup.SilentPush.Diversity.timeline
-      description: timeline of {ip, first_seen, last_seen}.
+      description: Timeline of IP addresses with first_seen and last_seen timestamps.
       type: Unknown
   - deprecated: false
     description: Search for IP Diversity patterns, with optional name server and domain name pattern matching.
@@ -1889,7 +1888,7 @@ script:
       default: false
     - name: timeline
       isArray: false
-      description: Whether to include details of IPs, ASNs, first_seen and last_seen for each domain, 0 (default) = do not include, 1 = include timeline
+      description: Whether to include details of IPs, ASNs, first_seen and last_seen for each domain, 0 (default) = do not include, 1 = include timeline.
       required: false
       secret: false
       default: false
@@ -1965,12 +1964,6 @@ script:
       required: false
       secret: false
       default: false
-    - name: ip_diversity_all_min
-      isArray: false
-      description: The minimum diversity limit, default = 1.
-      required: false
-      secret: false
-      default: false
     - name: ip_diversity_groups_min
       isArray: false
       description: The minimum diversity limit.
@@ -1997,10 +1990,10 @@ script:
       description: The number of unique IP groups associated with the domain.
       type: Number
     - contextPath: SilentPush.IPDiversityPatterns.SilentPush.Diversity.timeline
-      description: timeline of {ip, first_seen, last_seen}.
+      description: Timeline of IP addresses with first_seen and last_seen timestamps.
       type: Unknown
   - deprecated: false
-    description: get domain information along with Silent Push risk score and live whois information for multiple domains.
+    description: Get domain information along with Silent Push risk score and live WHOIS information for multiple domains.
     name: silentpush-list-domain-information
     arguments:
     - name: domains
@@ -2053,7 +2046,7 @@ script:
       description: The age of the domain in days.
       type: Unknown
   - deprecated: false
-    description: 'get IP4 information along with Silent Push risk score '
+    description: Get IPv4 information along with Silent Push risk score.
     name: silentpush-list-ip4-information
     arguments:
     - name: ips
@@ -2184,7 +2177,7 @@ script:
       description: The age of the domain in days.
       type: Unknown
   - deprecated: false
-    description: 'get IP6 information along with Silent Push risk score '
+    description: Get IPv6 information along with Silent Push risk score.
     name: silentpush-list-ip6-information
     arguments:
     - name: ips
@@ -2315,7 +2308,7 @@ script:
       description: The age of the domain in days.
       type: Unknown
   - deprecated: false
-    description: scan a URL to retrieve hosting metadata.
+    description: Scan a URL to retrieve hosting metadata.
     name: silentpush-live-url-scan
     arguments:
     - name: url
@@ -2425,7 +2418,7 @@ script:
       description: Similarity score of HTML body.
       type: Number
     - contextPath: SilentPush.URLScan.SilentPush.Web.html_body_ssdeep
-      description: ssdeep hash for the HTML body.
+      description: SSDEEP hash for the HTML body.
       type: String
     - contextPath: SilentPush.URLScan.SilentPush.Web.htmltitle
       description: The HTML title of the page.
@@ -2629,7 +2622,7 @@ script:
       description: List of ssdeep fuzzy hashes of JavaScript files.
       type: Unknown
   - deprecated: false
-    description: searches passive DNS data for records matching both query and answer.
+    description: Searches passive DNS data for records matching both query and answer.
     name: silentpush-multi-conditional-padns-lookup
     arguments:
     - name: first_seen_after
@@ -2740,18 +2733,6 @@ script:
       required: false
       secret: false
       default: false
-    - name: subdomains
-      isArray: false
-      description: The flag to include subdomains in the lookup results.
-      required: false
-      secret: false
-      default: false
-    - name: regex
-      isArray: false
-      description: The regular expression to filter the DNS records.
-      required: false
-      secret: false
-      default: false
     - name: answer
       isArray: false
       description: The DNS record answer to lookup.
@@ -2766,7 +2747,7 @@ script:
       default: false
     - name: net
       isArray: false
-      description: The find ptr4 or a records where ipv4 in or not in subnet defined by netmask. in (default) - find records in subnet, notin - find records not in subnet
+      description: The find ptr4 or a records where ipv4 in or not in subnet defined by netmask. in (default) - find records in subnet, notin - find records not in subnet.
       required: false
       secret: false
       default: false
@@ -2784,7 +2765,7 @@ script:
       default: false
     - name: asn
       isArray: false
-      description: Whether include asn diversity, 0 = do not include, 1 (default) = include asn diversity
+      description: Whether include asn diversity, 0 = do not include, 1 (default) = include asn diversity.
       required: false
       secret: false
       default: false
@@ -2826,18 +2807,18 @@ script:
       description: The type of the DNS record (e.g., NS).
       type: String
   - deprecated: false
-    description: retry another command which returned a Job ID
+    description: Retry another command which returned a job ID.
     name: silentpush-retry-job
     arguments:
     - name: job_id
       isArray: false
-      description: The Job ID to retry
+      description: The Job ID to retry.
       required: true
       secret: false
       default: false
     outputs: []
   - deprecated: false
-    description: retrieve reverse Passive DNS data for specific DNS record types.
+    description: Retrieve reverse passive DNS data for specific DNS record types.
     name: silentpush-reverse-padns-lookup
     arguments:
     - name: first_seen_after
@@ -2948,18 +2929,6 @@ script:
       required: false
       secret: false
       default: false
-    - name: subdomains
-      isArray: false
-      description: The flag to include subdomains in the lookup results.
-      required: false
-      secret: false
-      default: false
-    - name: regex
-      isArray: false
-      description: The regular expression to filter the DNS records.
-      required: false
-      secret: false
-      default: false
     outputs:
     - contextPath: SilentPush.ReversePADNSLookup.SilentPush.PADNS.qname
       description: The DNS record name that was looked up.
@@ -2992,7 +2961,7 @@ script:
       description: The type of the DNS record (e.g., NS).
       type: String
   - deprecated: false
-    description: 'runs the threat check on the specified '
+    description: Runs the threat check on the specified resource.
     name: silentpush-run-threat-check
     arguments:
     - name: data
@@ -3024,7 +2993,7 @@ script:
       description: The original value that was checked.
       type: String
   - deprecated: false
-    description: search for domains with optional filters.
+    description: Search for domains with optional filters.
     name: silentpush-search-domains
     arguments:
     - name: first_seen_after
@@ -3161,7 +3130,7 @@ script:
       default: false
     - name: timeline
       isArray: false
-      description: Whether to include details of IPs, ASNs, first_seen and last_seen for each domain, 0 (default) = do not include, 1 = include timeline
+      description: Whether to include details of IPs, ASNs, first_seen and last_seen for each domain, 0 (default) = do not include, 1 = include timeline.
       required: false
       secret: false
       default: false
@@ -3237,12 +3206,6 @@ script:
       required: false
       secret: false
       default: false
-    - name: ip_diversity_all_min
-      isArray: false
-      description: The minimum diversity limit, default = 1.
-      required: false
-      secret: false
-      default: false
     - name: ip_diversity_groups_min
       isArray: false
       description: The minimum diversity limit.
@@ -3269,10 +3232,10 @@ script:
       description: The number of unique IP groups associated with the domain.
       type: Number
     - contextPath: SilentPush.IPDiversityPatterns.SilentPush.Diversity.timeline
-      description: timeline of {ip, first_seen, last_seen}.
+      description: Timeline of IP addresses with first_seen and last_seen timestamps.
       type: Unknown
   - deprecated: false
-    description: search Silent Push scan data repositories using SPQL queries.
+    description: Search Silent Push scan data repositories using SPQL queries.
     name: silentpush-search-scan-data
     arguments:
     - name: query
@@ -3505,12 +3468,12 @@ script:
       description: The URL scanned.
       type: String
   - deprecated: false
-    description: get Whois information
+    description: Get WHOIS information for a domain.
     name: silentpush-whois
     arguments:
     - name: domain
       isArray: false
-      description: The domain name to search
+      description: The domain name to search.
       required: true
       secret: false
       default: false
@@ -3519,49 +3482,49 @@ script:
       description: Name or partial name of the registrar used to register domains.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.name
-      description: The registrant name
+      description: The registrant name.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.whois_server
-      description: The server queried
+      description: The server queried.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.org
-      description: Organization
+      description: Organization.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.address
-      description: Address
+      description: Address.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.city
-      description: City
+      description: City.
       type: Number
     - contextPath: SilentPush.whois.SilentPush.Whois.country
-      description: Country
+      description: Country.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.created
-      description: Date created
+      description: Date created.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.domain
-      description: Domain
+      description: Domain.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.emails
-      description: Emails
+      description: Emails.
       type: Number
     - contextPath: SilentPush.whois.SilentPush.Whois.expires
-      description: Expires
+      description: Expires.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.nameservers
-      description: Nameservers
+      description: Nameservers.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.state
-      description: State
+      description: State.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.updated
-      description: Date updated
+      description: Date updated.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.zipcode
-      description: Zip code
+      description: Zip code.
       type: String
   script: '-'
   type: python
