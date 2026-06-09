@@ -132,7 +132,7 @@ def get_raci(args):
         result["i"] = None
         result["i_email"] = None
 
-    return CommandResults(outputs_prefix="PaloAltoNetworksIoT.RACI", outputs_key_field="", outputs=result)
+    return CommandResults(outputs_prefix="PaloAltoNetworksDeviceSecurity.RACI", outputs_key_field="", outputs=result)
 
 
 def main():

@@ -77,7 +77,7 @@ tasks:
       - "3"
     scriptarguments:
       id:
-        simple: b8:27:eb:e1:38:23
+        simple: 00:50:56:bf:32:95
     separatecontext: false
     view: |-
       {
@@ -112,22 +112,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: PaloAltoNetworksIoT.Device.hostname
+              simple: PaloAltoNetworksDeviceSecurity.Device.hostname
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: PaloAltoNetworksIoT.Device.category
+              simple: PaloAltoNetworksDeviceSecurity.Device.category
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: PaloAltoNetworksIoT.Device.profile
+              simple: PaloAltoNetworksDeviceSecurity.Device.profile
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: PaloAltoNetworksIoT.Device.deviceid
+              simple: PaloAltoNetworksDeviceSecurity.Device.deviceid
             iscontext: true
     view: |-
       {
@@ -190,7 +190,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: PaloAltoNetworksIoT.DeviceList
+              simple: PaloAltoNetworksDeviceSecurity.DeviceList
             iscontext: true
     view: |-
       {
@@ -260,7 +260,7 @@ tasks:
       - - operator: hasLength
           left:
             value:
-              simple: PaloAltoNetworksIoT.Alerts
+              simple: PaloAltoNetworksDeviceSecurity.Alerts
             iscontext: true
           right:
             value:
@@ -330,7 +330,7 @@ tasks:
     scriptarguments:
       id:
         complex:
-          root: PaloAltoNetworksIoT.Alerts
+          root: PaloAltoNetworksDeviceSecurity.Alerts
           accessor: id
       reason:
         simple: XSOAR nightly integration test
@@ -367,13 +367,13 @@ tasks:
     scriptarguments:
       full_name:
         complex:
-          root: PaloAltoNetworksIoT.Vulns
+          root: PaloAltoNetworksDeviceSecurity.Vulns
           accessor: vulnerability_name
           transformers:
             - operator: FirstArrayElement
       id:
         complex:
-          root: PaloAltoNetworksIoT.Vulns
+          root: PaloAltoNetworksDeviceSecurity.Vulns
           accessor: zb_ticketid
           transformers:
             - operator: FirstArrayElement

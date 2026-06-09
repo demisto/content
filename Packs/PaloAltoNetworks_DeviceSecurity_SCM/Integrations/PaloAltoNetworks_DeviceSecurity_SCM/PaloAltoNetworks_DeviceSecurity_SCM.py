@@ -32,7 +32,6 @@ class Client(BaseClient):
     def __init__(
         self,
         base_url,
-        tenant_id,
         first_fetch="-1",
         max_fetch=10,
         api_timeout=60,
@@ -42,7 +41,6 @@ class Client(BaseClient):
         headers=None,
     ):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
-        self.tenant_id = tenant_id
         self.api_timeout = api_timeout
         self.first_fetch = first_fetch
         self.max_fetch = min(max_fetch, PAGELENGTH)
@@ -58,11 +56,13 @@ class Client(BaseClient):
             error_message = error.args[0]
             if "[404]" in error_message:
                 ind = error_message.find("Not Found")
-                new_message = error_message[:ind] + "\nValidate your server url address"
+                new_message = error_message[:ind] + "\nResource or endpoint not found."
                 raise DemistoException(new_message)
             elif "[403]" in error_message:
                 ind = error_message.find("Forbidden")
-                new_message = error_message[:ind] + "\nValidate your Tenant ID, Access Key ID or Secret Access Key "
+                new_message = (
+                    error_message[:ind] + "\nValidate your TSG ID or Whether Client ID or Client Secret has required permissions"
+                )
                 raise DemistoException(new_message)
             else:
                 raise error
@@ -124,7 +124,7 @@ class Client(BaseClient):
         """
         data = self._http_request(
             method="GET",
-            url_suffix="/device/list",
+            full_url=f"{self._base_url.replace('/v1', '/v2')}/device/list",
             params={
                 "filter_monitored": "no",
                 "offset": offset,
@@ -346,7 +346,7 @@ def device_security_get_device(client, args):
 
     result = client.get_device(device_id)
 
-    return CommandResults(outputs_prefix="PaloAltoNetworksIoT.Device", outputs_key_field="deviceid", outputs=result)
+    return CommandResults(outputs_prefix="PaloAltoNetworksDeviceSecurity.Device", outputs_key_field="deviceid", outputs=result)
 
 
 def device_security_get_device_by_ip(client, args):
@@ -366,7 +366,9 @@ def device_security_get_device_by_ip(client, args):
 
     result = client.get_device_by_ip(device_ip)
 
-    return CommandResults(outputs_prefix="PaloAltoNetworksIoT.Device", outputs_key_field="devices", outputs=result["devices"])
+    return CommandResults(
+        outputs_prefix="PaloAltoNetworksDeviceSecurity.Device", outputs_key_field="devices", outputs=result["devices"]
+    )
 
 
 def device_security_list_devices(client, args):
@@ -389,7 +391,9 @@ def device_security_list_devices(client, args):
     if not result:
         return CommandResults(readable_output="### No devices found")
 
-    return CommandResults(outputs_prefix="PaloAltoNetworksIoT.DeviceList", outputs_key_field="deviceid", outputs=result)
+    return CommandResults(
+        outputs_prefix="PaloAltoNetworksDeviceSecurity.DeviceList", outputs_key_field="deviceid", outputs=result
+    )
 
 
 def device_security_list_alerts(client, args):
@@ -413,7 +417,7 @@ def device_security_list_alerts(client, args):
     if not result:
         return CommandResults(readable_output="### No alerts found")
 
-    return CommandResults(outputs_prefix="PaloAltoNetworksIoT.Alerts", outputs_key_field="id", outputs=result)
+    return CommandResults(outputs_prefix="PaloAltoNetworksDeviceSecurity.Alerts", outputs_key_field="id", outputs=result)
 
 
 def device_security_list_vulns(client, args):
@@ -437,7 +441,7 @@ def device_security_list_vulns(client, args):
     if not result:
         return CommandResults(readable_output="### No vulnerabilities found")
 
-    return CommandResults(outputs_prefix="PaloAltoNetworksIoT.Vulns", outputs_key_field="zb_ticketid", outputs=result)
+    return CommandResults(outputs_prefix="PaloAltoNetworksDeviceSecurity.Vulns", outputs_key_field="zb_ticketid", outputs=result)
 
 
 def device_security_resolve_alert(client, args):
@@ -618,7 +622,6 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    tenant_id = demisto.params().get("tenant_id", "")
     is_staging = demisto.params().get("is_staging", False)
     tsg_id = demisto.params().get("tsg_id")
     client_id = demisto.params().get("client_id")
@@ -661,7 +664,6 @@ def main():
     try:
         client = Client(
             base_url=base_url,
-            tenant_id=tenant_id,
             api_timeout=api_timeout,
             first_fetch=first_fetch,
             max_fetch=max_fetch,

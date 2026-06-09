@@ -3,7 +3,7 @@ args:
   default: true
   description: The reason the alert was closed (either 'Resolved' or 'No Action Needed').
   name: close_reason
-comment: Device Security alert post processing script to resolve the alert in IoT security portal using API
+comment: Device Security alert post processing script to resolve the alert in Device Security portal using API
 commonfields:
   id: device-security-alert-post-processing
   version: -1

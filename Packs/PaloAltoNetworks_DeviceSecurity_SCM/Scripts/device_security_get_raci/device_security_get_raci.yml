@@ -26,7 +26,7 @@ commonfields:
   version: -1
 name: device-security-security-get-raci
 outputs:
-- contextPath: PaloAltoNetworksIoT.RACI
+- contextPath: PaloAltoNetworksDeviceSecurity.RACI
   description: The RACI model of the Device Security incident.
   type: unknown
 script: '-'

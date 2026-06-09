@@ -19,8 +19,8 @@ To obtain the **Client ID** and **Client Secret**, please refer to the official 
 | proxy | Use system proxy settings | False |
 | first_fetch | First fetch time | False |
 | max_fetch | Maximum number of incidents per fetch | False |
-| fetch_alerts | Fetch IoT Alerts | False |
-| fetch_vulns | Fetch IoT Vulnerabilities | False |
+| fetch_alerts | Fetch Device Security Alerts | False |
+| fetch_vulns | Fetch Device Security Vulnerabilities | False |
 | api_timeout | The timeout for querying APIs | False |
 | incidentType | Incident type | False |
 | isFetch | Fetch incidents | False |
@@ -49,42 +49,42 @@ Device Security get device command - get a single device's details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksIoT.Device | unknown | Device details. |
-| PaloAltoNetworksIoT.Device.hostname | String | The hostname of the device. |
-| PaloAltoNetworksIoT.Device.ip_address | String | The IP address of the device. |
-| PaloAltoNetworksIoT.Device.profile_type | String | The device profile type: Non\_IoT vs IoT. |
-| PaloAltoNetworksIoT.Device.profile_vertical | String | The device profile vertical. |
-| PaloAltoNetworksIoT.Device.category | String | The device category |
-| PaloAltoNetworksIoT.Device.profile | String | The device profile. |
-| PaloAltoNetworksIoT.Device.last_activity | Date | The last activity timestamp of the device. |
-| PaloAltoNetworksIoT.Device.long_description | String | The long description of the device. |
-| PaloAltoNetworksIoT.Device.vlan | Number | The device VLAN ID. |
-| PaloAltoNetworksIoT.Device.site_name | String | The site which the device is in. |
-| PaloAltoNetworksIoT.Device.risk_score | Number | The device risk score. |
-| PaloAltoNetworksIoT.Device.risk_level | String | The device risk level: Low, Medium, High, Critical |
-| PaloAltoNetworksIoT.Device.subnet | String | The device subnet. |
-| PaloAltoNetworksIoT.Device.first_seen_date | Date | The first seen date of the device. |
-| PaloAltoNetworksIoT.Device.confidence_score | Number | The device confidence score. |
-| PaloAltoNetworksIoT.Device.deviceid | Date | The device ID. |
-| PaloAltoNetworksIoT.Device.location | String | The device location. |
-| PaloAltoNetworksIoT.Device.vendor | String | The device vendor. |
-| PaloAltoNetworksIoT.Device.model | String | The device model. |
-| PaloAltoNetworksIoT.Device.description | String | The device description. |
-| PaloAltoNetworksIoT.Device.asset_tag | String | The device asset tag \(e.g. a sticky label at the bottom of the device\). |
-| PaloAltoNetworksIoT.Device.os_group | String | The device OS group. |
-| PaloAltoNetworksIoT.Device.Serial_Number | String | The device serial number. |
-| PaloAltoNetworksIoT.Device.DHCP | String | Whether the device is in DHCP model: Valid values are Yes or No. |
-| PaloAltoNetworksIoT.Device.wire_or_wireless | String | Is the device wired or wireless. |
-| PaloAltoNetworksIoT.Device.department | String | The device department. |
-| PaloAltoNetworksIoT.Device.Switch_Port | Number | The port of the switch this device is connected to. |
-| PaloAltoNetworksIoT.Device.Switch_Name | String | The name of the switch this device is connected to. |
-| PaloAltoNetworksIoT.Device.Switch_IP | String | The IP of the switch this device is connected to. |
-| PaloAltoNetworksIoT.Device.Access_Point_IP | String | The IP of the access point this device is connected to. |
-| PaloAltoNetworksIoT.Device.Access_Point_Name | String | The name of the access point this device is connected to. |
-| PaloAltoNetworksIoT.Device.SSID | String | The SSID of the wireless network this device is connected to. |
-| PaloAltoNetworksIoT.Device.MAC | Date | The device MAC address. |
-| PaloAltoNetworksIoT.Device.display_tags | String | The user tags of the device. |
-| PaloAltoNetworksIoT.Device.mac_address | String | The device MAC address. |
+| PaloAltoNetworksDeviceSecurity.Device | unknown | Device details. |
+| PaloAltoNetworksDeviceSecurity.Device.hostname | String | The hostname of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.ip_address | String | The IP address of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.profile_type | String | The device profile type: Non\_IoT vs IoT. |
+| PaloAltoNetworksDeviceSecurity.Device.profile_vertical | String | The device profile vertical. |
+| PaloAltoNetworksDeviceSecurity.Device.category | String | The device category |
+| PaloAltoNetworksDeviceSecurity.Device.profile | String | The device profile. |
+| PaloAltoNetworksDeviceSecurity.Device.last_activity | Date | The last activity timestamp of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.long_description | String | The long description of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.vlan | Number | The device VLAN ID. |
+| PaloAltoNetworksDeviceSecurity.Device.site_name | String | The site which the device is in. |
+| PaloAltoNetworksDeviceSecurity.Device.risk_score | Number | The device risk score. |
+| PaloAltoNetworksDeviceSecurity.Device.risk_level | String | The device risk level: Low, Medium, High, Critical |
+| PaloAltoNetworksDeviceSecurity.Device.subnet | String | The device subnet. |
+| PaloAltoNetworksDeviceSecurity.Device.first_seen_date | Date | The first seen date of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.confidence_score | Number | The device confidence score. |
+| PaloAltoNetworksDeviceSecurity.Device.deviceid | Date | The device ID. |
+| PaloAltoNetworksDeviceSecurity.Device.location | String | The device location. |
+| PaloAltoNetworksDeviceSecurity.Device.vendor | String | The device vendor. |
+| PaloAltoNetworksDeviceSecurity.Device.model | String | The device model. |
+| PaloAltoNetworksDeviceSecurity.Device.description | String | The device description. |
+| PaloAltoNetworksDeviceSecurity.Device.asset_tag | String | The device asset tag \(e.g. a sticky label at the bottom of the device\). |
+| PaloAltoNetworksDeviceSecurity.Device.os_group | String | The device OS group. |
+| PaloAltoNetworksDeviceSecurity.Device.Serial_Number | String | The device serial number. |
+| PaloAltoNetworksDeviceSecurity.Device.DHCP | String | Whether the device is in DHCP model: Valid values are Yes or No. |
+| PaloAltoNetworksDeviceSecurity.Device.wire_or_wireless | String | Is the device wired or wireless. |
+| PaloAltoNetworksDeviceSecurity.Device.department | String | The device department. |
+| PaloAltoNetworksDeviceSecurity.Device.Switch_Port | Number | The port of the switch this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.Switch_Name | String | The name of the switch this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.Switch_IP | String | The IP of the switch this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.Access_Point_IP | String | The IP of the access point this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.Access_Point_Name | String | The name of the access point this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.SSID | String | The SSID of the wireless network this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.MAC | Date | The device MAC address. |
+| PaloAltoNetworksDeviceSecurity.Device.display_tags | String | The user tags of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.mac_address | String | The device MAC address. |
 
 #### Command Example
 
@@ -116,7 +116,7 @@ Device Security list devices command
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksIoT.DeviceList | unknown | List of devices. |
+| PaloAltoNetworksDeviceSecurity.DeviceList | unknown | List of devices. |
 
 #### Command Example
 
@@ -150,7 +150,7 @@ Device Security list alerts.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksIoT.Alerts | unknown | List of alerts. |
+| PaloAltoNetworksDeviceSecurity.Alerts | unknown | List of alerts. |
 
 #### Command Example
 
@@ -184,7 +184,7 @@ Device Security list vulnerabilities.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksIoT.Vulns | unknown | List of vulnerabilities. |
+| PaloAltoNetworksDeviceSecurity.Vulns | unknown | List of vulnerabilities. |
 
 #### Command Example
 
@@ -266,39 +266,39 @@ Device Security get device command - get a single device's details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksIoT.Device | unknown | Device details. |
-| PaloAltoNetworksIoT.Device.hostname | String | The hostname of the device. |
-| PaloAltoNetworksIoT.Device.ip_address | String | The IP address of the device. |
-| PaloAltoNetworksIoT.Device.profile_type | String | The device profile type: Non_IoT vs IoT. |
-| PaloAltoNetworksIoT.Device.profile_vertical | String | The device profile vertical. |
-| PaloAltoNetworksIoT.Device.category | String | The device category |
-| PaloAltoNetworksIoT.Device.profile | String | The device profile. |
-| PaloAltoNetworksIoT.Device.last_activity | Date | The last activity timestamp of the device. |
-| PaloAltoNetworksIoT.Device.long_description | String | The long description of the device. |
-| PaloAltoNetworksIoT.Device.vlan | Number | The device VLAN ID. |
-| PaloAltoNetworksIoT.Device.site_name | String | The site which the device is in. |
-| PaloAltoNetworksIoT.Device.risk_score | Number | The device risk score. |
-| PaloAltoNetworksIoT.Device.risk_level | String | The device risk level: Low, Medium, High, Critical |
-| PaloAltoNetworksIoT.Device.subnet | String | The device subnet. |
-| PaloAltoNetworksIoT.Device.first_seen_date | Date | The first seen date of the device. |
-| PaloAltoNetworksIoT.Device.confidence_score | Number | The device confidence score. |
-| PaloAltoNetworksIoT.Device.deviceid | Date | The device ID. |
-| PaloAltoNetworksIoT.Device.location | String | The device location. |
-| PaloAltoNetworksIoT.Device.vendor | String | The device vendor. |
-| PaloAltoNetworksIoT.Device.model | String | The device model. |
-| PaloAltoNetworksIoT.Device.description | String | The device description. |
-| PaloAltoNetworksIoT.Device.asset_tag | String | The device asset tag \(e.g. a sticky label at the bottom of the device\). |
-| PaloAltoNetworksIoT.Device.os_group | String | The device OS group. |
-| PaloAltoNetworksIoT.Device.Serial_Number | String | The device serial number. |
-| PaloAltoNetworksIoT.Device.DHCP | String | Whether the device is in DHCP model: Valid values are Yes or No. |
-| PaloAltoNetworksIoT.Device.wire_or_wireless | String | Is the device wired or wireless. |
-| PaloAltoNetworksIoT.Device.department | String | The device department. |
-| PaloAltoNetworksIoT.Device.Switch_Port | Number | The port of the switch this device is connected to. |
-| PaloAltoNetworksIoT.Device.Switch_Name | String | The name of the switch this device is connected to. |
-| PaloAltoNetworksIoT.Device.Switch_IP | String | The IP of the switch this device is connected to. |
-| PaloAltoNetworksIoT.Device.Access_Point_IP | String | The IP of the access point this device is connected to. |
-| PaloAltoNetworksIoT.Device.Access_Point_Name | String | The name of the access point this device is connected to. |
-| PaloAltoNetworksIoT.Device.SSID | String | The SSID of the wireless network this device is connected to. |
-| PaloAltoNetworksIoT.Device.MAC | Date | The device MAC address. |
-| PaloAltoNetworksIoT.Device.display_tags | String | The user tags of the device. |
-| PaloAltoNetworksIoT.Device.mac_address | String | The device MAC address. |
+| PaloAltoNetworksDeviceSecurity.Device | unknown | Device details. |
+| PaloAltoNetworksDeviceSecurity.Device.hostname | String | The hostname of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.ip_address | String | The IP address of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.profile_type | String | The device profile type: Non_IoT vs IoT. |
+| PaloAltoNetworksDeviceSecurity.Device.profile_vertical | String | The device profile vertical. |
+| PaloAltoNetworksDeviceSecurity.Device.category | String | The device category |
+| PaloAltoNetworksDeviceSecurity.Device.profile | String | The device profile. |
+| PaloAltoNetworksDeviceSecurity.Device.last_activity | Date | The last activity timestamp of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.long_description | String | The long description of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.vlan | Number | The device VLAN ID. |
+| PaloAltoNetworksDeviceSecurity.Device.site_name | String | The site which the device is in. |
+| PaloAltoNetworksDeviceSecurity.Device.risk_score | Number | The device risk score. |
+| PaloAltoNetworksDeviceSecurity.Device.risk_level | String | The device risk level: Low, Medium, High, Critical |
+| PaloAltoNetworksDeviceSecurity.Device.subnet | String | The device subnet. |
+| PaloAltoNetworksDeviceSecurity.Device.first_seen_date | Date | The first seen date of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.confidence_score | Number | The device confidence score. |
+| PaloAltoNetworksDeviceSecurity.Device.deviceid | Date | The device ID. |
+| PaloAltoNetworksDeviceSecurity.Device.location | String | The device location. |
+| PaloAltoNetworksDeviceSecurity.Device.vendor | String | The device vendor. |
+| PaloAltoNetworksDeviceSecurity.Device.model | String | The device model. |
+| PaloAltoNetworksDeviceSecurity.Device.description | String | The device description. |
+| PaloAltoNetworksDeviceSecurity.Device.asset_tag | String | The device asset tag \(e.g. a sticky label at the bottom of the device\). |
+| PaloAltoNetworksDeviceSecurity.Device.os_group | String | The device OS group. |
+| PaloAltoNetworksDeviceSecurity.Device.Serial_Number | String | The device serial number. |
+| PaloAltoNetworksDeviceSecurity.Device.DHCP | String | Whether the device is in DHCP model: Valid values are Yes or No. |
+| PaloAltoNetworksDeviceSecurity.Device.wire_or_wireless | String | Is the device wired or wireless. |
+| PaloAltoNetworksDeviceSecurity.Device.department | String | The device department. |
+| PaloAltoNetworksDeviceSecurity.Device.Switch_Port | Number | The port of the switch this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.Switch_Name | String | The name of the switch this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.Switch_IP | String | The IP of the switch this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.Access_Point_IP | String | The IP of the access point this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.Access_Point_Name | String | The name of the access point this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.SSID | String | The SSID of the wireless network this device is connected to. |
+| PaloAltoNetworksDeviceSecurity.Device.MAC | Date | The device MAC address. |
+| PaloAltoNetworksDeviceSecurity.Device.display_tags | String | The user tags of the device. |
+| PaloAltoNetworksDeviceSecurity.Device.mac_address | String | The device MAC address. |

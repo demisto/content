@@ -30,7 +30,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| PaloAltoNetworksIoT | This path will have field "device" for the device details and "raci" if the command "device\-security\-get\-raci" has output. | string |
+| PaloAltoNetworksDeviceSecurity | This path will have field "device" for the device details and "raci" if the command "device\-security\-get\-raci" has output. | string |
 | ServiceNow.Record | The ServiceNow record after creating the ServiceNow ticket. | string |
 
 ## Playbook Image

@@ -139,15 +139,15 @@ tasks:
       alert_name:
         simple: ${incident.name}
       category:
-        simple: ${PaloAltoNetworksIoT.Device.category}
+        simple: ${PaloAltoNetworksDeviceSecurity.Device.category}
       model:
-        simple: ${PaloAltoNetworksIoT.Device.model}
+        simple: ${PaloAltoNetworksDeviceSecurity.Device.model}
       profile:
-        simple: ${PaloAltoNetworksIoT.Device.profile}
+        simple: ${PaloAltoNetworksDeviceSecurity.Device.profile}
       raw_type:
         simple: ${incident.rawType}
       vendor:
-        simple: ${PaloAltoNetworksIoT.Device.vendor}
+        simple: ${PaloAltoNetworksDeviceSecurity.Device.vendor}
     separatecontext: false
     view: |-
       {
@@ -245,7 +245,7 @@ tasks:
       - "8"
     scriptarguments:
       value:
-        simple: ${PaloAltoNetworksIoT.RACI.r_snow.table}
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.table}
     separatecontext: false
     view: |-
       {
@@ -277,11 +277,11 @@ tasks:
       - "9"
     scriptarguments:
       custom_fields:
-        simple: ${PaloAltoNetworksIoT.RACI.r_snow.custom_fields}
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.custom_fields}
       fields:
-        simple: ${PaloAltoNetworksIoT.RACI.r_snow.fields}
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.fields}
       table_name:
-        simple: ${PaloAltoNetworksIoT.RACI.r_snow.table}
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.table}
     separatecontext: false
     view: |-
       {
@@ -296,7 +296,7 @@ tasks:
     fieldMapping:
     - incidentfield: ServiceNow Table Name
       output:
-        simple: ${PaloAltoNetworksIoT.RACI.r_snow.table}
+        simple: ${PaloAltoNetworksDeviceSecurity.RACI.r_snow.table}
     - incidentfield: ServiceNow Record ID
       output:
         simple: ${ServiceNow.Record.ID}
@@ -476,7 +476,7 @@ inputs:
   description: Determines if a ServiceNow ticket should be created based on the RACI calculation. Set to True to create an incident.
   playbookInputQuery: null
 outputs:
-- contextPath: PaloAltoNetworksIoT
+- contextPath: PaloAltoNetworksDeviceSecurity
   description: This path will have field "device" for the device details and "raci"
     if the command "device-security-get-raci" has output.
   type: string

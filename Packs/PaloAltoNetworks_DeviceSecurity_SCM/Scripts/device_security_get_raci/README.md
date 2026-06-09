@@ -25,7 +25,7 @@ There are three main sections in the JSON: devices, alerts, and groups.
 
 "alerts" is a list of conditions to map a combination of Device Security incident type and incident names to the RACI model.
 
-- device security_raw_type: either "Device Security Alert" or "Device Security Vulnerability"
+- device_security_raw_type: either "Device Security Alert" or "Device Security Vulnerability"
 - name_regex: a list of regular expressions trying to match with the alert/vulnerability names
 - raci: a section to define the RACI model for the match. If the value is "DEVICE_SECURITY_OWNER", we look up the underlying group using the mapping in "devices" section.
 
@@ -50,7 +50,7 @@ Here is the template of the JSON:
     ],
     "alerts": [
         {
-            "device security_raw_type": "Device Security Alert",
+            "device_security_raw_type": "Device Security Alert",
             "name_regex": [
                 "DOUBLEPULSAR.+",
                 "ECLIPSEDWING.+",
@@ -62,7 +62,7 @@ Here is the template of the JSON:
             }
         },
         {
-            "device security_raw_type": "Device Security Vulnerability",
+            "device_security_raw_type": "Device Security Vulnerability",
             "raci": {
                 "r": "DEVICE_SECURITY_OWNER",
                 "i": ["INFOSEC", "SOC"]
@@ -126,13 +126,13 @@ This script is used in the following playbooks and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| PaloAltoNetworksIoT.RACI | The RACI model of the IoT incident | unknown |
-| PaloAltoNetworksIoT.RACI.r | The responsible in the RACI model | string |
-| PaloAltoNetworksIoT.RACI.r_email | The email of responsible in the RACI model | string |
-| PaloAltoNetworksIoT.RACI.i | The informed in the RACI model | string |
-| PaloAltoNetworksIoT.RACI.i_email | The emails of informed in the RACI model delimited by comma | string |
-| PaloAltoNetworksIoT.RACI.owner | The IoT owner of the device | string |
-| PaloAltoNetworksIoT.RACI.r_snow | The ServiceNow information of the incident responsible | string |
-| PaloAltoNetworksIoT.RACI.r_snow.fields | The fields of the ServiceNow ticket | string |
-| PaloAltoNetworksIoT.RACI.r_snow.custom_fields | The custom fields of the ServiceNow ticket | string |
-| PaloAltoNetworksIoT.RACI.r_snow.table | The table of the ServiceNow ticket | string |
+| PaloAltoNetworksDeviceSecurity.RACI | The RACI model of the DeviceSecurity incident | unknown |
+| PaloAltoNetworksDeviceSecurity.RACI.r | The responsible in the RACI model | string |
+| PaloAltoNetworksDeviceSecurity.RACI.r_email | The email of responsible in the RACI model | string |
+| PaloAltoNetworksDeviceSecurity.RACI.i | The informed in the RACI model | string |
+| PaloAltoNetworksDeviceSecurity.RACI.i_email | The emails of informed in the RACI model delimited by comma | string |
+| PaloAltoNetworksDeviceSecurity.RACI.owner | The DeviceSecurity owner of the device | string |
+| PaloAltoNetworksDeviceSecurity.RACI.r_snow | The ServiceNow information of the incident responsible | string |
+| PaloAltoNetworksDeviceSecurity.RACI.r_snow.fields | The fields of the ServiceNow ticket | string |
+| PaloAltoNetworksDeviceSecurity.RACI.r_snow.custom_fields | The custom fields of the ServiceNow ticket | string |
+| PaloAltoNetworksDeviceSecurity.RACI.r_snow.table | The table of the ServiceNow ticket | string |
