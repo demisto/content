@@ -101,7 +101,7 @@ The Azure AD application must be granted the following Microsoft Graph applicati
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Maximum number of events per fetch | The maximum number of events to fetch in a single fetch cycle. | False |
-| Fetch events |  | False |
+| Fetch Events |  | False |
 | Events Fetch Interval |  | False |
 
 ## Commands
@@ -125,6 +125,10 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!o365-message-trace-generate-login-url```
 
 #### Human Readable Output
 
@@ -177,7 +181,7 @@ There is no context output for this command.
 ### o365-message-trace-get-events
 
 ***
-Manually retrieve Message Trace events. Intended for development and debugging. Use with caution as it may cause event duplication when push to XSIAM is enabled.
+Manually retrieve Message Trace events. Intended for development and debugging. Use with caution as it may cause event duplication when push to Cortex XSIAM is enabled.
 
 #### Base Command
 
@@ -187,22 +191,22 @@ Manually retrieve Message Trace events. Intended for development and debugging. 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events to return. Default is 50. | Optional |
-| start_time | The start time to filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z"). | Optional |
-| end_time | The end time to filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional |
-| should_push_events | Whether the command sends the retrieved events to XSIAM. If false, it only displays them. Possible values are: true, false. Default is false. | Optional |
+| limit | The maximum number of events to return. Default is 50. | Optional | 
+| start_time | The start time to filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z"). | Optional | 
+| end_time | The end time to filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional | 
+| should_push_events | Whether the command sends the retrieved events to Cortex XSIAM. If false, it only displays them. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365MessageTrace.Event.id | String | The unique identifier of the message trace event. |
-| O365MessageTrace.Event.receivedDateTime | Date | The timestamp when the message was received \(e.g., "2020-01-01T00:11:22Z"\). |
-| O365MessageTrace.Event.senderAddress | String | The sender email address. |
-| O365MessageTrace.Event.recipientAddress | String | The recipient email address. |
-| O365MessageTrace.Event.subject | String | The subject of the message. |
-| O365MessageTrace.Event.status | String | The delivery status of the message \(e.g., Delivered, Pending, Failed, Quarantined\). |
-| O365MessageTrace.Event._time | Date | The XSIAM event timestamp in ISO 8601 format \(e.g., "2020-01-01T00:11:22Z"\). |
+| O365MessageTrace.Event.id | String | The unique identifier of the message trace event. | 
+| O365MessageTrace.Event.receivedDateTime | Date | The timestamp when the message was received \(e.g., "2020-01-01T00:11:22Z"\). | 
+| O365MessageTrace.Event.senderAddress | String | The sender email address. | 
+| O365MessageTrace.Event.recipientAddress | String | The recipient email address. | 
+| O365MessageTrace.Event.subject | String | The subject of the message. | 
+| O365MessageTrace.Event.status | String | The delivery status of the message \(e.g., Delivered, Pending, Failed, Quarantined\). | 
+| O365MessageTrace.Event._time | Date | The Cortex XSIAM event timestamp in ISO 8601 format \(e.g., "2020-01-01T00:11:22Z"\). | 
 
 #### Command example
 

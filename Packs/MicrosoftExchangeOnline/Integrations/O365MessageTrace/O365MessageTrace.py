@@ -394,7 +394,7 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    demisto.info(f"[Main] Command={command}")
+    demisto.debug(f"[Main] Command={command}")
 
     # ----- Tenant / Auth ID / Secret (support both creds objects and legacy plain params) -----
     tenant_id = params.get("tenant_id", "")

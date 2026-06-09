@@ -1,3 +1,5 @@
+display: O365 Message Trace
+name: O365 Message Trace
 category: Analytics & SIEM
 provider: Microsoft
 commonfields:
@@ -96,8 +98,6 @@ configuration:
   advanced: true
   required: false
 description: Ingest Exchange Online Message Trace events into Cortex XSIAM. Message Trace enables tenant administrators to track the lifecycle of an email, determine its delivery status (delivered, pending, failed, or quarantined), and understand the actions applied to it.
-display: O365 Message Trace
-name: O365 Message Trace
 script:
   commands:
   - arguments: []
@@ -123,7 +123,7 @@ script:
     - name: end_time
       description: The end time to filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").
     - name: should_push_events
-      description: Whether the command sends the retrieved events to XSIAM. If false, it only displays them.
+      description: Whether the command sends the retrieved events to Cortex XSIAM. If false, it only displays them.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -149,7 +149,7 @@ script:
       description: The delivery status of the message (e.g., Delivered, Pending, Failed, Quarantined).
       type: String
     - contextPath: O365MessageTrace.Event._time
-      description: The XSIAM event timestamp in ISO 8601 format (e.g., "2020-01-01T00:11:22Z").
+      description: The Cortex XSIAM event timestamp in ISO 8601 format (e.g., "2020-01-01T00:11:22Z").
       type: Date
   isfetchevents: true
   runonce: false
