@@ -1,5 +1,22 @@
+
+## Troubleshooting
+
+**Issue**: The survey sent from SlackBlockBuilder is sent to Slack and submitted successfully, but the response does not
+show up in context data in Cortex XSOAR.
+
+**Resolution**: The most likely cause is that there is no API key entered into the Slack v3 integration instance
+settings, or the API key was not created by the default admin user. Ensure that an API key created by a default admin
+user is entered into the Slack v3 integration instance settings. Also, make sure to mark the **Trust any certificate (
+not secure)** integration parameter.
+
+
+
+
 Send messages and notifications to your Slack team.
 This integration was integrated and tested with Slack.
+
+
+
 
 ## Configure SlackV3 in Cortex
 
@@ -11,7 +28,7 @@ Refer to
 the [video tutorial](https://live.paloaltonetworks.com/t5/cortex-xsoar-how-to-videos/cortex-xsoar-how-to-video-slack-v3-configuration/ta-p/445226)
 to learn about configuring SlackV3 using the app manifest.
 
-| **Parameter** | **Description** | **Required** |
+| **Parameter** | **Description** | **Required** | **TYPE** |
 | --- | --- | --- |
 | `bot_token` | Slack API bot token. | False |
 | `user_token` | Slack API user token. | False |
@@ -148,23 +165,6 @@ The Slack integration allows users to interact with the **Cortex Agentic Assista
 
 ![Cortex AI Assistant in Slack](../../doc_files/slack_ai_assistant_demo.png)
 
-### Prerequisites
-
-Before you begin, ensure the following requirements are met:
-
-1. **Supported Cortex product version** — The tenant must be running one of the following versions (or later), depending on your product:
-
-   | Product | Minimum Version |
-   |---------|-----------------|
-   | Cortex AGENTIX | V1.3 |
-   | Cortex Platform | 1.5 |
-   | Cortex CLOUD | 2.1 |
-   | Cortex XDR | 3.18 / 5.1 |
-   | Cortex XSIAM | 2.10 / 3.5 |
-
-2. **Slack App installed** — The Slack app must be created and installed in your workspace as described in [Creating a Custom App](#creating-a-custom-app) and [Installing the App to Your Workspace](#installing-the-app-to-your-workspace).
-3. **Slack content pack version 3.6.0 or later** — This includes the SlackV3 integration.
-4. **User permissions** — Each Slack user who interacts with the Cortex Agentic Assistant must have the appropriate permissions to use the Cortex Agentic Assistant in the Cortex platform. Users without the required permissions will receive an error message when attempting to interact with the bot. Contact your Cortex administrator to ensure the relevant roles and permissions are assigned.
 
 ### How to Enable
   
@@ -231,6 +231,7 @@ Bring-Your-Own-App model and customizable scope-based authentication.
 
 All commands are fully compatible with Slack V2 playbooks as their inputs and outputs have remained the same. As a
 customer, you should notice no significant change in the behavior of the Slack integration with your existing playbooks.
+
 
 ## Commands
 
@@ -377,7 +378,7 @@ The full list of Slack API scopes can be accessed [here](https://api.slack.com/s
 
 There are no known limitations for this command.
 
-#### Input
+#### Inputs
 
 | **Argument Name** | **Description**                                                                                     | **Required** |
 | --- | --- | --- |
@@ -408,6 +409,18 @@ There is no context output for this command.
 ***
 Sets the topic for a channel.
 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```
+!slack-set-channel-topic topic="Testing topic for documentation" channel=testing-docs
+```
+
+
 #### Base Command
 
 `slack-set-channel-topic`
@@ -420,43 +433,13 @@ Sets the topic for a channel.
 | channel_id        | The ID of the channel. If not specified, the topic of the mirrored investigation channel is set (if the channel exists). | Optional     |
 | topic             | The topic for the channel.                                                                                               | Required     |
 
-#### Context Output
 
-There is no context output for this command.
-
-#### Command Example
-
-```
-!slack-set-channel-topic topic="Testing topic for documentation" channel=testing-docs
-```
 
 #### Human Readable Output
 
 > Topic successfully set.
 
 ### slack-create-channel
-
-***
-Creates a channel in Slack.
-
-#### Base Command
-
-`slack-create-channel`
-
-#### Input
-
-| **Argument Name** | **Description**                                                                                       | **Required** |
-|-------------------|-------------------------------------------------------------------------------------------------------|--------------|
-| type              | The channel type. Can be "private" or "public". Default is private.                                   | Optional     |
-| name              | The name of the channel.                                                                              | Required     |
-| users             | A CSV list of user names or email addresses to invite to the channel. For example: "user1, user2...". | Optional     |
-
-#### Context Output
-
-| **Path**           | **Type** | **Description**          |
-|--------------------|----------|--------------------------|
-| Slack.Channel.ID   | String   | The ID of the channel.   |
-| Slack.Channel.Name | String   | The name of the channel. |
 
 #### Context Example
 
@@ -480,6 +463,31 @@ Creates a channel in Slack.
 #### Human Readable Output
 
 > Successfully created the channel testing-docs
+
+
+***
+Creates a channel in Slack.
+
+#### Base Command
+
+`slack-create-channel`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                       | **Required** |
+|-------------------|-------------------------------------------------------------------------------------------------------|--------------|
+| type              | The channel type. Can be "private" or "public". Default is private.                                   | Optional     |
+| name              | The name of the channel.                                                                              | Required     |
+| users             | A CSV list of user names or email addresses to invite to the channel. For example: "user1, user2...". | Optional     |
+
+#### Context Output
+
+| **Path**           | **Type** | **Description**          |
+|--------------------|----------|--------------------------|
+| Slack.Channel.ID   | String   | The ID of the channel.   |
+| Slack.Channel.Name | String   | The name of the channel. |
+
+
 
 ### slack-invite-to-channel
 
@@ -677,7 +685,7 @@ Edit an existing Slack message.
 
 ### slack-pin-message
 
-***
+*
 Pins a selected message to the given channel.
 
 #### Base Command
@@ -706,7 +714,7 @@ There is no context output for this command.
 
 ### slack-get-integration-context
 
-***
+**
 Returns the integration context as a file. Use this command for debug purposes only.
 
 #### Base Command
@@ -869,7 +877,7 @@ otherwise.
 | thread_id         | ID of the thread.  | Required     |
 | limit             | limit.             | Optional     |
 
-#### Context Output
+# Context Output
 
 There is no context output for this command.
 
@@ -891,12 +899,20 @@ There is no context output for this command.
 - ***mirror-investigation*** will only mirror chat messages between Cortex XSOAR and Slack. Images, threads, and files
   are not supported at this tme.
 
-## Troubleshooting
+### Prerequisites
 
-**Issue**: The survey sent from SlackBlockBuilder is sent to Slack and submitted successfully, but the response does not
-show up in context data in Cortex XSOAR.
+Before you begin, ensure the following requirements are met:
 
-**Resolution**: The most likely cause is that there is no API key entered into the Slack v3 integration instance
-settings, or the API key was not created by the default admin user. Ensure that an API key created by a default admin
-user is entered into the Slack v3 integration instance settings. Also, make sure to mark the **Trust any certificate (
-not secure)** integration parameter.
+1. **Supported Cortex product version** — The tenant must be running one of the following versions (or later), depending on your product:
+
+   | Product | Minimum Version |
+   |---------|-----------------|
+   | Cortex AGENTIX | V1.3 |
+   | Cortex Platform | 1.5 |
+   | Cortex CLOUD | 2.1 |
+   | Cortex XDR | 3.18 / 5.1 |
+   | Cortex XSIAM | 2.10 / 3.5 |
+
+2. **Slack App installed** — The Slack app must be created and installed in your workspace as described in [Creating a Custom App](#creating-a-custom-app) and [Installing the App to Your Workspace](#installing-the-app-to-your-workspace).
+3. **Slack content pack version 3.6.0 or later** — This includes the SlackV3 integration.
+4. **User permissions** — Each Slack user who interacts with the Cortex Agentic Assistant must have the appropriate permissions to use the Cortex Agentic Assistant in the Cortex platform. Users without the required permissions will receive an error message when attempting to interact with the bot. Contact your Cortex administrator to ensure the relevant roles and permissions are assigned.
