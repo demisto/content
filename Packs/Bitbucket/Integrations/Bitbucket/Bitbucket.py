@@ -1466,6 +1466,43 @@ def workspace_member_list_command(client: Client, args: dict) -> CommandResults:
 """ MAIN FUNCTION """
 
 
+def debug_params_command() -> CommandResults:
+    """Debug helper: returns the unified-connector metadata and the resolved
+    ``demisto.params()`` so the UCP interpolation result can be inspected.
+
+    Useful for verifying that:
+      - secret credential fields were interpolated via ``param_map`` into the
+        nested ``credentials`` param (XSOAR type 9), and
+      - non-secret fields marked ``metadata.event.publish`` are delivered as
+        flat params.
+    """
+    try:
+        connector_metadata = demisto.unifiedConnectorMetadata()
+    except Exception as e:
+        connector_metadata = "unavailable: {}".format(e)
+
+    params = demisto.params()
+    # Avoid echoing the raw secret in the human-readable output.
+    safe_params = dict(params)
+    creds = safe_params.get("credentials")
+    if isinstance(creds, dict):
+        masked = dict(creds)
+        if masked.get("password"):
+            masked["password"] = "***"
+        safe_params["credentials"] = masked
+
+    output = {
+        "unifiedConnectorMetadata": connector_metadata,
+        "params": safe_params,
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown("Bitbucket UCP Debug", output),
+        outputs_prefix="Bitbucket.DebugParams",
+        outputs=output,
+        raw_response=output,
+    )
+
+
 def main() -> None:  # pragma: no cover
     workspace = demisto.params().get("workspace")
     server_url = demisto.params().get("server_url")
@@ -1558,6 +1595,8 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == "bitbucket-workspace-member-list":
             result = workspace_member_list_command(client, demisto.args())
             return_results(result)
+        elif demisto.command() == "bitbucket-debug-params":
+            return_results(debug_params_command())
         else:
             raise NotImplementedError("This command is not implemented yet.")
 
