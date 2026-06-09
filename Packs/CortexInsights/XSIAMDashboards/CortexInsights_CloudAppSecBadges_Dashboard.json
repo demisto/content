@@ -1,8 +1,7 @@
 {
-  "id": "7ff8d94b7db547cead7690b864397fd0",
-  "name": "Cortex Cloud Appsec Badges (Text)",
   "dashboards_data": [
     {
+      "id": "7ff8d94b7db547cead7690b864397fd0",
       "name": "Cortex Cloud Appsec Badges (Text)",
       "description": "This dashboard tracks the achievement of key milestones for implementing Cloud Application Security best practices. It visualizes whether essential configurations are in place, such as the creation of custom policies, the use of automated CI/CD actions, and recent scan activity.",
       "status": "ENABLED",

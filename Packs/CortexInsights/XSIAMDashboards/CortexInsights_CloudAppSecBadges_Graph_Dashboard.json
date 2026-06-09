@@ -1,8 +1,7 @@
 {
-  "id": "2c1f7745d09149379179b97a4016b6c3",
-  "name": "Cortex Cloud AppSec Badges (Graph)",
   "dashboards_data": [
     {
+      "id": "2c1f7745d09149379179b97a4016b6c3",
       "name": "Cortex Cloud AppSec Badges (Graph)",
       "description": "This dashboard visualizes your organization's adoption and maturity level of Cloud Application Security features. It provides key metrics for achieving security milestones, such as the creation of custom policies, the configuration of enforcement actions, and recent CI/CD scan activity.",
       "status": "ENABLED",

@@ -1,8 +1,7 @@
 {
-  "id": "b335f061d2f44edebfbdaa2ba538e0c5",
-  "name": "Troubleshooting Playbooks",
   "dashboards_data": [
     {
+      "id": "b335f061d2f44edebfbdaa2ba538e0c5",
       "name": "Troubleshooting Playbooks",
       "description": "Helps automation engineers and security analysts identify and resolve issues with playbooks and tasks, focusing on error analysis, execution failures, and runtime metrics",
       "status": "ENABLED",

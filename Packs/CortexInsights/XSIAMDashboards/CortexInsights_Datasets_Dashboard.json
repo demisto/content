@@ -1,8 +1,7 @@
 {
-  "id": "a2335232972d4229baa96d96b4e4a45a",
-  "name": "Cortex Insights [Datasets]",
   "dashboards_data": [
     {
+      "id": "a2335232972d4229baa96d96b4e4a45a",
       "name": "Cortex Insights [Datasets]",
       "description": "This dashboard provides an overview of the health and completeness of data collection across your configured datasets. It provides key metrics on data source inventory, log collection status by product, and the recency of data updates for critical datasets.",
       "status": "ENABLED",

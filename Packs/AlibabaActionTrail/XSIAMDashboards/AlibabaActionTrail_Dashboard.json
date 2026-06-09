@@ -1,8 +1,7 @@
 {
-  "id": "f9c52470483a41e4a6afa65c93f70a4b",
-  "name": "Alibaba Overview Dashboard",
   "dashboards_data": [
     {
+      "id": "f9c52470483a41e4a6afa65c93f70a4b",
       "name": "Alibaba Overview Dashboard",
       "description": "This dashboard displays key information from the Alibaba account such as Top IP locations, TOP users with unauthorized events, etc.",
       "status": "ENABLED",

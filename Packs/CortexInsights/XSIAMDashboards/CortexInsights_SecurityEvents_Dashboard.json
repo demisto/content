@@ -1,8 +1,7 @@
 {
-  "id": "7afc9346f5e64ffdb7af57ae060284d4",
-  "name": "Cortex Insights [Security Events]",
   "dashboards_data": [
     {
+      "id": "7afc9346f5e64ffdb7af57ae060284d4",
       "name": "Cortex Insights [Security Events]",
       "description": "This dashboard provides a comprehensive overview of the security events and alerts detected across your environment. It highlights key metrics such as the distribution of events by source product, alert counts by endpoint prevention policy, and the volume of detections from analytics engines.",
       "status": "ENABLED",

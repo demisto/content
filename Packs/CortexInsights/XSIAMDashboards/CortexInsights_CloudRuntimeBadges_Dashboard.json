@@ -1,8 +1,7 @@
 {
-  "id": "58c696f471c84096b15a68880e49ead7",
-  "name": "Cortex Cloud Runtime Badges (Text)",
   "dashboards_data": [
     {
+      "id": "58c696f471c84096b15a68880e49ead7",
       "name": "Cortex Cloud Runtime Badges (Text)",
       "description": "This dashboard visualizes progress toward achieving key cloud runtime security milestones using a simple badge-based system. It provides \"Achieved\" or \"Not Passing\" statuses for critical metrics like vulnerability reduction, remediation of internet-exposed risks, and the rate of automated fixes.",
       "status": "ENABLED",

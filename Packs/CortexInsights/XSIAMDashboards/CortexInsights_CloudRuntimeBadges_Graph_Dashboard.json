@@ -1,8 +1,7 @@
 {
-  "id": "e974addb3dc743bc93fbde0f5433cd27",
-  "name": "Cortex Cloud Runtime Badges (Graph)",
   "dashboards_data": [
     {
+      "id": "e974addb3dc743bc93fbde0f5433cd27",
       "name": "Cortex Cloud Runtime Badges (Graph)",
       "description": "This dashboard provides a visual representation of your organization's progress in achieving key cloud runtime security badges. It measures performance indicators such as the reduction rate of critical vulnerabilities, adoption of registry scanning, and the automation of issue resolution.",
       "status": "ENABLED",

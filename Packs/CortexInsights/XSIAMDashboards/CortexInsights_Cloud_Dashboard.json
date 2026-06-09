@@ -1,8 +1,7 @@
 {
-  "id": "a3235f192fb047ccb56f51cbc6ee10e8",
-  "name": "Cortex Insights [Cloud]",
   "dashboards_data": [
     {
+      "id": "a3235f192fb047ccb56f51cbc6ee10e8",
       "name": "Cortex Insights [Cloud]",
       "description": "This dashboard provides a comprehensive overview of your organization's cloud security posture by consolidating findings from multiple sources. It highlights key metrics on critical vulnerabilities, posture misconfigurations, malware detections, and the health of your cloud data connectors.",
       "status": "ENABLED",

@@ -1,8 +1,7 @@
 {
-  "id": "2a3e86e19dc74f7091d17d39d16bf5e6",
-  "name": "Cortex Cloud posture Badges (Graph)",
   "dashboards_data": [
     {
+      "id": "2a3e86e19dc74f7091d17d39d16bf5e6",
       "name": "Cortex Cloud posture Badges (Graph)",
       "description": "This dashboard tracks your organization's progress toward achieving key cloud security milestones, represented as a series of earnable badges. It provides at-a-glance metrics on performance against critical objectives like enabling security capabilities, reducing attack paths, and accelerating issue remediation.",
       "status": "ENABLED",

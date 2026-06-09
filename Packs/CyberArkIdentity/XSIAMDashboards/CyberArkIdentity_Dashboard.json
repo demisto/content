@@ -1,8 +1,7 @@
 {
-  "id": "b25555dbd9ca47d089adda9a96ae7883",
-  "name": "CyberArk Posture Overview",
   "dashboards_data": [
     {
+      "id": "b25555dbd9ca47d089adda9a96ae7883",
       "name": "CyberArk Posture Overview",
       "description": "This dashboard displays security related information from the CyberArk account",
       "status": "ENABLED",

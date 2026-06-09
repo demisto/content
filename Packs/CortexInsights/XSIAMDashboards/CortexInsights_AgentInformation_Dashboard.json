@@ -1,8 +1,7 @@
 {
-  "id": "92e0fe9748974f55a05e73b8c799f130",
-  "name": "Cortex Insights [Agent Information]",
   "dashboards_data": [
     {
+      "id": "92e0fe9748974f55a05e73b8c799f130",
       "name": "Cortex Insights [Agent Information]",
       "description": "This dashboard provides a consolidated view into the health, status, and configuration of Cortex agents across your environment. It highlights key metrics on agent protection status and operating system distribution, and identifies critical issues like prolonged disconnections, misconfigurations, and upgrade failures.",
       "status": "ENABLED",

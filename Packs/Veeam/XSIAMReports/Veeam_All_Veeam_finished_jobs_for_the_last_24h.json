@@ -1,8 +1,8 @@
 {
-  "id": "94d08a79708c489b9ded64d9e9b4546e",
-  "name": "All Veeam finished jobs for the last 24h",
   "templates_data": [
     {
+      "id": "94d08a79708c489b9ded64d9e9b4546e",
+      "name": "All Veeam finished jobs for the last 24h",
       "report_name": "All Veeam finished jobs for the last 24h",
       "report_description": "Provides an overview of Veeam Backup & Replication jobs finished for the last 24 hours.",
       "layout": [

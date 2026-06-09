@@ -1,8 +1,7 @@
 {
-  "id": "f87d82c76c4b45c283cef888d624e111",
-  "name": "Gitlab Overview Dashboard",
   "dashboards_data": [
     {
+      "id": "f87d82c76c4b45c283cef888d624e111",
       "name": "Gitlab Overview Dashboard",
       "description": "Gitlab Overview Dashboard - an overview based on Gitlab logs.",
       "status": "ENABLED",

@@ -1,8 +1,7 @@
 {
-  "id": "03ffcf649a8a4cd6b9e0170b794baa89",
-  "name": "Automation Insights",
   "dashboards_data": [
     {
+      "id": "03ffcf649a8a4cd6b9e0170b794baa89",
       "name": "Automation Insights",
       "description": "Provides a high-level overview of the health and performance of automated processes, focusing on error rates, execution trends, and automation effectiveness",
       "status": "ENABLED",

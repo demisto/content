@@ -1,8 +1,7 @@
 {
-  "id": "6a2bcc80f015454e9559fba793736806",
-  "name": "Cortex Insights [Compliance]",
   "dashboards_data": [
     {
+      "id": "6a2bcc80f015454e9559fba793736806",
       "name": "Cortex Insights [Compliance]",
       "description": "This dashboard provides an overview of administrative activities related to security policy management to ensure compliance and proper governance. It highlights key metrics such as the volume of policy modifications and identifies the specific administrators responsible for these changes over time.",
       "status": "ENABLED",

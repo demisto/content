@@ -1,8 +1,7 @@
 {
-  "id": "8e39c026e23a40bc8985f306e4a6511d",
-  "name": "DropBox Dashboard",
   "dashboards_data": [
     {
+      "id": "8e39c026e23a40bc8985f306e4a6511d",
       "name": "DropBox Dashboard",
       "description": "This dashboard displays information about DropBox, which can assist the analysts with their day to day job.",
       "status": "ENABLED",

@@ -1,8 +1,7 @@
 {
-  "id": "38a737b1e0934c368d384fb7af36fdb2",
-  "name": "Cortex Insights [Analytics]",
   "dashboards_data": [
     {
+      "id": "38a737b1e0934c368d384fb7af36fdb2",
       "name": "Cortex Insights [Analytics]",
       "description": "The Cortex Insights dashboard provides a comprehensive overview of your security operations performance and efficiency. It visualizes key performance indicators such as case resolution trends, mean time to acknowledge (MTTA) and resolve (MTTR), and automation effectiveness.",
       "status": "ENABLED",

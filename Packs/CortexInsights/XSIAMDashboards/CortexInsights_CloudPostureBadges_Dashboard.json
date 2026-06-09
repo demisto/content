@@ -1,8 +1,7 @@
 {
-  "id": "548583625c2a4479b6d125a098c6152d",
-  "name": "Cortex Cloud Posture Badges",
   "dashboards_data": [
     {
+      "id": "548583625c2a4479b6d125a098c6152d",
       "name": "Cortex Cloud Posture Badges",
       "description": "This dashboard visually tracks the achievement of crucial cloud security posture objectives, presented as a series of badges. Key metrics measure progress across security module adoption, risk reduction for attack paths and identity issues, and the efficiency of case and alert remediation.",
       "status": "ENABLED",

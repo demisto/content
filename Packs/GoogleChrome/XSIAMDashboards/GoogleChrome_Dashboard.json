@@ -1,8 +1,7 @@
 {
-  "id": "06d48444d70f4cba8aaa343e518e484a",
-  "name": "Chrome Security Dashboard",
   "dashboards_data": [
     {
+      "id": "06d48444d70f4cba8aaa343e518e484a",
       "name": "Chrome Security Dashboard",
       "description": "This dashboard contains information about google chrome events.",
       "status": "ENABLED",
