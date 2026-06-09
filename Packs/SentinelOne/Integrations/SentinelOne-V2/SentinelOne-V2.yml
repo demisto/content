@@ -1527,6 +1527,9 @@ script:
     - contextPath: SentinelOne.StarRule.UpdatedAt
       description: The updated time for the STAR rule.
       type: String
+    - contextPath: SentinelOne.StarRule.QueryLanguage
+      description: The query language version for the STAR rule.
+      type: String
   - arguments:
     - name: status
       description: 'A comma-separated list of the status of the STAR rule. Available options are: "Activating, Active, Deleted, Deleting, Disabled, Disabling and Draft".Example: "Draft,Active".'
@@ -1699,6 +1702,9 @@ script:
       type: String
     - contextPath: SentinelOne.StarRule.UpdatedAt
       description: The updated time for the STAR rule.
+      type: String
+    - contextPath: SentinelOne.StarRule.QueryLanguage
+      description: The query language version for the STAR rule.
       type: String
   - arguments:
     - name: rule_ids
