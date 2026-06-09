@@ -53,6 +53,7 @@ from manifest_generator import (
     SERIALIZER_PLACEHOLDER,
     SERIALIZER_SCHEMA_DIRECTIVE,
     add_assets_capability,
+    add_connector_to_code_owners,
     add_fetch_issues_capability,
     add_handler_to_existing_connector,
     add_indicators_capability,
@@ -6782,3 +6783,97 @@ def test_similarity_no_connectors_root_passes(tmp_path):
     """Missing connectors root -> nothing to compare, no raise."""
     new_dir = tmp_path / "connectors" / "okta"
     check_connector_id_title_similarity(new_dir, "Okta")
+
+
+# ---------------------------------------------------------------------------
+# add_connector_to_code_owners
+# ---------------------------------------------------------------------------
+def test_add_connector_to_code_owners_appends_entry_to_existing_file(
+    tmp_path: Path,
+) -> None:
+    """Given an existing CODEOWNERS at the unified-connectors-content root,
+    appends the connector title comment + path-owners line + trailing blank
+    line."""
+    repo_root = tmp_path / "unified-connectors-content"
+    connectors_root = repo_root / "connectors"
+    connector_dir = connectors_root / "myconnector"
+    connector_dir.mkdir(parents=True)
+    code_owners = repo_root / "CODEOWNERS"
+    code_owners.write_text("# Existing header\n* @someone\n")
+
+    add_connector_to_code_owners(connector_dir, "My Connector")
+
+    content = code_owners.read_text()
+    assert content.startswith("# Existing header\n* @someone\n")
+    assert (
+        "# My Connector\n"
+        "connectors/myconnector/ @joeymizrahi @JudahSchwartz @YuvHayun \n"
+        "\n"
+    ) in content
+
+
+def test_add_connector_to_code_owners_creates_file_when_missing(
+    tmp_path: Path,
+) -> None:
+    """When CODEOWNERS does not yet exist, it is created with the entry."""
+    repo_root = tmp_path / "unified-connectors-content"
+    connectors_root = repo_root / "connectors"
+    connector_dir = connectors_root / "myconnector"
+    connector_dir.mkdir(parents=True)
+    code_owners = repo_root / "CODEOWNERS"
+    assert not code_owners.exists()
+
+    add_connector_to_code_owners(connector_dir, "My Connector")
+
+    assert code_owners.is_file()
+    assert code_owners.read_text() == (
+        "# My Connector\n"
+        "connectors/myconnector/ @joeymizrahi @JudahSchwartz @YuvHayun \n"
+        "\n"
+    )
+
+
+def test_add_connector_to_code_owners_uses_connector_dir_slug_in_path(
+    tmp_path: Path,
+) -> None:
+    """The path written uses ``connectors/<dir-name>/`` derived from the
+    connector_dir, regardless of the human-readable title."""
+    repo_root = tmp_path / "unified-connectors-content"
+    connector_dir = repo_root / "connectors" / "salesforce"
+    connector_dir.mkdir(parents=True)
+
+    add_connector_to_code_owners(connector_dir, "Salesforce Collection")
+
+    content = (repo_root / "CODEOWNERS").read_text()
+    assert "# Salesforce Collection\n" in content
+    assert "connectors/salesforce/ @joeymizrahi @JudahSchwartz @YuvHayun \n" in content
+
+
+def test_create_manifest_from_scratch_updates_code_owners(
+    tmp_path: Path,
+) -> None:
+    """End-to-end: the from-scratch flow appends the connector entry to the
+    CODEOWNERS file at the unified-connectors-content root."""
+    integration_yml = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": ["forensics"]}
+    )
+    repo_root = tmp_path / "unified-connectors-content"
+    connector_dir = repo_root / "connectors" / "myconnector"
+
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={"name": "MyInt"},
+        integration_path=integration_yml,
+        connector_title="My Connector",
+        mapped_params={},
+        auth_methods={},
+    )
+
+    code_owners = repo_root / "CODEOWNERS"
+    assert code_owners.is_file()
+    content = code_owners.read_text()
+    assert "# My Connector\n" in content
+    assert (
+        "connectors/myconnector/ @joeymizrahi @JudahSchwartz @YuvHayun \n"
+        in content
+    )

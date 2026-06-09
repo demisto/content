@@ -632,7 +632,7 @@ def build_connector_yaml(
 
     Vendor-driven fields (per user decision on review point 1):
       - ``vendor`` populates ``metadata.vendor`` verbatim.
-      - ``metadata.description`` = ``"integration for <vendor> products."``.
+      - ``metadata.description`` = ``"integrate with <vendor> products."``.
       - ``id`` and ``metadata.title`` are derived via
         :func:`derive_connector_id_and_title` (vendor prefix + capability
         suffix) when both ``vendor`` and ``mapped_params`` are supplied.
@@ -650,7 +650,7 @@ def build_connector_yaml(
         connector_title, vendor=vendor, mapped_params=mapped_params
     )
 
-    description = f"integration for {vendor} products." if vendor else ""
+    description = f"integrate with {vendor} products." if vendor else ""
 
     return {
         "id": connector_id,
@@ -826,35 +826,15 @@ _AGENTIX_XSIAM_LICENSES: tuple[str, ...] = ("agentix", "xsiam")
 CAPABILITY_ACTIONS: dict[str, dict] = {
     "fetch-assets-and-vulnerabilities": {
         "type": "reset_assets_last_run",
-        "display": "Reset Assets Last Run",
-        "description": (
-            "Clears the saved last-run cursor for asset and vulnerability "
-            "collection, forcing the next fetch to start from the beginning."
-        ),
     },
     "fetch-issues": {
         "type": "reset_incidents_last_run",
-        "display": "Reset Issues Last Run",
-        "description": (
-            "Clears the saved last-run cursor for issue/incident collection, "
-            "forcing the next fetch to start from the beginning."
-        ),
     },
     "threat-intelligence-and-enrichment": {
         "type": "reset_feed_last_run",
-        "display": "Reset Feed Last Run",
-        "description": (
-            "Clears the saved last-run cursor for threat intelligence feed "
-            "collection, forcing the next fetch to start from the beginning."
-        ),
     },
     "log-collection": {
         "type": "reset_events_last_run",
-        "display": "Reset Events Last Run",
-        "description": (
-            "Clears the saved last-run cursor for log/event collection, "
-            "forcing the next fetch to start from the beginning."
-        ),
     },
 }
 
@@ -1839,6 +1819,7 @@ def _build_numeric_fetch_interval_field(
             "id": field_id,
             "title": title,
             "field_type": "duration",
+            "output_format": "minutes",
             "options": {
                 "units": list(DURATION_UNITS),
                 "default_value": default_value,
@@ -2371,7 +2352,7 @@ def _build_feedreliability_field(
         if "description" not in options:
             options["description"] = FEED_RELIABILITY_ADDITIONAL_INFO
         # feedReliability is required by default per module.go.
-        if not yml_param.get("required"):
+        if yml_param.get("required") is None:
             # Only override if yml didn't explicitly set required.
             for mod_key in ("create_modifiers", "edit_modifiers"):
                 mod = options.get(mod_key, {})
@@ -3268,7 +3249,7 @@ def build_capabilities_yaml(
     Each capability entry includes the REQUIRED schema fields
     (capabilities.schema: id + title + default_enabled + required):
       - ``title`` — from CANONICAL_CAPABILITY_TITLES lookup
-      - ``default_enabled: true`` (per Salesforce reference §4.3)
+      - ``default_enabled: False`` (per Salesforce reference §4.3)
       - ``required: false`` (per guide §3.4: "Always false")
 
     Backwards-compatible: callers omitting all extra args get bare-id
@@ -3292,7 +3273,7 @@ def build_capabilities_yaml(
             # §3.4 — placeholder, flag for tech-writer review).
             "description": CANONICAL_CAPABILITY_DESCRIPTIONS[cap_id],
             # Per guide §3.4 + §4.3 Salesforce reference.
-            "default_enabled": True,
+            "default_enabled": False,
             "required": False,
         }
         # config.required_license — aggregate of the integration's
@@ -3823,7 +3804,7 @@ def append_capability_to_files(
             {
                 "id": cap_slug,
                 "title": CANONICAL_CAPABILITY_TITLES[cap_slug],
-                "default_enabled": True,
+                "default_enabled": False,
                 "required": False,
                 "sub_capabilities": [
                     build_sub_capability_entry(new_sub_cap_id, cap_name)
@@ -5377,6 +5358,51 @@ def merge_connection_data(
 
 
 # ---------------------------------------------------------------------------
+# CODEOWNERS registration (from-scratch flow)
+# ---------------------------------------------------------------------------
+# Default owners appended for every newly-scaffolded connector. The trailing
+# space after the last owner is intentional to mirror the existing CODEOWNERS
+# formatting convention.
+CODE_OWNERS_DEFAULT_OWNERS = "@joeymizrahi @JudahSchwartz @YuvHayun"
+
+
+def add_connector_to_code_owners(
+    connector_dir: Path,
+    connector_title: str,
+) -> None:
+    """Append a CODEOWNERS entry for a newly-created connector.
+
+    The CODEOWNERS file lives at the unified-connectors-content root, i.e. the
+    parent of the ``connectors/`` directory that holds ``connector_dir``. The
+    appended block is::
+
+        # <connector_title>
+        connectors/<slug>/ @joeymizrahi @JudahSchwartz @YuvHayun
+
+    followed by a trailing blank line. ``<slug>`` is the connector directory's
+    own name (``connector_dir.name``). The file is created if it does not yet
+    exist.
+    """
+    slug = connector_dir.name
+    # connector_dir == <root>/connectors/<slug>; the CODEOWNERS file lives at
+    # <root>/CODEOWNERS (parent of the connectors/ directory).
+    code_owners_path = connector_dir.parent.parent / "CODEOWNERS"
+
+    entry = (
+        f"# {connector_title}\n"
+        f"connectors/{slug}/ {CODE_OWNERS_DEFAULT_OWNERS} \n"
+        "\n"
+    )
+
+    with open(code_owners_path, "a") as fh:
+        fh.write(entry)
+
+    logger.info(
+        f"[manifest_generator] Registered {slug!r} in {code_owners_path}"
+    )
+
+
+# ---------------------------------------------------------------------------
 # Dispatch targets (stubs — per-file rules to be added later)
 # ---------------------------------------------------------------------------
 def create_manifest_from_scratch(
@@ -5426,6 +5452,10 @@ def create_manifest_from_scratch(
         )
     # Create the connector directory if it doesn't exist
     connector_dir.mkdir(parents=True, exist_ok=True)
+
+    # Register the new connector in the unified-connectors-content CODEOWNERS
+    # file (from-scratch flow only).
+    add_connector_to_code_owners(connector_dir, connector_title)
 
     # Copy the author image (if provided) into the connector root before
     # building connector.yaml so we can record the dest filename.
@@ -5744,6 +5774,11 @@ def add_handler_to_existing_connector(
     merged_tags = merge_tags_case_insensitive(existing_tags, pack_tags)
     metadata["tags"] = merged_tags
 
+    pack_categories = get_pack_categories(integration_path)
+    existing_tags = metadata.get("categories") or []
+    merged_categories = merge_tags_case_insensitive(existing_tags, pack_categories)
+    metadata["categories"] = merged_categories
+    
     # Bump minor version
     current_version = metadata.get("version", "")
     new_version = bump_minor_version(current_version)
@@ -6096,7 +6131,7 @@ def generate_manifest(
         help=(
             "Vendor name (e.g. 'Microsoft Graph', 'Okta'). Drives "
             "connector.yaml metadata.vendor, the description "
-            "('integration for <vendor> products.'), and the id/title "
+            "('integrate with <vendor> products.'), and the id/title "
             "capability-suffix derivation (guide §3.3.1). From-scratch "
             "path only. When omitted, the legacy stub id/title/description "
             "are emitted."

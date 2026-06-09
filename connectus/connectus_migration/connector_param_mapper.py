@@ -201,6 +201,10 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
         elif "longRunning" not in result[suggested]:
             result[suggested].append("longRunning")
 
+    capabilities = list(result.keys())
+    capabilities.remove("general_configurations")
+    if len(capabilities) < 1:
+        raise Exception(f"No capabilities were created for integration {integration_name}")
     return result
 
 
