@@ -1403,7 +1403,7 @@ script:
     - contextPath: MSGraphMail.MailTips.error.message
       description: The human-readable error message returned if the Mail Tips lookup for the recipient fails.
       type: String
-  dockerimage: demisto/crypto:1.0.0.7323034
+  dockerimage: demisto/crypto:1.0.0.8931184
   isfetch: true
   runonce: false
   script: '-'

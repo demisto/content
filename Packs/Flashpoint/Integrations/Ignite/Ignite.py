@@ -901,7 +901,7 @@ def prepare_args_for_fetch_alerts(
     return fetch_params
 
 
-def remove_duplicate_records(records: List, fetch_type: str, next_run: dict) -> List:
+def remove_duplicate_records(records: list, fetch_type: str, next_run: dict) -> list:
     """
     Check for duplicate records and remove them from the list.
 
@@ -1069,7 +1069,7 @@ def check_value_of_total_records(total: Any, next_run: dict) -> None:
         next_run["total"] = total
 
 
-def prepare_checkpoint_and_related_objects(hits: List, hit_ids: List, next_run: dict) -> None:
+def prepare_checkpoint_and_related_objects(hits: list, hit_ids: list, next_run: dict) -> None:
     """
     Prepare checkpoint and related objects for incidents of type compromised credentials.
 
@@ -1110,7 +1110,7 @@ def prepare_next_run_when_data_is_present(next_run: dict, start_time: str) -> No
     next_run["fetch_count"] = next_run["fetch_count"] + 1
 
 
-def prepare_next_run_when_data_is_empty(next_run: dict, hits: List) -> None:
+def prepare_next_run_when_data_is_empty(next_run: dict, hits: list) -> None:
     """
     Prepare next run when data is present.
 
@@ -1311,7 +1311,7 @@ def validate_alert_list_args(args: dict) -> dict:
     return params
 
 
-def validate_cvss_score(min_cvss: Optional[str], min_cvss_label: str, max_cvss: Optional[str], max_cvss_label: str) -> None:
+def validate_cvss_score(min_cvss: str | None, min_cvss_label: str, max_cvss: str | None, max_cvss_label: str) -> None:
     """
     Validate the CVSS score parameters.
 
@@ -1352,7 +1352,7 @@ def validate_cvss_score(min_cvss: Optional[str], min_cvss_label: str, max_cvss: 
         raise DemistoException(MESSAGES["INVALID_SCORE_RANGE"].format(min_cvss_label, max_cvss_label))
 
 
-def validate_epss_score(min_epss: Optional[str], min_epss_label: str, max_epss: Optional[str], max_epss_label: str) -> None:
+def validate_epss_score(min_epss: str | None, min_epss_label: str, max_epss: str | None, max_epss_label: str) -> None:
     """
     Validate the EPSS score parameters.
 
@@ -1394,7 +1394,7 @@ def validate_epss_score(min_epss: Optional[str], min_epss_label: str, max_epss: 
 
 
 def validate_time_range(
-    after_time: Optional[datetime], before_time: Optional[datetime], after_arg_name: str, before_arg_name: str
+    after_time: datetime | None, before_time: datetime | None, after_arg_name: str, before_arg_name: str
 ) -> None:
     """
     Validate that the 'after' timestamp is earlier than the 'before' timestamp.
@@ -1888,7 +1888,7 @@ def get_resource_url(source: str, resource_id: str, platform_url: str):
     return resource_url
 
 
-def prepare_hr_for_alerts(alerts: List, platform_url: str) -> str:
+def prepare_hr_for_alerts(alerts: list, platform_url: str) -> str:
     """
     Prepare human readable format for alerts.
 
@@ -2720,7 +2720,7 @@ def prepare_hr_for_vendors(vendors: list[dict], platform_url: str) -> str:
     )
 
 
-def prepare_hr_for_products(products: List, platform_url: str) -> str:
+def prepare_hr_for_products(products: list, platform_url: str) -> str:
     """
     Prepare human readable format for products.
 
@@ -2921,7 +2921,7 @@ def fetch_incidents(client: Client, last_run: dict, params: dict, is_test: bool 
 
     response = client.http_request("GET", url_suffix=url_suffix, params=fetch_params["fetch_params"])
 
-    incidents: List[dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
     next_run = last_run
     start_time = fetch_params["start_time"]
 
@@ -3920,7 +3920,7 @@ def get_reports_command(client, args) -> CommandResults:
     response = client.http_request(method="GET", url_suffix=URL_SUFFIX["REPORT_SEARCH"], params=params)
     reports = deepcopy(response.get("data", []))
     human_readable = "### Ignite Intelligence reports related to search: " + report_search + "\n"
-    report_details: List[Any] = []
+    report_details: list[Any] = []
 
     if reports:
         human_readable += "Top 5 reports:\n\n"
@@ -4099,7 +4099,7 @@ def related_report_list_command(client: Client, args: dict) -> CommandResults:
     )
     reports = deepcopy(response.get("data", []))
     human_readable = "### Ignite Intelligence related reports:\n"
-    report_details: List[Any] = []
+    report_details: list[Any] = []
 
     if reports:
         human_readable += "Top 5 related reports:\n\n"
@@ -4686,6 +4686,8 @@ def main():
         or DEFAULT_REPUTATION_CONTEXT_LIMIT
     )
 
+    config_exact_match = argToBoolean(params.get("ioc_enrichment_exact_match", False))
+
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = argToBoolean(params.get("proxy", False))
@@ -4761,13 +4763,16 @@ def main():
                 raise ValueError(MESSAGES["MISSING_REQUIRED_ARGS"].format(command))
             indicator_list = argToList(args.get(command))
             indicator_list = [indicator.strip() for indicator in indicator_list if indicator.strip()]
-            exact_match = argToBoolean(args.get("exact_match", False))
+            if "exact_match" in args:
+                exact_match = argToBoolean(args.get("exact_match"))
+            else:
+                exact_match = config_exact_match
             results = []
             if not indicator_list:
                 raise ValueError(MESSAGES["MISSING_REQUIRED_ARGS"].format(command))
             for indicator in indicator_list:
                 arguments = (client, indicator)
-                if exact_match:
+                if exact_match and command in ("ip", "domain", "url", "file"):
                     arguments += (exact_match,)  # type: ignore
                 results.append(REPUTATION_COMMAND_TO_FUNCTION[command](*arguments))
             return_results(results)

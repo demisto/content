@@ -194,6 +194,12 @@ configuration:
   type: 8
   required: false
   section: Collect
+- additionalinfo: Whether to use exact matching for indicator values by default in enrichment commands (ip, domain, file, and url). This behavior can be overridden for individual commands using the exact_match argument.
+  display: Enable Exact Match for IOC Enrichment
+  name: ioc_enrichment_exact_match
+  type: 8
+  required: false
+  section: Collect
 - additionalinfo: >-
     Maximum number of entries stored per reputation command result for both relationships (e.g. related IPs)
     and enrichments (e.g. domains, emails, CVEs). Lowering this value improves performance and reduces context
@@ -942,7 +948,6 @@ script:
       isArray: true
     - name: exact_match
       required: false
-      defaultValue: "False"
       description: Whether to perform an exact match on the IP address value.
       auto: PREDEFINED
       predefined:
@@ -2609,7 +2614,6 @@ script:
       isArray: true
     - name: exact_match
       required: false
-      defaultValue: "False"
       description: Whether to perform an exact match on the URL value.
       auto: PREDEFINED
       predefined:
@@ -2821,7 +2825,6 @@ script:
       isArray: true
     - name: exact_match
       required: false
-      defaultValue: "False"
       description: Whether to perform an exact match on the domain value.
       auto: PREDEFINED
       predefined:
@@ -3033,7 +3036,6 @@ script:
       isArray: true
     - name: exact_match
       required: false
-      defaultValue: "False"
       description: Whether to perform an exact match on the file hash value.
       auto: PREDEFINED
       predefined:
@@ -4823,7 +4825,7 @@ script:
     description: List products using provided filters.
   script: ''
   type: python
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.9059085
   isfetch: true
   runonce: false
   subtype: python3

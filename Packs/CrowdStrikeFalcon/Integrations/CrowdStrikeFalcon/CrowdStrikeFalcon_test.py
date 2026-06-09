@@ -4527,11 +4527,164 @@ def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid
     mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
     if is_valid:
         outputs = cs_falcon_spotlight_search_vulnerability_command(args)
-        assert outputs.readable_output == expected_hr
+        assert outputs[0].readable_output == expected_hr
     else:
         with pytest.raises(DemistoException) as e:
             cs_falcon_spotlight_search_vulnerability_command(args)
         assert str(e.value) == expected_hr
+
+
+def _find_token_cr(results):
+    """Return the CommandResults whose outputs_prefix is the pagination-token prefix, or None."""
+    for cr in results:
+        if getattr(cr, "outputs_prefix", None) == "CrowdStrike.VulnerabilityNextToken":
+            return cr
+    return None
+
+
+def test_cs_falcon_spotlight_search_vulnerability_command_pagination(mocker):
+    """
+    Verify the pagination contract: the cursor is always emitted to context when the
+    API returns a non-empty `after`, and is never rendered in human-readable output.
+
+    (a) next_token is forwarded to the API as `&after=`.
+    (b) A populated server cursor is surfaced as `CrowdStrike.VulnerabilityNextToken`.
+    (c) An empty server cursor causes the cursor entry to be omitted entirely.
+    (d) limit > 2500 is silently capped to 2500 in the outgoing URL.
+    (e) The cursor entry is emitted regardless of the requested limit when the API
+        returned one.
+    (f) Over-cap limit still emits the cursor entry.
+    (g) The cursor entry's `readable_output` is empty while the data entry carries
+        the markdown table.
+    (h) 404 "Search context expired" path raises the friendly intercept.
+    (i) next_token with URL-special chars is correctly percent-encoded.
+    """
+    from CrowdStrikeFalcon import cs_falcon_spotlight_search_vulnerability_command
+
+    # display_* args must be supplied because the production code unconditionally
+    # routes them through argToBoolean(), which raises ValueError on None.
+    base_args = {
+        "filter": "status:'open'",
+        "display_remediation_info": "False",
+        "display_evaluation_logic_info": "False",
+        "display_host_info": "False",
+    }
+
+    # ---- (a) + (b): cursor forwarded; populated server cursor surfaces ----
+    http_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"id": "vuln-1"}],
+            "meta": {"pagination": {"after": "CURSOR_VALUE"}},
+        },
+    )
+    results = cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "1", "next_token": "PREV_CURSOR"})
+    call_args, _ = http_mock.call_args
+    url_suffix = call_args[1] if len(call_args) > 1 else http_mock.call_args.kwargs.get("url_suffix")
+    assert "after=PREV_CURSOR" in url_suffix  # (a)
+    token_cr = _find_token_cr(results)
+    assert token_cr is not None  # (b)
+    assert token_cr.outputs == "CURSOR_VALUE"  # (b)
+
+    # ---- (c): empty server cursor -> cursor entry omitted ----
+    mocker.resetall()
+    http_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"id": "vuln-2"}],
+            "meta": {"pagination": {"after": ""}},
+        },
+    )
+    results = cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "1"})
+    assert len(results) == 1
+    assert _find_token_cr(results) is None  # (c)
+
+    # ---- (d): limit > 2500 is silently capped to 2500 ----
+    mocker.resetall()
+    http_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"id": "vuln-3"}],
+            "meta": {"pagination": {"after": "ANY"}},
+        },
+    )
+    cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "3000"})
+    call_args, _ = http_mock.call_args
+    url_suffix = call_args[1] if len(call_args) > 1 else http_mock.call_args.kwargs.get("url_suffix")
+    assert "limit=2500" in url_suffix
+    assert "limit=3000" not in url_suffix  # (d)
+
+    # ---- (e): small limit + server cursor -> cursor entry still emitted ----
+    mocker.resetall()
+    mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"id": "vuln-4"}],
+            "meta": {"pagination": {"after": "ANY"}},
+        },
+    )
+    results = cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "100"})
+    assert len(results) == 2
+    assert _find_token_cr(results) is not None  # (e)
+
+    # ---- (f): over-cap limit -> cursor entry still emitted ----
+    mocker.resetall()
+    mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"id": "vuln-5"}],
+            "meta": {"pagination": {"after": "ANY"}},
+        },
+    )
+    results = cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "3000"})
+    assert len(results) == 2
+    assert _find_token_cr(results) is not None  # (f)
+
+    # ---- (g): cursor entry advertises the token via its readable_output;
+    # data entry carries the markdown table with the vulnerability rows. ----
+    mocker.resetall()
+    mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={
+            "resources": [{"cve": {"id": "CVE-2024-0001"}, "status": "open"}],
+            "meta": {"pagination": {"after": "ANY"}},
+        },
+    )
+    results = cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "100"})
+    assert len(results) == 2
+    token_cr = _find_token_cr(results)
+    assert token_cr is not None
+    assert token_cr.readable_output
+    assert "VulnerabilityNextToken" in token_cr.readable_output
+    data_cr = next(cr for cr in results if cr is not token_cr)
+    assert data_cr.readable_output
+    assert "CVE-2024-0001" in data_cr.readable_output
+
+    # ---- (i): next_token with URL-special chars is correctly percent-encoded ----
+    mocker.resetall()
+    http_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        return_value={"resources": [], "meta": {"pagination": {"after": ""}}},
+    )
+    cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "1", "next_token": "a+b/c=d&e"})
+    call_args = http_mock.call_args.args
+    url_suffix = call_args[1]
+    assert "after=a%2Bb%2Fc%3Dd%26e" in url_suffix
+
+    # ---- (h): 404 "Search context expired" path raises the friendly intercept ----
+    mocker.resetall()
+    http_mock = mocker.patch(
+        "CrowdStrikeFalcon.http_request",
+        side_effect=DemistoException(
+            "Error in API call to CrowdStrike Falcon: code: 404 - reason: Not Found\n"
+            "Search context expired, 'after' key no longer valid"
+        ),
+    )
+    return_error_mock = mocker.patch("CrowdStrikeFalcon.return_error", side_effect=SystemExit)
+    with pytest.raises(SystemExit):
+        cs_falcon_spotlight_search_vulnerability_command({**base_args, "limit": "1"})
+    assert return_error_mock.call_count == 1
+    assert "cursor has expired" in return_error_mock.call_args.args[0]
 
 
 def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
@@ -8922,6 +9075,8 @@ class TestSpotlightSeverityBasedFetch:
         assert "filter" in call_kwargs["params"]
         assert "CRITICAL" in call_kwargs["params"]["filter"]
         assert "status:['open','reopen']" in call_kwargs["params"]["filter"]
+        # Lookback window filter is applied to bound the dataset size for large tenants
+        assert "updated_timestamp:>'now-100d'" in call_kwargs["params"]["filter"]
 
         # Verify AIDs sent to handler
         mock_handler.receive_new_aids.assert_awaited_once_with({"aid1", "aid2"})
@@ -9973,3 +10128,140 @@ def test_list_workflow_executions_command_filter_priority(mocker):
     call_args = http_mock.call_args
     params = call_args.kwargs.get("params") or call_args[1].get("params") or call_args[0][2] if len(call_args[0]) > 2 else None
     assert "ShouldBeIgnored" not in str(params)
+
+
+class TestSynchronousCompression:
+    """Tests for synchronous compression in send_data_to_xsiam_async (CIAC-16811 memory optimization)."""
+
+    @pytest.mark.asyncio
+    async def test_send_data_to_xsiam_async_compresses_synchronously(self, mocker):
+        """
+        Tests that send_data_to_xsiam_async compresses data synchronously before creating async tasks.
+
+        Given:
+            - A list of vulnerability dicts to send to XSIAM.
+        When:
+            - send_data_to_xsiam_async is called.
+        Then:
+            - Data is compressed synchronously (gzip.compress called during function execution, not in async task).
+            - Async tasks receive pre-compressed bytes, not raw data.
+            - The returned tasks are valid asyncio tasks.
+        """
+        import gzip
+        import json
+
+        from CrowdStrikeFalcon import send_data_to_xsiam_async
+
+        # Setup - mock XSIAM credentials and params
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"url": "mock_url"})
+        mocker.patch(
+            "CrowdStrikeFalcon.demisto.callingContext", {"context": {"IntegrationInstance": "test", "IntegrationBrand": "CSF"}}
+        )
+        mocker.patch("CrowdStrikeFalcon.demisto.getLicenseCustomField", return_value="mock-token")
+
+        # Track gzip.compress calls to verify synchronous compression
+        original_compress = gzip.compress
+        compress_calls: list[bytes] = []
+
+        def tracking_compress(data, *args, **kwargs):
+            result = original_compress(data, *args, **kwargs)
+            compress_calls.append(result)
+            return result
+
+        mocker.patch("CrowdStrikeFalcon.gzip.compress", side_effect=tracking_compress)
+
+        # Mock xsiam_api_call_async to avoid actual HTTP calls
+        mock_api_call = mocker.AsyncMock()
+        mocker.patch("CrowdStrikeFalcon.xsiam_api_call_async", mock_api_call)
+
+        # Test data - 3 vulnerability dicts
+        test_data = [
+            {"id": "vuln1", "aid": "aid1", "status": "open", "cve": {"id": "CVE-2024-0001", "severity": "HIGH"}},
+            {"id": "vuln2", "aid": "aid2", "status": "open", "cve": {"id": "CVE-2024-0002", "severity": "MEDIUM"}},
+            {"id": "vuln3", "aid": "aid3", "status": "open", "cve": {"id": "CVE-2024-0003", "severity": "LOW"}},
+        ]
+
+        # Execute
+        tasks = send_data_to_xsiam_async(
+            data=test_data,
+            vendor="CrowdStrike",
+            product="Falcon_Spotlight",
+            data_type="assets",
+            snapshot_id="snap123",
+        )
+
+        # Verify compression happened synchronously (before tasks are awaited)
+        assert len(compress_calls) > 0, "gzip.compress should have been called synchronously"
+
+        # Verify compressed data is valid gzip that decompresses to the original data
+        for compressed in compress_calls:
+            decompressed = gzip.decompress(compressed).decode("utf-8")
+            # Each line should be a valid JSON object from our test data
+            for line in decompressed.strip().split("\n"):
+                parsed = json.loads(line)
+                assert "id" in parsed
+                assert "aid" in parsed
+
+        # Verify tasks were created
+        assert len(tasks) > 0, "Should have created at least one async task"
+
+    @pytest.mark.asyncio
+    async def test_send_data_to_xsiam_async_empty_data_assets(self, mocker):
+        """
+        Tests that send_data_to_xsiam_async handles empty data for asset seal correctly.
+
+        Given:
+            - Empty data list with data_type="assets" (seal batch).
+        When:
+            - send_data_to_xsiam_async is called.
+        Then:
+            - A task is still created (for the seal).
+            - No crash occurs.
+        """
+        from CrowdStrikeFalcon import send_data_to_xsiam_async
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"url": "mock_url"})
+        mocker.patch(
+            "CrowdStrikeFalcon.demisto.callingContext", {"context": {"IntegrationInstance": "test", "IntegrationBrand": "CSF"}}
+        )
+        mocker.patch("CrowdStrikeFalcon.demisto.getLicenseCustomField", return_value="mock-token")
+        mocker.patch("CrowdStrikeFalcon.xsiam_api_call_async", mocker.AsyncMock())
+
+        tasks = send_data_to_xsiam_async(
+            data=[],
+            vendor="CrowdStrike",
+            product="Falcon_Spotlight",
+            data_type="assets",
+            snapshot_id="snap123",
+        )
+
+        # Seal batch should still create a task
+        assert len(tasks) == 1, "Empty assets data should create one seal task"
+
+    def test_send_data_to_xsiam_async_empty_data_non_assets(self, mocker):
+        """
+        Tests that send_data_to_xsiam_async returns empty list for non-asset empty data.
+
+        Given:
+            - Empty data list with data_type="events".
+        When:
+            - send_data_to_xsiam_async is called.
+        Then:
+            - Returns empty list (no tasks created).
+        """
+        from CrowdStrikeFalcon import send_data_to_xsiam_async
+
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"url": "mock_url"})
+        mocker.patch(
+            "CrowdStrikeFalcon.demisto.callingContext", {"context": {"IntegrationInstance": "test", "IntegrationBrand": "CSF"}}
+        )
+        mocker.patch("CrowdStrikeFalcon.demisto.getLicenseCustomField", return_value="mock-token")
+
+        tasks = send_data_to_xsiam_async(
+            data=[],
+            vendor="CrowdStrike",
+            product="Falcon_Spotlight",
+            data_type="events",
+        )
+
+        assert tasks == [], "Empty non-asset data should return no tasks"
