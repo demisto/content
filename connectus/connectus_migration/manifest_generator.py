@@ -834,7 +834,7 @@ CAPABILITY_ACTIONS: dict[str, dict] = {
     },
     "fetch-issues": {
         "type": "reset_incidents_last_run",
-        "display": "Reset Incidents Last Run",
+        "display": "Reset Issues Last Run",
         "description": (
             "Clears the saved last-run cursor for issue/incident collection, "
             "forcing the next fetch to start from the beginning."
@@ -1006,7 +1006,7 @@ def build_handler_yaml(
         the platform's standard service endpoint.
     """
     integration_id = integration_yml.get("commonfields", {}).get("id", "")
-    integration_display = integration_yml.get("display", "")
+    integration_name = integration_yml.get("name", "")
     handler_id = derive_handler_id(integration_id)
 
     # Build auth_options per the AuthOption schema (workloads required).
@@ -1082,8 +1082,7 @@ def build_handler_yaml(
         "metadata": {
             "version": "1.0.0",
             "description": (
-                f"XSOAR handler for {integration_display} integration for "
-                f"{connector_title} connector"
+                f"XSOAR handler for {integration_name} integration."
             ),
             "module": "xsoar",
             "tags": list(pack_tags),
@@ -2778,9 +2777,9 @@ def add_indicators_capability(
 
 # Default human-readable titles for the synthetic / fallback emission
 # paths in ``add_fetch_issues_capability``.
-_ISFETCH_DEFAULT_TITLE = "Fetch incidents"
+_ISFETCH_DEFAULT_TITLE = "Fetch Issues"
 _INCIDENTTYPE_DEFAULT_TITLE = "Incident type"
-_INCIDENTFETCHINTERVAL_DEFAULT_TITLE = "Incidents Fetch Interval"
+_INCIDENTFETCHINTERVAL_DEFAULT_TITLE = "Issues Fetch Interval"
 _MAPPER_INCOMING_DEFAULT_TITLE = "Incoming Mapper"
 _CLASSIFIER_DEFAULT_TITLE = "Classifier"
 _LONGRUNNING_DEFAULT_TITLE = "Long running instance"
@@ -3000,18 +2999,25 @@ def add_fetch_issues_capability(
     lr_field_id = _field_id(LONGRUNNING_PARAM_NAME) if is_long_running else ""
 
     # --- §2. Resolve titles (generic helper) ----------------------------
+    def align_incidents_to_issues(title):
+        title.replace("incidents", "Issues").replace("Incidents", "Issues").replace("incident", "Issues").replace("Incidents", "Issues")
+        return title
+
     isfetch_title = _resolve_title_from_yml(
         yml_params_by_name, ISFETCH_PARAM_NAME,
         fallback=_ISFETCH_DEFAULT_TITLE,
     )
+    isfetch_title = align_incidents_to_issues(isfetch_title)
     inctype_title = _resolve_title_from_yml(
         yml_params_by_name, INCIDENTTYPE_PARAM_NAME,
         fallback=_INCIDENTTYPE_DEFAULT_TITLE,
     )
+    inctype_title = align_incidents_to_issues(inctype_title)
     incfi_title = _resolve_title_from_yml(
         yml_params_by_name, INCIDENTFETCHINTERVAL_PARAM_NAME,
         fallback=_INCIDENTFETCHINTERVAL_DEFAULT_TITLE,
     )
+    incfi_title = align_incidents_to_issues(incfi_title)
 
     # --- §3. Look up yml params and integration-level defaults ----------
     def _yml(name: str) -> dict | None:
@@ -4156,7 +4162,7 @@ def _map_type_0(yml_param: dict) -> dict:
 
 def _map_type_1(yml_param: dict) -> dict:
     """XSOAR type 1 — Hidden short text → connectus `input` with mask."""
-    field = {"id": yml_param["name"], "field_type": "input", "options": {"mask": True}}
+    field = {"id": yml_param["name"], "field_type": "input", "options": {"mask": False}}
     _apply_common_field_metadata(field, yml_param)
     return field
 
