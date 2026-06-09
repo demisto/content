@@ -4,8 +4,9 @@ name: Darkmon - Enrich URL
 description: Sub-playbook that calls the Darkmon !url command and returns DBotScore + Common.URL for the input URL indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
 fromversion: 6.5.0
 marketplaces:
-- xsoar
-- marketplacev2
+  - xsoar
+  - marketplacev2
+  - platform
 starttaskid: "0"
 tasks:
   "0":

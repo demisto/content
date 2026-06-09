@@ -31,6 +31,7 @@
     "description": "Severity label (critical, high, medium, low).",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

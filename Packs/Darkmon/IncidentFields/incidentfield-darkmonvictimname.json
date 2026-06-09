@@ -31,6 +31,7 @@
     "description": "Victim organisation name as reported by the threat actor.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

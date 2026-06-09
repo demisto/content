@@ -9,7 +9,8 @@
     "system": false,
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "detailsV2": {
         "tabs": [

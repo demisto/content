@@ -6,8 +6,9 @@ description: Test playbook for the Darkmon integration. Exercises the 5 reputati
   Required for Marketplace certification.
 fromversion: 6.5.0
 marketplaces:
-- xsoar
-- marketplacev2
+  - xsoar
+  - marketplacev2
+  - platform
 starttaskid: "0"
 tasks:
   "0":

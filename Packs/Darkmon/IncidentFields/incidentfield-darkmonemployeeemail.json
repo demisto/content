@@ -31,6 +31,7 @@
     "description": "The corporate email of the compromised employee.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

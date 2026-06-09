@@ -31,6 +31,7 @@
     "description": "The Darkmon record ID for the leaked account.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

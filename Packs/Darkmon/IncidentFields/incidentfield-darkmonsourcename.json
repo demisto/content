@@ -33,6 +33,7 @@
     "description": "The source where the leak was observed.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }

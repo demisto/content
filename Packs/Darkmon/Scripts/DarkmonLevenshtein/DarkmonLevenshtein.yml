@@ -35,7 +35,8 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/python3:3.12.13.9059085
 marketplaces:
-- xsoar
-- marketplacev2
+  - xsoar
+  - marketplacev2
+  - platform
 tests:
 - No tests

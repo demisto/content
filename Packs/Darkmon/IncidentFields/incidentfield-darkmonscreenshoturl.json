@@ -31,6 +31,7 @@
     "description": "URL of the ransomware listing screenshot.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ]
 }
