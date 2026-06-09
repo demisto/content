@@ -1,5 +1,6 @@
 import json
 
+import demistomock as demisto
 from PaloAltoNetworks_DeviceSecurity_SCM import (
     Client,
     fetch_incidents,
