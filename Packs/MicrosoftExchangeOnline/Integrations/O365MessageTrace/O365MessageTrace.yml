@@ -1,0 +1,170 @@
+category: Analytics & SIEM
+provider: Microsoft
+commonfields:
+  id: O365 Message Trace
+  version: -1
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  defaultvalue: https://graph.microsoft.com
+  type: 0
+  section: Connect
+  additionalinfo: The Microsoft Graph base URL.
+- name: tenant_id
+  display: Tenant ID
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: The Azure AD tenant ID (GUID).
+- name: credentials_client_id
+  displaypassword: Client ID
+  hiddenusername: true
+  required: false
+  type: 9
+  section: Connect
+  additionalinfo: The Application (Client) ID registered in Azure AD.
+- name: credentials
+  displaypassword: Client Secret
+  hiddenusername: true
+  required: false
+  type: 9
+  section: Connect
+  additionalinfo: The client secret for the Azure AD application.
+- name: creds_certificate
+  display: Certificate Thumbprint
+  displaypassword: Private Key
+  type: 9
+  section: Connect
+  required: false
+  additionalinfo: The private key of the registered certificate used for certificate authentication, as it appears in the "Certificates & secrets" page of the app.
+- name: redirect_uri
+  display: Application redirect URI
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: The redirect URI configured in the Azure AD application. Required for the self-deployed authorization-code flow.
+- name: auth_code
+  displaypassword: Authorization code
+  hiddenusername: true
+  type: 9
+  section: Connect
+  required: false
+  additionalinfo: The authorization code received from the Azure portal during the self-deployed authorization-code flow.
+- name: use_managed_identities
+  display: Use Azure Managed Identities
+  type: 8
+  section: Connect
+  required: false
+  additionalinfo: Whether to use Azure Managed Identities when running on an Azure VM with assigned identity.
+- name: managed_identities_client_id
+  displaypassword: Azure Managed Identities Client ID
+  hiddenusername: true
+  type: 9
+  section: Connect
+  required: false
+  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on an Azure VM.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- name: max_fetch
+  display: Maximum number of events per fetch
+  required: false
+  defaultvalue: '50000'
+  type: 0
+  section: Collect
+  additionalinfo: The maximum number of events to fetch in a single fetch cycle.
+- name: isFetchEvents
+  display: Fetch events
+  required: false
+  type: 8
+  section: Collect
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+description: Ingest Exchange Online Message Trace events into Cortex XSIAM. Message Trace enables tenant administrators to track the lifecycle of an email, determine its delivery status (delivered, pending, failed, or quarantined), and understand the actions applied to it.
+display: O365 Message Trace
+name: O365 Message Trace
+script:
+  commands:
+  - arguments: []
+    description: Generate the login URL used for authorization code flow.
+    execution: false
+    name: o365-message-trace-generate-login-url
+  - arguments: []
+    description: Tests connectivity to Microsoft.
+    execution: false
+    name: o365-message-trace-auth-test
+  - arguments: []
+    description: Run this command if for some reason you need to rerun the authentication process. This will clear the saved access token / refresh token from the integration context, so on the next run a fresh authorization code (or client-credentials token) will be requested.
+    execution: false
+    name: o365-message-trace-auth-reset
+  - name: o365-message-trace-get-events
+    description: Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+    arguments:
+    - name: limit
+      description: The maximum number of events to return.
+      defaultValue: '50'
+    - name: start_time
+      description: The start time to filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z").
+    - name: end_time
+      description: The end time to filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").
+    - name: should_push_events
+      description: Whether the command sends the retrieved events to XSIAM. If false, it only displays them.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: O365MessageTrace.Event.id
+      description: The unique identifier of the message trace event.
+      type: String
+    - contextPath: O365MessageTrace.Event.receivedDateTime
+      description: The timestamp when the message was received (e.g., "2020-01-01T00:11:22Z").
+      type: Date
+    - contextPath: O365MessageTrace.Event.senderAddress
+      description: The sender email address.
+      type: String
+    - contextPath: O365MessageTrace.Event.recipientAddress
+      description: The recipient email address.
+      type: String
+    - contextPath: O365MessageTrace.Event.subject
+      description: The subject of the message.
+      type: String
+    - contextPath: O365MessageTrace.Event.status
+      description: The delivery status of the message (e.g., Delivered, Pending, Failed, Quarantined).
+      type: String
+    - contextPath: O365MessageTrace.Event._time
+      description: The XSIAM event timestamp in ISO 8601 format (e.g., "2020-01-01T00:11:22Z").
+      type: Date
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/crypto:1.0.0.8187750
+fromversion: 8.4.0
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+tests:
+- No tests (auto formatted)
+sectionorder:
+- Connect
+- Collect
