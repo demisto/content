@@ -6034,6 +6034,7 @@ def test_get_issues_by_filter_renders_bioc_description(requests_mock):
             "DATA": [
                 {
                     "internal_id": 1,
+                    "source_insert_ts": 1541494441222,
                     "alert_source": "BIOC",
                     "alert_description": [
                         {"render_type": "attribute", "pretty_name": "Action File Name"},
@@ -6072,6 +6073,7 @@ def test_get_issues_by_filter_does_not_render_non_bioc(requests_mock):
             "DATA": [
                 {
                     "internal_id": 2,
+                    "source_insert_ts": 1541494441222,
                     "alert_source": "XDR Analytics",
                     "alert_description": json.loads(json.dumps(description_list)),
                 }
@@ -6100,6 +6102,7 @@ def test_get_issues_by_filter_xql_bioc_string_untouched(requests_mock):
             "DATA": [
                 {
                     "internal_id": 3,
+                    "source_insert_ts": 1541494441222,
                     "alert_source": "BIOC",
                     "alert_description": "dataset = xdr_data | filter ...",
                 }
@@ -6184,6 +6187,7 @@ def test_get_issues_by_filter_malformed_bioc_description_kept_and_logged(request
             "DATA": [
                 {
                     "internal_id": 4,
+                    "source_insert_ts": 1541494441222,
                     "alert_source": "BIOC",
                     "alert_description": json.loads(json.dumps(malformed_description)),
                 }
