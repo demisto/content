@@ -1359,19 +1359,6 @@ def cloudflare_waf_ruleset_get_command(client: Client, args: dict[str, Any]) -> 
     }
 
     rules = output.get("rules", [])
-    rules_table = []
-    for rule in rules:
-        rules_table.append(
-            {
-                "id": rule.get("id"),
-                "action": rule.get("action"),
-                "expression": rule.get("expression"),
-                "description": rule.get("description"),
-                "enabled": rule.get("enabled"),
-                "version": rule.get("version"),
-                "ref": rule.get("ref"),
-            }
-        )
 
     readable_output = tableToMarkdown(
         name="Ruleset details",
@@ -1380,10 +1367,10 @@ def cloudflare_waf_ruleset_get_command(client: Client, args: dict[str, Any]) -> 
         headerTransform=string_to_table_header,
     )
 
-    if rules_table:
+    if rules:
         readable_output += "\n" + tableToMarkdown(
             name="Ruleset rules",
-            t=rules_table,
+            t=rules,
             headers=["id", "action", "expression", "description", "enabled", "version", "ref"],
             headerTransform=string_to_table_header,
         )
