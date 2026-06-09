@@ -792,11 +792,10 @@ def _fetch_all_pages(
 
 
 def _is_in_range(event: dict, from_threshold: int | None, to_threshold: int | None) -> bool:
-    """Return whether an event's createdOn falls within the inclusive bounds."""
     created_on = int(event.get("createdOn", "0"))
-    if from_threshold and created_on < from_threshold:
+    if from_threshold is not None and created_on < from_threshold:
         return False
-    return not (to_threshold and created_on > to_threshold)
+    return not (to_threshold is not None and created_on > to_threshold)
 
 
 def _resolve_fetch_window(from_input: str, to_input: str | None) -> tuple[str, str, str]:
