@@ -95,7 +95,7 @@ script:
           required: false
       description: Fetches events from iManage Threat Manager.
       name: imanage-threat-manager-get-events
-  dockerimage: demisto/fastapi:0.125.0.7178097
+  dockerimage: demisto/fastapi:0.125.0.9094740
   isfetchevents: true
   runonce: false
   script: "-"

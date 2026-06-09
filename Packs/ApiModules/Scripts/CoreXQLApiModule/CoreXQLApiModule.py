@@ -629,6 +629,22 @@ def is_empty(item_to_check: Any) -> bool:
     return item_to_check is not False and not item_to_check
 
 
+def is_timestamp_field(key: str) -> bool:
+    """
+    Check if a field name represents a timestamp field that should be converted.
+
+    Args:
+        key (str): The field name to check.
+
+    Returns:
+        bool: True if the field should be treated as a timestamp, False otherwise.
+    """
+    # Only convert fields that are actual timestamp fields, not fields that merely contain "time"
+    # Examples of timestamp fields: _time, insert_timestamp, created_time, resolution_time
+    # Examples of non-timestamp fields: reopenedbuffertime, runtime, lifetime
+    return key.endswith(("_time", "timestamp")) or key == "time"
+
+
 def handle_timestamp_item(item_to_convert: Any) -> Union[Any, str]:
     """
         Try to convert a given value to datestring.
@@ -670,7 +686,7 @@ def format_results(list_to_format: list, remove_empty_fields: bool = True) -> li
                 formatted_res = format_dict(value)
                 if is_empty(formatted_res) and remove_empty_fields:
                     continue  # do not add item to the new dict
-                if "time" in key:
+                if is_timestamp_field(key):
                     new_dict[key] = handle_timestamp_item(formatted_res)
                 else:
                     new_dict[key] = formatted_res
