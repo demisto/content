@@ -99,7 +99,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-- additionalinfo: 'The number of minutes to look back per fetch to handle the Proofpoint SIEM API indexing delay, which is known to be up to ~30 minutes. When set, each fetch cycle re-queries the previous N minutes to catch late-indexed events that would otherwise be missed. Duplicates are filtered automatically. Set to 0 to disable.'
+- additionalinfo: 'The number of minutes to look back during each fetch to handle the Proofpoint SIEM API indexing delay (up to 30 minutes). When set, each fetch cycle requeries the previous N minutes to catch late-indexing events that would otherwise be missed. Duplicates are filtered automatically. Set to 0 to disable.'
   defaultvalue: '30'
   display: Events Fetch Look-Back (minutes)
   name: look_back_minutes
