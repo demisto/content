@@ -5920,3 +5920,193 @@ def test_get_issues_by_filter_custom_filter_malformed_json_fixed(requests_mock):
 
     response = get_issues_by_filter_command(client, args)
     assert response[0].outputs[0].get("internal_id", {}) == 33333
+
+
+# ---------------------------------------------------------------------------
+# BIOC description rendering (render_bioc_description) + BIOC-only filtering
+# ---------------------------------------------------------------------------
+
+
+def test_render_bioc_description_simple_attribute_operator_value():
+    """
+    Given: A structured BIOC indicator with a single attribute = value clause.
+    When:  render_bioc_description is called.
+    Then:  The plain text mirrors the UI ("<attr> <op> <value>").
+    """
+    from CoreIRApiModule import render_bioc_description
+
+    indicator = [
+        {"render_type": "attribute", "pretty_name": "Action File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "evil.exe"},
+    ]
+
+    assert render_bioc_description(indicator) == "Action File Name = evil.exe"
+
+
+def test_render_bioc_description_entity_with_brackets_and_and():
+    """
+    Given: Two entities each with an attribute clause.
+    When:  render_bioc_description is called.
+    Then:  AND connector and [ ] brackets are inserted like the UI.
+    """
+    from CoreIRApiModule import render_bioc_description
+
+    indicator = [
+        {"render_type": "entity", "pretty_name": "Actor Process"},
+        {"render_type": "attribute", "pretty_name": "Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "a.exe"},
+        {"render_type": "entity", "pretty_name": "Causality Actor"},
+        {"render_type": "attribute", "pretty_name": "Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "b.exe"},
+    ]
+
+    result = render_bioc_description(indicator)
+    assert "AND" in result
+    assert "[" in result and "]" in result
+    assert "a.exe" in result and "b.exe" in result
+
+
+def test_render_bioc_description_or_group_parentheses():
+    """
+    Given: An indicator containing an OR connector.
+    When:  render_bioc_description is called.
+    Then:  The OR group is wrapped in parentheses (addParenthesisMetadata).
+    """
+    from CoreIRApiModule import render_bioc_description
+
+    indicator = [
+        {"render_type": "attribute", "pretty_name": "File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "a.exe"},
+        {"render_type": "connector", "pretty_name": "OR"},
+        {"render_type": "attribute", "pretty_name": "File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "b.exe"},
+    ]
+
+    result = render_bioc_description(indicator)
+    assert "OR" in result
+    assert "(" in result and ")" in result
+
+
+def test_render_bioc_description_does_not_mutate_input():
+    """
+    Given: A structured BIOC indicator.
+    When:  render_bioc_description is called.
+    Then:  The original input list is not mutated (parenthesis metadata applied to a copy).
+    """
+    from CoreIRApiModule import render_bioc_description
+
+    indicator = [
+        {"render_type": "attribute", "pretty_name": "File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "a.exe"},
+        {"render_type": "connector", "pretty_name": "OR"},
+        {"render_type": "attribute", "pretty_name": "File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "b.exe"},
+    ]
+    snapshot = json.loads(json.dumps(indicator))
+
+    render_bioc_description(indicator)
+
+    assert indicator == snapshot
+
+
+def test_get_issues_by_filter_renders_bioc_description(requests_mock):
+    """
+    Given: A get_data response containing an XDR BIOC issue whose alert_description is a
+           structured list of indicator render-link tokens.
+    When:  get_issues_by_filter_command is called.
+    Then:  The issue's alert_description is rendered to plain text in BOTH the context
+           output and the human-readable table.
+    """
+    from CoreIRApiModule import CoreClient, get_issues_by_filter_command
+
+    api_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "internal_id": 1,
+                    "alert_source": "BIOC",
+                    "alert_description": [
+                        {"render_type": "attribute", "pretty_name": "Action File Name"},
+                        {"render_type": "operator", "pretty_name": "="},
+                        {"render_type": "value", "pretty_name": "evil.exe"},
+                    ],
+                }
+            ],
+            "FILTER_COUNT": "1",
+        }
+    }
+    requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+
+    response = get_issues_by_filter_command(client, {})
+
+    assert response[0].outputs[0]["alert_description"] == "Action File Name = evil.exe"
+    assert "Action File Name = evil.exe" in response[0].readable_output
+
+
+def test_get_issues_by_filter_does_not_render_non_bioc(requests_mock):
+    """
+    Given: A get_data response containing a NON-BIOC issue.
+    When:  get_issues_by_filter_command is called.
+    Then:  The issue's alert_description is left untouched (even if it were a list).
+    """
+    from CoreIRApiModule import CoreClient, get_issues_by_filter_command
+
+    description_list = [
+        {"render_type": "attribute", "pretty_name": "Action File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "evil.exe"},
+    ]
+    api_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "internal_id": 2,
+                    "alert_source": "XDR Analytics",
+                    "alert_description": json.loads(json.dumps(description_list)),
+                }
+            ],
+            "FILTER_COUNT": "1",
+        }
+    }
+    requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+
+    response = get_issues_by_filter_command(client, {})
+
+    assert response[0].outputs[0]["alert_description"] == description_list
+
+
+def test_get_issues_by_filter_xql_bioc_string_untouched(requests_mock):
+    """
+    Given: An XQL BIOC issue whose alert_description is already a plain string.
+    When:  get_issues_by_filter_command is called.
+    Then:  The string description is left unchanged (only lists are rendered).
+    """
+    from CoreIRApiModule import CoreClient, get_issues_by_filter_command
+
+    api_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "internal_id": 3,
+                    "alert_source": "BIOC",
+                    "alert_description": "dataset = xdr_data | filter ...",
+                }
+            ],
+            "FILTER_COUNT": "1",
+        }
+    }
+    requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+
+    response = get_issues_by_filter_command(client, {})
+
+    assert response[0].outputs[0]["alert_description"] == "dataset = xdr_data | filter ..."
