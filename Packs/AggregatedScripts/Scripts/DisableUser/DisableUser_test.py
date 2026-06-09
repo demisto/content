@@ -185,7 +185,7 @@ def test_run_microsoft_graph_user_failure(mock_run_command):
         "Brand": "MSGraph",
         "Instance": "inst1",
     }
-    mock_run_command.return_value = [{"HumanReadable": "Error disabling user", "Content": "Error details"}], ""
+    mock_run_command.return_value = [{"HumanReadable": "Error disabling user", "Contents": "Error details"}], ""
     result, _ = run_microsoft_graph_user(user, "inst1")
     expected: list[DisabledUserResult] = [{"Disabled": False, "Result": "Failed", "Message": "Error details"}]
     assert result == expected

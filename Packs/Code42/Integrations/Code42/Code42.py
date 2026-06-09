@@ -320,7 +320,7 @@ class Code42Client(BaseClient):
         # some important alert information is not returned directly by the API and must be inferred or queried.
         # This helper method does this for incoming sessions.
         alert.riskSeverity = SESSION_SEVERITY_LIST[max(alert.scores, key=lambda x: x.severity).severity]
-        alert.state = max(alert.states, key=lambda x: x.source_timestamp).state
+        alert.state = max(alert.states, key=lambda x: x.source_timestamp).state_v2
         alert.actor = self.incydr_sdk.actors.v1.get_actor_by_id(alert.actor_id).name
         rule_name_list = []
         # It is possible for a session to trigger an alert rule that no longer exists.

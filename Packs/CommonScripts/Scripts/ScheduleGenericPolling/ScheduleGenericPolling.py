@@ -51,7 +51,8 @@ def should_run_with_guid():  # pragma: no cover
             and is_demisto_version_ge(MINIMUM_XSOAR_VERSION)
             and int(build_number) >= MINIMUM_BUILD_NUMBER_XSOAR
         )
-    except ValueError:
+    except ValueError as e:
+        demisto.debug(f"[ScheduleGenericPolling] Error parsing version or build number: {e}")
         return False
 
 
@@ -124,11 +125,17 @@ def main():  # pragma: no cover
     args_names = (args.get("additionalPollingCommandArgNames", "") or "").strip()
     args_values = (args.get("additionalPollingCommandArgValues", "") or "").strip()
 
+    demisto.debug(f"[ScheduleGenericPolling] Processed arguments: ids={ids}, interval={interval}, timeout={timeout}")
+
     # Verify correct dt path (does not verify condition!)
+    demisto.debug(f"[ScheduleGenericPolling] Starting dt path validation. args={args}")
     if not demisto.dt(demisto.context(), dt):
+        demisto.debug("[ScheduleGenericPolling] dt evaluation returned empty/null. Checking if dt path exists without condition.")
         if not demisto.dt(demisto.context(), re.sub(r"\(.*\)", "", dt)):
+            demisto.debug(f"[ScheduleGenericPolling] ERROR: dt path not found in context. dt='{dt}'")
             demisto.debug(f"Could not find the dt path: {dt} in the context: {demisto.context()}")
             return_error(f"Incorrect dt path {dt}: no ids found in the context: {demisto.context()}")
+        demisto.debug(f"[ScheduleGenericPolling] WARNING: dt path exists but no IDs match the condition. dt='{dt}'")
         demisto.results(
             "Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and "
             "that all ids have finished running."
@@ -137,13 +144,21 @@ def main():  # pragma: no cover
     command_string = get_command_string(
         ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag, args_names, args_values, extract_mode
     )
+    demisto.debug(f"[ScheduleGenericPolling] Generated command string: {command_string[:500]}")
 
     command_sanitized, message = is_command_sanitized(command_string)
+    demisto.debug(f"[ScheduleGenericPolling] Command sanitization check: sanitized={command_sanitized}, message={message}")
     if not command_sanitized:
         return_error(message)
 
+    demisto.debug(
+        f"[ScheduleGenericPolling] Scheduling polling task. use_guid={should_run_with_guid()}, "
+        f"interval={interval}, timeout={timeout}"
+    )
+
     schedule_command_args = {"command": command_string, "cron": f"*/{interval} * * * *", "times": 1}
     if should_run_with_guid():
+        demisto.debug("[ScheduleGenericPolling] Entering GUID flow (XSOAR)")
         # Generate a GUID for the scheduled entry and add it to the command.
         entryGuid = str(uuid.uuid4())
         command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{calculate_end_time(timeout)}"'
@@ -153,8 +168,13 @@ def main():  # pragma: no cover
         # See XSUP-36162 for the reason adding 2
         schedule_command_args["times"] = (timeout // interval) + 2
         schedule_command_args["scheduledEntryGuid"] = entryGuid
+        demisto.debug(
+            f"[ScheduleGenericPolling] GUID flow details: entryGuid={entryGuid}, times={schedule_command_args['times']}"
+        )
 
+    demisto.debug(f"[ScheduleGenericPolling] Executing ScheduleCommand with args: {schedule_command_args}")
     res = demisto.executeCommand("ScheduleCommand", schedule_command_args)
+    demisto.debug(f"[ScheduleGenericPolling] ScheduleCommand result: {res}")
     if isError(res[0]):
         return_error(res)
 

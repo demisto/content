@@ -1,0 +1,67 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "startRetrieveInvestigationFileFromEndpoint",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "startRetrieveInvestigationFileFromEndpoint",
+        "params": {
+          "targetId": "ENDPOINT_ID",
+          "path": "/home/ENDPOINT_NAME/test.txt"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": "6943fb82c1f339e18b0949a1"
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "getInvestigationFileUrl",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getInvestigationFileUrl",
+        "params": {
+          "activityId": "6943fb82c1f339e18b0949a1",
+          "targetId": "ENDPOINT_ID"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "status": "pending"
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "/api/v1.0/jsonrpc/investigation",
+      "method": "getInvestigationFileUrl",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getInvestigationFileUrl",
+        "params": {
+          "activityId": "6943fb82c1f339e18b0949a1",
+          "targetId": "ENDPOINT_ID"
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "status": "failed",
+        "errorCode": -100
+      }
+    }
+  }
+]

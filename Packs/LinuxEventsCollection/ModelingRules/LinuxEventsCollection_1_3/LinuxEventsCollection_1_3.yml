@@ -4,3 +4,5 @@ name: Linux Events Collection Modeling Rule
 rules: ''
 schema: ''
 tags: Linux Events Collection Redhat Ubuntu
+supportedModules:
+- xsiam

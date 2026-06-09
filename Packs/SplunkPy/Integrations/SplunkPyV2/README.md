@@ -107,19 +107,23 @@ Configured by the instance configuration max_fetch (behind the scenes an query c
 | --- | --- | --- |
 | Server URL | The Splunk server URL. Port 8089 \(Splunk's default REST API port\) is used automatically. Only include the port in the URL if using a non-default port. Examples: 'https://splunk.example.com' \(uses default port 8089\) or 'https://splunk.example.com:8090' \(uses custom port 8090\). | True |
 | Splunk Token |  | True |
-| Fetch events query | The Splunk search query by which to fetch events. The default query fetches ES finding events. You can edit this query to fetch other types of events. Note, that to fetch ES finding events, make sure to include the \`notable\` macro in your query. | False |
+| Fetch events query | The Splunk search query by which to fetch events. The default query fetches ES finding events. You can edit this query to fetch other types of events. Note, that to fetch ES finding events, make sure to include the \\\`notable\\\` macro in your query. | False |
 | Fetch Limit (Max.- 200, Recommended less than 50) |  | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | Parse Raw Part of Finding Events | Whether to parse the raw part of the Findings, or not. | False |
 | Replace with Underscore in Incident Fields | Whether to replace special characters to underscore when parsing the raw data of the Findings, or not. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option. | False |
+| Event types to fetch | Select the Splunk event types to ingest. Default is \`Finding\`. | False |
+| First fetch timestamp (Investigations) | The relative time interval to look back during the initial investigation fetch \(for example, 12 hours, 7 days, 3 months\). | False |
+| Investigations fetch query | The SPL query used when "Investigation" is selected for "Event types to fetch". The query must include the \`FETCH_FILTER_PLACEHOLDER\` token. Do not modify or remove this token. For more information on customizing the query \(for example, adding the filter &amp;status=New\), see the integration documentation under "Fetching investigation events". | False |
+| Maximum investigations per fetch | The maximum number of investigations to fetch per cycle. Limited to 100 by the Splunk investigations endpoint. | False |
 | Extract Fields - CSV fields that will be parsed out of raw finding events |  | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Splunk to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Splunk\), or Incoming and Outgoing \(from/to Cortex XSOAR and Splunk\). | False |
 | Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Splunk finding event with a "Closed" status will close the Cortex XSOAR incident. | False |
 | Additional Splunk status labels to close on mirror (Incoming Mirroring) | A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident \(Example: Resolved,False-Positive\). | False |
-| Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring) | When selected, Splunk Finding Events with a status that is marked as "End Status" will close the Cortex XSOAR incident. | False |
-| Close Mirrored Splunk Finding Events (Outgoing Mirroring) | When selected, closing the Cortex XSOAR incident  will close the Finding Event in Splunk. | False |
+| Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring) | When selected, automatically close the Cortex XSOAR incident when the Splunk ES event \(Finding or Investigation\) is marked as 'End Status'. | False |
+| Close Mirrored Splunk ES Events (Outgoing Mirroring) | When selected, automatically close the corresponding Splunk ES event \(Finding or Investigation\) when the Cortex XSOAR incident is closed. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | The app context of the namespace |  | False |
@@ -134,6 +138,7 @@ For more info about enrichment types see [Enriching Finding Events](#enriching-f
 | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
 | Advanced: Time type to use when fetching events | Defines which timestamp will be used to filter the events:<br/>- creation time: Filters based on when the event actually occurred.<br/>- index time \(Beta\): \*Beta feature\* – Filters based on when the event was ingested into Splunk.  <br/>  This option is still in testing and may not behave as expected in all scenarios.  <br/>  When using this mode, the parameter "Fetch backwards window for the events occurrence time \(minutes\)" should be set to \`0\`\`, as indexing time ensures there are no delay-based gaps.<br/>  The default is "creation time".<br/> |  |
 | Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
+| Advanced: Unique ID Fields | A comma-separated list of additional fields to use when generating unique incident IDs for events that are not findings \(i.e., queries without the \`notable\` macro\). By default, the integration uses: _cd, index,_time, _indextime,_raw. If these fields do not provide unique values in your environment, specify additional fields here to ensure incident uniqueness. Example: source,host,unique_field | False |
 | Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar | False |
 | Users Lookup table name | The name of the lookup table in Splunk, containing the username's mapping data. | False |
 | XSOAR user key | The name of the lookup column containing the Cortex XSOAR username. | False |
@@ -243,7 +248,7 @@ You can use Splunk to define a user lookup table and then configure the SplunkPy
 
 **Important Notes**
 
-- Mirroring-in is not supported when multiple Splunk integration instances are connected to the same Splunk server.
+- Mirroring-in is not supported when multiple Splunk integration instances are connected to the same Splunk server, meaning only one instance per Splunk server can be configured to perform mirroring-in.
 - This feature is available from Cortex XSOAR version 6.0.0.
 - This feature is supported by Splunk Enterprise Security only.
 - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
@@ -252,7 +257,7 @@ You can use Splunk to define a user lookup table and then configure the SplunkPy
 
 #### Splunk Notes Mirroring
 
-- **Splunk Notes Updates/Deletions** - Editing or deleting existing Finding notes will NOT trigger mirroring to XSOAR on their own. Notes changes will only appear in the *Splunk Notes* field when a "real" change occurs in another finding field (such as status, owner, urgency, etc.), which triggers the mirror-in process.
+- **Splunk Notes Updates/Deletions** - Editing or deleting existing Finding notes will NOT trigger mirroring to XSOAR on their own. Notes changes will only appear in the *Splunk Notes* field when a "real" change occurs in another finding field (such as status, owner, urgency, etc.), which triggers the mirror-in process. However, these changes will NOT update War Room notes. War Room notes from Splunk will NOT be deleted or updated.
 - **Notes Display Behavior** - The *Splunk Notes* field will display notes from the past week only. However, all notes that were mirrored via mirror-in will appear in the War Room notes.
 - **Notes Time** - Note timestamps will display the same time as shown in Splunk for the user who created the authentication token. The timezone offset is based on the timezone configured for that user in Splunk.
 
@@ -525,6 +530,7 @@ Update an existing finding event in Splunk ES.
 | urgency | The urgency of the finding events. | Optional |
 | status | The status of the finding events. Can be one of the default options: Unassigned, Assigned, In Progress, Pending, Resolved, Closed Or you can specif another custom status. | Optional |
 | disposition | The disposition of the finding events. Can be one of the default options: Unassigned,  True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other, Undetermined. Or you can specify custom dispositions as `disposition:#` where `#` is the number of the custom configured disposition on Splunk. | Optional |
+| finding_time | The time associated with the finding event (e.g., the `_time` field of the finding). Use this argument only when the command fails with error code MC_01202 or MC_0210, which indicate that the finding event time is required to complete the update. | Optional |
 
 ##### Context Output
 
@@ -537,6 +543,52 @@ There is no context output for this command.
 ##### Human Readable Output
 
 ![image](../../doc_files/edit_finding_command.png)
+
+### splunk-update-investigation
+
+***
+Updates existing investigations in Splunk ES. Supports updating fields such as owner, status, urgency, disposition, name, and description, adding a note, and appending finding IDs to the investigation.
+
+#### Base Command
+
+`splunk-update-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_ids | A comma-separated list of investigation IDs. | Required |
+| owner | A Splunk user to assign to the investigations. | Optional |
+| note | Note to add to the investigation. | Optional |
+| disposition | Disposition of the investigation. If more options exist on the server, specifying the disposition as `disposition:#` will work in place of choosing one of the default values from the list. Possible values are: Unassigned, True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other, Undetermined. | Optional |
+| status | Investigation status. Possible values are: New, Unassigned, In progress, Pending, Resolved, Closed. | Optional |
+| urgency | Investigation urgency. Possible values are: critical, high, medium, low, informational. | Optional |
+| name | Updated name for the investigation. | Optional |
+| description | Updated description for the investigation. | Optional |
+| findings | Comma-separated list of finding IDs to add (append) to the investigation. Only allowed when exactly one investigation ID is provided in `event_ids`. | Optional |
+| finding_times | The list of times for findings added to the investigation. Value can be in relative, ISO, or epoch time. Ignored when `findings` is not provided. Only allowed when exactly one investigation ID is provided in `event_ids`. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+`!splunk-update-investigation event_ids="ES00019"`
+
+#### Human Readable Output
+>
+> Splunk ES events updated successfully:
+> Successfully updated Splunk ES event ES-00019
+
+#### Command example (update name, description and append findings)
+
+`!splunk-update-investigation event_ids="ES00019" name="New investigation name" description="Updated description" findings="FND-1,FND-2" finding_times="1700000001,1700000002"`
+
+#### Human Readable Output
+>
+> Splunk ES events updated successfully:
+> Successfully updated Splunk ES event ES-00019
 
 ### splunk-job-create
 
@@ -1237,6 +1289,106 @@ Change job settings to share its results to all Splunk users, and change its TTL
 
 There is no context output for this command.
 
+### splunk-investigation-create
+
+***
+Creates a new investigation in Splunk Enterprise Security.
+
+#### Base Command
+
+`splunk-investigation-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the investigation to be created. | Required |
+| description | The description of the investigation to be created. | Optional |
+| investigation_type | The type of the investigation to be created (for example, `default`). | Optional |
+| status | The status of the investigation to be created. Defaults to the out-of-the-box Splunk ES status labels; custom statuses are also supported by typing the status ID or label. Possible values are: New, In Progress, Pending, Resolved, Closed. | Optional |
+| disposition | The disposition of the investigation to be created. Defaults to the out-of-the-box Splunk ES disposition labels; custom dispositions are also supported by typing the disposition ID or label. Possible values are: Undetermined, True Positive - Suspicious Activity, Benign Positive - Suspicious But Expected, False Positive - Incorrect Analytic Logic, False Positive - Inaccurate Data, Other. | Optional |
+| owner | The Splunk user to assign as the owner of the investigation. | Optional |
+| urgency | The urgency of the investigation to be created. Possible values are: informational, low, medium, high, critical, unknown. | Optional |
+| sensitivity | The sensitivity of the investigation to be created. Possible values are: White, Green, Amber, Red, Unassigned. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.Investigation.investigation_guid | String | The ID \(GUID\) of the investigation that was created. |
+
+### splunk-investigation-list
+
+***
+Lists investigations from Splunk Enterprise Security.
+
+#### Base Command
+
+`splunk-investigation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| investigation_ids | A comma-separated list of investigation IDs (GUID or display ID such as `ES-00001`) to retrieve. | Optional |
+| limit | The maximum number of investigations to return on the page. Maximum is 100. Default is 20. | Optional |
+| offset | The pagination offset used together with `limit` to specify the starting point of the returned results. | Optional |
+| sort | The sort expression for the returned investigations (for example, `create_time:asc,status:desc`). | Optional |
+| disposition | A comma-separated list of disposition IDs or disposition labels to filter investigations by (for example, `disposition:1,Undetermined`). | Optional |
+| status | A comma-separated list of status IDs or status labels to filter investigations by (for example, `New,In progress`). | Optional |
+| owner | A comma-separated list of owners to filter investigations by. | Optional |
+| urgency | A comma-separated list of urgency values to filter investigations by (for example, `medium,high,critical`). Valid values are `informational`, `low`, `medium`, `high`, `critical`, or `unknown`. | Optional |
+| sensitivity | A comma-separated list of sensitivity values to filter investigations by (for example, `Amber,Red`). Valid values are `White`, `Green`, `Amber`, `Red`, or `Unassigned`. | Optional |
+| create_time_min | The minimum (epoch) time during which investigations were created. | Optional |
+| create_time_max | The maximum (epoch) time during which investigations were created. | Optional |
+| update_time_min | The minimum (epoch) time during which investigations were updated. | Optional |
+| update_time_max | The maximum (epoch) time during which investigations were updated. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.Investigation.investigation_guid | String | The ID \(GUID\) of the investigation. |
+| Splunk.Investigation.investigation_id | String | The short display ID of the investigation \(for example, \`ES-00001\`\). |
+| Splunk.Investigation.name | String | The name of the investigation. |
+| Splunk.Investigation.description | String | The description of the investigation. |
+| Splunk.Investigation.investigation_type | String | The type of the investigation. |
+| Splunk.Investigation.source | String | The detection that generated the investigation. |
+| Splunk.Investigation.incident_origin | String | Where the investigation came from \(for example, Splunk Enterprise Security or a risk-based alerting finding\). |
+| Splunk.Investigation.finding_id | String | The ID of the originating Splunk Enterprise Security finding. |
+| Splunk.Investigation.disposition | String | The disposition ID of the investigation. |
+| Splunk.Investigation.disposition_name | String | The disposition name of the investigation. |
+| Splunk.Investigation.status | String | The status ID of the investigation. |
+| Splunk.Investigation.status_name | String | The status name of the investigation. |
+| Splunk.Investigation.owner | String | The person assigned to the investigation. |
+| Splunk.Investigation.urgency | String | The urgency of the investigation. |
+| Splunk.Investigation.sensitivity | String | The sensitivity of the investigation. |
+| Splunk.Investigation.create_time | Number | The time when the investigation was created \(epoch seconds\). |
+| Splunk.Investigation.update_time | Number | The time when the investigation was last updated \(epoch seconds\). |
+| Splunk.Investigation.mc_create_time | Number | The time when the finding or investigation was created or imported into Splunk Enterprise Security \(epoch seconds\). |
+| Splunk.Investigation.count_findings | Number | The number of findings \(or intermediate findings\) associated with this investigation or finding-based-detection \(FBD\) group. |
+| Splunk.Investigation.risk_event_count | Number | The number of risk events associated with this investigation. |
+| Splunk.Investigation.risk_score | Number | The maximum risk score for all the findings added to the investigation. |
+| Splunk.Investigation.excluded_finding_ids | Unknown | A list of finding IDs \(or intermediate findings in the finding groups\) that are removed from the investigation. |
+| Splunk.Investigation.attachments | Unknown | An array of file IDs attached directly to the investigation. |
+| Splunk.Investigation.notes | Unknown | An array of note IDs added directly to the finding or investigation. |
+| Splunk.Investigation.findings.incident_ids | Unknown | The added finding IDs. |
+| Splunk.Investigation.findings.field_inheritors | Unknown | The added finding IDs that will inherit this investigation's owner, status, urgency, sensitivity, and disposition values. |
+| Splunk.Investigation.current_response_plan_phase.phase_id | String | The ID of the current response plan phase. |
+| Splunk.Investigation.current_response_plan_phase.response_plan_id | String | The ID of the current response plan. |
+| Splunk.Investigation.response_plans | Unknown | The array of response plans added to the investigation. |
+| Splunk.Investigation.consolidated_findings | Unknown | The consolidated list of fields for the findings and all the findings that are added to this investigation. |
+| Splunk.Investigation.finding | Unknown | The raw data of the originating finding. |
+| Splunk.Investigation.custom_fields | Unknown | The custom fields in the investigation. |
+| Splunk.Investigation.src | Unknown | A list of values for the \`source\` field. |
+| Splunk.Investigation.dest | Unknown | A list of values for the \`destination\` field. |
+| Splunk.Investigation.dvc | Unknown | A list of values for the \`device\` field. |
+| Splunk.Investigation.orig_host | Unknown | A list of values for the \`host\` field. |
+| Splunk.Investigation.src_user | Unknown | A list of values for the \`source user\` field. |
+| Splunk.Investigation.user | Unknown | A list of values for the \`user\` field. |
+| Splunk.Investigation.risk_object | Unknown | The list of entities for a finding, finding group, or investigation. |
+| Splunk.Investigation.risk_object_type | Unknown | The list of risk object types for a finding, finding group, or investigation. |
+
 ## Additional Information
 
 To get the HEC token
@@ -1285,3 +1437,12 @@ Under **Used for communication between Cortex XSOAR and customer resources**. Ch
 If you encounter fetch issues and you have enriching enabled, the issue may be the result of pressing the `Reset the "last run" timestamp` button.  
 Note that the way to reset the mechanism is to run the `splunk-reset-enriching-fetch-mechanism` command.  
 See [here](#resetting-the-enriching-fetch-mechanism).
+
+### Large Search Results
+
+Commands that return large data (such as `splunk-search`) can cause performance issues in playbooks.
+
+**Recommendation**: Limit results to approximately **30,000** events, depending on the data size. You can do this through one of the following:
+
+- Use the `event_limit` argument (where available).
+- Append `| head 30000` directly to your Splunk query.

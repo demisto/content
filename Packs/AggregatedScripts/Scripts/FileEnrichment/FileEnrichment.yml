@@ -47,7 +47,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: 'This script gathers for reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information in the context output. Note: The script runs core-get-hash-analytics-prevalence on SHA256 values only.'
+comment: 'Enriches File indicators with reputation data from multiple integrations and outputs a consolidated FileEnrichment object. This script exclusively supports indicators of type File and will automatically create the indicator in TIM if it is not already exists. Note: The script runs core-get-hash-analytics-prevalence on SHA256 values only.'
 commonfields:
   id: file-enrichment
   version: -1
@@ -89,10 +89,10 @@ outputs:
   description: The max verdict of all the indicators found.
   type: String
 - contextPath: FileEnrichment.Results
-  description: List of all indicators found for the URL.
+  description: List of all indicators found for the File.
   type: Array
 - contextPath: FileEnrichment.TIMScore
-  description: The TIM score of the URL.
+  description: The TIM score of the File.
   type: Number
 - contextPath: FileEnrichment.Status
   description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, "Error" if enrichment Failed, and "None" if never modified.'
@@ -103,12 +103,15 @@ outputs:
 - contextPath: FileEnrichment.ModifiedTime
   description: The time the indicator was last modified.
   type: Date
-# URLEnrichment Main Keys
+# FileEnrichment Main Keys
 - contextPath: FileEnrichment.Results.Brand
   description: The brand of the indicator.
   type: String
 - contextPath: FileEnrichment.Results.Score
   description: The score of the indicator.
+  type: Number
+- contextPath: FileEnrichment.Results.Size
+  description: The size of the file, expressed in bytes.
   type: Number
 - contextPath: FileEnrichment.Results.Verdict
   description: The verdict of the indicator.
@@ -312,10 +315,10 @@ timeout: '0'
 type: python
 subtype: python3
 marketplaces:
-- xsoar
+- xsoar_saas
 - marketplacev2
 - platform
-dockerimage: demisto/python3:3.12.12.6204436
-fromversion: 6.10.0
+dockerimage: demisto/python3:3.12.13.7444307
+fromversion: 8.0.0
 tests:
 - FileEnrichment - Test

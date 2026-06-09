@@ -293,7 +293,7 @@ There is no context output for this command.
 
 >### Folder moved
 >
->Content is now available in account **exampleuser@paloaltonetworks.com** under directory **exmple@paloaltonetworks.com - My Name's Files and Folders (2)**
+>Content is now available in account **exampleuser@paloaltonetworks.com** under directory **exmple@example.com - My Name's Files and Folders (2)**
 
 ### box_files_get
 

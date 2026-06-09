@@ -29,7 +29,7 @@
             "is_array": false
         },
         "created_at": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         }
     }

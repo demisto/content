@@ -1,4 +1,5 @@
 category: IT Services
+provider: IBM
 commonfields:
   id: AnsibleHCloud
   version: -1
@@ -16,7 +17,7 @@ configuration:
   name: endpoint
   required: true
   type: 0
-description: Manage your Hetzner Cloud environment
+description: Manage your Hetzner Cloud environment.
 display: Ansible HCloud
 fromversion: 6.0.0
 name: AnsibleHCloud
@@ -42,7 +43,7 @@ script:
     name: hcloud-floating-ip-info
     outputs:
     - contextPath: HCloud.HcloudFloatingIpInfo.hcloud_floating_ip_info
-      description: The Floating ip infos as list
+      description: The Floating ip infos as list.
       type: unknown
   - arguments:
     - description: The ID of the image you want to get.
@@ -63,7 +64,7 @@ script:
     name: hcloud-image-info
     outputs:
     - contextPath: HCloud.HcloudImageInfo.hcloud_image_info
-      description: The image infos as list
+      description: The image infos as list.
       type: unknown
   - arguments:
     - description: The ID of the location you want to get.
@@ -74,7 +75,7 @@ script:
     name: hcloud-location-info
     outputs:
     - contextPath: HCloud.HcloudLocationInfo.hcloud_location_info
-      description: The location infos as list
+      description: The location infos as list.
       type: unknown
   - arguments:
     - description: 'The ID of the Hetzner Cloud Networks to manage. Only required if no Network `name` is given.'
@@ -97,7 +98,7 @@ script:
     name: hcloud-network
     outputs:
     - contextPath: HCloud.HcloudNetwork.hcloud_network
-      description: The Network
+      description: The Network.
       type: unknown
   - arguments:
     - description: The ID of the network you want to get.
@@ -110,7 +111,7 @@ script:
     name: hcloud-network-info
     outputs:
     - contextPath: HCloud.HcloudNetworkInfo.hcloud_network_info
-      description: The network info as list
+      description: The network info as list.
       type: unknown
   - arguments:
     - description: The name of the Hetzner Cloud server you want to add the reverse DNS entry to.
@@ -132,7 +133,7 @@ script:
     name: hcloud-rdns
     outputs:
     - contextPath: HCloud.HcloudRdns.hcloud_rdns
-      description: The reverse DNS entry
+      description: The reverse DNS entry.
       type: unknown
   - arguments:
     - description: The name of the Hetzner Cloud Network.
@@ -155,10 +156,10 @@ script:
     name: hcloud-route
     outputs:
     - contextPath: HCloud.HcloudRoute.hcloud_route
-      description: One Route of a Network
+      description: One Route of a Network.
       type: unknown
   - arguments:
-    - description: 'The ID of the Hetzner Cloud server to manage. Only required if no server `name` is given'
+    - description: 'The ID of the Hetzner Cloud server to manage. Only required if no server `name` is given.'
       name: id
     - description: 'The Name of the Hetzner Cloud server to manage. Only required if no server `id` is given or a server does not exists.'
       name: name
@@ -219,7 +220,7 @@ script:
     name: hcloud-server
     outputs:
     - contextPath: HCloud.HcloudServer.hcloud_server
-      description: The server instance
+      description: The server instance.
       type: unknown
   - arguments:
     - description: The ID of the server you want to get.
@@ -232,7 +233,7 @@ script:
     name: hcloud-server-info
     outputs:
     - contextPath: HCloud.HcloudServerInfo.hcloud_server_info
-      description: The server infos as list
+      description: The server infos as list.
       type: unknown
   - arguments:
     - description: The name of the Hetzner Cloud Networks.
@@ -257,7 +258,7 @@ script:
     name: hcloud-server-network
     outputs:
     - contextPath: HCloud.HcloudServerNetwork.hcloud_server_network
-      description: The relationship between a server and a network
+      description: The relationship between a server and a network.
       type: unknown
   - arguments:
     - description: The ID of the server type you want to get.
@@ -268,16 +269,16 @@ script:
     name: hcloud-server-type-info
     outputs:
     - contextPath: HCloud.HcloudServerTypeInfo.hcloud_server_type_info
-      description: The server type infos as list
+      description: The server type infos as list.
       type: unknown
   - arguments:
-    - description: 'The ID of the Hetzner Cloud ssh_key to manage. Only required if no ssh_key `name` is given'
+    - description: 'The ID of the Hetzner Cloud ssh_key to manage. Only required if no ssh_key `name` is given.'
       name: id
     - description: 'The Name of the Hetzner Cloud ssh_key to manage. Only required if no ssh_key `id` is given or a ssh_key does not exists.'
       name: name
     - description: 'The Fingerprint of the Hetzner Cloud ssh_key to manage. Only required if no ssh_key `id` or `name` is given.'
       name: fingerprint
-    - description: User-defined labels (key-value pairs)
+    - description: User-defined labels (key-value pairs).
       isArray: true
       name: labels
     - description: 'The Public Key to add. Required if ssh_key does not exists.'
@@ -293,7 +294,7 @@ script:
     name: hcloud-ssh-key
     outputs:
     - contextPath: HCloud.HcloudSshKey.hcloud_ssh_key
-      description: The ssh_key instance
+      description: The ssh_key instance.
       type: unknown
   - arguments:
     - description: The ID of the ssh key you want to get.
@@ -308,7 +309,7 @@ script:
     name: hcloud-ssh-key-info
     outputs:
     - contextPath: HCloud.HcloudSshKeyInfo.hcloud_ssh_key_info
-      description: The ssh key instances
+      description: The ssh key instances.
       type: unknown
   - arguments:
     - description: The ID or Name  of the Hetzner Cloud Networks.
@@ -334,10 +335,10 @@ script:
     name: hcloud-subnetwork
     outputs:
     - contextPath: HCloud.HcloudSubnetwork.hcloud_subnetwork
-      description: One Subnet of a Network
+      description: One Subnet of a Network.
       type: unknown
   - arguments:
-    - description: 'The ID of the Hetzner Cloud Block Volume to manage. Only required if no volume `name` is given'
+    - description: 'The ID of the Hetzner Cloud Block Volume to manage. Only required if no volume `name` is given.'
       name: id
     - description: 'The Name of the Hetzner Cloud Block Volume to manage. Only required if no volume `id` is given or a volume does not exists.'
       name: name
@@ -369,7 +370,7 @@ script:
     name: hcloud-volume
     outputs:
     - contextPath: HCloud.HcloudVolume.hcloud_volume
-      description: The block volume
+      description: The block volume.
       type: unknown
   - arguments:
     - description: The ID of the volume you want to get.
@@ -382,7 +383,7 @@ script:
     name: hcloud-volume-info
     outputs:
     - contextPath: HCloud.HcloudVolumeInfo.hcloud_volume_info
-      description: The volume infos as list
+      description: The volume infos as list.
       type: unknown
   dockerimage: demisto/ansible-runner:1.0.0.3262406
   script: ''

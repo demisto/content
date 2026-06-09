@@ -1,0 +1,5 @@
+!cyberark-isp-get-events limit=5
+!cyberark-isp-get-users limit=5
+!cyberark-isp-get-groups limit=5
+!cyberark-isp-get-roles limit=5
+!cyberark-isp-get-applications limit=5

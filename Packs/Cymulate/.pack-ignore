@@ -37,3 +37,10 @@ ignore=PB121
 # GR103 is temporary, see CIAC-11656
 [file:incidenttype-cymulate.json]
 ignore=GR103
+
+[known_words]
+markdown
+NIST
+Softwares
+Mappers
+mapper

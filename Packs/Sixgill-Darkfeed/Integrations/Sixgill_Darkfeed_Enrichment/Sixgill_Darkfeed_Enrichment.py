@@ -308,7 +308,7 @@ def postid_reputation_command(client: SixgillEnrichClient, args) -> list[Command
 
 
 def main():
-    channel_code = "7698e8287dfde53dcd13082be750a85a"
+    channel_code = "7457a04d972fceb8e0cc2192ba4abc66" if is_xsiam() else "7698e8287dfde53dcd13082be750a85a"
 
     verify = not demisto.params().get("insecure", True)
     session = requests.Session()

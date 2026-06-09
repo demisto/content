@@ -1,7 +1,7 @@
 jamf-get-computers limit=3
 jamf-get-computers-basic-subset limit=3
 jamf-get-computer-by-id id=1
-jamf-get-computer-by-match match="Computer 9*" limit=3
+jamf-get-computer-by-match filter="general.name==\"Computer 9*\"" limit=3
 jamf-get-computer-general-subset identifier=name identifier_value="Computer 95"
 jamf-get-computer-location-subset identifier=name identifier_value="Computer 95"
 jamf-get-computer-purchasing-subset identifier=name identifier_value="Computer 95"
@@ -14,6 +14,7 @@ jamf-get-computer-extension-attributes-subset identifier=name identifier_value="
 jamf-get-computer-groups-accounts-subset identifier=id identifier_value="138"
 jamf-get-computer-iphones-subset identifier=id identifier_value="138"
 jamf-get-computer-configuration-profiles-subset identifier=id identifier_value="138"
+jamf-get-computer-subset identifier=id identifier_value="138" section=GENERAL
 jamf-computer-lock id=138 passcode=123456
 jamf-computer-erase id=138 passcode=123456
 jamf-get-users limit=3

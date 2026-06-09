@@ -1,3 +1,4 @@
+import html
 import mimetypes
 from pathlib import Path
 
@@ -7,6 +8,30 @@ from parse_emails.parse_emails import EmailParser
 
 logger = logging.getLogger("parse-email")  # type: ignore[assignment]
 logger.addHandler(DemistoHandler)  # type: ignore[attr-defined]
+
+
+def html_unescape(html_body: str) -> str:
+    """
+    Unescape HTML entities in the raw HTML string returned by the email parser.
+
+    The ``parse_emails`` library returns the HTML body verbatim from the email
+    source, which means HTML entities such as ``&amp;`` (used inside attribute
+    values like ``href``) are **not** decoded.  When indicator-extraction runs
+    against this raw HTML it sees ``https://example.com?a=1&amp;b=2`` instead
+    of the real URL ``https://example.com?a=1&b=2``, causing missed or broken
+    indicators.
+
+    This function applies a single ``html.unescape()`` pass so that all named
+    and numeric character references are replaced with their Unicode equivalents
+    before the HTML is stored in context and consumed by downstream automations.
+
+    Args:
+        html_body (str): Raw HTML content as returned by the email parser.
+
+    Returns:
+        str: HTML string with all character references decoded.
+    """
+    return html.unescape(html_body)
 
 
 def remove_bom(file_path: str, file_type: str, file_name: str) -> tuple[str, Optional[str], str]:
@@ -129,6 +154,10 @@ def extract_file_info(entry_id: str) -> tuple:
             demisto.debug(f"{file_type=} seems wrong, changing it to {file_info=}")
             file_type = file_info
 
+        if file_name.lower().endswith(".eml") and ("iso-8859" in file_type.lower() or "mime entity" in file_type.lower()):
+            demisto.debug(f"Detected EML file misclassified as text ({file_type}). Forcing RFC822 parsing.")
+            file_type = "RFC 822 mail text"
+
     except Exception as ex:
         return_error(
             "Failed to load file entry with entry id: {}. Error: {}".format(
@@ -204,6 +233,9 @@ def main():
 
             if isinstance(email.get("HTML"), bytes):
                 email["HTML"] = email.get("HTML").decode("utf-8")
+
+            if html_body := email.get("HTML"):
+                email["HTMLUnescape"] = html_unescape(html_body)
 
             results.append(
                 CommandResults(

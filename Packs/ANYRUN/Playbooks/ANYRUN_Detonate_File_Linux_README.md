@@ -15,6 +15,7 @@ This playbook does not use any sub-playbooks.
 ### Scripts
 
 * IsIntegrationAvailable
+* associateIndicatorsToIncident
 
 ### Commands
 
@@ -29,7 +30,6 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | file | XSOAR Entry ID | ${File.EntryID} | Optional |
-| incident_info | XSOAR Incident | ${incident} | Optional |
 | run_as_root | Run file with superuser privileges | False | Optional |
 | env_locale | Operation system language. Use locale identifier or country name \(Ex: "en-US" or "Brazil"\). Case insensitive. | en-US | Optional |
 | env_os | Operation system | ubuntu | Optional |

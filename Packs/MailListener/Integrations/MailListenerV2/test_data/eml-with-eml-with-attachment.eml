@@ -31,11 +31,11 @@ ARC-Authentication-Results: i=1; mx.google.com;
        dkim=pass header.i=@paloaltonetworks.com
  header.s=google.paloaltonetworks.com header.b=byUdpnTG;
        spf=pass (google.com: domain of
- prvs=149195fd90=gforer@paloaltonetworks.com designates 67.231.156.123 as
+ prvs=149195fd90=gforer@example.com designates 67.231.156.123 as
  permitted sender)
- smtp.mailfrom="prvs=149195fd90=gforer@paloaltonetworks.com";
+ smtp.mailfrom="prvs=149195fd90=gforer@example.com";
        dmarc=pass (p=REJECT sp=NONE dis=NONE) header.from=paloaltonetworks.com
-Return-Path: <prvs=149195fd90=gforer@paloaltonetworks.com>
+Return-Path: <prvs=149195fd90=gforer@example.com>
 Received: from mx0b-00169c01.pphosted.com (mx0b-00169c01.pphosted.com.
  [67.231.156.123])
         by mx.google.com with ESMTPS id
@@ -44,7 +44,7 @@ Received: from mx0b-00169c01.pphosted.com (mx0b-00169c01.pphosted.com.
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
         Sun, 07 May 2023 01:34:10 -0700 (PDT)
 Received-SPF: pass (google.com: domain of
- prvs=149195fd90=gforer@paloaltonetworks.com designates 67.231.156.123 as
+ prvs=149195fd90=gforer@example.com designates 67.231.156.123 as
  permitted sender) client-ip=67.231.156.123;
 Authentication-Results: mx.google.com;
        dkim=pass header.i=@paloaltonetworks.com header.s=PPS12012017
@@ -52,9 +52,9 @@ Authentication-Results: mx.google.com;
        dkim=pass header.i=@paloaltonetworks.com
  header.s=google.paloaltonetworks.com header.b=byUdpnTG;
        spf=pass (google.com: domain of
- prvs=149195fd90=gforer@paloaltonetworks.com designates 67.231.156.123 as
+ prvs=149195fd90=gforer@example.com designates 67.231.156.123 as
  permitted sender)
- smtp.mailfrom="prvs=149195fd90=gforer@paloaltonetworks.com";
+ smtp.mailfrom="prvs=149195fd90=gforer@example.com";
        dmarc=pass (p=REJECT sp=NONE dis=NONE) header.from=paloaltonetworks.com
 Received: from pps.filterd (m0048189.ppops.net [127.0.0.1])
 	by mx0b-00169c01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id
@@ -109,7 +109,7 @@ X-Received: by 2002:a5d:4403:0:b0:307:8800:bbdb with SMTP id
  z3-20020a5d4403000000b003078800bbdbmr2384806wrq.58.1683448447781; Sun, 07 May
  2023 01:34:07 -0700 (PDT)
 MIME-Version: 1.0
-From: Gal Forer <gforer@paloaltonetworks.com>
+From: Gal Forer <gforer@example.com>
 Date: Sun, 7 May 2023 11:33:56 +0300
 Message-ID: 
  <CAC4PDDnRBdWow5Kc0KEGBUJ9+Bf8AX0a=zZCs258hCaq7qGq4g@mail.gmail.com>
@@ -154,8 +154,8 @@ Date: Sun, 7 May 2023 11:31:45 +0300
 Message-ID: 
  <CAC4PDDn8BgkuV9fuZLbbuOFb0mMxS4b3KCfkqt+rMWk40oHfig@mail.gmail.com>
 Subject: Test with an image
-From: Gal Forer <gforer@paloaltonetworks.com>
-To: Gal Forer <gforer@paloaltonetworks.com>
+From: Gal Forer <gforer@example.com>
+To: Gal Forer <gforer@example.com>
 Content-Type: multipart/mixed; boundary="0000000000004a2cd805fb165afa"
 
 --0000000000004a2cd805fb165afa

@@ -1,10 +1,9 @@
-[MODEL: dataset = "silverfort_admin_console_raw"]
-//The event type we're mapping is "Authentication"
-filter cefdeviceeventclassid = "Authentication"
-| alter
-    src_user = arrayindex(regextract(suser,"(\S+)\@"),0), //src_user comes sometimes as UPN
+//Rule for mapping event type "Authentication" of Silverfort Admin Console
+[RULE: silverfort_admin_console_authentication_fields]
+alter
+    src_user = arrayindex(regextract(suser,"(\S+)\@"),0), //suser comes sometimes as UPN
     coordinates = if(cs11 != "n/a", split(cs11, ",")), //The coordinates comes as <latitude>,<longitude>
-    outcome_reason = arrayindex(regextract(cs2, "\w+\s\((.+)\)"), 0), //The format of 'cs2' is 'Denied (Bad Password)', we're extracting the outcome reason, which will appear mostly in Denied.
+    outcome_reason = arrayindex(regextract(cs2, "\((.+)\)"), 0), //The format of 'cs2' is 'Denied (Bad Password)', we're extracting the outcome reason.
     risks = if(cs7 != "n/a", replace(cs7, "_", " ")) //Comes with underscore instead of space delimiter
 | alter
     latitude = if(cs11 != "n/a", to_float(arrayindex(coordinates, 0))),
@@ -13,25 +12,57 @@ filter cefdeviceeventclassid = "Authentication"
 //Mapping to XDM fields
 | alter
     xdm.source.user.username = coalesce(src_user,suser),
-    xdm.source.user.upn = if(src_user != null, suser),
+    xdm.source.user.upn = if(src_user != null, suser, concat(suser, "@", sntdom)), //In some cases suser comes as UPN, and in others as username, the UPN can then be derived as suser@sntdom.
     xdm.source.user.domain = sntdom,
-    xdm.source.host.hostname = shost,
-    xdm.source.ipv4 = if(incidr(src, "0.0.0.0/0"), src),
-    xdm.source.ipv6 = arrayindex(regextract(src, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
-    xdm.target.application.name = if(destinationServiceName != "", destinationServiceName),
-    xdm.target.resource.name = if(dhost !="", dhost),
+    xdm.source.host.hostname = if(shost = "n/a", null, shost),
+    xdm.source.ipv4 = if(is_ipv4(src) = TRUE, src),
+    xdm.source.ipv6 = if(is_ipv6(src) = TRUE, src),
+    xdm.target.host.hostname = if(is_ipv4(dhost) = FALSE AND is_ipv6(dhost) = FALSE, dhost), //dhost sometimes represents IP address and sometimes hostname.
+    xdm.target.resource.name = if(destinationServiceName != "", destinationServiceName, dhost),
+    xdm.target.ipv4 = if(is_ipv4(dhost) = TRUE, dhost),
+    xdm.target.ipv6 = if(is_ipv6(dhost) = TRUE, dhost),
     xdm.target.domain = if(dntdom != "", dntdom),
-    xdm.event.operation_sub_type = app,
     xdm.event.description = if(msg != "", msg),
     xdm.alert.severity = cs1,
     xdm.event.outcome = if(cs2 contains "Allowed", XDM_CONST.OUTCOME_SUCCESS, cs2 contains "Denied", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.observer.action = if(cs3 != "n/a",cs3),
-    xdm.event.outcome_reason = if(cs5 != "n/a", cs5, outcome_reason),
     xdm.alert.risks = split(risks ,","),
     xdm.network.rule = if(cs8 != "n/a", replace(cs8, "_", " ")),
+    xdm.auth.auth_method = app,
     xdm.source.location.country = if(cs9 != "n/a", cs9),
     xdm.source.location.city = if(cs10 != "n/a", cs10),
     xdm.source.location.latitude = latitude,
     xdm.source.location.longitude = longitude,
-    xdm.event.type = cefdeviceeventclassid,
+    xdm.event.type = "authentication",
+    xdm.event.original_event_type = cefdeviceeventclassid,
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, //MFA is a different cefdeviceeventclassid "MFA", we currently don't support this event class.
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION);
+
+
+//For authentication story - should be only for SSO events.
+[RULE: silverfort_admin_console_authentication_story_fields]
+alter
+    xdm.source.port = to_integer(0),
+    xdm.source.user.user_type = if(suser ~= "\$$" OR suser ~= "^(http|host|cifs|krbtgt|mssql|nfs)\/" OR suser ~= "\/",XDM_CONST.USER_TYPE_MACHINE_ACCOUNT, XDM_CONST.USER_TYPE_REGULAR),
+    xdm.target.port = to_integer(0),
+    xdm.logon.type = XDM_CONST.LOGON_TYPE_INTERACTIVE,
+    xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
+    xdm.auth.service = "IDP",
+    xdm.event.outcome_reason = if(
+            outcome_reason IN("*Bad password*", "*Bad username*", "*Bad credentials*", "*Expired password*"), "bad_credentials",
+            outcome_reason IN("*Account disabled, expired or locked out*", "*Account disabled*"), "account_expired_or_disabled",
+            outcome_reason IN("*Locked account*"), "account_locked",
+            outcome_reason IN("*Expired ticket*", "*The client trust failed or is not implemented*", "*The ticket and authenticator do not match*", "*Bad server*", "*cannot accommodate requested option*", "*Clock skew is too great*", "*TGT has been revoked*", "*KDC has no support for PADATA type*", "*Requested start time is later than end time*"), "failed_login",
+            outcome_reason IN("*Outside authorized hours*", "*Unauthorized workstation*", "Denied (Conditional access applied*", "*Changing password is required*"), "auth_policy_access_violation",
+            "NOT_SPECIFIED");
+
+[MODEL: dataset = silverfort_admin_console_raw]
+
+filter cefdeviceeventclassid = "Authentication" AND app ~= "SSO|SAML|OIDC"
+| call silverfort_admin_console_authentication_fields
+| call silverfort_admin_console_authentication_story_fields;
+
+filter cefdeviceeventclassid = "Authentication" AND app NOT IN("*SSO*","*SAML*", "*OIDC*")
+| call silverfort_admin_console_authentication_fields
+| alter
+    xdm.event.outcome_reason = if(cs5 != "n/a", cs5, outcome_reason);

@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Kloudend Inc
 commonfields:
   id: IP-API
   version: -1
@@ -79,85 +80,85 @@ script:
     name: ip
     outputs:
     - contextPath: IP-API.continentCode
-      description: continentCode
+      description: continentCode.
       type: String
     - contextPath: IP-API.zip
-      description: zip
+      description: zip.
       type: String
     - contextPath: IP-API.mobile
-      description: mobile
+      description: mobile.
       type: Boolean
     - contextPath: IP-API.reverse
-      description: reverse
+      description: reverse.
       type: String
     - contextPath: IP-API.countryCode
-      description: countryCode
+      description: countryCode.
       type: String
     - contextPath: IP-API.org
-      description: org
+      description: org.
       type: String
     - contextPath: IP-API.isp
-      description: isp
+      description: isp.
       type: String
     - contextPath: IP-API.currentTime
-      description: currentTime
+      description: currentTime.
       type: String
     - contextPath: IP-API.query
-      description: query
+      description: query.
       type: String
     - contextPath: IP-API.city
-      description: city
+      description: city.
       type: String
     - contextPath: IP-API.lon
-      description: lon
+      description: lon.
       type: Number
     - contextPath: IP-API.proxy
-      description: proxy
+      description: proxy.
       type: Boolean
     - contextPath: IP-API.district
-      description: district
+      description: district.
       type: String
     - contextPath: IP-API.countryCode3
-      description: countryCode3
+      description: countryCode3.
       type: String
     - contextPath: IP-API.currency
-      description: currency
+      description: currency.
       type: String
     - contextPath: IP-API.callingCode
-      description: callingCode
+      description: callingCode.
       type: Number
     - contextPath: IP-API.as
-      description: as
+      description: as.
       type: String
     - contextPath: IP-API.status
-      description: status
+      description: status.
       type: String
     - contextPath: IP-API.offset
-      description: offset
+      description: offset.
       type: String
     - contextPath: IP-API.continent
-      description: continent
+      description: continent.
       type: String
     - contextPath: IP-API.region
-      description: region
+      description: region.
       type: String
     - contextPath: IP-API.country
-      description: country
+      description: country.
       type: String
     - contextPath: IP-API.timezone
-      description: timezone
+      description: timezone.
       type: String
     - contextPath: IP-API.hosting
-      description: hosting
+      description: hosting.
       type: Boolean
     - contextPath: IP-API.asname
-      description: asname
+      description: asname.
       type: String
     - contextPath: IP-API.lat
-      description: lat
+      description: lat.
       type: Number
     - contextPath: IP-API.regionName
-      description: regionName
+      description: regionName.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.

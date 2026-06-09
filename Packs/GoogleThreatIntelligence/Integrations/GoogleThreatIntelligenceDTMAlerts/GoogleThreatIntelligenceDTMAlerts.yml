@@ -5,6 +5,7 @@ name: GoogleThreatIntelligenceDTMAlerts
 display: Google Threat Intelligence - DTM Alerts
 fromversion: 6.10.0
 category: Data Enrichment & Threat Intelligence
+provider: Google
 defaultmapperin: Google Threat Intelligence DTM Alerts - Incoming Mapper
 sectionorder:
 - Connect
@@ -27,7 +28,7 @@ configuration:
   defaultvalue: '25'
   type: 0
   required: false
-  additionalinfo: Maximum number of Alerts to fetch each time. Maximum value is 25.
+  additionalinfo: Maximum number of Alerts to fetch each time. Maximum value is 100.
   section: Collect
 - display: First Fetch Time
   name: first_fetch
@@ -37,13 +38,15 @@ configuration:
   additionalinfo: "The date or relative timestamp from which to begin fetching Alerts.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z."
   section: Collect
 - display: Mirroring Direction
-  hidden: false
+  hidden:
+  - marketplacev2
+  - platform
   name: mirror_direction
   type: 15
   options:
   - Outgoing
   required: false
-  additionalinfo: The mirroring direction in which to mirror the details. You can mirror "Outgoing" (from XSOAR to GTI) direction for DTM Alerts.
+  additionalinfo: The mirroring direction in which to mirror the details. You can mirror "Outgoing" (from XSOAR to GTI) direction for DTM Alerts. Cortex XSOAR only parameter.
   section: Collect
 - display: Alert Type
   name: alert_type
@@ -938,7 +941,7 @@ script:
     - contextPath: GoogleThreatIntelligenceDTMAlerts.Alerts.monitor_version
       description: Version of the monitoring source generating the alert.
       type: Number
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true
   isremotesyncout: true
 tests:

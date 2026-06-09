@@ -4,6 +4,7 @@ commonfields:
 name: Simple SFTP
 display: Simple SFTP
 category: Utilities
+provider: Open Source
 description: Simple SFTP Integration to copy files from SFTP Server using paramiko.
 configuration:
 - display: Host
@@ -38,7 +39,7 @@ script:
     arguments:
     - name: file_path
       required: true
-      description: Please provide file path as seen by the sftp user upon login
+      description: Please provide file path as seen by the sftp user upon login.
     - name: return_file
       auto: PREDEFINED
       predefined:
@@ -49,10 +50,10 @@ script:
     description: Copies contents of file specified from the sftp server and prints it to the war room
   - name: sftp-upload-file
     arguments:
-    - description: Directory to upload the file to
+    - description: Directory to upload the file to.
       name: path
       required: true
-    - description: Warroom Entry ID for the file to upload
+    - description: Warroom Entry ID for the file to upload.
       name: file_entry_id
       required: true
     description: Upload a file to a path on the SFTP Server

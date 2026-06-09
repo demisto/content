@@ -1,4 +1,5 @@
 category: Analytics & SIEM
+provider: WithSecure Corporation
 sectionorder:
 - Connect
 - Collect
@@ -63,3 +64,5 @@ marketplaces:
 - platform
 tests:
 - No tests
+supportedModules:
+- xsiam

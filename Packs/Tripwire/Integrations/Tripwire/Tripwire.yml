@@ -1,4 +1,5 @@
 category: IT Services
+provider: Fortra
 sectionorder:
 - Connect
 - Collect
@@ -77,7 +78,7 @@ script:
     - description: Elements IDs of elements versions to fetch, comma seperated.
       isArray: true
       name: element_oids
-    - description: Element names of elements versions to fetch. (case insensitive) .comma seperated
+    - description: Element names of elements versions to fetch. (case insensitive) .comma seperated.
       isArray: true
       name: element_names
     - description: Nodes IDs of elements versions to fetch. comma seperated.
@@ -107,9 +108,9 @@ script:
       name: limit
     - description: start index from which the results are returned.
       name: start
-    - description: "End detected time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\""
+    - description: "End detected time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\"."
       name: end_detected_time
-    - description: "End received time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\""
+    - description: "End received time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\"."
       name: end_received_time
     description: Returns all Element Versions that meet the search critiera.
     name: tripwire-versions-list
@@ -121,7 +122,7 @@ script:
       description: Last baseline versions of elements versions.
       type: String
     - contextPath: Tripwire.Versions.changeType
-      description: Change types of elements versions
+      description: Change types of elements versions.
       type: String
     - contextPath: Tripwire.Versions.elementId
       description: Elements IDs of elements versions.
@@ -277,7 +278,7 @@ script:
       description: Severity value for the latest version of this element.
       type: Number
     - contextPath: Tripwire.Elements.lastVersionChangeType
-      description: Change type for the latest version of this element
+      description: Change type for the latest version of this element.
       type: String
     - contextPath: Tripwire.Elements.lastVersionId
       description: Id for the latest version of this element.
@@ -301,10 +302,10 @@ script:
     - description: IP addresses of nodes to fetch (only finds agent nodes). comma seperated.
       isArray: true
       name: node_ips
-    - description: MAC addresses of nodes to fetch. comma seperat
+    - description: MAC addresses of nodes to fetch. comma seperat.
       isArray: true
       name: node_mac_adresses
-    - description: Support for case insensitive search for name parameter. comma seperat
+    - description: Support for case insensitive search for name parameter. comma seperat.
       isArray: true
       name: node_names
     - description: Os names of nodes to fetch. comma seperated.

@@ -24,3 +24,15 @@ This API key is used in the API Key field in the integration configuration.
 3. Copy the API key.
 
 Note: If your API key comes from integrations such as Prisma Cloud or Prisma Access ensure that the API source is set in the instance config.
+
+## WildFire Server URLs
+
+Use the appropriate server URL in the **Server base URL** parameter based on your region or cloud environment:
+
+| Server URL | Region |
+| --- | --- |
+| https://wildfire.paloaltonetworks.com | Global (default) |
+| https://pubsec-cloud.wildfire.paloaltonetworks.com | US Gov Cloud / FedRAMP Moderate |
+| https://gov-cloud.wildfire.paloaltonetworks.com | US Gov Cloud / FedRAMP High |
+| https://eu.wildfire.paloaltonetworks.com | EU |
+| https://jp.wildfire.paloaltonetworks.com | Japan |

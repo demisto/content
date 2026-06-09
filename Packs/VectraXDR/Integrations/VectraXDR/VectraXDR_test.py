@@ -45,6 +45,10 @@ from VectraXDR import (
     vectra_detection_tag_list_command,
     vectra_detection_tag_add_command,
     vectra_detection_tag_remove_command,
+    vectra_detection_note_list_command,
+    vectra_detection_note_add_command,
+    vectra_detection_note_remove_command,
+    vectra_detection_note_update_command,
 )
 from VectraXDR import (
     ERRORS,
@@ -4344,3 +4348,317 @@ def test_vectra_entity_detection_list_passes_entity_id_and_type(mocker, client):
     call_kwargs = mock_list.call_args.kwargs
     assert call_kwargs["entity_id"] == entity_id
     assert call_kwargs["entity_type"] == entity_type
+
+
+def test_vectra_detection_note_list_valid_arguments(requests_mock, client):
+    """
+    Given:
+    - A mocked 'requests_mock' to simulate API responses.
+    - A client object.
+    - Mocked detection note list response data.
+    - Mocked context data.
+
+    When:
+    - Calling the 'vectra_detection_note_list_command' function with valid arguments.
+
+    Then:
+    - Assert that the CommandResults object contains the expected outputs.
+    - Assert the correctness of the 'outputs_prefix' property.
+    - Assert that the human-readable output matches the content of the expected file.
+    - Assert that the 'Contents' property in the context matches the detection note list data.
+    - Assert that the 'EntryContext' property in the context matches the expected context data.
+    - Assert the correctness of the 'outputs_key_field' property.
+    """
+    notes_res = util_load_json(f"{TEST_DATA_DIR}/detection_note_list_response.json")
+    context_data = util_load_json(f"{TEST_DATA_DIR}/detection_note_list_context.json")
+    with open(f"{TEST_DATA_DIR}/detection_note_list_hr.md") as f:
+        result_hr = f.read()
+    args = {
+        "detection_id": "1",
+    }
+    url = BASE_URL + ENDPOINTS["ADD_AND_LIST_DETECTION_NOTE_ENDPOINT"].format(args.get("detection_id"))
+    requests_mock.get(url, json=notes_res)
+    # Call the function
+    result = vectra_detection_note_list_command(client, args)
+    result_context = result.to_context()
+    # Assert the CommandResults
+    assert result.outputs_prefix == "Vectra.Detection.Notes"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("EntryContext") == remove_empty_elements(context_data)
+    assert result.outputs_key_field == ["detection_id", "note_id"]
+
+
+def test_vectra_detection_note_add_valid_arguments(requests_mock, client):
+    """
+    Given:
+    - A mocked client for requests.
+    - A mock notes response.
+    - The expected human-readable output file.
+    - Arguments specifying valid parameters for adding a note to a detection.
+
+    When:
+    - Calling the 'vectra_detection_note_add_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the CommandResults object contains the expected outputs.
+    - Assert the correctness of the 'outputs_prefix' property.
+    - Assert that the human-readable output matches the content of the expected file.
+    - Assert that the 'Contents' property in the context matches the notes response.
+    - Assert that the 'EntryContext' property in the context matches the context data.
+    - Assert the correctness of the 'outputs_key_field' property.
+    """
+    notes_res = util_load_json(f"{TEST_DATA_DIR}/detection_note_add_response.json")
+    context_data = util_load_json(f"{TEST_DATA_DIR}/detection_note_add_context.json")
+    requests_mock.post(BASE_URL + ENDPOINTS["ADD_AND_LIST_DETECTION_NOTE_ENDPOINT"].format("1"), json=notes_res)
+    with open(f"{TEST_DATA_DIR}/detection_note_add_hr.md") as f:
+        result_hr = f.read()
+    args = {
+        "detection_id": "1",
+        "note": "test_note",
+    }
+
+    # Call the function
+    result = vectra_detection_note_add_command(client, args)
+    result_context = result.to_context()
+    notes_res["note_id"] = notes_res["id"]
+    notes_res["detection_id"] = 1
+    # Assert the CommandResults
+    assert result.outputs_prefix == "Vectra.Detection.Notes"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("EntryContext") == context_data
+    assert result.outputs_key_field == ["detection_id", "note_id"]
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"detection_id": "1"}, ERRORS["REQUIRED_ARGUMENT"].format("note")),
+        ({"note": "test_note"}, ERRORS["REQUIRED_ARGUMENT"].format("detection_id")),
+        ({"detection_id": "0", "note": "test_note"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+        ({"detection_id": "-1", "note": "test_note"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+        (
+            {"detection_id": "1.5", "note": "test_note"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("detection_id"),
+        ),
+    ],
+)
+def test_vectra_detection_note_add_invalid_args(client, args, error_msg):
+    """
+    Given:
+    - A client object.
+    - Arguments specifying different invalid values for detection_id, and note.
+
+    When:
+    - Calling the 'vectra_detection_note_add_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the function raises a ValueError.
+    - Assert that the error message matches the expected error message for each invalid argument.
+    """
+    # Call the function and assert that it raises ValueError
+    with pytest.raises(ValueError) as exception:
+        vectra_detection_note_add_command(client, args)
+
+    assert str(exception.value) == error_msg
+
+
+def test_vectra_detection_note_update_valid_arguments(requests_mock, client):
+    """
+    Given:
+    - A mocked client for requests.
+    - A mock note response.
+    - The expected human-readable output file.
+    - Arguments specifying valid parameters for updating a note of an entity.
+
+    When:
+    - Calling the 'vectra_detection_note_update_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the CommandResults object contains the expected outputs.
+    - Assert the correctness of the 'outputs_prefix' property.
+    - Assert that the human-readable output matches the content of the expected file.
+    - Assert that the 'Contents' property in the context matches the notes response.
+    - Assert that the 'EntryContext' property in the context matches the context data.
+    - Assert the correctness of the 'outputs_key_field' property.
+    """
+    notes_res = util_load_json(f"{TEST_DATA_DIR}/detection_note_update_response.json")
+    context_data = util_load_json(f"{TEST_DATA_DIR}/detection_note_update_context.json")
+    requests_mock.patch(BASE_URL + ENDPOINTS["UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT"].format(1, 1), json=notes_res)
+    with open(f"{TEST_DATA_DIR}/detection_note_update_hr.md") as f:
+        result_hr = f.read()
+    args = {
+        "detection_id": "1",
+        "note_id": "1",
+        "note": "test_note",
+    }
+
+    # Call the function
+    result = vectra_detection_note_update_command(client, args)
+    result_context = result.to_context()
+    notes_res["note_id"] = notes_res["id"]
+    notes_res["detection_id"] = 1
+    # Assert the CommandResults
+    assert result.outputs_prefix == "Vectra.Detection.Notes"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("Contents") == notes_res
+    assert result_context.get("EntryContext") == context_data
+    assert result.outputs_key_field == ["detection_id", "note_id"]
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"detection_id": "1", "note_id": "1"}, ERRORS["REQUIRED_ARGUMENT"].format("note")),
+        ({"note": "test_note", "note_id": "1"}, ERRORS["REQUIRED_ARGUMENT"].format("detection_id")),
+        ({"detection_id": "1", "note": "test_note"}, ERRORS["REQUIRED_ARGUMENT"].format("note_id")),
+        (
+            {"detection_id": "0", "note": "test_note", "note_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("detection_id"),
+        ),
+        (
+            {"detection_id": "-1", "note": "test_note", "note_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("detection_id"),
+        ),
+        (
+            {"detection_id": "1.5", "note": "test_note", "note_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("detection_id"),
+        ),
+        (
+            {"note_id": "0", "note": "test_note", "detection_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("note_id"),
+        ),
+        (
+            {"note_id": "-1", "note": "test_note", "detection_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("note_id"),
+        ),
+        (
+            {"note_id": "1.5", "note": "test_note", "detection_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("note_id"),
+        ),
+    ],
+)
+def test_vectra_detection_note_update_invalid_args(client, args, error_msg):
+    """
+    Given:
+    - A client object.
+    - Invalid arguments for updating a note of an entity.
+
+    When:
+    - Calling the 'vectra_detection_note_update_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that a ValueError is raised with the expected error message.
+    """
+    # Call the function and assert that it raises ValueError
+    with pytest.raises(ValueError) as exception:
+        vectra_detection_note_update_command(client, args)
+
+    assert str(exception.value) == error_msg
+
+
+def test_vectra_detection_note_remove_valid_arguments(requests_mock, client):
+    """
+    Tests the 'vectra_detection_note_remove_command' function with valid arguments.
+
+    Ensures that the function removes a detection note and returns the expected CommandResults object.
+
+    Args:
+        requests_mock: The requests mocker object.
+        client: The VectraClient instance.
+
+    Returns:
+        None. Raises an AssertionError if the test fails.
+    """
+    requests_mock.delete(BASE_URL + ENDPOINTS["UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT"].format(1, 1), status_code=204)
+    with open(f"{TEST_DATA_DIR}/detection_note_remove_hr.md") as f:
+        result_hr = f.read()
+    args = {
+        "detection_id": "1",
+        "note_id": "1",
+    }
+
+    # Call the function
+    result = vectra_detection_note_remove_command(client, args)
+    result_context = result.to_context()
+    # Assert the CommandResults
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("EntryContext") == {}
+
+
+def test_vectra_detection_note_remove_invalid_status_code(requests_mock, client):
+    """
+    Tests the 'vectra_detection_note_remove_command' function with valid arguments.
+
+    Ensures that the function gives error in HR for status code.
+
+    Args:
+        requests_mock: The requests mocker object.
+        client: The VectraClient instance.
+
+    Returns:
+        None. Raises an AssertionError if the test fails.
+    """
+    requests_mock.delete(BASE_URL + ENDPOINTS["UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT"].format(1, 1), status_code=200)
+    args = {
+        "detection_id": "1",
+        "note_id": "1",
+    }
+
+    # Call the function
+    result = vectra_detection_note_remove_command(client, args)
+    result_context = result.to_context()
+    # Assert the CommandResults
+    assert result_context.get("HumanReadable") == "Something went wrong."
+    assert result_context.get("EntryContext") == {}
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"note": "test_note", "note_id": "1"}, ERRORS["REQUIRED_ARGUMENT"].format("detection_id")),
+        ({"detection_id": "1"}, ERRORS["REQUIRED_ARGUMENT"].format("note_id")),
+        (
+            {"detection_id": "0", "note": "test_note", "note_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("detection_id"),
+        ),
+        (
+            {"detection_id": "-1", "note": "test_note", "note_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("detection_id"),
+        ),
+        (
+            {"detection_id": "1.5", "note": "test_note", "note_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("detection_id"),
+        ),
+        (
+            {"note_id": "0", "note": "test_note", "detection_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("note_id"),
+        ),
+        (
+            {"note_id": "-1", "note": "test_note", "detection_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("note_id"),
+        ),
+        (
+            {"note_id": "1.5", "note": "test_note", "detection_id": "1"},
+            ERRORS["INVALID_INTEGER_VALUE"].format("note_id"),
+        ),
+    ],
+)
+def test_vectra_detection_note_remove_invalid_args(client, args, error_msg):
+    """
+    Given:
+    - A client object.
+    - Invalid arguments for updating a note of an entity.
+
+    When:
+    - Calling the 'vectra_detection_note_remove_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that a ValueError is raised with the expected error message.
+    """
+    # Call the function and assert that it raises ValueError
+    with pytest.raises(ValueError) as exception:
+        vectra_detection_note_remove_command(client, args)
+
+    assert str(exception.value) == error_msg

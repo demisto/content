@@ -1,4 +1,4 @@
-from pytest import raises   # noqa: PT013
+from pytest import raises  # noqa: PT013
 
 
 def create_client():

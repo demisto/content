@@ -20,5 +20,9 @@
     "weeks": 0,
     "weeksR": 0,
     "fromVersion": "5.0.0",
-    "layout": "Illusive Networks Incident"
+    "layout": "Illusive Networks Incident",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

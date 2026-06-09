@@ -5,6 +5,7 @@ fromversion: 5.5.0
 name: Azure AD Connect Health Feed
 display: Azure AD Connect Health Feed
 category: Data Enrichment & Threat Intelligence
+provider: Microsoft
 description: Use the Microsoft Azure AD Connect Health Feed integration to get indicators from the feed.
 configuration:
 - display: Fetch indicators

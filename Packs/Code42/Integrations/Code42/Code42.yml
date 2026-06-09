@@ -1,4 +1,5 @@
 category: Endpoint
+provider: Permira
 commonfields:
   id: Code42
   version: -1
@@ -148,13 +149,14 @@ script:
     - description: The alert session ID to resolve. Alert session IDs are associated with alerts that are fetched via fetch-incidents.
       name: id
       required: true
-    - description: The desired state for the alert session. Possible states are OPEN, CLOSED_TP (true positive), CLOSED_FP (false positive).
+    - description: The desired state for the alert session. Possible states are OPEN, CLOSED_TP (true positive), CLOSED_FP (false positive), and CLOSED_TP_BENIGN (benign).
       name: state
       auto: PREDEFINED
       predefined:
       - OPEN
       - CLOSED_TP
       - CLOSED_FP
+      - CLOSED_TP_BENIGN
       required: true
     description: Changes the state of an Incydr alert session.
     name: code42-alert-update
@@ -492,7 +494,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.5470953
+  dockerimage: demisto/py42:1.0.0.6978288
   isfetch: true
   runonce: false
   script: '-'

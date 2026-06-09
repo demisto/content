@@ -1,4 +1,5 @@
 category: Identity and Access Management
+provider: SAP
 commonfields:
   id: SAP-IAM
   version: -1
@@ -28,8 +29,12 @@ configuration:
 - defaultvalue: User Profile - IAM Template (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: true
+  required: false
   type: 0
+  additionalinfo: Cortex XSOAR only parameter.
+  hidden:
+  - marketplacev2
+  - platform
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

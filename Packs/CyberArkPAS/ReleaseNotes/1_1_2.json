@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Updated the context outputs of the ***cyberark-pas-users-list*** command to better align with the raw API response. The following context output paths were removed: *CyberArkPAS.Users.authenticationMethod*, *CyberArkPAS.Users.changePassOnNextLogon*, *CyberArkPAS.Users.description*, *CyberArkPAS.Users.enableUser*, *CyberArkPAS.Users.expiryDate*, *CyberArkPAS.Users.internet.businessEmail*, *CyberArkPAS.Users.lastSuccessfulLoginDate*, *CyberArkPAS.Users.personalDetails.profession*, *CyberArkPAS.Users.suspended*."
+}

@@ -1,4 +1,5 @@
-This script enriches Domains data with information from multiple integrations and returns a "DomainEnrichment" object with consolidated information in the context output.
+Enriches Domain indicators with reputation data from multiple integrations and outputs a consolidated DomainEnrichment object. This script exclusively supports indicators of type Domain and will automatically create the indicator in TIM if it is not already exists.
+Note: This script is supported in Cortex XSOAR 8.0 and later, and in Cortex XSIAM.
 
 ## Script Data
 
@@ -8,7 +9,7 @@ This script enriches Domains data with information from multiple integrations an
 | --- | --- |
 | Script Type | python3 |
 | Tags | basescript |
-| Cortex XSOAR Version | 6.10.0 |
+| Cortex XSOAR Version | 8.0.0 |
 
 ## Inputs
 
@@ -51,7 +52,7 @@ This script enriches Domains data with information from multiple integrations an
 | DomainEnrichment.Results.AdditionalFields.CreationDate | The date when the domain was created. | Date |
 | DomainEnrichment.Results.AdditionalFields.UpdatedDate | The date when the domain was last updated. | String |
 | DomainEnrichment.Results.AdditionalFields.ExpirationDate | The expiration date of the domain. | Date |
-| DomainEnrichment.Results.AdditionalFields.DomainStatus | The status of the domain. | Datte |
+| DomainEnrichment.Results.AdditionalFields.DomainStatus | The status of the domain. | Date |
 | DomainEnrichment.Results.AdditionalFields.NameServers | \(List&lt;String&gt;\) Name servers of the domain. | Unknown |
 | DomainEnrichment.Results.AdditionalFields.Organization | The organization of the domain. | String |
 | DomainEnrichment.Results.AdditionalFields.Subdomains | \(List&lt;String&gt;\) Subdomains of the domain. | Unknown |

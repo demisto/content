@@ -22,7 +22,10 @@ args:
     name: ran_once_flag
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4508456
+dockerimage: demisto/python3:3.12.13.8428455
+dependson:
+  must:
+  - msgraph-mail-delete-email
 fromversion: 6.1.0
 isInternal: true
 tests:

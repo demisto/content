@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Amazon
 commonfields:
   id: Alexa Rank Indicator v2
   version: -1

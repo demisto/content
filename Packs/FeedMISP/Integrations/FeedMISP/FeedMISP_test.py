@@ -5,8 +5,10 @@ import demistomock as demisto
 from CommonServerPython import DemistoException, FeedIndicatorType, ThreatIntel
 from FeedMISP import (
     Client,
+    build_indicators,
     build_indicators_from_galaxies,
     build_indicators_iterator,
+    build_params_dict,
     fetch_attributes_command,
     get_galaxy_indicator_type,
     get_ip_type,
@@ -99,7 +101,8 @@ def test_parsing_user_query_success():
     """
     querystr = '{"returnFormat": "json","limit": "3", "type": {"OR": ["ip-src"]}, "tags": {"OR": ["tlp:%"]}}'
     params = parsing_user_query(querystr, limit=40000)
-    assert len(params) == 5
+    assert len(params) == 6
+    assert params["includeEventTags"] is True
 
 
 def test_parsing_user_query_bad_query():
@@ -140,8 +143,8 @@ def test_parsing_user_query_remove_timestamp():
         - Return query without the timestamp parameter
     """
     good_query = (
-        '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 2000,'
-        ' "attribute_timestamp": "1617875568"}'
+        '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 2,'
+        ' "attribute_timestamp": "1617875568", "includeEventTags": true}'
     )
     querystr = '{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
     params = parsing_user_query(querystr, limit=2)
@@ -299,7 +302,7 @@ def test_search_query_indicators_pagination(mocker):
         proxy=False,
         timeout=60,
         performance=False,
-        max_indicator_to_fetch=2000,
+        max_indicator_to_fetch=2,
     )
     returned_result_1 = {
         "response": {
@@ -403,7 +406,7 @@ def test_parsing_user_query_timestamp_deprecated():
     """
     good_query = (
         '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1,'
-        ' "limit": 2000, "attribute_timestamp": "1617875568"}'
+        ' "limit": 2, "attribute_timestamp": "1617875568", "includeEventTags": true}'
     )
     query_str = '{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
     params = parsing_user_query(query_str, limit=2)
@@ -659,3 +662,104 @@ def test_build_indicators_with_hostname():
     assert result[0].get("Relationships", [])[0].get("entityAType") == "Domain"
     assert result[0].get("Relationships", [])[0].get("entityBType") == "Attack Pattern"
     assert result[0].get("Relationships", [])[0].get("entityB") == "T1111"
+
+
+def test_parsing_user_query_with_limit():
+    """
+    Given
+        - A json parsed result from MISP
+    When
+        - function has limit argument
+    Then
+        - Return query with the right limit value
+    """
+    good_query = (
+        '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 3,'
+        ' "attribute_timestamp": "1617875568", "includeEventTags": true}'
+    )
+    querystr = '{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
+    params = parsing_user_query(querystr, limit=3)
+    assert good_query == json.dumps(params)
+
+
+def test_build_params_dict_includes_event_tags():
+    """
+    Given
+        - No tags, no attribute types, a limit and a page
+    When
+        - Building the params dict sent to MISP /attributes/restSearch
+    Then
+        - The "includeEventTags" flag is present and set to True so MISP merges
+          event-inherited tags (e.g. TLP) into Attribute.Tag.
+    """
+    params = build_params_dict(tags=[], attribute_type=[], limit=100, page=1)
+    assert params["includeEventTags"] is True
+
+
+def test_build_indicators_propagates_inherited_event_tag():
+    """
+    Given
+        - A MISP attribute whose Tag array contains an attribute-level tag and an
+          event-inherited tag (e.g. 'tlp:white' with inherited=1), as MISP returns
+          when includeEventTags=True.
+    When
+        - build_indicators parses the attribute into an indicator.
+    Then
+        - The inherited 'tlp:white' tag ends up in indicator["fields"]["Tags"]
+          alongside the attribute-level tag, satisfying the DoD that event-level
+          TLP is surfaced to the indicator mapper.
+    """
+    client = Client(
+        base_url="example",
+        authorization="auth",
+        verify=False,
+        proxy=False,
+        timeout=60,
+        performance=False,
+        max_indicator_to_fetch=2000,
+    )
+    response = {
+        "response": {
+            "Attribute": [
+                {
+                    "id": "1",
+                    "event_id": "1",
+                    "type": "ip-src",
+                    "value": "1.2.3.4",
+                    "Tag": [
+                        {
+                            "id": "1",
+                            "name": "attribute-tag",
+                            "colour": "#000000",
+                            "exportable": True,
+                            "is_galaxy": False,
+                            "is_custom_galaxy": False,
+                        },
+                        {
+                            "id": "2",
+                            "name": "tlp:white",
+                            "colour": "#ffffff",
+                            "exportable": True,
+                            "numerical_value": None,
+                            "is_galaxy": False,
+                            "is_custom_galaxy": False,
+                            "inherited": 1,
+                        },
+                    ],
+                },
+            ]
+        }
+    }
+    indicators = build_indicators(
+        client=client,
+        response=response,
+        attribute_type=[],
+        tlp_color=None,
+        url=None,
+        reputation=None,
+        feed_tags=[],
+    )
+    assert len(indicators) == 1
+    tags = indicators[0]["fields"]["Tags"]
+    assert "tlp:white" in tags
+    assert "attribute-tag" in tags

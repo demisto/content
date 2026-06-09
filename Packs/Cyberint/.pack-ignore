@@ -19,6 +19,24 @@ ignore=RN115
 [file:Packs/Cyberint/ReleaseNotes/1_1_5.md]
 ignore=RN115,RN114
 
+[file:Cyberint.yml]
+ignore=IN124
+
+[file:incidentfield-Cyberint_Closure_reason.json]
+ignore=BA100
+
+[file:incidentfield-Cyberint_Closure_reason_Description.json]
+ignore=BA100
+
+[file:FeedCyberintPremium_README.md]
+ignore=RM110,RM115
+
+[file:README.md]
+ignore=RM115
+
+[file:FeedCyberintPremium.yml]
+ignore=RM109,BA129
+
 [known_words]
 Cyberint
 

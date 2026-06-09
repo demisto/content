@@ -4,6 +4,7 @@ commonfields:
 name: Proofpoint Email Security Event Collector
 display: Proofpoint Email Security Event Collector
 category: Analytics & SIEM
+provider: Thoma Bravo
 description: Collects events for Proofpoint Email Security using the streaming API.
 sectionorder:
 - Connect
@@ -111,3 +112,5 @@ marketplaces:
 fromversion: 6.9.0
 tests:
 - No tests
+supportedModules:
+- xsiam

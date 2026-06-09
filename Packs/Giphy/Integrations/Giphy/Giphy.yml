@@ -5,6 +5,7 @@ name: Giphy
 display: Giphy
 system: true
 category: Utilities
+provider: Shutterstock
 description: Display random GIF in the War Room (e.g. !giphy hello). Powered By Giphy.
 configuration:
 - display: Giphy URL
@@ -32,13 +33,13 @@ script:
     arguments:
     - name: tag
       default: true
-      description: The GIF tag to limit randomness by
+      description: The GIF tag to limit randomness by.
     - name: as-json
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Returns the response as JSON
+      description: Returns the response as JSON.
     description: Display random GIF in the War Room (e.g. !giphy hello)
 tests:
 - No tests

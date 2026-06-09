@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: LHC
 commonfields:
   id: CIRCL
   version: -1
@@ -28,39 +29,39 @@ name: CIRCL
 script:
   commands:
   - arguments:
-    - description: IP address, hostname, or domain name
+    - description: IP address, hostname, or domain name.
       name: queryValue
       required: true
     description: Get DNS records for your query value from CIRCL's Passive DNS.
     name: circl-dns-get
     outputs:
     - contextPath: CIRCLdns.Query.Value
-      description: Query Value
+      description: Query Value.
       type: string
     - contextPath: CIRCLdns.Query.Record.Data
-      description: DNS Record or IP Address
+      description: DNS Record or IP Address.
       type: string
     - contextPath: CIRCLdns.Query.Record.LastTime
-      description: DNS record last recorded time
+      description: DNS record last recorded time.
       type: date
   - arguments:
-    - description: IP address or CIDR block
+    - description: IP address or CIDR block.
       name: queryValue
       required: true
     description: Query IP address or CIDR blocks (/32 up to /23) for SSL certificates history.
     name: circl-ssl-list-certificates
     outputs:
     - contextPath: CIRCLssl.IPAddress.Value
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: CIRCLssl.IPAddress.Certificate.SHA1
-      description: ' The SHA-1 fingerprint of the certificate'
+      description: ' The SHA-1 fingerprint of the certificate.'
       type: string
     - contextPath: CIRCLssl.IPAddress.Certificate.Subjects
-      description: Certificate subjects
+      description: Certificate subjects.
       type: string
   - arguments:
-    - description: SHA-1 fingerprint of a certificate
+    - description: SHA-1 fingerprint of a certificate.
       name: certificate
       required: true
     - defaultValue: '100'
@@ -70,47 +71,47 @@ script:
     name: circl-ssl-query-certificate
     outputs:
     - contextPath: CIRCLssl.Certificate.SHA1
-      description: ' The SHA-1 fingerprint of the certificate'
+      description: ' The SHA-1 fingerprint of the certificate.'
       type: string
     - contextPath: CIRCLssl.Certificate.Hits
-      description: Number of hits for the certificate (number of associated addresses)
+      description: Number of hits for the certificate (number of associated addresses).
       type: number
     - contextPath: CIRCLssl.Certificate.IPAddress
-      description: IP address associated to the certificate
+      description: IP address associated to the certificate.
       type: string
   - arguments:
-    - description: SHA-1 fingerprint of a certificate
+    - description: SHA-1 fingerprint of a certificate.
       name: certificate
       required: true
     description: Get the raw certificate and related information.
     name: circl-ssl-get-certificate
     outputs:
     - contextPath: CIRCLssl.Certificate.SHA1
-      description: The SHA-1 fingerprint of the certificate
+      description: The SHA-1 fingerprint of the certificate.
       type: string
     - contextPath: CIRCLssl.Certificate.Usage
-      description: Extended key usage
+      description: Extended key usage.
       type: string
     - contextPath: CIRCLssl.Certificate.Distribution
-      description: CRL distribution points
+      description: CRL distribution points.
       type: string
     - contextPath: CIRCLssl.Certificate.Issuer
-      description: Certificate issuer
+      description: Certificate issuer.
       type: string
     - contextPath: CIRCLssl.Certificate.Time
-      description: Certificate issued time (***not_before)
+      description: Certificate issued time (***not_before).
       type: date
     - contextPath: CIRCLssl.Certificate.Subject
-      description: Certificate subject
+      description: Certificate subject.
       type: string
     - contextPath: CIRCLssl.Certificate.Key
-      description: Certificate public key
+      description: Certificate public key.
       type: string
     - contextPath: CIRCLssl.Certificate.Pem
-      description: Certificate in PEM format
+      description: Certificate in PEM format.
       type: string
     - contextPath: CIRCLssl.Certificate.Seen
-      description: Number of times the certificate was seen
+      description: Number of times the certificate was seen.
       type: number
   runonce: false
   script: '-'

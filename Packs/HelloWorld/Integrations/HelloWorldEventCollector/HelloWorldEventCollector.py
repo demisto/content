@@ -187,7 +187,7 @@ def main() -> None:  # pragma: no cover
     # How much time before the first fetch to retrieve events
     first_fetch_time = datetime.now().isoformat()
     proxy = params.get("proxy", False)
-    alert_status = params.get("alert_status", '')
+    alert_status = params.get("alert_status", "")
     max_events_per_fetch = params.get("max_events_per_fetch", 1000)
 
     demisto.debug(f"Command being called is {command}")

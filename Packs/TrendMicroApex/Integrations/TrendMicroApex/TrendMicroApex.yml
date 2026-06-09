@@ -1,4 +1,5 @@
 category: Endpoint
+provider: Trend Micro
 commonfields:
   id: Trend Micro Apex
   version: -1

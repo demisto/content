@@ -1,4 +1,5 @@
 category: Identity and Access Management
+provider: Intellum
 commonfields:
   id: ExceedLMS IAM
   version: -1
@@ -58,8 +59,12 @@ configuration:
 - defaultvalue: User Profile - ExceedLMS (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: true
+  required: false
   type: 0
+  hidden:
+  - marketplacev2
+  - platform
+  additionalinfo: Cortex XSOAR only parameter.
 description: Integrate with Exceed LMS Identity Access Management services to execute CRUD operations to employee lifecycle processes.
 display: ExceedLMS IAM
 name: ExceedLMS IAM

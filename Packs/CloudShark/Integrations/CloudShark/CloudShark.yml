@@ -4,6 +4,7 @@ commonfields:
 name: CloudShark
 display: CloudShark
 category: Data Enrichment & Threat Intelligence
+provider: QA Cafe LLC
 description: Use the CloudShark integration to upload, share, and collaborate on network packet capture files using your on-premises CS Enterprise system.
 configuration:
 - display: CS Enterprise URL
@@ -44,7 +45,7 @@ script:
       description: Capture ID of the capture in CS Enterprise.
     outputs:
     - contextPath: File
-      description: The file downloaded from CS Enterprise
+      description: The file downloaded from CS Enterprise.
     description: Downloads a capture file from CS Enterprise.
   - name: cloudshark-info
     arguments:
@@ -69,10 +70,10 @@ script:
       description: List of the capture file's tags.
     - contextPath: CloudShark.CaptureInfo.DataBitRate
       type: string
-      description: Data bit rate
+      description: Data bit rate.
     - contextPath: CloudShark.CaptureInfo.FileName
       type: string
-      description: Filename
+      description: Filename.
     - contextPath: CloudShark.CaptureInfo.SHA1
       type: string
       description: SHA1 hash of the capture file.
@@ -123,13 +124,13 @@ script:
       description: Size of data in the capture.
     - contextPath: CloudShark.CaptureInfo.File
       type: string
-      description: Location of capture file on disk
+      description: Location of capture file on disk.
     - contextPath: CloudShark.CaptureInfo.FileType
       type: string
-      description: File type
+      description: File type.
     - contextPath: CloudShark.CaptureInfo.FileSource
       type: string
-      description: Source of capture file
+      description: Source of capture file.
     - contextPath: CloudShark.CaptureInfo.Truncated
       type: string
       description: Whether the capture file is truncated.

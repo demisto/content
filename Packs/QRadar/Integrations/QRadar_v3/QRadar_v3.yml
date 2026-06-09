@@ -7,6 +7,7 @@ sectionorder:
 name: QRadar v3
 display: IBM QRadar v3
 category: Analytics & SIEM
+provider: Palo Alto Networks
 description: IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
 configuration:
 - display: Server URL
@@ -3147,7 +3148,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.12.7090913
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true

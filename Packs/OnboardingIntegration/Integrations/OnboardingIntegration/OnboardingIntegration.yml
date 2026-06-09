@@ -1,4 +1,5 @@
 category: Utilities
+provider: Open Source
 commonfields:
   id: OnboardingIntegration
   version: -1
@@ -33,153 +34,153 @@ script:
   type: python
   commands:
   - arguments:
-    - description: The IP address to get the reputation of
+    - description: The IP address to get the reputation of.
       name: ip
       required: true
     description: Gets the simulated reputation of the IP address.
     name: demo-ip
     outputs:
     - contextPath: IP.Address
-      description: IP address that was tested
+      description: IP address that was tested.
       type: String
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision
+      description: For malicious IPs, the vendor that made the decision.
       type: String
     - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason that the vendor made the decision
+      description: For malicious IPs, the reason that the vendor made the decision.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
   - arguments:
-    - description: The URL to get the reputation of
+    - description: The URL to get the reputation of.
       name: url
       required: true
     description: Gets the simulated reputation of the URL address.
     name: demo-url
     outputs:
     - contextPath: URL.Data
-      description: The URL address that was tested
+      description: The URL address that was tested.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: String
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason that the vendor made the decision
+      description: For malicious URLs, the reason that the vendor made the decision.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
   - arguments:
-    - description: The domain to get the reputation of
+    - description: The domain to get the reputation of.
       name: domain
       required: true
     description: Gets the simulated reputation of the domain.
     name: demo-domain
     outputs:
     - contextPath: Domain.Name
-      description: The domain name that was tested
+      description: The domain name that was tested.
       type: String
     - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
+      description: For malicious domains, the vendor that made the decision.
       type: String
     - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason that the vendor made the decision
+      description: For malicious domains, the reason that the vendor made the decision.
       type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: Indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
   - arguments:
-    - description: The file hash to get the reputation of
+    - description: The file hash to get the reputation of.
       name: file
       required: true
     description: Gets the simulated reputation of the file hash.
     name: demo-file
     outputs:
     - contextPath: File.MD5
-      description: File MD5 hash that was tested
+      description: File MD5 hash that was tested.
       type: String
     - contextPath: File.SHA1
-      description: File SHA-1 hash that was tested
+      description: File SHA-1 hash that was tested.
       type: String
     - contextPath: File.SHA256
-      description: File SHA-256 hash that was tested
+      description: File SHA-256 hash that was tested.
       type: String
     - contextPath: File.SHA512
-      description: File SHA-512 hash that was tested
+      description: File SHA-512 hash that was tested.
       type: String
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
       type: String
     - contextPath: File.Malicious.Description
-      description: For malicious files, the reason that the vendor made the decision
+      description: For malicious files, the reason that the vendor made the decision.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
   - arguments:
-    - description: The email address to get the reputation of
+    - description: The email address to get the reputation of.
       name: email
       required: true
     description: Gets the simulated reputation of the email address.
     name: demo-email
     outputs:
     - contextPath: Account.Email.Address
-      description: The email address that was tested
+      description: The email address that was tested.
       type: String
     - contextPath: Account.Email.Malicious.Vendor
-      description: For malicious email addresses, the vendor that made the decision
+      description: For malicious email addresses, the vendor that made the decision.
       type: String
     - contextPath: Account.Email.Malicious.Description
-      description: For malicious email addresses, the reason that the vendor made the decision
+      description: For malicious email addresses, the reason that the vendor made the decision.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
   dockerimage: demisto/faker3:1.0.0.1976220
   isfetch: true

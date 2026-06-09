@@ -17,9 +17,7 @@ class Client(BaseClient):
             "Content-Type": "application/json",
         }
         authentication = (username, password)
-        super().__init__(
-            base_url=base_url, verify=verify_certificate, headers=headers, auth=authentication, proxy=proxy
-        )
+        super().__init__(base_url=base_url, verify=verify_certificate, headers=headers, auth=authentication, proxy=proxy)
 
     def api_request(
         self,

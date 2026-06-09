@@ -1,4 +1,5 @@
 category: Email
+provider: Microsoft
 sectionorder:
 - Connect
 - Collect
@@ -103,8 +104,9 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: This integration allows you to manage and interact with Microsoft security and compliance content search.
-display: O365 - Security And Compliance - Content Search v2
+description: Deprecated. Use the Microsoft Graph Security integration instead. This integration allows you to manage and interact with Microsoft security and compliance content search.
+display: O365 - Security And Compliance - Content Search v2 (Deprecated)
+deprecated: true
 name: SecurityAndComplianceV2
 script:
   commands:
@@ -1268,5 +1270,5 @@ script:
 fromversion: 5.5.0
 supportsquickactions: true
 tests:
-- O365-SecurityAndComplianceV2-Test
+- No tests (deprecated)
 autoUpdateDockerImage: false

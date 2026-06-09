@@ -22,7 +22,7 @@ subtype: python2
 tags:
 - Mimecast
 deprecated: true
-comment: Deprecated. Use mimecsat-query command instead.
+comment: Deprecated. Use mimecast-query command instead.
 system: true
 args:
 - default: true

@@ -36,6 +36,6 @@ filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+([+-]\d{2}:\d{2}|Z
 | alter tmp_current_year = to_string(format_timestamp("%Y",current_time()))
 | alter tmp_dns_timestamp = arrayindex(regextract(_raw_log, "\d{2}\-\w{3}\-\d{4}\s+\d{2}:\d{2}:\d{2}\.\d{3}"), 0),
         tmp_direct_timestamp = concat(tmp_current_year, " ", arrayindex(regextract( _raw_log, "\<\d+\>(\w{3}\s+\d{1,2}\s+\d{2}\:\d{2}\:\d{2})\s+"), 0)),
-        tmp_syslog_timestamp = replace(arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\S+"), 0), "Z", "+00:00") // normalize zulu time timezone to a numeric offset
+        tmp_syslog_timestamp = replace(arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+(?:[+-]\d{2}:\d{2}|Z)"), 0), "Z", "+00:00") // normalize zulu time timezone to a numeric offset
 | alter _time = if(tmp_dns_timestamp != null and tmp_dns_timestamp != "", parse_timestamp("%d-%b-%Y %H:%M:%E*S", tmp_dns_timestamp) , tmp_syslog_timestamp!= null and tmp_syslog_timestamp != "",parse_timestamp("%FT%H:%M:%E*S%Ez", tmp_syslog_timestamp), tmp_direct_timestamp != null and tmp_direct_timestamp != "", parse_timestamp("%Y %b %e %H:%M:%S", tmp_direct_timestamp))
 | fields - tmp*; // Remove all temporary util fields 

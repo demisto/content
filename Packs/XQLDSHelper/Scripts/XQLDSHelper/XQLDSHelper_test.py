@@ -63,12 +63,17 @@ class MainTester:
             self.__locking_params = demisto.get(template, "query.locking") or {}
 
         incident = {"id": "1"}
-        if is_xsiam := to_bool(demisto.get(ent, "config.is_xsiam", "false")):
+        is_platform = to_bool(demisto.get(ent, "config.is_platform", "false"))
+        is_xsiam = to_bool(demisto.get(ent, "config.is_xsiam", "false"))
+        if is_platform:
+            incident.update(ent.get("issue") or {})
+        elif is_xsiam:
             incident.update(ent.get("alert") or {})
         else:
             incident.update(ent.get("incident") or {})
 
         mocker.patch.object(XQLDSHelper, "is_xsiam", return_value=is_xsiam)
+        mocker.patch.object(XQLDSHelper, "is_platform", return_value=is_platform)
         mocker.patch.object(demisto, "incident", return_value=incident)
         mocker.patch.object(demisto, "args", return_value=ent.get("args") or {})
         mocker.patch.object(demisto, "executeCommand", side_effect=self.__demisto_execute_command)

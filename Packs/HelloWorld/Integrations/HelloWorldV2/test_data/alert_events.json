@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "severity": "high",
+        "user": "test@example.com",
+        "action": "Testing",
+        "date": "2026-01-15T00:00:00",
+        "status": "Success"
+    },
+    {
+        "id": 2,
+        "severity": "high",
+        "user": "admin@example.com",
+        "action": "Review",
+        "date": "2026-01-15T00:01:00",
+        "status": "Error"
+    }
+]

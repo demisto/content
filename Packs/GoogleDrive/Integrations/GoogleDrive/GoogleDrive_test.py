@@ -1073,3 +1073,467 @@ class TestFilePermissionMethods:
 
         assert len(result.outputs.get("GoogleDrive.File.Parents", [])) == 1  # type: ignore
         assert result.raw_response == mock_response
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_move_command_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-file-move command successful run.
+
+        Given:
+        - Command args.
+
+        When:
+        - Calling google-drive-file-move command with the parameters provided.
+
+        Then:
+        - Ensure command's outputs and readable_output should be as expected.
+        """
+        from GoogleDrive import file_move_command
+
+        with open("test_data/file_move_response.json", encoding="utf-8") as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
+
+        args = {
+            "file_id": "1234567890abcdef",
+            "add_parent_id": "quarantine_folder_id_123",
+            "remove_parent_id": "original_folder_id_789",
+            "user_id": "admin@example.com",
+        }
+        result: CommandResults = file_move_command(gsuite_client, args)
+
+        assert result.outputs_prefix == "GoogleDrive.File"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "1234567890abcdef"
+        assert result.outputs["parents"] == ["quarantine_folder_id_123"]
+        assert "moved successfully" in result.readable_output
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_command_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-file-create command successful run for folder creation.
+
+        Given:
+        - Command args.
+
+        When:
+        - Calling google-drive-file-create command with the parameters provided.
+
+        Then:
+        - Ensure command's outputs and readable_output should be as expected.
+        """
+        from GoogleDrive import file_create_command
+
+        with open("test_data/file_create_response.json", encoding="utf-8") as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
+
+        args = {
+            "file_name": "Quarantine Folder",
+            "mime_type": "application/vnd.google-apps.folder",
+            "user_id": "admin@example.com",
+            "parent": "root",
+        }
+        result: CommandResults = file_create_command(gsuite_client, args)
+
+        assert result.outputs_prefix == "GoogleDrive.File"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "new_folder_id_456"
+        assert result.outputs["mimeType"] == "application/vnd.google-apps.folder"
+        assert "Created" in result.readable_output
+
+        # Verify the request body and params
+        _, call_kwargs = mocker_http_request.call_args
+        assert call_kwargs["body"]["name"] == "Quarantine Folder"
+        assert call_kwargs["body"]["parents"] == ["root"]
+        # supports_all_drives defaults to False when not provided
+        assert call_kwargs["params"]["supportsAllDrives"] is False
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_tombstone_command_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-file-create command successful run for tombstone placeholder creation.
+
+        Given:
+        - Command args for creating a tombstone placeholder file.
+
+        When:
+        - Calling google-drive-file-create command with the parameters provided.
+
+        Then:
+        - Ensure command's outputs should be as expected.
+        """
+        from GoogleDrive import file_create_command
+
+        mock_response = {
+            "kind": "drive#file",
+            "id": "tombstone_id_789",
+            "name": "This file has been quarantined",
+            "mimeType": "application/vnd.google-apps.document",
+            "parents": ["original_folder_id"],
+            "description": "This file was quarantined by security policy. Contact admin for details.",
+        }
+        mocker_http_request.return_value = mock_response
+
+        args = {
+            "file_name": "This file has been quarantined",
+            "mime_type": "application/vnd.google-apps.document",
+            "user_id": "admin@example.com",
+            "parent": "original_folder_id",
+            "description": "This file was quarantined by security policy. Contact admin for details.",
+        }
+        result: CommandResults = file_create_command(gsuite_client, args)
+
+        assert result.outputs["id"] == "tombstone_id_789"
+        assert result.outputs["mimeType"] == "application/vnd.google-apps.document"
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_command_supports_all_drives(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For google-drive-file-create command run with supports_all_drives="true".
+
+        Given:
+        - Command args including supports_all_drives="true".
+
+        When:
+        - Calling google-drive-file-create command with the parameters provided.
+
+        Then:
+        - Ensure supportsAllDrives is forwarded to the API as True.
+        """
+        from GoogleDrive import file_create_command
+
+        mock_response = {
+            "kind": "drive#file",
+            "id": "shared_drive_folder_id",
+            "name": "Shared Drive Folder",
+            "mimeType": "application/vnd.google-apps.folder",
+            "parents": ["shared_drive_root_id"],
+        }
+        mocker_http_request.return_value = mock_response
+
+        args = {
+            "file_name": "Shared Drive Folder",
+            "mime_type": "application/vnd.google-apps.folder",
+            "user_id": "admin@example.com",
+            "parent": "shared_drive_root_id",
+            "supports_all_drives": "true",
+        }
+        result: CommandResults = file_create_command(gsuite_client, args)
+
+        assert result.outputs["id"] == "shared_drive_folder_id"
+        _, call_kwargs = mocker_http_request.call_args
+        assert call_kwargs["params"]["supportsAllDrives"] is True
+        assert call_kwargs["body"]["name"] == "Shared Drive Folder"
+        assert call_kwargs["body"]["parents"] == ["shared_drive_root_id"]
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_delete_command_soft_delete_true(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-delete invoked with soft_delete=true.
+
+        Given:
+        - file_id, user_id, and soft_delete=true.
+
+        When:
+        - Calling file_delete_command.
+
+        Then:
+        - The HTTP call is a PATCH (not DELETE) with body {"trashed": True}, and
+          the response's trashed field is surfaced under GoogleDrive.File.File.
+        """
+        from GoogleDrive import file_delete_command
+
+        mock_response = {
+            "kind": "drive#file",
+            "id": "file_id_123",
+            "name": "Quarterly Report.docx",
+            "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "trashed": True,
+            "trashedTime": "2026-05-29T12:00:00.000Z",
+        }
+        mocker_http_request.return_value = mock_response
+
+        args = {"file_id": "file_id_123", "user_id": "owner@example.com", "soft_delete": "true"}
+        result: CommandResults = file_delete_command(gsuite_client, args)
+
+        _, call_kwargs = mocker_http_request.call_args
+        assert call_kwargs["method"] == "PATCH"
+        assert call_kwargs["body"] == {"trashed": True}
+        assert "drive/v3/files/file_id_123" in call_kwargs["url_suffix"]
+
+        file_ctx = result.outputs.get("GoogleDrive.File").get("File")
+        assert file_ctx.get("trashed") is True
+        assert file_ctx.get("trashedTime") == "2026-05-29T12:00:00.000Z"
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_delete_command_soft_delete_default_hard_delete(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-delete invoked without soft_delete.
+
+        Given:
+        - file_id, user_id, and no soft_delete argument (default behavior).
+
+        When:
+        - Calling file_delete_command.
+
+        Then:
+        - The HTTP call is a DELETE (existing behavior preserved bit-for-bit),
+          no PATCH body is sent, and the legacy output shape is emitted.
+        """
+        from GoogleDrive import file_delete_command
+
+        mocker_http_request.return_value = None
+
+        args = {"file_id": "file_id_456", "user_id": "owner@example.com"}
+        result: CommandResults = file_delete_command(gsuite_client, args)
+
+        _, call_kwargs = mocker_http_request.call_args
+        assert call_kwargs["method"] == "DELETE"
+        # The legacy DELETE path must not send a body.
+        assert "body" not in call_kwargs or call_kwargs.get("body") is None
+
+        file_ctx = result.outputs.get("GoogleDrive.File").get("File")
+        assert file_ctx.get("id") == "file_id_456"
+        assert "trashed" not in file_ctx
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_create_command_transfer_ownership(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-permission-create invoked with transfer_ownership=true.
+
+        Given:
+        - role=owner, type=user, email_address set, and transfer_ownership=true.
+
+        When:
+        - Calling file_permission_create_command.
+
+        Then:
+        - The transferOwnership query parameter is forwarded to the vendor;
+          when the argument is omitted on a second call, the parameter is absent.
+        """
+        from GoogleDrive import file_permission_create_command
+
+        with open("test_data/file_permission_create_response.json", encoding="utf-8") as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
+
+        args_with = {
+            "file_id": "file_id_789",
+            "user_id": "admin@example.com",
+            "role": "owner",
+            "type": "user",
+            "email_address": "newowner@example.com",
+            "transfer_ownership": "true",
+        }
+        file_permission_create_command(gsuite_client, args_with)
+        _, call_kwargs_with = mocker_http_request.call_args
+        assert call_kwargs_with["params"].get("transferOwnership") == "true"
+
+        args_without = {
+            "file_id": "file_id_789",
+            "user_id": "admin@example.com",
+            "role": "reader",
+            "type": "user",
+            "email_address": "viewer@example.com",
+        }
+        file_permission_create_command(gsuite_client, args_without)
+        _, call_kwargs_without = mocker_http_request.call_args
+        assert "transferOwnership" not in call_kwargs_without["params"]
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_create_command_move_to_new_owners_root(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-permission-create invoked with move_to_new_owners_root.
+
+        Given:
+        - role=owner, transfer_ownership=true, and move_to_new_owners_root=true.
+
+        When:
+        - Calling file_permission_create_command.
+
+        Then:
+        - The moveToNewOwnersRoot query parameter is forwarded to the vendor;
+          when the argument is omitted on a second call, the parameter is absent.
+        """
+        from GoogleDrive import file_permission_create_command
+
+        with open("test_data/file_permission_create_response.json", encoding="utf-8") as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
+
+        args_with = {
+            "file_id": "file_id_789",
+            "user_id": "admin@example.com",
+            "role": "owner",
+            "type": "user",
+            "email_address": "newowner@example.com",
+            "transfer_ownership": "true",
+            "move_to_new_owners_root": "true",
+        }
+        file_permission_create_command(gsuite_client, args_with)
+        _, call_kwargs_with = mocker_http_request.call_args
+        assert call_kwargs_with["params"].get("moveToNewOwnersRoot") == "true"
+
+        args_without = {
+            "file_id": "file_id_789",
+            "user_id": "admin@example.com",
+            "role": "owner",
+            "type": "user",
+            "email_address": "newowner@example.com",
+            "transfer_ownership": "true",
+        }
+        file_permission_create_command(gsuite_client, args_without)
+        _, call_kwargs_without = mocker_http_request.call_args
+        assert "moveToNewOwnersRoot" not in call_kwargs_without["params"]
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_delete_command_ignore_not_found_404_treated_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-permission-delete with ignore_not_found=true on a permission Not Found.
+
+        Given:
+        - The shared GSuite client raises DemistoException carrying the
+          documented "Permission not found" reason from Drive.
+        - ignore_not_found=true.
+
+        When:
+        - Calling file_permission_delete_command.
+
+        Then:
+        - The exception is swallowed and the result surfaces alreadyRemoved=True.
+        - With ignore_not_found omitted, the same Not Found still raises
+          (default behavior preserved).
+        """
+        from GoogleDrive import file_permission_delete_command
+
+        args = {
+            "file_id": "file_id_999",
+            "user_id": "admin@example.com",
+            "permission_id": "perm_id_111",
+            "ignore_not_found": "true",
+        }
+
+        # Real-world payload observed from production.
+        mocker_http_request.side_effect = DemistoException("Not found. Reason: Permission not found: 12849315382336496719.")
+        result: CommandResults = file_permission_delete_command(gsuite_client, args)
+        perm_ctx = result.outputs.get("GoogleDrive.FilePermission").get("FilePermission")
+        assert perm_ctx.get("alreadyRemoved") is True
+        assert perm_ctx.get("id") == "perm_id_111"
+        assert perm_ctx.get("fileId") == "file_id_999"
+
+        # Default behavior preserved: with ignore_not_found omitted, the same
+        # Not Found still raises.
+        args_default = dict(args)
+        args_default.pop("ignore_not_found")
+        with pytest.raises(DemistoException, match=r"(?i)permission not found"):
+            file_permission_delete_command(gsuite_client, args_default)
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_delete_command_ignore_not_found_file_not_found_still_raises(
+        self, mocker_http_request, gsuite_client
+    ):
+        """
+        Scenario: bogus file_id with ignore_not_found=true must still raise.
+
+        Given:
+        - The shared GSuite client raises DemistoException carrying "File not
+          found" (the parent file does not exist, not the permission).
+        - ignore_not_found=true.
+
+        When:
+        - Calling file_permission_delete_command.
+
+        Then:
+        - The exception still raises; only "permission not found" is swallowed
+          so operator typos in file_id are not silently masked.
+        """
+        from GoogleDrive import file_permission_delete_command
+
+        mocker_http_request.side_effect = DemistoException("Not found. Reason: File not found: bogus_file_id_123.")
+
+        args = {
+            "file_id": "bogus_file_id_123",
+            "user_id": "admin@example.com",
+            "permission_id": "perm_id_111",
+            "ignore_not_found": "true",
+        }
+        with pytest.raises(DemistoException, match=r"(?i)file not found"):
+            file_permission_delete_command(gsuite_client, args)
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_delete_command_ignore_not_found_other_error_still_raises(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-permission-delete with ignore_not_found=true on non-Not Found.
+
+        Given:
+        - The shared GSuite client raises a Forbidden DemistoException (not a 404).
+        - ignore_not_found=true.
+
+        When:
+        - Calling file_permission_delete_command.
+
+        Then:
+        - The exception is still raised; only Not Found is swallowed.
+        """
+        from GoogleDrive import file_permission_delete_command
+
+        mocker_http_request.side_effect = DemistoException("HTTP Connection error occurred. Status: 403. Reason: Forbidden")
+
+        args = {
+            "file_id": "file_id_999",
+            "user_id": "admin@example.com",
+            "permission_id": "perm_id_222",
+            "ignore_not_found": "true",
+        }
+        with pytest.raises(DemistoException, match="Status: 403"):
+            file_permission_delete_command(gsuite_client, args)
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_permission_list_command_inherited_output(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-permissions-list surfaces permissionDetails.
+
+        Given:
+        - A vendor response containing permissionDetails with inherited=true.
+
+        When:
+        - Calling file_permission_list_command.
+
+        Then:
+        - The permissionDetails field is surfaced under
+          GoogleDrive.FilePermission.FilePermission so playbooks can filter on it.
+        """
+        from GoogleDrive import file_permission_list_command
+
+        mock_response = {
+            "kind": "drive#permissionList",
+            "permissions": [
+                {
+                    "id": "perm_inherited",
+                    "type": "user",
+                    "role": "writer",
+                    "emailAddress": "shared@example.com",
+                    "permissionDetails": [
+                        {
+                            "permissionType": "file",
+                            "role": "writer",
+                            "inheritedFrom": "parent_folder_id",
+                            "inherited": True,
+                        }
+                    ],
+                }
+            ],
+        }
+        mocker_http_request.return_value = mock_response
+
+        args = {"file_id": "file_id_xyz", "user_id": "owner@example.com", "supports_all_drives": "true"}
+        result: CommandResults = file_permission_list_command(gsuite_client, args)
+
+        perm_ctx = result.outputs.get("GoogleDrive.FilePermission").get("FilePermission")
+        # The list command surfaces an array; the helper may emit a single dict
+        # when there is one permission. Normalize for the assertion.
+        perms = perm_ctx if isinstance(perm_ctx, list) else [perm_ctx]
+        assert perms[0].get("permissionDetails")[0].get("inherited") is True
+        assert perms[0].get("permissionDetails")[0].get("inheritedFrom") == "parent_folder_id"
+        assert perms[0].get("permissionDetails")[0].get("permissionType") == "file"
