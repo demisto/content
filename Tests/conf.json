@@ -904,12 +904,6 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "AlienVault OTX v2",
-            "playbookID": "Alienvault_OTX_v2 - Test",
-            "memory_threshold": 130,
-            "timeout": 500
-        },
-        {
             "integrations": "AWS - CloudWatchLogs",
             "playbookID": "AWS - CloudWatchLogs Test Playbook",
             "fromversion": "5.0.0"
@@ -6140,7 +6134,8 @@
         "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
         "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated",
         "Gmail Single User - Test": "CIAC-11417",
-        "AWS-securityhub Test": "The creds were expired CRTX-237114"
+        "AWS-securityhub Test": "The creds were expired CRTX-237114",
+        "Alienvault_OTX_v2 - Test": "API reliability issues"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
@@ -6555,3 +6550,4 @@
         "Onion address extraction test"
     ]
 }
+
