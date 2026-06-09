@@ -346,6 +346,7 @@ def fetch_incidents(
     delete_processed: bool,
     limit: int,
     save_file: bool,
+    date_fetch: bool,
 ) -> tuple[dict | None, list]:
     """
     This function will execute each interval (default is 1 minute).
@@ -372,6 +373,7 @@ def fetch_incidents(
         delete_processed: Whether to delete processed mails
         limit: The maximum number of incidents to fetch each time
         save_file: Whether to save the .eml file of the incident's mail
+        date_fetch: Whether to fetch by date or not.
 
     Returns:
         next_run: This will be last_run in the next fetch-incidents
@@ -387,6 +389,10 @@ def fetch_incidents(
 
     # Otherwise use the mail UID
     uid_to_fetch_from = arg_to_number(last_run.get("last_uid", 0))
+    if date_fetch and last_run:
+        time_to_fetch_from = last_run.get("last_date")
+        time_to_fetch_from = datetime.fromisoformat(time_to_fetch_from)  # type: ignore[arg-type]
+        demisto.debug(f"last_date as date: {time_to_fetch_from}")
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
         client=client,
         include_raw_body=include_raw_body,
@@ -403,10 +409,16 @@ def fetch_incidents(
     for mail in mails_fetched:
         incidents.append(mail.convert_to_incident())
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
-    next_run = {"last_uid": str(uid_to_fetch_from)} if uid_to_fetch_from != 0 else None
+        time_to_fetch_from = max(time_to_fetch_from, mail.date)
+    next_run = {}
+    if time_to_fetch_from:
+        next_run["last_date"] = time_to_fetch_from.isoformat()
+    if uid_to_fetch_from != 0:
+        next_run["last_uid"] = str(uid_to_fetch_from)
     demisto.debug(f"{next_run=}")
     if delete_processed:
         client.delete_messages(messages)
+    demisto.debug("returning from fetch incidents")
     return next_run, incidents
 
 
@@ -511,10 +523,9 @@ def fetch_mails(
     else:
         next_uid_to_fetch_from = uid_to_fetch_from
         demisto.debug(f"messages_uids IS empty, setting {next_uid_to_fetch_from=}")
-    demisto.debug(f"fetched mail: {fetched_email_objects}")
     ids_fetched = [mail.id for mail in fetched_email_objects]
     for mail in fetched_email_objects:
-        demisto.debug(f"raw email: {mail.raw_json}")
+        demisto.debug(f"date of mail: {mail.date}")
     demisto.debug(f"fetched {len(fetched_email_objects)} emails, {ids_fetched=}")
     return fetched_email_objects, ids_fetched, next_uid_to_fetch_from
 
@@ -715,6 +726,7 @@ def main():  # pragma: no cover
     limit = arg_to_number(params.get("limit")) or 50
     demisto.debug(f"{limit=}")
     save_file = params.get("save_file") or False
+    date_fetch = params.get("date_fetch") or False
     first_fetch_time = (params.get("first_fetch") or "3 days").strip()
     ssl_context = ssl.create_default_context()
 
@@ -759,8 +771,9 @@ def main():  # pragma: no cover
                     delete_processed=delete_processed,
                     limit=limit,
                     save_file=save_file,
+                    date_fetch=date_fetch,
                 )
-                demisto.debug(f"{next_run=}")
+                demisto.debug(f" next runn is: {next_run}")
                 # if next_run is None, we will not update last_run
                 if next_run:
                     demisto.setLastRun(next_run)

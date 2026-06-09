@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Mail Listener v2 test
+  id: Mail Listener v2
   version: -1
 configuration:
 - display: Mail Server Hostname / IP address
@@ -97,6 +97,12 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Fetch by email date.
+  name: date_fetch
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Use TLS for connection (defaults to True)
   name: TLS_connection
@@ -111,8 +117,8 @@ configuration:
   advanced: true
   required: false
 description: Listens to a mailbox and enables incident triggering via e-mail.
-display: Mail Listener v2 test
-name: Mail Listener v2 test
+display: Mail Listener v2
+name: Mail Listener v2
 script:
   commands:
   - description: Retrieves emails according to the configuration.
