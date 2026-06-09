@@ -793,6 +793,83 @@ def _xsiam_consumer_loop(
             del item
 
 
+# ============================================================================
+# === OOM LEAK DIAGNOSTICS (REMOVE AFTER TESTING — CIAC-16981) ================
+# Self-contained, per-cycle diagnostics to find what accumulates between cycles
+# (workload is constant but cgroup_peak climbs ~13 MB/cycle). One log line per
+# cycle, prefixed [LEAK], capturing every suspect's signal at once. No config change.
+# To remove: delete this block + the single _leak_probe() call in the loop.
+# ============================================================================
+
+
+def _leak_rss_mb() -> float:
+    try:
+        import os
+
+        with open("/proc/self/statm") as f:
+            return int(f.read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 1024 / 1024
+    except Exception:
+        return -1.0
+
+
+def _leak_cgroup_peak_mb() -> float:
+    for path in ("/sys/fs/cgroup/memory.peak", "/sys/fs/cgroup/memory/memory.max_usage_in_bytes"):
+        try:
+            with open(path) as f:
+                v = f.read().strip()
+            if v.isdigit():
+                return int(v) / 1024 / 1024
+        except Exception:
+            continue
+    return -1.0
+
+
+def _leak_fd_count() -> int:
+    # Open file descriptors. A rising count = leaked sockets/sessions (suspect #4).
+    try:
+        import os
+
+        return len(os.listdir("/proc/self/fd"))
+    except Exception:
+        return -1
+
+
+def _leak_state_bytes(state: dict) -> int:
+    # Serialized size of the long-running state dict (suspect #1/#2 regression check).
+    try:
+        return len(json.dumps(state, default=str))
+    except Exception:
+        return -1
+
+
+def _leak_probe(iteration: int, state: dict) -> None:
+    """Log all leak signals for this cycle on one [LEAK] line.
+
+    Read together over many cycles:
+      - rss / cgroup_peak rising  = the leak itself
+      - py_objects rising         = Python-side accumulation (#2/#3)
+      - threads rising            = thread leak (#3)
+      - fds rising                = leaked HTTP sessions/sockets (#4)  <-- prime suspect
+      - state_bytes rising        = state dict growth (#1/#2)
+      - none rising but rss does  = native allocator fragmentation (#5)
+    """
+    import gc
+    import threading
+
+    try:
+        py_objects = len(gc.get_objects())
+        threads = threading.active_count()
+        demisto.info(
+            f"[LEAK] iter={iteration} rss={_leak_rss_mb():.1f}MB cgroup_peak={_leak_cgroup_peak_mb():.1f}MB "
+            f"py_objects={py_objects} threads={threads} fds={_leak_fd_count()} state_bytes={_leak_state_bytes(state)}"
+        )
+    except Exception as e:
+        demisto.error(f"[LEAK] probe failed: {e}")
+
+
+# === END OOM LEAK DIAGNOSTICS ===============================================
+
+
 def long_running_execution_command(
     client: Client,
     log_types: list[str],
@@ -902,6 +979,7 @@ def long_running_execution_command(
                 f"events_sent={consumer_stats['events_sent']} pages_sent={consumer_stats['pages_sent']} "
                 f"saturated={was_saturated}"
             )
+            _leak_probe(iteration, state)  # OOM LEAK DIAGNOSTIC (REMOVE AFTER TESTING — CIAC-16981)
 
             if not was_saturated:
                 # Caught up — give the API a break before checking for new events.
