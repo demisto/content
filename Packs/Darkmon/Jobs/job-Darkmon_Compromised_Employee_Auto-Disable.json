@@ -1,0 +1,13 @@
+{
+    "id": "Darkmon - Compromised Employee Auto-Disable",
+    "name": "Darkmon - Compromised Employee Auto-Disable",
+    "details": "Scheduled trigger for the 'Darkmon - Compromised Employee Auto-Disable' playbook.",
+    "type": "Darkmon Compromised Employee",
+    "scheduled": true,
+    "cronView": true,
+    "playbookId": "Darkmon - Compromised Employee Auto-Disable",
+    "fromVersion": "6.8.0",
+    "isFeed": false,
+    "selectedFeeds": [],
+    "isAllFeeds": false
+}
