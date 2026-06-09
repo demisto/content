@@ -18248,7 +18248,7 @@ script:
       type: Number
     - contextPath: AWS.NetworkFirewall.Firewalls.EnabledAnalysisTypes
       description: The enabled analysis types.
-      type: Unknown
+      type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayId
       description: The unique identifier for the transit gateway.
       type: String
@@ -18493,7 +18493,7 @@ script:
       type: Number
     - contextPath: AWS.NetworkFirewall.Firewalls.EnabledAnalysisTypes
       description: The enabled analysis types.
-      type: Unknown
+      type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayId
       description: The unique identifier of the transit gateway associated with this firewall.
       type: String

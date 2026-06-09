@@ -9760,9 +9760,10 @@ class NetworkFirewall:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        firewall = response.get("Firewall", {})
-        firewall["FirewallStatus"] = response.pop("FirewallStatus", {})
-        firewall["UpdateToken"] = response.pop("UpdateToken", None)
+        response_outputs = copy.deepcopy(response)
+        firewall = response_outputs.get("Firewall", {})
+        firewall["FirewallStatus"] = response_outputs.pop("FirewallStatus", {})
+        firewall["UpdateToken"] = response_outputs.pop("UpdateToken", None)
 
         return CommandResults(
             outputs_prefix="AWS.NetworkFirewall.Firewalls",
@@ -9892,8 +9893,9 @@ class NetworkFirewall:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        firewall = response.get("Firewall", {})
-        firewall["FirewallStatus"] = response.pop("FirewallStatus", {})
+        response_outputs = copy.deepcopy(response)
+        firewall = response_outputs.get("Firewall", {})
+        firewall["FirewallStatus"] = response_outputs.pop("FirewallStatus", {})
 
         return CommandResults(
             outputs_prefix="AWS.NetworkFirewall.Firewalls",
