@@ -88,7 +88,7 @@ Fetches asset information using the object ID.
 
 | **Object ID** | **Status** | **Message** | **Raw Data** |
 | --- | --- | --- | --- |
-| 12345678-1234-1234-1234-123456789abc | success | Asset information retrieved successfully. | \{<br/>&emsp;"name": "OBJECTNAME@example.com",<br/>&emsp;"type": "User",<br/>&emsp;"objectid": "12345678-1234-1234-1234-123456789abc",<br/>&emsp;"domain": "example.com",<br/>&emsp;"enabled": true<br/>\} |
+| 12345678-1234-1234-1234-123456789abc | success | Asset information retrieved successfully. | `{"name": "OBJECTNAME@example.com", "type": "User", "objectid": "12345678-1234-1234-1234-123456789abc", "domain": "example.com", "enabled": true}` |
 
 ### bloodhound-path-exist
 

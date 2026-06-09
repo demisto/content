@@ -168,7 +168,7 @@ Use the `bloodhound-object-id-get` command to retrieve the unique object ID for 
 
 **Command:**
 
-!bloodhound-object-id-get object_names="USERNAME@example.com"
+`!bloodhound-object-id-get object_names="USERNAME@example.com"`
 
 The command returns the object ID, status, and message for each object name provided. You can query multiple objects by providing a comma-separated list.
 
@@ -178,7 +178,7 @@ Use the `bloodhound-asset-info-get` command to retrieve comprehensive informatio
 
 **Command:**
 
-!bloodhound-asset-info-get object_ids="12345678-1234-1234-1234-123456789abc,87654321-4321-4321-4321-cba987654321"
+`!bloodhound-asset-info-get object_ids="12345678-1234-1234-1234-123456789abc,87654321-4321-4321-4321-cba987654321"`
 
 The command returns the asset information, status, and message for each object IDs provided. You can query multiple objects by providing a comma-separated list.
 
@@ -188,6 +188,6 @@ Use the `bloodhound-path-exist` command to verify if an attack path exists betwe
 
 **Command:**
 
-!bloodhound-path-exist from_principal="12345678-1234-1234-1234-123456789abc" to_principal="87654321-4321-4321-4321-cba987654321"
+`!bloodhound-path-exist from_principal="12345678-1234-1234-1234-123456789abc" to_principal="87654321-4321-4321-4321-cba987654321"`
 
 The command returns a boolean value indicating whether a path exists between the specified nodes, along with status and message information.
