@@ -1,6 +1,3 @@
-Ingest Exchange Online Message Trace events into Cortex XSIAM. Message Trace enables tenant administrators to track the lifecycle of an email, determine its delivery status (delivered, pending, failed, or quarantined), and understand the actions applied to it.
-
-This integration was integrated and tested with the Graph-based Message Trace API (`v1.0/admin/exchange/tracing/messageTraces`).
 
 ## Prerequisites
 
@@ -84,25 +81,15 @@ The Azure AD application must be granted the following Microsoft Graph applicati
 - [Microsoft Graph - Get message traces](https://learn.microsoft.com/en-us/exchange/monitoring/trace-an-email-message/graph-api-message-trace#get-beta-admin-exchange-tracing-messageTraces)
 - [Paging Microsoft Graph data in your app](https://learn.microsoft.com/en-us/graph/paging)
 
-## Configure O365 Message Trace in Cortex XSIAM
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Server URL | The Microsoft Graph base URL. | True |
-| Tenant ID | The Azure AD tenant ID \(GUID\). | False |
-| Client ID | The Application \(Client\) ID registered in Azure AD. | False |
-| Client Secret | The client secret for the Azure AD application. | False |
-| Certificate Thumbprint | The private key of the registered certificate used for certificate authentication, as it appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-| Private Key |  | False |
-| Application redirect URI | The redirect URI configured in the Azure AD application. Required for the self-deployed authorization-code flow. | False |
-| Authorization code | The authorization code received from the Azure portal during the self-deployed authorization-code flow. | False |
-| Use Azure Managed Identities | Whether to use Azure Managed Identities when running on an Azure VM with assigned identity. | False |
-| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on an Azure VM. | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
-| Maximum number of events per fetch | The maximum number of events to fetch in a single fetch cycle. | False |
-| Fetch events |  | False |
-| Events Fetch Interval |  | False |
+
+Ingest Exchange Online Message Trace events into Cortex XSIAM. Message Trace enables tenant administrators to track the lifecycle of an email, determine its delivery status (delivered, pending, failed, or quarantined), and understand the actions applied to it.
+
+This integration was integrated and tested with the Graph-based Message Trace API (`v1.0/admin/exchange/tracing/messageTraces`).
+
+
+
+## Configure O365 Message Trace in Cortex XSIAM
 
 ## Commands
 
@@ -216,3 +203,24 @@ Manually retrieve Message Trace events. Intended for development and debugging. 
 >| --- | --- | --- | --- | --- | --- |
 >| 2bd1c8...e9 | 2025-01-01T10:05:23Z | sender@contoso.com | recipient@contoso.com | Hello World | Delivered |
 >| 9f4ea2...11 | 2025-01-01T10:06:01Z | other@contoso.com | recipient@contoso.com | Test | Pending |
+
+
+
+
+| **Param** | **Desc** | **Required** |
+| --- | --- | --- |
+| Server URL | The Microsoft Graph base URL. | yes |
+| Tenant ID | The Azure AD tenant ID \(GUID\). | False |
+| Client ID | The Application \(Client\) ID registered in Azure AD. | False |
+| Client Secret | The client secret for the Azure AD application. | False |
+| Certificate Thumbprint | The private key of the registered certificate used for certificate authentication, as it appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+| Private Key |  | False |
+| Application redirect URI | The redirect URI configured in the Azure AD application. Required for the self-deployed authorization-code flow. | False |
+| Authorization code | The authorization code received from the Azure portal during the self-deployed authorization-code flow. | False |
+| Use Azure Managed Identities | Whether to use Azure Managed Identities when running on an Azure VM with assigned identity. | False |
+| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on an Azure VM. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Maximum number of events per fetch | The maximum number of events to fetch in a single fetch cycle. | False |
+| Fetch events |  | False |
+| Events Fetch Interval |  | False |
