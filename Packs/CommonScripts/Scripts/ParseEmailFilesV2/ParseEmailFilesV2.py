@@ -129,7 +129,7 @@ def extract_file_info(entry_id: str) -> tuple:
 
     Returns:
         file_type(str): the file mime type.
-        file_path(str): the file path.
+        file_path(str): the file path. test
         file_name(str):the file name.
     """
     file_type = ""
