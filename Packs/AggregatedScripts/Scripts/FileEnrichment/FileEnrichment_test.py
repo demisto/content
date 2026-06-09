@@ -81,7 +81,8 @@ def test_file_enrichment_script_end_to_end_with_files(mocker):
             batch0_results.append([(item, "", "")])
         out.append(batch0_results)
 
-        # Batch 1: enrichIndicators + core-get-hash-analytics-prevalence (one per SHA256)
+        # Batch 1: enrichIndicators + core-get-hash-analytics-prevalence
+        # (a single prevalence command carries a list of SHA256 values)
         batch1_cmds = list_of_batches[1]
         batch1_results = []
         for cmd in batch1_cmds:
@@ -89,16 +90,14 @@ def test_file_enrichment_script_end_to_end_with_files(mocker):
                 items = enrich_items or [{"Type": 1, "EntryContext": {}, "Metadata": {"brand": "WildFire-v2"}}]
                 batch1_results.append([(e, "", "") for e in items])
             elif cmd.name == "core-get-hash-analytics-prevalence":
-                item = (
-                    core_items.pop(0)
-                    if core_items
-                    else {
+                items = core_items or [
+                    {
                         "Type": 1,
                         "EntryContext": {},
                         "Metadata": {"brand": "Cortex Core - IR"},
                     }
-                )
-                batch1_results.append([(item, "", "")])
+                ]
+                batch1_results.append([(item, "", "") for item in items])
             else:
                 batch1_results.append([({"Type": 1, "EntryContext": {}}, "", "")])
         out.append(batch1_results)
