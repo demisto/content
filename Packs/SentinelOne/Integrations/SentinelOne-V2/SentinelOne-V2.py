@@ -664,7 +664,7 @@ class Client(BaseClient):
         expiration_date,
         network_quarantine,
         treatAsThreat,
-        query_lang: str = None,
+        query_lang: str = "",
     ):
         endpoint_url = "cloud-detection/rules"
         filter_dict = {"siteIds": site_ids, "groupIds": group_ids, "accountIds": account_ids}
@@ -684,7 +684,7 @@ class Client(BaseClient):
             },
             "filter": {"tenant": "true", **filter_dict},
         }
-        if query_lang is not None:
+        if query_lang:
             payload["data"]["queryLang"] = query_lang
         response = self._http_request(method="POST", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
@@ -709,7 +709,7 @@ class Client(BaseClient):
         expiration_date,
         network_quarantine,
         treatAsThreat,
-        query_lang: str = None,
+        query_lang: str = "",
     ):
         endpoint_url = f"cloud-detection/rules/{rule_id}"
         filter_dict = {"siteIds": site_ids, "groupIds": group_ids, "accountIds": account_ids}
@@ -729,7 +729,7 @@ class Client(BaseClient):
             },
             "filter": {"tenant": "true", **filter_dict},
         }
-        if query_lang is not None:
+        if query_lang:
             payload["data"]["queryLang"] = query_lang
         response = self._http_request(method="PUT", url_suffix=endpoint_url, json_data=payload)
         return response.get("data", {})
@@ -2140,7 +2140,7 @@ def create_star_rule(client: Client, args: dict) -> CommandResults:
             "Scope Hierarchy": rule.get("scope"),
             "Created At": rule.get("createdAt"),
             "Updated At": rule.get("updatedAt"),
-            "Query Language": rule.get("queryLang", None),
+            "Query Language": rule.get("queryLang"),
         }
     return CommandResults(
         readable_output=tableToMarkdown("Sentinel One - Create star rule", context, removeNull=True),
@@ -2262,7 +2262,7 @@ def update_star_rule(client: Client, args: dict) -> CommandResults:
             "Scope Hierarchy": rule.get("scope"),
             "Created At": rule.get("createdAt"),
             "Updated At": rule.get("updatedAt"),
-            "Query Language": rule.get("queryLang", None),
+            "Query Language": rule.get("queryLang"),
         }
     return CommandResults(
         readable_output=tableToMarkdown("Sentinel One - Updated star rule", context, removeNull=True),
