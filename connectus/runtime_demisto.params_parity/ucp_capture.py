@@ -9,12 +9,11 @@ emits the params dump.
 
 The top-level entry point is :func:`capture_ucp_params`.
 
-For the MVP, this module ships with a hard-coded Salesforce/Salesforce-IAM
-payload builder (:func:`_build_salesforce_iam_payload`) that ONLY enables the
-``automation-and-remediation`` capability — other capabilities like
-``saas-posture-config-monitoring`` and ``identity`` stay disabled by design.
-Generalizing the payload builder for other connectors is out of scope for the
-POC.
+The payload builder (:func:`_build_instance_payload`) is generic: it is driven
+by a resolved :class:`resolver.ParityInputs` and enables ALL (sub-)capabilities
+the handler subscribes to, sets auth per profile (same-value when the profile is
+interpolated, dummy otherwise), and pushes the SAME instance/dummy values to the
+connector side that the integration side uses (never connector defaults).
 
 UCP Shell API access requires:
     * ``gcloud`` CLI authenticated.
@@ -60,8 +59,12 @@ log = logging.getLogger("ucp_capture")
 # UCP / GKE connection defaults (sourced from .env when caller does not override)
 # ============================================================================
 
-DEFAULT_TENANT_ID = os.getenv("UCP_TENANT_ID", "")
-DEFAULT_CONNECTOR_ID = os.getenv("UCP_CONNECTOR_ID", "salesforce")
+# The tenant for UCP-side work — the SAME single tenant deploy.py uses. One
+# tenant per shell; deploy and the UCP capture MUST target it, so there is ONE
+# var (TENANT_ID) and no comma-splitting.
+DEFAULT_TENANT_ID = os.getenv("TENANT_ID", "")
+# Legacy/ad-hoc only: resolver-driven runs derive the connector id. Kept for
+# create_ucp_instance.py standalone usage.
 DEFAULT_UCP_PORT = int(os.getenv("UCP_PORT", "8080"))
 
 DEFAULT_GKE_ZONE = "us-central1-f"
@@ -429,83 +432,104 @@ def inject_magic_key_and_persist(
 
 
 # ============================================================================
-# Hard-Coded Salesforce-IAM Payload Builder (MVP)
+# Generic Multi-Capability Payload Builder
 # ============================================================================
 
 
-def _build_salesforce_iam_payload(
-    creation_view: dict,
-    *,
-    instance_name: str,
-    selected_capability: str,
-    profile_id: str,
-    domain_value: str,
-    auth_values: dict,
-    config_overrides: dict | None = None,
-) -> dict:
-    """Build the POST /instances payload for the Salesforce / Salesforce-IAM MVP.
+def _dummy_auth_value(field_id: str) -> str:
+    """A guaranteed-non-empty dummy for a non-interpolated auth field."""
+    return f"dummy_{field_id}"
 
-    Mirrors the original :file:`create_ucp_instance.py` logic but parameterized
-    via the function arguments instead of module-level globals.
 
-    Args:
-        creation_view: The dict returned by :func:`get_creation_view`.
-        instance_name: Display name for the new UCP instance.
-        selected_capability: Capability id to enable. For the POC, callers
-            must pass ``"automation-and-remediation"`` only — other
-            capabilities (``saas-posture-config-monitoring``, ``identity``)
-            stay disabled by design.
-        profile_id: Connection profile id, e.g.
-            ``"oauth2_client_credentials.salesforce"``.
-        domain_value: Value for the connector's ``general_configurations.domain``
-            field.
-        auth_values: Profile-specific auth fields. For
-            ``oauth2_client_credentials``, this is
-            ``{"client_key": ..., "client_secret": ...}``.
-
-    Returns:
-        The fully-formed POST payload dict.
-
-    Raises:
-        RuntimeError: if the creation view doesn't expose the requested
-            capability or profile.
-    """
-    instance_id = creation_view["instance_id"]
-
-    capabilities_step = creation_view["steps"][0]
-    available_caps = [c["id"] for c in capabilities_step.get("capabilities", [])]
-    if selected_capability not in available_caps:
-        raise RuntimeError(
-            "Capability {!r} not in creation view (available: {})".format(
-                selected_capability, available_caps
-            )
-        )
-
+def _applied_for_method_ids(
+    creation_view: dict, capability_id: str, profile_id: str
+) -> list[str]:
+    """Connection-method unique ids supporting ``(capability_id, profile_id)``."""
     connection_step = creation_view["steps"][1]
-    methods = connection_step.get("methods", [])
-    applied_for = []
-    for method in methods:
-        if method.get("capability_id") != selected_capability:
+    applied_for: list[str] = []
+    for method in connection_step.get("methods", []):
+        if method.get("capability_id") != capability_id:
             continue
         for opt in method.get("options", []):
             if opt.get("profile_id") == profile_id:
                 applied_for.append(method["method_unique_id"])
                 break
-    if not applied_for:
-        raise RuntimeError(
-            "No connection methods support capability={!r} + profile={!r}".format(
-                selected_capability, profile_id
-            )
-        )
+    return applied_for
 
-    # Pull default values from the configuration step, scoped to the selected capability.
-    # Also collect the SET of field ids the connector declares — we use it to filter
-    # `config_overrides` because UCP rejects POSTs with keys outside its schema.
+
+def _build_instance_payload(
+    creation_view: dict,
+    *,
+    instance_name: str,
+    capabilities: list,          # list[resolver.CapabilitySpec]
+    profiles: list,              # list[resolver.ProfileSpec]
+    auth_mappings: list,         # list[resolver.AuthMappingSpec]
+    instance_values: dict[str, Any],
+    connector_id: str,
+) -> dict:
+    """Build the POST /instances payload for ANY connector from resolved inputs.
+
+    Generalizes the old Salesforce-only builder per the "REVISED MULTI-CAPABILITY
+    + AUTH-MAPPING DESIGN" in ``plans/param-parity-pipeline-integration.md``.
+
+    Contract:
+        1. **Enable ALL (sub-)capabilities** the handler subscribes to — every
+           parent ``CapabilitySpec.id`` with its subscribed ``sub_capabilities``.
+           A handler may subscribe to several (e.g. automation AND fetch-secrets).
+        2. **Configuration scope = union over all enabled (sub-)capabilities.**
+        3. **Auth per profile, interpolation from ``ProfileSpec.interpolated``
+           ONLY**: interpolated → the connector auth fields are set to the SAME
+           values the INTEGRATION instance uses (via the Auth Details mapping);
+           non-interpolated → dummy-filled (never surfaced at runtime).
+        4. **Bidirectional dummy push, NEVER connector defaults.** ``instance_values``
+           is the SAME dict pushed to the INTEGRATION side; it is written into the
+           ``configuration`` block for every connector-declared field id. Keys the
+           connector doesn't declare are skipped (→ MISSING_IN_CONNECTOR at diff).
+
+    Args:
+        creation_view: dict from :func:`get_creation_view`.
+        instance_name: display name for the new UCP instance.
+        capabilities: resolved ``CapabilitySpec`` list (parents + sub-capabilities).
+        profiles: resolved ``ProfileSpec`` list (carry the interpolated flag).
+        auth_mappings: parsed ``AuthMappingSpec`` list (xsoar leaf → connector field).
+        instance_values: the shared dummy/instance value dict (xsoar param ids →
+            values) pushed to BOTH sides.
+        connector_id: the UCP connector id.
+
+    Returns:
+        The fully-formed POST payload dict.
+
+    Raises:
+        RuntimeError: if the creation view doesn't expose a requested capability,
+            or no connection method supports an enabled (capability, profile) pair.
+    """
+    instance_id = creation_view["instance_id"]
+
+    # ── 1. Enable ALL (sub-)capabilities ──
+    capabilities_step = creation_view["steps"][0]
+    available_caps = {c["id"] for c in capabilities_step.get("capabilities", [])}
+    enabled_values: dict[str, list[str]] = {}
+    enabled_cap_ids: list[str] = []
+    for cap in capabilities:
+        if cap.id not in available_caps:
+            raise RuntimeError(
+                "Capability {!r} not in creation view (available: {})".format(
+                    cap.id, sorted(available_caps)
+                )
+            )
+        sub_ids = [sc.id for sc in cap.sub_capabilities if getattr(sc, "enabled", True)]
+        enabled_values[cap.id] = sub_ids
+        enabled_cap_ids.append(cap.id)
+        # The (sub-)capability ids also participate in the configuration scope.
+        enabled_cap_ids.extend(sub_ids)
+
+    # ── 2. Configuration scope = union over all enabled (sub-)capabilities ──
     config_step = creation_view["steps"][2]
     configuration: dict[str, Any] = {}
     accepted_field_ids: set[str] = set()
+    scope = set(enabled_cap_ids)
     for section in config_step.get("sections", []):
-        if section.get("capability_id") != selected_capability:
+        if section.get("capability_id") not in scope:
             continue
         for row in section.get("data", []):
             for field in row.get("fields", []):
@@ -513,55 +537,99 @@ def _build_salesforce_iam_payload(
                 if not field_id:
                     continue
                 accepted_field_ids.add(field_id)
-                default_val = field.get("options", {}).get("default_value")
-                if default_val is not None:
-                    configuration[field_id] = default_val
+                # NOTE: we intentionally DO NOT seed connector default_values —
+                # the bidirectional-push contract forbids defaults so a silently
+                # dropped param can't false-pass via server default re-injection.
 
-    # Apply caller-supplied overrides — but ONLY for field ids the connector
-    # actually declares. The bidirectional-push contract: the orchestrator
-    # passes the same pre-computed dummy dict to BOTH the INTEGRATION and
-    # CONNECTOR sides; overrides that the connector doesn't declare here are
-    # silently skipped (and the diff later reports them as
-    # MISSING_IN_CONNECTOR — a real connector bug to fix).
-    if config_overrides:
-        applied = 0
-        skipped: list[str] = []
-        for k, v in config_overrides.items():
-            if k in accepted_field_ids:
-                configuration[k] = v
-                applied += 1
-            else:
-                skipped.append(k)
-        log.info(
-            "Applied %d/%d config_overrides to UCP payload "
-            "(skipped %d non-connector-declared fields: %s)",
-            applied,
-            len(config_overrides),
-            len(skipped),
-            ", ".join(sorted(skipped)) if skipped else "<none>",
+    # ── 4. Bidirectional dummy push (never defaults) ──
+    applied = 0
+    skipped: list[str] = []
+    for k, v in (instance_values or {}).items():
+        if k in accepted_field_ids:
+            configuration[k] = v
+            applied += 1
+        else:
+            skipped.append(k)
+    log.info(
+        "Applied %d/%d instance_values to UCP configuration "
+        "(skipped %d non-connector-declared fields: %s)",
+        applied,
+        len(instance_values or {}),
+        len(skipped),
+        ", ".join(sorted(skipped)) if skipped else "<none>",
+    )
+
+    # ── 3. Per-profile auth, interpolation-aware ──
+    # Build a combined xsoar-leaf → connector-field map from all auth mappings.
+    leaf_to_field: dict[str, str] = {}
+    for am in auth_mappings:
+        leaf_to_field.update(am.xsoar_to_connector_field)
+
+    profile_payloads: list[dict] = []
+    for prof in profiles:
+        # Which connection methods bind this profile (across all enabled caps)?
+        applied_for: list[str] = []
+        for cap_id in enabled_values:
+            applied_for.extend(_applied_for_method_ids(creation_view, cap_id, prof.id))
+        applied_for = list(dict.fromkeys(applied_for))  # de-dupe, preserve order
+        if not applied_for:
+            log.warning(
+                "No connection method supports profile %r for any enabled capability; "
+                "skipping it from the payload.",
+                prof.id,
+            )
+            continue
+
+        values: dict[str, Any] = {}
+        if prof.interpolated:
+            # Set connector auth fields to the SAME values the integration uses.
+            for leaf, connector_field in leaf_to_field.items():
+                if connector_field in prof.field_ids and leaf in (instance_values or {}):
+                    values[connector_field] = instance_values[leaf]
+            # Any profile field not covered by the mapping still needs a value.
+            for fid in prof.field_ids:
+                values.setdefault(fid, _dummy_auth_value(fid))
+        else:
+            for fid in prof.field_ids:
+                values[fid] = _dummy_auth_value(fid)
+
+        profile_payloads.append(
+            {
+                "profile_id": prof.id,
+                "type": prof.type or prof.id.split(".")[0],
+                "applied_for": applied_for,
+                "values": values,
+            }
         )
+
+    # Connection-level general configuration: push the shared values for any
+    # connection-general field the connector declares (filtered the same way the
+    # configuration block is — unknown keys are skipped).
+    connection_general: dict[str, Any] = {}
+    connection_step = creation_view["steps"][1]
+    conn_accepted: set[str] = set()
+    for section in connection_step.get("sections", []) or []:
+        for row in section.get("data", []) or []:
+            for field in row.get("fields", []) or []:
+                fid = field.get("id")
+                if fid:
+                    conn_accepted.add(fid)
+    for k, v in (instance_values or {}).items():
+        if k in conn_accepted:
+            connection_general[k] = v
 
     return {
         "instance_id": instance_id,
-        "connector_id": creation_view.get("connector_id") or "salesforce",
+        "connector_id": connector_id or creation_view.get("connector_id") or "",
         "capabilities": {
             "general_configurations": {"instance_name": instance_name},
-            # ONLY the selected capability is enabled; the empty list means "use defaults
-            # for sub-capabilities of this capability". Other capabilities not listed
-            # here stay disabled by design — they're out of POC scope.
-            "values": {selected_capability: []},
+            # ALL parents + their subscribed sub-capabilities.
+            "values": enabled_values,
         },
         "connection": {
             "origin": "RECOMMENDED",
-            "general_configurations": {"domain": domain_value},
-            "profiles": [
-                {
-                    "profile_id": profile_id,
-                    "type": profile_id.split(".")[0],  # e.g. "oauth2_client_credentials"
-                    "applied_for": applied_for,
-                    "values": auth_values,
-                }
-            ],
+            "general_configurations": connection_general,
+            "profiles": profile_payloads,
         },
         "configuration": configuration,
     }
@@ -576,16 +644,13 @@ def capture_ucp_params(
     *,
     xsoar_client,
     xsoar_brand_name: str,
-    connector_id: str = DEFAULT_CONNECTOR_ID,
+    parity_inputs,                       # resolver.ParityInputs
+    instance_values: dict | None = None,
+    connector_id: str | None = None,
     tenant_id: str = DEFAULT_TENANT_ID,
-    profile_id: str = "oauth2_client_credentials.salesforce",
-    selected_capability: str = "automation-and-remediation",
-    domain_value: str = "test.salesforce.com",
-    auth_values: dict | None = None,
     instance_name: str | None = None,
     ucp_port: int = DEFAULT_UCP_PORT,
     keep_instance: bool = False,
-    connector_config_overrides: dict | None = None,
 ) -> dict | None:
     """Run the full UCP-side capture flow end-to-end.
 
@@ -594,7 +659,8 @@ def capture_ucp_params(
         2. Snapshot existing XSOAR instances of the target brand so we can
            later identify the *new* mirrored instance.
         3. GET the creation view from UCP.
-        4. Build the POST payload via :func:`_build_salesforce_iam_payload`.
+        4. Build the POST payload via :func:`_build_instance_payload`
+           (enables ALL handler (sub-)capabilities; per-profile auth).
         5. POST the payload to create the UCP instance.
         6. Poll XSOAR for the mirrored instance to appear.
         7. Inject the ``__params_parity_dump__`` magic key into the mirrored
@@ -607,15 +673,13 @@ def capture_ucp_params(
         xsoar_client: A configured ``demisto_client`` for the XSOAR tenant.
         xsoar_brand_name: Brand of the XSOAR-mirrored integration
             (e.g. ``"Salesforce IAM"``).
-        connector_id: UCP connector id (e.g. ``"salesforce"``).
+        parity_inputs: The resolved :class:`resolver.ParityInputs` describing the
+            connector, ALL (sub-)capabilities, profiles, and the auth mapping.
+        instance_values: The SHARED dummy/instance value dict (xsoar param ids →
+            values) pushed to BOTH the integration and connector sides. Empty if
+            not provided.
+        connector_id: UCP connector id. Defaults to ``parity_inputs.connector_id``.
         tenant_id: UCP tenant id.
-        profile_id: Connection profile id.
-        selected_capability: Single capability to enable. For the POC, must be
-            ``"automation-and-remediation"``.
-        domain_value: Value for the connector's general_configurations.domain
-            field.
-        auth_values: Auth profile values. Defaults to dummy oauth2
-            ``client_key``/``client_secret``.
         instance_name: Display name for the new UCP instance. Auto-generated
             with a uuid suffix if not provided.
         ucp_port: Local port to bind the port-forward to.
@@ -627,14 +691,17 @@ def capture_ucp_params(
         failure.
     """
     if not tenant_id:
-        log.error("tenant_id is required (set UCP_TENANT_ID in .env or pass explicitly).")
+        log.error("tenant_id is required (set TENANT_ID in .env or pass explicitly).")
         return None
 
-    if auth_values is None:
-        auth_values = {"client_key": "dummy_client_key", "client_secret": "dummy_client_secret"}
+    if connector_id is None:
+        connector_id = parity_inputs.connector_id
+
+    if instance_values is None:
+        instance_values = {}
 
     if instance_name is None:
-        instance_name = f"{connector_id.title()} Parity {uuid.uuid4().hex[:8]}"
+        instance_name = f"{(connector_id or 'connector').title()} Parity {uuid.uuid4().hex[:8]}"
 
     # Snapshot existing XSOAR instances so we can identify only the NEW mirror.
     try:
@@ -663,27 +730,26 @@ def capture_ucp_params(
         creation_view = get_creation_view(connector_id, tenant_id, port=ucp_port)
         ucp_instance_id = creation_view["instance_id"]
 
-        # 3. Build payload (Salesforce-IAM-specific MVP helper).
-        # The connector_config_overrides dict (when supplied by the orchestrator)
-        # is merged into the payload's configuration block, ensuring the connector
-        # delivers the SAME dummy values the INTEGRATION side uses. This is what
-        # eliminates the test-setup-asymmetry false positives in the diff and
-        # leaves only real connector bugs visible.
-        payload = _build_salesforce_iam_payload(
+        # 3. Build payload (generic, resolver-driven).
+        # The shared `instance_values` dict is pushed to the connector's
+        # configuration + (interpolated) auth fields, ensuring the connector
+        # delivers the SAME values the INTEGRATION side uses. This eliminates the
+        # test-setup-asymmetry false positives in the diff and leaves only real
+        # connector bugs visible. ALL handler (sub-)capabilities are enabled.
+        payload = _build_instance_payload(
             creation_view,
             instance_name=instance_name,
-            selected_capability=selected_capability,
-            profile_id=profile_id,
-            domain_value=domain_value,
-            auth_values=auth_values,
-            config_overrides=connector_config_overrides,
+            capabilities=parity_inputs.capabilities,
+            profiles=parity_inputs.profiles,
+            auth_mappings=parity_inputs.auth_mappings,
+            instance_values=instance_values,
+            connector_id=connector_id,
         )
         log.info(
-            "UCP payload built: connector=%s capability=%s profile=%s domain=%s, configuration fields=%d",
+            "UCP payload built: connector=%s capabilities=%s profiles=%s, configuration fields=%d",
             connector_id,
-            selected_capability,
-            profile_id,
-            domain_value,
+            [c.id for c in parity_inputs.capabilities],
+            [p.id for p in parity_inputs.profiles],
             len(payload["configuration"]),
         )
         log.debug("Full payload: %s", json.dumps(payload, indent=2, default=str))
@@ -736,7 +802,6 @@ def capture_ucp_params(
 # ============================================================================
 
 __all__ = [
-    "DEFAULT_CONNECTOR_ID",
     "DEFAULT_TENANT_ID",
     "DEFAULT_UCP_PORT",
     "capture_ucp_params",

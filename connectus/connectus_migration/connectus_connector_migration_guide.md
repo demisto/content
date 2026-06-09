@@ -2046,6 +2046,7 @@ The following integrations are excluded from the migration. If the LLM encounter
 | `Cortex Core - IOC` | Internal Cortex integration — the legacy FE's `HIDE_CREDENTIALS_BOX_CONFIGURAIONS_IDS` list hides the credentials box for this integration. Not a vendor integration; do not migrate. |
 | `Cortex Core - IR` | Same as `Cortex Core - IOC`. Internal Cortex integration; do not migrate. |
 | Server-style integrations (e.g., mail-listener) | Long-running inbound listeners; require credential-pinning via `triggering.labels`. See [Appendix I](#appendix-i-server-style-integrations). |
+| `Salesforce` | Was migrated manually in april. All Salesforce integrations should be excluded |
 
 ## Appendix E: Integrations Requiring Manual Intervention
 

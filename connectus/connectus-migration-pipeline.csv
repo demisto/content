@@ -83,7 +83,7 @@ Azure Network Security Groups,Packs/AzureNetworkSecurityGroups/Integrations/Azur
 Azure Resource Graph,Packs/AzureResourceGraph/Integrations/AzureResourceGraph/AzureResourceGraph.yml,Microsoft Azure,,,,,,,,,,,,,,,
 Azure SQL Management,Packs/AzureSQLManagement/Integrations/AzureSQLManagement/AzureSQLManagement.yml,Microsoft Azure,,,,,,,,,,,,,,,
 Azure Security Center v2,Packs/AzureSecurityCenter/Integrations/AzureSecurityCenter_v2/AzureSecurityCenter_v2.yml,Microsoft Security,,,,,,,,,,,,,,,
-Azure Sentinel,Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml,Microsoft Security,,,,,,,,,,,,,,,
+Azure Sentinel,Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml,Microsoft Security,connectors/examples/xsoar-test-azure-sentinel,,,,,,,,,,,,,,
 Azure Storage,Packs/AzureStorage/Integrations/AzureStorage/AzureStorage.yml,Microsoft Azure,,,,,,,,,,,,,,,
 Azure Storage Container,Packs/AzureStorageContainer/Integrations/AzureStorageContainer/AzureStorageContainer.yml,Microsoft Azure,,,,,,,,,,,,,,,
 Azure Storage FileShare,Packs/AzureStorageFileShare/Integrations/AzureStorageFileShare/AzureStorageFileShare.yml,Microsoft Azure,,,,,,,,,,,,,,,

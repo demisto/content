@@ -69,6 +69,22 @@ IGNORED_PARAM_NAMES: set[str] = {
     "apiproxy",
 }
 
+#: HARD ignore-list — params that NEVER appear in a comparable way in runtime
+#: ``demisto.params()``, even inside an interpolated profile. Mirrors
+#: ``resolver.HARD_IGNORE_PARAMS`` (duplicated so the normalizer stays
+#: import-light). USER-CONFIRMED 2026-06-07.
+HARD_IGNORE_PARAM_NAMES: set[str] = {
+    "brand",
+    "packID",
+    "engine",
+    "engineGroup",
+    "mappingId",
+    "incomingMapperId",
+    "outgoingMapperId",
+    "defaultIgnore",
+    "integrationLogLevel",
+}
+
 
 # ============================================================================
 # YML parsing helper
@@ -103,6 +119,8 @@ def normalize_for_diff(
     yml_configuration: list[dict] | None,
     *,
     side: str = "unknown",
+    force_keep: set[str] | None = None,
+    force_drop: set[str] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, str]]]:
     """Apply the IGNORE policy and return the filtered dict (NO value normalization).
 
@@ -138,27 +156,41 @@ def normalize_for_diff(
     """
     raw_params = raw_params or {}
     yml_index = _build_yml_index(yml_configuration or [])
+    force_keep = force_keep or set()
+    force_drop = force_drop or set()
 
     filtered: dict[str, Any] = {}
     dropped: list[dict[str, str]] = []
 
     for key, value in raw_params.items():
+        # Rule 0: HARD ignore-list (caller-supplied force_drop ∪ the built-in
+        # HARD_IGNORE_PARAM_NAMES) — always wins, even over force_keep. These
+        # never appear comparably in runtime demisto.params().
+        if key in force_drop or key in HARD_IGNORE_PARAM_NAMES:
+            dropped.append({"name": key, "reason": "hard_ignore", "side": side})
+            continue
+
         # Rule 1: name-based ignore — always wins.
         if key in IGNORED_PARAM_NAMES:
             dropped.append({"name": key, "reason": "name_ignored", "side": side})
             continue
 
-        # Rule 2: type-based ignore — only applies when the YML knows about this key.
-        yml_entry = yml_index.get(key)
-        if yml_entry is not None:
-            yml_type = yml_entry.get("type")
-            if yml_type in IGNORED_YML_TYPES:
-                dropped.append({
-                    "name": key,
-                    "reason": "yml_type_ignored:{}".format(yml_type),
-                    "side": side,
-                })
-                continue
+        # Rule 2: type-based ignore — only applies when the YML knows about this
+        # key AND the caller did NOT force-keep it. force_keep carries the params
+        # of an INTERPOLATED connector profile: those auth fields (YML type 4/9)
+        # DO arrive in runtime demisto.params(), so they must be compared rather
+        # than dropped.
+        if key not in force_keep:
+            yml_entry = yml_index.get(key)
+            if yml_entry is not None:
+                yml_type = yml_entry.get("type")
+                if yml_type in IGNORED_YML_TYPES:
+                    dropped.append({
+                        "name": key,
+                        "reason": "yml_type_ignored:{}".format(yml_type),
+                        "side": side,
+                    })
+                    continue
 
         # Rule 3: keep this key verbatim (it's MUST-COMPARE).
         filtered[key] = value
@@ -176,5 +208,6 @@ def normalize_for_diff(
 __all__ = [
     "IGNORED_PARAM_NAMES",
     "IGNORED_YML_TYPES",
+    "HARD_IGNORE_PARAM_NAMES",
     "normalize_for_diff",
 ]

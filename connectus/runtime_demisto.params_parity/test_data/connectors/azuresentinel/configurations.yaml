@@ -1,0 +1,250 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration
+view_groups:
+- id: xsoar-azure-sentinel
+  label: xsoar-azure-sentinel
+general_configurations:
+  configurations:
+  - view_group: xsoar-azure-sentinel
+    fields:
+    - id: integrationLogLevel
+      title: Integration Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for the xsoar-azure-sentinel integration.
+        placeholder: Select log level
+        default_value: 'Off'
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    relevant_for_capabilities:
+    - xsoar-azure-sentinel-fetch-issues
+    - xsoar-azure-sentinel-automation-and-remediation
+configurations:
+- id: xsoar-azure-sentinel-fetch-issues
+  configurations:
+  - fields:
+    - id: isFetch
+      title: Fetch incidents
+      field_type: checkbox
+      options:
+        default_value: true
+        create_modifiers:
+          required: false
+          hidden: true
+        edit_modifiers:
+          required: false
+          hidden: true
+    - id: incidentType
+      title: Incident type
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Azure Sentinel
+            dynamicField: incident-type
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: incidentFetchInterval
+      field_type: duration
+      options:
+        default_value:
+          minutes: 1
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        units:
+        - days
+        - hours
+        - minutes
+      title: Incidents Fetch Interval
+    - id: mapper_incoming
+      title: Incoming Mapper
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Azure Sentinel
+            dynamicField: mapper-incoming
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        default_value: Microsoft Sentinel - Incoming Mapper
+    - id: classifier
+      title: Classifier
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Azure Sentinel
+            dynamicField: classifier
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        default_value: Microsoft Sentinel - Classifier
+    - id: fetch_additional_info
+      field_type: multi_select
+      options:
+        values:
+        - key: Alerts
+          label: Alerts
+        - key: Entities
+          label: Entities
+        - key: Comments
+          label: Comments
+        - key: Relations
+          label: Relations
+        description: 'Choose what additional info to fetch for each incident.
+
+          Note that this will increase the number of API calls.
+
+          '
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: Additional info to fetch
+    - id: fetch_time
+      field_type: input
+      title: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+      options:
+        default_value: 3 days
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: limit
+      field_type: input
+      title: Maximum number of incidents per fetch.
+      options:
+        default_value: '20'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: look_back
+      field_type: input
+      title: Minutes to look back when fetching
+      options:
+        description: The lookback time window for incidents/issues created before
+          the last run time that did not initially match the query. Small values (for
+          example, 1-5 minutes) are recommended to avoid performance issues.
+        default_value: 0
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: min_severity
+      field_type: select
+      options:
+        values:
+        - key: Informational
+          label: Informational
+        - key: Low
+          label: Low
+        - key: Medium
+          label: Medium
+        - key: High
+          label: High
+        default_value: Informational
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: The minimum severity of incidents to fetch
+    - id: statuses_to_fetch
+      field_type: multi_select
+      options:
+        values:
+        - key: New
+          label: New
+        - key: Active
+          label: Active
+        - key: Closed
+          label: Closed
+        description: The statuses of the incidents that will be fetched. If no status
+          is provided then incidents of all the statuses will be fetched.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: Incident Statuses to Fetch
+  view_group: xsoar-azure-sentinel
+- id: xsoar-azure-sentinel-automation-and-remediation
+  configurations:
+  - fields: []
+  view_group: xsoar-azure-sentinel
