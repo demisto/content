@@ -11,6 +11,7 @@ Steps (each persists its raw output to a temp folder):
     3a — Set Params for test default in code  (test-module-params → set-param-defaults)
     3b — Set Params to Capabilities           (connector_param_mapper.py → set-params-to-capabilities)
     3c — Generate connector manifest          (manifest_generator.py → <out_dir>/generated_manifest)
+    3d — Validate the generated manifest       (validator `make validate` → 3d_validator_outputs.json; non-fatal)
 
 Output files are written as ``<step>_<script_name>_outputs.json`` where
 ``<script_name>`` is the underlying script the step primarily invokes.
@@ -55,6 +56,12 @@ AUTHOR_IMAGE_CSV = REPO_ROOT / "connectus" / "connector-id-to-author-image.csv"
 
 DEFAULT_OUT_DIR = REPO_ROOT / ".tmp_premanifest"
 
+# Unified-connectors-content repo (holds the validator Makefile + schema/ +
+# policies). Defaults to a sibling of the content repo; override with
+# ``--validator-repo``. ``make validate`` MUST run from this directory so the
+# binary finds ``schema/`` and the embedded policies.
+DEFAULT_VALIDATOR_REPO = REPO_ROOT.parent / "unified-connectors-content"
+
 # Assignee used only when the row has none yet (so set-auth's ordering gate
 # — which requires the 'assignee' step done first — is satisfied).
 DEFAULT_ASSIGNEE = "premanifest-harness"
@@ -87,7 +94,13 @@ def _save_output(out_dir: Path, step: str, script_name: str, payload: Any) -> Pa
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"{step}_{script_name}_outputs.json"
     path.write_text(json.dumps(payload, indent=2, sort_keys=True))
-    print(f"  [saved] {path.relative_to(REPO_ROOT)}")
+    # Print a repo-relative path when possible; fall back to the absolute
+    # path when out_dir lives outside the repo (e.g. a custom --out-dir).
+    try:
+        display = path.relative_to(REPO_ROOT)
+    except ValueError:
+        display = path
+    print(f"  [saved] {display}")
     return path
 
 
@@ -526,6 +539,14 @@ def step_2_params_to_commands(integration_id: str, out_dir: Path) -> dict:
 # ---------------------------------------------------------------------------
 # Step 3a — Set Params for test with default in code
 # ---------------------------------------------------------------------------
+# Checkpoint step (no setter, no gate) that sits between the
+# ``set-param-defaults`` data step and ``set-params-to-capabilities``. It is
+# a manual "present → fix → markpass" review in the real workflow; for this
+# structural harness there is no code to review, so we markpass it
+# unconditionally to satisfy the state-machine ordering gate before step 3b.
+UCP_PARAM_DEFAULT_REVIEW_STEP = "UCP param-default review"
+
+
 def step_3a_param_defaults(integration_id: str, out_dir: Path) -> dict:
     """Persist Params-for-test defaults.
 
@@ -533,6 +554,12 @@ def step_3a_param_defaults(integration_id: str, out_dir: Path) -> dict:
     unless ``test-module-params`` reports required params. Since this is a
     structural-test harness, we keep it empty — the manifest generator
     consumes the cell but does not require non-empty values here.
+
+    After persisting the defaults this also ``markpass``-es the downstream
+    ``UCP param-default review`` checkpoint (a no-setter, no-gate manual
+    review step). The harness performs no source-level review, so it advances
+    the checkpoint unconditionally — otherwise the state-machine ordering gate
+    blocks step 3b's ``set-params-to-capabilities``.
     """
     print(f"[3a] test-module-params + set-param-defaults '{integration_id}'")
     tm_proc = _run(
@@ -573,6 +600,27 @@ def step_3a_param_defaults(integration_id: str, out_dir: Path) -> dict:
     if proc.returncode != 0:
         raise RuntimeError(
             f"set-param-defaults failed:\n{proc.stderr or proc.stdout}"
+        )
+
+    # Advance the manual 'UCP param-default review' checkpoint. It has no
+    # setter and no self-executing gate, so a plain markpass cannot fail on
+    # its own merits — but it MUST be passed here so the ordering gate lets
+    # step 3b's set-params-to-capabilities through.
+    print(f"  [markpass] {UCP_PARAM_DEFAULT_REVIEW_STEP} '{integration_id}'")
+    review = _run(
+        [
+            sys.executable,
+            str(WORKFLOW_STATE),
+            "markpass",
+            integration_id,
+            UCP_PARAM_DEFAULT_REVIEW_STEP,
+        ],
+        timeout=SHORT_TIMEOUT,
+    )
+    if review.returncode != 0:
+        raise RuntimeError(
+            f"markpass '{UCP_PARAM_DEFAULT_REVIEW_STEP}' failed:\n"
+            f"{review.stderr or review.stdout}"
         )
     return param_defaults
 
@@ -713,6 +761,157 @@ def step_3c_generate_manifest(
 
 
 # ---------------------------------------------------------------------------
+# Step 3d — Validate the generated connector manifest
+# ---------------------------------------------------------------------------
+def _find_generated_connector_dir(connectors_root: Path) -> Path | None:
+    """Locate the single generated connector directory under ``connectors_root``.
+
+    ``manifest_generator.py`` writes the connector to
+    ``<connectors_root>/<slug>/`` (a directory containing ``connector.yaml``).
+    We discover it by scanning one level deep for a ``connector.yaml`` rather
+    than re-deriving the slug, so this stays correct regardless of the
+    title→slug mapping. Returns the connector dir, or ``None`` when none is
+    found (caller warns + skips validation, non-fatal).
+    """
+    if not connectors_root.is_dir():
+        return None
+    matches = sorted(
+        p.parent for p in connectors_root.glob("*/connector.yaml") if p.is_file()
+    )
+    if not matches:
+        return None
+    if len(matches) > 1:
+        print(
+            f"  [validate] multiple connector dirs under {connectors_root}; "
+            f"validating the first: {matches[0].name}"
+        )
+    return matches[0]
+
+
+def step_3d_validate_manifest(
+    integration_id: str,
+    manifest_result: dict,
+    out_dir: Path,
+    validator_repo: Path,
+) -> dict:
+    """Run the validator's ``make validate`` against the generated connector.
+
+    NON-FATAL by design: validation violations are the whole point of this
+    step, so they are recorded + printed but never raise. Environment problems
+    (validator repo missing, ``make`` unavailable, generated connector not
+    found, unparseable output) also warn + skip with a ``skipped`` result and
+    do NOT abort the harness.
+
+    Runs ``make validate connector=<abs-connector-dir> json=1`` with
+    ``cwd=validator_repo`` so the validator binary finds ``schema/`` and its
+    embedded policies. The connector path is absolute, which the validator
+    accepts positionally. Output is persisted to
+    ``3d_validator_outputs.json``.
+    """
+    print(f"[3d] validate manifest '{integration_id}'")
+
+    def _skip(reason: str) -> dict:
+        print(f"  [validate] SKIPPED — {reason}")
+        result = {"status": "skipped", "reason": reason}
+        _save_output(out_dir, "3d", "validator", result)
+        return result
+
+    if not validator_repo.is_dir():
+        return _skip(f"validator repo not found: {validator_repo}")
+    if not (validator_repo / "Makefile").is_file():
+        return _skip(f"no Makefile in validator repo: {validator_repo}")
+
+    connectors_root = Path(manifest_result.get("connectors_root", ""))
+    connector_dir = _find_generated_connector_dir(connectors_root)
+    if connector_dir is None:
+        return _skip(
+            f"no generated connector (connector.yaml) found under "
+            f"{connectors_root}"
+        )
+
+    cmd = [
+        "make",
+        "validate",
+        f"connector={connector_dir.resolve()}",
+        "json=1",
+    ]
+    print(f"  [validate] {' '.join(cmd)}  (cwd={validator_repo})")
+    try:
+        proc = subprocess.run(
+            cmd,
+            cwd=str(validator_repo),
+            capture_output=True,
+            text=True,
+            timeout=LONG_TIMEOUT,
+        )
+    except FileNotFoundError:
+        return _skip("`make` not found on PATH — cannot run validator")
+    except subprocess.TimeoutExpired:
+        return _skip(f"validator timed out after {LONG_TIMEOUT}s")
+
+    # The validate target prints non-JSON banner lines around the binary's
+    # JSON; isolate the JSON object so we can record structured violations.
+    parsed = _extract_validator_json(proc.stdout)
+
+    result = {
+        "status": "ok" if proc.returncode == 0 else "violations",
+        "connector_dir": str(connector_dir.resolve()),
+        "returncode": proc.returncode,
+        "validation": parsed,
+        "stdout": proc.stdout.strip(),
+        "stderr": proc.stderr.strip(),
+    }
+    _save_output(out_dir, "3d", "validator", result)
+
+    if proc.returncode == 0:
+        print("  [validate] VALID ✅")
+    else:
+        print(f"  [validate] INVALID ❌ (exit {proc.returncode})")
+        _print_validator_violations(parsed, proc.stdout)
+    return result
+
+
+def _extract_validator_json(stdout: str) -> Any:
+    """Best-effort extraction of the validator's JSON object from stdout.
+
+    ``make validate`` interleaves colored banner lines with the binary's JSON
+    payload. We scan for the first ``{`` … matching ``}`` block and parse it.
+    Returns the parsed object, or ``None`` when no JSON can be recovered (the
+    caller still has the raw stdout persisted).
+    """
+    start = stdout.find("{")
+    end = stdout.rfind("}")
+    if start == -1 or end == -1 or end < start:
+        return None
+    candidate = stdout[start : end + 1]
+    try:
+        return json.loads(candidate)
+    except json.JSONDecodeError:
+        return None
+
+
+def _print_validator_violations(parsed: Any, raw_stdout: str) -> None:
+    """Print a concise list of validation violations (non-fatal report)."""
+    if not isinstance(parsed, dict):
+        # Could not parse structured output — surface the raw stdout instead.
+        print("  [validate] (could not parse JSON; raw output below)")
+        for line in raw_stdout.strip().splitlines():
+            print(f"    {line}")
+        return
+    results = parsed.get("results") or []
+    for res in results:
+        violations = res.get("violations") or []
+        if not violations:
+            continue
+        name = res.get("connector_name", "<connector>")
+        print(f"    {name}: {len(violations)} violation(s)")
+        for v in violations:
+            file_ = v.get("file", "")
+            msg = v.get("message", "")
+            print(f"      • [{file_}] {msg}")
+
+
+# ---------------------------------------------------------------------------
 # Orchestration
 # ---------------------------------------------------------------------------
 def main() -> int:
@@ -722,12 +921,28 @@ def main() -> int:
         default=str(DEFAULT_OUT_DIR),
         help="Folder for per-step *_outputs.json files.",
     )
+    parser.add_argument(
+        "--validator-repo",
+        default=str(DEFAULT_VALIDATOR_REPO),
+        help=(
+            "Path to the unified-connectors-content repo (holds the validator "
+            "Makefile + schema/ + policies). Step 3d runs `make validate` from "
+            "here. Defaults to a sibling of the content repo. Validation is "
+            "non-fatal — a missing repo only skips step 3d."
+        ),
+    )
     args = parser.parse_args()
-    
-    integration_id = "Microsoft Graph"
+
+    integration_id = "Akamai WAF SIEM"
     out_dir = Path(args.out_dir)
-    if not out_dir.is_absolute():
-        out_dir = REPO_ROOT / out_dir
+    out_dir = Path.cwd().parent / "unified-connectors-content" / "connectors"
+    print(out_dir)
+    # if not out_dir.is_absolute():
+    #     out_dir = REPO_ROOT / out_dir
+
+    validator_repo = Path(args.validator_repo)
+    if not validator_repo.is_absolute():
+        validator_repo = (REPO_ROOT / validator_repo).resolve()
 
     print(f"=== Pre-manifest setup for '{integration_id}' → {out_dir} ===")
     context = step_0_identify(integration_id, out_dir)
@@ -738,8 +953,13 @@ def main() -> int:
     params_to_capabilities = step_3b_params_to_capabilities(
         integration_id, context, params_to_commands, param_defaults, out_dir
     )
-    step_3c_generate_manifest(
+    manifest_result = step_3c_generate_manifest(
         integration_id, context, params_to_capabilities, auth_details, out_dir
+    )
+    # Step 3d — validate the generated manifest (non-fatal: violations are
+    # reported but never abort the harness).
+    step_3d_validate_manifest(
+        integration_id, manifest_result, out_dir, validator_repo
     )
     print(f"=== Done. Outputs in {out_dir} ===")
     return 0

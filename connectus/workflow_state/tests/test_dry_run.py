@@ -77,22 +77,22 @@ _VALID_AUTH_JSON = (
 
 
 class TestDryRunAuthEnvelopeShape:
-    """Pin the 6-key envelope and the per-branch payload."""
+    """Pin the 6-key envelope and the per-branch payload.
+
+    ALWAYS-INTERPOLATE GATE (2026-06-09): the dry-run no longer invokes
+    ``_run_auth_parity_for_set_auth``; it forces ``interpolated: true`` onto
+    every ``auth_types[]`` entry and short-circuits the parity test, so a
+    schema-valid payload ALWAYS yields ``would_commit=True``. The only
+    blocking branches that remain are schema-validation failure, seed-overlap,
+    and integration-not-found — all of which run BEFORE the always-interpolate
+    step.
+    """
 
     def test_envelope_always_has_expected_keys(
         self,
         monkeypatch: pytest.MonkeyPatch,
         mock_csv: list[dict],
     ) -> None:
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: {
-                "integration": "MyIntegration",
-                "auth_parity": {"primary": {"status": "pass", "diffs": []}},
-                "diagnostics": {},
-            },
-        )
         env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
         assert set(env.keys()) == {
             "pass",
@@ -113,37 +113,18 @@ class TestDryRunAuthEnvelopeShape:
         monkeypatch: pytest.MonkeyPatch,
         mock_csv: list[dict],
     ) -> None:
-        parity_called = {"value": False}
-
-        def _exploding_parity(**_kwargs):  # noqa: ANN003
-            parity_called["value"] = True
-            raise AssertionError("parity must not run after validator fails")
-
-        monkeypatch.setattr(
-            ws_api, "_run_auth_parity_for_set_auth", _exploding_parity
-        )
         env = ws_api.dry_run_auth("MyIntegration", "not valid json {")
         assert env["validator"]["passed"] is False
         assert env["validator"]["errors"]
         assert "skipped" in env["seed_overlap"]
         assert "skipped" in env["parity"]
         assert env["verdict"]["would_commit"] is False
-        assert parity_called["value"] is False
 
     def test_seed_overlap_short_circuits_with_skip_marker(
         self,
         monkeypatch: pytest.MonkeyPatch,
         mock_csv: list[dict],
     ) -> None:
-        parity_called = {"value": False}
-
-        def _exploding_parity(**_kwargs):  # noqa: ANN003
-            parity_called["value"] = True
-            raise AssertionError("parity must not run after seed overlap")
-
-        monkeypatch.setattr(
-            ws_api, "_run_auth_parity_for_set_auth", _exploding_parity
-        )
         env = ws_api.dry_run_auth(
             "MyIntegration",
             _VALID_AUTH_JSON,
@@ -157,142 +138,47 @@ class TestDryRunAuthEnvelopeShape:
         assert "skipped" in env["parity"]
         assert env["verdict"]["would_commit"] is False
         assert env["verdict"]["reason"] == "ERROR_SEED_AUTH_OVERLAP"
-        assert parity_called["value"] is False
 
-    def test_parity_pass_yields_would_commit_true(
+    def test_schema_valid_payload_always_commits(
         self,
         monkeypatch: pytest.MonkeyPatch,
         mock_csv: list[dict],
     ) -> None:
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: {
-                "integration": "MyIntegration",
-                "auth_parity": {"primary": {"status": "pass", "diffs": []}},
-                "diagnostics": {},
-            },
-        )
+        """A schema-valid payload always clears the always-interpolate gate."""
         env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
         assert env["verdict"]["would_commit"] is True
-        assert "ok" in env["verdict"]["reason"].lower() or "pass" in env["verdict"]["reason"].lower()
+        assert "interpolate" in env["verdict"]["reason"].lower()
+        # The parity block is a structural-skip stub, not a parity result.
+        assert "skipped" in env["parity"]
 
-    def test_parity_fail_yields_would_commit_false(
+    def test_non_interpolated_payload_reports_forced_interpolation(
         self,
         monkeypatch: pytest.MonkeyPatch,
         mock_csv: list[dict],
     ) -> None:
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: {
-                "integration": "MyIntegration",
-                "auth_parity": {"primary": {"status": "fail", "diffs": ["..."]}},
-                "diagnostics": {},
-            },
-        )
-        env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
-        assert env["verdict"]["would_commit"] is False
-        assert "fail" in env["verdict"]["reason"]
-
-    def test_all_interpolated_structural_skip_yields_would_commit_true(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
-        mock_csv: list[dict],
-    ) -> None:
-        """ERROR_ALL_INTERPOLATED is the ONLY clean fallback: every auth is
-        interpolated, so there is nothing to parity-test → would_commit=True.
+        """A payload with no ``interpolated`` flag is forced to interpolated
+        and the preview reports ``forced_interpolated: True``.
         """
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: {
-                "error": {
-                    "code": "ERROR_ALL_INTERPOLATED",
-                    "message": "all auths are interpolated; nothing to test",
-                    "exit_code": 12,
-                },
-            },
-        )
         env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
         assert env["verdict"]["would_commit"] is True
-        assert "structural skip" in env["verdict"]["reason"].lower()
+        assert env["parity"].get("forced_interpolated") is True
 
-    def test_no_baseclient_non_interpolated_yields_would_commit_false(
+    def test_already_interpolated_payload_reports_no_forcing(
         self,
         monkeypatch: pytest.MonkeyPatch,
         mock_csv: list[dict],
     ) -> None:
-        """AUTH-PARITY GATE STRICTNESS FIX: ERROR_NO_BASECLIENT means the
-        analyzer could NOT parity-test a non-interpolated auth. It must now
-        BLOCK (would_commit=False) instead of silently committing an
-        untested secret-placement.
+        """When every entry is already interpolated, nothing is rewritten and
+        ``forced_interpolated`` is ``False`` (still committable).
         """
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: {
-                "error": {
-                    "code": "ERROR_NO_BASECLIENT",
-                    "message": "integration does not subclass BaseClient",
-                    "exit_code": 11,
-                },
-            },
+        already = (
+            '{"auth_types":[{"type":"APIKey","name":"primary",'
+            '"interpolated":true,"xsoar_param_map":{"api_key":"key"}}],'
+            '"other_connection":[]}'
         )
-        env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
-        assert env["verdict"]["would_commit"] is False
-        assert "not parity-tested" in env["verdict"]["reason"].lower()
-        # Surfaces the two valid resolutions for the operator.
-        assert "interpolated: true" in env["verdict"]["reason"]
-        assert "docker/env" in env["verdict"]["reason"]
-
-    def test_apimodule_cannot_verify_non_interpolated_blocks(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
-        mock_csv: list[dict],
-    ) -> None:
-        """APIMODULE_INTEGRATION_CANNOT_VERIFY on a non-interpolated auth
-        must BLOCK (would_commit=False) and map to a non-zero dry-run exit
-        code.
-        """
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: {
-                "error": {
-                    "code": "APIMODULE_INTEGRATION_CANNOT_VERIFY",
-                    "message": "Client subclasses MicrosoftApiModule",
-                    "exit_code": 15,
-                },
-            },
-        )
-        env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
-        assert env["verdict"]["would_commit"] is False
-        assert ws_api.dry_run_exit_code(env) != 0
-
-    def test_docker_unavailable_inconclusive_blocks(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
-        mock_csv: list[dict],
-    ) -> None:
-        """Docker/env unavailable surfaces as a per-connection
-        ``inconclusive`` status. ``inconclusive`` is NOT in
-        _PARITY_OK_STATUSES, so the gate must BLOCK (would_commit=False).
-        """
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: {
-                "integration": "MyIntegration",
-                "auth_parity": {
-                    "primary": {"status": "inconclusive", "diffs": []},
-                },
-                "diagnostics": {},
-            },
-        )
-        env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
-        assert env["verdict"]["would_commit"] is False
-        assert ws_api.dry_run_exit_code(env) != 0
+        env = ws_api.dry_run_auth("MyIntegration", already)
+        assert env["verdict"]["would_commit"] is True
+        assert env["parity"].get("forced_interpolated") is False
 
     def test_integration_not_found_returns_would_commit_false(
         self,
@@ -304,19 +190,9 @@ class TestDryRunAuthEnvelopeShape:
             "save_csv",
             lambda _r: (_ for _ in ()).throw(AssertionError("must not write")),
         )
-        parity_called = {"value": False}
-
-        def _exploding_parity(**_kwargs):  # noqa: ANN003
-            parity_called["value"] = True
-            raise AssertionError("parity must not run after not-found")
-
-        monkeypatch.setattr(
-            ws_api, "_run_auth_parity_for_set_auth", _exploding_parity
-        )
         env = ws_api.dry_run_auth("Nope", _VALID_AUTH_JSON)
         assert env["verdict"]["would_commit"] is False
         assert "not found" in env["verdict"]["reason"]
-        assert parity_called["value"] is False
 
 
 # ---------------------------------------------------------------------------
@@ -602,3 +478,103 @@ class TestCsvUntouchedByDryRun:
             "dry_run_auth() mutated the CSV file! This is a critical "
             "regression — dry-run MUST be read-only."
         )
+
+
+# ---------------------------------------------------------------------------
+# 6) _force_interpolated_auth_details — always-interpolate gate helper
+# ---------------------------------------------------------------------------
+
+
+class TestForceInterpolatedAuthDetails:
+    """ALWAYS-INTERPOLATE GATE (2026-06-09): every auth_types[] entry must end
+    up carrying ``interpolated: true`` before the cell is committed.
+    """
+
+    def test_sets_interpolated_true_on_every_entry(self) -> None:
+        raw = (
+            '{"auth_types":['
+            '{"type":"APIKey","name":"a","xsoar_param_map":{"api_key":"key"}},'
+            '{"type":"Plain","name":"b","xsoar_param_map":'
+            '{"credentials.identifier":"username","credentials.password":"password"}}'
+            '],"other_connection":[]}'
+        )
+        out, changed = ws_api._force_interpolated_auth_details(raw)
+        payload = json.loads(out)
+        assert changed is True
+        assert all(e["interpolated"] is True for e in payload["auth_types"])
+
+    def test_idempotent_when_already_interpolated(self) -> None:
+        raw = (
+            '{"auth_types":[{"type":"APIKey","name":"a","interpolated":true,'
+            '"xsoar_param_map":{"api_key":"key"}}],"other_connection":[]}'
+        )
+        out, changed = ws_api._force_interpolated_auth_details(raw)
+        assert changed is False
+        assert out == raw  # unchanged string when nothing to force
+
+    def test_overwrites_explicit_false(self) -> None:
+        raw = (
+            '{"auth_types":[{"type":"APIKey","name":"a","interpolated":false,'
+            '"xsoar_param_map":{"api_key":"key"}}],"other_connection":[]}'
+        )
+        out, changed = ws_api._force_interpolated_auth_details(raw)
+        payload = json.loads(out)
+        assert changed is True
+        assert payload["auth_types"][0]["interpolated"] is True
+
+    def test_malformed_json_returns_unchanged(self) -> None:
+        out, changed = ws_api._force_interpolated_auth_details("not json {")
+        assert changed is False
+        assert out == "not json {"
+
+    def test_missing_auth_types_returns_unchanged(self) -> None:
+        raw = '{"other_connection":[]}'
+        out, changed = ws_api._force_interpolated_auth_details(raw)
+        assert changed is False
+        assert out == raw
+
+
+class TestSetAuthForcesInterpolatedCommit:
+    """The real ``set_integration_auth`` path persists the forced-interpolated
+    payload (every entry carries ``interpolated: true``) without ever invoking
+    the parity analyzer.
+    """
+
+    _AUTH_JSON = (
+        '{"auth_types":[{"type":"APIKey","name":"primary",'
+        '"xsoar_param_map":{"api_key":"key"}}],"other_connection":[]}'
+    )
+
+    def test_commit_persists_forced_interpolated_cell(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        committed: dict = {}
+
+        row = {"Integration ID": "MyIntegration", "Auth Details": ""}
+        monkeypatch.setattr(ws_api, "load_csv", lambda: [row])
+        monkeypatch.setattr(ws_api, "save_csv", lambda _rows: None)
+
+        # The parity analyzer must NEVER be called by the always-interpolate gate.
+        def _exploding_parity(**_kwargs):  # noqa: ANN003
+            raise AssertionError("parity analyzer must not be invoked")
+
+        monkeypatch.setattr(
+            ws_api, "_run_auth_parity_for_set_auth", _exploding_parity
+        )
+
+        # Capture what gets handed to the state machine for persistence.
+        def _capture_apply(row, target, value, *, verb):  # noqa: ANN001
+            committed["value"] = value
+            return [], None
+
+        monkeypatch.setattr(ws_api, "apply_step_action", _capture_apply)
+        monkeypatch.setattr(ws_api, "current_step", lambda _row: None)
+
+        result = ws_api.set_integration_auth("MyIntegration", self._AUTH_JSON)
+
+        assert "error" not in result
+        persisted = json.loads(committed["value"])
+        assert all(e["interpolated"] is True for e in persisted["auth_types"])
+        # The structural-skip stub is surfaced in the result.
+        assert "skipped" in result["parity"]
+        assert result["parity"].get("forced_interpolated") is True

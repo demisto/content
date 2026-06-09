@@ -250,35 +250,42 @@ class TestSetIntegrationAuthSeedOverlap:
         # The auth_types[].name is cited verbatim.
         assert "user_creds" in msg
 
-    def test_non_overlapping_seed_overrides_are_passed_to_parity(
+    def test_non_overlapping_seed_overrides_clear_the_overlap_gate(
         self, monkeypatch: pytest.MonkeyPatch, mock_csv: list[dict]
     ) -> None:
-        """Overrides that don't overlap reach the parity gate function
-        unchanged. We only assert the kwargs the parity gate sees —
-        not the downstream CSV write, because the test fixture row
-        intentionally has no upstream-step progress (assignee not set
-        etc.) so the state-machine apply_step_action would reject. The
-        parity-gate forwarding is the contract under test here; the
-        downstream cascade is covered elsewhere.
-        """
-        captured: dict = {}
+        """Overrides that don't overlap clear the overlap check, so the call
+        proceeds past it to the always-interpolate gate.
 
-        def _capturing_parity(**kwargs):  # noqa: ANN003
-            captured.update(kwargs)
-            return {"integration": "MyIntegration", "auth_parity": {}, "diagnostics": {}}
+        ALWAYS-INTERPOLATE GATE (2026-06-09): the parity analyzer is no longer
+        invoked by ``set-auth`` (``_run_auth_parity_for_set_auth`` is patched
+        to raise so the test fails loudly if anything ever calls it again).
+        With non-overlapping overrides, the overlap rejection does NOT fire,
+        so the result is NOT an ERROR_SEED_AUTH_OVERLAP envelope. The fixture
+        row has no upstream-step progress, so the downstream persist raises a
+        WorkflowError instead of committing — that is expected and is covered
+        by the cascade tests elsewhere.
+        """
+
+        def _exploding_parity(**_kwargs):  # noqa: ANN003
+            raise AssertionError(
+                "always-interpolate gate must NOT invoke the parity analyzer"
+            )
 
         monkeypatch.setattr(
-            ws_api, "_run_auth_parity_for_set_auth", _capturing_parity
+            ws_api, "_run_auth_parity_for_set_auth", _exploding_parity
         )
 
-        ws_api.set_integration_auth(
+        result = ws_api.set_integration_auth(
             "MyIntegration",
             self._AUTH_JSON,
             seed_overrides={"certificate_thumbprint": "A" * 40},
         )
 
-        # No overlap → parity was invoked with our overrides intact.
-        assert captured.get("seed_overrides") == {"certificate_thumbprint": "A" * 40}
+        # No overlap → the call moved past the overlap gate. The error (if
+        # any) must NOT be the seed-overlap rejection.
+        err = result.get("error")
+        if isinstance(err, dict):
+            assert err.get("code") != "ERROR_SEED_AUTH_OVERLAP"
 
 
 # ---------------------------------------------------------------------------
