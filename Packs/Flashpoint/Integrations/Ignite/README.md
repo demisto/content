@@ -35,6 +35,8 @@ If you are upgrading from a Flashpoint integration, please refer to the [Migrati
     | Fetch compromised credentials alerts having symbol in password | Filters the incoming compromised credentials alerts with passwords having symbols. | False |
     | Fetch compromised credentials alerts having minimum length of password | Filters the incoming compromised credentials alerts with passwords has minimum length. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
+    | Enable Exact Match for IOC Enrichment | Whether to use exact matching for indicator values by default in enrichment commands \(ip, domain, file, and url\). This behavior can be overridden for individual commands using the exact_match argument. | False |
+    | Reputation commands context limit | Maximum number of entries stored per reputation command result for both relationships \(e.g. related IPs\) and enrichments \(e.g. domains, emails, CVEs\). Lowering this value improves performance and reduces context size, but may omit some details. Raising it preserves more details at the cost of larger context payloads and potential performance degradation. Default is 50. | False |
     | Create relationships | Create relationships between indicators as part of enrichment. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -1014,7 +1016,7 @@ Looks up the "IP" type indicator details. The reputation of the IP address is de
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | A comma-separated list of IP addresses. | Required |
-| exact_match | Whether to perform an exact match on the IP address value. Possible values are: True, False. Default is False. | Optional |
+| exact_match | Whether to perform an exact match on the IP address value. Possible values are: True, False. | Optional |
 
 #### Context Output
 
@@ -2048,7 +2050,7 @@ Looks up the "URL" type indicator details. The reputation of the URL is decided 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | A comma-separated list of URLs. | Required |
-| exact_match | Whether to perform an exact match on the URL value. Possible values are: True, False. Default is False. | Optional |
+| exact_match | Whether to perform an exact match on the URL value. Possible values are: True, False. | Optional |
 
 #### Context Output
 
@@ -2244,7 +2246,7 @@ Looks up the "Domain" type indicator details. The reputation of the domain is de
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | A comma-separated list of domains. | Required |
-| exact_match | Whether to perform an exact match on the domain value. Possible values are: True, False. Default is False. | Optional |
+| exact_match | Whether to perform an exact match on the domain value. Possible values are: True, False. | Optional |
 
 #### Context Output
 
@@ -2438,7 +2440,7 @@ Looks up the "File" type indicator details. The reputation of the file is decide
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file | List of files. | Required |
-| exact_match | Whether to perform an exact match on the file hash value. Possible values are: True, False. Default is False. | Optional |
+| exact_match | Whether to perform an exact match on the file hash value. Possible values are: True, False. | Optional |
 
 #### Context Output
 
