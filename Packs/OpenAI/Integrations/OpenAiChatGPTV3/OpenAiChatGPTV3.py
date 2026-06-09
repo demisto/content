@@ -73,6 +73,7 @@ class ApiPaths:
     """
 
     CHAT_COMPLETIONS = "v1/chat/completions"
+    RESPONSES = "v1/responses"
     AUDIT_LOGS = "v1/organization/audit_logs"
 
     @classmethod
@@ -302,6 +303,35 @@ class OpenAiClient(BaseClient):
             f"top_p={options.get(ArgAndParamNames.TOP_P)}"
         )
         return self._http_request(method="POST", url_suffix=ApiPaths.CHAT_COMPLETIONS, json_data=options, headers=self.headers)
+
+    # region Responses API
+    def create_response(self, body: dict[str, Any]) -> dict[str, Any]:
+        """Call the OpenAI Responses API (POST /v1/responses).
+
+        Uses the regular OpenAI API key and the Server URL base.
+
+        Args:
+            body: The full JSON body to send (model, input, and optional params).
+
+        Returns:
+            The parsed JSON response dict from the API.
+        """
+        demisto.debug(
+            f"[API Responses] Calling | model={body.get('model')} | "
+            f"max_output_tokens={body.get('max_output_tokens')} | "
+            f"temperature={body.get('temperature')} | "
+            f"top_p={body.get('top_p')} | "
+            f"reasoning_effort={body.get('reasoning', {}).get('effort') if body.get('reasoning') else None} | "
+            f"background={body.get('background')}"
+        )
+        return self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.RESPONSES,
+            json_data=body,
+            headers=self.headers,
+        )
+
+    # endregion
 
     # region Event Collector - Audit Logs (Admin API)
     def get_audit_logs(
@@ -805,6 +835,172 @@ def create_soc_email_template_command(client: OpenAiClient, args: dict[str, Any]
         CommandResults(outputs_prefix="OpenAiChatGPTV3.SocEmailTemplate", outputs={"Response": response}, replace_existing=True)
     )
     return send_message_command_results
+
+
+def extract_response_output_text(response: dict[str, Any]) -> str:
+    """Extract the assistant's text from a Responses API response.
+
+    The Responses API returns output as a list of message objects, each containing
+    a list of content blocks. This extracts the first ``output_text`` block.
+
+    Args:
+        response: The parsed JSON response from ``POST /v1/responses``.
+
+    Returns:
+        The assistant's text content.
+
+    Raises:
+        DemistoException: If the expected structure is missing or empty.
+    """
+    output: list = response.get("output") or []
+    if not output:
+        raise DemistoException("Could not retrieve output from Responses API: 'output' field is empty or missing.")
+
+    content: list = output[0].get("content") or []
+    if not content:
+        raise DemistoException("Could not retrieve output from Responses API: 'output[0].content' is empty or missing.")
+
+    text: str = content[0].get("text") or ""
+    if not text:
+        raise DemistoException("Could not retrieve output from Responses API: 'output[0].content[0].text' is empty.")
+
+    demisto.debug(f"[Responses] Extracted assistant output | length={len(text)} chars")
+    return text
+
+
+def create_response_command(client: OpenAiClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+    """Execute the ``gpt-create-response`` command using the OpenAI Responses API.
+
+    Builds the request body from command arguments (falling back to instance params
+    where applicable), calls the Responses API, manages conversation context via
+    ``previous_response_id`` for multi-turn conversations, and returns structured
+    ``CommandResults``.
+
+    Conversation continuity:
+        The Responses API natively supports multi-turn conversations through the
+        ``previous_response_id`` field. After each call, the response ``id`` is stored
+        in the XSOAR context at ``OpenAiChatGPTV3.ResponsesConversation``. On subsequent
+        calls (when ``reset_conversation_history`` is ``False``), this ID is sent as
+        ``previous_response_id`` so the model retains full conversation context
+        server-side — no need to re-send prior messages.
+
+    Note:
+        This command uses a **separate** context key (``ResponsesConversation``) from
+        the existing ``gpt-send-message`` command (``Conversation``) to avoid clashing.
+
+    Args:
+        client: The configured ``OpenAiClient`` instance.
+        args: Command arguments from ``demisto.args()``.
+        params: Instance parameters from ``demisto.params()``.
+
+    Returns:
+        A ``CommandResults`` object with the conversation context and readable output.
+    """
+    message: str = args.get(ArgAndParamNames.MESSAGE, "")
+    if not message:
+        raise DemistoException("The 'message' argument is required.")
+
+    reset_conversation_history: bool = argToBoolean(args.get(ArgAndParamNames.RESET_CONVERSATION_HISTORY, "no"))
+
+    # Resolve model: command arg > instance param
+    model: str = args.get(ArgAndParamNames.MODEL, "") or client.model
+    if not model:
+        raise DemistoException("No model specified. Provide it as a command argument or configure it in the instance settings.")
+
+    # Build the API request body
+    body: dict[str, Any] = {
+        "model": model,
+        "input": message,
+    }
+
+    # Conversation continuity via previous_response_id.
+    # The Responses API keeps the full conversation server-side; we only need to
+    # pass the last response ID to continue the thread.
+    # Uses a SEPARATE context key (ResponsesConversation) to avoid clashing with
+    # the Chat Completions-based gpt-send-message command (Conversation).
+    if not reset_conversation_history:
+        conversation_ctx = demisto.context().get("OpenAiChatGPTV3", {}).get("ResponsesConversation")
+        previous_response_id: str | None = None
+        if isinstance(conversation_ctx, list) and conversation_ctx:
+            previous_response_id = conversation_ctx[-1].get("response_id") if isinstance(conversation_ctx[-1], dict) else None
+        elif isinstance(conversation_ctx, dict):
+            previous_response_id = conversation_ctx.get("response_id")
+
+        if previous_response_id:
+            body["previous_response_id"] = previous_response_id
+            demisto.debug(f"[Responses] Continuing conversation | previous_response_id={previous_response_id}")
+        else:
+            demisto.debug("[Responses] No previous response ID found - starting new conversation.")
+    else:
+        demisto.debug("[Responses] Conversation history reset requested - starting fresh.")
+
+    # max_output_tokens: command arg > instance param (maps from max_tokens param)
+    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS) or params.get(ArgAndParamNames.MAX_TOKENS)
+    if max_output_tokens:
+        body["max_output_tokens"] = int(max_output_tokens)
+
+    # temperature: command arg > instance param
+    temperature = args.get(ArgAndParamNames.TEMPERATURE) or params.get(ArgAndParamNames.TEMPERATURE)
+    if temperature:
+        body["temperature"] = float(temperature)
+
+    # top_p: command arg > instance param
+    top_p = args.get(ArgAndParamNames.TOP_P) or params.get(ArgAndParamNames.TOP_P)
+    if top_p:
+        body["top_p"] = float(top_p)
+
+    # reasoning_effort (only for reasoning model families: o1, o3, o4, gpt-5*)
+    reasoning_effort = args.get("reasoning_effort")
+    if reasoning_effort:
+        body["reasoning"] = {"effort": reasoning_effort}
+
+    # background
+    background = args.get("background")
+    if background is not None:
+        body["background"] = argToBoolean(background)
+
+    # compact_threshold - validated but not sent to API; for future context compaction logic
+    compact_threshold = args.get("compact_threshold")
+    if compact_threshold is not None:
+        compact_threshold_val = int(compact_threshold)
+        if compact_threshold_val < 1000:
+            raise DemistoException("compact_threshold must be at least 1000.")
+
+    # Call the Responses API
+    response = client.create_response(body)
+
+    # Extract the assistant's reply
+    assistant_message = extract_response_output_text(response)
+
+    # Store conversation step with response_id for multi-turn continuity
+    response_id = response.get("id", "")
+    conversation_step = [{
+        Roles.USER: message,
+        Roles.ASSISTANT: assistant_message,
+        "response_id": response_id,
+    }]
+
+    # Extract usage info
+    usage: dict[str, Any] = response.get("usage") or {}
+
+    readable_output = (
+        f"**ChatGPT (Responses API):**\n\n{assistant_message}\n\n"
+        f"---\n"
+        f"**Tokens Used:**\n"
+        f"- Input: {usage.get('input_tokens', 'N/A')}\n"
+        f"- Output: {usage.get('output_tokens', 'N/A')}\n"
+        f"- Total: {usage.get('total_tokens', 'N/A')}\n"
+        f"- Model: {response.get('model', model)}\n"
+        f"- Response ID: {response_id}"
+    )
+
+    return CommandResults(
+        outputs_prefix="OpenAiChatGPTV3.ResponsesConversation",
+        outputs=conversation_step,
+        replace_existing=True,
+        readable_output=readable_output,
+        raw_response=response,
+    )
 
 
 # region Helpers - JSON parsing
@@ -1644,6 +1840,7 @@ COMMAND_MAP: dict[str, Callable[["OpenAiClient", dict[str, Any], dict[str, Any]]
     "gpt-check-email-header": lambda client, args, params: check_email_headers_command(client=client, args=args),
     "gpt-check-email-body": lambda client, args, params: check_email_body_command(client=client, args=args),
     "gpt-create-soc-email-template": lambda client, args, params: create_soc_email_template_command(client=client, args=args),
+    "gpt-create-response": lambda client, args, params: create_response_command(client=client, args=args, params=params),
     "fetch-events": lambda client, args, params: fetch_events_command(client=client, params=params),
     "openai-get-events": lambda client, args, params: get_events_command(client=client, args=args, params=params),
 }

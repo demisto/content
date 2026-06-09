@@ -345,6 +345,73 @@ script:
     - contextPath: OpenAiChatGPTV3.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
+  - name: gpt-create-response
+    description: Send a message to the OpenAI Responses API and receive the generated response. Supports multi-turn conversations via previous_response_id, reasoning effort control for o-series and gpt-5 models, and background execution.
+    arguments:
+    - name: message
+      required: true
+      description: The user message to send.
+
+    - name: reset_conversation_history
+      required: false
+      description: Discard the existing OpenAiChatGPTV3.ResponsesConversation and start fresh.
+      defaultValue: 'no'
+      predefined:
+      - 'yes'
+      - 'no'
+
+    - name: max_tokens
+      required: false
+      description: The maximum number of output tokens. Falls back to instance config. Maps internally to the API body field max_output_tokens.
+
+    - name: temperature
+      required: false
+      description: Falls back to instance config. Range 0-2. Sets the randomness in responses.
+
+    - name: top_p
+      required: false
+      description: Falls back to instance config. Range 0-1. Enables nucleus sampling.
+
+    - name: reasoning_effort
+      required: false
+      description: Reasoning effort level. Honored only for reasoning families (o1, o3, o4, gpt-5*); silently dropped on others. Maps to body reasoning.effort. gpt-5 and o-series models only. Default medium. xhigh is supported for all models after gpt-5.1-codex-max.
+      auto: PREDEFINED
+      predefined:
+      - 'none'
+      - 'minimal'
+      - 'low'
+      - 'medium'
+      - 'high'
+      - 'xhigh'
+
+    - name: background
+      required: false
+      description: Whether to run the model response in the background.
+      predefined:
+      - 'true'
+      - 'false'
+
+    - name: compact_threshold
+      required: false
+      description: Token threshold at which compaction should be triggered for this entry. Minimum 1000.
+
+    - name: model
+      required: false
+      description: The model to use. Use the get-list-models command to see available models. Falls back to instance config.
+
+    outputs:
+    - contextPath: OpenAiChatGPTV3.ResponsesConversation
+      description: Conversation state including the response_id for multi-turn continuity.
+      type: Unknown
+    - contextPath: OpenAiChatGPTV3.ResponsesConversation.user
+      description: The user message sent.
+      type: String
+    - contextPath: OpenAiChatGPTV3.ResponsesConversation.assistant
+      description: The assistant response text.
+      type: String
+    - contextPath: OpenAiChatGPTV3.ResponsesConversation.response_id
+      description: The OpenAI response ID used for multi-turn conversation continuity.
+      type: String
   runonce: false
   script: ''
   type: python
