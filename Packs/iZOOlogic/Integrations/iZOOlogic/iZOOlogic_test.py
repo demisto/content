@@ -568,6 +568,23 @@ class TestClient:
         assert "incidents" in result
         assert "success" not in result  # _validate_api_response strips the wrapper
 
+    def test_fetch_events_page_rate_limit_propagates(self, mocker: MockerFixture, mock_client: Client):
+        """A 429 rate-limit error must propagate and NOT be treated as an auth failure
+        or silently swallowed.
+
+        The 429 is raised by the HTTP layer, so on_auth_failure (which only handles
+        401 re-auth) is never invoked and the error surfaces to the caller.
+        """
+        rate_limit_error = DemistoException("Error in API call [429] - Too Many Requests")
+        mocker.patch.object(mock_client, "_http_request", side_effect=rate_limit_error)
+        on_auth_failure_spy = mocker.patch.object(mock_client._auth_handler, "on_auth_failure", new_callable=AsyncMock)
+
+        with pytest.raises(DemistoException, match="429"):
+            mock_client.fetch_events_page("1700000000", "1700100000")
+
+        # 429 is not an auth failure — re-authentication must not be triggered.
+        on_auth_failure_spy.assert_not_called()
+
 
 # endregion
 
@@ -577,22 +594,22 @@ class TestClient:
 class TestTestModule:
     def test_success(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
         mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
-        assert izoologic_test_module(mock_client, [2]) == "ok"
+        assert izoologic_test_module(mock_client, [2], is_fetch_events=True) == "ok"
 
     def test_success_empty_response(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
         """Empty result still proves connectivity — test passes."""
         mocker.patch.object(mock_client, "fetch_events_page", return_value=empty_result)
-        assert izoologic_test_module(mock_client, [2]) == "ok"
+        assert izoologic_test_module(mock_client, [2], is_fetch_events=True) == "ok"
 
     @pytest.mark.parametrize("error_msg", ["401 Unauthorized", "403 Forbidden", "unauthorized"])
     def test_auth_failure(self, mocker: MockerFixture, mock_client: Client, error_msg: str):
         mocker.patch.object(mock_client, "fetch_events_page", side_effect=DemistoException(error_msg))
-        assert "Authorization Error" in izoologic_test_module(mock_client, [2])
+        assert "Authorization Error" in izoologic_test_module(mock_client, [2], is_fetch_events=True)
 
     def test_other_error_raises(self, mocker: MockerFixture, mock_client: Client):
         mocker.patch.object(mock_client, "fetch_events_page", side_effect=DemistoException("timeout"))
         with pytest.raises(DemistoException, match="timeout"):
-            izoologic_test_module(mock_client, [2])
+            izoologic_test_module(mock_client, [2], is_fetch_events=True)
 
     def test_caps_results_to_one(
         self,
@@ -605,26 +622,42 @@ class TestTestModule:
         mocker.patch.object(
             mock_client,
             "fetch_events_page",
-            side_effect=[events_result_with_pagination, events_result],
+            side_effect=[events_result_with_pagination, events_result, events_result],
         )
-        assert izoologic_test_module(mock_client, [2]) == "ok"
+        assert izoologic_test_module(mock_client, [2], is_fetch_events=True) == "ok"
 
-    def test_validates_each_configured_type(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
-        """test-module fetches one event per configured type, filtering by each type code."""
+    def test_validates_command_then_each_configured_type_when_fetch_enabled(
+        self, mocker: MockerFixture, mock_client: Client, events_result: dict
+    ):
+        """With fetch enabled, test-module validates the command path (no type filter)
+        then fetches one event per configured type, filtering by each type code."""
         mock_fetch = mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
 
-        assert izoologic_test_module(mock_client, [1, 2, 3]) == "ok"
+        assert izoologic_test_module(mock_client, [1, 2, 3], is_fetch_events=True) == "ok"
 
-        # One API call per configured type, each filtered by its event_type code.
-        assert mock_fetch.call_count == 3
-        called_types = [call.kwargs["event_type"] for call in mock_fetch.call_args_list]
-        assert called_types == [1, 2, 3]
+        # First call validates command functionality (search, no event_type),
+        # then one call per configured type filtered by its event_type code.
+        called_types = [call.kwargs.get("event_type") for call in mock_fetch.call_args_list]
+        assert called_types == [None, 1, 2, 3]
 
-    def test_no_configured_types_still_ok(self, mocker: MockerFixture, mock_client: Client):
-        """With no configured types, test-module makes no fetch calls but still returns ok."""
-        mock_fetch = mocker.patch.object(mock_client, "fetch_events_page")
-        assert izoologic_test_module(mock_client, []) == "ok"
-        mock_fetch.assert_not_called()
+    def test_collector_skipped_when_fetch_disabled(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """With fetch disabled, only the command path is validated — the per-type
+        collector checks are skipped entirely."""
+        mock_fetch = mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+
+        assert izoologic_test_module(mock_client, [1, 2, 3], is_fetch_events=False) == "ok"
+
+        # Only the command-functionality call runs (no event_type); no per-type calls.
+        called_types = [call.kwargs.get("event_type") for call in mock_fetch.call_args_list]
+        assert called_types == [None]
+
+    def test_no_configured_types_still_ok(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
+        """With no configured types but fetch enabled, only the command path runs."""
+        mock_fetch = mocker.patch.object(mock_client, "fetch_events_page", return_value=events_result)
+        assert izoologic_test_module(mock_client, [], is_fetch_events=True) == "ok"
+        # Only the command-functionality call (no event_type); no per-type calls.
+        called_types = [call.kwargs.get("event_type") for call in mock_fetch.call_args_list]
+        assert called_types == [None]
 
 
 # endregion
@@ -763,6 +796,17 @@ class TestIsInRange:
         assert _is_in_range({}, 100, 200) is False
         assert _is_in_range({}, None, None) is True
 
+    def test_from_threshold_zero_epoch_boundary(self):
+        """A from_threshold of 0 (epoch) is treated as a real bound via the
+        ``is not None`` check, not skipped as a falsy value.
+
+        createdOn == 0 is inclusive at the boundary, while a negative createdOn
+        is rejected. This locks in the is-not-None boundary behavior.
+        """
+        assert _is_in_range({"createdOn": "0"}, 0, None) is True
+        assert _is_in_range({"createdOn": "100"}, 0, None) is True
+        assert _is_in_range({"createdOn": "-1"}, 0, None) is False
+
 
 # endregion
 
@@ -844,7 +888,7 @@ class TestComputeNewState:
             # Single event at max
             (
                 [{"incidentID": "a", "createdOn": "100"}, {"incidentID": "b", "createdOn": "200"}],
-                "200",
+                200,
                 ["b"],
             ),
             # Multiple events at max timestamp
@@ -854,13 +898,13 @@ class TestComputeNewState:
                     {"incidentID": "b", "createdOn": "200"},
                     {"incidentID": "c", "createdOn": "200"},
                 ],
-                "200",
+                200,
                 ["b", "c"],
             ),
             # Single event
             (
                 [{"incidentID": "x", "createdOn": "500"}],
-                "500",
+                500,
                 ["x"],
             ),
         ],
@@ -868,12 +912,28 @@ class TestComputeNewState:
     def test_compute_new_state(
         self,
         consumed: list[dict],
-        expected_created_on: str,
+        expected_created_on: int,
         expected_ids: list[str],
     ):
         state = _compute_new_state(consumed, type_key="1")
         assert state["last_created_on"] == expected_created_on
         assert set(state["last_ids"]) == set(expected_ids)
+
+    def test_dedup_with_inconsistent_timestamp_formats(self):
+        """last_ids collects ALL IDs at the max createdOn even when the API returns
+        inconsistently-formatted timestamps (e.g. "200" vs " 200").
+
+        This protects the boundary dedup logic: comparison is normalized to int so a
+        whitespace-padded duplicate of the max timestamp is still grouped together.
+        """
+        consumed = [
+            {"incidentID": "a", "createdOn": "100"},
+            {"incidentID": "b", "createdOn": "200"},
+            {"incidentID": "c", "createdOn": " 200"},
+        ]
+        state = _compute_new_state(consumed, type_key="1")
+        assert state["last_created_on"] == 200
+        assert set(state["last_ids"]) == {"b", "c"}
 
 
 # endregion
@@ -891,7 +951,7 @@ class TestFetchForType:
         assert type_key == "2"
         assert len(cortex_events) == 3
         # State should have last_created_on = max createdOn (ascending sort, last consumed)
-        assert state["last_created_on"] == "1700000200"
+        assert state["last_created_on"] == 1700000200
         # Only the event at max createdOn should be in last_ids
         assert state["last_ids"] == ["abc123"]
 
@@ -915,7 +975,7 @@ class TestFetchForType:
         ids = [e["incidentID"] for e in consumed_events]
         assert ids == ["ghi789", "def456"]
         # last_created_on = createdOn of the last consumed (def456 = 1700000100)
-        assert state["last_created_on"] == "1700000100"
+        assert state["last_created_on"] == 1700000100
         assert state["last_ids"] == ["def456"]
 
     def test_time_filter(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
@@ -954,7 +1014,7 @@ class TestFetchForType:
         type_key, cortex_events, state = _fetch_for_type(mock_client, 2, {}, 10000)
 
         assert cortex_events == []
-        assert state["last_created_on"] == "1700100000"
+        assert state["last_created_on"] == 1700100000
         assert state["last_ids"] == []
 
     def test_all_filtered_out_advances_cursor(self, mocker: MockerFixture, mock_client: Client, events_result: dict):
@@ -966,7 +1026,7 @@ class TestFetchForType:
         _, cortex_events, state = _fetch_for_type(mock_client, 2, type_state, 10000)
 
         assert cortex_events == []
-        assert state["last_created_on"] == "1700100000"
+        assert state["last_created_on"] == 1700100000
         assert state["last_ids"] == []
 
     def test_state_update_with_multiple_same_timestamp(self, mocker: MockerFixture, mock_client: Client):
@@ -986,7 +1046,7 @@ class TestFetchForType:
 
         _, _, state = _fetch_for_type(mock_client, 2, {}, 10000)
 
-        assert state["last_created_on"] == "200"
+        assert state["last_created_on"] == 200
         assert set(state["last_ids"]) == {"a", "b"}
 
     def test_large_date_range_raises(self, mocker: MockerFixture, mock_client: Client, empty_result: dict):
@@ -1137,7 +1197,7 @@ class TestFetchEventsCommand:
         assert len(sent_events) == 3
         last_run = mock_set.call_args[0][0]
         assert "2" in last_run
-        assert last_run["2"]["last_created_on"] == "1700000200"
+        assert last_run["2"]["last_created_on"] == 1700000200
         assert last_run["2"]["last_ids"] == ["abc123"]
 
     def test_multiple_types_concurrent(

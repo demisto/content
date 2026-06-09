@@ -329,6 +329,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
 
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
+    is_fetch_events = argToBoolean(params.get("isFetchEvents", False))
 
     # Parse and validate event types filter — default to all types if none specified
     event_types_filter = argToList(params.get("events_types_filter"))
@@ -348,6 +349,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "proxy": proxy,
         "event_type_codes": event_type_codes,
         "max_fetch": max_fetch,
+        "is_fetch_events": is_fetch_events,
     }
 
 
@@ -651,30 +653,39 @@ class Client(ContentClient):
 # =================================
 
 
-def test_module(client: Client, event_type_codes: list[int]) -> str:
-    """Test API connectivity by authenticating and fetching events per type.
+def test_module(client: Client, event_type_codes: list[int], is_fetch_events: bool) -> str:
+    """Test API connectivity, the event collector, and command functionality.
 
-    Validates the full configuration: for each configured event type it fetches
-    a single event (``max_results=1``) via the same ``_fetch_all_pages`` code
-    path as production. An empty result (no events) still proves connectivity —
-    the test passes. This catches a type that the configured credentials cannot
-    access, not just generic connectivity.
+    Always validates the command path (the incident-search flow) so the
+    integration's commands are verified regardless of configuration. The event
+    collector is validated only when ``is_fetch_events`` is enabled — fetching a
+    single event (``max_results=1``) per configured type via the same
+    ``_fetch_all_pages`` code path as production. An empty result (no events)
+    still proves connectivity. This catches a type the configured credentials
+    cannot access, not just generic connectivity.
 
     Args:
         client: The iZOOlogic client.
         event_type_codes: Configured event type codes to validate.
+        is_fetch_events: Whether event collection is enabled.
 
     Returns:
         'ok' if test passed, otherwise raises an exception.
     """
-    demisto.debug(f"[Test Module] Starting for {len(event_type_codes)} configured type(s)...")
+    demisto.debug(f"[Test Module] Starting (is_fetch_events={is_fetch_events})...")
     try:
         from_date = snap_to_day_boundary_utc(get_current_unix_timestamp(), "start")
         to_date = get_current_unix_timestamp()
 
-        # Validate each configured type; one event per type is enough to verify access.
-        for type_code in event_type_codes:
-            _fetch_all_pages(client, from_date=from_date, to_date=to_date, event_type=type_code, max_results=1)
+        # Always validate command functionality by running the incident-search command.
+        demisto.debug("[Test Module] Validating command functionality (incident search)...")
+        search_incidents_command(client, {})
+
+        # Validate the collector only when event collection is enabled.
+        if is_fetch_events:
+            demisto.debug(f"[Test Module] Validating collector for {len(event_type_codes)} configured type(s)...")
+            for type_code in event_type_codes:
+                _fetch_all_pages(client, from_date=from_date, to_date=to_date, event_type=type_code, max_results=1)
 
         demisto.debug("[Test Module] Success")
         return "ok"
@@ -920,8 +931,9 @@ def _compute_new_state(
     Returns:
         Updated state dict with ``last_created_on`` and ``last_ids``.
     """
-    max_created_on = consumed[-1].get("createdOn", "")
-    new_last_ids = [inc.get("incidentID", "") for inc in consumed if inc.get("createdOn") == max_created_on]
+    # Normalize createdOn to int to stay consistent with the int-based pipeline.
+    max_created_on = int(consumed[-1].get("createdOn", "0"))
+    new_last_ids = [inc.get("incidentID", "") for inc in consumed if int(inc.get("createdOn", "0")) == max_created_on]
 
     demisto.debug(
         f"[Fetch] Type {type_key}: {len(consumed)} events consumed. "
@@ -993,7 +1005,7 @@ def _fetch_for_type(
 
     if not consumed:
         demisto.debug(f"[Fetch] Type {type_key}: No new events.")
-        return type_key, [], {"last_created_on": to_date, "last_ids": []}
+        return type_key, [], {"last_created_on": int(to_date), "last_ids": []}
 
     demisto.debug(f"[Fetch] Type {type_key}: Consuming {len(consumed)} events")
     updated_state = _compute_new_state(consumed, type_key)
@@ -1314,7 +1326,7 @@ def main() -> None:
         command_func = COMMAND_MAP[command]
 
         if command == "test-module":
-            result = command_func(client, config["event_type_codes"])
+            result = command_func(client, config["event_type_codes"], config["is_fetch_events"])
             return_results(result)
         elif command == "fetch-events":
             command_func(client, config["max_fetch"], config["event_type_codes"])
