@@ -155,13 +155,22 @@ def get_events_for_type(
     start_offset: int,
     max_events: int,
 ) -> tuple[list[dict], dict]:
-    """Fetch audit trail events with full pagination handling.
+    """Fetch audit trail events with dedup-first pagination handling.
+
+    The pagination strategy is:
+    1. Always call the API with from_time and limit (offset=0 by default).
+    2. Dedup the returned events against last_run_ids (events from the previous
+       run that shared the same from_time).
+    3. If ALL events on a page are deduped (the entire page consists of events
+       we already fetched), use offset on the next call to skip past them.
+    4. Otherwise, advance from_time to the last event's timestamp and track
+       boundary IDs for dedup on the next page/run.
 
     Args:
         client: The Securiti API client.
         from_time: Epoch timestamp in milliseconds to start fetching from.
         last_run_ids: IDs of events from the last fetch at the boundary timestamp.
-        start_offset: Starting offset (non-zero only when resuming from special case).
+        start_offset: Starting offset (non-zero only when resuming after a full-page dedup).
         max_events: Maximum total events to fetch.
 
     Returns:
@@ -171,8 +180,6 @@ def get_events_for_type(
     current_from_time = from_time
     current_offset = start_offset
     current_dedup_ids = last_run_ids
-    # Track whether we stopped due to the special case (all same timestamp at offset boundary)
-    stopped_at_offset_boundary = False
 
     while len(all_events) < max_events:
         remaining = max_events - len(all_events)
@@ -189,99 +196,64 @@ def get_events_for_type(
             break
 
         # Deduplicate against previously fetched IDs at the boundary.
-        # This only applies on the first page after a time-based shift.
+        events_before_dedup = events
         events = dedup_events(events, current_dedup_ids)
-        current_dedup_ids = []  # Only dedup once
 
         if not events:
-            # All events were duplicates. Advance offset to skip past them.
+            # All events on this page were duplicates.
+            # Use offset on the next call to skip past these deduped events.
             current_offset += page_limit
-            if current_offset >= API_MAX_OFFSET:
-                demisto.debug(
-                    "All events on page were duplicates and offset is at max. Stopping."
-                )
-                break
             demisto.debug(
-                f"All events on page were duplicates. Advancing offset to {current_offset}."
+                f"All events on page were duplicates. Advancing offset to {current_offset} " f"to skip past deduped events."
             )
+            # Keep current_dedup_ids — we still need to dedup against the same set
             continue
+
+        # We got new (non-duplicate) events — reset offset to 0 for subsequent pages
+        # since we'll be advancing from_time instead.
+        current_offset = 0
+        current_dedup_ids = []  # Dedup IDs consumed
 
         all_events.extend(events)
         demisto.debug(f"Total events collected so far: {len(all_events)}")
 
-        # If we got fewer events than requested, there are no more pages (partial page)
-        if len(events) < page_limit:
+        # If we got fewer events than requested (before dedup), there are no more pages
+        if len(events_before_dedup) < page_limit:
             demisto.debug("Received fewer events than requested (partial page), no more pages.")
             break
 
-        # Calculate next offset
-        next_offset = current_offset + page_limit
+        # Advance from_time to the last event's timestamp for the next page.
+        last_event = events[-1]
+        last_event_time = last_event.get("event_time", current_from_time)
 
-        if next_offset >= API_MAX_OFFSET:
-            # Cannot use offset beyond 10,000 — need to switch pagination strategy.
-            last_event = events[-1]
-            last_event_time = last_event.get("event_time", current_from_time)
-
-            if last_event_time == current_from_time:
-                # SPECIAL CASE: All events on this full page share the same timestamp
-                # as our from_time filter. We CANNOT advance time — there may be more
-                # events at this timestamp beyond offset 10,000.
-                # Save the offset so the next fetch resumes from this exact position.
-                demisto.debug(
-                    f"All {len(events)} events share timestamp {last_event_time} "
-                    f"and page is full at offset boundary. "
-                    f"Saving offset={next_offset} for next run."
-                )
-                current_offset = next_offset
-                stopped_at_offset_boundary = True
-                break
-            else:
-                # Normal case: events have different timestamps.
-                # Advance from_time to the last event's timestamp and track boundary
-                # IDs for dedup on the next page.
-                boundary_ids = [
-                    e["id"] for e in all_events
-                    if e.get("event_time") == last_event_time and e.get("id")
-                ]
-                current_from_time = last_event_time
-                current_offset = 0
-                current_dedup_ids = boundary_ids
-                demisto.debug(
-                    f"Advancing from_time to {last_event_time} with "
-                    f"{len(boundary_ids)} boundary IDs for dedup."
-                )
-        else:
-            current_offset = next_offset
-            demisto.debug(f"Advancing offset to {current_offset}")
+        # Collect boundary IDs: all events in this page that share the last event's timestamp.
+        # These will be used for dedup on the next API call.
+        boundary_ids = [e["id"] for e in events if e.get("event_time") == last_event_time and e.get("id")]
+        current_from_time = last_event_time
+        current_dedup_ids = boundary_ids
+        demisto.debug(
+            f"Advancing from_time to {last_event_time} with " f"{len(boundary_ids)} boundary IDs for dedup on next page."
+        )
 
     # Build next_run state
     if all_events:
         last_event = all_events[-1]
         last_event_time = last_event.get("event_time", current_from_time)
 
-        if stopped_at_offset_boundary:
-            # Special case: save offset for next run, no dedup needed
-            next_run: dict[str, Any] = {
-                "from_time": last_event_time,
-                "offset": current_offset,
-                "last_fetched_ids": [],
-            }
-        else:
-            # Normal case: save boundary IDs for dedup, no offset needed
-            boundary_ids = [
-                e["id"] for e in all_events
-                if e.get("event_time") == last_event_time and e.get("id")
-            ]
-            next_run = {
-                "from_time": last_event_time,
-                "offset": 0,
-                "last_fetched_ids": boundary_ids,
-            }
+        # Collect all IDs at the boundary timestamp for dedup on the next run
+        boundary_ids = [e["id"] for e in all_events if e.get("event_time") == last_event_time and e.get("id")]
+        next_run: dict[str, Any] = {
+            "from_time": last_event_time,
+            "offset": 0,
+            "last_fetched_ids": boundary_ids,
+        }
     else:
+        # No events fetched. Preserve state for next run.
+        # If we advanced offset due to full-page dedup, save it so we resume from there.
         next_run = {
             "from_time": current_from_time,
             "offset": current_offset,
-            "last_fetched_ids": last_run_ids,
+            "last_fetched_ids": last_run_ids if current_offset == start_offset else [],
         }
 
     return all_events, next_run
@@ -316,24 +288,30 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
     return "ok"
 
 
-def get_events_command(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
+def get_events_command(client: Client, args: dict) -> CommandResults | str:
     """Manual command to get events from Securiti.
+
+    Performs a full fetch cycle with pagination, exactly like fetch-events,
+    but without state management (last_run). Intended for manual debugging/testing.
 
     Args:
         client: The Securiti API client.
         args: Command arguments.
 
     Returns:
-        Tuple of (events list, CommandResults).
+        CommandResults with events data, or a string message if events were pushed.
     """
     limit = arg_to_number(args.get("limit", 50)) or 50
     from_date = args.get("from_date")
+    should_push_events = argToBoolean(args.get("should_push_events", False))
 
     if from_date:
         from_time_dt = arg_to_datetime(from_date)
         from_time = int(from_time_dt.timestamp() * 1000) if from_time_dt else 0
     else:
         from_time = 0
+
+    demisto.debug(f"[get_events_command] from_time={from_time}, limit={limit}, should_push_events={should_push_events}")
 
     events, _ = get_events_for_type(
         client=client,
@@ -343,20 +321,27 @@ def get_events_command(client: Client, args: dict) -> tuple[list[dict], CommandR
         max_events=limit,
     )
 
+    demisto.debug(f"[get_events_command] Fetched {len(events)} events")
+
+    if should_push_events and events:
+        add_time_to_events(events)
+        send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        demisto.debug(f"[get_events_command] Pushed {len(events)} events to XSIAM")
+        return f"Successfully retrieved and pushed {len(events)} events to XSIAM."
+
     hr = tableToMarkdown(
         name="Securiti Audit Trail Events",
         t=events,
         headers=["id", "event_time", "activity_type", "object_type", "user_email", "message", "ip_address"],
         removeNull=True,
     )
-    return events, CommandResults(readable_output=hr)
+    return CommandResults(readable_output=hr)
 
 
 def fetch_events(
     client: Client,
     last_run: dict[str, Any],
     max_events_per_fetch: int,
-    fetch_audit_trails: bool,
 ) -> tuple[dict[str, Any], list[dict]]:
     """Fetch events from Securiti for XSIAM ingestion.
 
@@ -364,38 +349,34 @@ def fetch_events(
         client: The Securiti API client.
         last_run: Last run state dictionary.
         max_events_per_fetch: Maximum events to fetch per run.
-        fetch_audit_trails: Whether to fetch audit trail events.
 
     Returns:
         Tuple of (next_run dict, events list).
     """
-    all_events: list[dict] = []
     next_run: dict[str, Any] = {}
 
-    if fetch_audit_trails:
-        audit_state = last_run.get("audit_trail", {})
-        from_time = audit_state.get("from_time", get_first_fetch_time())
-        last_fetched_ids = audit_state.get("last_fetched_ids", [])
-        stored_offset = audit_state.get("offset", 0)
+    audit_state = last_run.get("audit_trail", {})
+    from_time = audit_state.get("from_time", get_first_fetch_time())
+    last_fetched_ids = audit_state.get("last_fetched_ids", [])
+    stored_offset = audit_state.get("offset", 0)
 
-        demisto.debug(
-            f"Fetching audit trail events from_time={from_time}, "
-            f"offset={stored_offset}, last_fetched_ids count={len(last_fetched_ids)}"
-        )
+    demisto.debug(
+        f"Fetching audit trail events from_time={from_time}, "
+        f"offset={stored_offset}, last_fetched_ids count={len(last_fetched_ids)}"
+    )
 
-        events, audit_next_run = get_events_for_type(
-            client=client,
-            from_time=from_time,
-            last_run_ids=last_fetched_ids,
-            start_offset=stored_offset,
-            max_events=max_events_per_fetch,
-        )
+    events, audit_next_run = get_events_for_type(
+        client=client,
+        from_time=from_time,
+        last_run_ids=last_fetched_ids,
+        start_offset=stored_offset,
+        max_events=max_events_per_fetch,
+    )
 
-        all_events.extend(events)
-        next_run["audit_trail"] = audit_next_run
-        demisto.debug(f"Fetched {len(events)} audit trail events")
+    next_run["audit_trail"] = audit_next_run
+    demisto.debug(f"Fetched {len(events)} audit trail events")
 
-    return next_run, all_events
+    return next_run, events
 
 
 """ MAIN FUNCTION """
@@ -414,7 +395,6 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    fetch_audit_trails = params.get("fetch_audit_trails", True)
     max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_MAX_EVENTS_PER_FETCH
 
     demisto.debug(f"Command being called is {command}")
@@ -434,12 +414,7 @@ def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == "securiti-get-events":
-            should_push_events = argToBoolean(args.pop("should_push_events"))
-            events, results = get_events_command(client, args)
-            return_results(results)
-            if should_push_events:
-                add_time_to_events(events)
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            return_results(get_events_command(client, args))
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
@@ -447,7 +422,6 @@ def main() -> None:  # pragma: no cover
                 client=client,
                 last_run=last_run,
                 max_events_per_fetch=max_events_per_fetch,
-                fetch_audit_trails=fetch_audit_trails,
             )
 
             add_time_to_events(events)

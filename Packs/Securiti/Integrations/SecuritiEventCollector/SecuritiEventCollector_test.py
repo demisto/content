@@ -11,10 +11,13 @@ from SecuritiEventCollector import (
 )
 
 
+BASE_URL = "https://test.securiti.ai"  # disable-secrets-detection
+
+
 def create_client() -> Client:
     """Create a test client instance."""
     return Client(
-        base_url="https://test.securiti.ai",
+        base_url=BASE_URL,
         api_key="test_api_key",
         api_secret="test_api_secret",
         tenant_id="test_tenant_id",
@@ -38,15 +41,17 @@ def generate_events(count: int, start_time: int = 1000000, start_id: int = 1, sa
     events = []
     for i in range(count):
         event_time = start_time if same_time else start_time + i
-        events.append({
-            "id": f"event_{start_id + i}",
-            "event_time": event_time,
-            "activity_type": "login",
-            "object_type": "session",
-            "user_email": f"user{start_id + i}@test.com",
-            "message": f"Test event {start_id + i}",
-            "ip_address": "127.0.0.1",
-        })
+        events.append(
+            {
+                "id": f"event_{start_id + i}",
+                "event_time": event_time,
+                "activity_type": "login",
+                "object_type": "session",
+                "user_email": f"user{start_id + i}@test.com",
+                "message": f"Test event {start_id + i}",
+                "ip_address": "127.0.0.1",
+            }
+        )
     return events
 
 
@@ -204,13 +209,18 @@ class TestGetEventsForType:
         """
         Given:
             The API returns full pages requiring multiple requests.
+            After the first full page, from_time advances to the last event's
+            timestamp and dedup IDs are tracked for the next page.
         When:
             get_events_for_type is called with max_events > page size.
         Then:
-            Events from all pages should be collected.
+            Events from all pages should be collected, with dedup applied
+            between pages based on boundary timestamps.
         """
         page1 = generate_events(10, start_time=1000, start_id=1)
-        page2 = generate_events(5, start_time=1010, start_id=11)
+        # Page 2 starts from from_time=1009 (last event of page1).
+        # event_10 (time=1009) will be deduped since it's in boundary IDs.
+        page2 = generate_events(5, start_time=1009, start_id=10)
 
         client = create_client()
 
@@ -223,8 +233,43 @@ class TestGetEventsForType:
                 max_events=20,
             )
 
-        assert len(events) == 15
-        assert next_run["from_time"] == 1014
+        # page1: 10 events, page2: 5 events minus 1 deduped (event_10) = 14 total
+        assert len(events) == 14
+        assert next_run["from_time"] == 1013
+
+    def test_multi_page_api_calls_use_correct_params(self):
+        """
+        Given:
+            The API returns full pages requiring multiple requests.
+        When:
+            get_events_for_type paginates.
+        Then:
+            The second API call should use from_time of the last event's timestamp
+            and offset=0 (not an incremented offset).
+        """
+        page1 = generate_events(10, start_time=1000, start_id=1)
+        page2 = generate_events(5, start_time=1009, start_id=10)
+
+        client = create_client()
+
+        with patch.object(client, "get_audit_trail_events", side_effect=[page1, page2]) as mock_fetch:
+            get_events_for_type(
+                client=client,
+                from_time=1000,
+                last_run_ids=[],
+                start_offset=0,
+                max_events=20,
+            )
+
+        # First call: from_time=1000, offset=0
+        first_call = mock_fetch.call_args_list[0]
+        assert first_call.kwargs["from_time"] == 1000
+        assert first_call.kwargs["offset"] == 0
+
+        # Second call: from_time advanced to 1009 (last event's time), offset=0
+        second_call = mock_fetch.call_args_list[1]
+        assert second_call.kwargs["from_time"] == 1009
+        assert second_call.kwargs["offset"] == 0
 
     def test_empty_response_preserves_state(self):
         """
@@ -258,7 +303,7 @@ class TestGetEventsForType:
         When:
             get_events_for_type is called.
         Then:
-            Duplicate events should be removed from the first page only.
+            Duplicate events should be removed from the first page.
         """
         mock_events = generate_events(5, start_time=1000)
         client = create_client()
@@ -275,83 +320,77 @@ class TestGetEventsForType:
         assert len(events) == 3
         assert events[0]["id"] == "event_3"
 
-    def test_offset_exceeds_max_switches_to_time_based(self):
+    def test_all_duplicates_advances_offset_then_fetches_new_events(self):
         """
         Given:
-            Pagination offset would exceed API_MAX_OFFSET (10000)
-            and events have different timestamps.
+            All events on the first page are duplicates of previously fetched events.
+            The second page (fetched with offset) contains new events.
         When:
-            get_events_for_type is called.
+            get_events_for_type processes the pages.
         Then:
-            Pagination should switch to time-based continuation by advancing
-            from_time to the last event's event_time, resetting offset,
-            and tracking boundary IDs for dedup.
+            Offset should advance to skip past deduped events, and new events
+            from the next page should be returned.
         """
-        page1 = generate_events(5000, start_time=1000, start_id=1)
-        page2 = generate_events(5000, start_time=6000, start_id=5001)
-        # After offset reaches 10000, should switch to time-based
-        page3 = generate_events(100, start_time=11000, start_id=10001)
+        dup_events = generate_events(3, start_time=1000)
+        new_events = generate_events(2, start_time=1001, start_id=10)
 
         client = create_client()
 
-        with patch.object(client, "get_audit_trail_events", side_effect=[page1, page2, page3]):
+        with patch.object(client, "get_audit_trail_events", side_effect=[dup_events, new_events]) as mock_fetch:
             events, next_run = get_events_for_type(
                 client=client,
                 from_time=1000,
-                last_run_ids=[],
+                last_run_ids=["event_1", "event_2", "event_3"],
                 start_offset=0,
-                max_events=15000,
+                max_events=100,
             )
 
-        assert len(events) == 10100
-        assert next_run["offset"] == 0  # normal case
+        assert len(events) == 2
+        assert events[0]["id"] == "event_10"
+        # Second call should use offset=3 (skipping past the 3 deduped events)
+        second_call = mock_fetch.call_args_list[1]
+        assert second_call.kwargs["offset"] == 3
 
-    def test_all_same_timestamp_full_page_at_offset_boundary_saves_offset(self):
+    def test_all_duplicates_no_new_events_saves_offset(self):
         """
         Given:
-            All events on a full page share the same event_time at the offset
-            boundary (offset would exceed API_MAX_OFFSET).
+            All events on the page are duplicates, and the next page is empty.
         When:
-            get_events_for_type processes the page.
+            get_events_for_type processes the pages.
         Then:
-            The function should save the offset in next_run (special case)
-            instead of advancing time, to avoid losing events.
-            No dedup IDs should be stored since offset handles resumption.
+            No events should be returned, and next_run should save the advanced
+            offset so the next run resumes from there.
         """
-        # All events have the same timestamp
-        page1 = generate_events(5000, start_time=1000, start_id=1, same_time=True)
-        page2 = generate_events(5000, start_time=1000, start_id=5001, same_time=True)
+        dup_events = generate_events(3, start_time=1000)
 
         client = create_client()
 
-        with patch.object(client, "get_audit_trail_events", side_effect=[page1, page2]):
+        with patch.object(client, "get_audit_trail_events", side_effect=[dup_events, []]):
             events, next_run = get_events_for_type(
                 client=client,
                 from_time=1000,
-                last_run_ids=[],
+                last_run_ids=["event_1", "event_2", "event_3"],
                 start_offset=0,
-                max_events=20000,
+                max_events=100,
             )
 
-        assert len(events) == 10000
-        # Special case: offset should be saved
+        assert len(events) == 0
         assert next_run["from_time"] == 1000
-        assert next_run["offset"] == 10000
-        assert next_run["last_fetched_ids"] == []
+        assert next_run["offset"] == 3  # offset advanced past deduped events
+        assert next_run["last_fetched_ids"] == []  # no IDs since offset was advanced
 
     def test_resume_from_saved_offset(self):
         """
         Given:
-            A previous fetch stopped at the special case (all same timestamp,
-            offset boundary) and saved offset=10000 in last_run.
+            A previous fetch stopped after full-page dedup and saved offset=10
+            in last_run.
         When:
-            The next fetch resumes with start_offset=10000.
+            The next fetch resumes with start_offset=10.
         Then:
-            Events should be fetched starting from offset 10000 at the same
+            Events should be fetched starting from offset 10 at the same
             timestamp, continuing without data loss.
         """
-        # Resuming from offset 10000 at timestamp 1000
-        page = generate_events(500, start_time=1000, start_id=10001, same_time=True)
+        page = generate_events(5, start_time=1000, start_id=11)
 
         client = create_client()
 
@@ -360,14 +399,14 @@ class TestGetEventsForType:
                 client=client,
                 from_time=1000,
                 last_run_ids=[],
-                start_offset=10000,
-                max_events=5000,
+                start_offset=10,
+                max_events=100,
             )
 
-        assert len(events) == 500
-        # Verify the API was called with offset=10000
+        assert len(events) == 5
+        # Verify the API was called with offset=10
         call_args = mock_fetch.call_args
-        assert call_args.kwargs["offset"] == 10000
+        assert call_args.kwargs["offset"] == 10
 
     def test_partial_page_stops_pagination(self):
         """
@@ -459,67 +498,76 @@ class TestGetEventsForType:
         assert next_run["from_time"] == 1001
         assert set(next_run["last_fetched_ids"]) == {"b", "c", "d"}
 
-    def test_all_duplicates_advances_offset(self):
+    def test_large_fetch_uses_time_based_pagination_not_offset(self):
         """
         Given:
-            All events returned are duplicates of previously fetched events
-            and offset has not reached the max.
+            A large number of events spanning multiple pages with different timestamps.
         When:
-            get_events_for_type processes the page.
+            get_events_for_type paginates through them.
         Then:
-            Offset should advance and retry.
+            Each subsequent API call should use from_time (not offset) to paginate,
+            and next_run should always have offset=0.
         """
-        dup_events = generate_events(3, start_time=1000)
-        new_events = generate_events(2, start_time=1001, start_id=10)
+        page1 = generate_events(5000, start_time=1000, start_id=1)
+        page2 = generate_events(5000, start_time=6000, start_id=5001)
+        page3 = generate_events(100, start_time=11000, start_id=10001)
 
         client = create_client()
 
-        with patch.object(client, "get_audit_trail_events", side_effect=[dup_events, new_events]):
+        with patch.object(client, "get_audit_trail_events", side_effect=[page1, page2, page3]) as mock_fetch:
             events, next_run = get_events_for_type(
-                client=client,
-                from_time=1000,
-                last_run_ids=["event_1", "event_2", "event_3"],
-                start_offset=0,
-                max_events=100,
-            )
-
-        assert len(events) == 2
-        assert events[0]["id"] == "event_10"
-
-    def test_different_timestamps_at_offset_boundary_uses_dedup(self):
-        """
-        Given:
-            Events at the offset boundary have different timestamps
-            (not all the same).
-        When:
-            Offset would exceed API_MAX_OFFSET.
-        Then:
-            from_time should advance to the last event's timestamp (NOT save offset)
-            and boundary IDs should be tracked for dedup.
-        """
-        # Mix of timestamps - last event has time 2000
-        events = [
-            {"id": f"e{i}", "event_time": 1000 + (i % 3) * 500}
-            for i in range(5000)
-        ]
-        events[-1]["event_time"] = 2000
-        events[-1]["id"] = "last_event"
-
-        client = create_client()
-
-        with patch.object(client, "get_audit_trail_events", side_effect=[events, []]):
-            result_events, next_run = get_events_for_type(
                 client=client,
                 from_time=1000,
                 last_run_ids=[],
                 start_offset=0,
-                max_events=10000,
+                max_events=15000,
             )
 
-        # Should use time-based (dedup), NOT offset-based
-        assert next_run["from_time"] == 2000
+        # All calls should use offset=0 (time-based pagination)
+        for call in mock_fetch.call_args_list:
+            assert call.kwargs["offset"] == 0
+
         assert next_run["offset"] == 0
-        assert "last_event" in next_run["last_fetched_ids"]
+        assert len(events) == 10100
+
+    def test_all_same_timestamp_full_pages_collects_all_and_tracks_ids(self):
+        """
+        Given:
+            Multiple full pages where all events share the same timestamp.
+        When:
+            get_events_for_type processes them.
+        Then:
+            All events should be collected. Since all events share the same
+            timestamp, next_run should track all their IDs for dedup.
+            The second page call should use from_time (same timestamp) with
+            dedup IDs from the first page's boundary.
+        """
+        page1 = generate_events(5000, start_time=1000, start_id=1, same_time=True)
+        page2 = generate_events(5000, start_time=1000, start_id=5001, same_time=True)
+        # Third page: empty (no more events)
+        page3: list[dict] = []
+
+        client = create_client()
+
+        with patch.object(client, "get_audit_trail_events", side_effect=[page1, page2, page3]) as mock_fetch:
+            events, next_run = get_events_for_type(
+                client=client,
+                from_time=1000,
+                last_run_ids=[],
+                start_offset=0,
+                max_events=20000,
+            )
+
+        assert len(events) == 10000
+        assert next_run["from_time"] == 1000
+        assert next_run["offset"] == 0
+        # All 10000 IDs should be tracked for dedup since they all share the same timestamp
+        assert len(next_run["last_fetched_ids"]) == 10000
+
+        # Second call should use from_time=1000 (same) with offset=0
+        second_call = mock_fetch.call_args_list[1]
+        assert second_call.kwargs["from_time"] == 1000
+        assert second_call.kwargs["offset"] == 0
 
 
 class TestFetchEvents:
@@ -542,7 +590,6 @@ class TestFetchEvents:
                 client=client,
                 last_run={},
                 max_events_per_fetch=100,
-                fetch_audit_trails=True,
             )
 
         assert len(events) == 3
@@ -574,7 +621,6 @@ class TestFetchEvents:
                 client=client,
                 last_run=last_run,
                 max_events_per_fetch=100,
-                fetch_audit_trails=True,
             )
 
         # event_1 should be deduped
@@ -584,7 +630,7 @@ class TestFetchEvents:
     def test_fetch_events_subsequent_run_with_offset(self):
         """
         Given:
-            A subsequent fetch run resuming from the special case (saved offset).
+            A subsequent fetch run resuming from a saved offset (after full-page dedup).
         When:
             fetch_events is called.
         Then:
@@ -596,7 +642,7 @@ class TestFetchEvents:
         last_run = {
             "audit_trail": {
                 "from_time": 1000,
-                "offset": 10000,
+                "offset": 10,
                 "last_fetched_ids": [],
             }
         }
@@ -606,34 +652,12 @@ class TestFetchEvents:
                 client=client,
                 last_run=last_run,
                 max_events_per_fetch=100,
-                fetch_audit_trails=True,
             )
 
         assert len(events) == 3
         # Verify offset was passed to the API
         call_args = mock_fetch.call_args
-        assert call_args.kwargs["offset"] == 10000
-
-    def test_fetch_events_audit_trails_disabled(self):
-        """
-        Given:
-            fetch_audit_trails is set to False.
-        When:
-            fetch_events is called.
-        Then:
-            No events should be fetched and next_run should be empty.
-        """
-        client = create_client()
-
-        next_run, events = fetch_events(
-            client=client,
-            last_run={},
-            max_events_per_fetch=100,
-            fetch_audit_trails=False,
-        )
-
-        assert len(events) == 0
-        assert next_run == {}
+        assert call_args.kwargs["offset"] == 10
 
     def test_fetch_events_uses_stored_from_time(self):
         """
@@ -660,7 +684,6 @@ class TestFetchEvents:
                 client=client,
                 last_run=last_run,
                 max_events_per_fetch=100,
-                fetch_audit_trails=True,
             )
 
         call_args = mock_fetch.call_args
@@ -713,9 +736,11 @@ class TestTestModule:
         """
         client = create_client()
 
-        with patch.object(client, "get_audit_trail_events", side_effect=Exception("Connection timeout")):
-            with pytest.raises(Exception, match="Connection timeout"):
-                test_module(client, {})
+        with (
+            patch.object(client, "get_audit_trail_events", side_effect=Exception("Connection timeout")),
+            pytest.raises(Exception, match="Connection timeout"),
+        ):
+            test_module(client, {})
 
 
 class TestGetEventsCommand:
@@ -724,20 +749,20 @@ class TestGetEventsCommand:
     def test_get_events_command_default_args(self):
         """
         Given:
-            Default command arguments.
+            Default command arguments (no should_push_events).
         When:
             get_events_command is called.
         Then:
-            Events and human-readable output should be returned.
+            A CommandResults with human-readable output should be returned.
         """
         mock_events = generate_events(3, start_time=1000)
         client = create_client()
 
         with patch.object(client, "get_audit_trail_events", return_value=mock_events):
-            events, results = get_events_command(client, {})
+            result = get_events_command(client, {})
 
-        assert len(events) == 3
-        assert "Securiti Audit Trail Events" in results.readable_output
+        assert not isinstance(result, str)
+        assert "Securiti Audit Trail Events" in result.readable_output
 
     def test_get_events_command_with_limit(self):
         """
@@ -746,15 +771,16 @@ class TestGetEventsCommand:
         When:
             get_events_command is called.
         Then:
-            No more than limit events should be returned.
+            A CommandResults should be returned (pagination handles the limit).
         """
         mock_events = generate_events(5, start_time=1000)
         client = create_client()
 
         with patch.object(client, "get_audit_trail_events", return_value=mock_events):
-            events, results = get_events_command(client, {"limit": "5"})
+            result = get_events_command(client, {"limit": "5"})
 
-        assert len(events) == 5
+        assert not isinstance(result, str)
+        assert "Securiti Audit Trail Events" in result.readable_output
 
     def test_get_events_command_with_from_date(self):
         """
@@ -769,11 +795,69 @@ class TestGetEventsCommand:
         client = create_client()
 
         with patch.object(client, "get_audit_trail_events", return_value=mock_events) as mock_fetch:
-            events, results = get_events_command(client, {"from_date": "2021-04-20T15:00:00Z"})
+            result = get_events_command(client, {"from_date": "2021-04-20T15:00:00Z"})
 
-        assert len(events) == 2
+        assert not isinstance(result, str)
         call_args = mock_fetch.call_args
         assert call_args.kwargs["from_time"] > 0
+
+    def test_get_events_command_should_push_events(self):
+        """
+        Given:
+            should_push_events is set to true.
+        When:
+            get_events_command is called.
+        Then:
+            Events should be pushed to XSIAM and a success message returned.
+        """
+        mock_events = generate_events(3, start_time=1000)
+        client = create_client()
+
+        with (
+            patch.object(client, "get_audit_trail_events", return_value=mock_events),
+            patch("SecuritiEventCollector.send_events_to_xsiam") as mock_send,
+        ):
+            result = get_events_command(client, {"should_push_events": "true"})
+
+        assert isinstance(result, str)
+        assert "Successfully retrieved and pushed 3 events" in result
+        mock_send.assert_called_once()
+
+    def test_get_events_command_should_push_events_no_events(self):
+        """
+        Given:
+            should_push_events is true but no events are returned.
+        When:
+            get_events_command is called.
+        Then:
+            A CommandResults should be returned (not a push message), since there's nothing to push.
+        """
+        client = create_client()
+
+        with patch.object(client, "get_audit_trail_events", return_value=[]):
+            result = get_events_command(client, {"should_push_events": "true"})
+
+        assert not isinstance(result, str)
+
+    def test_get_events_command_full_pagination_cycle(self):
+        """
+        Given:
+            Multiple pages of events are available.
+        When:
+            get_events_command is called with a limit larger than one page.
+        Then:
+            It should paginate through all pages (same as fetch-events).
+        """
+        page1 = generate_events(10, start_time=1000, start_id=1)
+        page2 = generate_events(5, start_time=1009, start_id=10)
+
+        client = create_client()
+
+        with patch.object(client, "get_audit_trail_events", side_effect=[page1, page2]):
+            result = get_events_command(client, {"limit": "20"})
+
+        assert not isinstance(result, str)
+        assert "Securiti Audit Trail Events" in result.readable_output
 
 
 class TestClientHeaders:

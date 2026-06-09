@@ -37,8 +37,8 @@ configuration:
   required: false
   type: 8
   section: Connect
-- display: Fetch Audit Trails
-  name: fetch_audit_trails
+- display: Fetch Events
+  name: isFetchEvents
   required: false
   type: 8
   section: Collect

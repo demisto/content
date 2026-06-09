@@ -12,7 +12,7 @@ This is the default integration for this content pack when configured by the Dat
 | API Key | True |
 | API Secret | True |
 | Tenant Identifier | True |
-| Fetch Audit Trails | False |
+| Fetch Events | False |
 | The maximum number of events per fetch | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
@@ -48,6 +48,7 @@ There is no context output for this command.
 ##### Human Readable Output
 
 A table of audit trail events with the following columns:
+
 - id
 - event_time
 - activity_type
