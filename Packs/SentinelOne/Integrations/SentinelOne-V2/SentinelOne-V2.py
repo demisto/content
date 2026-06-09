@@ -664,7 +664,7 @@ class Client(BaseClient):
         expiration_date,
         network_quarantine,
         treatAsThreat,
-        query_lang: str = "",
+        query_lang,
     ):
         endpoint_url = "cloud-detection/rules"
         filter_dict = {"siteIds": site_ids, "groupIds": group_ids, "accountIds": account_ids}
@@ -709,7 +709,7 @@ class Client(BaseClient):
         expiration_date,
         network_quarantine,
         treatAsThreat,
-        query_lang: str = "",
+        query_lang,
     ):
         endpoint_url = f"cloud-detection/rules/{rule_id}"
         filter_dict = {"siteIds": site_ids, "groupIds": group_ids, "accountIds": account_ids}
