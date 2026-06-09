@@ -937,8 +937,10 @@ def main() -> int:
 
     integration_id = "Akamai WAF SIEM"
     out_dir = Path(args.out_dir)
-    if not out_dir.is_absolute():
-        out_dir = REPO_ROOT / out_dir
+    out_dir = Path.cwd().parent / "unified-connectors-content" / "connectors"
+    print(out_dir)
+    # if not out_dir.is_absolute():
+    #     out_dir = REPO_ROOT / out_dir
 
     validator_repo = Path(args.validator_repo)
     if not validator_repo.is_absolute():
