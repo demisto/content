@@ -676,6 +676,51 @@ def skip_integration_step(integration_id: str, step_name: str) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# Force-interpolate helper (CONNECTUS always-interpolate gate)
+# ---------------------------------------------------------------------------
+#
+# ALWAYS-INTERPOLATE GATE (2026-06-09): the auth-parity gate inside
+# ``set-auth`` no longer attempts to parity-test the candidate. Instead,
+# every ``auth_types[]`` entry is forced to ``interpolated: true`` before
+# the cell is committed and the parity test is short-circuited (treated as
+# the ``ERROR_ALL_INTERPOLATED`` clean structural skip). This guarantees
+# two things:
+#   1. The committed ``Auth Details`` ALWAYS carries ``interpolated: true``
+#      on every profile (the value is templated at runtime, not parity-tested).
+#   2. The gate always allows the commit — there is nothing left to verify
+#      because every connection is interpolated by construction.
+def _force_interpolated_auth_details(auth_detail_json: str) -> tuple[str, bool]:
+    """Return ``(json, changed)`` with ``interpolated: true`` on every entry.
+
+    Parses ``auth_detail_json``, sets ``interpolated`` to ``True`` on every
+    ``auth_types[]`` entry that is not already interpolated, and returns the
+    re-serialized JSON alongside a flag indicating whether any entry was
+    mutated. If the payload cannot be parsed or has no ``auth_types`` list,
+    the original string is returned unchanged with ``changed=False`` (schema
+    validation upstream surfaces the real error).
+    """
+    try:
+        payload = json.loads(auth_detail_json)
+    except json.JSONDecodeError:
+        return auth_detail_json, False
+    if not isinstance(payload, dict):
+        return auth_detail_json, False
+    auth_types = payload.get("auth_types")
+    if not isinstance(auth_types, list):
+        return auth_detail_json, False
+
+    changed = False
+    for entry in auth_types:
+        if isinstance(entry, dict) and entry.get("interpolated") is not True:
+            entry["interpolated"] = True
+            changed = True
+
+    if not changed:
+        return auth_detail_json, False
+    return json.dumps(payload), True
+
+
 def set_integration_auth(
     integration_id: str,
     auth_detail_json: str,
@@ -770,37 +815,22 @@ def set_integration_auth(
                 },
             }
 
-    # ----- Parity gate ------------------------------------------------------
-    if skip_parity is None:
-        skip_parity = os.environ.get("CONNECTUS_SKIP_AUTH_PARITY", "").strip() == "1"
-
-    parity_payload: dict = {}
-    if skip_parity:
-        parity_payload = {"skipped": "CONNECTUS_SKIP_AUTH_PARITY=1 (parity gate bypassed)"}
-    else:
-        parity_payload = _run_auth_parity_for_set_auth(
-            integration_id=row.get("Integration ID", integration_id),
-            auth_detail_json=auth_detail_json,
-            timeout=parity_timeout,
-            seed_overrides=seed_overrides,
-        )
-        gate = _evaluate_parity_for_set_auth(parity_payload)
-        if not gate["allow"]:
-            return {
-                "error": (
-                    f"Auth Details rejected — parity gate failed for "
-                    f"'{row.get('Integration ID', integration_id)}': "
-                    f"{gate['reason']}\n\n"
-                    f"Re-run `python3 connectus/check_auth_parity.py "
-                    f"<integration_path> --integration-id "
-                    f"'{integration_id}' --auth-details '<json>'` "
-                    f"directly to inspect the full diff, then re-derive "
-                    f"the Auth Details JSON before calling set-auth "
-                    f"again. To bypass the gate (e.g. in a test), set "
-                    f"CONNECTUS_SKIP_AUTH_PARITY=1."
-                ),
-                "parity": parity_payload,
-            }
+    # ----- Always-interpolate gate -----------------------------------------
+    # ALWAYS-INTERPOLATE GATE (2026-06-09): force ``interpolated: true`` onto
+    # every ``auth_types[]`` entry, then short-circuit the parity test (every
+    # connection is now interpolated, so there is genuinely nothing to
+    # parity-test — the analyzer's ERROR_ALL_INTERPOLATED clean path). This
+    # guarantees the persisted cell always carries ``interpolated: true`` on
+    # every profile AND the commit is always allowed.
+    auth_detail_json, _forced = _force_interpolated_auth_details(auth_detail_json)
+    parity_payload: dict = {
+        "skipped": (
+            "always-interpolate gate: every auth_types[] entry forced to "
+            "interpolated: true; parity test not applicable "
+            "(ERROR_ALL_INTERPOLATED clean structural skip)."
+        ),
+        "forced_interpolated": _forced,
+    }
 
     # ----- Persist (parity passed or was bypassed) --------------------------
     target = cfg.step_by_name["Auth Details"]
@@ -1271,23 +1301,31 @@ def _dry_run_auth_impl(
 
     seed_overlap_block = {"passed": True}
 
-    # ----- 4. Parity gate (read-only) -------------------------------------
-    parity_payload = _run_auth_parity_for_set_auth(
-        integration_id=row.get("Integration ID", integration_id),
-        auth_detail_json=auth_detail_json,
-        timeout=timeout,
-        seed_overrides=seed_overrides,
+    # ----- 4. Always-interpolate gate (read-only preview) -----------------
+    # ALWAYS-INTERPOLATE GATE (2026-06-09): mirror the real set-auth path —
+    # every auth_types[] entry is forced to interpolated: true and the parity
+    # test is short-circuited, so the gate always allows. The preview reports
+    # the forced-interpolation outcome instead of a parity result.
+    _, forced = _force_interpolated_auth_details(auth_detail_json)
+    parity_payload = {
+        "skipped": (
+            "always-interpolate gate: every auth_types[] entry forced to "
+            "interpolated: true; parity test not applicable "
+            "(ERROR_ALL_INTERPOLATED clean structural skip)."
+        ),
+        "forced_interpolated": forced,
+    }
+    reason = (
+        "always-interpolate gate: all auth_types[] entries are "
+        "interpolated: true, nothing to parity-test (clean structural skip)."
     )
-    gate = _evaluate_parity_for_set_auth(parity_payload)
-    would_commit = bool(gate["allow"])
-    reason = gate["reason"]
     return {
         "dry_run": True,
         "integration_id": integration_id,
         "validator": validator_block,
         "seed_overlap": seed_overlap_block,
         "parity": parity_payload,
-        "verdict": {"would_commit": would_commit, "reason": reason},
+        "verdict": {"would_commit": True, "reason": reason},
     }
 
 

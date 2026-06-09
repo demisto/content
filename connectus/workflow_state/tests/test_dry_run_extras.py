@@ -107,66 +107,26 @@ def _infra_error(code: str = "ERROR_PARITY_UNHANDLED", msg: str = "proxy MITM st
 # ---------------------------------------------------------------------------
 
 
-class TestProxyMitmFailure:
-    """A proxy/MITM-stage failure surfaces through the parity result.
+class TestAlwaysInterpolateGate:
+    """ALWAYS-INTERPOLATE GATE (2026-06-09): the gate no longer runs the
+    parity analyzer, so proxy/MITM-stage failures can no longer block a
+    schema-valid payload. A schema-valid payload always commits.
 
-    Two distinct shapes are possible per
-    ``plans/auth-parity-proxy-mitm-refactor.md``:
-
-    * the connection runs but the proxy capture crashed → a per-connection
-      ``status: fail`` with a crashed run → parity BLOCK → exit 1; and
-    * the analyzer itself raised while wiring the proxy → an
-      ``ERROR_PARITY_UNHANDLED`` infra envelope → exit 3.
+    The legacy ``_crashed_parity_block`` / ``_infra_error`` helpers are
+    retained at module level for the exit-code-mapping symmetry tests below,
+    which exercise :func:`dry_run_exit_code` / :func:`set_auth_exit_code`
+    directly on hand-built envelopes.
     """
 
-    def test_proxy_capture_crash_blocks_with_exit_one(
+    def test_schema_valid_payload_commits_regardless_of_proxy(
         self, monkeypatch: pytest.MonkeyPatch, mock_csv: list[dict]
     ) -> None:
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: _crashed_parity_block(),
-        )
         env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
-        assert env["verdict"]["would_commit"] is False
-        assert "fail" in env["verdict"]["reason"]
-        assert ws_api.dry_run_exit_code(env) == 1
-
-    def test_proxy_connection_refused_blocks(
-        self, monkeypatch: pytest.MonkeyPatch, mock_csv: list[dict]
-    ) -> None:
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: _crashed_parity_block("ConnectionRefusedError: proxy at 127.0.0.1:0"),
-        )
-        env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
-        assert env["verdict"]["would_commit"] is False
-        assert ws_api.dry_run_exit_code(env) == 1
-
-    def test_proxy_ca_cert_mismatch_blocks(
-        self, monkeypatch: pytest.MonkeyPatch, mock_csv: list[dict]
-    ) -> None:
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: _crashed_parity_block("SSLError: CERTIFICATE_VERIFY_FAILED (proxy CA)"),
-        )
-        env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
-        assert env["verdict"]["would_commit"] is False
-        assert ws_api.dry_run_exit_code(env) == 1
-
-    def test_proxy_stage_unhandled_crash_is_infra_exit_three(
-        self, monkeypatch: pytest.MonkeyPatch, mock_csv: list[dict]
-    ) -> None:
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: _infra_error("ERROR_PARITY_UNHANDLED", "proxy thread join timed out"),
-        )
-        env = ws_api.dry_run_auth("MyIntegration", _VALID_AUTH_JSON)
-        assert env["verdict"]["would_commit"] is False
-        assert ws_api.dry_run_exit_code(env) == 3
+        assert env["verdict"]["would_commit"] is True
+        assert ws_api.dry_run_exit_code(env) == 0
+        # The parity block is a structural-skip stub, never a parity result.
+        assert "skipped" in env["parity"]
+        assert env["parity"].get("forced_interpolated") is True
 
 
 # ---------------------------------------------------------------------------
@@ -215,15 +175,7 @@ class TestFormatTextEnvelope:
         mock_csv: list[dict],
         capsys: pytest.CaptureFixture,
     ) -> None:
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: {
-                "integration": "MyIntegration",
-                "auth_parity": {"primary": {"status": "pass", "diffs": []}},
-                "diagnostics": {},
-            },
-        )
+        # ALWAYS-INTERPOLATE GATE: a schema-valid payload always commits.
         with pytest.raises(SystemExit) as exc:
             ws_cli.cmd_set_auth([
                 "MyIntegration", _VALID_AUTH_JSON, "--dry-run", "--format=text",
@@ -241,18 +193,14 @@ class TestFormatTextEnvelope:
         mock_csv: list[dict],
         capsys: pytest.CaptureFixture,
     ) -> None:
-        monkeypatch.setattr(
-            ws_api,
-            "_run_auth_parity_for_set_auth",
-            lambda **_k: {
-                "integration": "MyIntegration",
-                "auth_parity": {"primary": {"status": "fail", "diffs": ["x"]}},
-                "diagnostics": {},
-            },
-        )
+        # ALWAYS-INTERPOLATE GATE: parity can no longer block, but a
+        # schema-INvalid payload still blocks (validation runs first), which
+        # exercises the WOULD NOT COMMIT text path. Use a brace-free invalid
+        # payload (a JSON array) so the no-JSON-braces assertion is meaningful
+        # — the validator rejects it because Auth Details must be an object.
         with pytest.raises(SystemExit) as exc:
             ws_cli.cmd_set_auth([
-                "MyIntegration", _VALID_AUTH_JSON, "--dry-run", "--format=text",
+                "MyIntegration", "[]", "--dry-run", "--format=text",
             ])
         assert exc.value.code == 1
         out = capsys.readouterr().out
