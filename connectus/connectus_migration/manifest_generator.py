@@ -6043,10 +6043,10 @@ def generate_manifest(
         ),
     ),
     connectors_root: Path = typer.Option(
-        Path.cwd() / "connectors",
+        Path.cwd() / "unified-connector-content" / "connectors",
         "--connectors-root",
         help="Root directory under which connector folders live. "
-        "Defaults to <CWD>/connectors.",
+        "Defaults to <CWD>/unified-connector-content/connectors.",
     ),
     author_image_path: Path = typer.Option(
         None,

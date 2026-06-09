@@ -163,6 +163,35 @@ def test_capability_config_filters_by_handler_capability_ids() -> None:
     assert ids == ["create_user"]
 
 
+def test_capability_config_flattens_nested_checkbox_group() -> None:
+    """A checkbox_group wrapper is not a param; its nested leaves are."""
+    configurations = {
+        "configurations": [
+            {
+                "id": "automation",
+                "configurations": [
+                    {
+                        "fields": [
+                            {
+                                "id": "user_operations",
+                                "field_type": "checkbox_group",
+                                "fields": [
+                                    {"id": "create_user_enabled"},
+                                    {"id": "update_user_enabled"},
+                                ],
+                            }
+                        ]
+                    }
+                ],
+            }
+        ]
+    }
+    ids = mod.collect_capability_config_field_ids({}, configurations, {"automation"})
+    assert set(ids) == {"create_user_enabled", "update_user_enabled"}
+    # The wrapper container id is NOT treated as a param.
+    assert "user_operations" not in ids
+
+
 def test_capability_config_includes_sub_capabilities() -> None:
     capabilities = {
         "capabilities": [
@@ -200,6 +229,31 @@ def test_general_config_view_group_filtering() -> None:
     ids = mod.collect_general_config_field_ids([doc], "xsoar-test")
     assert set(ids) == {"mine", "shared"}
     assert "theirs" not in ids
+
+
+def test_general_config_flattens_nested_checkbox_group() -> None:
+    """A general-config checkbox_group wrapper is flattened to its leaves."""
+    doc = {
+        "general_configurations": {
+            "configurations": [
+                {
+                    "fields": [
+                        {
+                            "id": "user_operations",
+                            "field_type": "checkbox_group",
+                            "fields": [
+                                {"id": "create_user_enabled"},
+                                {"id": "disable_user_enabled"},
+                            ],
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    ids = mod.collect_general_config_field_ids([doc], "xsoar-test")
+    assert set(ids) == {"create_user_enabled", "disable_user_enabled"}
+    assert "user_operations" not in ids
 
 
 # ---------------------------------------------------------------------------

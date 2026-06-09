@@ -229,18 +229,43 @@ def resolve_param_name(field_id: str, serializer_mappings: dict[str, str]) -> st
     return serializer_mappings.get(field_id, field_id)
 
 
+def _iter_leaf_field_ids(fields: list) -> list[str]:
+    """Yield the leaf param ids from a ``fields`` list, recursing into groups.
+
+    A field can be a UI container (e.g. a ``checkbox_group``) that nests its
+    real parameters under its own ``fields`` key. In that case the container
+    id (e.g. ``user_operations``) is NOT an integration param — the nested
+    children (e.g. ``create_user_enabled``) are. So:
+
+      * a field WITH nested ``fields`` contributes only its (recursive) leaf
+        children, not its own id;
+      * a field WITHOUT nested ``fields`` contributes its own id.
+    """
+    leaves: list[str] = []
+    for field in fields or []:
+        if not isinstance(field, dict):
+            continue
+        nested = field.get("fields")
+        if isinstance(nested, list) and nested:
+            leaves.extend(_iter_leaf_field_ids(nested))
+            continue
+        field_id = field.get("id")
+        if field_id:
+            leaves.append(field_id)
+    return leaves
+
+
 def _iter_field_ids(configurations: list) -> list[str]:
-    """Yield every ``fields[].id`` from a list of configuration field groups."""
+    """Yield every leaf param id from a list of configuration field groups.
+
+    Each group carries a ``fields`` list; nested ``checkbox_group`` style
+    containers are flattened to their leaf ids via :func:`_iter_leaf_field_ids`.
+    """
     field_ids: list[str] = []
     for group in configurations or []:
         if not isinstance(group, dict):
             continue
-        for field in group.get("fields", []) or []:
-            if not isinstance(field, dict):
-                continue
-            field_id = field.get("id")
-            if field_id:
-                field_ids.append(field_id)
+        field_ids.extend(_iter_leaf_field_ids(group.get("fields", [])))
     return field_ids
 
 
@@ -314,9 +339,7 @@ def collect_general_config_field_ids(docs: list[dict], view_group: str) -> list[
             group_view_group = group.get("view_group")
             if group_view_group and group_view_group != view_group:
                 continue
-            for field in group.get("fields", []) or []:
-                if isinstance(field, dict) and field.get("id"):
-                    field_ids.append(field["id"])
+            field_ids.extend(_iter_leaf_field_ids(group.get("fields", [])))
     return field_ids
 
 
