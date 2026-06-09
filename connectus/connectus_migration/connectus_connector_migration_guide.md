@@ -22,6 +22,7 @@
 - [Appendix G: Engine / EngineGroup / Proxy Exclusion List](#appendix-g-engine--enginegroup--proxy-exclusion-list)
 - [Appendix H: Single-Engine Integrations](#appendix-h-single-engine-integrations)
 - [Appendix I: Server-Style Integrations](#appendix-i-server-style-integrations)
+- [Appendix J: Backend-Managed Fields (config_type: backend)](#appendix-j-backend-managed-fields-config_type-backend)
 
 ---
 
@@ -370,10 +371,9 @@ Schema: [`field-options.schema.json`](schema/definitions/field-options.schema.js
 A `duration` field renders one numeric box per unit and serializes to one value.
 
 ```yaml
-- id: "incidents_fetch_interval"
+- id: "alertFetchInterval"
   title: "Incidents Fetch Interval"
   field_type: "duration"
-  metadata: { xsoar: { config_type: "backend" } }
   options:
     units: ["days", "hours", "minutes"]   # mandatory set & order
     output_format: "minutes"               # mandatory for migration
@@ -545,7 +545,7 @@ A sub-capability's `config.required_license` must contain only licenses present 
 | `general_configurations.description` | `"General configurations for all capabilities"`. |
 | `general_configurations.configurations` | Include the mandatory `instance_name` field (below). |
 
-> **Note:** `integrationLogLevel` and `defaultIgnore` are **not** in `capabilities.yaml` — they live in `configurations.yaml general_configurations` (§3.7).
+> **Note:** `integrationLogLevel` and `defaultIgnore` are **not** in `capabilities.yaml` — they live in `configurations.yaml general_configurations` (§3.7). `defaultIgnore` is emitted **only** for integrations that contribute an `automation-and-remediation` sub-capability (it governs commands; collection-only capabilities have none).
 
 Mandatory `instance_name` field (verbatim):
 
@@ -673,8 +673,8 @@ When `settings.grouped: true`, `connection.yaml` declares a top-level `view_grou
 1. **All params in manifest** — including backend-managed ones (`engine`, `engine_group`, etc.).
 2. **One field per row** (each field its own `fields` block).
 3. **Preserve field behavior** — type, default, options, title, id, tooltip, required must match the YML exactly (unless stated otherwise).
-4. **`integrationLogLevel` + `defaultIgnore`** go in `general_configurations`, **once per integration's `view_group`** (every capability of an integration needs them; this emits each once). For Standard connectors, place them in `general_configurations` without a `view_group`. Collisions when >1 integration are resolved via Appendix C.
-5. **`longRunning`** is supported — declare it backend-managed (`metadata.xsoar.config_type: "backend"`); the BE creates the long-running container when enabled.
+4. **`integrationLogLevel`** goes in `general_configurations`, **once per integration's `view_group`** (every capability of an integration needs it; this emits it once). **`defaultIgnore`** is **only relevant when the integration contributes an `automation-and-remediation` sub-capability** — it controls "Do not use in CLI by default" for the integration's **commands**, which collection-only capabilities (`fetch-issues`, `log-collection`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, `fetch-secrets`) do not have. Omit `defaultIgnore` for integrations with no automation capability; otherwise emit it once per integration's `view_group` alongside `integrationLogLevel`. For Standard connectors, place these in `general_configurations` without a `view_group`. Collisions when >1 integration are resolved via Appendix C.
+5. **`longRunning`** is supported
 
 #### view_groups (Grouped connectors)
 
@@ -705,10 +705,10 @@ See [Appendix A](#appendix-a-xsoar-type--manifest-type-mapping).
 | Property | Where | `field_type` | `config_type` | Notes |
 |---|---|---|---|---|
 | `integrationLogLevel` | `configurations.yaml` `general_configurations`, per `view_group` | `select` | `"backend"` | Off/Debug/Verbose. |
-| `defaultIgnore` | `configurations.yaml` `general_configurations`, per `view_group` | `checkbox` | `"backend"` | "Do not use in CLI by default". |
+| `defaultIgnore` | `configurations.yaml` `general_configurations`, per `view_group` | `checkbox` | `"backend"` | "Do not use in CLI by default". **Only for integrations with an `automation-and-remediation` sub-capability** — it governs commands, which collection-only capabilities don't have. Omit otherwise. |
 | `engine` / `engine_group` | connection profile (§3.6) | `select` + `dynamic_values` | `"backend"` | Engine 3-field pattern (below). Omit for Appendix G. |
 | `mappingId` (Classifier) | `configurations.yaml`, under fetch capability | `select` + `dynamic_values` | `"backend"` | When `isFetch`. `dynamicField: "classifier"`. |
-| `incomingMapperId` (Mapper incoming) | `configurations.yaml`, under fetch capability | `select` + `dynamic_values` | `"backend"` | When `isFetch`. `dynamicField: "mapper-incoming"`. |
+| `incomingMapperId` (Mapper incoming) | `configurations.yaml`, under fetch-issues capability | `select` + `dynamic_values` | `"backend"` | When `isFetch`. `dynamicField: "mapper-incoming"`. |
 | `defaultClassifier` | → `default_value` of `mappingId` | — | — | Not a UI field. |
 | `defaultMapperIn` | → `default_value` of `incomingMapperId` | — | — | Not a UI field. |
 | `outgoingMapperId` / `defaultMapperOut` | **OUT OF SCOPE** | — | — | Mirroring not supported. |
@@ -776,14 +776,75 @@ triggers:
     effects: [{ id: engine_group, action: { hidden: true } }]
 ```
 
-**Carve-outs:** [Appendix G](#appendix-g-engine--proxy-exclusion-list) — emit none of the engine fields and no `proxy`. [Appendix H](#appendix-h-single-engine-integrations) — emit `engine_mode` (2 options: `no_engine` + `engine`) and `engine` only; omit `engine_group`. If the FE lacks a horizontal-radio `select`, fall back to plain `select` (IDs/keys/triggers unchanged).
+#### Proxy field — conditional read-only
+
+The `proxy` field (a `checkbox`) lives in the same connection profile alongside the engine fields. Its title is **"Use system proxy settings"**. Proxy routing is only meaningful when traffic flows through an engine or engine group, so:
+
+- **`proxy` is `read_only` (locked, unchecked) while `engine_mode == "no_engine"`** (i.e. no engine and no engine group is chosen).
+- **Once the user selects an engine OR an engine group** (`engine_mode == "engine"` OR `engine_mode == "engine_group"`), `proxy` becomes editable so the user can check it.
+- A tooltip explains the lock: **"Use system proxy settings is enabled only when an engine or engine group are chosen."**
+
+The lock is enforced via a reversible [`triggers.yaml`](README.md:833) effect: `read_only: true` while `engine_mode == "no_engine"`, automatically reversed when an engine/engine group is selected.
+
+| ID | Type | Title | Default | `event.publish` | `config_type` |
+|---|---|---|---|---|---|
+| `proxy` | `checkbox` | "Use system proxy settings" | `false` | ✅ | — (not backend-managed; see Appendix J) |
+
+```yaml
+# connection.yaml — inside the same profile's configurations[].fields[]
+- id: proxy
+  field_type: checkbox
+  title: "Use system proxy settings"
+  metadata:
+    event: { publish: true }
+  options:
+    mask: false
+    default_value: false
+    help_text: "Use system proxy settings is enabled only when an engine or engine group are chosen."
+```
+
+```yaml
+# triggers.yaml — lock proxy until an engine or engine group is chosen
+triggers:
+  - conditions: { type: condition, id: engine_mode, operator: eq, behavior: { value: no_engine } }
+    effects:
+      - id: proxy
+        action: { read_only: true }
+        message: "Use system proxy settings is enabled only when an engine or engine group are chosen."
+```
+
+> The trigger is reversible (§2.10): when `engine_mode` changes away from `no_engine` (to `engine` or `engine_group`), the `read_only` lock is lifted and the user can toggle `proxy`.
+
+#### Insecure field — always editable
+
+The `insecure` field (a `checkbox`) also lives in the same connection profile. Its title is **"Trust any certificate (not secure)"**, it defaults to **off** (`false`), and — unlike `proxy` — it is **always editable** (`read_only: false` at all times, no engine gating, no trigger).
+
+| ID | Type | Title | Default | `read_only` | `event.publish` | `config_type` |
+|---|---|---|---|---|---|---|
+| `insecure` | `checkbox` | "Trust any certificate (not secure)" | `false` | always `false` | ✅ | — (not backend-managed; see Appendix J) |
+
+```yaml
+# connection.yaml — inside the same profile's configurations[].fields[]
+- id: insecure
+  field_type: checkbox
+  title: "Trust any certificate (not secure)"
+  metadata:
+    event: { publish: true }
+  options:
+    mask: false
+    default_value: false
+    create_modifiers: { required: false, read_only: false, hidden: false }
+    edit_modifiers: { required: false, read_only: false, hidden: false }
+```
+
+**Carve-outs:** [Appendix G](#appendix-g-engine--proxy-exclusion-list) — emit none of the engine fields and no `proxy`. [Appendix H](#appendix-h-single-engine-integrations) — emit `engine_mode` (2 options: `no_engine` + `engine`) and `engine` only; omit `engine_group` (the proxy read-only rule still applies, gated on `engine_mode == "no_engine"`). If the FE lacks a horizontal-radio `select`, fall back to plain `select` (IDs/keys/triggers unchanged).
 
 #### BE-auto-added params (now explicit)
 
 When a `script` flag is true, the BE used to auto-add params. Define them explicitly. **Omit** the implied checkbox (`isFetch`, `feed`, `isFetchEvents`, `isFetchAssets`, `isFetchCredentials`) — enabling the capability implies it.
 
 **`script.IsFetch: true`** → `fetch-issues` sub-capability:
-- `alertFetchInterval` — `duration`.
+- `alertFetchInterval` — `duration` default to 1 minute or whats given in integration YML.
 - `incidentType`/`alertType` (Platform uses `alertType`) — `select` + `dynamic_values` (`dynamicField: "incident-type"`). **User-visible** (do NOT mark backend). Title "Issue Type", tooltip "select if classifier doesn't exist".
   - Placed under **each** `fetch-issues` sub-capability's `configurations[]` (pinned to that integration's `view_group`) — never in `general_configurations` or on the parent capability.
   - **Always emit** for every `fetch-issues` sub-capability, regardless of whether the YML has a type-13 param.
@@ -793,7 +854,7 @@ When a `script` flag is true, the BE used to auto-add params. Define them explic
 
 ```yaml
 # inside the fetch-issues_<integration> sub-capability
-- id: "<integration>_incidentType"
+- id: "alertType"
   title: "Issue Type"
   field_type: "select"
   metadata:
@@ -1333,7 +1394,7 @@ Also see [`plans/integration-parameter-and-types-overrides.md`](plans/integratio
 | 8 | Boolean / Checkbox | `checkbox` | N/A | Single boolean toggle. |
 | 9 | Credentials / Authentication | **OUT OF SCOPE** | — | Handled by connection profiles. Type 9 params are removed by the auth migration script. |
 | 12 | Long Text / TextArea | `text_area` | `false` | Multi-line text. |
-| 13 | Incident Type | `select` + `metadata.dynamic_values` | `false` | Option list fetched at runtime via the XSOAR provider (`dynamicField: "incident-type"`). **User-visible field** — do NOT mark `metadata.xsoar.config_type: "backend"`. |
+| 13 | Incident Type | `select` + `metadata.dynamic_values` | `false` | Option list fetched at runtime via the XSOAR provider (`dynamicField: "incident-type"`). **User-visible field** |
 | 14 | Encrypted Text Area | `text_area` | `true` | Masked textarea. Example: SSHKey. |
 | 15 | Single Select / Dropdown | `select` | `false` | Options from YML `options` array as `{key, label}` pairs. |
 | 16 | Multi Select | `multi_select` | `false` | Native UCP field type. Items in `values` use `{key, label}`; `default_value` is an array of keys. See README [Multi-Select Example](README.md:1681). |
@@ -1377,7 +1438,7 @@ Determinism guarantees:
 - The prefix is always `<normalized-integration-id>_`, never an ad-hoc abbreviation.
 - Fields that do **not** collide are **never** renamed.
 
-> This rule is the single source of truth for id collisions everywhere in the guide (config fields, `integrationLogLevel`, `defaultIgnore`, `incidentType`, engine fields, `domain`, etc.). Wherever a prefixed id appears in this guide, it follows exactly this rule.
+> This rule is the single source of truth for id collisions everywhere in the guide (config fields, `integrationLogLevel`, `defaultIgnore`, `alertType`, engine fields, `domain`, etc.). Wherever a prefixed id appears in this guide, it follows exactly this rule.
 
 ## Appendix D: Excluded Integrations (Out of Scope)
 
@@ -1442,7 +1503,7 @@ Integrations listed below must have **no `engine_mode`, `engine`, `engine_group`
 | `Microsoft Teams` | Platform-native handler — networking handled outside the standard engine/proxy model. |
 | `AWS-SNS-Listener` | Long-running AWS SNS push listener. |
 
-If the LLM encounters one of these integrations during automated migration, it must skip the `engine_mode`, `engine`, `engine_group`, and `proxy` field rules entirely for that integration (no `engine_mode`, `engine`, `engine_group`, or `proxy` fields emitted at all) and note the exclusion in the Gap Analysis output.
+If the author encounters one of these integrations during automated migration, it must skip the `engine_mode`, `engine`, `engine_group`, and `proxy` field rules entirely for that integration (no `engine_mode`, `engine`, `engine_group`, or `proxy` fields emitted at all) and note the exclusion in the Gap Analysis output.
 
 ## Appendix H: Single-Engine Integrations
 
@@ -1505,3 +1566,19 @@ This appendix reflects only the integrations **currently in scope** for migratio
 If the answer to (1) and (2) is yes, the integration belongs in this appendix and likely also in [Appendix G](#appendix-g-engine--enginegroup--proxy-exclusion-list) (no engine/proxy fields).
 
 **Concrete example — `GenericWebhook`**: today it is excluded via [Appendix D](#appendix-d-excluded-integrations-out-of-scope) ("Generic webhook integration — not a vendor-specific connector"). When/if `GenericWebhook` (or any similar webhook-receiver integration) is brought into scope in the future, it MUST be analyzed against the criteria above — it is a long-running inbound HTTP listener and will require addition to this appendix (and to Appendix G), along with the credential-pinning rules described above. Do not migrate such an integration under the standard outbound-API path.
+
+## Appendix J: Backend-Managed Fields (`config_type: backend`)
+
+The following fields — and **only** these fields — MUST carry `metadata.xsoar: { config_type: "backend" }`. They are managed by the XSOAR backend rather than passed through as plain instance parameters. This list is **exclusive**: any field not on it MUST NOT be marked `config_type: backend`.
+
+| Field ID | Where it lives | Notes |
+|---|---|---|
+| `engine` | connection profile (§3.7 engine 3-field pattern) | `select` + `dynamic_values` (`dynamicField: engine`). |
+| `engineGroup` | connection profile (§3.7 engine 3-field pattern) | `select` + `dynamic_values` (`dynamicField: engine-group`). Field id `engine_group` in the manifest. |
+| `mappingId` | `configurations.yaml`, under the fetch capability | Classifier — `select` + `dynamic_values` (`dynamicField: classifier`). |
+| `incomingMapperId` | `configurations.yaml`, under the fetch capability | Mapper (incoming) — `select` + `dynamic_values` (`dynamicField: mapper-incoming`). |
+| `outgoingMapperId` | `configurations.yaml` (mirroring — see §3.2) | Mapper (outgoing). **Mirroring is out of scope on Platform**; listed here only because it is backend-managed when present. |
+| `defaultIgnore` | `configurations.yaml` `general_configurations`, per `view_group` | "Do not use in CLI by default". Only for integrations with an `automation-and-remediation` sub-capability (§3.7). |
+| `integrationLogLevel` | `configurations.yaml` `general_configurations`, per `view_group` | Off / Debug / Verbose. |
+
+**Explicitly NOT backend-managed** (do **not** set `config_type: backend`): `proxy`, `insecure`, `engine_mode` (the radio control), all auth/secret fields, and every other configuration parameter migrated from the integration YML.
