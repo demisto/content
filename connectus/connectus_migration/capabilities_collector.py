@@ -28,6 +28,26 @@ EXCLUDED_AUTOMATION_PATTERNS: list[str] = [
     "fetch-indicators",
 ]
 
+INTEGRATION_TO_LONGRUNNING_CAPABILITY: dict[str, str] = {
+    "Akamai WAF SIEM": FETCH_EVENTS_CAPABILITIES,
+    "AWS-SNS-Listener": AUTOMATION_CAPABILITY,
+    "EDL": AUTOMATION_CAPABILITY,
+    "LookoutMobileEndpointSecurity": FETCH_EVENTS_CAPABILITIES,
+    "MattermostV2": AUTOMATION_CAPABILITY,
+    "Microsoft Teams": AUTOMATION_CAPABILITY,
+    "Proofpoint Email Security Event Collector": FETCH_EVENTS_CAPABILITIES,
+    "QRadar v3": FETCH_ISSUES_CAPABILITIES,
+    "Retarus Secure Email Gateway": FETCH_EVENTS_CAPABILITIES,
+    "SlackV3": AUTOMATION_CAPABILITY,  # Also covers SlackV3v2 (same commonfields.id)
+    "Symantec Cloud Secure Web Gateway Event Collector": FETCH_EVENTS_CAPABILITIES,
+    "Symantec Endpoint Security": FETCH_EVENTS_CAPABILITIES,
+    "Syslog v2": FETCH_ISSUES_CAPABILITIES,
+    "TAXII2 Server": AUTOMATION_CAPABILITY,
+    "TAXII Server": AUTOMATION_CAPABILITY,
+    "Workday_IAM_Event_Generator": AUTOMATION_CAPABILITY,
+    "WorkdaySignonEventGenerator": AUTOMATION_CAPABILITY,
+    "Zoom": AUTOMATION_CAPABILITY,
+}
 
 def _is_pure_event_collector(integration_yml: dict, command_names: list[str]) -> bool:
     """Return True only if the integration is a 'pure' event collector.
@@ -70,6 +90,7 @@ def collect_capabilities(integration_yml: dict) -> list[str]:
             capabilities.append(capability)
 
     integration_name: str = (integration_yml.get("name") or "").lower()
+    integration_id: str = (integration_yml.get("commonfields", {}).get("id") or "")
     script: dict = integration_yml.get("script") or {}
     configuration: list[dict] = integration_yml.get("configuration") or []
     commands: list[dict] = script.get("commands") or []
@@ -106,7 +127,11 @@ def collect_capabilities(integration_yml: dict) -> list[str]:
     if script.get("isfetchassets") is True:
         add(FETCH_ASSETS_CAPABILITIES)
 
-    # Rule 6 - Automation
+    # Rule 6 - Use hard-coded predefined long-running to capability mapper        
+    if integration_id in INTEGRATION_TO_LONGRUNNING_CAPABILITY:
+        add(INTEGRATION_TO_LONGRUNNING_CAPABILITY[integration_id])
+
+    # Rule 7 - Automation
     # Added when the integration has at least one non-fetch command. For event
     # collectors (isfetchevents True) the integration must additionally expose
     # >= 3 commands.
