@@ -4414,6 +4414,17 @@ def _map_type_22(yml_param: dict) -> dict:
     return field
 
 
+class UnknownXsoarParamTypeError(ValueError):
+    """Raised when an XSOAR param ``type`` has no connectus field mapper.
+
+    Per the migration guide (Appendix A, "Important Notes"): "If you come
+    across a type not listed above when migrating, fail and raise a flag."
+
+    Subclasses ``ValueError`` so existing ``except ValueError`` callers keep
+    working while still allowing callers to catch this specific gap.
+    """
+
+
 # Registry mapping XSOAR type integer → mapper function.
 MAPPERS: dict[int, Callable] = {
     0: _map_type_0,
@@ -4437,7 +4448,9 @@ def map_xsoar_param_to_connectus_field(yml_param: dict) -> list[dict]:
     """Public dispatcher: map an XSOAR YAML config param to one or more connectus field dicts.
 
     Looks up the right `_map_type_<N>` helper from ``MAPPERS`` based on the
-    YAML's ``type`` integer. Raises ``ValueError`` for unknown types.
+    YAML's ``type`` integer. For unknown types it follows the migration guide
+    (Appendix A): fail AND raise a flag — a ``[MIGRATION FLAG]`` line is logged
+    before raising :class:`UnknownXsoarParamTypeError`.
 
     Returns a list — single-field types yield a one-element list; only
     type 9 (credentials) returns a list with multiple entries.
@@ -4445,10 +4458,23 @@ def map_xsoar_param_to_connectus_field(yml_param: dict) -> list[dict]:
     xsoar_type = yml_param.get("type", 0)
     mapper = MAPPERS.get(xsoar_type)
     if mapper is None:
-        raise ValueError(
+        param_name = yml_param.get("name", "<unnamed>")
+        known_types = sorted(MAPPERS.keys())
+        # Guide Appendix A: "If you come across a type not listed above when
+        # migrating, fail and raise a flag." Surface a structured flag for the
+        # gap-analysis output, then fail.
+        logger.error(
+            "[MIGRATION FLAG] Unknown XSOAR param type %s for param %r — "
+            "no connectus field mapper. Known types: %s. "
+            "See migration guide Appendix A.",
+            xsoar_type,
+            param_name,
+            known_types,
+        )
+        raise UnknownXsoarParamTypeError(
             f"No connectus field mapper for XSOAR type {xsoar_type}. "
-            f"Param: {yml_param.get('name', '<unnamed>')}. "
-            f"Known types: {sorted(MAPPERS.keys())}"
+            f"Param: {param_name}. "
+            f"Known types: {known_types}"
         )
     result = mapper(yml_param)
     if isinstance(result, dict):
