@@ -738,6 +738,8 @@ def step_3c_generate_manifest(
         json.dumps(auth_details),
         "--connectors-root",
         str(generated_root),
+        "--vendor",
+        "test"
     ]
     if author_image_path is not None:
         cmd += ["--author-image-path", str(author_image_path)]
