@@ -5965,8 +5965,10 @@ def test_render_bioc_description_entity_with_brackets_and_and():
 
     result = render_bioc_description(indicator)
     assert "AND" in result
-    assert "[" in result and "]" in result
-    assert "a.exe" in result and "b.exe" in result
+    assert "[" in result
+    assert "]" in result
+    assert "a.exe" in result
+    assert "b.exe" in result
 
 
 def test_render_bioc_description_or_group_parentheses():
@@ -5989,7 +5991,8 @@ def test_render_bioc_description_or_group_parentheses():
 
     result = render_bioc_description(indicator)
     assert "OR" in result
-    assert "(" in result and ")" in result
+    assert "(" in result
+    assert ")" in result
 
 
 def test_render_bioc_description_does_not_mutate_input():

@@ -4254,6 +4254,7 @@ def create_issues_filter(args) -> dict:
     demisto.debug(f"{filter_dict=}")
     return filter_dict
 
+
 def _is_or_connector(block: dict) -> bool:
     """Port of the front-end BiocIndicatorComponent.isOrConnector()."""
     return block.get("render_type") == "connector" and block.get("pretty_name") == "OR"
@@ -4378,9 +4379,7 @@ def render_bioc_description(  # noqa: C901
                     ) or not has_open_brackets:
                         added_space = " "
                     added_connector = (
-                        ""
-                        if (previous_block and previous_block.get("render_type") == "entity") or hide_and
-                        else entity_connector
+                        "" if (previous_block and previous_block.get("render_type") == "entity") or hide_and else entity_connector
                     )
                     inner_title += f"{added_space}{added_connector}{added_space}"
             inner_title += f"{text} "
