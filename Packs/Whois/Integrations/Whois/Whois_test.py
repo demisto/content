@@ -1087,8 +1087,8 @@ def test_check_and_remove_abuse(domain_info, expected_output, expected_domain_in
 @pytest.mark.parametrize(
     "time_sensitive, expected_timeout",
     [
-        (True, 10),   # War Room inline enrichment: short 10s timeout (existing behaviour)
-        (False, 30),  # Playbook context: 30s timeout to prevent OS-level hang (XSUP-70632)
+        (True, Whois.WHOIS_SOCKET_TIMEOUT_TIME_SENSITIVE),   # War Room inline enrichment
+        (False, Whois.WHOIS_SOCKET_TIMEOUT_DEFAULT),          # Playbook context
     ],
 )
 def test_whois_request_socket_timeout_always_set(mocker: MockerFixture, time_sensitive: bool, expected_timeout: int):
@@ -1104,7 +1104,7 @@ def test_whois_request_socket_timeout_always_set(mocker: MockerFixture, time_sen
     Then:
         - Case A: sock.settimeout(10) is called — fast fail for interactive use.
         - Case B: sock.settimeout(30) is called — prevents indefinite OS-level hang
-          (~127s on Linux) when the whois server is unreachable. Regression test for XSUP-70632.
+          (~127s on Linux) when the whois server is unreachable.
     """
     from Whois import whois_request_get_response
 
