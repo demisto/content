@@ -2226,10 +2226,7 @@ class Client(BaseClient):
         :return: Dict[str, Any]: Response containing feed information.
         """
         url_suffix = f"{EXPORT_DATA}{export_type}-exports/{file_name}.{file_type}"
-        response = self._http_request(
-            method="GET",
-            url_suffix=url_suffix,
-        )
+        response = self._http_request(method="GET", url_suffix=url_suffix, resp_type="response")
         return response
 
 
