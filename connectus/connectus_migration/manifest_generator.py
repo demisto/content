@@ -879,26 +879,68 @@ def slugify_capability_name(name: str) -> str:
 DEFAULT_HANDLER_WORKLOADS: list[str] = ["xsoar-pod"]
 
 
+def handler_id_to_integration_slug(handler_id: str) -> str:
+    """Recover the integration-id slug from a handler id.
+
+    A handler id is ``"xsoar-" + <integration-id-slug>`` (see
+    :func:`derive_handler_id`), where the slug is the integration's
+    ``commonfields.id`` lowercased with internal whitespace runs collapsed
+    to single dashes. This strips the leading ``"xsoar-"`` prefix to recover
+    that slug, which is used to build the sub-capability id per the
+    ``<capability_id>_<integration-id-slug>`` convention.
+
+    Examples:
+        handler_id_to_integration_slug("xsoar-salesforce") → "salesforce"
+        handler_id_to_integration_slug("xsoar-hello-world-iam")
+            → "hello-world-iam"
+    """
+    prefix = "xsoar-"
+    if handler_id.startswith(prefix):
+        return handler_id[len(prefix):]
+    return handler_id
+
+
 def make_sub_capability_id(handler_id: str, cap_name: str) -> str:
     """Compute the sub-capability id for a (handler, capability-family) pair.
 
-    Format is ``"<handler_id>-<cap_slug>"`` where ``cap_slug`` is the
-    canonical capability id (:func:`slugify_capability_name`). This is the
-    single source of truth for sub-cap id derivation, used by both the
-    from-scratch path and the append path so a connector is *always* modelled
-    as parent-capability + sub-capability (never a flat top-level capability).
+    Format is ``"<capability_id>_<integration-id-slug>"`` where
+    ``capability_id`` is the canonical capability id
+    (:func:`slugify_capability_name`) and ``integration-id-slug`` is the
+    integration's ``commonfields.id`` lowercased with spaces replaced by
+    dashes (recovered from ``handler_id`` via
+    :func:`handler_id_to_integration_slug`).
+
+    Example: ``Hello World IAM`` integration in the
+    ``automation-and-remediation`` capability →
+    ``automation-and-remediation_hello-world-iam``.
+
+    This is the single source of truth for sub-cap id derivation, used by
+    both the from-scratch path and the append path so a connector is
+    *always* modelled as parent-capability + sub-capability (never a flat
+    top-level capability).
     """
-    return f"{handler_id}-{slugify_capability_name(cap_name)}"
+    cap_slug = slugify_capability_name(cap_name)
+    integration_slug = handler_id_to_integration_slug(handler_id)
+    return f"{cap_slug}_{integration_slug}"
 
 
 def build_sub_capability_entry(
-    sub_cap_id: str, cap_name: str, required: bool = False
+    sub_cap_id: str,
+    cap_name: str,
+    required: bool = False,
+    integration_name: str = "",
 ) -> dict:
     """Build a schema-complete ``SubCapability`` entry.
 
     capabilities.schema requires ``id`` + ``title`` + ``default_enabled`` +
-    ``required`` on every sub-capability. The title reuses the canonical
-    capability family title.
+    ``required`` on every sub-capability.
+
+    The ``title`` is the integration's display ``name`` (the ``name`` field
+    from the integration YAML, e.g. ``"Salesforce IAM"``) — each
+    sub-capability is named after the integration whose handler exposes it.
+    When ``integration_name`` is not supplied (legacy callers) the title
+    falls back to the canonical capability family title so existing behaviour
+    is preserved.
 
     Per guide §3.4: ``default_enabled`` is **always False** on a
     sub-capability (the user opts in explicitly). Per guide §3.1 item 13:
@@ -907,9 +949,10 @@ def build_sub_capability_entry(
     callers pass ``required=True`` in that case.
     """
     cap_slug = slugify_capability_name(cap_name)
+    title = integration_name or CANONICAL_CAPABILITY_TITLES[cap_slug]
     return {
         "id": sub_cap_id,
-        "title": CANONICAL_CAPABILITY_TITLES[cap_slug],
+        "title": title,
         "default_enabled": False,
         "required": required,
     }
@@ -924,8 +967,9 @@ def _actions_for_capability(cap_name: str) -> list[dict]:
 
     Keying off the bucket key (rather than the possibly-decorated handler cap
     id) means this works identically on the from-scratch path (bare canonical
-    slug) and the append path (sub-cap id ``<handler_id>-<cap_slug>``) — the
-    capability family is the same in both cases.
+    slug) and the append path (sub-cap id
+    ``<capability_id>_<integration-id-slug>``) — the capability family is the
+    same in both cases.
 
     Returns a fresh one-element list when the capability family defines a reset
     action, else an empty list (callers omit the ``actions`` key entirely so
@@ -1025,8 +1069,8 @@ def build_handler_yaml(
         # Capabilities are ALWAYS modelled as sub-capabilities. When the
         # caller supplies an override (append path), use it; otherwise
         # (from-scratch path) default to this handler's own sub-cap id
-        # ``<handler_id>-<cap_slug>`` so the handler references the sub-cap
-        # entry that capabilities.yaml/configurations.yaml emit.
+        # ``<capability_id>_<integration-id-slug>`` so the handler references
+        # the sub-cap entry that capabilities.yaml/configurations.yaml emit.
         cap_id = cap_id_overrides.get(cap_name) or make_sub_capability_id(
             handler_id, cap_name
         )
@@ -3232,6 +3276,7 @@ def build_capabilities_yaml(
     handler_dir: Path | None = None,
     existing_ids: set[str] | None = None,
     supported_modules: list[str] | None = None,
+    integration_name: str = "",
 ) -> dict:
     """Build the dict for capabilities.yaml.
 
@@ -3287,9 +3332,10 @@ def build_capabilities_yaml(
         # Capabilities are ALWAYS modelled as parent + one sub-capability,
         # even on a fresh connector. The parent carries the canonical family
         # id/title; the lone sub-capability is keyed by this handler's sub-cap
-        # id ``<handler_id>-<cap_slug>`` (the id the handler.yaml and
-        # configurations.yaml entries reference). The bare-slug fallback only
-        # applies when no handler_id is supplied (legacy callers).
+        # id ``<capability_id>_<integration-id-slug>`` (the id the
+        # handler.yaml and configurations.yaml entries reference) and titled
+        # after the integration's display ``name``. The bare-slug fallback
+        # only applies when no handler_id is supplied (legacy callers).
         #
         # Per guide §3.1 item 13: a capability with exactly ONE
         # sub-capability marks that lone sub-cap ``required: true`` so
@@ -3297,7 +3343,12 @@ def build_capabilities_yaml(
         if handler_id:
             sub_cap_id = make_sub_capability_id(handler_id, cap_name)
             parent_entry["sub_capabilities"] = [
-                build_sub_capability_entry(sub_cap_id, cap_name, required=True)
+                build_sub_capability_entry(
+                    sub_cap_id,
+                    cap_name,
+                    required=True,
+                    integration_name=integration_name,
+                )
             ]
         capabilities.append(parent_entry)
 
@@ -3532,7 +3583,8 @@ def build_configurations_yaml(
             continue
         # Capabilities are ALWAYS modelled as sub-capabilities — key each
         # per-capability configuration entry by the sub-cap id
-        # ``<handler_id>-<cap_slug>`` so it matches the sub-capability emitted
+        # ``<capability_id>_<integration-id-slug>`` so it matches the
+        # sub-capability emitted
         # in capabilities.yaml and referenced by handler.yaml. Falls back to
         # the bare slug only when no handler_id is supplied (legacy callers).
         cap_id = (
@@ -3731,6 +3783,53 @@ def rename_handler_capability_id(
         _dump_yaml(data, fh)
 
 
+def _recover_integration_name_for_handler(
+    connector_dir: Path, handler_id: str
+) -> str:
+    """Best-effort recovery of an existing handler's integration display name.
+
+    Used by the Case 2 promotion path, where an already-written handler's
+    sub-capability must be (re)built but the original integration YAML is no
+    longer in scope. We read the handler's ``handler.yaml`` and prefer the
+    integration display name implied by the ``metadata.description`` (which
+    :func:`build_handler_yaml` writes as ``"XSOAR handler for <name>
+    integration."``). When that cannot be parsed, we fall back to a
+    title-cased form of the integration-id slug recovered from the handler id
+    and log a flag for manual review.
+    """
+    handler_yaml_path = (
+        connector_dir / "components" / "handlers" / handler_id / "handler.yaml"
+    )
+    if handler_yaml_path.is_file():
+        try:
+            with open(handler_yaml_path) as fh:
+                first_line = fh.readline()
+                rest = fh.read()
+            if not first_line.startswith("# yaml-language-server"):
+                rest = first_line + rest
+            data = yaml.safe_load(io.StringIO(rest)) or {}
+            description = (data.get("metadata") or {}).get("description") or ""
+            match = re.match(
+                r"^XSOAR handler for (.+) integration\.$", description.strip()
+            )
+            if match:
+                return match.group(1)
+        except Exception as exc:
+            logger.warning(
+                f"[manifest_generator] Failed to recover integration name from "
+                f"{handler_yaml_path}: {exc}; falling back to slug-derived title."
+            )
+    # Fallback: title-case the integration-id slug recovered from the handler id.
+    slug = handler_id_to_integration_slug(handler_id)
+    fallback = " ".join(w.capitalize() for w in slug.split("-") if w)
+    logger.warning(
+        f"[manifest_generator] Could not resolve integration display name for "
+        f"existing handler '{handler_id}'; using slug-derived title "
+        f"'{fallback}'. Flag for manual review."
+    )
+    return fallback
+
+
 def append_capability_to_files(
     cap_name: str,
     cap_params: list[str],
@@ -3740,6 +3839,7 @@ def append_capability_to_files(
     connector_dir: Path,
     yml_params_by_name: dict[str, dict] | None = None,
     existing_ids: set[str] | None = None,
+    integration_name: str = "",
 ) -> str:
     """Process one capability for the append-handler path.
 
@@ -3747,9 +3847,15 @@ def append_capability_to_files(
     ``capabilities_data``, ``configurations_data``, and (for Case 2) the
     existing handler.yaml file.
 
+    ``integration_name`` is the NEW handler's integration display ``name``
+    (the ``name`` field from the integration YAML). It titles every
+    sub-capability this call creates for the new handler. For the Case 2
+    promotion path the EXISTING handler's integration name is recovered
+    separately via :func:`_recover_integration_name_for_handler`.
+
     Returns the cap id that the NEW handler should reference in its own
-    handler.yaml ``capabilities`` list (either the bare slug for Case 3, or
-    the sub-cap id ``<new_handler_id>-<cap_slug>`` for Cases 1 and 2).
+    handler.yaml ``capabilities`` list — the sub-cap id
+    ``<capability_id>_<integration-id-slug>`` for all cases.
 
     When ``yml_params_by_name`` is supplied, each new field is materialized
     via :func:`emit_field_for_param` (rich shape with title + field_type +
@@ -3807,7 +3913,11 @@ def append_capability_to_files(
                 "default_enabled": False,
                 "required": False,
                 "sub_capabilities": [
-                    build_sub_capability_entry(new_sub_cap_id, cap_name)
+                    build_sub_capability_entry(
+                        new_sub_cap_id,
+                        cap_name,
+                        integration_name=integration_name,
+                    )
                 ],
             }
         )
@@ -3828,6 +3938,9 @@ def append_capability_to_files(
         )
         existing_handler_id = existing_handler_path.parent.name
         existing_sub_cap_id = make_sub_capability_id(existing_handler_id, cap_name)
+        existing_integration_name = _recover_integration_name_for_handler(
+            connector_dir, existing_handler_id
+        )
 
         # Step 2.1: rename cap id inside the existing handler.yaml.
         rename_handler_capability_id(
@@ -3836,7 +3949,11 @@ def append_capability_to_files(
 
         # Step 2.2: introduce sub_capabilities on the parent in capabilities.yaml.
         existing_cap["sub_capabilities"] = [
-            build_sub_capability_entry(existing_sub_cap_id, cap_name)
+            build_sub_capability_entry(
+                existing_sub_cap_id,
+                cap_name,
+                integration_name=existing_integration_name,
+            )
         ]
 
         # Step 2.3: rename the existing top-level entry in configurations.yaml
@@ -3848,7 +3965,9 @@ def append_capability_to_files(
 
     # Case 1 (or fall-through after promotion): append the new sub-cap.
     existing_cap.setdefault("sub_capabilities", []).append(
-        build_sub_capability_entry(new_sub_cap_id, cap_name)
+        build_sub_capability_entry(
+            new_sub_cap_id, cap_name, integration_name=integration_name
+        )
     )
     configurations_data.setdefault("configurations", []).append(
         {
@@ -5548,6 +5667,7 @@ def create_manifest_from_scratch(
         handler_dir=handler_dir,
         existing_ids=existing_field_ids,
         supported_modules=supported_modules,
+        integration_name=integration_yml.get("name", ""),
     )
     capabilities_data = deep_merge_dicts(
         capabilities_data, manual_capabilities_fields or {}
@@ -5887,6 +6007,7 @@ def add_handler_to_existing_connector(
             connector_dir=connector_dir,
             yml_params_by_name=yml_params_by_name,
             existing_ids=existing_field_ids,
+            integration_name=integration_yml.get("name", ""),
         )
         cap_name_to_handler_cap_id[cap_name] = handler_cap_id
 
