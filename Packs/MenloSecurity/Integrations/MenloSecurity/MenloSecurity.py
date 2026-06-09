@@ -793,6 +793,259 @@ def _xsiam_consumer_loop(
             del item
 
 
+# ============================================================================
+# === MEM TEST v2 (REMOVE AFTER TESTING — CIAC-16981) ========================
+# Per-ACTION memory + total time for one page. Unlike v1, EVERY method frees the
+# page + all intermediates BEFORE the send, so we can see the peak COLLAPSE:
+#   receive (page ~142MB) -> after_serialize (page + zip, TRUE PEAK)
+#   -> after_free (page+intermediates DELETED, only small zip left)  <-- the drop
+#   -> after_send (tiny zip sent)
+# Runs ONCE per container start, then normal collection. No config change; CSP untouched.
+# To remove: delete this block + the run-once hook in long_running_execution_command.
+# ============================================================================
+
+
+def _m2_rss() -> float:
+    try:
+        import os
+
+        with open("/proc/self/statm") as f:
+            return int(f.read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 1024 / 1024
+    except Exception:
+        return -1.0
+
+
+def _m2_log(action: str, t0: float) -> None:
+    demisto.info(f"[MEM2] {action} rss={_m2_rss():.1f}MB t=+{time.monotonic() - t0:.3f}s")
+
+
+def _m2_post(zipped: bytes) -> None:
+    """POST gzipped bytes to XSIAM, reproducing CSP headers (NOT modifying CSP)."""
+    calling_context = demisto.callingContext.get("context", {})
+    headers = {
+        "authorization": demisto.getLicenseCustomField("Http_Connector.token"),
+        "format": "json",
+        "product": PRODUCT,
+        "vendor": VENDOR,
+        "content-encoding": "gzip",
+        "collector-name": calling_context.get("IntegrationBrand", ""),
+        "instance-name": calling_context.get("IntegrationInstance", ""),
+        "final-reporting-device": demisto.params().get("url", ""),
+        "collector-type": "events",
+    }
+    xsiam_domain = demisto.getLicenseCustomField("Http_Connector.url")
+    xsiam_url = f"https://api-{xsiam_domain}"
+    client = BaseClient(base_url=xsiam_url, proxy=False)
+    xsiam_api_call_with_retries(
+        client=client, xsiam_url=xsiam_url, zipped_data=zipped, headers=headers,
+        num_of_attempts=3, is_json_response=True, data_type="events",
+    )
+
+
+def _m2_method_current(page: list[dict], t0: float) -> None:
+    """CURRENT: hand the whole page to CSP send (its 3-4 internal copies are hidden)."""
+    _m2_log("CURRENT.receive", t0)
+    send_events_to_xsiam(page, vendor=VENDOR, product=PRODUCT)
+    _m2_log("CURRENT.after_send", t0)
+
+
+def _m2_method_b_tempfile(page: list[dict], t0: float) -> None:
+    """B — gzip the page to a TEMP FILE, free page+everything, then stream the FILE to XSIAM.
+
+    The compressed bytes live on DISK during the send, so RAM holds neither the page nor the zip.
+    """
+    import gzip
+    import gc
+    import os
+    import tempfile
+
+    _m2_log("B.receive", t0)
+    fd, path = tempfile.mkstemp(suffix=".gz")
+    try:
+        os.close(fd)
+        with gzip.open(path, "wb") as gz:
+            while page:
+                gz.write((json.dumps(page.pop()) + "\n").encode("utf-8"))  # to disk; frees each event
+        _m2_log("B.after_serialize", t0)  # data on disk; page now empty
+        page.clear()
+        gc.collect()
+        _m2_log("B.after_free", t0)        # page gone; nothing big in RAM (zip is on disk)
+        with open(path, "rb") as fh:
+            zipped = fh.read()             # read compressed bytes back (small)
+        _m2_post(zipped)
+        del zipped
+        _m2_log("B.after_send", t0)
+    finally:
+        try:
+            os.unlink(path)
+        except OSError:
+            pass
+
+
+def _m2_method_c_inmem(page: list[dict], t0: float) -> None:
+    """C — build one big joined string, gzip it, free page+string before send."""
+    import gzip
+    import gc
+
+    _m2_log("C.receive", t0)
+    data = "\n".join(json.dumps(e) for e in page)   # one giant string
+    zipped = gzip.compress(data.encode("utf-8"))
+    _m2_log("C.after_serialize", t0)                # page + data + zip all briefly alive (TRUE PEAK)
+    del data
+    page.clear()                                     # free the page too (the big thing)
+    gc.collect()
+    _m2_log("C.after_free", t0)                      # only zip remains
+    _m2_post(zipped)
+    del zipped
+    _m2_log("C.after_send", t0)
+
+
+def _m2_method_e_streaming(page: list[dict], t0: float) -> None:
+    """E — stream-zip into a memory buffer (no giant string), free page+buf before send."""
+    import gzip
+    import gc
+    import io
+
+    _m2_log("E.receive", t0)
+    buf = io.BytesIO()
+    with gzip.GzipFile(fileobj=buf, mode="wb") as gz:
+        for e in page:                               # E does NOT pop (keeps page during serialize)
+            gz.write((json.dumps(e) + "\n").encode("utf-8"))
+    zipped = buf.getvalue()
+    _m2_log("E.after_serialize", t0)                 # page + buf + zip alive
+    del buf
+    page.clear()
+    gc.collect()
+    _m2_log("E.after_free", t0)                       # only zip remains
+    _m2_post(zipped)
+    del zipped
+    _m2_log("E.after_send", t0)
+
+
+def _m2_method_f_streaming_pop(page: list[dict], t0: float) -> None:
+    """F — stream-zip with pop() (frees each event during serialize), then free+send."""
+    import gzip
+    import gc
+    import io
+
+    _m2_log("F.receive", t0)
+    buf = io.BytesIO()
+    with gzip.GzipFile(fileobj=buf, mode="wb") as gz:
+        while page:
+            gz.write((json.dumps(page.pop()) + "\n").encode("utf-8"))  # frees each dict as it goes
+    zipped = buf.getvalue()
+    _m2_log("F.after_serialize", t0)                 # page already empty; buf+zip alive
+    del buf
+    gc.collect()
+    _m2_log("F.after_free", t0)                       # only zip remains
+    _m2_post(zipped)
+    del zipped
+    _m2_log("F.after_send", t0)
+
+
+def _m2_method_h_gc(page: list[dict], t0: float) -> None:
+    """H — same as C but WITHOUT an explicit gc before send (paired with C to isolate gc effect)."""
+    import gzip
+
+    _m2_log("H.receive", t0)
+    data = "\n".join(json.dumps(e) for e in page)
+    zipped = gzip.compress(data.encode("utf-8"))
+    _m2_log("H.after_serialize", t0)
+    del data
+    page.clear()                                     # free page, but NO gc.collect() here
+    _m2_log("H.after_free", t0)
+    _m2_post(zipped)
+    del zipped
+    _m2_log("H.after_send", t0)
+
+
+def _m2_run(page: list[dict]) -> None:
+    """Run each method on a fresh copy of the same page; log per-action memory + total time."""
+    import copy
+    import gc
+
+    # One-time size summary so the report is self-explanatory (page bytes -> zip bytes -> ratio).
+    try:
+        import gzip as _gz
+
+        _serialized = "\n".join(json.dumps(e) for e in page).encode("utf-8")
+        _page_bytes = len(_serialized)
+        _zip_bytes = len(_gz.compress(_serialized))
+        _ratio = (_page_bytes / _zip_bytes) if _zip_bytes else 0
+        del _serialized
+        demisto.info(
+            f"[MEM2] ===== MEM TEST v2 START: page_size={len(page)} events "
+            f"page_bytes={_page_bytes / 1024 / 1024:.1f}MB zip_bytes={_zip_bytes / 1024 / 1024:.2f}MB "
+            f"compression_ratio={_ratio:.1f}x ====="
+        )
+    except Exception as e:
+        demisto.error(f"[MEM2] size summary failed: {e}")
+        demisto.info(f"[MEM2] ===== MEM TEST v2 START: page_size={len(page)} events =====")
+    methods = [
+        ("CURRENT", _m2_method_current),
+        ("B_tempfile", _m2_method_b_tempfile),
+        ("C_inmem", _m2_method_c_inmem),
+        ("E_streaming", _m2_method_e_streaming),
+        ("F_streaming_pop", _m2_method_f_streaming_pop),
+        ("H_no_gc", _m2_method_h_gc),
+    ]
+    for name, fn in methods:
+        gc.collect()
+        gc.collect()
+        time.sleep(0.5)  # settle so each method starts from a clean floor (outside the timer)
+        t0 = time.monotonic()
+        _m2_log(f"{name}.reset", t0)
+        work = copy.deepcopy(page)
+        try:
+            fn(work, t0)
+        except Exception as e:
+            demisto.error(f"[MEM2] {name} failed: {e}\n{traceback.format_exc()}")
+        finally:
+            del work
+            gc.collect()
+            demisto.info(f"[MEM2] ----- {name} TOTAL time={time.monotonic() - t0:.3f}s -----")
+    demisto.info("[MEM2] ===== MEM TEST v2 END =====")
+
+
+def _m2_capture_and_run(
+    client: Client,
+    log_types: list[str],
+    first_fetch_time: str,
+    max_events_per_fetch_per_type: int,
+) -> None:
+    """Capture ONE page, then run the per-action mem test."""
+    demisto.info("[MEM2] capturing one page (serial).")
+    captured: dict[str, list[dict]] = {}
+
+    def _grab(p: list[dict]) -> None:
+        if not captured:
+            captured["page"] = list(p)
+
+    state = _init_long_running_state()
+    end_epoch = int(datetime.now(UTC).timestamp())
+    for log_type_ui in log_types:
+        last_fetch_time = state.get(log_type_ui, {}).get("last_fetch_time")
+        if last_fetch_time:
+            start_epoch = timestamp_to_epoch(last_fetch_time)
+        else:
+            first_dt = arg_to_datetime(first_fetch_time)
+            start_epoch = int(first_dt.timestamp()) if first_dt else end_epoch - 300
+        get_events_for_log_type(
+            client=client, log_type_ui=log_type_ui, start_epoch=start_epoch,
+            end_epoch=end_epoch, max_events=max_events_per_fetch_per_type, on_page=_grab,
+        )
+        if captured:
+            break
+    page = captured.get("page", [])
+    if not page:
+        demisto.info("[MEM2] no events to test this cycle.")
+        return
+    _m2_run(page)
+
+
+# === END MEM TEST v2 ========================================================
+
+
 def long_running_execution_command(
     client: Client,
     log_types: list[str],
@@ -830,6 +1083,14 @@ def long_running_execution_command(
     On exception: logs + updates module health + back-off sleep. Cortex's long-running supervisor
     restarts the container if this function ever returns or the process exits.
     """
+    # === MEM TEST v2 HOOK (REMOVE AFTER TESTING — CIAC-16981) ===
+    # Run the per-action mem test ONCE at container start, then normal collection.
+    try:
+        _m2_capture_and_run(client, log_types, first_fetch_time, max_events_per_fetch_per_type)
+    except Exception as e:
+        demisto.error(f"[MEM2] run failed (continuing to normal collection): {e}\n{traceback.format_exc()}")
+    # === END MEM TEST v2 HOOK ===
+
     state = _init_long_running_state()
     demisto.info(
         f"[long-running] Starting infinite collection loop (log_types={log_types}, "
