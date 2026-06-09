@@ -1,0 +1,225 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: azure-sentinel
+  label: Microsoft Sentinel
+  help_text: Connection settings for the Microsoft Sentinel integration.
+profiles:
+- id: passthrough.azure_sentinel
+  type: passthrough
+  view_group: azure-sentinel
+  title: Azure Sentinel Credentials
+  description: Authentication profile for Azure Sentinel (passthrough).
+  configurations:
+  - fields:
+    - id: credentials
+      title: Client Secret
+      field_type: input
+      metadata:
+        auth:
+          parameter: credentials
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: creds_certificate_username
+      title: Certificate Thumbprint
+      field_type: input
+      metadata:
+        auth:
+          parameter: creds_certificate_identifier
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: creds_certificate_password
+      title: Private Key
+      field_type: input
+      metadata:
+        auth:
+          parameter: creds_certificate
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: creds_client_id
+      title: Client ID
+      field_type: input
+      metadata:
+        auth:
+          parameter: creds_client_id
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: creds_tenant_id
+      title: Tenant ID
+      field_type: input
+      metadata:
+        auth:
+          parameter: creds_tenant_id
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: managed_identities_client_id
+      title: Azure Managed Identities Client ID
+      field_type: input
+      metadata:
+        auth:
+          parameter: managed_identities_client_id
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: server_url
+      field_type: input
+      title: Server URL
+      options:
+        description: Use this option when required to customize the URL to the Azure
+          management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+        default_value: https://management.azure.com
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+    - id: proxy
+      title: Use system proxy settings
+      field_type: switch
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: true
+        edit_modifiers:
+          required: false
+          hidden: true
+    - id: insecure
+      title: Trust any certificate (not secure)
+      field_type: switch
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: engine_mode
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+      options:
+        mask: false
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Azure Sentinel
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Azure Sentinel
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

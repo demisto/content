@@ -75,15 +75,21 @@ The orchestrator injects `__params_parity_dump__: "1"` into both creation payloa
 | [`ucp_capture.py`](ucp_capture.py) | CONNECTOR-side capture: port-forward to UCP shell pod → GET creation view → POST /instances → poll XSOAR for mirror → inject magic key → test-module → parse → cleanup. Top-level: `capture_ucp_params()`. |
 | [`normalizers.py`](normalizers.py) | Deterministic IGNORE policy. Strict exact-match comparison (no value normalization in MVP). Top-level: `normalize_for_diff()`. |
 | [`diff.py`](diff.py) | 5-state symmetric key-union diff engine + serializer-mapping annotations + connector-file `reason_hint` grep. Top-level: `diff_params()`. |
-| [`check_param_parity.py`](check_param_parity.py) | **Orchestrator CLI** (the main entry point). |
+| [`resolver.py`](resolver.py) | Resolves `--integration-id` → connector dir/id, integration YML/brand, capabilities/profiles, and the compare/ignore policy from the pipeline CSV + connector repo. Top-level: `resolve()`; shared `slugify()`. |
+| [`check_param_parity.py`](check_param_parity.py) | **Orchestrator CLI** (the main entry point; resolver-driven). |
+| [`results_ledger.py`](results_ledger.py) | Phase 7 results persistence: writes the per-run envelope JSON (captures scrubbed by default) + appends a row to `results/ledger.csv`. Top-level: `write_result()`, `append_ledger()`, `result_filename()`. |
+| [`tenant_lock.py`](tenant_lock.py) | Per-tenant filesystem lock (acquire/release/force-unlock; TTL/heartbeat/stale-reclaim). Keeps parallel shells from deploying to the same tenant at once. |
+| [`deploy_and_test.py`](deploy_and_test.py) | Atomic wrapper the skill runs per integration: acquire lock → `deploy.py` → `check_param_parity.py` → release (try/finally). Exit codes `0/10/11/20/21/30`. |
 | [`main.py`](main.py) | Thin CLI wrapper around `xsoar_capture` for ad-hoc INTEGRATION-side capture in isolation. |
 | [`create_ucp_instance.py`](create_ucp_instance.py) | Thin CLI wrapper around `ucp_capture` for ad-hoc CONNECTOR-side capture in isolation (with interactive Slack-permissions reminder). |
-| [`deploy.py`](deploy.py) | GitLab CI/CD helper for deploying connector content to a tenant (unchanged from previous draft). |
+| [`deploy.py`](deploy.py) | GitLab CI/CD helper for deploying connector content to a tenant (whole-manifest / whole-branch). |
 | [`test_data/connectors/<name>/`](test_data/connectors/) | Pre-built connector YAMLs the test suite diffs against. |
+| `results/` | Git-ignored Phase 7 artifacts: per-run envelope JSONs + `ledger.csv`. |
+| `.locks/` | Git-ignored per-tenant lockfiles (see `tenant_lock.py`). |
 
 ## Prerequisites
 
-1. **`.env`** — copy [`.env.example`](.env.example) to `.env` and fill in the placeholders (DEMISTO_BASE_URL, DEMISTO_API_KEY, XSIAM_AUTH_ID, UCP_TENANT_ID, etc.).
+1. **`.env`** — copy [`.env.example`](.env.example) to `.env` and fill the REQUIRED values: `DEMISTO_BASE_URL`, `DEMISTO_API_KEY`, `XSIAM_AUTH_ID`, `CONNECTUS_REPO_DIR` (local clone of unified-connectors-content — used by both deploy git ops AND the resolver), `CONNECTUS_BRANCH` (the connectus-repo branch deploy.py force-pushes), `TENANT_ID` (your single tenant — one per shell; sent to the GitLab pipeline as `TENANT_IDS`), and `GITLAB_TOKEN` (scope `api`). The rest have safe defaults. ⚠️ `BASE_BRANCH` controls a `git reset --hard origin/<base>` on every deploy — it discards un-pushed local changes on `CONNECTUS_BRANCH`.
 2. **Patched Base pack on the tenant** — the probe must be present on the tenant's `CommonServerPython` script. Upload via:
    ```bash
    demisto-sdk upload -i Packs/Base -z -mp platform
@@ -104,39 +110,175 @@ The orchestrator injects `__params_parity_dump__: "1"` into both creation payloa
 
 ## The one command
 
-For the MVP (Salesforce IAM × Salesforce connector × `automation-and-remediation` capability × OAuth2 client-credentials profile):
+The orchestrator is **resolver-driven**: the ONLY required input is the
+integration id. Everything else — the connector dir/id, the integration
+YML/brand, ALL (sub-)capabilities + profiles, and the compare/ignore policy —
+is resolved at runtime from the migration pipeline CSV + the connector repo by
+[`resolver.resolve()`](resolver.py). There are NO connector-specific defaults;
+this is a mass-migration tool, not a single-integration POC.
 
 ```bash
 cd connectus/runtime_demisto.params_parity
-python check_param_parity.py
+python check_param_parity.py --integration-id "<Integration ID>"
+# e.g. python check_param_parity.py --integration-id "Salesforce IAM"
 ```
 
 That's it. The orchestrator:
 
-  1. Captures the INTEGRATION-side `demisto.params()`.
-  2. Captures the CONNECTOR-side `demisto.params()`.
-  3. Normalizes both with the IGNORE policy.
-  4. Diffs them with serializer-mapping awareness.
-  5. Prints the JSON envelope to stdout (with raw captures embedded for triage).
-  6. Exits `0` on parity, `1` on any failure.
+  1. Resolves the integration id → connector/capabilities/profiles/policy.
+  2. Captures the INTEGRATION-side `demisto.params()`.
+  3. Captures the CONNECTOR-side `demisto.params()`.
+  4. Normalizes both with the IGNORE policy.
+  5. Diffs them with serializer-mapping awareness.
+  6. Prints the JSON envelope to stdout (with raw captures embedded for triage).
+  7. **Persists** the run to `results/` (JSON + `ledger.csv` — see below).
+  8. Exits per the exit-code contract below.
+
+> **Prerequisite — `Connector Folder Path`.** The resolver looks up the
+> connector tree from the pipeline CSV's `Connector Folder Path` column. That
+> cell MUST be set (e.g. via
+> `python3 connectus/workflow_state.py set-connector-path "<Integration ID>" connectors/<slug>`)
+> **before** the param-parity test can run, or the resolver raises a
+> `ResolverError` and the test is setup-blocked (exit `2`).
+
+### Exit-code contract (`check_param_parity.py`)
+
+| Exit | Meaning |
+|---|---|
+| `0` | **Parity pass** (`status: "pass"`, `n_fail == 0`). |
+| `1` | **Parity fail** — a real diff (`MISSING`/`EXTRA`/`VALUE_MISMATCH` not downgraded by `--allow-*`). |
+| `2` | **Setup-blocked** — resolver/capture failure (tenant unreachable, `Connector Folder Path` unset, handler not on disk, flow error). NOT a parity diff. |
+
+This contract is **stable**; the Phase 7 results-persistence step never changes
+it (a persistence write failure logs a warning and the exit code is unchanged).
 
 ### Useful CLI flags
 
+The required `--integration-id` is the only input the resolver needs. The
+remaining flags are OPTIONAL overrides (default `None`): pass one to pin a single
+knob the resolver would otherwise supply.
+
 | Flag | Purpose |
 |---|---|
+| `--integration-id <id>` | **Required.** The migration pipeline integration id (e.g. `"Salesforce IAM"`). Everything else is resolved from it. |
 | `--allow-missing` | Downgrade `MISSING_IN_CONNECTOR` findings to `warn` (no exit-code 1). |
 | `--allow-extra` | Same, for `EXTRA_IN_CONNECTOR`. |
 | `--allow-mismatch` | Same, for `VALUE_MISMATCH`. |
-| `--integration-yml <path>` | Test a different integration YML. |
-| `--integration-brand <name>` | Brand string for the XSOAR-mirror lookup. |
-| `--connector-id <id>` | Test a different connector. |
-| `--connector-dir <path>` | Connector YAML directory used for `reason_hint` attribution and serializer parsing. |
-| `--profile <id>` | UCP connection profile id. |
-| `--capability <id>` | UCP capability to enable. MVP supports ONE at a time. |
-| `--domain <value>` | Value for the connector's `general_configurations.domain` field. |
+| `--integration-yml <path>` | Override: pin the integration YML the resolver would supply. |
+| `--integration-brand <name>` | Override: pin the brand string for the XSOAR-mirror lookup. |
+| `--connector-id <id>` | Override: pin the connector id. |
+| `--connector-dir <path>` | Override: pin the connector YAML directory (used for `reason_hint` attribution and serializer parsing). |
+| `--no-scrub-results` | DEBUGGING ONLY: write the persisted result JSON with RAW captures (do NOT redact `demisto.params()` values). Default scrubs — see [Results & ledger](#results--ledger-phase-7). |
 | `--skip-xsoar` + `--integration-capture-file <path>` | Dev convenience: re-use a previously-captured INTEGRATION-side dict from disk. |
 | `--skip-ucp` + `--connector-capture-file <path>` | Same, for the CONNECTOR-side. |
 | `--verbose` | Enable DEBUG logging. |
+
+## The deploy + test wrapper (`deploy_and_test.py`)
+
+In the migration pipeline the param-parity test never runs standalone — it runs
+behind the atomic wrapper [`deploy_and_test.py`](deploy_and_test.py), which the
+skill invokes ONE command per integration:
+
+```bash
+python deploy_and_test.py --integration-id "<Integration ID>"
+```
+
+The wrapper performs the whole indivisible critical section inside a
+`try/finally` (the lock is ALWAYS released, even on crash):
+
+```
+acquire tenant lock → deploy.py (whole-manifest) → check_param_parity.py → release
+```
+
+### Wrapper exit-code contract
+
+The skill branches deterministically on this contract (it does NOT re-interpret
+stdout):
+
+| Exit | Meaning | Skill action |
+|---|---|---|
+| `0` | Deployed + parity **passed**. | `markpass "param parity test passes"`. |
+| `10` | Parity **FAILED** (real diff). | Report the mismatching params; cell stays empty. |
+| `11` | Parity **BLOCKED** (setup, e.g. handler not on disk / `Connector Folder Path`/`REPO_DIR` unset). | Report the setup fix; cell stays empty. |
+| `20` | **Deploy failed.** | Report the failed GitLab jobs + URL; CSV unchanged. |
+| `21` | **Deploy timeout.** | Report the still-running pipeline URL; CSV unchanged. |
+| `30` | Could not acquire the **tenant lock** (timeout). | Report the holder + options; NO auto-retry. |
+
+(`check_param_parity.py`'s `0/1/2` map to the wrapper's `0/10/11`; deploy's
+`1/2` map to `20/21`; lock-busy maps to `30`.)
+
+## The per-tenant lock (`tenant_lock.py`)
+
+Deployment is **whole-manifest**: [`deploy.py`](deploy.py) resets/force-pushes the
+`xsoar` branch and triggers a GitLab skinny pipeline against the `.env`
+`TENANT_IDS`. A deploy to tenant **X** clobbers whatever was on X, so two shells
+deploying to the SAME tenant concurrently corrupt each other's test. The lock is
+therefore **per-tenant** (keyed by the ICaaS / `TENANT_IDS` value) — not global,
+not per-integration. Shells on *different* tenants run fully in parallel.
+
+[`tenant_lock.py`](tenant_lock.py) is a filesystem lockfile under `.locks/`
+(git-ignored), created atomically via `O_CREAT | O_EXCL`:
+
+* **`acquire` BLOCKS internally** (up to `ACQUIRE_MAX_WAIT`, default 1800s) with
+  poll-retry; it is NOT the AI's job to loop.
+* **TTL + heartbeat** — the holder touches `heartbeat_at` every
+  `HEARTBEAT_INTERVAL` (30s) so a slow-but-alive deploy isn't mistaken for dead;
+  a lock whose `heartbeat_at` is older than `TTL` (1200s) is stale.
+* **Stale/dead-holder reclaim** — if the holder `pid` is not alive OR the lock is
+  stale, `acquire` reclaims it atomically and proceeds. A crashed holder never
+  causes a timeout.
+* **Owner-checked release** — `release` deletes the file iff this shell owns it
+  (matching `shell_id`); also fires on `atexit` / SIGINT / SIGTERM.
+* **`force-unlock --tenant X`** — manual reclaim for a known-dead holder.
+* **No auto-retry on timeout** — if `acquire` times out (wrapper exit `30`), the
+  skill STOPS and reports the holder + options to the user. The only retry is
+  human-initiated.
+
+## Parallel multi-shell
+
+Multiple AI shells run the migration in parallel, each taking different
+integrations — possibly on different tenants. **One tenant per shell:** each
+shell sets its OWN tenant in its OWN `.env` (`TENANT_IDS`). Shells on distinct
+tenants never block each other. If two shells happen to target the SAME tenant,
+the per-tenant lock serializes them so they can't clobber each other's deploy
+mid-test — the second shell's `acquire` blocks until the first releases.
+
+## Results & ledger (Phase 7)
+
+Every `check_param_parity.py` run is persisted to `results/` (git-ignored) by
+[`results_ledger.py`](results_ledger.py), in ADDITION to printing the envelope to
+stdout. Persistence happens BEFORE the exit code is returned and is guarded so a
+write failure logs a warning but NEVER changes the exit-code contract.
+
+```
+connectus/runtime_demisto.params_parity/results/
+├── ledger.csv                                                  # append-only tracking index
+└── <connector-slug>__<integration-slug>__<UTC-timestamp>.json # full envelope (audit detail)
+```
+
+* **Per-run JSON** — the envelope written verbatim, e.g.
+  `salesforce__salesforce-iam__20260607T170006Z.json` (timestamp is
+  `YYYYMMDDTHHMMSSZ`, UTC; append-only, never overwritten). **By default the
+  `captures` block is SCRUBBED**: every value under `captures.integration` /
+  `captures.connector` is replaced with `"<redacted>"` (keys preserved) because
+  the server may inject real tokens into `demisto.params()`. Pass
+  `--no-scrub-results` to write raw captures for debugging.
+* **`ledger.csv`** — one row per run; created with a header the first time.
+  Columns (exact):
+
+  | Column | Source |
+  |---|---|
+  | `timestamp` | the same UTC stamp used in the JSON filename |
+  | `integration_id` | the `--integration-id` |
+  | `connector_slug` | `slugify(connector_id)` |
+  | `status` | `envelope["status"]` (`pass`/`fail`) |
+  | `n_fail` | `envelope["summary"]["n_fail"]` |
+  | `result_file` | the JSON filename (basename) |
+
+The wrapper's captured output includes a `Result written: <path>` INFO line so an
+operator (or the skill) can jump straight to the audit JSON. This ledger is the
+parity DETAIL; the pipeline CSV ([`connectus-migration-pipeline.csv`](../connectus-migration-pipeline.csv))
+still records only a single ✅ in `param parity test passes`.
 
 ## The JSON envelope (output schema)
 

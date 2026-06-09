@@ -76,17 +76,17 @@ Examples:
   %(prog)s --repo-dir /path/to/repo     # Override repo directory
 
 Environment variables (set in .env or shell):
-  GITLAB_URL, GITLAB_TOKEN, PROJECT_PATH, REPO_DIR,
-  BRANCH_NAME, BASE_BRANCH, TENANT_IDS, OVERRIDE_REASON,
-  POLL_INTERVAL, MAX_WAIT
+  GITLAB_URL, GITLAB_TOKEN, CONNECTUS_REPO_DIR, CONNECTUS_BRANCH,
+  BASE_BRANCH, TENANT_IDS, OVERRIDE_REASON
+  (PROJECT_PATH is hardcoded; POLL_INTERVAL/MAX_WAIT are CLI-only.)
         """,
     )
     parser.add_argument("--gitlab-url", default=None, help="GitLab instance URL")
     parser.add_argument("--token", default=None, help="GitLab personal access token")
-    parser.add_argument("--project", default=None, help="GitLab project path")
-    parser.add_argument("--repo-dir", default=None, help="Path to the local git repo")
-    parser.add_argument("--branch", default=None, help="Branch name to create/push")
-    parser.add_argument("--base", default=None, help="Base branch to branch from")
+    parser.add_argument("--project", default=None, help="GitLab project path (defaults to the hardcoded PROJECT_PATH)")
+    parser.add_argument("--repo-dir", default=None, help="Path to the local unified-connectors-content repo (overrides CONNECTUS_REPO_DIR)")
+    parser.add_argument("--branch", default=None, help="Branch IN THE CONNECTUS REPO to create/force-push (overrides CONNECTUS_BRANCH)")
+    parser.add_argument("--base", default=None, help="Base branch; CONNECTUS_BRANCH is HARD-RESET (git reset --hard) to origin/<base> on every deploy")
     parser.add_argument("--tenant", default=None, help="Comma-separated tenant IDs for dev override")
     parser.add_argument("--reason", default=None, help="Override reason")
     parser.add_argument("--skip-git", action="store_true", help="Skip git operations")
@@ -96,19 +96,43 @@ Environment variables (set in .env or shell):
     return parser.parse_args()
 
 
+# The GitLab project that hosts unified-connectors-content. Hardcoded — there is
+# only ever one project; it does not vary per developer.
+PROJECT_PATH = "xdr/development/platform/unified-connectors-content"
+
+# Polling defaults (seconds). Not exposed as env vars — override via --poll-interval
+# / --max-wait if ever needed.
+DEFAULT_POLL_INTERVAL = 2
+DEFAULT_MAX_WAIT = 600
+
+
 def get_config(args):
-    """Build config from env vars (loaded by dotenv) with CLI overrides."""
+    """Build config from env vars (loaded by dotenv) with CLI overrides.
+
+    Env vars consumed:
+      * CONNECTUS_REPO_DIR — local clone of the unified-connectors-content repo
+        (git ops run here). REQUIRED for git operations.
+      * CONNECTUS_BRANCH — branch IN THE CONNECTUS REPO that is force-pushed +
+        deployed. REQUIRED for git operations.
+      * BASE_BRANCH — what CONNECTUS_BRANCH is HARD-RESET to on every deploy.
+      * TENANT_ID (single tenant; sent to the GitLab pipeline as TENANT_IDS),
+        OVERRIDE_REASON, GITLAB_URL, GITLAB_TOKEN.
+    PROJECT_PATH is hardcoded; POLL_INTERVAL/MAX_WAIT are CLI-only.
+    """
     return {
         "gitlab_url": args.gitlab_url or os.getenv("GITLAB_URL", "https://gitlab.xdr.pan.local"),
         "gitlab_token": args.token or os.getenv("GITLAB_TOKEN", ""),
-        "project_path": args.project or os.getenv("PROJECT_PATH", "xdr/development/platform/unified-connectors-content"),
-        "repo_dir": args.repo_dir or os.getenv("REPO_DIR", ""),
-        "branch_name": args.branch or os.getenv("BRANCH_NAME", "xsoar"),
-        "base_branch": args.base or os.getenv("BASE_BRANCH", "dev"),
-        "tenant_ids": args.tenant or os.getenv("TENANT_IDS", "9994313365288"),
+        "project_path": args.project or PROJECT_PATH,
+        "repo_dir": args.repo_dir or os.getenv("CONNECTUS_REPO_DIR", ""),
+        "branch_name": args.branch or os.getenv("CONNECTUS_BRANCH", "xsoar"),
+        "base_branch": args.base or os.getenv("BASE_BRANCH", "stable"),
+        # Single tenant per shell. Input var is TENANT_ID; it is sent to the
+        # GitLab pipeline as the CI-expected `TENANT_IDS` variable (see
+        # trigger_pipeline). --tenant overrides.
+        "tenant_ids": args.tenant or os.getenv("TENANT_ID", ""),
         "override_reason": args.reason or os.getenv("OVERRIDE_REASON", "dev-testing"),
-        "poll_interval": args.poll_interval if args.poll_interval is not None else int(os.getenv("POLL_INTERVAL", "2")),
-        "max_wait": args.max_wait if args.max_wait is not None else int(os.getenv("MAX_WAIT", "600")),
+        "poll_interval": args.poll_interval if args.poll_interval is not None else DEFAULT_POLL_INTERVAL,
+        "max_wait": args.max_wait if args.max_wait is not None else DEFAULT_MAX_WAIT,
         "skip_git": args.skip_git,
         "diagnose": args.diagnose,
     }
@@ -124,13 +148,13 @@ def validate_config(config):
         sys.exit(1)
 
     if not config["skip_git"] and not config["repo_dir"]:
-        error("REPO_DIR is required for git operations")
+        error("CONNECTUS_REPO_DIR is required for git operations")
         print(f"  Set it in {_SCRIPT_DIR / '.env'} or via --repo-dir flag")
         print(f"  Or use --skip-git to skip git operations")
         sys.exit(1)
 
     if not config["skip_git"] and not Path(config["repo_dir"]).is_dir():
-        error(f"REPO_DIR does not exist: {config['repo_dir']}")
+        error(f"CONNECTUS_REPO_DIR does not exist: {config['repo_dir']}")
         sys.exit(1)
 
 
@@ -341,7 +365,7 @@ def git_operations(config):
 
 def trigger_pipeline(config):
     """Trigger a GitLab CI/CD skinny pipeline."""
-    header("Step 2: Trigger Pipeline")
+    header("Step 2: Trigger Connector Deploy Pipeline")
     info(f"Triggering skinny pipeline on branch '{config['branch_name']}'...")
     info(f"  Tenant IDs: {config['tenant_ids']}")
     info(f"  Reason: {config['override_reason']}")
@@ -366,7 +390,7 @@ def trigger_pipeline(config):
 
 def poll_pipeline(config, pipeline_id):
     """Poll pipeline status until completion or timeout."""
-    header("Step 3: Waiting for Pipeline")
+    header("Step 3: Waiting for Connector Deploy Pipeline To Complete")
     terminal_states = {"success", "failed", "canceled"}
     start = time.time()
     last_status = ""
@@ -457,7 +481,12 @@ def main():
     print(f"\n{Colors.BOLD}🚀 Unified Connectors — Dev Deployment{Colors.RESET}")
     print(f"{Colors.DIM}Config: {_SCRIPT_DIR / '.env'}{Colors.RESET}\n")
 
-
+    # Step 1: Git operations — reset the branch from origin/<base> and force-push
+    # the connector-manifest branch so the pipeline deploys FROM that branch. This
+    # push step had been dropped from main(); without it the pipeline runs against a
+    # stale remote branch. Honored unless --skip-git is passed (re-trigger only).
+    if not config["skip_git"]:
+        git_operations(config)
 
     # Step 2: Trigger pipeline
     pipeline_id, pipeline_url = trigger_pipeline(config)

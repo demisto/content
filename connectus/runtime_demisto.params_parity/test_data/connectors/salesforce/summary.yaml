@@ -1,5 +1,0 @@
-# yaml-language-server: $schema=../../schema/summary.schema.json
-metadata:
-  title: "Summary"
-  description: "Review your instance configuration"
-  next_steps: "Your instance is fully configured and ready to use."

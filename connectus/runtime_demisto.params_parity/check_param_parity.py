@@ -15,32 +15,28 @@ Single end-to-end entry point that:
   7. Exits ``0`` on parity (``status: "pass"``), non-zero on any failure
      (``status: "fail"``).
 
-For the MVP this is wired to:
+The ONLY required input is ``--integration-id``. Everything else — the connector
+dir/id, the integration YML/brand, ALL (sub-)capabilities + profiles, and the
+compare/ignore policy — is resolved at runtime from the migration pipeline CSV +
+the connector repo by :func:`resolver.resolve`. There are NO connector-specific
+defaults; this is a mass-migration tool, not a single-integration POC.
 
-  * Integration: Salesforce IAM
-  * Connector: ``salesforce`` from :file:`test_data/connectors/salesforce/`
-  * Profile: ``oauth2_client_credentials.salesforce``
-  * Capability: ``automation-and-remediation`` ONLY
-
-All knobs can be overridden via CLI flags.
+The remaining flags are OPTIONAL overrides (default ``None``): pass one to pin a
+single knob the resolver would otherwise supply.
 
 Example::
 
     cd connectus/runtime_demisto.params_parity
-    python check_param_parity.py
+    python check_param_parity.py --integration-id "Salesforce IAM"
     # → prints the JSON envelope, exits 0 if parity OK, non-zero otherwise.
 
     # With allow-flags to downgrade specific findings to warn-level:
-    python check_param_parity.py \\
+    python check_param_parity.py --integration-id "Salesforce IAM" \\
         --allow-missing --allow-mismatch
 
-    # Pointing at a different integration YML / connector:
-    python check_param_parity.py \\
-        --integration-yml /path/to/Other.yml \\
-        --integration-brand "Other Integration" \\
-        --connector-id other \\
-        --connector-dir /path/to/other-connector/ \\
-        --profile oauth2_client_credentials.other
+    # Pinning a single resolver-supplied knob:
+    python check_param_parity.py --integration-id "Salesforce IAM" \\
+        --connector-dir /path/to/other-connector/
 """
 
 from __future__ import annotations
@@ -54,8 +50,11 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+import resolver as resolver_mod
+import results_ledger
 from diff import _load_serializer_mappings, diff_params
 from normalizers import normalize_for_diff
+from resolver import ResolverError
 from ucp_capture import capture_ucp_params
 from xsoar_capture import (
     capture_xsoar_params,
@@ -70,23 +69,6 @@ log = logging.getLogger("check_param_parity")
 
 
 # ============================================================================
-# Defaults — MVP wiring for Salesforce IAM × Salesforce connector
-# ============================================================================
-
-DEFAULT_INTEGRATION_YML = "Packs/Salesforce/Integrations/Salesforce_IAM/Salesforce_IAM.yml"
-DEFAULT_INTEGRATION_BRAND = "Salesforce IAM"
-DEFAULT_CONNECTOR_DIR = "connectus/runtime_demisto.params_parity/test_data/connectors/salesforce"
-DEFAULT_CONNECTOR_ID = "salesforce"
-DEFAULT_PROFILE_ID = "oauth2_client_credentials.salesforce"
-DEFAULT_CAPABILITY = "automation-and-remediation"
-DEFAULT_DOMAIN_VALUE = "test.salesforce.com"
-DEFAULT_AUTH_VALUES = {
-    "client_key": "dummy_client_key",
-    "client_secret": "dummy_client_secret",
-}
-
-
-# ============================================================================
 # CLI
 # ============================================================================
 
@@ -98,59 +80,50 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "End-to-end ConnectUs param-parity test. Captures demisto.params() "
             "from both the legacy XSOAR flow (INTEGRATION side) and the new "
             "UCP flow (CONNECTOR side), then diffs them with a deterministic "
-            "IGNORE policy."
+            "IGNORE policy. Everything is resolved from --integration-id."
         ),
     )
 
     p.add_argument(
-        "--integration-yml",
-        default=DEFAULT_INTEGRATION_YML,
+        "--integration-id",
+        required=True,
         help=(
-            "Path to the integration YML to test (relative to the workspace "
-            "or absolute). [default: %(default)s]"
+            "XSOAR Integration ID (REQUIRED). The resolver derives the connector "
+            "dir/id, integration YML/brand, ALL (sub-)capabilities + profiles, "
+            "and the compare/ignore policy from the migration pipeline CSV + the "
+            "connector repo."
+        ),
+    )
+
+    # Optional overrides (default None) — pin a single resolver-supplied knob.
+    p.add_argument(
+        "--integration-yml",
+        default=None,
+        help=(
+            "Override the resolver's integration YML path (relative to the "
+            "workspace or absolute)."
         ),
     )
     p.add_argument(
         "--integration-brand",
-        default=DEFAULT_INTEGRATION_BRAND,
+        default=None,
         help=(
-            "Integration brand name (equals the YML `name`). Used to find "
-            "the XSOAR-mirrored instance UCP creates. [default: %(default)s]"
+            "Override the resolver's integration brand name (equals the YML "
+            "`name`). Used to find the XSOAR-mirrored instance UCP creates."
         ),
     )
-
     p.add_argument(
         "--connector-id",
-        default=DEFAULT_CONNECTOR_ID,
-        help="UCP connector id. [default: %(default)s]",
+        default=None,
+        help="Override the resolver's UCP connector id.",
     )
     p.add_argument(
         "--connector-dir",
-        default=DEFAULT_CONNECTOR_DIR,
+        default=None,
         help=(
-            "Path to the connector's YAML directory. Used by the diff engine "
-            "to attribute EXTRA_IN_CONNECTOR findings to their source file. "
-            "[default: %(default)s]"
+            "Override the resolver's connector YAML directory. Used by the diff "
+            "engine to attribute EXTRA_IN_CONNECTOR findings to their source file."
         ),
-    )
-    p.add_argument(
-        "--profile",
-        default=DEFAULT_PROFILE_ID,
-        help="UCP connection profile id. [default: %(default)s]",
-    )
-    p.add_argument(
-        "--capability",
-        default=DEFAULT_CAPABILITY,
-        help=(
-            "UCP capability to enable (POC supports ONE capability at a time). "
-            "[default: %(default)s]"
-        ),
-    )
-    p.add_argument(
-        "--domain",
-        default=DEFAULT_DOMAIN_VALUE,
-        help="Value for the connector's general_configurations.domain field. "
-             "[default: %(default)s]",
     )
 
     # Allow-flags: downgrade specific finding types from `fail` to `warn`.
@@ -198,6 +171,16 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
 
     p.add_argument(
+        "--no-scrub-results",
+        action="store_true",
+        help=(
+            "DEBUGGING ONLY: write the persisted result JSON with RAW captures "
+            "(do NOT redact demisto.params() values). Default is to scrub, because "
+            "the server may inject real tokens into demisto.params()."
+        ),
+    )
+
+    p.add_argument(
         "--verbose", "-v",
         action="store_true",
         help="Enable DEBUG logging from all capture/diff modules.",
@@ -230,22 +213,61 @@ def main(argv: list[str] | None = None) -> int:
         datefmt="%H:%M:%S",
     )
 
-    # ── Parse the integration YML once (used by both captures + the normalizer) ──
-    if not os.path.isabs(args.integration_yml):
-        # Resolve relative paths against the workspace root (one up from this script).
-        candidate = os.path.abspath(args.integration_yml)
-        if not os.path.exists(candidate):
-            log.error("integration-yml not found: %s (resolved to %s)", args.integration_yml, candidate)
-            return 2
-        args.integration_yml = candidate
+    # ── Resolver: derive everything from the required --integration-id ──
+    #
+    # resolve() reads the migration pipeline CSV row + the connector repo and
+    # produces a ParityInputs describing the connector dir/id, the integration
+    # YML/brand, ALL (sub-)capabilities + profiles, the auth mapping, and the
+    # compare/ignore policy. Optional CLI overrides (default None) pin a single
+    # knob; otherwise the resolver value is used.
+    try:
+        parity_inputs = resolver_mod.resolve(args.integration_id)
+    except ResolverError as e:
+        log.error("Resolver failed for %r: %s", args.integration_id, e)
+        return 2
 
-    log.info("Parsing integration YML: %s", args.integration_yml)
-    yml_data = parse_integration_yml(args.integration_yml)
+    integration_yml = args.integration_yml or parity_inputs.integration_yml_path
+    integration_brand = args.integration_brand or parity_inputs.integration_brand
+    connector_id = args.connector_id or parity_inputs.connector_id
+    connector_dir = args.connector_dir or parity_inputs.connector_dir
+
+    # force_keep = the params the resolver decided to compare (includes
+    # interpolated-profile auth fields that are YML type-4/9 but DO arrive at
+    # runtime). force_drop = the hard ignore-list the resolver dropped.
+    force_keep: set[str] = set(parity_inputs.compare_params)
+    force_drop: set[str] = {
+        name
+        for name, reason in parity_inputs.ignored_params.items()
+        if reason == "hard_ignore_list"
+    }
+    log.info(
+        "Resolver: connector_dir=%s connector_id=%s integration_yml=%s "
+        "(%d compare, %d hard-ignored, %d capabilities, %d profiles)",
+        connector_dir,
+        connector_id,
+        integration_yml,
+        len(force_keep),
+        len(force_drop),
+        len(parity_inputs.capabilities),
+        len(parity_inputs.profiles),
+    )
+
+    # ── Parse the integration YML once (used by both captures + the normalizer) ──
+    if not os.path.isabs(integration_yml):
+        # Resolve relative paths against the workspace root (one up from this script).
+        candidate = os.path.abspath(integration_yml)
+        if not os.path.exists(candidate):
+            log.error("integration-yml not found: %s (resolved to %s)", integration_yml, candidate)
+            return 2
+        integration_yml = candidate
+
+    log.info("Parsing integration YML: %s", integration_yml)
+    yml_data = parse_integration_yml(integration_yml)
     yml_configuration = yml_data.get("configuration", []) or []
     yml_param_names = {p.get("name") for p in yml_configuration if p.get("name")}
     log.info(
         "Integration: %s — %d params declared in YML",
-        yml_data.get("name") or args.integration_brand,
+        yml_data.get("name") or integration_brand,
         len(yml_param_names),
     )
 
@@ -256,62 +278,30 @@ def main(argv: list[str] | None = None) -> int:
         log.error("Could not build XSOAR client: %s", e)
         return 2
 
-    # ── Pre-load the connector's serializer mappings to auto-align dummy values ──
+    # ── Bidirectional push: pre-compute the dummy dict ONCE and pass it to BOTH
+    #    sides ──
     #
-    # The whole point of the parity test is that the integration container should
-    # receive the same demisto.params() dict whether configured via XSOAR or via
-    # UCP. So when the connector's serializer.yaml maps `domain → url`, the
-    # INTEGRATION-side test MUST set `url` to the same value the CONNECTOR-side
-    # passes as `domain`. Otherwise we get false-positive VALUE_MISMATCH findings
-    # purely from test-setup drift.
-    #
-    # `by_xsoar_serialized[<xsoar_param>] = <connector_field>` — we use this to
-    # build a per-XSOAR-param override map that mirrors the CONNECTOR-side input
-    # values.
-    by_xsoar_serialized, _ = _load_serializer_mappings(Path(args.connector_dir))
-
-    # The CONNECTOR-side inputs that produce values for serialized XSOAR params.
-    # For the MVP this is just the `domain` field — anything else (auth, etc.)
-    # is IGNORE'd by the normalizer and never reaches the diff anyway.
-    connector_inputs: dict = {
-        "domain": args.domain,
-        # NOTE: auth-profile values (client_key, client_secret) are intentionally
-        # NOT mapped here — those map to type-4/type-9 XSOAR params and are
-        # IGNORE'd by the normalizer, so aligning them buys nothing.
-    }
-    xsoar_overrides: dict = {}
-    for xsoar_name, connector_field in by_xsoar_serialized.items():
-        if connector_field in connector_inputs:
-            xsoar_overrides[xsoar_name] = connector_inputs[connector_field]
-            log.info(
-                "Auto-aligned INTEGRATION-side override: %s = %r "
-                "(via serializer mapping %s ← %s)",
-                xsoar_name,
-                connector_inputs[connector_field],
-                xsoar_name,
-                connector_field,
-            )
-
-    # ── Bidirectional override push: pre-compute the dummy dict ONCE and pass
-    #    it to BOTH sides ──
-    #
-    # Without this step, the INTEGRATION side gets our guaranteed-different
-    # dummies while the CONNECTOR side gets the connector's `configurations.yaml`
-    # defaults — producing a flood of VALUE_MISMATCH false-positives that drown
-    # out the real bugs. With bidirectional push, both sides see the SAME dummy
-    # value, so any remaining diff finding is a real connector bug (missing
-    # field, extra field, or genuine value transformation gone wrong).
+    # Both sides receive the SAME guaranteed-different dummy values (never the
+    # connector's configuration defaults). Any remaining diff finding is then a
+    # real connector bug (missing field, extra field, or genuine value
+    # transformation gone wrong) rather than test-setup drift.
     #
     # `fill_params_from_yml` walks the YML's configuration list and, for every
-    # param, produces a dummy value via `generate_dummy_value_for_param` (which
-    # is guaranteed-different-from-the-YML-default). The `xsoar_overrides` we
-    # pass take precedence for serializer-mapped fields (e.g. `url` keeps the
-    # auto-aligned domain value, NOT the generator's `<override_url>` sentinel).
-    shared_dummies = fill_params_from_yml(yml_configuration, xsoar_overrides)
+    # param, produces a dummy value via `generate_dummy_value_for_param`.
+    shared_dummies = fill_params_from_yml(yml_configuration, {})
     log.info(
         "Pre-computed %d shared dummy values to push to BOTH sides.",
         len(shared_dummies),
     )
+
+    # The CONNECTOR side keys configuration/auth by connector FIELD id, while
+    # shared_dummies is keyed by xsoar PARAM id. Build a connector-keyed copy so
+    # serializer-renamed fields (e.g. xsoar `url` → connector `domain`) and
+    # interpolated auth fields receive the SAME value the integration side uses.
+    connector_instance_values: dict = dict(shared_dummies)
+    for xsoar_param, connector_field in parity_inputs.param_to_connector_field.items():
+        if xsoar_param in shared_dummies and connector_field != xsoar_param:
+            connector_instance_values[connector_field] = shared_dummies[xsoar_param]
 
     # ── INTEGRATION-side capture (legacy XSOAR flow) ──
     if args.skip_xsoar:
@@ -325,13 +315,16 @@ def main(argv: list[str] | None = None) -> int:
         log.info("Capturing INTEGRATION-side demisto.params() via legacy XSOAR flow...")
         log.info("=" * 70)
         integration_raw = capture_xsoar_params(
-            integration_yml_path=args.integration_yml,
-            overrides=shared_dummies,  # full pre-computed dummy dict (incl. auto-aligned serializer fields)
+            integration_yml_path=integration_yml,
+            overrides=shared_dummies,  # full pre-computed dummy dict
             client=xsoar_client,
         )
     if integration_raw is None:
+        # A capture FAILURE is a setup/runtime problem (tenant unreachable, flow
+        # error), NOT a real parity diff. The wrapper maps 2 → "setup-blocked"
+        # (exit 11), distinct from 1 → "parity-fail" (exit 10). See design §4.
         log.error("INTEGRATION-side capture failed. See logs above.")
-        return 1
+        return 2
     log.info("INTEGRATION-side captured %d keys.", len(integration_raw))
 
     # ── CONNECTOR-side capture (new UCP flow) ──
@@ -347,29 +340,32 @@ def main(argv: list[str] | None = None) -> int:
         log.info("=" * 70)
         connector_raw = capture_ucp_params(
             xsoar_client=xsoar_client,
-            xsoar_brand_name=args.integration_brand,
-            connector_id=args.connector_id,
-            profile_id=args.profile,
-            selected_capability=args.capability,
-            domain_value=args.domain,
-            auth_values=DEFAULT_AUTH_VALUES,
-            # The bidirectional push: same shared_dummies dict that fed the
-            # INTEGRATION-side capture is also merged into the UCP payload's
-            # configuration block (filtered to only fields the connector
-            # declares — see ucp_capture._build_salesforce_iam_payload).
-            connector_config_overrides=shared_dummies,
+            xsoar_brand_name=integration_brand,
+            parity_inputs=parity_inputs,
+            # The bidirectional push: the SAME values that fed the INTEGRATION
+            # side, keyed by connector field id. The builder enables ALL handler
+            # (sub-)capabilities and pushes these into the configuration + the
+            # interpolated-profile auth fields (never connector defaults).
+            instance_values=connector_instance_values,
+            connector_id=connector_id,
         )
     if connector_raw is None:
+        # Capture FAILURE = setup-blocked (return 2), not a parity diff (1).
+        # See design §4 / the wrapper's exit-code mapping.
         log.error("CONNECTOR-side capture failed. See logs above.")
-        return 1
+        return 2
     log.info("CONNECTOR-side captured %d keys.", len(connector_raw))
 
     # ── Normalize both sides with the deterministic IGNORE policy ──
+    # force_keep carries the resolver's compare set (incl. interpolated-profile
+    # auth fields); force_drop carries the hard ignore-list.
     integration_norm, integration_dropped = normalize_for_diff(
         integration_raw, yml_configuration, side="integration",
+        force_keep=force_keep, force_drop=force_drop,
     )
     connector_norm, connector_dropped = normalize_for_diff(
         connector_raw, yml_configuration, side="connector",
+        force_keep=force_keep, force_drop=force_drop,
     )
     log.info(
         "After normalization: INTEGRATION %d→%d (dropped %d), CONNECTOR %d→%d (dropped %d)",
@@ -385,7 +381,7 @@ def main(argv: list[str] | None = None) -> int:
         integration=integration_norm,
         connector=connector_norm,
         yml_param_names=yml_param_names,
-        connector_dir=args.connector_dir,
+        connector_dir=connector_dir,
         # Pass the raw captures + dropped-logs so the diff can synthesize
         # OK_IGNORED entries with the original raw values + drop reasons.
         integration_raw=integration_raw,
@@ -412,15 +408,20 @@ def main(argv: list[str] | None = None) -> int:
         "connector": connector_dropped,
     }
 
-    # Attach the args used so the report is reproducible.
+    # Attach the resolved inputs used so the report is reproducible.
     envelope["inputs"] = {
-        "integration_yml": args.integration_yml,
-        "integration_brand": args.integration_brand,
-        "connector_id": args.connector_id,
-        "connector_dir": args.connector_dir,
-        "profile": args.profile,
-        "capability": args.capability,
-        "domain": args.domain,
+        "integration_id": args.integration_id,
+        "integration_yml": integration_yml,
+        "integration_brand": integration_brand,
+        "connector_id": connector_id,
+        "connector_dir": connector_dir,
+        "capabilities": [
+            {"id": c.id, "sub_capabilities": [sc.id for sc in c.sub_capabilities]}
+            for c in parity_inputs.capabilities
+        ],
+        "profiles": [
+            {"id": p.id, "interpolated": p.interpolated} for p in parity_inputs.profiles
+        ],
         "allow_missing": args.allow_missing,
         "allow_extra": args.allow_extra,
         "allow_mismatch": args.allow_mismatch,
@@ -428,6 +429,31 @@ def main(argv: list[str] | None = None) -> int:
 
     # ── Emit the envelope to stdout ──
     print(json.dumps(envelope, indent=2, sort_keys=False, default=str))
+
+    # ── Persist the run (Phase 7) ──
+    # Write the envelope JSON + append a ledger row BEFORE returning the exit
+    # code. Guarded so a write failure logs a warning but NEVER changes the
+    # exit-code contract (0 pass / 1 parity-fail / 2 setup-blocked). Captures
+    # are scrubbed by default (the server may inject real tokens); pass
+    # --no-scrub-results to keep raw values for debugging.
+    try:
+        result_path = results_ledger.write_result(
+            envelope,
+            connector_id=connector_id,
+            integration_id=args.integration_id,
+            scrub=not args.no_scrub_results,
+        )
+        results_ledger.append_ledger(
+            envelope,
+            integration_id=args.integration_id,
+            connector_id=connector_id,
+            result_file=result_path.name,
+        )
+        # Logged at INFO so the deploy_and_test wrapper's captured output points
+        # the operator straight at the persisted artifact.
+        log.info("Result written: %s", result_path)
+    except Exception as e:  # noqa: BLE001 — persistence must never change exit code
+        log.warning("Failed to persist result (exit code unchanged): %s", e)
 
     # ── Exit code ──
     if envelope["status"] == "pass":
