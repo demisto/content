@@ -383,6 +383,16 @@ script:
     - contextPath: Rasterize.Content
       description: The extracted markdown-formatted text content.
       type: string
+  - arguments:
+    - description: Optional URL to filter the memory log by. When omitted, returns the diagnostic log for all URLs.
+      name: url
+    description: Returns the in-memory diagnostic log collected during rasterization (persisted in the integration context, keyed by URL).
+    name: rasterize-memory-log
+    hidden: true
+  - arguments: []
+    description: Dumps the full integration context as a downloadable JSON file. Useful for post-mortem diagnostics after a rasterize failure.
+    name: rasterize-get-integration-context
+    hidden: true
   dockerimage: demisto/chromium:148.0.7778.9191027
   runonce: false
   script: "-"

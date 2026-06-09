@@ -164,37 +164,61 @@ class RasterizeType(Enum):
 
 # region memory helpers
 
-# In-memory log buffer — collects memory-related diagnostic lines throughout the run so they
-# can be returned as a downloadable file even when debug mode is disabled.
-_memory_log_lines: list[str] = []
-_memory_log_lock = threading.Lock()
+# Diagnostic log lines are persisted in the integration context, keyed by the URL being
+# rasterized.  This survives process restarts (including OOM kills) because the server
+# persists integration context to its database.  Operators can later inspect the logs by
+# running `rasterize-memory-log` (per-URL output) or `rasterize-get-integration-context`
+# (returns the full integration-context dictionary as a downloadable file).
+#
+# Memory logging is only meaningful in lightweight mode, where rasterize processes a
+# single URL at a time — so we just track the "current URL" in a module-level global and
+# avoid any thread-local or locking machinery.
+MEMORY_LOG_CONTEXT_KEY = "memory_log_by_url"
+# Bucket used when no URL is associated with the current call (e.g. logs emitted from
+# `main()` startup before `perform_rasterize` sets the current URL).
+GENERAL_LOG_KEY = "_general_"
 
-# Path to the on-disk memory log file.  Written with O_APPEND + immediate flush so every
-# line survives an OOM kill (the process is terminated before main()'s finally block runs,
-# meaning emit_memory_log_file() is never called).  The file is read back and returned to
-# the War Room by emit_memory_log_file() / rasterize_memory_log_command().
-_MEMORY_LOG_FILE_PATH = os.path.join(tempfile.gettempdir(), "rasterize_memory_log.txt")
+# The URL currently being rasterized.  Set by `_set_current_url()` at the start of
+# `perform_rasterize` (per URL) and cleared when the call returns.
+_current_url: str | None = None
+
+
+def _set_current_url(url: str | None) -> None:
+    """Set (or clear) the URL associated with subsequent `_mem_log` calls."""
+    global _current_url
+    _current_url = url
+
+
+def _append_log_line_to_context(url_key: str, line: str) -> None:
+    """Append a single log line to the integration context under *url_key*.
+
+    Failures are swallowed so logging never breaks the main rasterize flow.
+    """
+    try:
+        context = get_integration_context() or {}
+        logs_by_url = context.get(MEMORY_LOG_CONTEXT_KEY)
+        if not isinstance(logs_by_url, dict):
+            logs_by_url = {}
+        url_lines = logs_by_url.get(url_key)
+        if not isinstance(url_lines, list):
+            url_lines = []
+        url_lines.append(line)
+        logs_by_url[url_key] = url_lines
+        context[MEMORY_LOG_CONTEXT_KEY] = logs_by_url
+        set_integration_context(context)
+    except Exception as ex:  # pragma: no cover - logging must never break the main flow
+        demisto.info(f"_append_log_line_to_context: failed to persist log line: {ex}")
 
 
 def _mem_log(level: str, message: str) -> None:
-    """Append a timestamped line to the in-memory buffer AND flush it to disk immediately.
+    """Append a timestamped line to the integration context, keyed by the current URL.
 
-    Writing to disk on every call ensures the diagnostics survive an OOM kill, because the
-    kernel terminates the process before Python's finally block (and therefore
-    emit_memory_log_file) can run.  debug-mode=true is also unreliable on the platform, so
-    we do not rely on demisto.debug() or demisto.info() as the sole output channel.
+    The integration context is persisted by the platform's database, so diagnostic lines
+    survive even an OOM kill that terminates the process before any `finally` block runs.
     """
     ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # pylint: disable=E9003
     line = f"[{ts}] [{level}] {message}"
-    with _memory_log_lock:
-        _memory_log_lines.append(line)
-        try:
-            with open(_MEMORY_LOG_FILE_PATH, "a", encoding="utf-8") as fh:
-                fh.write(line + "\n")
-                fh.flush()
-                os.fsync(fh.fileno())
-        except OSError:
-            pass  # Never let logging failures break the main flow
+    _append_log_line_to_context(_current_url or GENERAL_LOG_KEY, line)
     demisto.info(line)
 
 
@@ -1822,6 +1846,9 @@ def perform_rasterize(
 
     # In lightweight mode: log current memory stats for diagnostics (no hard block on low memory).
     if IS_LIGHTWEIGHT:
+        # Lightweight mode handles a single URL per invocation, so set it globally so every
+        # subsequent `_mem_log` call attributes its line to the right URL bucket.
+        _set_current_url(paths[0])
         available_mem = get_container_available_memory_bytes()
         working_set = get_container_working_set_bytes()
         if available_mem == -1:
@@ -2325,43 +2352,87 @@ def get_width_height(args: dict[str, str]) -> tuple[int, int]:
     return width, height
 
 
-def _read_memory_log_text() -> str:
-    """Return the full memory log text.
+def _read_memory_logs_by_url() -> dict[str, list[str]]:
+    """Return the memory log buckets persisted in the integration context.
 
-    Prefers the on-disk file (written by _mem_log on every call, survives OOM kill) over
-    the in-memory buffer.  Falls back to the in-memory buffer when the file does not exist
-    (e.g. first run with no prior OOM).
+    The returned dict is keyed by URL (with the bucket :data:`GENERAL_LOG_KEY` used for
+    logs emitted outside any URL context).  Returns an empty dict if no logs were
+    collected yet or if the integration context could not be read.
     """
-    # Try the on-disk file first — it contains logs from the current AND any prior OOM-killed run.
     try:
-        if os.path.exists(_MEMORY_LOG_FILE_PATH):
-            with open(_MEMORY_LOG_FILE_PATH, encoding="utf-8") as fh:
-                disk_text = fh.read().strip()
-            if disk_text:
-                return disk_text
-    except OSError:
-        pass
+        context = get_integration_context() or {}
+    except Exception as ex:  # pragma: no cover
+        demisto.info(f"_read_memory_logs_by_url: failed to read integration context: {ex}")
+        return {}
 
-    # Fall back to the in-memory buffer (no file yet).
-    with _memory_log_lock:
-        lines = list(_memory_log_lines)
-    return "\n".join(lines)
+    logs_by_url = context.get(MEMORY_LOG_CONTEXT_KEY)
+    if not isinstance(logs_by_url, dict):
+        return {}
+    # Defensive copy + filter to ensure values are lists of strings.
+    return {url: list(lines) for url, lines in logs_by_url.items() if isinstance(lines, list)}
+
+
+def _format_memory_logs(logs_by_url: dict[str, list[str]], url_filter: str | None = None) -> str:
+    """Render the per-URL log buckets as a single human-readable text blob."""
+    if url_filter:
+        lines = logs_by_url.get(url_filter, [])
+        if not lines:
+            return ""
+        return f"=== {url_filter} ===\n" + "\n".join(lines)
+
+    sections: list[str] = []
+    for url, lines in logs_by_url.items():
+        if not lines:
+            continue
+        sections.append(f"=== {url} ===\n" + "\n".join(lines))
+    return "\n\n".join(sections)
 
 
 def rasterize_memory_log_command() -> None:
     """Return the memory diagnostic log as a War-Room file and a readable output entry.
 
-    Reads from the on-disk log file so that diagnostics written before an OOM kill are
-    included even though the in-memory buffer was lost when the process was terminated.
+    Reads from the integration context so diagnostics survive process restarts (including
+    OOM kills).  Accepts an optional ``url`` argument to filter the output to a single URL
+    bucket.
     """
-    log_text = _read_memory_log_text()
+    url_filter = demisto.args().get("url") or None
+    logs_by_url = _read_memory_logs_by_url()
+    log_text = _format_memory_logs(logs_by_url, url_filter=url_filter)
 
     if not log_text:
-        return_results(CommandResults(readable_output="No memory log entries collected yet."))
+        msg = (
+            f"No memory log entries found for URL: {url_filter}"
+            if url_filter
+            else "No memory log entries collected yet."
+        )
+        return_results(CommandResults(readable_output=msg))
         return
 
     demisto.results(fileResult("memory_log.txt", log_text.encode("utf-8"), file_type=entryTypes["entryInfoFile"]))
     return_results(CommandResults(readable_output=f"### Memory Log\n```\n{log_text}\n```"))
+
+
+def rasterize_get_integration_context_command() -> None:
+    """Dump the full integration context as a downloadable JSON file in the War Room.
+
+    Useful for post-mortem diagnostics after a failed rasterization: returns every key in
+    the integration context (including the per-URL memory logs written by ``_mem_log``).
+    """
+    try:
+        context = get_integration_context() or {}
+    except Exception as ex:
+        return_error(f"Failed to read integration context: {ex}")
+        return
+
+    if not context:
+        return_results(CommandResults(readable_output="Integration context is empty."))
+        return
+
+    context_json = json.dumps(context, indent=2, sort_keys=True, default=str)
+    demisto.results(
+        fileResult("rasterize_integration_context.json", context_json.encode("utf-8"), file_type=entryTypes["entryInfoFile"])
+    )
+    return_results(CommandResults(readable_output=f"### Integration Context\nReturned {len(context)} top-level key(s)."))
 
 
 def emit_memory_log_file() -> None:
@@ -2369,10 +2440,11 @@ def emit_memory_log_file() -> None:
 
     Called at the end of every rasterize command so operators always get a memory log
     alongside the rasterization output, without having to run a separate command.
-    Reads from the on-disk file so logs from a prior OOM-killed invocation are included.
-    Does nothing if no log data exists.
+    Reads from the integration context so logs from a prior OOM-killed invocation are
+    included.  Does nothing if no log data exists.
     """
-    log_text = _read_memory_log_text()
+    logs_by_url = _read_memory_logs_by_url()
+    log_text = _format_memory_logs(logs_by_url)
 
     if not log_text:
         return
@@ -2429,6 +2501,9 @@ def main():  # pragma: no cover
         elif demisto.command() == "rasterize-memory-log":
             rasterize_memory_log_command()
 
+        elif demisto.command() == "rasterize-get-integration-context":
+            rasterize_get_integration_context_command()
+
         else:
             raise NotImplementedError(f"command {command} is not supported")
 
@@ -2437,7 +2512,7 @@ def main():  # pragma: no cover
     finally:
         kill_zombie_processes()
         # Emit the memory diagnostic log after every rasterize command (skip utility/meta commands).
-        if command not in ("test-module", "rasterize-memory-log"):
+        if command not in ("test-module", "rasterize-memory-log", "rasterize-get-integration-context"):
             emit_memory_log_file()
 
 
