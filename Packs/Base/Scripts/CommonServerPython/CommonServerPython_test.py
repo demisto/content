@@ -13445,6 +13445,234 @@ class TestUcpEdgeCases:
         assert call_count['count'] == 2
 
 
+@pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
+class TestUcpInterpolation:
+    """Tests for UCP param interpolation: _place_by_path, _parse_param_map,
+    _select_ucp_profiles, build_ucp_params, and interpolate_ucp_params.
+
+    Interpolation is metadata-first, capability-scoped, and multi-profile: it
+    reshapes the param_map + fields carried on each in-scope connection profile
+    into the nested demisto.params() shape integrations expect (e.g. folding
+    username/password into a single `credentials` dict — XSOAR type 9).
+    """
+
+    # ── _place_by_path ──
+
+    def test_place_by_path_flat(self):
+        target = {}  # type: dict
+        CommonServerPython._place_by_path(target, 'url', 'https://x')
+        assert target == {'url': 'https://x'}
+
+    def test_place_by_path_nested_creates_intermediate(self):
+        target = {}  # type: dict
+        CommonServerPython._place_by_path(target, 'a.b.c', 1)
+        assert target == {'a': {'b': {'c': 1}}}
+
+    def test_place_by_path_shared_parent_merges(self):
+        target = {}  # type: dict
+        CommonServerPython._place_by_path(target, 'credentials.identifier', 'alice')
+        CommonServerPython._place_by_path(target, 'credentials.password', 's3cr3t')
+        assert target == {'credentials': {'identifier': 'alice', 'password': 's3cr3t'}}
+
+    def test_place_by_path_empty_path_noop(self):
+        target = {'keep': 1}
+        CommonServerPython._place_by_path(target, '', 'x')
+        assert target == {'keep': 1}
+
+    def test_place_by_path_overwrites_non_dict_intermediate(self):
+        target = {'a': 'scalar'}
+        CommonServerPython._place_by_path(target, 'a.b', 2)
+        assert target == {'a': {'b': 2}}
+
+    # ── _parse_param_map ──
+
+    def test_parse_param_map_string(self):
+        pairs = CommonServerPython._parse_param_map(
+            'username:credentials.identifier,password:credentials.password'
+        )
+        assert pairs == [
+            ('username', 'credentials.identifier'),
+            ('password', 'credentials.password'),
+        ]
+
+    def test_parse_param_map_dict(self):
+        pairs = CommonServerPython._parse_param_map({'api_key': 'credentials.password'})
+        assert pairs == [('api_key', 'credentials.password')]
+
+    def test_parse_param_map_empty_and_malformed_skipped(self):
+        pairs = CommonServerPython._parse_param_map('good:dest, ,nocolon,empty:')
+        assert pairs == [('good', 'dest')]
+
+    def test_parse_param_map_none(self):
+        assert CommonServerPython._parse_param_map(None) == []
+
+    def test_parse_param_map_whitespace_trimmed(self):
+        pairs = CommonServerPython._parse_param_map(' a : b.c ')
+        assert pairs == [('a', 'b.c')]
+
+    # ── _select_ucp_profiles ──
+
+    def test_select_profiles_by_capability(self):
+        profiles = [
+            {'capability': 'cap-a', 'method_unique_id': 'A'},
+            {'capability': 'cap-b', 'method_unique_id': 'B'},
+        ]
+        result = CommonServerPython._select_ucp_profiles(profiles, 'cap-a')
+        assert [p['method_unique_id'] for p in result] == ['A']
+
+    def test_select_profiles_by_sub_capability(self):
+        profiles = [
+            {'capability': 'cap-a', 'method_unique_id': 'A', 'sub_capabilities': ['sub-x']},
+            {'capability': 'cap-b', 'method_unique_id': 'B', 'sub_capabilities': []},
+        ]
+        result = CommonServerPython._select_ucp_profiles(profiles, 'nope', sub_capability='sub-x')
+        assert [p['method_unique_id'] for p in result] == ['A']
+
+    def test_select_profiles_multiple_matches(self):
+        profiles = [
+            {'capability': 'cap-x', 'method_unique_id': 'A'},
+            {'capability': 'cap-x', 'method_unique_id': 'B'},
+        ]
+        result = CommonServerPython._select_ucp_profiles(profiles, 'cap-x')
+        assert [p['method_unique_id'] for p in result] == ['A', 'B']
+
+    def test_select_profiles_fallback_to_param_map_carriers(self, mocker):
+        mocker.patch.object(demisto, 'debug')
+        profiles = [
+            {'capability': 'other', 'method_unique_id': 'A', 'param_map': 'u:x'},
+            {'capability': 'other', 'method_unique_id': 'B'},
+        ]
+        result = CommonServerPython._select_ucp_profiles(profiles, 'no-match')
+        assert [p['method_unique_id'] for p in result] == ['A']
+
+    def test_select_profiles_empty(self):
+        assert CommonServerPython._select_ucp_profiles([], 'cap') == []
+
+    # ── build_ucp_params ──
+
+    def test_build_ucp_params_credentials_fold(self):
+        meta = {
+            'connectionProfiles': [
+                {
+                    'capability': 'automation-and-remediation',
+                    'method_unique_id': 'A',
+                    'param_map': 'username:credentials.identifier,password:credentials.password',
+                    'fields': {'username': 'alice', 'password': 's3cr3t'},
+                }
+            ]
+        }
+        result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
+        assert result == {'credentials': {'identifier': 'alice', 'password': 's3cr3t'}}
+
+    def test_build_ucp_params_capability_filtering(self):
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'cap-a', 'method_unique_id': 'A',
+                 'param_map': 'u:credentials.identifier', 'fields': {'u': 'alice'}},
+                {'capability': 'cap-b', 'method_unique_id': 'B',
+                 'param_map': 'k:credentials.password', 'fields': {'k': 'COLLECTOR'}},
+            ]
+        }
+        result = CommonServerPython.build_ucp_params(meta, capability='cap-b')
+        assert result == {'credentials': {'password': 'COLLECTOR'}}
+
+    def test_build_ucp_params_multi_profile_merge(self):
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'x', 'method_unique_id': 'A',
+                 'param_map': 'u:credentials.identifier', 'fields': {'u': 'alice'}},
+                {'capability': 'x', 'method_unique_id': 'B',
+                 'param_map': 'p:credentials.password', 'fields': {'p': 'pw'}},
+            ]
+        }
+        result = CommonServerPython.build_ucp_params(meta, capability='x')
+        assert result == {'credentials': {'identifier': 'alice', 'password': 'pw'}}
+
+    def test_build_ucp_params_last_wins_on_conflict(self):
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'x', 'method_unique_id': 'A',
+                 'param_map': 'v:dest', 'fields': {'v': 'first'}},
+                {'capability': 'x', 'method_unique_id': 'B',
+                 'param_map': 'v:dest', 'fields': {'v': 'second'}},
+            ]
+        }
+        result = CommonServerPython.build_ucp_params(meta, capability='x')
+        assert result == {'dest': 'second'}
+
+    def test_build_ucp_params_no_param_map_returns_base(self):
+        meta = {'connectionProfiles': [{'capability': 'x', 'method_unique_id': 'A'}]}
+        result = CommonServerPython.build_ucp_params(meta, base_params={'keep': 1}, capability='x')
+        assert result == {'keep': 1}
+
+    def test_build_ucp_params_missing_value_skipped(self, mocker):
+        mocker.patch.object(demisto, 'debug')
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'x', 'method_unique_id': 'A',
+                 'param_map': 'present:a,absent:b', 'fields': {'present': 1}},
+            ]
+        }
+        result = CommonServerPython.build_ucp_params(meta, capability='x')
+        assert result == {'a': 1}
+
+    def test_build_ucp_params_no_metadata_returns_base_copy(self):
+        base = {'keep': 1}
+        result = CommonServerPython.build_ucp_params(None, base_params=base)
+        assert result == {'keep': 1}
+        result['new'] = 2
+        assert base == {'keep': 1}  # input not mutated
+
+    def test_build_ucp_params_auto_resolves_capability(self, mocker):
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'collection-and-ingestion', 'method_unique_id': 'A',
+                 'param_map': 'k:credentials.password', 'fields': {'k': 'tok'}},
+            ]
+        }
+        # capability=None -> resolve_ucp_capability() -> collection-and-ingestion
+        result = CommonServerPython.build_ucp_params(meta, capability=None)
+        assert result == {'credentials': {'password': 'tok'}}
+
+    # ── interpolate_ucp_params ──
+
+    def test_interpolate_sets_flag_and_merges(self, mocker, ucp_reset_injected_flag):
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'automation-and-remediation', 'method_unique_id': 'A',
+                 'param_map': 'username:credentials.identifier,password:credentials.password',
+                 'fields': {'username': 'alice', 'password': 's3cr3t'}},
+            ]
+        }
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=meta)
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'debug')
+        demisto.callingContext = {'params': {'url': 'https://x'}}
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+
+        result = CommonServerPython.interpolate_ucp_params()
+        assert result is True
+        assert CommonServerPython._UCP_AUTH_PARAMS_INJECTED is True
+        assert demisto.callingContext['params'] == {
+            'url': 'https://x',
+            'credentials': {'identifier': 'alice', 'password': 's3cr3t'},
+        }
+
+    def test_interpolate_noop_when_no_param_map(self, mocker, ucp_reset_injected_flag):
+        meta = {'connectionProfiles': [{'capability': 'automation-and-remediation',
+                                        'method_unique_id': 'A'}]}
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=meta)
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'debug')
+        demisto.callingContext = {'params': {'url': 'https://x'}}
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+
+        result = CommonServerPython.interpolate_ucp_params()
+        assert result is False
+        assert CommonServerPython._UCP_AUTH_PARAMS_INJECTED is False
+        assert demisto.callingContext['params'] == {'url': 'https://x'}
+
 # === Safe Pickle Loading Tests ===
 
 

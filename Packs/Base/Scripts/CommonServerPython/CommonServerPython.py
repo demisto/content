@@ -13678,7 +13678,6 @@ class ISOEncoder(json.JSONEncoder):
 #     UCP Functions     #
 ###########################################
 
-# -- To be set when implementing interpolate -- 
 _UCP_AUTH_PARAMS_INJECTED = False
 
 # Seconds before token expiry to consider the cache stale and re-fetch.
@@ -13693,6 +13692,303 @@ _UCP_COMMAND_CAPABILITIES = {
     'fetch-incidents': 'collection-and-ingestion',
     'fetch-assets': 'collection-and-ingestion',
 }
+
+
+# -- UCP helper: interpolate connector field values into demisto.params() --
+
+def _place_by_path(target, path, value):
+    # type: (dict, str, Any) -> None
+    """Place ``value`` into ``target`` at the dotted ``path``, creating
+    intermediate dicts as needed.
+
+    The destination string is split on ``.``; each segment except the last
+    becomes (or reuses) a nested dict, and the final segment receives the
+    value. Two paths that share a parent therefore merge into a single nested
+    dict — this is how multiple connector fields fold into one structured param
+    (e.g. ``credentials.identifier`` + ``credentials.password`` →
+    ``{"credentials": {"identifier": ..., "password": ...}}``).
+
+    A single-segment path (e.g. ``"url"``) places a flat scalar.
+
+    :type target: ``dict``
+    :param target: The destination params dict (mutated in place).
+
+    :type path: ``str``
+    :param path: A non-empty dotted destination path (e.g. ``"a.b.c"``).
+
+    :type value: ``Any``
+    :param value: The value to set at the leaf of ``path``.
+
+    :return: ``None``
+    :rtype: ``None``
+    """
+    segments = [seg for seg in path.split('.') if seg != '']
+    if not segments:
+        return
+    cursor = target
+    for segment in segments[:-1]:
+        existing = cursor.get(segment)
+        if not isinstance(existing, dict):
+            existing = {}
+            cursor[segment] = existing
+        cursor = existing
+    cursor[segments[-1]] = value
+
+
+def _parse_param_map(param_map):
+    # type: (Any) -> list
+    """Parse a UCP ``param_map`` into a list of ``(field_id, destination)`` pairs.
+
+    The canonical form is a **single comma-separated string** of
+    ``field_id:dotted.destination`` entries, e.g.::
+
+        "username:credentials.identifier,password:credentials.password,server_url:server_url"
+
+    A ``dict`` form (``{field_id: destination}``) is also accepted for
+    convenience/backward-compatibility. Empty/invalid entries are skipped.
+
+    :type param_map: ``Any``
+    :param param_map: The raw ``param_map`` value from the profile (string or dict).
+
+    :return: List of ``(field_id, destination)`` tuples (order preserved for strings).
+    :rtype: ``list``
+    """
+    pairs = []  # type: list
+    if not param_map:
+        return pairs
+    items = []
+    for entry in str(param_map).split(','):
+        entry = entry.strip()
+        if not entry:
+            continue
+        if ':' not in entry:
+            demisto.error(
+                "[UCP][CommonServerPython.py] _parse_param_map: malformed entry '{}' (no ':'); skipping.".format(entry)
+            )
+            continue
+        field_id, destination = entry.split(':', 1)
+        items.append((field_id, destination))
+    for field_id, destination in items:
+        field_id = (field_id or '').strip()
+        destination = (destination or '').strip()
+        if not field_id or not destination:
+            demisto.debug(
+                "[UCP][CommonServerPython.py] _parse_param_map: empty field id or destination "
+                "('{}' -> '{}'); skipping.".format(field_id, destination)
+            )
+            continue
+        pairs.append((field_id, destination))
+    return pairs
+
+
+def _select_ucp_profiles(profiles, capability):
+    # type: (list, str) -> list
+    """Select ALL connection profiles in scope for the current command.
+
+    Interpolation is **metadata-first and capability-scoped**: starting from the
+    connector metadata's ``connectionProfiles``, it keeps **every** profile whose
+    ``capability`` matches ``capability``. More than one profile may be active at
+    a time, so this returns a list (not a single profile).
+
+    :type profiles: ``list``
+    :param profiles: The ``connectionProfiles`` from the connector metadata.
+
+    :type capability: ``str``
+    :param capability: The resolved capability for the current command.
+
+    :return: List of matching profile dicts (possibly empty).
+    :rtype: ``list``
+    """
+    if not profiles:
+        demisto.debug('[UCP][CommonServerPython.py] _select_ucp_profiles: no connectionProfiles in metadata.')
+        return []
+
+    matched = [p for p in profiles if p.get('capability') == capability]
+    demisto.debug('[UCP][CommonServerPython.py] _select_ucp_profiles: found {} profile(s) with capability {}.'.format(
+        len(matched), capability))
+    return matched
+
+
+def build_ucp_params(connector_metadata, capability=None):
+    # type: (Optional[dict], Optional[str]) -> dict
+    """Build the reshaped params dict from UCP connector metadata.
+
+    Pure, side-effect-free core of UCP param interpolation. It is
+    **metadata-first**: it scans ``connectionProfiles`` to find every profile in
+    scope for the current capability/sub_capability, then for each such profile
+    reads its ``param_map`` (a mapping of connector field id → dotted destination
+    path) together with the platform-supplied field values, and *interpolates*
+    them into the nested shape integrations expect — most importantly folding
+    flat fields (e.g. ``username`` / ``password``) into a single structured param
+    (e.g. a ``credentials`` dict, the classic XSOAR ``type 9`` shape).
+
+    **Multiple profiles may be active at once.** Each matching profile that
+    carries a ``param_map`` contributes its values; results are merged into one
+    params dict (**last-wins** when two profiles target the same destination
+    path, in ``connectionProfiles`` order).
+
+    This function does NOT touch ``demisto`` state, so it can be reused from
+    either ``interpolate_ucp_params()`` (the CommonServerPython applier) or a
+    Demisto class ``params()`` override.
+
+    Expected metadata shape (from ``demisto.unifiedConnectorMetadata()``)::
+
+        {
+            "connectionProfiles": [
+                {
+                    "method_unique_id": "...",
+                    "capability": "automation-and-remediation",
+                    "sub_capabilities": ["salesforce-iam"],
+                    "type": "oauth2",
+                    "param_map": {"username": "credentials.identifier", ...},
+                    "fields": {"username": "alice", "password": "s3cr3t", ...}
+                }
+            ]
+        }
+
+    :type connector_metadata: ``Optional[dict]``
+    :param connector_metadata: The connector metadata.
+
+    :type base_params: ``Optional[dict]``
+    :param base_params: Optional existing params to merge interpolated values
+        onto. A shallow copy is made; the input is not mutated.
+
+    :type capability: ``Optional[str]``
+    :param capability: The resolved capability. When ``None``, resolved via
+        ``resolve_ucp_capability()``.
+
+    :type sub_capability: ``Optional[str]``
+    :param sub_capability: Optional sub-capability to also match.
+
+    :return: A new params dict (base_params + interpolated values). When there
+        is nothing to interpolate, returns a copy of ``base_params`` (or ``{}``).
+    :rtype: ``dict``
+    """
+    result = {}  # type: Dict[str, Any]
+    if not connector_metadata:
+        return result
+
+    if capability is None:
+        capability = resolve_ucp_capability()
+
+    profiles = connector_metadata.get('connectionProfiles') or []
+    
+    # ── Full-object schema dump (for capturing real runtime shapes) ──
+    def _ucp_dump(obj):
+        try:
+            return json.dumps(obj, default=str, sort_keys=True)
+        except Exception:
+            return repr(obj)
+
+    demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: resolved capability={!r}'.format(capability))
+    demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FULL connector_metadata = {}'.format(_ucp_dump(connector_metadata)))
+    demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: connectionProfiles ({} total) = {}'.format(
+        len(profiles), _ucp_dump(profiles)))
+
+    selected = _select_ucp_profiles(profiles, capability)
+    demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: selected {} profile(s) = {}'.format(
+        len(selected), _ucp_dump(selected)))
+
+    for profile in selected:
+        method_unique_id = profile.get('method_unique_id')
+        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FULL profile (method_unique_id={}) = {}'.format(
+            method_unique_id, _ucp_dump(profile)))
+        interpolation_map = profile.get('interpolation_map')
+        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: interpolation_map (type={}) = {}'.format(
+            type(interpolation_map).__name__, _ucp_dump(interpolation_map)))
+        pairs = _parse_param_map(interpolation_map)
+        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: parsed pairs = {}'.format(_ucp_dump(pairs)))
+        if not pairs:
+            demisto.debug('there are no pairs for profile id {}'.format(method_unique_id))
+            continue
+        credentials = get_ucp_credentials(method_unique_id)
+        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FULL get_ucp_credentials({}) envelope = {}'.format(
+            method_unique_id, _ucp_dump(credentials)))
+        for field_id, destination in pairs:
+            field_value = credentials.get(field_id) if isinstance(credentials, dict) else None
+            demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: field_id={!r} -> destination={!r}, '
+                          'lookup credentials.get({!r}) found={} value_type={}'.format(
+                              field_id, destination, field_id, field_value is not None,
+                              type(field_value).__name__))
+            if not field_value:
+                demisto.debug('missing field value for field {} for profile id {}'.format(field_id, method_unique_id))
+                continue
+            _place_by_path(result, destination, field_value)
+
+    demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FINAL interpolated params = {}'.format(_ucp_dump(result)))
+    return result
+
+
+def interpolate_ucp_params(connector_metadata=None):
+    # type: (Optional[dict]) -> bool
+    """Interpolate UCP connector field values into ``demisto.params()``.
+
+    Thin CommonServerPython-side applier around the pure
+    :func:`build_ucp_params`. Fetches the connector metadata (if not provided),
+    builds the reshaped params, and merges them into
+    ``demisto.callingContext['params']`` so that subsequent ``demisto.params()``
+    calls observe them. When no ``param_map`` is present the function is a no-op
+    and the legacy params are left untouched.
+
+    On success the module-level ``_UCP_AUTH_PARAMS_INJECTED`` flag is set to
+    ``True`` so that ``should_use_ucp_auth()`` knows credentials have already
+    been pre-injected.
+
+    :type connector_metadata: ``Optional[dict]``
+    :param connector_metadata: The connector metadata. If ``None``, fetched via
+        ``demisto.unifiedConnectorMetadata()``.
+
+    :return: ``True`` if any params were interpolated, ``False`` otherwise.
+    :rtype: ``bool``
+    """
+    global _UCP_AUTH_PARAMS_INJECTED
+    try:
+        if connector_metadata is None:
+            connector_metadata = demisto.unifiedConnectorMetadata()
+            if connector_metadata is None:# we arent in ucpland
+                return False
+    except AttributeError:
+        demisto.debug("[UCP][CommonServerPython.py] interpolate_ucp_params: unifiedConnectorMetadata() not available.")
+        return False
+    except Exception as e:
+        demisto.error("[UCP][CommonServerPython.py] interpolate_ucp_params: unifiedConnectorMetadata() error: {}".format(e))
+        return False
+
+    # ── Full-object schema dump (for capturing the real runtime metadata shape) ──
+    try:
+        demisto.debug('[UCP-SCHEMA-DUMP] interpolate_ucp_params: RAW unifiedConnectorMetadata() = {}'.format(
+            json.dumps(connector_metadata, default=str, sort_keys=True)))
+    except Exception:
+        demisto.debug('[UCP-SCHEMA-DUMP] interpolate_ucp_params: RAW unifiedConnectorMetadata() (repr) = {}'.format(
+            repr(connector_metadata)))
+
+    # Capability-scoped, multi-profile: resolve the capability for the current
+    # command and interpolate every active profile that carries a param_map.
+    capability = None
+    try:
+        capability = resolve_ucp_capability()
+    except Exception as e:
+        demisto.debug(
+            "[UCP][CommonServerPython.py] interpolate_ucp_params: could not resolve capability ({}).".format(e)
+        )
+
+    interpolated = build_ucp_params(connector_metadata, capability=capability)
+    if not interpolated:
+        return False
+
+    params = demisto.callingContext.setdefault('params', {})
+    params.update(interpolated)
+    _UCP_AUTH_PARAMS_INJECTED = True
+    demisto.debug(
+        "[UCP][CommonServerPython.py] interpolate_ucp_params: interpolated {} top-level param(s) "
+        "for capability={}.".format(len(interpolated), capability)
+    )
+    try:
+        demisto.debug('[UCP-SCHEMA-DUMP] interpolate_ucp_params: FINAL demisto.callingContext["params"] = {}'.format(
+            json.dumps(params, default=str, sort_keys=True)))
+    except Exception:
+        demisto.debug('[UCP-SCHEMA-DUMP] interpolate_ucp_params: FINAL params (repr) = {}'.format(repr(params)))
+    return True
 
 
 # -- UCP helper: extract expiry from credentials response --
@@ -13975,6 +14271,20 @@ def invalidate_ucp_credentials(method_unique_id):
     """
     _ucp_creds_cache.pop(method_unique_id, None)
     demisto.debug("[UCP][CommonServerPython.py] Invalidated cached credentials for method_unique_id={}".format(method_unique_id))
+
+
+# -- Auto-run interpolation at import time --
+# Placed at the end of the UCP section so every UCP helper it depends on
+# (get_ucp_method_unique_id -> resolve_ucp_capability, profile matching) is
+# already defined. When the integration is not running under UCP, this is a
+# cheap no-op (unifiedConnectorMetadata() is empty / unavailable).
+try:
+    interpolate_ucp_params()
+except Exception:
+    # Import-time safety net: never let interpolation break module import.
+    # Intentionally does NOT call demisto.debug() here — in bare-mock contexts
+    # (e.g. test collection) demisto.debug itself may be unavailable.
+    pass
 
 
 ###########################################
