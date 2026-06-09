@@ -34,3 +34,9 @@ There are no inputs for this playbook.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | FilteredCVEs | CVEs that passed the CVSS \+ tech-stack filter. | unknown |
+
+## Playbook Image
+
+---
+
+![Darkmon_Critical_CVE_Pipeline](../doc_files/Darkmon_Critical_CVE_Pipeline.png)

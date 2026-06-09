@@ -34,3 +34,9 @@ There are no inputs for this playbook.
 | --- | --- | --- |
 | NewAccounts | Compromised account records that triggered new incidents this run. | unknown |
 | Darkmon.Compromised.Account | Raw compromised account data returned by Darkmon. | unknown |
+
+## Playbook Image
+
+---
+
+![Darkmon_Compromised_Credentials_Sweep](../doc_files/Darkmon_Compromised_Credentials_Sweep.png)

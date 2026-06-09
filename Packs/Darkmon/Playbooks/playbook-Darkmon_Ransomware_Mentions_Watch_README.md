@@ -30,3 +30,9 @@ There are no inputs for this playbook.
 
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Darkmon_Ransomware_Mentions_Watch](../doc_files/Darkmon_Ransomware_Mentions_Watch.png)

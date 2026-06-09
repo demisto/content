@@ -39,3 +39,9 @@ This playbook does not use any sub-playbooks.
 ## Playbook Outputs
 
 There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Darkmon_Generic_User_Action](../doc_files/Darkmon_Generic_User_Action.png)

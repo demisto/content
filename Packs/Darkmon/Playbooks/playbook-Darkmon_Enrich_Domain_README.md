@@ -43,3 +43,9 @@ This playbook does not use any scripts.
 | Domain.Malicious.Vendor | The vendor that flagged this Domain as malicious \(Darkmon\). | string |
 | Domain.Malicious.Description | Reason this Domain was flagged as malicious. | string |
 | Darkmon.SearchResult | Full search result records returned by Darkmon for this indicator. | unknown |
+
+## Playbook Image
+
+---
+
+![Darkmon_Enrich_Domain](../doc_files/Darkmon_Enrich_Domain.png)

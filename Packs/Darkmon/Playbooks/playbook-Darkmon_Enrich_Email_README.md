@@ -43,3 +43,9 @@ This playbook does not use any scripts.
 | Account.Email.Malicious.Vendor | The vendor that flagged this Email as malicious \(Darkmon\). | string |
 | Account.Email.Malicious.Description | Reason this Email was flagged as malicious. | string |
 | Darkmon.SearchResult | Full search result records returned by Darkmon for this indicator. | unknown |
+
+## Playbook Image
+
+---
+
+![Darkmon_Enrich_Email](../doc_files/Darkmon_Enrich_Email.png)

@@ -32,3 +32,9 @@ There are no inputs for this playbook.
 
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Darkmon_Compromised_Account_Response](../doc_files/Darkmon_Compromised_Account_Response.png)

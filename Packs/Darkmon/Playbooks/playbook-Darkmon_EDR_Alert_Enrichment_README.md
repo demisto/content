@@ -33,3 +33,9 @@ There are no inputs for this playbook.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | DBotScore | Per-IOC reputation scores from Darkmon. | unknown |
+
+## Playbook Image
+
+---
+
+![Darkmon_EDR_Alert_Enrichment](../doc_files/Darkmon_EDR_Alert_Enrichment.png)

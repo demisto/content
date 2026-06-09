@@ -36,3 +36,9 @@ There are no inputs for this playbook.
 | --- | --- | --- |
 | ExtractedIndicators | IOCs extracted from the phishing email body. | unknown |
 | DBotScore | Reputation scores from Darkmon enrichment per IOC. | unknown |
+
+## Playbook Image
+
+---
+
+![Darkmon_Phishing_Email_Triage](../doc_files/Darkmon_Phishing_Email_Triage.png)

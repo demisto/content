@@ -34,3 +34,9 @@ There are no inputs for this playbook.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Typosquats | NRD entries flagged as typosquats with their best-match brand and distance. | unknown |
+
+## Playbook Image
+
+---
+
+![Darkmon_Brand_Targeted_NRD_Watch](../doc_files/Darkmon_Brand_Targeted_NRD_Watch.png)

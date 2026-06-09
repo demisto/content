@@ -31,3 +31,9 @@ There are no inputs for this playbook.
 
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Darkmon_Ransomware_Victim_Response](../doc_files/Darkmon_Ransomware_Victim_Response.png)
