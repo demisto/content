@@ -6125,18 +6125,6 @@ def generate_manifest(
             "From-scratch path only — silently ignored on the append path."
         ),
     ),
-    vendor: str = typer.Option(
-        "",
-        "--vendor",
-        help=(
-            "Vendor name (e.g. 'Microsoft Graph', 'Okta'). Drives "
-            "connector.yaml metadata.vendor, the description "
-            "('integrate with <vendor> products.'), and the id/title "
-            "capability-suffix derivation (guide §3.3.1). From-scratch "
-            "path only. When omitted, the legacy stub id/title/description "
-            "are emitted."
-        ),
-    ),
     manual_connector_fields: str = typer.Option(
         "{}",
         "--manual-connector-fields",
@@ -6211,7 +6199,7 @@ def generate_manifest(
         f"title={connector_title!r} slug={slug!r} target={connector_dir} "
         f"auth_methods_keys={list(auth_methods_dict.keys())}"
     )
-
+    vendor = integration_yml["provider"]
     if connector_exists(connector_dir):
         add_handler_to_existing_connector(
             connector_dir=connector_dir,
