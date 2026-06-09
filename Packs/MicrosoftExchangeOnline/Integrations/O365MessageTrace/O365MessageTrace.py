@@ -23,6 +23,7 @@ class Config:
     MESSAGE_TRACES_PATH = "v1.0/admin/exchange/tracing/messageTraces"
 
     DATE_FORMAT_FILTER = "%Y-%m-%dT%H:%M:%SZ"
+    DATE_FORMAT_EVENT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
     DEFAULT_MAX_EVENTS = 50000
     DEFAULT_PAGE_SIZE = 1000  # API default/maximum per page
@@ -161,6 +162,19 @@ def add_time_field(events: list[dict]) -> None:
         event["_time"] = received if received else fallback_time
 
 
+def update_id_field(events: list[dict]) -> None:
+    """Update each event's ``id`` field to be ``<id>|<recipientAddress>``.
+
+    This guarantees uniqueness across events that share the same underlying
+    message id but were delivered to different recipients.
+    """
+    for event in events:
+        event_id = event.get("id")
+        recipient = event.get("recipientAddress")
+        if event_id and recipient:
+            event["id"] = f"{event_id}|{recipient}"
+
+
 # ============================================================================
 # Core fetch logic
 # ============================================================================
@@ -211,6 +225,10 @@ def fetch_events_sequential(
 
         page_events = response.get("value", []) or []
         collected.extend(page_events)
+        
+        # Sort collected by receivedDateTime (parsed as datetime) so the latest event is last
+        collected.sort(key=lambda event: datetime.strptime(event["receivedDateTime"], Config.DATE_FORMAT_EVENT))
+
         demisto.debug(
             f"[Fetch] Window {start_str} -> {end_str}: page returned {len(page_events)} events "
             f"(running total: {len(collected)})"
@@ -295,6 +313,7 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
     start_dt = parse_datetime(start_time, default=end_dt - timedelta(minutes=Config.DEFAULT_FIRST_FETCH_MINUTES))
 
     events = fetch_events_sequential(client, start_dt, end_dt, max_events=limit)
+    update_id_field(events)
     add_time_field(events)
 
     if should_push_events and events:
@@ -332,6 +351,7 @@ def fetch_events(client: Client, max_events: int) -> None:
 
     # Fetch all events in the window sequentially
     events = fetch_events_sequential(client, start_dt, end_dt, max_events=max_events)
+    update_id_field(events)
     demisto.debug(f"[Fetch] Fetched {len(events)} raw events before dedup")
 
     # Deduplicate against previous run's high-water-mark IDs
@@ -348,9 +368,7 @@ def fetch_events(client: Client, max_events: int) -> None:
     new_seen_ids: list[str] = seen_ids
 
     if new_events:
-        # Find the latest (max) _time across all new events, regardless of input order
-        event_times = [t for event in new_events if (t := event.get("_time"))]
-        latest_time: str | None = max(event_times) if event_times else None
+        latest_time: str | None = new_events[-1].get("_time")
 
         if latest_time:
             new_last_fetch = latest_time

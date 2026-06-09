@@ -84,7 +84,7 @@ configuration:
   section: Collect
   additionalinfo: The maximum number of events to fetch in a single fetch cycle.
 - name: isFetchEvents
-  display: Fetch events
+  display: Fetch Events
   required: false
   type: 8
   section: Collect
