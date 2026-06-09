@@ -1087,8 +1087,8 @@ def test_check_and_remove_abuse(domain_info, expected_output, expected_domain_in
 @pytest.mark.parametrize(
     "time_sensitive, expected_timeout",
     [
-        (True, Whois.WHOIS_SOCKET_TIMEOUT_TIME_SENSITIVE),   # War Room inline enrichment
-        (False, Whois.WHOIS_SOCKET_TIMEOUT_DEFAULT),          # Playbook context
+        (True, Whois.WHOIS_SOCKET_TIMEOUT_TIME_SENSITIVE),  # War Room inline enrichment
+        (False, Whois.WHOIS_SOCKET_TIMEOUT_DEFAULT),  # Playbook context
     ],
 )
 def test_whois_request_socket_timeout_always_set(mocker: MockerFixture, time_sensitive: bool, expected_timeout: int):

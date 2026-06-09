@@ -2040,10 +2040,14 @@ def whois_request_get_response(domain: str, server: str) -> str:
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         if is_time_sensitive():
-            demisto.debug(f"[whois_request_get_response] Time-sensitive context: setting socket timeout to {WHOIS_SOCKET_TIMEOUT_TIME_SENSITIVE}s.")
+            demisto.debug(
+                f"[whois_request_get_response] Time-sensitive context: setting socket timeout to {WHOIS_SOCKET_TIMEOUT_TIME_SENSITIVE}s."
+            )
             sock.settimeout(WHOIS_SOCKET_TIMEOUT_TIME_SENSITIVE)
         else:
-            demisto.debug(f"[whois_request_get_response] Playbook context: setting socket timeout to {WHOIS_SOCKET_TIMEOUT_DEFAULT}s.")
+            demisto.debug(
+                f"[whois_request_get_response] Playbook context: setting socket timeout to {WHOIS_SOCKET_TIMEOUT_DEFAULT}s."
+            )
             sock.settimeout(WHOIS_SOCKET_TIMEOUT_DEFAULT)
         try:
             sock.connect((server, 43))
