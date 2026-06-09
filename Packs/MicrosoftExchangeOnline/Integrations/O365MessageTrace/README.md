@@ -92,8 +92,8 @@ The Azure AD application must be granted the following Microsoft Graph applicati
 | Tenant ID | The Azure AD tenant ID \(GUID\). | False |
 | Client ID | The Application \(Client\) ID registered in Azure AD. | False |
 | Client Secret | The client secret for the Azure AD application. | False |
-| Certificate Thumbprint | The private key of the registered certificate used for certificate authentication, as it appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-| Private Key |  | False |
+| Certificate Thumbprint | Used for certificate authentication, as it appears in the "Certificates &amp; secrets" page of the app. | False |
+| Private Key | The private key of the registered certificate. | False |
 | Application redirect URI | The redirect URI configured in the Azure AD application. Required for the self-deployed authorization-code flow. | False |
 | Authorization code | The authorization code received from the Azure portal during the self-deployed authorization-code flow. | False |
 | Use Azure Managed Identities | Whether to use Azure Managed Identities when running on an Azure VM with assigned identity. | False |
@@ -192,8 +192,8 @@ Manually retrieve Message Trace events. Intended for development and debugging. 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of events to return. Default is 50. | Optional |
-| start_time | The start time to filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z"). | Optional |
-| end_time | The end time to filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional |
+| start_time | The start time to filter events received at or after this time. Supports ISO 8601 format or relative time expressions \(e.g., "now", "2024-01-01T00:00:00Z"\). | Optional |
+| end_time | The end time to filter events received at or before this time. Supports ISO 8601 format or relative time expressions \(e.g., "now", "2024-01-01T00:00:00Z"\). | Optional |
 | should_push_events | Whether the command sends the retrieved events to Cortex XSIAM. If false, it only displays them. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output

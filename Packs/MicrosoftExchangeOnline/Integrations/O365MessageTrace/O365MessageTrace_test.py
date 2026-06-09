@@ -151,6 +151,22 @@ class TestUpdateIdField:
         update_id_field(events)
         assert "id" not in events[0]
 
+    def test_leaves_id_unchanged_when_id_empty_string(self):
+        events = [{"id": "", "recipientAddress": "bob@contoso.com"}]
+        update_id_field(events)
+        assert events[0]["id"] == ""
+
+    def test_leaves_id_unchanged_when_recipient_empty_string(self):
+        events = [{"id": "evt-1", "recipientAddress": ""}]
+        update_id_field(events)
+        assert events[0]["id"] == "evt-1"
+
+    def test_leaves_id_unchanged_when_both_empty_strings(self):
+        events = [{"id": "", "recipientAddress": ""}]
+        update_id_field(events)
+        assert events[0]["id"] == ""
+        assert events[0]["recipientAddress"] == ""
+
 
 # ============================================================================
 # Client.get_message_traces_page tests

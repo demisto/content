@@ -119,9 +119,9 @@ script:
       description: The maximum number of events to return.
       defaultValue: '50'
     - name: start_time
-      description: The start time to filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z").
+      description: Filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z").
     - name: end_time
-      description: The end time to filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").
+      description: Filter events received at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").
     - name: should_push_events
       description: Whether the command sends the retrieved events to Cortex XSIAM. If false, it only displays them.
       auto: PREDEFINED
