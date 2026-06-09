@@ -470,7 +470,6 @@ SafeNetTrustedAccessEventCollector,Packs/SafeNet_Trusted_Access/Integrations/Saf
 SailPointIdentityNowEventCollector,Packs/SailPointIdentityNow/Integrations/SailPointIdentityNowEventCollector/SailPointIdentityNowEventCollector.yml,SailPoint,,,,,,,,,,,,,,,
 Sample Incident Generator,Packs/sampleSiem/Integrations/SampleIncidentGenerator/SampleIncidentGenerator.yml,Cortex Automation Developer Tools,,,,,,,,,,,,,,,
 SaviyntEICEventCollector,Packs/SaviyntEIC/Integrations/SaviyntEICEventCollector/SaviyntEICEventCollector.yml,Saviynt,,,,,,,,,,,,,,,
-SecurityAndComplianceV2,Packs/MicrosoftExchangeOnline/Integrations/SecurityAndComplianceV2/SecurityAndComplianceV2.yml,Deprecated. covered in MS Security Graph,,,,,,,,,,,,,,,
 SentinelOneEventCollector,Packs/SentinelOne/Integrations/SentinelOneEventCollector/SentinelOneEventCollector.yml,SentinelOne,,,,,,,,,,,,,,,
 Server Message Block (SMB) v2,Packs/SMB/Integrations/SMB_v2/SMB_v2.yml,SMB,,,,,,,,,,,,,,,
 Service Manager,Packs/HPE_Service_Manager/Integrations/ServiceManager/ServiceManager.yml,OpenText Service Manager,,,,,,,,,,,,,,,
