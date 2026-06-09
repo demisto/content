@@ -9754,7 +9754,7 @@ class NetworkFirewall:
         kwargs = {"FirewallName": args.get("firewall_name"), "FirewallArn": args.get("firewall_arn")}
         remove_nulls_from_dictionary(kwargs)
         validate_network_firewall_identifier(kwargs)
-        print_debug_logs(client, f"Describing firewall with parameters: {kwargs}")
+        print_debug_logs(client, f"Describing firewall with parameters: {kwargs.keys()}")
         response = client.describe_firewall(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -9799,7 +9799,7 @@ class NetworkFirewall:
         kwargs = {"VpcIds": argToList(args.get("vpc_ids"))}
         kwargs.update(build_pagination_kwargs(args, next_token_name="NextToken", limit_name="MaxResults", max_limit=100))
         remove_nulls_from_dictionary(kwargs)
-        print_debug_logs(client, f"Listing firewalls with parameters: {kwargs}")
+        print_debug_logs(client, f"Listing firewalls with parameters: {kwargs.keys()}")
         response = client.list_firewalls(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -9887,7 +9887,7 @@ class NetworkFirewall:
             }
         )
 
-        print_debug_logs(client, f"Creating firewall with parameters: {kwargs}")
+        print_debug_logs(client, f"Creating firewall with parameters: {kwargs.keys()}")
         response = client.create_firewall(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -9929,7 +9929,7 @@ class NetworkFirewall:
         }
         remove_nulls_from_dictionary(kwargs)
         validate_network_firewall_identifier(kwargs)
-        print_debug_logs(client, f"Deleting firewall with parameters: {kwargs}")
+        print_debug_logs(client, f"Deleting firewall with parameters: {kwargs.keys()}")
         response = client.delete_firewall(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -9962,7 +9962,7 @@ class NetworkFirewall:
         remove_nulls_from_dictionary(kwargs)
         validate_network_firewall_identifier(kwargs)
 
-        print_debug_logs(client, f"Updating firewall delete protection with parameters: {kwargs}")
+        print_debug_logs(client, f"Updating firewall delete protection with parameters: {kwargs.keys()}")
         response = client.update_firewall_delete_protection(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -9994,7 +9994,7 @@ class NetworkFirewall:
         remove_nulls_from_dictionary(kwargs)
         validate_network_firewall_identifier(kwargs)
 
-        print_debug_logs(client, f"Updating firewall description with parameters: {kwargs}")
+        print_debug_logs(client, f"Updating firewall description with parameters: {kwargs.keys()}")
         response = client.update_firewall_description(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
