@@ -156,21 +156,33 @@ def main():  # pragma: no cover
         f"interval={interval}, timeout={timeout}"
     )
 
-    schedule_command_args = {"command": command_string, "cron": f"*/{interval} * * * *", "times": 1}
+    # Schedule enough recurrences to span the entire timeout window in a single scheduled entry.
+    # The cron pattern "*/{interval} * * * *" fires on wall-clock minute boundaries that are multiples
+    # of `interval`, so the first run happens after a *partial* interval (the gap between "now" and the
+    # next boundary). This means up to one extra cron tick can occur within the timeout window, so we add
+    # a safety margin on top of (timeout // interval) to guarantee the entry survives until the in-task
+    # stop condition (timeout reached / no pending ids) is met.
+    # See XSUP-36162 (GUID flow) and XSUP-58905 (non-GUID flow) for context.
+    schedule_times = (timeout // interval) + 2
+    schedule_command_args = {"command": command_string, "cron": f"*/{interval} * * * *", "times": schedule_times}
     if should_run_with_guid():
         demisto.debug("[ScheduleGenericPolling] Entering GUID flow (XSOAR)")
         # Generate a GUID for the scheduled entry and add it to the command.
         entryGuid = str(uuid.uuid4())
         command_string = f'{command_string} scheduledEntryGuid="{entryGuid}" endTime="{calculate_end_time(timeout)}"'
         schedule_command_args["command"] = command_string
-        # Set the times to be the number of times the polling command should run (using the cron job functionally).
-        # Adding extra iterations to verify that the polling command will stop the schedule entry.
-        # See XSUP-36162 for the reason adding 2
-        schedule_command_args["times"] = (timeout // interval) + 2
         schedule_command_args["scheduledEntryGuid"] = entryGuid
         demisto.debug(
             f"[ScheduleGenericPolling] GUID flow details: entryGuid={entryGuid}, times={schedule_command_args['times']}"
         )
+    else:
+        # Non-GUID flow (e.g. XSIAM / older platforms): historically the entry was scheduled with
+        # times=1 and GenericPollingScheduledTask re-scheduled itself every iteration. That chain is
+        # fragile - if any single re-schedule is dropped by the server, polling stops prematurely
+        # (XSUP-58905). Scheduling all recurrences up front (times=schedule_times) makes the polling
+        # resilient: the single recurring entry runs until the in-task timeout check stops it, with no
+        # dependency on per-iteration re-creation.
+        demisto.debug(f"[ScheduleGenericPolling] Non-GUID flow: scheduling recurring entry with times={schedule_times}")
 
     demisto.debug(f"[ScheduleGenericPolling] Executing ScheduleCommand with args: {schedule_command_args}")
     res = demisto.executeCommand("ScheduleCommand", schedule_command_args)

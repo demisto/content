@@ -208,13 +208,13 @@ function genericPollingScheduled(){
             }
         }
 
-        if (!shouldRunWithGuid) {
-            // Schedule the next iteration, old version.
-            var scheduleTaskRes = setNextRun(args.ids, args.playbookId, args.pollingCommand, args.pollingCommandArgName, args.pendingIds, args.interval, args.timeout, args.tag, args.additionalPollingCommandArgNames, args.additionalPollingCommandArgValues, args.extractMode);
-            if (isError(scheduleTaskRes[0])) {
-                res.push(scheduleTaskRes);
-            }
-        }
+        // Note: in both the GUID and the non-GUID flows the recurrence is now owned by the single
+        // scheduled entry created in ScheduleGenericPolling (scheduled with enough "times" to span the
+        // whole timeout window). This task therefore does NOT re-schedule itself - doing so would create
+        // a parallel polling chain. The polling stops once the in-task stop conditions above are met
+        // (timeout reached / no pending ids), after which any remaining recurrences are harmless no-ops
+        // (they re-detect that nothing is pending and complete the task again idempotently).
+        // See XSUP-58905.
         return res;
     }
     catch (err) {

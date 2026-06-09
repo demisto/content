@@ -325,6 +325,46 @@ def test_main_fail(mocker):
     )
 
 
+def test_main_non_guid_schedules_recurring_entry(mocker):
+    """
+    Given
+            Sample input values on a platform that does NOT use the GUID flow (e.g. XSIAM / older platforms).
+    When
+            Calling main.
+    Then
+            The polling entry is scheduled as a recurring entry that spans the whole timeout window
+            (times == (timeout // interval) + 2) instead of a single run (times == 1), so the polling
+            task does not terminate prematurely (XSUP-58905).
+    """
+    good_input = {
+        "ids": "123",
+        "pollingCommand": "jira-get-issue",
+        "pollingCommandArgName": "issueId",
+        "playbookId": "pi",
+        "dt": "Ticket(val.Status != 'Done').Id",
+        "interval": "3",
+        "timeout": "60",
+        "tag": "polling",
+        "additionalPollingCommandArgNames": "my_arg_name",
+        "additionalPollingCommandArgValues": "my_arg_value",
+    }
+
+    mocker.patch.object(demisto, "args", return_value=good_input)
+    mocker.patch("ScheduleGenericPolling.should_run_with_guid", return_value=False)
+    execute_command_mocker = mocker.patch("ScheduleGenericPolling.demisto.executeCommand")
+    mocker.patch("ScheduleGenericPolling.demisto.dt", return_value="abc")
+    main()
+
+    assert execute_command_mocker.call_count == 1
+    schedule_args = execute_command_mocker.call_args_list[0][0][1]
+    # (60 // 3) + 2 == 22
+    assert schedule_args["times"] == 22
+    assert schedule_args["cron"] == "*/3 * * * *"
+    # No GUID is added in the non-GUID flow.
+    assert "scheduledEntryGuid" not in schedule_args
+    assert "scheduledEntryGuid" not in schedule_args["command"]
+
+
 def test_main_pass_no_playbook_id(mocker):
     """
     Given
