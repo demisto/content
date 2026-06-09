@@ -5,7 +5,7 @@ description: "Provider-agnostic indicator-block dispatcher. Reads the 'Darkmon -
 fromversion: 6.5.0
 marketplaces:
   - xsoar
-  - marketplacev2
+  - platform
   - platform
 tags:
   - darkmon

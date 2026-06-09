@@ -31,7 +31,6 @@
     "description": "The protected brand the domain typosquats.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

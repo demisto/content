@@ -31,7 +31,6 @@
     "description": "When the domain was first registered (per Darkmon NRD feed).",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

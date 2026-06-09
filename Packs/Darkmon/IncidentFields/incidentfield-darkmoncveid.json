@@ -31,7 +31,6 @@
     "description": "The CVE identifier (e.g. CVE-2026-0001).",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

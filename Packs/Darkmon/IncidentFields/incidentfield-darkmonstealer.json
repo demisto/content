@@ -32,7 +32,6 @@
     "description": "Stealer family that captured this credential.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

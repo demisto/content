@@ -31,7 +31,6 @@
     "description": "Customer tech-stack tags that intersect this CVE.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

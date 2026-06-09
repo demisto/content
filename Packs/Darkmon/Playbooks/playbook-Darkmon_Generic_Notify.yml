@@ -6,9 +6,8 @@ description: Provider-agnostic notification dispatcher. Reads "Darkmon - Notific
   jira) and routes to the matching command.
 fromversion: 6.5.0
 marketplaces:
-  - xsoar
-  - marketplacev2
-  - platform
+- xsoar
+- platform
 starttaskid: "0"
 tasks:
   "0":

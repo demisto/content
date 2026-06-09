@@ -31,7 +31,6 @@
     "description": "Base CVSS v3 score.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

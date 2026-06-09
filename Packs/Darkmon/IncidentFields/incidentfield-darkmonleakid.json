@@ -31,7 +31,6 @@
     "description": "The Darkmon record ID for the underlying leak.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

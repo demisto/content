@@ -32,7 +32,6 @@
     "description": "First time this credential was observed compromised.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

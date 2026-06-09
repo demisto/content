@@ -5,7 +5,7 @@ description: "Analyst-facing wrapper around Darkmon - Generic Block Indicator. L
 fromversion: 6.5.0
 marketplaces:
   - xsoar
-  - marketplacev2
+  - platform
   - platform
 tags:
   - darkmon

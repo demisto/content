@@ -4,9 +4,8 @@ name: Darkmon - Enrich File
 description: Sub-playbook that calls the Darkmon !file command and returns DBotScore + Common.File for the input File indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
 fromversion: 6.5.0
 marketplaces:
-  - xsoar
-  - marketplacev2
-  - platform
+- xsoar
+- platform
 starttaskid: "0"
 tasks:
   "0":

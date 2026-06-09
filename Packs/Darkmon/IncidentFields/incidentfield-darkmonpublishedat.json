@@ -31,7 +31,6 @@
     "description": "When the ransomware mention was first observed.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

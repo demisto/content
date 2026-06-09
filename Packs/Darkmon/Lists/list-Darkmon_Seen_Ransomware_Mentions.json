@@ -13,7 +13,6 @@
     "system": false,
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

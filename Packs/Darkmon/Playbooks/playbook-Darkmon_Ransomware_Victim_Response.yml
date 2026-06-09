@@ -5,7 +5,7 @@ description: "Triggered when our company surfaces in a Darkmon ransomware mentio
 fromversion: 6.5.0
 marketplaces:
   - xsoar
-  - marketplacev2
+  - platform
   - platform
 tags:
   - darkmon

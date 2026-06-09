@@ -1995,7 +1995,7 @@ def test_indicator_field_schema(path):
         "tagsSelect",
     }
     assert data["fromVersion"] == "6.5.0"
-    assert set(data["marketplaces"]) == {"xsoar", "marketplacev2"}
+    assert set(data["marketplaces"]) == {"xsoar", "platform"}
     assert isinstance(data["associatedTypes"], list)
     assert data["associatedTypes"]
 
@@ -2149,7 +2149,7 @@ def test_enrichment_playbook_schema(path):
         assert k in data, f"{os.path.basename(path)}: missing '{k}'"
 
     assert data["fromversion"] == "6.5.0"
-    assert set(data["marketplaces"]) == {"xsoar", "marketplacev2"}
+    assert set(data["marketplaces"]) == {"xsoar", "platform"}
     assert data["name"] in EXPECTED_PLAYBOOK_NAMES
     assert data["id"] == data["name"]
     assert data["starttaskid"] == "0"

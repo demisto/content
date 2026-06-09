@@ -6,9 +6,8 @@ description: Provider-agnostic user-action dispatcher (disable, reset password,
   directory (ad | okta | azuread) and routes to the matching command.
 fromversion: 6.5.0
 marketplaces:
-  - xsoar
-  - marketplacev2
-  - platform
+- xsoar
+- platform
 starttaskid: "0"
 tasks:
   "0":

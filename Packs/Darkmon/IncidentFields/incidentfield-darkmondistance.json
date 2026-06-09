@@ -31,7 +31,6 @@
     "description": "Levenshtein distance between the domain and the brand.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

@@ -31,7 +31,6 @@
     "description": "Resolved directory username (sAMAccountName / UPN / login).",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

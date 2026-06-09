@@ -31,7 +31,6 @@
     "description": "Ransomware group claiming the attack.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

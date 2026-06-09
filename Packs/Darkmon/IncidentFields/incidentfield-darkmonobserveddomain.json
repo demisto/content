@@ -31,7 +31,6 @@
     "description": "The newly-registered domain that resembles the brand.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

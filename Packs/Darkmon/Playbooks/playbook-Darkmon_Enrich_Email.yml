@@ -4,9 +4,8 @@ name: Darkmon - Enrich Email
 description: Sub-playbook that calls the Darkmon !email command and returns DBotScore + Common.Account.Email for the input Email indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
 fromversion: 6.5.0
 marketplaces:
-  - xsoar
-  - marketplacev2
-  - platform
+- xsoar
+- platform
 starttaskid: "0"
 tasks:
   "0":

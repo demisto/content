@@ -34,7 +34,6 @@
     "description": "Darkmon's classification of the indicator (e.g. malicious, phishing, suspicious, clean).",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

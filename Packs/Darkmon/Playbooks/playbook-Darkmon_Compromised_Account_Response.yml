@@ -5,7 +5,7 @@ description: "Incident-type playbook for 'Darkmon Compromised Credential' (and s
 fromversion: 6.5.0
 marketplaces:
   - xsoar
-  - marketplacev2
+  - platform
   - platform
 tags:
   - darkmon

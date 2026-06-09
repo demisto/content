@@ -31,7 +31,6 @@
     "description": "Action that was performed (disabled, reset, revoked, none).",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }

@@ -32,7 +32,6 @@
     "description": "Earliest date Darkmon observed this indicator in compromise data.",
     "marketplaces": [
         "xsoar",
-        "marketplacev2",
         "platform"
     ]
 }
