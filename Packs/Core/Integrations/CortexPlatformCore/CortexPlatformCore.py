@@ -4046,9 +4046,6 @@ def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
 
 
 def get_issues_command(client: Client, args: dict) -> list[CommandResults]:
-    # Note: the structured BIOC `description` (a list of indicator render-links) is already
-    # rendered to plain text inside get_issues_by_filter_command (CoreIRApiModule), so both the
-    # context output and the human-readable table reflect the readable description the UI shows.
     response: list[CommandResults] = get_issues_by_filter_command(client, args)
     output_keys = argToList(args.pop("output_keys", []))
     if isinstance(response[0].outputs, list) and response[0].outputs:

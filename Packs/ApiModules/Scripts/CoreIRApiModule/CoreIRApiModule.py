@@ -4254,7 +4254,6 @@ def create_issues_filter(args) -> dict:
     demisto.debug(f"{filter_dict=}")
     return filter_dict
 
-
 def _is_or_connector(block: dict) -> bool:
     """Port of the front-end BiocIndicatorComponent.isOrConnector()."""
     return block.get("render_type") == "connector" and block.get("pretty_name") == "OR"
@@ -4512,14 +4511,20 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
             action_status = issue.get("alert_action_status")
             issue["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
 
-        # For XDR BIOC issues the backend returns `alert_description` as a structured list of
-        # indicator render-link tokens (not plain text). Render it to text here - BEFORE the
-        # human-readable table is built below - so both the context output and the readable
-        # table show the same readable description the UI displays. Non-BIOC sources and XQL
-        # BIOCs (whose description is already a string) are left untouched.
         if "BIOC" in str(issue.get("alert_source", "")) and isinstance(issue.get("alert_description"), list):
-            demisto.debug(f"get_issues_by_filter_command: rendering BIOC description for issue {issue.get('internal_id')}")
-            issue["alert_description"] = render_bioc_description(issue["alert_description"])
+            raw_description = issue["alert_description"]
+            try:
+                rendered = render_bioc_description(raw_description)
+                demisto.debug(
+                    f"get_issues_by_filter_command: rendered BIOC description for issue "
+                    f"{issue.get('internal_id')}: {len(raw_description)} tokens -> {rendered!r}"
+                )
+                issue["alert_description"] = rendered
+            except Exception as e:
+                demisto.error(
+                    f"get_issues_by_filter_command: failed to render BIOC description for issue "
+                    f"{issue.get('internal_id')}: {e}. Raw description kept. tokens={raw_description!r}"
+                )
 
     human_readable = [
         {

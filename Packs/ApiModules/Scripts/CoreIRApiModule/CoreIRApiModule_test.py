@@ -6110,3 +6110,90 @@ def test_get_issues_by_filter_xql_bioc_string_untouched(requests_mock):
     response = get_issues_by_filter_command(client, {})
 
     assert response[0].outputs[0]["alert_description"] == "dataset = xdr_data | filter ..."
+
+
+def test_render_bioc_description_empty_list():
+    """
+    Given: An empty indicator token list.
+    When:  render_bioc_description is called.
+    Then:  An empty string is returned (no crash).
+    """
+    from CoreIRApiModule import render_bioc_description
+
+    assert render_bioc_description([]) == ""
+
+
+def test_render_bioc_description_introduction_trailing_dash_trimmed():
+    """
+    Given: An introduction token whose pretty_name ends with a dash, followed by a clause.
+    When:  render_bioc_description is called.
+    Then:  The introduction is included with its trailing dash trimmed.
+    """
+    from CoreIRApiModule import render_bioc_description
+
+    indicator = [
+        {"render_type": "introduction", "pretty_name": "Suspicious activity -"},
+        {"render_type": "attribute", "pretty_name": "File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "evil.exe"},
+    ]
+
+    result = render_bioc_description(indicator)
+    assert "Suspicious activity" in result
+    assert "Suspicious activity -" not in result  # trailing dash removed
+
+
+def test_render_bioc_description_comma_connector_spacing():
+    """
+    Given: Values joined by a ',' connector (an OR-list of values).
+    When:  render_bioc_description is called.
+    Then:  The comma connector uses "<value>, <value>" spacing (no leading space before comma).
+    """
+    from CoreIRApiModule import render_bioc_description
+
+    indicator = [
+        {"render_type": "value", "pretty_name": "a.exe"},
+        {"render_type": "connector", "pretty_name": ","},
+        {"render_type": "value", "pretty_name": "b.exe"},
+    ]
+
+    assert render_bioc_description(indicator) == "a.exe, b.exe"
+
+
+def test_get_issues_by_filter_malformed_bioc_description_kept_and_logged(requests_mock, mocker):
+    """
+    Given: A BIOC issue whose alert_description is a list but contains a malformed (non-dict)
+           token that causes render_bioc_description to raise.
+    When:  get_issues_by_filter_command is called.
+    Then:  The command does not crash, the raw description list is kept, and demisto.error
+           is called.
+    """
+    from CoreIRApiModule import CoreClient, get_issues_by_filter_command
+
+    error_mock = mocker.patch.object(demisto, "error")
+
+    malformed_description = [
+        {"render_type": "attribute", "pretty_name": "File Name"},
+        "not-a-dict-token",  # forces AttributeError inside the render loop
+    ]
+    api_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "internal_id": 4,
+                    "alert_source": "BIOC",
+                    "alert_description": json.loads(json.dumps(malformed_description)),
+                }
+            ],
+            "FILTER_COUNT": "1",
+        }
+    }
+    requests_mock.post(f"{Core_URL}/api/webapp/get_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/api/webapp", headers={})
+
+    response = get_issues_by_filter_command(client, {})
+
+    # Raw description kept (not crashed, not partially rendered)
+    assert response[0].outputs[0]["alert_description"] == malformed_description
+    # Error was logged for investigation
+    assert error_mock.called
