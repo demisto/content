@@ -9,59 +9,8 @@
                 "Title": {
                     "simple": "Name"
                 },
-                "Attack ID": {
-                    "simple": "AttackId"
-                },
-                "Path Title": {
-                    "simple": "PathTitle"
-                },
-                "Finding Type": {
-                    "simple": "FindingType"
-                },
                 "Domain": {
                     "simple": "Domain"
-                },
-                "Domain SID": {
-                    "simple": "DomainSID"
-                },
-                "Impact Percentage": {
-                    "simple": "ImpactPercentage"
-                },
-                "Impact Count": {
-                    "simple": "ImpactCount"
-                },
-                "Exposure Percentage": {
-                    "simple": "ExposurePercentage"
-                },
-                "Exposure Count": {
-                    "simple": "ExposureCount"
-                },
-                "Impacted Principal": {
-                    "simple": "ImpactedPrincipal"
-                },
-                "Impacted Principal Name": {
-                    "simple": "ImpactedPrincipalName"
-                },
-                "Impacted Principal Object ID": {
-                    "simple": "ImpactedPrincipalObjectId"
-                },
-                "Non Tier Zero Principal": {
-                    "simple": "NonTierZeroPrincipal"
-                },
-                "Object IDs": {
-                    "simple": "ObjectIds"
-                },
-                "Object Names": {
-                    "simple": "ObjectNames"
-                },
-                "Short Description": {
-                    "simple": "ShortDescription"
-                },
-                "Short Remediation": {
-                    "simple": "ShortRemediation"
-                },
-                "Long Remediation": {
-                    "simple": "LongRemediation"
                 },
                 "occurred": {
                     "simple": "CreatedAt"
@@ -69,20 +18,6 @@
                 "severity": {
                     "simple": "Severity"
                 }
-            }
-        }
-    },
-    "defaultMapping": {
-        "dontMapEventToLabels": false,
-        "internalMapping": {
-            "Title": {
-                "simple": "Name"
-            },
-            "occurred": {
-                "simple": "CreatedAt"
-            },
-            "severity": {
-                "simple": "Severity"
             }
         }
     },

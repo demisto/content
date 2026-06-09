@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: Start of playbook.
     nexttasks:
       '#none#':
       - "1"
@@ -43,10 +43,10 @@ tasks:
       version: -1
       name: bloodhound-object-id-get
       description: Fetches the object ID using the object name.
-      script: SpecterOpsBloodHoundEnterprise|||bloodhound-object-id-get
+      script: '|||bloodhound-object-id-get'
       type: regular
       iscommand: true
-      brand: SpecterOpsBloodHoundEnterprise
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -54,7 +54,7 @@ tasks:
       object_names:
         simple: ${incident.labels.ObjectNames}
       using:
-        simple: ${incident.labels.Instance}
+        simple: ${incident.sourceInstance}
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -113,10 +113,10 @@ tasks:
       version: -1
       name: bloodhound-asset-info-get
       description: Fetches asset information using the object ID.
-      script: SpecterOpsBloodHoundEnterprise|||bloodhound-asset-info-get
+      script: '|||bloodhound-asset-info-get'
       type: regular
       iscommand: true
-      brand: SpecterOpsBloodHoundEnterprise
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -124,7 +124,7 @@ tasks:
       object_ids:
         simple: ${incident.labels.ObjectIds}
       using:
-        simple: ${incident.labels.Instance}
+        simple: ${incident.sourceInstance}
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -151,10 +151,10 @@ tasks:
       version: -1
       name: bloodhound-path-exist
       description: Checks if a path exists between the two nodes.
-      script: SpecterOpsBloodHoundEnterprise|||bloodhound-path-exist
+      script: '|||bloodhound-path-exist'
       type: regular
       iscommand: true
-      brand: SpecterOpsBloodHoundEnterprise
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -164,7 +164,7 @@ tasks:
       to_principal:
         simple: ${incident.labels.ImpactedPrincipalObjectId}
       using:
-        simple: ${incident.labels.Instance}
+        simple: ${incident.sourceInstance}
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -193,7 +193,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: End of playbook.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -226,4 +226,4 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.9.0
+fromversion: 6.10.0
