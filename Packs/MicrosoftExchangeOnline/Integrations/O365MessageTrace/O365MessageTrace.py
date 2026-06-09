@@ -225,9 +225,16 @@ def fetch_events_sequential(
 
         page_events = response.get("value", []) or []
         collected.extend(page_events)
-        
-        # Sort collected by receivedDateTime (parsed as datetime) so the latest event is last
-        collected.sort(key=lambda event: datetime.strptime(event["receivedDateTime"], Config.DATE_FORMAT_EVENT))
+
+        # Sort collected by receivedDateTime (parsed as datetime) so the latest event is last.
+        # ``safe_strptime`` (from CommonServerPython) gracefully handles timestamps both
+        # with and without fractional seconds (e.g. ``2025-01-01T10:00:00Z`` and ``2025-01-01T10:00:00.06Z``).
+        # Events that are missing ``receivedDateTime`` are sorted first (datetime.min).
+        collected.sort(
+            key=lambda event: safe_strptime(event["receivedDateTime"], Config.DATE_FORMAT_EVENT)
+            if event.get("receivedDateTime")
+            else datetime.min
+        )
 
         demisto.debug(
             f"[Fetch] Window {start_str} -> {end_str}: page returned {len(page_events)} events "

@@ -17,6 +17,7 @@ from O365MessageTrace import (
     format_datetime_for_filter,
     get_events_command,
     parse_datetime,
+    update_id_field,
 )
 
 # Reference the production ``test_module`` entrypoint via an alias that does
@@ -132,6 +133,23 @@ class TestAddTimeField:
         events = [{"id": "evt-1", "receivedDateTime": ""}]
         add_time_field(events)
         assert events[0]["_time"]  # non-empty fallback value
+
+
+class TestUpdateIdField:
+    def test_appends_recipient_address_to_id(self, sample_events):
+        update_id_field(sample_events)
+        assert sample_events[0]["id"] == "evt-1|bob@contoso.com"
+        assert sample_events[1]["id"] == "evt-2|dave@contoso.com"
+
+    def test_leaves_id_unchanged_when_recipient_missing(self):
+        events = [{"id": "evt-1"}]
+        update_id_field(events)
+        assert events[0]["id"] == "evt-1"
+
+    def test_leaves_id_unchanged_when_id_missing(self):
+        events = [{"recipientAddress": "bob@contoso.com"}]
+        update_id_field(events)
+        assert "id" not in events[0]
 
 
 # ============================================================================
@@ -424,7 +442,9 @@ class TestFetchEvents:
         assert "2025-01-01T09:00:00Z" in first_call_params["$filter"]
 
     def test_deduplicates_against_seen_ids(self, mock_client, sample_events, mocker):
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": ["evt-1"]}
+        # ``update_id_field`` rewrites ids to ``<id>|<recipientAddress>``, so the
+        # seen_ids stored from the previous run must use the composite form.
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": ["evt-1|bob@contoso.com"]}
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
@@ -435,7 +455,7 @@ class TestFetchEvents:
         # evt-1 should have been filtered out
         sent_events = send_mock.call_args.kwargs["events"]
         assert len(sent_events) == 1
-        assert sent_events[0]["id"] == "evt-2"
+        assert sent_events[0]["id"] == "evt-2|dave@contoso.com"
 
     def test_no_events_does_not_call_send(self, mock_client, mocker):
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
@@ -458,7 +478,8 @@ class TestFetchEvents:
         new_state = set_last_run.call_args.args[0]
         # Latest event is evt-2 at 2025-01-01T10:01:00Z
         assert new_state["last_fetch"] == "2025-01-01T10:01:00Z"
-        assert "evt-2" in new_state["seen_ids"]
+        # ``update_id_field`` rewrites ids to ``<id>|<recipientAddress>``.
+        assert "evt-2|dave@contoso.com" in new_state["seen_ids"]
 
     def test_merges_seen_ids_when_high_water_mark_unchanged(self, mock_client, mocker):
         """If new events share the same timestamp as the previous high-water mark, seen_ids should be merged."""
