@@ -54,7 +54,7 @@ def output_data(response: dict) -> dict:
     """
     Arrange the returned data and remove irrelevant fields from response
     Args:
-        response: raw json api response
+        response: raw json api response test
 
     Returns:
         the response without irrelevant fields
