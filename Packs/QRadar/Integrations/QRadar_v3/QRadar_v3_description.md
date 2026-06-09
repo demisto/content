@@ -1,6 +1,9 @@
+### Use API token instead of Username and Password
+- In the **Username / API Key** field, type **_api_token_key**.  
+- In the **Password** field, type your API token.
 
 ## Choose your API version
-1. Visit the [QRadar API versions page](https://www.my-community.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
+1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
 2. Choose one of the API versions listed under **Supported REST API versions** column in the line corresponding to your QRadar version.
 
 Note: If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version.
@@ -10,8 +13,8 @@ Depending on the system load, the initial fetch might take a long time.**
 
 #### Query to fetch offenses
 You can apply additional (optional) filters for the fetch-incident query using the *Query to fetch offenses* integration parameter. For more information on how to use the filter syntax: 
-- Visit [QRadar Filter Syntax Documentation](https://www.my-community.com/docs/en/qradar-common?topic=versions-filter-syntax) for explanation about filter syntax.
-- Visit [QRadar Offense Documentation](https://www.my-community.com/docs/en/qradar-common?topic=card-offenses) for a list of all possible fields to be used in the filter.
+- Visit [QRadar Filter Syntax Documentation](https://www.ibm.com/docs/en/qradar-common?topic=versions-filter-syntax) for explanation about filter syntax.
+- Visit [QRadar Offense Documentation](https://www.ibm.com/docs/en/qradar-common?topic=card-offenses) for a list of all possible fields to be used in the filter.
 
 *Note*: Since QRadar API v19, The timestamp fields should be provided as milliseconds epoch format instead of seconds.
 #### Offense Enrichment

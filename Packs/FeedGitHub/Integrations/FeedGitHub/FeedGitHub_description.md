@@ -1,7 +1,3 @@
-- Only one instance supported at a time
-- * Fetching supports **hours only** (days are not supported).
-- Events are fetched starting from the **Last Exported Record** timestamp of the export profile. When first configuring the event collector, it is highly recommended to adjust the value of this field in the selected export profile(s) to a recent timestamp to prevent the fetching of outdated events.
-
 # Feed GitHub
 
 The integration supports the following workflow:
@@ -25,5 +21,5 @@ To generate your personal access token, visit:[GitHub](https://github.com/settin
 
 #### Owner, Repo sources example
 
-![](https://user-imageas.githubusercontent.com/221550/110506678-51906280-80cd-11eb-803a-c41984bd9312.png)
+![exa photo](../../doc_files/owner-repo-example.png)
 
