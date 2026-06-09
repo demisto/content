@@ -1082,3 +1082,40 @@ def test_check_and_remove_abuse(domain_info, expected_output, expected_domain_in
 
     assert check_and_remove_abuse(domain_info) == expected_output
     assert domain_info == expected_domain_info
+
+
+@pytest.mark.parametrize(
+    "time_sensitive, expected_timeout",
+    [
+        (True, 10),   # War Room inline enrichment: short 10s timeout (existing behaviour)
+        (False, 30),  # Playbook context: 30s timeout to prevent OS-level hang (XSUP-70632)
+    ],
+)
+def test_whois_request_socket_timeout_always_set(mocker: MockerFixture, time_sensitive: bool, expected_timeout: int):
+    """
+    Given:
+        - The Whois integration is executing whois_request_get_response().
+        - Case A: is_time_sensitive() returns True (War Room inline enrichment).
+        - Case B: is_time_sensitive() returns False (playbook task execution).
+
+    When:
+        - whois_request_get_response() opens a TCP socket to the whois server.
+
+    Then:
+        - Case A: sock.settimeout(10) is called — fast fail for interactive use.
+        - Case B: sock.settimeout(30) is called — prevents indefinite OS-level hang
+          (~127s on Linux) when the whois server is unreachable. Regression test for XSUP-70632.
+    """
+    from Whois import whois_request_get_response
+
+    mocker.patch("Whois.is_time_sensitive", return_value=time_sensitive)
+
+    mock_sock = mocker.MagicMock()
+    mock_sock.recv.return_value = b""
+    mock_sock.__enter__ = lambda s: s
+    mock_sock.__exit__ = mocker.MagicMock(return_value=False)
+    mocker.patch("socket.socket", return_value=mock_sock)
+
+    whois_request_get_response("example.com", "whois.iana.org")
+
+    mock_sock.settimeout.assert_called_once_with(expected_timeout)

@@ -2039,7 +2039,12 @@ def whois_request_get_response(domain: str, server: str) -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         if is_time_sensitive():
             # Default short timeout
+            demisto.debug("Running in a time-sensitive context, setting socket timeout to 10 seconds.")
             sock.settimeout(10)
+        else:
+            # Set a reasonable timeout to prevent indefinite hangs
+            demisto.debug("Running in a non-time-sensitive context, setting socket timeout to (default) 30 seconds.")
+            sock.settimeout(30)
         sock.connect((server, 43))
         sock.send(("%s\r\n" % domain).encode("utf-8"))
         buff = b""
