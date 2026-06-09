@@ -72,6 +72,20 @@
             }
         }
     },
+    "defaultMapping": {
+        "dontMapEventToLabels": false,
+        "internalMapping": {
+            "Title": {
+                "simple": "Name"
+            },
+            "occurred": {
+                "simple": "CreatedAt"
+            },
+            "severity": {
+                "simple": "Severity"
+            }
+        }
+    },
     "name": "SpecterOpsBloodHoundEnterprise - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,

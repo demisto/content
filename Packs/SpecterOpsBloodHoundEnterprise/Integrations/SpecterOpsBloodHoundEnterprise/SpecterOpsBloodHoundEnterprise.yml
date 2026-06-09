@@ -1,9 +1,12 @@
+sectionorder:
+- Connect
 commonfields:
   id: SpecterOpsBloodHoundEnterprise
   version: -1
 name: SpecterOpsBloodHoundEnterprise
 display: SpecterOps BloodHound Enterprise
 category: Network Security
+provider: SpecterOps
 description: Use the SpecterOpsBloodHoundEnterprise integration to retrieve attack path findings from BloodHound Enterprise to streamline incident creation and investigation.
 detaileddescription: BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure environments by continuously identifying and quantifying attack paths that attackers use to escalate privileges. The SpecterOpsBloodHoundEnterprise integration automatically ingests attack path findings from BloodHound Enterprise into Cortex XSOAR, streamlining incident creation and investigation. Configure the integration by providing your BloodHound Enterprise domain, API token ID and key, and optionally configure proxy settings and finding filters. Enable incident fetching to automatically retrieve attack paths at your specified interval.
 configuration:
@@ -63,6 +66,7 @@ configuration:
   type: 13
   required: false
 script:
+  script: '-'
   commands:
   - name: bloodhound-object-id-get
     arguments:
@@ -128,7 +132,7 @@ script:
       type: Boolean
     description: Checks if a path exists between the two nodes.
   type: python
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.13.9059085
   subtype: python3
   isfetch: true
   runonce: false
