@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-azure-sentinel
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for Microsoft Sentinel integration for Azure Sentinel
+    connector
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: Azure Sentinel
+    xsoar-pack-id: AzureSentinel
+  args: {}
+capabilities:
+- id: xsoar-azure-sentinel-fetch-issues
+  auth_options:
+  - id: passthrough.azure_sentinel
+    view_group: azure-sentinel
+    scopes:
+    - api
+    workloads:
+    - xsoar-pod
+  actions:
+  - type: reset_incidents_last_run
+    display: Reset Incidents Last Run
+    description: Clears the saved last-run cursor for issue/incident collection, forcing
+      the next fetch to start from the beginning.
+- id: xsoar-azure-sentinel-automation-and-remediation
+  auth_options:
+  - id: passthrough.azure_sentinel
+    view_group: azure-sentinel
+    scopes:
+    - api
+    workloads:
+    - xsoar-pod
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification
