@@ -30,11 +30,28 @@ param name rather than a dedup-renamed connector id. Resolution order:
      (the original integration param name).
   2. Otherwise use the bare field id.
 
+Beyond the three collectors above, two more sources feed the connector
+param set:
+
+  * **Serializer computed-field outputs** — every
+    ``computed_fields[].output[].id`` declared in any ``serializer.yaml``
+    under the handler dir is treated as a connector param as well (resolved
+    through the same serializer ``field_mappings`` pipeline).
+
 The check is one-directional and strict: it fails when an integration-YML
 param (anything not ``hidden: true`` / ``hidden: platform`` /
-``hidden: [..]``) is NOT present in the collected connector param set. No
-special-casing of credentials, backend-only, or reserved framework fields
-is applied on either side.
+``hidden: [..]``) is NOT present in the collected connector param set, with
+two Platform-rename special cases:
+
+  * an integration ``incidentType`` param is considered covered when the
+    connector exposes an ``alertType`` field (bare or sub-capability
+    prefixed, e.g. ``fetch-issues_<int>_alertType``);
+  * an integration ``incidentFetchInterval`` param is considered covered
+    when the connector exposes an ``alertFetchInterval`` field (bare or
+    sub-capability prefixed).
+
+No other special-casing of credentials, backend-only, or reserved
+framework fields is applied on either side.
 
 Exit codes:
   * ``0`` — every non-hidden YML param is covered.
@@ -46,7 +63,7 @@ Exit codes:
 Usage::
 
     python3 connectus/check_handler_param_coverage.py \\
-        --handler-path <connector>/components/handlers/<handler> \\
+        --handler-path <connector>/components/handlers/<handler>/handler.yaml \\
         --integration-yml Packs/<Pack>/Integrations/<Int>/<Int>.yml
 """
 
@@ -77,6 +94,19 @@ SERIALIZER_GLOB = "serializer.yaml"
 # ``<connector_root>/components/handlers/<handler>/``.
 COMPONENTS_DIR = "components"
 HANDLERS_DIR = "handlers"
+
+# Serializer ``computed_fields`` block: ``computed_fields[].output[].id``.
+COMPUTED_FIELDS_KEY = "computed_fields"
+
+# Platform "alert" renames. The Platform migrates the legacy XSOAR
+# ``incidentType`` / ``incidentFetchInterval`` params to ``alertType`` /
+# ``alertFetchInterval`` on the connector side with NO serializer bridge back
+# to the original names. The connector id may also be sub-capability prefixed
+# (e.g. ``fetch-issues_<int>_alertType``), so coverage uses a suffix match.
+INCIDENT_TYPE_PARAM = "incidentType"
+ALERT_TYPE_SUFFIX = "alertType"
+INCIDENT_FETCH_INTERVAL_PARAM = "incidentFetchInterval"
+ALERT_FETCH_INTERVAL_SUFFIX = "alertFetchInterval"
 
 
 class CoverageError(Exception):
@@ -215,6 +245,29 @@ def load_serializer_mappings(handler_dir: Path) -> dict[str, str]:
             if field_id and field_name:
                 mappings[field_id] = field_name
     return mappings
+
+
+def load_serializer_computed_output_ids(handler_dir: Path) -> list[str]:
+    """Collect every ``computed_fields[].output[].id`` for the handler.
+
+    Walks every ``serializer.yaml`` under ``handler_dir`` and reads each
+    ``computed_fields[]`` rule's ``output[]`` entries. Synthetic output fields
+    declared here count as connector params (they are resolved through the
+    serializer ``field_mappings`` like any other field id by the caller).
+    """
+    output_ids: list[str] = []
+    for serializer_path in sorted(handler_dir.rglob(SERIALIZER_GLOB)):
+        doc = load_yaml(serializer_path)
+        for rule in doc.get(COMPUTED_FIELDS_KEY, []) or []:
+            if not isinstance(rule, dict):
+                continue
+            for output in rule.get("output", []) or []:
+                if not isinstance(output, dict):
+                    continue
+                output_id = output.get("id")
+                if output_id:
+                    output_ids.append(output_id)
+    return output_ids
 
 
 # ---------------------------------------------------------------------------
@@ -363,21 +416,23 @@ def collect_auth_profile_field_ids(
 # ---------------------------------------------------------------------------
 # Orchestration
 # ---------------------------------------------------------------------------
-def collect_connector_params(
+def collect_connector_raw_field_ids(
     handler_dir: Path,
     capabilities_doc: dict,
     configurations_doc: dict,
     connection_doc: dict,
     handler_yaml: dict,
-) -> set[str]:
-    """Collect the full deduped set of connector params for the handler.
+) -> list[str]:
+    """Collect every RAW connector field id reachable from the handler.
 
-    Field ids from capabilities, view-group general configs, and auth profiles
-    are unioned and each resolved through the serializer into its original
-    integration param name.
+    Unions field ids from capability configs, view-group general configs, auth
+    profiles, and serializer ``computed_fields[].output[].id`` — WITHOUT
+    resolving them through the serializer ``field_mappings``. Raw ids are what
+    the alert-rename suffix match (``alertType`` / ``alertFetchInterval``)
+    needs, since those fields are migrated with no serializer bridge and may be
+    sub-capability prefixed.
     """
     view_group, capability_ids, auth_profile_ids = parse_handler(handler_yaml)
-    serializer_mappings = load_serializer_mappings(handler_dir)
 
     raw_field_ids: list[str] = []
     raw_field_ids.extend(
@@ -393,23 +448,85 @@ def collect_connector_params(
     raw_field_ids.extend(
         collect_auth_profile_field_ids(connection_doc, auth_profile_ids)
     )
+    raw_field_ids.extend(load_serializer_computed_output_ids(handler_dir))
+    return raw_field_ids
 
+
+def collect_connector_params(
+    handler_dir: Path,
+    capabilities_doc: dict,
+    configurations_doc: dict,
+    connection_doc: dict,
+    handler_yaml: dict,
+) -> set[str]:
+    """Collect the full deduped set of connector params for the handler.
+
+    Field ids from capabilities, view-group general configs, auth profiles, and
+    serializer ``computed_fields[].output[].id`` are unioned and each resolved
+    through the serializer into its original integration param name.
+    """
+    serializer_mappings = load_serializer_mappings(handler_dir)
+    raw_field_ids = collect_connector_raw_field_ids(
+        handler_dir,
+        capabilities_doc,
+        configurations_doc,
+        connection_doc,
+        handler_yaml,
+    )
     return {resolve_param_name(fid, serializer_mappings) for fid in raw_field_ids}
+
+
+def _alert_rename_covered(missing: set[str], raw_field_ids: list[str]) -> set[str]:
+    """Drop Platform-renamed alert params from ``missing`` when covered.
+
+    The Platform migrates ``incidentType`` -> ``alertType`` and
+    ``incidentFetchInterval`` -> ``alertFetchInterval`` on the connector side
+    with no serializer bridge, and the connector id may be sub-capability
+    prefixed (e.g. ``fetch-issues_<int>_alertType``). So an integration
+    ``incidentType`` / ``incidentFetchInterval`` is considered covered when any
+    raw connector field id equals or ends with the matching alert suffix.
+    """
+    resolved = set(missing)
+    rename_pairs = (
+        (INCIDENT_TYPE_PARAM, ALERT_TYPE_SUFFIX),
+        (INCIDENT_FETCH_INTERVAL_PARAM, ALERT_FETCH_INTERVAL_SUFFIX),
+    )
+    for incident_param, alert_suffix in rename_pairs:
+        if incident_param not in resolved:
+            continue
+        if any(fid == alert_suffix or fid.endswith(alert_suffix) for fid in raw_field_ids):
+            resolved.discard(incident_param)
+    return resolved
+
+
+def _resolve_handler_paths(handler_path: Path) -> tuple[Path, Path]:
+    """Resolve ``(handler_dir, handler_yaml_path)`` from a handler path.
+
+    Accepts either a path to the handler's ``handler.yaml`` file (the intended
+    input) or, for back-compat, the handler directory that contains it.
+    """
+    handler_path = handler_path.resolve()
+    if handler_path.is_file():
+        return handler_path.parent, handler_path
+    if handler_path.is_dir():
+        handler_yaml_path = handler_path / HANDLER_FILE
+        if not handler_yaml_path.is_file():
+            raise CoverageError(
+                f"No {HANDLER_FILE} found in handler path: {handler_path}"
+            )
+        return handler_path, handler_yaml_path
+    raise CoverageError(f"Handler path does not exist: {handler_path}")
 
 
 def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool, set[str]]:
     """Run the full coverage check.
 
-    Returns ``(passed, missing_params)`` where ``missing_params`` is the set
-    of non-hidden YML params not covered by the connector.
+    ``handler_path`` is the path to the handler's ``handler.yaml`` (a handler
+    directory is also accepted for back-compat). Returns ``(passed,
+    missing_params)`` where ``missing_params`` is the set of non-hidden YML
+    params not covered by the connector.
     """
-    handler_dir = handler_path.resolve()
-    if not handler_dir.is_dir():
-        raise CoverageError(f"Handler path is not a directory: {handler_dir}")
-
-    handler_yaml_path = handler_dir / HANDLER_FILE
-    if not handler_yaml_path.is_file():
-        raise CoverageError(f"No {HANDLER_FILE} found in handler path: {handler_dir}")
+    handler_dir, handler_yaml_path = _resolve_handler_paths(handler_path)
 
     if not integration_yml_path.is_file():
         raise CoverageError(f"Integration YML not found: {integration_yml_path}")
@@ -422,15 +539,23 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
     integration_yml = load_yaml(integration_yml_path)
 
     yml_params = collect_yml_params(integration_yml)
-    connector_params = collect_connector_params(
+    raw_field_ids = collect_connector_raw_field_ids(
         handler_dir,
         capabilities_doc,
         configurations_doc,
         connection_doc,
         handler_yaml,
     )
-
+    serializer_mappings = load_serializer_mappings(handler_dir)
+    connector_params = {
+        resolve_param_name(fid, serializer_mappings) for fid in raw_field_ids
+    }
+    print(f"Got the following integration params: {yml_params=}")
+    print(f"Got the following handler params: {connector_params=}")
     missing = yml_params - connector_params
+    # Platform "alert" renames: incidentType -> alertType,
+    # incidentFetchInterval -> alertFetchInterval (no serializer bridge).
+    missing = _alert_rename_covered(missing, raw_field_ids)
     return (len(missing) == 0), missing
 
 
@@ -447,13 +572,16 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--handler-path",
-        required=True,
+        required=False,
         type=Path,
-        help="Path to the handler directory (the dir containing handler.yaml).",
+        help=(
+            "Path to the handler's handler.yaml file "
+            "(the handler directory is also accepted)."
+        ),
     )
     parser.add_argument(
         "--integration-yml",
-        required=True,
+        required=False,
         type=Path,
         help="Path to the integration YML file.",
     )
@@ -473,6 +601,14 @@ def main(argv: list[str] | None = None) -> int:
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(levelname)s %(message)s",
     )
+
+    if not args.handler_path or not args.integration_yml:
+        print(  # noqa: T201
+            "ERROR: both --handler-path (handler.yaml) and --integration-yml "
+            "are required.",
+            file=sys.stderr,
+        )
+        return EXIT_USAGE
 
     try:
         passed, missing = check_coverage(args.handler_path, args.integration_yml)

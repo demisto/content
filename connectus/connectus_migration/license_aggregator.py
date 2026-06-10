@@ -82,7 +82,7 @@ LICENSE_LEADING_COLUMNS = 2
 # Boolean string literals used throughout the license sheets.
 TRUE_STR = "TRUE"
 FALSE_STR = "FALSE"
-
+ALL_MODULES = ["cloud_posture", "cloud", "cloud_runtime_security", "edr", "asm", "xsiam", "cloud_appsec", "tim", "agentix", "exposure_management"]
 
 def integration_id_to_slug(integration_id: str) -> str:
     """Lowercase + dash-slug an integration id (``commonfields.id``).
@@ -101,6 +101,7 @@ def integration_id_to_slug(integration_id: str) -> str:
 
 def _select_named_license_columns(
     header: list[str],
+    license_leading_columns=LICENSE_LEADING_COLUMNS
 ) -> tuple[list[str], list[int]]:
     """From the full license header, return the named license columns and the
     indices (into a full data row) they map to.
@@ -110,7 +111,7 @@ def _select_named_license_columns(
     """
     names: list[str] = []
     indices: list[int] = []
-    for idx in range(LICENSE_LEADING_COLUMNS, len(header)):
+    for idx in range(license_leading_columns, len(header)):
         col_name = header[idx].strip()
         if not col_name:
             continue  # skip unnamed/blank license columns
@@ -158,6 +159,40 @@ def load_license_table(
             by_name[integration_name] = values
 
     return license_columns, by_name
+
+
+def prase_licenses_to_json(
+    license_csv: Path,
+):
+    """Load the license CSV.
+
+    Returns ``(license_columns, by_name)`` where:
+      - ``license_columns`` is the list of NAMED license-column headers
+        (blank/unnamed columns dropped).
+      - ``by_name`` maps each integration name (excluding ``All pack`` rows)
+        to its list of license-flag values sliced to those named columns.
+
+    Last-seen row wins on duplicate integration names (rare; logged).
+    """
+    licenses = {}
+    with open(license_csv, newline="") as fh:
+        reader = csv.reader(fh)
+        try:
+            header = next(reader)
+        except StopIteration:
+            raise ValueError(f"License CSV {license_csv} is empty.")
+
+        for row in reader:
+            if not row or len(row) < 3:
+                continue
+            sub_capability_id = row[2].strip()
+            sub_cap_licenses = []
+            for i, val in enumerate(row):
+                if val == "TRUE":
+                    sub_cap_licenses.append(header[i])
+            licenses[sub_capability_id] = sub_cap_licenses
+    path = Path("connectus/connectus_migration/sub_capabilities_to_licenses.json")
+    path.write_text(json.dumps(licenses, indent=2, sort_keys=True))
 
 
 def load_integration_yml(path: Path) -> dict:
@@ -242,9 +277,11 @@ def resolve_license_row(
         return _modules_to_license_row(
             pack_modules, license_columns, unmatched_modules
         )
-
-    # 5: unresolved.
-    return None
+        
+    # 5: unresolved - takes all
+    return _modules_to_license_row(
+            ALL_MODULES, license_columns, unmatched_modules
+        )
 
 
 def read_pipeline_rows(pipeline_csv: Path) -> list[dict[str, str]]:
@@ -493,7 +530,6 @@ def aggregate(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
-
     license_columns, by_name = load_license_table(license_csv)
     pipeline_rows = read_pipeline_rows(pipeline_csv)
     grouped = group_by_connector(pipeline_rows)
@@ -517,6 +553,7 @@ def aggregate(
     xlsx_path = output.with_suffix(".xlsx")
     write_xlsx(xlsx_path, license_columns, connector_to_records)
     logger.info(f"[license_aggregator] Wrote {output} and {xlsx_path}")
+    prase_licenses_to_json(Path("connectus/connector_capability_licenses.csv"))
 
     if unmatched_modules:
         logger.warning(

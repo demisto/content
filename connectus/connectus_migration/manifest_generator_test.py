@@ -103,6 +103,35 @@ from manifest_generator import (
     write_triggers_yaml,
 )
 
+import manifest_generator as _mg
+
+
+# ---------------------------------------------------------------------------
+# License-lookup test stub
+# ---------------------------------------------------------------------------
+# Licenses are resolved per sub-capability from
+# sub_capabilities_to_licenses.json, and an unknown sub_capability_id is a
+# hard RuntimeError. Most integration-flow tests use SYNTHETIC integration
+# ids (e.g. "hello-world-iam") that are not in the real JSON, so this autouse
+# fixture stubs the lookup to return the real value when present and a
+# deterministic default otherwise. Tests that must exercise the REAL JSON /
+# missing-id behavior opt out with @pytest.mark.no_license_stub.
+_DEFAULT_STUB_LICENSES = ["agentix", "xsiam"]
+
+
+@pytest.fixture(autouse=True)
+def _stub_sub_capability_licenses(request, monkeypatch):
+    if "no_license_stub" in request.keywords:
+        return
+    real_table = _mg._load_sub_capability_licenses()
+
+    def _stub(sub_cap_id: str) -> list[str]:
+        if sub_cap_id in real_table:
+            return list(real_table[sub_cap_id])
+        return list(_DEFAULT_STUB_LICENSES)
+
+    monkeypatch.setattr(_mg, "licenses_for_sub_capability", _stub)
+
 
 # ---------------------------------------------------------------------------
 # Test helpers
@@ -1201,17 +1230,16 @@ def test_build_capabilities_yaml_shape() -> None:
     assert fields[0]["field_type"] == "input"
     assert fields[0]["metadata"]["connector"]["parameter"] == "instance_name"
     assert len(fields) == 1
-    # Called without handler_id -> no sub_capabilities; parents now carry
-    # description + config.required_license (review point 7). fetch-issues
-    # is license-restricted -> agentix/xsiam; TI&E is unrestricted -> [].
+    # Called without handler_id -> no sub_capabilities. Licenses are resolved
+    # per sub-capability from sub_capabilities_to_licenses.json, so without a
+    # handler_id (hence no sub-cap id) the parent carries NO config block.
     assert data["capabilities"] == [
         {
             "id": "fetch-issues",
             "title": "Fetch Issues",
             "description": CANONICAL_CAPABILITY_DESCRIPTIONS["fetch-issues"],
-            "default_enabled": True,
+            "default_enabled": False,
             "required": False,
-            "config": {"required_license": ["agentix", "xsiam"]},
         },
         {
             "id": "threat-intelligence-and-enrichment",
@@ -1219,9 +1247,8 @@ def test_build_capabilities_yaml_shape() -> None:
             "description": CANONICAL_CAPABILITY_DESCRIPTIONS[
                 "threat-intelligence-and-enrichment"
             ],
-            "default_enabled": True,
+            "default_enabled": False,
             "required": False,
-            "config": {"required_license": []},
         },
     ]
 
@@ -1965,6 +1992,74 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
     # No field-id collisions in this pipeline, so no serializer entries are
     # written and serializer.yaml is not created.
     assert not serializer_yaml.exists()
+
+
+def test_create_manifest_from_scratch_log_collection_emits_fetch_fields(
+    tmp_path: Path,
+) -> None:
+    """
+    Given: a from-scratch run whose mapped_params declares a Log Collection
+           capability with ``longRunning`` routed into its bucket (the Akamai
+           WAF SIEM scenario).
+    When:  create_manifest_from_scratch runs end-to-end.
+    Then:  the configurations.yaml ``log-collection_<slug>`` sub-cap entry
+           contains the platform fetch fields — isFetchEvents (toggle),
+           eventFetchInterval (duration) AND longRunning (checkbox). Because
+           BOTH checkboxes are present, the "count both checkboxes together"
+           rule shows them (hidden=False) and defaults them to False. This is
+           the regression guard for the orchestration wiring gap where the Log
+           Collection builder was never dispatched (only longRunning leaked
+           through the generic param pass).
+    """
+    integration_yml_path = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": ["network"]}
+    )
+    connector_dir = tmp_path / "connectors" / "akamai"
+
+    mapped_params = {
+        "general_configurations": [],
+        "Log Collection": ["longRunning"],
+    }
+    auth_methods = {"auth_types": [{"name": "oauth2"}]}
+
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={
+            "commonfields": {"id": "Akamai WAF SIEM"},
+            "display": "Akamai WAF SIEM",
+            "script": {"longRunning": True},
+        },
+        integration_path=integration_yml_path,
+        connector_title="Akamai",
+        mapped_params=mapped_params,
+        auth_methods=auth_methods,
+    )
+
+    with open(connector_dir / "configurations.yaml") as fh:
+        cfg_data = yaml.safe_load(fh)
+
+    lc_entry = next(
+        c
+        for c in cfg_data["configurations"]
+        if c["id"].startswith("log-collection_")
+    )
+    lc_fields = {
+        f["id"]: f
+        for grp in lc_entry["configurations"]
+        for f in grp["fields"]
+    }
+    # All three platform fetch fields must be present now.
+    assert "isFetchEvents" in lc_fields
+    assert "eventFetchInterval" in lc_fields
+    assert "longRunning" in lc_fields
+    # Both checkboxes present → shown + default False.
+    for fid in ("isFetchEvents", "longRunning"):
+        opts = lc_fields[fid]["options"]
+        assert opts["default_value"] is False
+        assert opts["create_modifiers"]["hidden"] is False
+        assert opts["edit_modifiers"]["hidden"] is False
+    # Interval field is a visible duration picker.
+    assert lc_fields["eventFetchInterval"]["field_type"] == "duration"
 
 
 # ---------------------------------------------------------------------------
@@ -4313,12 +4408,12 @@ def test_log_collection_scenario_A_not_long_running_synthetic_isFetchEvents():
     """
     Given: add_log_collection_capability called with
            is_long_running_capability=False, is_sub_capability=False,
-           NO yml param for isFetchEvents.
+           NO yml param for isFetchEvents (and no longRunning routed here).
     When:  Inspecting the returned isFetchEvents field.
-    Then:  Synthetic but VISIBLE shape — toggle, default False, shown in
-           both modifier blocks (hidden=False), required False, title
-           fallback 'Fetch events'. Plain id 'isFetchEvents' (no rename in
-           top-level case). The user decides whether to fetch events.
+    Then:  Per the "count both checkboxes together" rule isFetchEvents is the
+           lone fetch checkbox → toggle HIDDEN in both modifier blocks and
+           defaulted to True, required False, title fallback 'Fetch events'.
+           Plain id 'isFetchEvents' (no rename in top-level case).
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4334,9 +4429,9 @@ def test_log_collection_scenario_A_not_long_running_synthetic_isFetchEvents():
     ifc = fields_by_id["isFetchEvents"]
     assert ifc["field_type"] == "toggle"
     assert ifc["title"] == "Fetch events"
-    assert ifc["options"]["default_value"] is False
-    assert ifc["options"]["create_modifiers"] == {"required": False, "hidden": False}
-    assert ifc["options"]["edit_modifiers"] == {"required": False, "hidden": False}
+    assert ifc["options"]["default_value"] is True
+    assert ifc["options"]["create_modifiers"] == {"required": False, "hidden": True}
+    assert ifc["options"]["edit_modifiers"] == {"required": False, "hidden": True}
 
 
 def test_log_collection_scenario_A_not_long_running_synthetic_eventFetchInterval_no_yml():
@@ -4489,13 +4584,14 @@ def test_log_collection_scenario_B_long_running_with_yml_uses_yml_values():
 def test_log_collection_scenario_C_long_running_no_yml_falls_back_to_synthetic():
     """
     Given: is_long_running_capability=True AND neither isFetchEvents nor
-           eventFetchInterval is in the yml (E4 — long-running cap with
-           no related yml params).
+           eventFetchInterval is in the yml, and longRunning is NOT routed
+           into the Log Collection bucket (E4 — long-running cap with no
+           related yml params).
     When:  add_log_collection_capability runs.
-    Then:  Both fields are STILL emitted, using the synthetic shapes:
-           isFetchEvents = visible toggle default False;
-           eventFetchInterval = visible duration default {minutes: 1}.
-           Same shape as scenario A.
+    Then:  Both fields are STILL emitted. isFetchEvents is the lone fetch
+           checkbox (no longRunning emitted) → HIDDEN + default True per the
+           "count both checkboxes together" rule. eventFetchInterval stays a
+           VISIBLE duration default {minutes: 1}.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4510,8 +4606,8 @@ def test_log_collection_scenario_C_long_running_no_yml_falls_back_to_synthetic()
     assert "isFetchEvents" in fields_by_id
     assert "eventFetchInterval" in fields_by_id
     ifc = fields_by_id["isFetchEvents"]
-    assert ifc["options"]["default_value"] is False
-    assert ifc["options"]["create_modifiers"]["hidden"] is False
+    assert ifc["options"]["default_value"] is True
+    assert ifc["options"]["create_modifiers"]["hidden"] is True
     efi = fields_by_id["eventFetchInterval"]
     assert efi["field_type"] == "duration"
     assert efi["options"]["default_value"] == {"minutes": 1}
@@ -6180,11 +6276,14 @@ def test_add_fetch_issues_capability_top_level_emits_5_fields_standard():
 
     by_id = {f["id"]: f for f in fields}
 
-    # 1. isFetch — checkbox, visible, default false (user decides)
+    # 1. isFetch — checkbox. Per the "count both checkboxes together" rule,
+    # with NO longRunning in this capability isFetch is the lone fetch
+    # checkbox → hidden + default True.
     isfetch = by_id["isFetch"]
     assert isfetch["field_type"] == "checkbox"
-    assert isfetch["options"]["default_value"] is False
-    assert isfetch["options"]["create_modifiers"]["hidden"] is False
+    assert isfetch["options"]["default_value"] is True
+    assert isfetch["options"]["create_modifiers"]["hidden"] is True
+    assert isfetch["options"]["edit_modifiers"]["hidden"] is True
 
     # 2. alertType (XSOAR incidentType) — dynamic select. Per migration
     # guide §line 889-890 the connector-side id is the Platform "alertType",
@@ -6351,13 +6450,14 @@ def test_add_fetch_issues_capability_long_running_emits_6_fields():
     assert lr["options"]["create_modifiers"]["hidden"] is False
 
 
-def test_add_fetch_issues_capability_isfetch_visible_default_false():
+def test_add_fetch_issues_capability_isfetch_lone_checkbox_hidden_default_true():
     """
-    Given: yml carries an isFetch param with hidden=False and defaultvalue='true'.
+    Given: yml carries an isFetch param, and NO longRunning is routed to this
+           capability (isFetch is the lone fetch checkbox).
     When:  add_fetch_issues_capability runs.
-    Then:  The isFetch field is emitted VISIBLE (hidden=False) and NOT forced
-           on (default=False) — the synthetic shape ignores the yml's hidden/
-           default values; the user decides. Title still uses yml display.
+    Then:  Per the "count both checkboxes together" rule the lone isFetch
+           checkbox is HIDDEN (create+edit) and defaulted to True. The title
+           still uses the yml display value.
     """
     yml_lookup = {
         "isFetch": {
@@ -6379,8 +6479,9 @@ def test_add_fetch_issues_capability_isfetch_visible_default_false():
         yml_params_by_name=yml_lookup,
     )
     isfetch = {f["id"]: f for f in template["fields"]}["isFetch"]
-    assert isfetch["options"]["default_value"] is False
-    assert isfetch["options"]["create_modifiers"]["hidden"] is False
+    assert isfetch["options"]["default_value"] is True
+    assert isfetch["options"]["create_modifiers"]["hidden"] is True
+    assert isfetch["options"]["edit_modifiers"]["hidden"] is True
     # Title should use yml display when available.
     assert isfetch["title"] == "Custom Fetch Label"
 
@@ -6513,6 +6614,132 @@ def test_log_collection_longrunning_not_in_bucket_not_emitted():
     assert "longRunning" not in {f["id"] for f in template["fields"]}
     # longRunning stays in the Fetch Issues bucket (not stripped here).
     assert mapped["Fetch Issues"] == ["longRunning"]
+
+
+# ============================================================
+# "Count both checkboxes together" hide/default rule
+#
+# Per the fetch-checkbox visibility rule: within a fetch capability the set
+# of fetch checkboxes is {fetch_toggle, longRunning} — isFetchEvents for Log
+# Collection, isFetch for Fetch Issues. If EXACTLY ONE of the two is emitted,
+# it is hidden (create+edit) and defaulted to True. If BOTH are emitted, both
+# are shown (hidden=False) and defaulted to False. The interval / dynamic
+# fields are unaffected.
+# ============================================================
+
+
+def test_log_collection_only_isfetchevents_is_hidden_and_default_true():
+    """
+    Given: Log Collection with NO longRunning in the bucket (only the
+           always-emitted isFetchEvents checkbox is present).
+    When:  add_log_collection_capability runs.
+    Then:  isFetchEvents is hidden in both modifier blocks and default True
+           (the single fetch checkbox is auto-on + hidden). eventFetchInterval
+           stays VISIBLE.
+    """
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+
+    template = add_log_collection_capability(
+        capability_id="log-collection",
+        is_sub_capability=False,
+        is_long_running_capability=False,
+        mapped_params=mapped,
+    )
+
+    by_id = {f["id"]: f for f in template["fields"]}
+    ifc = by_id["isFetchEvents"]
+    assert ifc["options"]["default_value"] is True
+    assert ifc["options"]["create_modifiers"]["hidden"] is True
+    assert ifc["options"]["edit_modifiers"]["hidden"] is True
+    # The interval field is never hidden by this rule.
+    assert by_id["eventFetchInterval"]["options"]["create_modifiers"]["hidden"] is False
+
+
+def test_log_collection_both_checkboxes_are_shown_and_default_false():
+    """
+    Given: Log Collection WITH longRunning routed into the bucket (both
+           isFetchEvents and longRunning emitted).
+    When:  add_log_collection_capability runs.
+    Then:  BOTH checkboxes are shown (hidden=False) and default False — the
+           user explicitly chooses which fetch mode to enable.
+    """
+    mapped: dict[str, list[str]] = {
+        "general_configurations": [],
+        "Log Collection": ["longRunning"],
+    }
+
+    template = add_log_collection_capability(
+        capability_id="log-collection",
+        is_sub_capability=False,
+        is_long_running_capability=True,
+        mapped_params=mapped,
+    )
+
+    by_id = {f["id"]: f for f in template["fields"]}
+    for fid in ("isFetchEvents", "longRunning"):
+        opts = by_id[fid]["options"]
+        assert opts["default_value"] is False
+        assert opts["create_modifiers"]["hidden"] is False
+        assert opts["edit_modifiers"]["hidden"] is False
+
+
+def test_fetch_issues_only_isfetch_is_hidden_and_default_true():
+    """
+    Given: Fetch Issues with NO longRunning in the bucket (only the
+           always-emitted isFetch checkbox is present) — e.g. Akamai WAF SIEM,
+           whose longRunning is routed to Log Collection.
+    When:  add_fetch_issues_capability runs.
+    Then:  isFetch is hidden in both modifier blocks and default True. The
+           interval / dynamic fields are unaffected.
+    """
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    integration_yml = _make_integration_yml()
+
+    template = add_fetch_issues_capability(
+        capability_id="fetch-issues",
+        is_sub_capability=False,
+        is_long_running=False,
+        mapped_params=mapped,
+        integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
+    )
+
+    by_id = {f["id"]: f for f in template["fields"]}
+    isfetch = by_id["isFetch"]
+    assert isfetch["options"]["default_value"] is True
+    assert isfetch["options"]["create_modifiers"]["hidden"] is True
+    assert isfetch["options"]["edit_modifiers"]["hidden"] is True
+
+
+def test_fetch_issues_both_checkboxes_are_shown_and_default_false():
+    """
+    Given: Fetch Issues WITH longRunning routed into the bucket (both isFetch
+           and longRunning emitted).
+    When:  add_fetch_issues_capability runs.
+    Then:  BOTH isFetch and longRunning are shown (hidden=False) and default
+           False.
+    """
+    mapped: dict[str, list[str]] = {
+        "general_configurations": [],
+        "Fetch Issues": ["longRunning"],
+    }
+    integration_yml = _make_integration_yml(is_long_running=True)
+
+    template = add_fetch_issues_capability(
+        capability_id="fetch-issues",
+        is_sub_capability=False,
+        is_long_running=True,
+        mapped_params=mapped,
+        integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
+    )
+
+    by_id = {f["id"]: f for f in template["fields"]}
+    for fid in ("isFetch", "longRunning"):
+        opts = by_id[fid]["options"]
+        assert opts["default_value"] is False
+        assert opts["create_modifiers"]["hidden"] is False
+        assert opts["edit_modifiers"]["hidden"] is False
 
 
 def test_fetch_issues_preserves_unrelated_params_and_strips_only_owned():
@@ -7170,22 +7397,59 @@ def test_get_supported_modules_falls_back_to_pack_metadata(tmp_path: Path) -> No
     assert get_supported_modules({}, integration_yml) == ["xsoar", "xsiam"]
 
 
-def test_required_license_for_capability_restricts_fetch_caps() -> None:
+@pytest.mark.no_license_stub
+def test_licenses_for_sub_capability_reads_json() -> None:
+    """A known sub_capability_id resolves to its JSON license list."""
+    from manifest_generator import licenses_for_sub_capability
+
+    # absolute -> ["xsiam", "agentix"] in sub_capabilities_to_licenses.json.
+    assert sorted(
+        licenses_for_sub_capability("automation-and-remediation_absolute")
+    ) == ["agentix", "xsiam"]
+
+
+@pytest.mark.no_license_stub
+def test_licenses_for_sub_capability_missing_raises() -> None:
+    """An unknown sub_capability_id is a hard failure (RuntimeError)."""
+    from manifest_generator import licenses_for_sub_capability
+
+    with pytest.raises(RuntimeError, match="not found"):
+        licenses_for_sub_capability("automation-and-remediation_does-not-exist")
+
+
+@pytest.mark.no_license_stub
+def test_union_licenses_for_sub_caps_dedupes() -> None:
+    """The capability license set is the deduped union of its sub-caps."""
+    from manifest_generator import union_licenses_for_sub_caps
+
+    # absolute -> {xsiam, agentix}; abuseipdb adds cloud/cloud_runtime/edr.
+    result = union_licenses_for_sub_caps(
+        [
+            "automation-and-remediation_absolute",
+            "automation-and-remediation_abuseipdb",
+        ]
+    )
+    assert set(result) == {
+        "agentix",
+        "cloud",
+        "cloud_runtime_security",
+        "edr",
+        "xsiam",
+    }
+    # No duplicates in the returned list.
+    assert len(result) == len(set(result))
+
+
+@pytest.mark.no_license_stub
+def test_required_license_for_capability_unions_sub_caps() -> None:
+    """_required_license_for_capability is the union over its sub-caps."""
     from manifest_generator import _required_license_for_capability
 
-    # fetch-issues is license-restricted: intersect with {agentix, xsiam}.
-    assert _required_license_for_capability(
-        "fetch-issues", ["xsoar", "xsiam", "edr"]
-    ) == ["xsiam"]
-    # No modules declared -> default to the agentix/xsiam restriction.
-    assert _required_license_for_capability("log-collection", []) == [
-        "agentix",
-        "xsiam",
-    ]
-    # Non-restricted capability passes the base list through verbatim.
-    assert _required_license_for_capability(
-        "automation-and-remediation", ["xsoar", "edr"]
-    ) == ["xsoar", "edr"]
+    assert set(
+        _required_license_for_capability(
+            ["automation-and-remediation_absolute"]
+        )
+    ) == {"agentix", "xsiam"}
 
 
 def test_build_connector_yaml_vendor_drives_id_title_description() -> None:

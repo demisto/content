@@ -382,6 +382,161 @@ def test_check_coverage_bad_handler_path(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
+# handler.yaml path input (file path accepted, dir back-compat)
+# ---------------------------------------------------------------------------
+def test_check_coverage_accepts_handler_yaml_file_path(tmp_path: Path) -> None:
+    """check_coverage accepts the path to handler.yaml directly."""
+    _, handler_dir = _full_connector(tmp_path)
+    yml = _write_integration_yml(tmp_path, [{"name": "create_user"}])
+    handler_yaml_path = handler_dir / mod.HANDLER_FILE
+    passed, missing = mod.check_coverage(handler_yaml_path, yml)
+    assert passed is True
+    assert missing == set()
+
+
+def test_check_coverage_still_accepts_handler_dir(tmp_path: Path) -> None:
+    """Back-compat: the handler directory is still accepted."""
+    _, handler_dir = _full_connector(tmp_path)
+    yml = _write_integration_yml(tmp_path, [{"name": "create_user"}])
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+# ---------------------------------------------------------------------------
+# computed_fields.output collection
+# ---------------------------------------------------------------------------
+def test_load_serializer_computed_output_ids(tmp_path: Path) -> None:
+    handler = {"id": "xsoar-test", "capabilities": []}
+    _, handler_dir = _build_connector(
+        tmp_path,
+        handler=handler,
+        serializer={
+            "computed_fields": [
+                {"output": [{"id": "fetch_event"}, {"id": "another_output"}]},
+                {"output": [{"id": "third_output"}]},
+            ]
+        },
+    )
+    ids = mod.load_serializer_computed_output_ids(handler_dir)
+    assert set(ids) == {"fetch_event", "another_output", "third_output"}
+
+
+def test_check_coverage_computed_output_counts_as_param(tmp_path: Path) -> None:
+    """A computed_fields output id covers the matching integration param."""
+    handler = {"id": "xsoar-test", "capabilities": []}
+    _, handler_dir = _build_connector(
+        tmp_path,
+        handler=handler,
+        serializer={
+            "computed_fields": [{"output": [{"id": "synthetic_param"}]}],
+        },
+    )
+    yml = _write_integration_yml(tmp_path, [{"name": "synthetic_param"}])
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+def test_check_coverage_computed_output_resolved_via_field_mappings(
+    tmp_path: Path,
+) -> None:
+    """A computed output id is resolved through serializer field_mappings."""
+    handler = {"id": "xsoar-test", "capabilities": []}
+    _, handler_dir = _build_connector(
+        tmp_path,
+        handler=handler,
+        serializer={
+            "field_mappings": [{"id": "synthetic", "field_name": "original_name"}],
+            "computed_fields": [{"output": [{"id": "synthetic"}]}],
+        },
+    )
+    yml = _write_integration_yml(tmp_path, [{"name": "original_name"}])
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+# ---------------------------------------------------------------------------
+# Platform "alert" renames: incidentType / incidentFetchInterval
+# ---------------------------------------------------------------------------
+def _alert_connector(tmp_path: Path, *, alert_field_id: str):
+    """Build a connector whose automation cap exposes a single alert field."""
+    handler = {
+        "id": "xsoar-test",
+        "capabilities": [{"id": "automation"}],
+    }
+    configurations = {
+        "configurations": [
+            {
+                "id": "automation",
+                "configurations": [{"fields": [{"id": alert_field_id}]}],
+            }
+        ]
+    }
+    return _build_connector(
+        tmp_path,
+        handler=handler,
+        capabilities={"capabilities": [{"id": "automation"}]},
+        configurations=configurations,
+    )
+
+
+def test_incident_type_covered_by_bare_alert_type(tmp_path: Path) -> None:
+    _, handler_dir = _alert_connector(tmp_path, alert_field_id="alertType")
+    yml = _write_integration_yml(tmp_path, [{"name": "incidentType"}])
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+def test_incident_type_covered_by_prefixed_alert_type(tmp_path: Path) -> None:
+    _, handler_dir = _alert_connector(
+        tmp_path, alert_field_id="fetch-issues_xsoar_alertType"
+    )
+    yml = _write_integration_yml(tmp_path, [{"name": "incidentType"}])
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+def test_incident_type_missing_when_no_alert_type(tmp_path: Path) -> None:
+    _, handler_dir = _alert_connector(tmp_path, alert_field_id="unrelated_field")
+    yml = _write_integration_yml(tmp_path, [{"name": "incidentType"}])
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is False
+    assert missing == {"incidentType"}
+
+
+def test_incident_fetch_interval_covered_by_bare_alert_fetch_interval(
+    tmp_path: Path,
+) -> None:
+    _, handler_dir = _alert_connector(tmp_path, alert_field_id="alertFetchInterval")
+    yml = _write_integration_yml(tmp_path, [{"name": "incidentFetchInterval"}])
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+def test_incident_fetch_interval_covered_by_prefixed_field(tmp_path: Path) -> None:
+    _, handler_dir = _alert_connector(
+        tmp_path, alert_field_id="fetch-issues_xsoar_alertFetchInterval"
+    )
+    yml = _write_integration_yml(tmp_path, [{"name": "incidentFetchInterval"}])
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+def test_incident_fetch_interval_missing_when_no_alert_field(tmp_path: Path) -> None:
+    _, handler_dir = _alert_connector(tmp_path, alert_field_id="unrelated_field")
+    yml = _write_integration_yml(tmp_path, [{"name": "incidentFetchInterval"}])
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is False
+    assert missing == {"incidentFetchInterval"}
+
+
+# ---------------------------------------------------------------------------
 # Real Salesforce fixture (integration test)
 # ---------------------------------------------------------------------------
 SALESFORCE_HANDLER = (

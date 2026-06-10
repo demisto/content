@@ -70,7 +70,7 @@ _AUTOMATION_CAP_ID = "automation-and-remediation"
 # same capability family (a handler maps each fetch family to exactly one
 # sub-capability).
 _FETCH_MUTEX_MESSAGE = "Select only one fetch option."
-
+CONNECTOR_TO_AUTHOR_IMAGE_PATH = Path(__file__).resolve().parent / "connector_to_author_image.json"
 
 def derive_connector_suffix(mapped_params: dict) -> tuple[str, str]:
     """Compute the connector-id / title suffix from declared capabilities.
@@ -802,14 +802,140 @@ CANONICAL_CAPABILITY_DESCRIPTIONS: dict[str, str] = {
     ),
 }
 
-# Fetch capabilities that, per guide §3.4 note 6, must only be shown to
-# customers holding an ``agentix`` or ``xsiam`` license. The connector's
-# ``config.required_license`` for these capabilities is intersected with
-# {agentix, xsiam}.
-_LICENSE_RESTRICTED_FETCH_CAPS: frozenset[str] = frozenset(
-    {"fetch-issues", "log-collection", "fetch-assets-and-vulnerabilities"}
+# ---------------------------------------------------------------------------
+# Sub-capability -> licenses lookup (single source of truth)
+# ---------------------------------------------------------------------------
+# Licenses are resolved per sub-capability from
+# ``sub_capabilities_to_licenses.json`` (keyed by sub_capability_id). A
+# capability's ``config.required_license`` is the deduped UNION of the
+# licenses of every sub-capability registered under it. This file is the
+# single source of truth — there is no ``supportedModules`` fallback and no
+# agentix/xsiam post-filtering.
+SUB_CAPABILITIES_TO_LICENSES_PATH = (
+    Path(__file__).resolve().parent / "sub_capabilities_to_licenses.json"
 )
-_AGENTIX_XSIAM_LICENSES: tuple[str, ...] = ("agentix", "xsiam")
+
+# Module-level cache of the parsed JSON so we don't re-read the file on every
+# capability. Populated lazily by :func:`_load_sub_capability_licenses`.
+_SUB_CAPABILITY_LICENSES_CACHE: dict[str, list[str]] | None = None
+
+
+def _load_sub_capability_licenses() -> dict[str, list[str]]:
+    """Load and cache the sub-capability -> licenses mapping.
+
+    Reads :data:`SUB_CAPABILITIES_TO_LICENSES_PATH` once and caches the
+    parsed dict for subsequent calls. The JSON maps each sub_capability_id
+    (e.g. ``"automation-and-remediation_absolute"``) to its list of license
+    strings.
+
+    Raises:
+        RuntimeError: if the file is missing or does not decode to a JSON
+            object (the migration cannot resolve licenses without it).
+    """
+    global _SUB_CAPABILITY_LICENSES_CACHE
+    if _SUB_CAPABILITY_LICENSES_CACHE is not None:
+        return _SUB_CAPABILITY_LICENSES_CACHE
+    if not SUB_CAPABILITIES_TO_LICENSES_PATH.is_file():
+        raise RuntimeError(
+            f"Sub-capability licenses file not found at "
+            f"{SUB_CAPABILITIES_TO_LICENSES_PATH}; cannot resolve "
+            f"config.required_license."
+        )
+    try:
+        with open(SUB_CAPABILITIES_TO_LICENSES_PATH) as fh:
+            data = json.load(fh)
+    except Exception as exc:
+        raise RuntimeError(
+            f"Failed to parse sub-capability licenses file at "
+            f"{SUB_CAPABILITIES_TO_LICENSES_PATH}: {exc}"
+        ) from exc
+    if not isinstance(data, dict):
+        raise RuntimeError(
+            f"Sub-capability licenses file at "
+            f"{SUB_CAPABILITIES_TO_LICENSES_PATH} must decode to a JSON "
+            f"object mapping sub_capability_id -> list[str]."
+        )
+    _SUB_CAPABILITY_LICENSES_CACHE = data
+    return data
+
+
+def _load_connector_id_image() -> dict[str, str]:
+    """Load and cache the sub-capability -> licenses mapping.
+
+    Reads :data:`CONNECTOR_TO_AUTHOR_IMAGE_PATH` once and caches the
+    parsed dict for subsequent calls. The JSON maps each sub_capability_id
+    (e.g. ``"automation-and-remediation_absolute"``) to its list of license
+    strings.
+
+    Raises:
+        RuntimeError: if the file is missing or does not decode to a JSON
+            object (the migration cannot resolve licenses without it).
+    """
+    global _SUB_CAPABILITY_LICENSES_CACHE
+    if _SUB_CAPABILITY_LICENSES_CACHE is not None:
+        return _SUB_CAPABILITY_LICENSES_CACHE
+    if not CONNECTOR_TO_AUTHOR_IMAGE_PATH.is_file():
+        raise RuntimeError(
+            f"Sub-capability licenses file not found at "
+            f"{CONNECTOR_TO_AUTHOR_IMAGE_PATH}; cannot resolve "
+            f"config.required_license."
+        )
+    try:
+        with open(CONNECTOR_TO_AUTHOR_IMAGE_PATH) as fh:
+            data = json.load(fh)
+    except Exception as exc:
+        raise RuntimeError(
+            f"Failed to parse sub-capability licenses file at "
+            f"{CONNECTOR_TO_AUTHOR_IMAGE_PATH}: {exc}"
+        ) from exc
+    if not isinstance(data, dict):
+        raise RuntimeError(
+            f"Sub-capability licenses file at "
+            f"{CONNECTOR_TO_AUTHOR_IMAGE_PATH} must decode to a JSON "
+            f"object mapping sub_capability_id -> list[str]."
+        )
+    return data
+
+
+def licenses_for_sub_capability(sub_cap_id: str) -> list[str]:
+    """Return the list of licenses registered for ``sub_cap_id``.
+
+    Looks the sub-capability id up in
+    ``sub_capabilities_to_licenses.json``.
+
+    Raises:
+        RuntimeError: if ``sub_cap_id`` is not present in the JSON. Per the
+            license design, every sub-capability that reaches the manifest
+            MUST have an explicit license entry — a missing id is a hard
+            failure rather than a silent empty list.
+    """
+    table = _load_sub_capability_licenses()
+    if sub_cap_id not in table:
+        raise RuntimeError(
+            f"Sub-capability id '{sub_cap_id}' not found in "
+            f"{SUB_CAPABILITIES_TO_LICENSES_PATH}. Every sub-capability "
+            f"must have an explicit license entry; regenerate the licenses "
+            f"file (see license_aggregator.py) to add it."
+        )
+    return list(table[sub_cap_id])
+
+
+def union_licenses_for_sub_caps(sub_cap_ids: list[str]) -> list[str]:
+    """Return the deduped union of licenses across the given sub-cap ids.
+
+    The result is the set union of every sub-capability's licenses
+    (resolved via :func:`licenses_for_sub_capability`), deduped and
+    returned as a list. Order is not significant; we sort for a
+    deterministic, review-friendly output.
+
+    Raises:
+        RuntimeError: propagated from :func:`licenses_for_sub_capability`
+            when any id is missing from the JSON.
+    """
+    unioned: set[str] = set()
+    for sub_cap_id in sub_cap_ids:
+        unioned.update(licenses_for_sub_capability(sub_cap_id))
+    return sorted(unioned)
 
 # ---------------------------------------------------------------------------
 # Capability-scoped handler actions (per connectus handler.schema Action)
@@ -960,6 +1086,7 @@ def build_sub_capability_entry(
         "title": title,
         "default_enabled": False,
         "required": required,
+        "config": {"required_license": licenses_for_sub_capability(sub_cap_id)}
     }
 
 
@@ -1589,6 +1716,39 @@ def register_renamed_field_serializer_entry(
 # add_log_collection_capability, add_assets_capability) no longer call it.
 
 
+def _apply_fetch_checkbox_visibility_rule(checkbox_fields: list[dict]) -> None:
+    """Apply the "count both checkboxes together" hide/default rule in place.
+
+    Within a fetch capability the set of fetch checkboxes is
+    ``{fetch_toggle, longRunning}`` — ``isFetchEvents`` for Log Collection,
+    ``isFetch`` for Fetch Issues. The visibility / default of these checkboxes
+    is decided by how many of them this capability emits:
+
+      - **Exactly one** checkbox emitted → it is HIDDEN in both create and edit
+        modes and defaulted to ``True``. With only one fetch mode there is no
+        user choice to make, so the platform auto-enables it and hides the box.
+      - **Two (or more)** checkboxes emitted → ALL are SHOWN (``hidden: False``)
+        and defaulted to ``False``. The user explicitly picks which fetch mode
+        to enable.
+
+    Only the checkbox fields are passed in; interval / dynamic-select fields are
+    never touched by this rule. Mutates each field's
+    ``options.{default_value, create_modifiers.hidden, edit_modifiers.hidden}``
+    in place.
+    """
+    if not checkbox_fields:
+        return
+    single = len(checkbox_fields) == 1
+    hidden = single
+    default_value = single  # single → True (auto-on + hidden); both → False
+    for field in checkbox_fields:
+        options = field.setdefault("options", {})
+        options["default_value"] = default_value
+        for modifier_key in ("create_modifiers", "edit_modifiers"):
+            modifier = options.setdefault(modifier_key, {})
+            modifier["hidden"] = hidden
+
+
 def _resolve_title_from_yml(
     yml_params_by_name: dict[str, dict] | None,
     yml_param_name: str,
@@ -2071,11 +2231,21 @@ def add_log_collection_capability(
         if is_sub_capability
         else LONGRUNNING_PARAM_NAME
     )
+    # The fetch-checkbox set for this capability is {isFetchEvents, longRunning}.
+    # isFetchEvents is always emitted; longRunning only when routed here.
+    fetch_checkbox_fields: list[dict] = [ifc_field]
     if emit_longrunning:
-        fields.append(_build_longrunning_field(
+        lr_field = _build_longrunning_field(
             field_id=lr_field_id,
             title=_LONGRUNNING_DEFAULT_TITLE,
-        ))
+        )
+        fields.append(lr_field)
+        fetch_checkbox_fields.append(lr_field)
+
+    # Apply the "count both checkboxes together" hide/default rule: a lone
+    # checkbox is hidden + default True; when both are present they are shown +
+    # default False. eventFetchInterval is never touched by this rule.
+    _apply_fetch_checkbox_visibility_rule(fetch_checkbox_fields)
 
     # --- §5. Strip yml names from mapper results -----------------------
     stripped = {ISFETCHEVENTS_PARAM_NAME, EVENTFETCHINTERVAL_PARAM_NAME}
@@ -3225,10 +3395,12 @@ def add_fetch_issues_capability(
     # --- §4. Build the fields -------------------------------------------
     fields: list[dict] = []
 
-    # 1. isFetch — always synthetic (hardcoded true + hidden)
-    fields.append(_build_isfetch_field(
+    # 1. isFetch — always emitted. Its visibility / default is decided by the
+    # "count both checkboxes together" rule applied in §4b below.
+    isfetch_field = _build_isfetch_field(
         field_id=isfetch_field_id, title=isfetch_title,
-    ))
+    )
+    fields.append(isfetch_field)
 
     # 2. alertType (XSOAR incidentType) — dynamic select.
     # Migration rule (Issue #8): emit the alert field ONLY when the source
@@ -3282,11 +3454,23 @@ def add_fetch_issues_capability(
 
     # 6. longRunning — only when the mapper routed longRunning to this
     # capability's bucket (see ``emit_longrunning`` above).
+    lr_field: dict | None = None
     if emit_longrunning:
-        fields.append(_build_longrunning_field(
+        lr_field = _build_longrunning_field(
             field_id=lr_field_id,
             title=_LONGRUNNING_DEFAULT_TITLE,
-        ))
+        )
+        fields.append(lr_field)
+
+    # --- §4b. Fetch-checkbox visibility rule ----------------------------
+    # The fetch-checkbox set for this capability is {isFetch, longRunning}.
+    # isFetch is always emitted; longRunning only when routed here. A lone
+    # checkbox is hidden + default True; when both are present they are shown +
+    # default False. The interval / dynamic-select fields are never touched.
+    fetch_checkbox_fields = [isfetch_field]
+    if lr_field is not None:
+        fetch_checkbox_fields.append(lr_field)
+    _apply_fetch_checkbox_visibility_rule(fetch_checkbox_fields)
 
     # --- §5. Strip fetch-issues param names from mapper results ---------
     stripped = set(_FETCH_ISSUES_STRIPPED_PARAMS)
@@ -3403,27 +3587,52 @@ def _instance_name_field() -> dict:
     }
 
 
-def _required_license_for_capability(
-    cap_id: str, supported_modules: list[str] | None
-) -> list[str]:
+def _required_license_for_capability(sub_cap_ids: list[str]) -> list[str]:
     """Compute ``config.required_license`` for a capability.
 
-    Base list is the integration's / pack's ``supported_modules`` (already
-    normalized to the capabilities.schema license enum by the caller). For
-    the license-restricted fetch capabilities (guide §3.4 note 6) the list
-    is intersected with ``{agentix, xsiam}`` so those capabilities are only
-    visible to customers holding one of those licenses.
+    The capability's licenses are the deduped UNION of the licenses of every
+    sub-capability registered under it, resolved from
+    ``sub_capabilities_to_licenses.json`` (the single source of truth). There
+    is no ``supportedModules`` fallback and no agentix/xsiam post-filtering.
 
-    Returns a (possibly empty) list — an empty list is valid per
-    capabilities.schema (means "always visible").
+    Args:
+        sub_cap_ids: the sub_capability ids registered under this capability
+            (e.g. ``["automation-and-remediation_absolute"]``).
+
+    Returns:
+        The deduped union license list (sorted for deterministic output).
+
+    Raises:
+        RuntimeError: if any sub_capability id is absent from the JSON
+            (propagated from :func:`union_licenses_for_sub_caps`).
     """
-    base = list(supported_modules or [])
-    if cap_id in _LICENSE_RESTRICTED_FETCH_CAPS:
-        if base:
-            return [lic for lic in base if lic in _AGENTIX_XSIAM_LICENSES]
-        # No declared modules → default to the agentix/xsiam restriction.
-        return list(_AGENTIX_XSIAM_LICENSES)
-    return base
+    return union_licenses_for_sub_caps(sub_cap_ids)
+
+
+def _set_capability_required_license(cap_entry: dict) -> None:
+    """Set ``cap_entry["config"]["required_license"]`` from its sub-caps.
+
+    Recomputes the capability's ``config.required_license`` as the deduped
+    union of the licenses of every sub-capability currently listed under
+    ``cap_entry["sub_capabilities"]`` (resolved from
+    ``sub_capabilities_to_licenses.json``). Mutates ``cap_entry`` in place.
+
+    Used by the append-handler path so a parent capability always reflects
+    the licenses of ALL its registered sub-capabilities after one is added
+    or the capability is promoted from flat to sub-cap form.
+
+    Raises:
+        RuntimeError: if any sub_capability id is absent from the JSON
+            (propagated from :func:`union_licenses_for_sub_caps`).
+    """
+    sub_cap_ids = [
+        sub.get("id", "")
+        for sub in cap_entry.get("sub_capabilities") or []
+        if sub.get("id")
+    ]
+    cap_entry["config"] = {
+        "required_license": union_licenses_for_sub_caps(sub_cap_ids)
+    }
 
 
 def build_capabilities_yaml(
@@ -3432,7 +3641,6 @@ def build_capabilities_yaml(
     handler_id: str = "",
     handler_dir: Path | None = None,
     existing_ids: set[str] | None = None,
-    supported_modules: list[str] | None = None,
     integration_name: str = "",
 ) -> dict:
     """Build the dict for capabilities.yaml.
@@ -3453,6 +3661,13 @@ def build_capabilities_yaml(
       - ``title`` — from CANONICAL_CAPABILITY_TITLES lookup
       - ``default_enabled: False`` (per Salesforce reference §4.3)
       - ``required: false`` (per guide §3.4: "Always false")
+
+    ``config.required_license`` is the union of the licenses of the
+    capability's sub-capabilities, resolved from
+    ``sub_capabilities_to_licenses.json`` (single source of truth). It is
+    only emitted when ``handler_id`` is supplied (so a sub-capability id
+    exists to resolve licenses for). Legacy callers omitting ``handler_id``
+    get bare-id capability entries with no ``config``.
 
     Backwards-compatible: callers omitting all extra args get bare-id
     fields with no dedup side-effects.
@@ -3478,14 +3693,6 @@ def build_capabilities_yaml(
             "default_enabled": False,
             "required": False,
         }
-        # config.required_license — aggregate of the integration's
-        # supported_modules, intersected with {agentix, xsiam} for the
-        # license-restricted fetch capabilities (guide §3.4 note 6).
-        required_license = _required_license_for_capability(
-            cap_id, supported_modules
-        )
-        parent_entry["config"] = {"required_license": required_license}
-
         # Capabilities are ALWAYS modelled as parent + one sub-capability,
         # even on a fresh connector. The parent carries the canonical family
         # id/title; the lone sub-capability is keyed by this handler's sub-cap
@@ -3507,6 +3714,15 @@ def build_capabilities_yaml(
                     integration_name=integration_name,
                 )
             ]
+            # config.required_license — the union of the licenses of every
+            # sub-capability registered under this capability (here, the one
+            # this handler exposes), resolved from
+            # sub_capabilities_to_licenses.json (single source of truth).
+            parent_entry["config"] = {
+                "required_license": _required_license_for_capability(
+                    [sub_cap_id]
+                )
+            }
         capabilities.append(parent_entry)
 
     return {
@@ -4106,21 +4322,24 @@ def append_capability_to_files(
     # Per capabilities.schema: every (sub-)capability entry MUST include
     # id + title + default_enabled + required.
     if existing_cap is None:
-        capabilities_data.setdefault("capabilities", []).append(
-            {
-                "id": cap_slug,
-                "title": CANONICAL_CAPABILITY_TITLES[cap_slug],
-                "default_enabled": False,
-                "required": False,
-                "sub_capabilities": [
-                    build_sub_capability_entry(
-                        new_sub_cap_id,
-                        cap_name,
-                        integration_name=integration_name,
-                    )
-                ],
-            }
-        )
+        new_cap_entry = {
+            "id": cap_slug,
+            "title": CANONICAL_CAPABILITY_TITLES[cap_slug],
+            "default_enabled": False,
+            "required": False,
+            "sub_capabilities": [
+                build_sub_capability_entry(
+                    new_sub_cap_id,
+                    cap_name,
+                    integration_name=integration_name,
+                )
+            ],
+        }
+        # config.required_license — union of this capability's sub-cap
+        # licenses (here, the single new sub-cap) from
+        # sub_capabilities_to_licenses.json.
+        _set_capability_required_license(new_cap_entry)
+        capabilities_data.setdefault("capabilities", []).append(new_cap_entry)
         configurations_data.setdefault("configurations", []).append(
             {
                 "id": new_sub_cap_id,
@@ -4175,6 +4394,11 @@ def append_capability_to_files(
             "configurations": [{"fields": _emit_fields(cap_params)}],
         }
     )
+
+    # Recompute the parent's config.required_license as the union of ALL its
+    # sub-capabilities' licenses (Case 1 append + Case 2 promotion both add a
+    # sub-cap, so the parent must reflect every registered sub-cap).
+    _set_capability_required_license(existing_cap)
 
     return new_sub_cap_id
 
@@ -5978,16 +6202,15 @@ def create_manifest_from_scratch(
         if p.get("name")
     }
 
-    # Generate capabilities.yaml. supported_modules drives each
-    # capability's config.required_license (guide §3.4).
-    supported_modules = get_supported_modules(integration_yml, integration_path)
+    # Generate capabilities.yaml. Each capability's config.required_license is
+    # the union of its sub-capabilities' licenses, resolved from
+    # sub_capabilities_to_licenses.json (single source of truth).
     capabilities_data = build_capabilities_yaml(
         mapped_params,
         yml_params_by_name=yml_params_by_name,
         handler_id=handler_id,
         handler_dir=handler_dir,
         existing_ids=existing_field_ids,
-        supported_modules=supported_modules,
         integration_name=integration_yml.get("name", ""),
     )
     capabilities_data = deep_merge_dicts(
@@ -6041,6 +6264,32 @@ def create_manifest_from_scratch(
         )
         all_triggers.extend(fi_result.get("triggers", []))
         synthetic_cap_fields[fi_bucket_key] = fi_result.get("fields", [])
+
+    lc_bucket_key = LOG_COLLECTION_BUCKET_KEY
+    if lc_bucket_key in mapped_params:
+        lc_is_long_running = LONGRUNNING_PARAM_NAME in (
+            mapped_params.get(lc_bucket_key) or []
+        )
+        lc_result = add_log_collection_capability(
+            capability_id=slugify_capability_name(lc_bucket_key),
+            is_sub_capability=False,
+            is_long_running_capability=lc_is_long_running,
+            mapped_params=mapped_params,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=handler_dir,
+        )
+        synthetic_cap_fields[lc_bucket_key] = lc_result.get("fields", [])
+
+    av_bucket_key = "Fetch Assets and Vulnerabilities"
+    if av_bucket_key in mapped_params:
+        av_result = add_assets_capability(
+            capability_id=slugify_capability_name(av_bucket_key),
+            is_sub_capability=False,
+            mapped_params=mapped_params,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=handler_dir,
+        )
+        synthetic_cap_fields[av_bucket_key] = av_result.get("fields", [])
 
     # Generate configurations.yaml (no schema directive)
     configurations_data = build_configurations_yaml(
@@ -6495,6 +6744,42 @@ def add_handler_to_existing_connector(
             fi_result.get("fields", []),
         )
 
+    lc_bucket_key = LOG_COLLECTION_BUCKET_KEY
+    if lc_bucket_key in mapped_params:
+        lc_is_long_running = LONGRUNNING_PARAM_NAME in (
+            mapped_params.get(lc_bucket_key) or []
+        )
+        lc_result = add_log_collection_capability(
+            capability_id=slugify_capability_name(lc_bucket_key),
+            is_sub_capability=False,
+            is_long_running_capability=lc_is_long_running,
+            mapped_params=mapped_params,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=new_handler_dir,
+        )
+        _inject_append_capability_fields(
+            configurations_data,
+            cap_name_to_handler_cap_id.get(lc_bucket_key),
+            new_handler_id,
+            lc_result.get("fields", []),
+        )
+
+    av_bucket_key = "Fetch Assets and Vulnerabilities"
+    if av_bucket_key in mapped_params:
+        av_result = add_assets_capability(
+            capability_id=slugify_capability_name(av_bucket_key),
+            is_sub_capability=False,
+            mapped_params=mapped_params,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=new_handler_dir,
+        )
+        _inject_append_capability_fields(
+            configurations_data,
+            cap_name_to_handler_cap_id.get(av_bucket_key),
+            new_handler_id,
+            av_result.get("fields", []),
+        )
+
     # Write configurations.yaml back (no schema directive).
     configurations_data = deep_merge_dicts(
         configurations_data, manual_configurations_fields or {}
@@ -6608,16 +6893,6 @@ def generate_manifest(
         help="Root directory under which connector folders live. "
         "Defaults to <CWD>/unified-connectors-content/connectors.",
     ),
-    author_image_path: Path = typer.Option(
-        None,
-        "--author-image-path",
-        help=(
-            "Optional path to an author image file to copy into the new "
-            "connector's root as <connector_id><source_suffix>. Used to "
-            "populate connector.yaml's metadata.author_image field. "
-            "From-scratch path only — silently ignored on the append path."
-        ),
-    ),
     manual_connector_fields: str = typer.Option(
         "{}",
         "--manual-connector-fields",
@@ -6697,6 +6972,7 @@ def generate_manifest(
         f"auth_methods_keys={list(auth_methods_dict.keys())}"
     )
     vendor = integration_yml["provider"]
+    author_image_path = Path(_load_connector_id_image()[connector_title])
     if connector_exists(connector_dir):
         add_handler_to_existing_connector(
             connector_dir=connector_dir,

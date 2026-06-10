@@ -723,14 +723,8 @@ def step_3c_generate_manifest(
     if not yml_path.is_file():
         raise RuntimeError(f"integration YML not found: {yml_path}")
 
-    generated_root = out_dir / "generated_manifest"
+    generated_root = out_dir
     generated_root.mkdir(parents=True, exist_ok=True)
-
-    # Author image is keyed by the connector id (context.connector_id),
-    # not the workflow integration_id — they can differ (e.g. integration
-    # 'Microsoft Graph' → connector 'Microsoft Security').
-    connector_id = context.get("connector_id") or integration_id
-    author_image_path = _lookup_author_image(connector_id)
 
     cmd = [
         sys.executable,
@@ -743,15 +737,12 @@ def step_3c_generate_manifest(
         str(generated_root),
         
     ]
-    if author_image_path is not None:
-        cmd += ["--author-image-path", str(author_image_path)]
 
     proc = _run(cmd, timeout=LONG_TIMEOUT)
     result = {
         "connector_title": connector_title,
         "connectors_root": str(generated_root),
         "integration_path": str(yml_path),
-        "author_image_path": str(author_image_path) if author_image_path else "",
         "returncode": proc.returncode,
         "stdout": proc.stdout.strip(),
         "stderr": proc.stderr.strip(),

@@ -1,0 +1,3511 @@
+{
+  "automation-and-remediation_absolute": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_abuseipdb": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_active-directory-query-v2": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_activemq": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_adminbyrequest": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aha": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_akamai-waf": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_akamai-waf-siem": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_algosec": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_alienvault-otx-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_alienvault-usm-anywhere": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_amazon-dynamodb": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_amp": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ampv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_anomali-enterprise": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_anomali-threatstream-v3": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansibleacme": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansiblealibabacloud": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansibleazure": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansibleciscoios": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansiblecisconxos": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansibledns": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansiblehcloud": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansiblekubernetes": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansiblelinux": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansiblemicrosoftwindows": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansibleopenssl": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansibletower": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ansiblevmware": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_apivoid": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_arcsight-esm-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_arcsight-logger": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_arkime": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_atlassian-cloud-mcp": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_atlassian-confluence-cloud": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_atlassian-confluence-server": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_atlassian-iam": [
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_atlassianjiraservicemanagement": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_attackiqfiredrill": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_awake-security": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---accessanalyzer": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---acm": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---athena---beta": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---cloudtrail": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---cloudwatchlogs": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---ec2": [
+    "cloud_runtime_security",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---guardduty": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---iam": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---iam-identity-center": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---lambda": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---organizations": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---route53": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---s3": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---security-hub": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---sns": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---sqs": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws---system-manager": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws-eks": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws-ilm": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws-network-firewall": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws-sagemaker": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws-security-lake": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws-sns-listener": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws-waf": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_awssecretsmanager": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-compute-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-firewall": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-kubernetes-services": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-log-analytics": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-network-security-groups": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-resource-graph": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-security-center-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-sentinel": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-sql-management": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-storage": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-storage-container": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-storage-fileshare": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-storage-queue": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azure-storage-table": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azuredataexplorer": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azuredevops": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azurekeyvault": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azureriskyusers": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_azurewaf": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_beyondtrust-password-safe": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_bigfix": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_bitbucket": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_bluecataddressmanager": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_bmchelixremedyforce": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_bmcitsm": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_box-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_c2sec-irisk": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_capesandbox": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_carbon-black-endpoint-standard": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_carbon-black-endpoint-standard-v3": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_carbon-black-enterprise-edr": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_carbonblackliveresponse": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_carbonblackliveresponsecloud": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_carbonblackprotectionv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_centreon": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_checkphish": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_checkpointdome9": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_checkpointfirewall_v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_checkpointharmonyendpoint": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_checkpointsandblast": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cherwell": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ciphertrust": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_circl": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_circl-cve-search": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_circleci": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cisco-asa": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cisco-cloudlock": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cisco-firepower": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cisco-ise": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cisco-meraki-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cisco-spark": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cisco-stealthwatch": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cisco-umbrella-cloud-security-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cisco-umbrella-enforcement": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cisco-umbrella-investigate": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cisco-umbrella-reporting": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ciscoesa": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ciscosma": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ciscowebexeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ciscowsav2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_clarizen-iam": [
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cloaken": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cloudconvert": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cloudflare-mcp": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cloudflarewaf": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_core-lock": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cortex-xdr---ioc": [
+    "agentix"
+  ],
+  "automation-and-remediation_cortex-xdr---ir": [
+    "agentix"
+  ],
+  "automation-and-remediation_cortex-xdr---xql-query-engine": [
+    "agentix"
+  ],
+  "automation-and-remediation_countertack": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_crowdstrike-falcon-intel-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_crowdstrikefalcon": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "automation-and-remediation_cryptocurrency": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cuckoo-sandbox": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cybelangel-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cyber-triage": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cyberarkepmeventcollector": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cyberarkepmsocresponse": [
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_cylance-protect-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_dbot-truth-bombs": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_dehashed": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_demisto-lock": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_dhs-feed-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_dnstwist": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_docusign": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_dropboxeventscollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_duo-admin": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_easyvista": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_edl": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_elasticsearch-v2": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_email-hippo": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_emailrepio": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_endgame": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_envoy-iam": [
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ews-extension-online-powershell-v3": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ews-v2": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ewso365": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_exabeam": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_exabeam-data-lake": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_exabeamsecopsplatform": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_exceedlms-iam": [
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_f5-asm": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_f5-firewall": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_f5silverline": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fidelis-edr": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fidelis-elevate-network": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fireeye": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fireeye-central-management": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fireeye-email-security": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fireeye-etp": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fireeye-isight": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fireeyehelix": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fireeyehx-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fireeyenx": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_forcepoint": [
+    "cloud",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_forcepoint-security-management-center": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_forescout": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_forescouteyeinspect": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fortigate": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fortimail": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fortimanager": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fortisandboxv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fortisiem": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fortisiemv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fortiweb_vm": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_fraudwatch": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_freshdesk": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_freshworksfreshservice": [
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_g-suite-security-alert-center": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_gamma": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_gcp-iam": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_generic-mcp": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "asm",
+    "cloud_appsec",
+    "xsiam",
+    "exposure_management",
+    "agentix",
+    "tim"
+  ],
+  "automation-and-remediation_generic-sql": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_giphy": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_github": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_github-iam": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_github-mcp": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_gitlabv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_gmail": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_gmail-single-user": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_google-bigquery": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_google-cloud-compute": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_google-cloud-functions": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_google-cloud-storage": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_google-key-management-service": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_google-resource-manager": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_google-safe-browsing-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_google-vault": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_google-vision-ai": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_googlecalendar": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_googlecloudlogging": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_googlecloudtranslate": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_googledocs": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_googlegemini": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_googlekubernetesengine": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_googlemaps": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_googlepubsub": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_googlesheets": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_grafana": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_graphql": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_grr": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_gsuiteadmin": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_gsuiteauditor": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_guardicore-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_guidance-encase-endpoint": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_hashicorp-vault": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_hashicorpterraform": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_have-i-been-pwned?-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_hello-iam-world": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_hostio": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_hpearubacentraleventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_hpearubaclearpass": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ibm-resilient-systems": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ibm-storage-scale": [
+    "xsiam"
+  ],
+  "automation-and-remediation_icebrg": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_imperva-skyfence": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_imperva-waf": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_incapsula": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_infoarmor-vigilanteati": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ipinfo_v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ipstack": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_isitphishing": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_ivanti-heat": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_jamf-protect-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_jamf-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_jira-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_jira-v3": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_joesecurityv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_jsonwhois": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_kafkav3": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_kaspersky-security-center": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_keepersecurity": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_kennav2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_koi": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "asm",
+    "cloud_appsec",
+    "xsiam",
+    "exposure_management",
+    "agentix",
+    "tim"
+  ],
+  "automation-and-remediation_koodous": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_lastline-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_lockpath-keylight-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_logrhythmrest": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_logrhythmrest-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_looker": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mail-listener-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mail-sender-(new)": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_maltiverse": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_malwarebazaar": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_manageengine": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mattermostv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_maxmind-geoip2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mcafee-active-response": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mcafee-advanced-threat-defense": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mcafee-dxl": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mcafee-epo-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mcafee-esm-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mcafee-threat-intelligence-exchange-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mcafeedam": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mcafeensmv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-365-defender": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-defender-advanced-threat-protection": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-defender-for-cloud-apps-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-defender-for-cloud-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-endpoint-configuration-manager": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-graph": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-graph-api": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-graph-calendar": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-graph-device-management": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-graph-groups": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-graph-mail-single-user": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-graph-user": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-management-activity-api-(o365-azure-events)": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-teams": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-teams-management": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoft-teams-via-webhook": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoftcloudappsecurity": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoftdefenderthreatintelligence": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoftgraphapplications": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoftgraphidentityandaccess": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoftgraphmail": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_microsoftpolicyandcomplianceauditlog": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mimecastv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_misp-v3": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mitre-att&ck-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mondayeventcollector": [
+    "cloud",
+    "cloud_runtime_security",
+    "xsiam"
+  ],
+  "automation-and-remediation_mongodb": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mongodb-key-value-store": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mongodb-log": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_mxtoolbox": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_nessus": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_netcraft-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_netmiko": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_netquestomx": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_netskope_api_v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_netskopeapiv1": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_nmap": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_nutanix-hypervisor": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_o365-defender-safelinks": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_okta-iam": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_okta-v2": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_onboardingintegration": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_openai-chatgpt-v3": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_opencti": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_opencve": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_openldap": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_openphish_v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_opsgeniev3": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_opswat-metadefender-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_oracleiam": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_packetmail": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_packetsled": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_pagerduty-v2": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_palo-alto-networks---prisma-sase": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_palo-alto-networks-aiops": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_palo-alto-networks-enterprise-dlp": [
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_palo-alto-networks-iot": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_palo-alto-networks-security-advisories": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_palo-alto-networks-threat-vault-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_paloaltonetworks_prismacloudcompute": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_panorama": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_pathelpdeskadvanced": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_perch": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_phishlabs-ioc": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_phishlabs-ioc-drp": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_phishlabs-ioc-eir": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_phishtank-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_pipl": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_powershell-remoting": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_prisma-access": [
+    "cloud_posture",
+    "cloud",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_prismacloud-iam": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_prismacloud-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_proofpoint-email-security-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_proofpoint-protection-server-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_proofpoint-tap-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_proofpoint-threat-protection": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_proofpoint-threat-response": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_protectwise": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_qradar-v3": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_qualys_fim": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_qualysv2": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "automation-and-remediation_questkace": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_rapid7-insightidr": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_rapid7-nexpose": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "automation-and-remediation_rapid7appsec": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_recorded-future-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_redcanary": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_redmine": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_reliaquest-greymatter-drp-incidents": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_remedy-ar": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_remoteaccess-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_retarus-secure-email-gateway": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_rsa-archer-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_rsa-netwitness-endpoint": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_rsa-netwitness-security-analytics": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_rtir": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_rundeck": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_saassecurity": [
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_sap-iam": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_server-message-block-(smb)-v2": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_service-manager": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_servicedeskplus": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_servicenow-cmdb": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_servicenow-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_servicenow-iam": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_servicenow-v2": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_shodan_v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_signal-sciences-waf": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_skyhigh-secure-web-gateway-(on-prem)": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_skyhigh-security": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_slack-iam": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_slackv3": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_smime-messaging": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_snowflake": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_solarwinds": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_sophos-central": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_sophos_firewall": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_splunkpy": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_splunkpy-v2": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_stealthwatch-cloud": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_sumologic": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_symantec-blue-coat-content-and-malware-analysis": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_symantec-data-loss-prevention-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_symantec-email-security-cloud": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_symantec-endpoint-protection-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_symantec-endpoint-security": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_symantec-management-center": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_symantec-messaging-gateway": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_symantec-mss": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_symantecedr": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_sysaid": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_syslog-sender": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_tanium-threat-response": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_tanium-threat-response-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_tanium-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_taxii-2-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_taxii-server": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_taxii2-server": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_telegram_beta": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_tenable.io": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "automation-and-remediation_tenable.sc": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "automation-and-remediation_thehive-project": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_thinkst-canary": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_threatconnect-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_threatconnect-v3": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_threatexchange-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_threatgridv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_threatminer": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_threatq-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_threatx": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_tidy": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_topdesk": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_trend-micro-apex": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_trend-micro-deep-discovery-analyzer": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_trend-micro-deep-security": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_trendmicro-cloud-app-security": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_tripwire": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_trustwave-secure-email-gateway": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_twilio": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_twitter-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_unit-42-feed": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_unit-42-intelligence": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_urlhaus": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_venafitlsprotect": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_verodin": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_versadirector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_vertica": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_vmware": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_vmware-carbon-black-edr-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_vmware-workspace-one-uem-(airwatch-mdm)": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_vulndb": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_whatsmybrowser": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_whois": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_wildfire-v2": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_windows-remote-management": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_workday": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_workday-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_workday-iam": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_workday-sign-on-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_workday_iam_event_generator": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_workdaysignoneventgenerator": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_xfe_v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_zendesk-v2": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_zimperium": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_zimperium-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_zoom": [
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_zoom-mail": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_zoom_iam": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_zscaler": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_zscalerzidentity": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-assets-and-vulnerabilities_crowdstrikefalcon": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "fetch-assets-and-vulnerabilities_jamf-protect-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-assets-and-vulnerabilities_qualysv2": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "fetch-assets-and-vulnerabilities_rapid7-nexpose": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "fetch-assets-and-vulnerabilities_tenable.io": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "fetch-assets-and-vulnerabilities_tenable.sc": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "fetch-issues_activemq": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_akamai-waf-siem": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_alienvault-usm-anywhere": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_ampv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_arcsight-esm-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_arcsight-logger": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_awake-security": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_aws---accessanalyzer": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_aws---guardduty": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_aws---security-hub": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_aws---sqs": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_azure-sentinel": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_azure-storage-queue": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_azuredevops": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_bmchelixremedyforce": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_bmcitsm": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_box-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_carbon-black-endpoint-standard": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_carbon-black-endpoint-standard-v3": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_carbon-black-enterprise-edr": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_carbonblackprotectionv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_checkpointdome9": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_cherwell": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_ciscoesa": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_ciscosma": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_cortex-xdr---ir": [
+    "agentix"
+  ],
+  "fetch-issues_countertack": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_cylance-protect-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_elasticsearch-v2": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_ews-v2": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_ewso365": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_exabeam": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_fidelis-edr": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_fidelis-elevate-network": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_fireeye-central-management": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_fireeye-email-security": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_fireeye-etp": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_fireeyehelix": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_fireeyehx-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_fireeyenx": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_forescouteyeinspect": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_fortisiem": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_fortisiemv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_fraudwatch": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_freshdesk": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_freshworksfreshservice": [
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_g-suite-security-alert-center": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_gamma": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_generic-sql": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_github": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_gmail": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_gmail-single-user": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_google-bigquery": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_googlepubsub": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_grafana": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_guardicore-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_ibm-resilient-systems": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_icebrg": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_ivanti-heat": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_jira-v3": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_kafkav3": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_lockpath-keylight-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_logrhythmrest-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_mail-listener-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_maillistener---pop3": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_mcafee-esm-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_mcafeedam": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_microsoft-365-defender": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_microsoft-defender-advanced-threat-protection": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_microsoft-graph": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_microsoft-graph-mail-single-user": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_microsoft-management-activity-api-(o365-azure-events)": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_microsoftcloudappsecurity": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_microsoftgraphidentityandaccess": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_microsoftgraphmail": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_mimecastv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_netcraft-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_netskope_api_v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_netskopeapiv1": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_nutanix-hypervisor": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_okta-iam": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_onboardingintegration": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_opsgeniev3": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_packetsled": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_pagerduty-v2": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_palo-alto-networks-enterprise-dlp": [
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_palo-alto-networks-iot": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_palo-alto-networks-threat-vault-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_paloaltonetworks_prismacloudcompute": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_panorama": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_perch": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_phishlabs-ioc": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_phishlabs-ioc-drp": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_phishlabs-ioc-eir": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_prismacloud-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_proofpoint-tap-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_proofpoint-threat-response": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_protectwise": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_qradar-v3": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_qualys_fim": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_questkace": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_rapid7-insightidr": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_redcanary": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_reliaquest-greymatter-drp-incidents": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_rsa-archer-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_rsa-netwitness-security-analytics": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_rtir": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_saassecurity": [
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_sample-incident-generator": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_servicedeskplus": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_servicenow-v2": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_signal-sciences-waf": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_skyhigh-security": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_snowflake": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_solarwinds": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_sophos-central": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_splunkpy": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_splunkpy-v2": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_stealthwatch-cloud": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_sumologic": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_symantec-data-loss-prevention-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_symantec-email-security-cloud": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_symantec-mss": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_symantecedr": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_sysaid": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_tanium-threat-response": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_tanium-threat-response-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_tenable.sc": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "fetch-issues_thehive-project": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_thinkst-canary": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_threatconnect-v3": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_topdesk": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_trendmicro-cloud-app-security": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_tripwire": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_verodin": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_vmware-carbon-black-edr-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_workday-iam": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_zendesk-v2": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_zimperium": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_zimperium-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-issues_zoom-mail": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-secrets_awssecretsmanager": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-secrets_azurekeyvault": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-secrets_beyondtrust-password-safe": [
+    "xsiam",
+    "agentix"
+  ],
+  "fetch-secrets_hashicorp-vault": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_abnormal-security-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_absolute": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_adminbyrequest": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_akamai-waf-siem": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_alibaba-action-trail-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_appsentinels.ai": [
+    "xsiam"
+  ],
+  "log-collection_armiseventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_atlassian-confluence-cloud": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_aws---guardduty-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_aws-security-hub-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_beyondtrust-privilege-management-cloud": [
+    "xsiam"
+  ],
+  "log-collection_bitsight-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_bitwarden-password-manager": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_bloodhoundenterprise": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_boxeventscollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_carbonblackendpointstandardeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_celoniseventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_cisco-appdynamics": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_ciscoampeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_ciscothousandeyes": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_ciscowebexeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_citrixcloud": [
+    "xsiam"
+  ],
+  "log-collection_citrixdaas": [
+    "xsiam"
+  ],
+  "log-collection_cloudflare-zero-trust": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_code42-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_cohesity-helios-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_crowdstrikefalcon": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "log-collection_cybelangel-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_cyberark-identity-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_cyberarkepmeventcollector": [
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_cyberarkisp": [
+    "xsiam"
+  ],
+  "log-collection_darktrace-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_decyfireventcollector": [
+    "xsiam"
+  ],
+  "log-collection_digitalguardianarceventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_docusign": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_dropboxeventscollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_druvaeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_duo-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_elasticsearcheventcollector": [
+    "xsiam"
+  ],
+  "log-collection_exabeamsecopsplatform": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_extrahoprevealxeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_fireeye-etp-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_fireeye-hx-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_forcepoint-dlp-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_genericapieventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_genesyscloud": [
+    "xsiam"
+  ],
+  "log-collection_genetec-security-center-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_gitguardianeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_github-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_gitlab-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_google-apigee": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_halcyon": [
+    "xsiam"
+  ],
+  "log-collection_hashicorpterraform": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_hpearubacentraleventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_ibm-storage-scale": [
+    "xsiam"
+  ],
+  "log-collection_ibmmaas360security": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_ibmsecurityguardium": [
+    "xsiam"
+  ],
+  "log-collection_ibmsecurityverify": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_imanagethreatmanager": [
+    "xsiam"
+  ],
+  "log-collection_infoblox-bloxone-threat-defense-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_ironscales-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_jamf-protect-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_jira-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_keepersecurity": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_knowbe4-kmsat-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_koi": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "asm",
+    "cloud_appsec",
+    "xsiam",
+    "exposure_management",
+    "agentix",
+    "tim"
+  ],
+  "log-collection_lookoutmobileendpointsecurity": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_manageengine": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_microsoft-defender-for-cloud-apps-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_microsoft-defender-for-cloud-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_mimecast-event-collector-v2": [
+    "xsiam"
+  ],
+  "log-collection_mondayeventcollector": [
+    "cloud",
+    "cloud_runtime_security",
+    "xsiam"
+  ],
+  "log-collection_mongodbatlaseventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_netbox-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_netquestomx": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_netskopeeventcollector_v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_okta-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_oktaasa": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_oktaauth0eventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_onelogin-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_onepassword": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_openai-chatgpt-v3": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_oraclecloudinfrastructureeventcollector": [
+    "cloud_posture",
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_orca-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_proofpoint-email-security-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_proofpointisolationeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_proofpointthreatresponseeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_qualysv2": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "log-collection_radware-cloud-ddos-protection-services": [
+    "xsiam"
+  ],
+  "log-collection_recordedfutureeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_reliaquest-greymatter-drp-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_retarus-secure-email-gateway": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_runzero-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_saas-security-event-collector": [
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_safenettrustedaccesseventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_sailpointidentitynoweventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_sapbtp": [
+    "xsiam"
+  ],
+  "log-collection_sapcloudforcustomerc4c": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_saviynteiceventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_sentineloneeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_servicenow-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_shodan_v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_slack-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_symantec-cloud-secure-web-gateway-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_symantec-endpoint-security": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_symanteccloudsoceventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_teamviewer-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_tenable.io": [
+    "xsiam",
+    "exposure_management",
+    "agentix"
+  ],
+  "log-collection_trend-micro-email-security-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_trendmicrovisiononeeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_twilio-sendgrid": [
+    "xsiam"
+  ],
+  "log-collection_uptycseventcollector": [
+    "xsiam"
+  ],
+  "log-collection_vectraaieventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_vercaraultradns": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_withsecureeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_workday-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_workday-sign-on-event-collector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_zeronetworkssegmenteventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "log-collection_zoomeventcollector": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_abuse.ch-ssl-blacklist-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_alienvault-otx-taxii-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_alienvault-reputation-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_anomali-threatstream-feed": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "asm",
+    "cloud_appsec",
+    "xsiam",
+    "exposure_management",
+    "agentix",
+    "tim"
+  ],
+  "threat-intelligence-and-enrichment_aws-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_azure-ad-connect-health-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_azurefeed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_blocklist_de-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_bruteforceblocker-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_cisco-secure-malware-analytics": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_cisco-webex-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_cloudflare-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_cortex-xdr---ioc": [
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_csvfeed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_dhs-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_dhs-feed-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_dshield-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_elasticsearchfeed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_fastly-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_feedmispthreatactors": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_feednvdv2": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_feedurlhaus": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_feodo-tracker-ip-blocklist-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_fireeyefeed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_github-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_google-ip-ranges-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_json-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_lolbas-feed": [
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_majestic-million": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_malwarebazaar-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_microsoft-intune-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_misp-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_mitre-att&ck-v2": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_office-365-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_opencti-feed-4.x": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_palo-alto-networks-security-advisories": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_palo-alto-networks-threat-vault-v2-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_plain-text-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_prisma-access-egress-ip-feed": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_public-dns-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_recorded-future-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_rss-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_spamhausfeed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_taxii-2-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_taxiifeed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_threatconnect-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_threatfox-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_tor-exit-addresses-feed": [
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_unit-42-feed": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ],
+  "threat-intelligence-and-enrichment_zoom-feed": [
+    "xsiam",
+    "agentix"
+  ]
+}
