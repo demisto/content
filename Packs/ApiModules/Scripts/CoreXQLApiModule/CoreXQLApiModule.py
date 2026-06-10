@@ -852,7 +852,6 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
         demisto.debug(f"Query started successfully on retry with {execution_id=}.")
 
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
-    demisto.debug(f"XQL query results raw outputs keys: {list(outputs.keys())}, full outputs: {outputs}")
     outputs.update({"query_name": args.get("query_name", "")})
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(
@@ -894,9 +893,7 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
             error_message = str(raw_error)
         query_id = args.get("query_id", "unknown")
         demisto.debug(f"Query {query_id} failed with error: {error_message}")
-        raise DemistoException(
-            f"XQL query '{args.get('query_name', query_id)}' failed with status FAIL. Error: {error_message}"
-        )
+        raise DemistoException(f"XQL query '{args.get('query_name', query_id)}' failed with status FAIL. Error: {error_message}")
 
     demisto.debug(f"Returned status '{outputs.get('status')}' for {args.get('query_id', '')}.")
     results_to_format = outputs.pop("results")
