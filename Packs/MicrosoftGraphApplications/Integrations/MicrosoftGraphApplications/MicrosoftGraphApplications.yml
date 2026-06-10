@@ -186,7 +186,7 @@ script:
       description: Link to the application's terms of service statement.
       type: String
     - contextPath: MSGraphApplication.loginUrl
-      description: The URL where the service provider redirects the user to Azure AD to authenticate. Azure AD uses the URL to launch the application from Microsoft 365 or the Azure AD My Apps.
+      description: The URL where the service provider redirects the user to Microsoft Entra ID to authenticate. Microsoft Entra ID uses the URL to launch the application from Microsoft 365 or the Microsoft Entra My Apps.
       type: String
     - contextPath: MSGraphApplication.logoutUrl
       description: Specifies the URL that will be used by Microsoft's authorization service to log out an user.
@@ -219,7 +219,7 @@ script:
       description: The value to include in the scope claim in access tokens.
       type: String
     - contextPath: MSGraphApplication.preferredSingleSignOnMode
-      description: The single sign-on mode configured for this application. Azure AD uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Azure AD My Apps. The supported values are password, SAML, external, and OIDC.
+      description: The single sign-on mode configured for this application. Microsoft Entra ID uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Microsoft Entra My Apps. The supported values are password, SAML, external, and OIDC.
       type: String
     - contextPath: MSGraphApplication.preferredTokenSigningKeyThumbprint
       description: Thumbprint of preferred certificate to sign the token.
@@ -350,7 +350,7 @@ script:
       description: Link to the application's terms of service statement.
       type: String
     - contextPath: MSGraphApplication.loginUrl
-      description: The URL where the service provider redirects the user to Azure AD to authenticate. Azure AD uses the URL to launch the application from Microsoft 365 or the Azure AD My Apps.
+      description: The URL where the service provider redirects the user to Microsoft Entra ID to authenticate. Microsoft Entra ID uses the URL to launch the application from Microsoft 365 or the Microsoft Entra My Apps.
       type: String
     - contextPath: MSGraphApplication.logoutUrl
       description: Specifies the URL that will be used by Microsoft's authorization service to log out an user.
@@ -383,7 +383,7 @@ script:
       description: The value to include in the scope claim in access tokens.
       type: String
     - contextPath: MSGraphApplication.preferredSingleSignOnMode
-      description: The single sign-on mode configured for this application. Azure AD uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Azure AD My Apps. The supported values are password, SAML, external, and OIDC.
+      description: The single sign-on mode configured for this application. Microsoft Entra ID uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Microsoft Entra My Apps. The supported values are password, SAML, external, and OIDC.
       type: String
     - contextPath: MSGraphApplication.preferredTokenSigningKeyThumbprint
       description: Thumbprint of preferred certificate to sign the token.
@@ -432,7 +432,7 @@ script:
       - "true"
       - "false"
     - name: app_role_assignment_required
-      description: Specifies whether an appRoleAssignment to a user or group is required before Azure AD will issue a user or access token to the application. Not nullable.
+      description: Specifies whether an appRoleAssignment to a user or group is required before Microsoft Entra ID will issue a user or access token to the application.
       required: false
       auto: PREDEFINED
       predefined:
@@ -442,7 +442,7 @@ script:
       description: The display name for the service principal.
       required: false
     - name: preferred_single_sign_on_mode
-      description: Specifies the single sign-on mode configured for this application. Azure AD uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Azure AD My Apps. The supported values are password, saml, external, and oidc.
+      description: Specifies the single sign-on mode configured for this application. Microsoft Entra ID uses the preferred single sign-on mode to launch the application from Microsoft 365 or the Microsoft Entra My Apps. The supported values are password, saml, and oidc.
       required: false
       auto: PREDEFINED
       predefined:
@@ -450,7 +450,7 @@ script:
       - saml
       - oidc
     - name: reply_urls
-      description: The URLs that user tokens are sent to for sign in with the associated application, or the redirect URIs that OAuth 2.0 authorization codes and access tokens are sent to for the associated application. Not nullable.
+      description: A comma-separated list of the URLs that user tokens are sent to for sign in with the associated application, or the redirect URIs that OAuth 2.0 authorization codes and access tokens are sent to for the associated application.
       required: false
     outputs: []
   - description: Add a strong password or secret to a service principal. To allow this command, use msgraph-apps-service-principal-unlock-configuration. The password will be expired in 1 hour by default.
@@ -524,7 +524,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.5490413
+  dockerimage: demisto/crypto:1.0.0.8187750
 fromversion: 5.0.0
 tests:
 - MSGraph Applications Test

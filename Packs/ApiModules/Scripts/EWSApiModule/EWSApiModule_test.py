@@ -1376,3 +1376,73 @@ def test_mark_item_as_read(mocker, client):
         assert item.is_read == (item.id in expected_read_items)
 
     assert result.outputs == expected_output
+
+
+def test_escape_hr_item_ids():
+    """
+    Given:
+        - A list of dicts containing itemId values with '+' characters
+    When:
+        - Calling escape_hr_item_ids on a copy of the data
+    Then:
+        - The '+' characters in itemId are escaped to '\\+' in the returned data
+        - The original data is not mutated
+    """
+    import copy
+
+    from EWSApiModule import escape_hr_item_ids
+
+    items = [
+        {"itemId": "AAA+BBB+CCC", "messageId": "msg1", "action": "moved"},
+        {"itemId": "no_plus_here", "messageId": "msg2", "action": "moved"},
+    ]
+    original_items = copy.deepcopy(items)
+
+    result = escape_hr_item_ids(copy.deepcopy(items))
+
+    assert result[0]["itemId"] == "AAA\\+BBB\\+CCC"
+    assert result[1]["itemId"] == "no_plus_here"
+    assert items == original_items
+
+
+def test_escape_hr_item_ids_single_dict():
+    """
+    Given:
+        - A single dict containing an itemId value with '+' characters
+    When:
+        - Calling escape_hr_item_ids with a single dict
+    Then:
+        - The '+' characters in itemId are escaped to '\\+'
+    """
+    from EWSApiModule import escape_hr_item_ids
+
+    item = {"itemId": "FDSFSFS+FSFSDFSD+FSFSD", "action": "deleted"}
+    result = escape_hr_item_ids(item)
+    assert result["itemId"] == "FDSFSFS\\+FSFSDFSD\\+FSFSD"
+
+
+def test_mark_item_as_read_hr_escapes_plus(mocker, client):
+    """
+    Given:
+        - Item IDs that contain '+' characters
+    When:
+        - Calling mark_item_as_read with item IDs containing '+'
+    Then:
+        - The '+' characters in itemId are escaped in the human readable output
+        - The context output retains the original unescaped itemId
+    """
+    mock_items = [
+        MagicMock(spec=Message, id="AAA+BBB+CCC", is_read=False, message_id="msg1"),
+    ]
+    mocker.patch.object(
+        EWSClient, "get_items_from_mailbox", side_effect=lambda _target, ids: [item for item in mock_items if item.id in ids]
+    )
+
+    result = mark_item_as_read(client, {"item_ids": "AAA+BBB+CCC", "operation": "read"})
+
+    # Context output should have the original unescaped itemId
+    assert result.outputs == [
+        {"itemId": "AAA+BBB+CCC", "messageId": "msg1", "action": "marked-as-read"},
+    ]
+    # Human readable should have escaped '+'
+    assert "AAA\\+BBB\\+CCC" in result.readable_output

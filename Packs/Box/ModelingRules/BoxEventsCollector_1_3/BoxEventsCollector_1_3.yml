@@ -3,3 +3,5 @@ id: BoxEventCollector
 name: BoxEventCollector
 rules: ''
 schema: ''
+supportedModules:
+- xsiam
