@@ -3846,7 +3846,7 @@ def test_build_capability_gated_computed_field_single_and_multi():
     """The helper builds one ``any_of`` group for a single capability id and
     one group per id (OR) for multiple ids."""
     single = build_capability_gated_computed_field(
-        output_id="x", value=True, capability_ids=["cap-a"]
+        output_id="x", value=True, sub_capability_ids=["cap-a"]
     )
     assert single == {
         "output": [{"id": "x", "value": True}],
@@ -3862,7 +3862,7 @@ def test_build_capability_gated_computed_field_single_and_multi():
         ],
     }
     multi = build_capability_gated_computed_field(
-        output_id="y", value=5, capability_ids=["cap-a", "cap-b"]
+        output_id="y", value=5, sub_capability_ids=["cap-a", "cap-b"]
     )
     assert len(multi["any_of"]) == 2
     assert multi["output"] == [{"id": "y", "value": 5}]
@@ -3877,7 +3877,7 @@ def test_register_computed_field_entry_idempotent_and_preserves_field_mappings(
     register_serializer_entry(tmp_path, new_id="renamed", original_id="orig")
 
     rule = build_capability_gated_computed_field(
-        output_id="z", value=True, capability_ids=["cap-a"]
+        output_id="z", value=True, sub_capability_ids=["cap-a"]
     )
     register_computed_field_entry(tmp_path, rule)
     register_computed_field_entry(tmp_path, rule)  # idempotent — no duplicate

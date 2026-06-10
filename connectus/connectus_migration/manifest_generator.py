@@ -516,29 +516,6 @@ def deep_merge_dicts(base: dict, overrides: dict) -> dict:
     return result
 
 
-def compute_connector_id_and_title(
-    connector_title: str,
-    vendor: str = "",
-    mapped_params: dict | None = None,
-) -> tuple[str, str]:
-    """Compute the connector ``id`` and ``metadata.title`` for a new connector.
-
-    Single source of truth shared by :func:`build_connector_yaml` (which
-    writes these into ``connector.yaml``) and
-    :func:`check_connector_id_title_similarity` (which compares them against
-    existing connectors). Keeping the derivation in one place guarantees the
-    similarity check sees exactly the same id/title that will be written.
-
-    When both ``vendor`` and ``mapped_params`` are supplied, the id/title are
-    derived from the vendor prefix + capability suffix via
-    :func:`derive_connector_id_and_title`. Otherwise they fall back to the
-    legacy stub form: ``(title_to_slug(connector_title), connector_title)``.
-    """
-    if vendor and mapped_params:
-        return derive_connector_id_and_title(vendor, mapped_params)
-    return title_to_slug(connector_title), connector_title
-
-
 # ---------------------------------------------------------------------------
 # Connector id / title similarity guard (from-scratch flow)
 # ---------------------------------------------------------------------------
@@ -584,6 +561,29 @@ def iterate_existing_connector_id_titles(
         existing_id = data.get("id") or ""
         existing_title = (data.get("metadata") or {}).get("title") or ""
         yield connector_dir, existing_id, existing_title
+
+
+def compute_connector_id_and_title(
+    connector_title: str,
+    vendor: str = "",
+    mapped_params: dict | None = None,
+) -> tuple[str, str]:
+    """Compute the connector ``id`` and ``metadata.title`` for a new connector.
+
+    Single source of truth shared by :func:`build_connector_yaml` (which
+    writes these into ``connector.yaml``) and
+    :func:`check_connector_id_title_similarity` (which compares them against
+    existing connectors). Keeping the derivation in one place guarantees the
+    similarity check sees exactly the same id/title that will be written.
+
+    When both ``vendor`` and ``mapped_params`` are supplied, the id/title are
+    derived from the vendor prefix + capability suffix via
+    :func:`derive_connector_id_and_title`. Otherwise they fall back to the
+    legacy stub form: ``(title_to_slug(connector_title), connector_title)``.
+    """
+    if vendor and mapped_params:
+        return derive_connector_id_and_title(vendor, mapped_params)
+    return title_to_slug(connector_title), connector_title
 
 
 def _is_similar(new_value: str, existing_value: str) -> bool:
@@ -678,9 +678,7 @@ def build_connector_yaml(
     # enough information; otherwise keep the legacy stub behaviour. Shared
     # with the similarity check via compute_connector_id_and_title so both
     # see the exact same values.
-    connector_id, metadata_title = compute_connector_id_and_title(
-        connector_title, vendor=vendor, mapped_params=mapped_params
-    )
+    connector_id, metadata_title = title_to_slug(connector_title), connector_title
 
     description = f"integrate with {vendor} products." if vendor else ""
 
@@ -1520,23 +1518,23 @@ def build_capability_gated_computed_field(
     *,
     output_id: str,
     value: Any,
-    capability_ids: list[str],
+    sub_capability_ids: list[str],
 ) -> dict:
     """Build a single ``computed_fields`` rule that injects ``output_id``=``value``.
 
     The rule mirrors RULE 5 in the Salesforce example serializer.yaml: a
     synthetic output parameter pushed into the lifecycle notification message
-    when a capability is enabled.
+    when a sub-capability is enabled.
 
     Gating (per migration decision):
-      - **One** capability id -> a single ``any_of`` group with one
+      - **One** sub-capability id -> a single ``any_of`` group with one
         ``capability`` condition (``value: "on"``). Used for params that are
-        strictly attached to one (sub-)capability.
-      - **Multiple** capability ids -> one ``any_of`` group PER id (OR logic),
-        so the value is injected if ANY of the listed capabilities is enabled.
-        Used for params not attached to any single capability (e.g.
-        ``general_configurations`` hidden-default params), which list all the
-        handler's available capability ids.
+        strictly attached to one sub-capability.
+      - **Multiple** sub-capability ids -> one ``any_of`` group PER id (OR
+        logic), so the value is injected if ANY of the listed sub-capabilities
+        is enabled. Used for params not attached to any single sub-capability
+        (e.g. ``general_configurations`` hidden-default params), which list all
+        the handler's available sub-capability ids.
 
     Returns a dict shaped per ``serializer.schema.json`` ``ComputedFieldRule``::
 
@@ -1545,7 +1543,7 @@ def build_capability_gated_computed_field(
             "any_of": [
                 {"conditions": [
                     {"type": "capability",
-                     "options": {"capability_id": <cap_id>, "value": "on"}}
+                     "options": {"capability_id": <sub_cap_id>, "value": "on"}}
                 ]},
                 ...
             ],
@@ -1556,11 +1554,11 @@ def build_capability_gated_computed_field(
             "conditions": [
                 {
                     "type": "capability",
-                    "options": {"capability_id": cap_id, "value": "on"},
+                    "options": {"capability_id": sub_cap_id, "value": "on"},
                 }
             ]
         }
-        for cap_id in capability_ids
+        for sub_cap_id in sub_capability_ids
     ]
     return {
         "output": [{"id": output_id, "value": value}],
@@ -1754,7 +1752,7 @@ def emit_field_for_param(
             rule = build_capability_gated_computed_field(
                 output_id=name,
                 value=value,
-                capability_ids=gating_capability_ids,
+                sub_capability_ids=gating_capability_ids,
             )
             register_computed_field_entry(handler_dir, rule)
             logger.info(
@@ -1927,7 +1925,7 @@ def _apply_fetch_checkbox_visibility_rule(
             rule = build_capability_gated_computed_field(
                 output_id=yml_name,
                 value=True,
-                capability_ids=[capability_id],
+                sub_capability_ids=[capability_id],
             )
             register_computed_field_entry(handler_dir, rule)
         else:
@@ -2042,7 +2040,7 @@ def add_secret_capability(
         rule = build_capability_gated_computed_field(
             output_id=ISFETCHCREDENTIALS_PARAM_NAME,
             value=True,
-            capability_ids=[capability_id],
+            sub_capability_ids=[capability_id],
         )
         register_computed_field_entry(handler_dir, rule)
 
@@ -2639,7 +2637,7 @@ def add_assets_capability(
             build_capability_gated_computed_field(
                 output_id=ISFETCHASSETS_PARAM_NAME,
                 value=True,
-                capability_ids=[capability_id],
+                sub_capability_ids=[capability_id],
             ),
         )
         # assetsFetchInterval: bridge the sub-cap-prefixed id back to the
@@ -6428,9 +6426,7 @@ def create_manifest_from_scratch(
     # building connector.yaml so we can record the dest filename.
     author_image_filename = ""
     if author_image_path is not None:
-        connector_id, _ = compute_connector_id_and_title(
-            connector_title, vendor=vendor, mapped_params=mapped_params
-        )
+        connector_id, _ = title_to_slug(connector_title), connector_title
         author_image_filename = _copy_author_image(
             connector_dir, connector_id, author_image_path
         )
@@ -6542,10 +6538,19 @@ def create_manifest_from_scratch(
     # / mapper-incoming / classifier. This restores them.)
     synthetic_cap_fields: dict[str, list[dict]] = {}
 
+    # NOTE: the builders' ``capability_id`` is used BOTH for field-id
+    # prefixing (only when ``is_sub_capability=True``) AND as the serializer
+    # ``computed_fields`` gating id. Capabilities are always modelled as
+    # sub-capabilities in the manifest (capabilities.yaml / configurations.yaml
+    # are keyed by the sub-cap id ``<capability_id>_<integration-id-slug>``),
+    # so the serializer rule MUST gate on the sub-cap id — otherwise the rule
+    # never fires (no top-level capability is ever ``on``). We therefore pass
+    # the sub-cap id as ``capability_id`` while keeping ``is_sub_capability=False``
+    # so the emitted field ids stay un-prefixed (matching the per-cap entries).
     ti_bucket_key = "Threat Intelligence & Enrichment"
     if ti_bucket_key in mapped_params:
         ti_result = add_indicators_capability(
-            capability_id=slugify_capability_name(ti_bucket_key),
+            capability_id=make_sub_capability_id(handler_id, ti_bucket_key),
             is_sub_capability=False,
             mapped_params=mapped_params,
             yml_params_by_name=yml_params_by_name,
@@ -6559,7 +6564,7 @@ def create_manifest_from_scratch(
         script = integration_yml.get("script") or {}
         fi_is_long_running = script.get("longRunning") is True
         fi_result = add_fetch_issues_capability(
-            capability_id=slugify_capability_name(fi_bucket_key),
+            capability_id=make_sub_capability_id(handler_id, fi_bucket_key),
             is_sub_capability=False,
             is_long_running=fi_is_long_running,
             mapped_params=mapped_params,
@@ -6576,7 +6581,7 @@ def create_manifest_from_scratch(
             mapped_params.get(lc_bucket_key) or []
         )
         lc_result = add_log_collection_capability(
-            capability_id=slugify_capability_name(lc_bucket_key),
+            capability_id=make_sub_capability_id(handler_id, lc_bucket_key),
             is_sub_capability=False,
             is_long_running_capability=lc_is_long_running,
             mapped_params=mapped_params,
@@ -6588,7 +6593,7 @@ def create_manifest_from_scratch(
     av_bucket_key = "Fetch Assets and Vulnerabilities"
     if av_bucket_key in mapped_params:
         av_result = add_assets_capability(
-            capability_id=slugify_capability_name(av_bucket_key),
+            capability_id=make_sub_capability_id(handler_id, av_bucket_key),
             is_sub_capability=False,
             mapped_params=mapped_params,
             yml_params_by_name=yml_params_by_name,
@@ -7021,10 +7026,14 @@ def add_handler_to_existing_connector(
     # sub-cap entry rather than discarded. Inject by the SUB-CAP id the new
     # handler actually uses (``cap_name_to_handler_cap_id``), which may differ
     # from the bare-slug default.
+    # See the from-scratch path note: pass the new handler's sub-cap id as
+    # ``capability_id`` (keeping ``is_sub_capability=False`` so field ids stay
+    # un-prefixed) so the serializer computed_fields rule gates on the sub-cap
+    # id that capabilities.yaml / configurations.yaml actually expose.
     ti_bucket_key = "Threat Intelligence & Enrichment"
     if ti_bucket_key in mapped_params:
         ti_result = add_indicators_capability(
-            capability_id=slugify_capability_name(ti_bucket_key),
+            capability_id=make_sub_capability_id(new_handler_id, ti_bucket_key),
             is_sub_capability=False,
             mapped_params=mapped_params,
             yml_params_by_name=yml_params_by_name,
@@ -7043,7 +7052,7 @@ def add_handler_to_existing_connector(
         script = integration_yml.get("script") or {}
         fi_is_long_running = script.get("longRunning") is True
         fi_result = add_fetch_issues_capability(
-            capability_id=slugify_capability_name(fi_bucket_key),
+            capability_id=make_sub_capability_id(new_handler_id, fi_bucket_key),
             is_sub_capability=False,
             is_long_running=fi_is_long_running,
             mapped_params=mapped_params,
@@ -7065,7 +7074,7 @@ def add_handler_to_existing_connector(
             mapped_params.get(lc_bucket_key) or []
         )
         lc_result = add_log_collection_capability(
-            capability_id=slugify_capability_name(lc_bucket_key),
+            capability_id=make_sub_capability_id(new_handler_id, lc_bucket_key),
             is_sub_capability=False,
             is_long_running_capability=lc_is_long_running,
             mapped_params=mapped_params,
@@ -7082,7 +7091,7 @@ def add_handler_to_existing_connector(
     av_bucket_key = "Fetch Assets and Vulnerabilities"
     if av_bucket_key in mapped_params:
         av_result = add_assets_capability(
-            capability_id=slugify_capability_name(av_bucket_key),
+            capability_id=make_sub_capability_id(new_handler_id, av_bucket_key),
             is_sub_capability=False,
             mapped_params=mapped_params,
             yml_params_by_name=yml_params_by_name,
@@ -7288,9 +7297,7 @@ def generate_manifest(
     vendor = integration_yml["provider"]
     # The connector directory name must be the connector id (not a slug of
     # the title) so the on-disk path matches connector.yaml's ``id`` field.
-    slug, _ = compute_connector_id_and_title(
-        connector_title, vendor=vendor, mapped_params=mapped_params_dict
-    )
+    slug, _ = title_to_slug(connector_title), connector_title
     connector_dir = connectors_root / slug
 
     logger.info(
