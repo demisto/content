@@ -15,6 +15,7 @@ Usage:
 import io
 import json
 import logging
+import os
 import re
 import shutil
 from pathlib import Path
@@ -28,9 +29,34 @@ import yaml
 
 # Make the shared connectus env loader importable (connectus/ is not a package).
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from env_loader import load_env  # noqa: E402
+from env_loader import find_repo_root, load_env  # noqa: E402
 
 logger = logging.getLogger(__name__)
+
+# Env var (read from the canonical root .env) that overrides where connector
+# folders are written. Mirrors ``workflow_state.gates._connectus_repo_root``
+# so generation and the later ``make validate`` gate agree on the repo root.
+_CONNECTUS_REPO_ENV = "CONNECTUS_REPO_DIR"
+_CONNECTUS_REPO_DIRNAME = "unified-connectors-content"
+
+
+def resolve_connectors_root(explicit: Path | None) -> Path:
+    """Resolve the connectors root directory.
+
+    Resolution order (call ``load_env()`` before this so $CONNECTUS_REPO_DIR
+    from the canonical root .env is visible):
+
+    1. ``explicit`` if the caller passed ``--connectors-root`` (wins).
+    2. ``$CONNECTUS_REPO_DIR/connectors`` when the env var is set.
+    3. ``<content-repo>/unified-connectors-content/connectors`` (the
+       historical default).
+    """
+    if explicit is not None:
+        return explicit
+    override = os.environ.get(_CONNECTUS_REPO_ENV)
+    if override and override.strip():
+        return Path(os.path.abspath(override.strip())) / "connectors"
+    return find_repo_root() / _CONNECTUS_REPO_DIRNAME / "connectors"
 
 main = typer.Typer()
 
@@ -7175,10 +7201,12 @@ def generate_manifest(
         ),
     ),
     connectors_root: Path = typer.Option(
-        Path.cwd() / "unified-connectors-content" / "connectors",
+        None,
         "--connectors-root",
         help="Root directory under which connector folders live. "
-        "Defaults to <CWD>/unified-connectors-content/connectors.",
+        "When omitted, resolves from $CONNECTUS_REPO_DIR (the .env value) as "
+        "<CONNECTUS_REPO_DIR>/connectors, falling back to "
+        "<CWD>/unified-connectors-content/connectors.",
     ),
     manual_connector_fields: str = typer.Option(
         "{}",
@@ -7235,6 +7263,11 @@ def generate_manifest(
     # Load the canonical root .env via the single unified loader so any
     # subprocess we spawn (e.g. `make validate`) inherits CONNECTUS_REPO_DIR.
     load_env()
+
+    # Resolve the output root AFTER load_env() so $CONNECTUS_REPO_DIR from the
+    # .env is honored when --connectors-root is not explicitly supplied.
+    connectors_root = resolve_connectors_root(connectors_root)
+    logger.info(f"[manifest_generator] connectors_root resolved to {connectors_root}")
 
     integration_yml = load_integration_yml(integration_path)
     mapped_params_dict = parse_mapped_params(mapped_params)
