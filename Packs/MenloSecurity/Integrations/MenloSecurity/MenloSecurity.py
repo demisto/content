@@ -63,6 +63,90 @@ ALL_LOG_TYPES = list(LOG_TYPE_MAP.keys())
 DEFAULT_LOG_TYPES = ALL_LOG_TYPES
 
 
+# ============================================================================
+# === MOCK MODE (for local/offline memory testing — branch FAKE-menlo) =======
+# When enabled, Client.fetch_log_page returns synthetic data matching the real
+# Menlo response shape/size instead of hitting the API. Lets us run the
+# send-method benchmarks in many scenarios without touching a real tenant.
+# Controlled by params: mock_mode (bool), mock_total_events (int per log type).
+# ============================================================================
+
+# A realistic web-log event template (~45 fields, ~1.3-1.5 KB serialized) copied
+# from test_data/web_logs_response.json so mock pages match real page sizes.
+_MOCK_EVENT_TEMPLATE: dict[str, str] = {
+    "top_url": "http://example.com/some/realistic/path?q=value&x=1",
+    "egress_country": "US",
+    "domain": "example.com",
+    "protocol": "https",
+    "risk_tally": "-1",
+    "origin_ip": "8.8.8.8",
+    "has_password": "NA",
+    "file_size": "NA",
+    "origin_country": "FR",
+    "x-client-country": "US",
+    "browser_and_version": "Chrome_120",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+    "egress_ip": "1.2.3.4",
+    "threats": "cats_Phishing & Fraud",
+    "severity": "5",
+    "event_time": "2024-01-15T10:00:40.548000",
+    "dst": "8.8.8.8",
+    "filename": "NA",
+    "risk_score": "low",
+    "version": "2.0",
+    "sha256": "fd1aee671d92aba0f9f0a8a6d5c6b843e09c8295ced9bb85e16d97360b4d7b3a",
+    "soph_dlp_ref": "NA",
+    "tab_id": "1",
+    "xff_ip": "NA",
+    "product": "MSIP",
+    "vendor": "Menlo Security",
+    "request_type": "GET",
+    "pe_reason": "6c6ea27d-5350-4f2a-9c1d-abcdef012345",
+    "categories": "Education",
+    "x-client-ip": "1.1.1.1",
+    "name": "page_request",
+    "url": "http://example.com/some/realistic/path?q=value&x=1",
+    "response_code": "200",
+    "userid": "admin@menlosecurity.com",
+    "full_session_id": "KbJQIDPS-1",
+    "pe_action": "isolate",
+    "threat_types": "Phishing",
+    "ua_type": "supported_browser",
+    "content-type": "text/html; charset=iso-8859-1",
+    "is_iframe": "true",
+    "region": "us-west-1b",
+}
+
+
+def _mock_make_event(seq: int, base_epoch: int) -> dict:
+    """Build one synthetic event (~real size). Vary a few fields so events aren't identical."""
+    e = dict(_MOCK_EVENT_TEMPLATE)  # shallow copy of the template
+    # Ascending event_time so dedup/boundary logic behaves like real data.
+    ts = datetime.fromtimestamp(base_epoch + seq, tz=UTC).strftime("%Y-%m-%dT%H:%M:%S.%f")
+    e["event_time"] = ts
+    e["full_session_id"] = f"SESS-{seq}"
+    e["sha256"] = hashlib.sha256(str(seq).encode()).hexdigest()
+    e["origin_ip"] = f"10.{(seq >> 16) & 255}.{(seq >> 8) & 255}.{seq & 255}"
+    return e
+
+
+def _mock_fetch_page(log_type: str, start: int, limit: int, paging_identifiers: dict | None, total: int) -> dict | None:
+    """Return one synthetic page in the real response shape, with pagination until `total` reached.
+
+    pagingIdentifiers carries an 'offset' cursor so multi-page fetches terminate at `total`.
+    """
+    offset = int(paging_identifiers.get("offset", 0)) if paging_identifiers else 0
+    if offset >= total:
+        return None  # no more data
+    count = min(limit, total - offset)
+    events = [{"event": _mock_make_event(offset + i, start)} for i in range(count)]
+    next_offset = offset + count
+    result: dict[str, Any] = {"events": events}
+    if next_offset < total:
+        result["pagingIdentifiers"] = {"offset": next_offset}
+    return {"timestamp": "mock", "result": result}
+
+
 """ CLIENT CLASS """
 
 
@@ -73,8 +157,21 @@ class Client(ContentClient):
     Authenticates via an API token passed in the POST body of each request.
     """
 
-    def __init__(self, base_url: str, token: str, verify: bool, proxy: bool, token_type: str = DEFAULT_TOKEN_TYPE) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        token: str,
+        verify: bool,
+        proxy: bool,
+        token_type: str = DEFAULT_TOKEN_TYPE,
+        mock_mode: bool = False,
+        mock_total_events: int = 0,
+    ) -> None:
         self._token = token
+        # MOCK MODE (FAKE-menlo branch): when True, fetch_log_page returns synthetic data
+        # instead of calling the API. mock_total_events = events generated per log type.
+        self._mock_mode = mock_mode
+        self._mock_total_events = mock_total_events
         # Admin-UI tokens use v2; legacy CSV-based tokens use v1.
         api_version = TOKEN_TYPE_TO_API_VERSION.get(token_type, TOKEN_TYPE_TO_API_VERSION[DEFAULT_TOKEN_TYPE])
         self._api_path = API_PATH_TEMPLATE.format(api_version=api_version)
@@ -111,6 +208,10 @@ class Client(ContentClient):
         Raises:
             ValueError: If the response body is non-empty but not valid JSON (e.g. HTML auth-error pages).
         """
+        # MOCK MODE (FAKE-menlo branch): return synthetic data instead of calling the API.
+        if self._mock_mode:
+            return _mock_fetch_page(log_type, start, limit, paging_identifiers, self._mock_total_events)
+
         params = {"start": start, "end": end, "limit": limit, "format": "json"}
         body: dict[str, Any] = {"token": self._token, "log_type": log_type}
         if paging_identifiers:
@@ -556,6 +657,9 @@ def main() -> None:
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     token_type = params.get("token_type", DEFAULT_TOKEN_TYPE)
+    # MOCK MODE (FAKE-menlo branch): offline synthetic data for memory testing.
+    mock_mode = argToBoolean(params.get("mock_mode", False))
+    mock_total_events = arg_to_number(params.get("mock_total_events", 10000)) or 10000
 
     log_types: list[str] = argToList(params.get("log_types", ",".join(DEFAULT_LOG_TYPES))) or DEFAULT_LOG_TYPES
     max_events_per_fetch_per_type: int = (
@@ -566,7 +670,17 @@ def main() -> None:
     demisto.debug(f"[main] Command: {command}, token_type: {token_type}, params: {json.dumps(params)}, args: {json.dumps(args)}")
 
     try:
-        client = Client(base_url=base_url, token=token, verify=verify_certificate, proxy=proxy, token_type=token_type)
+        client = Client(
+            base_url=base_url,
+            token=token,
+            verify=verify_certificate,
+            proxy=proxy,
+            token_type=token_type,
+            mock_mode=mock_mode,
+            mock_total_events=mock_total_events,
+        )
+        if mock_mode:
+            demisto.info(f"[MOCK] mock_mode ON — synthetic data, mock_total_events={mock_total_events} per log type.")
 
         if command == "test-module":
             return_results(test_module(client, log_types))
