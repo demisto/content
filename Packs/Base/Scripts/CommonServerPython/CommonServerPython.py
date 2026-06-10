@@ -13893,10 +13893,10 @@ def build_ucp_params(connector_metadata, capability=None):
         method_unique_id = profile.get('method_unique_id')
         demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FULL profile (method_unique_id={}) = {}'.format(
             method_unique_id, _ucp_dump(profile)))
-        interpolation_map = profile.get('interpolation_map')
-        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: interpolation_map (type={}) = {}'.format(
-            type(interpolation_map).__name__, _ucp_dump(interpolation_map)))
-        pairs = _parse_param_map(interpolation_map)
+        interpolation_mapping = profile.get('interpolation_mapping')
+        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: interpolation_mapping (type={}) = {}'.format(
+            type(interpolation_mapping).__name__, _ucp_dump(interpolation_mapping)))
+        pairs = _parse_param_map(interpolation_mapping)
         demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: parsed pairs = {}'.format(_ucp_dump(pairs)))
         if not pairs:
             demisto.debug('there are no pairs for profile id {}'.format(method_unique_id))
