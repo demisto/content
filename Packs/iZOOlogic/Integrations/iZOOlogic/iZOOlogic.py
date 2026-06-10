@@ -677,9 +677,10 @@ def test_module(client: Client, event_type_codes: list[int], is_fetch_events: bo
         from_date = snap_to_day_boundary_utc(get_current_unix_timestamp(), "start")
         to_date = get_current_unix_timestamp()
 
-        # Always validate command functionality by running the incident-search command.
+        # Always validate command functionality by running the incident-search command,
+        # using a narrow window (DEFAULT_FROM_TIME) to keep the test lightweight.
         demisto.debug("[Test Module] Validating command functionality (incident search)...")
-        search_incidents_command(client, {})
+        search_incidents_command(client, {"from_date": Config.DEFAULT_FROM_TIME})
 
         # Validate the collector only when event collection is enabled.
         if is_fetch_events:
