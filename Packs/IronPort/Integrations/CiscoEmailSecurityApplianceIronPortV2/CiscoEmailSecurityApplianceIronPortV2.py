@@ -766,6 +766,152 @@ class Client(BaseClient):
             json_data=json_data,
         )
 
+    def message_filter_list_request(
+        self,
+        filter_name: str | None,
+        mode: str,
+        host_name: str | None,
+        group_name: str | None,
+    ) -> dict[str, Any]:
+        """
+        Retrieve all message filters or a single named message filter.
+
+        Args:
+            filter_name (str, optional): Specific filter to read. When omitted, list all filters.
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name when mode is 'machine'.
+            group_name (str, optional): Group name when mode is 'group'.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        endpoint = "config/message_filters"
+        if filter_name:
+            endpoint += f"/{filter_name}"
+
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+        return self._http_request("GET", endpoint, params=params)
+
+    def message_filter_create_request(
+        self,
+        filter_name: str,
+        rules_and_actions: str,
+        active: str,
+        order: int | None,
+        mode: str,
+        host_name: str | None,
+        group_name: str | None,
+    ) -> dict[str, Any]:
+        """
+        Create a new message filter.
+
+        Args:
+            filter_name (str): Name of the new filter.
+            rules_and_actions (str): Full Cisco filter DSL body.
+            active (str): "true" or "false" — whether the filter should be active on creation.
+            order (int, optional): 1-based position in the filter list.
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name when mode is 'machine'.
+            group_name (str, optional): Group name when mode is 'group'.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+        body_data = assign_params(rules_and_actions=rules_and_actions, active=active, order=order)
+        return self._http_request(
+            "POST",
+            f"config/message_filters/{filter_name}",
+            params=params,
+            json_data={"data": body_data},
+        )
+
+    def message_filter_update_request(
+        self,
+        filter_name: str,
+        active: str | None,
+        order: int | None,
+        mode: str,
+        host_name: str | None,
+        group_name: str | None,
+    ) -> dict[str, Any]:
+        """
+        Partially update an existing message filter.
+
+        Only the supplied fields (active / order) are sent to the API.
+
+        Args:
+            filter_name (str): Name of the filter to update.
+            active (str, optional): "true" or "false".
+            order (int, optional): New 1-based position.
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name when mode is 'machine'.
+            group_name (str, optional): Group name when mode is 'group'.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+
+        Raises:
+            DemistoException: If neither `active` nor `order` was supplied.
+        """
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+        body_data = assign_params(active=active, order=order)
+        if not body_data:
+            demisto.debug("message_filter_update_request: rejecting call — no updatable fields supplied")
+            raise DemistoException("At least one of 'active' or 'order' must be supplied.")
+        return self._http_request(
+            "PUT",
+            f"config/message_filters/{filter_name}",
+            params=params,
+            json_data={"data": body_data},
+        )
+
+    def message_filter_delete_request(
+        self,
+        filter_name: str,
+        mode: str,
+        host_name: str | None,
+        group_name: str | None,
+    ) -> dict[str, Any]:
+        """
+        Delete a message filter.
+
+        Args:
+            filter_name (str): Name of the filter to delete.
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name when mode is 'machine'.
+            group_name (str, optional): Group name when mode is 'group'.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+        return self._http_request(
+            "DELETE",
+            f"config/message_filters/{filter_name}",
+            params=params,
+        )
+
     def url_list_request(
         self,
         mode: str,
@@ -2540,6 +2686,223 @@ def dictionary_words_update_command(client: Client, args: dict[str, Any]) -> Com
     )
 
 
+def message_filter_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieve all message filters in scope or read a single named filter.
+
+    Applies client-side filtering on `active` and a client-side cap (`limit`) when listing
+    all filters. When `filter_name` is supplied both filters are ignored.
+
+    Args:
+        client (Client): Cisco ESA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Readable outputs, structured outputs under CiscoESA.MessageFilter,
+            and the raw API response.
+    """
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name = args.get("host_name", "")
+    group_name = args.get("group_name", "")
+    filter_name = args.get("filter_name") or ""
+    active = args.get("active")
+    limit = arg_to_number(args.get("limit")) or 50
+
+    host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
+
+    demisto.debug(f"calling Cisco with {filter_name=}, {mode=}, {host_name=}, {group_name=}")
+
+    response = client.message_filter_list_request(
+        filter_name=filter_name or None,
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+    )
+
+    rows: list[dict[str, Any]] = list(response.get("data") or [])
+
+    # Client-side filtering is only meaningful when listing (not when reading one by name).
+    if not filter_name:
+        if active:
+            rows = [row for row in rows if row.get("active").lower() == active.lower()]  # type: ignore
+        rows = rows[:limit]
+
+    # Conditionally include the 'Validation Warning' column only when at least one row has it.
+    headers = ["Name", "Active", "Order", "Rules And Actions"]
+    if any(row.get("invalid_reason") for row in rows):
+        headers.append("Validation Warning")
+
+    hr_rows = [
+        {
+            "Name": row.get("name"),
+            "Active": row.get("active"),
+            "Order": row.get("order"),
+            "Rules And Actions": row.get("rules_and_actions"),
+            "Validation Warning": row.get("invalid_reason"),
+        }
+        for row in rows
+    ]
+
+    if filter_name:
+        title = f"Cisco ESA — Message Filter: {filter_name}"
+    else:
+        title = f"Cisco ESA — Message Filters (mode: {mode})"
+
+    readable_output = tableToMarkdown(
+        name=title,
+        t=hr_rows,
+        headers=headers,
+        removeNull=False,
+    )
+
+    # Only enable overwrite when listing the full collection. When the user
+    # requested a single filter by name, fall back to the keyed merge behavior
+    # so that a one-row lookup does not wipe the rest of the array.
+    if not filter_name:
+        return CommandResults(
+            outputs_prefix="CiscoESA.MessageFilter",
+            outputs_key_field="name",
+            outputs=rows,
+            raw_response=response,
+            readable_output=readable_output,
+            replace_existing=True,
+        )
+
+    return CommandResults(
+        outputs_prefix="CiscoESA.MessageFilter",
+        outputs_key_field="name",
+        outputs=rows,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def message_filter_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Create a new message filter.
+
+    On success the API may still return a `meta.warning` (e.g. when a referenced listener or
+    interface is unknown). The filter is created either way; the warning is surfaced in the
+    human-readable output.
+
+    Args:
+        client (Client): Cisco ESA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Readable outputs and the raw API response (no context outputs).
+    """
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name = args.get("host_name", "")
+    group_name = args.get("group_name", "")
+    filter_name = args["filter_name"]
+    rules_and_actions = args["rules_and_actions"]
+    active = args.get("active", "true")
+    order = arg_to_number(args.get("order"))
+
+    host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
+
+    demisto.debug(f"calling Cisco with {filter_name=}, {mode=}, {host_name=}, {group_name=}")
+
+    response = client.message_filter_create_request(
+        filter_name=filter_name,
+        rules_and_actions=rules_and_actions,
+        active=active,
+        order=order,
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+    )
+
+    readable_output = f"Filter {filter_name} was added successfully."
+    warning = (response.get("meta") or {}).get("warning")
+    if warning:
+        demisto.debug(f"appliance returned meta.warning={warning!r} for filter={filter_name!r}")
+        readable_output += f"\n\n**Warning:** {warning}"
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def message_filter_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Partially update an existing message filter.
+
+    At least one of `active` or `order` must be supplied.
+
+    Args:
+        client (Client): Cisco ESA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Readable outputs and the raw API response (no context outputs).
+    """
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name = args.get("host_name", "")
+    group_name = args.get("group_name", "")
+    filter_name = args["filter_name"]
+    active = args.get("active")
+    order = arg_to_number(args.get("order"))
+
+    host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
+
+    demisto.debug(f"calling Cisco with {filter_name=}, {mode=}, {host_name=}, {group_name=}")
+
+    response = client.message_filter_update_request(
+        filter_name=filter_name,
+        active=active,
+        order=order,
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+    )
+
+    readable_output = f"Filter {filter_name} was successfully updated."
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def message_filter_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Delete a message filter.
+
+    Args:
+        client (Client): Cisco ESA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Readable outputs and the raw API response (no context outputs).
+    """
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name = args.get("host_name", "")
+    group_name = args.get("group_name", "")
+    filter_name = args["filter_name"]
+
+    host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
+
+    demisto.debug(
+        "cisco-esa-message-filter-delete: calling Cisco with "
+        f"filter_name={filter_name!r}, mode={mode!r}, host_name={host_name!r}, group_name={group_name!r}"
+    )
+
+    response = client.message_filter_delete_request(
+        filter_name=filter_name,
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+    )
+
+    return CommandResults(
+        readable_output=f"Filter {filter_name} was deleted successfully.",
+        raw_response=response,
+    )
+
+
 def url_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
     host_name, group_name = check_dictionary_mode_args(mode, args.get("host_name", ""), args.get("group_name", ""))
@@ -3064,6 +3427,10 @@ def main() -> None:
         "cisco-esa-message-amp-details-get": message_amp_details_get_command,
         "cisco-esa-message-url-details-get": message_url_details_get_command,
         "cisco-esa-dictionary-words-update": dictionary_words_update_command,
+        "cisco-esa-message-filter-list": message_filter_list_command,
+        "cisco-esa-message-filter-create": message_filter_create_command,
+        "cisco-esa-message-filter-update": message_filter_update_command,
+        "cisco-esa-message-filter-delete": message_filter_delete_command,
     }
     try:
         client: Client = Client(
