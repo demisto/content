@@ -15,6 +15,7 @@ configuration:
   type: 0
   required: true
   section: Connect
+  additionalinfo: The Okta API base domain, for example https://<domain>.com. Do not append /api/v1/logs; the integration adds it automatically.
 - displaypassword: API key
   name: api_key
   hiddenusername: true
