@@ -1,66 +1,6 @@
 {
   "imanage_threat_raw": {
-    "task_id": {
-      "type": "Integer",
-      "is_array": false
-    },
-    "user": {
-      "type": "String",
-      "is_array": false
-    },
-    "alert_time": {
-      "type": "Integer",
-      "is_array": false
-    },
-    "alert_timezone": {
-      "type": "String",
-      "is_array": false
-    },
-    "comments": {
-      "type": "String",
-      "is_array": true
-    },
-    "email": {
-      "type": "String",
-      "is_array": false
-    },
-    "flagged": {
-      "type": "Boolean",
-      "is_array": false
-    },
-    "location": {
-      "type": "String",
-      "is_array": false
-    },
-    "login": {
-      "type": "String",
-      "is_array": false
-    },
-    "minute_update_time": {
-      "type": "Integer",
-      "is_array": false
-    },
-    "name": {
-      "type": "String",
-      "is_array": false
-    },
-    "parameters_as_executed": {
-      "type": "String",
-      "is_array": false
-    },
-    "reviewed": {
-      "type": "Boolean",
-      "is_array": false
-    },
-    "risk_level": {
-      "type": "String",
-      "is_array": false
-    },
-    "risk_score": {
-      "type": "Integer",
-      "is_array": false
-    },
-    "stats": {
+    "id": {
       "type": "String",
       "is_array": false
     },
@@ -68,19 +8,27 @@
       "type": "String",
       "is_array": false
     },
-    "update_time": {
+    "task_id": {
       "type": "Integer",
       "is_array": false
     },
-    "id": {
+    "risk_score": {
+      "type": "Integer",
+      "is_array": false
+    },
+    "risk_level": {
       "type": "String",
       "is_array": false
     },
-    "action_execution_error": {
+    "user": {
       "type": "String",
       "is_array": false
     },
-    "action_state": {
+    "email": {
+      "type": "String",
+      "is_array": false
+    },
+    "location": {
       "type": "String",
       "is_array": false
     },
@@ -88,11 +36,7 @@
       "type": "String",
       "is_array": false
     },
-    "activity_data": {
-      "type": "String",
-      "is_array": false
-    },
-    "tm_counts": {
+    "action_state": {
       "type": "String",
       "is_array": false
     }
