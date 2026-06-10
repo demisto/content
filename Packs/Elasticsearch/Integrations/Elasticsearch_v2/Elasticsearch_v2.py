@@ -95,8 +95,6 @@ FIELDS_LIST = argToList(PARAMS.get("fetch_fields", ""))
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
 
-
-
 def get_value_by_dot_notation(dictionary, key):
     """
     Get dictionary value by key using dot notation.
@@ -857,6 +855,7 @@ def integration_health_check(proxies):
         test_general_query(es)
     return "Testing was successful."
 
+
 def normalize_es_value(value):
     if isinstance(value, list):
         value = value[0] if len(value) == 1 else value
@@ -865,6 +864,7 @@ def normalize_es_value(value):
         return json.dumps(value)
 
     return str(value)
+
 
 def incident_label_maker(source, fields=None):
     """Creates labels for the created incident.
@@ -879,17 +879,11 @@ def incident_label_maker(source, fields=None):
     labels = []
 
     for field, value in source.items():
-        labels.append({
-            "type": str(field),
-            "value": normalize_es_value(value)
-        })
+        labels.append({"type": str(field), "value": normalize_es_value(value)})
 
     if fields:
         for field, value in fields.items():
-            labels.append({
-                "type": f"fields.{field}",
-                "value": normalize_es_value(value)
-            })
+            labels.append({"type": f"fields.{field}", "value": normalize_es_value(value)})
 
     return labels
 
