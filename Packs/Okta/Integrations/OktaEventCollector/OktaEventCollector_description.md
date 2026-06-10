@@ -17,6 +17,6 @@ Okta Events collector XSIAM
 [https://developer.okta.com/docs/guides/find-your-domain/main/](https://developer.okta.com/docs/guides/find-your-domain/main/)
 **API key** - your API key
 **Number of incidents to fetch per fetch** - 100
-**Events fetch  interval** - 01 Minutes
+**Events fetch interval** - 01 Minutes
 **Fetches events** - True
 
