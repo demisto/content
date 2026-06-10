@@ -4423,6 +4423,13 @@ def render_bioc_description(  # noqa: C901
     return inner_title
 
 
+def render_bioc_description_simple(indicator_data: list[dict]) -> str:
+    """
+    Simply joins the `pretty_name` values of the indicator tokens with spaces.
+    """
+    return " ".join(str(token.get("pretty_name", "")) for token in indicator_data)
+
+
 def get_issues_by_filter_command(client: CoreClient, args: Dict):
     def fix_array_value(match: Match[str]) -> str:
         """
@@ -4520,9 +4527,10 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
                 )
                 issue["alert_description"] = rendered
             except Exception as e:
+                issue["alert_description"] = render_bioc_description_simple(raw_description)
                 demisto.error(
                     f"get_issues_by_filter_command: failed to render BIOC description for issue "
-                    f"{issue.get('internal_id')}: {e}. Raw description kept. tokens={raw_description!r}"
+                    f"{issue.get('internal_id')}: {e}. Falling back to simple rendering. tokens={raw_description!r}"
                 )
 
     human_readable = [

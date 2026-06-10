@@ -6166,21 +6166,24 @@ def test_render_bioc_description_comma_connector_spacing():
     assert render_bioc_description(indicator) == "a.exe, b.exe"
 
 
-def test_get_issues_by_filter_malformed_bioc_description_kept_and_logged(requests_mock, mocker):
+def test_get_issues_by_filter_bioc_description_render_failure_falls_back_to_simple(requests_mock, mocker):
     """
-    Given: A BIOC issue whose alert_description is a list but contains a malformed (non-dict)
-           token that causes render_bioc_description to raise.
+    Given: A BIOC issue with a structured alert_description, where the full
+           render_bioc_description raises an exception.
     When:  get_issues_by_filter_command is called.
-    Then:  The command does not crash, the raw description list is kept, and demisto.error
-           is called.
+    Then:  The command does not crash, falls back to render_bioc_description_simple
+           (a plain pretty_name join), and demisto.error is called.
     """
     from CoreIRApiModule import CoreClient, get_issues_by_filter_command
 
     error_mock = mocker.patch.object(demisto, "error")
+    # Force the full renderer to fail so the simple fallback is exercised.
+    mocker.patch("CoreIRApiModule.render_bioc_description", side_effect=Exception("boom"))
 
-    malformed_description = [
+    description = [
         {"render_type": "attribute", "pretty_name": "File Name"},
-        "not-a-dict-token",  # forces AttributeError inside the render loop
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "evil.exe"},
     ]
     api_response = {
         "reply": {
@@ -6189,7 +6192,7 @@ def test_get_issues_by_filter_malformed_bioc_description_kept_and_logged(request
                     "internal_id": 4,
                     "source_insert_ts": 1541494441222,
                     "alert_source": "BIOC",
-                    "alert_description": json.loads(json.dumps(malformed_description)),
+                    "alert_description": json.loads(json.dumps(description)),
                 }
             ],
             "FILTER_COUNT": "1",
@@ -6200,7 +6203,24 @@ def test_get_issues_by_filter_malformed_bioc_description_kept_and_logged(request
 
     response = get_issues_by_filter_command(client, {})
 
-    # Raw description kept (not crashed, not partially rendered)
-    assert response[0].outputs[0]["alert_description"] == malformed_description
-    # Error was logged for investigation
+    # Fell back to the simple pretty_name join.
+    assert response[0].outputs[0]["alert_description"] == "File Name = evil.exe"
+    # Error was logged for investigation.
     assert error_mock.called
+
+
+def test_render_bioc_description_simple_joins_pretty_names():
+    """
+    Given: A structured BIOC indicator token list.
+    When:  render_bioc_description_simple is called.
+    Then:  The pretty_name values are joined with single spaces.
+    """
+    from CoreIRApiModule import render_bioc_description_simple
+
+    indicator = [
+        {"render_type": "attribute", "pretty_name": "File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "evil.exe"},
+    ]
+
+    assert render_bioc_description_simple(indicator) == "File Name = evil.exe"
