@@ -24,6 +24,14 @@ MAX_EVENTS_PER_PAGE = 10000
 DEFAULT_FIRST_FETCH = "5 minutes"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
+# Per Menlo support: the Logging API does a full time-range scan per request, so the response
+# latency scales with the (end - start) span, NOT the page size. When the integration falls
+# behind, start = last_event_time and end = now can span many hours, making each 10k-event page
+# take ~20s on a high-volume tenant (vs ~6s for a small window). Menlo recommends querying windows
+# of ~5 minutes or less for high-volume tenants. We therefore cap each query to a bounded window
+# and walk forward window-by-window, which keeps per-request latency low even with a large backlog.
+MAX_FETCH_WINDOW_SECONDS = 300  # 5 minutes
+
 # Per Menlo docs: Admin-UI-generated tokens use the v2 endpoint; legacy CSV-based tokens use v1.
 API_PATH_TEMPLATE = "/api/rep/{api_version}/fetch/client_select"
 TOKEN_TYPE_TO_API_VERSION = {"Admin Token": "v2", "Token": "v1"}
@@ -419,6 +427,7 @@ class FetchResult:
     events_emitted: int = 0  # total events handed to consumer (or accumulated); used for saturation check
     next_run_state: dict | None = None  # None means preserve previous state
     error: str | None = None
+    window_capped: bool = False  # True ⇒ query window was capped below `now` (we're behind; more windows remain)
 
 
 def _fetch_log_type_task(
@@ -472,6 +481,18 @@ def _fetch_log_type_task(
             start_epoch = int(first_fetch_dt.timestamp())
             demisto.debug(f"[{thread_name}] first fetch from {epoch_to_timestamp(start_epoch)}")
 
+        # Cap the query window: Menlo's API latency scales with (end - start), not page size.
+        # When behind, start can be many hours before `now`, making each page slow (~20s). Bound
+        # the window to MAX_FETCH_WINDOW_SECONDS so each request stays fast, and walk forward
+        # window-by-window. window_end is per-log-type (each type has its own start/backlog).
+        window_end_epoch = min(end_epoch, start_epoch + MAX_FETCH_WINDOW_SECONDS)
+        window_capped = window_end_epoch < end_epoch  # True ⇒ we're behind; more windows remain
+        window_end_timestamp = epoch_to_timestamp(window_end_epoch)
+        demisto.debug(
+            f"[{thread_name}] window [{epoch_to_timestamp(start_epoch)} → {window_end_timestamp}] "
+            f"({window_end_epoch - start_epoch}s span, capped={window_capped})"
+        )
+
         boundary_hashes: set[str] = set(last_run.get(log_type_ui, {}).get("boundary_hashes", []))
 
         # Track total events emitted by the producer (so the caller can compute saturation
@@ -492,7 +513,7 @@ def _fetch_log_type_task(
             client=client,
             log_type_ui=log_type_ui,
             start_epoch=start_epoch,
-            end_epoch=end_epoch,
+            end_epoch=window_end_epoch,  # bounded window, not `now`
             max_events=max_events_per_fetch_per_type,
             boundary_hashes=boundary_hashes,
             last_fetch_time=last_fetch_time,
@@ -503,25 +524,40 @@ def _fetch_log_type_task(
         # but `page_count["n"]` is the true total handed to the consumer.
         result.events = events
         result.events_emitted = page_count["n"] if on_page is not None else len(events)
+        # Tell the caller whether this log type still has more windows to drain. When True, the
+        # long-running loop should keep looping immediately (we're behind), regardless of cap.
+        result.window_capped = window_capped
 
         if events:
             last_event_time = events[-1].get("event_time") or events[-1].get("_time", "")
-            next_fetch_time = last_event_time or end_timestamp
-            # `events` is the last page in streaming mode (ascending time order),
-            # so it contains all boundary events at `last_event_time` from the cycle.
+            # If we hit the per-type event cap, more events may share last_event_time beyond what
+            # we fetched — resume FROM last_event_time (dedup handles the overlap). If we drained
+            # the whole window without hitting the cap, we've consumed everything up to
+            # last_event_time, but there may be later events still inside this capped window — so
+            # also resume from last_event_time. Either way last_event_time is the safe resume point.
+            next_fetch_time = last_event_time or window_end_timestamp
             next_boundary_hashes = get_boundary_hashes(events, last_event_time)
             demisto.debug(f"[{thread_name}] next fetch from {next_fetch_time} ({len(next_boundary_hashes)} boundary hash(es))")
             result.next_run_state = {"last_fetch_time": next_fetch_time, "boundary_hashes": next_boundary_hashes}
         else:
-            # No events — preserve previous state so the next cycle retries from the same point.
-            prev_state = last_run.get(log_type_ui)
-            if prev_state:
-                demisto.debug(f"[{thread_name}] no events — preserving state.")
-                result.next_run_state = prev_state
+            # No events in this window.
+            if window_capped:
+                # CRITICAL: the window was capped (we're behind) and it was empty. We must NOT
+                # preserve the old start — that would re-query the same empty window forever and
+                # deadlock. Advance past this empty window to window_end so we make progress.
+                demisto.debug(f"[{thread_name}] empty capped window — advancing start to {window_end_timestamp}")
+                result.next_run_state = {"last_fetch_time": window_end_timestamp, "boundary_hashes": []}
             else:
-                # First fetch with no results — advance to now to avoid re-querying the same empty window.
-                demisto.debug(f"[{thread_name}] first fetch, no events — advancing to {end_timestamp}")
-                result.next_run_state = {"last_fetch_time": end_timestamp, "boundary_hashes": []}
+                # Window reached `now` and was empty — we're caught up. Preserve previous state so
+                # we re-poll from the same boundary next cycle (don't skip a partial trailing second).
+                prev_state = last_run.get(log_type_ui)
+                if prev_state:
+                    demisto.debug(f"[{thread_name}] caught up, no events — preserving state.")
+                    result.next_run_state = prev_state
+                else:
+                    # First fetch, caught up, no events — advance to now to avoid re-querying empty.
+                    demisto.debug(f"[{thread_name}] first fetch, no events — advancing to {window_end_timestamp}")
+                    result.next_run_state = {"last_fetch_time": window_end_timestamp, "boundary_hashes": []}
 
     except Exception as e:
         result.error = str(e)
@@ -597,15 +633,15 @@ def fetch_events(
     next_run: dict = dict(last_run)
     total_emitted = 0
 
-    # Track per-type saturation for nextTrigger decision (ANY saturated → fire immediately).
-    # Saturation = "we hit the per-type cap, more events are likely waiting on the API".
-    # Since dedup now happens INSIDE `get_events_for_log_type` (before counting), `events_emitted`
-    # is the post-dedup count and the producer keeps fetching until it reaches the cap. So a
-    # straight `events_emitted >= cap` check is correct — no boundary-hash compensation needed.
-    # (v1 needed `cap - boundary_count` because it did dedup AFTER fetching exactly `cap` events;
-    # that compensation would now cause false saturations and unnecessary `nextTrigger=0` loops.)
-    any_saturated = False
-    saturation_details: list[str] = []
+    # Decide whether to loop immediately (nextTrigger=0) vs sleep. We must keep going whenever
+    # ANY log type still has work to do, which is true in EITHER of two cases:
+    #   1. Cap-saturated: we hit the per-type event cap this cycle (more events remain at/after
+    #      the boundary in the current window).
+    #   2. Window-capped: the query window was bounded below `now` because we're behind — there
+    #      are more time-windows to walk forward through, even if this window returned < cap.
+    # Only when NO type is cap-saturated AND NO type is window-capped are we truly caught up.
+    any_more_work = False
+    progress_details: list[str] = []
 
     for result in fetch_results:
         if result.error:
@@ -621,18 +657,18 @@ def fetch_events(
             next_run[result.log_type_ui] = result.next_run_state
 
         is_saturated = result.events_emitted >= max_events_per_fetch_per_type
-        saturation_details.append(
-            f"{result.log_type_ui}={result.events_emitted}/{max_events_per_fetch_per_type}" f"{'(SAT)' if is_saturated else ''}"
-        )
-        if is_saturated:
-            any_saturated = True
+        more_work = is_saturated or result.window_capped
+        flags = f"{'(SAT)' if is_saturated else ''}{'(BEHIND)' if result.window_capped else ''}"
+        progress_details.append(f"{result.log_type_ui}={result.events_emitted}/{max_events_per_fetch_per_type}{flags}")
+        if more_work:
+            any_more_work = True
 
-    if any_saturated:
+    if any_more_work:
         next_run["nextTrigger"] = "0"
-        demisto.debug(f"[fetch-events] nextTrigger=0 (any saturated) — {', '.join(saturation_details)}")
+        demisto.debug(f"[fetch-events] nextTrigger=0 (more work: saturated or behind) — {', '.join(progress_details)}")
     else:
         next_run.pop("nextTrigger", None)
-        demisto.debug(f"[fetch-events] no nextTrigger (none saturated) — {', '.join(saturation_details)}")
+        demisto.debug(f"[fetch-events] no nextTrigger (caught up) — {', '.join(progress_details)}")
 
     demisto.debug(f"[fetch-events] Total events emitted: {total_emitted} (returned in list: {len(all_events)})")
     return next_run, all_events
@@ -942,7 +978,8 @@ def main() -> None:
     # TODO remove before release
     demisto.info(
         f"[main] *** MenloSecurity build: MAX_EVENTS_PER_PAGE={MAX_EVENTS_PER_PAGE}, "
-        f"fast_time_parse=on, next_trigger=on, long_running=on, streaming=on (producer/consumer queue) ***"
+        f"fast_time_parse=on, next_trigger=on, long_running=on, streaming=on, "
+        f"windowed_fetch={MAX_FETCH_WINDOW_SECONDS}s ***"
     )
     demisto.debug(f"[main] Command: {command}, token_type: {token_type}, params: {json.dumps(params)}, args: {json.dumps(args)}")
 

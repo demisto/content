@@ -1,9 +1,11 @@
 import json
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
 from MenloSecurity import (
     Client,
+    DATE_FORMAT,
     MAX_EVENTS_PER_PAGE,
     fetch_events,
     get_boundary_hashes,
@@ -441,15 +443,18 @@ class TestFetchEvents:
         assert arg_to_datetime(next_run["web"]["last_fetch_time"]) is not None
         assert next_run["web"]["boundary_hashes"] == []
 
-    def test_next_run_preserves_last_run_state_when_no_events_on_subsequent_fetch(self, mock_client: Client, mocker):
+    def test_next_run_advances_past_empty_capped_window(self, mock_client: Client, mocker):
         """
         Given:
-            - A last_run with last_fetch_time and boundary_hashes already set.
-            - No events are returned in this cycle.
+            - A last_run whose last_fetch_time is far in the past (so the query window is
+              capped to MAX_FETCH_WINDOW_SECONDS below `now` — i.e. we're behind).
+            - No events are returned in this (empty) capped window.
         When:
             - Calling fetch_events.
         Then:
-            - next_run["web"] is identical to the previous last_run["web"] (state preserved).
+            - next_run["web"] does NOT preserve the old start (that would deadlock, re-querying
+              the same empty window forever). Instead last_fetch_time advances forward by exactly
+              one window (start + MAX_FETCH_WINDOW_SECONDS), and boundary_hashes is cleared.
         """
         mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
 
@@ -465,7 +470,44 @@ class TestFetchEvents:
         )
 
         assert events == []
+        # State must have moved forward (not preserved) to escape the empty window.
+        assert next_run["web"] != prev_state
+        assert next_run["web"]["boundary_hashes"] == []
+        # New start = old start + one window (2024-01-15T09:00:00Z + 300s = 09:05:00Z).
+        assert next_run["web"]["last_fetch_time"] == "2024-01-15T09:05:00Z"
+        # Still behind ⇒ loop immediately.
+        assert next_run.get("nextTrigger") == "0"
+
+    def test_next_run_preserves_state_when_caught_up_and_no_events(self, mock_client: Client, mocker):
+        """
+        Given:
+            - A last_run whose last_fetch_time is within MAX_FETCH_WINDOW_SECONDS of `now`
+              (so the window reaches `now` and is NOT capped — i.e. we're caught up).
+            - No events are returned.
+        When:
+            - Calling fetch_events.
+        Then:
+            - next_run["web"] preserves the previous state (re-poll same boundary next cycle),
+              and no nextTrigger is set (we're caught up → the loop should sleep).
+        """
+        mocker.patch.object(mock_client, "fetch_log_page", return_value=make_empty_response())
+
+        # last_fetch_time ~1 minute ago ⇒ window [start, now] is < 5 min ⇒ not capped.
+        recent = (datetime.now(UTC) - timedelta(minutes=1)).strftime(DATE_FORMAT)
+        prev_state = {"last_fetch_time": recent, "boundary_hashes": ["abc123hash"]}
+        last_run = {"web": prev_state}
+
+        next_run, events = fetch_events(
+            client=mock_client,
+            last_run=last_run,
+            log_types=["web"],
+            first_fetch_time="1 hour",
+            max_events_per_fetch_per_type=5000,
+        )
+
+        assert events == []
         assert next_run["web"] == prev_state
+        assert next_run.get("nextTrigger") is None
 
     def test_next_run_uses_last_event_time_when_events_exist(self, mock_client: Client, mocker):
         """
