@@ -13903,16 +13903,33 @@ def build_ucp_params(connector_metadata, capability=None):
         if not pairs:
             demisto.debug('there are no pairs for profile id {}'.format(method_unique_id))
             continue
+        # [UCP-CODE-VERSION] flatten-v2 — if this marker is ABSENT from the logs,
+        # the runtime is executing a STALE bundled CommonServerPython, not this file.
+        demisto.debug('[UCP-CODE-VERSION] build_ucp_params flatten-v2 active')
         credentials = get_ucp_credentials(method_unique_id)
         demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FULL get_ucp_credentials({}) envelope = {}'.format(
             method_unique_id, _ucp_dump(credentials)))
+        # The credentials envelope is nested under a type key, e.g.
+        # {"type": "plain", "plain": {"username": "...", "password": "..."}}.
+        # Flatten: look up the field inside creds[creds["type"]], with a
+        # top-level fallback for already-flat envelopes.
+        cred_values = {}  # type: Dict[str, Any]
+        if isinstance(credentials, dict):
+            cred_type = credentials.get('type')
+            type_data = credentials.get(cred_type) if cred_type else None
+            if isinstance(type_data, dict):
+                cred_values = type_data
+            else:
+                cred_values = credentials
+        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: cred_type={!r}, FLATTENED cred_values keys={}'.format(
+            credentials.get('type') if isinstance(credentials, dict) else None,
+            list(cred_values.keys())))
         for field_id, destination in pairs:
-            field_value = credentials.get(field_id) if isinstance(credentials, dict) else None
+            field_value = cred_values.get(field_id)
             demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: field_id={!r} -> destination={!r}, '
-                          'lookup credentials.get({!r}) found={} value_type={}'.format(
-                              field_id, destination, field_id, field_value is not None,
-                              type(field_value).__name__))
-            if not field_value:
+                          'found={} value_type={}'.format(
+                              field_id, destination, field_value is not None, type(field_value).__name__))
+            if field_value is None:
                 demisto.debug('missing field value for field {} for profile id {}'.format(field_id, method_unique_id))
                 continue
             _place_by_path(result, destination, field_value)
