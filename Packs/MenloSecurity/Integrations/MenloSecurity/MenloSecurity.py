@@ -390,6 +390,11 @@ def test_module(client: Client, log_types: list[str]) -> str:  # noqa: PT
     Fetches one record per configured log type using the default first-fetch window.
     Returns 'ok' on success, a descriptive string for known errors, or re-raises unexpected ones.
     """
+    # MOCK MODE (FAKE-menlo branch): no real API, so Test always passes without credentials.
+    if getattr(client, "_mock_mode", False):
+        demisto.info("[MOCK] test-module: mock mode on — returning ok without calling the API.")
+        return "ok"
+
     end_epoch = int(datetime.now(UTC).timestamp())
     first_fetch_dt = arg_to_datetime(DEFAULT_FIRST_FETCH)
     if first_fetch_dt is None:
