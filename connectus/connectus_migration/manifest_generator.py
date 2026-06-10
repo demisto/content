@@ -2241,6 +2241,7 @@ _FEEDEXPIRATIONPOLICY_DEFAULT_TITLE = ""  # module.go does not set a display
 _FEEDEXPIRATIONINTERVAL_DEFAULT_TITLE = ""  # no display name per spec
 _FEEDREPUTATION_DEFAULT_TITLE = "Indicator Verdict"
 _FEEDBYPASSEXCLUSIONLIST_DEFAULT_TITLE = "Bypass exclusion list"
+_FEEDINCREMENTAL_DEFAULT_TITLE = "Incremental Feed"
 
 # Fallback default for feedFetchInterval when the yml doesn't carry the
 # param. DefaultFeedFetchTime = 4 * time.Hour = 240 minutes (module.go).
@@ -2256,6 +2257,7 @@ FEEDEXPIRATIONINTERVAL_PARAM_NAME = "feedExpirationInterval"
 FEEDREPUTATION_PARAM_NAME = "feedReputation"
 FEEDBYPASSEXCLUSIONLIST_PARAM_NAME = "feedBypassExclusionList"
 FEEDFETCHINTERVAL_PARAM_NAME = "feedFetchInterval"
+FEEDINCREMENTAL_PARAM_NAME = "feedIncremental"
 
 # All feed param names that are stripped from mapped_params by the builder.
 _FEED_STRIPPED_PARAMS: frozenset[str] = frozenset(
@@ -2267,6 +2269,7 @@ _FEED_STRIPPED_PARAMS: frozenset[str] = frozenset(
         FEEDREPUTATION_PARAM_NAME,
         FEEDBYPASSEXCLUSIONLIST_PARAM_NAME,
         FEEDFETCHINTERVAL_PARAM_NAME,
+        FEEDINCREMENTAL_PARAM_NAME,
     }
 )
 
@@ -2567,6 +2570,25 @@ def _build_feedbypassexclusionlist_field(
     }
 
 
+def _build_feedincremental_field(
+    yml_param: dict,
+    field_id: str,
+    title: str,
+) -> dict:
+    """Build the ``feedIncremental`` checkbox field from the integration yml.
+
+    Unlike the other feed fields, ``feedIncremental`` has NO synthetic
+    fallback: it is emitted ONLY when the integration yml carries the
+    param (the caller guarantees ``yml_param`` is not None). Its
+    ``hidden``, ``defaultvalue`` (default_value) and ``display`` (title)
+    are taken verbatim from the yml via :func:`_map_type_8`.
+    """
+    field = _map_type_8(yml_param)
+    field["id"] = field_id
+    field["title"] = title
+    return field
+
+
 # ---------------------------------------------------------------------------
 # Trigger builder for feedExpirationInterval reveal
 # ---------------------------------------------------------------------------
@@ -2623,7 +2645,7 @@ def add_indicators_capability(
     handler_dir: Path | None = None,
 ) -> dict:
     """Build the per-capability template dict for the ``Threat Intelligence
-    & Enrichment`` capability with up to 7 fields:
+    & Enrichment`` capability with up to 8 fields:
 
       1. ``feed`` — checkbox, always default true + hidden true
       2. ``feedFetchInterval`` — duration picker (fallback 240 min = 4h)
@@ -2633,6 +2655,11 @@ def add_indicators_capability(
          revealed via trigger when feedExpirationPolicy == interval)
       6. ``feedReputation`` — select (type 18 hardcoded values)
       7. ``feedBypassExclusionList`` — checkbox
+      8. ``feedIncremental`` — checkbox, emitted **only when present in the
+         integration yml** (no synthetic fallback). Its ``hidden``,
+         ``display`` (title) and ``defaultvalue`` (default_value) are taken
+         verbatim from the yml. When the yml omits it, this field is not
+         emitted and the capability keeps its 7 standard fields.
 
     Caller contract (mirrors the other ``add_<capability>_capability``
     builders):
@@ -2705,6 +2732,10 @@ def add_indicators_capability(
         yml_params_by_name, FEEDBYPASSEXCLUSIONLIST_PARAM_NAME,
         fallback=_FEEDBYPASSEXCLUSIONLIST_DEFAULT_TITLE,
     )
+    fi_title = _resolve_title_from_yml(
+        yml_params_by_name, FEEDINCREMENTAL_PARAM_NAME,
+        fallback=_FEEDINCREMENTAL_DEFAULT_TITLE,
+    )
 
     # --- §3. Look up yml params (may be None) ---------------------------
     def _yml(name: str) -> dict | None:
@@ -2754,6 +2785,16 @@ def add_indicators_capability(
         field_id=fbe_field_id, title=fbe_title,
     ))
 
+    # 8. feedIncremental — checkbox, emitted ONLY when present in the yml.
+    #    hidden/display/default_value are taken verbatim from the yml.
+    fi_yml_param = _yml(FEEDINCREMENTAL_PARAM_NAME)
+    fi_field_id = _field_id(FEEDINCREMENTAL_PARAM_NAME)
+    if fi_yml_param is not None:
+        fields.append(_build_feedincremental_field(
+            yml_param=fi_yml_param,
+            field_id=fi_field_id, title=fi_title,
+        ))
+
     # --- §5. Strip all feed param names from mapper results -------------
     for cap_name in list(mapped_params.keys()):
         names = mapped_params.get(cap_name) or []
@@ -2772,6 +2813,9 @@ def add_indicators_capability(
             FEEDREPUTATION_PARAM_NAME: frep_field_id,
             FEEDBYPASSEXCLUSIONLIST_PARAM_NAME: fbe_field_id,
         }
+        # feedIncremental only gets a bridge when it was actually emitted.
+        if fi_yml_param is not None:
+            _original_to_renamed[FEEDINCREMENTAL_PARAM_NAME] = fi_field_id
         for original, renamed in _original_to_renamed.items():
             if renamed != original:
                 register_renamed_field_serializer_entry(
@@ -2822,11 +2866,13 @@ ALERTFETCHINTERVAL_PARAM_NAME = "alertFetchInterval"
 LONGRUNNING_PARAM_NAME = "longRunning"
 
 # Connector-side field ids for the dynamic fields (mapper + classifier).
-# These are NOT XSOAR config param names — they are connector-level field
-# ids that map to the XSOAR instance-level fields via the dynamic values
-# mechanism.
-MAPPER_INCOMING_FIELD_ID = "mapper_incoming"
-CLASSIFIER_FIELD_ID = "classifier"
+# These mirror the XSOAR instance-level field names (per migration guide
+# Appendix J / §3.7): the classifier is stored under ``mappingId`` and the
+# incoming mapper under ``incomingMapperId`` — NOT under the dynamic-field
+# provider hints (``classifier`` / ``mapper-incoming``), which are passed
+# separately as ``dynamicField``.
+MAPPER_INCOMING_FIELD_ID = "incomingMapperId"
+CLASSIFIER_FIELD_ID = "mappingId"
 
 # All fetch-issues param names that are stripped from mapped_params.
 _FETCH_ISSUES_STRIPPED_PARAMS: frozenset[str] = frozenset(
@@ -2893,6 +2939,7 @@ def _build_dynamic_select_field(
     required: bool = False,
     hidden: bool = False,
     description: str = "",
+    config_type: str = "",
 ) -> dict:
     """Build a dynamic ``select`` field whose options are fetched at runtime
     by the XSOAR provider.
@@ -2938,6 +2985,8 @@ def _build_dynamic_select_field(
             "edit_modifiers": {"required": required, "hidden": hidden},
         },
     }
+    if config_type:
+        field["metadata"]["xsoar"] = {"config_type": config_type}
     if default_value:
         field["options"]["default_value"] = default_value
     if description:
@@ -3023,9 +3072,16 @@ def add_fetch_issues_capability(
     lr_field_id = _field_id(LONGRUNNING_PARAM_NAME) if is_long_running else ""
 
     # --- §2. Resolve titles (generic helper) ----------------------------
-    def align_incidents_to_issues(title):
-        title.replace("incidents", "Issues").replace("Incidents", "Issues").replace("incident", "Issues").replace("Incidents", "Issues")
-        return title
+    def align_incidents_to_issues(title: str) -> str:
+        """Replace the legacy "Incidents" terminology with Platform "Issues".
+
+        Per migration guide §3.7 field rule 2 / Appendix A: every occurrence
+        of "Incidents"/"incidents" in a user-visible title must become
+        "Issues" on the Platform marketplace. Returns the rewritten title
+        (the previous implementation discarded the ``str.replace`` result and
+        returned the input unchanged).
+        """
+        return title.replace("Incidents", "Issues").replace("incidents", "Issues")
 
     isfetch_title = _resolve_title_from_yml(
         yml_params_by_name, ISFETCH_PARAM_NAME,
@@ -3083,22 +3139,24 @@ def add_fetch_issues_capability(
         field_id=incfi_field_id, title=incfi_title,
     ))
 
-    # 4. mapper_incoming — dynamic select
+    # 4. incomingMapperId — dynamic select (backend-managed, Appendix J)
     fields.append(_build_dynamic_select_field(
         field_id=mapper_field_id,
         title=_MAPPER_INCOMING_DEFAULT_TITLE,
         dynamic_field_type="mapper-incoming",
         integration_id=integration_id,
         default_value=mapper_default,
+        config_type="backend",
     ))
 
-    # 5. classifier — dynamic select
+    # 5. mappingId (Classifier) — dynamic select (backend-managed, Appendix J)
     fields.append(_build_dynamic_select_field(
         field_id=classifier_field_id,
         title=_CLASSIFIER_DEFAULT_TITLE,
         dynamic_field_type="classifier",
         integration_id=integration_id,
         default_value=classifier_default,
+        config_type="backend",
     ))
 
     # 6. longRunning — only for long-running integrations

@@ -1687,8 +1687,8 @@ def test_create_manifest_from_scratch_generates_configurations_yaml_without_sche
     assert cfg_entries[0]["id"] == "fetch-issues_salesforce"
     assert cfg_entries[0]["view_group"] == "xsoar-salesforce"
     # The Fetch Issues capability injects its platform-mandated synthetic
-    # fields (isFetch, incidentType, incidentFetchInterval, mapper-incoming,
-    # classifier) at the FRONT of the sub-cap, followed by the raw mapped
+    # fields (isFetch, incidentType, incidentFetchInterval, incomingMapperId,
+    # mappingId) at the FRONT of the sub-cap, followed by the raw mapped
     # params. We assert by id/order (the exact field shapes are covered by the
     # dedicated add_fetch_issues_capability tests).
     field_ids = [
@@ -1698,8 +1698,8 @@ def test_create_manifest_from_scratch_generates_configurations_yaml_without_sche
         "isFetch",
         "incidentType",
         "incidentFetchInterval",
-        "mapper_incoming",
-        "classifier",
+        "incomingMapperId",
+        "mappingId",
         "fetch_limit",
         "first_fetch",
     ]
@@ -2369,8 +2369,8 @@ def test_append_handler_to_capability_already_split_adds_subcap_only(
         "isFetch",
         "incidentType",
         "incidentFetchInterval",
-        "mapper_incoming",
-        "classifier",
+        "incomingMapperId",
+        "mappingId",
         "new_p",
     ]
 
@@ -2540,8 +2540,8 @@ def test_append_handler_case2_promotes_existing_flat_capability(
         "isFetch",
         "incidentType",
         "incidentFetchInterval",
-        "mapper_incoming",
-        "classifier",
+        "incomingMapperId",
+        "mappingId",
         "new_param1",
         "new_param2",
     ]
@@ -5634,6 +5634,197 @@ def test_add_indicators_capability_uses_yml_display_for_titles():
     assert by_id["feedBypassExclusionList"]["title"] == "Skip Exclusions"
 
 
+# ------------------------------------------------------------
+# feedIncremental — conditional 8th field (only when in the yml)
+# ------------------------------------------------------------
+
+
+def test_add_indicators_capability_no_feedincremental_when_absent_from_yml():
+    """
+    Given: add_indicators_capability called with no yml params (or yml
+           without a feedIncremental entry).
+    When:  add_indicators_capability runs.
+    Then:  No feedIncremental field is emitted — the field list stays at
+           the 7 standard feed fields.
+    """
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    template = add_indicators_capability(
+        capability_id="threat-intelligence-and-enrichment",
+        is_sub_capability=False,
+        mapped_params=mapped,
+    )
+    field_ids = [f["id"] for f in template["fields"]]
+    assert "feedIncremental" not in field_ids
+    assert len(template["fields"]) == 7
+
+
+def test_add_indicators_capability_emits_feedincremental_when_present_in_yml():
+    """
+    Given: yml carries a feedIncremental param (type 8) with display,
+           defaultvalue='true', and hidden=True.
+    When:  add_indicators_capability runs.
+    Then:  An 8th checkbox field is appended (last) whose hidden, title
+           (display) and default_value are taken verbatim from the yml.
+    """
+    yml_lookup = {
+        "feedIncremental": {
+            "name": "feedIncremental",
+            "type": 8,
+            "display": "Incremental Feed",
+            "defaultvalue": "true",
+            "hidden": True,
+        },
+    }
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    template = add_indicators_capability(
+        capability_id="threat-intelligence-and-enrichment",
+        is_sub_capability=False,
+        mapped_params=mapped,
+        yml_params_by_name=yml_lookup,
+    )
+    fields = template["fields"]
+    # Emitted as the last (8th) field.
+    assert len(fields) == 8
+    assert fields[-1]["id"] == "feedIncremental"
+
+    fi = fields[-1]
+    assert fi["field_type"] == "checkbox"
+    assert fi["title"] == "Incremental Feed"
+    # default_value honored from yml (coerced "true" -> True).
+    assert fi["options"]["default_value"] is True
+    # hidden honored from yml.
+    assert fi["options"]["create_modifiers"]["hidden"] is True
+    assert fi["options"]["edit_modifiers"]["hidden"] is True
+
+
+def test_add_indicators_capability_feedincremental_honors_visible_and_false_default():
+    """
+    Given: yml carries a visible (hidden False) feedIncremental with
+           defaultvalue='false' and a custom display.
+    When:  add_indicators_capability runs.
+    Then:  The field is visible (hidden False), default_value False, and
+           uses the custom display as its title.
+    """
+    yml_lookup = {
+        "feedIncremental": {
+            "name": "feedIncremental",
+            "type": 8,
+            "display": "Pull only new/modified",
+            "defaultvalue": "false",
+            "hidden": False,
+        },
+    }
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    template = add_indicators_capability(
+        capability_id="threat-intelligence-and-enrichment",
+        is_sub_capability=False,
+        mapped_params=mapped,
+        yml_params_by_name=yml_lookup,
+    )
+    fi = {f["id"]: f for f in template["fields"]}["feedIncremental"]
+    assert fi["title"] == "Pull only new/modified"
+    assert fi["options"]["default_value"] is False
+    assert fi["options"]["create_modifiers"]["hidden"] is False
+    assert fi["options"]["edit_modifiers"]["hidden"] is False
+
+
+def test_add_indicators_capability_feedincremental_blank_display_falls_back_title():
+    """
+    Given: yml carries feedIncremental with no display.
+    When:  add_indicators_capability runs.
+    Then:  The field title falls back to the default "Incremental Feed".
+    """
+    yml_lookup = {
+        "feedIncremental": {
+            "name": "feedIncremental",
+            "type": 8,
+            "defaultvalue": "true",
+            "hidden": True,
+        },
+    }
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    template = add_indicators_capability(
+        capability_id="threat-intelligence-and-enrichment",
+        is_sub_capability=False,
+        mapped_params=mapped,
+        yml_params_by_name=yml_lookup,
+    )
+    fi = {f["id"]: f for f in template["fields"]}["feedIncremental"]
+    assert fi["title"] == "Incremental Feed"
+
+
+def test_add_indicators_capability_feedincremental_stripped_from_mapped_params():
+    """
+    Given: mapped_params contains feedIncremental in a bucket and the yml
+           carries the param.
+    When:  add_indicators_capability runs.
+    Then:  feedIncremental is removed from mapped_params so the standard
+           param-mapping pass does not re-emit it.
+    """
+    yml_lookup = {
+        "feedIncremental": {
+            "name": "feedIncremental",
+            "type": 8,
+            "display": "Incremental Feed",
+            "defaultvalue": "true",
+            "hidden": True,
+        },
+    }
+    mapped = {
+        "general_configurations": ["feedIncremental", "tlp_color"],
+        "Threat Intelligence & Enrichment": ["feedIncremental"],
+    }
+    add_indicators_capability(
+        capability_id="threat-intelligence-and-enrichment",
+        is_sub_capability=False,
+        mapped_params=mapped,
+        yml_params_by_name=yml_lookup,
+    )
+    assert "feedIncremental" not in mapped["general_configurations"]
+    assert mapped["general_configurations"] == ["tlp_color"]
+    assert "feedIncremental" not in mapped["Threat Intelligence & Enrichment"]
+
+
+def test_add_indicators_capability_feedincremental_sub_cap_renames_and_bridges(
+    tmp_path: Path,
+):
+    """
+    Given: sub-cap path with handler_dir and a yml carrying feedIncremental.
+    When:  add_indicators_capability runs.
+    Then:  The feedIncremental field id is renamed to
+           f"{cap_id}_feedIncremental" AND the serializer.yaml bridges it
+           back to the original "feedIncremental".
+    """
+    yml_lookup = {
+        "feedIncremental": {
+            "name": "feedIncremental",
+            "type": 8,
+            "display": "Incremental Feed",
+            "defaultvalue": "true",
+            "hidden": True,
+        },
+    }
+    cap_id = "threat-intelligence-and-enrichment-xsoar-myfeed"
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    template = add_indicators_capability(
+        capability_id=cap_id,
+        is_sub_capability=True,
+        mapped_params=mapped,
+        yml_params_by_name=yml_lookup,
+        handler_dir=tmp_path,
+    )
+    field_ids = [f["id"] for f in template["fields"]]
+    assert f"{cap_id}_feedIncremental" in field_ids
+
+    serializer_path = tmp_path / "serializer.yaml"
+    assert serializer_path.exists()
+    with open(serializer_path) as fh:
+        content = fh.read()
+    data = yaml.safe_load(content.split("\n", 1)[1])  # skip directive
+    mapping_dict = {m["id"]: m["field_name"] for m in data["field_mappings"]}
+    assert mapping_dict[f"{cap_id}_feedIncremental"] == "feedIncremental"
+
+
 # ============================================================
 # triggers.yaml emission: build_triggers_yaml / write_triggers_yaml
 # ============================================================
@@ -5989,18 +6180,114 @@ def test_add_fetch_issues_capability_top_level_emits_5_fields_standard():
     assert incfi["options"]["default_value"] == {"minutes": 1}
     assert incfi["options"]["units"] == DURATION_UNITS
 
-    # 4. mapper_incoming — dynamic select
-    mapper = by_id["mapper_incoming"]
+    # 4. incomingMapperId — dynamic select
+    mapper = by_id["incomingMapperId"]
     assert mapper["field_type"] == "select"
     assert mapper["metadata"]["dynamic_values"]["params"]["dynamicField"] == "mapper-incoming"
 
-    # 5. classifier — dynamic select
-    classifier = by_id["classifier"]
+    # 5. mappingId (Classifier) — dynamic select
+    classifier = by_id["mappingId"]
     assert classifier["field_type"] == "select"
     assert classifier["metadata"]["dynamic_values"]["params"]["dynamicField"] == "classifier"
 
     # No triggers for fetch-issues
     assert template["triggers"] == []
+
+
+def test_add_fetch_issues_capability_classifier_field_id_is_mappingId():
+    """
+    Given: add_fetch_issues_capability on the top-level path.
+    When:  the classifier field is emitted.
+    Then:  its connector field id is "mappingId" (the XSOAR instance-level
+           classifier field per migration guide Appendix J / §3.7), while the
+           runtime provider hint dynamicField stays "classifier".
+    """
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    template = add_fetch_issues_capability(
+        capability_id="fetch-issues",
+        is_sub_capability=False,
+        is_long_running=False,
+        mapped_params=mapped,
+        integration_yml=_make_integration_yml(),
+    )
+    by_id = {f["id"]: f for f in template["fields"]}
+    assert "mappingId" in by_id
+    assert "classifier" not in by_id
+    classifier = by_id["mappingId"]
+    assert classifier["metadata"]["dynamic_values"]["params"]["dynamicField"] == "classifier"
+
+
+def test_add_fetch_issues_capability_mapper_field_id_is_incomingMapperId():
+    """
+    Given: add_fetch_issues_capability on the top-level path.
+    When:  the incoming-mapper field is emitted.
+    Then:  its connector field id is "incomingMapperId" (the XSOAR
+           instance-level field per migration guide Appendix J / §3.7), while
+           the runtime provider hint dynamicField stays "mapper-incoming".
+    """
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    template = add_fetch_issues_capability(
+        capability_id="fetch-issues",
+        is_sub_capability=False,
+        is_long_running=False,
+        mapped_params=mapped,
+        integration_yml=_make_integration_yml(),
+    )
+    by_id = {f["id"]: f for f in template["fields"]}
+    assert "incomingMapperId" in by_id
+    assert "mapper_incoming" not in by_id
+    mapper = by_id["incomingMapperId"]
+    assert mapper["metadata"]["dynamic_values"]["params"]["dynamicField"] == "mapper-incoming"
+
+
+def test_add_fetch_issues_capability_classifier_and_mapper_are_backend_managed():
+    """
+    Given: add_fetch_issues_capability on the top-level path.
+    When:  the classifier (mappingId) and mapper (incomingMapperId) fields are
+           emitted.
+    Then:  both carry metadata.xsoar.config_type == "backend" (Appendix J),
+           while the user-visible incidentType field does NOT.
+    """
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    template = add_fetch_issues_capability(
+        capability_id="fetch-issues",
+        is_sub_capability=False,
+        is_long_running=False,
+        mapped_params=mapped,
+        integration_yml=_make_integration_yml(),
+    )
+    by_id = {f["id"]: f for f in template["fields"]}
+    assert by_id["mappingId"]["metadata"]["xsoar"]["config_type"] == "backend"
+    assert by_id["incomingMapperId"]["metadata"]["xsoar"]["config_type"] == "backend"
+    # incidentType is user-visible — must NOT be backend-managed.
+    assert "xsoar" not in by_id["incidentType"]["metadata"]
+
+
+def test_add_fetch_issues_capability_replaces_incidents_with_issues_in_titles():
+    """
+    Given: an integration yml whose isFetch/incidentType params carry a
+           display string containing "Incidents".
+    When:  add_fetch_issues_capability runs.
+    Then:  the emitted field titles use "Issues" (Platform terminology),
+           proving align_incidents_to_issues actually performs the
+           replacement (guide §3.7 field rule 2 / Appendix A).
+    """
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    yml_params_by_name = {
+        ISFETCH_PARAM_NAME: {"display": "Fetch Incidents"},
+        INCIDENTTYPE_PARAM_NAME: {"display": "Incidents Type"},
+    }
+    template = add_fetch_issues_capability(
+        capability_id="fetch-issues",
+        is_sub_capability=False,
+        is_long_running=False,
+        mapped_params=mapped,
+        integration_yml=_make_integration_yml(),
+        yml_params_by_name=yml_params_by_name,
+    )
+    by_id = {f["id"]: f for f in template["fields"]}
+    assert by_id["isFetch"]["title"] == "Fetch Issues"
+    assert by_id["incidentType"]["title"] == "Issues Type"
 
 
 def test_add_fetch_issues_capability_long_running_emits_6_fields():
@@ -6127,7 +6414,7 @@ def test_add_fetch_issues_capability_mapper_default_from_yml():
         mapped_params=mapped,
         integration_yml=integration_yml,
     )
-    mapper = {f["id"]: f for f in template["fields"]}["mapper_incoming"]
+    mapper = {f["id"]: f for f in template["fields"]}["incomingMapperId"]
     assert mapper["options"]["default_value"] == "QRadar - Generic Incoming Mapper"
 
 
@@ -6148,7 +6435,7 @@ def test_add_fetch_issues_capability_classifier_default_from_yml():
         mapped_params=mapped,
         integration_yml=integration_yml,
     )
-    classifier = {f["id"]: f for f in template["fields"]}["classifier"]
+    classifier = {f["id"]: f for f in template["fields"]}["mappingId"]
     assert classifier["options"]["default_value"] == "QRadar"
 
 
@@ -6156,7 +6443,7 @@ def test_add_fetch_issues_capability_no_mapper_classifier_defaults():
     """
     Given: integration yml has NO defaultmapperin or defaultclassifier.
     When:  add_fetch_issues_capability runs.
-    Then:  mapper_incoming and classifier fields have no default_value.
+    Then:  incomingMapperId and mappingId fields have no default_value.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     integration_yml = _make_integration_yml()
@@ -6168,8 +6455,8 @@ def test_add_fetch_issues_capability_no_mapper_classifier_defaults():
         integration_yml=integration_yml,
     )
     by_id = {f["id"]: f for f in template["fields"]}
-    assert "default_value" not in by_id["mapper_incoming"]["options"]
-    assert "default_value" not in by_id["classifier"]["options"]
+    assert "default_value" not in by_id["incomingMapperId"]["options"]
+    assert "default_value" not in by_id["mappingId"]["options"]
 
 
 def test_add_fetch_issues_capability_incidenttype_default_from_yml():
@@ -6249,8 +6536,8 @@ def test_add_fetch_issues_capability_sub_capability_renames_field_ids():
     assert f"{cap_id}_isFetch" in field_ids
     assert f"{cap_id}_incidentType" in field_ids
     assert f"{cap_id}_incidentFetchInterval" in field_ids
-    assert f"{cap_id}_mapper_incoming" in field_ids
-    assert f"{cap_id}_classifier" in field_ids
+    assert f"{cap_id}_incomingMapperId" in field_ids
+    assert f"{cap_id}_mappingId" in field_ids
 
 
 def test_add_fetch_issues_capability_sub_cap_writes_serializer_bridges(tmp_path: Path):
@@ -6281,8 +6568,8 @@ def test_add_fetch_issues_capability_sub_cap_writes_serializer_bridges(tmp_path:
     assert mapping_dict[f"{cap_id}_isFetch"] == "isFetch"
     assert mapping_dict[f"{cap_id}_incidentType"] == "incidentType"
     assert mapping_dict[f"{cap_id}_incidentFetchInterval"] == "incidentFetchInterval"
-    assert mapping_dict[f"{cap_id}_mapper_incoming"] == "mapper_incoming"
-    assert mapping_dict[f"{cap_id}_classifier"] == "classifier"
+    assert mapping_dict[f"{cap_id}_incomingMapperId"] == "incomingMapperId"
+    assert mapping_dict[f"{cap_id}_mappingId"] == "mappingId"
 
 
 def test_add_fetch_issues_capability_long_running_sub_cap_writes_6_bridges(tmp_path: Path):
@@ -6347,7 +6634,7 @@ def test_add_fetch_issues_capability_dynamic_fields_use_integration_id():
         integration_yml=integration_yml,
     )
     by_id = {f["id"]: f for f in template["fields"]}
-    for field_id in ["incidentType", "mapper_incoming", "classifier"]:
+    for field_id in ["incidentType", "incomingMapperId", "mappingId"]:
         dv = by_id[field_id]["metadata"]["dynamic_values"]
         assert dv["params"]["integrationID"] == "Salesforce"
 
