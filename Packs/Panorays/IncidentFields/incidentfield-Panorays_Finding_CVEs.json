@@ -1,0 +1,10 @@
+{
+    "cliName": "panoraysfindingcves",
+    "description": "CVEs associated with the Panorays finding.",
+    "group": 0,
+    "id": "incident_panoraysfindingcves",
+    "name": "Panorays Finding CVEs",
+    "associatedTypes": ["Panorays Finding"],
+    "type": "longText",
+    "fromVersion": "6.0.0"
+}

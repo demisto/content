@@ -1,0 +1,10 @@
+{
+    "cliName": "panoraysfindingid",
+    "description": "The unique ID of the Panorays finding.",
+    "group": 0,
+    "id": "incident_panoraysfindingid",
+    "name": "Panorays Finding ID",
+    "associatedTypes": ["Panorays Finding"],
+    "type": "shortText",
+    "fromVersion": "6.0.0"
+}

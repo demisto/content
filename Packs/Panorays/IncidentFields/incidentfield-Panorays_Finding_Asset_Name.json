@@ -1,0 +1,10 @@
+{
+    "cliName": "panoraysfindingassetname",
+    "description": "The name of the asset affected by the Panorays finding.",
+    "group": 0,
+    "id": "incident_panoraysfindingassetname",
+    "name": "Panorays Finding Asset Name",
+    "associatedTypes": ["Panorays Finding"],
+    "type": "shortText",
+    "fromVersion": "6.0.0"
+}

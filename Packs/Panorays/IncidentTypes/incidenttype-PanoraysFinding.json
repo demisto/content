@@ -1,0 +1,16 @@
+{
+    "color": "#0D5C8A",
+    "defaultPlaybook": "",
+    "description": "A security finding detected by Panorays.",
+    "hours": 0,
+    "id": "Panorays Finding",
+    "name": "Panorays Finding",
+    "playbook": "",
+    "prevName": "Panorays Finding",
+    "days": 3,
+    "weeks": 1,
+    "closureScript": "",
+    "system": false,
+    "readonly": false,
+    "fromVersion": "6.0.0"
+}

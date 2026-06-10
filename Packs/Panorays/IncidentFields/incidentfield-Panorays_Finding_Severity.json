@@ -1,0 +1,10 @@
+{
+    "cliName": "panoraysfindingseverity",
+    "description": "The severity level of the Panorays finding.",
+    "group": 0,
+    "id": "incident_panoraysfindingseverity",
+    "name": "Panorays Finding Severity",
+    "associatedTypes": ["Panorays Finding"],
+    "type": "shortText",
+    "fromVersion": "6.0.0"
+}
