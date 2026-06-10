@@ -66,6 +66,7 @@ from manifest_generator import (
     make_sub_capability_id,
     handler_id_to_integration_slug,
     build_per_handler_general_config,
+    build_default_ignore_capability_field,
     build_capabilities_yaml,
     build_configurations_yaml,
     build_connector_yaml,
@@ -1048,9 +1049,10 @@ def test_create_manifest_from_scratch_generates_serializer_yaml_alongside_handle
         auth_methods={},
     )
 
-    # With no collisions, the per-handler general_config fields keep their
-    # bare canonical ids (integrationLogLevel + defaultIgnore) and register
-    # NO serializer entries, so serializer.yaml is not created.
+    # With no collisions, the per-handler general_config field keeps its
+    # bare canonical id (integrationLogLevel) and registers NO serializer
+    # entries, so serializer.yaml is not created. (No Automation capability
+    # here, so no defaultIgnore field is emitted either.)
     serializer_yaml_path = (
         connector_dir
         / "components"
@@ -1297,12 +1299,13 @@ def test_build_per_handler_general_config_skips_user_param_colliding_with_mandat
             "xsoar-test", handler_dir, mapped_params=mapped_params
         )
     field_ids = [f["id"] for f in result["fields"]]
-    # integrationLogLevel + defaultIgnore are always first (platform-mandated).
-    # With no collisions they keep their bare canonical ids (no prefix).
-    # instance_name and integrationLogLevel from user params are skipped.
-    # Only "url" from user params should appear.
+    # integrationLogLevel is always first (platform-mandated). With no
+    # collisions it keeps its bare canonical id (no prefix). instance_name
+    # and integrationLogLevel from user params are skipped. Only "url" from
+    # user params should appear. defaultIgnore is NOT emitted here anymore —
+    # it is injected under the automation capability by the caller.
     assert "integrationLogLevel" in field_ids
-    assert "defaultIgnore" in field_ids
+    assert "defaultIgnore" not in field_ids
     assert "url" in field_ids  # user param that didn't collide
     # No duplicate integrationLogLevel from user params.
     assert field_ids.count("integrationLogLevel") == 1
@@ -1833,8 +1836,9 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
     # ``timeout`` all unique (no collision between general_configurations
     # and the per-capability buckets), AND the platform-mandated
     # integrationLogLevel/defaultIgnore fields keeping their bare canonical
-    # ids (no collision), no field_mappings entries are written — so
-    # serializer.yaml is not created.
+    # ids (no collision — defaultIgnore now lives under the automation
+    # capability), no field_mappings entries are written — so serializer.yaml
+    # is not created.
     assert not serializer_yaml.exists()
 
     # Spot-check shapes
@@ -1906,7 +1910,9 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
     assert len(handler_gc) >= 1
     handler_field_ids = [f["id"] for f in handler_gc[0]["fields"]]
     assert "integrationLogLevel" in handler_field_ids
-    assert "defaultIgnore" in handler_field_ids
+    # defaultIgnore is NOT in general_configurations anymore — it now lives
+    # under the automation-and-remediation capability (asserted below).
+    assert "defaultIgnore" not in handler_field_ids
     # User-mapped params (url, verify_ssl, proxy) also present.
     assert "url" in handler_field_ids or any(
         "url" in fid for fid in handler_field_ids
@@ -1918,6 +1924,19 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
         "fetch-issues_salesforce",
         "automation-and-remediation_salesforce",
     ]
+    # defaultIgnore is injected under the automation-and-remediation sub-cap
+    # entry (this connector declares the Automation capability).
+    automation_entry = next(
+        c
+        for c in configurations_data["configurations"]
+        if c["id"] == "automation-and-remediation_salesforce"
+    )
+    automation_field_ids = [
+        f["id"]
+        for grp in automation_entry["configurations"]
+        for f in grp["fields"]
+    ]
+    assert "defaultIgnore" in automation_field_ids
 
     with open(handler_yaml) as fh:
         fh.readline()  # skip schema directive
@@ -3868,16 +3887,17 @@ def test_register_renamed_field_serializer_entry_writes_bridge(tmp_path: Path):
 # ---------------------------------------------------------------------------
 def test_build_per_handler_general_config_shape(tmp_path: Path):
     """build_per_handler_general_config returns a view_group-pinned
-    field group with exactly 2 fields: integrationLogLevel (select)
-    and defaultIgnore (checkbox). With no collisions, both field ids
-    keep their bare canonical names (no handler-id prefix)."""
+    field group with exactly 1 field: integrationLogLevel (select). With
+    no collisions the field id keeps its bare canonical name (no handler-id
+    prefix). defaultIgnore is NO longer emitted here — it is injected under
+    the automation capability instead."""
     handler_dir = tmp_path / "handler"
     handler_dir.mkdir()
     result = build_per_handler_general_config("xsoar-salesforce", handler_dir)
 
     assert result["view_group"] == "xsoar-salesforce"
     fields = result["fields"]
-    assert len(fields) == 2
+    assert len(fields) == 1
 
     log_level = fields[0]
     assert log_level["id"] == "integrationLogLevel"
@@ -3888,20 +3908,16 @@ def test_build_per_handler_general_config_shape(tmp_path: Path):
     assert [v["key"] for v in values] == ["Off", "Debug", "Verbose"]
     assert log_level["options"]["default_value"] == "Off"
 
-    default_ignore = fields[1]
-    assert default_ignore["id"] == "defaultIgnore"
-    assert default_ignore["title"] == "Do not use in CLI by default"
-    assert default_ignore["field_type"] == "checkbox"
-    assert default_ignore["metadata"]["xsoar"]["config_type"] == "backend"
-    assert default_ignore["options"]["default_value"] is False
+    # defaultIgnore is not part of the general_configurations group anymore.
+    assert "defaultIgnore" not in [f["id"] for f in fields]
 
 
 def test_build_per_handler_general_config_no_serializer_entries_without_collision(
     tmp_path: Path,
 ):
     """build_per_handler_general_config does NOT write serializer
-    field_mappings entries when the canonical ids don't collide — the
-    bare ids are used directly, so no bridge is needed and serializer.yaml
+    field_mappings entries when the canonical id doesn't collide — the
+    bare id is used directly, so no bridge is needed and serializer.yaml
     is not created."""
     handler_dir = tmp_path / "handler"
     handler_dir.mkdir()
@@ -3913,27 +3929,63 @@ def test_build_per_handler_general_config_no_serializer_entries_without_collisio
 def test_build_per_handler_general_config_prefixes_and_bridges_on_collision(
     tmp_path: Path,
 ):
-    """When the canonical ids already collide (pre-seeded existing_ids),
+    """When the canonical id already collides (pre-seeded existing_ids),
     build_per_handler_general_config renames to ``<handler_id>_<id>`` and
-    registers serializer field_mappings entries bridging back to the
-    canonical param names."""
+    registers a serializer field_mappings entry bridging back to the
+    canonical param name. Only integrationLogLevel is handled here now
+    (defaultIgnore moved to the automation capability)."""
     handler_dir = tmp_path / "handler"
     handler_dir.mkdir()
-    existing = {"integrationLogLevel", "defaultIgnore"}
+    existing = {"integrationLogLevel"}
     result = build_per_handler_general_config(
         "xsoar-myint", handler_dir, existing_ids=existing
     )
 
     field_ids = [f["id"] for f in result["fields"]]
     assert "xsoar-myint_integrationLogLevel" in field_ids
-    assert "xsoar-myint_defaultIgnore" in field_ids
 
     serializer_data = _read_serializer_dict(handler_dir)
     mappings = serializer_data.get("field_mappings", [])
-    assert len(mappings) == 2
+    assert len(mappings) == 1
     mapping_by_id = {m["id"]: m["field_name"] for m in mappings}
     assert mapping_by_id["xsoar-myint_integrationLogLevel"] == "integrationLogLevel"
-    assert mapping_by_id["xsoar-myint_defaultIgnore"] == "defaultIgnore"
+
+
+def test_build_default_ignore_capability_field_shape(tmp_path: Path):
+    """build_default_ignore_capability_field returns the defaultIgnore
+    checkbox field with the bare canonical id when there is no collision."""
+    handler_dir = tmp_path / "handler"
+    handler_dir.mkdir()
+    field = build_default_ignore_capability_field("xsoar-salesforce", handler_dir)
+
+    assert field["id"] == "defaultIgnore"
+    assert field["title"] == "Do not use in CLI by default"
+    assert field["field_type"] == "checkbox"
+    assert field["metadata"]["xsoar"]["config_type"] == "backend"
+    assert field["options"]["default_value"] is False
+    # No collision -> no serializer.yaml bridge.
+    assert not (handler_dir / "serializer.yaml").exists()
+
+
+def test_build_default_ignore_capability_field_bridges_on_collision(tmp_path: Path):
+    """When ``defaultIgnore`` already collides (pre-seeded existing_ids),
+    build_default_ignore_capability_field renames to
+    ``<handler_id>_defaultIgnore`` and registers a serializer field_mappings
+    entry bridging back to the canonical ``defaultIgnore`` param name."""
+    handler_dir = tmp_path / "handler"
+    handler_dir.mkdir()
+    existing = {"defaultIgnore"}
+    field = build_default_ignore_capability_field(
+        "xsoar-myint", handler_dir, existing_ids=existing
+    )
+
+    assert field["id"] == "xsoar-myint_defaultIgnore"
+
+    serializer_data = _read_serializer_dict(handler_dir)
+    mappings = serializer_data.get("field_mappings", [])
+    assert len(mappings) == 1
+    assert mappings[0]["id"] == "xsoar-myint_defaultIgnore"
+    assert mappings[0]["field_name"] == "defaultIgnore"
 
 
 def test_from_scratch_emits_per_handler_general_config_in_configurations_yaml(
@@ -3941,7 +3993,9 @@ def test_from_scratch_emits_per_handler_general_config_in_configurations_yaml(
 ):
     """End-to-end: create_manifest_from_scratch emits the per-handler
     general_configurations field group + view_groups registry entry
-    in configurations.yaml."""
+    in configurations.yaml. With an Automation capability, defaultIgnore
+    is injected under the automation-and-remediation sub-cap entry (NOT in
+    general_configurations)."""
     integration_yml_path = _make_pack_with_integration(
         tmp_path, "MyPack", "MyInt", {"tags": []}
     )
@@ -3965,13 +4019,70 @@ def test_from_scratch_emits_per_handler_general_config_in_configurations_yaml(
     vg_ids = [vg["id"] for vg in cfg.get("view_groups", [])]
     assert "xsoar-myint" in vg_ids
 
-    # general_configurations has a view_group-pinned field group.
+    # general_configurations has a view_group-pinned field group with only
+    # integrationLogLevel — defaultIgnore is no longer here.
     gc_entries = cfg.get("general_configurations", {}).get("configurations", [])
     handler_gc = [e for e in gc_entries if e.get("view_group") == "xsoar-myint"]
     assert len(handler_gc) == 1
     field_ids = [f["id"] for f in handler_gc[0]["fields"]]
     assert "integrationLogLevel" in field_ids
-    assert "defaultIgnore" in field_ids
+    assert "defaultIgnore" not in field_ids
+
+    # defaultIgnore is injected under the automation-and-remediation sub-cap.
+    automation_entry = next(
+        c
+        for c in cfg["configurations"]
+        if c["id"] == "automation-and-remediation_myint"
+    )
+    automation_field_ids = [
+        f["id"]
+        for grp in automation_entry["configurations"]
+        for f in grp["fields"]
+    ]
+    assert "defaultIgnore" in automation_field_ids
+
+
+def test_from_scratch_omits_default_ignore_without_automation_capability(
+    tmp_path: Path,
+):
+    """When the connector has NO Automation capability, defaultIgnore is not
+    emitted anywhere — neither in general_configurations nor in any capability
+    entry."""
+    integration_yml_path = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "test_conn"
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={
+            "commonfields": {"id": "MyInt"},
+            "display": "MyInt",
+        },
+        integration_path=integration_yml_path,
+        connector_title="test_conn",
+        mapped_params={"Fetch Issues": ["p1"]},
+        auth_methods={},
+    )
+
+    with open(connector_dir / "configurations.yaml") as fh:
+        cfg = yaml.safe_load(fh)
+
+    # general_configurations has only integrationLogLevel — no defaultIgnore.
+    gc_entries = cfg.get("general_configurations", {}).get("configurations", [])
+    handler_gc = [e for e in gc_entries if e.get("view_group") == "xsoar-myint"]
+    assert len(handler_gc) == 1
+    field_ids = [f["id"] for f in handler_gc[0]["fields"]]
+    assert "integrationLogLevel" in field_ids
+    assert "defaultIgnore" not in field_ids
+
+    # No capability entry carries defaultIgnore either.
+    all_cap_field_ids = [
+        f["id"]
+        for c in cfg.get("configurations", [])
+        for grp in c.get("configurations", [])
+        for f in grp.get("fields", [])
+    ]
+    assert "defaultIgnore" not in all_cap_field_ids
 
 
 def test_add_secret_capability_top_level_uses_plain_field_id():
@@ -5188,13 +5299,18 @@ def test_add_indicators_capability_top_level_emits_7_fields_with_defaults():
     assert fep["options"]["default_value"] == FEED_EXPIRATION_POLICY_DEFAULT
     assert fep["options"]["values"] == FEED_EXPIRATION_POLICY_VALUES
 
-    # 5. feedExpirationInterval — numeric input, hidden, no title
+    # 5. feedExpirationInterval — duration picker, hidden, no title.
+    # The "20160" (2 weeks in minutes) default converts to {"days": 14}.
     fei = by_id["feedExpirationInterval"]
-    assert fei["field_type"] == "input"
-    assert fei["options"]["is_number_input"] is True
-    assert fei["options"]["default_value"] == FEED_EXPIRATION_INTERVAL_DEFAULT
+    assert fei["field_type"] == "duration"
+    assert fei["output_format"] == "minutes"
+    assert fei["options"]["units"] == ["days", "hours", "minutes"]
+    assert "is_number_input" not in fei["options"]
+    assert fei["options"]["default_value"] == {"days": 14}
     assert fei["options"]["create_modifiers"]["hidden"] is True
     assert fei["options"]["edit_modifiers"]["hidden"] is True
+    # required is forbidden on a duration field.
+    assert "required" not in fei["options"]["create_modifiers"]
     assert "title" not in fei
 
     # 6. feedReputation — select, type 18 values
@@ -5460,7 +5576,8 @@ def test_add_indicators_capability_feedexpirationinterval_yml_driven():
     """
     Given: yml carries feedExpirationInterval with defaultvalue='1440'.
     When:  add_indicators_capability runs.
-    Then:  The field uses the yml default, is still hidden, and has no title.
+    Then:  The field is a duration picker using the yml default (1440 min =
+           {"days": 1}), is still hidden, and has no title.
     """
     yml_lookup = {
         "feedExpirationInterval": {
@@ -5477,7 +5594,10 @@ def test_add_indicators_capability_feedexpirationinterval_yml_driven():
         yml_params_by_name=yml_lookup,
     )
     fei = {f["id"]: f for f in template["fields"]}["feedExpirationInterval"]
-    assert fei["options"]["default_value"] == "1440"
+    assert fei["field_type"] == "duration"
+    assert fei["output_format"] == "minutes"
+    assert fei["options"]["units"] == ["days", "hours", "minutes"]
+    assert fei["options"]["default_value"] == {"days": 1}
     assert fei["options"]["create_modifiers"]["hidden"] is True
     assert "title" not in fei
 

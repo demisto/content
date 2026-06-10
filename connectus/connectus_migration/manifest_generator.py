@@ -1872,25 +1872,13 @@ def _build_numeric_fetch_interval_field(
             },
         }
 
-    # yml-driven path: reuse _map_type_19 only to honor hidden/required
-    # metadata, then convert it into a duration field.
+    # yml-driven path: _map_type_19 already emits a fully-formed duration
+    # field (units / output_format / per-unit default_value / hidden
+    # honoured / required stripped). We only override the connector-side id
+    # and title for this capability's field.
     field = _map_type_19(yml_param)
     field["id"] = field_id
     field["title"] = title
-    field["field_type"] = "duration"
-
-    options = field.setdefault("options", {})
-    # _map_type_19 emits the numeric-input flag; the duration field does
-    # not use it.
-    options.pop("is_number_input", None)
-    options["units"] = list(DURATION_UNITS)
-
-    # Convert the yml minute count (if any) into a per-unit object; when
-    # absent or unparseable, fall back to 1 minute.
-    minutes = _coerce_interval_minutes(yml_param.get("defaultvalue"))
-    options["default_value"] = _minutes_to_duration_default(
-        minutes if minutes is not None else 1
-    )
     return field
 
 
@@ -2461,38 +2449,49 @@ def _build_feedexpirationinterval_field(
     yml_param: dict | None,
     field_id: str,
 ) -> dict:
-    """Build the ``feedExpirationInterval`` numeric input field.
+    """Build the ``feedExpirationInterval`` ``duration`` field.
 
-    Per spec: **no display name** (title omitted or empty), **hidden by
-    default** (revealed via a trigger when ``feedExpirationPolicy ==
-    interval``). Default ``"20160"`` (2 weeks in minutes) from module.go.
+    Per spec: **no display name** (title omitted), **hidden by default**
+    (revealed via a trigger when ``feedExpirationPolicy == interval``).
+    Default ``"20160"`` (2 weeks in minutes) from module.go, converted to
+    a per-unit ``duration`` object (``{"days": 14}``).
 
-    When ``yml_param`` is provided, honor its ``defaultvalue`` and
-    ``additionalinfo`` but force hidden=True regardless.
+    Per the duration migration contract (§2.15) the field is a
+    ``duration`` picker — NOT a numeric ``input`` — with
+    ``units == ["days", "hours", "minutes"]`` and
+    ``output_format: "minutes"``; ``required`` is forbidden.
+
+    When ``yml_param`` is provided, honor its ``defaultvalue`` (a minute
+    count) and ``additionalinfo`` but force hidden=True regardless.
     """
     if yml_param is not None:
+        # _map_type_19 emits the full duration shape (units / output_format /
+        # per-unit default / required stripped).
         field = _map_type_19(yml_param)
         field["id"] = field_id
         # No display name per spec.
         field.pop("title", None)
         options = field.setdefault("options", {})
-        if "default_value" not in options:
-            options["default_value"] = FEED_EXPIRATION_INTERVAL_DEFAULT
         # Force hidden — the trigger reveals it.
         for mod_key in ("create_modifiers", "edit_modifiers"):
             mod = options.setdefault(mod_key, {})
             mod["hidden"] = True
         return field
 
-    # Synthetic fallback path.
+    # Synthetic fallback path — duration field, hidden, no title.
+    minutes = _coerce_interval_minutes(FEED_EXPIRATION_INTERVAL_DEFAULT)
+    default_value = _minutes_to_duration_default(
+        minutes if minutes is not None else 1
+    )
     return {
         "id": field_id,
-        "field_type": "input",
+        "field_type": "duration",
+        "output_format": "minutes",
         "options": {
-            "is_number_input": True,
-            "default_value": FEED_EXPIRATION_INTERVAL_DEFAULT,
-            "create_modifiers": {"required": False, "hidden": True},
-            "edit_modifiers": {"required": False, "hidden": True},
+            "units": list(DURATION_UNITS),
+            "default_value": default_value,
+            "create_modifiers": {"hidden": True},
+            "edit_modifiers": {"hidden": True},
         },
     }
 
@@ -3379,17 +3378,28 @@ def write_capabilities_yaml(
 # Per-handler general_configurations fields
 # ---------------------------------------------------------------------------
 # Per the grouped-example reference, every handler added to a connector
-# gets two fields in configurations.yaml → general_configurations, each
-# inside a view_group-pinned field group where view_group id = handler id.
-# By default both fields keep their bare canonical ids
-# (``integrationLogLevel`` / ``defaultIgnore``) with NO handler-id prefix
-# and NO serializer entry. Only when the bare id collides with another
-# emitted field is it renamed to ``<handler_id>_<id>`` and bridged back to
-# its canonical name via a serializer ``field_mappings`` entry.
+# gets an ``integrationLogLevel`` field in configurations.yaml →
+# general_configurations, inside a view_group-pinned field group where
+# view_group id = handler id. By default the field keeps its bare canonical
+# id (``integrationLogLevel``) with NO handler-id prefix and NO serializer
+# entry. Only when the bare id collides with another emitted field is it
+# renamed to ``<handler_id>_<id>`` and bridged back to its canonical name
+# via a serializer ``field_mappings`` entry.
+#
+# The ``defaultIgnore`` field ("Do not use in CLI by default") is NO longer
+# emitted unconditionally in general_configurations. It only makes sense for
+# handlers exposing automation/CLI commands, so it is injected under the
+# ``automation-and-remediation`` (sub-)capability entry in
+# configurations.yaml — and ONLY when the handler declares the Automation
+# capability (the ``"Automation"`` bucket key in ``mapped_params``).
 
 # Canonical base param names (the XSOAR runtime expects these).
 _INTEGRATION_LOG_LEVEL_PARAM = "integrationLogLevel"
 _DEFAULT_IGNORE_PARAM = "defaultIgnore"
+
+# The mapper bucket key that maps to the automation-and-remediation
+# capability. ``defaultIgnore`` is only emitted when this bucket is present.
+_AUTOMATION_BUCKET_KEY = "Automation"
 
 
 def _per_handler_log_level_field(handler_id: str, field_id: str) -> dict:
@@ -3431,13 +3441,19 @@ def _per_handler_log_level_field(handler_id: str, field_id: str) -> dict:
 
 
 def _per_handler_default_ignore_field(field_id: str) -> dict:
-    """Build the per-handler ``defaultIgnore`` checkbox field.
+    """Build the ``defaultIgnore`` checkbox field.
 
     Per the grouped-example reference (lines 325-338 of
     ``configurations.yaml``): "Do not use in CLI by default" — a
     visible checkbox, always default ``false``, backend-managed.
     ``field_id`` is the resolved connector id (bare ``defaultIgnore``
     by default, or ``<handler_id>_defaultIgnore`` only on collision).
+
+    This field is emitted under the ``automation-and-remediation``
+    (sub-)capability entry in ``configurations.yaml`` (NOT in
+    general_configurations) and only when the handler declares the
+    Automation capability — it controls whether the connector's automation
+    commands are used in the CLI by default.
 
     Shape matches the grouped-example reference.
     """
@@ -3458,6 +3474,33 @@ def _per_handler_default_ignore_field(field_id: str) -> dict:
     }
 
 
+def build_default_ignore_capability_field(
+    handler_id: str,
+    handler_dir: Path,
+    existing_ids: set[str] | None = None,
+) -> dict:
+    """Build the ``defaultIgnore`` field for the automation capability.
+
+    Resolves the connector field id via the same collision-based dedup as the
+    other per-handler fields: by default it keeps the bare canonical id
+    (``defaultIgnore``) with NO prefix and NO serializer entry; only when the
+    bare id already collides with another emitted field does
+    :func:`dedup_field_id_and_register` rename it to
+    ``<handler_id>_defaultIgnore`` and append the serializer ``field_mappings``
+    bridge back to the canonical name. ``existing_ids`` is mutated in place.
+
+    The returned field is intended to be injected (by the caller) into the
+    ``automation-and-remediation`` (sub-)capability entry in
+    ``configurations.yaml`` — and ONLY when the handler declares the Automation
+    capability.
+    """
+    ids = existing_ids if existing_ids is not None else set()
+    default_ignore_id = dedup_field_id_and_register(
+        ids, handler_id, handler_dir, _DEFAULT_IGNORE_PARAM
+    )
+    return _per_handler_default_ignore_field(default_ignore_id)
+
+
 def build_per_handler_general_config(
     handler_id: str,
     handler_dir: Path,
@@ -3474,7 +3517,6 @@ def build_per_handler_general_config(
             "relevant_for_capabilities": [<cap_ids>],
             "fields": [
                 <integrationLogLevel field>,
-                <defaultIgnore field>,
                 <user-mapped general_configurations params...>,
             ],
         }
@@ -3488,11 +3530,15 @@ def build_per_handler_general_config(
     (NOT in capabilities.yaml) — each materialized via
     :func:`emit_field_for_param` with dedup support.
 
-    The ``integrationLogLevel`` and ``defaultIgnore`` fields keep their
-    bare canonical ids by default (no prefix, no serializer entry). Only
-    on an id collision are they renamed to ``<handler_id>_<id>`` and a
-    serializer ``field_mappings`` entry registered so the XSOAR runtime
-    still receives the canonical param name.
+    The ``integrationLogLevel`` field keeps its bare canonical id by default
+    (no prefix, no serializer entry). Only on an id collision is it renamed
+    to ``<handler_id>_<id>`` and a serializer ``field_mappings`` entry
+    registered so the XSOAR runtime still receives the canonical param name.
+
+    NOTE: ``defaultIgnore`` is NO longer emitted here. It is injected under
+    the ``automation-and-remediation`` (sub-)capability entry in
+    ``configurations.yaml`` — and only when the handler declares the
+    Automation capability — via :func:`build_default_ignore_capability_field`.
 
     The caller is responsible for:
       1. Adding the returned dict to
@@ -3501,25 +3547,20 @@ def build_per_handler_general_config(
          ``{"id": handler_id, "label": handler_id}`` to
          ``configurations_data["view_groups"]``.
     """
-    # Resolve the connector field ids via collision-based dedup: by default
-    # these keep their bare canonical ids (``integrationLogLevel`` /
-    # ``defaultIgnore``) with NO prefix and NO serializer entry. Only when
-    # the bare id already collides with another emitted field does
-    # ``dedup_field_id_and_register`` rename it to ``<handler_id>_<id>`` and
-    # append the serializer ``field_mappings`` bridge back to the canonical
-    # name. ``existing_ids`` is mutated in place.
+    # Resolve the connector field id via collision-based dedup: by default
+    # ``integrationLogLevel`` keeps its bare canonical id with NO prefix and
+    # NO serializer entry. Only when the bare id already collides with another
+    # emitted field does ``dedup_field_id_and_register`` rename it to
+    # ``<handler_id>_<id>`` and append the serializer ``field_mappings`` bridge
+    # back to the canonical name. ``existing_ids`` is mutated in place.
     ids = existing_ids if existing_ids is not None else set()
     log_level_id = dedup_field_id_and_register(
         ids, handler_id, handler_dir, _INTEGRATION_LOG_LEVEL_PARAM
     )
-    default_ignore_id = dedup_field_id_and_register(
-        ids, handler_id, handler_dir, _DEFAULT_IGNORE_PARAM
-    )
 
     log_level = _per_handler_log_level_field(handler_id, log_level_id)
-    default_ignore = _per_handler_default_ignore_field(default_ignore_id)
 
-    fields: list[dict] = [log_level, default_ignore]
+    fields: list[dict] = [log_level]
 
     # User-mapped general_configurations params — emitted here (in
     # configurations.yaml) rather than in capabilities.yaml, each
@@ -4480,13 +4521,46 @@ def _map_type_18(yml_param: dict) -> dict:
 
 
 def _map_type_19(yml_param: dict) -> dict:
-    """XSOAR type 19 — Numeric/interval → connectus `input` with `is_number_input: true`."""
-    field = {
-        "id": yml_param["name"],
-        "field_type": "input",
-        "options": {"is_number_input": True},
-    }
+    """XSOAR type 19 — Feed/Fetch Interval → connectus ``duration``.
+
+    Per the migration guide (Appendix A type 19, §2.14/§2.15, §3.7), an
+    interval field renders as a multi-unit ``duration`` picker — NOT a bare
+    numeric ``input``. The XSOAR ``defaultvalue`` is a single integer count
+    of MINUTES (e.g. ``"240"``) which is decomposed into a per-unit object
+    via :func:`_minutes_to_duration_default`.
+
+    The duration migration contract (§2.15) requires:
+      - ``options.units == ["days", "hours", "minutes"]``
+      - ``output_format: "minutes"``
+      - ``required`` is FORBIDDEN on a duration field — so the
+        create/edit modifiers built by :func:`_apply_common_field_metadata`
+        are stripped of their ``required`` key here.
+
+    ``hidden`` is preserved (some interval fields are hidden-by-default and
+    revealed via a trigger, e.g. ``feedExpirationInterval``).
+    """
+    field = {"id": yml_param["name"], "field_type": "duration"}
     _apply_common_field_metadata(field, yml_param)
+
+    options = field.setdefault("options", {})
+    options["units"] = list(DURATION_UNITS)
+    field["output_format"] = "minutes"
+
+    # Convert the raw minutes default (set as a string by
+    # _apply_common_field_metadata) into a per-unit object. When absent or
+    # unparseable, fall back to 1 minute.
+    minutes = _coerce_interval_minutes(options.get("default_value"))
+    options["default_value"] = _minutes_to_duration_default(
+        minutes if minutes is not None else 1
+    )
+
+    # ``required`` is forbidden on a duration field (§2.15) — drop it from
+    # both modifier blocks while preserving ``hidden``.
+    for mod_key in ("create_modifiers", "edit_modifiers"):
+        mod = options.get(mod_key)
+        if isinstance(mod, dict):
+            mod.pop("required", None)
+
     return field
 
 
@@ -5736,9 +5810,9 @@ def create_manifest_from_scratch(
             configurations_data, cap_name, fields, handler_id=handler_id
         )
 
-    # Per-handler general_configurations: add integrationLogLevel +
-    # defaultIgnore fields in a view_group-pinned field group. Also
-    # register the view_groups registry entry.
+    # Per-handler general_configurations: add the integrationLogLevel field in
+    # a view_group-pinned field group. Also register the view_groups registry
+    # entry.
     per_handler_gc = build_per_handler_general_config(
         handler_id,
         handler_dir,
@@ -5752,6 +5826,21 @@ def create_manifest_from_scratch(
     configurations_data.setdefault("view_groups", []).append(
         {"id": handler_id, "label": handler_id}
     )
+
+    # The ``defaultIgnore`` field ("Do not use in CLI by default") is only
+    # meaningful for handlers that expose automation/CLI commands, so it is
+    # injected under the automation-and-remediation sub-capability entry —
+    # and ONLY when the handler declares the Automation capability.
+    if _AUTOMATION_BUCKET_KEY in mapped_params:
+        default_ignore_field = build_default_ignore_capability_field(
+            handler_id, handler_dir, existing_ids=existing_field_ids
+        )
+        inject_synthetic_capability_fields(
+            configurations_data,
+            _AUTOMATION_BUCKET_KEY,
+            [default_ignore_field],
+            handler_id=handler_id,
+        )
 
     configurations_data = deep_merge_dicts(
         configurations_data, manual_configurations_fields or {}
@@ -6027,10 +6116,9 @@ def add_handler_to_existing_connector(
     write_handler_yaml(handler_yaml_path, handler_data)
     logger.info(f"[manifest_generator] Generated {handler_yaml_path}")
 
-    # Per-handler general_configurations: add integrationLogLevel +
-    # defaultIgnore fields in a view_group-pinned field group. Also
-    # register the view_groups registry entry (dedup: skip if already
-    # present from a prior handler addition).
+    # Per-handler general_configurations: add the integrationLogLevel field in
+    # a view_group-pinned field group. Also register the view_groups registry
+    # entry (dedup: skip if already present from a prior handler addition).
     new_handler_dir = handler_yaml_path.parent
     per_handler_gc = build_per_handler_general_config(
         new_handler_id,
@@ -6051,10 +6139,28 @@ def add_handler_to_existing_connector(
             {"id": new_handler_id, "label": new_handler_id}
         )
 
+    # The ``defaultIgnore`` field ("Do not use in CLI by default") is only
+    # meaningful for handlers that expose automation/CLI commands, so it is
+    # injected under the automation-and-remediation sub-capability entry —
+    # and ONLY when the handler declares the Automation capability. The append
+    # path resolves sub-cap ids up front (``cap_name_to_handler_cap_id``), so
+    # inject by that exact id.
+    if _AUTOMATION_BUCKET_KEY in mapped_params:
+        default_ignore_field = build_default_ignore_capability_field(
+            new_handler_id, new_handler_dir, existing_ids=existing_field_ids
+        )
+        _inject_append_capability_fields(
+            configurations_data,
+            cap_name_to_handler_cap_id.get(_AUTOMATION_BUCKET_KEY),
+            new_handler_id,
+            [default_ignore_field],
+        )
+
     # Per Batch 7 (Part A.7.1) + guide §3.9: serializer.yaml is OPTIONAL.
     # The dedup pass writes it on-demand when collision-rename produces
     # a field_mappings entry. The per-handler general_config above also
-    # writes serializer entries (for integrationLogLevel + defaultIgnore).
+    # writes a serializer entry on collision (for integrationLogLevel), and
+    # the defaultIgnore injection above does the same for defaultIgnore.
     serializer_yaml_path = handler_yaml_path.parent / "serializer.yaml"
     if serializer_yaml_path.exists():
         logger.info(
