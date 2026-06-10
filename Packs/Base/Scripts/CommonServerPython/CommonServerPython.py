@@ -13893,7 +13893,9 @@ def build_ucp_params(connector_metadata, capability=None):
         method_unique_id = profile.get('method_unique_id')
         demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FULL profile (method_unique_id={}) = {}'.format(
             method_unique_id, _ucp_dump(profile)))
-        interpolation_mapping = profile.get('interpolation_mapping')
+        # The interpolation mapping lives under the profile's module-namespaced
+        # metadata: profile['metadata']['xsoar']['interpolation_mapping'].
+        interpolation_mapping = ((profile.get('metadata') or {}).get('xsoar') or {}).get('interpolation_mapping')
         demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: interpolation_mapping (type={}) = {}'.format(
             type(interpolation_mapping).__name__, _ucp_dump(interpolation_mapping)))
         pairs = _parse_param_map(interpolation_mapping)
