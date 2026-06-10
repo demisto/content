@@ -17,7 +17,7 @@ VENDOR = "Menlo"
 PRODUCT = "Security IP"
 
 DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE = 5000
-MAX_EVENTS_PER_PAGE = 1000  # API default limit per request
+MAX_EVENTS_PER_PAGE = 10000  # page size per request (10K to match the benchmark; ~15MB JSON/page)
 DEFAULT_FIRST_FETCH = "3 hours"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
