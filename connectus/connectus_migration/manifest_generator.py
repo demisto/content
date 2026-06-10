@@ -6428,7 +6428,9 @@ def create_manifest_from_scratch(
     # building connector.yaml so we can record the dest filename.
     author_image_filename = ""
     if author_image_path is not None:
-        connector_id = title_to_slug(connector_title)
+        connector_id, _ = compute_connector_id_and_title(
+            connector_title, vendor=vendor, mapped_params=mapped_params
+        )
         author_image_filename = _copy_author_image(
             connector_dir, connector_id, author_image_path
         )
@@ -7283,7 +7285,12 @@ def generate_manifest(
     manual_serializer_fields_dict = parse_mapped_params(manual_serializer_fields)
     manual_connection_fields_dict = parse_mapped_params(manual_connection_fields)
 
-    slug = title_to_slug(connector_title)
+    vendor = integration_yml["provider"]
+    # The connector directory name must be the connector id (not a slug of
+    # the title) so the on-disk path matches connector.yaml's ``id`` field.
+    slug, _ = compute_connector_id_and_title(
+        connector_title, vendor=vendor, mapped_params=mapped_params_dict
+    )
     connector_dir = connectors_root / slug
 
     logger.info(
@@ -7291,7 +7298,6 @@ def generate_manifest(
         f"title={connector_title!r} slug={slug!r} target={connector_dir} "
         f"auth_methods_keys={list(auth_methods_dict.keys())}"
     )
-    vendor = integration_yml["provider"]
     author_image_path = Path(_load_connector_id_image()[connector_title])
     if connector_exists(connector_dir):
         add_handler_to_existing_connector(
