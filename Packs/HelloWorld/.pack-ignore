@@ -1,6 +1,6 @@
 
 
-[pack]
+# [pack]
 # ignore=RN107
 
 [file:README.md]
@@ -23,4 +23,7 @@ ignore=BA101
 ignore=GR103
 
 [file:HelloWorldV2.yml]
-ignore=BA129,IN126,RN107
+ignore=BA129,IN126
+
+[file:ReleaseNotes/4_0_10.md]
+ignore=RN107
