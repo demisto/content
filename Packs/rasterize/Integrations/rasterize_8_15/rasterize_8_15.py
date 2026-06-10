@@ -1,7 +1,8 @@
-from pathlib import Path
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import gc
+from pathlib import Path
+
+
 import logging
 import psutil
 import base64
@@ -115,24 +116,12 @@ except Exception as e:
     demisto.info(f"Exception trying to parse MAX_CHROME_TABS_COUNT, {e}")
     MAX_CHROME_TABS_COUNT = 10
 
-# Minimum available memory (in bytes) required to start a new Chrome instance or open a new tab.
-# Defaults to 1024 MiB (1 GiB) because heavy websites can consume 600-700 MB per tab.
-# Can be overridden via the MIN_MEMORY_FOR_CHROME_MB environment variable.
-try:
-    _env_min_mem_mb = os.getenv("MIN_MEMORY_FOR_CHROME_MB", "1024")
-    MIN_MEMORY_FOR_CHROME_BYTES = int(_env_min_mem_mb) * 1024 * 1024
-except Exception as e:
-    demisto.info(f"Exception trying to parse MIN_MEMORY_FOR_CHROME_MB, {e}")
-    MIN_MEMORY_FOR_CHROME_BYTES = 1024 * 1024 * 1024
-
 # Memory pressure tolerance (in bytes): if available memory drops below this value while a page
 # is loading, wait_for_page_load_with_memory_guard will abort the wait and take a screenshot of
-# whatever has rendered so far, preventing an OOM kill.  Defaults to 400 MiB to leave headroom
-# for the post-load screenshot allocation (Chrome bitmap + base64 + decoded bytes can each be
-# 100-200 MB on heavy pages like cnn.com).
+# whatever has rendered so far, preventing an OOM kill.  Defaults to 200 MiB.
 # Can be overridden via the MEMORY_PRESSURE_TOLERANCE_MB environment variable.
 try:
-    _env_tolerance_mb = os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "400")
+    _env_tolerance_mb = os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "600")
     MEMORY_PRESSURE_TOLERANCE_BYTES = int(_env_tolerance_mb) * 1024 * 1024
 except Exception as e:
     demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_MB, {e}")
@@ -162,7 +151,7 @@ class RasterizeType(Enum):
 
 # endregion
 
-# region memory helpers
+# new functions
 
 # Diagnostic log lines are persisted in the integration context, keyed by the URL being
 # rasterized.  This survives process restarts (including OOM kills) because the server
@@ -330,19 +319,138 @@ def compute_memory_based_limits(
     # )
     return 1, 1, 1
 
+def _read_memory_logs_by_url() -> dict[str, list[str]]:
+    """Return the memory log buckets persisted in the integration context.
 
-# endregion
+    The returned dict is keyed by URL (with the bucket :data:`GENERAL_LOG_KEY` used for
+    logs emitted outside any URL context).  Returns an empty dict if no logs were
+    collected yet or if the integration context could not be read.
+    """
+    try:
+        context = get_integration_context() or {}
+    except Exception as ex:  # pragma: no cover
+        demisto.info(f"_read_memory_logs_by_url: failed to read integration context: {ex}")
+        return {}
+
+    logs_by_url = context.get(MEMORY_LOG_CONTEXT_KEY)
+    if not isinstance(logs_by_url, dict):
+        return {}
+    # Defensive copy + filter to ensure values are lists of strings.
+    return {url: list(lines) for url, lines in logs_by_url.items() if isinstance(lines, list)}
+
+
+def _format_memory_logs(logs_by_url: dict[str, list[str]], url_filter: str | None = None) -> str:
+    """Render the per-URL log buckets as a single human-readable text blob."""
+    if url_filter:
+        lines = logs_by_url.get(url_filter, [])
+        if not lines:
+            return ""
+        return f"=== {url_filter} ===\n" + "\n".join(lines)
+
+    sections: list[str] = []
+    for url, lines in logs_by_url.items():
+        if not lines:
+            continue
+        sections.append(f"=== {url} ===\n" + "\n".join(lines))
+    return "\n\n".join(sections)
+
+
+def rasterize_memory_log_command() -> None:
+    """Return the memory diagnostic log as a War-Room file and a readable output entry.
+
+    Reads from the integration context so diagnostics survive process restarts (including
+    OOM kills).  Accepts an optional ``url`` argument to filter the output to a single URL
+    bucket.
+    """
+    url_filter = demisto.args().get("url") or None
+    logs_by_url = _read_memory_logs_by_url()
+    log_text = _format_memory_logs(logs_by_url, url_filter=url_filter)
+
+    if not log_text:
+        msg = (
+            f"No memory log entries found for URL: {url_filter}"
+            if url_filter
+            else "No memory log entries collected yet."
+        )
+        return_results(CommandResults(readable_output=msg))
+        return
+
+    demisto.results(fileResult("memory_log.txt", log_text.encode("utf-8"), file_type=entryTypes["entryInfoFile"]))
+    return_results(CommandResults(readable_output=f"### Memory Log\n```\n{log_text}\n```"))
+
+
+def rasterize_get_integration_context_command() -> None:
+    """Dump the full integration context as a downloadable JSON file in the War Room.
+
+    Useful for post-mortem diagnostics after a failed rasterization: returns every key in
+    the integration context (including the per-URL memory logs written by ``_mem_log``).
+    """
+    try:
+        context = get_integration_context() or {}
+    except Exception as ex:
+        return_error(f"Failed to read integration context: {ex}")
+        return
+
+    if not context:
+        return_results(CommandResults(readable_output="Integration context is empty."))
+        return
+
+    context_json = json.dumps(context, indent=2, sort_keys=True, default=str)
+    demisto.results(
+        fileResult("rasterize_integration_context.json", context_json.encode("utf-8"), file_type=entryTypes["entryInfoFile"])
+    )
+    return_results(CommandResults(readable_output=f"### Integration Context\nReturned {len(context)} top-level key(s)."))
+
+
+def emit_memory_log_file() -> None:
+    """Attach the memory diagnostic log as a downloadable file in the War Room.
+
+    Called at the end of every rasterize command so operators always get a memory log
+    alongside the rasterization output, without having to run a separate command.
+    Reads from the integration context so logs from a prior OOM-killed invocation are
+    included.  Does nothing if no log data exists.
+    """
+    logs_by_url = _read_memory_logs_by_url()
+    log_text = _format_memory_logs(logs_by_url)
+
+    if not log_text:
+        return
+
+    demisto.results(fileResult("memory_log.txt", log_text.encode("utf-8"), file_type=entryTypes["entryInfoFile"]))
+
+
+def find_existing_chrome_port() -> str | None:
+    """
+    Finds the port of an already-running Chrome process.
+
+    Used as a fallback when generate_chrome_port() returns None (all ports occupied),
+    which can happen after an OOM kill clears the chrome_instances file while Chrome
+    is still running. In lightweight mode MAX_CHROMES_COUNT=1, so there is at most
+    one port to check.
+
+    Returns:
+        str | None: The port string of the first occupied Chrome port, or None if none found.
+    """
+    first_chrome_port = FIRST_CHROME_PORT
+    ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
+    for chrome_port in ports_list:
+        if len(get_chrome_processes(chrome_port)) > 0:
+            demisto.debug(f"find_existing_chrome_port: found existing Chrome on port {chrome_port}")
+            return str(chrome_port)
+    return None
 
 # In lightweight mode, apply memory-based limits at module load time so that MAX_CHROMES_COUNT,
 # MAX_CHROME_TABS_COUNT, and MAX_RASTERIZATIONS_COUNT reflect the actual container memory budget.
 if IS_LIGHTWEIGHT:
     MAX_CHROMES_COUNT, MAX_CHROME_TABS_COUNT, MAX_RASTERIZATIONS_COUNT = compute_memory_based_limits(
         available_bytes=get_container_available_memory_bytes(),
-        per_instance_bytes=MIN_MEMORY_FOR_CHROME_BYTES,
+        per_instance_bytes=1,
         default_chromes=MAX_CHROMES_COUNT,
         default_tabs=MAX_CHROME_TABS_COUNT,
         default_rasterizations=MAX_RASTERIZATIONS_COUNT,
     )
+
+# end new functions
 
 # region utility classes
 
@@ -1211,6 +1319,25 @@ def chrome_manager_one_port() -> tuple[pychrome.Browser | None, str | None]:
 
 def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
     chrome_port = generate_chrome_port()
+    if chrome_port is None:
+        # All ports are occupied — this can happen after an OOM kill clears the
+        # chrome_instances file while Chrome is still running (common in lightweight
+        # mode where MAX_CHROMES_COUNT=1 and only port 9301 is ever used).
+        # Try to reconnect to the already-running Chrome instead of failing.
+        chrome_port = find_existing_chrome_port()
+        if chrome_port is None:
+            demisto.error("generate_new_chrome_instance: no available or existing Chrome port found.")
+            return None, None
+        demisto.info(f"generate_new_chrome_instance: reconnecting to existing Chrome on port {chrome_port}")
+        browser = get_chrome_browser(chrome_port)
+        if browser:
+            new_chrome_instance = {
+                chrome_port: {INSTANCE_ID: instance_id, CHROME_INSTANCE_OPTIONS: chrome_options, RASTERIZATION_COUNT: 0}
+            }
+            add_new_chrome_instance(new_chrome_instance_content=new_chrome_instance)
+            return browser, chrome_port
+        demisto.error(f"generate_new_chrome_instance: could not connect to existing Chrome on port {chrome_port}")
+        return None, None
     return start_chrome_headless(chrome_port, instance_id, chrome_options)
 
 
@@ -1238,9 +1365,10 @@ def wait_for_page_load_with_memory_guard(
     tab_ready_event: Event,
     navigation_timeout: int,
     tolerance_bytes: int = MEMORY_PRESSURE_TOLERANCE_BYTES,
-    poll_interval: float = 0.25,
+    poll_interval: float = 0.5,
     tab_id: str = "",
     path: str = "",
+    tab: Optional[pychrome.Tab] = None,
 ) -> bool:
     """
     Waits for *tab_ready_event* to be set, but aborts the wait early if available container
@@ -1268,6 +1396,31 @@ def wait_for_page_load_with_memory_guard(
         # Check if the page has finished loading.
         if tab_ready_event.wait(timeout=poll_interval):
             _mem_log("DEBUG", f"wait_for_page_load_with_memory_guard: tab_ready_event set normally, {tab_id=}, {path=}")
+            if tab is not None:
+                try:
+                    tab.Page.stopLoading()
+                    _mem_log(
+                        "DEBUG",
+                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() called, {tab_id=}, {path=}",
+                    )
+                except Exception as stop_ex:
+                    _mem_log(
+                        "DEBUG",
+                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() failed (tab may already be stopping): "
+                        f"{stop_ex}, {tab_id=}, {path=}",
+                    )
+            get_container_available_memory_bytes()
+            time.sleep(1)  # let Chrome process the stop
+            tab.HeapProfiler.collectGarbage()           # reclaim unreachable JS objects
+            tab.Memory.forciblyPurgeJavaScriptMemory()  # more aggressive purge
+            get_container_available_memory_bytes()
+            for i in range(1,4):
+                _mem_log(
+                    "INFO",
+                    f"iteration num: {i}"
+                )
+                time.sleep(10)
+                get_container_available_memory_bytes()
             return True
 
         # Check for timeout.
@@ -1285,6 +1438,20 @@ def wait_for_page_load_with_memory_guard(
             continue
 
         if available <= tolerance_bytes:
+            if tab is not None:
+                try:
+                    tab.Page.stopLoading()
+                    _mem_log(
+                        "DEBUG",
+                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() called, {tab_id=}, {path=}",
+                    )
+                except Exception as stop_ex:
+                    _mem_log(
+                        "DEBUG",
+                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() failed (tab may already be stopping): "
+                        f"{stop_ex}, {tab_id=}, {path=}",
+                    )
+            tab_ready_event.set()
             _mem_log(
                 "INFO",
                 f"wait_for_page_load_with_memory_guard: memory pressure detected — "
@@ -1292,8 +1459,23 @@ def wait_for_page_load_with_memory_guard(
                 f"{tolerance_bytes / (1024 * 1024):.1f} MiB tolerance. "
                 f"Aborting page-load wait and capturing partial screenshot. {tab_id=}, {path=}",
             )
+            get_container_available_memory_bytes()
+            time.sleep(1)  # let Chrome process the stop
+            tab.HeapProfiler.collectGarbage()           # reclaim unreachable JS objects
+            tab.Memory.forciblyPurgeJavaScriptMemory()  # more aggressive purge
+            get_container_available_memory_bytes()
             # Signal the event so the caller proceeds to capture immediately.
-            tab_ready_event.set()
+            for i in range(1,4):
+                _mem_log(
+                    "INFO",
+                    f"iteration num: {i} beofre sleep"
+                )
+                time.sleep(10)
+                _mem_log(
+                    "INFO",
+                    f"iteration num: {i} after sleep"
+                )
+                get_container_available_memory_bytes()
             return False  # False signals that we aborted early due to memory pressure.
 
 
@@ -1340,6 +1522,7 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
                 navigation_timeout=navigation_timeout,
                 tab_id=tab.id,
                 path=path,
+                tab=tab,
             )
             if not page_loaded_normally:
                 return_warning(
@@ -1468,24 +1651,6 @@ def screenshot_image(
 
     demisto.debug(f"{page_layout_metrics=} {tab.id=} {path=}.")
     css_content_size = page_layout_metrics["cssContentSize"]
-
-    # Pre-capture memory guard: captureScreenshot allocates a large bitmap in Chrome
-    # PLUS the base64 string PLUS the decoded bytes — typically 3-5x the final image
-    # size. If we're already low on memory, refuse to capture rather than getting OOM-killed.
-    if IS_LIGHTWEIGHT:
-        available_before_capture = get_container_available_memory_bytes()
-        if available_before_capture != -1 and available_before_capture <= MEMORY_PRESSURE_TOLERANCE_BYTES:
-            _mem_log(
-                "INFO",
-                f"screenshot_image: skipping capture — only "
-                f"{available_before_capture / (1024 * 1024):.1f} MiB available "
-                f"(<= {MEMORY_PRESSURE_TOLERANCE_BYTES / (1024 * 1024):.1f} MiB tolerance). "
-                f"{tab.id=}, {path=}",
-            )
-            return None, (
-                f"Skipped screenshot for {path}: insufficient memory "
-                f"({available_before_capture / (1024 * 1024):.1f} MiB available)."
-            )
 
     try:
         if full_screen:
@@ -1858,7 +2023,6 @@ def perform_rasterize(
                 "DEBUG",
                 f"Memory: working_set={working_set / (1024 * 1024):.1f} MiB, "
                 f"available={available_mem / (1024 * 1024):.1f} MiB, "
-                f"threshold={MIN_MEMORY_FOR_CHROME_BYTES / (1024 * 1024):.1f} MiB, "
                 f"tolerance={MEMORY_PRESSURE_TOLERANCE_BYTES / (1024 * 1024):.1f} MiB",
             )
 
@@ -2352,106 +2516,6 @@ def get_width_height(args: dict[str, str]) -> tuple[int, int]:
     return width, height
 
 
-def _read_memory_logs_by_url() -> dict[str, list[str]]:
-    """Return the memory log buckets persisted in the integration context.
-
-    The returned dict is keyed by URL (with the bucket :data:`GENERAL_LOG_KEY` used for
-    logs emitted outside any URL context).  Returns an empty dict if no logs were
-    collected yet or if the integration context could not be read.
-    """
-    try:
-        context = get_integration_context() or {}
-    except Exception as ex:  # pragma: no cover
-        demisto.info(f"_read_memory_logs_by_url: failed to read integration context: {ex}")
-        return {}
-
-    logs_by_url = context.get(MEMORY_LOG_CONTEXT_KEY)
-    if not isinstance(logs_by_url, dict):
-        return {}
-    # Defensive copy + filter to ensure values are lists of strings.
-    return {url: list(lines) for url, lines in logs_by_url.items() if isinstance(lines, list)}
-
-
-def _format_memory_logs(logs_by_url: dict[str, list[str]], url_filter: str | None = None) -> str:
-    """Render the per-URL log buckets as a single human-readable text blob."""
-    if url_filter:
-        lines = logs_by_url.get(url_filter, [])
-        if not lines:
-            return ""
-        return f"=== {url_filter} ===\n" + "\n".join(lines)
-
-    sections: list[str] = []
-    for url, lines in logs_by_url.items():
-        if not lines:
-            continue
-        sections.append(f"=== {url} ===\n" + "\n".join(lines))
-    return "\n\n".join(sections)
-
-
-def rasterize_memory_log_command() -> None:
-    """Return the memory diagnostic log as a War-Room file and a readable output entry.
-
-    Reads from the integration context so diagnostics survive process restarts (including
-    OOM kills).  Accepts an optional ``url`` argument to filter the output to a single URL
-    bucket.
-    """
-    url_filter = demisto.args().get("url") or None
-    logs_by_url = _read_memory_logs_by_url()
-    log_text = _format_memory_logs(logs_by_url, url_filter=url_filter)
-
-    if not log_text:
-        msg = (
-            f"No memory log entries found for URL: {url_filter}"
-            if url_filter
-            else "No memory log entries collected yet."
-        )
-        return_results(CommandResults(readable_output=msg))
-        return
-
-    demisto.results(fileResult("memory_log.txt", log_text.encode("utf-8"), file_type=entryTypes["entryInfoFile"]))
-    return_results(CommandResults(readable_output=f"### Memory Log\n```\n{log_text}\n```"))
-
-
-def rasterize_get_integration_context_command() -> None:
-    """Dump the full integration context as a downloadable JSON file in the War Room.
-
-    Useful for post-mortem diagnostics after a failed rasterization: returns every key in
-    the integration context (including the per-URL memory logs written by ``_mem_log``).
-    """
-    try:
-        context = get_integration_context() or {}
-    except Exception as ex:
-        return_error(f"Failed to read integration context: {ex}")
-        return
-
-    if not context:
-        return_results(CommandResults(readable_output="Integration context is empty."))
-        return
-
-    context_json = json.dumps(context, indent=2, sort_keys=True, default=str)
-    demisto.results(
-        fileResult("rasterize_integration_context.json", context_json.encode("utf-8"), file_type=entryTypes["entryInfoFile"])
-    )
-    return_results(CommandResults(readable_output=f"### Integration Context\nReturned {len(context)} top-level key(s)."))
-
-
-def emit_memory_log_file() -> None:
-    """Attach the memory diagnostic log as a downloadable file in the War Room.
-
-    Called at the end of every rasterize command so operators always get a memory log
-    alongside the rasterization output, without having to run a separate command.
-    Reads from the integration context so logs from a prior OOM-killed invocation are
-    included.  Does nothing if no log data exists.
-    """
-    logs_by_url = _read_memory_logs_by_url()
-    log_text = _format_memory_logs(logs_by_url)
-
-    if not log_text:
-        return
-
-    demisto.results(fileResult("memory_log.txt", log_text.encode("utf-8"), file_type=entryTypes["entryInfoFile"]))
-
-
 def main():  # pragma: no cover
     command = demisto.command()
 
@@ -2470,7 +2534,6 @@ def main():  # pragma: no cover
                 "DEBUG",
                 f"Memory: working_set={working_set / (1024 * 1024):.1f} MiB, "
                 f"available={available_mem / (1024 * 1024):.1f} MiB, "
-                f"threshold={MIN_MEMORY_FOR_CHROME_BYTES / (1024 * 1024):.1f} MiB, "
                 f"tolerance={MEMORY_PRESSURE_TOLERANCE_BYTES / (1024 * 1024):.1f} MiB",
             )
 
@@ -2503,6 +2566,10 @@ def main():  # pragma: no cover
 
         elif demisto.command() == "rasterize-get-integration-context":
             rasterize_get_integration_context_command()
+
+        elif demisto.command() == "rasterize-reset-integration-context":
+            set_integration_context({})
+            return_results("reset-integration-context")
 
         else:
             raise NotImplementedError(f"command {command} is not supported")
