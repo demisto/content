@@ -119,16 +119,45 @@ def _integration_yml_abs(integration_id: str) -> str:
     return os.path.join(_repo_root(), yml_rel)
 
 
+def _derive_connector_folder_rel(integration_id: str) -> str:
+    """Derive the default ``connectors/<slug>`` folder for an integration.
+
+    Mirrors ``connectus_migration.manifest_generator.title_to_slug`` (the
+    auto-runner uses the Integration ID itself as the connector title, so
+    the on-disk slug is the id lowercased with internal whitespace runs
+    collapsed to single dashes). This is the deterministic location the
+    manifest generator writes to, so the gate can resolve the handler dir
+    WITHOUT a manually-set ``Connector Folder Path`` CSV cell.
+
+    Inlined (one regex) to keep this dependency-light module free of a
+    heavy ``manifest_generator`` import.
+    """
+    slug = re.sub(r"\s+", "-", integration_id.strip().lower())
+    return os.path.join("connectors", slug)
+
+
 def _handler_dir_abs(integration_id: str) -> str:
     """Resolve the absolute connector handler dir for ``integration_id``.
 
     Layout (guide §3.8):
     ``<connectus_repo>/<Connector Folder Path>/components/handlers/<handler-id>``
-    where ``<handler-id>`` is :func:`_derive_handler_id`. The Connector
-    Folder Path is read from the pipeline CSV (relative to the ConnectUs
-    repo root). Returns ``""`` when the id or its connector folder path is
-    not found — the coverage script then exits with a usage error (exit 2),
-    surfaced as a failing verdict.
+    where ``<handler-id>`` is :func:`_derive_handler_id`.
+
+    The Connector Folder Path is resolved in this order:
+
+    1. The ``Connector Folder Path`` CSV cell, when explicitly set (an
+       operator override for non-standard layouts).
+    2. Otherwise it is **derived** as ``connectors/<slug>`` from the
+       integration id (:func:`_derive_connector_folder_rel`) — the same
+       deterministic location the manifest generator writes to. This means
+       a manual ``set-connector-path`` is no longer required for the
+       standard sibling-repo layout; the ConnectUs repo root itself is
+       already env-wired via ``$CONNECTUS_REPO_DIR``
+       (:func:`_connectus_repo_root`).
+
+    Returns ``""`` only when the integration id is not found in the CSV —
+    the coverage script then exits with a usage error (exit 2), surfaced
+    as a failing verdict.
 
     Imported lazily (see :func:`_integration_yml_abs`).
     """
@@ -140,7 +169,8 @@ def _handler_dir_abs(integration_id: str) -> str:
         return ""
     connector_folder_rel = rows[idx].get("Connector Folder Path", "").strip()
     if not connector_folder_rel:
-        return ""
+        # No explicit override — derive the standard connectors/<slug> path.
+        connector_folder_rel = _derive_connector_folder_rel(integration_id)
     handler_id = _derive_handler_id(integration_id)
     return os.path.join(
         _connectus_repo_root(),

@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-akamai-waf-siem
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for Akamai WAF SIEM integration.
+  module: xsoar
+  tags:
+  - Network
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: Akamai WAF SIEM
+    xsoar-pack-id: Akamai_SIEM
+  args: {}
+capabilities:
+- id: log-collection_akamai-waf-siem
+  auth_options:
+  - id: passthrough.akamai_waf_siem
+    scopes:
+    - api
+    workloads:
+    - xsoar-pod
+  actions:
+  - type: reset_events_last_run
+- id: fetch-issues_akamai-waf-siem
+  auth_options:
+  - id: passthrough.akamai_waf_siem
+    scopes:
+    - api
+    workloads:
+    - xsoar-pod
+  actions:
+  - type: reset_incidents_last_run
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

@@ -1,0 +1,236 @@
+metadata:
+  title: Configuration
+  description: Adjust and refine your configuration
+view_groups:
+- id: xsoar-akamai-waf-siem
+  label: xsoar-akamai-waf-siem
+general_configurations:
+  configurations:
+  - view_group: xsoar-akamai-waf-siem
+    fields:
+    - id: integrationLogLevel
+      title: Integration Log Level
+      field_type: select
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        description: Set the log level for the xsoar-akamai-waf-siem integration.
+        placeholder: Select log level
+        default_value: 'Off'
+        values:
+        - key: 'Off'
+          label: 'Off'
+        - key: Debug
+          label: Debug
+        - key: Verbose
+          label: Verbose
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: fetchLimit
+      field_type: input
+      title: Fetch limit (minimum is 20)
+      options:
+        description: Limit on the number of incidents retrieved in a single fetch.
+          The maximum is 80k.
+        default_value: '20'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: fetchTime
+      field_type: input
+      title: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+      options:
+        default_value: 1 hours
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+configurations:
+- id: log-collection_akamai-waf-siem
+  configurations:
+  - fields:
+    - id: page_size
+      field_type: input
+      title: Akamai Page size
+      options:
+        description: The number of events to fetch per request to akamai (multiple
+          requests are made for each fetch). If you're getting aggregated delays,
+          increase the number. The maximum is 80k. Note that if your API has higher
+          ingestion rate, the integration will be able to detect it and immediately
+          starts the next run in order to fetch events quicker.
+        default_value: '20000'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: should_skip_decode_events
+      field_type: checkbox
+      options:
+        description: Use this parameter to avoid decoding the http message and attack
+          data fields and speed up the ingestion rate.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: Skip events decoding
+    - id: beta_page_size
+      field_type: input
+      title: Page Size - high performance mode
+      options:
+        description: The number of events to fetch per request to akamai Default is
+          200k, maximum is 600k as per Akamai documentation. Use this only when using
+          the long running beta feature.
+        default_value: '200000'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: max_concurrent_tasks
+      field_type: input
+      title: Max allowed concurrent tasks
+      options:
+        description: The number of tasks that can run concurrently - the higher the
+          number, the bigger the gap between the ingested events and the events pulled
+          from akamai can be. Maximum is 10k. Use this only when using the long running
+          beta feature.
+        default_value: '100'
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: isFetchEvents
+      field_type: checkbox
+      options:
+        description: Make sure this feature is not used with long running configured
+          in the integration params and that there's no config ID used for 2 different
+          instances / features.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+      title: Fetch Events
+  view_group: xsoar-akamai-waf-siem
+- id: fetch-issues_akamai-waf-siem
+  configurations:
+  - fields:
+    - id: isFetch
+      title: Fetch incidents
+      field_type: checkbox
+      options:
+        default_value: true
+        create_modifiers:
+          required: false
+          hidden: true
+        edit_modifiers:
+          required: false
+          hidden: true
+    - id: incidentType
+      title: Incident type
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Akamai WAF SIEM
+            dynamicField: incident-type
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: incidentFetchInterval
+      field_type: duration
+      title: Incidents Fetch Interval
+      options:
+        default_value:
+          minutes: 1
+        create_modifiers:
+          hidden: true
+        edit_modifiers:
+          hidden: true
+        units:
+        - days
+        - hours
+        - minutes
+      output_format: minutes
+    - id: mapper_incoming
+      title: Incoming Mapper
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Akamai WAF SIEM
+            dynamicField: mapper-incoming
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: classifier
+      title: Classifier
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Akamai WAF SIEM
+            dynamicField: classifier
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: longRunning
+      title: Long running instance
+      field_type: checkbox
+      options:
+        default_value: true
+        create_modifiers:
+          required: false
+          hidden: true
+        edit_modifiers:
+          required: false
+          hidden: true
+  view_group: xsoar-akamai-waf-siem
