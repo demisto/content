@@ -118,6 +118,13 @@ steps:
     setter: null
     description: "Generate the ConnectUs manifest YAML for the integration."
 
+  - name: "handler param coverage"
+    kind: checkpoint
+    optional: false
+    setter: null
+    gate: handler_param_coverage
+    description: "Verify the connector handler covers every non-hidden integration-YML param. Self-executing gate: `markpass` RUNS connectus/check_handler_param_coverage.py with the integration's --handler-path (resolved from the Connector Folder Path cell + derived handler id) and --integration-yml (from the Integration File Path cell) and only passes the checkpoint if it exits 0. Runs immediately before `run manifest make validate` so a missing param is caught before connector-level schema validation. No bypass."
+
   - name: "run manifest make validate"
     kind: checkpoint
     optional: false

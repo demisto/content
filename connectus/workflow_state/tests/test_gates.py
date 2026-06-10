@@ -47,6 +47,10 @@ class TestRegistry:
         assert gates.is_known_gate("make_validate")
         assert "make_validate" in gates.known_gate_names()
 
+    def test_handler_param_coverage_gate_registered(self) -> None:
+        assert gates.is_known_gate("handler_param_coverage")
+        assert "handler_param_coverage" in gates.known_gate_names()
+
     def test_deferred_gates_not_registered(self) -> None:
         # param_parity remains deferred (design §6.3). make_validate is now
         # ACTIVE — it runs `make validate` in the ConnectUs repo.
@@ -96,6 +100,56 @@ class TestRunGate:
         parent = os.path.dirname(gates._repo_root())
         assert resolved == os.path.join(parent, "unified-connectors-content")
         assert os.path.basename(resolved) == "unified-connectors-content"
+
+    def test_handler_param_coverage_argv(self, monkeypatch) -> None:
+        # The handler_param_coverage gate runs the standalone coverage
+        # script with --handler-path and --integration-yml resolved from
+        # the pipeline CSV. Stub the resolvers so the argv is deterministic
+        # without touching the real CSV / connector repo.
+        monkeypatch.setattr(
+            gates, "_handler_dir_abs", lambda iid: "/connectus/repo/connectors/c/components/handlers/xsoar-myint"
+        )
+        monkeypatch.setattr(
+            gates, "_integration_yml_abs", lambda iid: "/content/Packs/P/Integrations/MyInt/MyInt.yml"
+        )
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("handler_param_coverage", "/abs/integration/dir", "MyInt")
+        assert verdict["allow"] is True
+        assert verdict["gate"] == "handler_param_coverage"
+        argv = m.call_args.args[0]
+        # Script path + both resolved args are present, in order.
+        assert argv[0] == gates.sys.executable
+        assert argv[1] == gates._HANDLER_PARAM_COVERAGE_SCRIPT
+        assert "--handler-path" in argv
+        assert "--integration-yml" in argv
+        assert argv[argv.index("--handler-path") + 1] == (
+            "/connectus/repo/connectors/c/components/handlers/xsoar-myint"
+        )
+        assert argv[argv.index("--integration-yml") + 1] == (
+            "/content/Packs/P/Integrations/MyInt/MyInt.yml"
+        )
+
+    def test_handler_param_coverage_fail_on_nonzero_exit(self, monkeypatch) -> None:
+        # A non-zero exit from the coverage script (missing param / usage
+        # error) becomes a failing verdict so the markpass is rejected.
+        monkeypatch.setattr(gates, "_handler_dir_abs", lambda iid: "/h")
+        monkeypatch.setattr(gates, "_integration_yml_abs", lambda iid: "/y.yml")
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=1, stdout="", stderr="FAIL: missing param x"
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed):
+            verdict = gates.run_gate("handler_param_coverage", "/abs/dir", "MyInt")
+        assert verdict["allow"] is False
+        assert verdict["exit_code"] == 1
+
+    def test_derive_handler_id_matches_guide(self) -> None:
+        # Mirrors manifest_generator.derive_handler_id (guide §3.8).
+        assert gates._derive_handler_id("Salesforce") == "xsoar-salesforce"
+        assert gates._derive_handler_id("My Integration") == "xsoar-my-integration"
+        assert gates._derive_handler_id("EWS v2") == "xsoar-ews-v2"
 
     def test_fail_on_nonzero_exit(self) -> None:
         completed = subprocess.CompletedProcess(
@@ -189,6 +243,25 @@ class TestLoaderGateParsing:
         cfg = load_config()
         step = cfg.step_by_name["run manifest make validate"]
         assert step.gate == "make_validate"
+
+    def test_default_yaml_binds_handler_param_coverage_gate(self) -> None:
+        cfg = load_config()
+        step = cfg.step_by_name["handler param coverage"]
+        assert step.gate == "handler_param_coverage"
+        assert step.kind == "checkpoint"
+
+    def test_handler_param_coverage_runs_immediately_before_make_validate(
+        self,
+    ) -> None:
+        # The new gate must sit exactly one step before make_validate so it
+        # gates the workflow before connector-level schema validation.
+        cfg = load_config()
+        names = [s.name for s in cfg.steps]
+        i_cov = names.index("handler param coverage")
+        i_validate = names.index("run manifest make validate")
+        assert i_validate == i_cov + 1
+        # And the step right before the coverage check is the manifest gen.
+        assert names[i_cov - 1] == "generated manifest"
 
     def test_checkpoint_without_gate_defaults_none(self) -> None:
         cfg = load_config()
