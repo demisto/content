@@ -13783,6 +13783,49 @@ class TestUcpInterpolationPassthroughDeep:
         )
         assert result == {'credentials': {'identifier': 'alice', 'password': 's3cr3t'}}
 
+    def test_deep_interpolation_multiple_independent_roots(self, mocker):
+        """Destinations are NOT limited to credentials.* — a mapping may target
+        several independent top-level roots (flat scalar, credentials2, credentials3)
+        and each builds/merges into its own root in the same params dict."""
+        mocker.patch.object(demisto, 'debug')
+        mapping = (
+            "username:credentials.identifier,"
+            "app_password:credentials.password,"
+            "client_key:flatclientkey,"
+            "auth_scheme:credentials3.connection.scheme,"
+            "tenant:credentials2.connection.tenant.slug"
+        )
+        meta = {
+            'connectionProfiles': [
+                {
+                    'capability': 'automation-and-remediation',
+                    'method_unique_id': 'm-roots',
+                    'type': 'passthrough',
+                    'metadata': {'xsoar': {'interpolation_mapping': mapping}},
+                }
+            ]
+        }
+        envelope = {
+            'type': 'passthrough',
+            'passthrough': {
+                'parameters': {
+                    'username': 'usr',
+                    'app_password': 'pw',
+                    'client_key': 'CK',
+                    'auth_scheme': 'bearer',
+                    'tenant': 'ten',
+                }
+            },
+        }
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
+        assert result == {
+            'credentials': {'identifier': 'usr', 'password': 'pw'},
+            'flatclientkey': 'CK',
+            'credentials3': {'connection': {'scheme': 'bearer'}},
+            'credentials2': {'connection': {'tenant': {'slug': 'ten'}}},
+        }
+
 
 @pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpInterpolationByProfileType:
