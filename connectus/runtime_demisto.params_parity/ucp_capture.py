@@ -39,7 +39,6 @@ from typing import Any
 import demisto_client
 import requests
 from demisto_client.demisto_api.rest import ApiException
-from dotenv import load_dotenv
 
 from xsoar_capture import (
     PARAM_TYPE_SHORT_TEXT,
@@ -51,7 +50,14 @@ from xsoar_capture import (
     run_test_module_and_capture_params,
 )
 
-load_dotenv()
+# Make the shared connectus env loader importable (connectus/ is not a package).
+from pathlib import Path as _Path  # noqa: E402
+
+sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
+from env_loader import load_env  # noqa: E402
+
+# Load the canonical root .env via the single unified loader.
+load_env()
 
 log = logging.getLogger("ucp_capture")
 

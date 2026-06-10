@@ -17,8 +17,14 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Callable, Optional
+
+# Make the shared connectus env loader importable (connectus/ is not a package).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from env_loader import load_env  # noqa: E402
 
 
 def _repo_root() -> str:
@@ -58,6 +64,9 @@ def _connectus_repo_root() -> str:
     gate runner surfaces a "could not be launched" verdict (cwd missing)
     rather than this resolver guessing further.
     """
+    # Ensure the canonical root .env is loaded (idempotent) before reading
+    # CONNECTUS_REPO_DIR, then fall back to the sibling-repo convention.
+    load_env()
     override = os.environ.get(_CONNECTUS_REPO_ENV)
     if override and override.strip():
         return os.path.abspath(override.strip())

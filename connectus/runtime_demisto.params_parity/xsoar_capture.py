@@ -38,10 +38,17 @@ from typing import Any
 import demisto_client
 import urllib3
 from demisto_client.demisto_api.rest import ApiException
-from dotenv import load_dotenv
 from ruamel.yaml import YAML
 
-load_dotenv()
+# Make the shared connectus env loader importable (connectus/ is not a package).
+import sys as _sys  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
+from env_loader import load_env  # noqa: E402
+
+# Load the canonical root .env via the single unified loader.
+load_env()
 
 # ============================================================================
 # Tenant connection defaults (sourced from .env when caller does not override)

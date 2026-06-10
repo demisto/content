@@ -26,8 +26,6 @@ import logging
 import sys
 import uuid
 
-from dotenv import load_dotenv
-
 import resolver as resolver_mod
 from resolver import ResolverError
 from ucp_capture import (
@@ -37,7 +35,14 @@ from ucp_capture import (
 )
 from xsoar_capture import create_client
 
-load_dotenv()
+# Make the shared connectus env loader importable (connectus/ is not a package).
+from pathlib import Path as _Path  # noqa: E402
+
+sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
+from env_loader import load_env  # noqa: E402
+
+# Load the canonical root .env via the single unified loader.
+load_env()
 
 log = logging.getLogger("create_ucp_instance")
 

@@ -48,8 +48,6 @@ import os
 import sys
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 import resolver as resolver_mod
 import results_ledger
 from diff import _load_serializer_mappings, diff_params
@@ -63,7 +61,12 @@ from xsoar_capture import (
     parse_integration_yml,
 )
 
-load_dotenv()
+# Make the shared connectus env loader importable (connectus/ is not a package).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from env_loader import load_env  # noqa: E402
+
+# Load the canonical root .env via the single unified loader.
+load_env()
 
 log = logging.getLogger("check_param_parity")
 

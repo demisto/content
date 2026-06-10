@@ -39,14 +39,17 @@ import subprocess
 import sys
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 import preflight_check
 import tenant_lock
 
-# Load .env from the script's own directory (works regardless of CWD).
 _SCRIPT_DIR = Path(__file__).resolve().parent
-load_dotenv()
+
+# Make the shared connectus env loader importable (connectus/ is not a package).
+sys.path.insert(0, str(_SCRIPT_DIR.parent))
+from env_loader import load_env  # noqa: E402
+
+# Load the canonical root .env via the single unified loader.
+load_env()
 
 log = logging.getLogger("deploy_and_test")
 

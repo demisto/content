@@ -13,12 +13,12 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 |---|------|---------|---|
 | 0 | Identify | `context "<id>"` (one call: state + files + auth-ignore set) | Step 0 |
 | 1 | Auth Details | `set-auth "<id>" '<json>' --dry-run` → then apply | §1 |
-| 1.5 | Collect Capabilities | `capabilities_collector.py <yml> -o <path>` → `set-capabilities` | §1.5 |
+| 1.5 | Collect Capabilities | `connectus_migration/capabilities_collector.py <yml> -o <path>` → `set-capabilities` | §1.5 |
 | 2 | Params to Commands | run analyzer w/ `--integration-id` → `set-params-to-commands` | §2 |
 | 3a | Param defaults | `set-param-defaults "<id>" '<json>'` (required-only) | §3a |
 | 3a.5 | UCP param-default review | `check_param_defaults.py --integration-id <id> --human` → present → fix → `markpass "UCP param-default review"` | §3a.5 |
 | 3b | Params to Capabilities | mapper → `set-params-to-capabilities` | §3b |
-| 3c | Generated manifest | `markpass "generated manifest"` | §3c |
+| 3c | Generated manifest | `manifest_generator.py <yml> <title> <Params-to-Capabilities raw> <Auth-Details raw>` → `markpass "generated manifest"` | §3c |
 | 7 | Validate manifest | `demisto-sdk validate` → `markpass "run manifest make validate"` | §7 |
 | 8 | Release Notes | `set-release-notes "<id>"` (only if .py/.yml changed) | §8 |
 | 9 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` | §9 |
@@ -28,7 +28,7 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 
 > **Step order note.** The live CSV workflow has **14 steps**, and `Collect Capabilities` is step **#3** — a hard prerequisite gate that the state machine enforces **before** `Params to Commands`. Do `set-capabilities` first or `set-params-to-commands` will be rejected with `current step is #3 'Collect Capabilities'`. The `UCP param-default review` checkpoint (Step 3a.5) sits right after `Params for test with default in code` and before `Params to Capabilities`.
 
-**Pause for user approval ONLY on the 4 JSON-write setters** (`set-auth`, `set-params-to-commands`, `set-param-defaults`, `set-params-to-capabilities`). Everything else (reads, `markpass`, `fail`, `set-capabilities`, analyzer/validate/pre-commit runs) runs straight through. `set-capabilities` is deterministically generated from YML fetch flags by `capabilities_collector.py`, so it is a run-through (no pause). Setter output already echoes `Current step:` — do NOT re-run `status` to confirm.
+**Pause for user approval ONLY on the 4 JSON-write setters** (`set-auth`, `set-params-to-commands`, `set-param-defaults`, `set-params-to-capabilities`). Everything else (reads, `markpass`, `fail`, `set-capabilities`, analyzer/validate/pre-commit runs) runs straight through. `set-capabilities` is deterministically generated from YML fetch flags by `connectus_migration/capabilities_collector.py`, so it is a run-through (no pause). Setter output already echoes `Current step:` — do NOT re-run `status` to confirm.
 
 **Need depth?** Auth research/examples → [`auth-examples.md`](auth-examples.md) · Auth gate blocked → [`auth-parity-troubleshooting.md`](auth-parity-troubleshooting.md) · Per-command params → [`analyzer-manual.md`](analyzer-manual.md) · JSON shapes → [`column-schemas.md`](column-schemas.md).
 
@@ -161,6 +161,32 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 6. If a checkpoint does not pass, it might be because a previous step was not done well — go back to it via `fail` or `reset-to`. Both verbs **preserve** `Params to Commands` only (it is the sole column carrying `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml)) so per-command param research survives a failed checkpoint. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept; the api response includes the same names in `result["preserved"]`. **`set-auth` is NOT covered by this carve-out** — auth changes invalidate downstream artifacts, so `set-auth` continues to wipe `Params to Commands` by design (see Step 1 below). Plain `reset` (the "wipe the whole row" verb) also wipes it; preservation is for `reset-to`/`fail` only.
 7. Try to be efficient in what needs input from the user. If you have an option to read files instead of grep, or batch commands to the cli, it is better.
 8. **NEVER use the Neo4j graph (`idex_graph_query`) or `demisto-sdk graph` to resolve, search for, or look up integrations in the ConnectUs migration workflow.** The graph is unrelated to this workflow and is frequently not running. The ONLY source of truth for resolving an integration (its ID, file path, connector, and workflow state) is the [`connectus/workflow_state.py`](workflow_state.py) CLI against [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv). To find an integration by a partial/informal name (e.g. "aha"), run `python3 connectus/workflow_state.py list` and match against the result, then use `context "<Integration ID>"`. Do NOT fall back to graph queries, `find`/`ls`/`grep` over the repo, or any other discovery mechanism for this purpose.
+
+### Environment Configuration (unified `.env`)
+
+> **One `.env` at the repo root.** All connectus/UCP tooling reads from a single
+> `.env` file at the **content-repo root** (`/<content-repo>/.env`) — never a
+> per-tool `.env`. It is created once from the root template:
+>
+> ```bash
+> cp .env.example .env   # run from the content-repo root, then fill it in
+> ```
+>
+> The root [`.env.example`](../.env.example) groups the variables by stage:
+> **UCP Connection / Tenant** (`DEMISTO_BASE_URL`, `DEMISTO_API_KEY`,
+> `XSIAM_AUTH_ID`, `TENANT_ID`), **ConnectUs Repo** (`CONNECTUS_REPO_DIR`,
+> `CONNECTUS_BRANCH` — shared by param-parity, generate-manifest, and validate),
+> and per-stage tuning for param-parity / generate-manifest. Real secrets must
+> never be committed.
+>
+> **Rule:** the `.env` is loaded by the shared module
+> [`connectus/env_loader.py`](env_loader.py) via `load_env()`, which resolves the
+> repo root from `__file__` and loads `<repo_root>/.env` by an explicit path
+> (idempotent, import-safe). Every entry point — param-parity scripts,
+> [`run_pre_manifest_steps.py`](connectus_migration/run_pre_manifest_steps.py)
+> / [`manifest_generator.py`](connectus_migration/manifest_generator.py), and the
+> validate gate in [`workflow_state/gates.py`](workflow_state/gates.py) — calls
+> `load_env()`. Do **NOT** call `dotenv.load_dotenv()` directly anywhere.
 
 ## Cross-cutting Decisions
 
@@ -555,7 +581,7 @@ Each `auth_types[]` entry describes **one complete UCP connection type** — one
 
   > **Enum.** The only values you may OUTPUT in an `Auth Details` classification are `APIKey`, `Plain`, `Passthrough`, and `NoneRequired`. (OAuth2 flows classify as Passthrough — see §1.2.)
 - **Multi-secret auth flows: extras go in the SAME profile (see §1.2.2a).** Every entry is one self-contained, mutually-exclusive profile. If an auth flow consumes more than one XSOAR field-path, they all go in the **same** entry's `xsoar_param_map` — never split across multiple entries (because the only inter-profile relation is exclusive-OR, not AND). When the combined shape doesn't fit a canonical profile (no dominant canonical role; co-equal multi-secret packages like Datadog/AWS/Akamai/GitHub App), use `Passthrough`. When one canonical role dominates and the rest are "extras" (e.g. APIKey + a vendor cert), keep the canonical type and add the extras to the same map.
-- **`interpolated`** (optional, defaults to `false`) — set to `true` when the value is templated in at runtime by the manifest generator rather than supplied directly by the user. **Only `Plain` and `APIKey` entries may be non-interpolated (i.e., `interpolated: false` or omitted).** `Passthrough` MUST set `interpolated: true` — these flows (including all OAuth2 flows, which are now classified as `Passthrough`) cannot accept raw user input verbatim; their values are always derived/templated at runtime. `xsoar_param_map` is still required and non-empty even when `interpolated: true`.
+- **`interpolated`** (optional in the payload, but **always `true` in the persisted cell**) — **ALWAYS-INTERPOLATE GATE (2026-06-09): EVERY `auth_types[]` entry is interpolated, regardless of `type`.** `set-auth` forces `interpolated: true` onto every entry before committing (see [§1.12](#112-auth-parity-gate-inside-set-auth)), so **do NOT suggest, classify, or hand-author a non-interpolated profile** — there is no longer any such thing as a non-interpolated `Plain` or `APIKey` profile. You may omit the flag in the payload you submit (the gate sets it for you) or set it `true` explicitly, but you must **never** emit `interpolated: false`. `xsoar_param_map` is still required and non-empty on every entry — the role declarations are still needed even though the value is templated at runtime.
 
   > **`interpolated: true` is a documented fallback on ANY profile type** (cross-cutting decision #3). Operators may set it on `Plain` and `APIKey` profiles too, as the escape valve when the parity gate cannot verify the integration cleanly. This is **not** a bypass — it's the documented escape path for these classes of failures:
   >
@@ -958,7 +984,7 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 - [ ] **XOR-vs-AND gate (run whenever `len(auth_types) >= 2`).** A multi-entry `auth_types[]` means **EXCLUSIVE-OR — the user picks exactly one profile**. Before keeping 2+ entries, prove from the source code that the credential sets are genuine *alternatives* (the code reads one OR the other; configuring both is meaningless/rejected). If instead the sets are used **together / additively** (the `Client(...)` is constructed with several of them at once; one code path mints tokens from set A *and* set B; one set is required and another is an optional add-on layered on top), they are **AND, not XOR** → collapse them into **ONE `Passthrough` profile** whose `xsoar_param_map` holds all the secrets (see §1.2.2a "Multi-flow → one `Passthrough`"). When unsure, default to one `Passthrough` — there is no `any`/concurrent relation, so multiple entries can only ever mean "pick one," which is wrong for additive credentials.
 - [ ] Any OAuth2 Authorization Code flow (browser redirect, `code` + `redirect_uri`, `oauth-start`/`oauth-complete` commands) is classified as `Passthrough` — there is no canonical `oauth2_authorization_code` profile shape; the user-facing config lives on the profile itself, not in `metadata.auth.parameter`.
 - [ ] Every non-`NoneRequired` entry has a non-empty `xsoar_param_map` (even if `interpolated: true`).
-- [ ] Every entry whose `type` is NOT `Plain` or `APIKey` has `interpolated: true`. Only `Plain` and `APIKey` entries may be non-interpolated.
+- [ ] **Every** `auth_types[]` entry is interpolated, regardless of `type` (ALWAYS-INTERPOLATE GATE, see [§1.12](#112-auth-parity-gate-inside-set-auth)). `set-auth` forces `interpolated: true` onto every entry — never suggest, classify, or hand-author a non-interpolated profile, and never emit `interpolated: false` (including on `Plain` / `APIKey`).
 - [ ] Every `auth_types[]` entry whose test-module path manually raises (`raise DemistoException(...)` / `return_error(...)`) for this auth — e.g. OAuth Authorization Code, Device Code, ROPC flows that require an out-of-band `!auth-start` command before the connection-test button can succeed — has `"verify_connection_skip": true`. Profiles whose test-module reaches an actual HTTP call leave `verify_connection_skip` at its default (`false`) or omit the key.
 - [ ] No `xsoar_params` key is present in any entry — only `xsoar_param_map` is read (any stale `xsoar_params` field is silently ignored, so leaving it in is a silent footgun).
 - [ ] `auth_types[]` entries are sorted by `(type, name)` ascending. (Map keys are unordered — no sort requirement.)
@@ -1037,7 +1063,7 @@ This column is **deterministically generated** from the integration's YML fetch 
 
 **Shape:** a flat JSON array of capability-name strings from the closed enum (`Fetch Assets and Vulnerabilities`, `Fetch Issues`, `Log Collection`, `Fetch Secrets`, `Threat Intelligence & Enrichment`, `Automation`). `[]` is valid. NOTE: `general_configurations` is NOT allowed here (that value belongs only to `Params to Capabilities`).
 
-**Generate it with the collector helper, then apply.** `capabilities_collector.py` is a single-command Typer app — invoke it with the YML path directly, with **NO subcommand name**:
+**Generate it with the collector helper, then apply.** The collector lives at **`connectus/connectus_migration/capabilities_collector.py`** — note the `connectus_migration/` SUBDIRECTORY (it is NOT directly under `connectus/`; `ls connectus/capabilities_collector.py` will fail — always use the full `connectus/connectus_migration/` path). It is a single-command Typer app — invoke it with the YML path directly, with **NO subcommand name**:
 
 ```bash
 # Generate (writes the array to a workspace path — NOT /tmp, which the sandbox blocks)
@@ -1050,9 +1076,10 @@ python3 connectus/workflow_state.py set-capabilities "<Integration ID>" '["Fetch
 rm -f connectus/connectus_migration/_caps.json
 ```
 
-How the collector maps YML → capabilities (so you can sanity-check): `isfetch:true` → `Fetch Issues`; `isfetchevents:true` → `Log Collection`; `isFetchCredentials` → `Fetch Secrets`; `feed:true` → `Threat Intelligence & Enrichment`; `isfetchassets:true` → `Fetch Assets and Vulnerabilities`; plus `Automation` when there is ≥1 non-fetch command. (Source: [`capabilities_collector.py`](connectus_migration/capabilities_collector.py) `collect_capabilities()`.)
+How the collector maps YML → capabilities (so you can sanity-check, or derive by hand if the script ever fails to run): `isfetch:true` → `Fetch Issues`; `isfetchevents:true` → `Log Collection`; `isFetchCredentials` → `Fetch Secrets`; `feed:true` → `Threat Intelligence & Enrichment`; `isfetchassets:true` → `Fetch Assets and Vulnerabilities`; plus `Automation` when there is ≥1 non-fetch command. (Source: [`capabilities_collector.py`](connectus_migration/capabilities_collector.py) `collect_capabilities()`.) Worked example: a plain command integration with no fetch/feed flags but ≥1 command → only the `Automation` rule fires → `["Automation"]`.
 
 > **Gotchas that cost time if missed:**
+> - **The script is under `connectus/connectus_migration/`, NOT `connectus/`.** `ls connectus/capabilities_collector.py` returns "No such file" — that does NOT mean the script is missing. The whole helper family (`capabilities_collector.py`, `connector_param_mapper.py`, `manifest_generator.py`, `run_pre_manifest_steps.py`) lives in the `connectus_migration/` subdirectory. Do NOT conclude the tooling is absent and fall back to a hand-derivation without first checking `connectus/connectus_migration/`.
 > - The helper takes **no subcommand** — `capabilities_collector.py <yml> -o <path>`, NOT `capabilities_collector.py generate-capabilities-list <yml>`.
 > - Write `-o` to a **workspace path**; `/tmp` is denied by the sandbox.
 
@@ -1482,9 +1509,100 @@ list-of-unique-non-empty-strings values, no required keys, `{}` valid.
 
 > **Reset semantics.** Not preserved on any reset path — see [Error Recovery Commands](#error-recovery-commands).
 
-### Step 3c: Mark `generated manifest` (first checkpoint)
+### Step 3c: Generate the manifest, then mark `generated manifest` (first checkpoint)
 
-After generating the ConnectUs manifest YAML for the integration:
+This checkpoint has two parts: (1) **run the manifest generator** to
+scaffold/append the ConnectUs connector files for the integration, then
+(2) **markpass** the checkpoint. Both run straight through — generating
+the manifest is deterministic (it is fed entirely from already-confirmed
+pipeline cells), so it is NOT one of the 4 JSON-write setters and needs
+no extra user approval beyond what Steps 1/3b already collected.
+
+#### The generator and its 4 positional inputs
+
+The generator is
+[`connectus/connectus_migration/manifest_generator.py`](connectus_migration/manifest_generator.py:1)
+— note the `connectus_migration/` SUBDIRECTORY (it is NOT directly under
+`connectus/`; `ls connectus/manifest_generator.py` fails — always use the
+full `connectus/connectus_migration/` path). It is a single-command Typer
+app: invoke it **with NO subcommand name**, the positionals come straight
+after the script path. It auto-decides from-scratch vs. append-handler by
+whether `<connectors-root>/<slug>/connector.yaml` already exists.
+
+Every input is **already persisted in the pipeline** from earlier steps —
+do NOT re-derive any of them. Pull each from its column with
+`show-step --raw` (the machine-consumer contract: emits the cell value
+verbatim — no header, no pretty-printing, no flag-default substitution —
+so the output can be passed straight into the generator as a JSON arg):
+
+| # | Generator positional | Source pipeline data | How to read it |
+|---|---|---|---|
+| 1 | `integration_path` (XSOAR integration `.yml`) | `Integration File Path` identity column (the `yml` file path) | `context "<id>"` → `file_paths.yml`, or `files "<id>" --format=paths \| head -1` |
+| 2 | `connector_title` | the integration display name — the auto-runner uses the **Integration ID** itself (`context.integration_id`) as the title; the directory slug is derived as `title.lower()` with spaces→dashes | from `context "<id>"` (`integration_id`) — pass the Integration ID unless the user gives an explicit connector title |
+| 3 | `mapped_params` (JSON `{capability: [params]}`) | **`Params to Capabilities`** cell (Step 3b output) | `show-step --raw "<id>" "Params to Capabilities"` |
+| 4 | `auth_methods` (JSON `{auth_types, other_connection}`) | **`Auth Details`** cell (Step 1) | `show-step --raw "<id>" "Auth Details"` |
+
+The `--connectors-root` option points at the ConnectUs repo's
+`connectors/` directory (the shared-workspace sibling
+`unified-connectors-content`, the same repo Step 7's `make validate`
+runs in). The optional `--author-image-path` is keyed by the
+**`Connector ID`** identity column (looked up in
+[`connectus/connector-id-to-author-image.csv`](connector-id-to-author-image.csv));
+omit it if there's no match.
+
+#### Canonical invocation (sourcing every input from the pipeline)
+
+```bash
+ID="<Integration ID>"
+
+# 1. integration YML path (identity column, via context's file_paths.yml)
+YML=$(python3 connectus/workflow_state.py files "$ID" --format=paths | head -1)
+
+# 2. connector title = the Integration ID (auto-runner convention)
+TITLE="$ID"
+
+# 3. mapped_params  ← Params to Capabilities cell (Step 3b)
+MAPPED=$(python3 connectus/workflow_state.py show-step --raw "$ID" "Params to Capabilities")
+
+# 4. auth_methods   ← Auth Details cell (Step 1)
+AUTH=$(python3 connectus/workflow_state.py show-step --raw "$ID" "Auth Details")
+
+# Generate (NO subcommand name; --connectors-root points into the ConnectUs repo)
+python3 connectus/connectus_migration/manifest_generator.py \
+  "$YML" "$TITLE" "$MAPPED" "$AUTH" \
+  --connectors-root "../unified-connectors-content/connectors"
+```
+
+> **Gotchas:**
+> - **Use `show-step --raw`, NOT plain `show-step`.** The default form
+>   prints a decorative header + pretty-printed JSON, which is NOT valid
+>   to pass as a generator arg. `--raw` emits the verbatim cell value
+>   (and nothing at all for an empty cell), which is exactly what the
+>   JSON positionals need.
+> - **The script is under `connectus/connectus_migration/`, NOT
+>   `connectus/`** — same as the other helper family
+>   (`capabilities_collector.py`, `connector_param_mapper.py`,
+>   `run_pre_manifest_steps.py`). A "No such file" on
+>   `connectus/manifest_generator.py` does NOT mean it's missing.
+> - **Invoke with NO subcommand** — `manifest_generator.py <yml>
+>   <title> <mapped> <auth> ...`, not `manifest_generator.py
+>   generate-manifest ...`.
+> - The integration's `provider` (vendor) and pack metadata
+>   (`tags`/`categories`/`supported_modules`) are read from the YML /
+>   `pack_metadata.json` automatically — nothing to pass.
+
+> **Shortcut.** The auto-runner
+> [`run_pre_manifest_steps.py`](connectus_migration/run_pre_manifest_steps.py:1)
+> performs this exact wiring in
+> [`step_3c_generate_manifest()`](connectus_migration/run_pre_manifest_steps.py:686)
+> (`integration_path` ← `context.file_paths.yml`, `connector_title` ←
+> `context.integration_id`, `mapped_params` ← `Params to Capabilities`,
+> `auth_methods` ← `Auth Details`). Running the auto-runner is equivalent
+> to the manual invocation above.
+
+#### Markpass the checkpoint
+
+After the generator exits 0:
 
 ```bash
 python3 connectus/workflow_state.py markpass "<Integration ID>" "generated manifest"

@@ -89,7 +89,13 @@ The orchestrator injects `__params_parity_dump__: "1"` into both creation payloa
 
 ## Prerequisites
 
-1. **`.env`** — copy [`.env.example`](.env.example) to `.env` and fill the REQUIRED values: `DEMISTO_BASE_URL`, `DEMISTO_API_KEY`, `XSIAM_AUTH_ID`, `CONNECTUS_REPO_DIR` (local clone of unified-connectors-content — used by both deploy git ops AND the resolver), `CONNECTUS_BRANCH` (the connectus-repo branch deploy.py force-pushes), `TENANT_ID` (your single tenant — one per shell; sent to the GitLab pipeline as `TENANT_IDS`), and `GITLAB_TOKEN` (scope `api`). The rest have safe defaults. ⚠️ `BASE_BRANCH` controls a `git reset --hard origin/<base>` on every deploy — it discards un-pushed local changes on `CONNECTUS_BRANCH`.
+1. **Root `.env`** — there is ONE unified `.env` for all connectus/UCP tooling, living at the **repo root** (`/<content-repo>/.env`), NOT in this directory. Copy the root template to the root `.env` and fill it in:
+   ```bash
+   cp .env.example .env   # run from the content-repo root
+   ```
+   The REQUIRED values are: `DEMISTO_BASE_URL`, `DEMISTO_API_KEY`, `XSIAM_AUTH_ID`, `CONNECTUS_REPO_DIR` (local clone of unified-connectors-content — used by both deploy git ops AND the resolver), `CONNECTUS_BRANCH` (the connectus-repo branch deploy.py force-pushes), `TENANT_ID` (your single tenant — one per shell; sent to the GitLab pipeline as `TENANT_IDS`), and `GITLAB_TOKEN` (scope `api`). The rest have safe defaults. ⚠️ `BASE_BRANCH` controls a `git reset --hard origin/<base>` on every deploy — it discards un-pushed local changes on `CONNECTUS_BRANCH`.
+
+   Every script here loads this root `.env` automatically via the shared loader [`connectus/env_loader.py`](../env_loader.py) (`load_env()`), which resolves the repo root from `__file__` and loads `<repo_root>/.env` by an explicit path — so it works no matter which directory you run the tools from. **Do not** create a per-tool `.env` in this folder, and **do not** call `load_dotenv()` directly; use `load_env()`.
 2. **Patched Base pack on the tenant** — the probe must be present on the tenant's `CommonServerPython` script. Upload via:
    ```bash
    demisto-sdk upload -i Packs/Base -z -mp platform
