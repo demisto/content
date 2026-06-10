@@ -40,7 +40,8 @@ XSIAM_CONTENT = [
 # Git utilities
 # -----------------------------
 def run_git_command(cmd, raise_on_error=True):
-    print(f"Running: {' '.join(cmd)}")
+    log_cmd = [c.replace(get_env_var("CONTENTBOT_GH_ADMIN_TOKEN"), "***") for c in cmd]
+    print(f"Running: {' '.join(log_cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True)
 
     if result.returncode != 0 and raise_on_error:
@@ -53,10 +54,10 @@ def run_git_command(cmd, raise_on_error=True):
 def prepare_git(head_branch: str):
     token = get_env_var("CONTENTBOT_GH_ADMIN_TOKEN")
 
-    run_git_command(["git", "config", "--global", "user.name", "contentbot"], raise_on_error=False)
-    run_git_command(["git", "config", "--global", "user.email", "contentbot@demisto.com"], raise_on_error=False)
+    run_git_command(["git", "config", "--global", "user.name", "content-bot"], raise_on_error=False)
+    run_git_command(["git", "config", "--global", "user.email", "content-bot@users.noreply.github.com"], raise_on_error=False)
 
-    remote_url = f"https://${token}@github.com/demisto/content.git"
+    remote_url = f"https://x-access-token:{token}@github.com/demisto/content.git"
     run_git_command(["git", "remote", "set-url", "origin", remote_url])
 
     run_git_command(["git", "fetch", "origin", "master"])
@@ -71,9 +72,7 @@ def seperate_pr_files(pr_files: dict):
     xsiam_files = []
 
     for file_path, file in pr_files.items():
-        is_xsiam = any(
-            item in Path(file_path).parts for item in XSIAM_CONTENT
-        )
+        is_xsiam = any(item in Path(file_path).parts for item in XSIAM_CONTENT)
 
         if is_xsiam:
             xsiam_files.append(file)
@@ -101,7 +100,7 @@ def split_branch_with_git(head_branch, xsoar_files, xsiam_files):
             run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
         elif file.status == "renamed":
             run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
-            if hasattr(file, 'previous_filename') and file.previous_filename:
+            if hasattr(file, "previous_filename") and file.previous_filename:
                 res = run_git_command(["git", "checkout", "origin/master", "--", file.previous_filename], raise_on_error=False)
                 if res.returncode != 0:
                     run_git_command(["git", "rm", "--ignore-unmatch", file.previous_filename], raise_on_error=False)
@@ -126,7 +125,7 @@ def split_branch_with_git(head_branch, xsoar_files, xsiam_files):
             run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
         elif file.status == "renamed":
             run_git_command(["git", "rm", "--ignore-unmatch", filename], raise_on_error=False)
-            if hasattr(file, 'previous_filename') and file.previous_filename:
+            if hasattr(file, "previous_filename") and file.previous_filename:
                 res = run_git_command(["git", "checkout", "origin/master", "--", file.previous_filename], raise_on_error=False)
                 if res.returncode != 0:
                     run_git_command(["git", "rm", "--ignore-unmatch", file.previous_filename], raise_on_error=False)
@@ -266,9 +265,7 @@ def main():
     if xsiam_files and xsoar_files:
         main_branch, mapping_branch = split_branch_with_git(head_branch, xsoar_files, xsiam_files)
 
-
     elif xsiam_files and not xsoar_files:
-
         print(f"{t.cyan}Only XSIAM files → mapping only{t.normal}")
 
         mapping_branch = f"{head_branch}-mapping"
@@ -295,9 +292,7 @@ def main():
         try:
             pr = create_pr(repo, title, body, base_branch, main_branch, labels, assignees, new_reviewers, t)
 
-            org_reviewers = [
-                r for r in new_reviewers if is_organization_member(gh, r)
-            ]
+            org_reviewers = [r for r in new_reviewers if is_organization_member(gh, r)]
             if org_reviewers:
                 post_ai_review_introduction(pr, org_reviewers, t)
 
