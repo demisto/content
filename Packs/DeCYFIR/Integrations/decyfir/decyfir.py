@@ -9,17 +9,20 @@ import urllib3
 import json
 import dateparser
 
-# Disable insecure warnings
-# requests.packages.urllib3.disable_warnings()
 urllib3.disable_warnings()
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 MAX_INCIDENTS_TO_FETCH = 500
-DEFAULT_INDICATORS_THRESHOLD = 65
+
+API_TEST_PATH_SUFFIX = "/core/api-ua/v2/data/ping?key={0}"
 
 API_PATH_SUFFIX: str = "/core/api-ua/v2/alerts"
+
+API_TAKE_DOWN_LIST_PATH_SUFFIX: str = "/core/api-ua/v1/take-down?key={0}&page={1}&size={2}"
+API_TAKE_DOWN_LIST_WITH_CAT_PATH_SUFFIX: str = API_TAKE_DOWN_LIST_PATH_SUFFIX + "&sub-category={3}"
+API_INIT_TAKE_DOWN_PATH_SUFFIX: str = "/core/api-ua/v1/takedown-request/create?key={0}&alertId={1}"
 
 LABEL_DECYFIR = "DeCYFIR"
 LABEL_ATTACK_SURFACE = "Attack Surface"
@@ -147,9 +150,21 @@ class Client(BaseClient):
         else:
             return IncidentSeverity.UNKNOWN
 
+    def decyfir_api_request(self, url) -> list[dict]:
+        response = self._http_request(
+            url_suffix=url,
+            resp_type="response",
+            method="GET",
+        )
+
+        if response.status_code == 200 and response.content:
+            return response.json()
+
+        return []
+
     def request_decyfir_api(self, category, category_type, api_param_query) -> list[dict]:
         response = self._http_request(
-            url_suffix=f"{API_PATH_SUFFIX}" + f"/{category}?" + f"type={category_type}" + api_param_query,
+            url_suffix=f"{API_PATH_SUFFIX}" + f"/{category}?type={category_type}" + api_param_query,
             resp_type="response",
             method="GET",
         )
@@ -162,7 +177,7 @@ class Client(BaseClient):
     def get_decyfir_data(self, after_val: int, decyfir_api_key: str, incident_type: str, max_fetch):
         size = max_fetch if max_fetch else MAX_INCIDENTS_TO_FETCH
 
-        api_param_query = "&" + f"key={decyfir_api_key}&" + f"size={size}&" + f"after={after_val}"
+        api_param_query = f"&key={decyfir_api_key}&size={size}&after={after_val}&product-name=PALO_ALTO_XSOAR"
 
         return_data = {}
         incident_types = []
@@ -223,7 +238,13 @@ class Client(BaseClient):
             "subcategory": alert_subtype,
             "dbotMirrorId": record_id,
             "sourceBrand": LABEL_DECYFIR,
-            "labels": [{"type": "Description", "value": details.get("description")}],
+            "labels": [
+                {"type": "Sub Category", "value": alert_subtype},
+                {"type": "Description", "value": details.get("description")},
+                {"type": "Alert Id", "value": details.get("alert_uid", details.get("alert_object_uid", ""))},
+                {"type": "Object Id", "value": details.get("uid")},
+                {"type": "Risk Score", "value": str(details.get("exposure_score"))},
+            ],
             "customFields": {"decyfirdatadetails": decyfir_data_details},
         }
 
@@ -279,7 +300,6 @@ class Client(BaseClient):
     def convert_decyfir_data_to_incidents_format(self, decyfir_alerts_incidents):
         try:
             return_data: list[dict] = []
-
             # Attack Surface
             # Open Ports
             if json_data := decyfir_alerts_incidents.get(VAR_OPEN_PORTS):
@@ -399,11 +419,33 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(str(e))
 
+    def take_down_list_data(self, decyfir_api_key, sub_category, page, size):
+        if sub_category:
+            api_url = API_TAKE_DOWN_LIST_WITH_CAT_PATH_SUFFIX.format(decyfir_api_key, page, size, sub_category)
+            return self.decyfir_api_request(api_url)
+        else:
+            api_url = API_TAKE_DOWN_LIST_PATH_SUFFIX.format(decyfir_api_key, page, size)
+            return self.decyfir_api_request(api_url)
+
+    def initiate_take_down(self, decyfir_api_key, alert_id) -> Dict:
+        api_path = API_INIT_TAKE_DOWN_PATH_SUFFIX.format(decyfir_api_key, alert_id)
+
+        response = self._http_request(
+            url_suffix=api_path,
+            resp_type="response",
+            method="POST",
+        )
+
+        if response.status_code == 200 and response.content:
+            return response.json()
+
+        return {}
+
 
 # commands
 # This is the call made when pressing the integration Test button.
 def test_module(client, decyfir_api_key):  # pragma: no cover
-    url = f"{API_PATH_SUFFIX}" + f"/{VAR_ATTACK_SURFACE}?" + f"type={VAR_OPEN_PORTS}" + "&size=1" + "&key=" + f"{decyfir_api_key}"
+    url = API_TEST_PATH_SUFFIX.format(decyfir_api_key)
 
     response = client._http_request(url_suffix=url, method="GET", resp_type="response")
 
@@ -441,6 +483,116 @@ def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_typ
             raise e
 
 
+def take_down_list_command_results(data: List[Dict], title: str) -> CommandResults:
+    if not data:
+        return CommandResults(readable_output="No data found for current request.")
+
+    if not isinstance(data, list):
+        return CommandResults(readable_output="Unexpected response format.")
+
+    table_data = []
+    outputs = []
+
+    for da in data:
+        ticket_id = da.get("ticket_name", "")
+        sub_category = da.get("sub_category", "")
+        created_date = da.get("created_date", "")
+        modified_date = da.get("modified_date", "")
+        status = da.get("status", "")
+        domain = da.get("domain", "")
+        modified_by = da.get("modified_by", "")
+        created_by = da.get("created_by", "")
+
+        row = {
+            "Ticket Id": ticket_id,
+            "URL Status Updated By": da.get("url_status_updated_by", ""),
+            "URL Status": da.get("url_status", ""),
+            "Domain": domain,
+            "Sub Category": sub_category,
+            "Category": da.get("category", ""),
+            "Status": status,
+            "Created Date": created_date,
+            "Modified Date": modified_date,
+            "Created By": created_by,
+            "Modified By": modified_by,
+        }
+
+        table_data.append(row)
+
+        outputs.append(
+            {
+                "ticket_id": ticket_id,
+                "sub_category": sub_category,
+                "created_date": created_date,
+                "modified_date": modified_date,
+                "status": status,
+                "domain": domain,
+                "created_by": created_by,
+                "modified_by": modified_by,
+            }
+        )
+
+    if not table_data:
+        human_readable = "No data found for current request."
+    else:
+        human_readable = tableToMarkdown(title, table_data, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix=f"{LABEL_DECYFIR}.TakeDownList",
+        outputs_key_field="ticket_id",
+        outputs=outputs,
+        raw_response=data,
+    )
+
+
+def initiate_take_down_request(client: Client, decyfir_api_key: str, args: Dict):
+    alert_id = args.get("alert_id")
+    data: Dict = client.initiate_take_down(decyfir_api_key, alert_id)
+    msg: str = ""
+
+    if not data:
+        msg = "For no data found for current request."
+    elif bool(data.get("error")) is True:
+        msg = "Error in creating take down request"
+
+    if msg:
+        return CommandResults(
+            readable_output=msg,
+            outputs_prefix=f"{LABEL_DECYFIR}.InitiateTakeDown",
+            outputs_key_field="ticket_id",
+            outputs=msg,
+            raw_response=data,
+        )
+
+    da: Dict = data.get("response", {})
+    if da:
+        ticket_id = da.get("ticketName", "")
+        msg = f"Take Down Request Created Successfully - TIcket ID: {ticket_id}"
+    else:
+        msg = "Error in creating take down request"
+
+    return CommandResults(
+        readable_output=msg,
+        outputs_prefix=f"{LABEL_DECYFIR}.InitiateTakeDown",
+        outputs_key_field="ticket_id",
+        outputs=msg,
+        raw_response=data,
+    )
+
+
+def get_take_down_list(client, decyfir_api_key, args):
+    sub_category = args.get("sub_category", "")
+    size = args.get("size", "100")
+    page = args.get("page", "0")
+    # table_data = []
+
+    res_data: list = client.take_down_list_data(decyfir_api_key, sub_category, page, size)
+    return take_down_list_command_results(
+        res_data, f"DeCYFIR Take Down List - Sub Category: {sub_category if sub_category else 'All'}, Page: {page}, Size: {size}"
+    )
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     decyfir_url = params["url"].rstrip("/")
@@ -451,6 +603,7 @@ def main():  # pragma: no cover
     # How much time before the first fetch to retrieve incidents
     first_fetch = params.get("first_fetch", "30 days").strip()
     proxy = params.get("proxy", False)
+    args = demisto.args()
 
     demisto.info(f"Command being called is {demisto.command()}")
     try:
@@ -472,7 +625,10 @@ def main():  # pragma: no cover
             # Pushing Incidents data to XSOAR
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
-
+        elif demisto.command() == "decyfir-takedown-initiate":
+            return_results(initiate_take_down_request(client, decyfir_api_key, args))
+        elif demisto.command() == "decyfir-takedown-list":
+            return_results(get_take_down_list(client, decyfir_api_key, args))
         else:
             raise NotImplementedError("DeCYFIR error: " + f"command {demisto.command()} is not implemented")
 
