@@ -4322,7 +4322,7 @@ script:
       - resolved_true_positive
       - resolved_security_testing
       - resolved_other
-    - description: A free-text comment explaining the resolution. Can only be provided when status is set to "resolved".
+    - description: The free-text comment explaining the resolution. Can only be provided when status is set to "resolved".
       name: resolve_comment
     - auto: PREDEFINED
       description: The user-defined severity to set for the case. Provide an empty string to clear the severity.
@@ -4332,11 +4332,11 @@ script:
       - medium
       - high
       - critical
-    - description: A valid Cortex XDR user email address to assign the case to.
+    - description: The valid Cortex XDR user email address to assign the case to.
       name: assigned_user
-    - description: A free-text note for the case, used for operational or intermediate comments (e.g., a ServiceNow Ticket ID).
+    - description: The free-text note for the case, used for operational or intermediate comments (e.g., a ServiceNow Ticket ID).
       name: notes
-    - description: 'A JSON object string of tenant-defined custom fields to update on the case. The keys must be the exact custom field names as configured in your Cortex XDR tenant, and the values must match each field''s configuration. It is the user''s responsibility to ensure the custom field names are valid/correct for the tenant; the integration does not validate field names, only that the input is valid JSON. Example: {"my_custom_field": "value", "another_field": 42}.'
+    - description: 'The JSON object string of tenant-defined custom fields to update on the case. The keys must be the exact custom field names as configured in your Cortex XDR tenant, and the values must match each field''s configuration. It is the user''s responsibility to ensure the custom field names are valid/correct for the tenant; the integration does not validate field names, only that the input is valid JSON. Example: {"my_custom_field": "value", "another_field": 42}.'
       name: custom_fields
     description: Updates an existing case with the specified details.
     name: xdr-case-update

@@ -2942,7 +2942,7 @@ def case_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     # Enforce the API's conditional rules client-side with clear error messages.
     if (resolve_reason or resolve_comment) and not is_resolving:
         raise DemistoException(
-            "The 'resolve_reason' and 'resolve_comment' arguments can only be provided when " "'status' is set to 'Resolved'."
+            "The 'resolve_reason' and 'resolve_comment' arguments can only be provided when 'status' is set to 'Resolved'."
         )
     if is_resolving and not resolve_reason:
         raise DemistoException("The 'resolve_reason' argument is required when resolving a case (status 'Resolved').")
