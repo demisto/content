@@ -1,5 +1,4 @@
 """Single, unified environment-variable loading entry point for the UCP repo.
-"""Single, unified environment-variable loading entry point for the UCP repo.
 
 This module is the **one** place that loads the canonical root ``.env`` file
 for all ConnectUs / UCP tooling (param-parity, generate-manifest, and the
