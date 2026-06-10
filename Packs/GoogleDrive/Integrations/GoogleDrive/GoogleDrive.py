@@ -1393,19 +1393,35 @@ def get_labels_command(client: "GSuiteClient", args: dict[str, str]) -> CommandR
 
 @logger
 def file_delete_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
-    """
-    Delete a file in Google Drive
+    """Delete a file in Google Drive, or move it to Trash when soft_delete=true.
 
-    :param client: Client object.
-    :param args: Command arguments.
+    Args:
+        client: The authorized GSuite API client.
+        args: Command arguments. When ``soft_delete`` is true, the file is moved
+            to Trash by patching the file with ``{"trashed": true}`` instead of
+            being permanently deleted; default behavior is preserved otherwise.
 
-    :return: Command Result.
+    Returns:
+        CommandResults with the file context. When soft_delete=true the
+        response's ``trashed`` (and ``trashedTime`` for shared drive items) are
+        surfaced under ``GoogleDrive.File.File``.
     """
 
     prepare_file_command_res = prepare_file_command_request(client, args, scopes=COMMAND_SCOPES["FILE_DELETE"])
     http_request_params = prepare_file_command_res["http_request_params"]
 
     url_suffix = URL_SUFFIX["DRIVE_FILES_ID"].format(args.get("file_id"))
+    soft_delete = argToBoolean(args.get("soft_delete") or "false")
+
+    if soft_delete:
+        response = client.http_request(
+            url_suffix=url_suffix,
+            method="PATCH",
+            params=http_request_params,
+            body={"trashed": True},
+        )
+        return handle_response_file_single(response, args)
+
     client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
     outputs_context = {
         "id": args.get("file_id"),
@@ -1622,6 +1638,8 @@ def file_permission_create_command(client: "GSuiteClient", args: dict[str, str])
     http_request_params.update(
         assign_params(
             sendNotificationEmail=args.get("send_notification_email"),
+            transferOwnership=args.get("transfer_ownership"),
+            moveToNewOwnersRoot=args.get("move_to_new_owners_root"),
         )
     )
 
@@ -1664,13 +1682,18 @@ def file_permission_update_command(client: "GSuiteClient", args: dict[str, str])
 
 @logger
 def file_permission_delete_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
-    """
-    Delete file permissions
+    """Delete a file permission, optionally treating Not Found as success.
 
-    :param client: Client object.
-    :param args: Command arguments.
+    Args:
+        client: The authorized GSuite API client.
+        args: Command arguments. When ``ignore_not_found`` is true, a Not Found
+            response (the permission was already removed) is treated as success
+            and surfaced via the ``alreadyRemoved`` output flag.
 
-    :return: Command Result.
+    Returns:
+        CommandResults with the targeted file id, permission id, and the
+        ``alreadyRemoved`` flag (true only when ignore_not_found=true and the
+        vendor returned Not Found).
     """
 
     prepare_file_permission_request_res = prepare_file_permission_request(
@@ -1679,11 +1702,32 @@ def file_permission_delete_command(client: "GSuiteClient", args: dict[str, str])
     http_request_params = prepare_file_permission_request_res["http_request_params"]
 
     url_suffix = URL_SUFFIX["FILE_PERMISSION_DELETE"].format(args.get("file_id"), args.get("permission_id"))
-    client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
+    ignore_not_found = argToBoolean(args.get("ignore_not_found") or "false")
+
+    already_removed = False
+    try:
+        client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
+    except DemistoException as exc:
+        # Narrow match: only swallow "permission not found" so a typo in file_id
+        # (which surfaces as "file not found") still raises.
+        # See GSuiteApiModule.COMMON_MESSAGES for the exact error templates.
+        exc_str = str(exc).lower()
+        is_permission_not_found = ignore_not_found and (
+            "permission not found" in exc_str or "permission_not_found" in exc_str or "permissionnotfound" in exc_str
+        )
+        if is_permission_not_found:
+            demisto.debug(
+                f"google-drive-file-permission-delete: permission {args.get('permission_id')} "
+                "already removed; treating Not Found as success"
+            )
+            already_removed = True
+        else:
+            raise
 
     outputs_context: dict = {
         "fileId": args.get("file_id"),
         "id": args.get("permission_id"),
+        "alreadyRemoved": already_removed,
     }
     outputs: dict = {
         OUTPUT_PREFIX["GOOGLE_DRIVE_FILE_PERMISSION_HEADER"]: {

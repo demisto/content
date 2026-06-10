@@ -318,6 +318,131 @@ class MsGraphClient:
         demisto.debug(f'response of "upload_file_with_upload_session": {response_file_upload}')
         return response_file_upload
 
+    @staticmethod
+    def _driveitem_uri(object_type: str, object_type_id: str, item_id: str, suffix: str = "") -> str:
+        """Build a /v1.0 relative URL for a driveItem sub-resource.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the target driveItem.
+            suffix: Optional path suffix appended after items/{item_id} (no leading slash).
+
+        Returns:
+            Relative URL suitable for ms_client.http_request(url_suffix=...).
+        """
+        base = (
+            f"{object_type}/{object_type_id}/items/{item_id}"
+            if object_type == "drives"
+            else f"{object_type}/{object_type_id}/drive/items/{item_id}"
+        )
+        return f"{base}/{suffix}" if suffix else base
+
+    def update_driveitem(
+        self,
+        object_type: str,
+        object_type_id: str,
+        item_id: str,
+        body: dict,
+    ) -> dict:
+        """Apply a PATCH on a driveItem (move / rename / metadata update).
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the driveItem to update.
+            body: JSON body to send. Only keys the caller provided are included.
+
+        Returns:
+            The updated driveItem object returned by Microsoft Graph.
+        """
+        url_suffix = self._driveitem_uri(object_type, object_type_id, item_id)
+        return self.ms_client.http_request(method="PATCH", url_suffix=url_suffix, json_data=body)
+
+    def list_driveitem_permissions(
+        self,
+        object_type: str,
+        object_type_id: str,
+        item_id: str,
+        limit: str | None = None,
+        next_page_url: str | None = None,
+    ) -> dict:
+        """List permissions (sharing entries) on a driveItem.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the driveItem.
+            limit: Optional $top page size.
+            next_page_url: Optional full URL from a previous @odata.nextLink to fetch the next page.
+
+        Returns:
+            The raw response from Microsoft Graph (with value[] and optional @odata.nextLink).
+        """
+        params = {"$top": limit} if limit else {}
+        if next_page_url:
+            url = url_validation(next_page_url)
+            return self.ms_client.http_request(method="GET", full_url=url, params=params)
+        url_suffix = self._driveitem_uri(object_type, object_type_id, item_id, suffix="permissions")
+        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=params)
+
+    def delete_driveitem_permission(
+        self,
+        object_type: str,
+        object_type_id: str,
+        item_id: str,
+        permission_id: str,
+    ) -> requests.Response:
+        """Delete (revoke) a single sharing permission on a driveItem.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the driveItem.
+            permission_id: ID of the permission to delete (obtain via list_driveitem_permissions).
+
+        Returns:
+            The raw requests.Response from Microsoft Graph (status 204 with no body).
+        """
+        url_suffix = self._driveitem_uri(object_type, object_type_id, item_id, suffix=f"permissions/{permission_id}")
+        return self.ms_client.http_request(
+            method="DELETE",
+            url_suffix=url_suffix,
+            resp_type="text",
+        )
+
+    def copy_driveitem(
+        self,
+        object_type: str,
+        object_type_id: str,
+        item_id: str,
+        body: dict,
+        params: dict,
+    ) -> requests.Response:
+        """Initiate a driveItem copy operation. Returns the raw response so the Location header can be read.
+
+        Microsoft Graph responds 202 Accepted with a Location header pointing to a monitor URL
+        that the caller polls until the copy reaches a terminal status.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the source driveItem.
+            body: JSON body to send. Only keys the caller provided are included.
+            params: Query parameters to send. Only keys the caller provided are included.
+
+        Returns:
+            The raw requests.Response from Microsoft Graph (status 202 with a Location header).
+        """
+        url_suffix = self._driveitem_uri(object_type, object_type_id, item_id, suffix="copy")
+        return self.ms_client.http_request(
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=body,
+            params=params,
+            resp_type="response",
+        )
+
     def delete_file(self, object_type: str, object_type_id: str, item_id: str) -> str:
         """
         Delete a DriveItem by using its ID
@@ -526,6 +651,78 @@ class MsGraphClient:
         }
 
         return self.ms_client.http_request(method="POST", json_data=payload, url_suffix=uri)
+
+    @staticmethod
+    def _build_drive_item_uri(object_type: str, object_type_id: str, item_id: str) -> str:
+        """Build the drive-item URI prefix based on the MS Graph resource type.
+
+        Args:
+            object_type: MS Graph resource. One of 'drives', 'groups', 'sites', 'users'.
+            object_type_id: MS Graph resource ID.
+            item_id: The drive item ID.
+
+        Returns:
+            Relative URI of the drive item, with no trailing slash.
+        """
+        if object_type == "drives":
+            return f"drives/{object_type_id}/items/{item_id}"
+        if object_type in {"groups", "sites", "users"}:
+            return f"{object_type}/{object_type_id}/drive/items/{item_id}"
+        raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: drives, groups, sites, users.")
+
+    def get_sensitivity_label(self, object_type: str, object_type_id: str, item_id: str) -> dict:
+        """Retrieve the sensitivity label currently assigned to a drive item.
+
+        Args:
+            object_type: MS Graph resource. One of 'drives', 'groups', 'sites', 'users'.
+            object_type_id: MS Graph resource ID.
+            item_id: The drive item ID.
+
+        Returns:
+            Graph API raw response (the driveItem with the sensitivityLabel projection).
+        """
+        uri = self._build_drive_item_uri(object_type, object_type_id, item_id)
+        return self.ms_client.http_request(
+            method="GET",
+            url_suffix=uri,
+            params={"$select": "sensitivityLabel"},
+        )
+
+    def assign_sensitivity_label(
+        self,
+        object_type: str,
+        object_type_id: str,
+        item_id: str,
+        sensitivity_label_id: str,
+        assignment_method: str,
+        justification_text: str,
+    ) -> requests.Response:
+        """Assign a sensitivity label to a drive item.
+
+        Args:
+            object_type: MS Graph resource. One of 'drives', 'groups', 'sites', 'users'.
+            object_type_id: MS Graph resource ID.
+            item_id: The drive item ID.
+            sensitivity_label_id: The GUID of the sensitivity label to assign. An empty
+                string instructs Microsoft Graph to remove the existing label.
+            assignment_method: One of 'standard', 'privileged', 'auto'.
+            justification_text: Free-text justification recorded with the assignment.
+
+        Returns:
+            Raw HTTP response object so the caller can inspect the status code and headers.
+        """
+        uri = self._build_drive_item_uri(object_type, object_type_id, item_id) + "/assignSensitivityLabel"
+        body: dict = {"sensitivityLabelId": sensitivity_label_id}
+        if assignment_method:
+            body["assignmentMethod"] = assignment_method
+        if justification_text:
+            body["justificationText"] = justification_text
+        return self.ms_client.http_request(
+            method="POST",
+            url_suffix=uri,
+            json_data=body,
+            resp_type="response",
+        )
 
 
 def test_function(client: MsGraphClient) -> str:
@@ -1055,6 +1252,447 @@ def delete_site_permission_command(client: MsGraphClient, args: dict[str, str]) 
     return CommandResults(readable_output="Site permission was deleted.")
 
 
+def update_driveitem_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Apply a PATCH on a driveItem (move within or across drives, rename, or update metadata).
+
+    Maps to Microsoft Graph: PATCH /v1.0/{drive-prefix}/items/{item-id}.
+    All body fields are optional per the Graph contract; only the keys whose argument
+    the caller provided are sent. Sending at least one update field is required.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with the updated driveItem under MsGraphFiles.UpdatedItem.
+    """
+    object_type = args["object_type"]
+    object_type_id = args["object_type_id"]
+    item_id = args["item_id"]
+
+    new_parent_id = args.get("new_parent_id", "")
+    new_parent_drive_id = args.get("new_parent_drive_id", "")
+    new_name = args.get("new_name", "")
+    description = args.get("description", "")
+    conflict_behavior = args.get("conflict_behavior", "")
+
+    body: dict = {}
+    parent_reference: dict = {}
+    if new_parent_id:
+        parent_reference["id"] = new_parent_id
+    if new_parent_drive_id:
+        parent_reference["driveId"] = new_parent_drive_id
+    if parent_reference:
+        body["parentReference"] = parent_reference
+    if new_name:
+        body["name"] = new_name
+    if description:
+        body["description"] = description
+    if conflict_behavior:
+        body["@microsoft.graph.conflictBehavior"] = conflict_behavior
+
+    if not body:
+        raise DemistoException(
+            "Provide at least one update field " "(new_parent_id, new_parent_drive_id, new_name, description, conflict_behavior)."
+        )
+
+    raw_response = client.update_driveitem(object_type, object_type_id, item_id, body)
+    context_entry = parse_key_to_context(raw_response)
+
+    human_readable_content = {
+        "ID": context_entry.get("ID"),
+        "Name": context_entry.get("Name"),
+        "LastModifiedDateTime": context_entry.get("LastModifiedDateTime"),
+        "ParentReferenceID": context_entry.get("ParentReference", {}).get("ID"),
+        "ParentReferenceDriveId": context_entry.get("ParentReference", {}).get("DriveId"),
+        "Size": context_entry.get("Size"),
+        "WebUrl": context_entry.get("WebUrl"),
+    }
+    remove_nulls_from_dictionary(human_readable_content)
+    readable_output = tableToMarkdown(
+        "Updated driveItem",
+        human_readable_content,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.UpdatedItem",
+        outputs_key_field="ID",
+        outputs=context_entry,
+        raw_response=raw_response,
+        readable_output=readable_output,
+    )
+
+
+def copy_driveitem_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Initiate an asynchronous driveItem copy and return the monitor URL.
+
+    Maps to Microsoft Graph: POST /v1.0/{drive-prefix}/items/{item-id}/copy.
+    Microsoft Graph performs the copy asynchronously and responds 202 Accepted with a Location
+    header pointing to a monitor URL. The caller is expected to poll the monitor URL against
+    Microsoft Graph until the copy reaches a terminal status.
+
+    All body fields and the conflict_behavior query parameter are optional per the Graph contract;
+    only keys whose argument the caller provided are sent.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with MsGraphFiles.CopyOperation context including MonitorUrl.
+    """
+    object_type = args["object_type"]
+    object_type_id = args["object_type_id"]
+    item_id = args["item_id"]
+
+    destination_parent_id = args.get("destination_parent_id", "")
+    destination_drive_id = args.get("destination_drive_id", "")
+    new_name = args.get("new_name", "")
+    conflict_behavior = args.get("conflict_behavior", "")
+    children_only_raw = args.get("children_only", "")
+
+    body: dict = {}
+    parent_reference: dict = {}
+    if destination_parent_id:
+        parent_reference["id"] = destination_parent_id
+    if destination_drive_id:
+        parent_reference["driveId"] = destination_drive_id
+    if parent_reference:
+        body["parentReference"] = parent_reference
+    if new_name:
+        body["name"] = new_name
+    if children_only_raw:
+        body["childrenOnly"] = argToBoolean(children_only_raw)
+
+    params: dict = {}
+    if conflict_behavior:
+        params["@microsoft.graph.conflictBehavior"] = conflict_behavior
+
+    response = client.copy_driveitem(object_type, object_type_id, item_id, body, params)
+    monitor_url = response.headers.get("Location", "")
+
+    outputs = {
+        "MonitorUrl": monitor_url,
+        "ItemId": item_id,
+        "ObjectType": object_type,
+        "ObjectTypeId": object_type_id,
+    }
+    readable_output = tableToMarkdown(
+        "Copy operation accepted",
+        {"MonitorUrl": monitor_url},
+        removeNull=True,
+    )
+    readable_output += (
+        "\nPoll the MonitorUrl directly against Microsoft Graph "
+        "(using the same access token) until status is `completed` or `failed`."
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.CopyOperation",
+        outputs_key_field="ItemId",
+        outputs=outputs,
+        readable_output=readable_output,
+    )
+
+
+def _decode_sharepoint_login_name(login_name: str) -> str:
+    """Extract a human-readable identifier from a SharePoint claims-encoded loginName.
+
+    Microsoft Graph encodes external/guest users using the SharePoint claims format
+    "i:0#.f|membership|<encoded-upn>". For guest users the encoded UPN looks like
+    "<email-with-underscore>#ext#@<tenant>.onmicrosoft.com", where the original "@" in the
+    guest's email is replaced with "_". This helper returns the decoded email when the input
+    matches that pattern, otherwise returns the input unchanged so callers can still surface
+    something meaningful.
+
+    Args:
+        login_name: The raw SharePoint claims-encoded loginName string.
+
+    Returns:
+        The decoded email (best effort) or the original loginName.
+    """
+    if not login_name or "|" not in login_name:
+        return login_name
+    encoded_upn = login_name.rsplit("|", 1)[-1]
+    if "#ext#" in encoded_upn:
+        # Guest user: "<email-with-underscore>#ext#@<tenant>.onmicrosoft.com"
+        guest_part = encoded_upn.split("#ext#", 1)[0]
+        # The original "@" was replaced with the LAST "_" in the email.
+        if "_" in guest_part:
+            local, _, domain = guest_part.rpartition("_")
+            return f"{local}@{domain}"
+        return guest_part
+    return encoded_upn
+
+
+def _identity_label(identity: dict) -> str:
+    """Return the best human-readable label for an IdentitySet identity (user/siteUser/group/application/device).
+
+    Prefers an email, then a loginName (decoded if SharePoint claims-encoded), then a
+    displayName, then an ID. Returns an empty string when nothing useful is present.
+    """
+    if not isinstance(identity, dict):
+        return ""
+    email = identity.get("Email") or identity.get("email")
+    if email:
+        return email
+    login_name = identity.get("LoginName") or identity.get("loginName")
+    if login_name:
+        return _decode_sharepoint_login_name(login_name)
+    display_name = identity.get("DisplayName") or identity.get("displayName")
+    if display_name:
+        return display_name
+    identity_id = identity.get("ID") or identity.get("id")
+    return identity_id or ""
+
+
+def _summarize_permission_grantees(perm: dict) -> str:
+    """Build a comma-separated label of all grantees on a single permission entry.
+
+    Walks every identity source Microsoft Graph may populate on a driveItem permission:
+    grantedToV2 / grantedTo (single IdentitySet), grantedToIdentitiesV2 / grantedToIdentities
+    (list of IdentitySets). Inside each IdentitySet it considers user, siteUser, group,
+    application and device. Duplicates are removed while preserving order.
+    """
+    identity_sets: list[dict] = []
+    for single_key in ("GrantedToV2", "GrantedTo"):
+        single = perm.get(single_key)
+        if isinstance(single, dict):
+            identity_sets.append(single)
+    for list_key in ("GrantedToIdentitiesV2", "GrantedToIdentities"):
+        listed = perm.get(list_key)
+        if isinstance(listed, list):
+            identity_sets.extend([item for item in listed if isinstance(item, dict)])
+
+    labels: list[str] = []
+    seen: set[str] = set()
+    for identity_set in identity_sets:
+        for identity_key in ("User", "SiteUser", "Group", "Application", "Device"):
+            label = _identity_label(identity_set.get(identity_key) or {})
+            if label and label not in seen:
+                labels.append(label)
+                seen.add(label)
+    return ", ".join(labels)
+
+
+def list_driveitem_permissions_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """List permissions (sharing entries) on a driveItem.
+
+    Maps to Microsoft Graph: GET /v1.0/{drive-prefix}/items/{item-id}/permissions.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with MsGraphFiles.ItemPermission context.
+    """
+    object_type = args["object_type"]
+    object_type_id = args["object_type_id"]
+    item_id = args["item_id"]
+    limit = args.get("limit") or None
+    next_page_url = args.get("next_page_url") or None
+
+    raw_response = client.list_driveitem_permissions(
+        object_type=object_type,
+        object_type_id=object_type_id,
+        item_id=item_id,
+        limit=limit,
+        next_page_url=next_page_url,
+    )
+
+    parsed_permissions = [parse_key_to_context(p) for p in raw_response.get("value", [])]
+
+    outputs = {
+        "Value": parsed_permissions,
+        "ItemId": item_id,
+        "ObjectType": object_type,
+        "ObjectTypeId": object_type_id,
+        "OdataContext": raw_response.get("@odata.context"),
+        "NextToken": raw_response.get("@odata.nextLink"),
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    readable_rows = [
+        {
+            "ID": perm.get("ID"),
+            "Roles": perm.get("Roles"),
+            "LinkScope": (perm.get("Link") or {}).get("Scope"),
+            "LinkType": (perm.get("Link") or {}).get("Type"),
+            "GrantedTo": _summarize_permission_grantees(perm),
+            "InheritedFrom": "yes" if perm.get("InheritedFrom") else None,
+        }
+        for perm in parsed_permissions
+    ]
+    readable_output = tableToMarkdown(
+        "DriveItem permissions",
+        readable_rows,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.ItemPermission",
+        outputs_key_field="ItemId",
+        outputs=outputs,
+        raw_response=raw_response,
+        readable_output=readable_output,
+    )
+
+
+def delete_driveitem_permission_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Delete (revoke) a single sharing permission on a driveItem.
+
+    Maps to Microsoft Graph: DELETE /v1.0/{drive-prefix}/items/{item-id}/permissions/{perm-id}.
+    Microsoft Graph returns 204 No Content. Errors (including 404 itemNotFound) are surfaced
+    verbatim. For bulk-delete loops where intermittent 404s are acceptable, set "Continue on
+    error" on the calling task.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with MsGraphFiles.RemovedItemPermission echo context.
+    """
+    object_type = args["object_type"]
+    object_type_id = args["object_type_id"]
+    item_id = args["item_id"]
+    permission_id = args["permission_id"]
+
+    client.delete_driveitem_permission(object_type, object_type_id, item_id, permission_id)
+
+    outputs = {
+        "ItemId": item_id,
+        "PermissionId": permission_id,
+        "ObjectType": object_type,
+        "ObjectTypeId": object_type_id,
+    }
+    readable_output = tableToMarkdown(
+        "Permission removed",
+        {"ItemId": item_id, "PermissionId": permission_id},
+    )
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.RemovedItemPermission",
+        outputs_key_field="PermissionId",
+        outputs=outputs,
+        readable_output=readable_output,
+    )
+
+
+def get_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Retrieve the sensitivity label currently assigned to a drive item.
+
+    A missing or null `sensitivityLabel` field in the Graph response is the documented
+    "no label assigned" case and is returned as a successful result with empty label
+    fields, not an error.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: The command arguments.
+            object_type (Required): The MS Graph resource. One of drives, groups, sites, users.
+            object_type_id (Required): The MS Graph resource ID.
+            item_id (Required): The drive item ID.
+
+    Returns:
+        CommandResults with the drive item ID and all sensitivity label fields
+        as returned by Microsoft Graph.
+    """
+    object_type = args.get("object_type", "")
+    object_type_id = args.get("object_type_id", "")
+    item_id = args.get("item_id", "")
+
+    raw_response = client.get_sensitivity_label(object_type, object_type_id, item_id)
+    label = raw_response.get("sensitivityLabel") or {}
+
+    outputs: dict = {"itemId": item_id}
+    outputs.update(label)
+
+    if label:
+        readable_output = tableToMarkdown(
+            "Sensitivity Label",
+            outputs,
+            headerTransform=pascalToSpace,
+        )
+    else:
+        readable_output = f"No sensitivity label is assigned to drive item `{item_id}`."
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.SensitivityLabel",
+        outputs_key_field="itemId",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=raw_response,
+    )
+
+
+def assign_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Assign a sensitivity label to a drive item.
+
+    Microsoft Graph treats `assignSensitivityLabel` as a long-running operation and
+    returns `202 Accepted` with a `Location` response header pointing to the operation
+    status URL. The handler surfaces that URL verbatim in `outputs["location"]`. Non-2xx
+    responses raise an exception that is caught by the outer `main()` try/except and
+    surfaced via `return_error` with the raw Graph error message.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: The command arguments.
+            object_type (Required): The MS Graph resource. One of drives, groups, sites, users.
+            object_type_id (Required): The MS Graph resource ID.
+            item_id (Required): The drive item ID.
+            sensitivity_label_id (Optional): The GUID of the sensitivity label to assign.
+                An empty string instructs Microsoft Graph to remove the existing label.
+            assignment_method (Optional): One of standard, privileged, auto.
+            justification_text (Optional): Free-text justification recorded with the
+                assignment.
+
+    Returns:
+        CommandResults with the drive item ID, the assigned label GUID, and the
+        `Location` header URL returned by Microsoft Graph.
+    """
+    object_type = args.get("object_type", "")
+    object_type_id = args.get("object_type_id", "")
+    item_id = args.get("item_id", "")
+    sensitivity_label_id = args.get("sensitivity_label_id", "")
+    assignment_method = args.get("assignment_method", "")
+    justification_text = args.get("justification_text", "")
+
+    response = client.assign_sensitivity_label(
+        object_type=object_type,
+        object_type_id=object_type_id,
+        item_id=item_id,
+        sensitivity_label_id=sensitivity_label_id,
+        assignment_method=assignment_method,
+        justification_text=justification_text,
+    )
+
+    response_headers = getattr(response, "headers", {}) or {}
+    location = response_headers.get("Location") or ""
+
+    outputs = {
+        "itemId": item_id,
+        "sensitivityLabelId": sensitivity_label_id,
+        "location": location,
+    }
+
+    readable_output = tableToMarkdown(
+        name="Assigned Sensitivity Label",
+        t=outputs,
+        headers=["itemId", "sensitivityLabelId", "location"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.AssignedSensitivityLabel",
+        outputs_key_field="itemId",
+        outputs=outputs,
+        readable_output=readable_output,
+    )
+
+
 def main():
     params: dict = demisto.params()
     args = demisto.args()
@@ -1066,7 +1704,7 @@ def main():
     enc_key = params.get("credentials_enc_key", {}).get("password") or params.get("enc_key")
     use_ssl: bool = not params.get("insecure", False)
     proxy: bool = params.get("proxy", False)
-    ok_codes: tuple = (200, 204, 201)
+    ok_codes: tuple = (200, 201, 202, 204)
     certificate_thumbprint = params.get("credentials_certificate_thumbprint", {}).get("password") or params.get(
         "certificate_thumbprint"
     )
@@ -1132,6 +1770,18 @@ def main():
             return_results(update_site_permissions_command(client, args))
         elif command == "msgraph-delete-site-permissions":
             return_results(delete_site_permission_command(client, args))
+        elif command == "msgraph-driveitem-update":
+            return_results(update_driveitem_command(client, args))
+        elif command == "msgraph-driveitem-copy":
+            return_results(copy_driveitem_command(client, args))
+        elif command == "msgraph-driveitem-permissions-list":
+            return_results(list_driveitem_permissions_command(client, args))
+        elif command == "msgraph-driveitem-permission-delete":
+            return_results(delete_driveitem_permission_command(client, args))
+        elif command == "msgraph-get-sensitivity-label":
+            return_results(get_sensitivity_label_command(client, args))
+        elif command == "msgraph-assign-sensitivity-label":
+            return_results(assign_sensitivity_label_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:
