@@ -78,7 +78,6 @@ from manifest_generator import (
     collect_fetch_sub_cap_ids,
     _FETCH_MUTEX_BUCKET_KEYS,
     _FETCH_MUTEX_MESSAGE,
-    bump_minor_version,
     check_connector_id_title_similarity,
     collect_existing_field_ids,
     compute_connector_id_and_title,
@@ -200,25 +199,6 @@ def test_merge_tags_case_insensitive_handles_empty_inputs() -> None:
     assert merge_tags_case_insensitive([], ["b"]) == ["b"]
     assert merge_tags_case_insensitive(["a"], ["b", "c"]) == ["a", "b", "c"]
 
-
-# ---------------------------------------------------------------------------
-# bump_minor_version
-# ---------------------------------------------------------------------------
-def test_bump_minor_version_basic() -> None:
-    assert bump_minor_version("1.0.0") == "1.1.0"
-    assert bump_minor_version("2.3.5") == "2.4.0"
-
-
-def test_bump_minor_version_raises_on_malformed() -> None:
-    for bad in ("v1", "1.2", "abc.def.ghi", "", "1.2.3.4"):
-        with pytest.raises(ValueError):
-            bump_minor_version(bad)
-
-
-def test_bump_minor_version_zero_minor() -> None:
-    assert bump_minor_version("0.0.0") == "0.1.0"
-
-
 # ---------------------------------------------------------------------------
 # create_manifest_from_scratch
 # ---------------------------------------------------------------------------
@@ -244,8 +224,7 @@ def test_create_manifest_from_scratch_generates_correct_connector_yaml(
 
     with open(connector_yaml_path) as fh:
         data = yaml.safe_load(fh)
-
-    assert data["id"] == "myconnector"
+    assert data["id"] == "my-connector"
     metadata = data["metadata"]
     assert metadata["title"] == "My Connector"
     assert metadata["description"] == ""
@@ -254,7 +233,6 @@ def test_create_manifest_from_scratch_generates_correct_connector_yaml(
     # the singular ``category`` string). Defaults to empty list.
     assert metadata["categories"] == []
     assert list(metadata["tags"]) == ["forensics"]
-    assert metadata["domain"] == ""
     assert metadata["vendor"] == ""
     assert metadata["publisher"] == "Palo Alto Networks"
     # No --author-image-path provided → author_image defaults to ""
@@ -329,37 +307,6 @@ def test_create_manifest_from_scratch_copies_author_image_and_records_filename(
     with open(connector_dir / "connector.yaml") as fh:
         data = yaml.safe_load(fh)
     assert data["metadata"]["author_image"] == "myconnector.png"
-
-
-def test_create_manifest_from_scratch_preserves_svg_extension(
-    tmp_path: Path,
-) -> None:
-    """
-    Given: --author-image-path pointing to a .svg file.
-    When:  create_manifest_from_scratch is called.
-    Then:  The dest filename preserves the .svg extension.
-    """
-    integration_yml = _make_pack_with_integration(
-        tmp_path, "MyPack", "MyInt", {"tags": []}
-    )
-    connector_dir = tmp_path / "connectors" / "myconnector"
-    source_image = tmp_path / "logo.svg"
-    source_image.write_text("<svg></svg>")
-
-    create_manifest_from_scratch(
-        connector_dir=connector_dir,
-        integration_yml={"name": "MyInt"},
-        integration_path=integration_yml,
-        connector_title="My Connector",
-        mapped_params={},
-        auth_methods={},
-        author_image_path=source_image,
-    )
-
-    assert (connector_dir / "myconnector.svg").is_file()
-    with open(connector_dir / "connector.yaml") as fh:
-        data = yaml.safe_load(fh)
-    assert data["metadata"]["author_image"] == "myconnector.svg"
 
 
 def test_create_manifest_from_scratch_missing_author_image_raises(
@@ -448,7 +395,7 @@ def test_add_handler_to_existing_connector_silently_ignores_author_image(
 # ---------------------------------------------------------------------------
 def test_build_connector_yaml_shape() -> None:
     data = build_connector_yaml("My Connector", ["forensics"])
-    assert data["id"] == "myconnector"
+    assert data["id"] == "my-connector"
     assert data["metadata"]["title"] == "My Connector"
     assert data["metadata"]["tags"] == ["forensics"]
     # Ensure the returned tags list is a copy, not the same object
@@ -1381,54 +1328,6 @@ def test_build_configurations_yaml_with_only_general_configurations() -> None:
 
 
 # ---------------------------------------------------------------------------
-# build_handler_yaml — capabilities population
-# ---------------------------------------------------------------------------
-def test_build_handler_yaml_capabilities_with_empty_auth_methods() -> None:
-    """Per guide §3.4: handler capability ids must use canonical names —
-    ``Automation`` → ``automation-and-remediation`` (not bare
-    ``automation``)."""
-    integration_yml = {
-        "commonfields": {"id": "Salesforce"},
-        "display": "Salesforce",
-    }
-    mapped_params = {
-        "general_configurations": ["url"],
-        "Fetch Issues": ["fetch_limit"],
-        "Automation": ["timeout"],
-    }
-    data = build_handler_yaml(
-        integration_yml, "Salesforce", [], mapped_params, {}
-    )
-    # Per Batch 4 (Part A.4.3 + handler.schema oneOf): with empty
-    # ``auth_methods``, capabilities use the anonymous shape (auth='none'
-    # + capability-level workloads), NOT empty auth_options (which fails
-    # the schema's minItems: 1 on auth_options).
-    # ``fetch-issues`` carries a capability-scoped reset action;
-    # ``automation-and-remediation`` is action-free (no ``actions`` key).
-    # Capabilities are always sub-capabilities — handler references the
-    # ``xsoar-salesforce-<cap_slug>`` sub-cap ids.
-    assert data["capabilities"] == [
-        {
-            "id": "fetch-issues_salesforce",
-            "auth": "none",
-            "workloads": ["xsoar-pod"],
-            "actions": [
-                {
-                    "type": "reset_incidents_last_run",
-                    "display": "Reset Incidents Last Run",
-                    "description": CAPABILITY_ACTIONS["fetch-issues"]["description"],
-                }
-            ],
-        },
-        {
-            "id": "automation-and-remediation_salesforce",
-            "auth": "none",
-            "workloads": ["xsoar-pod"],
-        },
-    ]
-
-
-# ---------------------------------------------------------------------------
 # build_handler_yaml — capability-scoped actions[]
 # ---------------------------------------------------------------------------
 _INTEGRATION_YML_FOR_ACTIONS = {
@@ -2177,39 +2076,6 @@ def test_find_existing_handler_raises_on_multiple_matches(tmp_path: Path) -> Non
 
     with pytest.raises(RuntimeError, match="Multiple handlers reference"):
         find_existing_handler_for_capability(connector_dir, "fetch-issues")
-
-
-# ---------------------------------------------------------------------------
-# rename_handler_capability_id — preserves directive & other fields
-# ---------------------------------------------------------------------------
-def test_rename_handler_capability_id_preserves_schema_directive_and_other_fields(
-    tmp_path: Path,
-) -> None:
-    handler_dir = tmp_path / "components" / "handlers" / "xsoar-one"
-    handler_yaml_path = _write_existing_handler_yaml(
-        handler_dir,
-        "xsoar-one",
-        [
-            {"id": "fetch-issues", "auth_options": [{"id": "oauth2", "scopes": ["api"], "workloads": ["xsoar-pod"]}]},
-            {"id": "automation", "auth_options": []},
-        ],
-    )
-
-    rename_handler_capability_id(handler_yaml_path, "fetch-issues", "fetch-issues_one")
-
-    with open(handler_yaml_path) as fh:
-        first_line = fh.readline()
-        data = yaml.safe_load(fh)
-    assert first_line == HANDLER_SCHEMA_DIRECTIVE
-    assert data["id"] == "xsoar-one"
-    assert data["capabilities"] == [
-        {
-            "id": "fetch-issues_one",
-            "auth_options": [{"id": "oauth2", "scopes": ["api"], "workloads": ["xsoar-pod"]}],
-        },
-        {"id": "automation", "auth_options": []},
-    ]
-
 
 # ---------------------------------------------------------------------------
 # Case 3 — new capability

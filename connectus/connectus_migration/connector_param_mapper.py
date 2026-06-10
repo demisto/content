@@ -372,6 +372,7 @@ def _resolve_target_capability(
     cmd_name: str,
     result: dict[str, list[str]],
     integration_id: str = "",
+    manual_command_to_capability: dict = {},
 ) -> str:
     """Decide which capability a command's params should be routed to.
 
@@ -389,6 +390,8 @@ def _resolve_target_capability(
          ``"Threat Intelligence & Enrichment"``.
     4. Fallback: ``"Automation"``.
     """
+    if cmd_name in manual_command_to_capability:
+        return manual_command_to_capability[cmd_name][0]
     if cmd_name == LONG_RUNNING_EXECUTION_COMMAND:
         suggested = INTEGRATION_TO_LONGRUNNING_CAPABILITY.get(integration_id)
         if suggested:
@@ -407,6 +410,7 @@ def _multi_capability_mapping(
     command_params: dict,
     handled_commands: set | None = None,
     integration_id: str = "",
+    manual_command_to_capability: dict = {}
 ) -> None:
     """
     command_params structure- {integration: '', commands: {command: [params]}}
@@ -427,7 +431,7 @@ def _multi_capability_mapping(
     for cmd_name, params in commands_section.items():
         if cmd_name == "test-module" or cmd_name in handled_commands:
             continue
-        target = _resolve_target_capability(cmd_name, result, integration_id)
+        target = _resolve_target_capability(cmd_name, result, integration_id, manual_command_to_capability)
         if target in result:
             cap_set = placed_per_cap.setdefault(target, set(result[target]))
             for param in params or []:
@@ -676,7 +680,7 @@ def map_params_to_capabilities(
         # Step 2.3 - multi-capability mapping (forwards integration_id so the
         # long-running-execution command is routed by the override dict)
         _multi_capability_mapping(
-            result, command_params, handled_commands, integration_id
+            result, command_params, handled_commands, integration_id, manual_command_to_capability
         )
 
     # Step 2.4 - deduplicate

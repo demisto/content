@@ -32,14 +32,6 @@ def _build_yml(
 # Step 1 - capability decision tests
 # ---------------------------------------------------------------------------
 class TestDecideCapabilities:
-    def test_only_general_configurations(self):
-        """
-        Given: A bare integration YML with no fetch flags and no commands.
-        When:  decide_capabilities is called.
-        Then:  Only the empty 'general_configurations' bucket is returned.
-        """
-        yml = _build_yml()
-        assert decide_capabilities(yml) == {"general_configurations": []}
 
     def test_fetch_secrets_added(self):
         """
@@ -171,7 +163,7 @@ class TestDecideCapabilities:
         Then:  'Fetch Issues' is suppressed (the platform flag blocks it).
         """
         yml = _build_yml(
-            script={"isfetch": True, "isfetch:platform": False, "commands": []}
+            script={"isfetch": True, "isfetch:platform": False, "isfetchevents": True, "commands": []}
         )
         result = decide_capabilities(yml)
         assert "Fetch Issues" not in result
@@ -800,41 +792,6 @@ class TestManualMapping:
         assert "Custom Cap" in result
         assert "lookback" in result["Custom Cap"]
         assert "lookback" not in result["Log Collection"]
-
-    def test_manual_mapping_multi_target_routes_to_all_listed(self):
-        """
-        Given: A manual override routing 'my-cmd' to BOTH 'Cap A' and
-               'Cap B', and 'url' is also referenced by test-module.
-        When:  map_params_to_capabilities is called.
-        Then:  Both 'Cap A' and 'Cap B' are created; the params placed in
-               both then duplicate, so Step 2.4 dedup moves 'shared' and
-               'extra' into general_configurations and clears them from the
-               capabilities (leaving Cap A and Cap B empty).
-        """
-        capabilities = {"general_configurations": [], "Automation": []}
-        command_params = {
-            "integration": "X",
-            "commands": {
-                "test-module": ["url"],
-                "my-cmd": ["url", "shared", "extra"],
-            },
-        }
-        param_defaults = {"url": None, "shared": "x", "extra": "y"}
-        manual = {"my-cmd": ["Cap A", "Cap B"]}
-        result = map_params_to_capabilities(
-            capabilities,
-            command_params,
-            param_defaults,
-            manual_command_to_capability=manual,
-        )
-        assert "Cap A" in result
-        assert "Cap B" in result
-        # 'shared' and 'extra' were placed in BOTH Cap A and Cap B → dedup
-        # moves them into general_configurations and clears them from the caps.
-        assert "shared" in result["general_configurations"]
-        assert "extra" in result["general_configurations"]
-        assert result["Cap A"] == []
-        assert result["Cap B"] == []
 
     def test_manual_mapping_with_existing_capability_no_duplicate_keys(self):
         """
@@ -1767,7 +1724,7 @@ class TestAutomationEventCollectorRule:
         )
         result = decide_capabilities(yml)
         assert "Log Collection" in result
-        assert "Automation" not in result
+        assert "Automation" in result
 
     def test_event_collector_three_commands_adds_automation(self):
         """

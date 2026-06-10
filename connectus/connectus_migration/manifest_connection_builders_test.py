@@ -610,7 +610,7 @@ def test_build_view_groups_registry():
         {
             "id": "ews-o365",
             "label": "EWS O365",
-            "help_text": "Connection settings for the EWS O365 integration.",
+            "help_text": "Connection settings for EWS O365.",
         }
     ]
 

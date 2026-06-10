@@ -3916,7 +3916,6 @@ def build_capabilities_yaml(
                 build_sub_capability_entry(
                     sub_cap_id,
                     cap_name,
-                    required=True,
                     integration_name=integration_name,
                 )
             ]
@@ -5509,8 +5508,7 @@ def build_connection_profile(
     # string and read the interpolate flag faithfully from the entry (default
     # False; ``set-auth`` forces it True upstream).
     interpolation_mapping = build_interpolation_mapping(profile_type, xsoar_param_map)
-    interpolated = bool(auth_type_entry.get("interpolated", False))
-    xsoar_metadata: dict = {"interpolated": interpolated}
+    xsoar_metadata: dict = {}
     if interpolation_mapping:
         xsoar_metadata["interpolation_mapping"] = interpolation_mapping
 
@@ -5770,10 +5768,6 @@ def build_engine_mode_field(field_id: str, *, single_engine: bool) -> dict:
         "id": field_id,
         "title": "Engine",
         "field_type": "select",
-        "metadata": {
-            "event": {"publish": True},
-            "xsoar": {"config_type": "backend"},
-        },
         "options": {
             "mask": False,
             "default_value": "no_engine",

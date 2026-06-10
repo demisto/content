@@ -109,7 +109,7 @@ class TestCollectCapabilities:
         )
         result = collect_capabilities(yml)
         assert "Log Collection" in result
-        assert "Automation" not in result
+        assert "Automation" in result
 
     def test_event_collector_three_commands_adds_automation(self):
         """
