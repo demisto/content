@@ -28,6 +28,39 @@ You can also register the skill through the Roo UI instead of creating the symli
 
 > **Architecture note.** The CLI entry script [`connectus/workflow_state.py`](workflow_state.py:1) delegates to the package at [`connectus/workflow_state/`](workflow_state/__init__.py:1), which hosts the CLI entrypoint, validators, state machine, CSV I/O, display helpers, and config loader. The canonical Python import is `from workflow_state import …`.
 
+## Environment Configuration
+
+There is **one** environment file for all connectus/UCP tooling: a single `.env`
+at the **repo root** (`/<content-repo>/.env`). It is the canonical source of
+truth for configuration such as `INTEGRATION_YML_PATH`, `CONNECTUS_REPO_DIR`,
+deployment credentials, and tenant settings.
+
+Create it from the root template once:
+
+```bash
+cp .env.example .env   # run from the content-repo root, then fill it in
+```
+
+The root `.env` is loaded by the shared module
+[`connectus/env_loader.py`](env_loader.py:1) via its `load_env()` function,
+which locates the repo root relative to `__file__` and loads `<repo_root>/.env`
+by an explicit path. It is idempotent and import-safe (degrades gracefully if
+`python-dotenv` is unavailable). The same loader is consumed by the three
+workflow stages:
+
+- **Param-parity** — `connectus/runtime_demisto.params_parity/*` (deploy,
+  capture, resolve, parity orchestration).
+- **Generate-manifest** — [`connectus/connectus_migration/run_pre_manifest_steps.py`](connectus_migration/run_pre_manifest_steps.py:1)
+  and [`connectus/connectus_migration/manifest_generator.py`](connectus_migration/manifest_generator.py:1)
+  (so spawned subprocesses like `make validate` inherit the env).
+- **Validate** — [`connectus/workflow_state/gates.py`](workflow_state/gates.py:1)
+  reads `CONNECTUS_REPO_DIR` after `load_env()` runs.
+
+> **Rule:** scripts must never call `dotenv.load_dotenv()` directly. Always use
+> `load_env()` from [`connectus/env_loader.py`](env_loader.py:1) so the root
+> `.env` stays the single source of truth regardless of the current working
+> directory.
+
 ## Authentication Type Catalog
 
 Each integration's authentication is classified into an **Auth Class** string

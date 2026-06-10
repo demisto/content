@@ -27,9 +27,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-from dotenv import load_dotenv
+# Make the shared connectus env loader importable (connectus/ is not a package).
+import sys as _sys
 
-load_dotenv()
+_sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from env_loader import load_env  # noqa: E402
+
+# Load the canonical root .env via the single unified loader.
+load_env()
 
 # This file lives at connectus/runtime_demisto.params_parity/preflight_check.py —
 # go up THREE dirs to reach the content-repo workspace root.

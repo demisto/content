@@ -21,8 +21,14 @@ from pathlib import Path
 from typing import Any
 from collections.abc import Callable
 
+import sys
+
 import typer
 import yaml
+
+# Make the shared connectus env loader importable (connectus/ is not a package).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from env_loader import load_env  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -6403,6 +6409,10 @@ def generate_manifest(
     * Otherwise, the full connector folder is created from scratch.
     """
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+
+    # Load the canonical root .env via the single unified loader so any
+    # subprocess we spawn (e.g. `make validate`) inherits CONNECTUS_REPO_DIR.
+    load_env()
 
     integration_yml = load_integration_yml(integration_path)
     mapped_params_dict = parse_mapped_params(mapped_params)

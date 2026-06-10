@@ -20,11 +20,12 @@ from urllib.parse import quote
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-from dotenv import load_dotenv
+# Make the shared connectus env loader importable (connectus/ is not a package).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from env_loader import load_env  # noqa: E402
 
-# Load .env from the script's own directory (works regardless of CWD)
-_SCRIPT_DIR = Path(__file__).resolve().parent
-load_dotenv()
+# Load the canonical root .env via the single unified loader.
+_ENV_PATH = load_env()
 
 
 # ── Colors ──────────────────────────────────────────────────────────────────
@@ -142,14 +143,14 @@ def validate_config(config):
     """Validate required configuration values."""
     if not config["gitlab_token"] or config["gitlab_token"] == "your-gitlab-personal-access-token":
         error("GITLAB_TOKEN is required")
-        print(f"  Set it in {_SCRIPT_DIR / '.env'} or via --token flag")
+        print(f"  Set it in {_ENV_PATH} or via --token flag")
         print(f"  Create a token at: {config['gitlab_url']}/-/user_settings/personal_access_tokens")
         print(f"  Required scope: {Colors.BOLD}api{Colors.RESET}")
         sys.exit(1)
 
     if not config["skip_git"] and not config["repo_dir"]:
         error("CONNECTUS_REPO_DIR is required for git operations")
-        print(f"  Set it in {_SCRIPT_DIR / '.env'} or via --repo-dir flag")
+        print(f"  Set it in {_ENV_PATH} or via --repo-dir flag")
         print(f"  Or use --skip-git to skip git operations")
         sys.exit(1)
 
@@ -479,7 +480,7 @@ def main():
         sys.exit(0)
 
     print(f"\n{Colors.BOLD}🚀 Unified Connectors — Dev Deployment{Colors.RESET}")
-    print(f"{Colors.DIM}Config: {_SCRIPT_DIR / '.env'}{Colors.RESET}\n")
+    print(f"{Colors.DIM}Config: {_ENV_PATH}{Colors.RESET}\n")
 
     # Step 1: Git operations — reset the branch from origin/<base> and force-push
     # the connector-manifest branch so the pipeline deploys FROM that branch. This

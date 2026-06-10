@@ -37,7 +37,35 @@ ActiveMQ,Packs/ActiveMQ/Integrations/ActiveMQ/ActiveMQ.yml,Apache,,,,,,,,,,,,,,,
 AdminByRequest,Packs/AdminByRequest/Integrations/AdminByRequestEventCollector/AdminByRequestEventCollector.yml,AdminByRequest,,,,,,,,,,,,,,,
 Aha,Packs/AHA/Integrations/AHA/AHA.yml,Aha,,,,,,,,,,,,,,,
 Akamai WAF,Packs/Akamai_WAF/Integrations/Akamai_WAF/Akamai_WAF.yml,Akamai,,,,,,,,,,,,,,,
-Akamai WAF SIEM,Packs/Akamai_SIEM/Integrations/Akamai_SIEM/Akamai_SIEM.yml,Akamai,,,,,,,,,,,,,,,
+Akamai WAF SIEM,Packs/Akamai_SIEM/Integrations/Akamai_SIEM/Akamai_SIEM.yml,Akamai,,juschwartz,"{
+  ""auth_types"": [
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""edgegrid"",
+      ""interpolated"": true,
+      ""xsoar_param_map"": {
+        ""clienttoken_creds.password"": ""client_token"",
+        ""accesstoken_creds.password"": ""access_token"",
+        ""clientsecret_creds.password"": ""client_secret""
+      }
+    }
+  ],
+  ""other_connection"": [""configIds"", ""host"", ""insecure"", ""proxy""]
+}","[""Log Collection"", ""Fetch Issues""]","{
+  ""integration"": ""Akamai WAF SIEM"",
+  ""commands"": {
+    ""test-module"": [],
+    ""akamai-siem-get-events"": [],
+    ""akamai-siem-reset-offset"": [],
+    ""fetch-incidents"": [""fetchTime"", ""fetchLimit"", ""isFetch""],
+    ""fetch-events"": [""fetchTime"", ""fetchLimit"", ""page_size"", ""should_skip_decode_events"", ""longRunning""],
+    ""long-running-execution"": [""fetchTime"", ""beta_page_size"", ""should_skip_decode_events"", ""max_concurrent_tasks"", ""isFetchEvents""]
+  }
+}",{},✅,"{
+  ""general_configurations"": [""fetchLimit"", ""fetchTime""],
+  ""Log Collection"": [""longRunning"", ""page_size"", ""should_skip_decode_events"", ""beta_page_size"", ""max_concurrent_tasks"", ""isFetchEvents""],
+  ""Fetch Issues"": [""isFetch""]
+}",,,,,,,
 AlgoSec,Packs/Algosec/Integrations/AlgoSec/AlgoSec.yml,AlgoSec,,,,,,,,,,,,,,,
 Alibaba Action Trail Event Collector,Packs/AlibabaActionTrail/Integrations/AlibabaActionTrailEventCollector/AlibabaActionTrailEventCollector.yml,Alibaba Cloud,,,,,,,,,,,,,,,
 AlienVault OTX TAXII Feed,Packs/FeedAlienVault/Integrations/FeedAlienVaultOTXTaxii/FeedAlienVaultOTXTaxii.yml,AlienVault,,,,,,,,,,,,,,,
@@ -100,7 +128,10 @@ BeyondTrust Password Safe,Packs/BeyondTrust_Password_Safe/Integrations/BeyondTru
 BeyondTrust Privilege Management Cloud,Packs/BeyondTrust/Integrations/BeyondTrustPrivilegeManagementCloud/BeyondTrustPrivilegeManagementCloud.yml,BeyondTrust,,,,,,,,,,,,,,,
 BigFix,Packs/BigFix/Integrations/BigFix/BigFix.yml,HCL BigFix,,,,,,,,,,,,,,,
 BitSight Event Collector,Packs/BitSight/Integrations/BitSightEventCollector/BitSightEventCollector.yml,BitSight,,,,,,,,,,,,,,,
-Bitbucket,Packs/Bitbucket/Integrations/Bitbucket/Bitbucket.yml,Atlassian Automation and Collection,,juschwartz,"{""auth_types"":[{""type"":""Plain"",""name"":""credentials"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""insecure"",""proxy"",""repository"",""server_url"",""workspace""]}",,,,,,,,,,,,
+Bitbucket,Packs/Bitbucket/Integrations/Bitbucket/Bitbucket.yml,Atlassian Automation and Collection,,juschwartz,"{""auth_types"":[{""type"":""Plain"",""name"":""credentials"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""insecure"",""proxy"",""repository"",""server_url"",""workspace""]}","[""Automation""]","{""integration"":""Bitbucket"",""commands"":{""bitbucket-branch-create"":[],""bitbucket-branch-delete"":[],""bitbucket-branch-get"":[],""bitbucket-commit-create"":[],""bitbucket-commit-list"":[],""bitbucket-file-delete"":[],""bitbucket-issue-comment-create"":[],""bitbucket-issue-comment-delete"":[],""bitbucket-issue-comment-list"":[],""bitbucket-issue-comment-update"":[],""bitbucket-issue-create"":[],""bitbucket-issue-list"":[],""bitbucket-issue-update"":[],""bitbucket-open-branch-list"":[],""bitbucket-project-list"":[],""bitbucket-pull-request-comment-create"":[],""bitbucket-pull-request-comment-delete"":[],""bitbucket-pull-request-comment-list"":[],""bitbucket-pull-request-comment-update"":[],""bitbucket-pull-request-create"":[],""bitbucket-pull-request-list"":[],""bitbucket-pull-request-update"":[],""bitbucket-raw-file-get"":[],""bitbucket-workspace-member-list"":[],""test-module"":[]}}",{},✅,"{
+  ""general_configurations"": [],
+  ""Automation"": []
+}",,,,,,,
 Bitwarden Password Manager,Packs/BitwardenPasswordManager/Integrations/BitwardenPasswordManager/BitwardenPasswordManager.yml,bitwarden,,,,,,,,,,,,,,,
 Blocklist_de Feed,Packs/FeedBlocklist_de/Integrations/FeedBlocklist_de/FeedBlocklist_de.yml,Blocklist.de,,,,,,,,,,,,,,,
 BloodHoundEnterprise,Packs/BloodHoundEnterprise/Integrations/BloodHoundEnterprise/BloodHoundEnterprise.yml,BloodHound Enterprise,,,,,,,,,,,,,,,

@@ -38,6 +38,10 @@ from typing import Any
 
 import yaml
 
+# Make the shared connectus env loader importable (connectus/ is not a package).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from env_loader import load_env  # noqa: E402
+
 # ---------------------------------------------------------------------------
 # Constants — repo-relative script locations and tuning knobs.
 # ---------------------------------------------------------------------------
@@ -915,6 +919,9 @@ def _print_validator_violations(parsed: Any, raw_stdout: str) -> None:
 # Orchestration
 # ---------------------------------------------------------------------------
 def main() -> int:
+    # Load the canonical root .env via the single unified loader so spawned
+    # subprocesses (e.g. `make validate`) inherit CONNECTUS_REPO_DIR.
+    load_env()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--out-dir",

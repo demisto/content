@@ -24,6 +24,15 @@ import json
 import logging
 import os
 import sys
+from pathlib import Path
+
+# Make the shared connectus env loader importable (connectus/ is not a package).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from env_loader import load_env  # noqa: E402
+
+# Load the canonical root .env via the single unified loader so env vars such
+# as INTEGRATION_YML_PATH come from the repo-root .env.
+load_env()
 
 # Re-export every public symbol from xsoar_capture so legacy imports work.
 from xsoar_capture import (  # noqa: F401  (re-exports are intentional)
