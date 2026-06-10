@@ -248,6 +248,8 @@ DUMMY_API_KEY = "dummy-key"
 ITEM_TEMPLATE = '"id": {id}, "name": "XSOAR Test Alert #{id}", "severity": "{severity}", "date": "{date}", "status": "{status}"'
 """ CLIENT CLASS """
 
+'''test'''
+
 
 class Client(BaseClient):
     """Client class to interact with the service API
