@@ -148,6 +148,7 @@ class RasterizeType(Enum):
 
 # endregion
 
+
 def get_container_working_set_bytes() -> int:
     """
     Calculates the container's memory working set in bytes.
@@ -170,7 +171,7 @@ def get_container_working_set_bytes() -> int:
         return max(0, mem_current - inactive_file)
 
     except (FileNotFoundError, ValueError, PermissionError) as e:
-        demisto.debug("DEBUG", f"get_container_working_set_bytes: Could not read cgroup v2 memory stats: {e}")
+        demisto.debug(f"get_container_working_set_bytes: Could not read cgroup v2 memory stats: {e}")
         return 0
 
 
@@ -195,7 +196,6 @@ def get_container_available_memory_bytes() -> int:
         working_set = get_container_working_set_bytes()
         available = max(0, mem_max - working_set)
         demisto.debug(
-            "DEBUG",
             f"get_container_available_memory_bytes: mem_max={mem_max / (1024 * 1024):.1f} MiB, "
             f"working_set={working_set / (1024 * 1024):.1f} MiB, "
             f"available={available / (1024 * 1024):.1f} MiB",
@@ -203,7 +203,7 @@ def get_container_available_memory_bytes() -> int:
         return available
 
     except (FileNotFoundError, ValueError, PermissionError) as e:
-        demisto.debug("DEBUG", f"get_container_available_memory_bytes: Could not read cgroup v2 memory.max: {e}")
+        demisto.debug(f"get_container_available_memory_bytes: Could not read cgroup v2 memory.max: {e}")
         return 0
 
 
@@ -262,30 +262,25 @@ def wait_for_page_load_with_memory_guard(
     while True:
         # Check if the page has finished loading.
         if tab_ready_event.wait(timeout=poll_interval):
-            demisto.debug("DEBUG", f"wait_for_page_load_with_memory_guard: tab_ready_event set normally, {tab_id=}, {path=}")
+            demisto.debug(f"wait_for_page_load_with_memory_guard: tab_ready_event set normally, {tab_id=}, {path=}")
             if tab is not None:
                 try:
                     tab.Page.stopLoading()
                     demisto.debug(
-                        "DEBUG",
                         f"wait_for_page_load_with_memory_guard: Page.stopLoading() called, {tab_id=}, {path=}",
                     )
                 except Exception as stop_ex:
                     demisto.debug(
-                        "DEBUG",
                         f"wait_for_page_load_with_memory_guard: Page.stopLoading() failed (tab may already be stopping): "
                         f"{stop_ex}, {tab_id=}, {path=}",
                     )
             get_container_available_memory_bytes()
             time.sleep(1)  # let Chrome process the stop
-            tab.HeapProfiler.collectGarbage()           # reclaim unreachable JS objects
+            tab.HeapProfiler.collectGarbage()  # reclaim unreachable JS objects
             tab.Memory.forciblyPurgeJavaScriptMemory()  # more aggressive purge
             get_container_available_memory_bytes()
-            for i in range(1,4):
-                demisto.debug(
-                    "INFO",
-                    f"iteration num: {i}"
-                )
+            for i in range(1, 4):
+                demisto.debug(f"iteration num: {i}")
                 time.sleep(10)
                 get_container_available_memory_bytes()
             return True
@@ -293,7 +288,6 @@ def wait_for_page_load_with_memory_guard(
         # Check for timeout.
         if time.monotonic() >= deadline:  # pylint: disable=E9003
             demisto.debug(
-                "DEBUG",
                 f"wait_for_page_load_with_memory_guard: navigation_timeout reached ({navigation_timeout}s), {tab_id=}, {path=}",
             )
             return True  # Caller handles the timeout warning as before.
@@ -309,18 +303,15 @@ def wait_for_page_load_with_memory_guard(
                 try:
                     tab.Page.stopLoading()
                     demisto.debug(
-                        "DEBUG",
                         f"wait_for_page_load_with_memory_guard: Page.stopLoading() called, {tab_id=}, {path=}",
                     )
                 except Exception as stop_ex:
                     demisto.debug(
-                        "DEBUG",
                         f"wait_for_page_load_with_memory_guard: Page.stopLoading() failed (tab may already be stopping): "
                         f"{stop_ex}, {tab_id=}, {path=}",
                     )
             tab_ready_event.set()
             demisto.debug(
-                "INFO",
                 f"wait_for_page_load_with_memory_guard: memory pressure detected — "
                 f"{available / (1024 * 1024):.1f} MiB available ≤ "
                 f"{tolerance_bytes / (1024 * 1024):.1f} MiB tolerance. "
@@ -328,20 +319,14 @@ def wait_for_page_load_with_memory_guard(
             )
             get_container_available_memory_bytes()
             time.sleep(1)  # let Chrome process the stop
-            tab.HeapProfiler.collectGarbage()           # reclaim unreachable JS objects
+            tab.HeapProfiler.collectGarbage()  # reclaim unreachable JS objects
             tab.Memory.forciblyPurgeJavaScriptMemory()  # more aggressive purge
             get_container_available_memory_bytes()
             # Signal the event so the caller proceeds to capture immediately.
-            for i in range(1,4):
-                demisto.debug(
-                    "INFO",
-                    f"iteration num: {i} beofre sleep"
-                )
+            for i in range(1, 4):
+                demisto.debug(f"iteration num: {i} beofre sleep")
                 time.sleep(10)
-                demisto.debug(
-                    "INFO",
-                    f"iteration num: {i} after sleep"
-                )
+                demisto.debug(f"iteration num: {i} after sleep")
                 get_container_available_memory_bytes()
             return False  # False signals that we aborted early due to memory pressure.
 
