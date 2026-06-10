@@ -37,7 +37,7 @@ def _is_skippable_error(e: DemistoException) -> bool:
     (401 Unauthorized, 403 Forbidden, 429 Rate Limit) and should be raised.
 
     Args:
-        e: The DemistoException raised by _http_request.
+        e: The DemistoException raised by _http_request. test in code
 
     Returns:
         True if the error can be safely skipped, False otherwise.
