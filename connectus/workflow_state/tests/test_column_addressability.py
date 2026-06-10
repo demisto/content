@@ -29,14 +29,15 @@ from workflow_state.config_loader import _reset_config_for_testing
 
 # ---------------------------------------------------------------------------
 # Schema canaries — these encode the expected column positions in the
-# bundled YAML (4 identity columns + 14 steps as of 2026-06-07, after the
-# 'Connector Folder Path' identity column was inserted as the 4th identity
-# column (after 'Connector ID'), on top of the earlier 'UCP param-default
-# review' checkpoint insertion. If the YAML shifts, fix these numbers in
+# bundled YAML (4 identity columns + 15 steps as of 2026-06-10, after the
+# 'handler param coverage' checkpoint was inserted (after 'generated
+# manifest', immediately BEFORE 'run manifest make validate'), on top of
+# the earlier 'Connector Folder Path' identity column and 'UCP param-default
+# review' checkpoint insertions. If the YAML shifts, fix these numbers in
 # lock-step with the column references below.
 # ---------------------------------------------------------------------------
 
-_EXPECTED_TOTAL_COLS = 18
+_EXPECTED_TOTAL_COLS = 19
 _COL_INTEGRATION_ID = 1          # identity (allowed for show-step)
 _COL_AUTH_DETAILS = 6            # step #2 → CSV column 6 (4 identity cols + step idx 2)
 _COL_GENERATED_MANIFEST = 12     # first data-free checkpoint, after the 4 identity cols + Collect Capabilities + Params for test + UCP param-default review + Params to Capabilities

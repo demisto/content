@@ -412,6 +412,7 @@ def test_main_fetch_incidents(mocker):
     with open("test_data/fetch_incidents_output.json") as file:
         fetch_incidents_output = json.load(file)
     mocker.patch.object(demisto, "command", return_value="fetch-incidents")
+    mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "incidents")
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(
@@ -1226,3 +1227,90 @@ class TestFilePermissionMethods:
         assert call_kwargs["params"]["supportsAllDrives"] is True
         assert call_kwargs["body"]["name"] == "Shared Drive Folder"
         assert call_kwargs["body"]["parents"] == ["shared_drive_root_id"]
+
+
+def test_mask_sensitive_values():
+    """
+    Scenario: Mask sensitive values in a params dictionary.
+
+    Given:
+    - A dictionary containing sensitive and non-sensitive keys, including nested dicts.
+
+    When:
+    - Calling mask_sensitive_values.
+
+    Then:
+    - Ensure sensitive values are redacted and non-sensitive values are preserved.
+    """
+    from GoogleDrive import mask_sensitive_values
+
+    data = {
+        "user_id": "admin@example.com",
+        "insecure": False,
+        "user_service_account_json": "super-secret-json",
+        "user_creds": {"identifier": "id@example.com", "password": "p@ss"},
+    }
+
+    result = mask_sensitive_values(data)
+
+    assert result["user_id"] == "admin@example.com"
+    assert result["insecure"] is False
+    assert result["user_service_account_json"] == "***"
+    assert result["user_creds"]["identifier"] == "***"
+    assert result["user_creds"]["password"] == "***"
+
+
+def test_connectus_info_command_ucp_disabled(mocker, gsuite_client):
+    """
+    Scenario: Run connectus-info command when UCP is disabled.
+
+    Given:
+    - UCP is not enabled and integration params are configured.
+
+    When:
+    - Calling connectus_info_command.
+
+    Then:
+    - Ensure ucp_enabled is False and sensitive params are masked.
+    """
+    from GoogleDrive import connectus_info_command
+
+    mocker.patch("GoogleDrive.should_use_ucp_auth", return_value=False)
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"user_id": "admin@example.com", "user_service_account_json": "secret"},
+    )
+
+    result: CommandResults = connectus_info_command(gsuite_client, {})
+
+    assert result.outputs["ConnectUs"]["ucp_enabled"] is False
+    assert result.outputs["Params"]["user_service_account_json"] == "***"
+    assert result.outputs["Params"]["user_id"] == "admin@example.com"
+
+
+def test_connectus_info_command_ucp_enabled(mocker, gsuite_client):
+    """
+    Scenario: Run connectus-info command when UCP is enabled.
+
+    Given:
+    - UCP is enabled and a capability/method id can be resolved.
+
+    When:
+    - Calling connectus_info_command.
+
+    Then:
+    - Ensure capability and method_unique_id are included in the output.
+    """
+    from GoogleDrive import connectus_info_command
+
+    mocker.patch("GoogleDrive.should_use_ucp_auth", return_value=True)
+    mocker.patch("GoogleDrive.resolve_ucp_capability", return_value="automation-and-remediation")
+    mocker.patch("GoogleDrive.get_ucp_method_unique_id", return_value="method-123")
+    mocker.patch.object(demisto, "params", return_value={"user_id": "admin@example.com"})
+
+    result: CommandResults = connectus_info_command(gsuite_client, {})
+
+    assert result.outputs["ConnectUs"]["ucp_enabled"] is True
+    assert result.outputs["ConnectUs"]["capability"] == "automation-and-remediation"
+    assert result.outputs["ConnectUs"]["method_unique_id"] == "method-123"

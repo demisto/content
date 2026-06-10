@@ -16,6 +16,7 @@ Design of record: ``connectus/self_executing_gates_design.md``.
 from __future__ import annotations
 
 import os
+import re
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -45,6 +46,13 @@ def _repo_root() -> str:
 # this repo's Makefile, not the content repo.
 _CONNECTUS_REPO_DIRNAME = "unified-connectors-content"
 
+# Path to the standalone handler-param-coverage checker (lives at the
+# connectus/ package root, a sibling of this package's parent dir). Run as
+# a subprocess by the ``handler_param_coverage`` gate.
+_HANDLER_PARAM_COVERAGE_SCRIPT = str(
+    Path(__file__).resolve().parent.parent / "check_handler_param_coverage.py"
+)
+
 # Env var to override the auto-resolved ConnectUs repo path (e.g. when the
 # sibling layout differs, or for tests). When set, it wins over the
 # sibling-of-content-repo default.
@@ -72,6 +80,75 @@ def _connectus_repo_root() -> str:
         return os.path.abspath(override.strip())
     parent = os.path.dirname(_repo_root())
     return os.path.join(parent, _CONNECTUS_REPO_DIRNAME)
+
+
+def _derive_handler_id(integration_id: str) -> str:
+    """Derive the connector handler folder name from an integration id.
+
+    Mirrors ``connectus_migration.manifest_generator.derive_handler_id``
+    (guide §3.8): ``"xsoar-" + integration_id`` lowercased with internal
+    whitespace runs collapsed to single dashes. Inlined here (3 lines) to
+    keep this dependency-light module free of a heavy manifest_generator
+    import.
+    """
+    slug = re.sub(r"\s+", "-", integration_id.strip().lower())
+    return f"xsoar-{slug}"
+
+
+def _integration_yml_abs(integration_id: str) -> str:
+    """Resolve the absolute integration-YML path for ``integration_id``.
+
+    Reads the ``Integration File Path`` cell from the pipeline CSV (the
+    same source :mod:`workflow_state.api` uses) and joins it to the repo
+    root. Returns ``""`` when the id or its file path is not found — the
+    coverage script then exits with a usage error (exit 2), which the gate
+    runner surfaces as a normal failing verdict.
+
+    Imported lazily (not at module top) to avoid a circular import:
+    ``csv_io`` imports ``config_loader`` which imports this module.
+    """
+    from workflow_state.csv_io import find_row, load_csv
+
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        return ""
+    yml_rel = rows[idx].get("Integration File Path", "").strip()
+    if not yml_rel:
+        return ""
+    return os.path.join(_repo_root(), yml_rel)
+
+
+def _handler_dir_abs(integration_id: str) -> str:
+    """Resolve the absolute connector handler dir for ``integration_id``.
+
+    Layout (guide §3.8):
+    ``<connectus_repo>/<Connector Folder Path>/components/handlers/<handler-id>``
+    where ``<handler-id>`` is :func:`_derive_handler_id`. The Connector
+    Folder Path is read from the pipeline CSV (relative to the ConnectUs
+    repo root). Returns ``""`` when the id or its connector folder path is
+    not found — the coverage script then exits with a usage error (exit 2),
+    surfaced as a failing verdict.
+
+    Imported lazily (see :func:`_integration_yml_abs`).
+    """
+    from workflow_state.csv_io import find_row, load_csv
+
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        return ""
+    connector_folder_rel = rows[idx].get("Connector Folder Path", "").strip()
+    if not connector_folder_rel:
+        return ""
+    handler_id = _derive_handler_id(integration_id)
+    return os.path.join(
+        _connectus_repo_root(),
+        connector_folder_rel,
+        "components",
+        "handlers",
+        handler_id,
+    )
 
 
 # How many bytes of captured stdout/stderr to surface in a verdict. Keeps
@@ -144,6 +221,29 @@ GATES: dict[str, GateSpec] = {
         # to the docker-backed precommit gate, but allow headroom.
         default_timeout=600,
         description="make validate (ConnectUs repo: JSON Schema + OPA)",
+    ),
+    "handler_param_coverage": GateSpec(
+        name="handler_param_coverage",
+        # `python3 connectus/check_handler_param_coverage.py` fails (exit 1)
+        # when a non-hidden integration-YML param is NOT covered by the
+        # connector handler's params, or errors (exit 2) on a path-
+        # resolution problem. Runs BEFORE the make_validate gate so a
+        # missing param is caught before connector-level schema validation.
+        build_argv=lambda abs_dir, iid: [
+            sys.executable,
+            _HANDLER_PARAM_COVERAGE_SCRIPT,
+            "--handler-path", _handler_dir_abs(iid),
+            "--integration-yml", _integration_yml_abs(iid),
+        ],
+        # Run from the content repo root (paths resolved above are absolute,
+        # so cwd is incidental — match the precommit gate's root cwd).
+        build_cwd=lambda abs_dir, iid: _repo_root(),
+        # Pure local YAML parsing — fast. Allow modest headroom.
+        default_timeout=120,
+        description=(
+            "check_handler_param_coverage (handler covers every non-hidden "
+            "integration-YML param)"
+        ),
     ),
 }
 

@@ -111,8 +111,10 @@ class TestLoadDefault:
         # so 13 → 12. 2026-06-07 inserted ``Collect Capabilities`` at
         # step #3 (before ``Params to Commands``) — so 12 → 13. 2026-06-07
         # additionally inserted ``UCP param-default review`` (after ``Params
-        # for test with default in code``) — so 13 → 14.
-        assert len(cfg.steps) == 14
+        # for test with default in code``) — so 13 → 14. 2026-06-10 inserted
+        # ``handler param coverage`` (after ``generated manifest``,
+        # immediately before ``run manifest make validate``) — so 14 → 15.
+        assert len(cfg.steps) == 15
         assert len(cfg.identity_columns) == 4
         # Markers match the expected sentinels.
         assert cfg.markers.check == "✅"
