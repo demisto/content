@@ -104,7 +104,9 @@ Defines authentication profiles. Schema: [`connection.schema.json`](schema/conne
 | `view_groups` | ViewGroup[] | Grouped | One tile per integration (Grouped connectors). |
 | `profiles` | Profile[] | ✅ | Authentication profiles. |
 
-**Profile types:** `oauth2_client_credentials`, `oauth2_authorization_code`, `oauth2_jwt_bearer`, `plain` (user/password), `api_key`, `passthrough` (store-and-forward, no IDP — see §2.6.1).
+**Profile types (framework):** `oauth2_client_credentials`, `oauth2_authorization_code`, `oauth2_jwt_bearer`, `oauth2_refresh_token`, `plain` (user/password), `api_key`, `external_auth`, `passthrough` (store-and-forward, no IDP — see §2.6.1).
+
+> **Mass-migration scope:** the XSOAR mass migration emits **only three** of these profile types — **`plain`**, **`api_key`**, and **`passthrough`**.
 
 **Profile schema:**
 
@@ -683,10 +685,20 @@ When `settings.grouped: true`, `connection.yaml` declares a top-level `view_grou
 
 > Standard connectors (one handler) don't need `view_groups` — there's a single implicit tile.
 
+##### `view_group` id / label / help_text derivation
+
+A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`](../README.md) `ViewGroups`): `id` and `label` are **required**; `help_text` is **optional**. The field is **`label`, NOT `title`**.
+
+| Key | Req | Rule |
+|---|---|---|
+| `id` | ✅ | The **normalized integration id** — the integration's `commonfields.id` lowercased, spaces → dashes (the **same normalization as the handler-folder name**, §3.8). E.g. `EWS O365` → `ews-o365`; `Salesforce IAM` → `salesforce-iam`. Must be unique within the file. |
+| `label` | ✅ | The integration's display name in **Title Case** (the human-readable tile name). E.g. `Salesforce IAM`, `Microsoft Teams`. |
+| `help_text` | ❌ | Optional explanatory text rendered alongside the label. Purely presentational — references resolve by `id`, never by `help_text`/`label`. Flag for writer review when synthesized. |
+
 #### Profiles
 
 1. For each profile, follow §2.2 and the auth-parameter tagging in §2.6.
-2. **Typed profile** (`oauth2_*` / `plain` / `api_key` / `oauth2_jwt_bearer`) when the platform manages the credential lifecycle; **`passthrough`** (§2.6.1) when it can't be cleanly mapped or needs several inputs at once (e.g. Slack v3).
+2. **Mass-migration profile types are restricted to `plain`, `api_key`, and `passthrough`** (§2.2). Use **`plain`** for user/password auth and **`api_key`** for a single API-key secret; use **`passthrough`** (§2.6.1) when the credentials can't be cleanly mapped to `plain`/`api_key` or need several inputs at once (e.g. Slack v3).
 3. **`engine`/`engine_group`/`proxy`/`insecure`** appear once inside each profile that needs them. Because a handler binds to exactly one profile, the user supplies a single value per instance.
 4. **`profiles[].view_group`** (Grouped): every profile references one `connection.yaml view_groups[].id`.
    - **A profile cannot be shared across integrations** — each `view_group` belongs to one integration, so declare a **separate profile per integration** even when auth is identical (e.g. `oauth2_client_credentials.salesforce` and `.salesforce-iam`).
