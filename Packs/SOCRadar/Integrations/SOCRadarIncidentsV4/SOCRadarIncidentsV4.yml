@@ -7,10 +7,11 @@ sectionorder:
 - Connect
 - Collect
 configuration:
-- display: API Key
+- displaypassword: API Key
   name: apikey
   required: true
-  type: 4
+  type: 9
+  hiddenusername: true
   section: Connect
   additionalinfo: Your SOCRadar API key from platform.socradar.com
 - display: Company ID
@@ -107,6 +108,62 @@ configuration:
   required: false
   section: Collect
   additionalinfo: Comma-separated list of alarm sub types to exclude (e.g., "Impersonating Domain,Stolen Credential")
+- display: Include Company ID
+  name: include_company_id
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: If enabled, the SOCRadar Company ID will be stored as a custom field on each fetched incident. Also adds company_id to rawJSON labels. Useful for multi-tenant environments to identify which company an incident belongs to.
+- display: Include Incident Link
+  name: include_incident_link
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: If enabled, adds the SOCRadar platform incident link and incident content as custom fields on each fetched incident. Also adds incident_link to rawJSON labels.
+- display: Include Mitigation
+  name: include_mitigation
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes the default mitigation plan provided by SOCRadar for each alarm type. Contains actionable remediation steps such as credential rotation, domain takedown procedures, and vulnerability patching guidance.
+- display: Include Response
+  name: include_response
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes recommended response actions for the alarm. Contains step-by-step incident response procedures such as CVE identification, system isolation, evidence collection, and stakeholder communication.
+- display: Include Detection And Analysis
+  name: include_detection_and_analysis
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes detection and analysis guidance for the alarm. Describes how to integrate alarm output into security systems, set up alerts, and perform initial triage and investigation.
+- display: Include Post Incident Analysis
+  name: include_post_incident_analysis
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes post-incident analysis recommendations. Contains lessons learned guidance such as reviewing incident response processes, updating security policies, and monitoring for recurrence. Available for select alarm types (e.g., Vulnerability Intelligence).
+- display: Include Related Assets
+  name: include_related_assets
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes related assets associated with the alarm such as CPE identifiers, websites, hostnames, and IP addresses. Helps identify the scope and blast radius of the incident.
+- display: Include Related Entities
+  name: include_related_entities
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
+  additionalinfo: Includes related entities extracted from the alarm such as domains, CVE IDs, IP addresses, email addresses, and URLs. Provides context for threat hunting and correlation with other incidents.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
