@@ -571,7 +571,7 @@ A sub-capability's `config.required_license` must contain only licenses present 
 | `general_configurations.description` | `"General configurations for all capabilities"`. |
 | `general_configurations.configurations` | Include the mandatory `instance_name` field (below). |
 
-> **Note:** `integrationLogLevel` and `defaultIgnore` are **not** in `capabilities.yaml` — they live in `configurations.yaml`, under the integration's **sub-capability** `configurations[]` entry (§3.7), alongside the integration's other per-integration config fields. `integrationLogLevel` is emitted once per integration under that integration's sub-capability (its `automation-and-remediation` sub-capability if it has one, otherwise its single/primary sub-capability) — never duplicated across multiple sub-capabilities of the same integration. `defaultIgnore` is emitted **only** for integrations that contribute an `automation-and-remediation` sub-capability (it governs commands; collection-only capabilities have none) and goes under that `automation-and-remediation_<integration>` sub-capability.
+> **Note:** `integrationLogLevel` and `defaultIgnore` are **not** in `capabilities.yaml` — they live in `configurations.yaml`, but in **different** places. **`integrationLogLevel`** lives in `configurations.yaml general_configurations` — emitted **once per `view_group`** (i.e. once per integration) for Grouped connectors, each `general_configurations.configurations[]` row tagged with that integration's `view_group`; for Standard/non-Grouped connectors it lives in `general_configurations` with **no** `view_group`. **`defaultIgnore`** lives at the **sub-capability** level — inside the `automation-and-remediation_<integration>` sub-capability's `configurations[]` entry — and is emitted **only** for integrations that contribute an `automation-and-remediation` sub-capability (it governs commands; collection-only capabilities have none). Both carry `config_type: backend`; collisions when >1 integration are resolved via Appendix C.
 
 Mandatory `instance_name` field (verbatim):
 
@@ -652,7 +652,7 @@ triggers:
 
 | Field | Rule |
 |---|---|
-| `metadata.title` | `"Connection"`. |
+| `metadata.title` | Take the auth_details.auth_types.name and convert to Title Case. |
 | `metadata.description` | `"Enter the credentials to securely authorize the connection"`. Flag for writer review. |
 | `metadata.help` | Long Markdown: extract connection methods from the integration YMLs + READMEs (auth only — no commands/IO), combined with vendor knowledge. Flag for writer review. |
 
@@ -707,7 +707,7 @@ When `settings.grouped: true`, `connection.yaml` declares a top-level `view_grou
 1. **All params in manifest** — including backend-managed ones (`engine`, `engine_group`, etc.).
 2. **One field per row** (each field its own `fields` block).
 3. **Preserve field behavior** — type, default, options, title, id, tooltip, required must match the YML exactly (unless stated otherwise).
-4. **`integrationLogLevel`** and **`defaultIgnore`** are **sub-capability-level** fields — they live under the integration's **sub-capability** `configurations[]` entry (the same place as the integration's other per-integration config fields), **not** in `general_configurations`. **`integrationLogLevel`** is emitted **once per integration**, under that integration's sub-capability — its `automation-and-remediation` sub-capability if the integration has one, otherwise its single/primary sub-capability. Do **not** duplicate `integrationLogLevel` across multiple sub-capabilities of the same integration. **`defaultIgnore`** is **only relevant when the integration contributes an `automation-and-remediation` sub-capability** — it controls "Do not use in CLI by default" for the integration's **commands**, which collection-only capabilities (`fetch-issues`, `log-collection`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, `fetch-secrets`) do not have. Omit `defaultIgnore` for integrations with no automation capability; otherwise emit it under that integration's `automation-and-remediation_<integration>` sub-capability. Collisions when >1 integration are resolved via Appendix C.
+4. **`integrationLogLevel`** and **`defaultIgnore`** are backend-managed but live in **different** places. **`integrationLogLevel`** lives in `general_configurations` — emitted **once per integration's `view_group`** for Grouped connectors (each `general_configurations.configurations[]` row tagged with that integration's `view_group`); for Standard/non-Grouped connectors it lives in `general_configurations` **without** a `view_group`. **`defaultIgnore`** lives at the **sub-capability** level — under the integration's `automation-and-remediation_<integration>` sub-capability `configurations[]` entry, and is **only relevant when the integration contributes an `automation-and-remediation` sub-capability** — it controls "Do not use in CLI by default" for the integration's **commands**, which collection-only capabilities (`fetch-issues`, `log-collection`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, `fetch-secrets`) do not have. Omit `defaultIgnore` for integrations with no automation capability; otherwise emit it under that integration's `automation-and-remediation_<integration>` sub-capability. Collisions when >1 integration (for either field's id) are resolved via Appendix C.
 5. **`longRunning`** is supported
 
 #### NULL vs empty-string
@@ -719,7 +719,7 @@ In ConnectUs, fields that are left unfilled are sent to the BE as **NULL** (unle
 
 #### view_groups (Grouped connectors)
 
-`configurations.yaml` declares its own `view_groups` registry, independent of `connection.yaml` (ids may overlap — each registry scopes only its own file). One tile per integration; may add config-only tiles (e.g. `advanced`). Each `general_configurations.configurations[]` and `configurations[]` entry carries a `view_group`; inner `fields[]` rows must NOT.
+`configurations.yaml` declares its own `view_groups` registry, independent of `connection.yaml` (ids may overlap — each registry scopes only its own file). One tile per integration; may add config-only tiles (e.g. `advanced`). Each `general_configurations.configurations[]` and `configurations[]` entry carries a `view_group`; inner `fields[]` rows must NOT. **`integrationLogLevel` is emitted in `general_configurations` once per `view_group`** — each integration's `general_configurations.configurations[]` row is tagged with that integration's `view_group`.
 
 #### configurations
 
@@ -746,7 +746,7 @@ See [Appendix A](#appendix-a-xsoar-type--manifest-type-mapping).
 
 | Property | Where | `field_type` | `config_type` | Notes |
 |---|---|---|---|---|
-| `integrationLogLevel` | `configurations.yaml`, under the integration's sub-capability (once per integration; its automation sub-capability if it has one, else its primary sub-capability) | `select` | `"backend"` | Off/Debug/Verbose. |
+| `integrationLogLevel` | `configurations.yaml` `general_configurations`, per `view_group` (one per integration; Standard connectors: no `view_group`) | `select` | `"backend"` | Off/Debug/Verbose. |
 | `defaultIgnore` | `configurations.yaml`, under the `automation-and-remediation_<integration>` sub-capability | `checkbox` | `"backend"` | "Do not use in CLI by default". **Only for integrations with an `automation-and-remediation` sub-capability** — it governs commands, which collection-only capabilities don't have. Omit otherwise. |
 | `engine` / `engine_group` | connection profile (§3.6) | `select` + `dynamic_values` | `"backend"` | Engine 3-field pattern (below). Omit for Appendix G. |
 | `mappingId` (label "Classifier") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "classifier"`. `default_value` ← `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `alertType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
@@ -1035,7 +1035,7 @@ Required at repo root. GitLab evaluates bottom-to-top — connector overrides go
 /connectors/googleworkspace/** @ssingh @kverma
 ```
 
-**Rules:** keep the default block; add `/connectors/<name>/** ...` after the catch-all; and for every new connector add `@jmizrahi @juschwartz @yhayun` as codeowners.
+**Rules:** keep the default block; add `/connectors/<name>/** ...` after the catch-all; and for every new connector add `@sbenyakir @ybenshalom @juschwartz` as codeowners.
 
 ---
 
@@ -1210,10 +1210,10 @@ general_configurations:
                 - type: "async"
                   validation_type: "uniqueness"
           options:
-            placeholder: "Please Enter Name for an Instance"
+            placeholder: "Enter a unique name for this instance"
             create_modifiers: { required: true, read_only: false, hidden: false }
             edit_modifiers: { required: true, read_only: false, hidden: false }
-# integrationLogLevel / defaultIgnore live in configurations.yaml under the integration's sub-capability (§3.7), not here.
+# integrationLogLevel lives in configurations.yaml general_configurations (per view_group); defaultIgnore lives under the integration's automation-and-remediation sub-capability (§3.7). Neither is here.
 
 capabilities:
   - id: "automation-and-remediation"
@@ -1241,9 +1241,42 @@ view_groups:
   - { id: "salesforce", label: "Salesforce" }
   - { id: "salesforce-iam", label: "Salesforce IAM" }
 
-# integrationLogLevel + defaultIgnore are sub-capability-level fields (§3.7 rule 4) —
-# they live under each integration's automation-and-remediation sub-capability, NOT in general_configurations.
+# integrationLogLevel lives in general_configurations, one row per view_group (§3.7 rule 4);
+# defaultIgnore lives under each integration's automation-and-remediation sub-capability.
 # salesforce wins the collision → keeps original ids (no serializer); salesforce-iam prefixes.
+general_configurations:
+  description: "General configurations for all capabilities"
+  configurations:
+    # integrationLogLevel — one row per view_group (one per integration).
+    # salesforce wins the collision → keeps original id (no serializer).
+    - view_group: "salesforce"
+      fields:
+        - id: "integrationLogLevel"
+          title: "Integration Log Level"
+          field_type: "select"
+          metadata: { xsoar: { config_type: "backend" } }
+          options:
+            description: "Set the log level for the Salesforce integration"
+            placeholder: "Select log level"
+            default_value: "Off"
+            values: [{ key: "Off", label: "Off" }, { key: "Debug", label: "Debug" }, { key: "Verbose", label: "Verbose" }]
+            create_modifiers: { required: false, hidden: false }
+            edit_modifiers: { required: false, hidden: false }
+    # salesforce-iam loses the collision → prefixed id (serializer remaps, §4.8).
+    - view_group: "salesforce-iam"
+      fields:
+        - id: "salesforce-iam_integrationLogLevel"
+          title: "Integration Log Level"
+          field_type: "select"
+          metadata: { xsoar: { config_type: "backend" } }
+          options:
+            description: "Set the log level for the Salesforce IAM integration"
+            placeholder: "Select log level"
+            default_value: "Off"
+            values: [{ key: "Off", label: "Off" }, { key: "Debug", label: "Debug" }, { key: "Verbose", label: "Verbose" }]
+            create_modifiers: { required: false, hidden: false }
+            edit_modifiers: { required: false, hidden: false }
+
 configurations:
   - id: "automation-and-remediation_salesforce"
     view_group: "salesforce"
@@ -1266,19 +1299,8 @@ configurations:
               - { id: "update_user_enabled", title: "Allow updating users" }
               - { id: "enable_user_enabled", title: "Allow enabling users" }
               - { id: "disable_user_enabled", title: "Allow disabling users" }
-          # integrationLogLevel + defaultIgnore — under salesforce's automation sub-capability.
-          # salesforce wins the collision → keeps original ids (no serializer).
-          - id: "integrationLogLevel"
-            title: "Integration Log Level"
-            field_type: "select"
-            metadata: { xsoar: { config_type: "backend" } }
-            options:
-              description: "Set the log level for the Salesforce integration"
-              placeholder: "Select log level"
-              default_value: "Off"
-              values: [{ key: "Off", label: "Off" }, { key: "Debug", label: "Debug" }, { key: "Verbose", label: "Verbose" }]
-              create_modifiers: { required: false, hidden: false }
-              edit_modifiers: { required: false, hidden: false }
+          # defaultIgnore — under salesforce's automation sub-capability (integrationLogLevel is in general_configurations).
+          # salesforce wins the collision → keeps original id (no serializer).
           - id: "defaultIgnore"
             title: "Do not use in CLI by default"
             field_type: "checkbox"
@@ -1300,19 +1322,8 @@ configurations:
               default_value: true
               create_modifiers: { required: false, read_only: false, hidden: false }
               edit_modifiers: { required: false, read_only: false, hidden: false }
-          # integrationLogLevel + defaultIgnore — under salesforce-iam's automation sub-capability.
-          # salesforce-iam loses the collision → prefixed ids (serializer remaps, §4.8).
-          - id: "salesforce-iam_integrationLogLevel"
-            title: "Integration Log Level"
-            field_type: "select"
-            metadata: { xsoar: { config_type: "backend" } }
-            options:
-              description: "Set the log level for the Salesforce IAM integration"
-              placeholder: "Select log level"
-              default_value: "Off"
-              values: [{ key: "Off", label: "Off" }, { key: "Debug", label: "Debug" }, { key: "Verbose", label: "Verbose" }]
-              create_modifiers: { required: false, hidden: false }
-              edit_modifiers: { required: false, hidden: false }
+          # defaultIgnore — under salesforce-iam's automation sub-capability (integrationLogLevel is in general_configurations).
+          # salesforce-iam loses the collision → prefixed id (serializer remaps, §4.8).
           - id: "salesforce-iam_defaultIgnore"
             title: "Do not use in CLI by default"
             field_type: "checkbox"
@@ -1620,6 +1631,6 @@ The following fields — and **only** these fields — MUST carry `metadata.xsoa
 | `incomingMapperId` | `configurations.yaml`, under the `fetch-issues` sub-capability | Mapper (incoming) — `select` + `dynamic_values` (`dynamicField: mapper-incoming`). |
 | `outgoingMapperId` | `configurations.yaml` (mirroring — see §3.2) | Mapper (outgoing). **Mirroring is out of scope on Platform**; listed here only because it is backend-managed when present. |
 | `defaultIgnore` | `configurations.yaml`, under the `automation-and-remediation_<integration>` sub-capability | "Do not use in CLI by default". Only for integrations with an `automation-and-remediation` sub-capability (§3.7). |
-| `integrationLogLevel` | `configurations.yaml`, under the integration's sub-capability | Off / Debug / Verbose. |
+| `integrationLogLevel` | `configurations.yaml` `general_configurations`, per `view_group` | Off / Debug / Verbose. |
 
 **Explicitly NOT backend-managed** (do **not** set `config_type: backend`): `proxy`, `insecure`, `engine_mode` (the radio control), all auth/secret fields, and every other configuration parameter migrated from the integration YML.
