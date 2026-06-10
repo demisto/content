@@ -546,7 +546,14 @@ A sub-capability's `config.required_license` must contain only licenses present 
 
 **Notes:**
 
-1. **Carve-out**: if the integration name/id contains **`eventcollector`**, do NOT map its commands to `automation-and-remediation` — it is an event-collector integration and maps to `log-collection` (its `isfetchevents` capability) instead.
+1. **`eventcollector` carve-out** (If Integration name/id contains **`eventcollector`**, case-insensitive):
+   - **Default**: create a sub-capability **only** under **`log-collection`** (`log-collection_<integration>`). Do **NOT** create an `automation-and-remediation` sub-capability for its commands.
+   - **EXCEPTION** — also create an `automation-and-remediation` sub-capability (so the integration gets sub-capabilities under **BOTH** `log-collection` **AND** `automation-and-remediation`) if **either**:
+     1. the integration has **≥ 3 commands**, **OR**
+     2. the integration has **≥ 1 command whose name does NOT contain `get-events`**.
+     (If the only commands are `get-events`-style **and** there are **< 3** of them, it stays `log-collection`-only; otherwise it also gets an automation sub-capability.)
+   - When the exception applies, the handler's `capabilities[]` lists **both** the `log-collection_<integration>` and `automation-and-remediation_<integration>` entries (handler subscribes to both — §3.8).
+   - **`defaultIgnore`**: ALWAYS emitted only on/for the `automation-and-remediation` sub-capability (§3.7). A `log-collection`-only eventcollector integration gets **no** `defaultIgnore`; one that also gets an automation sub-capability **does** (governing its commands).
 2. An integration may map to multiple capabilities (e.g. fetch + commands) — emit each, with one sub-capability per integration (`<capability_id>_<integration_id>`).
 3. Multiple integrations may share a capability; each is its own sub-capability (`title` = integration name; `id` = `<capability_id>_<integration_id>`).
 4. **Flag** (but allow) if two integrations declare the same fetch type, or one integration declares multiple fetch/feed/credential capabilities.
