@@ -17,10 +17,15 @@ This integration was integrated and tested with version 1.0.0 of Rubrik Security
 | Threat Monitoring Match Types | Select Threat Monitoring Match Types to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "Threat Monitoring object". | False |
 | Threat Monitoring Object Types | Select Threat Monitoring Object Types to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "Threat Monitoring object". | False |
 | First fetch time | The time interval for the first fetch \(retroactive\). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/\#relative-dates. | False |
-| Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000.<br/><br/>Note: If both Threat Monitoring objects and events are selected, the limit is split equally to fetch both types optimally. | False |
+| Fetch Limit (Maximum of 1000) | Maximum number of incidents to fetch every time. The maximum value is 1000.<br/><br/>Note: If multiple fetch types \(Events, Threat Monitoring objects, DSPM Violations\) are selected, the limit is distributed optimally among them to fetch all types. | False |
 | Event Critical Severity Level Mapping | When an event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
 | Event Warning Severity Level Mapping | When an event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR. | False |
 | Threat Monitoring Object Severity Level Mapping | When a threat monitoring object is fetched, this setting indicates what severity will get assigned within XSOAR. | False |
+| DSPM Violation Statuses | Select DSPM violation statuses to fetch as incidents. Default is OPEN and IN_PROGRESS.<br/><br/>Note: Applies only when RSC fetch type is set to "DSPM Violation". | False |
+| DSPM Violation Sensitivity Levels | Select DSPM violation sensitivity levels to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "DSPM Violation". | False |
+| DSPM Violation Severity Levels | Select DSPM violation severity levels to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "DSPM Violation". | False |
+| DSPM Violation Categories | Select DSPM violation categories to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "DSPM Violation". | False |
+| DSPM Violation Object Types | Select DSPM violation object types to fetch as incidents. Default is all.<br/><br/>Note: Applies only when RSC fetch type is set to "DSPM Violation". Values not included in the options can be found in the documentation. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Use system proxy settings | Whether to use XSOAR's system proxy settings to connect to the API. | False |
 | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
@@ -4220,3 +4225,1259 @@ Request for the analysis and directly download the anomaly CSV analyzed file.
 #### Human Readable Output
 
 >#### Successfully downloaded the analyzed CSV file
+
+### rubrik-data-security-violation-list
+
+***
+Retrieve the list of DSPM violations.
+
+#### Base Command
+
+`rubrik-data-security-violation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | Filter the violations based on object types. Supports comma separated values.<br/><br/>Note: Values not included in the options can be found in the documentation. Possible values are: AWS_NATIVE_DYNAMODB_TABLE, AWS_NATIVE_EBS_VOLUME, AWS_NATIVE_RDS_INSTANCE, AWS_NATIVE_S3_BUCKET, AZURE_MANAGED_DISK, AZURE_SQL_DATABASE_DB, AZURE_SQL_MANAGED_INSTANCE_DB, AZURE_STORAGE_ACCOUNT, AZURE_VIRTUAL_MACHINE, GCP_NATIVE_DISK, GCP_NATIVE_GCE_INSTANCE, HYPERV_VIRTUAL_MACHINE, K8S_PROTECTION_SET, K8S_VIRTUAL_MACHINE, LINUX_FILESET, NAS_FILESET, NUTANIX_VIRTUAL_MACHINE, O365_ONEDRIVE, O365_SITE, ORACLE_DATA_GUARD_GROUP, ORACLE_DATABASE, SHARE_FILESET, VOLUME_GROUP, VSPHERE_VIRTUAL_MACHINE, WINDOWS_FILESET. | Optional |
+| detection_start_date | Filter the violations detected after this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: detection_start_date and detection_end_date both or none of them should be initialized. | Optional |
+| detection_end_date | Filter the violations detected before this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: detection_start_date and detection_end_date both or none of them should be initialized. | Optional |
+| resolved_start_date | Filter the violations resolved after this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: resolved_start_date and resolved_end_date both or none of them should be initialized. | Optional |
+| resolved_end_date | Filter the violations resolved before this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: resolved_start_date and resolved_end_date both or none of them should be initialized. | Optional |
+| category | Filter the violations by category. Supports comma separated values. Possible values are: CATEGORY_UNSPECIFIED, MISPLACED, REDUNDANT, OVEREXPOSED, UNPROTECTED. | Optional |
+| status | Filter the violations by status. Supports comma separated values. Possible values are: OPEN, IN_PROGRESS, REMEDIATED, DISMISSED, CLOSED. | Optional |
+| severity | Filter the violations by severity level. Supports comma separated values. Possible values are: SEVERITY_UNSPECIFIED, LOW, MEDIUM, HIGH, CRITICAL. | Optional |
+| sensitivity | Filter the violations by sensitivity level. Supports comma separated values. Possible values are: HIGH, MEDIUM, LOW, NO. | Optional |
+| limit | Number of results to retrieve in the response. The maximum allowed size is 1000. Default is 50. | Optional |
+| next_page_token | The next page cursor to retrieve the next set of results. | Optional |
+| sort_by | Specify the field to use for sorting the response. Possible values are: SEVERITY, HITS, DETECTION_TIME, UPDATE_TIME, IDENTITY_TYPE, FILES_AT_RISK, TOTAL_HITS, ACCESSIBLE_OBJECTS, ORIGIN, EVENT_TIME, NAME, TYPE. Default is DETECTION_TIME. | Optional |
+| sort_order | Specify the order to sort the data in. Possible values are: ASC, DESC. Default is DESC. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.DSPMViolation.policyViolationId | String | The unique identifier for the policy violation. |
+| RubrikPolaris.DSPMViolation.status | String | The current status of the policy violation. |
+| RubrikPolaris.DSPMViolation.__typename | String | The GraphQL typename for the violation object. |
+| RubrikPolaris.DSPMViolation.createdAt | Date | The date and time when the policy violation was created. |
+| RubrikPolaris.DSPMViolation.lastUpdatedAt | Date | The date and time when the policy violation was last updated. |
+| RubrikPolaris.DSPMViolation.policy.policyId | String | The unique identifier of the policy associated with the violation. |
+| RubrikPolaris.DSPMViolation.policy.name | String | The name of the policy associated with the violation. |
+| RubrikPolaris.DSPMViolation.policy.policySeverity | String | The severity level assigned to the policy. |
+| RubrikPolaris.DSPMViolation.policy.__typename | String | The GraphQL typename for the policy object. |
+| RubrikPolaris.DSPMViolation.resourceId | String | The unique identifier of the resource associated with the violation. |
+| RubrikPolaris.DSPMViolation.resourceType | String | The type of the resource associated with the violation. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.name | String | The name of the resource where the violation occurred. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.objectType | String | The object type of the resource. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.platform | String | The platform of the resource. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.physicalHost | String | The physical host where the resource resides. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.cloudAccountInfo.accountName | String | The name of the associated cloud account. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.cloudAccountInfo.__typename | String | The GraphQL typename for the cloud account info object. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.__typename | String | The GraphQL typename for the resource metadata details object. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.__typename | String | The GraphQL typename for the resource metadata object. |
+| RubrikPolaris.DSPMViolation.details.dataCategories.id | String | The ID of the data category. |
+| RubrikPolaris.DSPMViolation.details.dataCategories.name | String | The name of the data category. |
+| RubrikPolaris.DSPMViolation.details.dataCategories.totalViolatedHits | Integer | The total violated hits of the data category. |
+| RubrikPolaris.DSPMViolation.details.dataCategories.__typename | String | The type name of the data category. |
+| RubrikPolaris.DSPMViolation.details.dataTypes.id | String | The ID of the data type. |
+| RubrikPolaris.DSPMViolation.details.dataTypes.name | String | The name of the data type. |
+| RubrikPolaris.DSPMViolation.details.dataTypes.totalViolatedHits | Integer | The total violated hits of the data type. |
+| RubrikPolaris.DSPMViolation.details.dataTypes.__typename | String | The type name of the data type. |
+| RubrikPolaris.DSPMViolation.details.violatedNoRiskSensitiveHits | Number | The number of no-risk sensitive hits involved in the violation. |
+| RubrikPolaris.DSPMViolation.details.violatedLowRiskSensitiveHits | Number | The number of low-risk sensitive hits involved in the violation. |
+| RubrikPolaris.DSPMViolation.details.violatedMediumRiskSensitiveHits | Number | The number of medium-risk sensitive hits involved in the violation. |
+| RubrikPolaris.DSPMViolation.details.violatedHighRiskSensitiveHits | Number | The number of high-risk sensitive hits involved in the violation. |
+| RubrikPolaris.DSPMViolation.details.snapshotId | String | The ID of the snapshot associated with the violation details. |
+| RubrikPolaris.DSPMViolation.details.__typename | String | The GraphQL typename for the violation details object. |
+| RubrikPolaris.DSPMViolation.remediations.type | String | The type of the remediation action. |
+| RubrikPolaris.DSPMViolation.remediations.state | String | The state of the remediation action. |
+| RubrikPolaris.DSPMViolation.remediations.remediationDetails | Unknown | Detailed information about the remediation action. |
+| RubrikPolaris.DSPMViolation.remediations.__typename | String | The GraphQL typename for the remediation object. |
+| RubrikPolaris.DSPMViolation.remediations | Unknown | The list of remediations associated with the violation. |
+| RubrikPolaris.PageToken.DSPMViolation.next_page_token | String | Next page token. |
+| RubrikPolaris.PageToken.DSPMViolation.name | String | Name of the command. |
+| RubrikPolaris.PageToken.DSPMViolation.has_next_page | Boolean | Whether the result has the next page or not. |
+
+#### Command example
+
+```!rubrik-data-security-violation-list status="OPEN" severity="MEDIUM" limit="50"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "DSPMViolation": [
+            {
+                "policyViolationId": "00000000-0000-0000-0000-000000000001",
+                "status": "POLICY_VIOLATION_STATUS_OPEN",
+                "__typename": "PolicyViolation",
+                "createdAt": "2026-03-06T06:30:45.000Z",
+                "lastUpdatedAt": "2026-03-24T05:30:07.000Z",
+                "name": "Secrets stored outside of vault",
+                "violationSeverity": "MEDIUM",
+                "policy": {
+                    "policyId": "00000000-0000-0000-0000-000000000010",
+                    "name": "Secrets stored outside of vault",
+                    "policySeverity": "MEDIUM",
+                    "policyCategory": "MISPLACED",
+                    "description": "Detects secrets stored outside of vault",
+                    "__typename": "DSPMPolicy"
+                },
+                "resourceId": "00000000-0000-0000-0000-000000000020",
+                "resourceType": "RESOURCE_TYPE_OBJECT",
+                "resourceMetadata": {
+                    "metadata": {
+                        "name": "DEMO-RADAR02",
+                        "objectType": "VSPHERE_VIRTUAL_MACHINE",
+                        "platform": "PLATFORM_DATA_CENTER",
+                        "physicalHost": "rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine",
+                        "__typename": "CommonAssetMetadata"
+                    },
+                    "__typename": "ResourceMetadata"
+                },
+                "details": {
+                    "dataCategories": [
+                        {
+                            "__typename": "DataCategoryStats",
+                            "id": "00000000-0000-0000-0000-000000000010",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        },
+                        {
+                            "__typename": "DataCategoryStats",
+                            "id": "00000000-0000-0000-0000-000000000020",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        }
+                    ],
+                    "dataTypes": [
+                        {
+                            "__typename": "DataTypeStats",
+                            "id": "00000000-0000-0000-0000-000000000010",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        },
+                        {
+                            "__typename": "DataTypeStats",
+                            "id": "00000000-0000-0000-0000-000000000020",
+                            "name": "",
+                            "totalViolatedHits": 1
+                        }
+                    ],
+                    "violatedNoRiskSensitiveHits": 37,
+                    "violatedLowRiskSensitiveHits": 2,
+                    "violatedMediumRiskSensitiveHits": 1,
+                    "violatedHighRiskSensitiveHits": 0,
+                    "snapshotId": "00000000-0000-0000-0000-000000000030",
+                    "__typename": "DataGovViolationDetails"
+                },
+                "remediations": [
+                    {
+                        "type": "REMEDIATION_TYPE_EXPORT_ACTIONS_LOG_TO_CSV",
+                        "state": "REMEDIATION_STATE_SUCCESS",
+                        "__typename": "RemediationMetadata"
+                    }
+                ]
+            },
+            {
+                "policyViolationId": "00000000-0000-0000-0000-000000000002",
+                "status": "POLICY_VIOLATION_STATUS_OPEN",
+                "__typename": "PolicyViolation",
+                "createdAt": "2026-02-25T15:30:25.000Z",
+                "lastUpdatedAt": "2026-03-23T16:30:05.000Z",
+                "name": "Stale sensitive data",
+                "violationSeverity": "LOW",
+                "policy": {
+                    "policyId": "00000000-0000-0000-0000-000000000011",
+                    "name": "Stale sensitive data - not modified for over a year",
+                    "policySeverity": "LOW",
+                    "policyCategory": "REDUNDANT",
+                    "description": "Detects stale sensitive data",
+                    "__typename": "DSPMPolicy"
+                },
+                "resourceId": "00000000-0000-0000-0000-000000000021",
+                "resourceType": "RESOURCE_TYPE_OBJECT",
+                "resourceMetadata": {
+                    "metadata": {
+                        "name": "file-store",
+                        "objectType": "AWS_NATIVE_S3_BUCKET",
+                        "platform": "PLATFORM_AWS",
+                        "physicalHost": "rubrik-lab/us-east-1",
+                        "cloudAccountInfo": {
+                            "accountName": "rubrik-lab",
+                            "__typename": "CloudAccountInfo"
+                        },
+                        "__typename": "CommonAssetMetadata"
+                    },
+                    "__typename": "ResourceMetadata"
+                },
+                "details": {
+                    "violatedNoRiskSensitiveHits": 83,
+                    "violatedLowRiskSensitiveHits": 0,
+                    "violatedMediumRiskSensitiveHits": 0,
+                    "violatedHighRiskSensitiveHits": 7,
+                    "snapshotId": "00000000-0000-0000-0000-000000000031",
+                    "__typename": "DataGovViolationDetails"
+                }
+            }
+        ]
+    },
+    "RubrikPolaris": {
+        "PageToken": {
+            "DSPMViolation": {
+                "name": "rubrik-data-security-violation-list",
+                "next_page_token": "hash_token",
+                "has_next_page": true
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### DSPM Violations List
+>
+>|ID|Violation Name|Severity|Object Name|Violation Status|High Risk Hits|Medium Risk Hits|Low Risk Hits|No Risk Hits|Detection On|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 00000000-0000-0000-0000-000000000001 | Secrets stored outside of vault | Medium | DEMO-RADAR02 | Open | 0 | 1 | 2 | 37 | 2026-03-06T06:30:45.000Z |
+>| 00000000-0000-0000-0000-000000000002 | Stale sensitive data - not modified for over a year | Low | file-store | Open | 7 | 0 | 0 | 83 | 2026-02-25T15:30:25.000Z |
+>
+>Note: To retrieve the next set of results use, "next_page_token" = hash_token
+
+### rubrik-data-security-violation-get
+
+***
+Retrieve the details of DSPM violation based on the provided violation ID.
+
+#### Base Command
+
+`rubrik-data-security-violation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| violation_id | The ID of the DSPM violation.<br/><br/>Note: Users can get the violation ID by executing the "rubrik-data-security-violation-list" command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.DSPMViolation.policyViolationId | String | The unique identifier for the policy violation. |
+| RubrikPolaris.DSPMViolation.status | String | The current status of the policy violation. |
+| RubrikPolaris.DSPMViolation.__typename | String | The GraphQL typename for the violation object. |
+| RubrikPolaris.DSPMViolation.createdAt | Date | The date and time when the policy violation was created. |
+| RubrikPolaris.DSPMViolation.lastUpdatedAt | Date | The date and time when the policy violation was last updated. |
+| RubrikPolaris.DSPMViolation.policy.policyId | String | The unique identifier of the policy associated with the violation. |
+| RubrikPolaris.DSPMViolation.policy.name | String | The name of the policy associated with the violation. |
+| RubrikPolaris.DSPMViolation.policy.policySeverity | String | The severity level assigned to the policy. |
+| RubrikPolaris.DSPMViolation.policy.__typename | String | The GraphQL typename for the policy object. |
+| RubrikPolaris.DSPMViolation.resourceId | String | The unique identifier of the resource associated with the violation. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.name | String | The name of the resource where the violation occurred. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.objectType | String | The object type of the resource. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.platform | String | The platform of the resource. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.physicalHost | String | The physical host where the resource resides. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.cloudAccountInfo.accountName | String | The name of the associated cloud account. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.cloudAccountInfo.__typename | String | The GraphQL typename for the cloud account info object. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.__typename | String | The GraphQL typename for the resource metadata details object. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.clusterInfo.clusterName | String | The name of the cluster. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.clusterInfo.clusterUuid | String | The UUID of the cluster. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.clusterInfo.__typename | String | The GraphQL typename for the cluster info object. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.creationTime | Number | The creation time of the metadata. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.lastAccessTime | Number | The last access time of the metadata. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.snapshotTimestamp | Number | The snapshot timestamp. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.isDeleted | Boolean | Whether the resource is deleted. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.metadata.region | String | The region of the resource. |
+| RubrikPolaris.DSPMViolation.resourceMetadata.__typename | String | The GraphQL typename for the resource metadata object. |
+| RubrikPolaris.DSPMViolation.details.violatedNoRiskSensitiveHits | Number | The number of no-risk sensitive hits involved in the violation. |
+| RubrikPolaris.DSPMViolation.details.violatedLowRiskSensitiveHits | Number | The number of low-risk sensitive hits involved in the violation. |
+| RubrikPolaris.DSPMViolation.details.violatedMediumRiskSensitiveHits | Number | The number of medium-risk sensitive hits involved in the violation. |
+| RubrikPolaris.DSPMViolation.details.violatedHighRiskSensitiveHits | Number | The number of high-risk sensitive hits involved in the violation. |
+| RubrikPolaris.DSPMViolation.details.violatedSensitiveHits | Number | The total number of violated sensitive hits. |
+| RubrikPolaris.DSPMViolation.details.dataTypes.id | String | The ID of the data type. |
+| RubrikPolaris.DSPMViolation.details.dataTypes.name | String | The name of the data type. |
+| RubrikPolaris.DSPMViolation.details.dataTypes.totalViolatedHits | Number | The total violated hits for the data type. |
+| RubrikPolaris.DSPMViolation.details.dataTypes.__typename | String | The GraphQL typename for the data type stats. |
+| RubrikPolaris.DSPMViolation.details.mipLabels | Unknown | The MIP labels associated with the details. |
+| RubrikPolaris.DSPMViolation.details.documentTypes | Unknown | The document types associated with the details. |
+| RubrikPolaris.DSPMViolation.details.dataCategories.id | String | The ID of the data category. |
+| RubrikPolaris.DSPMViolation.details.dataCategories.name | String | The name of the data category. |
+| RubrikPolaris.DSPMViolation.details.dataCategories.totalViolatedHits | Number | The total violated hits for the data category. |
+| RubrikPolaris.DSPMViolation.details.dataCategories.__typename | String | The GraphQL typename for the data category stats. |
+| RubrikPolaris.DSPMViolation.details.snapshotId | String | The ID of the snapshot associated with the violation details. |
+| RubrikPolaris.DSPMViolation.details.__typename | String | The GraphQL typename for the violation details object. |
+| RubrikPolaris.DSPMViolation.policy.description | String | The description of the policy. |
+| RubrikPolaris.DSPMViolation.policy.policyCategory | String | The category of the policy. |
+| RubrikPolaris.DSPMViolation.policy.containsAccessFilters | Boolean | Whether the policy contains access filters. |
+| RubrikPolaris.DSPMViolation.remediations.state | String | The state of the remediation action. |
+| RubrikPolaris.DSPMViolation.remediations.remediationId | String | The ID of the remediation. |
+| RubrikPolaris.DSPMViolation.remediations.remediationDetails | Unknown | Detailed information about the remediation action. |
+| RubrikPolaris.DSPMViolation.remediations.__typename | String | The GraphQL typename for the remediation object. |
+
+#### Command example
+
+```!rubrik-data-security-violation-get violation_id="00000000-0000-0000-0000-000000000001"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "DSPMViolation": {
+            "policyViolationId": "00000000-0000-0000-0000-000000000001",
+            "status": "POLICY_VIOLATION_STATUS_OPEN",
+            "violationSeverity": "MEDIUM",
+            "createdAt": "2026-03-06T06:30:45.000Z",
+            "lastUpdatedAt": "2026-03-24T05:30:07.000Z",
+            "resourceId": "00000000-0000-0000-0000-000000000002",
+            "__typename": "PolicyViolation",
+            "policy": {
+                "policyId": "00000000-0000-0000-0000-000000000003",
+                "name": "Secrets stored outside of vault",
+                "description": "Storing secrets outside vaults can lead to privilege escalation and unauthorized access. Store secrets in a secure vault to limit exposure.",
+                "policyCategory": "MISPLACED",
+                "policySeverity": "MEDIUM",
+                "containsAccessFilters": false,
+                "__typename": "DSPMPolicy"
+            },
+            "resourceMetadata": {
+                "metadata": {
+                    "name": "DEMO-RADAR02",
+                    "objectType": "VSPHERE_VIRTUAL_MACHINE",
+                    "platform": "PLATFORM_DATA_CENTER",
+                    "physicalHost": "vcsa.rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine",
+                    "clusterInfo": {
+                        "clusterName": "Cluster_C",
+                        "clusterUuid": "00000000-0000-0000-0000-000000000004",
+                        "__typename": "ClusterInfo"
+                    },
+                    "creationTime": 0,
+                    "lastAccessTime": 0,
+                    "snapshotTimestamp": 1774329080131,
+                    "isDeleted": false,
+                    "region": "",
+                    "cloudAccountInfo": {
+                        "accountName": "",
+                        "__typename": "CloudAccountInfo"
+                    },
+                    "__typename": "CommonAssetMetadata"
+                },
+                "__typename": "ResourceMetadata"
+            },
+            "details": {
+                "snapshotId": "00000000-0000-0000-0000-000000000005",
+                "violatedSensitiveHits": 40,
+                "violatedNoRiskSensitiveHits": 37,
+                "violatedLowRiskSensitiveHits": 2,
+                "violatedMediumRiskSensitiveHits": 1,
+                "violatedHighRiskSensitiveHits": 0,
+                "__typename": "DataGovViolationDetails",
+                "dataTypes": [
+                    {
+                        "id": "00000000-0000-0000-0000-000000000006",
+                        "name": "Country",
+                        "totalViolatedHits": 35,
+                        "__typename": "DataTypeStats"
+                    },
+                    {
+                        "id": "00000000-0000-0000-0000-000000000007",
+                        "name": "US State",
+                        "totalViolatedHits": 2,
+                        "__typename": "DataTypeStats"
+                    }
+                ],
+                "dataCategories": [
+                    {
+                        "id": "00000000-0000-0000-0000-000000000008",
+                        "name": "Geographical",
+                        "totalViolatedHits": 37,
+                        "__typename": "DataCategoryStats"
+                    }
+                ]
+            },
+            "remediations": [
+                {
+                    "remediationId": "00000000-0000-0000-0000-000000000009",
+                    "state": "REMEDIATION_STATE_SUCCESS",
+                    "__typename": "RemediationMetadata"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### DSPM Violation Data
+>
+>|ID|Violation Name|Severity|Violation Status|Detection Time|Last Updated|Policy ID|Policy Description|Policy Category|Policy Severity|Total Risk Hits|High Risk Hits|Medium Risk Hits|Low Risk Hits|No Risk Hits|Snapshot ID|Object ID|Object Name|Object Type|Object Location|Object Platform|Cluster ID|Cluster Name|Data Types|Data Categories|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 00000000-0000-0000-0000-000000000001 | Secrets stored outside of vault | Medium | Open | 2026-03-06T06:30:45.000Z | 2026-03-24T05:30:07.000Z | 00000000-0000-0000-0000-000000000003 | Storing secrets outside vaults can lead to privilege escalation and unauthorized access. Store secrets in a secure vault to limit exposure. | MISPLACED | Medium | 40 | 0 | 1 | 2 | 37 | 00000000-0000-0000-0000-000000000005 | 00000000-0000-0000-0000-000000000002 | DEMO-RADAR02 | VSPHERE_VIRTUAL_MACHINE | vcsa.rubrikdemo.com/Datacenters/Data Center/vm/Discovered virtual machine | PLATFORM_DATA_CENTER | 00000000-0000-0000-0000-000000000004 | Cluster_C | **-** ***id***: 00000000-0000-0000-0000-000000000006<br/> ***name***: Country<br/> ***totalViolatedHits***: 35<br/>**-** ***id***: 00000000-0000-0000-0000-000000000007<br/> ***name***: US State<br/> ***totalViolatedHits***: 2 | **-** ***id***: 00000000-0000-0000-0000-000000000008<br/> ***name***: Geographical<br/> ***totalViolatedHits***: 37 |
+
+### rubrik-data-security-violation-status-update
+
+***
+Updates the status of the DSPM violation.
+
+#### Base Command
+
+`rubrik-data-security-violation-status-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| violation_id | The ID of the DSPM violation.<br/><br/>Note: Users can get the violation ID by executing the "rubrik-data-security-violation-list" command. | Required |
+| status | The status to update for violation. Possible values are: OPEN, IN_PROGRESS, REMEDIATED, DISMISSED, CLOSED. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.DSPMViolation.policyViolationId | String | The ID of the violation. |
+| RubrikPolaris.DSPMViolation.status | String | The status of the violation. |
+
+#### Command example
+
+```!rubrik-data-security-violation-status-update violation_id="00000000-0000-0000-0000-000000000001" status="IN_PROGRESS"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "DSPMViolation": {
+            "policyViolationId": "00000000-0000-0000-0000-000000000001",
+            "status": "POLICY_VIOLATION_STATUS_IN_PROGRESS"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>#### Successfully updated the DSPM violation status to In Progress
+
+### rubrik-data-security-violation-file-list
+
+***
+Retrieve the file information of data security violation based on the provided violation ID.
+
+#### Base Command
+
+`rubrik-data-security-violation-file-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| violation_id | The ID of the DSPM violation.<br/><br/>Note: Users can get the violation ID by executing the "rubrik-data-security-violation-list" command. | Required |
+| snapshot_id | The snapshot ID.<br/><br/>Note: Users can get the snapshot ID by executing the "rubrik-polaris-object-snapshot-list" command. | Required |
+| object_id | The object ID.<br/><br/>Note: Users can get the Object ID by executing the "rubrik-polaris-objects-list" command. | Required |
+| limit | Number of results to retrieve in the response. The maximum allowed size is 1000. Default is 25. | Optional |
+| next_page_token | The next page cursor to retrieve the next set of results. | Optional |
+| file_name | Filter files by their name. | Optional |
+| last_access_start_date | Filter files with last access after this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: last_access_start_date and last_access_end_date both or none of them should be initialized. | Optional |
+| last_access_end_date | Filter files with last access before this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: last_access_start_date and last_access_end_date both or none of them should be initialized. | Optional |
+| last_modified_start_date | Filter files with last modified after this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: last_modified_start_date and last_modified_end_date both or none of them should be initialized. | Optional |
+| last_modified_end_date | Filter files with last modified before this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: last_modified_start_date and last_modified_end_date both or none of them should be initialized. | Optional |
+| creation_start_date | Filter files created after this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: creation_date_start_date and creation_date_start_date both or none of them should be initialized. | Optional |
+| creation_end_date | Filter files created before this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: creation_date_start_date and creation_date_start_date both or none of them should be initialized. | Optional |
+| last_scan_start_date | Filter files with last scan after this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: last_scan_start_date and last_scan_end_date both or none of them should be initialized. | Optional |
+| last_scan_end_date | Filter files with last scan before this date.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 Jan 2026, 01 Jan 2026 04:45:33, 2026-01-01T14:05:44Z.<br/><br/>Note: last_scan_start_date and last_scan_end_date both or none of them should be initialized. | Optional |
+| sensitivity | Filter files by sensitivity level. Supports comma separated values. Possible values are: HIGH, MEDIUM, LOW, NO. | Optional |
+| exposure | Filter files by exposure type. Supports comma separated values. Possible values are: EXPLICIT, INHERITED, NOT_OPEN, PUBLIC. | Optional |
+| access_via | Filter files by access type. Possible values are: ACCESS_TYPE_UNSPECIFIED, DIRECT, GROUP, ROLE. Default is ACCESS_TYPE_UNSPECIFIED. | Optional |
+| sort_order | Specify the order to sort the data in. Possible values are: ASC, DESC. Default is DESC. | Optional |
+| sort_by | Specify the field to use for sorting the response. Possible values are: CLUSTER, CREATION_TIME, DAILY_CHANGE, DATA_CATEGORY, DATA_TYPE, DOCUMENT_TYPE, EXPOSED_FILES, FILES_WITH_HITS, FILES_WITH_OPEN_ACCESS_HITS, HITS, HITS_BY_SENSITIVITY, LAST_ACCESS_TIME, LAST_MODIFIED, LAST_SCAN_TIME, NAME, NATIVE_PATH, NUM_ACTIVITIES, NUM_ACTIVITIES_DELTA, OBJECT_LOCATION, OBJECT_NAME, OPEN_ACCESS_TYPE, SNAPSHOT_TIME, STALE_FILES_WITH_HITS, TOTAL_SENSITIVE_HITS. Default is HITS. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Rubrik.DSPMViolationFile.nativePath | String | The native path of the file. |
+| Rubrik.DSPMViolationFile.stdPath | String | The standardized path of the file. |
+| Rubrik.DSPMViolationFile.filename | String | The name of the file. |
+| Rubrik.DSPMViolationFile.mode | String | The file mode. |
+| Rubrik.DSPMViolationFile.size | Number | The file size in bytes. |
+| Rubrik.DSPMViolationFile.lastAccessTime | Number | The last access time of the file. |
+| Rubrik.DSPMViolationFile.lastModifiedTime | Number | The last modified time of the file. |
+| Rubrik.DSPMViolationFile.creationTime | Number | The creation time of the file. |
+| Rubrik.DSPMViolationFile.lastScanTime | Number | The last scan time of the file. |
+| Rubrik.DSPMViolationFile.directory | String | The directory of the file. |
+| Rubrik.DSPMViolationFile.createdBy | String | The user who created the file. |
+| Rubrik.DSPMViolationFile.modifiedBy | String | The user who last modified the file. |
+| Rubrik.DSPMViolationFile.numDescendantFiles | Number | The number of descendant files. |
+| Rubrik.DSPMViolationFile.numDescendantErrorFiles | Number | The number of descendant files with errors. |
+| Rubrik.DSPMViolationFile.numDescendantSkippedExtFiles | Number | The number of descendant files skipped due to extension. |
+| Rubrik.DSPMViolationFile.numDescendantSkippedSizeFiles | Number | The number of descendant files skipped due to size. |
+| Rubrik.DSPMViolationFile.errorCode | String | The error code. |
+| Rubrik.DSPMViolationFile.hits.totalHits | Number | The total number of hits. |
+| Rubrik.DSPMViolationFile.hits.violations | Number | The number of violations. |
+| Rubrik.DSPMViolationFile.hits.violationsDelta | Number | The change in the number of violations. |
+| Rubrik.DSPMViolationFile.hits.totalHitsDelta | Number | The change in the total number of hits. |
+| Rubrik.DSPMViolationFile.hits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.filesWithHits.totalHits | Number | The total number of hits in files. |
+| Rubrik.DSPMViolationFile.filesWithHits.violations | Number | The number of violations in files. |
+| Rubrik.DSPMViolationFile.filesWithHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.openAccessFilesWithHits.totalHits | Number | The total number of hits in open access files. |
+| Rubrik.DSPMViolationFile.openAccessFilesWithHits.violations | Number | The number of violations in open access files. |
+| Rubrik.DSPMViolationFile.openAccessFilesWithHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.staleFilesWithHits.totalHits | Number | The total number of hits in stale files. |
+| Rubrik.DSPMViolationFile.staleFilesWithHits.violations | Number | The number of violations in stale files. |
+| Rubrik.DSPMViolationFile.staleFilesWithHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerGroup.groupType | String | The type of the analyzer group. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerGroup.id | String | The ID of the analyzer group. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerGroup.name | String | The name of the analyzer group. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerGroup.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.hits.totalHits | Number | The total number of hits. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.hits.violations | Number | The number of violations. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.hits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.analyzer.id | String | The ID of the analyzer. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.analyzer.name | String | The name of the analyzer. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.analyzer.analyzerType | String | The type of the analyzer. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.analyzer.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.analyzerResults.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.hits.totalHits | Number | The total number of hits. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.hits.violations | Number | The number of violations. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.hits.violationsDelta | Number | The change in the number of violations. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.hits.totalHitsDelta | Number | The change in the total number of hits. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.hits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerGroupResults.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.highRiskFileCount.totalCount | Number | The total count of high risk files. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.highRiskFileCount.violatedCount | Number | The count of high risk files with violations. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.highRiskFileCount.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.mediumRiskFileCount.totalCount | Number | The total count of medium risk files. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.mediumRiskFileCount.violatedCount | Number | The count of medium risk files with violations. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.mediumRiskFileCount.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.lowRiskFileCount.totalCount | Number | The total count of low risk files. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.lowRiskFileCount.violatedCount | Number | The count of low risk files with violations. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.lowRiskFileCount.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.noRiskFileCount | Unknown | The count of files with no risk. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.totalFileCount.totalCount | Number | The total count of files. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.totalFileCount.violatedCount | Number | The count of files with violations. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.totalFileCount.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.sensitiveFiles.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.sensitiveHits.highRiskHits.totalHits | Number | The total number of high risk hits. |
+| Rubrik.DSPMViolationFile.sensitiveHits.highRiskHits.violatedHits | Number | The number of violated high risk hits. |
+| Rubrik.DSPMViolationFile.sensitiveHits.highRiskHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.sensitiveHits.mediumRiskHits.totalHits | Number | The total number of medium risk hits. |
+| Rubrik.DSPMViolationFile.sensitiveHits.mediumRiskHits.violatedHits | Number | The number of violated medium risk hits. |
+| Rubrik.DSPMViolationFile.sensitiveHits.mediumRiskHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.sensitiveHits.lowRiskHits.totalHits | Number | The total number of low risk hits. |
+| Rubrik.DSPMViolationFile.sensitiveHits.lowRiskHits.violatedHits | Number | The number of violated low risk hits. |
+| Rubrik.DSPMViolationFile.sensitiveHits.lowRiskHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.sensitiveHits.noRiskHits.totalHits | Number | The total number of no risk hits. |
+| Rubrik.DSPMViolationFile.sensitiveHits.noRiskHits.violatedHits | Number | The number of violated no risk hits. |
+| Rubrik.DSPMViolationFile.sensitiveHits.noRiskHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.sensitiveHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.highRiskHits.totalHits | Number | The total number of high risk analyzer hits. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.highRiskHits.violatedHits | Number | The number of violated high risk analyzer hits. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.highRiskHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.mediumRiskHits.totalHits | Number | The total number of medium risk analyzer hits. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.mediumRiskHits.violatedHits | Number | The number of violated medium risk analyzer hits. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.mediumRiskHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.lowRiskHits.totalHits | Number | The total number of low risk analyzer hits. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.lowRiskHits.violatedHits | Number | The number of violated low risk analyzer hits. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.lowRiskHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.noRiskHits.totalHits | Number | The total number of no risk analyzer hits. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.noRiskHits.violatedHits | Number | The number of violated no risk analyzer hits. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.noRiskHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerRiskHits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerResults.hits.totalHits | Number | The total number of hits. |
+| Rubrik.DSPMViolationFile.analyzerResults.hits.violations | Number | The number of violations. |
+| Rubrik.DSPMViolationFile.analyzerResults.hits.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerResults.analyzer.id | String | The ID of the analyzer. |
+| Rubrik.DSPMViolationFile.analyzerResults.analyzer.name | String | The name of the analyzer. |
+| Rubrik.DSPMViolationFile.analyzerResults.analyzer.analyzerType | String | The type of the analyzer. |
+| Rubrik.DSPMViolationFile.analyzerResults.analyzer.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.analyzerResults.__typename | String | The GraphQL type name. |
+| Rubrik.DSPMViolationFile.openAccessType | String | The open access type. |
+| Rubrik.DSPMViolationFile.stalenessType | String | The staleness type. |
+| Rubrik.DSPMViolationFile.numActivities | Number | The number of activities. |
+| Rubrik.DSPMViolationFile.numActivitiesDelta | Number | The change in the number of activities. |
+| Rubrik.DSPMViolationFile.exposureSummary | Unknown | The exposure summary. |
+| Rubrik.DSPMViolationFile.dbEntityType | String | The database entity type. |
+| Rubrik.DSPMViolationFile.mipLabelsSummary | Unknown | The MIP labels summary. |
+| Rubrik.DSPMViolationFile.documentTypesSummary | Unknown | The document types summary. |
+| Rubrik.DSPMViolationFile.__typename | String | The GraphQL type name. |
+
+#### Command example
+
+```!rubrik-data-security-violation-file-list violation_id="00000000-0000-0000-0000-000000000001" snapshot_id="00000000-0000-0000-0000-000000010001" object_id="00000000-0000-0000-0000-000000000002"```
+
+#### Context Example
+
+```json
+{
+    "RubrikPolaris": {
+        "DSPMViolationFile": [
+            {
+                "nativePath": "/Sales Department/fileName.txt",
+                "stdPath": "/Sales Department/fileName.txt",
+                "filename": "fileName.txt",
+                "mode": "FILE",
+                "size": 67615,
+                "lastAccessTime": 0,
+                "lastModifiedTime": 1684957676,
+                "creationTime": 0,
+                "lastScanTime": 1775406966,
+                "directory": "/Sales Department",
+                "createdBy": "",
+                "modifiedBy": "",
+                "numDescendantFiles": 0,
+                "numDescendantErrorFiles": 0,
+                "numDescendantSkippedExtFiles": 0,
+                "numDescendantSkippedSizeFiles": 0,
+                "errorCode": "NOERROR",
+                "hits": {
+                    "totalHits": 0,
+                    "violations": 3022,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0,
+                    "__typename": "Hits"
+                },
+                "filesWithHits": {
+                    "totalHits": 0,
+                    "violations": 1,
+                    "__typename": "Hits"
+                },
+                "openAccessFilesWithHits": {
+                    "totalHits": 0,
+                    "violations": 0,
+                    "__typename": "Hits"
+                },
+                "staleFilesWithHits": {
+                    "totalHits": 0,
+                    "violations": 1,
+                    "__typename": "Hits"
+                },
+                "analyzerGroupResults": [
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "00000000-0000-0000-0000-000000000008",
+                            "name": "Personal",
+                            "__typename": "AnalyzerGroup"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000003",
+                                    "name": "Italy Passport Number",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000004",
+                                    "name": "ITIN",
+                                    "analyzerType": "US_ITIN",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 1533,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0,
+                            "__typename": "Hits"
+                        },
+                        "__typename": "AnalyzerGroupResult"
+                    },
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "00000000-0000-0000-0000-000000000007",
+                            "name": "Geographical",
+                            "__typename": "AnalyzerGroup"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000005",
+                                    "name": "Country",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000006",
+                                    "name": "County",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 1489,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0,
+                            "__typename": "Hits"
+                        },
+                        "__typename": "AnalyzerGroupResult"
+                    }
+                ],
+                "sensitiveFiles": {
+                    "highRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "mediumRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 1,
+                        "__typename": "SummaryCount"
+                    },
+                    "lowRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "totalFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "__typename": "SensitiveFiles"
+                },
+                "sensitiveHits": {
+                    "highRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "mediumRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 1533,
+                        "__typename": "SummaryHits"
+                    },
+                    "lowRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "noRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 1489,
+                        "__typename": "SummaryHits"
+                    },
+                    "__typename": "SensitiveHits"
+                },
+                "analyzerRiskHits": {
+                    "highRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "mediumRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 1533,
+                        "__typename": "SummaryHits"
+                    },
+                    "lowRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "noRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "__typename": "AnalyzerHits"
+                },
+                "analyzerResults": [
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 758,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000013",
+                            "name": "First Name",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    },
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 9,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000009",
+                            "name": "EU Country",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    },
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 765,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000010",
+                            "name": "City",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    },
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 715,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000011",
+                            "name": "US State",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    },
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 775,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000012",
+                            "name": "Last Name",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    }
+                ],
+                "openAccessType": "UNKNOWN_ACCESS",
+                "stalenessType": "IS_STALE",
+                "numActivities": 0,
+                "numActivitiesDelta": 0,
+                "dbEntityType": "UNDEFINED_ENTITY",
+                "__typename": "FileResult"
+            },
+            {
+                "nativePath": "/Sales Department/fileName1.txt",
+                "stdPath": "/Sales Department/fileName1.txt",
+                "filename": "fileName1.txt",
+                "mode": "FILE",
+                "size": 25653,
+                "lastAccessTime": 0,
+                "lastModifiedTime": 1684957355,
+                "creationTime": 0,
+                "lastScanTime": 1775406966,
+                "directory": "/Sales Department",
+                "createdBy": "",
+                "modifiedBy": "",
+                "numDescendantFiles": 0,
+                "numDescendantErrorFiles": 0,
+                "numDescendantSkippedExtFiles": 0,
+                "numDescendantSkippedSizeFiles": 0,
+                "errorCode": "NOERROR",
+                "hits": {
+                    "totalHits": 0,
+                    "violations": 790,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0,
+                    "__typename": "Hits"
+                },
+                "filesWithHits": {
+                    "totalHits": 0,
+                    "violations": 1,
+                    "__typename": "Hits"
+                },
+                "openAccessFilesWithHits": {
+                    "totalHits": 0,
+                    "violations": 0,
+                    "__typename": "Hits"
+                },
+                "staleFilesWithHits": {
+                    "totalHits": 0,
+                    "violations": 1,
+                    "__typename": "Hits"
+                },
+                "analyzerGroupResults": [
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "00000000-0000-0000-0000-000000000007",
+                            "name": "Geographical",
+                            "__typename": "AnalyzerGroup"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 21,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000005",
+                                    "name": "Country",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000006",
+                                    "name": "County",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 397,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0,
+                            "__typename": "Hits"
+                        },
+                        "__typename": "AnalyzerGroupResult"
+                    },
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "00000000-0000-0000-0000-000000000008",
+                            "name": "Personal",
+                            "__typename": "AnalyzerGroup"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000003",
+                                    "name": "Italy Passport Number",
+                                    "analyzerType": "UNDEFINED",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 0,
+                                    "violations": 0,
+                                    "__typename": "Hits"
+                                },
+                                "analyzer": {
+                                    "id": "00000000-0000-0000-0000-000000000004",
+                                    "name": "ITIN",
+                                    "analyzerType": "US_ITIN",
+                                    "__typename": "Analyzer"
+                                },
+                                "__typename": "AnalyzerResult"
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 393,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0,
+                            "__typename": "Hits"
+                        },
+                        "__typename": "AnalyzerGroupResult"
+                    }
+                ],
+                "sensitiveFiles": {
+                    "highRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "mediumRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 1,
+                        "__typename": "SummaryCount"
+                    },
+                    "lowRiskFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "totalFileCount": {
+                        "totalCount": 0,
+                        "violatedCount": 0,
+                        "__typename": "SummaryCount"
+                    },
+                    "__typename": "SensitiveFiles"
+                },
+                "sensitiveHits": {
+                    "highRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "mediumRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 393,
+                        "__typename": "SummaryHits"
+                    },
+                    "lowRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "noRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 397,
+                        "__typename": "SummaryHits"
+                    },
+                    "__typename": "SensitiveHits"
+                },
+                "analyzerRiskHits": {
+                    "highRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "mediumRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 393,
+                        "__typename": "SummaryHits"
+                    },
+                    "lowRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "noRiskHits": {
+                        "totalHits": 0,
+                        "violatedHits": 0,
+                        "__typename": "SummaryHits"
+                    },
+                    "__typename": "AnalyzerHits"
+                },
+                "analyzerResults": [
+                    {
+                        "hits": {
+                            "totalHits": 0,
+                            "violations": 192,
+                            "__typename": "Hits"
+                        },
+                        "analyzer": {
+                            "id": "00000000-0000-0000-0000-000000000010",
+                            "name": "City",
+                            "analyzerType": "UNDEFINED",
+                            "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                    }
+                ],
+                "openAccessType": "UNKNOWN_ACCESS",
+                "stalenessType": "IS_STALE",
+                "numActivities": 0,
+                "numActivitiesDelta": 0,
+                "dbEntityType": "UNDEFINED_ENTITY",
+                "__typename": "FileResult"
+            }
+        ]
+    },
+    "RubrikPolaris": {
+        "PageToken": {
+            "DSPMViolationFile": {
+                "name": "rubrik-data-security-violation-file-list",
+                "next_page_token": "end_hash_cursor",
+                "has_next_page": true
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### DSPM Violation File List
+>
+>|File Path|File Size in Bytes|Total Risk Hits|High Risk Hits|Medium Risk Hits|Low Risk Hits|No Risk Hits|Last Access Time|Last Modified Time|Data Categories|
+>|---|---|---|---|---|---|---|---|---|---|
+>| /Sales Department/fileName.txt | 67615 | 3022 | 0 | 1533 | 0 | 1489 | 1970-01-01T00:00:00Z | 2023-05-24T19:47:56Z | **-** ***id***: 00000000-0000-0000-0000-000000000008<br/> ***name***: Personal<br/> ***totalViolatedHits***: 1533<br/>**-** ***id***: 00000000-0000-0000-0000-000000000007<br/> ***name***: Geographical<br/> ***totalViolatedHits***: 1489 |
+>| /Sales Department/fileName1.txt | 25653 | 790 | 0 | 393 | 0 | 397 | 1970-01-01T00:00:00Z | 2023-05-24T19:42:35Z | **-** ***id***: 00000000-0000-0000-0000-000000000007<br/> ***name***: Geographical<br/> ***totalViolatedHits***: 397<br/>**-** ***id***: 00000000-0000-0000-0000-000000000008<br/> ***name***: Personal<br/> ***totalViolatedHits***: 393 |
+>
+>Note: To retrieve the next set of results use, "next_page_token" = end_hash_cursor
+
+### rubrik-data-security-violation-csv-download
+
+***
+Download all files at risk as CSV file for the specified data security violation.
+
+#### Base Command
+
+`rubrik-data-security-violation-csv-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| violation_id | The ID of the DSPM violation.<br/><br/>Note: Users can get the violation ID by executing the "rubrik-data-security-violation-list" command. | Required |
+| snapshot_id | The snapshot ID.<br/><br/>Note: Users can retrieve the snapshot ID by executing the "rubrik-polaris-object-snapshot-list" command. | Required |
+| object_id | The object ID.<br/><br/>Note: Users can retrieve the object ID by executing the "rubrik-polaris-objects-list" command. | Required |
+| object_name | The object Name.<br/><br/>Note: If not specified command will retrieve it using the "rubrik-data-security-violation-get" command. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.DSPMViolationCSVDownload.violationId | String | The ID of the violation. |
+| RubrikPolaris.DSPMViolationCSVDownload.snapshotId | String | The ID of the snapshot. |
+| RubrikPolaris.DSPMViolationCSVDownload.objectId | String | The ID of the object. |
+| RubrikPolaris.DSPMViolationCSVDownload.objectName | String | The Name of the object. |
+| RubrikPolaris.DSPMViolationCSVDownload.externalId | String | The external ID of the CSV file. |
+| RubrikPolaris.DSPMViolationCSVDownload.isSuccessful | Boolean | Whether the CSV analysis was successful or not. |
+| InfoFile.Name | string | FileName. |
+| InfoFile.EntryID | string | The EntryID of the report. |
+| InfoFile.Size | number | File Size. |
+| InfoFile.Type | string | File type e.g. "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+
+#### Command example
+
+```!rubrik-data-security-violation-csv-download violation_id="00000000-0000-0000-0000-000000000001" snapshot_id="00000000-0000-0000-0000-000000010001" object_id="00000000-0000-0000-0000-000000000002"```
+
+#### Context Example
+
+```json
+{
+    "InfoFile": {
+        "EntryID": "10000@00000000-0000-0000-0000-000000000001",
+        "Extension": "csv",
+        "Info": "text/csv; charset=utf-8",
+        "Name": "test_object-violating-files_file_results_1775629027.csv",
+        "Size": 1771317,
+        "Type": "ASCII text, with very long lines"
+    },
+    "RubrikPolaris": {
+        "DSPMViolationCSVDownload": {
+            "violationId": "00000000-0000-0000-0000-000000000001",
+            "objectId": "00000000-0000-0000-0000-000000000002",
+            "snapshotId": "00000000-0000-0000-0000-000000010001",
+            "objectName": "test_object",
+            "externalId": "00000000-0000-0000-0000-000000000011",
+            "isSuccessful": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>#### Successfully downloaded the Files at Risk CSV file
+
+### rubrik-data-security-violation-log-download
+
+***
+Download remediation logs as CSV file for the specified data security violation.
+
+#### Base Command
+
+`rubrik-data-security-violation-log-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| violation_id | The ID of the DSPM violation.<br/><br/>Note: Users can get the violation ID by executing the "rubrik-data-security-violation-list" command. | Required |
+| object_id | The object ID.<br/><br/>Note: Users can retrieve the object ID by executing the "rubrik-polaris-objects-list" command. | Required |
+| object_name | The object Name.<br/><br/>Note: If not specified command will retrieve it using the "rubrik-data-security-violation-get" command. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| RubrikPolaris.DSPMViolationRemediationLogDownload.violationId | String | The ID of the violation. |
+| RubrikPolaris.DSPMViolationRemediationLogDownload.objectId | String | The ID of the object. |
+| RubrikPolaris.DSPMViolationRemediationLogDownload.remediationId | String | The ID of the remediation. |
+| RubrikPolaris.DSPMViolationRemediationLogDownload.objectName | String | The Name of the object. |
+| RubrikPolaris.DSPMViolationRemediationLogDownload.externalId | String | The external ID of the file. |
+| RubrikPolaris.DSPMViolationRemediationLogDownload.isSuccessful | Boolean | Whether the command was successful or not. |
+| InfoFile.Name | string | FileName. |
+| InfoFile.EntryID | string | The EntryID of the report. |
+| InfoFile.Size | number | File Size. |
+| InfoFile.Type | string | File type e.g. "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+
+#### Command example
+
+```!rubrik-data-security-violation-log-download violation_id="00000000-0000-0000-0000-000000000001" object_id="00000000-0000-0000-0000-000000000002"```
+
+#### Context Example
+
+```json
+{
+    "InfoFile": {
+        "EntryID": "10000@00000000-0000-0000-0000-000000000001",
+        "Extension": "csv",
+        "Info": "text/csv; charset=utf-8",
+        "Name": "test_object actions log.csv",
+        "Size": 1771317,
+        "Type": "ASCII text, with very long lines"
+    },
+    "RubrikPolaris": {
+        "DSPMViolationRemediationLogDownload": {
+            "violationId": "00000000-0000-0000-0000-000000000001",
+            "objectId": "00000000-0000-0000-0000-000000000002",
+            "remediationId": "00000000-0000-0000-0000-000000010001",
+            "externalId": "00000000-0000-0000-0000-000000000011",
+            "objectName": "test_object",
+            "isSuccessful": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>#### Successfully downloaded the Remediation Log file
