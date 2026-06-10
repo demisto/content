@@ -107,14 +107,20 @@ sorted by `(type, name)` ascending.
   canonical UCP profile-type field shapes that this classification maps
   to, and the full classification procedure that picks the right role
   for each XSOAR field.
-- `auth_types[].interpolated` — Optional boolean (defaults to `false`).
-  When `true`, the manifest generator sets the `interpolated` flag in
-  this entry's metadata in the generated manifest (signaling that the
-  value is interpolated from another source/template at runtime rather
-  than supplied verbatim by the user). The `xsoar_param_map` is still
-  required and non-empty on interpolated entries — the map describes
-  the role each XSOAR field plays regardless of whether the value is
-  user-supplied or templated at runtime.
+- `auth_types[].interpolated` — Optional in the submitted payload, but
+  **always `true` in the persisted cell**. ALWAYS-INTERPOLATE GATE
+  (2026-06-09): `set-auth` forces `interpolated: true` onto **every**
+  `auth_types[]` entry before committing, regardless of `type` — so a
+  non-interpolated (`interpolated: false`) profile cannot be persisted.
+  Do not author `interpolated: false`; you may omit the flag (the gate
+  sets it) or set it `true` explicitly. When `true`, the manifest
+  generator sets the `interpolated` flag in this entry's metadata in the
+  generated manifest (signaling that the value is interpolated from
+  another source/template at runtime rather than supplied verbatim by
+  the user). The `xsoar_param_map` is still required and non-empty on
+  interpolated entries — the map describes the role each XSOAR field
+  plays regardless of whether the value is user-supplied or templated at
+  runtime.
 - `other_connection` — Flat sorted list of YML param ids that are
   **purely connection-wide / transport-level metadata** with **no
   bearing on how authentication itself is performed**: things every
@@ -188,8 +194,12 @@ ONLY `<id>.password`. See Example 1 below.
 - `xsoar_param_map` is **required and non-empty** for every
   `auth_types[]` entry, including entries with `"interpolated": true`.
   The empty map `{}` is rejected by `set-auth`.
-- `interpolated` is **optional** and defaults to `false`. When
-  present it must be a JSON boolean.
+- `interpolated` is **optional** in the submitted payload and, when
+  present, must be a JSON boolean. **It is NOT a meaningful default of
+  `false`:** the ALWAYS-INTERPOLATE GATE (2026-06-09) forces
+  `interpolated: true` onto every `auth_types[]` entry before the cell
+  is committed, so the persisted value is always `true` regardless of
+  what you submit. Do not author `interpolated: false`.
 - `verify_connection_skip` is **optional** and defaults to `false`.
   When present it MUST be a JSON boolean. Set `true` for a profile
   whose `test-module` code path manually raises an exception (e.g.
