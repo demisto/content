@@ -1,8 +1,6 @@
+from pathlib import Path
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from pathlib import Path
-
-
 import logging
 import psutil
 import base64
@@ -118,14 +116,13 @@ except Exception as e:
 
 # Memory pressure tolerance (in bytes): if available memory drops below this value while a page
 # is loading, wait_for_page_load_with_memory_guard will abort the wait and take a screenshot of
-# whatever has rendered so far, preventing an OOM kill.  Defaults to 200 MiB.
-# Can be overridden via the MEMORY_PRESSURE_TOLERANCE_MB environment variable.
+# whatever has rendered so far, preventing an OOM kill.  Defaults to 600MB.
 try:
     _env_tolerance_mb = os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "600")
     MEMORY_PRESSURE_TOLERANCE_BYTES = int(_env_tolerance_mb) * 1024 * 1024
 except Exception as e:
     demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_MB, {e}")
-    MEMORY_PRESSURE_TOLERANCE_BYTES = 400 * 1024 * 1024
+    MEMORY_PRESSURE_TOLERANCE_BYTES = 600 * 1024 * 1024
 
 # Polling for rasterization commands to complete
 DEFAULT_POLLING_INTERVAL = 0.1
@@ -151,66 +148,6 @@ class RasterizeType(Enum):
 
 # endregion
 
-# new functions
-
-# Diagnostic log lines are persisted in the integration context, keyed by the URL being
-# rasterized.  This survives process restarts (including OOM kills) because the server
-# persists integration context to its database.  Operators can later inspect the logs by
-# running `rasterize-memory-log` (per-URL output) or `rasterize-get-integration-context`
-# (returns the full integration-context dictionary as a downloadable file).
-#
-# Memory logging is only meaningful in lightweight mode, where rasterize processes a
-# single URL at a time — so we just track the "current URL" in a module-level global and
-# avoid any thread-local or locking machinery.
-MEMORY_LOG_CONTEXT_KEY = "memory_log_by_url"
-# Bucket used when no URL is associated with the current call (e.g. logs emitted from
-# `main()` startup before `perform_rasterize` sets the current URL).
-GENERAL_LOG_KEY = "_general_"
-
-# The URL currently being rasterized.  Set by `_set_current_url()` at the start of
-# `perform_rasterize` (per URL) and cleared when the call returns.
-_current_url: str | None = None
-
-
-def _set_current_url(url: str | None) -> None:
-    """Set (or clear) the URL associated with subsequent `_mem_log` calls."""
-    global _current_url
-    _current_url = url
-
-
-def _append_log_line_to_context(url_key: str, line: str) -> None:
-    """Append a single log line to the integration context under *url_key*.
-
-    Failures are swallowed so logging never breaks the main rasterize flow.
-    """
-    try:
-        context = get_integration_context() or {}
-        logs_by_url = context.get(MEMORY_LOG_CONTEXT_KEY)
-        if not isinstance(logs_by_url, dict):
-            logs_by_url = {}
-        url_lines = logs_by_url.get(url_key)
-        if not isinstance(url_lines, list):
-            url_lines = []
-        url_lines.append(line)
-        logs_by_url[url_key] = url_lines
-        context[MEMORY_LOG_CONTEXT_KEY] = logs_by_url
-        set_integration_context(context)
-    except Exception as ex:  # pragma: no cover - logging must never break the main flow
-        demisto.info(f"_append_log_line_to_context: failed to persist log line: {ex}")
-
-
-def _mem_log(level: str, message: str) -> None:
-    """Append a timestamped line to the integration context, keyed by the current URL.
-
-    The integration context is persisted by the platform's database, so diagnostic lines
-    survive even an OOM kill that terminates the process before any `finally` block runs.
-    """
-    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())  # pylint: disable=E9003
-    line = f"[{ts}] [{level}] {message}"
-    _append_log_line_to_context(_current_url or GENERAL_LOG_KEY, line)
-    demisto.info(line)
-
-
 def get_container_working_set_bytes() -> int:
     """
     Calculates the container's memory working set in bytes.
@@ -233,7 +170,7 @@ def get_container_working_set_bytes() -> int:
         return max(0, mem_current - inactive_file)
 
     except (FileNotFoundError, ValueError, PermissionError) as e:
-        _mem_log("DEBUG", f"get_container_working_set_bytes: Could not read cgroup v2 memory stats: {e}")
+        demisto.debug("DEBUG", f"get_container_working_set_bytes: Could not read cgroup v2 memory stats: {e}")
         return 0
 
 
@@ -257,7 +194,7 @@ def get_container_available_memory_bytes() -> int:
         mem_max = int(max_val)
         working_set = get_container_working_set_bytes()
         available = max(0, mem_max - working_set)
-        _mem_log(
+        demisto.debug(
             "DEBUG",
             f"get_container_available_memory_bytes: mem_max={mem_max / (1024 * 1024):.1f} MiB, "
             f"working_set={working_set / (1024 * 1024):.1f} MiB, "
@@ -266,157 +203,8 @@ def get_container_available_memory_bytes() -> int:
         return available
 
     except (FileNotFoundError, ValueError, PermissionError) as e:
-        _mem_log("DEBUG", f"get_container_available_memory_bytes: Could not read cgroup v2 memory.max: {e}")
+        demisto.debug("DEBUG", f"get_container_available_memory_bytes: Could not read cgroup v2 memory.max: {e}")
         return 0
-
-
-def compute_memory_based_limits(
-    available_bytes: int,
-    per_instance_bytes: int,
-    default_chromes: int,
-    default_tabs: int,
-    default_rasterizations: int,
-) -> tuple[int, int, int]:
-    """
-    Derives safe values for MAX_CHROMES_COUNT, MAX_CHROME_TABS_COUNT, and
-    MAX_RASTERIZATIONS_COUNT from the available container memory.
-
-    Args:
-        available_bytes: Available container memory in bytes (-1 means unlimited).
-        per_instance_bytes: Memory budget per Chrome instance/tab in bytes.
-        default_chromes: Configured MAX_CHROMES_COUNT (used when memory is unlimited).
-        default_tabs: Configured MAX_CHROME_TABS_COUNT (used when memory is unlimited).
-        default_rasterizations: Configured MAX_RASTERIZATIONS_COUNT (used when memory is unlimited).
-
-    Returns:
-        tuple[int, int, int]: (max_chromes, max_tabs, max_rasterizations)
-            Each value is at least 1 so the integration can always attempt one operation.
-    """
-    if available_bytes == -1:
-        # No cgroup limit — keep the operator-configured defaults unchanged.
-        _mem_log(
-            "DEBUG",
-            "compute_memory_based_limits: no cgroup memory limit, keeping defaults "
-            f"({default_chromes=}, {default_tabs=}, {default_rasterizations=})",
-        )
-        return default_chromes, default_tabs, default_rasterizations
-
-    # # How many Chrome instances can fit in the available memory?
-    # safe_count = max(1, available_bytes // per_instance_bytes)
-
-    # # Cap at the operator-configured maximums — never exceed them.
-    # max_chromes = min(safe_count, default_chromes)
-    # max_tabs = min(safe_count, default_tabs)
-    # # Scale rasterizations proportionally: keep the same ratio as the original defaults.
-    # ratio = safe_count / max(default_chromes, 1)
-    # max_rasterizations = max(1, int(default_rasterizations * ratio))
-
-    # _mem_log(
-    #     "DEBUG",
-    #     f"compute_memory_based_limits: {available_bytes / (1024 * 1024):.1f} MiB available, "
-    #     f"{per_instance_bytes / (1024 * 1024):.1f} MiB per instance → "
-    #     f"{safe_count=}, {max_chromes=}, {max_tabs=}, {max_rasterizations=}",
-    # )
-    return 1, 1, 1
-
-def _read_memory_logs_by_url() -> dict[str, list[str]]:
-    """Return the memory log buckets persisted in the integration context.
-
-    The returned dict is keyed by URL (with the bucket :data:`GENERAL_LOG_KEY` used for
-    logs emitted outside any URL context).  Returns an empty dict if no logs were
-    collected yet or if the integration context could not be read.
-    """
-    try:
-        context = get_integration_context() or {}
-    except Exception as ex:  # pragma: no cover
-        demisto.info(f"_read_memory_logs_by_url: failed to read integration context: {ex}")
-        return {}
-
-    logs_by_url = context.get(MEMORY_LOG_CONTEXT_KEY)
-    if not isinstance(logs_by_url, dict):
-        return {}
-    # Defensive copy + filter to ensure values are lists of strings.
-    return {url: list(lines) for url, lines in logs_by_url.items() if isinstance(lines, list)}
-
-
-def _format_memory_logs(logs_by_url: dict[str, list[str]], url_filter: str | None = None) -> str:
-    """Render the per-URL log buckets as a single human-readable text blob."""
-    if url_filter:
-        lines = logs_by_url.get(url_filter, [])
-        if not lines:
-            return ""
-        return f"=== {url_filter} ===\n" + "\n".join(lines)
-
-    sections: list[str] = []
-    for url, lines in logs_by_url.items():
-        if not lines:
-            continue
-        sections.append(f"=== {url} ===\n" + "\n".join(lines))
-    return "\n\n".join(sections)
-
-
-def rasterize_memory_log_command() -> None:
-    """Return the memory diagnostic log as a War-Room file and a readable output entry.
-
-    Reads from the integration context so diagnostics survive process restarts (including
-    OOM kills).  Accepts an optional ``url`` argument to filter the output to a single URL
-    bucket.
-    """
-    url_filter = demisto.args().get("url") or None
-    logs_by_url = _read_memory_logs_by_url()
-    log_text = _format_memory_logs(logs_by_url, url_filter=url_filter)
-
-    if not log_text:
-        msg = (
-            f"No memory log entries found for URL: {url_filter}"
-            if url_filter
-            else "No memory log entries collected yet."
-        )
-        return_results(CommandResults(readable_output=msg))
-        return
-
-    demisto.results(fileResult("memory_log.txt", log_text.encode("utf-8"), file_type=entryTypes["entryInfoFile"]))
-    return_results(CommandResults(readable_output=f"### Memory Log\n```\n{log_text}\n```"))
-
-
-def rasterize_get_integration_context_command() -> None:
-    """Dump the full integration context as a downloadable JSON file in the War Room.
-
-    Useful for post-mortem diagnostics after a failed rasterization: returns every key in
-    the integration context (including the per-URL memory logs written by ``_mem_log``).
-    """
-    try:
-        context = get_integration_context() or {}
-    except Exception as ex:
-        return_error(f"Failed to read integration context: {ex}")
-        return
-
-    if not context:
-        return_results(CommandResults(readable_output="Integration context is empty."))
-        return
-
-    context_json = json.dumps(context, indent=2, sort_keys=True, default=str)
-    demisto.results(
-        fileResult("rasterize_integration_context.json", context_json.encode("utf-8"), file_type=entryTypes["entryInfoFile"])
-    )
-    return_results(CommandResults(readable_output=f"### Integration Context\nReturned {len(context)} top-level key(s)."))
-
-
-def emit_memory_log_file() -> None:
-    """Attach the memory diagnostic log as a downloadable file in the War Room.
-
-    Called at the end of every rasterize command so operators always get a memory log
-    alongside the rasterization output, without having to run a separate command.
-    Reads from the integration context so logs from a prior OOM-killed invocation are
-    included.  Does nothing if no log data exists.
-    """
-    logs_by_url = _read_memory_logs_by_url()
-    log_text = _format_memory_logs(logs_by_url)
-
-    if not log_text:
-        return
-
-    demisto.results(fileResult("memory_log.txt", log_text.encode("utf-8"), file_type=entryTypes["entryInfoFile"]))
 
 
 def find_existing_chrome_port() -> str | None:
@@ -439,18 +227,129 @@ def find_existing_chrome_port() -> str | None:
             return str(chrome_port)
     return None
 
-# In lightweight mode, apply memory-based limits at module load time so that MAX_CHROMES_COUNT,
-# MAX_CHROME_TABS_COUNT, and MAX_RASTERIZATIONS_COUNT reflect the actual container memory budget.
-if IS_LIGHTWEIGHT:
-    MAX_CHROMES_COUNT, MAX_CHROME_TABS_COUNT, MAX_RASTERIZATIONS_COUNT = compute_memory_based_limits(
-        available_bytes=get_container_available_memory_bytes(),
-        per_instance_bytes=1,
-        default_chromes=MAX_CHROMES_COUNT,
-        default_tabs=MAX_CHROME_TABS_COUNT,
-        default_rasterizations=MAX_RASTERIZATIONS_COUNT,
-    )
 
-# end new functions
+def wait_for_page_load_with_memory_guard(
+    tab_ready_event: Event,
+    navigation_timeout: int,
+    tolerance_bytes: int = MEMORY_PRESSURE_TOLERANCE_BYTES,
+    poll_interval: float = 0.5,
+    tab_id: str = "",
+    path: str = "",
+    tab: Optional[pychrome.Tab] = None,
+) -> bool:
+    """
+    Waits for *tab_ready_event* to be set, but aborts the wait early if available container
+    memory drops below *tolerance_bytes*.
+
+    When memory pressure is detected the event is set immediately so that the caller can
+    capture a screenshot of whatever has rendered so far, rather than waiting for the full
+    page load and risking an OOM kill.
+
+    Args:
+        tab_ready_event: The threading.Event that signals page load completion.
+        navigation_timeout: Maximum seconds to wait (same as the normal page-load timeout).
+        tolerance_bytes: Available-memory floor in bytes. Default: MEMORY_PRESSURE_TOLERANCE_BYTES.
+        poll_interval: How often (seconds) to sample memory while waiting. Default: 1 s.
+        tab_id: Tab identifier for logging.
+        path: URL/path being loaded, for logging.
+
+    Returns:
+        bool: True if the event was set normally (page finished loading or timed out),
+              False if the wait was aborted early due to memory pressure.
+    """
+    deadline = time.monotonic() + navigation_timeout  # pylint: disable=E9003
+
+    while True:
+        # Check if the page has finished loading.
+        if tab_ready_event.wait(timeout=poll_interval):
+            demisto.debug("DEBUG", f"wait_for_page_load_with_memory_guard: tab_ready_event set normally, {tab_id=}, {path=}")
+            if tab is not None:
+                try:
+                    tab.Page.stopLoading()
+                    demisto.debug(
+                        "DEBUG",
+                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() called, {tab_id=}, {path=}",
+                    )
+                except Exception as stop_ex:
+                    demisto.debug(
+                        "DEBUG",
+                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() failed (tab may already be stopping): "
+                        f"{stop_ex}, {tab_id=}, {path=}",
+                    )
+            get_container_available_memory_bytes()
+            time.sleep(1)  # let Chrome process the stop
+            tab.HeapProfiler.collectGarbage()           # reclaim unreachable JS objects
+            tab.Memory.forciblyPurgeJavaScriptMemory()  # more aggressive purge
+            get_container_available_memory_bytes()
+            for i in range(1,4):
+                demisto.debug(
+                    "INFO",
+                    f"iteration num: {i}"
+                )
+                time.sleep(10)
+                get_container_available_memory_bytes()
+            return True
+
+        # Check for timeout.
+        if time.monotonic() >= deadline:  # pylint: disable=E9003
+            demisto.debug(
+                "DEBUG",
+                f"wait_for_page_load_with_memory_guard: navigation_timeout reached ({navigation_timeout}s), {tab_id=}, {path=}",
+            )
+            return True  # Caller handles the timeout warning as before.
+
+        # Sample available memory.
+        available = get_container_available_memory_bytes()
+        if available == -1:
+            # No cgroup limit — memory pressure check is not applicable.
+            continue
+
+        if available <= tolerance_bytes:
+            if tab is not None:
+                try:
+                    tab.Page.stopLoading()
+                    demisto.debug(
+                        "DEBUG",
+                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() called, {tab_id=}, {path=}",
+                    )
+                except Exception as stop_ex:
+                    demisto.debug(
+                        "DEBUG",
+                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() failed (tab may already be stopping): "
+                        f"{stop_ex}, {tab_id=}, {path=}",
+                    )
+            tab_ready_event.set()
+            demisto.debug(
+                "INFO",
+                f"wait_for_page_load_with_memory_guard: memory pressure detected — "
+                f"{available / (1024 * 1024):.1f} MiB available ≤ "
+                f"{tolerance_bytes / (1024 * 1024):.1f} MiB tolerance. "
+                f"Aborting page-load wait and capturing partial screenshot. {tab_id=}, {path=}",
+            )
+            get_container_available_memory_bytes()
+            time.sleep(1)  # let Chrome process the stop
+            tab.HeapProfiler.collectGarbage()           # reclaim unreachable JS objects
+            tab.Memory.forciblyPurgeJavaScriptMemory()  # more aggressive purge
+            get_container_available_memory_bytes()
+            # Signal the event so the caller proceeds to capture immediately.
+            for i in range(1,4):
+                demisto.debug(
+                    "INFO",
+                    f"iteration num: {i} beofre sleep"
+                )
+                time.sleep(10)
+                demisto.debug(
+                    "INFO",
+                    f"iteration num: {i} after sleep"
+                )
+                get_container_available_memory_bytes()
+            return False  # False signals that we aborted early due to memory pressure.
+
+
+# In lightweight mode, we handle only one URL at a time,
+# so we limit the number of Chrome instances tabs and rasterizations to 1.
+if IS_LIGHTWEIGHT:
+    MAX_CHROMES_COUNT = MAX_CHROME_TABS_COUNT = MAX_RASTERIZATIONS_COUNT = 1
 
 # region utility classes
 
@@ -1320,9 +1219,6 @@ def chrome_manager_one_port() -> tuple[pychrome.Browser | None, str | None]:
 def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
     chrome_port = generate_chrome_port()
     if chrome_port is None:
-        # All ports are occupied — this can happen after an OOM kill clears the
-        # chrome_instances file while Chrome is still running (common in lightweight
-        # mode where MAX_CHROMES_COUNT=1 and only port 9301 is ever used).
         # Try to reconnect to the already-running Chrome instead of failing.
         chrome_port = find_existing_chrome_port()
         if chrome_port is None:
@@ -1359,124 +1255,6 @@ def generate_chrome_port() -> str | None:
 
     demisto.error(f"Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome")
     return None
-
-
-def wait_for_page_load_with_memory_guard(
-    tab_ready_event: Event,
-    navigation_timeout: int,
-    tolerance_bytes: int = MEMORY_PRESSURE_TOLERANCE_BYTES,
-    poll_interval: float = 0.5,
-    tab_id: str = "",
-    path: str = "",
-    tab: Optional[pychrome.Tab] = None,
-) -> bool:
-    """
-    Waits for *tab_ready_event* to be set, but aborts the wait early if available container
-    memory drops below *tolerance_bytes*.
-
-    When memory pressure is detected the event is set immediately so that the caller can
-    capture a screenshot of whatever has rendered so far, rather than waiting for the full
-    page load and risking an OOM kill.
-
-    Args:
-        tab_ready_event: The threading.Event that signals page load completion.
-        navigation_timeout: Maximum seconds to wait (same as the normal page-load timeout).
-        tolerance_bytes: Available-memory floor in bytes. Default: MEMORY_PRESSURE_TOLERANCE_BYTES.
-        poll_interval: How often (seconds) to sample memory while waiting. Default: 1 s.
-        tab_id: Tab identifier for logging.
-        path: URL/path being loaded, for logging.
-
-    Returns:
-        bool: True if the event was set normally (page finished loading or timed out),
-              False if the wait was aborted early due to memory pressure.
-    """
-    deadline = time.monotonic() + navigation_timeout  # pylint: disable=E9003
-
-    while True:
-        # Check if the page has finished loading.
-        if tab_ready_event.wait(timeout=poll_interval):
-            _mem_log("DEBUG", f"wait_for_page_load_with_memory_guard: tab_ready_event set normally, {tab_id=}, {path=}")
-            if tab is not None:
-                try:
-                    tab.Page.stopLoading()
-                    _mem_log(
-                        "DEBUG",
-                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() called, {tab_id=}, {path=}",
-                    )
-                except Exception as stop_ex:
-                    _mem_log(
-                        "DEBUG",
-                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() failed (tab may already be stopping): "
-                        f"{stop_ex}, {tab_id=}, {path=}",
-                    )
-            get_container_available_memory_bytes()
-            time.sleep(1)  # let Chrome process the stop
-            tab.HeapProfiler.collectGarbage()           # reclaim unreachable JS objects
-            tab.Memory.forciblyPurgeJavaScriptMemory()  # more aggressive purge
-            get_container_available_memory_bytes()
-            for i in range(1,4):
-                _mem_log(
-                    "INFO",
-                    f"iteration num: {i}"
-                )
-                time.sleep(10)
-                get_container_available_memory_bytes()
-            return True
-
-        # Check for timeout.
-        if time.monotonic() >= deadline:  # pylint: disable=E9003
-            _mem_log(
-                "DEBUG",
-                f"wait_for_page_load_with_memory_guard: navigation_timeout reached ({navigation_timeout}s), {tab_id=}, {path=}",
-            )
-            return True  # Caller handles the timeout warning as before.
-
-        # Sample available memory.
-        available = get_container_available_memory_bytes()
-        if available == -1:
-            # No cgroup limit — memory pressure check is not applicable.
-            continue
-
-        if available <= tolerance_bytes:
-            if tab is not None:
-                try:
-                    tab.Page.stopLoading()
-                    _mem_log(
-                        "DEBUG",
-                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() called, {tab_id=}, {path=}",
-                    )
-                except Exception as stop_ex:
-                    _mem_log(
-                        "DEBUG",
-                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() failed (tab may already be stopping): "
-                        f"{stop_ex}, {tab_id=}, {path=}",
-                    )
-            tab_ready_event.set()
-            _mem_log(
-                "INFO",
-                f"wait_for_page_load_with_memory_guard: memory pressure detected — "
-                f"{available / (1024 * 1024):.1f} MiB available ≤ "
-                f"{tolerance_bytes / (1024 * 1024):.1f} MiB tolerance. "
-                f"Aborting page-load wait and capturing partial screenshot. {tab_id=}, {path=}",
-            )
-            get_container_available_memory_bytes()
-            time.sleep(1)  # let Chrome process the stop
-            tab.HeapProfiler.collectGarbage()           # reclaim unreachable JS objects
-            tab.Memory.forciblyPurgeJavaScriptMemory()  # more aggressive purge
-            get_container_available_memory_bytes()
-            # Signal the event so the caller proceeds to capture immediately.
-            for i in range(1,4):
-                _mem_log(
-                    "INFO",
-                    f"iteration num: {i} beofre sleep"
-                )
-                time.sleep(10)
-                _mem_log(
-                    "INFO",
-                    f"iteration num: {i} after sleep"
-                )
-                get_container_available_memory_bytes()
-            return False  # False signals that we aborted early due to memory pressure.
 
 
 def setup_tab_event(
@@ -1651,7 +1429,6 @@ def screenshot_image(
 
     demisto.debug(f"{page_layout_metrics=} {tab.id=} {path=}.")
     css_content_size = page_layout_metrics["cssContentSize"]
-
     try:
         if full_screen:
             viewport = css_content_size
@@ -1677,9 +1454,6 @@ def screenshot_image(
     demisto.debug(f"heapUsage after screenshot {heapUsage=} on {tab.id=}, {path=}")
 
     captured_image = base64.b64decode(screenshot_data)
-    # Free the (large) base64 string immediately — we no longer need it after decoding.
-    del screenshot_data
-    gc.collect()
     if not captured_image:
         demisto.info(f"Empty snapshot, {screenshot_data=}, {tab.id=}, {path=}")
     else:
@@ -2008,23 +1782,6 @@ def perform_rasterize(
         demisto.error(message)
         return_error(message)
         return None
-
-    # In lightweight mode: log current memory stats for diagnostics (no hard block on low memory).
-    if IS_LIGHTWEIGHT:
-        # Lightweight mode handles a single URL per invocation, so set it globally so every
-        # subsequent `_mem_log` call attributes its line to the right URL bucket.
-        _set_current_url(paths[0])
-        available_mem = get_container_available_memory_bytes()
-        working_set = get_container_working_set_bytes()
-        if available_mem == -1:
-            _mem_log("DEBUG", "Memory: no cgroup limit set (unlimited)")
-        else:
-            _mem_log(
-                "DEBUG",
-                f"Memory: working_set={working_set / (1024 * 1024):.1f} MiB, "
-                f"available={available_mem / (1024 * 1024):.1f} MiB, "
-                f"tolerance={MEMORY_PRESSURE_TOLERANCE_BYTES / (1024 * 1024):.1f} MiB",
-            )
 
     # until https://issues.chromium.org/issues/379034728 is fixed, we can only use one chrome port
     browser, chrome_port = chrome_manager_one_port()
@@ -2528,10 +2285,9 @@ def main():  # pragma: no cover
         available_mem = get_container_available_memory_bytes()
         working_set = get_container_working_set_bytes()
         if available_mem == -1:
-            _mem_log("DEBUG", "Memory: no cgroup limit set (unlimited)")
+            demisto.debug("Memory: no cgroup limit set (unlimited)")
         else:
-            _mem_log(
-                "DEBUG",
+            demisto.debug(
                 f"Memory: working_set={working_set / (1024 * 1024):.1f} MiB, "
                 f"available={available_mem / (1024 * 1024):.1f} MiB, "
                 f"tolerance={MEMORY_PRESSURE_TOLERANCE_BYTES / (1024 * 1024):.1f} MiB",
@@ -2561,16 +2317,6 @@ def main():  # pragma: no cover
         elif demisto.command() == "rasterize-extract":
             rasterize_extract_command()
 
-        elif demisto.command() == "rasterize-memory-log":
-            rasterize_memory_log_command()
-
-        elif demisto.command() == "rasterize-get-integration-context":
-            rasterize_get_integration_context_command()
-
-        elif demisto.command() == "rasterize-reset-integration-context":
-            set_integration_context({})
-            return_results("reset-integration-context")
-
         else:
             raise NotImplementedError(f"command {command} is not supported")
 
@@ -2578,11 +2324,7 @@ def main():  # pragma: no cover
         return_err_or_warn(f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}")
     finally:
         kill_zombie_processes()
-        # Emit the memory diagnostic log after every rasterize command (skip utility/meta commands).
-        if command not in ("test-module", "rasterize-memory-log", "rasterize-get-integration-context"):
-            emit_memory_log_file()
 
 
 if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
-
