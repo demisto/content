@@ -2846,11 +2846,19 @@ def add_indicators_capability(
 # Default human-readable titles for the synthetic / fallback emission
 # paths in ``add_fetch_issues_capability``.
 _ISFETCH_DEFAULT_TITLE = "Fetch Issues"
-_INCIDENTTYPE_DEFAULT_TITLE = "Incident type"
+# Per migration guide §line 890: the Platform incident-type field is
+# user-visible with the hardcoded title "Issue Type" (NOT derived from the
+# XSOAR yml ``display``, which is the legacy "Incident type").
+_INCIDENTTYPE_DEFAULT_TITLE = "Issue Type"
 _INCIDENTFETCHINTERVAL_DEFAULT_TITLE = "Issues Fetch Interval"
 _MAPPER_INCOMING_DEFAULT_TITLE = "Incoming Mapper"
 _CLASSIFIER_DEFAULT_TITLE = "Classifier"
 _LONGRUNNING_DEFAULT_TITLE = "Long running instance"
+
+# Per migration guide §line 890: the incident-type select carries a tooltip
+# and a placeholder on the Platform.
+_ALERTTYPE_HELP_TEXT = "select if classifier doesn't exist"
+_ALERTTYPE_PLACEHOLDER = "Select an issue type"
 
 # Fallback default for incidentFetchInterval when the yml doesn't carry
 # the param. DefaultIncidentFetchTime = 1 * time.Minute = 1 minute.
@@ -2864,6 +2872,17 @@ INCIDENTTYPE_PARAM_NAME = "incidentType"
 INCIDENTFETCHINTERVAL_PARAM_NAME = "incidentFetchInterval"
 ALERTFETCHINTERVAL_PARAM_NAME = "alertFetchInterval"
 LONGRUNNING_PARAM_NAME = "longRunning"
+
+# Connector-side (Platform) field ids for the fetch-issues type/interval
+# fields. Per migration guide §line 889-890 the Platform renames the legacy
+# XSOAR ``incidentType``/``incidentFetchInterval`` params to ``alertType``/
+# ``alertFetchInterval`` on the connector side. The original XSOAR names are
+# still consumed by the integration at runtime, so a serializer field_mapping
+# bridges the Platform id back to the XSOAR name (see §6 of
+# ``add_fetch_issues_capability``). ``dynamicField`` keeps the XSOAR provider
+# hint ``"incident-type"`` regardless of the connector-side id.
+ALERTTYPE_FIELD_ID = "alertType"
+ALERTFETCHINTERVAL_FIELD_ID = "alertFetchInterval"
 
 # Connector-side field ids for the dynamic fields (mapper + classifier).
 # These mirror the XSOAR instance-level field names (per migration guide
@@ -2939,6 +2958,8 @@ def _build_dynamic_select_field(
     required: bool = False,
     hidden: bool = False,
     description: str = "",
+    help_text: str = "",
+    placeholder: str = "",
     config_type: str = "",
 ) -> dict:
     """Build a dynamic ``select`` field whose options are fetched at runtime
@@ -2991,6 +3012,10 @@ def _build_dynamic_select_field(
         field["options"]["default_value"] = default_value
     if description:
         field["options"]["description"] = description
+    if help_text:
+        field["options"]["help_text"] = help_text
+    if placeholder:
+        field["options"]["placeholder"] = placeholder
     return field
 
 
@@ -3052,7 +3077,12 @@ def add_fetch_issues_capability(
       1. Strips ``isFetch``, ``incidentType``, ``incidentFetchInterval``,
          ``alertFetchInterval`` from every bucket of ``mapped_params``.
          When ``is_long_running=True``, also strips ``longRunning``.
-      2. Sub-cap rename bridges via serializer for each renamed field.
+      2. Rename bridges via serializer for each renamed field. The
+         Platform "alert" renames (``incidentType`` -> ``alertType`` and
+         ``incidentFetchInterval`` -> ``alertFetchInterval``, guide
+         §line 889-890) always apply, so bridges are registered in BOTH the
+         top-level and sub-capability paths whenever ``handler_dir`` is set;
+         sub-cap prefixing adds bridges for the remaining fields.
 
     Returns:
       ``{"capability_id", "fields", "triggers"}`` — triggers is always
@@ -3065,8 +3095,11 @@ def add_fetch_issues_capability(
         return f"{capability_id}_{original}" if is_sub_capability else original
 
     isfetch_field_id = _field_id(ISFETCH_PARAM_NAME)
-    inctype_field_id = _field_id(INCIDENTTYPE_PARAM_NAME)
-    incfi_field_id = _field_id(INCIDENTFETCHINTERVAL_PARAM_NAME)
+    # Per migration guide §line 889-890: the connector-side ids are the
+    # Platform "alert" names, not the legacy XSOAR "incident" names. The
+    # XSOAR names are bridged back via the serializer in §6 below.
+    inctype_field_id = _field_id(ALERTTYPE_FIELD_ID)
+    incfi_field_id = _field_id(ALERTFETCHINTERVAL_FIELD_ID)
     mapper_field_id = _field_id(MAPPER_INCOMING_FIELD_ID)
     classifier_field_id = _field_id(CLASSIFIER_FIELD_ID)
     lr_field_id = _field_id(LONGRUNNING_PARAM_NAME) if is_long_running else ""
@@ -3088,11 +3121,10 @@ def add_fetch_issues_capability(
         fallback=_ISFETCH_DEFAULT_TITLE,
     )
     isfetch_title = align_incidents_to_issues(isfetch_title)
-    inctype_title = _resolve_title_from_yml(
-        yml_params_by_name, INCIDENTTYPE_PARAM_NAME,
-        fallback=_INCIDENTTYPE_DEFAULT_TITLE,
-    )
-    inctype_title = align_incidents_to_issues(inctype_title)
+    # Per migration guide §line 890: the incident-type field's title is the
+    # hardcoded Platform label "Issue Type" — it is NOT derived from the XSOAR
+    # yml ``display`` (which is the legacy "Incident type").
+    inctype_title = _INCIDENTTYPE_DEFAULT_TITLE
     incfi_title = _resolve_title_from_yml(
         yml_params_by_name, INCIDENTFETCHINTERVAL_PARAM_NAME,
         fallback=_INCIDENTFETCHINTERVAL_DEFAULT_TITLE,
@@ -3124,13 +3156,15 @@ def add_fetch_issues_capability(
         field_id=isfetch_field_id, title=isfetch_title,
     ))
 
-    # 2. incidentType — dynamic select
+    # 2. alertType (XSOAR incidentType) — dynamic select
     fields.append(_build_dynamic_select_field(
         field_id=inctype_field_id,
         title=inctype_title,
         dynamic_field_type="incident-type",
         integration_id=integration_id,
         default_value=inctype_default,
+        help_text=_ALERTTYPE_HELP_TEXT,
+        placeholder=_ALERTTYPE_PLACEHOLDER,
     ))
 
     # 3. incidentFetchInterval — duration picker
@@ -3176,8 +3210,18 @@ def add_fetch_issues_capability(
             n for n in names if n not in stripped
         ]
 
-    # --- §6. Sub-cap rename bridges (per emitted field) -----------------
-    if is_sub_capability and handler_dir is not None:
+    # --- §6. Rename bridges (per emitted field) ------------------------
+    # Two independent rename sources require a serializer field_mapping that
+    # bridges the connector-side id back to the XSOAR yml param name:
+    #   1. The sub-capability prefix (``<capability_id>_<name>``), applied to
+    #      every field when ``is_sub_capability`` is True.
+    #   2. The Platform "alert" renames (``incidentType`` -> ``alertType``,
+    #      ``incidentFetchInterval`` -> ``alertFetchInterval``), applied in
+    #      BOTH the top-level and sub-capability paths (guide §line 889-890).
+    # Because the alert renames mean ``renamed != original`` even when
+    # ``is_sub_capability`` is False, the bridge must run whenever a handler
+    # dir is available — not only for sub-capabilities.
+    if handler_dir is not None:
         _original_to_renamed = {
             ISFETCH_PARAM_NAME: isfetch_field_id,
             INCIDENTTYPE_PARAM_NAME: inctype_field_id,
