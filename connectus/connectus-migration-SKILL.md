@@ -564,7 +564,13 @@ Map "what you saw in the source" → "auth-type enum value" (the values are the 
 Each `auth_types[]` entry describes **one complete UCP connection type** — one full auth flow, not one XSOAR param. See [`column-schemas.md`](column-schemas.md:34) for the authoritative shape. The rules you'll be applying as you build entries:
 
 - **`type`** — the enum value chosen via the table above.
-- **`name`** — a free-form logical id you choose (e.g. `"api_key"`, `"credentials"`, `"oauth_client"`, `"hunting_credentials"`). Must be unique within the row. The name is a free-form identifier you choose to refer to the profile in human-facing diagnostics; it does NOT need to match any YML param id or auth-type enum value.
+- **`name`** — a human-readable label that **best describes the kind of authentication this profile represents**, since it surfaces directly as the connection profile's title (`metadata.title`, see §1.6 manifest generation). Choose the name from what the credentials actually are, NOT from the `type` enum or any YML param id:
+  - `APIKey` profile → `"API Key"`.
+  - `Plain` profile (username + password) → `"Basic Auth"`.
+  - Any other recognizable scheme → name it for what it is (e.g. `"OAuth"`, `"Client Credentials"`, `"JWT Bearer"`, `"AWS Signature"`, `"Personal Access Token"`).
+  - **NEVER name a profile `"Passthrough"`.** `Passthrough` is an internal `type` enum value, not a user-facing auth name — do not leak it into `name`.
+  - **When the auth scheme is totally unclear**, fall back to `"<Integration name> authentication"` (e.g. `"Acme Cloud authentication"`).
+  Must be unique within the row — if a single integration has two profiles that would map to the same label, qualify each so they stay distinct (e.g. `"API Key"` vs `"Basic Auth"`, or `"OAuth (read)"` vs `"OAuth (write)"`).
 - **`xsoar_param_map`** — a **JSON object** mapping each XSOAR field path that supplies a secret for **this one** connection type (the key) to the **role** that secret plays inside the ConnectUs envelope (the value). The map is **required and non-empty** for every entry — including entries with `"interpolated": true` (the role still has to be declared even if the value is templated at runtime). Key conventions:
   - For a flat param (YML type `0`/`4`/`14`/`17` etc.): use the bare param id as the key, e.g. `"api_key"`, `"server_token"`.
   - For a credentials param (YML type `9`): use dotted-leaf notation — `"<paramid>.identifier"` for the username slot and `"<paramid>.password"` for the password slot. Both leaves get their own keys IF both are used; suppress `<paramid>.identifier` or `<paramid>.password` according to `hiddenusername:true` / `hiddenpassword:true` flags (see §1.3 for the leaf-suppression rules).
@@ -649,7 +655,7 @@ Some integrations expose **two distinct optional auth flows** in a single config
   "auth_types": [
     {
       "type": "Passthrough",
-      "name": "bag",
+      "name": "AbuseIPDB authentication",
       "interpolated": true,
       "xsoar_param_map": {
         "credentials.password":          "primary_api_key",
@@ -786,7 +792,7 @@ Resulting field inside `Auth Details`:
 
 ```json
 {
-  "auth_types": [{ "type": "APIKey", "name": "api_key", "interpolated": true, "xsoar_param_map": { "api_key": "key" } }],
+  "auth_types": [{ "type": "APIKey", "name": "API Key", "interpolated": true, "xsoar_param_map": { "api_key": "key" } }],
   "other_connection": ["insecure", "proxy", "url"]
 }
 ```
@@ -840,7 +846,7 @@ The `hiddenusername` / `hiddenpassword` flags suppress only the **named leaf** o
 ```json
 {
   "type": "APIKey",
-  "name": "credentials",
+  "name": "API Key",
   "interpolated": true,
   "xsoar_param_map": {
     "credentials.password": "key"
@@ -969,7 +975,7 @@ This command:
 Example:
 
 ```bash
-python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"api_key","xsoar_param_map":{"api_key":"key"}}],"other_connection":["insecure","proxy","url"]}'
+python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"API Key","xsoar_param_map":{"api_key":"key"}}],"other_connection":["insecure","proxy","url"]}'
 ```
 
 `set-auth`'s own output echoes the new `Current step:` — do NOT re-run `status` to confirm.
