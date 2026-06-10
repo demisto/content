@@ -546,7 +546,14 @@ A sub-capability's `config.required_license` must contain only licenses present 
 
 **Notes:**
 
-1. **Carve-out**: if the integration name/id contains **`eventcollector`**, do NOT map its commands to `automation-and-remediation` — it is an event-collector integration and maps to `log-collection` (its `isfetchevents` capability) instead.
+1. **`eventcollector` carve-out** (If Integration name/id contains **`eventcollector`**, case-insensitive):
+   - **Default**: create a sub-capability **only** under **`log-collection`** (`log-collection_<integration>`). Do **NOT** create an `automation-and-remediation` sub-capability for its commands.
+   - **EXCEPTION** — also create an `automation-and-remediation` sub-capability (so the integration gets sub-capabilities under **BOTH** `log-collection` **AND** `automation-and-remediation`) if **either**:
+     1. the integration has **≥ 3 commands**, **OR**
+     2. the integration has **≥ 1 command whose name does NOT contain `get-events`**.
+     (If the only commands are `get-events`-style **and** there are **< 3** of them, it stays `log-collection`-only; otherwise it also gets an automation sub-capability.)
+   - When the exception applies, the handler's `capabilities[]` lists **both** the `log-collection_<integration>` and `automation-and-remediation_<integration>` entries (handler subscribes to both — §3.8).
+   - **`defaultIgnore`**: ALWAYS emitted only on/for the `automation-and-remediation` sub-capability (§3.7). A `log-collection`-only eventcollector integration gets **no** `defaultIgnore`; one that also gets an automation sub-capability **does** (governing its commands).
 2. An integration may map to multiple capabilities (e.g. fetch + commands) — emit each, with one sub-capability per integration (`<capability_id>_<integration_id>`).
 3. Multiple integrations may share a capability; each is its own sub-capability (`title` = integration name; `id` = `<capability_id>_<integration_id>`).
 4. **Flag** (but allow) if two integrations declare the same fetch type, or one integration declares multiple fetch/feed/credential capabilities.
@@ -742,10 +749,10 @@ See [Appendix A](#appendix-a-xsoar-type--manifest-type-mapping).
 | `integrationLogLevel` | `configurations.yaml` `general_configurations`, per `view_group` | `select` | `"backend"` | Off/Debug/Verbose. |
 | `defaultIgnore` | `configurations.yaml` `general_configurations`, per `view_group` | `checkbox` | `"backend"` | "Do not use in CLI by default". **Only for integrations with an `automation-and-remediation` sub-capability** — it governs commands, which collection-only capabilities don't have. Omit otherwise. |
 | `engine` / `engine_group` | connection profile (§3.6) | `select` + `dynamic_values` | `"backend"` | Engine 3-field pattern (below). Omit for Appendix G. |
-| `mappingId` (Classifier) | `configurations.yaml`, under fetch capability | `select` + `dynamic_values` | `"backend"` | When `isFetch`. `dynamicField: "classifier"`. |
-| `incomingMapperId` (Mapper incoming) | `configurations.yaml`, under fetch-issues capability | `select` + `dynamic_values` | `"backend"` | When `isFetch`. `dynamicField: "mapper-incoming"`. |
-| `defaultClassifier` | → `default_value` of `mappingId` | — | — | Not a UI field. |
-| `defaultMapperIn` | → `default_value` of `incomingMapperId` | — | — | Not a UI field. |
+| `mappingId` (label "Classifier") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "classifier"`. `default_value` ← `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `alertType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
+| `incomingMapperId` (label "Mapper (incoming)") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "mapper-incoming"`. `default_value` ← `defaultMapperIn` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `alertType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
+| `defaultClassifier` | → `default_value` of `mappingId` | — | — | Not a UI field. Best-effort literal pre-selection (§2.16). |
+| `defaultMapperIn` | → `default_value` of `incomingMapperId` | — | — | Not a UI field. Best-effort literal pre-selection (§2.16). |
 | `outgoingMapperId` / `defaultMapperOut` | **OUT OF SCOPE** | — | — | Mirroring not supported. |
 
 #### Engine handling — 3-field pattern
@@ -885,7 +892,8 @@ When a `script` flag is true, the BE used to auto-add params. Define them explic
   - **Always emit** for every `fetch-issues` sub-capability, regardless of whether the YML has a type-13 param.
   - Never emit under non-issue fetch sub-capabilities.
   - When `script.isfetchsamples: true`, force it always-visible.
-- `mappingId` (`classifier`), `incomingMapperId` (`mapper-incoming`).
+- `mappingId` — label "Classifier", `select` + `dynamic_values` (provider `xsoar`, `dynamicField: "classifier"`), `config_type: backend`. `default_value` ← integration YML `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Placed only under each `fetch-issues_<integration>` sub-capability (like `alertType`) — never under other fetch capabilities or general configurations.
+- `incomingMapperId` — label "Mapper (incoming)", `select` + `dynamic_values` (provider `xsoar`, `dynamicField: "mapper-incoming"`), `config_type: backend`. `default_value` ← integration YML `defaultMapperIn` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Placed only under each `fetch-issues_<integration>` sub-capability (like `alertType`) — never under other fetch capabilities or general configurations.
 
 ```yaml
 # inside the fetch-issues_<integration> sub-capability
@@ -911,6 +919,7 @@ When a `script` flag is true, the BE used to auto-add params. Define them explic
 - `feedExpirationInterval` — `duration`, shown only when `feedExpirationPolicy == "interval"` (trigger, §3.5).
 - `feedFetchInterval` — `duration` (default 240 min → `{hours: 4}` unless the YML differs).
 - `feedBypassExclusionList` — `checkbox`.
+- `feedIncremental` — `checkbox`. **Only emit if the YML declares it.** Place it **only** under the integration's `threat-intelligence-and-enrichment_<integration>` (feed) sub-capability — never under any other capability or in general configurations.
 
 **`script.IsFetchEvents: true`** → `log-collection`: `eventFetchInterval` — `duration` (default 1 min → `{minutes: 1}`).
 
@@ -1610,8 +1619,8 @@ The following fields — and **only** these fields — MUST carry `metadata.xsoa
 |---|---|---|
 | `engine` | connection profile (§3.7 engine 3-field pattern) | `select` + `dynamic_values` (`dynamicField: engine`). |
 | `engineGroup` | connection profile (§3.7 engine 3-field pattern) | `select` + `dynamic_values` (`dynamicField: engine-group`). Field id `engine_group` in the manifest. |
-| `mappingId` | `configurations.yaml`, under the fetch capability | Classifier — `select` + `dynamic_values` (`dynamicField: classifier`). |
-| `incomingMapperId` | `configurations.yaml`, under the fetch capability | Mapper (incoming) — `select` + `dynamic_values` (`dynamicField: mapper-incoming`). |
+| `mappingId` | `configurations.yaml`, under the `fetch-issues` sub-capability | Classifier — `select` + `dynamic_values` (`dynamicField: classifier`). |
+| `incomingMapperId` | `configurations.yaml`, under the `fetch-issues` sub-capability | Mapper (incoming) — `select` + `dynamic_values` (`dynamicField: mapper-incoming`). |
 | `outgoingMapperId` | `configurations.yaml` (mirroring — see §3.2) | Mapper (outgoing). **Mirroring is out of scope on Platform**; listed here only because it is backend-managed when present. |
 | `defaultIgnore` | `configurations.yaml` `general_configurations`, per `view_group` | "Do not use in CLI by default". Only for integrations with an `automation-and-remediation` sub-capability (§3.7). |
 | `integrationLogLevel` | `configurations.yaml` `general_configurations`, per `view_group` | Off / Debug / Verbose. |
