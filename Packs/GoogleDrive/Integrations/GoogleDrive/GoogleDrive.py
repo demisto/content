@@ -17,38 +17,46 @@ import yaml
 from apiclient import discovery, errors
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
-APPROVED_EXTENSIONS = {'.md', '.json', '.jsonl', '.csv', '.docx', '.yaml', '.yml', '.txt'}
+APPROVED_EXTENSIONS = {".md", ".json", ".jsonl", ".csv", ".docx", ".yaml", ".yml", ".txt"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 
-def is_approved_file(file_name: str, mime_type: str = None) -> bool:
+MIME_TO_EXTENSION = {
+    "text/markdown": ".md",
+    "text/x-markdown": ".md",
+    "application/json": ".json",
+    "application/jsonl": ".jsonl",
+    "application/x-jsonlines": ".jsonl",
+    "text/csv": ".csv",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+    "text/yaml": ".yaml",
+    "text/x-yaml": ".yaml",
+    "application/yaml": ".yaml",
+    "application/x-yaml": ".yaml",
+    "application/vnd.google-apps.document": ".md",
+    "application/vnd.google-apps.spreadsheet": ".csv",
+    "text/plain": ".txt",
+}
+
+
+def get_approved_extension(file_name: str, mime_type: str = None) -> Optional[str]:
+    """Return the approved file extension for the given file name or MIME type, or None if not approved."""
     if file_name:
         _, ext = os.path.splitext(file_name.lower())
         if ext in APPROVED_EXTENSIONS:
-            return True
+            return ext
 
     if mime_type:
-        mime_map = {
-            "text/markdown": ".md",
-            "text/x-markdown": ".md",
-            "application/json": ".json",
-            "application/jsonl": ".jsonl",
-            "application/x-jsonlines": ".jsonl",
-            "text/csv": ".csv",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
-            "text/yaml": ".yaml",
-            "text/x-yaml": ".yaml",
-            "application/yaml": ".yaml",
-            "application/x-yaml": ".yaml",
-            "application/vnd.google-apps.document": ".md",
-            "application/vnd.google-apps.spreadsheet": ".csv",
-            "text/plain": ".txt",
-        }
-        ext = mime_map.get(mime_type.lower())
-        if ext in APPROVED_EXTENSIONS:
-            return True
+        mime_ext = MIME_TO_EXTENSION.get(mime_type.lower())
+        if mime_ext in APPROVED_EXTENSIONS:
+            return mime_ext
 
-    return False
+    return None
+
+
+def is_approved_file(file_name: str, mime_type: str = None) -> bool:
+    return get_approved_extension(file_name, mime_type) is not None
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -2231,7 +2239,10 @@ def get_file_content_command(client: "GSuiteClient", args: dict[str, str]) -> Co
         size_bytes = int(size_str)
         if size_bytes > MAX_FILE_SIZE:
             size_mb = size_bytes / (1024 * 1024)
-            raise ValueError(f"File size exceeds the 5MB limit: {size_mb:.2f} MB")
+            limit_mb = MAX_FILE_SIZE / (1024 * 1024)
+            raise ValueError(
+                f"The file '{file_name}' is {size_mb:.2f} MB, which exceeds the maximum allowed size of {limit_mb:.0f} MB."
+            )
 
     content, output_type = _download_drive_file_content(client, file_id, mime_type)
 
@@ -2255,7 +2266,6 @@ def get_file_content_command(client: "GSuiteClient", args: dict[str, str]) -> Co
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX["FILE_CONTENT"],
-        outputs_key_field="Id",
         outputs=generic_output,
         readable_output=readable_hr,
         raw_response=response,

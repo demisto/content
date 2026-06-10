@@ -1453,7 +1453,7 @@ def test_generic_file_get_command_success(requests_mock):
     assert result.outputs_key_field == "Id"
     assert result.outputs["Id"] == "test-page-id"
     assert result.outputs["Title"] == "test_page"
-    assert result.outputs["Type"] == "page"
+    assert result.outputs["Type"] == "text/html"
     assert result.outputs["Content"] == "<p>This is the page content</p>"
     assert result.outputs["Url"] == args["url"]
 

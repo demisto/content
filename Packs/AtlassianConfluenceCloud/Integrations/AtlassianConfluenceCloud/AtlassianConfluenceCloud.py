@@ -1473,20 +1473,23 @@ def confluence_cloud_generic_file_get_command(client: Client, args: dict[str, st
     response_json = response.json()
 
     title = response_json.get("title", "")
-    content_type = response_json.get("type", "")
     body_content = response_json.get("body", {}).get("storage", {}).get("value", "")
 
     # Check size of body_content (limit to 5MB = 5 * 1024 * 1024 bytes)
     if body_content:
-        size_bytes = len(body_content.encode('utf-8'))
+        size_bytes = len(body_content.encode("utf-8"))
         if size_bytes > MAX_FILE_SIZE:
             size_mb = size_bytes / (1024 * 1024)
-            raise ValueError(f"File size exceeds the 5MB limit: {size_mb:.2f} MB")
+            limit_mb = MAX_FILE_SIZE / (1024 * 1024)
+            raise ValueError(
+                f"The file '{title}' is {size_mb:.2f} MB, which exceeds the maximum allowed size of {limit_mb:.0f} MB."
+            )
 
+    # Confluence returns the page body as HTML/XHTML (storage format), so the content MIME type is text/html.
     generic_output = remove_empty_elements(
         {
             "Title": title,
-            "Type": content_type,
+            "Type": "text/html",
             "Name": title,
             "Content": body_content,
             "Url": url,
@@ -1503,7 +1506,6 @@ def confluence_cloud_generic_file_get_command(client: Client, args: dict[str, st
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX["FILE_CONTENT"],
-        outputs_key_field="Id",
         outputs=generic_output,
         readable_output=readable_hr,
         raw_response=response_json,
