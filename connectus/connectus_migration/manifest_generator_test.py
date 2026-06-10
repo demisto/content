@@ -1269,7 +1269,7 @@ def test_per_handler_integration_log_level_shape_matches_reference() -> None:
 
     log = _per_handler_log_level_field("xsoar-test", "integrationLogLevel")
     assert log["id"] == "integrationLogLevel"
-    assert log["title"] == "Integration Log Level"
+    assert log["title"] == "Log Level"
     assert log["field_type"] == "select"
     assert log["metadata"] == {"xsoar": {"config_type": "backend"}}
     assert log["options"]["default_value"] == "Off"
@@ -1685,7 +1685,7 @@ def test_create_manifest_from_scratch_generates_configurations_yaml_without_sche
     assert len(cfg_entries) == 1
     # Per-capability config entries are keyed by the sub-cap id.
     assert cfg_entries[0]["id"] == "fetch-issues_salesforce"
-    assert cfg_entries[0]["view_group"] == "xsoar-salesforce"
+    assert cfg_entries[0]["view_group"] == "salesforce"
     # The Fetch Issues capability injects its platform-mandated synthetic
     # fields (isFetch, alertType, alertFetchInterval, incomingMapperId,
     # mappingId) at the FRONT of the sub-cap, followed by the raw mapped
@@ -1695,10 +1695,11 @@ def test_create_manifest_from_scratch_generates_configurations_yaml_without_sche
     field_ids = [
         f["id"] for f in cfg_entries[0]["configurations"][0]["fields"]
     ]
+    # Issue #8: alertType / alertFetchInterval are emitted only when the source
+    # incidentType / incidentFetchInterval params exist in the integration yml.
+    # This integration declares neither, so the alert fields are omitted.
     assert field_ids == [
         "isFetch",
-        "alertType",
-        "alertFetchInterval",
         "incomingMapperId",
         "mappingId",
         "fetch_limit",
@@ -1760,13 +1761,11 @@ def test_create_manifest_from_scratch_handler_capabilities_populated(
         {
             "id": "oauth2.salesforce",
             "view_group": "salesforce",
-            "scopes": ["api"],
             "workloads": ["xsoar-pod"],
         },
         {
             "id": "api_key.salesforce",
             "view_group": "salesforce",
-            "scopes": ["api"],
             "workloads": ["xsoar-pod"],
         },
     ]
@@ -1907,7 +1906,7 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
     gc_entries = cfg_data.get("general_configurations", {}).get(
         "configurations", []
     )
-    handler_gc = [e for e in gc_entries if e.get("view_group") == "xsoar-salesforce"]
+    handler_gc = [e for e in gc_entries if e.get("view_group") == "salesforce"]
     assert len(handler_gc) >= 1
     handler_field_ids = [f["id"] for f in handler_gc[0]["fields"]]
     assert "integrationLogLevel" in handler_field_ids
@@ -1948,7 +1947,6 @@ def test_create_manifest_from_scratch_full_pipeline_with_typical_inputs(
         {
             "id": "oauth2.salesforce",
             "view_group": "salesforce",
-            "scopes": ["api"],
             "workloads": ["xsoar-pod"],
         }
     ]
@@ -2224,7 +2222,6 @@ def test_append_handler_with_new_capability_adds_to_all_files(
                 {
                     "id": "oauth2.my_integration",
                     "view_group": "my-integration",
-                    "scopes": ["api"],
                     "workloads": ["xsoar-pod"],
                 }
             ],
@@ -2366,10 +2363,11 @@ def test_append_handler_to_capability_already_split_adds_subcap_only(
     # The Fetch Issues capability injects its platform-mandated synthetic
     # fields ahead of the raw mapped param ``new_p``.
     new_field_ids = [f["id"] for f in new_entry["configurations"][0]["fields"]]
+    # Issue #8: alertType / alertFetchInterval are emitted only when the source
+    # incidentType / incidentFetchInterval params exist in the integration yml.
+    # This integration declares neither, so the alert fields are omitted.
     assert new_field_ids == [
         "isFetch",
-        "alertType",
-        "alertFetchInterval",
         "incomingMapperId",
         "mappingId",
         "new_p",
@@ -2578,7 +2576,6 @@ def test_append_handler_case2_promotes_existing_flat_capability(
                 {
                     "id": "api_key.jira",
                     "view_group": "jira",
-                    "scopes": ["api"],
                     "workloads": ["xsoar-pod"],
                 }
             ],
@@ -3896,13 +3893,13 @@ def test_build_per_handler_general_config_shape(tmp_path: Path):
     handler_dir.mkdir()
     result = build_per_handler_general_config("xsoar-salesforce", handler_dir)
 
-    assert result["view_group"] == "xsoar-salesforce"
+    assert result["view_group"] == "salesforce"
     fields = result["fields"]
     assert len(fields) == 1
 
     log_level = fields[0]
     assert log_level["id"] == "integrationLogLevel"
-    assert log_level["title"] == "Integration Log Level"
+    assert log_level["title"] == "Log Level"
     assert log_level["field_type"] == "select"
     assert log_level["metadata"]["xsoar"]["config_type"] == "backend"
     values = log_level["options"]["values"]
@@ -4018,12 +4015,12 @@ def test_from_scratch_emits_per_handler_general_config_in_configurations_yaml(
 
     # view_groups registry has the handler id.
     vg_ids = [vg["id"] for vg in cfg.get("view_groups", [])]
-    assert "xsoar-myint" in vg_ids
+    assert "myint" in vg_ids
 
     # general_configurations has a view_group-pinned field group with only
     # integrationLogLevel — defaultIgnore is no longer here.
     gc_entries = cfg.get("general_configurations", {}).get("configurations", [])
-    handler_gc = [e for e in gc_entries if e.get("view_group") == "xsoar-myint"]
+    handler_gc = [e for e in gc_entries if e.get("view_group") == "myint"]
     assert len(handler_gc) == 1
     field_ids = [f["id"] for f in handler_gc[0]["fields"]]
     assert "integrationLogLevel" in field_ids
@@ -4070,7 +4067,7 @@ def test_from_scratch_omits_default_ignore_without_automation_capability(
 
     # general_configurations has only integrationLogLevel — no defaultIgnore.
     gc_entries = cfg.get("general_configurations", {}).get("configurations", [])
-    handler_gc = [e for e in gc_entries if e.get("view_group") == "xsoar-myint"]
+    handler_gc = [e for e in gc_entries if e.get("view_group") == "myint"]
     assert len(handler_gc) == 1
     field_ids = [f["id"] for f in handler_gc[0]["fields"]]
     assert "integrationLogLevel" in field_ids
@@ -4318,9 +4315,10 @@ def test_log_collection_scenario_A_not_long_running_synthetic_isFetchEvents():
            is_long_running_capability=False, is_sub_capability=False,
            NO yml param for isFetchEvents.
     When:  Inspecting the returned isFetchEvents field.
-    Then:  Synthetic shape — toggle, default False, hidden in both
-           modifier blocks, required False, title fallback 'Fetch events'.
-           Plain id 'isFetchEvents' (no rename in top-level case).
+    Then:  Synthetic but VISIBLE shape — toggle, default False, shown in
+           both modifier blocks (hidden=False), required False, title
+           fallback 'Fetch events'. Plain id 'isFetchEvents' (no rename in
+           top-level case). The user decides whether to fetch events.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4336,9 +4334,9 @@ def test_log_collection_scenario_A_not_long_running_synthetic_isFetchEvents():
     ifc = fields_by_id["isFetchEvents"]
     assert ifc["field_type"] == "toggle"
     assert ifc["title"] == "Fetch events"
-    assert ifc["options"]["default_value"] is True
-    assert ifc["options"]["create_modifiers"] == {"required": False, "hidden": True}
-    assert ifc["options"]["edit_modifiers"] == {"required": False, "hidden": True}
+    assert ifc["options"]["default_value"] is False
+    assert ifc["options"]["create_modifiers"] == {"required": False, "hidden": False}
+    assert ifc["options"]["edit_modifiers"] == {"required": False, "hidden": False}
 
 
 def test_log_collection_scenario_A_not_long_running_synthetic_eventFetchInterval_no_yml():
@@ -4495,10 +4493,9 @@ def test_log_collection_scenario_C_long_running_no_yml_falls_back_to_synthetic()
            no related yml params).
     When:  add_log_collection_capability runs.
     Then:  Both fields are STILL emitted, using the synthetic shapes:
-           isFetchEvents = hidden toggle default False;
-           eventFetchInterval = visible numeric input default '1'.
-           Same shape as scenario A — only the trigger suppression
-           below distinguishes B/C from A.
+           isFetchEvents = visible toggle default False;
+           eventFetchInterval = visible duration default {minutes: 1}.
+           Same shape as scenario A.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4513,8 +4510,8 @@ def test_log_collection_scenario_C_long_running_no_yml_falls_back_to_synthetic()
     assert "isFetchEvents" in fields_by_id
     assert "eventFetchInterval" in fields_by_id
     ifc = fields_by_id["isFetchEvents"]
-    assert ifc["options"]["default_value"] is True
-    assert ifc["options"]["create_modifiers"]["hidden"] is True
+    assert ifc["options"]["default_value"] is False
+    assert ifc["options"]["create_modifiers"]["hidden"] is False
     efi = fields_by_id["eventFetchInterval"]
     assert efi["field_type"] == "duration"
     assert efi["options"]["default_value"] == {"minutes": 1}
@@ -6139,21 +6136,43 @@ def _make_integration_yml(
     return yml
 
 
+# Issue #8: the alert fields (alertType / alertFetchInterval) are emitted ONLY
+# when their source XSOAR params (incidentType / incidentFetchInterval) exist in
+# the integration yml config params. This shared lookup declares both so the
+# fetch-issues tests that expect the alert fields keep exercising the full
+# 5-/6-field shape.
+_FETCH_ISSUES_YML_PARAMS = {
+    INCIDENTTYPE_PARAM_NAME: {
+        "name": INCIDENTTYPE_PARAM_NAME,
+        "display": "Incident type",
+    },
+    INCIDENTFETCHINTERVAL_PARAM_NAME: {
+        "name": INCIDENTFETCHINTERVAL_PARAM_NAME,
+        "display": "Incidents Fetch Interval",
+    },
+}
+
+
 def test_add_fetch_issues_capability_top_level_emits_5_fields_standard():
     """
-    Given: add_fetch_issues_capability called with is_long_running=False,
-           no yml params (pure synthetic fallback path).
+    Given: add_fetch_issues_capability called with is_long_running=False, and
+           the integration yml DOES declare incidentType / incidentFetchInterval
+           (so the alert fields are migrated — Issue #8).
     When:  add_fetch_issues_capability runs.
     Then:  5 fields are emitted (no longRunning field).
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     integration_yml = _make_integration_yml()
+    # Issue #8: alertType / alertFetchInterval are emitted ONLY when the source
+    # XSOAR params exist in the integration yml. Supply them so all 5 fields
+    # are emitted (the realistic fetch-issues migration case).
     template = add_fetch_issues_capability(
         capability_id="fetch-issues",
         is_sub_capability=False,
         is_long_running=False,
         mapped_params=mapped,
         integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
     )
     assert template["capability_id"] == "fetch-issues"
     fields = template["fields"]
@@ -6161,11 +6180,11 @@ def test_add_fetch_issues_capability_top_level_emits_5_fields_standard():
 
     by_id = {f["id"]: f for f in fields}
 
-    # 1. isFetch — checkbox, default true, hidden
+    # 1. isFetch — checkbox, visible, default false (user decides)
     isfetch = by_id["isFetch"]
     assert isfetch["field_type"] == "checkbox"
-    assert isfetch["options"]["default_value"] is True
-    assert isfetch["options"]["create_modifiers"]["hidden"] is True
+    assert isfetch["options"]["default_value"] is False
+    assert isfetch["options"]["create_modifiers"]["hidden"] is False
 
     # 2. alertType (XSOAR incidentType) — dynamic select. Per migration
     # guide §line 889-890 the connector-side id is the Platform "alertType",
@@ -6263,6 +6282,7 @@ def test_add_fetch_issues_capability_classifier_and_mapper_are_backend_managed()
         is_long_running=False,
         mapped_params=mapped,
         integration_yml=_make_integration_yml(),
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
     )
     by_id = {f["id"]: f for f in template["fields"]}
     assert by_id["mappingId"]["metadata"]["xsoar"]["config_type"] == "backend"
@@ -6303,11 +6323,15 @@ def test_add_fetch_issues_capability_replaces_incidents_with_issues_in_titles():
 
 def test_add_fetch_issues_capability_long_running_emits_6_fields():
     """
-    Given: add_fetch_issues_capability called with is_long_running=True.
+    Given: add_fetch_issues_capability called when the param-capability mapper
+           routed ``longRunning`` to the ``"Fetch Issues"`` bucket.
     When:  add_fetch_issues_capability runs.
-    Then:  6 fields are emitted (includes longRunning hidden checkbox).
+    Then:  6 fields are emitted (includes the visible longRunning checkbox).
     """
-    mapped: dict[str, list[str]] = {"general_configurations": []}
+    mapped: dict[str, list[str]] = {
+        "general_configurations": [],
+        "Fetch Issues": ["longRunning"],
+    }
     integration_yml = _make_integration_yml(is_long_running=True)
     template = add_fetch_issues_capability(
         capability_id="fetch-issues",
@@ -6315,6 +6339,7 @@ def test_add_fetch_issues_capability_long_running_emits_6_fields():
         is_long_running=True,
         mapped_params=mapped,
         integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
     )
     fields = template["fields"]
     assert len(fields) == 6
@@ -6322,24 +6347,25 @@ def test_add_fetch_issues_capability_long_running_emits_6_fields():
     by_id = {f["id"]: f for f in fields}
     lr = by_id["longRunning"]
     assert lr["field_type"] == "checkbox"
-    assert lr["options"]["default_value"] is True
-    assert lr["options"]["create_modifiers"]["hidden"] is True
+    assert lr["options"]["default_value"] is False
+    assert lr["options"]["create_modifiers"]["hidden"] is False
 
 
-def test_add_fetch_issues_capability_isfetch_always_true_hidden():
+def test_add_fetch_issues_capability_isfetch_visible_default_false():
     """
-    Given: yml carries an isFetch param with hidden=False and defaultvalue='false'.
+    Given: yml carries an isFetch param with hidden=False and defaultvalue='true'.
     When:  add_fetch_issues_capability runs.
-    Then:  The isFetch field is STILL emitted as hidden=True, default=True
-           (hardcoded synthetic — yml values are ignored).
+    Then:  The isFetch field is emitted VISIBLE (hidden=False) and NOT forced
+           on (default=False) — the synthetic shape ignores the yml's hidden/
+           default values; the user decides. Title still uses yml display.
     """
     yml_lookup = {
         "isFetch": {
             "name": "isFetch",
             "type": 8,
             "display": "Custom Fetch Label",
-            "defaultvalue": "false",
-            "hidden": False,
+            "defaultvalue": "true",
+            "hidden": True,
         },
     }
     mapped: dict[str, list[str]] = {"general_configurations": []}
@@ -6353,8 +6379,8 @@ def test_add_fetch_issues_capability_isfetch_always_true_hidden():
         yml_params_by_name=yml_lookup,
     )
     isfetch = {f["id"]: f for f in template["fields"]}["isFetch"]
-    assert isfetch["options"]["default_value"] is True
-    assert isfetch["options"]["create_modifiers"]["hidden"] is True
+    assert isfetch["options"]["default_value"] is False
+    assert isfetch["options"]["create_modifiers"]["hidden"] is False
     # Title should use yml display when available.
     assert isfetch["title"] == "Custom Fetch Label"
 
@@ -6389,9 +6415,10 @@ def test_add_fetch_issues_capability_strips_params_from_mapped_params():
 
 def test_add_fetch_issues_capability_long_running_strips_longrunning():
     """
-    Given: mapped_params has longRunning in a bucket.
-    When:  add_fetch_issues_capability runs with is_long_running=True.
-    Then:  longRunning is also stripped.
+    Given: the param-capability mapper routed longRunning to the Fetch Issues
+           bucket.
+    When:  add_fetch_issues_capability runs.
+    Then:  longRunning is emitted here AND stripped from the bucket.
     """
     mapped = {
         "general_configurations": [],
@@ -6406,6 +6433,121 @@ def test_add_fetch_issues_capability_long_running_strips_longrunning():
         integration_yml=integration_yml,
     )
     assert mapped["Fetch Issues"] == ["custom_param"]
+
+
+def test_add_fetch_issues_capability_longrunning_not_in_bucket_not_emitted():
+    """
+    Given: script.longRunning is True but the param-capability mapper routed
+           longRunning to a DIFFERENT capability (it is NOT in the Fetch Issues
+           bucket).
+    When:  add_fetch_issues_capability runs.
+    Then:  NO longRunning field is emitted here — emission follows the mapper,
+           not the raw script flag.
+    """
+    mapped: dict[str, list[str]] = {
+        "general_configurations": [],
+        "Log Collection": ["longRunning"],
+    }
+    integration_yml = _make_integration_yml(is_long_running=True)
+    template = add_fetch_issues_capability(
+        capability_id="fetch-issues",
+        is_sub_capability=False,
+        is_long_running=True,
+        mapped_params=mapped,
+        integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
+    )
+    assert "longRunning" not in {f["id"] for f in template["fields"]}
+    # longRunning stays in the Log Collection bucket (not stripped here).
+    assert mapped["Log Collection"] == ["longRunning"]
+
+
+def test_log_collection_emits_longrunning_when_mapped_to_log_collection():
+    """
+    Given: the param-capability mapper routed longRunning to the Log Collection
+           bucket (e.g. Akamai WAF SIEM via INTEGRATION_TO_LONGRUNNING_CAPABILITY).
+    When:  add_log_collection_capability runs.
+    Then:  a VISIBLE longRunning checkbox (default False) is emitted here AND
+           longRunning is stripped from the bucket so the generic param pass
+           does not re-emit it.
+    """
+    mapped: dict[str, list[str]] = {
+        "general_configurations": [],
+        "Log Collection": ["longRunning"],
+    }
+    template = add_log_collection_capability(
+        capability_id="log-collection",
+        is_sub_capability=False,
+        is_long_running_capability=True,
+        mapped_params=mapped,
+    )
+    by_id = {f["id"]: f for f in template["fields"]}
+    assert "longRunning" in by_id
+    lr = by_id["longRunning"]
+    assert lr["field_type"] == "checkbox"
+    assert lr["options"]["default_value"] is False
+    assert lr["options"]["create_modifiers"]["hidden"] is False
+    assert lr["options"]["edit_modifiers"]["hidden"] is False
+    # Stripped from the bucket (owned by this builder now).
+    assert mapped["Log Collection"] == []
+
+
+def test_log_collection_longrunning_not_in_bucket_not_emitted():
+    """
+    Given: longRunning is NOT in the Log Collection bucket (the mapper routed it
+           elsewhere, or there is no long-running concept for this capability).
+    When:  add_log_collection_capability runs.
+    Then:  NO longRunning field is emitted, and any longRunning in another
+           bucket is left untouched.
+    """
+    mapped: dict[str, list[str]] = {
+        "general_configurations": [],
+        "Fetch Issues": ["longRunning"],
+    }
+    template = add_log_collection_capability(
+        capability_id="log-collection",
+        is_sub_capability=False,
+        is_long_running_capability=True,
+        mapped_params=mapped,
+    )
+    assert "longRunning" not in {f["id"] for f in template["fields"]}
+    # longRunning stays in the Fetch Issues bucket (not stripped here).
+    assert mapped["Fetch Issues"] == ["longRunning"]
+
+
+def test_fetch_issues_preserves_unrelated_params_and_strips_only_owned():
+    """
+    Regression (Task 4): a param that is neither owned by the builder nor a
+    capability-gate toggle must NOT be emitted as a synthetic field and must be
+    LEFT untouched in its bucket. Only the builder-owned params (isFetch /
+    incidentType / incidentFetchInterval / alertFetchInterval) are stripped.
+    """
+    mapped: dict[str, list[str]] = {
+        "general_configurations": ["unrelated_global"],
+        "Fetch Issues": [
+            "isFetch",
+            "incidentType",
+            "incidentFetchInterval",
+            "alertFetchInterval",
+            "some_vendor_param",
+        ],
+    }
+    integration_yml = _make_integration_yml()
+    template = add_fetch_issues_capability(
+        capability_id="fetch-issues",
+        is_sub_capability=False,
+        is_long_running=False,
+        mapped_params=mapped,
+        integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
+    )
+    emitted_ids = {f["id"] for f in template["fields"]}
+    # The unrelated params are NOT emitted as synthetic capability fields.
+    assert "some_vendor_param" not in emitted_ids
+    assert "unrelated_global" not in emitted_ids
+    # Owned params are stripped; unrelated ones are preserved verbatim.
+    assert mapped["Fetch Issues"] == ["some_vendor_param"]
+    assert mapped["general_configurations"] == ["unrelated_global"]
 
 
 def test_add_fetch_issues_capability_mapper_default_from_yml():
@@ -6544,6 +6686,7 @@ def test_add_fetch_issues_capability_sub_capability_renames_field_ids():
         is_long_running=False,
         mapped_params=mapped,
         integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
     )
     field_ids = [f["id"] for f in template["fields"]]
     assert f"{cap_id}_isFetch" in field_ids
@@ -6558,7 +6701,10 @@ def test_add_fetch_issues_capability_sub_cap_writes_serializer_bridges(tmp_path:
     """
     Given: sub-cap path AND handler_dir supplied.
     When:  add_fetch_issues_capability runs.
-    Then:  serializer.yaml at handler_dir contains field_mappings entries.
+    Then:  serializer.yaml at handler_dir contains field_mappings entries for
+           the sub-cap-prefixed fields. Per Issue #8 the alert fields
+           (alertType / alertFetchInterval) are NOT bridged — they migrate
+           as-is — so only isFetch / incomingMapperId / mappingId get bridges.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     cap_id = "fetch-issues-xsoar-myhandler"
@@ -6569,6 +6715,7 @@ def test_add_fetch_issues_capability_sub_cap_writes_serializer_bridges(tmp_path:
         is_long_running=False,
         mapped_params=mapped,
         integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
         handler_dir=tmp_path,
     )
     serializer_path = tmp_path / "serializer.yaml"
@@ -6577,23 +6724,29 @@ def test_add_fetch_issues_capability_sub_cap_writes_serializer_bridges(tmp_path:
         content = fh.read()
     data = yaml.safe_load(content.split("\n", 1)[1])  # skip directive
     mappings = data["field_mappings"]
-    assert len(mappings) == 5  # 5 fields renamed
+    assert len(mappings) == 3  # isFetch + incomingMapperId + mappingId
     mapping_dict = {m["id"]: m["field_name"] for m in mappings}
     assert mapping_dict[f"{cap_id}_isFetch"] == "isFetch"
-    # The Platform "alert" connector ids bridge back to the XSOAR yml names.
-    assert mapping_dict[f"{cap_id}_alertType"] == "incidentType"
-    assert mapping_dict[f"{cap_id}_alertFetchInterval"] == "incidentFetchInterval"
     assert mapping_dict[f"{cap_id}_incomingMapperId"] == "incomingMapperId"
     assert mapping_dict[f"{cap_id}_mappingId"] == "mappingId"
+    # Issue #8: alert fields are NOT bridged (no incident* mapping).
+    assert f"{cap_id}_alertType" not in mapping_dict
+    assert f"{cap_id}_alertFetchInterval" not in mapping_dict
 
 
-def test_add_fetch_issues_capability_long_running_sub_cap_writes_6_bridges(tmp_path: Path):
+def test_add_fetch_issues_capability_long_running_sub_cap_writes_4_bridges(tmp_path: Path):
     """
-    Given: sub-cap path with is_long_running=True.
+    Given: sub-cap path where the mapper routed longRunning to the Fetch Issues
+           bucket.
     When:  add_fetch_issues_capability runs.
-    Then:  serializer.yaml has 6 field_mappings entries (includes longRunning).
+    Then:  serializer.yaml has 4 field_mappings entries (isFetch +
+           incomingMapperId + mappingId + longRunning). Per Issue #8 the alert
+           fields are NOT bridged.
     """
-    mapped: dict[str, list[str]] = {"general_configurations": []}
+    mapped: dict[str, list[str]] = {
+        "general_configurations": [],
+        "Fetch Issues": ["longRunning"],
+    }
     cap_id = "fetch-issues-xsoar-myhandler"
     integration_yml = _make_integration_yml(is_long_running=True)
     add_fetch_issues_capability(
@@ -6602,6 +6755,7 @@ def test_add_fetch_issues_capability_long_running_sub_cap_writes_6_bridges(tmp_p
         is_long_running=True,
         mapped_params=mapped,
         integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
         handler_dir=tmp_path,
     )
     serializer_path = tmp_path / "serializer.yaml"
@@ -6609,22 +6763,24 @@ def test_add_fetch_issues_capability_long_running_sub_cap_writes_6_bridges(tmp_p
         content = fh.read()
     data = yaml.safe_load(content.split("\n", 1)[1])
     mappings = data["field_mappings"]
-    assert len(mappings) == 6
+    assert len(mappings) == 4
     mapping_dict = {m["id"]: m["field_name"] for m in mappings}
     assert mapping_dict[f"{cap_id}_longRunning"] == "longRunning"
+    # Issue #8: alert fields are NOT bridged.
+    assert f"{cap_id}_alertType" not in mapping_dict
+    assert f"{cap_id}_alertFetchInterval" not in mapping_dict
 
 
-def test_add_fetch_issues_capability_top_level_writes_alert_rename_bridges(
+def test_add_fetch_issues_capability_top_level_writes_no_serializer_bridges(
     tmp_path: Path,
 ):
     """
     Given: top-level path (is_sub_capability=False) with handler_dir.
     When:  add_fetch_issues_capability runs.
-    Then:  A serializer.yaml IS created with exactly the two Platform "alert"
-           rename bridges (guide §line 889-890): alertType -> incidentType and
-           alertFetchInterval -> incidentFetchInterval. The other fields
-           (isFetch, incomingMapperId, mappingId) are 1:1 on the top-level
-           path, so they get no bridge.
+    Then:  NO serializer.yaml is created. Per Issue #8 the alert fields are no
+           longer bridged back to the incident* names, and on the top-level
+           path every other field (isFetch, incomingMapperId, mappingId) is
+           1:1 — so there are no renames to bridge at all.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     integration_yml = _make_integration_yml()
@@ -6634,19 +6790,11 @@ def test_add_fetch_issues_capability_top_level_writes_alert_rename_bridges(
         is_long_running=False,
         mapped_params=mapped,
         integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
         handler_dir=tmp_path,
     )
     serializer_path = tmp_path / "serializer.yaml"
-    assert serializer_path.exists()
-    with open(serializer_path) as fh:
-        content = fh.read()
-    data = yaml.safe_load(content.split("\n", 1)[1])  # skip directive
-    mappings = data["field_mappings"]
-    mapping_dict = {m["id"]: m["field_name"] for m in mappings}
-    assert mapping_dict == {
-        "alertType": "incidentType",
-        "alertFetchInterval": "incidentFetchInterval",
-    }
+    assert not serializer_path.exists()
 
 
 def test_add_fetch_issues_capability_dynamic_fields_use_integration_id():
@@ -6663,6 +6811,7 @@ def test_add_fetch_issues_capability_dynamic_fields_use_integration_id():
         is_long_running=False,
         mapped_params=mapped,
         integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
     )
     by_id = {f["id"]: f for f in template["fields"]}
     for field_id in ["alertType", "incomingMapperId", "mappingId"]:
@@ -7246,7 +7395,7 @@ def test_add_connector_to_code_owners_appends_entry_to_existing_file(
     assert content.startswith("# Existing header\n* @someone\n")
     assert (
         "# My Connector\n"
-        "connectors/myconnector/ @joeymizrahi @JudahSchwartz @YuvHayun \n"
+        "connectors/myconnector/ @sbenyakir @ybenshalom\n"
         "\n"
     ) in content
 
@@ -7267,7 +7416,7 @@ def test_add_connector_to_code_owners_creates_file_when_missing(
     assert code_owners.is_file()
     assert code_owners.read_text() == (
         "# My Connector\n"
-        "connectors/myconnector/ @joeymizrahi @JudahSchwartz @YuvHayun \n"
+        "connectors/myconnector/ @sbenyakir @ybenshalom\n"
         "\n"
     )
 
@@ -7285,7 +7434,7 @@ def test_add_connector_to_code_owners_uses_connector_dir_slug_in_path(
 
     content = (repo_root / "CODEOWNERS").read_text()
     assert "# Salesforce Collection\n" in content
-    assert "connectors/salesforce/ @joeymizrahi @JudahSchwartz @YuvHayun \n" in content
+    assert "connectors/salesforce/ @sbenyakir @ybenshalom\n" in content
 
 
 def test_create_manifest_from_scratch_updates_code_owners(
@@ -7313,7 +7462,7 @@ def test_create_manifest_from_scratch_updates_code_owners(
     content = code_owners.read_text()
     assert "# My Connector\n" in content
     assert (
-        "connectors/myconnector/ @joeymizrahi @JudahSchwartz @YuvHayun \n"
+        "connectors/myconnector/ @sbenyakir @ybenshalom\n"
         in content
     )
 

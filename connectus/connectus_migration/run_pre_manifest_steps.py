@@ -693,6 +693,7 @@ def step_3c_generate_manifest(
     params_to_capabilities: dict,
     auth_details: dict,
     out_dir: Path,
+    connector_title: str,
 ) -> dict:
     """Run ``manifest_generator.py`` to scaffold the connector manifest.
 
@@ -722,8 +723,6 @@ def step_3c_generate_manifest(
     if not yml_path.is_file():
         raise RuntimeError(f"integration YML not found: {yml_path}")
 
-    connector_title = context.get("integration_id") or integration_id
-
     generated_root = out_dir / "generated_manifest"
     generated_root.mkdir(parents=True, exist_ok=True)
 
@@ -737,11 +736,12 @@ def step_3c_generate_manifest(
         sys.executable,
         str(MANIFEST_GENERATOR),
         str(yml_path),
-        connector_title,
+        str(connector_title),
         json.dumps(params_to_capabilities),
         json.dumps(auth_details),
         "--connectors-root",
         str(generated_root),
+        
     ]
     if author_image_path is not None:
         cmd += ["--author-image-path", str(author_image_path)]
@@ -960,8 +960,9 @@ def main() -> int:
     params_to_capabilities = step_3b_params_to_capabilities(
         integration_id, context, params_to_commands, param_defaults, out_dir
     )
+    connector_id = context.get("connector_id", "connector id not found")
     manifest_result = step_3c_generate_manifest(
-        integration_id, context, params_to_capabilities, auth_details, out_dir
+        integration_id, context, params_to_capabilities, auth_details, out_dir, connector_id
     )
     # Step 3d — validate the generated manifest (non-fatal: violations are
     # reported but never abort the harness).

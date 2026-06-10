@@ -69,7 +69,7 @@ _AUTOMATION_CAP_ID = "automation-and-remediation"
 # We never pair across handlers, and never pair two sub-capabilities of the
 # same capability family (a handler maps each fetch family to exactly one
 # sub-capability).
-_FETCH_MUTEX_MESSAGE = "Select only one fetch option for this sub-capability"
+_FETCH_MUTEX_MESSAGE = "Select only one fetch option."
 
 
 def derive_connector_suffix(mapped_params: dict) -> tuple[str, str]:
@@ -660,13 +660,13 @@ def build_connector_yaml(
 
     return {
         "id": connector_id,
+        "enabled": True,
         "metadata": {
             "title": metadata_title,
             "description": description,
             "version": "1.0.0",
             "categories": list(categories or []),
             "tags": list(pack_tags),
-            "domain": "",
             "vendor": vendor,
             "publisher": "Palo Alto Networks",
             "author_image": author_image_filename,
@@ -674,11 +674,10 @@ def build_connector_yaml(
                 "team": "xsoar",
                 "maintainers": ["@xsoar-content"],
             },
-            "enabled": True,
-            "grouped": True,
         },
         "settings": {
             "allow_skip_verification": True,
+            "grouped": True,
         },
     }
 
@@ -1007,9 +1006,10 @@ def build_handler_yaml(
     shapes defined by handler.schema:
 
       - **Authenticated shape** (when ``auth_methods.auth_types`` is
-        non-empty): ``{id, auth_options: [{id, scopes, workloads}]}``
-        where ``workloads`` lives on each auth_option (per AuthOption
-        schema). NO capability-level ``workloads``.
+        non-empty): ``{id, auth_options: [{id, workloads}]}`` where
+        ``workloads`` lives on each auth_option (per AuthOption schema).
+        ``scopes`` is omitted (optional in the schema). NO capability-level
+        ``workloads``.
 
       - **Anonymous shape** (when ``auth_methods.auth_types`` is empty):
         ``{id, auth: "none", workloads: ["xsoar-pod"]}``. NO
@@ -1055,10 +1055,11 @@ def build_handler_yaml(
     # ``type``) and only raises on a present-but-unrecognized ``type``.
     auth_types = auth_methods.get("auth_types", [])
     seen_profile_ids: set[str] = set()
+    # ``scopes`` is intentionally omitted from auth_options (it is optional per
+    # the AuthOption schema). Only ``id`` and ``workloads`` are emitted.
     auth_options = [
         {
             "id": derive_profile_id(at, integration_id, seen_profile_ids),
-            "scopes": ["api"],
             "workloads": list(DEFAULT_HANDLER_WORKLOADS),
         }
         for at in auth_types
@@ -1112,7 +1113,7 @@ def build_handler_yaml(
         "metadata": {
             "version": "1.0.0",
             "description": (
-                f"XSOAR handler for {integration_name} integration."
+                f"XSOAR handler for {integration_name}."
             ),
             "module": "xsoar",
             "tags": list(pack_tags),
@@ -1725,6 +1726,15 @@ EVENTFETCHINTERVAL_FALLBACK_DEFAULT = "1"  # string per XSOAR convention (E1=a)
 ISFETCHEVENTS_PARAM_NAME = "isFetchEvents"
 EVENTFETCHINTERVAL_PARAM_NAME = "eventFetchInterval"
 
+# The mapper bucket key for the Log Collection capability. Must match
+# ``connector_param_mapper.FETCH_EVENTS_CAPABILITIES`` — it is the key under
+# which ``map_params_to_capabilities`` places this capability's params (incl.
+# ``longRunning`` when Rule 7 routes long-running here, e.g. Akamai WAF SIEM
+# via INTEGRATION_TO_LONGRUNNING_CAPABILITY). Used by
+# ``add_log_collection_capability`` to decide whether to emit the longRunning
+# checkbox in THIS capability.
+LOG_COLLECTION_BUCKET_KEY = "Log Collection"
+
 
 def _build_isfetchevents_field(
     yml_param: dict | None,
@@ -1733,9 +1743,10 @@ def _build_isfetchevents_field(
 ) -> dict:
     """Build the ``isFetchEvents`` toggle field.
 
-    Path A (no yml_param): pure synthetic via
-    :func:`build_synthetic_hidden_toggle` — default False, hidden in
-    both modifier blocks, required False.
+    Path A (no yml_param): synthetic but VISIBLE — default False, shown in
+    both modifier blocks (``hidden: false``), required False. The fetch
+    toggle is presented to the user so they decide whether to collect
+    events; it is not forced on.
 
     Path B (yml_param present): delegate to :func:`_map_type_8` so the
     shape matches what every other type-8 param produces (preserves
@@ -1744,12 +1755,16 @@ def _build_isfetchevents_field(
     and re-apply the resolved ``title``.
     """
     if yml_param is None:
-        return build_synthetic_hidden_toggle(
-            field_id=field_id,
-            title=title,
-            default_value=True,
-            required=False,
-        )
+        return {
+            "id": field_id,
+            "title": title,
+            "field_type": "toggle",
+            "options": {
+                "default_value": False,
+                "create_modifiers": {"required": False, "hidden": False},
+                "edit_modifiers": {"required": False, "hidden": False},
+            },
+        }
     field = _map_type_8(yml_param)
     field["id"] = field_id
     field["title"] = title
@@ -2043,14 +2058,32 @@ def add_log_collection_capability(
     )
     fields.append(efi_field)
 
-    # --- §5. Strip both yml names from mapper results -------------------
+    # longRunning: emitted ONLY when the param-capability mapper routed
+    # ``longRunning`` to THIS capability's ``"Log Collection"`` bucket (e.g.
+    # Akamai WAF SIEM via INTEGRATION_TO_LONGRUNNING_CAPABILITY). The raw
+    # ``script.longRunning`` flag is NOT consulted here — routing is owned by
+    # the mapper.
+    emit_longrunning = LONGRUNNING_PARAM_NAME in (
+        mapped_params.get(LOG_COLLECTION_BUCKET_KEY) or []
+    )
+    lr_field_id = (
+        f"{capability_id}_{LONGRUNNING_PARAM_NAME}"
+        if is_sub_capability
+        else LONGRUNNING_PARAM_NAME
+    )
+    if emit_longrunning:
+        fields.append(_build_longrunning_field(
+            field_id=lr_field_id,
+            title=_LONGRUNNING_DEFAULT_TITLE,
+        ))
+
+    # --- §5. Strip yml names from mapper results -----------------------
+    stripped = {ISFETCHEVENTS_PARAM_NAME, EVENTFETCHINTERVAL_PARAM_NAME}
+    if emit_longrunning:
+        stripped.add(LONGRUNNING_PARAM_NAME)
     for cap_name in list(mapped_params.keys()):
         names = mapped_params.get(cap_name) or []
-        mapped_params[cap_name] = [
-            n
-            for n in names
-            if n not in (ISFETCHEVENTS_PARAM_NAME, EVENTFETCHINTERVAL_PARAM_NAME)
-        ]
+        mapped_params[cap_name] = [n for n in names if n not in stripped]
 
     # --- §6. Sub-cap rename bridges (per emitted field) -----------------
     if is_sub_capability and handler_dir is not None:
@@ -2065,6 +2098,12 @@ def add_log_collection_capability(
                 handler_dir,
                 original_id=EVENTFETCHINTERVAL_PARAM_NAME,
                 renamed_id=efi_field_id,
+            )
+        if emit_longrunning and lr_field_id != LONGRUNNING_PARAM_NAME:
+            register_renamed_field_serializer_entry(
+                handler_dir,
+                original_id=LONGRUNNING_PARAM_NAME,
+                renamed_id=lr_field_id,
             )
 
     return {
@@ -2879,6 +2918,14 @@ INCIDENTFETCHINTERVAL_PARAM_NAME = "incidentFetchInterval"
 ALERTFETCHINTERVAL_PARAM_NAME = "alertFetchInterval"
 LONGRUNNING_PARAM_NAME = "longRunning"
 
+# The mapper bucket key for the Fetch Issues capability. Must match
+# ``connector_param_mapper.FETCH_ISSUES_CAPABILITIES`` — it is the key under
+# which ``map_params_to_capabilities`` places this capability's params (incl.
+# ``longRunning`` when Rule 7 routes long-running here). Used by
+# ``add_fetch_issues_capability`` to decide whether to emit the longRunning
+# checkbox in THIS capability.
+FETCH_ISSUES_BUCKET_KEY = "Fetch Issues"
+
 # Connector-side (Platform) field ids for the fetch-issues type/interval
 # fields. Per migration guide §line 889-890 the Platform renames the legacy
 # XSOAR ``incidentType``/``incidentFetchInterval`` params to ``alertType``/
@@ -2919,20 +2966,20 @@ def _build_isfetch_field(
     field_id: str,
     title: str,
 ) -> dict:
-    """Build the ``isFetch`` checkbox field — always default ``True``, hidden.
+    """Build the ``isFetch`` checkbox field — visible, default ``False``.
 
-    Per spec: the ``isFetch`` param is always emitted as a hidden checkbox
-    with ``default_value: true``. The yml's hidden/default values are
-    IGNORED — this is a hardcoded synthetic field.
+    The fetch toggle is presented to the user (``hidden: false``) and is NOT
+    forced on (``default_value: false``); enabling the capability plus this
+    toggle is what turns fetching on. The user decides.
     """
     return {
         "id": field_id,
         "title": title,
         "field_type": "checkbox",
         "options": {
-            "default_value": True,
-            "create_modifiers": {"required": False, "hidden": True},
-            "edit_modifiers": {"required": False, "hidden": True},
+            "default_value": False,
+            "create_modifiers": {"required": False, "hidden": False},
+            "edit_modifiers": {"required": False, "hidden": False},
         },
     }
 
@@ -3029,18 +3076,21 @@ def _build_longrunning_field(
     field_id: str,
     title: str,
 ) -> dict:
-    """Build the ``longRunning`` checkbox field — hidden, default ``True``.
+    """Build the ``longRunning`` checkbox field — visible, default ``False``.
 
-    Only emitted for long-running integrations mapped to Fetch Issues.
+    Emitted in whichever capability the param-capability mapper routed
+    ``longRunning`` to (Fetch Issues or Log Collection). The toggle is
+    presented to the user (``hidden: false``) and NOT forced on
+    (``default_value: false``) — the user decides whether to run long-running.
     """
     return {
         "id": field_id,
         "title": title,
         "field_type": "checkbox",
         "options": {
-            "default_value": True,
-            "create_modifiers": {"required": False, "hidden": True},
-            "edit_modifiers": {"required": False, "hidden": True},
+            "default_value": False,
+            "create_modifiers": {"required": False, "hidden": False},
+            "edit_modifiers": {"required": False, "hidden": False},
         },
     }
 
@@ -3065,16 +3115,21 @@ def add_fetch_issues_capability(
          default from ``integration_yml["defaultmapperin"]``
       5. ``classifier`` — dynamic select (``classifier``),
          default from ``integration_yml["defaultclassifier"]``
-      6. ``longRunning`` — checkbox, hidden + default true
-         (only when ``is_long_running=True``)
+      6. ``longRunning`` — checkbox
+         (only when the mapper routed ``longRunning`` to this capability's
+         ``"Fetch Issues"`` bucket)
 
     Caller contract (mirrors the other ``add_<capability>_capability``
     builders):
       - ``capability_id``: connector-side capability id. Pass
         ``"fetch-issues"`` for the top-level case or a sub-cap id.
       - ``is_sub_capability``: flips the field-id naming.
-      - ``is_long_running``: when True, adds the ``longRunning`` hidden
-        checkbox and strips ``longRunning`` from ``mapped_params``.
+      - ``is_long_running``: retained for backward compatibility only. The
+        ``longRunning`` checkbox is now emitted (and stripped from
+        ``mapped_params``) based on whether the param-capability mapper placed
+        ``longRunning`` in this capability's ``"Fetch Issues"`` bucket — NOT
+        on this flag. An integration may declare ``script.longRunning: true``
+        yet have its long-running concept routed to another capability.
       - ``integration_yml``: the full integration YAML dict — needed for
         ``commonfields.id`` (dynamic field ``integrationID`` param),
         ``defaultmapperin``, and ``defaultclassifier``.
@@ -3082,7 +3137,8 @@ def add_fetch_issues_capability(
     Side effects:
       1. Strips ``isFetch``, ``incidentType``, ``incidentFetchInterval``,
          ``alertFetchInterval`` from every bucket of ``mapped_params``.
-         When ``is_long_running=True``, also strips ``longRunning``.
+         When the mapper routed ``longRunning`` here, also strips
+         ``longRunning``.
       2. Rename bridges via serializer for each renamed field. The
          Platform "alert" renames (``incidentType`` -> ``alertType`` and
          ``incidentFetchInterval`` -> ``alertFetchInterval``, guide
@@ -3096,6 +3152,18 @@ def add_fetch_issues_capability(
     """
     integration_id = (integration_yml.get("commonfields") or {}).get("id", "")
 
+    # The ``longRunning`` checkbox is emitted here ONLY when the
+    # param-capability mapper actually placed ``longRunning`` in THIS
+    # capability's bucket (``"Fetch Issues"``). The raw ``script.longRunning``
+    # flag is NOT sufficient: an integration may declare ``longRunning: true``
+    # yet have its long-running concept routed to a different capability (e.g.
+    # Akamai WAF SIEM routes it to Log Collection via
+    # INTEGRATION_TO_LONGRUNNING_CAPABILITY). ``is_long_running`` is retained
+    # in the signature for backward compatibility but no longer gates emission.
+    emit_longrunning = LONGRUNNING_PARAM_NAME in (
+        mapped_params.get(FETCH_ISSUES_BUCKET_KEY) or []
+    )
+
     # --- §1. Resolve the connector-side field ids (sub-cap rename) ------
     def _field_id(original: str) -> str:
         return f"{capability_id}_{original}" if is_sub_capability else original
@@ -3108,7 +3176,7 @@ def add_fetch_issues_capability(
     incfi_field_id = _field_id(ALERTFETCHINTERVAL_FIELD_ID)
     mapper_field_id = _field_id(MAPPER_INCOMING_FIELD_ID)
     classifier_field_id = _field_id(CLASSIFIER_FIELD_ID)
-    lr_field_id = _field_id(LONGRUNNING_PARAM_NAME) if is_long_running else ""
+    lr_field_id = _field_id(LONGRUNNING_PARAM_NAME) if emit_longrunning else ""
 
     # --- §2. Resolve titles (generic helper) ----------------------------
     def align_incidents_to_issues(title: str) -> str:
@@ -3162,22 +3230,35 @@ def add_fetch_issues_capability(
         field_id=isfetch_field_id, title=isfetch_title,
     ))
 
-    # 2. alertType (XSOAR incidentType) — dynamic select
-    fields.append(_build_dynamic_select_field(
-        field_id=inctype_field_id,
-        title=inctype_title,
-        dynamic_field_type="incident-type",
-        integration_id=integration_id,
-        default_value=inctype_default,
-        help_text=_ALERTTYPE_HELP_TEXT,
-        placeholder=_ALERTTYPE_PLACEHOLDER,
-    ))
+    # 2. alertType (XSOAR incidentType) — dynamic select.
+    # Migration rule (Issue #8): emit the alert field ONLY when the source
+    # XSOAR param exists in the integration yml. When present we carry its
+    # ``defaultvalue`` (resolved into ``inctype_default`` above). The field is
+    # migrated as ``alertType`` with NO serializer bridge back to
+    # ``incidentType`` — the platform consumes ``alertType`` directly.
+    emit_alerttype = _yml(INCIDENTTYPE_PARAM_NAME) is not None
+    if emit_alerttype:
+        fields.append(_build_dynamic_select_field(
+            field_id=inctype_field_id,
+            title=inctype_title,
+            dynamic_field_type="incident-type",
+            integration_id=integration_id,
+            default_value=inctype_default,
+            help_text=_ALERTTYPE_HELP_TEXT,
+            placeholder=_ALERTTYPE_PLACEHOLDER,
+        ))
 
-    # 3. incidentFetchInterval — duration picker
-    fields.append(_build_incidentfetchinterval_field(
-        yml_param=_yml(INCIDENTFETCHINTERVAL_PARAM_NAME),
-        field_id=incfi_field_id, title=incfi_title,
-    ))
+    # 3. alertFetchInterval (XSOAR incidentFetchInterval) — duration picker.
+    # Same migration rule: emit ONLY when the source param exists in the yml,
+    # carrying its yml default. Migrated as ``alertFetchInterval`` with NO
+    # serializer bridge back to ``incidentFetchInterval``.
+    incfi_yml = _yml(INCIDENTFETCHINTERVAL_PARAM_NAME)
+    emit_alertfetchinterval = incfi_yml is not None
+    if emit_alertfetchinterval:
+        fields.append(_build_incidentfetchinterval_field(
+            yml_param=incfi_yml,
+            field_id=incfi_field_id, title=incfi_title,
+        ))
 
     # 4. incomingMapperId — dynamic select (backend-managed, Appendix J)
     fields.append(_build_dynamic_select_field(
@@ -3199,8 +3280,9 @@ def add_fetch_issues_capability(
         config_type="backend",
     ))
 
-    # 6. longRunning — only for long-running integrations
-    if is_long_running:
+    # 6. longRunning — only when the mapper routed longRunning to this
+    # capability's bucket (see ``emit_longrunning`` above).
+    if emit_longrunning:
         fields.append(_build_longrunning_field(
             field_id=lr_field_id,
             title=_LONGRUNNING_DEFAULT_TITLE,
@@ -3208,7 +3290,7 @@ def add_fetch_issues_capability(
 
     # --- §5. Strip fetch-issues param names from mapper results ---------
     stripped = set(_FETCH_ISSUES_STRIPPED_PARAMS)
-    if is_long_running:
+    if emit_longrunning:
         stripped.add(LONGRUNNING_PARAM_NAME)
     for cap_name in list(mapped_params.keys()):
         names = mapped_params.get(cap_name) or []
@@ -3217,25 +3299,26 @@ def add_fetch_issues_capability(
         ]
 
     # --- §6. Rename bridges (per emitted field) ------------------------
-    # Two independent rename sources require a serializer field_mapping that
-    # bridges the connector-side id back to the XSOAR yml param name:
-    #   1. The sub-capability prefix (``<capability_id>_<name>``), applied to
-    #      every field when ``is_sub_capability`` is True.
-    #   2. The Platform "alert" renames (``incidentType`` -> ``alertType``,
-    #      ``incidentFetchInterval`` -> ``alertFetchInterval``), applied in
-    #      BOTH the top-level and sub-capability paths (guide §line 889-890).
-    # Because the alert renames mean ``renamed != original`` even when
-    # ``is_sub_capability`` is False, the bridge must run whenever a handler
-    # dir is available — not only for sub-capabilities.
+    # Serializer field_mappings bridge the connector-side id back to the XSOAR
+    # yml param name. The ONLY rename source here is the sub-capability prefix
+    # (``<capability_id>_<name>``), applied to every field when
+    # ``is_sub_capability`` is True.
+    #
+    # Migration rule (Issue #8): the Platform "alert" renames
+    # (``incidentType`` -> ``alertType`` and
+    # ``incidentFetchInterval`` -> ``alertFetchInterval``) are NO LONGER
+    # bridged — the alert fields are migrated as ``alertType`` /
+    # ``alertFetchInterval`` and the platform consumes those names directly.
+    # They are therefore excluded from the bridge map. (Sub-cap prefixing is
+    # also not bridged for the alert fields, matching the no-serialization
+    # contract.)
     if handler_dir is not None:
         _original_to_renamed = {
             ISFETCH_PARAM_NAME: isfetch_field_id,
-            INCIDENTTYPE_PARAM_NAME: inctype_field_id,
-            INCIDENTFETCHINTERVAL_PARAM_NAME: incfi_field_id,
             MAPPER_INCOMING_FIELD_ID: mapper_field_id,
             CLASSIFIER_FIELD_ID: classifier_field_id,
         }
-        if is_long_running:
+        if emit_longrunning:
             _original_to_renamed[LONGRUNNING_PARAM_NAME] = lr_field_id
         for original, renamed in _original_to_renamed.items():
             if renamed != original:
@@ -3305,7 +3388,7 @@ def _instance_name_field() -> dict:
             }
         ],
         "options": {
-            "placeholder": "Please Enter Name for an Instance",
+            "placeholder": "Enter a unique name for this instance",
             "create_modifiers": {
                 "required": True,
                 "read_only": False,
@@ -3316,39 +3399,6 @@ def _instance_name_field() -> dict:
                 "read_only": False,
                 "hidden": False,
             },
-        },
-    }
-
-
-def _integration_log_level_field() -> dict:
-    """Build the mandatory ``integrationLogLevel`` field for general_configurations.
-
-    Per guide §3.4 + §3.7 + §4.3 Salesforce reference. This is a BE-managed
-    field (``metadata.xsoar.config_type: "backend"``) — the values are
-    consumed by the platform's logging layer, NOT by the integration code.
-
-    Default value is "Off" per the Salesforce reference. The 3 select
-    options (Off / Debug / Verbose) are platform-defined and identical
-    across every connector.
-
-    Returns a fresh dict on every call so callers can mutate safely.
-    """
-    return {
-        "id": "integrationLogLevel",
-        "title": "Integration Log Level",
-        "field_type": "select",
-        "metadata": {"xsoar": {"config_type": "backend"}},
-        "options": {
-            "description": "Set the log level for the integration",
-            "placeholder": "Select log level",
-            "default_value": "Off",
-            "values": [
-                {"key": "Off", "label": "Off"},
-                {"key": "Debug", "label": "Debug"},
-                {"key": "Verbose", "label": "Verbose"},
-            ],
-            "create_modifiers": {"required": False, "hidden": False},
-            "edit_modifiers": {"required": False, "hidden": False},
         },
     }
 
@@ -3526,7 +3576,7 @@ def _per_handler_log_level_field(handler_id: str, field_id: str) -> dict:
     """
     return {
         "id": field_id,
-        "title": "Integration Log Level",
+        "title": "Log Level",
         "field_type": "select",
         "metadata": {
             "xsoar": {
@@ -3534,7 +3584,7 @@ def _per_handler_log_level_field(handler_id: str, field_id: str) -> dict:
             },
         },
         "options": {
-            "description": f"Set the log level for the {handler_id} integration.",
+            "description": f"Set the log level for {handler_id}.",
             "placeholder": "Select log level",
             "default_value": "Off",
             "values": [
@@ -3696,7 +3746,7 @@ def build_per_handler_general_config(
             )
 
     result: dict = {
-        "view_group": handler_id,
+        "view_group": view_group_id_for_handler(handler_id),
         "fields": fields,
     }
 
@@ -3756,11 +3806,12 @@ def build_configurations_yaml(
             "id": cap_id,
             "configurations": [{"fields": fields}],
         }
-        # Per grouped-example reference: each per-capability entry
-        # carries ``view_group: <handler_id>`` so the FE knows which
-        # tile to render it under.
+        # Per grouped-example reference: each per-capability entry carries a
+        # ``view_group`` tile id so the FE knows which tile to render it under.
+        # The tile id is the integration slug (== connection.yaml's tile id),
+        # NOT the handler id, so connection + configuration rows share a tile.
         if handler_id:
-            entry["view_group"] = handler_id
+            entry["view_group"] = view_group_id_for_handler(handler_id)
         configurations.append(entry)
 
     return {
@@ -3814,7 +3865,7 @@ def inject_synthetic_capability_fields(
     if target is None:
         target = {"id": cap_id, "configurations": [{"fields": []}]}
         if handler_id:
-            target["view_group"] = handler_id
+            target["view_group"] = view_group_id_for_handler(handler_id)
         entries.append(target)
 
     groups = target.setdefault("configurations", [{"fields": []}])
@@ -3849,7 +3900,7 @@ def _inject_append_capability_fields(
     if target is None:
         target = {"id": sub_cap_id, "configurations": [{"fields": []}]}
         if handler_id:
-            target["view_group"] = handler_id
+            target["view_group"] = view_group_id_for_handler(handler_id)
         entries.append(target)
 
     groups = target.setdefault("configurations", [{"fields": []}])
@@ -3959,7 +4010,7 @@ def _recover_integration_name_for_handler(
             data = yaml.safe_load(io.StringIO(rest)) or {}
             description = (data.get("metadata") or {}).get("description") or ""
             match = re.match(
-                r"^XSOAR handler for (.+) integration\.$", description.strip()
+                r"^XSOAR handler for (.+)\.$", description.strip()
             )
             if match:
                 return match.group(1)
@@ -4873,8 +4924,22 @@ def _auth_parameter_for_role(profile_type: str, role: str) -> str:
     return ROLE_TO_AUTH_PARAMETER.get((profile_type, role), role)
 
 
-def _connection_profile_title(profile_type: str, connector_title: str) -> str:
-    """Human title for a profile (OQ-4: fixed for canonical, derived for passthrough)."""
+def _connection_profile_title(
+    profile_type: str,
+    connector_title: str,
+    auth_name: str = "",
+) -> str:
+    """Human title for a connection profile.
+
+    Preferred source is the auth-type object's ``name`` (the input the script
+    is given for each auth method) — when present and non-blank it is used
+    verbatim as the profile title so the connection page reflects the auth
+    method's own label. When no ``name`` is supplied, fall back to the legacy
+    behaviour: a fixed per-profile-type title (canonical types) or a
+    ``"<connector_title> Credentials"`` form (passthrough / free-form).
+    """
+    if auth_name and auth_name.strip():
+        return auth_name.strip()
     if profile_type in _PROFILE_TYPE_TITLES:
         return _PROFILE_TYPE_TITLES[profile_type]
     base = connector_title.strip() or "Connection"
@@ -4959,7 +5024,11 @@ def build_connection_profile(
         # handler reference the same tile — matching the grouped-example shape
         # where each auth profile carries its view_group.
         "view_group": slugify_view_group_id(integration_id),
-        "title": _connection_profile_title(profile_type, connector_title),
+        "title": _connection_profile_title(
+            profile_type,
+            connector_title,
+            auth_name=auth_type_entry.get("name", "") or "",
+        ),
         "description": (
             f"Authentication profile for "
             f"{connector_title or integration_id} ({profile_type})."
@@ -5011,29 +5080,41 @@ def _bool_switch_field(
     field_id: str,
     title: str,
     description: str = "",
-    hidden = False
+    hidden: bool = False,
+    read_only: bool = False,
 ) -> dict:
-    """Build a non-secret boolean ``switch`` connection field (Part B / D-D8 home 1).
+    """Build a non-secret boolean ``checkbox`` connection field (Part B / D-D8 home 1).
 
-    Carries ``metadata.event.publish: true`` (legal inside a profile) AND
-    ``metadata.xsoar.config_type: "backend"`` (backend-managed toggle). Always
-    ``default_value: false`` (B-D6), ``mask: false``, optional + visible.
+    Carries ``metadata.event.publish: true`` (legal inside a profile). The value
+    is forwarded to the handler via the lifecycle event payload — it is NOT a
+    backend-managed field, so NO ``metadata.xsoar.config_type`` is emitted.
+    Always ``default_value: false`` (B-D6), ``mask: false``, optional.
+
+    ``hidden`` / ``read_only`` are mirrored into both modifier blocks so a
+    field can ship visible-but-locked (``read_only: true``) or hidden.
     """
     options: dict[str, Any] = {
         "mask": False,
         "default_value": False,
-        "create_modifiers": {"required": False, "hidden": hidden},
-        "edit_modifiers": {"required": False, "hidden": hidden},
+        "create_modifiers": {
+            "required": False,
+            "hidden": hidden,
+            "read_only": read_only,
+        },
+        "edit_modifiers": {
+            "required": False,
+            "hidden": hidden,
+            "read_only": read_only,
+        },
     }
     if description:
         options["description"] = description
     return {
         "id": field_id,
         "title": title,
-        "field_type": "switch",
+        "field_type": "checkbox",
         "metadata": {
             "event": {"publish": True},
-            "xsoar": {"config_type": "backend"},
         },
         "options": options,
     }
@@ -5055,12 +5136,17 @@ def _resolve_title(
 def build_proxy_field(
     pid: str, yml_params_by_name: dict[str, dict] | None = None
 ) -> dict:
-    """Build the ``proxy`` switch field (id == original yml id, verbatim)."""
+    """Build the ``proxy`` checkbox field (id == original yml id, verbatim).
+
+    Proxy ships VISIBLE but ``read_only: true`` (locked) by default — the
+    engine-visibility trigger un-locks it (``read_only: false``) when an engine
+    or engine group is selected. See :func:`build_engine_triggers`.
+    """
     return _bool_switch_field(
         field_id=pid,
         title=_resolve_title(yml_params_by_name, pid, _PROXY_DEFAULT_TITLE),
         description=_field_description(yml_params_by_name, pid),
-        hidden=True
+        read_only=True,
     )
 
 
@@ -5239,12 +5325,13 @@ def build_engine_triggers(
 
     - Hide ``engine`` unless mode==engine; hide ``engine_group`` unless
       mode==engine_group. References the (possibly prefixed) per-profile ids.
-    - When ``proxy_ids`` is supplied, also emit "reveal proxy" triggers:
-      proxy is hidden by default, and is un-hidden (``hidden: false``) when an
-      engine is actually selected — i.e. when ``engine`` is_not_empty OR
-      ``engine_group`` is_not_empty. One reveal trigger is emitted per
-      (engine field, proxy field) pair, so each proxy field is revealed by
-      either engine selector.
+    - When ``proxy_ids`` is supplied, also emit a SINGLE "unlock proxy"
+      trigger per proxy field: proxy ships ``read_only: true`` (locked) by
+      default, and is unlocked (``read_only: false``) when an engine is
+      actually selected — i.e. when ``engine`` is_not_empty OR
+      ``engine_group`` is_not_empty. The two engine selectors are merged into
+      one OR ``ConditionGroup`` so a single trigger controls each proxy field
+      (instead of one trigger per engine selector).
     """
     triggers: list[dict] = []
     if engine_id:
@@ -5272,21 +5359,35 @@ def build_engine_triggers(
             }
         )
 
-    # Reveal proxy when an engine value is present. Proxy ships hidden by
-    # default (see build_proxy_field), so these triggers un-hide it once the
-    # user picks an engine or engine group.
-    for engine_field_id in (engine_id, engine_group_id):
-        if not engine_field_id:
-            continue
-        for proxy_id in proxy_ids or []:
+    # Unlock proxy when an engine value is present. Proxy ships read_only:true
+    # (locked) by default (see build_proxy_field), so a SINGLE merged trigger
+    # per proxy field unlocks it (read_only:false) once the user picks an
+    # engine OR an engine group. The two engine selectors are combined into
+    # one OR ConditionGroup so there is exactly one trigger per proxy field.
+    engine_conditions = [
+        {
+            "id": engine_field_id,
+            "behavior": "value",
+            "operator": "is_not_empty",
+        }
+        for engine_field_id in (engine_id, engine_group_id)
+        if engine_field_id
+    ]
+    if engine_conditions and proxy_ids:
+        if len(engine_conditions) == 1:
+            merged_conditions: dict = engine_conditions[0]
+        else:
+            merged_conditions = {
+                "operator": "OR",
+                "children": engine_conditions,
+            }
+        for proxy_id in proxy_ids:
             triggers.append(
                 {
-                    "conditions": {
-                        "id": engine_field_id,
-                        "behavior": "value",
-                        "operator": "is_not_empty",
-                    },
-                    "effects": [{"id": proxy_id, "action": {"hidden": False}}],
+                    "conditions": merged_conditions,
+                    "effects": [
+                        {"id": proxy_id, "action": {"read_only": False}}
+                    ],
                 }
             )
     return triggers
@@ -5504,6 +5605,20 @@ def slugify_view_group_id(integration_id: str) -> str:
     return s
 
 
+def view_group_id_for_handler(handler_id: str) -> str:
+    """Connection/configurations tile id for a handler.
+
+    Both connection.yaml and configurations.yaml must reference the SAME tile
+    id so the grouped UI renders connection + configuration rows under one
+    tile. The connection side uses ``slugify_view_group_id(integration_id)``
+    (== the integration slug). A handler id is ``xsoar-<integration-slug>``
+    (see :func:`derive_handler_id`), so stripping the ``xsoar-`` prefix yields
+    the same integration-slug tile id — keeping the two files in lockstep
+    without threading ``integration_id`` through every configurations builder.
+    """
+    return handler_id_to_integration_slug(handler_id)
+
+
 def integration_field_prefix(integration_id: str) -> str:
     """Field-id prefix for an integration (lowercase, no separators)."""
     return _slug_word(integration_id).replace("_", "")
@@ -5511,6 +5626,7 @@ def integration_field_prefix(integration_id: str) -> str:
 
 def build_view_groups_registry(
     integrations: list[tuple[str, str]],
+    purpose = "Connection"
 ) -> list[dict]:
     """Build the ``view_groups`` registry — one ``{id,label,help_text}`` per
     integration. ``integrations`` is a list of ``(integration_id, display)``.
@@ -5524,7 +5640,7 @@ def build_view_groups_registry(
                 "id": tile,
                 "label": label,
                 "help_text": (
-                    f"Connection settings for the {label} integration."
+                    f"{purpose} settings for {label}."
                 ),
             }
         )
@@ -5664,7 +5780,24 @@ def merge_connection_data(
 # Default owners appended for every newly-scaffolded connector. The trailing
 # space after the last owner is intentional to mirror the existing CODEOWNERS
 # formatting convention.
-CODE_OWNERS_DEFAULT_OWNERS = "@joeymizrahi @JudahSchwartz @YuvHayun"
+CODE_OWNERS_DEFAULT_OWNERS = "@sbenyakir @ybenshalom"
+
+
+def _find_repo_root_for_code_owners(connector_dir: Path) -> Path:
+    """Locate the unified-connectors-content repo root for the CODEOWNERS file.
+
+    The CODEOWNERS file lives at the repo root — the directory that contains
+    the top-level ``connectors/`` directory. ``connector_dir`` may be nested
+    at varying depths (e.g. ``<root>/connectors/<slug>`` or
+    ``<root>/connectors/generated_manifest/<slug>``), so we walk upwards from
+    ``connector_dir`` until we find the ancestor whose ``name`` is
+    ``connectors`` and return ITS parent. Falls back to the legacy
+    ``connector_dir.parent.parent`` when no ``connectors`` ancestor is found.
+    """
+    for ancestor in connector_dir.parents:
+        if ancestor.name == "connectors":
+            return ancestor.parent
+    return connector_dir.parent.parent
 
 
 def add_connector_to_code_owners(
@@ -5674,24 +5807,30 @@ def add_connector_to_code_owners(
     """Append a CODEOWNERS entry for a newly-created connector.
 
     The CODEOWNERS file lives at the unified-connectors-content root, i.e. the
-    parent of the ``connectors/`` directory that holds ``connector_dir``. The
-    appended block is::
+    parent of the top-level ``connectors/`` directory. The appended block is::
 
         # <connector_title>
-        connectors/<slug>/ @joeymizrahi @JudahSchwartz @YuvHayun
+        connectors/<slug>/ @sbenyakir @ybenshalom
 
     followed by a trailing blank line. ``<slug>`` is the connector directory's
     own name (``connector_dir.name``). The file is created if it does not yet
     exist.
+
+    The repo root is resolved by walking up to the ``connectors/`` ancestor
+    (via :func:`_find_repo_root_for_code_owners`) so the CODEOWNERS file is
+    always written to the repo root, even for connectors nested under
+    ``connectors/generated_manifest/``.
     """
     slug = connector_dir.name
-    # connector_dir == <root>/connectors/<slug>; the CODEOWNERS file lives at
-    # <root>/CODEOWNERS (parent of the connectors/ directory).
-    code_owners_path = connector_dir.parent.parent / "CODEOWNERS"
+    # Resolve the repo root robustly (handles nested generated_manifest layout)
+    # so the CODEOWNERS file lands at <root>/CODEOWNERS, never under connectors/.
+    code_owners_path = (
+        _find_repo_root_for_code_owners(connector_dir) / "CODEOWNERS"
+    )
 
     entry = (
         f"# {connector_title}\n"
-        f"connectors/{slug}/ {CODE_OWNERS_DEFAULT_OWNERS} \n"
+        f"connectors/{slug}/ {CODE_OWNERS_DEFAULT_OWNERS}\n"
         "\n"
     )
 
@@ -5931,8 +6070,17 @@ def create_manifest_from_scratch(
     configurations_data.setdefault("general_configurations", {}).setdefault(
         "configurations", []
     ).append(per_handler_gc)
-    configurations_data.setdefault("view_groups", []).append(
-        {"id": handler_id, "label": handler_id}
+    # view_groups registry entry — use the integration tile id + display label
+    # so configurations.yaml and connection.yaml reference the SAME tile.
+    _cfg_integration_id = integration_yml.get("commonfields", {}).get("id", "")
+    _cfg_integration_display = (
+        integration_yml.get("display", "") or connector_title
+    )
+    configurations_data.setdefault("view_groups", []).extend(
+        build_view_groups_registry(
+            [(_cfg_integration_id, _cfg_integration_display)],
+            "Confiurations"
+        )
     )
 
     # The ``defaultIgnore`` field ("Do not use in CLI by default") is only
@@ -6242,9 +6390,19 @@ def add_handler_to_existing_connector(
         vg.get("id")
         for vg in configurations_data.get("view_groups", [])
     }
-    if new_handler_id not in existing_vg_ids:
-        configurations_data.setdefault("view_groups", []).append(
-            {"id": new_handler_id, "label": new_handler_id}
+    # view_groups registry entry — use the integration tile id + display label
+    # so configurations.yaml and connection.yaml reference the SAME tile.
+    _cfg_integration_id = integration_yml.get("commonfields", {}).get("id", "")
+    _cfg_integration_display = (
+        integration_yml.get("display", "") or _cfg_integration_id
+    )
+    _cfg_tile_id = view_group_id_for_handler(new_handler_id)
+    if _cfg_tile_id not in existing_vg_ids:
+        configurations_data.setdefault("view_groups", []).extend(
+            build_view_groups_registry(
+                [(_cfg_integration_id, _cfg_integration_display)],
+                "Confiurations"
+            )
         )
 
     # The ``defaultIgnore`` field ("Do not use in CLI by default") is only

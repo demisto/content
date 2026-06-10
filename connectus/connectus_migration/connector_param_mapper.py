@@ -132,6 +132,7 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
     configuration: list[dict] = integration_yml.get("configuration") or []
     commands: list[dict] = script.get("commands") or []
     command_names: list[str] = [c.get("name", "") for c in commands]
+    is_event_collector = ("event collector" in integration_name or "eventcollector" in integration_name)
 
     # Rule 1 - Fetch Secrets
     if any(p.get("name") == "isFetchCredentials" for p in configuration):
@@ -140,7 +141,7 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
     # Rule 2 - Log Collection (with possible early exit)
     if script.get("isfetchevents") is True:
         result[FETCH_EVENTS_CAPABILITIES] = []
-        if "event collector" in integration_name and _is_pure_event_collector(
+        if is_event_collector and _is_pure_event_collector(
             integration_yml, command_names
         ):
             # Pure event collector — short-circuit to keep the result minimal
@@ -183,7 +184,6 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
         not any(pattern in command_name for pattern in EXCLUDED_AUTOMATION_PATTERNS)
         for command_name in command_names
     )
-    is_event_collector = script.get("isfetchevents") is True
     if has_non_fetch_command and (
         not is_event_collector or len(command_names) >= 3
     ):

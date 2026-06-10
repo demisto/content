@@ -89,7 +89,8 @@ def test_build_connection_profile_apikey_shape():
     prof = cb.build_connection_profile(entry, "Okta", connector_title="Okta")
     assert prof["id"] == "api_key.okta"
     assert prof["type"] == "api_key"
-    assert prof["title"] == "API Key"
+    # Profile title now derives from the auth-type object's ``name`` (Issue #4).
+    assert prof["title"] == entry["name"]
     field = prof["configurations"][0]["fields"][0]
     assert field["id"] == "api_key"
     assert field["metadata"]["auth"]["parameter"] == "api_key"
@@ -125,7 +126,8 @@ def test_build_connection_profile_passthrough_title_and_freeform_roles():
     }
     prof = cb.build_connection_profile(entry, "Microsoft Graph", connector_title="Microsoft Graph")
     assert prof["type"] == "passthrough"
-    assert prof["title"] == "Microsoft Graph Credentials"
+    # Profile title now derives from the auth-type object's ``name`` (Issue #4).
+    assert prof["title"] == "bag"
     params = {f["metadata"]["auth"]["parameter"] for f in prof["configurations"][0]["fields"]}
     assert params == {"creds_auth_id", "managed_identities_client_id"}
 
@@ -167,11 +169,18 @@ def test_classify_connection_param(pid, expected):
 def test_build_proxy_field_shape():
     f = cb.build_proxy_field("proxy")
     assert f["id"] == "proxy"
-    assert f["field_type"] == "switch"
+    # switch -> checkbox (Issue #6)
+    assert f["field_type"] == "checkbox"
     assert f["options"]["default_value"] is False
     assert f["options"]["mask"] is False
     assert f["metadata"]["event"]["publish"] is True
-    assert f["metadata"]["xsoar"]["config_type"] == "backend"
+    # proxy/insecure are NOT backend-managed (Issue #5) — no xsoar metadata.
+    assert "xsoar" not in f["metadata"]
+    # proxy ships visible-but-locked (read_only:true), unlocked by the engine
+    # trigger (Issue #7) — NOT hidden.
+    assert f["options"]["create_modifiers"]["read_only"] is True
+    assert f["options"]["create_modifiers"]["hidden"] is False
+    assert f["options"]["edit_modifiers"]["read_only"] is True
 
 
 def test_build_insecure_field_default_false_always():
@@ -270,31 +279,33 @@ def test_attach_full_emits_proxy_insecure_engine():
         "engine",
         "engine_group",
     ]
-    # 2 engine-hide triggers + 2 proxy-reveal triggers (proxy revealed when
-    # engine OR engine_group is_not_empty).
-    assert len(trig) == 4
-    proxy_reveal = [
+    # 2 engine-hide triggers + 1 merged proxy-unlock trigger (proxy unlocked
+    # via read_only:false when engine OR engine_group is_not_empty — Issue #7).
+    assert len(trig) == 3
+    proxy_unlock = [
         t
         for t in trig
-        if t["conditions"]["operator"] == "is_not_empty"
-        and t["effects"][0]["action"] == {"hidden": False}
+        if t["effects"][0]["action"] == {"read_only": False}
+        and t["effects"][0]["id"] == "proxy"
     ]
-    assert proxy_reveal == [
+    assert proxy_unlock == [
         {
             "conditions": {
-                "id": "engine",
-                "behavior": "value",
-                "operator": "is_not_empty",
+                "operator": "OR",
+                "children": [
+                    {
+                        "id": "engine",
+                        "behavior": "value",
+                        "operator": "is_not_empty",
+                    },
+                    {
+                        "id": "engine_group",
+                        "behavior": "value",
+                        "operator": "is_not_empty",
+                    },
+                ],
             },
-            "effects": [{"id": "proxy", "action": {"hidden": False}}],
-        },
-        {
-            "conditions": {
-                "id": "engine_group",
-                "behavior": "value",
-                "operator": "is_not_empty",
-            },
-            "effects": [{"id": "proxy", "action": {"hidden": False}}],
+            "effects": [{"id": "proxy", "action": {"read_only": False}}],
         },
     ]
 
@@ -321,23 +332,24 @@ def test_attach_appendix_h_single_engine_no_group():
     # single-engine: engine_mode 2-option
     mode = next(f for f in profiles[0]["configurations"][0]["fields"] if f["id"] == "engine_mode")
     assert [v["key"] for v in mode["options"]["values"]] == ["no_engine", "engine"]
-    # single-engine: 1 engine-hide trigger + 1 proxy-reveal trigger (engine
-    # is_not_empty → proxy hidden:false). No engine_group → no second reveal.
+    # single-engine: 1 engine-hide trigger + 1 proxy-unlock trigger (engine
+    # is_not_empty → proxy read_only:false). No engine_group → single condition
+    # (no OR group needed). (Issue #7)
     assert len(trig) == 2
-    proxy_reveal = [
+    proxy_unlock = [
         t
         for t in trig
-        if t["conditions"]["operator"] == "is_not_empty"
-        and t["effects"][0]["action"] == {"hidden": False}
+        if t["effects"][0]["action"] == {"read_only": False}
+        and t["effects"][0]["id"] == "proxy"
     ]
-    assert proxy_reveal == [
+    assert proxy_unlock == [
         {
             "conditions": {
                 "id": "engine",
                 "behavior": "value",
                 "operator": "is_not_empty",
             },
-            "effects": [{"id": "proxy", "action": {"hidden": False}}],
+            "effects": [{"id": "proxy", "action": {"read_only": False}}],
         },
     ]
 
@@ -488,14 +500,18 @@ def test_build_connection_yaml_microsoft_graph_end_to_end():
     assert "host" in prof_ids
     assert "proxy" in prof_ids and "insecure" in prof_ids and "engine_mode" in prof_ids
     assert prof_ids.index("host") < prof_ids.index("proxy")
-    # 2 engine-hide triggers (engine, engine_group) + 2 proxy-reveal triggers
-    # (proxy revealed when engine OR engine_group is_not_empty).
-    assert len(triggers) == 4
-    proxy_reveal = [
+    # 2 engine-hide triggers (engine, engine_group) + 1 merged proxy-unlock
+    # trigger (proxy unlocked via read_only:false when engine OR engine_group
+    # is_not_empty — Issue #7).
+    assert len(triggers) == 3
+    proxy_unlock = [
         t
         for t in triggers
-        if t["conditions"]["operator"] == "is_not_empty"
-        and t["effects"][0]["action"] == {"hidden": False}
+        if t["effects"][0]["action"] == {"read_only": False}
         and t["effects"][0]["id"] == "proxy"
     ]
-    assert [t["conditions"]["id"] for t in proxy_reveal] == ["engine", "engine_group"]
+    assert len(proxy_unlock) == 1
+    assert proxy_unlock[0]["conditions"]["operator"] == "OR"
+    assert [
+        c["id"] for c in proxy_unlock[0]["conditions"]["children"]
+    ] == ["engine", "engine_group"]
