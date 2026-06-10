@@ -13921,6 +13921,14 @@ def build_ucp_params(connector_metadata, capability=None):
                 cred_values = type_data
             else:
                 cred_values = credentials
+            # Some envelope types (e.g. passthrough) wrap the actual field
+            # values one level deeper under a "parameters" sub-dict:
+            #   {"type": "passthrough", "passthrough": {"parameters": {...}}}
+            # while others (e.g. plain) place them directly under the type key.
+            # Descend into "parameters" when present.
+            inner_params = cred_values.get('parameters') if isinstance(cred_values, dict) else None
+            if isinstance(inner_params, dict):
+                cred_values = inner_params
         demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: cred_type={!r}, FLATTENED cred_values keys={}'.format(
             credentials.get('type') if isinstance(credentials, dict) else None,
             list(cred_values.keys())))
@@ -13936,7 +13944,6 @@ def build_ucp_params(connector_metadata, capability=None):
 
     demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FINAL interpolated params = {}'.format(_ucp_dump(result)))
     return result
-
 
 def interpolate_ucp_params(connector_metadata=None):
     # type: (Optional[dict]) -> bool
