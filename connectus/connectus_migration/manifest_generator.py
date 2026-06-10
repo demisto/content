@@ -214,7 +214,7 @@ def title_to_slug(title: str) -> str:
     from a connector's display title (e.g. ``"Microsoft Defender"``) to its
     directory name on disk (e.g. ``microsoftdefender``).
     """
-    return title.strip().lower().replace(" ", "-")
+    return title.strip().lower().replace(" ", "-").replace("---", "-")
 
 
 def connector_exists(connector_dir: Path) -> bool:
@@ -449,30 +449,6 @@ def merge_tags_case_insensitive(existing: list[str], new: list[str]) -> list[str
             result.append(tag)
             seen.add(tag.lower())
     return result
-
-
-def bump_minor_version(version: str) -> str:
-    """Bump the minor component of a semver version (X.Y.Z → X.(Y+1).0).
-
-    Examples:
-        bump_minor_version("1.0.0") → "1.1.0"
-        bump_minor_version("2.3.5") → "2.4.0"
-
-    Raises:
-        ValueError: if ``version`` is not a valid semver string.
-    """
-    parts = version.split(".")
-    if len(parts) != 3:
-        raise ValueError(
-            f"Invalid semver version '{version}'; expected 'X.Y.Z' format."
-        )
-    try:
-        major, minor, _patch = (int(p) for p in parts)
-    except ValueError as exc:
-        raise ValueError(
-            f"Invalid semver version '{version}'; all components must be integers."
-        ) from exc
-    return f"{major}.{minor + 1}.0"
 
 
 def deep_merge_dicts(base: dict, overrides: dict) -> dict:
@@ -754,6 +730,7 @@ def derive_handler_id(integration_id: str) -> str:
     """
     # Lowercase + collapse internal whitespace runs to single dashes.
     slug = re.sub(r"\s+", "-", integration_id.strip().lower())
+    slug = slug.replace("---", "-")
     return f"xsoar-{slug}"
 
 
@@ -6127,7 +6104,7 @@ def slugify_view_group_id(integration_id: str) -> str:
     s = integration_id.strip().lower()
     s = re.sub(r"[^a-z0-9-]+", "-", s)
     s = re.sub(r"-+", "-", s).strip("-")
-    return s
+    return s.replace("---", "-")
 
 
 def view_group_id_for_handler(handler_id: str) -> str:
@@ -6802,14 +6779,6 @@ def add_handler_to_existing_connector(
     existing_tags = metadata.get("categories") or []
     merged_categories = merge_tags_case_insensitive(existing_tags, pack_categories)
     metadata["categories"] = merged_categories
-    
-    # Bump minor version
-    current_version = metadata.get("version", "")
-    new_version = bump_minor_version(current_version)
-    metadata["version"] = new_version
-    logger.info(
-        f"[manifest_generator] Bumped version: {current_version} → {new_version}"
-    )
 
     connector_data = deep_merge_dicts(connector_data, manual_connector_fields or {})
 

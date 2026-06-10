@@ -171,36 +171,36 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---accessanalyzer": [
+  "automation-and-remediation_aws-accessanalyzer": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---acm": [
+  "automation-and-remediation_aws-acm": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---athena---beta": [
+  "automation-and-remediation_aws-athena-beta": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---cloudtrail": [
+  "automation-and-remediation_aws-cloudtrail": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---cloudwatchlogs": [
+  "automation-and-remediation_aws-cloudwatchlogs": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---ec2": [
+  "automation-and-remediation_aws-ec2": [
     "cloud_runtime_security",
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---guardduty": [
+  "automation-and-remediation_aws-guardduty": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---iam": [
+  "automation-and-remediation_aws-iam": [
     "cloud_posture",
     "cloud",
     "cloud_runtime_security",
@@ -208,39 +208,39 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---iam-identity-center": [
+  "automation-and-remediation_aws-iam-identity-center": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---lambda": [
+  "automation-and-remediation_aws-lambda": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---organizations": [
+  "automation-and-remediation_aws-organizations": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---route53": [
+  "automation-and-remediation_aws-route53": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---s3": [
+  "automation-and-remediation_aws-s3": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---security-hub": [
+  "automation-and-remediation_aws-security-hub": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---sns": [
+  "automation-and-remediation_aws-sns": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---sqs": [
+  "automation-and-remediation_aws-sqs": [
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_aws---system-manager": [
+  "automation-and-remediation_aws-system-manager": [
     "xsiam",
     "agentix"
   ],
@@ -552,13 +552,13 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_cortex-xdr---ioc": [
+  "automation-and-remediation_cortex-xdr-ioc": [
     "agentix"
   ],
-  "automation-and-remediation_cortex-xdr---ir": [
+  "automation-and-remediation_cortex-xdr-ir": [
     "agentix"
   ],
-  "automation-and-remediation_cortex-xdr---xql-query-engine": [
+  "automation-and-remediation_cortex-xdr-xql-query-engine": [
     "agentix"
   ],
   "automation-and-remediation_countertack": [
@@ -1507,7 +1507,7 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_palo-alto-networks---prisma-sase": [
+  "automation-and-remediation_palo-alto-networks-prisma-sase": [
     "cloud_posture",
     "cloud",
     "cloud_runtime_security",
@@ -2181,19 +2181,19 @@
     "xsiam",
     "agentix"
   ],
-  "fetch-issues_aws---accessanalyzer": [
+  "fetch-issues_aws-accessanalyzer": [
     "xsiam",
     "agentix"
   ],
-  "fetch-issues_aws---guardduty": [
+  "fetch-issues_aws-guardduty": [
     "xsiam",
     "agentix"
   ],
-  "fetch-issues_aws---security-hub": [
+  "fetch-issues_aws-security-hub": [
     "xsiam",
     "agentix"
   ],
-  "fetch-issues_aws---sqs": [
+  "fetch-issues_aws-sqs": [
     "xsiam",
     "agentix"
   ],
@@ -2253,7 +2253,7 @@
     "xsiam",
     "agentix"
   ],
-  "fetch-issues_cortex-xdr---ir": [
+  "fetch-issues_cortex-xdr-ir": [
     "agentix"
   ],
   "fetch-issues_countertack": [
@@ -2441,7 +2441,7 @@
     "xsiam",
     "agentix"
   ],
-  "fetch-issues_maillistener---pop3": [
+  "fetch-issues_maillistener-pop3": [
     "xsiam",
     "agentix"
   ],
@@ -2846,7 +2846,7 @@
     "xsiam",
     "agentix"
   ],
-  "log-collection_aws---guardduty-event-collector": [
+  "log-collection_aws-guardduty-event-collector": [
     "xsiam",
     "agentix"
   ],
@@ -3348,7 +3348,7 @@
     "xsiam",
     "agentix"
   ],
-  "threat-intelligence-and-enrichment_cortex-xdr---ioc": [
+  "threat-intelligence-and-enrichment_cortex-xdr-ioc": [
     "agentix"
   ],
   "threat-intelligence-and-enrichment_csvfeed": [
