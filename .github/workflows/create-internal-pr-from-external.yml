@@ -49,4 +49,7 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
           echo "Add a comment"
-          gh pr comment "$PR_URL" --body "Thank you for your contribution. Your external PR has been merged and the changes are now included in an internal PR for further review. The internal PR will be merged to the master branch within 3 business days."
+          gh pr comment "$PR_URL" --body "Thank you for your contribution. Your external PR has been merged and the changes are now included in one or more internal PRs for further review.
+                                          > [!NOTE] 
+                                          > Contributions containing XSIAM content (Modeling Rules, Parsing Rules, Correlation Rules, or Dashboards) are subject to an additional review process and may take longer to be merged to master."
+          
