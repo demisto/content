@@ -228,6 +228,35 @@ def find_existing_chrome_port() -> str | None:
     return None
 
 
+def _safe_call_cdp(tab: Optional[pychrome.Tab], method_path: str, tab_id: str, path: str) -> None:
+    """
+    Safely invokes a Chrome DevTools Protocol method on *tab*, swallowing and logging
+    any pychrome exception. Used so transient errors (tab already stopping/disconnected)
+    never propagate out of the page-load wait.
+
+    Args:
+        tab: The pychrome tab (may be None — call is a no-op in that case).
+        method_path: Dotted CDP method, e.g. "Page.stopLoading".
+        tab_id: Tab identifier for logging.
+        path: URL/path being loaded, for logging.
+    """
+    if tab is None:
+        return
+    try:
+        target: Any = tab
+        for part in method_path.split("."):
+            target = getattr(target, part)
+        target()
+        demisto.debug(
+            f"wait_for_page_load_with_memory_guard: {method_path}() called, {tab_id=}, {path=}",
+        )
+    except Exception as ex:
+        demisto.debug(
+            f"wait_for_page_load_with_memory_guard: {method_path}() failed "
+            f"(tab may already be stopping/disconnected): {ex}, {tab_id=}, {path=}",
+        )
+
+
 def wait_for_page_load_with_memory_guard(
     tab_ready_event: Event,
     navigation_timeout: int,
@@ -249,9 +278,10 @@ def wait_for_page_load_with_memory_guard(
         tab_ready_event: The threading.Event that signals page load completion.
         navigation_timeout: Maximum seconds to wait (same as the normal page-load timeout).
         tolerance_bytes: Available-memory floor in bytes. Default: MEMORY_PRESSURE_TOLERANCE_BYTES.
-        poll_interval: How often (seconds) to sample memory while waiting. Default: 1 s.
+        poll_interval: How often (seconds) to sample memory while waiting. Default: 0.5 s.
         tab_id: Tab identifier for logging.
         path: URL/path being loaded, for logging.
+        tab: Optional pychrome.Tab used to stop loading and reclaim memory on early exit.
 
     Returns:
         bool: True if the event was set normally (page finished loading or timed out),
@@ -259,25 +289,26 @@ def wait_for_page_load_with_memory_guard(
     """
     deadline = time.monotonic() + navigation_timeout  # pylint: disable=E9003
 
+    # If there is no cgroup memory limit, the memory-pressure check is not applicable.
+    # Fall back to a single blocking wait instead of busy-polling every poll_interval.
+    if get_container_available_memory_bytes() == -1:
+        demisto.debug(
+            f"wait_for_page_load_with_memory_guard: no cgroup memory limit detected; "
+            f"falling back to plain wait, {tab_id=}, {path=}",
+        )
+        tab_ready_event.wait(timeout=navigation_timeout)
+        _safe_call_cdp(tab, "Page.stopLoading", tab_id, path)
+        return True
+
     while True:
         # Check if the page has finished loading.
         if tab_ready_event.wait(timeout=poll_interval):
             demisto.debug(f"wait_for_page_load_with_memory_guard: tab_ready_event set normally, {tab_id=}, {path=}")
-            if tab is not None:
-                try:
-                    tab.Page.stopLoading()
-                    demisto.debug(
-                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() called, {tab_id=}, {path=}",
-                    )
-                except Exception as stop_ex:
-                    demisto.debug(
-                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() failed (tab may already be stopping): "
-                        f"{stop_ex}, {tab_id=}, {path=}",
-                    )
+            _safe_call_cdp(tab, "Page.stopLoading", tab_id, path)
             get_container_available_memory_bytes()
             time.sleep(1)  # let Chrome process the stop
-            tab.HeapProfiler.collectGarbage()  # reclaim unreachable JS objects
-            tab.Memory.forciblyPurgeJavaScriptMemory()  # more aggressive purge
+            _safe_call_cdp(tab, "HeapProfiler.collectGarbage", tab_id, path)  # reclaim unreachable JS objects
+            _safe_call_cdp(tab, "Memory.forciblyPurgeJavaScriptMemory", tab_id, path)  # more aggressive purge
             get_container_available_memory_bytes()
             for i in range(1, 4):
                 demisto.debug(f"iteration num: {i}")
@@ -290,26 +321,15 @@ def wait_for_page_load_with_memory_guard(
             demisto.debug(
                 f"wait_for_page_load_with_memory_guard: navigation_timeout reached ({navigation_timeout}s), {tab_id=}, {path=}",
             )
+            # Stop the still-loading tab so it cannot keep consuming memory after we return.
+            _safe_call_cdp(tab, "Page.stopLoading", tab_id, path)
             return True  # Caller handles the timeout warning as before.
 
         # Sample available memory.
         available = get_container_available_memory_bytes()
-        if available == -1:
-            # No cgroup limit — memory pressure check is not applicable.
-            continue
 
         if available <= tolerance_bytes:
-            if tab is not None:
-                try:
-                    tab.Page.stopLoading()
-                    demisto.debug(
-                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() called, {tab_id=}, {path=}",
-                    )
-                except Exception as stop_ex:
-                    demisto.debug(
-                        f"wait_for_page_load_with_memory_guard: Page.stopLoading() failed (tab may already be stopping): "
-                        f"{stop_ex}, {tab_id=}, {path=}",
-                    )
+            _safe_call_cdp(tab, "Page.stopLoading", tab_id, path)
             tab_ready_event.set()
             demisto.debug(
                 f"wait_for_page_load_with_memory_guard: memory pressure detected — "
@@ -319,12 +339,11 @@ def wait_for_page_load_with_memory_guard(
             )
             get_container_available_memory_bytes()
             time.sleep(1)  # let Chrome process the stop
-            tab.HeapProfiler.collectGarbage()  # reclaim unreachable JS objects
-            tab.Memory.forciblyPurgeJavaScriptMemory()  # more aggressive purge
+            _safe_call_cdp(tab, "HeapProfiler.collectGarbage", tab_id, path)  # reclaim unreachable JS objects
+            _safe_call_cdp(tab, "Memory.forciblyPurgeJavaScriptMemory", tab_id, path)  # more aggressive purge
             get_container_available_memory_bytes()
-            # Signal the event so the caller proceeds to capture immediately.
             for i in range(1, 4):
-                demisto.debug(f"iteration num: {i} beofre sleep")
+                demisto.debug(f"iteration num: {i} before sleep")
                 time.sleep(10)
                 demisto.debug(f"iteration num: {i} after sleep")
                 get_container_available_memory_bytes()
