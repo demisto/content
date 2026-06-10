@@ -14,9 +14,6 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 
 """
 
-from typing import Any, Dict, Optional
-
-import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -33,7 +30,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 def main():
     """main function, parses params and runs command functions"""
-    pass
-    
+
+
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

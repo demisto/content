@@ -10,4 +10,3 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
-pass

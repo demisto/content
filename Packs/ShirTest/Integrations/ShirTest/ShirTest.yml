@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Shir_Test
+  id: ShirTest
   version: -1
 provider: BaseIntegration
 configuration:
@@ -23,8 +23,8 @@ configuration:
   required: false
   type: 8
 description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: Shir_Test
-name: Shir_Test
+display: ShirTest
+name: ShirTest
 script:
   commands:
   - arguments:
