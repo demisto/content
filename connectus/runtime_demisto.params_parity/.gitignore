@@ -1,0 +1,6 @@
+# Per-tenant filesystem locks (runtime-only; never committed). See tenant_lock.py.
+.locks/
+
+# Phase 7 results persistence: per-run envelope JSONs + ledger.csv (audit detail,
+# may contain captured params; never committed). See results_ledger.py.
+results/

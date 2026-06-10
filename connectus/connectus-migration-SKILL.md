@@ -1596,11 +1596,53 @@ python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/valid
 
 ### Step 10: `param parity test passes`
 
-Run the parameter parity test to verify the ConnectUs integration's parameters match the original:
+> **Prerequisite — `Connector Folder Path` must be set.** The param-parity
+> resolver looks up the connector tree from the pipeline CSV's
+> `Connector Folder Path` column. Before this step can run, that cell MUST be
+> populated:
+>
+> ```bash
+> python3 connectus/workflow_state.py set-connector-path "<Integration ID>" connectors/<slug>
+> ```
+>
+> If it is unset, `deploy_and_test.py` returns exit `11` (parity setup-blocked).
+
+Run the **atomic deploy + test wrapper** — ONE command per integration. It
+acquires the per-tenant lock, deploys the whole manifest to the `.env` tenant,
+runs the param-parity test, and releases the lock (always, via `try/finally`):
 
 ```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
+cd connectus/runtime_demisto.params_parity
+python deploy_and_test.py --integration-id "<Integration ID>"
 ```
+
+Branch on the wrapper's exit code (do NOT re-interpret stdout):
+
+* **`0` — deployed + parity PASSED.** Mark the checkpoint and move on:
+  ```bash
+  python3 connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
+  ```
+* **`10` — parity FAILED (real diff).** Do NOT markpass. Read the persisted
+  envelope (`results/<connector>__<integration>__<ts>.json`, path echoed on the
+  `Result written:` line) and tell the user exactly which params are
+  `MISSING_IN_CONNECTOR` / `EXTRA_IN_CONNECTOR` / `VALUE_MISMATCH`, then fix the
+  connector YAMLs and re-run the wrapper.
+* **`11` — parity BLOCKED (setup).** Do NOT markpass. Tell the user the setup
+  problem to fix (most commonly: `Connector Folder Path` unset → run
+  `set-connector-path`; or the handler isn't on disk / `REPO_DIR` unset), then
+  re-run.
+* **`20` — deploy FAILED.** Do NOT markpass. Report the failed GitLab jobs +
+  pipeline URL; the user fixes the cause and re-runs the wrapper.
+* **`21` — deploy TIMEOUT.** Do NOT markpass. Report the still-running pipeline
+  URL; re-run later.
+* **`30` — tenant lock BUSY (could not acquire).** Do NOT markpass and do NOT
+  auto-retry. Report the holder (shell id / integration / since-when) and the
+  options to the user: (a) wait and retry later, (b) use a different tenant,
+  (c) `python tenant_lock.py force-unlock --tenant <X>` if the holder is dead.
+
+The wrapper persists every run under `results/` (per-run envelope JSON +
+`ledger.csv`); the `param parity test passes = ✅` cell in the pipeline CSV is the
+only durable pass recorded.
 
 ### Step 11: `code reviewed`
 
