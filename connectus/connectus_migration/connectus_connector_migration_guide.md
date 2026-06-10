@@ -240,25 +240,44 @@ profiles:
 
 Handlers reference it like any other profile: `auth_options: [{ id: "passthrough.acme_api", workloads: ["xsoar-pod"] }]`.
 
-#### 2.6.2 Profile Metadata & the `interpolated` flag
+#### 2.6.2 Profile Metadata & the `interpolation_mapping`
 
 Profiles may carry an optional, **module-namespaced** `metadata` object (`profiles[].metadata`, keyed by handler module — `xsoar`, etc.) holding profile-scoped **non-secret** runtime context. The platform flattens the matching module's namespace into the connector lifecycle event (same channel as `metadata.event.publish`, §2.17 — **not** get-credentials). The `auth` namespace and secrets are **forbidden** here.
 
-**`interpolated: true` — run unmodified integration code in UCP.** For migrations that do **not** rewrite the integration code, set `metadata.xsoar.interpolated: true` on each profile. At runtime the XSOAR runtime calls `getucpcredentials` and injects the secrets into `demisto.params()` exactly as a legacy instance, so the code runs unchanged.
+**`interpolation_mapping` — run unmodified integration code in UCP.** The mass migration does **not** rewrite integration code, so **every** migrated profile (`plain`, `api_key`, `passthrough`) carries `metadata.xsoar.interpolation_mapping`. At runtime the XSOAR runtime injects each credential value into `demisto.params()` at the mapped path, so the legacy code runs unchanged.
+
+**Format.** A single string of comma-separated `<ucp_param>:<xsoar_path>` pairs:
+
+```yaml
+metadata:
+  xsoar:
+    interpolation_mapping: "ucpparamname:xsoar.path.with.names,ucpparamname2:otherfield"
+```
+
+- **Left of the colon (`<ucp_param>`)** — the field's `metadata.auth.parameter` value (e.g. `username`, `app_password`). **Only auth fields** (fields carrying `metadata.auth`) appear in the mapping — never `engine`/`engine_group`/`proxy`/`insecure`.
+- **Right of the colon (`<xsoar_path>`)** — a **dotted path** into the legacy `demisto.params()` structure where the runtime injects the value. The path is **free-form** — it must match exactly what the integration code reads.
+
+**Path levels.** The feature was built forward-thinking to support arbitrarily nested paths; **today expect only 1 or 2 levels**:
+
+- **1 level** (flat params) — e.g. a URL or API key: `api_token:flatclientkey`, `base_url:host`.
+- **2 levels** (XSOAR `type: 9` credentials) — the `credentials` param holds an identifier and a password (each renamable), plus optional nested extras: `username:credentials.identifier`, `app_password:credentials.password`, `bitbucket_email:credentials.email`.
+
+**Profile-field vs. mapping (both supported).** A field's value can be supplied **either** through `interpolation_mapping` **or** directly by the profile/field itself. Some fields (e.g. a server URL) are sometimes carried in the profile rather than the mapping. **The runtime handles both scenarios** — if a UCP param is not listed in `interpolation_mapping`, it is resolved from the profile field directly.
 
 ```yaml
 profiles:
-  - id: "oauth2_client_credentials.salesforce"
-    type: "oauth2_client_credentials"
-    title: "OAuth 2.0 Client Credentials Flow"
+  - id: "passthrough.credentials"
+    type: "passthrough"
+    title: "Bitbucket Credentials (Passthrough)"
     metadata:
       xsoar:
-        interpolated: true   # → runtime injects secrets into demisto.params()
+        # left = field metadata.auth.parameter; right = demisto.params() dotted path
+        interpolation_mapping: "username:credentials.identifier,app_password:credentials.password,bitbucket_email:credentials.metadata.email,api_token:flatclientkey,base_url:credentials.connection.host"
     configurations:
-      - fields: [...]
+      - fields: [...]   # each auth field's metadata.auth.parameter matches a left-side key above
 ```
 
-> **Migration default**: emit `metadata.xsoar.interpolated: true` on every profile **unless** the integration code was explicitly adapted to fetch credentials via the UCP get-credentials API.
+> **Migration default**: emit `metadata.xsoar.interpolation_mapping` on **every** migrated profile, covering every auth field whose value the integration code reads from `demisto.params()`. Omit it only if the integration code was explicitly adapted to fetch credentials via the UCP get-credentials API.
 
 ### 2.7 configurations.yaml
 
@@ -703,7 +722,7 @@ A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`
 4. **`profiles[].view_group`** (Grouped): every profile references one `connection.yaml view_groups[].id`.
    - **A profile cannot be shared across integrations** — each `view_group` belongs to one integration, so declare a **separate profile per integration** even when auth is identical (e.g. `oauth2_client_credentials.salesforce` and `.salesforce-iam`).
 5. **One profile per handler — OR, never AND.** A handler binds to a single profile at runtime. Multiple auth methods → separate profiles sharing one `view_group`, advertised as alternatives in `auth_options[]` (user picks one). If an integration needs several inputs simultaneously, model it as one `passthrough` profile.
-6. **`metadata.xsoar.interpolated: true`** on every profile (§2.6.2) unless the integration code was rewritten for UCP credential retrieval.
+6. **`metadata.xsoar.interpolation_mapping`** on every migrated profile (§2.6.2) — the migration always interpolates (`plain`/`api_key`/`passthrough`) since integration code is not rewritten. Map each auth field's `metadata.auth.parameter` to its `demisto.params()` dotted path (`"<ucp_param>:<xsoar_path>,..."`). Do **not** emit the legacy `interpolated: true`. A value may instead be carried in the profile field directly — the runtime resolves both.
 
 ### 3.7 configurations.yaml Rules
 
@@ -1369,8 +1388,8 @@ triggering:
 capabilities:
   - id: "automation-and-remediation_salesforce"
     auth_options:
-      - { id: "oauth2_client_credentials.salesforce", scopes: ["api", "chatter_api", "refresh_token", "offline_access"], workloads: ["xsoar-pod"] }
-      - { id: "oauth2_authorization_code.salesforce", scopes: ["api", "chatter_api"], workloads: ["xsoar-pod"] }
+      - { id: "oauth2_client_credentials.salesforce",  workloads: ["xsoar-pod"] }
+      - { id: "oauth2_authorization_code.salesforce",  workloads: ["xsoar-pod"] }
 test_connection:
   type: "service"
   service: "xsoar"
