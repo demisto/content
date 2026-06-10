@@ -5004,6 +5004,42 @@ Returns a list of GitHub workflows on a given repository.
 | GitHub.Workflow.created_at | Date | Datetime the GitHub workflow was created at. |
 | GitHub.Workflow.updated_at | Date | Datetime the GitHub workflow was updated at. |
 
+### github-get-workflow-run
+
+***
+Gets a specific workflow run (dispatched event) in a repository.
+
+#### Base Command
+
+`github-get-workflow-run`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | The GitHub owner (organization or username) of the repository. | Optional |
+| repository | The GitHub repository name. | Optional |
+| run_id | The unique identifier of the workflow run. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.WorkflowRun.ID | Number | The workflow run ID. |
+| GitHub.WorkflowRun.Name | String | The workflow run name. |
+| GitHub.WorkflowRun.HeadBranch | String | The branch the workflow run was triggered on. |
+| GitHub.WorkflowRun.HeadSha | String | The commit SHA that triggered the run. |
+| GitHub.WorkflowRun.DisplayTitle | String | The display title of the workflow run. |
+| GitHub.WorkflowRun.RunNumber | Number | The sequential run number for the workflow. |
+| GitHub.WorkflowRun.Event | String | The event that triggered the workflow run \(e.g. workflow_dispatch\). |
+| GitHub.WorkflowRun.Status | String | The status of the workflow run \(queued, in_progress, completed\). |
+| GitHub.WorkflowRun.Conclusion | String | The conclusion of the workflow run \(success, failure, cancelled, etc.\). |
+| GitHub.WorkflowRun.WorkflowID | Number | The ID of the parent workflow. |
+| GitHub.WorkflowRun.CreatedAt | Date | The datetime the workflow run was created. \(ISO8601 format: 2020-01-01T00:11:22Z\) |
+| GitHub.WorkflowRun.UpdatedAt | Date | The datetime the workflow run was last updated. \(ISO8601 format: 2020-01-01T00:11:22Z\) |
+| GitHub.WorkflowRun.Url | String | The workflow run API URL. |
+| GitHub.WorkflowRun.HtmlUrl | String | The workflow run HTML URL. |
+
 ### github-list-teams
 
 ***
