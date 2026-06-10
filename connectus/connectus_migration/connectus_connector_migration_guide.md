@@ -911,6 +911,7 @@ When a `script` flag is true, the BE used to auto-add params. Define them explic
 - `feedExpirationInterval` — `duration`, shown only when `feedExpirationPolicy == "interval"` (trigger, §3.5).
 - `feedFetchInterval` — `duration` (default 240 min → `{hours: 4}` unless the YML differs).
 - `feedBypassExclusionList` — `checkbox`.
+- `feedIncremental` — `checkbox`. **Only emit if the YML declares it.** Place it **only** under the integration's `threat-intelligence-and-enrichment_<integration>` (feed) sub-capability — never under any other capability or in general configurations.
 
 **`script.IsFetchEvents: true`** → `log-collection`: `eventFetchInterval` — `duration` (default 1 min → `{minutes: 1}`).
 
