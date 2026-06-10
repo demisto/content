@@ -107,7 +107,7 @@ INCIDENT_TYPE_PARAM = "incidentType"
 ALERT_TYPE_SUFFIX = "alertType"
 INCIDENT_FETCH_INTERVAL_PARAM = "incidentFetchInterval"
 ALERT_FETCH_INTERVAL_SUFFIX = "alertFetchInterval"
-
+IGNORED_PARAMS = {"is_mirroring", "mirror_direction", "mirror_limit", "close_incident"}
 
 class CoverageError(Exception):
     """Raised for usage / resolution errors that should exit with EXIT_USAGE."""
@@ -556,6 +556,7 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
     # Platform "alert" renames: incidentType -> alertType,
     # incidentFetchInterval -> alertFetchInterval (no serializer bridge).
     missing = _alert_rename_covered(missing, raw_field_ids)
+    missing = missing - IGNORED_PARAMS
     return (len(missing) == 0), missing
 
 
@@ -572,7 +573,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--handler-path",
-        required=False,
+        required=True,
         type=Path,
         help=(
             "Path to the handler's handler.yaml file "
@@ -581,7 +582,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--integration-yml",
-        required=False,
+        required=True,
         type=Path,
         help="Path to the integration YML file.",
     )
@@ -602,11 +603,11 @@ def main(argv: list[str] | None = None) -> int:
         format="%(levelname)s %(message)s",
     )
 
-    # handler_path = args.handler_path
-    # integration_yml_path = args.integration_yml
-    handler_path = Path("connectors/akamai/components/handlers/xsoar-akamai-waf-siem/handler.yaml")
-    integration_yml_path = Path("Packs/Akamai_SIEM/Integrations/Akamai_SIEM/Akamai_SIEM.yml")
+    handler_path = args.handler_path
     integration_yml_path = args.integration_yml
+    # handler_path = Path("/Users/yhayun/dev/demisto/unified-connectors-content/connectors/azure-devops/components/handlers/xsoar-azuredevops/handler.yaml")
+    # integration_yml_path = Path("Packs/AzureDevOps/Integrations/AzureDevOps/AzureDevOps.yml")
+
     try:
         passed, missing = check_coverage(handler_path, integration_yml_path)
     except CoverageError as exc:

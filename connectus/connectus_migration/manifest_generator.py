@@ -3613,12 +3613,10 @@ def add_fetch_issues_capability(
     # carrying its yml default. Migrated as ``alertFetchInterval`` with NO
     # serializer bridge back to ``incidentFetchInterval``.
     incfi_yml = _yml(INCIDENTFETCHINTERVAL_PARAM_NAME)
-    emit_alertfetchinterval = incfi_yml is not None
-    if emit_alertfetchinterval:
-        fields.append(_build_incidentfetchinterval_field(
-            yml_param=incfi_yml,
-            field_id=incfi_field_id, title=incfi_title,
-        ))
+    fields.append(_build_incidentfetchinterval_field(
+        yml_param=incfi_yml,
+        field_id=incfi_field_id, title=incfi_title,
+    ))
 
     # 4. incomingMapperId — dynamic select (backend-managed, Appendix J)
     fields.append(_build_dynamic_select_field(

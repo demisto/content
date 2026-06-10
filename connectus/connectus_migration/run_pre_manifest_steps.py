@@ -931,7 +931,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    integration_id = "Akamai WAF SIEM"
+    integration_id = "AzureDevOps"
     out_dir = Path(args.out_dir)
     out_dir = Path.cwd().parent / "unified-connectors-content" / "connectors"
     print(out_dir)
