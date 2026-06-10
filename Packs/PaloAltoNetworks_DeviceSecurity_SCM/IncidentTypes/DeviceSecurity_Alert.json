@@ -5,7 +5,7 @@
     "vcShouldIgnore": false,
     "locked": false,
     "name": "Device Security Alert",
-    "prevName": "IoT Alert",
+    "prevName": "Device Security Alert",
     "color": "#a5bfd9",
     "playbookId": "PANW Device Security Incident Handling with ServiceNow",
     "hours": 0,
