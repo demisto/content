@@ -14319,61 +14319,6 @@ except Exception:
 
 
 ###########################################
-#     Params Parity Test Probe (BEGIN)    #
-###########################################
-# Purpose:
-#   Support the connectus param-parity test (see connectus/runtime_demisto.params_parity/).
-#   When an instance is configured with the magic key ``__params_parity_dump__: "1"``
-#   AND the framework invokes ``test-module``, this probe short-circuits the
-#   integration's own ``main()`` and emits the full ``demisto.params()`` dict as the
-#   ``return_error`` payload. The parity-test orchestrator parses that payload to
-#   compare what the integration actually receives at runtime via the legacy XSOAR
-#   instance-creation path vs the new ConnectUs UCP-driven path.
-#
-# Safety:
-#   * Hard-wrapped in try/except: any failure here MUST NOT break unrelated integrations.
-#     On any exception we silently fall through and let the integration's own main() run.
-#   * Gated on BOTH ``demisto.command() == "test-module"`` AND the magic param key.
-#     Normal traffic pays only one dict lookup + one string compare.
-#   * The probe runs at CommonServerPython import-time, which happens once per command
-#     dispatch BEFORE the integration's main() is reached. ``return_error`` raises
-#     ``SystemExit``, so the integration's main() never starts when the probe fires.
-#   * Credentials are NEVER read or echoed here beyond what ``demisto.params()`` itself
-#     already contains; integrations that mask credentials before reading params (or
-#     that callers seed with dummy creds — which the parity-test orchestrator does)
-#     remain safe.
-try:
-    if demisto.command() == 'test-module':
-        import json as _pp_json  # local alias to avoid colliding with any user-defined ``json``
-        # CRITICAL: ``IntegrationLogger.__init__`` auto-populates ``LOG.replace_strs`` from
-        # ``demisto.params()`` using a SUBSTRING match against the sensitive-name list
-        # ('key', 'private', 'password', 'secret', 'token', 'credentials', 'service_account').
-        # That over-matches: values of params like ``emailencodingkey``, ``languagelocalekey``,
-        # ``localesidkey`` (all contain the substring 'key') get auto-masked to ``<XX_REPLACED>``
-        # in any string that subsequently passes through ``LOG.encode()`` — INCLUDING the
-        # ``return_error`` message we emit below. To get a clean params-parity capture we must
-        # neutralize that replace-list BEFORE emitting our payload. ``LOG`` was created at the
-        # bottom of the IntegrationLogger section earlier in this file, so it exists here.
-        try:
-            LOG.replace_strs = []  # type: ignore[name-defined]
-        except Exception:
-            # If LOG doesn't exist for some unexpected reason, proceed anyway — the dump just
-            # carries the masked values, which is acceptable degraded behavior.
-            pass
-        _pp_payload = {
-            '__params_parity_dump__': True,
-            'params': demisto.params(),
-        }
-        return_error('PARAMS_PARITY_DUMP::' + _pp_json.dumps(_pp_payload, default=str, sort_keys=True))
-except SystemExit:
-    # ``return_error`` raises SystemExit; let it propagate so the test-module call ends here.
-    raise
-except Exception:
-    # Probe must never break unrelated integrations. Swallow and continue.
-    pass
-###########################################
-#     Params Parity Test Probe (END)      #
-###########################################
 #   Safe Pickle Loading     #
 ###########################################
 # Two-layer defense against insecure deserialization (RCE via malicious pickle payloads).
