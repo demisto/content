@@ -386,7 +386,7 @@ script:
 
     - name: background
       required: false
-      description: Whether to run the model response in the background.
+      description: Whether to run the model response in the background. When true, the command uses polling to wait for the response to complete.
       predefined:
       - 'true'
       - 'false'
@@ -399,17 +399,19 @@ script:
       required: false
       description: The model to use. Use the get-list-models command to see available models. Falls back to instance config.
 
+    polling: true
+
     outputs:
-    - contextPath: OpenAiChatGPTV3.ResponsesConversation
+    - contextPath: OpenAiChatGPTV3.Response
       description: Conversation state including the response_id for multi-turn continuity.
       type: Unknown
-    - contextPath: OpenAiChatGPTV3.ResponsesConversation.user
+    - contextPath: OpenAiChatGPTV3.Response.user
       description: The user message sent.
       type: String
-    - contextPath: OpenAiChatGPTV3.ResponsesConversation.assistant
+    - contextPath: OpenAiChatGPTV3.Response.assistant
       description: The assistant response text.
       type: String
-    - contextPath: OpenAiChatGPTV3.ResponsesConversation.response_id
+    - contextPath: OpenAiChatGPTV3.Response.response_id
       description: The OpenAI response ID used for multi-turn conversation continuity.
       type: String
   runonce: false

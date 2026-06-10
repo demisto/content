@@ -65,6 +65,17 @@ class Stream:
 
 EML_FILE_PREFIX = ".eml"
 
+# Regex prefixes that identify reasoning-capable model families.
+# When the model name starts with any of these, the usage table includes a "Reasoning tokens" row.
+REASONING_MODEL_PREFIXES = ("o1", "o3", "o4", "gpt-5")
+
+# Terminal statuses for background responses polling.
+BACKGROUND_TERMINAL_STATUSES = frozenset({"completed", "failed", "cancelled", "incomplete"})
+BACKGROUND_PENDING_STATUSES = frozenset({"queued", "in_progress"})
+
+DEFAULT_POLLING_INTERVAL_SECS = 10
+DEFAULT_POLLING_TIMEOUT_SECS = 600
+
 
 class ApiPaths:
     """Centralized OpenAI API endpoint paths.
@@ -328,6 +339,24 @@ class OpenAiClient(BaseClient):
             method="POST",
             url_suffix=ApiPaths.RESPONSES,
             json_data=body,
+            headers=self.headers,
+        )
+
+    def get_response(self, response_id: str) -> dict[str, Any]:
+        """Retrieve an existing response by ID (GET /v1/responses/{response_id}).
+
+        Used for polling background responses until they reach a terminal state.
+
+        Args:
+            response_id: The response ID returned from a ``POST /v1/responses`` call.
+
+        Returns:
+            The parsed JSON response dict from the API.
+        """
+        demisto.debug(f"[API Responses] Polling | response_id={response_id}")
+        return self._http_request(
+            method="GET",
+            url_suffix=f"{ApiPaths.RESPONSES}/{response_id}",
             headers=self.headers,
         )
 
@@ -868,6 +897,61 @@ def extract_response_output_text(response: dict[str, Any]) -> str:
     return text
 
 
+def _is_reasoning_model(model: str) -> bool:
+    """Return ``True`` if *model* belongs to a reasoning-capable family.
+
+    Reasoning models (o1, o3, o4-mini, gpt-5*) expose extra usage details
+    such as ``usage.output_tokens_details.reasoning_tokens``.
+    """
+    return model.lower().startswith(REASONING_MODEL_PREFIXES)
+
+
+def _build_response_readable_output(
+    response: dict[str, Any],
+    assistant_message: str,
+    model: str,
+) -> str:
+    """Build the human-readable output for a completed Responses API call.
+
+    Mirrors the ``gpt-send-message`` HR style using ``tableToMarkdown``.
+    For reasoning models, an extra *Reasoning tokens* row is included.
+
+    Args:
+        response: The full API response dict.
+        assistant_message: The extracted assistant text.
+        model: The resolved model name.
+
+    Returns:
+        Markdown-formatted readable output string.
+    """
+    usage: dict[str, Any] = response.get("usage") or {}
+    response_id = response.get("id", "")
+    actual_model = response.get("model", model)
+
+    usage_table: dict[str, Any] = {
+        "Input tokens": usage.get("input_tokens", ""),
+        "Output tokens": usage.get("output_tokens", ""),
+    }
+
+    # For reasoning models, include the reasoning tokens row.
+    if _is_reasoning_model(actual_model):
+        output_details = usage.get("output_tokens_details") or {}
+        usage_table["Reasoning tokens"] = output_details.get("reasoning_tokens", "")
+
+    usage_table["Total tokens"] = usage.get("total_tokens", "")
+    usage_table["Response ID"] = response_id
+
+    return (
+        assistant_message
+        + "\n"
+        + tableToMarkdown(
+            name=f"{actual_model} response:",
+            sort_headers=False,
+            t=usage_table,
+        )
+    )
+
+
 def create_response_command(client: OpenAiClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
     """Execute the ``gpt-create-response`` command using the OpenAI Responses API.
 
@@ -879,13 +963,19 @@ def create_response_command(client: OpenAiClient, args: dict[str, Any], params: 
     Conversation continuity:
         The Responses API natively supports multi-turn conversations through the
         ``previous_response_id`` field. After each call, the response ``id`` is stored
-        in the XSOAR context at ``OpenAiChatGPTV3.ResponsesConversation``. On subsequent
+        in the XSOAR context at ``OpenAiChatGPTV3.Response``. On subsequent
         calls (when ``reset_conversation_history`` is ``False``), this ID is sent as
         ``previous_response_id`` so the model retains full conversation context
         server-side — no need to re-send prior messages.
 
+    Polling:
+        When ``background=true`` is set, the initial API call returns immediately with
+        a ``queued`` or ``in_progress`` status. The command schedules itself for re-execution
+        via ``ScheduledCommand`` and polls ``GET /v1/responses/{id}`` until the response
+        reaches a terminal state (``completed``, ``failed``, ``cancelled``, ``incomplete``).
+
     Note:
-        This command uses a **separate** context key (``ResponsesConversation``) from
+        This command uses a **separate** context key (``Response``) from
         the existing ``gpt-send-message`` command (``Conversation``) to avoid clashing.
 
     Args:
@@ -896,6 +986,38 @@ def create_response_command(client: OpenAiClient, args: dict[str, Any], params: 
     Returns:
         A ``CommandResults`` object with the conversation context and readable output.
     """
+    # --- Polling re-entry: if we already have a response_id, poll for completion ---
+    polling_response_id = args.get("_polling_response_id")
+    if polling_response_id:
+        demisto.debug(f"[Responses] Polling re-entry | response_id={polling_response_id}")
+        response = client.get_response(polling_response_id)
+        status = response.get("status", "")
+        demisto.debug(f"[Responses] Poll status={status}")
+
+        if status in BACKGROUND_PENDING_STATUSES:
+            # Still running — schedule next poll
+            scheduled_command = ScheduledCommand(
+                command="gpt-create-response",
+                next_run_in_seconds=DEFAULT_POLLING_INTERVAL_SECS,
+                args={**args, "_polling_response_id": polling_response_id},
+                timeout_in_seconds=DEFAULT_POLLING_TIMEOUT_SECS,
+            )
+            return CommandResults(
+                readable_output=f"⏳ Response `{polling_response_id}` is still {status}. Polling...",
+                scheduled_command=scheduled_command,
+            )
+
+        if status != "completed":
+            error_info = response.get("error") or {}
+            raise DemistoException(
+                f"Background response reached terminal status '{status}'. "
+                f"Error: {error_info.get('message', 'N/A')} (code={error_info.get('code', 'N/A')})"
+            )
+
+        # Completed — fall through to build the final result
+        return _build_completed_response_result(response, args)
+
+    # --- First call: build and send the request ---
     message: str = args.get(ArgAndParamNames.MESSAGE, "")
     if not message:
         raise DemistoException("The 'message' argument is required.")
@@ -916,10 +1038,10 @@ def create_response_command(client: OpenAiClient, args: dict[str, Any], params: 
     # Conversation continuity via previous_response_id.
     # The Responses API keeps the full conversation server-side; we only need to
     # pass the last response ID to continue the thread.
-    # Uses a SEPARATE context key (ResponsesConversation) to avoid clashing with
+    # Uses a SEPARATE context key (Response) to avoid clashing with
     # the Chat Completions-based gpt-send-message command (Conversation).
     if not reset_conversation_history:
-        conversation_ctx = demisto.context().get("OpenAiChatGPTV3", {}).get("ResponsesConversation")
+        conversation_ctx = demisto.context().get("OpenAiChatGPTV3", {}).get("Response")
         previous_response_id: str | None = None
         if isinstance(conversation_ctx, list) and conversation_ctx:
             previous_response_id = conversation_ctx[-1].get("response_id") if isinstance(conversation_ctx[-1], dict) else None
@@ -969,33 +1091,55 @@ def create_response_command(client: OpenAiClient, args: dict[str, Any], params: 
     # Call the Responses API
     response = client.create_response(body)
 
-    # Extract the assistant's reply
+    # If background=true and the response is not yet completed, start polling
+    response_status = response.get("status", "")
+    if body.get("background") and response_status in BACKGROUND_PENDING_STATUSES:
+        response_id = response.get("id", "")
+        demisto.debug(f"[Responses] Background response queued | id={response_id} status={response_status}")
+        scheduled_command = ScheduledCommand(
+            command="gpt-create-response",
+            next_run_in_seconds=DEFAULT_POLLING_INTERVAL_SECS,
+            args={**args, "_polling_response_id": response_id},
+            timeout_in_seconds=DEFAULT_POLLING_TIMEOUT_SECS,
+        )
+        return CommandResults(
+            readable_output=f"⏳ Background response `{response_id}` is {response_status}. Polling started...",
+            scheduled_command=scheduled_command,
+        )
+
+    # Synchronous completion — build the final result
+    return _build_completed_response_result(response, args)
+
+
+def _build_completed_response_result(response: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """Build the final ``CommandResults`` for a completed Responses API response.
+
+    Shared by both the synchronous path and the polling completion path.
+
+    Args:
+        response: The completed API response dict.
+        args: The original command arguments.
+
+    Returns:
+        A ``CommandResults`` with context, HR, and raw response.
+    """
+    message: str = args.get(ArgAndParamNames.MESSAGE, "")
+    model: str = args.get(ArgAndParamNames.MODEL, "") or response.get("model", "")
+
     assistant_message = extract_response_output_text(response)
+    response_id = response.get("id", "")
 
     # Store conversation step with response_id for multi-turn continuity
-    response_id = response.get("id", "")
     conversation_step = [{
         Roles.USER: message,
         Roles.ASSISTANT: assistant_message,
         "response_id": response_id,
     }]
 
-    # Extract usage info
-    usage: dict[str, Any] = response.get("usage") or {}
-
-    readable_output = (
-        f"**ChatGPT (Responses API):**\n\n{assistant_message}\n\n"
-        f"---\n"
-        f"**Tokens Used:**\n"
-        f"- Input: {usage.get('input_tokens', 'N/A')}\n"
-        f"- Output: {usage.get('output_tokens', 'N/A')}\n"
-        f"- Total: {usage.get('total_tokens', 'N/A')}\n"
-        f"- Model: {response.get('model', model)}\n"
-        f"- Response ID: {response_id}"
-    )
+    readable_output = _build_response_readable_output(response, assistant_message, model)
 
     return CommandResults(
-        outputs_prefix="OpenAiChatGPTV3.ResponsesConversation",
+        outputs_prefix="OpenAiChatGPTV3.Response",
         outputs=conversation_step,
         replace_existing=True,
         readable_output=readable_output,
@@ -1907,6 +2051,5 @@ def main() -> None:  # pragma: no cover
 
 
 """ ENTRY POINT """
-
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
