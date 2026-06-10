@@ -24,3 +24,6 @@ ignore=GR103
 
 [file:HelloWorldV2.yml]
 ignore=BA129,IN126
+
+[file:ReleaseNotes/4_0_10.md]
+ignore=RN107
