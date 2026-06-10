@@ -1,0 +1,198 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: akamai-waf-siem
+  label: Akamai WAF SIEM
+  help_text: Connection settings for the Akamai WAF SIEM integration.
+profiles:
+- id: passthrough.akamai_waf_siem
+  type: passthrough
+  view_group: akamai-waf-siem
+  title: Akamai Credentials
+  description: Authentication profile for Akamai (passthrough).
+  configurations:
+  - fields:
+    - id: accesstoken_creds
+      title: Access token
+      field_type: input
+      metadata:
+        auth:
+          parameter: access_token
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: clientsecret_creds
+      title: Client secret
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_secret
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: clienttoken_creds
+      title: Client token
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_token
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: configIds
+      field_type: input
+      title: Config IDs to fetch
+      options:
+        description: Your Akamai security configuration ID(s). Multiple IDs can be
+          separated by semicolons (e.g., 12345;2345;3456). Config IDs are unique to
+          your account.
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+    - id: host
+      field_type: input
+      title: Server URL (e.g., https://akaa-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net)
+      options:
+        default_value: https://akaa-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+    - id: proxy
+      title: Use system proxy settings
+      field_type: switch
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: true
+        edit_modifiers:
+          required: false
+          hidden: true
+    - id: insecure
+      title: Trust any certificate (not secure)
+      field_type: switch
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: engine_mode
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+      options:
+        mask: false
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Akamai WAF SIEM
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Akamai WAF SIEM
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

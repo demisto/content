@@ -4924,6 +4924,27 @@ def _auth_parameter_for_role(profile_type: str, role: str) -> str:
     return ROLE_TO_AUTH_PARAMETER.get((profile_type, role), role)
 
 
+def build_interpolation_mapping(
+    profile_type: str, xsoar_param_map: dict[str, str]
+) -> str:
+    """Return the UCP ``role:xsoar_path,...`` ``interpolation_mapping`` string.
+
+    Inverts ``xsoar_param_map`` (``{xsoar_path: role}``) into the comma-joined
+    UCP form. The LEFT side is the post-remap ``auth_parameter`` (matches the
+    field's ``metadata.auth.parameter`` and the runtime credentials-envelope
+    key); the RIGHT side is the dotted XSOAR field path. Entries are sorted by
+    ``xsoar_path`` to match the field-emit order in
+    :func:`build_connection_profile`. The runtime grammar has no escaping, so
+    ``,``/``:`` must not appear in roles or paths (they never do in practice).
+    """
+    entries: list[str] = []
+    for xsoar_path in sorted(xsoar_param_map.keys()):
+        role = xsoar_param_map[xsoar_path]
+        auth_parameter = _auth_parameter_for_role(profile_type, role)
+        entries.append(f"{auth_parameter}:{xsoar_path}")
+    return ",".join(entries)
+
+
 def _connection_profile_title(
     profile_type: str,
     connector_title: str,
@@ -5015,6 +5036,15 @@ def build_connection_profile(
             }
         )
 
+    # UCP interpolation: invert xsoar_param_map into the role:path mapping
+    # string and read the interpolate flag faithfully from the entry (default
+    # False; ``set-auth`` forces it True upstream).
+    interpolation_mapping = build_interpolation_mapping(profile_type, xsoar_param_map)
+    interpolated = bool(auth_type_entry.get("interpolated", False))
+    xsoar_metadata: dict = {"interpolated": interpolated}
+    if interpolation_mapping:
+        xsoar_metadata["interpolation_mapping"] = interpolation_mapping
+
     return {
         "id": profile_id,
         "type": profile_type,
@@ -5033,6 +5063,9 @@ def build_connection_profile(
             f"Authentication profile for "
             f"{connector_title or integration_id} ({profile_type})."
         ),
+        # ``metadata`` precedes ``configurations`` to match the real connector
+        # manifest key order (MS365 profiles put metadata above configurations).
+        "metadata": {"xsoar": xsoar_metadata},
         "configurations": [{"fields": fields}],
     }
 

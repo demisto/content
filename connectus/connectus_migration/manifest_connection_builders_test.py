@@ -143,6 +143,190 @@ def test_build_connection_profile_title_enrichment_from_yml():
 
 
 # ---------------------------------------------------------------------------
+# Part A (interpolation) — build_interpolation_mapping pure helper
+# ---------------------------------------------------------------------------
+def _parse_param_map_like_runtime(param_map: str) -> list[tuple[str, str]]:
+    """Re-implement CommonServerPython._parse_param_map grammar (split on ',',
+    then first ':') so tests can round-trip the emitted string back to
+    (role, xsoar_path) pairs without importing the runtime module."""
+    pairs: list[tuple[str, str]] = []
+    for raw in param_map.split(","):
+        entry = raw.strip()
+        if not entry or ":" not in entry:
+            continue
+        left, right = entry.split(":", 1)
+        left, right = left.strip(), right.strip()
+        if not left or not right:
+            continue
+        pairs.append((left, right))
+    return pairs
+
+
+def test_build_interpolation_mapping_apikey_flat_remaps_role_on_left():
+    # APIKey role "key" must remap to auth_parameter "api_key" on the LEFT.
+    assert (
+        cb.build_interpolation_mapping("api_key", {"api_key": "key"})
+        == "api_key:api_key"
+    )
+
+
+def test_build_interpolation_mapping_apikey_dotted_leaf():
+    assert (
+        cb.build_interpolation_mapping("api_key", {"credentials.password": "key"})
+        == "api_key:credentials.password"
+    )
+
+
+def test_build_interpolation_mapping_plain_both_leaves_sorted():
+    # Sorted by xsoar_path: credentials.identifier < credentials.password.
+    assert cb.build_interpolation_mapping(
+        "plain",
+        {
+            "credentials.identifier": "username",
+            "credentials.password": "password",
+        },
+    ) == "username:credentials.identifier,password:credentials.password"
+
+
+def test_build_interpolation_mapping_plain_two_flat_params_sorted_by_key():
+    # Sorted by xsoar_path: server_password < server_user.
+    assert cb.build_interpolation_mapping(
+        "plain",
+        {"server_user": "username", "server_password": "password"},
+    ) == "password:server_password,username:server_user"
+
+
+def test_build_interpolation_mapping_passthrough_multi_secret_verbatim_roles():
+    assert cb.build_interpolation_mapping(
+        "passthrough",
+        {
+            "credentials_auth_id.password": "client_id",
+            "credentials_enc_key.password": "client_secret",
+        },
+    ) == (
+        "client_id:credentials_auth_id.password,"
+        "client_secret:credentials_enc_key.password"
+    )
+
+
+def test_build_interpolation_mapping_passthrough_secrets_bag():
+    # Sorted by xsoar_path: credentials.password < hunting_credentials.password.
+    assert cb.build_interpolation_mapping(
+        "passthrough",
+        {
+            "credentials.password": "primary_api_key",
+            "hunting_credentials.password": "hunting_api_key",
+        },
+    ) == (
+        "primary_api_key:credentials.password,"
+        "hunting_api_key:hunting_credentials.password"
+    )
+
+
+def test_build_interpolation_mapping_round_trips_through_runtime_grammar():
+    # Cross-check: feed the emitted string through the same grammar the runtime
+    # _parse_param_map uses and assert it reconstructs role -> xsoar_path.
+    xsoar_param_map = {
+        "credentials_auth_id.password": "client_id",
+        "credentials_enc_key.password": "client_secret",
+    }
+    emitted = cb.build_interpolation_mapping("passthrough", xsoar_param_map)
+    parsed = _parse_param_map_like_runtime(emitted)
+    # role -> xsoar_path reconstruction equals the inverted input map.
+    reconstructed = {role: path for role, path in parsed}
+    assert reconstructed == {
+        "client_id": "credentials_auth_id.password",
+        "client_secret": "credentials_enc_key.password",
+    }
+    # And the LEFT-side roles are exactly the post-remap auth_parameters.
+    assert [role for role, _ in parsed] == ["client_id", "client_secret"]
+
+
+# ---------------------------------------------------------------------------
+# Part A (interpolation) — build_connection_profile emits metadata.xsoar
+# ---------------------------------------------------------------------------
+def test_build_connection_profile_apikey_emits_interpolation_metadata():
+    entry = {
+        "type": "APIKey",
+        "name": "api_key",
+        "interpolated": True,
+        "xsoar_param_map": {"api_key": "key"},
+    }
+    prof = cb.build_connection_profile(entry, "Okta", connector_title="Okta")
+    assert prof["metadata"]["xsoar"]["interpolation_mapping"] == "api_key:api_key"
+    assert prof["metadata"]["xsoar"]["interpolated"] is True
+    # Regression: existing field shape unchanged.
+    field = prof["configurations"][0]["fields"][0]
+    assert field["id"] == "api_key"
+    assert field["metadata"]["auth"]["parameter"] == "api_key"
+
+
+def test_build_connection_profile_plain_mapping_matches_field_roles():
+    entry = {
+        "type": "Plain",
+        "name": "credentials",
+        "interpolated": True,
+        "xsoar_param_map": {
+            "credentials.identifier": "username",
+            "credentials.password": "password",
+        },
+    }
+    prof = cb.build_connection_profile(entry, "Foo", connector_title="Foo")
+    mapping = prof["metadata"]["xsoar"]["interpolation_mapping"]
+    left_roles = {entry.split(":", 1)[0] for entry in mapping.split(",")}
+    field_params = {
+        f["metadata"]["auth"]["parameter"]
+        for f in prof["configurations"][0]["fields"]
+    }
+    assert left_roles == field_params == {"username", "password"}
+
+
+def test_build_connection_profile_passthrough_interpolated_true():
+    entry = {
+        "type": "Passthrough",
+        "name": "bag",
+        "interpolated": True,
+        "xsoar_param_map": {
+            "credentials_auth_id.password": "client_id",
+            "credentials_enc_key.password": "client_secret",
+        },
+    }
+    prof = cb.build_connection_profile(entry, "Microsoft Graph")
+    assert prof["metadata"]["xsoar"]["interpolation_mapping"] == (
+        "client_id:credentials_auth_id.password,"
+        "client_secret:credentials_enc_key.password"
+    )
+    assert prof["metadata"]["xsoar"]["interpolated"] is True
+
+
+def test_build_connection_profile_interpolated_faithful_read():
+    # No "interpolated" key -> default False (faithful read, not hard-forced).
+    entry_default = {
+        "type": "APIKey",
+        "name": "api_key",
+        "xsoar_param_map": {"api_key": "key"},
+    }
+    prof_default = cb.build_connection_profile(entry_default, "Okta")
+    assert prof_default["metadata"]["xsoar"]["interpolated"] is False
+    # Explicit True -> True.
+    entry_true = {**entry_default, "interpolated": True}
+    prof_true = cb.build_connection_profile(entry_true, "Okta")
+    assert prof_true["metadata"]["xsoar"]["interpolated"] is True
+
+
+def test_build_connection_profile_metadata_precedes_configurations():
+    entry = {
+        "type": "APIKey",
+        "name": "api_key",
+        "interpolated": True,
+        "xsoar_param_map": {"api_key": "key"},
+    }
+    prof = cb.build_connection_profile(entry, "Okta")
+    keys = list(prof.keys())
+    assert keys.index("metadata") < keys.index("configurations")
+
+
+# ---------------------------------------------------------------------------
 # Part B — proxy / insecure detection + shapes
 # ---------------------------------------------------------------------------
 @pytest.mark.parametrize(

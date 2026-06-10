@@ -539,6 +539,8 @@ Whichever convention you use, the **overlap note beneath the table is mandatory*
 
 Map "what you saw in the source" → "auth-type enum value" (the values are the members of the [`AuthType`](auth_config_parser/types.py:11) enum — import it directly with `from auth_config_parser.types import AuthType` and use `[e.value for e in AuthType]` when you need the string list):
 
+> **EVERY classified profile is `interpolated: true` — including `APIKey` and `Plain`.** The "Use type" column below picks the `type` ONLY; the `interpolated: true` flag is NOT optional and is NOT type-specific. Whatever type you pick from this table, the profile you author MUST carry `"interpolated": true`. There is NO such thing as a non-interpolated profile (ALWAYS-INTERPOLATE GATE, §1.12). Never suggest, classify, or output a profile of ANY type without `interpolated: true`.
+
 | You see... | Use type |
 |---|---|
 | `Authorization: Bearer <key>` from a single param, no token exchange | `APIKey` |
@@ -784,10 +786,12 @@ Resulting field inside `Auth Details`:
 
 ```json
 {
-  "auth_types": [{ "type": "APIKey", "name": "api_key", "xsoar_param_map": { "api_key": "key" } }],
+  "auth_types": [{ "type": "APIKey", "name": "api_key", "interpolated": true, "xsoar_param_map": { "api_key": "key" } }],
   "other_connection": ["insecure", "proxy", "url"]
 }
 ```
+
+> **Note the `"interpolated": true` on the `APIKey` profile.** EVERY profile carries it — there is no such thing as a non-interpolated profile (ALWAYS-INTERPOLATE GATE, §1.12). Always emit `"interpolated": true` on every `auth_types[]` entry you author, regardless of `type` (`APIKey`, `Plain`, `Passthrough` — all of them).
 
 ---
 
@@ -837,6 +841,7 @@ The `hiddenusername` / `hiddenpassword` flags suppress only the **named leaf** o
 {
   "type": "APIKey",
   "name": "credentials",
+  "interpolated": true,
   "xsoar_param_map": {
     "credentials.password": "key"
   }
@@ -905,6 +910,8 @@ Is there a credentials param (type=9)?
 │       ├── YES: Check code for auth mechanism → classify accordingly
 │       └── NO: NoneRequired
 ```
+
+> **Read every leaf above as ending in `interpolated: true`.** The `(interpolated:true)` annotations on the OAuth/Passthrough leaves are NOT a contrast with the `APIKey` / `Plain` leaves — ALL leaves, including `APIKey` and `Plain`, produce `interpolated: true` profiles. The annotation is shown only where the `type` itself is also being disambiguated. NEVER author a `Plain` or `APIKey` leaf without `interpolated: true`.
 
 ---
 
@@ -1870,12 +1877,14 @@ When analyzing an integration's authentication, use these classification values 
 
 | Auth Type | UCP Profile | Description |
 |---|---|---|
-| `APIKey` | `api_key` | Single static secret (header / query param / single-secret HMAC). Two-or-more keys → `Passthrough`. |
-| `Plain` | `plain` | Single username + password pair (`username` + `password`) |
+| `APIKey` | `api_key` | Single static secret (header / query param / single-secret HMAC). Two-or-more keys → `Passthrough`. Always `interpolated: true`. |
+| `Plain` | `plain` | Single username + password pair (`username` + `password`). Always `interpolated: true`. |
 | `Passthrough` | n/a | **All OAuth2 flows** — Client Credentials, JWT-bearer, Authorization Code (browser flow), Device Code, ROPC — plus Managed Identity, mTLS, dual-key API (Datadog, AWS, Akamai EdgeGrid, GitHub App), custom HMAC/signing, and anything else that doesn't cleanly fit `api_key` or `plain`. Always `interpolated: true`. **When in doubt, prefer `Passthrough`.** |
 | `NoneRequired` | n/a | No authentication required |
 
 > **OAuth2 flows classify as Passthrough — see §1.2.** The only values you may OUTPUT in `auth_types[].type` are `APIKey`, `Plain`, `Passthrough`, and `NoneRequired`.
+
+> **ALL types present in `auth_types[]` are `interpolated: true`** (`APIKey`, `Plain`, `Passthrough` — `NoneRequired` emits no entry at all). Do NOT treat `interpolated: true` as a `Passthrough`-only flag; that asymmetric reading is the root cause of profiles being suggested without it. Whenever you author or suggest a profile of ANY type, it MUST carry `"interpolated": true`.
 
 
 

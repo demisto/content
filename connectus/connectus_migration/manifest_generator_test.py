@@ -6964,6 +6964,53 @@ def test_create_manifest_from_scratch_generates_connection_yaml(tmp_path: Path):
     assert triggers_yaml.exists()
 
 
+def test_create_manifest_from_scratch_emits_interpolation_mapping(tmp_path: Path):
+    """End-to-end: the from-scratch path writes
+    metadata.xsoar.interpolation_mapping + interpolated onto the connection
+    profile in the written connection.yaml."""
+    integration_yml_path = _make_pack_with_integration(
+        tmp_path, "MyPack", "MyInt", {"tags": []}
+    )
+    connector_dir = tmp_path / "connectors" / "interp"
+
+    auth_methods = {
+        "auth_types": [
+            {
+                "type": "Passthrough",
+                "name": "passthrough",
+                "interpolated": True,
+                "xsoar_param_map": {
+                    "creds.identifier": "username",
+                    "creds.password": "password",
+                },
+            }
+        ],
+        "other_connection": ["host"],
+    }
+    create_manifest_from_scratch(
+        connector_dir=connector_dir,
+        integration_yml={
+            "commonfields": {"id": "MyInt"},
+            "display": "My Integration",
+            "configuration": [
+                {"name": "host", "type": 0, "display": "Host URL"},
+                {"name": "creds", "type": 9, "display": "Credentials"},
+            ],
+        },
+        integration_path=integration_yml_path,
+        connector_title="My Connector",
+        mapped_params={"general_configurations": []},
+        auth_methods=auth_methods,
+    )
+
+    conn = _read_connection_yaml(connector_dir)
+    profile = conn["profiles"][0]
+    assert profile["metadata"]["xsoar"]["interpolation_mapping"] == (
+        "username:creds.identifier,password:creds.password"
+    )
+    assert profile["metadata"]["xsoar"]["interpolated"] is True
+
+
 def test_create_manifest_from_scratch_anonymous_skips_connection_yaml(
     tmp_path: Path,
 ):
@@ -7077,6 +7124,16 @@ def test_append_handler_adds_profile_view_group_and_general_config(
     }
     assert any(fid.endswith("host") for fid in inta_fields)
     assert any(fid.endswith("server") for fid in intb_fields)
+
+    # Both profiles carry their own metadata.xsoar.interpolation_mapping +
+    # interpolated (append path preserves A's and adds B's).
+    inta_xsoar = profiles_by_id["passthrough.inta"]["metadata"]["xsoar"]
+    intb_xsoar = profiles_by_id["api_key.intb"]["metadata"]["xsoar"]
+    assert inta_xsoar["interpolation_mapping"] == "password:creds.password"
+    assert intb_xsoar["interpolation_mapping"] == "api_key:apikey"
+    # The interpolated boolean block is always present on each profile.
+    assert "interpolated" in inta_xsoar
+    assert "interpolated" in intb_xsoar
 
 
 def test_append_handler_anonymous_leaves_connection_untouched(tmp_path: Path):
