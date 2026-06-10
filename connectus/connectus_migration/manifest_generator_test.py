@@ -93,6 +93,8 @@ from manifest_generator import (
     get_pack_tags,
     merge_general_configurations,
     merge_tags_case_insensitive,
+    build_capability_gated_computed_field,
+    register_computed_field_entry,
     register_renamed_field_serializer_entry,
     register_serializer_entry,
     rename_handler_capability_id,
@@ -1725,8 +1727,9 @@ def test_create_manifest_from_scratch_generates_configurations_yaml_without_sche
     # Issue #8: alertType / alertFetchInterval are emitted only when the source
     # incidentType / incidentFetchInterval params exist in the integration yml.
     # This integration declares neither, so the alert fields are omitted.
+    # isFetch is the lone fetch checkbox → NOT emitted as a field (moved to
+    # serializer computed_fields).
     assert field_ids == [
-        "isFetch",
         "incomingMapperId",
         "mappingId",
         "fetch_limit",
@@ -2461,8 +2464,9 @@ def test_append_handler_to_capability_already_split_adds_subcap_only(
     # Issue #8: alertType / alertFetchInterval are emitted only when the source
     # incidentType / incidentFetchInterval params exist in the integration yml.
     # This integration declares neither, so the alert fields are omitted.
+    # isFetch is the lone fetch checkbox → NOT emitted as a field (moved to
+    # serializer computed_fields).
     assert new_field_ids == [
-        "isFetch",
         "incomingMapperId",
         "mappingId",
         "new_p",
@@ -3741,6 +3745,150 @@ def test_emit_field_for_param_ALSO_skips_when_hidden_is_bool_true():
     assert result == []
 
 
+def test_emit_field_for_param_hidden_with_default_moves_to_computed_field(
+    tmp_path: Path,
+):
+    """A platform-hidden param that carries a ``defaultvalue`` is NOT emitted
+    as a manifest field; instead its default is pushed via a serializer
+    computed_fields rule (output id = original yml param name, value = coerced
+    default), gated on the supplied capability id(s)."""
+    yml = {
+        "type": 8,
+        "name": "trust_any_certificate",
+        "display": "Trust any cert",
+        "hidden": True,
+        "defaultvalue": "true",
+    }
+    result = emit_field_for_param(
+        "trust_any_certificate",
+        {"trust_any_certificate": yml},
+        handler_id="xsoar",
+        handler_dir=tmp_path,
+        existing_ids=set(),
+        gating_capability_ids=["log-collection_acme"],
+    )
+    assert result == []  # no manifest field emitted
+
+    serializer = _read_serializer_dict(tmp_path)
+    assert serializer["computed_fields"] == [
+        {
+            "output": [{"id": "trust_any_certificate", "value": True}],
+            "any_of": [
+                {
+                    "conditions": [
+                        {
+                            "type": "capability",
+                            "options": {
+                                "capability_id": "log-collection_acme",
+                                "value": "on",
+                            },
+                        }
+                    ]
+                }
+            ],
+        }
+    ]
+
+
+def test_emit_field_for_param_hidden_no_default_is_dropped(tmp_path: Path):
+    """A platform-hidden param with NO ``defaultvalue`` is dropped entirely —
+    no manifest field AND no serializer computed_fields rule (there is nothing
+    meaningful to inject)."""
+    yml = {
+        "type": 0,
+        "name": "legacy_flag",
+        "display": "Legacy",
+        "hidden": True,
+    }
+    result = emit_field_for_param(
+        "legacy_flag",
+        {"legacy_flag": yml},
+        handler_id="xsoar",
+        handler_dir=tmp_path,
+        existing_ids=set(),
+        gating_capability_ids=["log-collection_acme"],
+    )
+    assert result == []
+    assert not (tmp_path / "serializer.yaml").exists()
+
+
+def test_emit_field_for_param_hidden_default_or_gated_across_capabilities(
+    tmp_path: Path,
+):
+    """When multiple gating capability ids are supplied (e.g. a
+    general_configurations hidden-default param not attached to a single
+    capability), the computed_fields rule lists one ``any_of`` group per
+    capability (OR logic)."""
+    yml = {
+        "type": 8,
+        "name": "use_proxy",
+        "hidden": True,
+        "defaultvalue": "false",
+    }
+    emit_field_for_param(
+        "use_proxy",
+        {"use_proxy": yml},
+        handler_id="xsoar",
+        handler_dir=tmp_path,
+        existing_ids=set(),
+        gating_capability_ids=["log-collection_acme", "fetch-issues_acme"],
+    )
+    serializer = _read_serializer_dict(tmp_path)
+    rule = serializer["computed_fields"][0]
+    assert rule["output"] == [{"id": "use_proxy", "value": False}]
+    cap_ids = [
+        g["conditions"][0]["options"]["capability_id"] for g in rule["any_of"]
+    ]
+    assert cap_ids == ["log-collection_acme", "fetch-issues_acme"]
+
+
+def test_build_capability_gated_computed_field_single_and_multi():
+    """The helper builds one ``any_of`` group for a single capability id and
+    one group per id (OR) for multiple ids."""
+    single = build_capability_gated_computed_field(
+        output_id="x", value=True, capability_ids=["cap-a"]
+    )
+    assert single == {
+        "output": [{"id": "x", "value": True}],
+        "any_of": [
+            {
+                "conditions": [
+                    {
+                        "type": "capability",
+                        "options": {"capability_id": "cap-a", "value": "on"},
+                    }
+                ]
+            }
+        ],
+    }
+    multi = build_capability_gated_computed_field(
+        output_id="y", value=5, capability_ids=["cap-a", "cap-b"]
+    )
+    assert len(multi["any_of"]) == 2
+    assert multi["output"] == [{"id": "y", "value": 5}]
+
+
+def test_register_computed_field_entry_idempotent_and_preserves_field_mappings(
+    tmp_path: Path,
+):
+    """register_computed_field_entry appends to computed_fields, preserves any
+    existing field_mappings, and is idempotent for identical rules."""
+    # Seed with a field_mappings entry first.
+    register_serializer_entry(tmp_path, new_id="renamed", original_id="orig")
+
+    rule = build_capability_gated_computed_field(
+        output_id="z", value=True, capability_ids=["cap-a"]
+    )
+    register_computed_field_entry(tmp_path, rule)
+    register_computed_field_entry(tmp_path, rule)  # idempotent — no duplicate
+
+    serializer = _read_serializer_dict(tmp_path)
+    assert serializer["field_mappings"] == [
+        {"id": "renamed", "field_name": "orig"}
+    ]
+    assert serializer["computed_fields"] == [rule]
+
+
 def test_emit_field_for_param_type_22_copy_to_clipboard_emits_label():
     """Per Batch 3 (Part A.11.5) + guide Appendix A: type 22 ('Copy to
     Clipboard') maps to ``label`` — a read-only display field with no
@@ -4178,16 +4326,18 @@ def test_from_scratch_omits_default_ignore_without_automation_capability(
     assert "defaultIgnore" not in all_cap_field_ids
 
 
-def test_add_secret_capability_top_level_uses_plain_field_id():
+def test_add_secret_capability_top_level_emits_no_field_only_computed(
+    tmp_path: Path,
+):
     """
-    Given: A mapped_params dict that DOES NOT have a Fetch Secrets bucket
-           (or has one with no params). add_secret_capability is called
-           with is_sub_capability=False and capability_id='fetch-secrets'.
+    Given: A mapped_params dict that DOES NOT have a Fetch Secrets bucket.
+           add_secret_capability is called with is_sub_capability=False and
+           capability_id='fetch-secrets' plus a handler_dir.
     When:  add_secret_capability runs.
-    Then:  The returned template carries field_id='isFetchCredentials'
-           (the plain XSOAR yml name, unrenamed), default_value=True
-           (hidden toggles default to True per user decision),
-           hidden in both modifier blocks, required=False.
+    Then:  The returned template emits NO manifest field (no more hidden
+           default-True toggle). Instead a serializer computed_fields rule
+           is registered injecting isFetchCredentials=true gated on this
+           capability being 'on'.
     """
     mapped: dict[str, list[str]] = {
         "general_configurations": [],
@@ -4198,34 +4348,42 @@ def test_add_secret_capability_top_level_uses_plain_field_id():
         capability_id="fetch-secrets",
         is_sub_capability=False,
         mapped_params=mapped,
+        handler_dir=tmp_path,
     )
 
     assert template["capability_id"] == "fetch-secrets"
-    assert len(template["fields"]) == 1
-    field = template["fields"][0]
-    assert field["id"] == "isFetchCredentials"
-    assert field["title"] == "Fetch credentials"
-    assert field["field_type"] == "toggle"
-    assert field["options"]["default_value"] is True
-    assert field["options"]["create_modifiers"] == {
-        "required": False,
-        "hidden": True,
-    }
-    assert field["options"]["edit_modifiers"] == {
-        "required": False,
-        "hidden": True,
-    }
+    assert template["fields"] == []
+
+    serializer = _read_serializer_dict(tmp_path)
+    assert serializer["computed_fields"] == [
+        {
+            "output": [{"id": "isFetchCredentials", "value": True}],
+            "any_of": [
+                {
+                    "conditions": [
+                        {
+                            "type": "capability",
+                            "options": {
+                                "capability_id": "fetch-secrets",
+                                "value": "on",
+                            },
+                        }
+                    ]
+                }
+            ],
+        }
+    ]
 
 
-def test_add_secret_capability_sub_capability_renames_field_id():
+def test_add_secret_capability_sub_capability_gates_on_sub_cap_id(
+    tmp_path: Path,
+):
     """
     Given: add_secret_capability is called with is_sub_capability=True
            and a sub-cap id 'fetch-secrets-xsoar-mygraphmail'.
-    When:  Inspecting the returned template.
-    Then:  field.id is renamed to
-           '<capability_id>_isFetchCredentials' so it cannot collide with
-           the root fetch-secrets cap's toggle if both exist on the same
-           connector.
+    When:  Inspecting the returned template + serializer.
+    Then:  No manifest field is emitted; the computed_fields rule is gated
+           on the sub-capability id.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4233,12 +4391,17 @@ def test_add_secret_capability_sub_capability_renames_field_id():
         capability_id="fetch-secrets-xsoar-mygraphmail",
         is_sub_capability=True,
         mapped_params=mapped,
+        handler_dir=tmp_path,
     )
 
     assert template["capability_id"] == "fetch-secrets-xsoar-mygraphmail"
-    assert (
-        template["fields"][0]["id"]
-        == "fetch-secrets-xsoar-mygraphmail_isFetchCredentials"
+    assert template["fields"] == []
+
+    serializer = _read_serializer_dict(tmp_path)
+    rule = serializer["computed_fields"][0]
+    assert rule["output"] == [{"id": "isFetchCredentials", "value": True}]
+    assert rule["any_of"][0]["conditions"][0]["options"]["capability_id"] == (
+        "fetch-secrets-xsoar-mygraphmail"
     )
 
 
@@ -4268,14 +4431,13 @@ def test_add_secret_capability_strips_isfetchcredentials_from_mapper_results():
     assert mapped["Automation"] == ["unrelated"]
 
 
-def test_add_secret_capability_sub_cap_path_writes_serializer_bridge(tmp_path: Path):
+def test_add_secret_capability_sub_cap_path_writes_computed_field(tmp_path: Path):
     """
-    Given: A sub-capability call with handler_dir set so the serializer
-           rename bridge fires.
+    Given: A sub-capability call with handler_dir set.
     When:  add_secret_capability runs.
-    Then:  serializer.yaml at handler_dir contains a field_mappings entry
-           bridging '<sub_cap_id>_isFetchCredentials' (renamed connector
-           field id) back to 'isFetchCredentials' (original yml name).
+    Then:  serializer.yaml at handler_dir contains a computed_fields rule
+           injecting isFetchCredentials=true gated on the sub-capability —
+           NOT a field_mappings bridge (no manifest field exists anymore).
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4287,22 +4449,36 @@ def test_add_secret_capability_sub_cap_path_writes_serializer_bridge(tmp_path: P
     )
 
     serializer = _read_serializer_dict(tmp_path)
-    assert serializer["field_mappings"] == [
+    assert "field_mappings" not in serializer
+    assert serializer["computed_fields"] == [
         {
-            "id": "fetch-secrets-xsoar-mygraphmail_isFetchCredentials",
-            "field_name": "isFetchCredentials",
+            "output": [{"id": "isFetchCredentials", "value": True}],
+            "any_of": [
+                {
+                    "conditions": [
+                        {
+                            "type": "capability",
+                            "options": {
+                                "capability_id": (
+                                    "fetch-secrets-xsoar-mygraphmail"
+                                ),
+                                "value": "on",
+                            },
+                        }
+                    ]
+                }
+            ],
         }
     ]
 
 
-def test_add_secret_capability_top_level_does_NOT_write_serializer(tmp_path: Path):
+def test_add_secret_capability_top_level_writes_computed_field(tmp_path: Path):
     """
-    Given: A top-level call (is_sub_capability=False) — even with
-           handler_dir supplied, the rename bridge should NOT fire
-           because the field id matches the original yml name 1:1 so
-           there's nothing to bridge.
+    Given: A top-level call (is_sub_capability=False) with handler_dir.
     When:  add_secret_capability runs.
-    Then:  No serializer.yaml is created at handler_dir.
+    Then:  serializer.yaml IS created with a computed_fields rule (the
+           value is always injected via the serializer now — there is no
+           hidden toggle field).
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4313,61 +4489,10 @@ def test_add_secret_capability_top_level_does_NOT_write_serializer(tmp_path: Pat
         handler_dir=tmp_path,
     )
 
-    assert not (tmp_path / "serializer.yaml").exists()
-
-
-def test_add_secret_capability_uses_yml_display_for_title_when_present():
-    """
-    Given: yml_params_by_name has an entry for 'isFetchCredentials' with
-           display='Enable credentials sync'.
-    When:  add_secret_capability runs.
-    Then:  The returned field uses the YAML's display as the title,
-           NOT the fallback constant 'Fetch credentials'.
-    """
-    mapped: dict[str, list[str]] = {"general_configurations": []}
-    yml_lookup = {
-        "isFetchCredentials": {
-            "name": "isFetchCredentials",
-            "display": "Enable credentials sync",
-            "type": 8,
-        }
-    }
-
-    template = add_secret_capability(
-        capability_id="fetch-secrets",
-        is_sub_capability=False,
-        mapped_params=mapped,
-        yml_params_by_name=yml_lookup,
-    )
-
-    assert template["fields"][0]["title"] == "Enable credentials sync"
-
-
-def test_add_secret_capability_falls_back_to_constant_when_display_is_empty():
-    """
-    Given: yml_params_by_name has an entry for 'isFetchCredentials' but
-           with display='' (empty / whitespace-only).
-    When:  add_secret_capability runs.
-    Then:  The fallback constant 'Fetch credentials' is used. Empty
-           display strings don't accidentally produce an empty title.
-    """
-    mapped: dict[str, list[str]] = {"general_configurations": []}
-    yml_lookup = {
-        "isFetchCredentials": {
-            "name": "isFetchCredentials",
-            "display": "   ",  # whitespace-only
-            "type": 8,
-        }
-    }
-
-    template = add_secret_capability(
-        capability_id="fetch-secrets",
-        is_sub_capability=False,
-        mapped_params=mapped,
-        yml_params_by_name=yml_lookup,
-    )
-
-    assert template["fields"][0]["title"] == "Fetch credentials"
+    serializer = _read_serializer_dict(tmp_path)
+    assert serializer["computed_fields"][0]["output"] == [
+        {"id": "isFetchCredentials", "value": True}
+    ]
 
 
 def test_isfetchcredentials_param_name_constant_matches_xsoar_yaml_name():
@@ -4404,16 +4529,19 @@ def test_log_collection_constants_match_xsoar_yaml_names():
     assert EVENTFETCHINTERVAL_FALLBACK_DEFAULT == "1"
 
 
-def test_log_collection_scenario_A_not_long_running_synthetic_isFetchEvents():
+def test_log_collection_scenario_A_lone_isFetchEvents_dropped_to_computed(
+    tmp_path: Path,
+):
     """
     Given: add_log_collection_capability called with
            is_long_running_capability=False, is_sub_capability=False,
-           NO yml param for isFetchEvents (and no longRunning routed here).
-    When:  Inspecting the returned isFetchEvents field.
+           NO yml param for isFetchEvents (and no longRunning routed here),
+           plus a handler_dir.
+    When:  Inspecting the returned fields + serializer.
     Then:  Per the "count both checkboxes together" rule isFetchEvents is the
-           lone fetch checkbox → toggle HIDDEN in both modifier blocks and
-           defaulted to True, required False, title fallback 'Fetch events'.
-           Plain id 'isFetchEvents' (no rename in top-level case).
+           lone fetch checkbox → it is NOT emitted as a manifest field and its
+           ``true`` value is pushed via a serializer computed_fields rule gated
+           on this capability being 'on'.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4422,16 +4550,31 @@ def test_log_collection_scenario_A_not_long_running_synthetic_isFetchEvents():
         is_sub_capability=False,
         is_long_running_capability=False,
         mapped_params=mapped,
+        handler_dir=tmp_path,
     )
 
     fields_by_id = {f["id"]: f for f in template["fields"]}
-    assert "isFetchEvents" in fields_by_id
-    ifc = fields_by_id["isFetchEvents"]
-    assert ifc["field_type"] == "toggle"
-    assert ifc["title"] == "Fetch events"
-    assert ifc["options"]["default_value"] is True
-    assert ifc["options"]["create_modifiers"] == {"required": False, "hidden": True}
-    assert ifc["options"]["edit_modifiers"] == {"required": False, "hidden": True}
+    assert "isFetchEvents" not in fields_by_id
+
+    serializer = _read_serializer_dict(tmp_path)
+    assert serializer["computed_fields"] == [
+        {
+            "output": [{"id": "isFetchEvents", "value": True}],
+            "any_of": [
+                {
+                    "conditions": [
+                        {
+                            "type": "capability",
+                            "options": {
+                                "capability_id": "log-collection",
+                                "value": "on",
+                            },
+                        }
+                    ]
+                }
+            ],
+        }
+    ]
 
 
 def test_log_collection_scenario_A_not_long_running_synthetic_eventFetchInterval_no_yml():
@@ -4530,17 +4673,18 @@ def test_log_collection_scenario_A_yml_eventFetchInterval_without_defaultvalue_f
     }
 
 
-def test_log_collection_scenario_B_long_running_with_yml_uses_yml_values():
+def test_log_collection_scenario_B_lone_isFetchEvents_dropped_interval_kept(
+    tmp_path: Path,
+):
     """
     Given: is_long_running_capability=True AND the yml carries BOTH
            isFetchEvents (defaultvalue 'true') and eventFetchInterval
-           (defaultvalue '5', explicit hidden=True).
+           (defaultvalue '5'). longRunning is NOT routed into this bucket,
+           so isFetchEvents is the lone fetch checkbox.
     When:  add_log_collection_capability runs.
-    Then:  Both fields are emitted with values derived from the yml —
-           isFetchEvents default_value is True (coerced), and
-           eventFetchInterval is a duration field with default
-           {minutes: 5} (5-minute count converted) AND hidden=True in
-           both modifier blocks (yml override honored).
+    Then:  isFetchEvents is dropped to a serializer computed_fields rule
+           (value True). eventFetchInterval is STILL emitted as a duration
+           field with default {minutes: 5}.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     yml_lookup = {
@@ -4553,7 +4697,6 @@ def test_log_collection_scenario_B_long_running_with_yml_uses_yml_values():
             "name": "eventFetchInterval",
             "type": 19,
             "defaultvalue": "5",
-            "hidden": True,
         },
     }
 
@@ -4563,34 +4706,33 @@ def test_log_collection_scenario_B_long_running_with_yml_uses_yml_values():
         is_long_running_capability=True,
         mapped_params=mapped,
         yml_params_by_name=yml_lookup,
+        handler_dir=tmp_path,
     )
 
     fields_by_id = {f["id"]: f for f in template["fields"]}
-    assert fields_by_id["isFetchEvents"]["options"]["default_value"] is True
+    assert "isFetchEvents" not in fields_by_id
     assert fields_by_id["eventFetchInterval"]["field_type"] == "duration"
     assert fields_by_id["eventFetchInterval"]["options"]["default_value"] == {
         "minutes": 5
     }
-    assert (
-        fields_by_id["eventFetchInterval"]["options"]["create_modifiers"]["hidden"]
-        is True
-    )
-    assert (
-        fields_by_id["eventFetchInterval"]["options"]["edit_modifiers"]["hidden"]
-        is True
-    )
+
+    serializer = _read_serializer_dict(tmp_path)
+    assert serializer["computed_fields"][0]["output"] == [
+        {"id": "isFetchEvents", "value": True}
+    ]
 
 
-def test_log_collection_scenario_C_long_running_no_yml_falls_back_to_synthetic():
+def test_log_collection_scenario_C_long_running_no_yml_drops_isFetchEvents(
+    tmp_path: Path,
+):
     """
     Given: is_long_running_capability=True AND neither isFetchEvents nor
            eventFetchInterval is in the yml, and longRunning is NOT routed
            into the Log Collection bucket (E4 — long-running cap with no
            related yml params).
     When:  add_log_collection_capability runs.
-    Then:  Both fields are STILL emitted. isFetchEvents is the lone fetch
-           checkbox (no longRunning emitted) → HIDDEN + default True per the
-           "count both checkboxes together" rule. eventFetchInterval stays a
+    Then:  isFetchEvents is the lone fetch checkbox → dropped to a serializer
+           computed_fields rule (value True). eventFetchInterval stays a
            VISIBLE duration default {minutes: 1}.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
@@ -4600,29 +4742,31 @@ def test_log_collection_scenario_C_long_running_no_yml_falls_back_to_synthetic()
         is_sub_capability=False,
         is_long_running_capability=True,
         mapped_params=mapped,
+        handler_dir=tmp_path,
     )
 
     fields_by_id = {f["id"]: f for f in template["fields"]}
-    assert "isFetchEvents" in fields_by_id
+    assert "isFetchEvents" not in fields_by_id
     assert "eventFetchInterval" in fields_by_id
-    ifc = fields_by_id["isFetchEvents"]
-    assert ifc["options"]["default_value"] is True
-    assert ifc["options"]["create_modifiers"]["hidden"] is True
     efi = fields_by_id["eventFetchInterval"]
     assert efi["field_type"] == "duration"
     assert efi["options"]["default_value"] == {"minutes": 1}
     assert efi["options"]["create_modifiers"]["hidden"] is False
 
+    serializer = _read_serializer_dict(tmp_path)
+    assert serializer["computed_fields"][0]["output"] == [
+        {"id": "isFetchEvents", "value": True}
+    ]
 
-def test_log_collection_sub_capability_renames_both_field_ids():
+
+def test_log_collection_sub_capability_renames_interval_field_id():
     """
     Given: is_sub_capability=True with a sub-cap id
            'log-collection-xsoar-myhandler'.
     When:  add_log_collection_capability runs.
-    Then:  Both field ids are renamed to
-           '<capability_id>_<original_name>' so they cannot collide
-           with the root log-collection cap's toggles if both exist on
-           the same connector.
+    Then:  Only eventFetchInterval remains as a renamed field. isFetchEvents
+           is the lone fetch checkbox → dropped to serializer computed_fields
+           (no manifest field).
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4634,7 +4778,7 @@ def test_log_collection_sub_capability_renames_both_field_ids():
     )
 
     field_ids = {f["id"] for f in template["fields"]}
-    assert "log-collection-xsoar-myhandler_isFetchEvents" in field_ids
+    assert "log-collection-xsoar-myhandler_isFetchEvents" not in field_ids
     assert "log-collection-xsoar-myhandler_eventFetchInterval" in field_ids
 
 
@@ -4664,16 +4808,17 @@ def test_log_collection_strips_both_param_names_from_mapper_results():
     assert mapped["Automation"] == ["unrelated"]
 
 
-def test_log_collection_sub_cap_path_writes_serializer_bridges_for_both(tmp_path: Path):
+def test_log_collection_sub_cap_path_writes_interval_bridge_and_computed(
+    tmp_path: Path,
+):
     """
-    Given: sub-cap path AND handler_dir supplied. is_long_running=False
-           so both fields are renamed (sub-cap rule applies to both
-           regardless of scenario A/B/C).
+    Given: sub-cap path AND handler_dir supplied. is_long_running=False so
+           isFetchEvents is the lone fetch checkbox.
     When:  add_log_collection_capability runs.
-    Then:  serializer.yaml at handler_dir contains TWO field_mappings
-           entries bridging '<sub_cap_id>_isFetchEvents' →
-           'isFetchEvents' AND '<sub_cap_id>_eventFetchInterval' →
-           'eventFetchInterval'.
+    Then:  serializer.yaml contains ONE field_mappings entry bridging
+           '<sub_cap_id>_eventFetchInterval' → 'eventFetchInterval', a
+           computed_fields rule injecting isFetchEvents=true, and NO
+           field_mappings bridge for isFetchEvents (it has no manifest field).
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4686,25 +4831,25 @@ def test_log_collection_sub_cap_path_writes_serializer_bridges_for_both(tmp_path
     )
 
     serializer = _read_serializer_dict(tmp_path)
-    field_mappings = serializer["field_mappings"]
-    by_id = {fm["id"]: fm for fm in field_mappings}
-    assert (
-        by_id["log-collection-xsoar-myhandler_isFetchEvents"]["field_name"]
-        == "isFetchEvents"
-    )
+    by_id = {fm["id"]: fm for fm in serializer["field_mappings"]}
     assert (
         by_id["log-collection-xsoar-myhandler_eventFetchInterval"]["field_name"]
         == "eventFetchInterval"
     )
+    assert "log-collection-xsoar-myhandler_isFetchEvents" not in by_id
+    assert serializer["computed_fields"][0]["output"] == [
+        {"id": "isFetchEvents", "value": True}
+    ]
 
 
-def test_log_collection_top_level_does_NOT_write_serializer_bridge(tmp_path: Path):
+def test_log_collection_top_level_writes_only_computed_field(tmp_path: Path):
     """
-    Given: top-level call (is_sub_capability=False) even with
-           handler_dir supplied. Field ids match the original yml names
-           1:1 — nothing to bridge.
+    Given: top-level call (is_sub_capability=False) with handler_dir.
     When:  add_log_collection_capability runs.
-    Then:  No serializer.yaml is created at handler_dir.
+    Then:  serializer.yaml IS created with a computed_fields rule for
+           isFetchEvents (always injected via the serializer now). The
+           eventFetchInterval field keeps its plain id so there is no
+           field_mappings bridge on the top-level path.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4716,18 +4861,21 @@ def test_log_collection_top_level_does_NOT_write_serializer_bridge(tmp_path: Pat
         handler_dir=tmp_path,
     )
 
-    assert not (tmp_path / "serializer.yaml").exists()
+    serializer = _read_serializer_dict(tmp_path)
+    assert "field_mappings" not in serializer
+    assert serializer["computed_fields"][0]["output"] == [
+        {"id": "isFetchEvents", "value": True}
+    ]
 
 
-def test_log_collection_uses_yml_display_for_title_when_present():
+def test_log_collection_uses_yml_display_for_interval_title_when_present():
     """
-    Given: yml_params_by_name carries isFetchEvents with display='Enable
-           event ingestion' and eventFetchInterval with display='Polling
-           interval (minutes)'.
-    When:  add_log_collection_capability runs (scenario A — synthetic
-           shapes, but title resolution still uses yml.display).
-    Then:  Both emitted fields use the vendor-supplied display strings
-           as their titles, overriding the fallback constants.
+    Given: yml_params_by_name carries eventFetchInterval with
+           display='Polling interval (minutes)'.
+    When:  add_log_collection_capability runs (scenario A — isFetchEvents
+           dropped to serializer, interval still emitted).
+    Then:  The eventFetchInterval field uses the vendor-supplied display
+           string as its title. isFetchEvents is no longer a field.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     yml_lookup = {
@@ -4752,7 +4900,7 @@ def test_log_collection_uses_yml_display_for_title_when_present():
     )
 
     fields_by_id = {f["id"]: f for f in template["fields"]}
-    assert fields_by_id["isFetchEvents"]["title"] == "Enable event ingestion"
+    assert "isFetchEvents" not in fields_by_id
     assert fields_by_id["eventFetchInterval"]["title"] == "Polling interval (minutes)"
 
 
@@ -4778,15 +4926,14 @@ def test_assets_constants_match_xsoar_yaml_names():
     assert ASSETSFETCHINTERVAL_FALLBACK_DEFAULT == "720"
 
 
-def test_assets_isFetchAssets_is_always_synthetic_hidden_toggle_no_yml():
+def test_assets_isFetchAssets_is_not_emitted_only_computed_field(tmp_path: Path):
     """
     Given: add_assets_capability called with NO yml param for
-           isFetchAssets.
-    When:  Inspecting the returned isFetchAssets field.
-    Then:  Synthetic shape — toggle, default False, hidden in both
-           modifier blocks, required False, title fallback 'Fetch
-           assets and vulnerabilities'. Plain id 'isFetchAssets'
-           (no rename in top-level case).
+           isFetchAssets (and a handler_dir).
+    When:  Inspecting the returned fields + serializer.
+    Then:  isFetchAssets is NOT emitted as a manifest field anymore. Its
+           ``true`` value is pushed via a serializer computed_fields rule
+           gated on this capability being 'on'.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4794,28 +4941,43 @@ def test_assets_isFetchAssets_is_always_synthetic_hidden_toggle_no_yml():
         capability_id="fetch-assets-and-vulnerabilities",
         is_sub_capability=False,
         mapped_params=mapped,
+        handler_dir=tmp_path,
     )
 
     fields_by_id = {f["id"]: f for f in template["fields"]}
-    assert "isFetchAssets" in fields_by_id
-    ifa = fields_by_id["isFetchAssets"]
-    assert ifa["field_type"] == "toggle"
-    assert ifa["title"] == "Fetch assets and vulnerabilities"
-    assert ifa["options"]["default_value"] is True
-    assert ifa["options"]["create_modifiers"] == {"required": False, "hidden": True}
-    assert ifa["options"]["edit_modifiers"] == {"required": False, "hidden": True}
+    assert "isFetchAssets" not in fields_by_id
+
+    serializer = _read_serializer_dict(tmp_path)
+    assert serializer["computed_fields"] == [
+        {
+            "output": [{"id": "isFetchAssets", "value": True}],
+            "any_of": [
+                {
+                    "conditions": [
+                        {
+                            "type": "capability",
+                            "options": {
+                                "capability_id": (
+                                    "fetch-assets-and-vulnerabilities"
+                                ),
+                                "value": "on",
+                            },
+                        }
+                    ]
+                }
+            ],
+        }
+    ]
 
 
-def test_assets_isFetchAssets_is_always_synthetic_even_when_yml_carries_it():
+def test_assets_isFetchAssets_computed_field_even_when_yml_carries_it(
+    tmp_path: Path,
+):
     """
-    Given: The yml CARRIES isFetchAssets (with defaultvalue: 'true',
-           hidden: false in the yml).
+    Given: The yml CARRIES isFetchAssets (with defaultvalue / hidden).
     When:  add_assets_capability runs.
-    Then:  isFetchAssets is STILL emitted as the synthetic hidden
-           toggle (default False, hidden True) — the yml's
-           defaultvalue and hidden are IGNORED for isFetchAssets per
-           the spec ("default False and hidden True"). Only the title
-           is allowed to come from yml.display.
+    Then:  isFetchAssets is STILL not emitted as a field; the computed
+           field injects ``true`` regardless of the yml's defaultvalue.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     yml_lookup = {
@@ -4832,14 +4994,15 @@ def test_assets_isFetchAssets_is_always_synthetic_even_when_yml_carries_it():
         is_sub_capability=False,
         mapped_params=mapped,
         yml_params_by_name=yml_lookup,
+        handler_dir=tmp_path,
     )
 
     fields_by_id = {f["id"]: f for f in template["fields"]}
-    ifa = fields_by_id["isFetchAssets"]
-    # Synthetic shape preserved despite yml override attempts.
-    assert ifa["options"]["default_value"] is True
-    assert ifa["options"]["create_modifiers"]["hidden"] is True
-    assert ifa["options"]["edit_modifiers"]["hidden"] is True
+    assert "isFetchAssets" not in fields_by_id
+    serializer = _read_serializer_dict(tmp_path)
+    assert serializer["computed_fields"][0]["output"] == [
+        {"id": "isFetchAssets", "value": True}
+    ]
 
 
 def test_assets_assetsFetchInterval_no_yml_synthetic_visible_with_fallback_720():
@@ -4964,15 +5127,14 @@ def test_assets_assetsFetchInterval_yml_hidden_true_is_respected():
     assert afi["options"]["edit_modifiers"]["hidden"] is True
 
 
-def test_assets_sub_capability_renames_both_field_ids():
+def test_assets_sub_capability_renames_interval_field_id():
     """
     Given: is_sub_capability=True with a sub-cap id
            'fetch-assets-and-vulnerabilities-xsoar-myhandler'.
     When:  add_assets_capability runs.
-    Then:  Both field ids are renamed to
-           '<capability_id>_<original_name>' so they cannot collide
-           with the root fetch-assets cap's fields if both exist on
-           the same connector.
+    Then:  Only assetsFetchInterval remains as a field (renamed to the
+           sub-cap-prefixed id). isFetchAssets is no longer a field (moved
+           to serializer computed_fields).
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -4985,7 +5147,7 @@ def test_assets_sub_capability_renames_both_field_ids():
     field_ids = {f["id"] for f in template["fields"]}
     assert (
         "fetch-assets-and-vulnerabilities-xsoar-myhandler_isFetchAssets"
-        in field_ids
+        not in field_ids
     )
     assert (
         "fetch-assets-and-vulnerabilities-xsoar-myhandler_assetsFetchInterval"
@@ -5022,14 +5184,14 @@ def test_assets_strips_both_param_names_from_mapper_results():
     assert mapped["Automation"] == ["unrelated"]
 
 
-def test_assets_sub_cap_path_writes_serializer_bridges_for_both(tmp_path: Path):
+def test_assets_sub_cap_path_writes_interval_bridge_and_computed(tmp_path: Path):
     """
     Given: sub-cap path AND handler_dir supplied.
     When:  add_assets_capability runs.
-    Then:  serializer.yaml at handler_dir contains TWO field_mappings
-           entries bridging '<sub_cap_id>_isFetchAssets' →
-           'isFetchAssets' AND '<sub_cap_id>_assetsFetchInterval' →
-           'assetsFetchInterval'.
+    Then:  serializer.yaml contains ONE field_mappings entry bridging
+           '<sub_cap_id>_assetsFetchInterval' → 'assetsFetchInterval', AND
+           a computed_fields rule injecting isFetchAssets=true (gated on the
+           sub-capability). isFetchAssets has NO field_mappings bridge.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -5043,26 +5205,28 @@ def test_assets_sub_cap_path_writes_serializer_bridges_for_both(tmp_path: Path):
     serializer = _read_serializer_dict(tmp_path)
     by_id = {fm["id"]: fm for fm in serializer["field_mappings"]}
     assert (
-        by_id["fetch-assets-and-vulnerabilities-xsoar-myhandler_isFetchAssets"][
-            "field_name"
-        ]
-        == "isFetchAssets"
-    )
-    assert (
         by_id["fetch-assets-and-vulnerabilities-xsoar-myhandler_assetsFetchInterval"][
             "field_name"
         ]
         == "assetsFetchInterval"
     )
+    assert (
+        "fetch-assets-and-vulnerabilities-xsoar-myhandler_isFetchAssets"
+        not in by_id
+    )
+    assert serializer["computed_fields"][0]["output"] == [
+        {"id": "isFetchAssets", "value": True}
+    ]
 
 
-def test_assets_top_level_does_NOT_write_serializer_bridge(tmp_path: Path):
+def test_assets_top_level_writes_computed_field(tmp_path: Path):
     """
-    Given: top-level call (is_sub_capability=False) even with
-           handler_dir supplied. Field ids match the original yml
-           names 1:1 — nothing to bridge.
+    Given: top-level call (is_sub_capability=False) with handler_dir.
     When:  add_assets_capability runs.
-    Then:  No serializer.yaml is created at handler_dir.
+    Then:  serializer.yaml IS created — with a computed_fields rule for
+           isFetchAssets (always injected via the serializer now). The
+           assetsFetchInterval field keeps its plain id so there is no
+           field_mappings bridge on the top-level path.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -5073,17 +5237,22 @@ def test_assets_top_level_does_NOT_write_serializer_bridge(tmp_path: Path):
         handler_dir=tmp_path,
     )
 
-    assert not (tmp_path / "serializer.yaml").exists()
+    serializer = _read_serializer_dict(tmp_path)
+    assert "field_mappings" not in serializer
+    assert serializer["computed_fields"][0]["output"] == [
+        {"id": "isFetchAssets", "value": True}
+    ]
 
 
-def test_assets_uses_yml_display_for_titles_when_present():
+def test_assets_uses_yml_display_for_interval_title_when_present():
     """
-    Given: yml_params_by_name carries isFetchAssets with display
-           'Enable asset ingestion' and assetsFetchInterval with
-           display 'Asset polling interval'.
+    Given: yml_params_by_name carries assetsFetchInterval with display
+           'Asset polling interval'.
     When:  add_assets_capability runs.
-    Then:  Both emitted fields use the vendor-supplied display
-           strings as their titles, overriding the fallback constants.
+    Then:  The assetsFetchInterval field uses the vendor-supplied display
+           string as its title. isFetchAssets is no longer a field (moved
+           to serializer computed_fields), so only the interval title is
+           asserted.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     yml_lookup = {
@@ -5107,7 +5276,7 @@ def test_assets_uses_yml_display_for_titles_when_present():
     )
 
     fields_by_id = {f["id"]: f for f in template["fields"]}
-    assert fields_by_id["isFetchAssets"]["title"] == "Enable asset ingestion"
+    assert "isFetchAssets" not in fields_by_id
     assert fields_by_id["assetsFetchInterval"]["title"] == "Asset polling interval"
 
 
@@ -6249,18 +6418,21 @@ _FETCH_ISSUES_YML_PARAMS = {
 }
 
 
-def test_add_fetch_issues_capability_top_level_emits_5_fields_standard():
+def test_add_fetch_issues_capability_top_level_emits_4_fields_standard():
     """
     Given: add_fetch_issues_capability called with is_long_running=False, and
            the integration yml DOES declare incidentType / incidentFetchInterval
            (so the alert fields are migrated — Issue #8).
     When:  add_fetch_issues_capability runs.
-    Then:  5 fields are emitted (no longRunning field).
+    Then:  4 fields are emitted. isFetch is the lone fetch checkbox → it is
+           NOT emitted as a manifest field (moved to serializer
+           computed_fields); the remaining 4 are alertType, alertFetchInterval,
+           incomingMapperId, mappingId. No longRunning field.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     integration_yml = _make_integration_yml()
     # Issue #8: alertType / alertFetchInterval are emitted ONLY when the source
-    # XSOAR params exist in the integration yml. Supply them so all 5 fields
+    # XSOAR params exist in the integration yml. Supply them so all 4 fields
     # are emitted (the realistic fetch-issues migration case).
     template = add_fetch_issues_capability(
         capability_id="fetch-issues",
@@ -6272,18 +6444,13 @@ def test_add_fetch_issues_capability_top_level_emits_5_fields_standard():
     )
     assert template["capability_id"] == "fetch-issues"
     fields = template["fields"]
-    assert len(fields) == 5
+    assert len(fields) == 4
 
     by_id = {f["id"]: f for f in fields}
 
-    # 1. isFetch — checkbox. Per the "count both checkboxes together" rule,
-    # with NO longRunning in this capability isFetch is the lone fetch
-    # checkbox → hidden + default True.
-    isfetch = by_id["isFetch"]
-    assert isfetch["field_type"] == "checkbox"
-    assert isfetch["options"]["default_value"] is True
-    assert isfetch["options"]["create_modifiers"]["hidden"] is True
-    assert isfetch["options"]["edit_modifiers"]["hidden"] is True
+    # 1. isFetch — the lone fetch checkbox is dropped to serializer
+    # computed_fields (no manifest field).
+    assert "isFetch" not in by_id
 
     # 2. alertType (XSOAR incidentType) — dynamic select. Per migration
     # guide §line 889-890 the connector-side id is the Platform "alertType",
@@ -6415,7 +6582,8 @@ def test_add_fetch_issues_capability_replaces_incidents_with_issues_in_titles():
         yml_params_by_name=yml_params_by_name,
     )
     by_id = {f["id"]: f for f in template["fields"]}
-    assert by_id["isFetch"]["title"] == "Fetch Issues"
+    # isFetch is the lone fetch checkbox → dropped to serializer; no field.
+    assert "isFetch" not in by_id
     # alertType title is hardcoded, ignoring the yml "Incidents Type" display.
     assert by_id["alertType"]["title"] == "Issue Type"
 
@@ -6450,14 +6618,17 @@ def test_add_fetch_issues_capability_long_running_emits_6_fields():
     assert lr["options"]["create_modifiers"]["hidden"] is False
 
 
-def test_add_fetch_issues_capability_isfetch_lone_checkbox_hidden_default_true():
+def test_add_fetch_issues_capability_isfetch_lone_checkbox_dropped_to_computed(
+    tmp_path: Path,
+):
     """
     Given: yml carries an isFetch param, and NO longRunning is routed to this
-           capability (isFetch is the lone fetch checkbox).
+           capability (isFetch is the lone fetch checkbox), plus a handler_dir.
     When:  add_fetch_issues_capability runs.
     Then:  Per the "count both checkboxes together" rule the lone isFetch
-           checkbox is HIDDEN (create+edit) and defaulted to True. The title
-           still uses the yml display value.
+           checkbox is NOT emitted as a manifest field. Its ``true`` value is
+           pushed via a serializer computed_fields rule gated on this
+           capability being 'on'.
     """
     yml_lookup = {
         "isFetch": {
@@ -6477,13 +6648,28 @@ def test_add_fetch_issues_capability_isfetch_lone_checkbox_hidden_default_true()
         mapped_params=mapped,
         integration_yml=integration_yml,
         yml_params_by_name=yml_lookup,
+        handler_dir=tmp_path,
     )
-    isfetch = {f["id"]: f for f in template["fields"]}["isFetch"]
-    assert isfetch["options"]["default_value"] is True
-    assert isfetch["options"]["create_modifiers"]["hidden"] is True
-    assert isfetch["options"]["edit_modifiers"]["hidden"] is True
-    # Title should use yml display when available.
-    assert isfetch["title"] == "Custom Fetch Label"
+    by_id = {f["id"]: f for f in template["fields"]}
+    assert "isFetch" not in by_id
+
+    serializer = _read_serializer_dict(tmp_path)
+    assert {
+        "output": [{"id": "isFetch", "value": True}],
+        "any_of": [
+            {
+                "conditions": [
+                    {
+                        "type": "capability",
+                        "options": {
+                            "capability_id": "fetch-issues",
+                            "value": "on",
+                        },
+                    }
+                ]
+            }
+        ],
+    } in serializer["computed_fields"]
 
 
 def test_add_fetch_issues_capability_strips_params_from_mapped_params():
@@ -6628,14 +6814,14 @@ def test_log_collection_longrunning_not_in_bucket_not_emitted():
 # ============================================================
 
 
-def test_log_collection_only_isfetchevents_is_hidden_and_default_true():
+def test_log_collection_only_isfetchevents_dropped_to_computed(tmp_path: Path):
     """
     Given: Log Collection with NO longRunning in the bucket (only the
-           always-emitted isFetchEvents checkbox is present).
+           always-emitted isFetchEvents checkbox is present), plus handler_dir.
     When:  add_log_collection_capability runs.
-    Then:  isFetchEvents is hidden in both modifier blocks and default True
-           (the single fetch checkbox is auto-on + hidden). eventFetchInterval
-           stays VISIBLE.
+    Then:  isFetchEvents (the single fetch checkbox) is NOT emitted as a field
+           and is injected via serializer computed_fields instead.
+           eventFetchInterval stays VISIBLE.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
 
@@ -6644,15 +6830,18 @@ def test_log_collection_only_isfetchevents_is_hidden_and_default_true():
         is_sub_capability=False,
         is_long_running_capability=False,
         mapped_params=mapped,
+        handler_dir=tmp_path,
     )
 
     by_id = {f["id"]: f for f in template["fields"]}
-    ifc = by_id["isFetchEvents"]
-    assert ifc["options"]["default_value"] is True
-    assert ifc["options"]["create_modifiers"]["hidden"] is True
-    assert ifc["options"]["edit_modifiers"]["hidden"] is True
-    # The interval field is never hidden by this rule.
+    assert "isFetchEvents" not in by_id
+    # The interval field is still emitted and visible.
     assert by_id["eventFetchInterval"]["options"]["create_modifiers"]["hidden"] is False
+
+    serializer = _read_serializer_dict(tmp_path)
+    assert serializer["computed_fields"][0]["output"] == [
+        {"id": "isFetchEvents", "value": True}
+    ]
 
 
 def test_log_collection_both_checkboxes_are_shown_and_default_false():
@@ -6683,14 +6872,15 @@ def test_log_collection_both_checkboxes_are_shown_and_default_false():
         assert opts["edit_modifiers"]["hidden"] is False
 
 
-def test_fetch_issues_only_isfetch_is_hidden_and_default_true():
+def test_fetch_issues_only_isfetch_dropped_to_computed(tmp_path: Path):
     """
     Given: Fetch Issues with NO longRunning in the bucket (only the
            always-emitted isFetch checkbox is present) — e.g. Akamai WAF SIEM,
-           whose longRunning is routed to Log Collection.
+           whose longRunning is routed to Log Collection. Plus handler_dir.
     When:  add_fetch_issues_capability runs.
-    Then:  isFetch is hidden in both modifier blocks and default True. The
-           interval / dynamic fields are unaffected.
+    Then:  isFetch (the single fetch checkbox) is NOT emitted as a field and is
+           injected via serializer computed_fields instead. The interval /
+           dynamic fields are unaffected.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     integration_yml = _make_integration_yml()
@@ -6702,13 +6892,29 @@ def test_fetch_issues_only_isfetch_is_hidden_and_default_true():
         mapped_params=mapped,
         integration_yml=integration_yml,
         yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
+        handler_dir=tmp_path,
     )
 
     by_id = {f["id"]: f for f in template["fields"]}
-    isfetch = by_id["isFetch"]
-    assert isfetch["options"]["default_value"] is True
-    assert isfetch["options"]["create_modifiers"]["hidden"] is True
-    assert isfetch["options"]["edit_modifiers"]["hidden"] is True
+    assert "isFetch" not in by_id
+
+    serializer = _read_serializer_dict(tmp_path)
+    assert {
+        "output": [{"id": "isFetch", "value": True}],
+        "any_of": [
+            {
+                "conditions": [
+                    {
+                        "type": "capability",
+                        "options": {
+                            "capability_id": "fetch-issues",
+                            "value": "on",
+                        },
+                    }
+                ]
+            }
+        ],
+    } in serializer["computed_fields"]
 
 
 def test_fetch_issues_both_checkboxes_are_shown_and_default_false():
@@ -6916,7 +7122,8 @@ def test_add_fetch_issues_capability_sub_capability_renames_field_ids():
         yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
     )
     field_ids = [f["id"] for f in template["fields"]]
-    assert f"{cap_id}_isFetch" in field_ids
+    # isFetch is the lone fetch checkbox → dropped to serializer (no field).
+    assert f"{cap_id}_isFetch" not in field_ids
     # Platform "alert" ids (guide §line 889-890), still sub-cap prefixed.
     assert f"{cap_id}_alertType" in field_ids
     assert f"{cap_id}_alertFetchInterval" in field_ids
@@ -6930,8 +7137,10 @@ def test_add_fetch_issues_capability_sub_cap_writes_serializer_bridges(tmp_path:
     When:  add_fetch_issues_capability runs.
     Then:  serializer.yaml at handler_dir contains field_mappings entries for
            the sub-cap-prefixed fields. Per Issue #8 the alert fields
-           (alertType / alertFetchInterval) are NOT bridged — they migrate
-           as-is — so only isFetch / incomingMapperId / mappingId get bridges.
+           (alertType / alertFetchInterval) are NOT bridged. isFetch is the
+           lone fetch checkbox → dropped to computed_fields (NOT a
+           field_mappings bridge) — so only incomingMapperId / mappingId get
+           bridges, plus the isFetch computed_fields rule.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     cap_id = "fetch-issues-xsoar-myhandler"
@@ -6951,14 +7160,19 @@ def test_add_fetch_issues_capability_sub_cap_writes_serializer_bridges(tmp_path:
         content = fh.read()
     data = yaml.safe_load(content.split("\n", 1)[1])  # skip directive
     mappings = data["field_mappings"]
-    assert len(mappings) == 3  # isFetch + incomingMapperId + mappingId
+    assert len(mappings) == 2  # incomingMapperId + mappingId
     mapping_dict = {m["id"]: m["field_name"] for m in mappings}
-    assert mapping_dict[f"{cap_id}_isFetch"] == "isFetch"
     assert mapping_dict[f"{cap_id}_incomingMapperId"] == "incomingMapperId"
     assert mapping_dict[f"{cap_id}_mappingId"] == "mappingId"
+    # isFetch is NOT a field_mappings bridge (moved to computed_fields).
+    assert f"{cap_id}_isFetch" not in mapping_dict
     # Issue #8: alert fields are NOT bridged (no incident* mapping).
     assert f"{cap_id}_alertType" not in mapping_dict
     assert f"{cap_id}_alertFetchInterval" not in mapping_dict
+    # isFetch value flows via computed_fields gated on the sub-capability.
+    assert data["computed_fields"][0]["output"] == [
+        {"id": "isFetch", "value": True}
+    ]
 
 
 def test_add_fetch_issues_capability_long_running_sub_cap_writes_4_bridges(tmp_path: Path):
@@ -7004,10 +7218,10 @@ def test_add_fetch_issues_capability_top_level_writes_no_serializer_bridges(
     """
     Given: top-level path (is_sub_capability=False) with handler_dir.
     When:  add_fetch_issues_capability runs.
-    Then:  NO serializer.yaml is created. Per Issue #8 the alert fields are no
-           longer bridged back to the incident* names, and on the top-level
-           path every other field (isFetch, incomingMapperId, mappingId) is
-           1:1 — so there are no renames to bridge at all.
+    Then:  serializer.yaml IS created, but with NO field_mappings bridges (on
+           the top-level path every emitted field is 1:1 and the alert fields
+           are not bridged per Issue #8). The only serializer content is the
+           isFetch computed_fields rule (the lone fetch checkbox value).
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     integration_yml = _make_integration_yml()
@@ -7020,8 +7234,11 @@ def test_add_fetch_issues_capability_top_level_writes_no_serializer_bridges(
         yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
         handler_dir=tmp_path,
     )
-    serializer_path = tmp_path / "serializer.yaml"
-    assert not serializer_path.exists()
+    serializer = _read_serializer_dict(tmp_path)
+    assert "field_mappings" not in serializer
+    assert serializer["computed_fields"][0]["output"] == [
+        {"id": "isFetch", "value": True}
+    ]
 
 
 def test_add_fetch_issues_capability_dynamic_fields_use_integration_id():

@@ -602,16 +602,13 @@ def main(argv: list[str] | None = None) -> int:
         format="%(levelname)s %(message)s",
     )
 
-    if not args.handler_path or not args.integration_yml:
-        print(  # noqa: T201
-            "ERROR: both --handler-path (handler.yaml) and --integration-yml "
-            "are required.",
-            file=sys.stderr,
-        )
-        return EXIT_USAGE
-
+    # handler_path = args.handler_path
+    # integration_yml_path = args.integration_yml
+    handler_path = Path("connectors/akamai/components/handlers/xsoar-akamai-waf-siem/handler.yaml")
+    integration_yml_path = Path("Packs/Akamai_SIEM/Integrations/Akamai_SIEM/Akamai_SIEM.yml")
+    integration_yml_path = args.integration_yml
     try:
-        passed, missing = check_coverage(args.handler_path, args.integration_yml)
+        passed, missing = check_coverage(handler_path, integration_yml_path)
     except CoverageError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)  # noqa: T201
         return EXIT_USAGE

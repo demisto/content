@@ -1490,6 +1490,100 @@ def register_serializer_entry(
         _dump_yaml(existing, fh)
 
 
+def build_capability_gated_computed_field(
+    *,
+    output_id: str,
+    value: Any,
+    capability_ids: list[str],
+) -> dict:
+    """Build a single ``computed_fields`` rule that injects ``output_id``=``value``.
+
+    The rule mirrors RULE 5 in the Salesforce example serializer.yaml: a
+    synthetic output parameter pushed into the lifecycle notification message
+    when a capability is enabled.
+
+    Gating (per migration decision):
+      - **One** capability id -> a single ``any_of`` group with one
+        ``capability`` condition (``value: "on"``). Used for params that are
+        strictly attached to one (sub-)capability.
+      - **Multiple** capability ids -> one ``any_of`` group PER id (OR logic),
+        so the value is injected if ANY of the listed capabilities is enabled.
+        Used for params not attached to any single capability (e.g.
+        ``general_configurations`` hidden-default params), which list all the
+        handler's available capability ids.
+
+    Returns a dict shaped per ``serializer.schema.json`` ``ComputedFieldRule``::
+
+        {
+            "output": [{"id": <output_id>, "value": <value>}],
+            "any_of": [
+                {"conditions": [
+                    {"type": "capability",
+                     "options": {"capability_id": <cap_id>, "value": "on"}}
+                ]},
+                ...
+            ],
+        }
+    """
+    groups = [
+        {
+            "conditions": [
+                {
+                    "type": "capability",
+                    "options": {"capability_id": cap_id, "value": "on"},
+                }
+            ]
+        }
+        for cap_id in capability_ids
+    ]
+    return {
+        "output": [{"id": output_id, "value": value}],
+        "any_of": groups,
+    }
+
+
+def register_computed_field_entry(
+    handler_dir: Path, rule: dict
+) -> None:
+    """Append one ``computed_fields`` rule to a handler's ``serializer.yaml``.
+
+    Behavior mirrors :func:`register_serializer_entry` (creates the file with
+    the schema directive when missing / comment-only stub, preserves existing
+    ``field_mappings`` and ``computed_fields`` entries when dict-based), but
+    appends to the ``computed_fields`` list instead of ``field_mappings``.
+
+    Idempotent: if a rule with the same ``output`` AND ``any_of`` already
+    exists, the file is left untouched (no duplicate appended, no write).
+    """
+    handler_dir.mkdir(parents=True, exist_ok=True)
+    serializer_path = handler_dir / "serializer.yaml"
+
+    existing: dict = {}
+    if serializer_path.is_file():
+        with open(serializer_path) as fh:
+            raw = fh.read()
+        body = _strip_leading_comments(raw)
+        loaded = yaml.safe_load(io.StringIO(body)) if body.strip() else None
+        if isinstance(loaded, dict):
+            existing = loaded
+
+    computed_fields = existing.setdefault("computed_fields", [])
+
+    # Idempotency guard: skip if an identical rule already exists.
+    for cf in computed_fields:
+        if (
+            isinstance(cf, dict)
+            and cf.get("output") == rule.get("output")
+            and cf.get("any_of") == rule.get("any_of")
+        ):
+            return
+    computed_fields.append(rule)
+
+    with open(serializer_path, "w") as fh:
+        fh.write(SERIALIZER_SCHEMA_DIRECTIVE)
+        _dump_yaml(existing, fh)
+
+
 def _strip_leading_comments(text: str) -> str:
     """Strip leading comment lines (``# ...``) and blank lines.
 
@@ -1536,12 +1630,29 @@ def dedup_field_id_and_register(
     return renamed
 
 
+def _coerce_hidden_default_value(yml_param: dict) -> Any:
+    """Coerce an XSOAR yml param's ``defaultvalue`` to its native type for use
+    as a serializer ``computed_fields`` output value.
+
+    XSOAR stores defaults as strings even for boolean (type 8) params. The
+    serializer ``ComputedOutput.value`` accepts string / number / boolean, so:
+      - type 8 (boolean) -> Python ``bool`` via :func:`_coerce_toggle_default`.
+      - everything else -> the raw ``defaultvalue`` passed through unchanged
+        (string / number — already JSON-serializable).
+    """
+    raw = yml_param.get("defaultvalue")
+    if yml_param.get("type") == 8:
+        return _coerce_toggle_default(raw)
+    return raw
+
+
 def emit_field_for_param(
     name: str,
     yml_params_by_name: dict[str, dict] | None,
     handler_id: str = "",
     handler_dir: Path | None = None,
     existing_ids: set[str] | None = None,
+    gating_capability_ids: list[str] | None = None,
 ) -> list[dict]:
     """Return one or more connectus field dicts for an XSOAR yml param name.
 
@@ -1550,9 +1661,15 @@ def emit_field_for_param(
       - **Platform-hidden filter** (per guide §3.1 *Assumptions #4*): if
         the underlying yml param declares ``hidden: [platform]`` (the
         marketplace-keyed form indicating the param is hidden on the
-        Platform marketplace), this function returns an EMPTY list. The
-        param is excluded from the manifest entirely. Callers must
-        handle empty results by skipping the field emission.
+        Platform marketplace), the param is NOT emitted as a manifest
+        field. Per the no-more-hidden-defaults rule, if the param carries
+        a ``defaultvalue`` AND ``gating_capability_ids`` + ``handler_dir``
+        are supplied, a serializer ``computed_fields`` rule is registered
+        instead (output id = original yml param name, value = coerced
+        default, gated on the listed capabilities — OR logic). Hidden
+        params with NO default are dropped entirely (as before). Either
+        way this function returns an EMPTY list; callers must handle empty
+        results by skipping the field emission.
       - If ``yml_params_by_name`` is missing or doesn't contain ``name``,
         log a warning and fall back to the bare-id shape ``{"id": name}``
         (with dedup-rename applied when requested). This bare-id path
@@ -1603,10 +1720,29 @@ def emit_field_for_param(
     # ``_collect_hidden_params`` which uses the same rule to drop these
     # params from capability routing.
     if _is_hidden_on_platform(yml_param):
-        logger.info(
-            f"[manifest_generator] Skipping param '{name}' (handler='{handler_id}'): "
-            f"marked hidden on platform marketplace per guide §3.1 #4."
+        has_default = (
+            "defaultvalue" in yml_param and yml_param["defaultvalue"] is not None
         )
+        if has_default and handler_dir is not None and gating_capability_ids:
+            value = _coerce_hidden_default_value(yml_param)
+            rule = build_capability_gated_computed_field(
+                output_id=name,
+                value=value,
+                capability_ids=gating_capability_ids,
+            )
+            register_computed_field_entry(handler_dir, rule)
+            logger.info(
+                f"[manifest_generator] Hidden param '{name}' "
+                f"(handler='{handler_id}') moved to serializer computed_fields "
+                f"with default value {value!r} (gated on "
+                f"{gating_capability_ids})."
+            )
+        else:
+            logger.info(
+                f"[manifest_generator] Skipping param '{name}' (handler='{handler_id}'): "
+                f"marked hidden on platform marketplace with no default value "
+                f"(or no gating context) per guide §3.1 #4."
+            )
         return []
 
     # Rich path: materialize via the type-aware dispatcher.
@@ -1716,37 +1852,74 @@ def register_renamed_field_serializer_entry(
 # add_log_collection_capability, add_assets_capability) no longer call it.
 
 
-def _apply_fetch_checkbox_visibility_rule(checkbox_fields: list[dict]) -> None:
-    """Apply the "count both checkboxes together" hide/default rule in place.
+def _apply_fetch_checkbox_visibility_rule(
+    checkbox_fields: list[dict],
+    *,
+    capability_id: str = "",
+    handler_dir: Path | None = None,
+    field_id_to_yml_name: dict[str, str] | None = None,
+) -> list[dict]:
+    """Apply the "count both checkboxes together" rule, serializer-first.
 
     Within a fetch capability the set of fetch checkboxes is
     ``{fetch_toggle, longRunning}`` — ``isFetchEvents`` for Log Collection,
-    ``isFetch`` for Fetch Issues. The visibility / default of these checkboxes
-    is decided by how many of them this capability emits:
+    ``isFetch`` for Fetch Issues. The behavior is decided by how many of them
+    this capability emits:
 
-      - **Exactly one** checkbox emitted → it is HIDDEN in both create and edit
-        modes and defaulted to ``True``. With only one fetch mode there is no
-        user choice to make, so the platform auto-enables it and hides the box.
+      - **Exactly one** checkbox emitted → the field is NOT emitted into the
+        sub-capability configurations at all. Instead a serializer
+        ``computed_fields`` rule is registered that injects ``<yml_name>: true``
+        into the lifecycle notification when ``capability_id`` is ``on`` (RULE 5
+        style). With only one fetch mode there is no user choice to make, so the
+        platform auto-enables it — no hidden toggle is carried over.
       - **Two (or more)** checkboxes emitted → ALL are SHOWN (``hidden: False``)
         and defaulted to ``False``. The user explicitly picks which fetch mode
-        to enable.
+        to enable. (Unchanged from the legacy behavior.)
 
     Only the checkbox fields are passed in; interval / dynamic-select fields are
-    never touched by this rule. Mutates each field's
-    ``options.{default_value, create_modifiers.hidden, edit_modifiers.hidden}``
-    in place.
+    never touched by this rule.
+
+    Returns the list of checkbox fields that should REMAIN in the manifest:
+      - single-checkbox case → returns ``[]`` (the lone checkbox is dropped and
+        its value moved to the serializer);
+      - multi-checkbox case → returns the (mutated, shown + default-False)
+        fields unchanged.
+
+    ``capability_id``, ``handler_dir`` and ``field_id_to_yml_name`` are used to
+    register the computed_fields rule in the single-checkbox case. When
+    ``handler_dir`` is missing the rule cannot be written (legacy callers); the
+    lone field is still dropped and a warning logged.
     """
     if not checkbox_fields:
-        return
-    single = len(checkbox_fields) == 1
-    hidden = single
-    default_value = single  # single → True (auto-on + hidden); both → False
+        return []
+
+    if len(checkbox_fields) == 1:
+        field = checkbox_fields[0]
+        field_id = str(field.get("id") or "")
+        yml_name = str((field_id_to_yml_name or {}).get(field_id, field_id))
+        if handler_dir is not None and capability_id:
+            rule = build_capability_gated_computed_field(
+                output_id=yml_name,
+                value=True,
+                capability_ids=[capability_id],
+            )
+            register_computed_field_entry(handler_dir, rule)
+        else:
+            logger.warning(
+                f"[manifest_generator] Single fetch checkbox '{field_id}' "
+                f"dropped but could not register computed_fields rule "
+                f"(handler_dir/capability_id missing)."
+            )
+        return []
+
+    # Two or more checkboxes: shown + default False (user picks the mode).
     for field in checkbox_fields:
         options = field.setdefault("options", {})
-        options["default_value"] = default_value
+        options["default_value"] = False
         for modifier_key in ("create_modifiers", "edit_modifiers"):
             modifier = options.setdefault(modifier_key, {})
-            modifier["hidden"] = hidden
+            modifier["hidden"] = False
+    return checkbox_fields
 
 
 def _resolve_title_from_yml(
@@ -1822,50 +1995,34 @@ def add_secret_capability(
       per-capability bucket and then adds the rest of the standard
       mapper-produced params for the same capability.
     """
-    # --- §1. Decide the connector-side field id (D1 rule) ---------------
-    if is_sub_capability:
-        field_id = f"{capability_id}_{ISFETCHCREDENTIALS_PARAM_NAME}"
-    else:
-        field_id = ISFETCHCREDENTIALS_PARAM_NAME
-
-    # --- §2. Resolve the human-readable title (D3 rule) -----------------
-    # Uses the generic _resolve_title_from_yml helper (third use case ->
-    # extracted in the log-collection follow-up).
-    title = _resolve_title_from_yml(
-        yml_params_by_name,
-        ISFETCHCREDENTIALS_PARAM_NAME,
-        fallback=_ISFETCHCREDENTIALS_DEFAULT_TITLE,
-    )
-
-    # --- §3. Build the field dict via the generic synthetic helper ------
-    field = build_synthetic_hidden_toggle(
-        field_id=field_id,
-        title=title,
-        default_value=True,
-        required=False,
-    )
-
-    # --- §4. Strip the original yml name from mapper results ------------
+    # --- §1. Strip the original yml name from mapper results ------------
     # Mapper results are keyed by yml-param-name (NOT by connector
-    # field-id), so we strip the literal "isFetchCredentials" regardless
-    # of whether the field was later renamed for the sub-cap path.
+    # field-id), so we strip the literal "isFetchCredentials" so it is not
+    # re-emitted as a manifest field by the generic param-mapping pass.
     for cap_name in list(mapped_params.keys()):
         names = mapped_params.get(cap_name) or []
         mapped_params[cap_name] = [
             n for n in names if n != ISFETCHCREDENTIALS_PARAM_NAME
         ]
 
-    # --- §5. Sub-cap rename bridge (D2 rule) ----------------------------
-    if is_sub_capability and handler_dir is not None:
-        register_renamed_field_serializer_entry(
-            handler_dir,
-            original_id=ISFETCHCREDENTIALS_PARAM_NAME,
-            renamed_id=field_id,
+    # --- §2. Serializer-first: no hidden toggle is emitted -------------
+    # Previously this capability emitted a hidden, default-True
+    # ``isFetchCredentials`` toggle. Per the no-more-hidden-defaults rule we
+    # instead push ``isFetchCredentials: true`` into the lifecycle
+    # notification via a serializer computed_fields rule, gated on THIS
+    # capability being enabled (RULE 5 style). The output id is the original
+    # XSOAR yml param name so the handler reads it unchanged.
+    if handler_dir is not None:
+        rule = build_capability_gated_computed_field(
+            output_id=ISFETCHCREDENTIALS_PARAM_NAME,
+            value=True,
+            capability_ids=[capability_id],
         )
+        register_computed_field_entry(handler_dir, rule)
 
     return {
         "capability_id": capability_id,
-        "fields": [field],
+        "fields": [],
     }
 
 
@@ -2242,10 +2399,27 @@ def add_log_collection_capability(
         fields.append(lr_field)
         fetch_checkbox_fields.append(lr_field)
 
-    # Apply the "count both checkboxes together" hide/default rule: a lone
-    # checkbox is hidden + default True; when both are present they are shown +
-    # default False. eventFetchInterval is never touched by this rule.
-    _apply_fetch_checkbox_visibility_rule(fetch_checkbox_fields)
+    # Apply the "count both checkboxes together" rule (serializer-first): a lone
+    # checkbox is DROPPED from the manifest and its ``true`` value moved to a
+    # serializer computed_fields rule gated on this capability; when both are
+    # present they are shown + default False. eventFetchInterval is never
+    # touched by this rule.
+    _checkbox_yml_names = {ifc_field_id: ISFETCHEVENTS_PARAM_NAME}
+    if emit_longrunning:
+        _checkbox_yml_names[lr_field_id] = LONGRUNNING_PARAM_NAME
+    kept_checkboxes = _apply_fetch_checkbox_visibility_rule(
+        fetch_checkbox_fields,
+        capability_id=capability_id,
+        handler_dir=handler_dir,
+        field_id_to_yml_name=_checkbox_yml_names,
+    )
+    # Drop any checkbox field that the rule removed (single-checkbox case).
+    _kept_ids = {f.get("id") for f in kept_checkboxes}
+    _dropped_ids = {
+        f.get("id") for f in fetch_checkbox_fields if f.get("id") not in _kept_ids
+    }
+    if _dropped_ids:
+        fields[:] = [f for f in fields if f.get("id") not in _dropped_ids]
 
     # --- §5. Strip yml names from mapper results -----------------------
     stripped = {ISFETCHEVENTS_PARAM_NAME, EVENTFETCHINTERVAL_PARAM_NAME}
@@ -2256,8 +2430,14 @@ def add_log_collection_capability(
         mapped_params[cap_name] = [n for n in names if n not in stripped]
 
     # --- §6. Sub-cap rename bridges (per emitted field) -----------------
+    # Skip the bridge for any checkbox that was dropped by the visibility rule
+    # (single-checkbox case) — its value already flows via computed_fields, so
+    # there is no manifest field left to rename.
     if is_sub_capability and handler_dir is not None:
-        if ifc_field_id != ISFETCHEVENTS_PARAM_NAME:
+        if (
+            ifc_field_id != ISFETCHEVENTS_PARAM_NAME
+            and ifc_field_id not in _dropped_ids
+        ):
             register_renamed_field_serializer_entry(
                 handler_dir,
                 original_id=ISFETCHEVENTS_PARAM_NAME,
@@ -2269,7 +2449,11 @@ def add_log_collection_capability(
                 original_id=EVENTFETCHINTERVAL_PARAM_NAME,
                 renamed_id=efi_field_id,
             )
-        if emit_longrunning and lr_field_id != LONGRUNNING_PARAM_NAME:
+        if (
+            emit_longrunning
+            and lr_field_id != LONGRUNNING_PARAM_NAME
+            and lr_field_id not in _dropped_ids
+        ):
             register_renamed_field_serializer_entry(
                 handler_dir,
                 original_id=LONGRUNNING_PARAM_NAME,
@@ -2398,20 +2582,19 @@ def add_assets_capability(
         else None
     )
 
-    # --- §4. Build the two fields ---------------------------------------
-    # isFetchAssets: ALWAYS synthetic hidden toggle (no yml-driven path).
-    ifa_field = build_synthetic_hidden_toggle(
-        field_id=ifa_field_id,
-        title=ifa_title,
-        default_value=True,
-        required=False,
-    )
-    # assetsFetchInterval: yml-driven if present, else synthetic fallback.
+    # --- §4. Build the fields -------------------------------------------
+    # isFetchAssets: previously an ALWAYS-synthetic hidden default-True toggle.
+    # Per the no-more-hidden-defaults rule it is NO LONGER emitted as a field;
+    # its ``true`` value is pushed via a serializer computed_fields rule gated
+    # on THIS capability being enabled (§6 below). The output id is the
+    # original XSOAR yml param name so the handler reads it unchanged.
+    # assetsFetchInterval: yml-driven if present, else synthetic fallback —
+    # this is a visible interval field and is still emitted.
     afi_field = _build_assetsfetchinterval_field(
         yml_param=afi_yml, field_id=afi_field_id, title=afi_title
     )
 
-    fields: list[dict] = [ifa_field, afi_field]
+    fields: list[dict] = [afi_field]
 
     # --- §5. Strip both yml names from mapper results -------------------
     for cap_name in list(mapped_params.keys()):
@@ -2422,15 +2605,20 @@ def add_assets_capability(
             if n not in (ISFETCHASSETS_PARAM_NAME, ASSETSFETCHINTERVAL_PARAM_NAME)
         ]
 
-    # --- §6. Sub-cap rename bridges (per emitted field) -----------------
-    if is_sub_capability and handler_dir is not None:
-        if ifa_field_id != ISFETCHASSETS_PARAM_NAME:
-            register_renamed_field_serializer_entry(
-                handler_dir,
-                original_id=ISFETCHASSETS_PARAM_NAME,
-                renamed_id=ifa_field_id,
-            )
-        if afi_field_id != ASSETSFETCHINTERVAL_PARAM_NAME:
+    # --- §6. Serializer bridges + isFetchAssets computed_field ----------
+    if handler_dir is not None:
+        # isFetchAssets value injected via computed_fields (no hidden toggle).
+        register_computed_field_entry(
+            handler_dir,
+            build_capability_gated_computed_field(
+                output_id=ISFETCHASSETS_PARAM_NAME,
+                value=True,
+                capability_ids=[capability_id],
+            ),
+        )
+        # assetsFetchInterval: bridge the sub-cap-prefixed id back to the
+        # original yml name when renamed.
+        if is_sub_capability and afi_field_id != ASSETSFETCHINTERVAL_PARAM_NAME:
             register_renamed_field_serializer_entry(
                 handler_dir,
                 original_id=ASSETSFETCHINTERVAL_PARAM_NAME,
@@ -3465,12 +3653,27 @@ def add_fetch_issues_capability(
     # --- §4b. Fetch-checkbox visibility rule ----------------------------
     # The fetch-checkbox set for this capability is {isFetch, longRunning}.
     # isFetch is always emitted; longRunning only when routed here. A lone
-    # checkbox is hidden + default True; when both are present they are shown +
-    # default False. The interval / dynamic-select fields are never touched.
+    # checkbox is DROPPED from the manifest and its ``true`` value moved to a
+    # serializer computed_fields rule gated on this capability; when both are
+    # present they are shown + default False. The interval / dynamic-select
+    # fields are never touched.
     fetch_checkbox_fields = [isfetch_field]
+    _checkbox_yml_names = {isfetch_field_id: ISFETCH_PARAM_NAME}
     if lr_field is not None:
         fetch_checkbox_fields.append(lr_field)
-    _apply_fetch_checkbox_visibility_rule(fetch_checkbox_fields)
+        _checkbox_yml_names[lr_field_id] = LONGRUNNING_PARAM_NAME
+    kept_checkboxes = _apply_fetch_checkbox_visibility_rule(
+        fetch_checkbox_fields,
+        capability_id=capability_id,
+        handler_dir=handler_dir,
+        field_id_to_yml_name=_checkbox_yml_names,
+    )
+    _kept_ids = {f.get("id") for f in kept_checkboxes}
+    _dropped_ids = {
+        f.get("id") for f in fetch_checkbox_fields if f.get("id") not in _kept_ids
+    }
+    if _dropped_ids:
+        fields[:] = [f for f in fields if f.get("id") not in _dropped_ids]
 
     # --- §5. Strip fetch-issues param names from mapper results ---------
     stripped = set(_FETCH_ISSUES_STRIPPED_PARAMS)
@@ -3505,6 +3708,10 @@ def add_fetch_issues_capability(
         if emit_longrunning:
             _original_to_renamed[LONGRUNNING_PARAM_NAME] = lr_field_id
         for original, renamed in _original_to_renamed.items():
+            # Skip checkboxes dropped by the visibility rule — their value
+            # already flows via computed_fields, no manifest field to rename.
+            if renamed in _dropped_ids:
+                continue
             if renamed != original:
                 register_renamed_field_serializer_entry(
                     handler_dir,
@@ -3940,6 +4147,22 @@ def build_per_handler_general_config(
     # configurations.yaml) rather than in capabilities.yaml, each
     # pinned to this handler's view_group.
     reserved_ids = {"instance_name", "integrationLogLevel", "defaultIgnore"}
+    # general_configurations params are NOT attached to any single capability,
+    # so hidden-default ones moved to serializer computed_fields are gated on
+    # ALL of the handler's capabilities (OR logic).
+    all_cap_ids = (
+        [
+            (
+                make_sub_capability_id(handler_id, cap_name)
+                if handler_id
+                else slugify_capability_name(cap_name)
+            )
+            for cap_name in mapped_params
+            if cap_name != "general_configurations"
+        ]
+        if mapped_params
+        else []
+    )
     if mapped_params:
         general_params = mapped_params.get("general_configurations", []) or []
         for p in general_params:
@@ -3958,6 +4181,7 @@ def build_per_handler_general_config(
                     handler_id=handler_id,
                     handler_dir=handler_dir,
                     existing_ids=existing_ids,
+                    gating_capability_ids=all_cap_ids,
                 )
             )
 
@@ -3992,6 +4216,20 @@ def build_configurations_yaml(
     Backwards-compatible: callers omitting all extra args get bare-id
     fields with no dedup side-effects.
     """
+    # Pre-compute the set of all sub-capability ids for this handler — used to
+    # gate ``general_configurations`` hidden-default params (which are not
+    # attached to any single capability) across ALL of the handler's
+    # capabilities (OR logic) when moved to serializer computed_fields.
+    all_cap_ids = [
+        (
+            make_sub_capability_id(handler_id, cap_name)
+            if handler_id
+            else slugify_capability_name(cap_name)
+        )
+        for cap_name in mapped_params
+        if cap_name != "general_configurations"
+    ]
+
     configurations = []
     for cap_name, params in mapped_params.items():
         if cap_name == "general_configurations":
@@ -4016,6 +4254,9 @@ def build_configurations_yaml(
                     handler_id=handler_id,
                     handler_dir=handler_dir,
                     existing_ids=existing_ids,
+                    # Capability-attached hidden-default params gate on THIS
+                    # sub-capability being enabled.
+                    gating_capability_ids=[cap_id],
                 )
             )
         entry: dict = {
@@ -4287,6 +4528,9 @@ def append_capability_to_files(
     """
     handler_dir = connector_dir / "components" / "handlers" / new_handler_id
 
+    cap_slug = slugify_capability_name(cap_name)
+    new_sub_cap_id = make_sub_capability_id(new_handler_id, cap_name)
+
     def _emit_fields(params: list[str]) -> list[dict]:
         result: list[dict] = []
         for p in params:
@@ -4297,12 +4541,12 @@ def append_capability_to_files(
                     handler_id=new_handler_id,
                     handler_dir=handler_dir,
                     existing_ids=existing_ids,
+                    # Capability-attached hidden-default params gate on the
+                    # sub-capability being appended.
+                    gating_capability_ids=[new_sub_cap_id],
                 )
             )
         return result
-
-    cap_slug = slugify_capability_name(cap_name)
-    new_sub_cap_id = make_sub_capability_id(new_handler_id, cap_name)
 
     existing_cap = next(
         (
@@ -4410,6 +4654,7 @@ def merge_general_configurations(
     new_handler_id: str = "",
     handler_dir: Path | None = None,
     existing_ids: set[str] | None = None,
+    gating_capability_ids: list[str] | None = None,
 ) -> None:
     """Append new general params to capabilities.yaml's general_configurations.
 
@@ -4447,6 +4692,7 @@ def merge_general_configurations(
             handler_id=new_handler_id,
             handler_dir=handler_dir,
             existing_ids=existing_ids,
+            gating_capability_ids=gating_capability_ids,
         )
         for new_field in new_fields:
             if new_field["id"] in local_existing:
@@ -6609,6 +6855,15 @@ def add_handler_to_existing_connector(
         if p.get("name")
     }
 
+    # All sub-capability ids this new handler contributes — used to gate
+    # general_configurations hidden-default params (moved to serializer
+    # computed_fields) across ALL of the handler's capabilities (OR logic).
+    _append_all_cap_ids = [
+        make_sub_capability_id(new_handler_id, cap_name)
+        for cap_name in mapped_params
+        if cap_name != "general_configurations"
+    ]
+
     # Merge general configurations (deduplicated by field id).
     merge_general_configurations(
         capabilities_data,
@@ -6617,6 +6872,7 @@ def add_handler_to_existing_connector(
         new_handler_id=new_handler_id,
         handler_dir=handler_dir,
         existing_ids=existing_field_ids,
+        gating_capability_ids=_append_all_cap_ids,
     )
 
     # Per-capability append: compute the cap id mapping the new handler
