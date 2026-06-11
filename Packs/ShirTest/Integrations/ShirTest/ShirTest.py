@@ -25,8 +25,6 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
-""" CLIENT CLASS """
-
 
 def main():
     """main function, parses params and runs command functions"""
