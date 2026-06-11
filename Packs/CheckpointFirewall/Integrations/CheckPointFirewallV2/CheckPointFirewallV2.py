@@ -905,6 +905,7 @@ class Client(BaseClient):
             body["color"] = color
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
+            body["use-default-session-timeout"] = False
         if aggressive_aging:
             body["aggressive-aging"] = aggressive_aging
         if tags:
@@ -931,6 +932,7 @@ class Client(BaseClient):
             body["color"] = color
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
+            body["use-default-session-timeout"] = False
         if aggressive_aging:
             body["aggressive-aging"] = aggressive_aging
         if tags:
@@ -983,6 +985,7 @@ class Client(BaseClient):
             body["color"] = color
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
+            body["use-default-session-timeout"] = False
         if aggressive_aging:
             body["aggressive-aging"] = aggressive_aging
         if tags:
@@ -1012,6 +1015,7 @@ class Client(BaseClient):
             body["color"] = color
         if session_timeout is not None:
             body["session-timeout"] = session_timeout
+            body["use-default-session-timeout"] = False
         if aggressive_aging:
             body["aggressive-aging"] = aggressive_aging
         if tags:
