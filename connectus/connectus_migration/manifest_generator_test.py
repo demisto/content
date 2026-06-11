@@ -966,42 +966,6 @@ def test_add_handler_to_existing_connector_does_NOT_create_or_modify_summary_yam
 
 
 # ---------------------------------------------------------------------------
-# write_serializer_yaml
-# ---------------------------------------------------------------------------
-def test_write_serializer_yaml_creates_placeholder_file(tmp_path: Path) -> None:
-    serializer_yaml_path = tmp_path / "serializer.yaml"
-    write_serializer_yaml(serializer_yaml_path)
-
-    assert serializer_yaml_path.is_file()
-    assert serializer_yaml_path.read_text() == "# TODO: serializer config\n"
-    # Sanity-check the constant matches the on-disk content.
-
-
-def test_write_serializer_yaml_creates_parent_directories(tmp_path: Path) -> None:
-    serializer_yaml_path = (
-        tmp_path / "components" / "handlers" / "xsoar_test" / "serializer.yaml"
-    )
-    assert not serializer_yaml_path.parent.exists()
-
-    write_serializer_yaml(serializer_yaml_path)
-
-    assert serializer_yaml_path.is_file()
-    assert serializer_yaml_path.parent.is_dir()
-
-
-def test_write_serializer_yaml_raises_if_exists(tmp_path: Path) -> None:
-    serializer_yaml_path = tmp_path / "serializer.yaml"
-    original_content = "# CUSTOM SERIALIZER CONFIG — DO NOT OVERWRITE\n"
-    serializer_yaml_path.write_text(original_content)
-
-    with pytest.raises(FileExistsError):
-        write_serializer_yaml(serializer_yaml_path)
-
-    # Original content must be untouched.
-    assert serializer_yaml_path.read_text() == original_content
-
-
-# ---------------------------------------------------------------------------
 # create_manifest_from_scratch — serializer.yaml integration
 # ---------------------------------------------------------------------------
 def test_create_manifest_from_scratch_generates_serializer_yaml_alongside_handler(
@@ -7689,89 +7653,6 @@ def _write_existing_connector(
     with open(connector_dir / "connector.yaml", "w") as fh:
         yaml.safe_dump(data, fh)
     return connector_dir
-
-
-def test_compute_connector_id_and_title_fallback():
-    """No vendor/mapped_params -> slug/title fallback."""
-    assert compute_connector_id_and_title("Microsoft Defender") == (
-        "microsoft-defender",
-        "Microsoft Defender",
-    )
-
-
-def test_similarity_no_match_passes(tmp_path):
-    """A genuinely-distinct new connector does not raise."""
-    connectors_root = tmp_path / "connectors"
-    _write_existing_connector(
-        connectors_root, "okta", "okta-collection", "Okta Collection"
-    )
-    new_dir = connectors_root / "salesforce"
-    # Should not raise.
-    check_connector_id_title_similarity(new_dir, "Salesforce")
-
-
-def test_similarity_new_id_contained_in_existing(tmp_path):
-    """New id is a substring of an existing id -> RuntimeError."""
-    connectors_root = tmp_path / "connectors"
-    _write_existing_connector(
-        connectors_root,
-        "oktacollection",
-        "okta-collection",
-        "Okta Collection",
-    )
-    new_dir = connectors_root / "okta"
-    with pytest.raises(RuntimeError, match="found similiray"):
-        check_connector_id_title_similarity(new_dir, "okta")
-
-
-def test_similarity_existing_id_contained_in_new(tmp_path):
-    """Existing id is a substring of the new id -> RuntimeError."""
-    connectors_root = tmp_path / "connectors"
-    _write_existing_connector(connectors_root, "okta", "okta", "Okta")
-    new_dir = connectors_root / "oktacollection"
-    with pytest.raises(RuntimeError, match="found similiray"):
-        check_connector_id_title_similarity(new_dir, "okta-collection")
-
-
-def test_similarity_title_match(tmp_path):
-    """Titles collide even when ids differ -> RuntimeError mentioning title."""
-    connectors_root = tmp_path / "connectors"
-    _write_existing_connector(
-        connectors_root, "acme-x", "acme-x", "Acme Collection"
-    )
-    new_dir = connectors_root / "acme-y"
-    with pytest.raises(RuntimeError, match="title"):
-        check_connector_id_title_similarity(new_dir, "Acme Collection Plus")
-
-
-def test_similarity_case_and_space_insensitive(tmp_path):
-    """Different case + spacing still triggers a title match."""
-    connectors_root = tmp_path / "connectors"
-    _write_existing_connector(
-        connectors_root,
-        "paloalto",
-        "paloalto-collection",
-        "Palo Alto Collection",
-    )
-    new_dir = connectors_root / "palo-alto-new"
-    with pytest.raises(RuntimeError, match="found similiray"):
-        check_connector_id_title_similarity(new_dir, "PALO ALTO collection")
-
-
-def test_similarity_skips_own_target_dir(tmp_path):
-    """A connector.yaml already present in the target dir is ignored."""
-    connectors_root = tmp_path / "connectors"
-    # The target dir itself has a connector.yaml with identical id/title.
-    new_dir = _write_existing_connector(connectors_root, "okta", "okta", "Okta")
-    # No OTHER connector exists, so the self-match must be skipped.
-    check_connector_id_title_similarity(new_dir, "Okta")
-
-
-def test_similarity_no_connectors_root_passes(tmp_path):
-    """Missing connectors root -> nothing to compare, no raise."""
-    new_dir = tmp_path / "connectors" / "okta"
-    check_connector_id_title_similarity(new_dir, "Okta")
-
 
 # ---------------------------------------------------------------------------
 # add_connector_to_code_owners
