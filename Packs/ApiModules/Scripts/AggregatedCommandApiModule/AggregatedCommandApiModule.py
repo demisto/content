@@ -1440,9 +1440,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
         # Return an error only if there were no successes AND at least one of those was a hard failure.
         if self._is_final_result_error(final_entries):
             demisto.debug("All commands failed or no indicators found. Returning an error entry.")
-            return CommandResults(
-                readable_output="Error: All commands failed or no indicators found.\n" + human_readable,
-                entry_type=EntryType.ERROR,
+            raise DemistoException(
+                "Error: All commands failed or no indicators found.\n" + human_readable,
             )
 
         demisto.debug("Returning a success entry (at least one command succeeded or no hard failures).")
