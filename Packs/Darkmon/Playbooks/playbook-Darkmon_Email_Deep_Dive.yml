@@ -1,8 +1,7 @@
 id: Darkmon - Email Deep Dive
 version: -1
 name: Darkmon - Email Deep Dive
-description: Analyst-driven full Darkmon profile for a single email address. Runs board-protection check, all three boardemails categories, and global search. Outputs a unified summary into the incident
-  War Room.
+description: Analyst-driven full Darkmon profile for a single email address. Runs board-protection check, all three boardemails categories, and global search. Outputs a unified summary into the incident War Room.
 fromversion: 6.5.0
 marketplaces:
 - xsoar
@@ -58,7 +57,7 @@ tasks:
       - '2'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 195}}'
+    view: '{"position": {"x": 50, "y": 530}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -89,7 +88,7 @@ tasks:
       - '3'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 370}}'
+    view: '{"position": {"x": 50, "y": 770}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -120,7 +119,7 @@ tasks:
       - '4'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 545}}'
+    view: '{"position": {"x": 50, "y": 1010}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -151,7 +150,7 @@ tasks:
       - '5'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 720}}'
+    view: '{"position": {"x": 50, "y": 1250}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -182,7 +181,7 @@ tasks:
       - '6'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 895}}'
+    view: '{"position": {"x": 50, "y": 1490}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -203,14 +202,13 @@ tasks:
       brand: ''
     scriptarguments:
       message:
-        simple: 'Darkmon profile for ${inputs.Email}: under-protection=${Darkmon.BoardProtection.length:0}, accounts=${Darkmon.BoardLeak.Account.length:0}, combos=${Darkmon.BoardLeak.ComboList.length:0},
-          breaches=${Darkmon.BoardLeak.PublicBreach.length:0}, search-hits=${Darkmon.SearchResult.length:0}.'
+        simple: 'Darkmon profile for ${inputs.Email}: under-protection=${Darkmon.BoardProtection.length:0}, accounts=${Darkmon.BoardLeak.Account.length:0}, combos=${Darkmon.BoardLeak.ComboList.length:0}, breaches=${Darkmon.BoardLeak.PublicBreach.length:0}, search-hits=${Darkmon.SearchResult.length:0}.'
     nexttasks:
       '#none#':
       - '7'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 1070}}'
+    view: '{"position": {"x": 50, "y": 1730}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -230,7 +228,7 @@ tasks:
       brand: ''
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 1245}}'
+    view: '{"position": {"x": 50, "y": 1970}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -257,19 +255,37 @@ tasks:
     nexttasks:
       'yes':
       - '1'
-      'no':
-      - '7'
       '#default#':
-      - '7'
+      - '101'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 105}}'
+    view: '{"position": {"x": 50, "y": 290}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 1260, "width": 400, "x": 50, "y": 50}}}'
+  '101':
+    id: '101'
+    taskid: 8b43a433-9534-49f0-91ba-7cf10d22no-x
+    type: title
+    task:
+      id: 8b43a433-9534-49f0-91ba-7cf10d22no-x
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": -450, "y": 530}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: '{"linkLabelsPosition": {"100_1_yes": 0.1, "100_101_#default#": 0.5}, "paper": {"dimensions": {"height": 2135, "width": 980, "x": -500, "y": 0}}}'
 inputs:
 - key: Email
   value: {}

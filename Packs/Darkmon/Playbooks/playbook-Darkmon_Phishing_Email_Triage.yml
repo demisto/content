@@ -1,218 +1,215 @@
 id: Darkmon - Phishing Email Triage
 version: -1
 name: Darkmon - Phishing Email Triage
-description: "Extracts URLs/IPs/file-hashes from a reported phishing email, enriches each via the Darkmon - Enrich * sub-playbooks, and if any indicator is scored Bad (DBotScore=3) calls Generic Block Indicator on it. Notifies the reporter and the SOC at the end."
+description: Extracts URLs/IPs/file-hashes from a reported phishing email, enriches each via the Darkmon - Enrich * sub-playbooks, and if any indicator is scored Bad (DBotScore=3) calls Generic Block Indicator on it. Notifies the reporter and the SOC at the end.
 fromversion: 6.5.0
 marketplaces:
-  - xsoar
-  - platform
-  - platform
+- xsoar
+- platform
+- platform
 tags:
-  - darkmon
-  - phishing
-  - ir
-starttaskid: "0"
+- darkmon
+- phishing
+- ir
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 9f19c1a2-93f8-4063-958a-159340d40505
     type: start
     task:
       id: 9f19c1a2-93f8-4063-958a-159340d40505
       version: -1
-      name: ""
-      description: ""
+      name: ''
+      description: ''
       type: start
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-        - "1"
+      - '1'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 50}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 50}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 7b4810de-b9b5-4457-9d44-c61c34053b4b
     type: regular
     task:
       id: 7b4810de-b9b5-4457-9d44-c61c34053b4b
       version: -1
-      name: "Extract IOCs from email"
-      description: "Uses the platform ExtractIndicatorsFromTextFile script to harvest IOCs from the incoming email body."
+      name: Extract IOCs from email
+      description: Uses the platform ExtractIndicatorsFromTextFile script to harvest IOCs from the incoming email body.
       scriptName: ExtractIndicatorsFromTextFile
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       text:
-        simple: "${incident.emailbody}"
+        simple: ${incident.emailbody}
       indicator_types:
-        simple: "URL,IP,Hash,Domain"
+        simple: URL,IP,Hash,Domain
     nexttasks:
       '#none#':
-        - "2"
+      - '2'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 195}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 290}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: b840b601-7ec7-4090-8a84-1a0fa2a8fd95
     type: playbook
     task:
       id: b840b601-7ec7-4090-8a84-1a0fa2a8fd95
       version: -1
-      name: "Enrich each IOC via Darkmon"
-      description: "One pass of Darkmon URL enrichment over the extracted URLs. Domain/IP/Hash equivalents can be added per-customer by extending this playbook with parallel branches."
-      playbookName: "Darkmon - Enrich URL"
+      name: Enrich each IOC via Darkmon
+      description: One pass of Darkmon URL enrichment over the extracted URLs. Domain/IP/Hash equivalents can be added per-customer by extending this playbook with parallel branches.
+      playbookName: Darkmon - Enrich URL
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       URL:
-        simple: "${ExtractedIndicators.URL}"
+        simple: ${ExtractedIndicators.URL}
     nexttasks:
       '#none#':
-        - "3"
+      - '3'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 370}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 530}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 5b8eeb26-11e4-4268-ad11-08510cc0967c
     type: condition
     task:
       id: 5b8eeb26-11e4-4268-ad11-08510cc0967c
       version: -1
-      name: "Any indicator scored Bad?"
-      description: ""
+      name: Any indicator scored Bad?
+      description: ''
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     conditions:
-      - label: "yes"
-        condition:
-          -   - operator: greaterThanOrEqual
-                left:
-                  value:
-                    complex: {"root": "DBotScore.Score"}
-                  iscontext: true
-                right:
-                  value:
-                    simple: "3"
+    - label: 'yes'
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: '3'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 545}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 770}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     nexttasks:
-      "yes":
-        - "8"
-      "#default#":
-        - "5"
-
-  "4":
-    id: "4"
+      'yes':
+      - '8'
+      '#default#':
+      - '5'
+  '4':
+    id: '4'
     taskid: c07b16cd-622d-4a35-834f-4952aa8d1894
     type: playbook
     task:
       id: c07b16cd-622d-4a35-834f-4952aa8d1894
       version: -1
-      name: "Block malicious indicators"
-      description: ""
-      playbookName: "Darkmon - Generic Block Indicator"
+      name: Block malicious indicators
+      description: ''
+      playbookName: Darkmon - Generic Block Indicator
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       Indicator:
-        simple: "${DBotScore(val.Score >= 3).Indicator}"
+        simple: ${DBotScore(val.Score >= 3).Indicator}
       Type:
-        simple: "url"
+        simple: url
       Reason:
-        simple: "Darkmon scored Bad in phishing triage"
+        simple: Darkmon scored Bad in phishing triage
     nexttasks:
       '#none#':
-        - "5"
-  "8":
-    id: "8"
+      - '5'
+    view: '{"position": {"x": 1050, "y": 1490}}'
+  '8':
+    id: '8'
     taskid: 0c9d3a5e-5e1f-4ec7-9e80-7b1a2f0f5311
     type: condition
     task:
       id: 0c9d3a5e-5e1f-4ec7-9e80-7b1a2f0f5311
       version: -1
-      name: "Auto-block enabled?"
-      description: "Routes around the manual approval gate when AutoBlock input is true."
+      name: Auto-block enabled?
+      description: Routes around the manual approval gate when AutoBlock input is true.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     conditions:
-      - label: "yes"
-        condition:
-          -   - operator: isEqualString
-                left:
-                  value:
-                    complex: {"root": "inputs.AutoBlock"}
-                  iscontext: true
-                right:
-                  value:
-                    simple: "true"
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoBlock
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 300, "y": 620}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 550, "y": 1010}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     nexttasks:
-      "yes":
-        - "4"
-      "#default#":
-        - "9"
-  "9":
-    id: "9"
+      'yes':
+      - '4'
+      '#default#':
+      - '9'
+  '9':
+    id: '9'
     taskid: 1d8e4f6f-6f2f-4fd8-af91-8c2b3f1f6422
     type: condition
     task:
       id: 1d8e4f6f-6f2f-4fd8-af91-8c2b3f1f6422
       version: -1
-      name: "Analyst approval to block?"
-      description: "Manual approval gate. Analyst confirms the block action before the Generic Block Indicator playbook runs."
+      name: Analyst approval to block?
+      description: Manual approval gate. Analyst confirms the block action before the Generic Block Indicator playbook runs.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     message:
-      to:
+      to: null
       subject:
-        simple: "Approve block of ${DBotScore(val.Score >= 3).Indicator}?"
+        simple: Approve block of ${DBotScore(val.Score >= 3).Indicator}?
       body:
-        simple: "Darkmon scored the following indicator(s) Bad. Approve to send to Darkmon - Generic Block Indicator."
+        simple: Darkmon scored the following indicator(s) Bad. Approve to send to Darkmon - Generic Block Indicator.
       methods: []
-      format: ""
-      bcc:
-      cc:
+      format: ''
+      bcc: null
+      cc: null
       timings:
         retriescount: 0
         retriesinterval: 0
@@ -220,120 +217,113 @@ tasks:
         completeafterv2: false
         completeaftersla: false
       replyOptions:
-        - "yes"
-        - "no"
+      - 'yes'
+      - 'no'
     nexttasks:
-      "yes":
-        - "4"
-      "no":
-        - "5"
-      "#default#":
-        - "5"
+      'yes':
+      - '4'
+      '#default#':
+      - '5'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 300, "y": 720}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 1250}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 361b9161-619e-4a94-a629-4590a974c293
     type: playbook
     task:
       id: 361b9161-619e-4a94-a629-4590a974c293
       version: -1
-      name: "Notify reporter"
-      description: ""
-      playbookName: "Darkmon - Generic Notify"
+      name: Notify reporter
+      description: ''
+      playbookName: Darkmon - Generic Notify
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       Subject:
-        simple: "Your phishing report has been triaged"
+        simple: Your phishing report has been triaged
       Body:
-        simple: "Thanks - we triaged your report. ${DBotScore.length:0} indicators evaluated."
+        simple: Thanks - we triaged your report. ${DBotScore.length:0} indicators evaluated.
     nexttasks:
       '#none#':
-        - "6"
+      - '6'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 895}}
+    continueonerrortype: ''
+    view: '{"position": {"x": -450, "y": 1730}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: a1dfdd29-aa80-4c30-b0c8-c335e0f8a65c
     type: playbook
     task:
       id: a1dfdd29-aa80-4c30-b0c8-c335e0f8a65c
       version: -1
-      name: "Notify SOC"
-      description: ""
-      playbookName: "Darkmon - Generic Notify"
+      name: Notify SOC
+      description: ''
+      playbookName: Darkmon - Generic Notify
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       Subject:
-        simple: "Phishing triage complete"
+        simple: Phishing triage complete
       Body:
-        simple: "Incident ${incident.id} - see Darkmon enrichment context for results."
+        simple: Incident ${incident.id} - see Darkmon enrichment context for results.
     nexttasks:
       '#none#':
-        - "7"
+      - '7'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 1070}}
+    continueonerrortype: ''
+    view: '{"position": {"x": -450, "y": 1970}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 3304e1ac-dc11-462d-8b9e-937a20e13723
     type: title
     task:
       id: 3304e1ac-dc11-462d-8b9e-937a20e13723
       version: -1
-      name: "Done"
-      description: ""
+      name: Done
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 1245}}
+    continueonerrortype: ''
+    view: '{"position": {"x": -450, "y": 2210}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-view: |-
-  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 1260, "width": 520, "x": 50, "y": 50}}}
+view: '{"linkLabelsPosition": {"3_5_#default#": 0.1, "3_8_yes": 0.5, "8_4_yes": 0.1, "8_9_#default#": 0.5, "9_5_#default#": 0.1, "9_4_yes": 0.5}, "paper": {"dimensions": {"height": 2375, "width": 1980, "x": -500, "y": 0}}}'
 inputs:
-  - key: AutoBlock
-    value:
-      simple: "false"
-    required: false
-    description: When true, indicators scored Bad by Darkmon are sent to Darkmon - Generic Block Indicator without an analyst approval task. Defaults to false (a manual approval is presented before any block).
-    playbookInputQuery:
+- key: AutoBlock
+  value:
+    simple: 'false'
+  required: false
+  description: When true, indicators scored Bad by Darkmon are sent to Darkmon - Generic Block Indicator without an analyst approval task. Defaults to false (a manual approval is presented before any block).
+  playbookInputQuery: null
 outputs:
-  - contextPath: ExtractedIndicators
-    description: IOCs extracted from the phishing email body.
-    type: unknown
-  - contextPath: DBotScore
-    description: Reputation scores from Darkmon enrichment per IOC.
-    type: unknown
+- contextPath: ExtractedIndicators
+  description: IOCs extracted from the phishing email body.
+  type: unknown
+- contextPath: DBotScore
+  description: Reputation scores from Darkmon enrichment per IOC.
+  type: unknown
 tests:
-  - No tests
+- No tests

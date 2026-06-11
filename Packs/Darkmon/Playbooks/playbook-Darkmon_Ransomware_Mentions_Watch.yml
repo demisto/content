@@ -59,7 +59,7 @@ tasks:
       - '2'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 195}}'
+    view: '{"position": {"x": 50, "y": 530}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -90,7 +90,7 @@ tasks:
       - '3'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 370}}'
+    view: '{"position": {"x": 50, "y": 770}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -125,7 +125,7 @@ tasks:
       - '4'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 545}}'
+    view: '{"position": {"x": 50, "y": 1010}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -154,7 +154,7 @@ tasks:
       - '5'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 720}}'
+    view: '{"position": {"x": 50, "y": 1250}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -174,7 +174,7 @@ tasks:
       brand: ''
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 895}}'
+    view: '{"position": {"x": 50, "y": 1490}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -201,19 +201,37 @@ tasks:
     nexttasks:
       'yes':
       - '1'
-      'no':
-      - '5'
       '#default#':
-      - '5'
+      - '101'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 105}}'
+    view: '{"position": {"x": 50, "y": 290}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 910, "width": 380, "x": 50, "y": 50}}}'
+  '101':
+    id: '101'
+    taskid: a0cc153a-7371-4459-b6b0-6452aaeano-x
+    type: title
+    task:
+      id: a0cc153a-7371-4459-b6b0-6452aaeano-x
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": -450, "y": 530}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: '{"linkLabelsPosition": {"100_1_yes": 0.1, "100_101_#default#": 0.5}, "paper": {"dimensions": {"height": 1655, "width": 980, "x": -500, "y": 0}}}'
 inputs: []
 outputs: []
 tests:

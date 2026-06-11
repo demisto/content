@@ -1,8 +1,7 @@
 id: Darkmon - Enrich Domain
 version: -1
 name: Darkmon - Enrich Domain
-description: Sub-playbook that calls the Darkmon !domain command and returns DBotScore + Common.Domain for the input Domain indicator. Designed to be invoked from a parent playbook; does not auto-run on
-  indicator creation.
+description: Sub-playbook that calls the Darkmon !domain command and returns DBotScore + Common.Domain for the input Domain indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
 fromversion: 6.5.0
 marketplaces:
 - xsoar
@@ -55,7 +54,7 @@ tasks:
           root: inputs.Domain
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 195}}'
+    view: '{"position": {"x": 50, "y": 530}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -77,7 +76,7 @@ tasks:
       brand: ''
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 370}}'
+    view: '{"position": {"x": 50, "y": 770}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -106,19 +105,37 @@ tasks:
     nexttasks:
       'yes':
       - '1'
-      'no':
-      - '2'
       '#default#':
-      - '2'
+      - '101'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 105}}'
+    view: '{"position": {"x": 50, "y": 290}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 385, "width": 380, "x": 50, "y": 50}}}'
+  '101':
+    id: '101'
+    taskid: e21c0719-eddc-4915-9fc1-3d6bae42no-x
+    type: title
+    task:
+      id: e21c0719-eddc-4915-9fc1-3d6bae42no-x
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": -450, "y": 530}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: '{"linkLabelsPosition": {"100_1_yes": 0.1, "100_101_#default#": 0.5}, "paper": {"dimensions": {"height": 935, "width": 980, "x": -500, "y": 0}}}'
 inputs:
 - key: Domain
   value:

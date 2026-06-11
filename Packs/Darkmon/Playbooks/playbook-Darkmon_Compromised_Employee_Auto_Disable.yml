@@ -1,9 +1,7 @@
 id: Darkmon - Compromised Employee Auto-Disable
 version: -1
 name: Darkmon - Compromised Employee Auto-Disable
-description: "Hourly poll of compromised employees. For each new entry, looks up the user\nin the configured directory and acts per the integration's\nemployee_disable_mode parameter:\n  - notify-only \
-  \      : creates incident and notifies; no AD action.   [DEFAULT]\n  - approval-required : creates incident, blocks on a manual approval task,\n                        then disables on approve.\n  - auto-disable\
-  \      : disables the account immediately, then notifies.\nAccounts in the 'Darkmon - Auto-Disable Allowlist' list are NEVER auto-disabled."
+description: "Hourly poll of compromised employees. For each new entry, looks up the user\nin the configured directory and acts per the integration's\nemployee_disable_mode parameter:\n  - notify-only       : creates incident and notifies; no AD action.   [DEFAULT]\n  - approval-required : creates incident, blocks on a manual approval task,\n                        then disables on approve.\n  - auto-disable      : disables the account immediately, then notifies.\nAccounts in the 'Darkmon - Auto-Disable Allowlist' list are NEVER auto-disabled."
 fromversion: 6.5.0
 marketplaces:
 - xsoar
@@ -62,7 +60,7 @@ tasks:
       - '2'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 195}}'
+    view: '{"position": {"x": 50, "y": 530}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -97,7 +95,7 @@ tasks:
       - '3'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 370}}'
+    view: '{"position": {"x": 50, "y": 770}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -145,7 +143,7 @@ tasks:
             value:
               simple: auto-disable
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 545}}'
+    view: '{"position": {"x": 50, "y": 1010}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -178,7 +176,7 @@ tasks:
       - '7'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": -300, "y": 720}}'
+    view: '{"position": {"x": -430, "y": 1250}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -211,7 +209,7 @@ tasks:
       - '7'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 720}}'
+    view: '{"position": {"x": 50, "y": 1250}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -240,7 +238,7 @@ tasks:
       - '7'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 400, "y": 720}}'
+    view: '{"position": {"x": 530, "y": 1250}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -269,7 +267,7 @@ tasks:
       - '8'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 895}}'
+    view: '{"position": {"x": 50, "y": 1490}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -289,7 +287,7 @@ tasks:
       brand: ''
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 1070}}'
+    view: '{"position": {"x": 50, "y": 1730}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -316,19 +314,37 @@ tasks:
     nexttasks:
       'yes':
       - '1'
-      'no':
-      - '8'
       '#default#':
-      - '8'
+      - '101'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 105}}'
+    view: '{"position": {"x": 50, "y": 290}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 1085, "width": 800, "x": -300, "y": 50}}}'
+  '101':
+    id: '101'
+    taskid: df1828b8-ae6e-41c4-b608-93478b97no-x
+    type: title
+    task:
+      id: df1828b8-ae6e-41c4-b608-93478b97no-x
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": -450, "y": 530}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: '{"linkLabelsPosition": {"3_4_#default#": 0.82, "3_5_approval-required": 0.82, "3_6_auto-disable": 0.82, "100_1_yes": 0.1, "100_101_#default#": 0.5}, "paper": {"dimensions": {"height": 1895, "width": 1460, "x": -500, "y": 0}}}'
 inputs: []
 outputs:
 - contextPath: NewAccounts

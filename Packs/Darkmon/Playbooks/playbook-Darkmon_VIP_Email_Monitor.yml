@@ -55,7 +55,7 @@ tasks:
       - '2'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 195}}'
+    view: '{"position": {"x": 50, "y": 530}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -86,7 +86,7 @@ tasks:
       - '3'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 370}}'
+    view: '{"position": {"x": 50, "y": 770}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -106,7 +106,7 @@ tasks:
       brand: ''
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 545}}'
+    view: '{"position": {"x": 50, "y": 1010}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -133,19 +133,37 @@ tasks:
     nexttasks:
       'yes':
       - '1'
-      'no':
-      - '3'
       '#default#':
-      - '3'
+      - '101'
     separatecontext: false
     continueonerrortype: ''
-    view: '{"position": {"x": 50, "y": 105}}'
+    view: '{"position": {"x": 50, "y": 290}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 560, "width": 380, "x": 50, "y": 50}}}'
+  '101':
+    id: '101'
+    taskid: 3f85937b-1e21-4bc5-bf80-0f73ea0bno-x
+    type: title
+    task:
+      id: 3f85937b-1e21-4bc5-bf80-0f73ea0bno-x
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": -450, "y": 530}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: '{"linkLabelsPosition": {"100_1_yes": 0.1, "100_101_#default#": 0.5}, "paper": {"dimensions": {"height": 1175, "width": 980, "x": -500, "y": 0}}}'
 inputs: []
 outputs:
 - contextPath: Darkmon.BoardProtection

@@ -1,50 +1,47 @@
 id: Darkmon - Generic User Action
 version: -1
 name: Darkmon - Generic User Action
-description: Provider-agnostic user-action dispatcher (disable, reset password,
-  revoke sessions). Reads "Darkmon - Identity Provider" List for the configured
-  directory (ad | okta | azuread) and routes to the matching command.
+description: Provider-agnostic user-action dispatcher (disable, reset password, revoke sessions). Reads "Darkmon - Identity Provider" List for the configured directory (ad | okta | azuread) and routes to the matching command.
 fromversion: 6.5.0
 marketplaces:
 - xsoar
 - platform
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 0a901864-5faa-49b3-9c67-2bba28cc891c
     type: start
     task:
       id: 0a901864-5faa-49b3-9c67-2bba28cc891c
       version: -1
-      name: ""
-      description: ""
+      name: ''
+      description: ''
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 50}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 50}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 71cd6625-3579-4f00-bfb3-d3c18d7a1b3a
     type: condition
     task:
       id: 71cd6625-3579-4f00-bfb3-d3c18d7a1b3a
       version: -1
       name: Provider switch
-      description: ""
+      description: ''
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     conditions:
     - label: ad
       condition:
@@ -84,34 +81,33 @@ tasks:
               simple: azuread
     nexttasks:
       '#default#':
-      - "10"
+      - '10'
       ad:
-      - "2"
+      - '2'
       okta:
-      - "3"
+      - '3'
       azuread:
-      - "4"
+      - '4'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 195}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 290}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: f7fdbc63-230b-4983-8e3f-e86e716936db
     type: condition
     task:
       id: f7fdbc63-230b-4983-8e3f-e86e716936db
       version: -1
       name: AD action switch
-      description: ""
+      description: ''
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     conditions:
     - label: disable
       condition:
@@ -148,210 +144,212 @@ tasks:
               simple: revoke-sessions
     nexttasks:
       '#default#':
-      - "10"
+      - '10'
       disable:
-      - "5"
+      - '5'
       reset:
-      - "6"
+      - '6'
       revoke:
-      - "7"
+      - '7'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": -200, "y": 370}}
+    continueonerrortype: ''
+    view: '{"position": {"x": -190, "y": 530}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 083986cb-9bc1-4381-96a0-6e779d10aa8a
     type: regular
     task:
       id: 083986cb-9bc1-4381-96a0-6e779d10aa8a
       version: -1
       name: 'Okta: deactivate user'
-      description: ""
+      description: ''
       script: okta-deactivate-user
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     scriptarguments:
-      username: {"complex": {"root": "inputs.Username"}}
+      username:
+        complex:
+          root: inputs.Username
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 100, "y": 370}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 290, "y": 530}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 9bc69625-c4c2-4b30-9d73-d12ccfd0bc29
     type: regular
     task:
       id: 9bc69625-c4c2-4b30-9d73-d12ccfd0bc29
       version: -1
       name: 'Azure AD: disable user'
-      description: ""
+      description: ''
       script: msgraph-user-account-disable
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     scriptarguments:
-      user: {"complex": {"root": "inputs.Username"}}
+      user:
+        complex:
+          root: inputs.Username
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 350, "y": 370}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 770, "y": 530}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 59c0c8a5-d47e-4b0e-915c-873f94f3fdca
     type: regular
     task:
       id: 59c0c8a5-d47e-4b0e-915c-873f94f3fdca
       version: -1
       name: 'AD: disable account'
-      description: ""
+      description: ''
       script: ad-disable-account
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     scriptarguments:
-      username: {"complex": {"root": "inputs.Username"}}
+      username:
+        complex:
+          root: inputs.Username
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": -350, "y": 540}}
+    continueonerrortype: ''
+    view: '{"position": {"x": -430, "y": 770}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 674ed138-5e2f-41a4-8c36-76f7cc57a4b6
     type: regular
     task:
       id: 674ed138-5e2f-41a4-8c36-76f7cc57a4b6
       version: -1
       name: 'AD: force password change at next logon'
-      description: ""
+      description: ''
       script: ad-set-new-password
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     scriptarguments:
-      username: {"complex": {"root": "inputs.Username"}}
-      password: {"complex": {"root": "inputs.NewPassword"}}
+      username:
+        complex:
+          root: inputs.Username
+      password:
+        complex:
+          root: inputs.NewPassword
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": -200, "y": 540}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 770}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 665f174c-44d0-4a71-9966-cf8d848109b0
     type: regular
     task:
       id: 665f174c-44d0-4a71-9966-cf8d848109b0
       version: -1
       name: 'AD: revoke Kerberos tickets'
-      description: Custom AD command via the AD - Authentication integration.
-        For environments without that integration, replace with your tooling.
+      description: Custom AD command via the AD - Authentication integration. For environments without that integration, replace with your tooling.
       script: ad-clear-sessions
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     scriptarguments:
-      username: {"complex": {"root": "inputs.Username"}}
+      username:
+        complex:
+          root: inputs.Username
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": -50, "y": 540}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 530, "y": 770}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: e82f83e9-38bb-4cf3-b9a0-0e9b1c03bbf0
     type: regular
     task:
       id: e82f83e9-38bb-4cf3-b9a0-0e9b1c03bbf0
       version: -1
       name: 'Fallback: log unsupported request'
-      description: No identity provider configured (or unrecognized action).
-        Set the "Darkmon - Identity Provider" List to one of ad/okta/azuread.
+      description: No identity provider configured (or unrecognized action). Set the "Darkmon - Identity Provider" List to one of ad/okta/azuread.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
-      message: {"simple": "Generic User Action skipped: provider list unset or unsupported action."}
+      message:
+        simple: 'Generic User Action skipped: provider list unset or unsupported action.'
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 600, "y": 540}}
+    continueonerrortype: ''
+    view: '{"position": {"x": -910, "y": 770}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: dd32a7c1-ed5f-4f6e-a1fd-bd6385e2eb60
     type: title
     task:
       id: dd32a7c1-ed5f-4f6e-a1fd-bd6385e2eb60
       version: -1
       name: Done
-      description: ""
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 720}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 1010}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: |-
-  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 735, "width": 1100, "x": -350, "y": 50}}}
+view: '{"linkLabelsPosition": {"1_10_#default#": 0.82, "1_2_ad": 0.82, "1_3_okta": 0.82, "1_4_azuread": 0.82, "2_10_#default#": 0.82, "2_5_disable": 0.82, "2_6_reset": 0.82, "2_7_revoke": 0.82}, "paper": {"dimensions": {"height": 1175, "width": 2160, "x": -960, "y": 0}}}'
 inputs:
 - key: Username
   value: {}
