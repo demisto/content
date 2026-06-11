@@ -2,16 +2,16 @@
     "definitionId": "",
     "version": -1,
     "fromVersion": "6.5.0",
-    "name": "Darkmon Critical CVE",
-    "id": "Darkmon Critical CVE",
-    "group": "incident",
-    "description": "Layout for Darkmon Critical CVE incidents.",
+    "name": "Darkmon Account",
+    "id": "Darkmon Account",
+    "group": "indicator",
+    "description": "Layout for Darkmon-enriched Account indicators. Adds a Darkmon tab with compromise sources, first/last compromise, and stealer families.",
     "system": false,
     "marketplaces": [
         "xsoar",
         "platform"
     ],
-    "detailsV2": {
+    "indicatorsDetails": {
         "tabs": [
             {
                 "id": "summary",
@@ -30,36 +30,36 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "incident_cve",
+                                "fieldId": "indicator_darkmoncompromisesources",
                                 "height": 22,
-                                "id": "field-incident_cve",
+                                "id": "field-indicator_darkmoncompromisesources",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "incident_cvss",
+                                "fieldId": "indicator_darkmonstealers",
                                 "height": 22,
-                                "id": "field-incident_cvss",
+                                "id": "field-indicator_darkmonstealers",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "incident_darkmoncveseverity",
+                                "fieldId": "indicator_darkmonfirstcompromise",
                                 "height": 22,
-                                "id": "field-incident_darkmoncveseverity",
+                                "id": "field-indicator_darkmonfirstcompromise",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "incident_darkmonaffectedcomponents",
+                                "fieldId": "indicator_darkmonlastcompromise",
                                 "height": 22,
-                                "id": "field-incident_darkmonaffectedcomponents",
+                                "id": "field-indicator_darkmonlastcompromise",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -68,7 +68,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Darkmon Details",
+                        "name": "Darkmon Overview",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -82,10 +82,13 @@
                 "type": "investigation"
             },
             {
-                "id": "war_room",
-                "name": "War Room",
-                "type": "warRoom"
+                "id": "relationships",
+                "name": "Relationships",
+                "type": "relationships"
             }
         ]
+    },
+    "indicatorsQuickView": {
+        "tabs": []
     }
 }

@@ -43,9 +43,3 @@ This playbook does not use any scripts.
 | File.Malicious.Vendor | The vendor that flagged this File as malicious \(Darkmon\). | string |
 | File.Malicious.Description | Reason this File was flagged as malicious. | string |
 | Darkmon.SearchResult | Full search result records returned by Darkmon for this indicator. | unknown |
-
-## Playbook Image
-
----
-
-![Darkmon_Enrich_File](../doc_files/Darkmon_Enrich_File.png)

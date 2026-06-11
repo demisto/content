@@ -4,192 +4,217 @@ name: Darkmon - Ransomware Mentions Watch
 description: Every 6 hours, polls ransomware mentions for the customer organisation. New entries open a critical 'Darkmon Ransomware Mention' incident and notify the CISO via Generic Notify.
 fromversion: 6.5.0
 marketplaces:
-  - xsoar
-  - platform
-  - platform
+- xsoar
+- platform
 tags:
-  - darkmon
-  - monitoring
-starttaskid: "0"
+- darkmon
+- monitoring
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: eff80257-5aa8-4ceb-b61a-3b3248bfcd4c
     type: start
     task:
       id: eff80257-5aa8-4ceb-b61a-3b3248bfcd4c
       version: -1
-      name: ""
-      description: ""
+      name: ''
+      description: ''
       type: start
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-        - "1"
+      - '100'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 50}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 50}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: ea07a276-36b2-485d-a212-90e060284889
     type: regular
     task:
       id: ea07a276-36b2-485d-a212-90e060284889
       version: -1
-      name: "Fetch ransomware mentions"
-      description: ""
-      script: "Darkmon|||dmontip-get-ransomware"
+      name: Fetch ransomware mentions
+      description: ''
+      script: Darkmon|||dmontip-get-ransomware
       type: regular
       iscommand: true
-      brand: "Darkmon"
+      brand: Darkmon
     scriptarguments:
       type:
-        simple: "mentions"
+        simple: mentions
       size:
-        simple: "50"
+        simple: '50'
       sort:
-        simple: "publishedAt,desc"
+        simple: publishedAt,desc
     nexttasks:
       '#none#':
-        - "2"
+      - '2'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 195}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 195}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: aa4e0d9f-3d6d-4c4e-a083-8624a4576214
     type: regular
     task:
       id: aa4e0d9f-3d6d-4c4e-a083-8624a4576214
       version: -1
-      name: "Filter new mentions"
-      description: ""
+      name: Filter new mentions
+      description: ''
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
       scriptName: DarkmonFilterUnseen
     scriptarguments:
       items:
-        simple: "${{Darkmon.Ransomware}}"
+        simple: ${{Darkmon.Ransomware}}
       id_field:
-        simple: "id"
+        simple: id
       seen_list:
-        simple: "Darkmon - Seen Ransomware Mentions"
+        simple: Darkmon - Seen Ransomware Mentions
     nexttasks:
       '#none#':
-        - "3"
+      - '3'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 370}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 370}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 568ce999-4e54-46c7-9a0d-cb412ca28b8c
     type: regular
     task:
       id: 568ce999-4e54-46c7-9a0d-cb412ca28b8c
       version: -1
-      name: "Open critical incidents"
-      description: ""
+      name: Open critical incidents
+      description: ''
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
       scriptName: DarkmonCreateIncidents
     scriptarguments:
       items:
-        simple: "${{NewAccounts}}"
+        simple: ${{NewAccounts}}
       incident_type:
-        simple: "Darkmon Ransomware Mention"
+        simple: Darkmon Ransomware Mention
       severity:
-        simple: "4"
+        simple: '4'
       name_template:
-        simple: "Darkmon: ${{victimName}} listed by ${{threatActor}}"
+        simple: 'Darkmon: ${{victimName}} listed by ${{threatActor}}'
       field_map:
-        simple: "darkmonvictimname=victimName,darkmonthreatactor=threatActor,darkmonpublishedat=publishedAt,darkmonscreenshoturl=screenShotUrl"
+        simple: darkmonvictimname=victimName,darkmonthreatactor=threatActor,darkmonpublishedat=publishedAt,darkmonscreenshoturl=screenShotUrl
     nexttasks:
       '#none#':
-        - "4"
+      - '4'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 545}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 545}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: d23b8918-25ef-4325-9412-eb83170bff09
     type: playbook
     task:
       id: d23b8918-25ef-4325-9412-eb83170bff09
       version: -1
-      name: "Page CISO"
-      description: ""
+      name: Page CISO
+      description: ''
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
       playbookName: Darkmon - Generic Notify
     scriptarguments:
       Subject:
-        simple: "CRITICAL: Darkmon ransomware mention"
+        simple: 'CRITICAL: Darkmon ransomware mention'
       Body:
-        simple: "${{NewAccounts.length}} new ransomware mentions of the company."
+        simple: ${{NewAccounts.length}} new ransomware mentions of the company.
     nexttasks:
       '#none#':
-        - "5"
+      - '5'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 720}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 720}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: db745e82-1ae8-4f2e-9f2d-978ca7dd8a7a
     type: title
     task:
       id: db745e82-1ae8-4f2e-9f2d-978ca7dd8a7a
       version: -1
-      name: "Done"
-      description: ""
+      name: Done
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 895}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 895}}'
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: |-
-  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 910, "width": 380, "x": 50, "y": 50}}}
+  '100':
+    id: '100'
+    taskid: a0cc153a-7371-4459-b6b0-6452aaeac7fb
+    type: condition
+    task:
+      id: a0cc153a-7371-4459-b6b0-6452aaeac7fb
+      version: -1
+      name: Is Darkmon integration available?
+      description: Skips the playbook gracefully if the Darkmon integration is not configured in this tenant. Calls the built-in IsIntegrationAvailable script with brandname=Darkmon.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      brandname:
+        simple: Darkmon
+    results:
+    - brandInstances
+    nexttasks:
+      'yes':
+      - '1'
+      'no':
+      - '5'
+      '#default#':
+      - '5'
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 105}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 910, "width": 380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
 tests:
-  - No tests
+- No tests

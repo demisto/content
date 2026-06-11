@@ -27,7 +27,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "1"
+        - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -86,7 +86,7 @@ tasks:
       Action:
         simple: "reset-password"
       NewPassword:
-        simple: "${random_password}"
+        simple: "${GeneratePassword.NewPassword}"
     nexttasks:
       '#none#':
         - "3"
@@ -180,9 +180,138 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+  "6":
+    id: "6"
+    taskid: a1b2c3d4-1111-4111-8111-111111111111
+    type: regular
+    task:
+      id: a1b2c3d4-1111-4111-8111-111111111111
+      version: -1
+      name: "Generate new password"
+      description: "Generates a strong password used by the Force password reset step. Replaces the previous orphan ${random_password} reference so reset actually has a value to apply."
+      script: "GeneratePassword"
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      min_lcase:
+        simple: "2"
+      min_ucase:
+        simple: "2"
+      min_digits:
+        simple: "2"
+      min_symbols:
+        simple: "1"
+      max_lcase:
+        simple: "8"
+      max_ucase:
+        simple: "6"
+      max_digits:
+        simple: "4"
+      max_symbols:
+        simple: "4"
+    nexttasks:
+      '#none#':
+        - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 120}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+  "7":
+    id: "7"
+    taskid: a1b2c3d4-2222-4222-8222-222222222222
+    type: condition
+    task:
+      id: a1b2c3d4-2222-4222-8222-222222222222
+      version: -1
+      name: "Auto-disable enabled?"
+      description: "Routes around the manual approval gate when the AutoDisable input is true. Defaults to false so destructive actions wait for an analyst by default."
+      type: condition
+      iscommand: false
+      brand: ""
+    conditions:
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex: {"root": "inputs.AutoDisable"}
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+    nexttasks:
+      "yes":
+        - "1"
+      "#default#":
+        - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 175}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+  "8":
+    id: "8"
+    taskid: a1b2c3d4-3333-4333-8333-333333333333
+    type: condition
+    task:
+      id: a1b2c3d4-3333-4333-8333-333333333333
+      version: -1
+      name: "Analyst approval to disable account?"
+      description: "Manual approval gate. Analyst confirms the disable + reset + revoke sequence before any destructive action runs. Required when AutoDisable input is false (the default)."
+      type: condition
+      iscommand: false
+      brand: ""
+    message:
+      to:
+      subject:
+        simple: "Approve compromised account response for ${incident.darkmonusername}?"
+      body:
+        simple: "Darkmon reported credentials for ${incident.darkmonusername} as compromised. Approving will disable the account, force a password reset, and revoke active sessions. Reject to skip all three and only notify."
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 0
+        retriesinterval: 0
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+        - "yes"
+        - "no"
+    nexttasks:
+      "yes":
+        - "1"
+      "no":
+        - "4"
+      "#default#":
+        - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 50, "y": 230}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
 view: |-
   {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 910, "width": 400, "x": 50, "y": 50}}}
-inputs: []
+inputs:
+  - key: AutoDisable
+    value:
+      simple: "false"
+    required: false
+    description: When true, the playbook proceeds straight to the disable + password-reset + revoke-sessions sequence without an analyst approval task. Defaults to false. Accounts in the Darkmon - Auto-Disable Allowlist are never auto-disabled regardless of this input.
+    playbookInputQuery:
 outputs: []
 tests:
   - No tests

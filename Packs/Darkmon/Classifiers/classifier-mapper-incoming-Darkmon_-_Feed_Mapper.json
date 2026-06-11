@@ -1,0 +1,77 @@
+{
+    "id": "Darkmon - Feed Mapper",
+    "version": -1,
+    "modified": "2026-06-11T00:00:00Z",
+    "fromVersion": "6.5.0",
+    "name": "Darkmon - Feed Mapper",
+    "description": "Maps raw Darkmon indicator JSON to XSOAR indicator fields per indicator type.",
+    "type": "mapping-incoming",
+    "feed": true,
+    "defaultIncidentType": "IP",
+    "mapping": {
+        "IP": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "description":          {"simple": "eventInfo"},
+                "firstseenbysource":    {"simple": "timestamp"},
+                "lastseenbysource":     {"simple": "timestamp"},
+                "darkmonclassification":{"simple": "classification"}
+            }
+        },
+        "Domain": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "description":          {"simple": "eventInfo"},
+                "firstseenbysource":    {"simple": "timestamp"},
+                "lastseenbysource":     {"simple": "timestamp"},
+                "darkmonclassification":{"simple": "classification"}
+            }
+        },
+        "URL": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "description":          {"simple": "eventInfo"},
+                "firstseenbysource":    {"simple": "timestamp"},
+                "lastseenbysource":     {"simple": "timestamp"},
+                "darkmonclassification":{"simple": "classification"}
+            }
+        },
+        "File": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "description":          {"simple": "eventInfo"},
+                "firstseenbysource":    {"simple": "timestamp"},
+                "lastseenbysource":     {"simple": "timestamp"},
+                "darkmonclassification":{"simple": "classification"}
+            }
+        },
+        "Email": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "description":             {"simple": "eventInfo"},
+                "firstseenbysource":       {"simple": "timestamp"},
+                "lastseenbysource":        {"simple": "timestamp"},
+                "darkmoncompromisesources":{"simple": "compromise_sources"},
+                "darkmonfirstcompromise":  {"simple": "first_compromise"},
+                "darkmonlastcompromise":   {"simple": "last_compromise"},
+                "darkmonstealers":         {"simple": "stealers"}
+            }
+        },
+        "Account": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "description":             {"simple": "eventInfo"},
+                "firstseenbysource":       {"simple": "timestamp"},
+                "lastseenbysource":        {"simple": "timestamp"},
+                "darkmoncompromisesources":{"simple": "compromise_sources"},
+                "darkmonfirstcompromise":  {"simple": "first_compromise"},
+                "darkmonlastcompromise":   {"simple": "last_compromise"},
+                "darkmonstealers":         {"simple": "stealers"}
+            }
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "platform"
+    ]
+}

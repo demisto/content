@@ -1,0 +1,28 @@
+{
+    "id": "Darkmon - Classifier",
+    "version": -1,
+    "modified": "2026-06-11T00:00:00Z",
+    "fromVersion": "6.5.0",
+    "name": "Darkmon - Classifier",
+    "description": "Routes raw Darkmon records to the matching Darkmon incident type based on the darkmon_kind field added by fetch_incidents() and by the DarkmonCreateIncidents script.",
+    "type": "classification",
+    "feed": false,
+    "defaultIncidentType": "Darkmon Compromised Credential",
+    "keyTypeMap": {
+        "Compromised Credential": "Darkmon Compromised Credential",
+        "Compromised Employee": "Darkmon Compromised Employee",
+        "Critical CVE": "Darkmon Critical CVE",
+        "Ransomware Mention": "Darkmon Ransomware Mention",
+        "Typosquatting Threat": "Darkmon Typosquatting Threat",
+        "VIP Email Leak": "Darkmon VIP Email Leak"
+    },
+    "transformer": {
+        "complex": {
+            "root": "darkmon_kind"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "platform"
+    ]
+}

@@ -6,26 +6,25 @@ fromversion: 6.5.0
 marketplaces:
 - xsoar
 - platform
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 91a63e51-d4e0-45b8-9953-10567bc29ab2
     type: start
     task:
       id: 91a63e51-d4e0-45b8-9953-10567bc29ab2
       version: -1
-      name: ""
-      description: ""
+      name: ''
+      description: ''
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '100'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 50}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 50}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -33,8 +32,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 77fd9027-c14e-4280-bfea-f54cc9b87b1f
     type: regular
     task:
@@ -48,15 +47,14 @@ tasks:
       brand: Darkmon
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       ip:
         complex:
           root: inputs.IP
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 195}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 195}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -64,22 +62,21 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: a817544a-b347-4268-9860-83d88b17ffe3
     type: title
     task:
       id: a817544a-b347-4268-9860-83d88b17ffe3
       version: -1
       name: Done
-      description: ""
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 370}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 370}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -87,8 +84,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 385, "width": 380, "x": 50, "y": 50}}}
+  '100':
+    id: '100'
+    taskid: f17e41a6-59bf-4214-a907-cd4faf853b82
+    type: condition
+    task:
+      id: f17e41a6-59bf-4214-a907-cd4faf853b82
+      version: -1
+      name: Is Darkmon integration available?
+      description: Skips the playbook gracefully if the Darkmon integration is not configured in this tenant. Calls the built-in IsIntegrationAvailable script with brandname=Darkmon.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      brandname:
+        simple: Darkmon
+    results:
+    - brandInstances
+    nexttasks:
+      'yes':
+      - '1'
+      'no':
+      - '2'
+      '#default#':
+      - '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 105}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 385, "width": 380, "x": 50, "y": 50}}}'
 inputs:
 - key: IP
   value:

@@ -6,7 +6,7 @@
     "name": "Darkmon URL",
     "ownerOnly": false,
     "cliName": "darkmonurl",
-    "type": "shortText",
+    "type": "url",
     "closeForm": false,
     "editForm": true,
     "required": false,

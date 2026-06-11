@@ -35,29 +35,6 @@ DBOT_SCORE_BY_CLASSIFICATION: dict[str, int] = {
 
 SENSITIVE_FIELDS_FOR_REDACTION = {"password", "cardNumber", "cvv", "cvvs"}
 
-IOC_FIELD_MAP: dict[str, list[dict[str, str]]] = {
-    "domain": [
-        {"src": "name", "dst": "domainname", "kind": "scalar"},
-        {"src": "classification", "dst": "tags", "kind": "tag"},
-    ],
-    "file": [
-        {"src": "md5", "dst": "md5", "kind": "scalar"},
-        {"src": "sha1", "dst": "sha1", "kind": "scalar"},
-        {"src": "sha256", "dst": "sha256", "kind": "scalar"},
-        {"src": "sha3_384", "dst": "sha3384", "kind": "scalar"},
-        {"src": "ssdeep", "dst": "ssdeep", "kind": "scalar"},
-        {"src": "size", "dst": "size", "kind": "scalar"},
-        {"src": "name", "dst": "name", "kind": "scalar"},
-    ],
-    "vulnerabilityioc": [
-        {"src": "cvssScore", "dst": "cvssscore", "kind": "scalar"},
-        {"src": "description", "dst": "description", "kind": "scalar"},
-        {"src": "published", "dst": "published", "kind": "scalar"},
-        {"src": "severity", "dst": "tags", "kind": "tag"},
-    ],
-}
-
-
 def classification_to_dbot_score(classification: str | None) -> int:
     if not classification:
         return DBOT_SCORE_NONE
@@ -144,20 +121,6 @@ def build_dbot_outputs(value: str, indicator_type: str, search_results: list[dic
         }
 
     return {"DBotScore": dbot, common_key: common_obj}
-
-
-def _apply_ioc_fields(item: dict, ioc_type: str, indicator_obj: dict) -> None:
-    """Table-driven mapping of raw IOC fields onto the indicator's fields dict."""
-    for spec in IOC_FIELD_MAP.get(ioc_type, []):
-        v = item.get(spec["src"])
-        if v in (None, "", []):
-            continue
-        if spec["kind"] == "tag":
-            existing = indicator_obj["fields"].get("tags", [])
-            new_tags = v if isinstance(v, list) else [v]
-            indicator_obj["fields"]["tags"] = existing + new_tags
-        else:
-            indicator_obj["fields"][spec["dst"]] = v
 
 
 def extract_feature_value(item: dict, key: str) -> Any:
@@ -571,25 +534,6 @@ def generate_ioc_tables(ioc_objects: list) -> str:
         tables_md.append(table_md)
 
     return "\n\n".join(tables_md) if tables_md else "No indicators found"
-
-
-def dmontip_get_indicators_command(client: Client, args: dict) -> CommandResults:
-    size = arg_to_number(args.get("size", DEFAULT_SIZE)) or DEFAULT_SIZE
-
-    result = client.get_indicators(size=size)
-
-    ioc_objects = result.get("iocObjects", [])
-
-    indicators = []
-    for item in ioc_objects:
-        indicator_data = extract_features_to_dict(item)
-        indicators.append(indicator_data)
-
-    outputs = {"Darkmon.Indicator(val.id == obj.id)": indicators}
-
-    readable_output = generate_ioc_tables(ioc_objects)
-
-    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=result)
 
 
 def dmontip_global_search_command(client: Client, args: dict) -> CommandResults:
@@ -1539,63 +1483,117 @@ def dmontip_search_file_command(client: Client, args: dict) -> list[CommandResul
     return _search_each(client, args, "file", "Hash", "File hash parameter is required")
 
 
-FEED_INDICATOR_TYPE_MAP: dict[str, Any] = {
-    "domain": FeedIndicatorType.Domain,
-    "url": FeedIndicatorType.URL,
-    "ip": FeedIndicatorType.IP,
-    "file": FeedIndicatorType.File,
-    "email": FeedIndicatorType.Email,
-    "vulnerabilityioc": FeedIndicatorType.CVE,
-    "tlsssl": "TLSSSL",
+INCIDENT_TYPE_MAP: dict[str, str] = {
+    "Compromised Credential": "Darkmon Compromised Credential",
+    "Compromised Employee":   "Darkmon Compromised Employee",
+    "Critical CVE":           "Darkmon Critical CVE",
+    "Ransomware Mention":     "Darkmon Ransomware Mention",
+    "Typosquatting Threat":   "Darkmon Typosquatting Threat",
+    "VIP Email Leak":         "Darkmon VIP Email Leak",
+}
+
+SEVERITY_MAP: dict[str, int] = {
+    "critical": 4, "high": 3, "medium": 2, "low": 1, "informational": 0,
+    "4": 4, "3": 3, "2": 2, "1": 1, "0": 0,
 }
 
 
-def fetch_indicators_command(client: Client, params: dict) -> list[dict]:
-    tlp_color = params.get("tlp_color")
-    feed_tags = argToList(params.get("feedTags", ""))
-    limit = arg_to_number(params.get("limit", DEFAULT_SIZE)) or DEFAULT_SIZE
+def _severity_from_record(record: dict) -> int:
+    raw = (record.get("severity") or record.get("cve_severity") or "medium")
+    return SEVERITY_MAP.get(str(raw).lower(), 2)
 
-    result = client.get_indicators(size=limit)
-    ioc_objects = result.get("iocObjects", []) or []
 
-    indicators: list[dict[str, Any]] = []
-    for item in ioc_objects:
-        ioc_type = item.get("type") or ""
-        value = item.get("value")
-        if not value:
+def _occurred_from_record(record: dict) -> str:
+    return (
+        record.get("occurred")
+        or record.get("timestamp")
+        or record.get("first_compromise")
+        or record.get("published_at")
+        or record.get("created_at")
+        or ""
+    )
+
+
+def _fetch_kind(client: Client, kind: str, since: str, size: int) -> list[dict]:
+    """Pull a single Darkmon record kind for fetch_incidents.
+
+    Returns each record annotated with `darkmon_kind` so the classifier can
+    route it to the right IncidentType.
+    """
+    raw: dict = {}
+    if kind == "Compromised Credential":
+        raw = client.get_compromised_data("compromised-accounts", size=size, sort="-timestamp")
+    elif kind == "Compromised Employee":
+        raw = client.get_compromised_data("compromised-employees", size=size, sort="-timestamp")
+    elif kind == "Critical CVE":
+        raw = client.get_cve(size=size)
+    elif kind == "Ransomware Mention":
+        raw = client.get_ransomware(mentions=True, size=size, sort="-timestamp")
+    elif kind == "Typosquatting Threat":
+        raw = client.get_nrd(size=size, sort="-timestamp")
+    elif kind == "VIP Email Leak":
+        raw = client.get_board_leaks(size=size) if hasattr(client, "get_board_leaks") else {}
+    else:
+        return []
+
+    records: list[dict] = []
+    payload = raw.get("content") or raw.get("items") or raw.get("results") or raw.get("data") or []
+    for item in payload if isinstance(payload, list) else []:
+        item = dict(item)
+        item["darkmon_kind"] = kind
+        occurred = _occurred_from_record(item)
+        if since and occurred and occurred <= since:
             continue
+        records.append(item)
+    return records
 
-        indicator_type = FEED_INDICATOR_TYPE_MAP.get(ioc_type, ioc_type)
 
-        raw_data = {"value": value, "type": indicator_type, **item}
-        indicator_obj: dict[str, Any] = {
-            "value": value,
-            "type": indicator_type,
-            "service": VENDOR,
-            "rawJSON": raw_data,
-            "fields": {},
-        }
+def fetch_incidents_command(client: Client, params: dict) -> tuple[list[dict], dict]:
+    """Native incident fetch.
 
-        # Common fields applicable to every IOC type
-        if event_info := item.get("eventInfo"):
-            indicator_obj["fields"]["description"] = event_info
-        if ts := item.get("timestamp"):
-            indicator_obj["fields"]["firstseenbysource"] = ts
-            indicator_obj["fields"]["lastseenbysource"] = ts
+    Pulls each enabled Darkmon record kind newer than the last high-water-mark,
+    annotates each with `darkmon_kind` so the classifier routes it, and emits
+    an incident dict with `name`, `type`, `occurred`, `severity`, and `rawJSON`.
+    The mapper turns rawJSON into XSOAR IncidentField values.
+    """
+    enabled = argToList(params.get("incident_types_to_fetch") or "")
+    if not enabled:
+        enabled = ["Compromised Credential", "Critical CVE", "VIP Email Leak"]
 
-        # Type-specific fields driven by IOC_FIELD_MAP - declarative, future-proof
-        _apply_ioc_fields(item, ioc_type, indicator_obj)
+    max_fetch = arg_to_number(params.get("max_fetch", 50)) or 50
+    first_fetch = params.get("first_fetch", "3 days")
 
-        if feed_tags:
-            existing = indicator_obj["fields"].get("tags", [])
-            indicator_obj["fields"]["tags"] = existing + feed_tags
+    last_run = demisto.getLastRun() or {}
+    since_per_kind: dict[str, str] = last_run.get("since_per_kind") or {}
+    bootstrap: str = ""
+    if not since_per_kind:
+        dt = dateparser.parse(first_fetch, settings={"TIMEZONE": "UTC"})
+        bootstrap = dt.strftime("%Y-%m-%dT%H:%M:%SZ") if dt else ""
 
-        if tlp_color:
-            indicator_obj["fields"]["trafficlightprotocol"] = tlp_color
+    per_kind = max(1, max_fetch // max(1, len(enabled)))
+    incidents: list[dict] = []
+    new_since_per_kind: dict[str, str] = dict(since_per_kind)
 
-        indicators.append(indicator_obj)
+    for kind in enabled:
+        since = since_per_kind.get(kind) or bootstrap
+        records = _fetch_kind(client, kind, since, per_kind)
+        highest = since
+        for record in records:
+            occurred = _occurred_from_record(record) or ""
+            if occurred > highest:
+                highest = occurred
+            incidents.append({
+                "name": f"Darkmon {kind}: {record.get('value') or record.get('id') or record.get('cve_id') or 'record'}",
+                "type": INCIDENT_TYPE_MAP.get(kind, "Darkmon Compromised Credential"),
+                "occurred": occurred,
+                "severity": _severity_from_record(record),
+                "rawJSON": json.dumps(record),
+            })
+        if highest:
+            new_since_per_kind[kind] = highest
 
-    return indicators
+    next_last_run = {"since_per_kind": new_since_per_kind}
+    return incidents[:max_fetch], next_last_run
 
 
 def main() -> None:
@@ -1625,13 +1623,10 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client))
 
-        elif command == "fetch-indicators":
-            indicators = fetch_indicators_command(client, params)
-            for batch_indicators in batch(indicators, batch_size=2000):
-                demisto.createIndicators(batch_indicators)
-
-        elif command == "dmontip-get-indicators":
-            return_results(dmontip_get_indicators_command(client, args))
+        elif command == "fetch-incidents":
+            incidents, next_last_run = fetch_incidents_command(client, params)
+            demisto.incidents(incidents)
+            demisto.setLastRun(next_last_run)
 
         elif command == "dmontip-global-search":
             return_results(dmontip_global_search_command(client, args))

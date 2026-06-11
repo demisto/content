@@ -1,31 +1,31 @@
 id: Darkmon - Enrich Domain
 version: -1
 name: Darkmon - Enrich Domain
-description: Sub-playbook that calls the Darkmon !domain command and returns DBotScore + Common.Domain for the input Domain indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
+description: Sub-playbook that calls the Darkmon !domain command and returns DBotScore + Common.Domain for the input Domain indicator. Designed to be invoked from a parent playbook; does not auto-run on
+  indicator creation.
 fromversion: 6.5.0
 marketplaces:
 - xsoar
 - platform
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 58c433f6-9f8c-4c59-85e4-649d492159ef
     type: start
     task:
       id: 58c433f6-9f8c-4c59-85e4-649d492159ef
       version: -1
-      name: ""
-      description: ""
+      name: ''
+      description: ''
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '100'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 50}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 50}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -33,8 +33,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: ef80b616-1b04-4184-8b45-91b4f63df51e
     type: regular
     task:
@@ -48,15 +48,14 @@ tasks:
       brand: Darkmon
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       domain:
         complex:
           root: inputs.Domain
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 195}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 195}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -64,22 +63,21 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: ecb5ddbd-8aec-40ac-85d1-ca61f892a561
     type: title
     task:
       id: ecb5ddbd-8aec-40ac-85d1-ca61f892a561
       version: -1
       name: Done
-      description: ""
+      description: ''
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {"position": {"x": 50, "y": 370}}
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 370}}'
     note: false
     timertriggers: []
     ignoreworker: false
@@ -87,8 +85,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 385, "width": 380, "x": 50, "y": 50}}}
+  '100':
+    id: '100'
+    taskid: e21c0719-eddc-4915-9fc1-3d6bae425e55
+    type: condition
+    task:
+      id: e21c0719-eddc-4915-9fc1-3d6bae425e55
+      version: -1
+      name: Is Darkmon integration available?
+      description: Skips the playbook gracefully if the Darkmon integration is not configured in this tenant. Calls the built-in IsIntegrationAvailable script with brandname=Darkmon.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      brandname:
+        simple: Darkmon
+    results:
+    - brandInstances
+    nexttasks:
+      'yes':
+      - '1'
+      'no':
+      - '2'
+      '#default#':
+      - '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 105}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 385, "width": 380, "x": 50, "y": 50}}}'
 inputs:
 - key: Domain
   value:

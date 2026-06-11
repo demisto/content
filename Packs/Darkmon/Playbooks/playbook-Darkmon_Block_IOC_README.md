@@ -35,9 +35,3 @@ This playbook does not use any commands.
 
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
-
----
-
-![Darkmon_Block_IOC](../doc_files/Darkmon_Block_IOC.png)

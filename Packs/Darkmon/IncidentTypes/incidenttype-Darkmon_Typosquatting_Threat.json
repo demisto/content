@@ -4,7 +4,7 @@
     "name": "Darkmon Typosquatting Threat",
     "preProcessingScript": "",
     "color": "#FFA500",
-    "playbookId": "",
+    "playbookId": "Darkmon - Brand Targeted NRD Watch",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -19,5 +19,6 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "layout": "Darkmon Typosquatting Threat"
 }

@@ -4,7 +4,7 @@
     "name": "Darkmon Ransomware Mention",
     "preProcessingScript": "",
     "color": "#FF0000",
-    "playbookId": "",
+    "playbookId": "Darkmon - Ransomware Victim Response",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -19,5 +19,6 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "layout": "Darkmon Ransomware Mention"
 }

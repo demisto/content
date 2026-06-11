@@ -88,7 +88,7 @@ tasks:
       Body:
         simple: "Open the IR war room for incident ${incident.id} - victim: ${incident.darkmonvictimname}, threat actor: ${incident.darkmonthreatactor}."
       SlackChannel:
-        simple: "#soc-warroom"
+        simple: "${inputs.WarRoomChannel}"
     nexttasks:
       '#none#':
         - "3"
@@ -120,7 +120,7 @@ tasks:
       Body:
         simple: "Threat actor ${incident.darkmonthreatactor} listed ${incident.darkmonvictimname} on a leak site. Screenshot: ${incident.darkmonscreenshoturl}."
       EmailTo:
-        simple: "ciso@${customer_domain}"
+        simple: "${inputs.CISOEmail}"
     nexttasks:
       '#none#':
         - "4"
@@ -184,7 +184,19 @@ tasks:
     quietmode: 0
 view: |-
   {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 910, "width": 400, "x": 50, "y": 50}}}
-inputs: []
+inputs:
+  - key: CISOEmail
+    value:
+      simple: ""
+    required: true
+    description: Mailbox to notify when this playbook fires. Replaces the orphan ${customer_domain} variable so deployments do not silently send to a non-resolving address.
+    playbookInputQuery:
+  - key: WarRoomChannel
+    value:
+      simple: "#soc-warroom"
+    required: false
+    description: Slack / Teams channel where SOC discussion of this ransomware victim incident happens. Defaults to #soc-warroom; override per tenant.
+    playbookInputQuery:
 outputs: []
 tests:
   - No tests

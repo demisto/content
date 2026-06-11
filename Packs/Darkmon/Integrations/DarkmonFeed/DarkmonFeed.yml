@@ -1,0 +1,145 @@
+commonfields:
+  id: Darkmon Feed
+  version: -1
+name: Darkmon Feed
+display: Darkmon Feed
+category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
+description: |-
+  Darkmon TIP indicator feed for Cortex XSOAR. Pulls IPs, URLs, domains, file hashes,
+  emails, and accounts from the Darkmon Threat Intel firehose into the XSOAR TIM
+  module. Pair with the Darkmon integration for incident fetching and automation
+  commands.
+configuration:
+- display: API Base URL
+  name: base_url
+  defaultvalue: https://api.darkmon.com/tip/2025.1
+  type: 0
+  required: false
+  additionalinfo: Override the Darkmon TIP API base URL only if your tenant points
+    at a non-default endpoint. The default value already targets the production
+    Darkmon TIP service. Leave blank to use the default.
+  section: Connect
+- display: ""
+  displaypassword: API key
+  name: X-API-KEY
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Fetch indicators
+  name: feed
+  defaultvalue: 'true'
+  type: 8
+  required: false
+  section: Collect
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  section: Collect
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data.
+  section: Collect
+- display: ''
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  section: Collect
+- display: ''
+  name: feedExpirationInterval
+  defaultvalue: '20160'
+  type: 1
+  required: false
+  section: Collect
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: '240'
+  type: 19
+  required: false
+  section: Collect
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed.
+  section: Collect
+- display: Traffic Light Protocol Color
+  name: tlp_color
+  type: 15
+  required: false
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  section: Collect
+- display: Tags
+  name: feedTags
+  type: 0
+  required: false
+  additionalinfo: Supports CSV values.
+  section: Collect
+- display: Indicator fetch limit
+  name: limit
+  defaultvalue: '1000'
+  type: 0
+  required: false
+  additionalinfo: Maximum number of indicators to fetch per cycle.
+  section: Collect
+script:
+  script: ''
+  type: python
+  subtype: python3
+  feed: true
+  runonce: false
+  dockerimage: demisto/python3:3.12.13.9059085
+  commands:
+  - name: darkmon-get-indicators
+    description: Fetch a page of Darkmon indicators on demand without waiting for the next scheduled feed cycle. Useful for debugging.
+    arguments:
+    - name: limit
+      description: Maximum number of indicators to return.
+      defaultValue: "20"
+defaultclassifier: Darkmon - Feed Classifier
+defaultmapperin: Darkmon - Feed Mapper
+tests:
+- No tests
+fromversion: 6.5.0

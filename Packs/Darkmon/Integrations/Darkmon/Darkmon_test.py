@@ -237,36 +237,10 @@ INDICATORS_API_RESPONSE = {
 }
 
 
-def test_dmontip_get_indicators_calls_correct_endpoint(monkeypatch):
-    calls = patch_http(monkeypatch, INDICATORS_API_RESPONSE)
-    src.dmontip_get_indicators_command(make_client(), {"size": "50"})
-    assert calls["url_suffix"] == "ioc-feed"
-    assert calls["params"] == {"size": 50}
 
 
-def test_dmontip_get_indicators_renders_grouped_tables(monkeypatch):
-    patch_http(monkeypatch, INDICATORS_API_RESPONSE)
-    result = src.dmontip_get_indicators_command(make_client(), {})
-
-    assert "Darkmon.Indicator(val.id == obj.id)" in result.outputs
-    indicators = result.outputs["Darkmon.Indicator(val.id == obj.id)"]
-    ids = {i["id"] for i in indicators}
-    assert ids == {"d1", "h1", "i1"}
-
-    md = result.readable_output
-    assert "DOMAIN Indicators" in md
-    assert "FILE Indicators" in md
-    assert "IP Indicators" in md
-    assert "phish.example.com" in md_tokens(md)
-    assert "dropper.exe" in md
-    assert "198.51.100.7" in md
 
 
-def test_dmontip_get_indicators_empty(monkeypatch):
-    patch_http(monkeypatch, {"iocObjects": []})
-    result = src.dmontip_get_indicators_command(make_client(), {})
-    assert result.readable_output == "No indicators found"
-    assert result.outputs["Darkmon.Indicator(val.id == obj.id)"] == []
 
 
 # ===========================================================================
@@ -1255,53 +1229,10 @@ FEED_RESPONSE = {
 }
 
 
-def test_fetch_indicators_basic_mapping(monkeypatch):
-    patch_http(monkeypatch, FEED_RESPONSE)
-    indicators = src.fetch_indicators_command(make_client(), {})
-
-    by_value = {i["value"]: i for i in indicators}
-    assert set(by_value.keys()) == {"phish.example.com", "s256-hash", "CVE-2026-0001", "198.51.100.7"}
-
-    domain = by_value["phish.example.com"]
-    assert domain["type"] == "Domain"
-    assert domain["service"] == "Darkmon"
-    assert domain["fields"]["domainname"] == "phish.example.com"
-    assert domain["fields"]["tags"] == ["malicious"]
-    assert domain["fields"]["description"] == "Phishing kit"
-
-    file_ind = by_value["s256-hash"]
-    assert file_ind["type"] == "File"
-    assert file_ind["fields"]["md5"] == "m"
-    assert file_ind["fields"]["sha256"] == "s2"
-    assert file_ind["fields"]["size"] == 1024
-
-    cve = by_value["CVE-2026-0001"]
-    assert cve["type"] == "CVE"
-    assert cve["fields"]["cvssscore"] == 9.1
-    assert "CRITICAL" in cve["fields"]["tags"]
-
-    ip = by_value["198.51.100.7"]
-    assert ip["type"] == "IP"
-    assert ip["fields"]["description"] == "C2"
 
 
-def test_fetch_indicators_applies_tlp_and_feed_tags(monkeypatch):
-    patch_http(monkeypatch, FEED_RESPONSE)
-    indicators = src.fetch_indicators_command(
-        make_client(),
-        {"tlp_color": "AMBER", "feedTags": "darkmon,threatfeed", "limit": "100"},
-    )
-    for ind in indicators:
-        assert ind["fields"]["trafficlightprotocol"] == "AMBER"
-        assert "darkmon" in ind["fields"]["tags"]
-        assert "threatfeed" in ind["fields"]["tags"]
 
 
-def test_fetch_indicators_passes_limit_as_size(monkeypatch):
-    calls = patch_http(monkeypatch, FEED_RESPONSE)
-    src.fetch_indicators_command(make_client(), {"limit": "250"})
-    assert calls["url_suffix"] == "ioc-feed"
-    assert calls["params"] == {"size": 250}
 
 
 # ===========================================================================
@@ -1834,34 +1765,11 @@ def test_boardemails_accounts_redacts_password_by_default(monkeypatch):
 
 
 # ===========================================================================
-# Tier 0: fetch_indicators table-driven mapping
 # ===========================================================================
 
 
-def test_fetch_indicators_handles_unknown_ioc_type_gracefully(monkeypatch):
-    """A new ioc_type Darkmon adds in the future shouldn't crash the feed."""
-    response = {
-        "iocObjects": [
-            {"id": "x1", "type": "something_new", "value": "whatever", "eventInfo": "novel kind"},
-        ]
-    }
-    patch_http(monkeypatch, response)
-    inds = src.fetch_indicators_command(make_client(), {})
-    assert len(inds) == 1
-    assert inds[0]["value"] == "whatever"
-    # type passes through (no FeedIndicatorType match, but doesn't crash)
-    assert inds[0]["type"] == "something_new"
-    # description still applied from common section
-    assert inds[0]["fields"]["description"] == "novel kind"
 
 
-def test_fetch_indicators_field_mapping_is_table_driven(monkeypatch):
-    """The IOC_FIELD_MAP is the authoritative source for per-type field mapping."""
-    assert "domain" in src.IOC_FIELD_MAP
-    assert "file" in src.IOC_FIELD_MAP
-    assert "vulnerabilityioc" in src.IOC_FIELD_MAP
-    # Adding a column in the table should be the only edit needed
-    assert any(s["src"] == "sha256" and s["dst"] == "sha256" for s in src.IOC_FIELD_MAP["file"])
 
 
 # ===========================================================================

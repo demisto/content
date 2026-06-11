@@ -110,15 +110,14 @@ tasks:
     conditions:
       - label: "yes"
         condition:
-          -   - operator: isEqualString
+          -   - operator: greaterThanOrEqual
                 left:
                   value:
                     complex: {"root": "DBotScore.Score"}
                   iscontext: true
-                ignorecase: true
                 right:
                   value:
-                    simple: 3
+                    simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -129,7 +128,7 @@ tasks:
     skipunavailable: true
     nexttasks:
       "yes":
-        - "4"
+        - "8"
       "#default#":
         - "5"
 
@@ -148,13 +147,87 @@ tasks:
       brand: ""
     scriptarguments:
       Indicator:
-        simple: "${DBotScore(val.Score === 3).Indicator}"
+        simple: "${DBotScore(val.Score >= 3).Indicator}"
       Type:
         simple: "url"
       Reason:
-        simple: "Darkmon scored 3/Bad in phishing triage"
+        simple: "Darkmon scored Bad in phishing triage"
     nexttasks:
       '#none#':
+        - "5"
+  "8":
+    id: "8"
+    taskid: 0c9d3a5e-5e1f-4ec7-9e80-7b1a2f0f5311
+    type: condition
+    task:
+      id: 0c9d3a5e-5e1f-4ec7-9e80-7b1a2f0f5311
+      version: -1
+      name: "Auto-block enabled?"
+      description: "Routes around the manual approval gate when AutoBlock input is true."
+      type: condition
+      iscommand: false
+      brand: ""
+    conditions:
+      - label: "yes"
+        condition:
+          -   - operator: isEqualString
+                left:
+                  value:
+                    complex: {"root": "inputs.AutoBlock"}
+                  iscontext: true
+                right:
+                  value:
+                    simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {"position": {"x": 300, "y": 620}}
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    nexttasks:
+      "yes":
+        - "4"
+      "#default#":
+        - "9"
+  "9":
+    id: "9"
+    taskid: 1d8e4f6f-6f2f-4fd8-af91-8c2b3f1f6422
+    type: condition
+    task:
+      id: 1d8e4f6f-6f2f-4fd8-af91-8c2b3f1f6422
+      version: -1
+      name: "Analyst approval to block?"
+      description: "Manual approval gate. Analyst confirms the block action before the Generic Block Indicator playbook runs."
+      type: condition
+      iscommand: false
+      brand: ""
+    message:
+      to:
+      subject:
+        simple: "Approve block of ${DBotScore(val.Score >= 3).Indicator}?"
+      body:
+        simple: "Darkmon scored the following indicator(s) Bad. Approve to send to Darkmon - Generic Block Indicator."
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 0
+        retriesinterval: 0
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+        - "yes"
+        - "no"
+    nexttasks:
+      "yes":
+        - "4"
+      "no":
+        - "5"
+      "#default#":
         - "5"
     separatecontext: false
     continueonerrortype: ""
@@ -248,7 +321,13 @@ tasks:
     quietmode: 0
 view: |-
   {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 1260, "width": 520, "x": 50, "y": 50}}}
-inputs: []
+inputs:
+  - key: AutoBlock
+    value:
+      simple: "false"
+    required: false
+    description: When true, indicators scored Bad by Darkmon are sent to Darkmon - Generic Block Indicator without an analyst approval task. Defaults to false (a manual approval is presented before any block).
+    playbookInputQuery:
 outputs:
   - contextPath: ExtractedIndicators
     description: IOCs extracted from the phishing email body.

@@ -4,7 +4,7 @@
     "name": "Darkmon Critical CVE",
     "preProcessingScript": "",
     "color": "#FF0000",
-    "playbookId": "",
+    "playbookId": "Darkmon - Critical CVE Pipeline",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -19,5 +19,6 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "layout": "Darkmon Critical CVE"
 }

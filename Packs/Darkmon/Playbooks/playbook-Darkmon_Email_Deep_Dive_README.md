@@ -41,9 +41,3 @@ This playbook does not use any sub-playbooks.
 | Darkmon.BoardLeak.ComboList | Combo-list records for this email. | unknown |
 | Darkmon.BoardLeak.PublicBreach | Public-breach records for this email. | unknown |
 | Darkmon.SearchResult | Global-search hits for the email. | unknown |
-
-## Playbook Image
-
----
-
-![Darkmon_Email_Deep_Dive](../doc_files/Darkmon_Email_Deep_Dive.png)

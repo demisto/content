@@ -1,0 +1,191 @@
+{
+    "id": "Darkmon - Incoming Mapper",
+    "version": -1,
+    "modified": "2026-06-11T00:00:00Z",
+    "fromVersion": "6.5.0",
+    "name": "Darkmon - Incoming Mapper",
+    "description": "Maps raw Darkmon record JSON to XSOAR incident fields. Routed per Darkmon incident type by the Darkmon - Classifier.",
+    "type": "mapping-incoming",
+    "feed": false,
+    "defaultIncidentType": "Darkmon Compromised Credential",
+    "mapping": {
+        "Darkmon Compromised Credential": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "occurred": {
+                    "simple": "occurred"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "darkmonaccountid": {
+                    "simple": "id"
+                },
+                "darkmonusername": {
+                    "simple": "username"
+                },
+                "darkmonurl": {
+                    "simple": "url"
+                },
+                "darkmonsourcename": {
+                    "simple": "source_name"
+                },
+                "darkmonstealer": {
+                    "simple": "stealer_family"
+                },
+                "darkmonfirstcompromise": {
+                    "simple": "first_compromise"
+                },
+                "darkmonlastcompromise": {
+                    "simple": "last_compromise"
+                },
+                "darkmonpasswordredacted": {
+                    "simple": "password_redacted"
+                },
+                "country": {
+                    "simple": "country"
+                }
+            }
+        },
+        "Darkmon Compromised Employee": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "occurred": {
+                    "simple": "occurred"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "darkmonemployeeemail": {
+                    "simple": "employee_email"
+                },
+                "darkmondirectoryuser": {
+                    "simple": "directory_user"
+                },
+                "darkmonactiontaken": {
+                    "simple": "action_taken"
+                },
+                "darkmonurl": {
+                    "simple": "url"
+                },
+                "darkmonsourcename": {
+                    "simple": "source_name"
+                },
+                "darkmonstealer": {
+                    "simple": "stealer_family"
+                },
+                "darkmonfirstcompromise": {
+                    "simple": "first_compromise"
+                },
+                "darkmonlastcompromise": {
+                    "simple": "last_compromise"
+                },
+                "darkmonpasswordredacted": {
+                    "simple": "password_redacted"
+                },
+                "darkmonusername": {
+                    "simple": "username"
+                },
+                "country": {
+                    "simple": "country"
+                }
+            }
+        },
+        "Darkmon Critical CVE": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "occurred": {
+                    "simple": "occurred"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "darkmoncveseverity": {
+                    "simple": "cve_severity"
+                },
+                "darkmonaffectedcomponents": {
+                    "simple": "affected_components"
+                },
+                "cve": {
+                    "simple": "cve_id"
+                },
+                "cvss": {
+                    "simple": "cvss_score"
+                }
+            }
+        },
+        "Darkmon Ransomware Mention": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "occurred": {
+                    "simple": "occurred"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "darkmonthreatactor": {
+                    "simple": "threat_actor"
+                },
+                "darkmonvictimname": {
+                    "simple": "victim_name"
+                },
+                "darkmonpublishedat": {
+                    "simple": "published_at"
+                },
+                "darkmonscreenshoturl": {
+                    "simple": "screenshot_url"
+                }
+            }
+        },
+        "Darkmon Typosquatting Threat": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "occurred": {
+                    "simple": "occurred"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "darkmonbrand": {
+                    "simple": "brand"
+                },
+                "darkmonobserveddomain": {
+                    "simple": "observed_domain"
+                },
+                "darkmondistance": {
+                    "simple": "distance"
+                },
+                "darkmonregisteredat": {
+                    "simple": "registered_at"
+                }
+            }
+        },
+        "Darkmon VIP Email Leak": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "occurred": {
+                    "simple": "occurred"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "darkmonprotectedemail": {
+                    "simple": "protected_email"
+                },
+                "darkmonleakid": {
+                    "simple": "leak_id"
+                },
+                "darkmonleaktype": {
+                    "simple": "leak_type"
+                },
+                "darkmonsourcename": {
+                    "simple": "source_name"
+                }
+            }
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "platform"
+    ]
+}

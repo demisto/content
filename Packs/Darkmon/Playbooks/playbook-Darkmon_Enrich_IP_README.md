@@ -43,9 +43,3 @@ This playbook does not use any scripts.
 | IP.Malicious.Vendor | The vendor that flagged this IP as malicious \(Darkmon\). | string |
 | IP.Malicious.Description | Reason this IP was flagged as malicious. | string |
 | Darkmon.SearchResult | Full search result records returned by Darkmon for this indicator. | unknown |
-
-## Playbook Image
-
----
-
-![Darkmon_Enrich_IP](../doc_files/Darkmon_Enrich_IP.png)

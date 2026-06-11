@@ -41,9 +41,3 @@ There are no inputs for this playbook.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | NewAccounts | Compromised employee accounts that triggered action this run. | unknown |
-
-## Playbook Image
-
----
-
-![Darkmon_Compromised_Employee_Auto_Disable](../doc_files/Darkmon_Compromised_Employee_Auto_Disable.png)

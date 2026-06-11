@@ -32,9 +32,3 @@ There are no inputs for this playbook.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Darkmon.BoardProtection | List of currently board-protected emails. | unknown |
-
-## Playbook Image
-
----
-
-![Darkmon_VIP_Email_Monitor](../doc_files/Darkmon_VIP_Email_Monitor.png)
