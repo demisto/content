@@ -170,11 +170,28 @@ def _capture_built_commands(mocker, file_list):
 
     mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=extractIndicators_side_effect)
 
-    class _MockSearcher:
-        def __iter__(self):
-            return iter([])
+    # Build a minimal TIM page so each input hash is "found" in TIM. This keeps the
+    # enrichment flow on the success path (instead of the all-failed path which now
+    # raises), while these tests only care about the commands that were built.
+    def _build_ioc(file_hash):
+        custom_fields = {"sha256": file_hash} if len(file_hash) == 64 else {"md5": file_hash}
+        return {
+            "value": file_hash,
+            "score": 1,
+            "modifiedTime": "2025-09-01T00:00:00Z",
+            "CustomFields": custom_fields,
+        }
 
-    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_MockSearcher())
+    tim_pages = [{"iocs": [_build_ioc(file_hash) for file_hash in file_list]}]
+
+    class _MockSearcher:
+        def __init__(self, pages):
+            self.pages = pages
+
+        def __iter__(self):
+            return iter(self.pages)
+
+    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_MockSearcher(tim_pages))
     mocker.patch.object(
         demisto,
         "getModules",

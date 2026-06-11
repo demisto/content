@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes
 from AggregatedCommandApiModule import *
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 
 
 # =================================================================================================
@@ -1880,7 +1880,7 @@ def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modif
         - Else STALE (including invalid/no modifiedTime).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
 
     def iso(dt: datetime) -> str:
         # Code under test accepts 'Z' or '+00:00'; it replaces Z → +00:00, so we emit 'Z' here.
@@ -1914,7 +1914,7 @@ def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory)
         - Returns FRESH at the boundary (minus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -1931,7 +1931,7 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
         - Returns STALE at the boundary (plus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -2147,7 +2147,8 @@ def test_summarize_command_results_uses_is_error_result_for_entry_type(module_fa
     When:
         - summarize_command_results is called.
     Then:
-        - The CommandResults.entry_type is ERROR iff _is_error_result returns True.
+        - A DemistoException is raised iff _is_final_result_error returns True.
+        - Otherwise a success CommandResults (non-error entry type) is returned.
     """
     mod = module_factory()
     # Don't let these mutate entry_results, we want to control it
@@ -2157,11 +2158,11 @@ def test_summarize_command_results_uses_is_error_result_for_entry_type(module_fa
     # Avoid depending on markdown formatting
     mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
 
-    # Case 1: _is_final_result_error -> True => EntryType.ERROR
+    # Case 1: _is_final_result_error -> True => raises DemistoException
     mocker.patch.object(mod, "_is_final_result_error", return_value=True)
     mod.entry_results = [make_entry_result("c1", "A", Status.FAILURE, "Error")]
-    res = mod.summarize_command_results(final_context={"ctx": 1})
-    assert res.entry_type == entryTypes["error"]
+    with pytest.raises(DemistoException, match=r"Error: All commands failed or no indicators found\."):
+        mod.summarize_command_results(final_context={"ctx": 1})
 
     # Case 2: _is_final_result_error -> False => success (default entry type)
     mocker.patch.object(mod, "_is_final_result_error", return_value=False)
