@@ -143,7 +143,9 @@ class AWSClient:
                     region_name=calculated_sts_region,
                     endpoint_url=self.sts_endpoint_url,
                 )
+                demisto.debug(f"Using the following keys for assume_role for case 'login with Role ARN' {kwargs.keys()=}")
                 sts_response = sts_client.assume_role(**kwargs)
+                demisto.debug("assume_role was executed successfully for case 'login with Role ARN'.")
                 client = boto3.client(
                     service_name=service,
                     region_name=region if region else self.aws_default_region,
@@ -170,7 +172,9 @@ class AWSClient:
                     "RoleSessionName": role_session_name or self.aws_role_session_name,
                 }
             )
+            demisto.debug(f"Using the following keys for assume_role for case 'login with Access Key ID and Role ARN' {kwargs.keys()=}")
             sts_response = sts_client.assume_role(**kwargs)
+            demisto.debug("assume_role was executed successfully for case 'login with Access Key ID and Role ARN'.")
             client = boto3.client(
                 service_name=service,
                 region_name=region if region else self.aws_default_region,
@@ -206,6 +210,7 @@ class AWSClient:
             client = boto3.client(
                 service_name=service, region_name=region if region else self.aws_default_region, endpoint_url=self.endpoint_url
             )
+        demisto.debug("AWS client created successfully return it.")
 
         return client
 
