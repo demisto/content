@@ -1,0 +1,106 @@
+[MODEL: dataset="openai_admin_audit_raw"]
+// OpenAI Organization Admin Audit Logs -> XDM
+// Supports two stories:
+//   * Authentication (AUTH)  -> login.* events
+//   * SaaS Audit             -> all non-login admin/audit events (api_key.*, organization.*, etc.)
+alter
+    get_actor_email   = json_extract_scalar(actor, "$.session.user.email"),
+    get_actor_user_id = json_extract_scalar(actor, "$.session.user.id"),
+    get_src_ip        = json_extract_scalar(actor, "$.session.ip_address"),
+    get_user_agent    = json_extract_scalar(actor, "$.session.user_agent"),
+    get_geo_country   = json_extract_scalar(actor, "$.session.ip_address_details.country"),
+    get_geo_city      = json_extract_scalar(actor, "$.session.ip_address_details.city"),
+    get_geo_region    = json_extract_scalar(actor, "$.session.ip_address_details.region"),
+    get_geo_lat       = json_extract_scalar(actor, "$.session.ip_address_details.latitude"),
+    get_geo_long      = json_extract_scalar(actor, "$.session.ip_address_details.longitude"),
+    get_is_login      = if(type ~= "^login\.", true, false),
+    xdm.event.type = if(type ~= "^login\.", "authentication", "saas audit"),
+    xdm.event.original_event_type = type,
+    get_outcome = if(
+        type ~= "\.succeeded$", XDM_CONST.OUTCOME_SUCCESS,
+        type ~= "\.failed$",    XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.outcome = get_outcome,
+    xdm.event.outcome_reason = if(get_outcome = XDM_CONST.OUTCOME_FAILED, "failed_login", "NOT_SPECIFIED"),
+    xdm.source.user.upn        = get_actor_email,
+    xdm.source.user.identifier = get_actor_user_id,
+    xdm.source.user.username   = get_actor_email,
+    xdm.source.ipv4         = get_src_ip,
+    xdm.source.user_agent   = get_user_agent,
+    xdm.source.port         = to_integer(0),
+    xdm.target.ipv4         = "",
+    xdm.target.port         = to_integer(0),
+    xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
+    xdm.event.operation = if(get_is_login = true, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, null),
+    xdm.auth.service    = if(get_is_login = true, "IDP", null),
+    xdm.event.tags      = if(get_is_login = true, arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null),
+    xdm.event.original_event_time = to_timestamp(to_integer(effective_at), "SECONDS"),
+    xdm.source.location.country   = get_geo_country,
+    xdm.source.location.city      = get_geo_city,
+    xdm.source.location.region    = get_geo_region,
+    xdm.source.location.latitude  = to_number(get_geo_lat),
+    xdm.source.location.longitude = to_number(get_geo_long),
+    xdm.observer.type    = "openai",
+    xdm.target.resource.name = object;
+
+[MODEL: dataset="openai_chatgpt_compliance_raw"]
+// OpenAI ChatGPT Enterprise Compliance API Logs -> XDM
+// Primary story: SaaS Audit - admin/workspace audit activity.
+// Authentication (AUTH): only INVITE_ACCEPT carries a real user identity/auth-relevant
+alter
+    get_actor_type   = json_extract_scalar(actor, "$.type"),
+    get_actor_email  = json_extract_scalar(actor, "$.user_email"),
+    get_identifier   = coalesce(
+        json_extract_scalar(actor, "$.user_id"),
+        json_extract_scalar(actor, "$.redacted_id")),
+    get_client_ip    = json_extract_scalar(request_metadata, "$.client_ip"),
+    get_client_ua    = json_extract_scalar(request_metadata, "$.client_user_agent"),
+    get_geo_country  = json_extract_scalar(request_metadata, "$.client_ip_details.country"),
+    get_geo_city     = json_extract_scalar(request_metadata, "$.client_ip_details.city"),
+    get_geo_region   = json_extract_scalar(request_metadata, "$.client_ip_details.region"),
+    get_geo_lat      = json_extract_scalar(request_metadata, "$.client_ip_details.latitude"),
+    get_geo_long     = json_extract_scalar(request_metadata, "$.client_ip_details.longitude"),
+    get_dest_host    = json_extract_scalar(request_metadata, "$.destination_hostname"),
+    get_is_auth      = if(action = "INVITE_ACCEPT", true, false),
+    xdm.event.type = if(action = "INVITE_ACCEPT", "authentication", "saas audit"),
+    xdm.event.original_event_type = action,
+    get_outcome = if(
+        action_result = "SUCCESS", XDM_CONST.OUTCOME_SUCCESS,
+        action_result in("ERROR", "BLOCKED"), XDM_CONST.OUTCOME_FAILED,
+        action_result = null, null,
+        XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome = get_outcome,
+    xdm.event.outcome_reason = if(
+        action_result = "BLOCKED", "auth_policy_access_violation",
+        action_result = "ERROR",   "OTHER",
+        "NOT_SPECIFIED"),
+    xdm.source.user.identifier = get_identifier,
+    xdm.source.user.upn        = get_actor_email,
+    xdm.source.user.username   = get_actor_email,
+    xdm.source.user.user_type  = if(
+        get_actor_type = "ACCOUNT_USER", XDM_CONST.USER_TYPE_REGULAR,
+        get_actor_type = "API_KEY",      XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        null),
+    xdm.auth.privilege_level = if(
+        action_privilege = "ADMIN",         XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
+        action_privilege = "STANDARD_USER", XDM_CONST.PRIVILEGE_LEVEL_USER,
+        null),
+    xdm.source.ipv4         = get_client_ip,
+    xdm.source.user_agent   = get_client_ua,
+    xdm.source.port         = to_integer(0),
+    xdm.target.ipv4         = "",
+    xdm.target.port         = to_integer(0),
+    xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
+    xdm.event.operation = if(get_is_auth = true, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, null),
+    xdm.auth.service    = if(get_is_auth = true, "IDP", null),
+    xdm.event.tags      = if(get_is_auth = true, arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null),
+    xdm.event.original_event_time = parse_timestamp("%b %d %Y %H:%M:%S", timestamp),
+    xdm.source.location.country   = get_geo_country,
+    xdm.source.location.city      = get_geo_city,
+    xdm.source.location.region    = get_geo_region,
+    xdm.source.location.latitude  = to_number(get_geo_lat),
+    xdm.source.location.longitude = to_number(get_geo_long),
+    xdm.observer.type    = "openai",
+    xdm.target.resource.id   = workspace_id,
+    xdm.target.resource.name = get_dest_host,
+    xdm.network.session_id   = conversation_id;
