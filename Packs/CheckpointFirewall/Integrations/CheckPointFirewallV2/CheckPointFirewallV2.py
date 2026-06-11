@@ -1213,12 +1213,13 @@ class Client(BaseClient):
     def publish(self):
         return self._http_request(method="POST", url_suffix="publish", headers=self.headers, json_data={})
 
-    def install_policy(self, policy_package: str, targets, access: bool):
-        body = {
+    def install_policy(self, policy_package: str, access: bool, targets=None):
+        body: dict = {
             "policy-package": policy_package,
-            "targets": targets,
             "access": access,
         }
+        if targets:
+            body["targets"] = targets
         return self._http_request(method="POST", url_suffix="install-policy", headers=self.headers, json_data=body)
 
     def verify_policy(self, policy_package: str):
@@ -3726,23 +3727,23 @@ def checkpoint_set_threat_protections_command(client: Client, args):
     return command_results
 
 
-def checkpoint_install_policy_command(client: Client, policy_package: str, targets, access: bool) -> CommandResults:
+def checkpoint_install_policy_command(client: Client, policy_package: str, access: bool, targets=None) -> CommandResults:
     """
     installing policy.
 
     Args:
         client (Client): CheckPoint client.
         policy_package(str): The name of the Policy Package to be installed.
-        targets(str or list):On what targets to execute this command. Targets may be identified
-                            by their name, or object unique identifier.
         access(bool): Set to be true in order to install the Access Control policy.
                         By default, the value is true if Access Control policy is enabled
                         on the input policy package, otherwise false.
+        targets(str or list):On what targets to execute this command. Targets may be identified
+                            by their name, or object unique identifier.
     """
     printable_result = {}
     readable_output = ""
 
-    result = client.install_policy(policy_package, targets, access)
+    result = client.install_policy(policy_package, access, targets)
     if result:
         printable_result = {"task-id": result.get("task-id")}
         readable_output = tableToMarkdown("CheckPoint data for installing policy:", printable_result)

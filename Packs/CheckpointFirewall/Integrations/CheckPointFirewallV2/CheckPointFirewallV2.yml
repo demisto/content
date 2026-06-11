@@ -2272,7 +2272,6 @@ script:
       required: true
     - description: The targets on which to execute this command. Targets can be identified by their name, or object unique identifier.
       name: targets
-      required: true
     - auto: PREDEFINED
       defaultValue: 'true'
       description: If "True", will install the Access Control policy.
