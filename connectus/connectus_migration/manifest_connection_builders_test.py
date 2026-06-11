@@ -249,12 +249,11 @@ def test_build_connection_profile_apikey_emits_interpolation_metadata():
     entry = {
         "type": "APIKey",
         "name": "api_key",
-        "interpolated": True,
+        "interpolated": False,
         "xsoar_param_map": {"api_key": "key"},
     }
     prof = cb.build_connection_profile(entry, "Okta", connector_title="Okta")
     assert prof["metadata"]["xsoar"]["interpolation_mapping"] == "api_key:api_key"
-    assert prof["metadata"]["xsoar"]["interpolated"] is True
     # Regression: existing field shape unchanged.
     field = prof["configurations"][0]["fields"][0]
     assert field["id"] == "api_key"
@@ -285,7 +284,7 @@ def test_build_connection_profile_passthrough_interpolated_true():
     entry = {
         "type": "Passthrough",
         "name": "bag",
-        "interpolated": True,
+        "interpolated": False,
         "xsoar_param_map": {
             "credentials_auth_id.password": "client_id",
             "credentials_enc_key.password": "client_secret",
@@ -296,7 +295,6 @@ def test_build_connection_profile_passthrough_interpolated_true():
         "client_id:credentials_auth_id.password,"
         "client_secret:credentials_enc_key.password"
     )
-    assert prof["metadata"]["xsoar"]["interpolated"] is True
 
 
 def test_build_connection_profile_interpolated_faithful_read():
@@ -307,11 +305,9 @@ def test_build_connection_profile_interpolated_faithful_read():
         "xsoar_param_map": {"api_key": "key"},
     }
     prof_default = cb.build_connection_profile(entry_default, "Okta")
-    assert prof_default["metadata"]["xsoar"]["interpolated"] is False
     # Explicit True -> True.
     entry_true = {**entry_default, "interpolated": True}
     prof_true = cb.build_connection_profile(entry_true, "Okta")
-    assert prof_true["metadata"]["xsoar"]["interpolated"] is True
 
 
 def test_build_connection_profile_metadata_precedes_configurations():

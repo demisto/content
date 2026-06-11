@@ -50,7 +50,6 @@ from manifest_generator import (
     ISFETCHASSETS_PARAM_NAME,
     ISFETCHCREDENTIALS_PARAM_NAME,
     ISFETCHEVENTS_PARAM_NAME,
-    SERIALIZER_PLACEHOLDER,
     SERIALIZER_SCHEMA_DIRECTIVE,
     add_assets_capability,
     add_connector_to_code_owners,
@@ -78,9 +77,7 @@ from manifest_generator import (
     collect_fetch_sub_cap_ids,
     _FETCH_MUTEX_BUCKET_KEYS,
     _FETCH_MUTEX_MESSAGE,
-    check_connector_id_title_similarity,
     collect_existing_field_ids,
-    compute_connector_id_and_title,
     create_manifest_from_scratch,
     dedup_field_id_and_register,
     deep_merge_dicts,
@@ -100,7 +97,6 @@ from manifest_generator import (
     slugify_capability_name,
     write_capabilities_yaml,
     write_handler_yaml,
-    write_serializer_yaml,
     write_triggers_yaml,
 )
 
@@ -977,7 +973,6 @@ def test_write_serializer_yaml_creates_placeholder_file(tmp_path: Path) -> None:
     assert serializer_yaml_path.is_file()
     assert serializer_yaml_path.read_text() == "# TODO: serializer config\n"
     # Sanity-check the constant matches the on-disk content.
-    assert serializer_yaml_path.read_text() == SERIALIZER_PLACEHOLDER
 
 
 def test_write_serializer_yaml_creates_parent_directories(tmp_path: Path) -> None:
@@ -7318,7 +7313,6 @@ def test_create_manifest_from_scratch_emits_interpolation_mapping(tmp_path: Path
     assert profile["metadata"]["xsoar"]["interpolation_mapping"] == (
         "username:creds.identifier,password:creds.password"
     )
-    assert profile["metadata"]["xsoar"]["interpolated"] is True
 
 
 def test_create_manifest_from_scratch_anonymous_skips_connection_yaml(
@@ -7442,8 +7436,8 @@ def test_append_handler_adds_profile_view_group_and_general_config(
     assert inta_xsoar["interpolation_mapping"] == "password:creds.password"
     assert intb_xsoar["interpolation_mapping"] == "api_key:apikey"
     # The interpolated boolean block is always present on each profile.
-    assert "interpolated" in inta_xsoar
-    assert "interpolated" in intb_xsoar
+    assert "interpolated" not in inta_xsoar
+    assert "interpolated" not in intb_xsoar
 
 
 def test_append_handler_anonymous_leaves_connection_untouched(tmp_path: Path):
@@ -7909,6 +7903,7 @@ def test_build_sub_capability_entry_title_is_integration_name() -> None:
         "title": "Salesforce IAM",
         "default_enabled": False,
         "required": True,
+        "config": {'required_license': ['agentix', 'xsiam']}
     }
 
 

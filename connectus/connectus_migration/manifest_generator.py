@@ -217,14 +217,21 @@ def title_to_slug(title: str) -> str:
     return title.strip().lower().replace(" ", "-").replace("---", "-")
 
 
-def connector_exists(connector_dir: Path) -> bool:
+def connector_exists_and_valid(connector_dir: Path) -> bool:
     """Return True if ``connector_dir`` looks like an already-initialized connector.
 
     A directory counts as an existing connector only when it both exists and
     contains a ``connector.yaml`` file at its root. This avoids treating empty
     or partially-created directories as existing connectors.
     """
-    return connector_dir.is_dir() and (connector_dir / "connector.yaml").is_file()
+    existing_connector_path = connector_dir / "connector.yaml"
+    if connector_dir.is_dir() and (existing_connector_path).is_file():
+        with open(existing_connector_path) as fh:
+            yml = yaml.safe_load(fh) or {}
+            if yml.get("metadata", {}).get("ownership", {}).get("team", "") != "xsoar":
+                raise Exception("There's already exist a non-xsoar connector with this id.")
+        return True
+    return False
 
 
 def load_integration_yml(path: Path) -> dict:
@@ -539,83 +546,6 @@ def iterate_existing_connector_id_titles(
         yield connector_dir, existing_id, existing_title
 
 
-def compute_connector_id_and_title(
-    connector_title: str,
-    vendor: str = "",
-    mapped_params: dict | None = None,
-) -> tuple[str, str]:
-    """Compute the connector ``id`` and ``metadata.title`` for a new connector.
-
-    Single source of truth shared by :func:`build_connector_yaml` (which
-    writes these into ``connector.yaml``) and
-    :func:`check_connector_id_title_similarity` (which compares them against
-    existing connectors). Keeping the derivation in one place guarantees the
-    similarity check sees exactly the same id/title that will be written.
-
-    When both ``vendor`` and ``mapped_params`` are supplied, the id/title are
-    derived from the vendor prefix + capability suffix via
-    :func:`derive_connector_id_and_title`. Otherwise they fall back to the
-    legacy stub form: ``(title_to_slug(connector_title), connector_title)``.
-    """
-    if vendor and mapped_params:
-        return derive_connector_id_and_title(vendor, mapped_params)
-    return title_to_slug(connector_title), connector_title
-
-
-def _is_similar(new_value: str, existing_value: str) -> bool:
-    """Return True if the two values are "similar" per the spec rule.
-
-    After normalization (lowercase + no whitespace), values are similar when
-    one is a substring of the other (containment in either direction). Empty
-    normalized values never match (avoids flagging on a missing id/title).
-    """
-    new_norm = _normalize_for_similarity(new_value)
-    existing_norm = _normalize_for_similarity(existing_value)
-    if not new_norm or not existing_norm:
-        return False
-    return new_norm in existing_norm or existing_norm in new_norm
-
-
-def check_connector_id_title_similarity(
-    connector_dir: Path,
-    connector_title: str,
-    vendor: str = "",
-    mapped_params: dict | None = None,
-) -> None:
-    """Guard the from-scratch flow against id/title collisions.
-
-    Computes the new connector's ``id`` and ``title`` (via
-    :func:`compute_connector_id_and_title`, the same logic
-    :func:`build_connector_yaml` uses), then compares them against every
-    existing connector under ``connector_dir.parent`` (skipping the target
-    dir itself). A match is raised as a ``RuntimeError`` when the new id is
-    similar to an existing id, OR the new title is similar to an existing
-    title (similarity = case/space-insensitive substring containment in
-    either direction — see :func:`_is_similar`).
-
-    Raises:
-        RuntimeError: on the first detected similarity.
-    """
-    new_id, new_title = compute_connector_id_and_title(
-        connector_title, vendor=vendor, mapped_params=mapped_params
-    )
-    connectors_root = connector_dir.parent
-    for existing_dir, existing_id, existing_title in (
-        iterate_existing_connector_id_titles(connectors_root, skip_dir=connector_dir)
-    ):
-        if _is_similar(new_id, existing_id):
-            raise RuntimeError(
-                f"found similiray between the new connector id with {new_id} "
-                f"and connector {existing_dir} id with {existing_id}."
-            )
-        if _is_similar(new_title, existing_title):
-            raise RuntimeError(
-                f"found similiray between the new connector title with "
-                f"{new_title} and connector {existing_dir} title with "
-                f"{existing_title}."
-            )
-
-
 def build_connector_yaml(
     connector_title: str,
     pack_tags: list[str],
@@ -650,10 +580,6 @@ def build_connector_yaml(
         (schema requires ≥1 entry — callers that cannot source any should
         flag for manual review; this builder leaves the list as-is).
     """
-    # Derive id/title from the vendor + declared capabilities when we have
-    # enough information; otherwise keep the legacy stub behaviour. Shared
-    # with the similarity check via compute_connector_id_and_title so both
-    # see the exact same values.
     connector_id, metadata_title = title_to_slug(connector_title), connector_title
 
     description = f"integrate with {vendor} products." if vendor else ""
@@ -1366,29 +1292,9 @@ def write_handler_yaml(handler_yaml_path: Path, handler_data: dict) -> None:
         fh.write(HANDLER_SCHEMA_DIRECTIVE)
         _dump_yaml(handler_data, fh)
 
-
-SERIALIZER_PLACEHOLDER = "# TODO: serializer config\n"
 SERIALIZER_SCHEMA_DIRECTIVE = (
     "# yaml-language-server: $schema=../../../../../schema/serializer.schema.json\n"
 )
-
-
-def write_serializer_yaml(serializer_yaml_path: Path) -> None:
-    """Write a placeholder ``serializer.yaml`` file at the given path.
-
-    The file contains only a single comment line — real serializer config
-    will be added in a future iteration. Raises ``FileExistsError`` if the
-    target path already exists, to prevent silently overwriting handler
-    serializer configs.
-    """
-    serializer_yaml_path.parent.mkdir(parents=True, exist_ok=True)
-    if serializer_yaml_path.exists():
-        raise FileExistsError(
-            f"Serializer file already exists at {serializer_yaml_path}. "
-            f"Refusing to overwrite."
-        )
-    with open(serializer_yaml_path, "w") as fh:
-        fh.write(SERIALIZER_PLACEHOLDER)
 
 
 # ---------------------------------------------------------------------------
@@ -6371,15 +6277,6 @@ def create_manifest_from_scratch(
         f"{len(auth_methods.get('auth_types', []))} auth_types"
     )
 
-    # Guard against id/title collisions with any existing connector BEFORE
-    # writing any files (raises RuntimeError on a similarity).
-    check_connector_id_title_similarity(
-        connector_dir,
-        connector_title,
-        vendor=vendor,
-        mapped_params=mapped_params,
-    )
-
     if manual_serializer_fields:
         logger.info(
             "[manifest_generator] manual_serializer_fields received with keys "
@@ -7242,7 +7139,7 @@ def generate_manifest(
     # .env is honored when --connectors-root is not explicitly supplied.
     connectors_root = resolve_connectors_root(connectors_root)
     logger.info(f"[manifest_generator] connectors_root resolved to {connectors_root}")
-
+    
     integration_yml = load_integration_yml(integration_path)
     mapped_params_dict = parse_mapped_params(mapped_params)
     auth_methods_dict = parse_mapped_params(auth_methods)
@@ -7269,7 +7166,7 @@ def generate_manifest(
         f"auth_methods_keys={list(auth_methods_dict.keys())}"
     )
     author_image_path = Path(_load_connector_id_image()[connector_title])
-    if connector_exists(connector_dir):
+    if connector_exists_and_valid(connector_dir):
         add_handler_to_existing_connector(
             connector_dir=connector_dir,
             integration_yml=integration_yml,
