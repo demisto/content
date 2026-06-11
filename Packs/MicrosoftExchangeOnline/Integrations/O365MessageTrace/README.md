@@ -112,7 +112,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### o365-message-trace-generate-login-url
 
 ***
-Generate the login URL used for authorization code flow.
+Generates the login URL for the authorization code flow.
 
 #### Base Command
 
@@ -162,7 +162,7 @@ There is no context output for this command.
 ### o365-message-trace-auth-reset
 
 ***
-Run this command if for some reason you need to rerun the authentication process. This will clear the saved access token / refresh token from the integration context, so on the next run a fresh authorization code (or client-credentials token) will be requested.
+Clears the saved access token / refresh token from the integration context, so on the next run a fresh authorization code (or client-credentials token) is requested. Used to rerun the authentication process.
 
 #### Base Command
 
@@ -181,7 +181,7 @@ There is no context output for this command.
 ### o365-message-trace-get-events
 
 ***
-Manually retrieve Message Trace events. Intended for development and debugging. Use with caution as it may cause event duplication when push to Cortex XSIAM is enabled.
+Retrieves Exchange Online Message Trace events. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
 
 #### Base Command
 
