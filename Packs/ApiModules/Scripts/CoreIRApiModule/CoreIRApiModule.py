@@ -4314,9 +4314,9 @@ def _add_parenthesis_metadata(data: list[dict]) -> None:
                     data[closing_index]["pretty_name"] = str(data[closing_index].get("pretty_name", "")) + ")"
                     indexes_with_parenthesis.append(i + 1)
                     indexes_with_parenthesis.append(closing_index)
-            except (IndexError, KeyError):
-                # cannot add parenthesis before and after OR
-                pass
+            except (IndexError, KeyError) as e:
+                demisto.debug(f"Failed to add BIOC OR parentheses due to malformed token structure: {e}")
+                # Fallback: leave tokens unchanged rather than rendering incorrect logical grouping.
             or_block_start_before_index = i
 
 
