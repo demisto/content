@@ -904,12 +904,6 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": "AlienVault OTX v2",
-            "playbookID": "Alienvault_OTX_v2 - Test",
-            "memory_threshold": 130,
-            "timeout": 500
-        },
-        {
             "integrations": "AWS - CloudWatchLogs",
             "playbookID": "AWS - CloudWatchLogs Test Playbook",
             "fromversion": "5.0.0"
@@ -5750,10 +5744,6 @@
             "playbookID": "Kaspersky Security Center - Test"
         },
         {
-            "integrations": "Forcepoint Security Management Center",
-            "playbookID": "ForcepointSecurityManagementCenter_test"
-        },
-        {
             "integrations": "AWS - Organizations",
             "playbookID": "Test - AWS_Organizations",
             "fromversion": "6.10.0"
@@ -6140,7 +6130,9 @@
         "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
         "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated",
         "Gmail Single User - Test": "CIAC-11417",
-        "AWS-securityhub Test": "The creds were expired CRTX-237114"
+        "AWS-securityhub Test": "The creds were expired CRTX-237114",
+        "Alienvault_OTX_v2 - Test": "API reliability issues",
+        "ForcepointSecurityManagementCenter_test": "No instance"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
@@ -6555,3 +6547,4 @@
         "Onion address extraction test"
     ]
 }
+
