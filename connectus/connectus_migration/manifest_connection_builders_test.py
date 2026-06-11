@@ -297,17 +297,20 @@ def test_build_connection_profile_passthrough_interpolated_true():
     )
 
 
-def test_build_connection_profile_interpolated_faithful_read():
-    # No "interpolated" key -> default False (faithful read, not hard-forced).
+def test_build_connection_profile_interpolated_always_true():
+    # ALWAYS-INTERPOLATE gate (Plan B INV-5): interpolated is hard-forced True
+    # on every profile, regardless of what the entry carries.
     entry_default = {
         "type": "APIKey",
         "name": "api_key",
         "xsoar_param_map": {"api_key": "key"},
     }
     prof_default = cb.build_connection_profile(entry_default, "Okta")
-    # Explicit True -> True.
-    entry_true = {**entry_default, "interpolated": True}
-    prof_true = cb.build_connection_profile(entry_true, "Okta")
+    assert prof_default["metadata"]["xsoar"]["interpolated"] is True
+    # Even an entry that explicitly says interpolated False still emits True.
+    entry_false = {**entry_default, "interpolated": False}
+    prof_false = cb.build_connection_profile(entry_false, "Okta")
+    assert prof_false["metadata"]["xsoar"]["interpolated"] is True
 
 
 def test_build_connection_profile_metadata_precedes_configurations():
@@ -320,6 +323,174 @@ def test_build_connection_profile_metadata_precedes_configurations():
     prof = cb.build_connection_profile(entry, "Okta")
     keys = list(prof.keys())
     assert keys.index("metadata") < keys.index("configurations")
+
+
+# ---------------------------------------------------------------------------
+# Part A (interpolation) — Plan B hard gate (_validate_interpolation_invariants)
+# See interpolated-param-schemas-and-fix.md §6.6.
+# ---------------------------------------------------------------------------
+def _profile_with_field(
+    *,
+    profile_type: str,
+    auth_parameter: str | None,
+    mapping: str,
+    interpolated: bool = True,
+):
+    """Hand-build a minimal profile dict for direct validator tests.
+
+    Lets the tests construct profiles that ``build_connection_profile`` would
+    never produce (e.g. a mapping role with no matching field), exercising the
+    gate's must-raise paths directly.
+    """
+    field_metadata: dict = {}
+    if auth_parameter is not None:
+        field_metadata = {"auth": {"parameter": auth_parameter}}
+    return {
+        "id": f"{profile_type}.test",
+        "type": profile_type,
+        "metadata": {
+            "xsoar": {
+                "interpolated": interpolated,
+                "interpolation_mapping": mapping,
+            }
+        },
+        "configurations": [{"fields": [{"id": "f", "metadata": field_metadata}]}],
+    }
+
+
+# --- Positive: every built profile passes the gate (one per type) ---
+@pytest.mark.parametrize(
+    "entry",
+    [
+        {"type": "APIKey", "name": "k", "xsoar_param_map": {"api_key": "key"}},
+        {
+            "type": "Plain",
+            "name": "c",
+            "xsoar_param_map": {
+                "credentials.identifier": "username",
+                "credentials.password": "password",
+            },
+        },
+        {
+            "type": "Passthrough",
+            "name": "bag",
+            "xsoar_param_map": {
+                "credentials_auth_id.password": "client_id",
+                "credentials_enc_key.password": "client_secret",
+            },
+        },
+    ],
+)
+def test_validate_invariants_built_profiles_pass(entry):
+    # build_connection_profile already runs the gate; no raise == pass.
+    prof = cb.build_connection_profile(entry, "Acme", connector_title="Acme")
+    # And re-validating is idempotent.
+    cb._validate_interpolation_invariants(prof, "Acme")
+
+
+# --- INV-1 / INV-2: role with no matching field auth.parameter ---
+def test_validate_inv1_role_without_matching_field_raises():
+    prof = _profile_with_field(
+        profile_type="plain",
+        auth_parameter="username",
+        # 'password' has no matching field auth.parameter.
+        mapping="username:credentials.identifier,password:credentials.password",
+    )
+    with pytest.raises(cb.InterpolationSchemaError, match="INV-1/INV-2"):
+        cb._validate_interpolation_invariants(prof, "Acme")
+
+
+def test_validate_inv2_non_auth_field_mapped_raises():
+    # A none_* config field has NO auth.parameter -> field_parameters empty,
+    # so the mapped role 'server_url' cannot match.
+    prof = _profile_with_field(
+        profile_type="plain",
+        auth_parameter=None,
+        mapping="server_url:none_server_url",
+    )
+    with pytest.raises(cb.InterpolationSchemaError, match="INV-1/INV-2"):
+        cb._validate_interpolation_invariants(prof, "MxToolbox")
+
+
+# --- INV-3: api_key LEFT must be 'api_key', not raw 'key' ---
+def test_validate_inv3_apikey_raw_key_left_raises():
+    prof = _profile_with_field(
+        profile_type="api_key",
+        auth_parameter="key",
+        mapping="key:api_key.password",
+    )
+    with pytest.raises(cb.InterpolationSchemaError, match="INV-3"):
+        cb._validate_interpolation_invariants(prof, "Acme")
+
+
+# --- INV-4: no reserved delimiters in role/path (grammar has no escaping) ---
+def test_build_interpolation_mapping_inv4_comma_in_path_raises():
+    # A ',' in the xsoar_path would corrupt the comma-joined mapping string;
+    # caught at emission time in build_interpolation_mapping.
+    with pytest.raises(cb.InterpolationSchemaError, match="INV-4"):
+        cb.build_interpolation_mapping("passthrough", {"creds.a,b": "client_id"})
+
+
+def test_build_interpolation_mapping_inv4_colon_in_role_raises():
+    # A ':' in the role would corrupt the first-':' split; caught at emission.
+    with pytest.raises(cb.InterpolationSchemaError, match="INV-4"):
+        cb.build_interpolation_mapping("passthrough", {"creds.a": "client:id"})
+
+
+# --- INV-5: interpolated must be True on every profile ---
+def test_validate_inv5_interpolated_not_true_raises():
+    prof = _profile_with_field(
+        profile_type="api_key",
+        auth_parameter="api_key",
+        mapping="api_key:api_key",
+        interpolated=False,
+    )
+    with pytest.raises(cb.InterpolationSchemaError, match="INV-5"):
+        cb._validate_interpolation_invariants(prof, "Acme")
+
+
+# --- Round-trip parse guard: emitted mapping round-trips role -> xsoar_path ---
+@pytest.mark.parametrize(
+    "profile_type,xsoar_param_map",
+    [
+        ("api_key", {"api_key": "key"}),
+        (
+            "plain",
+            {
+                "credentials.identifier": "username",
+                "credentials.password": "password",
+            },
+        ),
+        (
+            "passthrough",
+            {
+                "credentials_auth_id.password": "client_id",
+                "credentials_enc_key.password": "client_secret",
+            },
+        ),
+    ],
+)
+def test_emitted_mapping_round_trips_to_auth_parameter_pairs(
+    profile_type, xsoar_param_map
+):
+    mapping = cb.build_interpolation_mapping(profile_type, xsoar_param_map)
+    # Re-implement the runtime _parse_param_map grammar inline (first-':' split).
+    parsed = []
+    for entry in mapping.split(","):
+        entry = entry.strip()
+        if not entry or ":" not in entry:
+            continue
+        left, _, right = entry.partition(":")
+        parsed.append((left.strip(), right.strip()))
+    # Each parsed pair must be (post-remap auth_parameter, xsoar_path).
+    expected = {
+        (
+            cb._auth_parameter_for_role(profile_type, role),
+            xsoar_path,
+        )
+        for xsoar_path, role in xsoar_param_map.items()
+    }
+    assert set(parsed) == expected
 
 
 # ---------------------------------------------------------------------------

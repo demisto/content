@@ -2128,6 +2128,27 @@ var _UCP_COMMAND_CAPABILITIES = {
     'fetch-assets': 'collection-and-ingestion'
 };
 
+// Canonical credential-envelope schema per profile type.
+// Mirrors Python _UCP_CANONICAL_FIELD_KEYS.
+//
+// 'api_key' and 'plain' profiles have FIXED envelope schemas: the secret always
+// lives under a known key inside creds[creds.type] regardless of what
+// interpolation_mapping left-hand id (field_id) the manifest emits. The common
+// scripts therefore OWN this knowledge and resolve those values from the
+// canonical location, rather than trusting the generator-emitted field_id.
+//
+// Each entry maps the mapping's left-hand field_id (which equals the field's
+// metadata.auth.parameter) to the actual key inside the flattened envelope.
+// Note the api_key alias: auth.parameter is 'api_key' (per the connection
+// schema / OPA contract) but the runtime envelope stores the value under 'key'.
+//
+// 'passthrough' is the free-form escape hatch and intentionally has NO entry:
+// its values are looked up generically by field_id.
+var _UCP_CANONICAL_FIELD_KEYS = {
+    'api_key': {'api_key': 'key'},
+    'plain': {'username': 'username', 'password': 'password'}
+};
+
 // ── UCP TTL Cache (mirrors Python _ttl_cache) ──
 var _ucpCredentialsCache = {};
 
@@ -2696,9 +2717,9 @@ function buildUcpParams(connectorMetadata, capability) {
             logDebug('there are no pairs for profile id ' + methodUniqueId);
             continue;
         }
-        // [UCP-CODE-VERSION] flatten-v2 — if this marker is ABSENT from the logs,
+        // [UCP-CODE-VERSION] flatten-v3 — if this marker is ABSENT from the logs,
         // the runtime is executing a STALE bundled CommonServer.js, not this file.
-        logDebug('[UCP-CODE-VERSION] buildUcpParams flatten-v2 active');
+        logDebug('[UCP-CODE-VERSION] buildUcpParams flatten-v3 active');
 
         // Fetch the RAW credentials envelope by method id (mirrors Python
         // get_ucp_credentials) and generically flatten — do NOT reuse the
@@ -2709,10 +2730,18 @@ function buildUcpParams(connectorMetadata, capability) {
 
         var credValues = _flattenUcpCredentialsGeneric(credentials);
 
+        // For fixed-schema types (api_key, plain) resolve the value from the
+        // canonical envelope key, aliasing the mapping's field_id as needed
+        // (e.g. api_key -> 'key'). Free-form types (passthrough) fall back to a
+        // generic field_id lookup. Mirrors Python _UCP_CANONICAL_FIELD_KEYS.
+        var credType = (credentials && typeof credentials === 'object') ? credentials.type : null;
+        var canonicalKeys = _UCP_CANONICAL_FIELD_KEYS[credType] || {};
+
         for (var p = 0; p < pairs.length; p++) {
             var fieldId = pairs[p][0];
             var destination = pairs[p][1];
-            var fieldValue = (credValues && typeof credValues === 'object') ? credValues[fieldId] : undefined;
+            var lookupKey = (canonicalKeys[fieldId] !== undefined) ? canonicalKeys[fieldId] : fieldId;
+            var fieldValue = (credValues && typeof credValues === 'object') ? credValues[lookupKey] : undefined;
             // Match Python's `if field_value is None`: only skip null/undefined.
             // Empty string, 0 and false ARE valid values and get placed.
             if (fieldValue === null || fieldValue === undefined) {
@@ -2803,4 +2832,44 @@ try {
     interpolateUcpParams();
 } catch (e) {
     // Load-time safety net: never let interpolation break script load.
+}
+
+
+/**
+ * Return result params and UCP info when the current instance name contains "judah".
+ *
+ * Simple diagnostic helper: inspects the current integration instance name and,
+ * if it contains the substring "judah" (case-insensitive), returns an object
+ * containing the integration params and the UCP / unified connector metadata.
+ * Returns null otherwise.
+ *
+ * @return {Object|null} An object with `params` and `ucpInfo` keys, or null when
+ *   the instance name does not contain "judah".
+ */
+function getJudahDebugInfo() {
+    var instanceName = '';
+    try {
+        instanceName = getInstanceName() || '';
+    } catch (e) {
+        instanceName = '';
+    }
+    if (instanceName.toLowerCase().indexOf('judah') === -1) {
+        return null;
+    }
+    var resultParams = {};
+    try {
+        resultParams = params || {};
+    } catch (e) {
+        resultParams = {};
+    }
+    var ucpInfo = {};
+    try {
+        ucpInfo = unifiedConnectorMetadata() || {};
+    } catch (e) {
+        ucpInfo = {};
+    }
+    return {
+        params: resultParams,
+        ucpInfo: ucpInfo
+    };
 }
