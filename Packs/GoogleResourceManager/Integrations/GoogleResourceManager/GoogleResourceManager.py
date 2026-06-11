@@ -12,7 +12,6 @@ from googleapiclient import discovery
 
 """ IMPORTS """
 
-
 """ GLOBALS/PARAMS """
 
 # Params for assembling object of the Service Account Credentials File Contents
