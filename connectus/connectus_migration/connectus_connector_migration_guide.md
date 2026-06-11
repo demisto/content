@@ -90,6 +90,7 @@ Defines the connector identity. Schema: [`connector.schema.json`](schema/connect
 | `settings.allow_skip_verification` | boolean | ❌ | Allow skipping the connection test. |
 | `settings.required_features` | string[] | ❌ | Tenant features required for visibility. |
 | `settings.grouped` | boolean | ❌ | `true` for Grouped connectors (multiple handlers per vendor). |
+| `settings.skip_cut_off_check` | boolean | ❌ | `true` to allow adding the connector **after the feature freeze (FF)**. Required for every mass-migration connector (§3.3). |
 
 ### 2.2 connection.yaml
 
@@ -219,7 +220,7 @@ profiles:
     title: "Acme API Credentials"
     description: "Stores Acme credentials; returned as-is to the handler."
     configurations:
-      - fields:
+      - fields:                                  # one field per fields block (§3.7 item 2)
           - id: "acme_client_id"
             title: "Client ID"
             field_type: "input"
@@ -228,6 +229,7 @@ profiles:
               mask: false
               create_modifiers: { required: true }
               edit_modifiers: { required: true }
+      - fields:
           - id: "acme_client_secret"
             title: "Client Secret"
             field_type: "input"
@@ -485,7 +487,7 @@ Per field: `trigger` (✅, `change`/`blur`), `rules[].type` (✅, `pattern`/`min
 4. **Hidden on platform**: a parameter hidden on `platform` (`hidden: [platform]`, `isfetch:platform: false`, etc.) is excluded from the manifest.
 5. **Platform-specific fields**: respect marketplace-specific overrides (`defaultvalue:platform`, `id:xsoar`, `quickaction:platform`, etc.).
 6. **Author image**: the PNG in `<pack>/integrations/<integration>/` is the connector icon. If multiple exist, take the first; verify it manually. If none, flag.
-7. **cooc integrations** (`AWS`, `GCP`, `Azure`) are **not migrated** (see Appendix D).
+7. **cooc integrations** (the `AWS` family — `AWS`, `AWS EC2`, `AWS S3`, `AWS EKS`, `AWS Lambda`, `AWS CloudWatchLogs`, `AWS System Manager`, `AWS Network Firewall` — plus `GCP` and `Azure`) are **not migrated** (see Appendix D for the full list).
 8. **UI triggers**: none added this quarter, but **author** [`triggers.yaml`](README.md:833) where it cleanly solves a known UI problem (§3.5).
 9. **Always have a sub-capability**, even with one integration under a capability. A lone sub-capability is marked `required: true`.
 10. **Sub-capability licenses MUST be a subset of the integration's `supportedModules`** (see §3.1.1).
@@ -533,6 +535,16 @@ A sub-capability's `config.required_license` must contain only licenses present 
 | `metadata.ownership.team` | Always `"xsoar"`. |
 | `metadata.ownership.maintainers` | Always `["@xsoar-content"]`. |
 | `settings.allow_skip_verification` | `true` unless the vendor requires successful verification before enabling. |
+| `settings.skip_cut_off_check` | **Always `true`.** All mass-migration connectors are added **after the feature freeze (FF)**, so every connector MUST set `settings.skip_cut_off_check: true` to bypass the FF cut-off check (§3.3.2). |
+
+#### 3.3.2 Post-feature-freeze cut-off
+
+Connectors added **after the feature freeze (FF)** are blocked by a cut-off check unless they opt out via `settings.skip_cut_off_check: true`. Because the entire mass migration lands after FF, **every** migrated connector MUST include it:
+
+```yaml
+settings:
+  skip_cut_off_check: true
+```
 
 #### 3.3.1 ID and title naming
 
@@ -720,9 +732,9 @@ A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`
 2. **Mass-migration profile types are restricted to `plain`, `api_key`, and `passthrough`** (§2.2). Use **`plain`** for user/password auth and **`api_key`** for a single API-key secret; use **`passthrough`** (§2.6.1) when the credentials can't be cleanly mapped to `plain`/`api_key` or need several inputs at once (e.g. Slack v3).
 3. **`engine`/`engine_group`/`proxy`/`insecure`** appear once inside each profile that needs them. Because a handler binds to exactly one profile, the user supplies a single value per instance.
 4. **`profiles[].view_group`** (Grouped): every profile references one `connection.yaml view_groups[].id`.
-   - **A profile cannot be shared across integrations** — each `view_group` belongs to one integration, so declare a **separate profile per integration** even when auth is identical (e.g. `oauth2_client_credentials.salesforce` and `.salesforce-iam`).
+   - **A profile cannot be shared across two integrations/handlers.** The chain is causal: a profile points to **exactly one** `view_group`, and each `view_group` belongs to **exactly one** integration — therefore a single profile can only ever serve one integration. Declare a **separate profile per integration** even when the auth is identical (e.g. `oauth2_client_credentials.salesforce` and `.salesforce-iam`). Two handlers MUST NOT reference the same profile id.
 5. **One profile per handler — OR, never AND.** A handler binds to a single profile at runtime. Multiple auth methods → separate profiles sharing one `view_group`, advertised as alternatives in `auth_options[]` (user picks one). If an integration needs several inputs simultaneously, model it as one `passthrough` profile.
-6. **`metadata.xsoar.interpolation_mapping`** on every migrated profile (§2.6.2) — the migration always interpolates (`plain`/`api_key`/`passthrough`) since integration code is not rewritten. Map each auth field's `metadata.auth.parameter` to its `demisto.params()` dotted path (`"<ucp_param>:<xsoar_path>,..."`). Do **not** emit the legacy `interpolated: true`. A value may instead be carried in the profile field directly — the runtime resolves both.
+6. **`metadata.xsoar.interpolation_mapping`** on every migrated profile (§2.6.2) — the migration always interpolates (`plain`/`api_key`/`passthrough`) since integration code is not rewritten. Map each auth field's `metadata.auth.parameter` to its `demisto.params()` dotted path (`"<ucp_param>:<xsoar_path>,..."`).
 
 ### 3.7 configurations.yaml Rules
 
@@ -736,7 +748,34 @@ A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`
 #### Principles
 
 1. **All params in manifest** — including backend-managed ones (`engine`, `engine_group`, etc.).
-2. **One field per row** (each field its own `fields` block).
+2. **One field per `fields` block (one field per UI row).** Each field MUST be the sole entry of its own `fields:` block. **Reason**: every `fields` block renders as a **single UI row**; putting more than one field in a block puts them on the same row, and since we don't control the rendered layout this causes weird layout bugs. This applies **everywhere fields are emitted** — `configurations.yaml` (per-capability and `general_configurations`) **and** `connection.yaml` profile `configurations[].fields[]`. (Sole exception: a `checkbox_group`'s inner `fields[]` lists its checkbox items — that is one field/row by design.)
+
+   ```yaml
+   # ✅ CORRECT — one field per fields block (one row each)
+   configurations:
+     - fields:
+         - id: "automation_fetches_issues"
+           title: "Fetches issues/incidents"
+           field_type: "checkbox"
+           options:
+             create_modifiers: { required: false, hidden: false }
+             edit_modifiers: { required: false, hidden: false }
+     - fields:
+         - id: "outgoing_mapper"
+           title: "Outgoing mapper"
+           field_type: "input"
+           options:
+             default_value: ""
+             placeholder: ""
+             create_modifiers: { required: true, hidden: true }
+             edit_modifiers: { required: true, hidden: true }
+
+   # ❌ WRONG — two fields in one fields block (same row → layout bugs)
+   configurations:
+     - fields:
+         - { id: "automation_fetches_issues", title: "Fetches issues/incidents", field_type: "checkbox" }
+         - { id: "outgoing_mapper", title: "Outgoing mapper", field_type: "input" }
+   ```
 3. **Preserve field behavior** — type, default, options, title, id, tooltip, required must match the YML exactly (unless stated otherwise).
 4. **`integrationLogLevel`** and **`defaultIgnore`** are backend-managed but live in **different** places. **`integrationLogLevel`** lives in `general_configurations` — emitted **once per integration's `view_group`** for Grouped connectors (each `general_configurations.configurations[]` row tagged with that integration's `view_group`); for Standard/non-Grouped connectors it lives in `general_configurations` **without** a `view_group`. **`defaultIgnore`** lives at the **sub-capability** level — under the integration's `automation-and-remediation_<integration>` sub-capability `configurations[]` entry, and is **only relevant when the integration contributes an `automation-and-remediation` sub-capability** — it controls "Do not use in CLI by default" for the integration's **commands**, which collection-only capabilities (`fetch-issues`, `log-collection`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, `fetch-secrets`) do not have. Omit `defaultIgnore` for integrations with no automation capability; otherwise emit it under that integration's `automation-and-remediation_<integration>` sub-capability. Collisions when >1 integration (for either field's id) are resolved via Appendix C.
 5. **`longRunning`** is supported
@@ -756,6 +795,15 @@ In ConnectUs, fields that are left unfilled are sent to the BE as **NULL** (unle
 
 1. Each capability/sub-capability has its own configurations, mirroring the underlying integration.
 2. Config IDs must be globally unique across the connector (Appendix C).
+3. **`view_group` and config params always live on the SUB-capability** (each `configurations[]` entry's `id` is a sub-capability id), never on a bare parent capability. This matches the handler rule (§3.8 rule 3) — the FE binds **sub-capabilities** to view_groups.
+4. **An empty sub-capability still needs a `configurations[]` entry carrying its `view_group`.** Even when a sub-capability has **no** config params, you MUST emit a `configurations[]` entry with its `id` and `view_group` so the FE knows which `view_group` the sub-capability belongs to. Emit the entry with an empty `configurations: []` (no `fields`). Example:
+
+   ```yaml
+   configurations:
+     - id: "automation-and-remediation_microsoft-teams"
+       view_group: "microsoft-teams"
+       configurations: []   # no params, but the view_group binding is mandatory
+   ```
 
 #### Type mapping
 
@@ -995,16 +1043,13 @@ Each integration gets one `handler.yaml` under `components/handlers/<handler-fol
 
 1. Each handler maps to exactly **one** integration.
 2. An integration with fetch + commands subscribes to both `automation-and-remediation` and the relevant fetch capability.
-3. **`auth_options[].id`** references a `connection.yaml` profile id only. The tile comes from the **profile's** `view_group` (§3.6) — do NOT put `view_group` on the handler.
-4. **`auth_options[]` are OR** (alternatives) — never AND. Multiple methods → separate entries referencing profiles that share a `view_group`. Several simultaneous inputs → one `passthrough` profile.
-5. **Workloads** always `["xsoar-pod"]`.
+3. **Grouped connectors — handlers subscribe to SUB-capabilities ONLY, never bare capabilities.** A handler's `capabilities[].id` MUST be a sub-capability id (`<capability-id>/<sub-capability-id>`), never a bare `<capability-id>`. **Reason**: the FE renders **sub-capabilities** into `view_groups`; it does **not** know how to render a bare capability into a view_group. (Since every migrated connector has a sub-capability per integration — §3.1.9 — there is always a sub-capability to subscribe to.)
+4. **`auth_options[].id`** references a `connection.yaml` profile id only. The tile comes from the **profile's** `view_group` (§3.6) — do NOT put `view_group` on the handler.
+5. **`auth_options[]` are OR** (alternatives) — never AND. Multiple methods → separate entries referencing profiles that share a `view_group`. Several simultaneous inputs → one `passthrough` profile.
+6. **Workloads** always `["xsoar-pod"]`.
 
 ```yaml
-# single capability
-capabilities:
-  - id: "<capability-id>"
-    workloads: ["xsoar-pod"]
-# sub-capability
+# Grouped connectors: ALWAYS subscribe to the SUB-capability (never a bare capability) — rule 3.
 capabilities:
   - id: "<parent-capability-id>/<sub-capability-id>"
     workloads: ["xsoar-pod"]
@@ -1110,6 +1155,7 @@ metadata:
 settings:
   allow_skip_verification: false
   grouped: true
+  skip_cut_off_check: true   # added after the feature freeze — mandatory for mass migration (§3.3.2)
 ```
 
 ### 4.2 connection.yaml
@@ -1132,7 +1178,7 @@ profiles:
     description: "Server-to-server authentication using client credentials"
     view_group: "salesforce"
     configurations:
-      - fields:
+      - fields:                       # one field per fields block (§3.7 item 2)
           - id: "domain"            # alphabetically first → keeps original id
             title: "Domain URL"
             field_type: "input"
@@ -1142,6 +1188,7 @@ profiles:
               placeholder: "https://<my_domain>"
               create_modifiers: { required: true, hidden: false }
               edit_modifiers: { required: true, hidden: false, read_only: true }
+      - fields:
           - id: "client_key"
             title: "Consumer Key (Client ID)"
             field_type: "input"
@@ -1150,6 +1197,7 @@ profiles:
               mask: false
               create_modifiers: { required: true, hidden: false }
               edit_modifiers: { required: true, hidden: true }
+      - fields:
           - id: "sf_client_secret"
             title: "Consumer Secret"
             field_type: "input"
@@ -1188,7 +1236,7 @@ profiles:
     view_group: "salesforce-iam"
     discovery_url: "https://{{salesforce-iam_domain}}/.well-known/openid-configuration"
     configurations:
-      - fields:
+      - fields:                              # one field per fields block (§3.7 item 2)
           - id: "salesforce-iam_domain"   # loses collision → prefixed
             title: "Domain URL"
             field_type: "input"
@@ -1198,6 +1246,7 @@ profiles:
               placeholder: "https://<my_domain>"
               create_modifiers: { required: true, hidden: false }
               edit_modifiers: { required: true, hidden: false, read_only: true }
+      - fields:
           - id: "salesforce-iam_client_key"
             title: "Consumer Key (Client ID)"
             field_type: "input"
@@ -1206,6 +1255,7 @@ profiles:
               mask: false
               create_modifiers: { required: true, hidden: false }
               edit_modifiers: { required: true, hidden: true }
+      - fields:
           - id: "salesforce-iam_client_secret"
             title: "Consumer Secret"
             field_type: "input"
@@ -1312,6 +1362,7 @@ configurations:
   - id: "automation-and-remediation_salesforce"
     view_group: "salesforce"
     configurations:
+      # one field per fields block (§3.7 item 2). checkbox_group is one row by design.
       - fields:
           - id: "user_operations"
             title: "User Operations"
@@ -1325,13 +1376,14 @@ configurations:
                 - { key: "disable_user_enabled", value: true }
               create_modifiers: { required: false, read_only: false, hidden: false }
               edit_modifiers: { required: false, read_only: false, hidden: false }
-            fields:
+            fields:   # checkbox_group items — NOT a violation (one control, one row)
               - { id: "create_user_enabled", title: "Allow creating users" }
               - { id: "update_user_enabled", title: "Allow updating users" }
               - { id: "enable_user_enabled", title: "Allow enabling users" }
               - { id: "disable_user_enabled", title: "Allow disabling users" }
-          # defaultIgnore — under salesforce's automation sub-capability (integrationLogLevel is in general_configurations).
-          # salesforce wins the collision → keeps original id (no serializer).
+      # defaultIgnore — its own fields block (own row).
+      # salesforce wins the collision → keeps original id (no serializer).
+      - fields:
           - id: "defaultIgnore"
             title: "Do not use in CLI by default"
             field_type: "checkbox"
@@ -1344,7 +1396,7 @@ configurations:
   - id: "automation-and-remediation_salesforce-iam"
     view_group: "salesforce-iam"
     configurations:
-      - fields:
+      - fields:                              # one field per fields block (§3.7 item 2)
           - id: "create_if_not_exists"   # unique to IAM → keep original id
             title: "Automatically create user if not found"
             field_type: "switch"
@@ -1353,8 +1405,9 @@ configurations:
               default_value: true
               create_modifiers: { required: false, read_only: false, hidden: false }
               edit_modifiers: { required: false, read_only: false, hidden: false }
-          # defaultIgnore — under salesforce-iam's automation sub-capability (integrationLogLevel is in general_configurations).
-          # salesforce-iam loses the collision → prefixed id (serializer remaps, §4.8).
+      # defaultIgnore — its own fields block (own row).
+      # salesforce-iam loses the collision → prefixed id (serializer remaps, §4.8).
+      - fields:
           - id: "salesforce-iam_defaultIgnore"
             title: "Do not use in CLI by default"
             field_type: "checkbox"
@@ -1538,7 +1591,7 @@ The following integrations are excluded from the migration. If the LLM encounter
 | Deprecated integrations | Will not be migrated. Users will be pointed to the replacement connector (see §3.2.2 open item about deprecated-pack redirect text). |
 | `Cortex Core - IOC` (`CoreIOCs`), `Cortex Core - IR` (`CortexCoreIR`), `XQL Query Engine` (`CortexCoreXQLQueryEngine`), `Cortex Core - Platform` (`CortexPlatformCore`), `Core REST API` | Internal Cortex core integrations — always excluded.  |
 | `Salesforce` | Migrated manually in April — all Salesforce integrations excluded. |
-| `AWS`, `GCP`, `Azure` | Already onboarded to the **cooc** experience — excluded from ConnectUs migration.  |
+| `AWS`, `AWS EC2`, `AWS S3`, `AWS EKS`, `AWS Lambda`, `AWS CloudWatchLogs`, `AWS System Manager`, `AWS Network Firewall`, `GCP`, `Azure` | Already onboarded to the **cooc** experience — excluded from ConnectUs migration. |
 
 ## Appendix E: Integrations Requiring Manual Migration
 
@@ -1568,7 +1621,7 @@ The following vendor connectors are owned jointly with the SaaS team. SaaS alrea
 
 Integrations listed below must have **no `engine_mode`, `engine`, `engine_group`, or `proxy` fields emitted at all** in their connector manifest — none of the three engine fields from the §3.7 "Engine handling — 3-field pattern" sub-section, and no `proxy` field either. They run as long-running servers/listeners or are platform-native handlers. Match is case-insensitive against the integration `commonfields.id`.
 
-> **Note**: `AWS`, `Azure`, and `GCP` are **not** listed here because they are **fully excluded from migration** (cooc — see [Appendix D](#appendix-d-excluded-integrations-out-of-scope)).
+> **Note**: the `AWS` family (`AWS`, `AWS EC2`, `AWS S3`, `AWS EKS`, `AWS Lambda`, `AWS CloudWatchLogs`, `AWS System Manager`, `AWS Network Firewall`), `Azure`, and `GCP` are **not** listed here because they are **fully excluded from migration** (cooc — see [Appendix D](#appendix-d-excluded-integrations-out-of-scope)).
 
 | Integration ID | Why excluded |
 |---|---|

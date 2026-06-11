@@ -566,6 +566,8 @@ def build_connector_yaml(
       - version: "1.0.0"
       - settings.allow_skip_verification: True (per guide §3.3: "Always
         true unless the vendor explicitly requires successful verification")
+      - settings.skip_cut_off_check: True (emitted for every generated
+        connector).
       - metadata.domain: always "" (out of scope for grouped connectors).
 
     Vendor-driven fields (per user decision on review point 1):
@@ -604,6 +606,7 @@ def build_connector_yaml(
         "settings": {
             "allow_skip_verification": True,
             "grouped": True,
+            "skip_cut_off_check": True,
         },
     }
 

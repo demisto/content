@@ -238,6 +238,8 @@ def test_create_manifest_from_scratch_generates_correct_connector_yaml(
     # Per guide §3.3: "Always true unless the vendor explicitly requires
     # successful verification".
     assert data["settings"]["allow_skip_verification"] is True
+    # Emitted for every generated connector.
+    assert data["settings"]["skip_cut_off_check"] is True
 
 
 def test_create_manifest_from_scratch_creates_directory_if_missing(

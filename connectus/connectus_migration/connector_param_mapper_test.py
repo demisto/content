@@ -442,6 +442,83 @@ class TestMapParamsToCapabilities:
         )
         assert result["Automation"] == ["arg1"]
 
+    def test_mirroring_commands_ignored_multi_capability(self):
+        """
+        Given: A multi-capability mapping (Fetch Issues + Automation) plus
+               the mirroring commands (get-remote-data,
+               get-modified-remote-data, update-remote-system,
+               get-mapping-fields) each carrying mirroring-only params.
+        When:  map_params_to_capabilities is called.
+        Then:  The mirroring params are NOT routed into any capability
+               (Automation stays empty); only the real vendor param lands
+               in Automation.
+        """
+        capabilities = {
+            "general_configurations": [],
+            "Fetch Issues": [],
+            "Automation": [],
+        }
+        command_params = {
+            "integration": "X",
+            "commands": {
+                "test-module": [],
+                "get-remote-data": ["mirror_direction"],
+                "get-modified-remote-data": ["mirror_limit"],
+                "update-remote-system": ["mirror_tags"],
+                "get-mapping-fields": ["close_incident"],
+                "vendor-do-stuff": ["arg1"],
+            },
+        }
+        param_defaults = {
+            "mirror_direction": "Both",
+            "mirror_limit": 100,
+            "mirror_tags": "comments",
+            "close_incident": True,
+            "arg1": "x",
+        }
+        result = map_params_to_capabilities(
+            capabilities, command_params, param_defaults
+        )
+        assert result["Automation"] == ["arg1"]
+        for cap, params in result.items():
+            assert "mirror_direction" not in params
+            assert "mirror_limit" not in params
+            assert "mirror_tags" not in params
+            assert "close_incident" not in params
+
+    def test_mirroring_commands_ignored_single_capability_shortcut(self):
+        """
+        Given: A single non-general capability plus mirroring commands that
+               carry mirroring-only params.
+        When:  map_params_to_capabilities is called (Step 2.2 shortcut).
+        Then:  The mirroring params are NOT dumped into the single
+               capability; only the real command params land there.
+        """
+        capabilities = {
+            "general_configurations": [],
+            "Automation": [],
+        }
+        command_params = {
+            "integration": "X",
+            "commands": {
+                "test-module": [],
+                "get-remote-data": ["mirror_direction"],
+                "update-remote-system": ["mirror_tags"],
+                "vendor-do-stuff": ["arg1"],
+            },
+        }
+        param_defaults = {
+            "mirror_direction": "Both",
+            "mirror_tags": "comments",
+            "arg1": "x",
+        }
+        result = map_params_to_capabilities(
+            capabilities, command_params, param_defaults
+        )
+        assert result["Automation"] == ["arg1"]
+        assert "mirror_direction" not in result["Automation"]
+        assert "mirror_tags" not in result["Automation"]
+
     def test_multi_capability_other_command_to_automation(self):
         """
         Given: A multi-capability mapping (Fetch Issues + Automation) but
