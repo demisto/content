@@ -452,6 +452,23 @@ function TestModuleCommand {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
     param([RemotingClient]$client)
 
+    # Override: params parity dump for test-module
+    try {
+        $pp_payload = @{
+            '__params_parity_dump__' = $true
+            'params' = $demisto.Params()
+        }
+        $pp_json = $pp_payload | ConvertTo-Json -Depth 10 -Compress
+        ReturnError "PARAMS_PARITY_DUMP::$pp_json"
+        return $null, $null, $null
+    }
+    catch [System.Management.Automation.MethodInvocationException] {
+        throw
+    }
+    catch {
+        # Probe must never break unrelated integrations. Swallow and continue.
+    }
+
     if ($client.ssl) {
         $res = Test-Connection -TcpPort 5986 -TargetName $client.fqdn -ErrorAction Stop
         if (-not $res) {
