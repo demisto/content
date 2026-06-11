@@ -1,4 +1,4 @@
-Ingest Exchange Online Message Trace events into Cortex XSIAM. Message Trace enables tenant administrators to track the lifecycle of an email, determine its delivery status (delivered, pending, failed, or quarantined), and understand the actions applied to it.
+Message Trace enables tenant administrators to track the lifecycle of an email, determine its delivery status (delivered, pending, failed, or quarantined), and understand the actions applied to it.
 
 This integration was integrated and tested with the Graph-based Message Trace API (`v1.0/admin/exchange/tracing/messageTraces`).
 

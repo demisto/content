@@ -97,7 +97,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: Ingest Exchange Online Message Trace events into Cortex XSIAM. Message Trace enables tenant administrators to track the lifecycle of an email, determine its delivery status (delivered, pending, failed, or quarantined), and understand the actions applied to it.
+description: Message Trace enables tenant administrators to track the lifecycle of an email, determine its delivery status (delivered, pending, failed, or quarantined), and understand the actions applied to it.
 script:
   commands:
   - arguments: []
