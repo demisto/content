@@ -5,6 +5,7 @@ description: Sub-playbook that calls the Darkmon !ip command and returns DBotSco
 fromversion: 6.5.0
 marketplaces:
 - xsoar
+- marketplacev2
 - platform
 starttaskid: "0"
 tasks:

@@ -5,6 +5,7 @@ description: Sub-playbook that calls the Darkmon !file command and returns DBotS
 fromversion: 6.5.0
 marketplaces:
 - xsoar
+- marketplacev2
 - platform
 starttaskid: "0"
 tasks:

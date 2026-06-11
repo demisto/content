@@ -5,7 +5,7 @@ description: Hourly poll of board-protected emails. For each protected email, ch
 fromversion: 6.5.0
 marketplaces:
   - xsoar
-  - platform
+  - marketplacev2
   - platform
 tags:
   - darkmon

@@ -13,7 +13,7 @@ description: |-
 fromversion: 6.5.0
 marketplaces:
   - xsoar
-  - platform
+  - marketplacev2
   - platform
 tags:
   - darkmon

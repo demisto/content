@@ -5,7 +5,7 @@ description: Daily filter of new CVEs (CVSS >= 9) against the customer's tech-st
 fromversion: 6.5.0
 marketplaces:
   - xsoar
-  - platform
+  - marketplacev2
   - platform
 tags:
   - darkmon

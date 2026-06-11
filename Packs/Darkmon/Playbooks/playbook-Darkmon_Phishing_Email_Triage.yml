@@ -5,7 +5,7 @@ description: "Extracts URLs/IPs/file-hashes from a reported phishing email, enri
 fromversion: 6.5.0
 marketplaces:
   - xsoar
-  - platform
+  - marketplacev2
   - platform
 tags:
   - darkmon

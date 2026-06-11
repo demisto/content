@@ -5,6 +5,7 @@ description: Sub-playbook that calls the Darkmon !domain command and returns DBo
 fromversion: 6.5.0
 marketplaces:
 - xsoar
+- marketplacev2
 - platform
 starttaskid: "0"
 tasks:
