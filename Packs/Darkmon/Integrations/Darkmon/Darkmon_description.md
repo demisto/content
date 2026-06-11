@@ -1,7 +1,7 @@
 ## Darkmon Threat Intelligence Platform
 
 Connect Cortex XSOAR to **Darkmon TIP** for real-time intelligence from the
-Clear, Deep, and Dark Web — tailored to your assets.
+Clear, Deep, and Dark Web - tailored to your assets.
 
 ### What you get
 - **Indicator enrichment** for IPs, domains, URLs, file hashes, and emails,
@@ -9,13 +9,13 @@ Clear, Deep, and Dark Web — tailored to your assets.
 - **IOC feed** ingestion into Cortex Threat Intel Management.
 - **Compromised data** discovery (leaked accounts, bank cards, combo lists,
   public breaches, compromised employee accounts).
-- **Board-level VIP email monitoring** — list protected emails and pull every
+- **Board-level VIP email monitoring** - list protected emails and pull every
   leak associated with each.
 - **Ransomware tracking** (articles + company-specific mentions).
 - **Newly registered domains** and **telnet brute-force IOCs**.
 - **Vulnerability intelligence** (CVE feed with CVSS, exploitation status,
   source identifier).
-- **Global search** — fully dynamic over every Darkmon data type, future-proof
+- **Global search** - fully dynamic over every Darkmon data type, future-proof
   for new feature types added to the platform.
 
 ### Get an API key

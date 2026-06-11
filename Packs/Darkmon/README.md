@@ -1,6 +1,6 @@
 # Darkmon Threat Intelligence Pack
 
-Stay ahead of cyber threats with **Darkmon TIP** — real-time threat intelligence
+Stay ahead of cyber threats with **Darkmon TIP** - real-time threat intelligence
 from the Clear, Deep, and Dark Web, tailored to your assets and operationalized
 inside Cortex XSOAR.
 
@@ -11,7 +11,7 @@ everything a SOC team needs to put Darkmon intelligence into action.
 
 ### Integration
 
-- **Darkmon** — 18 commands covering indicator enrichment, IOC feed ingestion
+- **Darkmon** - 18 commands covering indicator enrichment, IOC feed ingestion
   (TIM), compromised data discovery, board-level VIP email protection,
   ransomware tracking, newly-registered-domain monitoring, vulnerability
   intelligence, and a fully dynamic global search.
