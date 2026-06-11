@@ -4,3 +4,5 @@ name: RSA SecureID Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

@@ -1,3 +1,17 @@
+> **Important Notice – Microsoft Sentinel Migration to Microsoft Defender Portal**
+>
+> Microsoft is migrating Microsoft Sentinel from the Azure portal to the Microsoft Defender portal:
+>
+> - **From July 2025** – New customers have automatically been onboarded and redirected to the Defender portal.
+> - **Starting March 2027** – All customers using Microsoft Sentinel in the Azure portal will be redirected to the Defender portal.
+>
+> This integration is **not being deprecated** at this time, as not all commands are supported in the Graph API. However, if you currently use Microsoft Sentinel in the Azure portal, Microsoft recommends planning your transition to the Defender portal now.
+>
+> We strongly recommend transitioning to the following integrations for managing incidents and indicators:
+>
+> - [Microsoft Graph Security](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph)
+> - [Microsoft Defender Threat Intelligence](https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-threat-intelligence)
+
 Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
 This integration was integrated and tested with version 2021-04-01 of Azure Sentinel.
 
@@ -93,6 +107,13 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and *Microsoft Sentinel*.
 - If the **The minimum severity of incidents to fetch** integration parameter is set to a value other than `None`, incidents with a severity lower than the specified value will not be mirrored, even if their severity is changed in *Microsoft Sentinel* to a higher severity.
 - When closing an incident in Cortex XSOAR, the *Closing Reason* must be provided, otherwise the incident cannot be closed in *Microsoft Sentinel*.
+
+**Look-back Note**:
+
+- Increasing the **look-back** parameter value after the initial fetch may result in duplicate incidents during the first run following the change. To avoid duplicates, ensure the lookback value is not increased once the integration is active.
+    For more information, see [fetch-incidents-lookback](https://xsoar.pan.dev/docs/integrations/fetch-incidents-lookback).
+- Using a large lookback value (greater than one hour) may increase memory usage and is not recommended.
+    For tracking issues or scenarios requiring a large lookback window, it is recommended to use the mirroring feature with relevant tag filtering instead of the lookback parameter. You can configure a custom mapper to track specific fields.
 
 ## Commands
 

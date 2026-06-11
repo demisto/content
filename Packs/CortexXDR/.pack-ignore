@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:CortexXDRIR.yml]
-ignore=IN126,IN139,BA129
+ignore=IN126,IN139,BA129,BA130
 
 [file:XDR_iocs.yml]
 ignore=BA108,BA109
@@ -170,3 +170,6 @@ ignore=GR107
 
 [file:Cortex_XDR_Port_Scan.json]
 ignore=GR107
+
+[file:Test_Playbook_-_Cortex_XDR_Malware_-_Incident_Enrichment.yml]
+ignore=BA130
