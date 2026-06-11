@@ -628,7 +628,6 @@ class ContentErrorCode(object):
 
     # ── Resource Errors ──────────────────────────────────────────────
     RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
-    CONFLICT = "CONFLICT"
 
     # ── API / Network Errors (aligned with existing ErrorTypes) ──────
     API_ERROR = "API_ERROR"
@@ -640,8 +639,8 @@ class ContentErrorCode(object):
     SSL_ERROR = ErrorTypes.SSL_ERROR              # 'SSLError'
     TIMEOUT_ERROR = ErrorTypes.TIMEOUT_ERROR      # 'TimeoutError'
 
-    # ── Data Errors ──────────────────────────────────────────────────
-    PARSE_ERROR = "PARSE_ERROR"
+    # ── Data Errors (failures parsing data returned by the API/service) ──
+    PARSE_ERROR = "API_PARSE_ERROR"
 
     # ── Permission Errors ────────────────────────────────────────────
     PERMISSION_ERROR = "PERMISSION_ERROR"
@@ -11215,7 +11214,6 @@ class UcpException(DemistoException):
 #           ├── ContentExtraArgError
 #           ├── ContentConflictingArgsError
 #           ├── ContentResourceNotFoundError
-#           ├── ContentConflictError
 #           ├── ContentApiError
 #           │     ├── ContentAuthError
 #           │     ├── ContentRateLimitError
@@ -11469,13 +11467,6 @@ class ContentResourceNotFoundError(ContentError):
         return "{} not found".format(self.resource_type)
 
 
-class ContentConflictError(ContentError):
-    """Raised when there is a resource state conflict (e.g. already exists)."""
-
-    error_code = ContentErrorCode.CONFLICT
-    _default_message = "The operation conflicts with the current state of the resource."
-
-
 class ContentApiError(ContentError):
     """Raised when an external API returns an error.
 
@@ -11605,10 +11596,16 @@ class ContentConnectionError(ContentApiError):
 
 
 class ContentParseError(ContentError):
-    """Raised when response data cannot be parsed."""
+    """Raised when data returned by the external API/service cannot be parsed.
+
+    Use this for failures while decoding or interpreting the *response*
+    received from the external service (e.g. invalid JSON/XML, unexpected
+    schema, missing fields) - **not** for invalid user input
+    (use :class:`ContentInvalidArgError` for that).
+    """
 
     error_code = ContentErrorCode.PARSE_ERROR
-    _default_message = "Failed to parse the response data."
+    _default_message = "Failed to parse the response received from the API."
 
 
 class ContentPermissionError(ContentError):

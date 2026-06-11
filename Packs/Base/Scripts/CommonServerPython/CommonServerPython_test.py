@@ -1979,11 +1979,9 @@ def test_content_error_build_message_simple_defaults():
     - Each returns its category-specific default message
     """
     from CommonServerPython import (
-        ContentConflictError, ContentParseError, ContentPermissionError, ContentExecutionError,
+        ContentParseError, ContentPermissionError, ContentExecutionError,
     )
-    assert ContentConflictError().build_message() == \
-        "The operation conflicts with the current state of the resource."
-    assert ContentParseError().build_message() == "Failed to parse the response data."
+    assert ContentParseError().build_message() == "Failed to parse the response received from the API."
     assert ContentPermissionError().build_message() == \
         "Permission denied. You do not have the required permissions to perform this action."
     assert ContentExecutionError().build_message() == "The command or script execution failed."
