@@ -12421,3 +12421,29 @@ class TestGetPlatformSpecificProfileDefaults:
         assert result["agent_settings"] == "Default"  # Still defaults
         assert result["restrictions"] == "Default"  # Still defaults
         assert result["exceptions"] == "Default (No Exceptions)"  # Still defaults
+
+
+# ---------------------------------------------------------------------------
+# BIOC issue description rendering (render_bioc_description)
+#
+# render_bioc_description and the BIOC-only filtering live in CoreIRApiModule and
+# are exercised by CoreIRApiModule_test.py. These smoke tests confirm the symbol
+# is re-exported into CortexPlatformCore (via `from CoreIRApiModule import *`).
+# ---------------------------------------------------------------------------
+
+
+def test_render_bioc_description_simple_attribute_operator_value():
+    """
+    GIVEN: A structured BIOC indicator with a single attribute = value clause.
+    WHEN:  render_bioc_description is called.
+    THEN:  The plain text mirrors the UI ("<attr> <op> <value>").
+    """
+    from CortexPlatformCore import render_bioc_description
+
+    indicator = [
+        {"render_type": "attribute", "pretty_name": "Action File Name"},
+        {"render_type": "operator", "pretty_name": "="},
+        {"render_type": "value", "pretty_name": "evil.exe"},
+    ]
+
+    assert render_bioc_description(indicator) == "Action File Name = evil.exe"
