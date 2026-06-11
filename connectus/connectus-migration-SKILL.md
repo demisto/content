@@ -13,7 +13,7 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 |---|------|---------|---|
 | 0 | Identify | `context "<id>"` (one call: state + files + auth-ignore set) | Step 0 |
 | 1 | Assignee | `set-assignee "<id>" "<name>"` | §1 |
-| 2 | Auth Details | `set-auth "<id>" '<json>' --dry-run` → then apply | §2 |
+| 2 | Auth Details | `set-auth "<id>" '<json>'` (validate-and-apply in one step) | §2 |
 | 3 | Collect Capabilities | `connectus_migration/capabilities_collector.py <yml> -o <path>` → `set-capabilities` | §3 |
 | 4 | Params to Commands | run analyzer w/ `--integration-id` → `set-params-to-commands` | §4 |
 | 5 | Param defaults | `set-param-defaults "<id>" '<json>'` (required-only) | §5 |
@@ -256,7 +256,7 @@ which is then applied verbatim).
 
 | # | CLI verb | Column written | What to show before asking |
 |---|---|---|---|
-| 1 | `set-auth` | `Auth Details` | The full JSON payload; a per-`auth_types[]`-entry evidence table that MUST include, for each profile, the **XSOAR fields** (the `xsoar_param_map` keys) it consumes alongside the role each field plays, the YML param + code site that justifies the type, and any `verify_connection_skip` / `interpolated` flags. Any XSOAR field that appears in more than one profile MUST be **highlighted** (🔶 marker by default) and called out in a mandatory overlap note beneath the table (see [§1.2](#12-researching-auth-details--the-four-sources-of-truth) for the table format and highlight conventions); the `other_connection` list. Note that this call resets the workflow + wipes the downstream Params\* columns AND runs the auth-parity test on the candidate payload — the cell is **rejected** unless parity passes or short-circuits structurally (see [§1.12 Auth-parity gate inside `set-auth`](#112-auth-parity-gate-inside-set-auth)). If the gate fails, treat the printed diff as the next problem to solve (most often: a non-standard auth header that needs a `_apply_ucp_<type>` override on the integration's `Client`, or a multi-auth integration with a startup validator that needs `is_ucp_enabled()` gating) — see the same §1.12 for the troubleshooting playbook. |
+| 1 | `set-auth` | `Auth Details` | The full JSON payload; a per-`auth_types[]`-entry evidence table that MUST include, for each profile, the **XSOAR fields** (the `xsoar_param_map` keys) it consumes alongside the role each field plays, the YML param + code site that justifies the type, and any `verify_connection_skip` / `interpolated` flags. Any XSOAR field that appears in more than one profile MUST be **highlighted** (🔶 marker by default) and called out in a mandatory overlap note beneath the table (see [§1.2](#12-researching-auth-details--the-four-sources-of-truth) for the table format and highlight conventions); the `other_connection` list. Note that this call resets the workflow + wipes the downstream Params\* columns. `set-auth` forces `interpolated: true` onto every `auth_types[]` entry and short-circuits the parity test, so the write **always succeeds once the JSON passes schema validation** — there is no parity diff to resolve (see [§1.12 Auth-parity gate inside `set-auth`](#112-auth-parity-gate-inside-set-auth)). |
 | 2 | `set-params-to-commands` | `Params to Commands` | The full JSON payload; the analyzer's per-command findings vs. the final list (call out any commands where you overrode the analyzer); the auth-ignore set pulled from `auth-params`. **Include a per-param scores table** (max `rollup_confidence`, top source, and your decision) so the user can see what the analyzer proved vs. what you elevated by source review — explicitly flag the "investigated myself" rows (analyzer score below your inclusion bar) and why. Get scores via a throwaway `--with-diagnostics` run. See [analyzer-manual §12.4](analyzer-manual.md) for the table format and §11/§12 for arg-seeding + the params-access spy (the `dynamic_access` 0.9 source). |
 | 3 | `set-param-defaults` | `Params for test with default in code` | The full JSON payload AND, for each entry, a one-line attribution: **(a)** *param `foo`: YML `defaultvalue` is `<yml default>` — use as code fallback? confirm / edit / reject (move to `other_connection`).* **(b)** *param `foo`: NO YML default; proposed default `<value>` — confirm / edit / reject (move to `other_connection`).* **(c)** *param `foo`: code already supplies fallback `<existing default>`; recorded for the cell, no code edit.* Branches (a) AND (b) are per-param sub-confirmations that pause the workflow (within the same outer pause-before-`set-param-defaults` step) — the YML default in branch (a) is NEVER accepted silently. The skill MUST collect all branch-(a)/(b) confirmations before applying any `.py` edits, AND before calling `set-param-defaults`. If a branch-(a)/(b) param is **rejected**, drop it from the JSON, skip its code edit, add it to `other_connection`, and re-apply via `set-auth` first (note: `set-auth` resets the workflow — see Step 5 "Rejecting a default"). |
 | 4 | `set-params-to-capabilities` | `Params to Capabilities` | The full JSON payload from the mapping helper; any `MANUAL_COMMAND_TO_CAPABILITY_JSON` overrides applied and why. |
@@ -408,9 +408,8 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 7. ☐ Extract the **connection-adjacent** YML params (URL, proxy, insecure, port, host, region, …) into the sorted `other_connection` list — see [1.2.5](#125-building-the-other_connection-list)
 8. ☐ Sanity-check against [Known Misclassification Patterns](#16-known-misclassification-patterns) and the [Decision Tree](#19-decision-tree-for-auth-type)
 9. ☐ Run the [Pre-flight self-check](#111-pre-flight-self-check)
-10. ☐ **Dry-run first.** Validate the candidate payload with `set-auth … --dry-run` BEFORE the real apply — this runs the schema validator + the auth-parity gate and reports the top-level **`pass`** boolean **without** writing the cell or resetting the workflow. Inspect the JSON result, then present the evidence table to the user. See [1.10](#110-applying-corrections).
-11. ☐ Apply via `set-auth` (no `--dry-run`) once the dry-run reports `pass: true` and the user approves (this validates the JSON schema, **runs the auth-parity test on the candidate payload**, and on success resets the workflow) — see [1.10](#110-applying-corrections)
-12. ☐ If the dry-run (or the real `set-auth`) reports a parity-gate failure, apply the troubleshooting playbook in [§1.12](#112-auth-parity-gate-inside-set-auth) (UCP header override, startup-validator gating, `interpolated: true` fallback, etc.) and re-run the dry-run
+10. ☐ Present the evidence table to the user and get approval.
+11. ☐ Apply via `set-auth` once the user approves (this validates the JSON schema, forces `interpolated: true` onto every entry, and on success resets the workflow). The write always succeeds once the JSON passes schema validation — no parity check is performed. See [1.10](#110-applying-corrections).
 
 `set-auth`'s own output echoes the new `Current step:` on success — do **not** re-run `status` to confirm.
 
@@ -937,31 +936,11 @@ Examples currently in the pipeline: `SpamhausFeed`, `MalwareBazaarFeed`, `AbuseI
 
 #### 1.10 Applying Corrections
 
-##### Always dry-run first (`--dry-run`)
-
-**Before the real `set-auth`, ALWAYS validate the candidate payload with `--dry-run`.** This runs the full schema validator and the auth-parity gate against the candidate JSON and prints a machine-readable verdict, but does **NOT** write the `Auth Details` cell and does **NOT** reset the workflow:
-
-```bash
-python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details JSON>' --dry-run
-```
-
-The JSON result leads with a single unambiguous top-level **`pass`** boolean — **this is the field to branch on.** The remaining blocks explain *why*:
-
-- **`pass`** — top-level boolean. `true` ⇒ the payload would commit (parity passed or structurally short-circuited); `false` ⇒ it would not. **Use this as the decision signal.** (It mirrors `verdict.would_commit`, which is retained for its human-readable `reason`; the `--dry-run` text output prints it as the `PASS:` line.)
-- `validator` — `passed` + any schema `errors` (unsorted `auth_types[]`, role-enum violations, missing `other_connection`, etc.).
-- `seed_overlap` — `passed` for the field-overlap / seed check.
-- `parity` — the auth-parity gate outcome. Either a clean pass, an interpolated short-circuit (`ERROR_ALL_INTERPOLATED` / `ERROR_CONNECTION_INTERPOLATED`), or an `error` with a cannot-verify `code` (e.g. `APIMODULE_INTEGRATION_CANNOT_VERIFY`, `ERROR_NO_BASECLIENT`, `ERROR_NON_PYTHON`, `MULTI_SECRET_PASSTHROUGH`) and a `message`.
-- `verdict` — `would_commit` (boolean, same as top-level `pass`) + a human-readable `reason`. Only an interpolated short-circuit (`ERROR_ALL_INTERPOLATED` / `ERROR_CONNECTION_INTERPOLATED`) yields `pass: true` as a structural skip. A cannot-verify code yields `pass: false` (AUTH-PARITY GATE STRICTNESS FIX, 2026-06-03) — the `reason` spells out the two valid resolutions (mark the auth `interpolated: true`, or make parity runnable).
-
-**Decision rule:**
-- `pass == true` → the payload is good. Present the evidence table to the user, get approval, then run the **same command without `--dry-run`** to actually commit.
-- `pass == false` (validator/parity failure) → do NOT run the real apply. Fix the JSON or apply the [§1.12](#112-auth-parity-gate-inside-set-auth) troubleshooting playbook (UCP header override, startup-validator gating, `interpolated: true` fallback, etc.), then re-run the dry-run until it passes.
-
-Re-running a dry-run is free and side-effect-free — iterate on it as many times as needed. Only the final, `--dry-run`-clean, user-approved payload should be committed.
-
 ##### Committing the value
 
-When corrections are needed (or for the initial set), use `set-auth` (drop `--dry-run` to actually write):
+> **No dry-run step.** `set-auth` only ever forces `interpolated: true` and short-circuits the parity test, so there is nothing to verify ahead of time — the write succeeds the moment the JSON passes schema validation. Just present the evidence table, get user approval, and apply. (The `--dry-run` flag is no longer part of the Auth Details flow.)
+
+When corrections are needed (or for the initial set), use `set-auth`:
 
 ```bash
 python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details JSON>'
@@ -1260,7 +1239,7 @@ Procedure for each rejected param:
 
 1. **Drop it from this cell.** Do not add a `or "<default>"` fallback in the `.py`, and do not include the param id as a key in the `set-param-defaults` JSON payload.
 2. **Add it to `other_connection`.** Take the param id and append it to the sorted `other_connection` list inside the current `Auth Details` JSON (read the current value from the Step-0 `context` output's `data_columns["Auth Details"]`). Keep `other_connection` sorted and de-duplicated.
-3. **Re-apply via `set-auth`.** Run `set-auth "<Integration ID>" '<updated Auth Details JSON>'` with the param now present in `other_connection`. Follow the normal Step 2 pause-and-confirm + dry-run flow — this is a `set-auth` write, so present the evidence table and the updated `other_connection` list to the user before applying.
+3. **Re-apply via `set-auth`.** Run `set-auth "<Integration ID>" '<updated Auth Details JSON>'` with the param now present in `other_connection`. Follow the normal Step 2 pause-and-confirm flow — this is a `set-auth` write, so present the evidence table and the updated `other_connection` list to the user before applying.
 4. **Mind the reset.** `set-auth` **resets the workflow back to `generated manifest` and wipes the downstream `Params*` columns** (including any `Params for test with default in code` work already done for the OTHER params in this batch). Because of this, **collect ALL branch-(a)/(b) confirmations and rejections for the whole integration FIRST**, then:
    - If there is at least one rejection, do the `set-auth` re-apply (Step 2) for all rejected params **before** re-running Steps 4 and 5 for the surviving params. This avoids losing the param-defaults cell to a later reset.
    - If there are no rejections, proceed straight to `set-param-defaults` as normal.
@@ -1515,7 +1494,7 @@ elevation when that list is non-empty:**
 2. Append each elevated param id to that JSON's `other_connection` list;
    keep it sorted ascending and de-duplicated.
 3. Re-apply via `set-auth "<Integration ID>" '<updated Auth Details JSON>'`
-   (normal Step 2 pause-and-confirm + `--dry-run` first). This is the
+   (normal Step 2 pause-and-confirm). This is the
    "inject into Auth Details" step.
 
 > **`set-auth` resets the workflow — but the capability mapping
