@@ -485,7 +485,7 @@ Per field: `trigger` (✅, `change`/`blur`), `rules[].type` (✅, `pattern`/`min
 4. **Hidden on platform**: a parameter hidden on `platform` (`hidden: [platform]`, `isfetch:platform: false`, etc.) is excluded from the manifest.
 5. **Platform-specific fields**: respect marketplace-specific overrides (`defaultvalue:platform`, `id:xsoar`, `quickaction:platform`, etc.).
 6. **Author image**: the PNG in `<pack>/integrations/<integration>/` is the connector icon. If multiple exist, take the first; verify it manually. If none, flag.
-7. **cooc integrations** (`AWS`, `GCP`, `Azure`) are **not migrated** (see Appendix D).
+7. **cooc integrations** (the `AWS` family — `AWS`, `AWS EC2`, `AWS S3`, `AWS EKS`, `AWS Lambda`, `AWS CloudWatchLogs`, `AWS System Manager`, `AWS Network Firewall` — plus `GCP` and `Azure`) are **not migrated** (see Appendix D for the full list).
 8. **UI triggers**: none added this quarter, but **author** [`triggers.yaml`](README.md:833) where it cleanly solves a known UI problem (§3.5).
 9. **Always have a sub-capability**, even with one integration under a capability. A lone sub-capability is marked `required: true`.
 10. **Sub-capability licenses MUST be a subset of the integration's `supportedModules`** (see §3.1.1).
@@ -722,7 +722,7 @@ A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`
 4. **`profiles[].view_group`** (Grouped): every profile references one `connection.yaml view_groups[].id`.
    - **A profile cannot be shared across integrations** — each `view_group` belongs to one integration, so declare a **separate profile per integration** even when auth is identical (e.g. `oauth2_client_credentials.salesforce` and `.salesforce-iam`).
 5. **One profile per handler — OR, never AND.** A handler binds to a single profile at runtime. Multiple auth methods → separate profiles sharing one `view_group`, advertised as alternatives in `auth_options[]` (user picks one). If an integration needs several inputs simultaneously, model it as one `passthrough` profile.
-6. **`metadata.xsoar.interpolation_mapping`** on every migrated profile (§2.6.2) — the migration always interpolates (`plain`/`api_key`/`passthrough`) since integration code is not rewritten. Map each auth field's `metadata.auth.parameter` to its `demisto.params()` dotted path (`"<ucp_param>:<xsoar_path>,..."`). Do **not** emit the legacy `interpolated: true`. A value may instead be carried in the profile field directly — the runtime resolves both.
+6. **`metadata.xsoar.interpolation_mapping`** on every migrated profile (§2.6.2) — the migration always interpolates (`plain`/`api_key`/`passthrough`) since integration code is not rewritten. Map each auth field's `metadata.auth.parameter` to its `demisto.params()` dotted path (`"<ucp_param>:<xsoar_path>,..."`).
 
 ### 3.7 configurations.yaml Rules
 
@@ -1538,7 +1538,7 @@ The following integrations are excluded from the migration. If the LLM encounter
 | Deprecated integrations | Will not be migrated. Users will be pointed to the replacement connector (see §3.2.2 open item about deprecated-pack redirect text). |
 | `Cortex Core - IOC` (`CoreIOCs`), `Cortex Core - IR` (`CortexCoreIR`), `XQL Query Engine` (`CortexCoreXQLQueryEngine`), `Cortex Core - Platform` (`CortexPlatformCore`), `Core REST API` | Internal Cortex core integrations — always excluded.  |
 | `Salesforce` | Migrated manually in April — all Salesforce integrations excluded. |
-| `AWS`, `GCP`, `Azure` | Already onboarded to the **cooc** experience — excluded from ConnectUs migration.  |
+| `AWS`, `AWS EC2`, `AWS S3`, `AWS EKS`, `AWS Lambda`, `AWS CloudWatchLogs`, `AWS System Manager`, `AWS Network Firewall`, `GCP`, `Azure` | Already onboarded to the **cooc** experience — excluded from ConnectUs migration. |
 
 ## Appendix E: Integrations Requiring Manual Migration
 
@@ -1568,7 +1568,7 @@ The following vendor connectors are owned jointly with the SaaS team. SaaS alrea
 
 Integrations listed below must have **no `engine_mode`, `engine`, `engine_group`, or `proxy` fields emitted at all** in their connector manifest — none of the three engine fields from the §3.7 "Engine handling — 3-field pattern" sub-section, and no `proxy` field either. They run as long-running servers/listeners or are platform-native handlers. Match is case-insensitive against the integration `commonfields.id`.
 
-> **Note**: `AWS`, `Azure`, and `GCP` are **not** listed here because they are **fully excluded from migration** (cooc — see [Appendix D](#appendix-d-excluded-integrations-out-of-scope)).
+> **Note**: the `AWS` family (`AWS`, `AWS EC2`, `AWS S3`, `AWS EKS`, `AWS Lambda`, `AWS CloudWatchLogs`, `AWS System Manager`, `AWS Network Firewall`), `Azure`, and `GCP` are **not** listed here because they are **fully excluded from migration** (cooc — see [Appendix D](#appendix-d-excluded-integrations-out-of-scope)).
 
 | Integration ID | Why excluded |
 |---|---|
