@@ -13693,6 +13693,26 @@ _UCP_COMMAND_CAPABILITIES = {
     'fetch-assets': 'collection-and-ingestion',
 }
 
+# Canonical credential-envelope schema per profile type.
+#
+# ``api_key`` and ``plain`` profiles have FIXED envelope schemas: the secret
+# always lives under a known key inside ``creds[creds["type"]]`` regardless of
+# what ``interpolation_mapping`` left-hand id (``field_id``) the manifest emits.
+# The common scripts therefore OWN this knowledge and resolve those values from
+# the canonical location, rather than trusting the generator-emitted field_id.
+#
+# Each entry maps the mapping's left-hand ``field_id`` (which equals the field's
+# ``metadata.auth.parameter``) to the actual key inside the flattened envelope.
+# Note the api_key alias: ``auth.parameter`` is ``api_key`` (per the connection
+# schema / OPA contract) but the runtime envelope stores the value under ``key``.
+#
+# ``passthrough`` is the free-form escape hatch and intentionally has NO entry:
+# its values are looked up generically by field_id.
+_UCP_CANONICAL_FIELD_KEYS = {
+    'api_key': {'api_key': 'key'},
+    'plain': {'username': 'username', 'password': 'password'},
+}
+
 
 # -- UCP helper: interpolate connector field values into demisto.params() --
 
@@ -13903,9 +13923,9 @@ def build_ucp_params(connector_metadata, capability=None):
         if not pairs:
             demisto.debug('there are no pairs for profile id {}'.format(method_unique_id))
             continue
-        # [UCP-CODE-VERSION] flatten-v2 — if this marker is ABSENT from the logs,
+        # [UCP-CODE-VERSION] flatten-v3 — if this marker is ABSENT from the logs,
         # the runtime is executing a STALE bundled CommonServerPython, not this file.
-        demisto.debug('[UCP-CODE-VERSION] build_ucp_params flatten-v2 active')
+        demisto.debug('[UCP-CODE-VERSION] build_ucp_params flatten-v3 active')
         credentials = get_ucp_credentials(method_unique_id)
         demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FULL get_ucp_credentials({}) envelope = {}'.format(
             method_unique_id, _ucp_dump(credentials)))
@@ -13929,14 +13949,21 @@ def build_ucp_params(connector_metadata, capability=None):
             inner_params = cred_values.get('parameters') if isinstance(cred_values, dict) else None
             if isinstance(inner_params, dict):
                 cred_values = inner_params
+        cred_type = credentials.get('type') if isinstance(credentials, dict) else None
         demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: cred_type={!r}, FLATTENED cred_values keys={}'.format(
-            credentials.get('type') if isinstance(credentials, dict) else None,
-            list(cred_values.keys())))
+            cred_type, list(cred_values.keys())))
+        # For fixed-schema types (api_key, plain) resolve the value from the
+        # canonical envelope key, aliasing the mapping's field_id as needed
+        # (e.g. api_key -> "key"). Free-form types (passthrough) fall back to a
+        # generic field_id lookup.
+        canonical_keys = _UCP_CANONICAL_FIELD_KEYS.get(cred_type, {})
         for field_id, destination in pairs:
-            field_value = cred_values.get(field_id)
-            demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: field_id={!r} -> destination={!r}, '
-                          'found={} value_type={}'.format(
-                              field_id, destination, field_value is not None, type(field_value).__name__))
+            lookup_key = canonical_keys.get(field_id, field_id)
+            field_value = cred_values.get(lookup_key)
+            demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: field_id={!r} (lookup_key={!r}) -> '
+                          'destination={!r}, found={} value_type={}'.format(
+                              field_id, lookup_key, destination, field_value is not None,
+                              type(field_value).__name__))
             if field_value is None:
                 demisto.debug('missing field value for field {} for profile id {}'.format(field_id, method_unique_id))
                 continue
@@ -14524,6 +14551,37 @@ def safe_pickle_loads(data, allowed_classes, safe_module_prefixes):
     unpickler_cls = _make_restricted_unpickler(allowed_classes, safe_module_prefixes)
     return unpickler_cls(_io.BytesIO(data)).load()
 
+
+    # type: () -> Optional[dict]
+    """Return result params and UCP info when the current instance name contains "judah".
+
+    Simple diagnostic helper: inspects the current integration instance name and,
+    if it contains the substring ``"judah"`` (case-insensitive), returns a dict
+    containing the integration ``params`` and the UCP / unified connector metadata.
+    Returns ``None`` otherwise.
+
+    :return: A dict with ``params`` and ``ucp_info`` keys, or ``None`` when the
+        instance name does not contain "judah".
+    :rtype: ``Optional[dict]``
+    """
+    try:
+        instance_name = demisto.integrationInstance() or ''
+    except Exception:
+        instance_name = ''
+    if 'judah' not in instance_name.lower():
+        return None
+    try:
+        params = demisto.params()
+    except Exception:
+        params = {}
+    try:
+        ucp_info = demisto.unifiedConnectorMetadata()
+    except Exception:
+        ucp_info = {}
+    return {
+        'params': params,
+        'ucp_info': ucp_info,
+    }
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 

@@ -5424,8 +5424,121 @@ def build_interpolation_mapping(
     for xsoar_path in sorted(xsoar_param_map.keys()):
         role = xsoar_param_map[xsoar_path]
         auth_parameter = _auth_parameter_for_role(profile_type, role)
+        # INV-4 (Plan B §6.6.2): the runtime grammar has NO escaping — ',' and
+        # ':' are hard delimiters. A role/path containing them would corrupt the
+        # comma-joined string, so reject at emission rather than emit a mapping
+        # that silently mis-parses at runtime.
+        if "," in auth_parameter or ":" in auth_parameter:
+            raise InterpolationSchemaError(
+                f"interpolation role '{auth_parameter}' contains a reserved "
+                f"delimiter (',' or ':') (INV-4); the runtime grammar has no "
+                f"escaping. profile_type={profile_type}, xsoar_path={xsoar_path}."
+            )
+        if "," in xsoar_path:
+            raise InterpolationSchemaError(
+                f"interpolation destination '{xsoar_path}' contains ',' (INV-4); "
+                f"the runtime grammar has no escaping. profile_type={profile_type}."
+            )
         entries.append(f"{auth_parameter}:{xsoar_path}")
     return ",".join(entries)
+
+
+class InterpolationSchemaError(ValueError):
+    """Raised when a built connection profile violates an interpolation invariant.
+
+    This is the Plan B *hard gate* (see
+    ``connectus/interpolated-param-schemas-and-fix.md`` §6.6): rather than let
+    the generator emit a silently-broken ``interpolation_mapping`` (which the
+    runtime would drop at debug-log level), generation aborts loudly with the
+    connector / profile / offending-entry context.
+    """
+
+
+def _validate_interpolation_invariants(
+    profile: dict,
+    integration_id: str,
+) -> None:
+    """Enforce the Plan B interpolation invariants on a built profile (fail loud).
+
+    Checks INV-1..INV-5 from ``interpolated-param-schemas-and-fix.md`` §6.6.2
+    against the profile's own emitted fields + ``metadata.xsoar``. Raises
+    :class:`InterpolationSchemaError` on the first violation, naming the
+    connector id, the profile, and the offending entry so a broken
+    ``connection.yaml`` is never written.
+
+    - INV-1: every ``interpolation_mapping`` LEFT (role) equals an emitted
+      field's ``metadata.auth.parameter`` in the SAME profile.
+    - INV-2: no field lacking ``metadata.auth.parameter`` is referenced by the
+      mapping (``none_*`` config fields belong to the normal params path).
+    - INV-3: for ``api_key`` profiles the LEFT is ``api_key`` (the
+      ``auth.parameter``), consistent with the runtime canonical-key alias
+      ``api_key`` -> ``key`` — never the raw ``key`` role.
+    - INV-4: no ``,`` or ``:`` in any role (LEFT) and no ``,`` in any
+      destination path (RIGHT) — the runtime grammar has no escaping.
+    - INV-5: ``metadata.xsoar.interpolated`` is ``True`` on every profile
+      (ALWAYS-INTERPOLATE gate).
+    """
+    profile_type = profile.get("type", "")
+    profile_id = profile.get("id", "<unknown>")
+    where = (
+        f"connector '{integration_id}', profile '{profile_id}' "
+        f"(type={profile_type})"
+    )
+    xsoar_meta = (profile.get("metadata") or {}).get("xsoar") or {}
+    mapping = xsoar_meta.get("interpolation_mapping", "")
+
+    # Collect the auth.parameter of every emitted field in this profile.
+    field_parameters: set[str] = set()
+    for configuration in profile.get("configurations") or []:
+        for field in configuration.get("fields") or []:
+            parameter = ((field.get("metadata") or {}).get("auth") or {}).get(
+                "parameter"
+            )
+            if parameter:
+                field_parameters.add(parameter)
+
+    if mapping:
+        for entry in mapping.split(","):
+            if ":" not in entry:
+                raise InterpolationSchemaError(
+                    f"{where}: interpolation_mapping entry '{entry}' has no ':' "
+                    f"separator (INV-1/grammar). Expected 'role:xsoar_path'."
+                )
+            role, _, xsoar_path = entry.partition(":")
+
+            # INV-4 (',' delimiter) is enforced at emission in
+            # build_interpolation_mapping: once the mapping is a comma-joined
+            # string, a stray ',' is indistinguishable from the entry separator
+            # (it surfaces here as an entry with no ':', handled above), and a
+            # ':' in a role is absorbed by the first-':' partition. The
+            # validator therefore focuses on the structural invariants below.
+
+            # INV-3 — api_key LEFT must be the auth.parameter 'api_key'.
+            if profile_type == "api_key" and role == "key":
+                raise InterpolationSchemaError(
+                    f"{where}: api_key interpolation entry '{entry}' uses the raw "
+                    f"role 'key' on the LEFT (INV-3). Emit 'api_key' (the "
+                    f"metadata.auth.parameter); the runtime aliases it to the "
+                    f"envelope key 'key' via _UCP_CANONICAL_FIELD_KEYS."
+                )
+
+            # INV-1 / INV-2 — LEFT must match an emitted field's auth.parameter.
+            if role not in field_parameters:
+                raise InterpolationSchemaError(
+                    f"{where}: interpolation_mapping entry '{entry}' references "
+                    f"role '{role}' with no matching field metadata.auth.parameter "
+                    f"(have: {sorted(field_parameters)}) (INV-1/INV-2). Only "
+                    f"auth-tagged fields may be interpolated; none_* config "
+                    f"fields belong to the normal params path."
+                )
+
+    # INV-5 — every profile must be interpolated (ALWAYS-INTERPOLATE gate).
+    if xsoar_meta.get("interpolated") is not True:
+        raise InterpolationSchemaError(
+            f"{where}: metadata.xsoar.interpolated must be True on every profile "
+            f"(INV-5, ALWAYS-INTERPOLATE gate), got "
+            f"{xsoar_meta.get('interpolated')!r}."
+        )
 
 
 def _connection_profile_title(
@@ -5520,14 +5633,15 @@ def build_connection_profile(
         )
 
     # UCP interpolation: invert xsoar_param_map into the role:path mapping
-    # string and read the interpolate flag faithfully from the entry (default
-    # False; ``set-auth`` forces it True upstream).
+    # string. ``interpolated`` is hard-forced True on every profile per the
+    # ALWAYS-INTERPOLATE gate (Plan B INV-5; ``set-auth`` forces it True
+    # upstream and there is no such thing as a non-interpolated profile).
     interpolation_mapping = build_interpolation_mapping(profile_type, xsoar_param_map)
-    xsoar_metadata: dict = {}
+    xsoar_metadata: dict = {"interpolated": True}
     if interpolation_mapping:
         xsoar_metadata["interpolation_mapping"] = interpolation_mapping
 
-    return {
+    profile = {
         "id": profile_id,
         "type": profile_type,
         # Pin the profile to the integration's connection-page tile. This is
@@ -5550,6 +5664,11 @@ def build_connection_profile(
         "metadata": {"xsoar": xsoar_metadata},
         "configurations": [{"fields": fields}],
     }
+
+    # Plan B hard gate: refuse to emit a silently-broken interpolation mapping.
+    _validate_interpolation_invariants(profile, integration_id)
+
+    return profile
 
 
 # ---------------------------------------------------------------------------

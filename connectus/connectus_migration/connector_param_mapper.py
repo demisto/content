@@ -287,6 +287,17 @@ def _handle_test_module(
     test_module_params: list[str] = commands_section.get("test-module", []) or []
     required_names: set[str] = _required_param_names(integration_yml)
     general_set: set = set(result["general_configurations"])
+    # Params consumed by at least one NON-test-module command. A test-module
+    # param that also appears here is a real capability param (test-module
+    # only reads it to validate the connection), so it must be left for the
+    # command-routing phase to place under its owning capability — NOT forced
+    # into general_configurations (which would otherwise trip _deduplicate and
+    # strip it back out of that capability).
+    capability_command_params: set[str] = set()
+    for cmd_name, cmd_params in commands_section.items():
+        if cmd_name == "test-module":
+            continue
+        capability_command_params.update(cmd_params or [])
     elevated: set[str] = set()
     for param in test_module_params:
         if param in PINNED_LONG_RUNNING_PARAMS:
@@ -299,9 +310,14 @@ def _handle_test_module(
             # Correction 1: required test-module params elevate to the
             # connection (other_connection), never into a capability bucket.
             elevated.add(param)
+        elif param in capability_command_params:
+            # Correction 3: the param is also used by a real capability
+            # command. Let command routing own its placement; do not add it
+            # to general_configurations.
+            continue
         elif param not in general_set:
-            # Correction 2: non-required test-module params keep the old
-            # general_configurations behavior.
+            # Correction 2: non-required test-module params that appear ONLY
+            # under test-module keep the old general_configurations behavior.
             result["general_configurations"].append(param)
             general_set.add(param)
 
