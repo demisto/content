@@ -4528,7 +4528,7 @@ def get_issues_by_filter_command(client: CoreClient, args: Dict):
                 issue["alert_description"] = rendered
             except Exception as e:
                 issue["alert_description"] = render_bioc_description_simple(raw_description)
-                demisto.error(
+                demisto.debug(
                     f"get_issues_by_filter_command: failed to render BIOC description for issue "
                     f"{issue.get('internal_id')}: {e}. Falling back to simple rendering. tokens={raw_description!r}"
                 )
