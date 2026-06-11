@@ -50,8 +50,28 @@ two Platform-rename special cases:
     when the connector exposes an ``alertFetchInterval`` field (bare or
     sub-capability prefixed).
 
-No other special-casing of credentials, backend-only, or reserved
-framework fields is applied on either side.
+One more special case covers XSOAR ``type: 9`` credentials widgets. A
+credentials param is a *compound* field that the integration reads through
+the dotted-leaf form ``params.get("<name>", {}).get("identifier")`` /
+``.get("password")`` (see ``connectus/analyzer-manual.md``). The manifest
+generator splits it on the connector side into a ``<name>_username`` +
+``<name>_password`` pair (or a password-only field, with the bare ``<name>``
+as its id, when the YML carries ``hiddenusername: true``). So a credentials
+param is considered covered when:
+
+  * the serializer already bridged a connector field back to the bare
+    ``<name>``; OR
+  * ``hiddenusername: true`` and the connector exposes the bare ``<name>``
+    OR the ``<name>_password`` half; OR
+  * (default) the connector exposes BOTH the ``<name>_username`` AND the
+    ``<name>_password`` halves.
+
+Leaf ids may be sub-capability prefixed (e.g.
+``fetch-issues_<int>_<name>_password``), so coverage uses the same
+underscore-boundary suffix match as the alert renames.
+
+No other special-casing of backend-only or reserved framework fields is
+applied on either side.
 
 Exit codes:
   * ``0`` — every non-hidden YML param is covered.
@@ -108,6 +128,22 @@ ALERT_TYPE_SUFFIX = "alertType"
 INCIDENT_FETCH_INTERVAL_PARAM = "incidentFetchInterval"
 ALERT_FETCH_INTERVAL_SUFFIX = "alertFetchInterval"
 IGNORED_PARAMS = {"is_mirroring", "mirror_direction", "mirror_limit", "close_incident"}
+
+# XSOAR ``type: 9`` — the credentials widget. A single integration YML param
+# of this type is a *compound* field: the integration reads it as
+# ``params.get("<name>", {}).get("identifier")`` / ``.get("password")`` (the
+# dotted-leaf rule, see ``connectus/analyzer-manual.md``). On the connector
+# side it is split by the manifest generator into TWO fields:
+#   * ``<name>_username`` (from the ``.identifier`` leaf), and
+#   * ``<name>_password`` (from the ``.password`` leaf).
+# When the YML param carries ``hiddenusername: true`` the username half is
+# suppressed and only the password half is emitted, with the *bare* ``<name>``
+# as its id. Either connector id may be sub-capability prefixed (e.g.
+# ``fetch-issues_<int>_<name>_password``), so coverage uses an
+# underscore-boundary suffix match just like the alert renames above.
+YML_TYPE_CREDENTIALS = 9
+USERNAME_LEAF_SUFFIX = "_username"
+PASSWORD_LEAF_SUFFIX = "_password"
 
 class CoverageError(Exception):
     """Raised for usage / resolution errors that should exit with EXIT_USAGE."""
@@ -192,6 +228,30 @@ def collect_yml_params(integration_yml: dict) -> set[str]:
         if name:
             params.add(name)
     return params
+
+
+def collect_type9_params(integration_yml: dict) -> dict[str, bool]:
+    """Map each non-hidden ``type: 9`` credentials param to its hiddenusername.
+
+    A credentials widget is special on the connector side: it splits into a
+    ``<name>_username`` + ``<name>_password`` pair (or a password-only field
+    when ``hiddenusername: true``). The returned ``{name: hiddenusername}``
+    map lets :func:`_type9_leaf_covered` recognise that the leaves cover the
+    original compound param. Only non-hidden params are included, matching
+    :func:`collect_yml_params`.
+    """
+    creds: dict[str, bool] = {}
+    for param in integration_yml.get("configuration", []) or []:
+        if not isinstance(param, dict):
+            continue
+        if _is_hidden(param):
+            continue
+        if param.get("type") != YML_TYPE_CREDENTIALS:
+            continue
+        name = param.get("name")
+        if name:
+            creds[name] = bool(param.get("hiddenusername"))
+    return creds
 
 
 # ---------------------------------------------------------------------------
@@ -499,6 +559,70 @@ def _alert_rename_covered(missing: set[str], raw_field_ids: list[str]) -> set[st
     return resolved
 
 
+def _raw_id_matches_leaf(leaf_id: str, raw_field_ids: list[str]) -> bool:
+    """Return True when a connector leaf id is present in the raw field ids.
+
+    A leaf is present when a raw field id equals it OR ends with
+    ``_<leaf_id>`` (the underscore boundary guards against partial-token
+    matches while still recognising sub-capability prefixes such as
+    ``fetch-issues_<int>_<name>_password``).
+    """
+    underscore_suffix = f"_{leaf_id}"
+    return any(
+        fid == leaf_id or fid.endswith(underscore_suffix) for fid in raw_field_ids
+    )
+
+
+def _type9_leaf_covered(
+    missing: set[str],
+    raw_field_ids: list[str],
+    connector_params: set[str],
+    type9_params: dict[str, bool],
+) -> set[str]:
+    """Drop ``type: 9`` credentials params from ``missing`` when their split
+    connector leaves cover them.
+
+    A credentials widget never appears as its bare ``<name>`` on the connector
+    config side — the manifest generator splits it into ``<name>_username`` +
+    ``<name>_password`` (or a password-only field when ``hiddenusername:
+    true``). So an integration credentials param is considered covered when:
+
+      * the serializer already bridged a connector field back to ``<name>``
+        (``<name>`` is in the resolved ``connector_params`` set); OR
+      * ``hiddenusername: true`` and the connector exposes the bare ``<name>``
+        OR the ``<name>_password`` half; OR
+      * (default) the connector exposes BOTH the ``<name>_username`` AND the
+        ``<name>_password`` halves.
+
+    Leaf ids are matched against the RAW connector field ids with an
+    underscore-boundary suffix match (see :func:`_raw_id_matches_leaf`) so
+    sub-capability-prefixed ids are recognised.
+    """
+    resolved = set(missing)
+    for name, hidden_username in type9_params.items():
+        if name not in resolved:
+            continue
+        # Serializer already bridged a connector field back to the bare name.
+        if name in connector_params:
+            resolved.discard(name)
+            continue
+        password_present = _raw_id_matches_leaf(
+            f"{name}{PASSWORD_LEAF_SUFFIX}", raw_field_ids
+        )
+        if hidden_username:
+            # Only the password half is emitted; its id is the bare name.
+            if _raw_id_matches_leaf(name, raw_field_ids) or password_present:
+                resolved.discard(name)
+            continue
+        # Default: require BOTH the username and password halves.
+        username_present = _raw_id_matches_leaf(
+            f"{name}{USERNAME_LEAF_SUFFIX}", raw_field_ids
+        )
+        if username_present and password_present:
+            resolved.discard(name)
+    return resolved
+
+
 def _resolve_handler_paths(handler_path: Path) -> tuple[Path, Path]:
     """Resolve ``(handler_dir, handler_yaml_path)`` from a handler path.
 
@@ -539,6 +663,7 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
     integration_yml = load_yaml(integration_yml_path)
 
     yml_params = collect_yml_params(integration_yml)
+    type9_params = collect_type9_params(integration_yml)
     raw_field_ids = collect_connector_raw_field_ids(
         handler_dir,
         capabilities_doc,
@@ -556,6 +681,11 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
     # Platform "alert" renames: incidentType -> alertType,
     # incidentFetchInterval -> alertFetchInterval (no serializer bridge).
     missing = _alert_rename_covered(missing, raw_field_ids)
+    # type:9 credentials widgets split into <name>_username / <name>_password
+    # leaves on the connector (or a password-only field when hiddenusername).
+    missing = _type9_leaf_covered(
+        missing, raw_field_ids, connector_params, type9_params
+    )
     missing = missing - IGNORED_PARAMS
     return (len(missing) == 0), missing
 
