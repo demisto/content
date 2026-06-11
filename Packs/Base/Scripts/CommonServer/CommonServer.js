@@ -2804,3 +2804,48 @@ try {
 } catch (e) {
     // Load-time safety net: never let interpolation break script load.
 }
+
+///////////////////////////////////////////
+//     Params Parity Test Probe (BEGIN)  //
+///////////////////////////////////////////
+// Purpose:
+//   Support the connectus param-parity test (see connectus/runtime_demisto.params_parity/).
+//   When the framework invokes ``test-module``, this probe short-circuits the
+//   integration's own command dispatch and emits the full ``params`` object as an
+//   error payload. The parity-test orchestrator parses that payload to compare what
+//   the integration actually receives at runtime via the legacy XSOAR
+//   instance-creation path vs the new ConnectUs UCP-driven path.
+//
+// Safety:
+//   * Hard-wrapped in try/catch: any failure here MUST NOT break unrelated integrations.
+//     On any exception we silently fall through and let the integration's own code run.
+//   * Gated on ``command === 'test-module'``.
+//     Normal traffic pays only one string compare.
+//   * The probe runs at CommonServer.js load-time, which happens once per command
+//     dispatch BEFORE the integration's own code is reached. ``throw`` halts execution,
+//     so the integration's command dispatch never starts when the probe fires.
+try {
+    if (command === 'test-module') {
+        var _pp_payload = {
+            '__params_parity_dump__': true,
+            'params': params
+        };
+        // Sort keys to match Python's json.dumps(sort_keys=True)
+        var _pp_keys = Object.keys(_pp_payload.params || {}).sort();
+        var _pp_sorted = {};
+        for (var _pp_i = 0; _pp_i < _pp_keys.length; _pp_i++) {
+            _pp_sorted[_pp_keys[_pp_i]] = _pp_payload.params[_pp_keys[_pp_i]];
+        }
+        _pp_payload.params = _pp_sorted;
+        throw 'PARAMS_PARITY_DUMP::' + JSON.stringify(_pp_payload);
+    }
+} catch (_pp_ex) {
+    if (typeof _pp_ex === 'string' && _pp_ex.indexOf('PARAMS_PARITY_DUMP::') === 0) {
+        // Re-throw so the test-module call ends with the dump message.
+        throw _pp_ex;
+    }
+    // Probe must never break unrelated integrations. Swallow and continue.
+}
+///////////////////////////////////////////
+//     Params Parity Test Probe (END)    //
+///////////////////////////////////////////
