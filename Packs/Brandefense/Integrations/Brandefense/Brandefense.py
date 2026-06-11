@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
-(somethinForCheck)
 
 def get_assets(api_token):
     url = "https://api.brandefense.io/api/v1/assets"
