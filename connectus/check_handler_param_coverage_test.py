@@ -226,7 +226,7 @@ def test_general_config_view_group_filtering() -> None:
             ]
         }
     }
-    ids = mod.collect_general_config_field_ids([doc], "xsoar-test")
+    ids = mod.collect_general_config_field_ids([doc], {"xsoar-test"})
     assert set(ids) == {"mine", "shared"}
     assert "theirs" not in ids
 
@@ -251,9 +251,57 @@ def test_general_config_flattens_nested_checkbox_group() -> None:
             ]
         }
     }
-    ids = mod.collect_general_config_field_ids([doc], "xsoar-test")
+    ids = mod.collect_general_config_field_ids([doc], {"xsoar-test"})
     assert set(ids) == {"create_user_enabled", "disable_user_enabled"}
     assert "user_operations" not in ids
+
+
+# ---------------------------------------------------------------------------
+# handler view-group resolver
+# ---------------------------------------------------------------------------
+def test_resolve_handler_view_groups_from_configurations() -> None:
+    """View groups come from the per-capability config entries, not the id."""
+    configurations = {
+        "configurations": [
+            {"id": "automation-and-remediation_psps", "view_group": "psps"},
+            {"id": "unrelated_cap", "view_group": "other"},
+        ]
+    }
+    capabilities: dict = {"capabilities": []}
+    view_groups = mod.resolve_handler_view_groups(
+        configurations, capabilities, {"automation-and-remediation_psps"}
+    )
+    assert view_groups == {"psps"}
+
+
+def test_resolve_handler_view_groups_from_inline_capabilities() -> None:
+    """Inline view_group on a capability / sub-capability is also collected."""
+    configurations: dict = {"configurations": []}
+    capabilities = {
+        "capabilities": [
+            {
+                "id": "automation",
+                "view_group": "vg-top",
+                "sub_capabilities": [
+                    {"id": "automation_sub", "view_group": "vg-sub"},
+                ],
+            }
+        ]
+    }
+    view_groups = mod.resolve_handler_view_groups(
+        configurations, capabilities, {"automation_sub"}
+    )
+    assert view_groups == {"vg-sub"}
+
+
+def test_resolve_handler_view_groups_empty_when_no_match() -> None:
+    configurations = {
+        "configurations": [{"id": "some_cap", "view_group": "psps"}]
+    }
+    view_groups = mod.resolve_handler_view_groups(
+        configurations, {"capabilities": []}, {"different_cap"}
+    )
+    assert view_groups == set()
 
 
 # ---------------------------------------------------------------------------
@@ -338,6 +386,58 @@ def test_check_coverage_pass(tmp_path: Path) -> None:
             {"name": "client_key"},
             {"name": "secret_hidden", "hidden": True},  # excluded
         ],
+    )
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+def test_check_coverage_general_config_view_group_differs_from_handler_id(
+    tmp_path: Path,
+) -> None:
+    """General-config params pinned to the sub-capability's view group are
+    covered even when the handler id differs from the view group.
+
+    Mirrors the real ``psps`` connector: the handler id is ``xsoar-psps`` but
+    the per-capability config entry (and its general-config group) is pinned to
+    the ``psps`` view group. The view group must be derived from the config
+    entry, not the handler id, or ``integrationLogLevel`` is missed.
+    """
+    handler = {
+        "id": "xsoar-psps",
+        "capabilities": [{"id": "automation-and-remediation_psps"}],
+    }
+    capabilities = {
+        "capabilities": [
+            {
+                "id": "automation-and-remediation",
+                "sub_capabilities": [{"id": "automation-and-remediation_psps"}],
+            }
+        ]
+    }
+    configurations = {
+        "configurations": [
+            {
+                "id": "automation-and-remediation_psps",
+                "view_group": "psps",
+                "configurations": [{"fields": [{"id": "defaultIgnore"}]}],
+            }
+        ],
+        "general_configurations": {
+            "configurations": [
+                {"view_group": "psps", "fields": [{"id": "integrationLogLevel"}]},
+            ]
+        },
+    }
+    _, handler_dir = _build_connector(
+        tmp_path,
+        handler=handler,
+        capabilities=capabilities,
+        configurations=configurations,
+    )
+    yml = _write_integration_yml(
+        tmp_path,
+        [{"name": "defaultIgnore"}, {"name": "integrationLogLevel"}],
     )
     passed, missing = mod.check_coverage(handler_dir, yml)
     assert passed is True

@@ -14,9 +14,14 @@ the handler:
     ``configurations`` / ``capabilities`` entries whose ``id`` is one of the
     handler's ``capabilities[].id`` (sub-capabilities included).
   * **General-configuration params** — every ``fields[].id`` inside a
-    ``general_configurations`` field group whose ``view_group`` matches the
-    handler's view group (= the handler id). General-config field groups that
-    are pinned to a *different* handler's view group are ignored.
+    ``general_configurations`` field group whose ``view_group`` matches one
+    of the handler's view groups. The handler's view groups are derived from
+    the ``configurations.yaml`` (and inline ``capabilities.yaml``) config
+    entries whose ``id`` is one of the handler's ``capabilities[].id`` (sub-
+    capabilities included) — all sub-capabilities of a handler share the same
+    view group. A general-config field group with no ``view_group`` is shared
+    (belongs to every handler); a group pinned to a *different* handler's view
+    group is ignored.
   * **Auth-profile params** — every ``fields[].id`` of each
     ``connection.yaml`` profile whose ``id`` is referenced by the handler's
     ``capabilities[].auth_options[].id``.
@@ -438,14 +443,60 @@ def collect_capability_config_field_ids(
 
 
 # ---------------------------------------------------------------------------
-# Step 8: general-configurations collector
+# Step 8: handler view-group resolver + general-configurations collector
 # ---------------------------------------------------------------------------
-def collect_general_config_field_ids(docs: list[dict], view_group: str) -> list[str]:
-    """Collect general-config field ids pinned to the handler's view group.
+def resolve_handler_view_groups(
+    configurations_doc: dict,
+    capabilities_doc: dict,
+    handler_capability_ids: set[str],
+) -> set[str]:
+    """Resolve the set of view groups that belong to the handler.
+
+    All sub-capabilities of a handler share the same view group. The view
+    group is not the handler id — it is the ``view_group`` slug attached to
+    the per-capability config entries. This walks every ``configurations[]``
+    entry in ``configurations.yaml`` (and any inline ``configurations`` block
+    on a ``capabilities.yaml`` capability / sub-capability) whose ``id`` is
+    one of the handler's ``capabilities[].id`` (sub-capabilities included) and
+    collects the ``view_group`` value declared on that entry.
+    """
+    view_groups: set[str] = set()
+
+    # configurations.yaml — list of {id, configurations, view_group}.
+    for entry in configurations_doc.get("configurations", []) or []:
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("id") in handler_capability_ids:
+            view_group = entry.get("view_group")
+            if view_group:
+                view_groups.add(view_group)
+
+    # capabilities.yaml — capabilities / sub-capabilities may carry an inline
+    # view_group alongside inline configurations.
+    for entry in capabilities_doc.get("capabilities", []) or []:
+        if not isinstance(entry, dict):
+            continue
+        chain = _capability_id_chain(entry)
+        if not any(cid in handler_capability_ids for cid in chain):
+            continue
+        if entry.get("id") in handler_capability_ids and entry.get("view_group"):
+            view_groups.add(entry["view_group"])
+        for sub in entry.get("sub_capabilities", []) or []:
+            if not isinstance(sub, dict):
+                continue
+            if sub.get("id") in handler_capability_ids and sub.get("view_group"):
+                view_groups.add(sub["view_group"])
+
+    return view_groups
+
+
+def collect_general_config_field_ids(docs: list[dict], view_groups: set[str]) -> list[str]:
+    """Collect general-config field ids pinned to the handler's view groups.
 
     A general-config field group with no ``view_group`` is treated as shared
     (belongs to every handler) and is always included. A group whose
-    ``view_group`` differs from the handler's is skipped.
+    ``view_group`` is in ``view_groups`` is included; a group pinned to any
+    other view group is skipped.
     """
     field_ids: list[str] = []
     for doc in docs:
@@ -456,7 +507,7 @@ def collect_general_config_field_ids(docs: list[dict], view_group: str) -> list[
             if not isinstance(group, dict):
                 continue
             group_view_group = group.get("view_group")
-            if group_view_group and group_view_group != view_group:
+            if group_view_group and group_view_group not in view_groups:
                 continue
             field_ids.extend(_iter_leaf_field_ids(group.get("fields", [])))
     return field_ids
@@ -498,7 +549,17 @@ def collect_connector_raw_field_ids(
     needs, since those fields are migrated with no serializer bridge and may be
     sub-capability prefixed.
     """
-    view_group, capability_ids, auth_profile_ids = parse_handler(handler_yaml)
+    handler_view_group, capability_ids, auth_profile_ids = parse_handler(handler_yaml)
+
+    # The handler's view groups come from the per-capability config entries
+    # (all sub-capabilities of a handler share the same view group), NOT the
+    # handler id. Fall back to the handler id for back-compat when no config
+    # entry yields a view group.
+    view_groups = resolve_handler_view_groups(
+        configurations_doc, capabilities_doc, capability_ids
+    )
+    if not view_groups and handler_view_group:
+        view_groups = {handler_view_group}
 
     raw_field_ids: list[str] = []
     raw_field_ids.extend(
@@ -508,7 +569,7 @@ def collect_connector_raw_field_ids(
     )
     raw_field_ids.extend(
         collect_general_config_field_ids(
-            [capabilities_doc, configurations_doc, connection_doc], view_group
+            [capabilities_doc, configurations_doc, connection_doc], view_groups
         )
     )
     raw_field_ids.extend(
