@@ -12,6 +12,7 @@ Usage:
         '{"identity-posture-ai-security": ["sync_interval", "create_user_enabled"]}'
 """
 
+import copy
 import io
 import json
 import logging
@@ -1264,13 +1265,115 @@ _CONFIGURATIONS_KEY_ORDER = (
 )
 
 
+def split_fields_blocks(block: dict) -> list[dict]:
+    """Expand ONE field group so each field sits in its own ``fields`` block.
+
+    Per guide §3.7 item 2, every field must be the sole entry of its own
+    ``fields:`` block (each block renders as a single UI row). Builders emit
+    one block holding many fields::
+
+        {"id": "...", "view_group": "...", "fields": [a, b, c]}
+
+    This returns one block per field, copying the sibling keys (everything
+    except ``fields`` — e.g. ``id``, ``view_group``,
+    ``relevant_for_capabilities``) onto each produced block::
+
+        [{"id": ..., "view_group": ..., "fields": [a]},
+         {"id": ..., "view_group": ..., "fields": [b]},
+         {"id": ..., "view_group": ..., "fields": [c]}]
+
+    Notes:
+      - An EMPTY block (``fields: []``) is preserved as a single block with
+        ``fields: []`` so empty sub-capability entries keep their
+        ``view_group`` binding (guide §3.7 rule 4).
+      - Only the block-level ``fields`` list is split; a field's OWN inner
+        ``fields`` (e.g. a ``checkbox_group``'s items — guide §3.7 item 2
+        sole exception) is left untouched because it is part of the field
+        object, not the block.
+    """
+    sibling_keys = {k: v for k, v in block.items() if k != "fields"}
+    fields = block.get("fields", [])
+    if not fields:
+        out = dict(sibling_keys)
+        out["fields"] = []
+        return [out]
+    result: list[dict] = []
+    for field in fields:
+        out = dict(sibling_keys)
+        out["fields"] = [field]
+        result.append(out)
+    return result
+
+
+def _split_block_list(blocks: list[dict]) -> list[dict]:
+    """Apply :func:`split_fields_blocks` to every block in ``blocks``."""
+    expanded: list[dict] = []
+    for block in blocks:
+        if isinstance(block, dict) and "fields" in block:
+            expanded.extend(split_fields_blocks(block))
+        else:
+            expanded.append(block)
+    return expanded
+
+
+def normalize_connection_field_blocks(connection_data: dict) -> dict:
+    """Return a copy of ``connection_data`` with one field per ``fields`` block.
+
+    Splits every ``profiles[].configurations[]`` field group so each field
+    renders in its own UI row (guide §3.7 item 2). The input is deep-copied
+    so in-memory builder state (and the tests asserting on it) is untouched —
+    only the written YAML adopts the one-field-per-block shape.
+    """
+    data = copy.deepcopy(connection_data)
+    for profile in data.get("profiles", []) or []:
+        if not isinstance(profile, dict):
+            continue
+        cfgs = profile.get("configurations")
+        if isinstance(cfgs, list):
+            profile["configurations"] = _split_block_list(cfgs)
+    return data
+
+
+def normalize_configurations_field_blocks(configurations_data: dict) -> dict:
+    """Return a copy of ``configurations_data`` with one field per block.
+
+    Splits every field group under:
+      - ``general_configurations.configurations[]`` and
+      - ``configurations[].configurations[]`` (per sub-capability)
+    so each field renders in its own UI row (guide §3.7 item 2). The input is
+    deep-copied so in-memory builder state is untouched — only the written
+    YAML adopts the one-field-per-block shape.
+    """
+    data = copy.deepcopy(configurations_data)
+
+    general = data.get("general_configurations")
+    if isinstance(general, dict):
+        gen_cfgs = general.get("configurations")
+        if isinstance(gen_cfgs, list):
+            general["configurations"] = _split_block_list(gen_cfgs)
+
+    for entry in data.get("configurations", []) or []:
+        if not isinstance(entry, dict):
+            continue
+        sub_cfgs = entry.get("configurations")
+        if isinstance(sub_cfgs, list):
+            entry["configurations"] = _split_block_list(sub_cfgs)
+
+    return data
+
+
 def _ordered_configurations(data: dict) -> dict:
     """Return ``data`` with top-level keys in the canonical configurations order.
+
+    Also normalizes every ``fields`` block so each field occupies its own
+    block (guide §3.7 item 2) — applied here so both configurations.yaml
+    write sites are covered by this single choke-point.
 
     Preserves all values untouched (nested ordering is left as-is). Keys not in
     :data:`_CONFIGURATIONS_KEY_ORDER` keep their original relative position at
     the end.
     """
+    data = normalize_configurations_field_blocks(data)
     ordered: dict = {}
     for key in _CONFIGURATIONS_KEY_ORDER:
         if key in data:
@@ -4740,6 +4843,9 @@ def write_connection_yaml(connection_yaml_path: Path, connection_data: dict) -> 
     same ``../../schema/`` relative prefix.
     """
     connection_yaml_path.parent.mkdir(parents=True, exist_ok=True)
+    # Normalize so each field occupies its own ``fields`` block (guide §3.7
+    # item 2) — applied at write time so in-memory builder state is untouched.
+    connection_data = normalize_connection_field_blocks(connection_data)
     with open(connection_yaml_path, "w") as fh:
         fh.write(CONNECTION_SCHEMA_DIRECTIVE)
         _dump_yaml(connection_data, fh)

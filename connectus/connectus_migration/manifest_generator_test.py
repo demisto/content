@@ -20,37 +20,22 @@ from manifest_generator import (
     EVENTFETCHINTERVAL_FALLBACK_DEFAULT,
     EVENTFETCHINTERVAL_PARAM_NAME,
     FEED_BYPASS_EXCLUSION_ADDITIONAL_INFO,
-    FEED_EXPIRATION_INTERVAL_DEFAULT,
     FEED_EXPIRATION_POLICY_DEFAULT,
     FEED_EXPIRATION_POLICY_VALUES,
-    FEED_PARAM_NAME,
     FEED_RELIABILITY_ADDITIONAL_INFO,
     FEED_RELIABILITY_DEFAULT,
-    FEED_RELIABILITY_OPTIONS,
     FEED_REPUTATION_ADDITIONAL_INFO,
     FEED_REPUTATION_DEFAULT,
-    FEEDBYPASSEXCLUSIONLIST_PARAM_NAME,
-    FEEDEXPIRATIONINTERVAL_PARAM_NAME,
-    FEEDEXPIRATIONPOLICY_PARAM_NAME,
-    FEEDFETCHINTERVAL_FALLBACK_DEFAULT,
-    FEEDFETCHINTERVAL_PARAM_NAME,
-    FEEDRELIABILITY_PARAM_NAME,
-    FEEDREPUTATION_PARAM_NAME,
-    INCIDENTFETCHINTERVAL_FALLBACK_DEFAULT,
     INCIDENTFETCHINTERVAL_PARAM_NAME,
     INCIDENTTYPE_PARAM_NAME,
     INDICATOR_REPUTATION_VALUES,
     ISFETCH_PARAM_NAME,
-    CLASSIFIER_FIELD_ID,
-    LONGRUNNING_PARAM_NAME,
-    MAPPER_INCOMING_FIELD_ID,
     TRIGGERS_SCHEMA_DIRECTIVE,
     _minutes_to_duration_default,
     HANDLER_SCHEMA_DIRECTIVE,
     ISFETCHASSETS_PARAM_NAME,
     ISFETCHCREDENTIALS_PARAM_NAME,
     ISFETCHEVENTS_PARAM_NAME,
-    SERIALIZER_SCHEMA_DIRECTIVE,
     add_assets_capability,
     add_connector_to_code_owners,
     add_fetch_issues_capability,
@@ -98,6 +83,9 @@ from manifest_generator import (
     write_capabilities_yaml,
     write_handler_yaml,
     write_triggers_yaml,
+    split_fields_blocks,
+    normalize_connection_field_blocks,
+    normalize_configurations_field_blocks,
 )
 
 import manifest_generator as _mg
@@ -7809,3 +7797,106 @@ def test_build_capabilities_yaml_subcap_titled_by_integration_name() -> None:
     assert sub["id"] == "automation-and-remediation_hello-world-iam"
     assert sub["title"] == "Hello World IAM"
     assert sub["required"] is True
+
+
+# ---------------------------------------------------------------------------
+# One-field-per-fields-block normalization (guide §3.7 item 2)
+# ---------------------------------------------------------------------------
+def test_split_fields_blocks_multi_field() -> None:
+    """A block with N fields becomes N single-field blocks, sibling keys kept."""
+    block = {
+        "id": "fetch-issues_x",
+        "view_group": "x",
+        "fields": [{"id": "a"}, {"id": "b"}, {"id": "c"}],
+    }
+    result = split_fields_blocks(block)
+    assert result == [
+        {"id": "fetch-issues_x", "view_group": "x", "fields": [{"id": "a"}]},
+        {"id": "fetch-issues_x", "view_group": "x", "fields": [{"id": "b"}]},
+        {"id": "fetch-issues_x", "view_group": "x", "fields": [{"id": "c"}]},
+    ]
+
+
+def test_split_fields_blocks_single_field_unchanged() -> None:
+    """A block already holding one field round-trips to one block."""
+    block = {"view_group": "x", "fields": [{"id": "a"}]}
+    assert split_fields_blocks(block) == [
+        {"view_group": "x", "fields": [{"id": "a"}]}
+    ]
+
+
+def test_split_fields_blocks_empty_preserves_sibling_keys() -> None:
+    """An empty block keeps its view_group binding (guide §3.7 rule 4)."""
+    block = {"id": "automation-and-remediation_x", "view_group": "x", "fields": []}
+    assert split_fields_blocks(block) == [
+        {"id": "automation-and-remediation_x", "view_group": "x", "fields": []}
+    ]
+
+
+def test_split_fields_blocks_leaves_checkbox_group_inner_fields_untouched() -> None:
+    """Only the block-level fields list is split; a checkbox_group's inner
+    ``fields[]`` (its items) belong to the field object and stay intact."""
+    cbg = {
+        "id": "user_operations",
+        "field_type": "checkbox_group",
+        "fields": [{"id": "create_user_enabled"}, {"id": "update_user_enabled"}],
+    }
+    block = {"view_group": "x", "fields": [cbg, {"id": "other"}]}
+    result = split_fields_blocks(block)
+    assert result == [
+        {"view_group": "x", "fields": [cbg]},
+        {"view_group": "x", "fields": [{"id": "other"}]},
+    ]
+    # The checkbox_group's inner items are NOT split.
+    assert result[0]["fields"][0]["fields"] == [
+        {"id": "create_user_enabled"},
+        {"id": "update_user_enabled"},
+    ]
+
+
+def test_normalize_connection_field_blocks_splits_per_profile() -> None:
+    """Each profiles[].configurations[] block is split one-field-per-block."""
+    data = {
+        "profiles": [
+            {
+                "id": "p1",
+                "configurations": [
+                    {"fields": [{"id": "a"}, {"id": "b"}]},
+                ],
+            }
+        ]
+    }
+    out = normalize_connection_field_blocks(data)
+    cfgs = out["profiles"][0]["configurations"]
+    assert [c["fields"][0]["id"] for c in cfgs] == ["a", "b"]
+    assert all(len(c["fields"]) == 1 for c in cfgs)
+    # Input is not mutated (deep-copied).
+    assert len(data["profiles"][0]["configurations"]) == 1
+
+
+def test_normalize_configurations_field_blocks_splits_subcaps_and_general() -> None:
+    """Both general_configurations and per-sub-cap blocks are split."""
+    data = {
+        "general_configurations": {
+            "configurations": [
+                {"view_group": "x", "fields": [{"id": "log"}, {"id": "extra"}]},
+            ]
+        },
+        "configurations": [
+            {
+                "id": "fetch-issues_x",
+                "view_group": "x",
+                "configurations": [{"fields": [{"id": "a"}, {"id": "b"}]}],
+            }
+        ],
+    }
+    out = normalize_configurations_field_blocks(data)
+
+    gen = out["general_configurations"]["configurations"]
+    assert [g["fields"][0]["id"] for g in gen] == ["log", "extra"]
+    assert all(g["view_group"] == "x" for g in gen)
+
+    sub = out["configurations"][0]["configurations"]
+    assert [s["fields"][0]["id"] for s in sub] == ["a", "b"]
+    # Input untouched.
+    assert len(data["configurations"][0]["configurations"]) == 1
