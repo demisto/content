@@ -2684,6 +2684,26 @@ function Main
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
     param()
+
+    # Override: params parity dump for test-module (before any setup that might fail)
+    if ($demisto.GetCommand() -eq "test-module") {
+        try {
+            $pp_payload = @{
+                '__params_parity_dump__' = $true
+                'params' = $demisto.Params()
+            }
+            $pp_json = $pp_payload | ConvertTo-Json -Depth 10 -Compress
+            ReturnError "PARAMS_PARITY_DUMP::$pp_json"
+            return
+        }
+        catch [System.Management.Automation.MethodInvocationException] {
+            throw
+        }
+        catch {
+            # Probe must never break unrelated integrations. Swallow and continue.
+        }
+    }
+
     $command = $null
     $command_arguments = $null
     $integration_params = $null
