@@ -18,7 +18,7 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 | 3a | Param defaults | `set-param-defaults "<id>" '<json>'` (required-only) | §3a |
 | 3a.5 | UCP param-default review | `check_param_defaults.py --integration-id <id> --human` → present → fix → `markpass "UCP param-default review"` | §3a.5 |
 | 3b | Params to Capabilities | mapper → `set-params-to-capabilities` | §3b |
-| 3c | Generated manifest | `manifest_generator.py <yml> <title> <Params-to-Capabilities raw> <Auth-Details raw>` → `markpass "generated manifest"` | §3c |
+| 3c | Generated manifest | `manifest_generator.py <yml> <title=Connector ID> <Params-to-Capabilities raw> <Auth-Details raw>` → `markpass "generated manifest"` (title comes from the `Connector ID` column so a connector's integrations share one folder) | §3c |
 | 7 | Validate manifest | `demisto-sdk validate` → `markpass "run manifest make validate"` | §7 |
 | 8 | Release Notes | `set-release-notes "<id>"` (only if .py/.yml changed) | §8 |
 | 9 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` | §9 |
@@ -1551,7 +1551,7 @@ so the output can be passed straight into the generator as a JSON arg):
 | # | Generator positional | Source pipeline data | How to read it |
 |---|---|---|---|
 | 1 | `integration_path` (XSOAR integration `.yml`) | `Integration File Path` identity column (the `yml` file path) | `context "<id>"` → `file_paths.yml`, or `files "<id>" --format=paths \| head -1` |
-| 2 | `connector_title` | the integration display name — the auto-runner uses the **Integration ID** itself (`context.integration_id`) as the title; the directory slug is derived as `title.lower()` with spaces→dashes | from `context "<id>"` (`integration_id`) — pass the Integration ID unless the user gives an explicit connector title |
+| 2 | `connector_title` | **the `Connector ID` identity column** (`context.connector_id`) — NOT the Integration ID. The directory slug is derived as `title.lower()` with spaces→dashes. Using the Connector ID ensures every integration in a multi-integration connector (e.g. all `AWS - *` integrations) scaffolds/appends into ONE shared `connectors/<slug>/` folder instead of a separate per-integration folder. | from `context "<id>"` (`connector_id`) — pass the Connector ID unless the user gives an explicit connector title |
 | 3 | `mapped_params` (JSON `{capability: [params]}`) | **`Params to Capabilities`** cell (Step 3b output) | `show-step --raw "<id>" "Params to Capabilities"` |
 | 4 | `auth_methods` (JSON `{auth_types, other_connection}`) | **`Auth Details`** cell (Step 1) | `show-step --raw "<id>" "Auth Details"` |
 
@@ -1571,8 +1571,9 @@ ID="<Integration ID>"
 # 1. integration YML path (identity column, via context's file_paths.yml)
 YML=$(python3 connectus/workflow_state.py files "$ID" --format=paths | head -1)
 
-# 2. connector title = the Integration ID (auto-runner convention)
-TITLE="$ID"
+# 2. connector title = the Connector ID identity column (groups all of a
+#    connector's integrations into ONE connectors/<slug>/ folder).
+TITLE=$(python3 connectus/workflow_state.py context "$ID" | python3 -c 'import json,sys; print(json.load(sys.stdin)["connector_id"])')
 
 # 3. mapped_params  ← Params to Capabilities cell (Step 3b)
 MAPPED=$(python3 connectus/workflow_state.py show-step --raw "$ID" "Params to Capabilities")
@@ -1609,9 +1610,10 @@ python3 connectus/connectus_migration/manifest_generator.py \
 > performs this exact wiring in
 > [`step_3c_generate_manifest()`](connectus_migration/run_pre_manifest_steps.py:686)
 > (`integration_path` ← `context.file_paths.yml`, `connector_title` ←
-> `context.integration_id`, `mapped_params` ← `Params to Capabilities`,
-> `auth_methods` ← `Auth Details`). Running the auto-runner is equivalent
-> to the manual invocation above.
+> `context.connector_id` (the Connector ID column — see the table above),
+> `mapped_params` ← `Params to Capabilities`, `auth_methods` ←
+> `Auth Details`). Running the auto-runner is equivalent to the manual
+> invocation above.
 
 #### Markpass the checkpoint
 

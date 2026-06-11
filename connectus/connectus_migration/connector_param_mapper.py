@@ -61,6 +61,23 @@ LONG_RUNNING_EXECUTION_COMMAND = "long-running-execution"
 LONG_RUNNING_PORT_PARAM = "longRunningPort"
 LONG_RUNNING_FLAG_PARAM = "longRunning"
 
+# Mirroring (a.k.a. remote-sync) commands. These are synthesised by
+# ``check_command_params.discover_commands`` from the ``isRemoteSyncIn`` /
+# ``isRemoteSyncOut`` script flags and have no corresponding connector
+# capability. Their params (e.g. ``mirror_direction``, ``mirror_tags``,
+# ``close_incident``, ``mirror_limit``) are mirroring-only and must never be
+# routed into a capability bucket (they would otherwise pollute
+# ``Automation``). They are skipped entirely during param-to-capability
+# routing.
+IGNORED_COMMANDS: frozenset[str] = frozenset(
+    {
+        "get-remote-data",
+        "get-modified-remote-data",
+        "update-remote-system",
+        "get-mapping-fields",
+    }
+)
+
 # Params that must be routed ONLY to the long-running suggested capability
 # (per INTEGRATION_TO_LONGRUNNING_CAPABILITY). They are placed by Rule 7 in
 # `decide_capabilities` and are guarded against the rest of the pipeline:
@@ -359,7 +376,9 @@ def _single_capability_shortcut(
     seen: set = set()
     commands_section: dict = command_params.get("commands") or {}
     for cmd_name, params in commands_section.items():
-        if cmd_name in handled_commands:
+        if cmd_name in handled_commands or cmd_name in IGNORED_COMMANDS:
+            # Mirroring commands carry mirroring-only params with no
+            # capability — never route them into the target capability.
             continue
         for param in params or []:
             if param in already_placed or param in seen:
@@ -429,7 +448,14 @@ def _multi_capability_mapping(
     commands_section: dict = command_params.get("commands") or {}
     placed_per_cap: dict[str, set] = {}
     for cmd_name, params in commands_section.items():
-        if cmd_name == "test-module" or cmd_name in handled_commands:
+        if (
+            cmd_name == "test-module"
+            or cmd_name in handled_commands
+            or cmd_name in IGNORED_COMMANDS
+        ):
+            # Mirroring commands (get-remote-data, get-modified-remote-data,
+            # update-remote-system, get-mapping-fields) have no capability —
+            # their params are mirroring-only and must not pollute Automation.
             continue
         target = _resolve_target_capability(cmd_name, result, integration_id, manual_command_to_capability)
         if target in result:

@@ -2,7 +2,41 @@ Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee
 AMP,Packs/AMP/Integrations/AMP/AMP.yml,Cisco Security,,juschwartz,"{""auth_types"":[{""type"":""Plain"",""name"":""credentials"",""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""},""interpolated"":true}],""other_connection"":[""insecure"",""server""]}","[""Automation""]","{""integration"":""AMP"",""commands"":{""amp_delete_computers_isolation"":[],""amp_delete_file_list_files_by_sha"":[],""amp_get_application_blocking"":[],""amp_get_computer_activity"":[],""amp_get_computer_actvity"":[],""amp_get_computer_by_connector"":[],""amp_get_computer_trajctory"":[],""amp_get_computer_trajectory"":[],""amp_get_computers"":[],""amp_get_computers_isolation"":[],""amp_get_event_types"":[],""amp_get_events"":[],""amp_get_file_list_by_guid"":[],""amp_get_file_list_files"":[],""amp_get_file_list_files_by_sha"":[],""amp_get_group"":[],""amp_get_groups"":[],""amp_get_policies"":[],""amp_get_policy"":[],""amp_get_simple_custom_detections"":[],""amp_get_version"":[],""amp_move_computer"":[],""amp_put_computers_isolation"":[],""amp_set_file_list_files_by_sha"":[],""amp_set_group_policy"":[],""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",✅,,,,,,,
 AMPv2,Packs/AMP/Integrations/AMPv2/AMPv2.yml,Cisco Security,,,,,,,,,,,,,,,,
 APIVoid,Packs/APIVoid/Integrations/APIVoid/APIVoid.yml,APIVoid,,,,,,,,,,,,,,,,
-AWS - ACM,Packs/AWS-ACM/Integrations/AWS-ACM/AWS-ACM.yml,AWS,,,,,,,,,,,,,,,,
+AWS - ACM,Packs/AWS-ACM/Integrations/AWS-ACM/AWS-ACM.yml,AWS,,juschwartz,"{
+  ""auth_types"": [
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""AWS Credentials"",
+      ""xsoar_param_map"": {
+        ""credentials.identifier"": ""access_key_id"",
+        ""credentials.password"": ""secret_access_key""
+      },
+      ""interpolated"": true
+    }
+  ],
+  ""other_connection"": [
+    ""defaultRegion"",
+    ""insecure"",
+    ""proxy"",
+    ""retries"",
+    ""roleArn"",
+    ""roleSessionName"",
+    ""sessionDuration"",
+    ""sts_regional_endpoint"",
+    ""timeout""
+  ]
+}","[""Automation""]","{
+  ""integration"": ""AWS - ACM"",
+  ""commands"": {
+    ""aws-acm-describe-certificate"": [],
+    ""aws-acm-list-certificates"": [],
+    ""aws-acm-add-tags-to-certificate"": [],
+    ""aws-acm-remove-tags-from-certificate"": [],
+    ""aws-acm-list-tags-for-certificate"": [],
+    ""aws-acm-get-certificate"": [],
+    ""test-module"": []
+  }
+}",{},✅,"{""general_configurations"": [], ""Automation"": []}",✅,,,,,,,
 AWS - AccessAnalyzer,Packs/AWS-AccessAnalyzer/Integrations/AWS-AccessAnalyzer/AWS-AccessAnalyzer.yml,AWS,,,,,,,,,,,,,,,,
 AWS - Athena - Beta,Packs/AWS-Athena/Integrations/AWS-Athena/AWS-Athena.yml,AWS,,,,,,,,,,,,,,,,
 AWS - CloudTrail,Packs/AWS-CloudTrail/Integrations/AWS-CloudTrail/AWS-CloudTrail.yml,AWS,,,,,,,,,,,,,,,,
@@ -307,7 +341,39 @@ Ivanti Heat,Packs/IvantiHeat/Integrations/IvantiHeat/IvantiHeat.yml,Ivanti,,,,,,
 JSON Feed,Packs/FeedJSON/Integrations/FeedJSON/FeedJSON.yml,Generic Intel Feed,,,,,,,,,,,,,,,,
 Jamf Protect Event Collector,Packs/JamfProtect/Integrations/JamfProtectEventCollector/JamfProtectEventCollector.yml,Jamf,,,,,,,,,,,,,,,,
 Jira Event Collector,Packs/Jira/Integrations/JiraEventCollector/JiraEventCollector.yml,Atlassian Automation and Collection,,,,,,,,,,,,,,,,
-Jira V3,Packs/Jira/Integrations/JiraV3/JiraV3.yml,Atlassian Automation and Collection,,,,,,,,,,,,,,,,
+Jira V3,Packs/Jira/Integrations/JiraV3/JiraV3.yml,Atlassian Automation and Collection,,juschwartz,"{
+  ""auth_types"": [
+    {
+      ""type"": ""APIKey"",
+      ""name"": ""pat"",
+      ""xsoar_param_map"": {
+        ""pat_credential.password"": ""key""
+      },
+      ""interpolated"": true
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""oauth2_auth_code"",
+      ""xsoar_param_map"": {
+        ""credentials.identifier"": ""client_id"",
+        ""credentials.password"": ""client_secret"",
+        ""callback_url"": ""redirect_uri""
+      },
+      ""interpolated"": true,
+      ""verify_connection_skip"": true
+    },
+    {
+      ""type"": ""Plain"",
+      ""name"": ""basic_auth"",
+      ""xsoar_param_map"": {
+        ""basic_credentials.identifier"": ""username"",
+        ""basic_credentials.password"": ""password""
+      },
+      ""interpolated"": true
+    }
+  ],
+  ""other_connection"": [""cloud_id"", ""insecure"", ""proxy"", ""server_url""]
+}","[""Fetch Issues"", ""Automation""]",,,,,,,,,,,,
 JoeSecurityV2,Packs/JoeSecurity/Integrations/JoeSecurityV2/JoeSecurityV2.yml,Joe Security,,,,,,,,,,,,,,,,
 JsonWhoIs,Packs/JsonWhoIs/Integrations/JsonWhoIs/JsonWhoIs.yml,JSONWhoIs.com,,,,,,,,,,,,,,,,
 KOI,Packs/Koi/Integrations/Koi/Koi.yml,Koi,,,,,,,,,,,,,,,,
