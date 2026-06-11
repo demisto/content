@@ -732,7 +732,7 @@ A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`
 2. **Mass-migration profile types are restricted to `plain`, `api_key`, and `passthrough`** (§2.2). Use **`plain`** for user/password auth and **`api_key`** for a single API-key secret; use **`passthrough`** (§2.6.1) when the credentials can't be cleanly mapped to `plain`/`api_key` or need several inputs at once (e.g. Slack v3).
 3. **`engine`/`engine_group`/`proxy`/`insecure`** appear once inside each profile that needs them. Because a handler binds to exactly one profile, the user supplies a single value per instance.
 4. **`profiles[].view_group`** (Grouped): every profile references one `connection.yaml view_groups[].id`.
-   - **A profile cannot be shared across integrations** — each `view_group` belongs to one integration, so declare a **separate profile per integration** even when auth is identical (e.g. `oauth2_client_credentials.salesforce` and `.salesforce-iam`).
+   - **A profile cannot be shared across two integrations/handlers.** The chain is causal: a profile points to **exactly one** `view_group`, and each `view_group` belongs to **exactly one** integration — therefore a single profile can only ever serve one integration. Declare a **separate profile per integration** even when the auth is identical (e.g. `oauth2_client_credentials.salesforce` and `.salesforce-iam`). Two handlers MUST NOT reference the same profile id.
 5. **One profile per handler — OR, never AND.** A handler binds to a single profile at runtime. Multiple auth methods → separate profiles sharing one `view_group`, advertised as alternatives in `auth_options[]` (user picks one). If an integration needs several inputs simultaneously, model it as one `passthrough` profile.
 6. **`metadata.xsoar.interpolation_mapping`** on every migrated profile (§2.6.2) — the migration always interpolates (`plain`/`api_key`/`passthrough`) since integration code is not rewritten. Map each auth field's `metadata.auth.parameter` to its `demisto.params()` dotted path (`"<ucp_param>:<xsoar_path>,..."`).
 
@@ -795,6 +795,15 @@ In ConnectUs, fields that are left unfilled are sent to the BE as **NULL** (unle
 
 1. Each capability/sub-capability has its own configurations, mirroring the underlying integration.
 2. Config IDs must be globally unique across the connector (Appendix C).
+3. **`view_group` and config params always live on the SUB-capability** (each `configurations[]` entry's `id` is a sub-capability id), never on a bare parent capability. This matches the handler rule (§3.8 rule 3) — the FE binds **sub-capabilities** to view_groups.
+4. **An empty sub-capability still needs a `configurations[]` entry carrying its `view_group`.** Even when a sub-capability has **no** config params, you MUST emit a `configurations[]` entry with its `id` and `view_group` so the FE knows which `view_group` the sub-capability belongs to. Emit the entry with an empty `configurations: []` (no `fields`). Example:
+
+   ```yaml
+   configurations:
+     - id: "automation-and-remediation_microsoft-teams"
+       view_group: "microsoft-teams"
+       configurations: []   # no params, but the view_group binding is mandatory
+   ```
 
 #### Type mapping
 
@@ -1034,16 +1043,13 @@ Each integration gets one `handler.yaml` under `components/handlers/<handler-fol
 
 1. Each handler maps to exactly **one** integration.
 2. An integration with fetch + commands subscribes to both `automation-and-remediation` and the relevant fetch capability.
-3. **`auth_options[].id`** references a `connection.yaml` profile id only. The tile comes from the **profile's** `view_group` (§3.6) — do NOT put `view_group` on the handler.
-4. **`auth_options[]` are OR** (alternatives) — never AND. Multiple methods → separate entries referencing profiles that share a `view_group`. Several simultaneous inputs → one `passthrough` profile.
-5. **Workloads** always `["xsoar-pod"]`.
+3. **Grouped connectors — handlers subscribe to SUB-capabilities ONLY, never bare capabilities.** A handler's `capabilities[].id` MUST be a sub-capability id (`<capability-id>/<sub-capability-id>`), never a bare `<capability-id>`. **Reason**: the FE renders **sub-capabilities** into `view_groups`; it does **not** know how to render a bare capability into a view_group. (Since every migrated connector has a sub-capability per integration — §3.1.9 — there is always a sub-capability to subscribe to.)
+4. **`auth_options[].id`** references a `connection.yaml` profile id only. The tile comes from the **profile's** `view_group` (§3.6) — do NOT put `view_group` on the handler.
+5. **`auth_options[]` are OR** (alternatives) — never AND. Multiple methods → separate entries referencing profiles that share a `view_group`. Several simultaneous inputs → one `passthrough` profile.
+6. **Workloads** always `["xsoar-pod"]`.
 
 ```yaml
-# single capability
-capabilities:
-  - id: "<capability-id>"
-    workloads: ["xsoar-pod"]
-# sub-capability
+# Grouped connectors: ALWAYS subscribe to the SUB-capability (never a bare capability) — rule 3.
 capabilities:
   - id: "<parent-capability-id>/<sub-capability-id>"
     workloads: ["xsoar-pod"]
