@@ -1871,6 +1871,8 @@ def _apply_fetch_checkbox_visibility_rule(
     capability_id: str = "",
     handler_dir: Path | None = None,
     field_id_to_yml_name: dict[str, str] | None = None,
+    has_real_fetch_flag: bool = True,
+    fetch_toggle_field_id: str = "",
 ) -> list[dict]:
     """Apply the "count both checkboxes together" rule, serializer-first.
 
@@ -1889,25 +1891,40 @@ def _apply_fetch_checkbox_visibility_rule(
         and defaulted to ``False``. The user explicitly picks which fetch mode
         to enable. (Unchanged from the legacy behavior.)
 
+    **No-real-fetch-flag carve-out** (``has_real_fetch_flag=False``): the
+    integration declares neither ``script.isfetch``/``script.isfetchevents``
+    nor a fetch checkbox param — the only reason this fetch capability exists
+    is that ``longRunning`` was routed to it (e.g. QRadar v3, Retarus Secure
+    Email Gateway). There is no genuine user fetch choice, so:
+
+      - the **synthetic fetch toggle** (``fetch_toggle_field_id``) is dropped
+        and appears NOWHERE — it gets neither a manifest field nor a serializer
+        rule (its value is implied by selecting the sub-capability);
+      - ``longRunning`` is dropped from configurations and moved to a serializer
+        ``computed_fields`` rule gated on the sub-capability selection (same
+        ``any_of`` shape as the single-checkbox case).
+
+    This branch returns ``[]`` regardless of how many checkboxes are present.
+
     Only the checkbox fields are passed in; interval / dynamic-select fields are
     never touched by this rule.
 
     Returns the list of checkbox fields that should REMAIN in the manifest:
-      - single-checkbox case → returns ``[]`` (the lone checkbox is dropped and
-        its value moved to the serializer);
+      - single-checkbox / no-real-flag case → returns ``[]`` (the dropped
+        checkbox values that need serialization are moved to the serializer);
       - multi-checkbox case → returns the (mutated, shown + default-False)
         fields unchanged.
 
     ``capability_id``, ``handler_dir`` and ``field_id_to_yml_name`` are used to
-    register the computed_fields rule in the single-checkbox case. When
-    ``handler_dir`` is missing the rule cannot be written (legacy callers); the
-    lone field is still dropped and a warning logged.
+    register the computed_fields rule. When ``handler_dir`` is missing the rule
+    cannot be written (legacy callers); the field is still dropped and a
+    warning logged.
     """
     if not checkbox_fields:
         return []
 
-    if len(checkbox_fields) == 1:
-        field = checkbox_fields[0]
+    def _serialize_checkbox(field: dict) -> None:
+        """Drop a checkbox and push ``<yml_name>: true`` to computed_fields."""
         field_id = str(field.get("id") or "")
         yml_name = str((field_id_to_yml_name or {}).get(field_id, field_id))
         if handler_dir is not None and capability_id:
@@ -1919,10 +1936,36 @@ def _apply_fetch_checkbox_visibility_rule(
             register_computed_field_entry(handler_dir, rule)
         else:
             logger.warning(
-                f"[manifest_generator] Single fetch checkbox '{field_id}' "
+                f"[manifest_generator] Fetch checkbox '{field_id}' "
                 f"dropped but could not register computed_fields rule "
                 f"(handler_dir/capability_id missing)."
             )
+
+    # No-real-fetch-flag carve-out: the integration declares neither a real
+    # fetch flag nor a fetch checkbox param. This carve-out ONLY changes
+    # behavior when an EXTRA checkbox (longRunning) was routed here alongside
+    # the synthetic fetch toggle — i.e. the fetch capability exists solely
+    # because longRunning is part of the fetch flow. In that case the synthetic
+    # fetch toggle appears NOWHERE (no manifest field, no serializer rule) and
+    # every OTHER checkbox (longRunning) is serialized via computed_fields gated
+    # on the sub-capability.
+    #
+    # When the synthetic fetch toggle is the ONLY checkbox (no longRunning), we
+    # fall through to the standard single-checkbox path below, which serializes
+    # the lone fetch toggle so the capability auto-enables on selection
+    # (unchanged legacy behavior).
+    non_toggle_checkboxes = [
+        f for f in checkbox_fields
+        if str(f.get("id") or "") != fetch_toggle_field_id
+    ]
+    if not has_real_fetch_flag and non_toggle_checkboxes:
+        for field in non_toggle_checkboxes:
+            _serialize_checkbox(field)
+        # The synthetic fetch toggle is dropped silently (appears nowhere).
+        return []
+
+    if len(checkbox_fields) == 1:
+        _serialize_checkbox(checkbox_fields[0])
         return []
 
     # Two or more checkboxes: shown + default False (user picks the mode).
@@ -2257,6 +2300,7 @@ def add_log_collection_capability(
     mapped_params: dict[str, list[str]],
     yml_params_by_name: dict[str, dict] | None = None,
     handler_dir: Path | None = None,
+    integration_yml: dict | None = None,
 ) -> dict:
     """Build the per-capability template dict for the ``Log Collection``
     capability with up to two fields: ``isFetchEvents`` (toggle, hidden
@@ -2417,6 +2461,20 @@ def add_log_collection_capability(
     # serializer computed_fields rule gated on this capability; when both are
     # present they are shown + default False. eventFetchInterval is never
     # touched by this rule.
+    #
+    # No-real-fetch-flag carve-out: when the integration declares neither
+    # ``script.isfetchevents: true`` NOR an ``isFetchEvents`` config param, the
+    # synthetic fetch toggle is not a genuine user choice — the capability only
+    # exists because ``longRunning`` was routed here. In that case the synthetic
+    # fetch toggle appears nowhere and ``longRunning`` moves to the serializer
+    # computed_fields gated on the sub-capability (see the visibility helper).
+    _script = (integration_yml.get("script") or {}) if integration_yml else {}
+    has_real_fetch_flag = (
+        _script.get("isfetchevents") is True
+        or bool(
+            yml_params_by_name and ISFETCHEVENTS_PARAM_NAME in yml_params_by_name
+        )
+    )
     _checkbox_yml_names = {ifc_field_id: ISFETCHEVENTS_PARAM_NAME}
     if emit_longrunning:
         _checkbox_yml_names[lr_field_id] = LONGRUNNING_PARAM_NAME
@@ -2425,6 +2483,8 @@ def add_log_collection_capability(
         capability_id=capability_id,
         handler_dir=handler_dir,
         field_id_to_yml_name=_checkbox_yml_names,
+        has_real_fetch_flag=has_real_fetch_flag,
+        fetch_toggle_field_id=ifc_field_id,
     )
     # Drop any checkbox field that the rule removed (single-checkbox case).
     _kept_ids = {f.get("id") for f in kept_checkboxes}
@@ -3668,6 +3728,18 @@ def add_fetch_issues_capability(
     # serializer computed_fields rule gated on this capability; when both are
     # present they are shown + default False. The interval / dynamic-select
     # fields are never touched.
+    #
+    # No-real-fetch-flag carve-out: when the integration declares neither
+    # ``script.isfetch: true`` NOR an ``isFetch`` config param, the synthetic
+    # fetch toggle is not a genuine user choice — the capability only exists
+    # because ``longRunning`` was routed here. In that case the synthetic fetch
+    # toggle appears nowhere and ``longRunning`` moves to the serializer
+    # computed_fields gated on the sub-capability (see the visibility helper).
+    _script = (integration_yml.get("script") or {})
+    has_real_fetch_flag = (
+        _script.get("isfetch") is True
+        or bool(yml_params_by_name and ISFETCH_PARAM_NAME in yml_params_by_name)
+    )
     fetch_checkbox_fields = [isfetch_field]
     _checkbox_yml_names = {isfetch_field_id: ISFETCH_PARAM_NAME}
     if lr_field is not None:
@@ -3678,6 +3750,8 @@ def add_fetch_issues_capability(
         capability_id=capability_id,
         handler_dir=handler_dir,
         field_id_to_yml_name=_checkbox_yml_names,
+        has_real_fetch_flag=has_real_fetch_flag,
+        fetch_toggle_field_id=isfetch_field_id,
     )
     _kept_ids = {f.get("id") for f in kept_checkboxes}
     _dropped_ids = {
@@ -6564,6 +6638,7 @@ def create_manifest_from_scratch(
             mapped_params=mapped_params,
             yml_params_by_name=yml_params_by_name,
             handler_dir=handler_dir,
+            integration_yml=integration_yml,
         )
         synthetic_cap_fields[lc_bucket_key] = lc_result.get("fields", [])
 
@@ -7049,6 +7124,7 @@ def add_handler_to_existing_connector(
             mapped_params=mapped_params,
             yml_params_by_name=yml_params_by_name,
             handler_dir=new_handler_dir,
+            integration_yml=integration_yml,
         )
         _inject_append_capability_fields(
             configurations_data,

@@ -1899,18 +1899,31 @@ def test_create_manifest_from_scratch_log_collection_emits_fetch_fields(
         for grp in lc_entry["configurations"]
         for f in grp["fields"]
     }
-    # All three platform fetch fields must be present now.
-    assert "isFetchEvents" in lc_fields
+    # Akamai WAF SIEM declares no script.isfetchevents and no isFetchEvents
+    # param — the Log Collection capability only exists because longRunning is
+    # routed to it. So the synthetic isFetchEvents toggle appears NOWHERE and
+    # longRunning is moved to the serializer (not configurations). Only the
+    # eventFetchInterval picker remains as a visible field.
+    assert "isFetchEvents" not in lc_fields
+    assert "longRunning" not in lc_fields
     assert "eventFetchInterval" in lc_fields
-    assert "longRunning" in lc_fields
-    # Both checkboxes present → shown + default False.
-    for fid in ("isFetchEvents", "longRunning"):
-        opts = lc_fields[fid]["options"]
-        assert opts["default_value"] is False
-        assert opts["create_modifiers"]["hidden"] is False
-        assert opts["edit_modifiers"]["hidden"] is False
-    # Interval field is a visible duration picker.
     assert lc_fields["eventFetchInterval"]["field_type"] == "duration"
+
+    # longRunning is serialized via computed_fields gated on the sub-capability;
+    # the synthetic isFetchEvents toggle is NOT serialized (appears nowhere).
+    handler_dir = (
+        connector_dir / "components" / "handlers" / "xsoar-akamai-waf-siem"
+    )
+    with open(handler_dir / "serializer.yaml") as fh:
+        ser_body = fh.read().split("\n", 1)[1]
+    serializer = yaml.safe_load(ser_body) or {}
+    outputs = [
+        out["id"]
+        for rule in serializer.get("computed_fields", [])
+        for out in rule["output"]
+    ]
+    assert "longRunning" in outputs
+    assert "isFetchEvents" not in outputs
 
 
 # ---------------------------------------------------------------------------
@@ -6198,6 +6211,8 @@ def _make_integration_yml(
     default_classifier: str = "",
     is_long_running: bool = False,
     configuration: list | None = None,
+    is_fetch: bool = False,
+    is_fetch_events: bool = False,
 ) -> dict:
     """Helper to build a minimal integration yml dict for fetch-issues tests."""
     yml: dict = {
@@ -6207,6 +6222,10 @@ def _make_integration_yml(
     }
     if is_long_running:
         yml["script"]["longRunning"] = True
+    if is_fetch:
+        yml["script"]["isfetch"] = True
+    if is_fetch_events:
+        yml["script"]["isfetchevents"] = True
     if default_mapper_in:
         yml["defaultmapperin"] = default_mapper_in
     if default_classifier:
@@ -6414,7 +6433,9 @@ def test_add_fetch_issues_capability_long_running_emits_6_fields():
         "general_configurations": [],
         "Fetch Issues": ["longRunning"],
     }
-    integration_yml = _make_integration_yml(is_long_running=True)
+    # The integration declares a real fetch flag (script.isfetch), so the
+    # fetch checkbox is a genuine user choice and BOTH checkboxes are shown.
+    integration_yml = _make_integration_yml(is_long_running=True, is_fetch=True)
     template = add_fetch_issues_capability(
         capability_id="fetch-issues",
         is_sub_capability=False,
@@ -6577,11 +6598,14 @@ def test_log_collection_emits_longrunning_when_mapped_to_log_collection():
         "general_configurations": [],
         "Log Collection": ["longRunning"],
     }
+    # Real fetch flag present → fetch checkbox is a genuine user choice, so the
+    # longRunning checkbox is shown alongside it.
     template = add_log_collection_capability(
         capability_id="log-collection",
         is_sub_capability=False,
         is_long_running_capability=True,
         mapped_params=mapped,
+        integration_yml=_make_integration_yml(is_fetch_events=True),
     )
     by_id = {f["id"]: f for f in template["fields"]}
     assert "longRunning" in by_id
@@ -6672,11 +6696,13 @@ def test_log_collection_both_checkboxes_are_shown_and_default_false():
         "Log Collection": ["longRunning"],
     }
 
+    # Real fetch flag present → both checkboxes are shown.
     template = add_log_collection_capability(
         capability_id="log-collection",
         is_sub_capability=False,
         is_long_running_capability=True,
         mapped_params=mapped,
+        integration_yml=_make_integration_yml(is_fetch_events=True),
     )
 
     by_id = {f["id"]: f for f in template["fields"]}
@@ -6744,7 +6770,9 @@ def test_fetch_issues_both_checkboxes_are_shown_and_default_false():
         "general_configurations": [],
         "Fetch Issues": ["longRunning"],
     }
-    integration_yml = _make_integration_yml(is_long_running=True)
+    # Real fetch flag present → fetch checkbox is a genuine user choice, so
+    # both checkboxes are shown.
+    integration_yml = _make_integration_yml(is_long_running=True, is_fetch=True)
 
     template = add_fetch_issues_capability(
         capability_id="fetch-issues",
@@ -7004,7 +7032,9 @@ def test_add_fetch_issues_capability_long_running_sub_cap_writes_4_bridges(tmp_p
         "Fetch Issues": ["longRunning"],
     }
     cap_id = "fetch-issues-xsoar-myhandler"
-    integration_yml = _make_integration_yml(is_long_running=True)
+    # Real fetch flag present → both isFetch and longRunning are real shown
+    # checkboxes and get serializer rename bridges.
+    integration_yml = _make_integration_yml(is_long_running=True, is_fetch=True)
     add_fetch_issues_capability(
         capability_id=cap_id,
         is_sub_capability=True,
@@ -7900,3 +7930,151 @@ def test_normalize_configurations_field_blocks_splits_subcaps_and_general() -> N
     assert [s["fields"][0]["id"] for s in sub] == ["a", "b"]
     # Input untouched.
     assert len(data["configurations"][0]["configurations"]) == 1
+
+
+# ---------------------------------------------------------------------------
+# longRunning routed to a fetch capability that has NO real fetch flag
+# (no script.isfetch / no script.isfetchevents, no fetch checkbox param).
+# The synthetic fetch toggle must appear NOWHERE; longRunning moves to the
+# serializer computed_fields gated on the sub-capability.
+# ---------------------------------------------------------------------------
+def test_fetch_issues_no_real_fetch_flag_longrunning_moves_to_serializer(
+    tmp_path: Path,
+):
+    """QRadar v3 / Retarus shape: longRunning routed to Fetch Issues but the
+    integration declares no script.isfetch and no isFetch param. Expect:
+      - no isFetch field AND no longRunning field in the manifest;
+      - isFetch is NOT serialized (appears nowhere);
+      - longRunning IS serialized via computed_fields gated on the sub-cap.
+    """
+    mapped: dict[str, list[str]] = {
+        "general_configurations": [],
+        "Fetch Issues": ["longRunning"],
+    }
+    cap_id = "fetch-issues_qradar-v3"
+    integration_yml = _make_integration_yml(
+        integration_id="QRadar v3", is_long_running=True
+    )
+    template = add_fetch_issues_capability(
+        capability_id=cap_id,
+        is_sub_capability=False,
+        is_long_running=True,
+        mapped_params=mapped,
+        integration_yml=integration_yml,
+        yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
+        handler_dir=tmp_path,
+    )
+
+    by_id = {f["id"]: f for f in template["fields"]}
+    assert "isFetch" not in by_id
+    assert "longRunning" not in by_id
+
+    serializer = _read_serializer_dict(tmp_path)
+    outputs = [
+        out["id"]
+        for rule in serializer.get("computed_fields", [])
+        for out in rule["output"]
+    ]
+    # longRunning moved to the serializer, gated on the sub-capability.
+    assert "longRunning" in outputs
+    lr_rule = next(
+        r
+        for r in serializer["computed_fields"]
+        if r["output"] == [{"id": "longRunning", "value": True}]
+    )
+    assert lr_rule["any_of"] == [
+        {
+            "conditions": [
+                {
+                    "type": "capability",
+                    "options": {"capability_id": cap_id, "value": "on"},
+                }
+            ]
+        }
+    ]
+    # The synthetic isFetch toggle appears NOWHERE (no computed_fields rule).
+    assert "isFetch" not in outputs
+    # No field_mappings bridge for the dropped longRunning either.
+    assert all(
+        m.get("field_name") != "longRunning"
+        for m in serializer.get("field_mappings", [])
+    )
+
+
+def test_log_collection_no_real_fetch_flag_longrunning_moves_to_serializer(
+    tmp_path: Path,
+):
+    """Same shape as the fetch-issues case but for Log Collection: longRunning
+    routed here with no script.isfetchevents / no isFetchEvents param. Expect
+    no isFetchEvents/longRunning fields, isFetchEvents serialized nowhere, and
+    longRunning moved to a computed_fields rule gated on the sub-capability.
+    """
+    cap_id = "log-collection_retarus"
+    mapped: dict[str, list[str]] = {
+        "general_configurations": [],
+        "Log Collection": ["longRunning"],
+    }
+    integration_yml = _make_integration_yml(
+        integration_id="Retarus", is_long_running=True
+    )
+    template = add_log_collection_capability(
+        capability_id=cap_id,
+        is_sub_capability=False,
+        is_long_running_capability=True,
+        mapped_params=mapped,
+        integration_yml=integration_yml,
+        handler_dir=tmp_path,
+    )
+
+    by_id = {f["id"]: f for f in template["fields"]}
+    assert "isFetchEvents" not in by_id
+    assert "longRunning" not in by_id
+    # The interval field is still emitted.
+    assert "eventFetchInterval" in by_id
+
+    serializer = _read_serializer_dict(tmp_path)
+    outputs = [
+        out["id"]
+        for rule in serializer.get("computed_fields", [])
+        for out in rule["output"]
+    ]
+    assert "longRunning" in outputs
+    assert "isFetchEvents" not in outputs
+    lr_rule = next(
+        r
+        for r in serializer["computed_fields"]
+        if r["output"] == [{"id": "longRunning", "value": True}]
+    )
+    assert lr_rule["any_of"] == [
+        {
+            "conditions": [
+                {
+                    "type": "capability",
+                    "options": {"capability_id": cap_id, "value": "on"},
+                }
+            ]
+        }
+    ]
+
+
+def test_fetch_issues_real_fetch_flag_via_param_keeps_both_shown():
+    """When the integration carries an ``isFetch`` config PARAM (even without
+    script.isfetch), it counts as a real fetch flag → both checkboxes shown.
+    """
+    mapped: dict[str, list[str]] = {
+        "general_configurations": [],
+        "Fetch Issues": ["longRunning"],
+    }
+    yml_params: dict = dict(_FETCH_ISSUES_YML_PARAMS)
+    yml_params["isFetch"] = {"name": "isFetch", "type": 8, "display": "Fetch"}
+    template = add_fetch_issues_capability(
+        capability_id="fetch-issues",
+        is_sub_capability=False,
+        is_long_running=True,
+        mapped_params=mapped,
+        integration_yml=_make_integration_yml(is_long_running=True),
+        yml_params_by_name=yml_params,
+    )
+    by_id = {f["id"]: f for f in template["fields"]}
+    assert "isFetch" in by_id
+    assert "longRunning" in by_id
