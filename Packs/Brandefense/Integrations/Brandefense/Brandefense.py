@@ -13,7 +13,7 @@ def get_assets(api_token):
     allassets = {"assets": response.json()}
     result = CommandResults(outputs=allassets, outputs_prefix="branddefense_assets")
     return_results(result)
-
+!
 kdufhgks
 def get_specific_asset(api_token, args):
     asset_id = args.get("assetid")
