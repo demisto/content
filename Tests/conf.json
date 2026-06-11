@@ -5744,10 +5744,6 @@
             "playbookID": "Kaspersky Security Center - Test"
         },
         {
-            "integrations": "Forcepoint Security Management Center",
-            "playbookID": "ForcepointSecurityManagementCenter_test"
-        },
-        {
             "integrations": "AWS - Organizations",
             "playbookID": "Test - AWS_Organizations",
             "fromversion": "6.10.0"
@@ -6135,7 +6131,8 @@
         "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated",
         "Gmail Single User - Test": "CIAC-11417",
         "AWS-securityhub Test": "The creds were expired CRTX-237114",
-        "Alienvault_OTX_v2 - Test": "API reliability issues"
+        "Alienvault_OTX_v2 - Test": "API reliability issues",
+        "ForcepointSecurityManagementCenter_test": "No instance"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
