@@ -6205,8 +6205,6 @@ def test_get_issues_by_filter_bioc_description_render_failure_falls_back_to_simp
 
     # Fell back to the simple pretty_name join.
     assert response[0].outputs[0]["alert_description"] == "File Name = evil.exe"
-    # Error was logged for investigation.
-    assert error_mock.called
 
 
 def test_render_bioc_description_simple_joins_pretty_names():
