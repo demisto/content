@@ -90,11 +90,17 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 from pathlib import Path
 
 import yaml
+
+# Make sibling connectus modules (workflow_state) importable regardless of CWD.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent
 
 logger = logging.getLogger(__name__)
 
@@ -691,6 +697,50 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
 
 
 # ---------------------------------------------------------------------------
+# --integration-id resolution
+# ---------------------------------------------------------------------------
+def _resolve_paths_from_id(integration_id: str) -> tuple[Path, Path]:
+    """Resolve ``(handler_yaml_path, integration_yml_path)`` from a CSV id.
+
+    Reuses the workflow's own gate resolvers (the single source of truth the
+    ``run manifest make validate`` gate uses), mirroring how the reference
+    analyzers resolve ``--integration-id``:
+
+    * ``workflow_state.gates._handler_dir_abs`` → the connector handler dir
+      (``<connectus_repo>/<connector folder>/components/handlers/<handler-id>``),
+      to which ``handler.yaml`` is appended.
+    * ``workflow_state.gates._integration_yml_abs`` → the integration YML path.
+
+    Raises ``CoverageError`` (→ exit 2) on any resolution failure so the CLI
+    surfaces a clean usage error.
+    """
+    try:
+        from workflow_state.gates import (  # type: ignore
+            _handler_dir_abs,
+            _integration_yml_abs,
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise CoverageError(
+            f"could not import workflow_state for --integration-id "
+            f"{integration_id!r}: {type(exc).__name__}: {exc}"
+        ) from exc
+
+    yml_abs = _integration_yml_abs(integration_id)
+    if not yml_abs:
+        raise CoverageError(
+            f"--integration-id {integration_id!r}: no integration YML path "
+            f"resolved (id not in CSV or 'Integration File Path' unset)."
+        )
+    handler_dir = _handler_dir_abs(integration_id)
+    if not handler_dir:
+        raise CoverageError(
+            f"--integration-id {integration_id!r}: could not resolve the "
+            f"connector handler dir (id not in CSV)."
+        )
+    return Path(handler_dir) / HANDLER_FILE, Path(yml_abs)
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -702,19 +752,37 @@ def build_arg_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--integration-id",
+        type=str,
+        default=None,
+        help=(
+            "Resolve --handler-path and --integration-yml from the workflow "
+            "CSV id (preferred). Replaces the two explicit path flags."
+        ),
+    )
+    parser.add_argument(
         "--handler-path",
-        required=True,
         type=Path,
+        default=None,
         help=(
             "Path to the handler's handler.yaml file "
-            "(the handler directory is also accepted)."
+            "(the handler directory is also accepted). "
+            "Omit when using --integration-id."
         ),
     )
     parser.add_argument(
         "--integration-yml",
-        required=True,
         type=Path,
-        help="Path to the integration YML file.",
+        default=None,
+        help="Path to the integration YML file. Omit when using --integration-id.",
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help=(
+            "Emit the reference-aligned JSON envelope to stdout "
+            "({integration, pass, missing, ignored_params})."
+        ),
     )
     parser.add_argument(
         "-v",
@@ -733,25 +801,52 @@ def main(argv: list[str] | None = None) -> int:
         format="%(levelname)s %(message)s",
     )
 
-    handler_path = args.handler_path
-    integration_yml_path = args.integration_yml
-    # handler_path = Path("/Users/yhayun/dev/demisto/unified-connectors-content/connectors/azure-devops/components/handlers/xsoar-azuredevops/handler.yaml")
-    # integration_yml_path = Path("Packs/AzureDevOps/Integrations/AzureDevOps/AzureDevOps.yml")
+    if args.integration_id:
+        try:
+            handler_path, integration_yml_path = _resolve_paths_from_id(
+                args.integration_id
+            )
+        except CoverageError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)  # noqa: T201
+            return EXIT_USAGE
+    else:
+        if not args.handler_path or not args.integration_yml:
+            print(  # noqa: T201
+                "ERROR: provide --integration-id, OR both --handler-path and "
+                "--integration-yml.",
+                file=sys.stderr,
+            )
+            return EXIT_USAGE
+        handler_path = args.handler_path
+        integration_yml_path = args.integration_yml
 
     try:
         passed, missing = check_coverage(handler_path, integration_yml_path)
     except CoverageError as exc:
+        if args.json:
+            print(json.dumps({"error": str(exc)}, indent=2, sort_keys=True))
         print(f"ERROR: {exc}", file=sys.stderr)  # noqa: T201
         return EXIT_USAGE
 
+    sorted_missing = sorted(missing)
+
+    if args.json:
+        envelope = {
+            "integration": integration_yml_path.stem,
+            "pass": passed,
+            "missing": sorted_missing,
+            "ignored_params": sorted(IGNORED_PARAMS),
+        }
+        print(json.dumps(envelope, indent=2, sort_keys=True))
+
     if passed:
-        print(  # noqa: T201
-            "PASS: every non-hidden integration YML param is covered by the "
-            "connector handler."
-        )
+        if not args.json:
+            print(  # noqa: T201
+                "PASS: every non-hidden integration YML param is covered by "
+                "the connector handler."
+            )
         return EXIT_OK
 
-    sorted_missing = sorted(missing)
     print(  # noqa: T201
         "FAIL: the following integration YML params are NOT covered by the "
         f"connector handler ({len(sorted_missing)}):",

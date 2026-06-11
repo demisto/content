@@ -1,5 +1,6 @@
 import json
 import logging
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -9,6 +10,23 @@ import yaml
 logger = logging.getLogger(__name__)
 
 main = typer.Typer()
+
+# Make sibling connectus modules (workflow_state) importable regardless of CWD.
+# connector_param_mapper.py lives in connectus/connectus_migration/, so the
+# connectus/ dir is one level up.
+_CONNECTUS_DIR = Path(__file__).resolve().parent.parent
+if str(_CONNECTUS_DIR) not in sys.path:
+    sys.path.insert(0, str(_CONNECTUS_DIR))
+
+_REPO_ROOT = _CONNECTUS_DIR.parent
+
+# Workflow-CSV column names the --integration-id resolution reads.
+_PARAMS_TO_COMMANDS_COL = "Params to Commands"
+_PARAM_DEFAULTS_COL = "Params for test with default in code"
+
+# Exit codes — mirror the reference analyzers (check_param_defaults.py etc.).
+EXIT_OK = 0
+EXIT_USAGE = 2
 
 FETCH_ASSETS_CAPABILITIES = "Fetch Assets and Vulnerabilities"
 FETCH_ISSUES_CAPABILITIES = "Fetch Issues"
@@ -761,19 +779,75 @@ def map_params_to_capabilities(
 
 
 # ---------------------------------------------------------------------------
+# --integration-id resolution
+# ---------------------------------------------------------------------------
+def _resolve_inputs_from_id(integration_id: str) -> tuple[str, str, Path]:
+    """Resolve the mapper's three data inputs from a workflow-CSV id.
+
+    Returns ``(command_params_json, param_defaults_json, yml_path)`` where:
+
+    * ``command_params_json`` ← the ``Params to Commands`` cell (Step 4).
+    * ``param_defaults_json`` ← the ``Params for test with default in code``
+      cell (Step 5); defaults to ``"{}"`` when the cell is empty.
+    * ``yml_path`` ← the integration YML resolved via
+      :func:`workflow_state.get_integration_files`.
+
+    Mirrors the reference analyzers' ``--integration-id`` resolution: a single
+    pull from ``workflow_state`` (the source of truth) replaces three
+    hand-pasted JSON args. Raises ``ValueError`` on any resolution failure so
+    the CLI can surface a clean usage error.
+    """
+    try:
+        from workflow_state import get_integration_files  # type: ignore
+        from workflow_state.csv_io import find_row, load_csv  # type: ignore
+    except Exception as exc:  # noqa: BLE001
+        raise ValueError(
+            f"could not import workflow_state for --integration-id "
+            f"{integration_id!r}: {type(exc).__name__}: {exc}"
+        ) from exc
+
+    rows = load_csv()
+    idx = find_row(rows, integration_id)
+    if idx is None:
+        raise ValueError(f"--integration-id {integration_id!r}: not found in CSV.")
+    row = rows[idx]
+
+    command_params_json = (row.get(_PARAMS_TO_COMMANDS_COL) or "").strip()
+    if not command_params_json:
+        raise ValueError(
+            f"--integration-id {integration_id!r}: '{_PARAMS_TO_COMMANDS_COL}' "
+            f"cell is not set (run Step 4 / set-params-to-commands first)."
+        )
+    param_defaults_json = (row.get(_PARAM_DEFAULTS_COL) or "").strip() or "{}"
+
+    files = get_integration_files(integration_id)
+    if "error" in files:
+        raise ValueError(f"--integration-id {integration_id!r}: {files['error']}")
+    yml_rel = files.get("yml")
+    if not yml_rel:
+        raise ValueError(
+            f"--integration-id {integration_id!r}: workflow row has no YML path."
+        )
+    return command_params_json, param_defaults_json, (_REPO_ROOT / yml_rel).resolve()
+
+
+# ---------------------------------------------------------------------------
 # CLI entry-point
 # ---------------------------------------------------------------------------
 @main.command()
 def generate_param_mapping(
     command_params_json: str = typer.Argument(
-        ...,
-        help="JSON string with the {integration: '', commands: {command: [params]}} structure that map commands to their params.",
+        None,
+        help=(
+            "JSON {integration: '', commands: {command: [params]}} mapping "
+            "commands to params (legacy positional). Omit with --integration-id."
+        ),
     ),
     param_defaults_json: str = typer.Argument(
-        ..., help="JSON string mapping param names to their default values."
+        None, help="JSON mapping param names to default values (legacy positional)."
     ),
     integration_yml_path: Path = typer.Argument(
-        ..., exists=True, help="Path to the integration YML file."
+        None, help="Path to the integration YML file (legacy positional)."
     ),
     manual_command_to_capability_json: str = typer.Argument(
         "{}",
@@ -783,23 +857,79 @@ def generate_param_mapping(
             "Pass '{}' or omit to disable."
         ),
     ),
+    integration_id: str = typer.Option(
+        None,
+        "--integration-id",
+        help=(
+            "Resolve command_params / param_defaults / YML from the workflow "
+            "CSV id (preferred). Replaces the three positional JSON args."
+        ),
+    ),
     output_path: Path = typer.Option(
         Path("./param_mapping_output.json"),
         "-o",
         "--output",
-        help="Output JSON file path.",
+        help="Output JSON file path (also written when --report is used).",
+    ),
+    report: bool = typer.Option(
+        False,
+        "--report",
+        help=(
+            "Emit the reference-aligned JSON envelope to stdout "
+            "({integration, pass, mapping, elevated})."
+        ),
+    ),
+    human: bool = typer.Option(
+        False, "--human", help="Also print a human-readable summary to stderr."
     ),
 ) -> None:
-    """Generate the connector parameter mapping from the integration YML and
-    the supplied command/defaults JSON inputs (with optional manual overrides)."""
+    """Generate the connector parameter mapping.
+
+    Two input modes (back-compatible):
+
+    * **Legacy** — three positional JSON args (command_params, param_defaults,
+      yml path) + optional manual-override JSON. Writes the bare mapping JSON
+      to ``-o`` (unchanged behavior) plus the ``<output>.elevated.json``
+      sidecar.
+    * **Reference-aligned** — ``--integration-id <id>`` pulls
+      ``Params to Commands`` + ``Params for test with default in code`` + the
+      YML from ``workflow_state`` (the source of truth), mirroring the other
+      analyzers. The manual-override positional is still accepted.
+
+    With ``--report`` the analyzer ALSO emits a JSON envelope
+    (``{"integration", "pass", "mapping", "elevated"}``) on stdout — the same
+    shape the other analyzers use. Exit 0 on success, 2 on a usage error.
+    """
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+
+    if integration_id:
+        try:
+            command_params_json, param_defaults_json, yml_path = (
+                _resolve_inputs_from_id(integration_id)
+            )
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            raise typer.Exit(EXIT_USAGE)
+    else:
+        if not command_params_json or not param_defaults_json or not integration_yml_path:
+            print(
+                "error: provide the three positional JSON args + YML path, "
+                "or use --integration-id",
+                file=sys.stderr,
+            )
+            raise typer.Exit(EXIT_USAGE)
+        yml_path = integration_yml_path.resolve()
+
+    if not yml_path.is_file():
+        print(f"error: not a file: {yml_path}", file=sys.stderr)
+        raise typer.Exit(EXIT_USAGE)
 
     command_params: dict[str, Any] = json.loads(command_params_json)
     param_defaults: dict[str, Any] = json.loads(param_defaults_json)
     manual_command_to_capability: dict[str, list[str]] = json.loads(
         manual_command_to_capability_json
     )
-    with open(integration_yml_path) as f:
+    with open(yml_path) as f:
         integration_yml: dict = yaml.safe_load(f)
 
     capabilities = decide_capabilities(integration_yml)
@@ -838,6 +968,26 @@ def generate_param_mapping(
             f"No required test-module params to elevate. Empty elevation list "
             f"written to {elevated_path}."
         )
+
+    if report:
+        envelope = {
+            "integration": integration_yml.get("name") or "<unknown>",
+            "pass": True,
+            "mapping": result,
+            "elevated": elevated,
+        }
+        print(json.dumps(envelope, indent=2, sort_keys=True))
+        if human:
+            cap_summary = ", ".join(sorted(result.keys())) or "(none)"
+            elev_summary = ", ".join(elevated) if elevated else "(none)"
+            print(
+                f"Integration: {envelope['integration']}\n"
+                f"  capabilities: {cap_summary}\n"
+                f"  elevated to other_connection: {elev_summary}",
+                file=sys.stderr,
+            )
+
+    raise typer.Exit(EXIT_OK)
 
 
 if __name__ == "__main__":

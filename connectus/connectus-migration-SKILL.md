@@ -19,8 +19,8 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 | 5 | Param defaults | `set-param-defaults "<id>" '<json>'` (required-only) | §5 |
 | 6 | UCP param-default review | `check_param_defaults.py --integration-id <id> --human` → present → fix → `markpass "UCP param-default review"` | §6 |
 | 7 | Params to Capabilities | mapper → `set-params-to-capabilities` | §7 |
-| 8 | Generated manifest | `manifest_generator.py <yml> <title=Connector ID> <Params-to-Capabilities raw> <Auth-Details raw>` → `markpass "generated manifest"` (title comes from the `Connector ID` column so a connector's integrations share one folder) | §8 |
-| 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id>` → `markpass "handler param coverage"` | §9 |
+| 8 | Generated manifest | `manifest_generator.py <yml> <title=Connector ID> <Params-to-Capabilities raw> <Auth-Details raw>` → `set-connector-path "<id>" connectors/<slug Connector ID>` → `markpass "generated manifest"` (title comes from the `Connector ID` column so a connector's integrations share one folder) | §8 |
+| 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id> --json` → **fail-and-ask if `pass:false`** → `markpass "handler param coverage"` | §9 |
 | 10 | Validate manifest | `demisto-sdk validate` → `markpass "run manifest make validate"` | §10 |
 | 11 | Release Notes | `set-release-notes "<id>"` (only if .py/.yml changed) | §11 |
 | 12 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` | §12 |
@@ -1081,7 +1081,15 @@ This column is **deterministically generated** from the integration's YML fetch 
 **Generate it with the collector helper, then apply.** The collector lives at **`connectus/connectus_migration/capabilities_collector.py`** — note the `connectus_migration/` SUBDIRECTORY (it is NOT directly under `connectus/`; `ls connectus/capabilities_collector.py` will fail — always use the full `connectus/connectus_migration/` path). It is a single-command Typer app — invoke it with the YML path directly, with **NO subcommand name**:
 
 ```bash
-# Generate (writes the array to a workspace path — NOT /tmp, which the sandbox blocks)
+# Preferred — resolve the YML from the workflow CSV id and ALSO emit the
+# reference-aligned JSON envelope ({integration, pass, capabilities}) on stdout.
+# The bare array is still written to the -o file for set-capabilities.
+python3 connectus/connectus_migration/capabilities_collector.py \
+  --integration-id "<Integration ID>" \
+  -o connectus/connectus_migration/_caps.json \
+  --report
+
+# Legacy positional form (still supported — pass the YML path directly):
 python3 connectus/connectus_migration/capabilities_collector.py \
   Packs/<PackName>/Integrations/<Name>/<Name>.yml \
   -o connectus/connectus_migration/_caps.json
@@ -1438,8 +1446,28 @@ spotted immediately.
 #### Canonical mapper invocation
 
 [`connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:1)
-is a single-command Typer app — invoke it **without** a subcommand name;
-the four positionals come straight after the script path:
+is a single-command Typer app — invoke it **without** a subcommand name.
+
+**Preferred — `--integration-id` (reference-aligned I/O).** The mapper now
+resolves all three data inputs (`Params to Commands`, `Params for test with
+default in code`, and the integration YML) straight from the workflow CSV id
+via [`workflow_state.py`](workflow_state.py), so you no longer hand-paste them.
+With `--report` it ALSO emits a JSON envelope
+`{"integration", "pass", "mapping", "elevated"}` on stdout (add `--human` for a
+stderr summary); the bare mapping is still written to `-o`, and the
+`<output>.elevated.json` sidecar is still produced. Exit 0 on success, 2 on a
+usage/resolution error.
+
+```bash
+python3 connectus/connectus_migration/connector_param_mapper.py \
+  --integration-id "<Integration ID>" \
+  '<MANUAL_COMMAND_TO_CAPABILITY_JSON — optional, default {}>' \
+  -o connectus/connectus_migration/_<integration>_param_mapping.json \
+  --report
+```
+
+**Legacy positional form (still supported).** Pass the four positionals
+straight after the script path:
 
 ```bash
 python3 connectus/connectus_migration/connector_param_mapper.py \
@@ -1669,9 +1697,35 @@ integrations genuinely belong to the same connector.
 > `Auth Details`). Running the auto-runner is equivalent to the manual
 > invocation above.
 
-#### Markpass the checkpoint
+#### Record the connector folder path, then markpass the checkpoint
 
-After the generator exits 0:
+After the generator exits 0, do TWO things, in order:
+
+**1. Write the `Connector Folder Path` identity column.** Record the
+connector folder relative to the ConnectUs `connectors/` root —
+`connectors/<slugged Connector ID>` — into the CSV via `set-connector-path`.
+The slug is the **same mapping the generator uses on disk**
+([`title_to_slug()`](connectus_migration/manifest_generator.py:211)): take the
+`Connector ID` column, lowercase it, and replace internal whitespace runs with
+single dashes (collapsing any `---` to `-`). This guarantees the recorded path
+matches the folder the generator just wrote, so Step 13's param-parity resolver
+(which reads `Connector Folder Path`) and Step 9's handler-coverage resolver
+both find the connector without a manual fix-up.
+
+```bash
+# slug = Connector ID, lowercased, spaces → dashes (e.g. "AWS" → "aws",
+#        "Cisco Security" → "cisco-security", "Atlassian Automation and
+#        Collection" → "atlassian-automation-and-collection")
+python3 connectus/workflow_state.py set-connector-path "<Integration ID>" "connectors/<slugged Connector ID>"
+```
+
+> The `Connector ID` (NOT the Integration ID) is the slug source — every
+> integration in a multi-integration connector (e.g. all `AWS - *`
+> integrations) shares ONE `connectors/<slug>/` folder, exactly as Step 8's
+> generator scaffolds them. `set-connector-path` is an identity-column write:
+> it does NOT cascade a workflow reset.
+
+**2. Markpass the checkpoint:**
 
 ```bash
 python3 connectus/workflow_state.py markpass "<Integration ID>" "generated manifest"
@@ -1682,12 +1736,72 @@ machine enforces this and tells you what's missing.
 
 ### Step 9: `handler param coverage`
 
-Verify every connection/capability param declared in the generated
-manifest is covered by a handler. Run
-`python3 connectus/check_handler_param_coverage.py --integration-id "<id>"`
-and address any gaps, then `markpass "handler param coverage"`. This
-checkpoint sits between `generated manifest` (Step 8) and
-`run manifest make validate` (Step 10).
+Verify every non-hidden integration YML param is covered by the generated
+connector handler. This checkpoint sits between `generated manifest`
+(Step 8) and `run manifest make validate` (Step 10).
+
+#### Run the coverage check (reference-aligned I/O)
+
+The script resolves BOTH the handler `handler.yaml` and the integration YML
+from the workflow CSV id (via [`workflow_state.py`](workflow_state.py)'s gate
+resolvers — the same source `run manifest make validate` uses), mirroring
+[`check_param_defaults.py`](check_param_defaults.py) /
+[`check_auth_parity.py`](check_auth_parity.py) /
+[`check_command_params.py`](check_command_params.py). Pass `--json` to get the
+structured envelope on stdout:
+
+```bash
+python3 connectus/check_handler_param_coverage.py \
+  --integration-id "<Integration ID>" --json
+```
+
+The stdout JSON envelope is
+`{"integration", "pass", "missing", "ignored_params"}`:
+
+- **`pass`** — top-level boolean. `true` ⇒ every non-hidden YML param is
+  covered. **Branch on this.**
+- **`missing`** — the sorted list of non-hidden YML params NOT covered by the
+  handler (the cause of a `false`).
+- **`ignored_params`** — the params the script deliberately excludes from the
+  coverage requirement (the `IGNORED_PARAMS` constant in
+  [`check_handler_param_coverage.py`](check_handler_param_coverage.py:110) —
+  mirroring fields, etc.). Surfaced so you can see exactly what was excluded.
+
+(The legacy explicit-path form
+`--handler-path <handler.yaml> --integration-yml <yml>` is still supported for
+standalone runs; inside the workflow use `--integration-id`.)
+
+Exit codes mirror the reference analyzers: `0` = pass, `1` = at least one
+param missing, `2` = usage / resolution error.
+
+#### This step FAILS the workflow when the script fails
+
+**If `pass` is `false` (exit `1`), do NOT `markpass`.** Treat a non-empty
+`missing` list as a hard stop. Present the `missing` and `ignored_params`
+lists to the user, then **pause and wait for the user's explicit decision** —
+the AI must NOT pick a resolution on its own. Offer exactly these three
+options:
+
+1. **Mark-pass anyway.** The user judges the missing params are acceptable
+   to skip. Only then run
+   `markpass "<Integration ID>" "handler param coverage"`.
+2. **Add some params to the `IGNORED_PARAMS` constant.** The user names
+   which params to add to
+   [`IGNORED_PARAMS`](check_handler_param_coverage.py:110); the AI edits the
+   constant ONLY for the params the user explicitly approved, re-runs the
+   check, and proceeds. **Under no circumstances may the AI decide on its own
+   to add any param to `IGNORED_PARAMS`** — that constant is changed only on
+   an explicit user instruction naming the params.
+3. **Fix an earlier step and re-run from there.** The missing param indicates
+   an upstream input was wrong (e.g. a param mis-routed in
+   `Params to Capabilities`, or an `Auth Details` / `other_connection`
+   classification error). Go back to the relevant step (Step 2 `set-auth`,
+   Step 7 `set-params-to-capabilities`, etc.), correct the input, regenerate
+   the manifest (Step 8), and re-run this check.
+
+Only after the user picks an option and the resulting state is clean (or the
+user explicitly chose mark-pass) do you run
+`markpass "<Integration ID>" "handler param coverage"`.
 
 ### Step 10: `run manifest make validate`
 
