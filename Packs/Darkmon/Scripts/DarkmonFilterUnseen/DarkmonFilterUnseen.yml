@@ -1,0 +1,81 @@
+commonfields:
+  id: DarkmonFilterUnseen
+  version: -1
+name: DarkmonFilterUnseen
+script: ""
+type: python
+subtype: python3
+fromversion: 6.5.0
+tags:
+- darkmon
+comment: "Filters items by ID against an XSOAR List (state) and optionally by domain match or allowlist. Updates the List with new IDs. Outputs NewAccounts."
+args:
+- name: items
+  isArray: true
+  description: Items to process.
+- name: id_field
+  description: Field name to use as the dedup key.
+  defaultValue: id
+- name: seen_list
+  description: Name of the XSOAR List storing already-seen IDs.
+- name: domain_filter_list
+  description: Optional - list of customer domains to filter username matches.
+- name: domain_match_field
+  description: Field on each item to match against domain_filter_list.
+  defaultValue: username
+- name: allowlist
+  description: Optional list of usernames/DNs that must NEVER be actioned.
+- name: allowlist_match_field
+  description: Field to match against the allowlist.
+  defaultValue: username
+- name: incident_type
+  description: Incident type for newly created incidents.
+- name: severity
+  description: Severity (1=Low, 2=Medium, 3=High, 4=Critical).
+- name: name_template
+  description: Incident name template (supports ${field} interpolation).
+- name: field_map
+  description: Comma-separated 'fieldCli=sourcePath' pairs.
+- name: emails
+  isArray: true
+  description: Email addresses to fan out per VIP fetch.
+- name: domains
+  isArray: true
+  description: Optional list of customer domains to filter domain-based matches.
+- name: brands_list
+  description: Name of the XSOAR List containing brand names for NRD brand-watch matching.
+- name: max_distance
+  defaultValue: "2"
+  description: Maximum Levenshtein distance allowed when matching NRD domains against brand names.
+- name: min_cvss
+  defaultValue: "9.0"
+  description: Minimum CVSS score threshold; CVEs below this value are excluded.
+- name: tech_stack_list
+  description: Name of the XSOAR List containing tech-stack tags used to filter CVEs by relevance.
+outputs:
+- contextPath: NewAccounts
+  description: Newly discovered account records that have not been previously actioned.
+  type: unknown
+- contextPath: CreatedIncidents
+  description: Incidents created during this execution run.
+  type: unknown
+- contextPath: Count
+  description: Total count of new items processed.
+  type: number
+- contextPath: Typosquats
+  description: NRD domains identified as potential typosquats of monitored brand names.
+  type: unknown
+- contextPath: FilteredCVEs
+  description: CVEs that passed the CVSS and tech-stack filters.
+  type: unknown
+- contextPath: VIPCreated
+  description: Number of VIP-related incidents created during this execution.
+  type: number
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.12.13.9059085
+marketplaces:
+- xsoar
+- platform
+tests:
+- No tests

@@ -1,0 +1,717 @@
+commonfields:
+  id: Darkmon
+  version: -1
+name: Darkmon
+sectionorder:
+- Connect
+- Collect
+display: Darkmon
+category: Data Enrichment & Threat Intelligence
+description: |-
+  Stay ahead of cyber threats with DarkMon TIP — real-time threat intelligence from the Clear, Deep, and Dark Web tailored to your assets.
+  Pack also helps with integration with Cortex XSOAR and provides pre-made playbooks/templates to ease integration use.
+configuration:
+- display: API Base URL
+  name: base_url
+  defaultvalue: https://api.darkmon.com/tip/2025.1
+  type: 0
+  required: false
+  additionalinfo: Override the Darkmon TIP API base URL. Leave blank to use the default
+    development environment, or set to your production endpoint (e.g.
+    https://api.darkmon.com/tip/2025.1).
+  section: Connect
+- display: Fetch indicators
+  name: feed
+  defaultvalue: 'true'
+  type: 8
+  required: false
+  section: Collect
+- display: ""
+  displaypassword: API key
+  name: X-API-KEY
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  section: Collect
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+  section: Collect
+- display: ''
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  section: Collect
+- display: ''
+  name: feedExpirationInterval
+  defaultvalue: '20160'
+  type: 1
+  required: false
+  section: Collect
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: '240'
+  type: 19
+  required: false
+  section: Collect
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  section: Collect
+- display: Traffic Light Protocol Color
+  name: tlp_color
+  type: 15
+  required: false
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  section: Collect
+- display: Tags
+  name: feedTags
+  type: 0
+  required: false
+  additionalinfo: Supports CSV values.
+  section: Collect
+- display: Indicator fetch limit
+  name: limit
+  defaultvalue: '1000'
+  type: 0
+  required: false
+  additionalinfo: Maximum number of indicators to fetch per cycle.
+  section: Collect
+- display: Redact secrets in War Room output
+  name: redact_secrets
+  defaultvalue: 'true'
+  type: 8
+  required: false
+  additionalinfo: When enabled, replaces password/card-number values in markdown
+    table output with '***'. Raw values remain in rawJSON for playbook automation.
+    Disable only in non-production debugging contexts.
+  section: Connect
+- display: Employee compromise disable mode
+  name: employee_disable_mode
+  defaultvalue: notify-only
+  type: 15
+  required: false
+  options:
+  - notify-only
+  - approval-required
+  - auto-disable
+  additionalinfo: 'Controls how the Compromised Employee Auto-Disable playbook
+    reacts when a new compromised employee account is observed. notify-only
+    (default - safe): creates an incident, no AD action.  approval-required:
+    creates an incident with a manual approval task; on approve, runs the
+    disable.  auto-disable: disables the account immediately. Accounts in the
+    "Darkmon - Auto-Disable Allowlist" list are NEVER auto-disabled regardless
+    of mode.'
+  section: Collect
+script:
+  script: ''
+  type: python
+  commands:
+  - name: dmontip-global-search
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Domain
+      - IP
+      - URL
+      - Hash
+      - CVE
+      - Email
+      - Username
+      - Malware
+      - Source
+      - Keyword
+      - Card
+      - CardNumber
+      - CardHolder
+      description: Type of the value.
+      type: textArea
+    - name: query
+      required: true
+      description: A specific value.
+      type: textArea
+    - name: page
+      description: 1-indexed page number.
+      defaultValue: "1"
+      type: textArea
+    - name: size
+      description: Page size (1-100).
+      defaultValue: "20"
+    description: The dmontip-global-search command performs a comprehensive search
+      across the Darkmon Threat Intelligence Platform. This command allows users to
+      search for indicators, threat actors, malware, and other intelligence data using
+      keywords or specific search terms. It queries multiple data sources simultaneously
+      and returns consolidated results, helping analysts quickly find relevant intelligence
+      across the platform.
+    outputs:
+    - contextPath: Darkmon.SearchResult
+      description: Search results matching the query, with type-specific fields.
+      type: Unknown
+    - contextPath: Darkmon.Pagination.number
+      description: Current page number (zero-indexed at the API).
+      type: Number
+    - contextPath: Darkmon.Pagination.totalPages
+      description: Total number of pages available.
+      type: Number
+    - contextPath: Darkmon.Pagination.totalElements
+      description: Total number of items across all pages.
+      type: Number
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      isArray: true
+      type: textArea
+      description: One or more IP addresses to enrich (comma-separated).
+    description: Searches the Darkmon platform for intelligence related to a specific
+      IP address. A focused interface for threat intelligence lookup of IP indicators.
+    outputs:
+    - contextPath: Darkmon.SearchResult
+      description: Search results for the IP indicator.
+      type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Source reliability per the Admiralty code.
+      type: String
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor that flagged this IP as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: Reason this IP was flagged as malicious.
+      type: String
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      isArray: true
+      type: textArea
+      description: One or more URLs to enrich (comma-separated).
+    description: Searches for URL-specific threat intelligence across the Darkmon
+      platform. Quickly identifies malicious or suspicious URLs and associated threat
+      data.
+    outputs:
+    - contextPath: Darkmon.SearchResult
+      description: Search results for the URL indicator.
+      type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Source reliability per the Admiralty code.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor that flagged this URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: Reason this URL was flagged as malicious.
+      type: String
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      isArray: true
+      type: textArea
+      description: One or more domains to enrich (comma-separated).
+    description: Performs domain-focused threat intelligence searches in the Darkmon
+      platform. Returns comprehensive information about potentially malicious domains.
+    outputs:
+    - contextPath: Darkmon.SearchResult
+      description: Search results for the domain indicator.
+      type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Source reliability per the Admiralty code.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor that flagged this domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: Reason this domain was flagged as malicious.
+      type: String
+  - name: email
+    arguments:
+    - name: email
+      required: true
+      default: true
+      isArray: true
+      type: textArea
+      description: One or more email addresses to enrich (comma-separated).
+    description: Searches for threat intelligence related to specific email addresses.
+      Identifies compromised accounts or emails associated with malicious activities.
+    outputs:
+    - contextPath: Darkmon.SearchResult
+      description: Search results for the email indicator.
+      type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Source reliability per the Admiralty code.
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address.
+      type: String
+    - contextPath: Account.Email.Malicious.Vendor
+      description: The vendor that flagged this email as malicious.
+      type: String
+    - contextPath: Account.Email.Malicious.Description
+      description: Reason this email was flagged as malicious.
+      type: String
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      isArray: true
+      type: textArea
+      description: One or more file hashes (MD5, SHA-1, SHA-256) to enrich (comma-separated).
+    description: Searches the Darkmon platform using file hash values (MD5, SHA-1,
+      SHA-256). Identifies malware and provides associated threat intelligence data.
+    outputs:
+    - contextPath: Darkmon.SearchResult
+      description: Search results for the file-hash indicator.
+      type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Source reliability per the Admiralty code.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 of the file (when the input was an MD5 hash).
+      type: String
+    - contextPath: File.SHA1
+      description: SHA-1 of the file (when the input was a SHA-1 hash).
+      type: String
+    - contextPath: File.SHA256
+      description: SHA-256 of the file (when the input was a SHA-256 hash).
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that flagged this file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: Reason this file was flagged as malicious.
+      type: String
+  - name: dmontip-get-indicators
+    arguments:
+    - name: size
+      defaultValue: "20"
+      type: textArea
+      description: Number of indicators to retrieve from the IOC feed (max 1000).
+    description: Retrieve the latest indicators of compromise (IOCs) from the Darkmon
+      TIP feed. Returns IOCs grouped by type (domain, URL, file, IP, email, TLS/SSL,
+      vulnerability) along with their metadata.
+    outputs:
+    - contextPath: Darkmon.Indicator
+      description: Latest IOCs from the Darkmon feed.
+      type: Unknown
+  - name: dmontip-get-compromised
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - accounts
+      - bank-cards
+      - combo-lists
+      - public-breaches
+      - employees
+      type: textArea
+      description: Which compromised data set to retrieve.
+    - name: size
+      defaultValue: "20"
+      type: textArea
+      description: Page size (1-500).
+    - name: page
+      defaultValue: "1"
+      description: 1-indexed page number.
+    - name: sort
+      type: textArea
+      description: 'Sort field and direction in Spring Pageable format, e.g.
+        ''firstSeen,desc'' or ''lastCompromiseDate,asc''. Leave blank to use the
+        default: combo-lists defaults to firstSeen,desc; other types use the
+        backend default order.'
+    description: Retrieve compromised data of a given type from Darkmon - leaked
+      accounts, leaked bank cards, combo lists, public breaches, or compromised
+      employee accounts. Use the 'type' argument to choose the data set.
+    outputs:
+    - contextPath: Darkmon.Compromised.Account
+      description: Leaked account records (when type=accounts).
+      type: Unknown
+    - contextPath: Darkmon.Compromised.BankCard
+      description: Leaked bank card records (when type=bank-cards).
+      type: Unknown
+    - contextPath: Darkmon.Compromised.ComboList
+      description: Combo list records (when type=combo-lists).
+      type: Unknown
+    - contextPath: Darkmon.Compromised.PublicBreach
+      description: Public breach records (when type=public-breaches).
+      type: Unknown
+    - contextPath: Darkmon.Compromised.Employee
+      description: Compromised employee account records (when type=employees).
+      type: Unknown
+    - contextPath: Darkmon.Compromised.Page
+      description: Pagination metadata (number, totalPages, totalElements).
+      type: Unknown
+  - name: dmontip-get-vpn
+    arguments:
+    - name: page
+      defaultValue: "1"
+      type: textArea
+      description: 1-indexed page number.
+    - name: size
+      defaultValue: "20"
+      type: textArea
+      description: Page size (1-100).
+    - name: sort
+      defaultValue: "firstSeen,desc"
+      type: textArea
+      description: Sort field and direction in Spring Pageable format. Default
+        sorts newest first by firstSeen.
+    description: Retrieve known VPN exit-node IOCs with pagination, sorted newest
+      first by firstSeen unless overridden.
+    outputs:
+    - contextPath: Darkmon.VPN
+      description: Known VPN exit-node records.
+      type: Unknown
+    - contextPath: Darkmon.VPN.Page
+      description: Pagination metadata.
+      type: Unknown
+  - name: dmontip-get-proxy
+    arguments:
+    - name: page
+      defaultValue: "1"
+      type: textArea
+      description: 1-indexed page number.
+    - name: size
+      defaultValue: "20"
+      type: textArea
+      description: Page size (1-100).
+    - name: sort
+      defaultValue: "firstSeen,desc"
+      type: textArea
+      description: Sort field and direction in Spring Pageable format. Default
+        sorts newest first by firstSeen.
+    description: Retrieve known open-proxy IOCs with pagination, sorted newest
+      first by firstSeen unless overridden.
+    outputs:
+    - contextPath: Darkmon.Proxy
+      description: Known open-proxy records.
+      type: Unknown
+    - contextPath: Darkmon.Proxy.Page
+      description: Pagination metadata.
+      type: Unknown
+  - name: dmontip-get-cve
+    arguments:
+    - name: page
+      defaultValue: "1"
+      type: textArea
+      description: 1-indexed page number.
+    - name: size
+      defaultValue: "20"
+      type: textArea
+      description: Page size (1-100).
+    description: Retrieve security vulnerabilities (CVEs) with severity, CVSS score,
+      published/lastModified timestamps, source identifier, and tags.
+    outputs:
+    - contextPath: Darkmon.CVE
+      description: CVE records.
+      type: Unknown
+    - contextPath: Darkmon.CVE.Page
+      description: Pagination metadata.
+      type: Unknown
+  - name: dmontip-get-nrd
+    arguments:
+    - name: page
+      defaultValue: "1"
+      type: textArea
+      description: 1-indexed page number.
+    - name: size
+      defaultValue: "20"
+      type: textArea
+      description: Page size (1-100).
+    - name: sort
+      defaultValue: "timestamp,desc"
+      type: textArea
+      description: Sort field and direction in Spring Pageable format. Default
+        sorts newest first by timestamp.
+    description: Retrieve newly registered domains (NRD) recently observed by Darkmon,
+      sorted newest first by timestamp unless overridden. Filters the IOC feed by
+      classification NEWLY_REGISTERED_DOMAIN.
+    outputs:
+    - contextPath: Darkmon.NRD
+      description: Newly registered domain records.
+      type: Unknown
+    - contextPath: Darkmon.NRD.Page
+      description: Pagination metadata.
+      type: Unknown
+  - name: dmontip-get-tbf
+    arguments:
+    - name: page
+      defaultValue: "1"
+      type: textArea
+      description: 1-indexed page number.
+    - name: size
+      defaultValue: "20"
+      type: textArea
+      description: Page size (1-100).
+    - name: sort
+      defaultValue: "timestamp,desc"
+      type: textArea
+      description: Sort field and direction in Spring Pageable format. Default
+        sorts newest first by timestamp.
+    description: Retrieve telnet brute-force IOCs - sources observed attempting telnet
+      brute-force attacks, sorted newest first by timestamp unless overridden.
+      Filters the IOC feed by classification TELNET_BRUTE_FORCE.
+    outputs:
+    - contextPath: Darkmon.TBF
+      description: Telnet brute-force IOC records.
+      type: Unknown
+    - contextPath: Darkmon.TBF.Page
+      description: Pagination metadata.
+      type: Unknown
+  - name: dmontip-get-ransomware
+    arguments:
+    - name: page
+      defaultValue: "1"
+      type: textArea
+      description: 1-indexed page number.
+    - name: size
+      defaultValue: "10"
+      type: textArea
+      description: Page size (1-100).
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - mentions
+      - all-topics
+      defaultValue: mentions
+      type: textArea
+      description: 'Use ''mentions'' to retrieve company-specific ransomware mentions,
+        or ''all-topics'' to retrieve all ransomware articles.'
+    - name: sort
+      defaultValue: "publishedAt,desc"
+      type: textArea
+      description: Sort field and direction in Spring Pageable format. Default
+        sorts newest first by publishedAt.
+    description: Retrieve ransomware articles or company-specific ransomware mentions
+      with details such as victim name, threat actor, published date, and matched
+      keywords. Sorted newest first by publishedAt unless overridden.
+    outputs:
+    - contextPath: Darkmon.Ransomware
+      description: Ransomware article or mention records.
+      type: Unknown
+    - contextPath: Darkmon.Ransomware.Page
+      description: Pagination metadata.
+      type: Unknown
+  - name: dmontip-get-landscape
+    arguments:
+    - name: page
+      defaultValue: "1"
+      type: textArea
+      description: 1-indexed page number.
+    - name: size
+      defaultValue: "10"
+      type: textArea
+      description: Page size (1-100).
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - mentions
+      - all-topics
+      defaultValue: mentions
+      description: 'Use ''mentions'' to retrieve company-specific landscape news mentions,
+        or ''all-topics'' to retrieve all landscape news articles.'
+    description: Retrieve cybersecurity landscape news articles or company-specific
+      landscape mentions with title, link, source, author, and matched keywords.
+    outputs:
+    - contextPath: Darkmon.Landscape
+      description: Landscape article or mention records.
+      type: Unknown
+    - contextPath: Darkmon.Landscape.Page
+      description: Pagination metadata.
+      type: Unknown
+  - name: dmontip-get-boardprotection
+    arguments:
+    - name: page
+      defaultValue: "1"
+      type: textArea
+      description: 1-indexed page number.
+    - name: size
+      defaultValue: "20"
+      type: textArea
+      description: Page size (1-100).
+    - name: term
+      type: textArea
+      description: Optional search term filtering across all available attributes.
+    description: Lists the emails currently under board-leak protection (monitored)
+      including request state, owner name, and tokens. Backed by the board-leak/request
+      endpoint.
+    outputs:
+    - contextPath: Darkmon.BoardProtection
+      description: Board protection request records (monitored emails with state and
+        owner details).
+      type: Unknown
+    - contextPath: Darkmon.BoardProtection.Page
+      description: Pagination metadata.
+      type: Unknown
+  - name: dmontip-get-boardemails
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - accounts
+      - combo-lists
+      - public-breaches
+      type: textArea
+      description: Which board-leak data set to retrieve for the given email.
+    - name: email
+      required: true
+      type: textArea
+      description: The protected email to query (must be an email already under board
+        protection).
+    - name: page
+      defaultValue: "1"
+      type: textArea
+      description: 1-indexed page number.
+    - name: size
+      defaultValue: "20"
+      type: textArea
+      description: Page size (1-100).
+    - name: term
+      type: textArea
+      description: Optional search term filtering inside the chosen data set.
+    description: Retrieves leaked accounts, combo lists, or public breaches associated
+      with a board-protected email. Use dmontip-get-boardprotection first to list
+      monitored emails.
+    outputs:
+    - contextPath: Darkmon.BoardLeak.Account
+      description: Leaked account records for the protected email (when type=accounts).
+      type: Unknown
+    - contextPath: Darkmon.BoardLeak.ComboList
+      description: Combo list records for the protected email (when type=combo-lists).
+      type: Unknown
+    - contextPath: Darkmon.BoardLeak.PublicBreach
+      description: Public breach records for the protected email (when type=public-breaches).
+      type: Unknown
+    - contextPath: Darkmon.BoardLeak.Page
+      description: Pagination metadata.
+      type: Unknown
+  dockerimage: demisto/python3:3.12.13.9059085
+  feed: true
+  runonce: false
+  subtype: python3
+tests:
+- Darkmon - Test
+fromversion: 6.5.0
