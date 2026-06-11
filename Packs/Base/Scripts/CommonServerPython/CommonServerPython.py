@@ -14495,7 +14495,6 @@ def safe_pickle_loads(data, allowed_classes, safe_module_prefixes):
     return unpickler_cls(_io.BytesIO(data)).load()
 
 
-def get_judah_debug_info():
     # type: () -> Optional[dict]
     """Return result params and UCP info when the current instance name contains "judah".
 
@@ -14527,7 +14526,6 @@ def get_judah_debug_info():
         'ucp_info': ucp_info,
     }
 
-demisto.results(get_judah_debug_info())
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################
