@@ -1,0 +1,16 @@
+=== thread_scaling ARM1/ARM2/SUMMARY ===
+2026-06-11T12:38:43.330970457Z	[ARCH:thread_scaling] ARM1_single_thread rss=118.8MB rss_peak=354.5MB cgroup_cur=369.1MB cgroup_peak=863.5MB t=+14.13s events=150000 workers=1
+2026-06-11T12:38:29.199893674Z	[ARCH:thread_scaling] ===== START log_types=['auth_flows'] max_events=50000 =====
+2026-06-11T12:37:56.451625735Z	[ARCH:thread_scaling] ===== END =====
+2026-06-11T12:37:56.363230150Z	[ARCH:thread_scaling] THREAD_SCALING_SUMMARY rss=202.2MB rss_peak=357.6MB cgroup_cur=458.3MB cgroup_peak=863.5MB t=+27.09s arm1_peak=354.4MB arm2_peak=357.6MB delta=3.2MB total_x=150000
+2026-06-11T12:37:56.361407959Z	[ARCH:thread_scaling] ARM2_multi_thread rss=202.2MB rss_peak=357.6MB cgroup_cur=458.3MB cgroup_peak=863.5MB t=+13.66s events=150000 workers=3
+2026-06-11T12:37:42.364255038Z	[ARCH:thread_scaling] ARM1_single_thread rss=118.8MB rss_peak=354.4MB cgroup_cur=367.2MB cgroup_peak=863.5MB t=+13.10s events=150000 workers=1
+2026-06-11T12:37:29.267641408Z	[ARCH:thread_scaling] ===== START log_types=['auth_flows'] max_events=50000 =====
+2026-06-11T12:37:02.536141588Z	[ARCH:thread_scaling] ===== END =====
+2026-06-11T12:37:02.441987744Z	[ARCH:thread_scaling] THREAD_SCALING_SUMMARY rss=202.0MB rss_peak=357.5MB cgroup_cur=468.3MB cgroup_peak=863.5MB t=+28.38s arm1_peak=354.1MB arm2_peak=357.5MB delta=3.4MB total_x=150000
+2026-06-11T12:37:02.440528073Z	[ARCH:thread_scaling] ARM2_multi_thread rss=202.0MB rss_peak=357.5MB cgroup_cur=468.3MB cgroup_peak=863.5MB t=+12.85s events=150000 workers=3
+2026-06-11T12:36:49.259760374Z	[ARCH:thread_scaling] ARM1_single_thread rss=119.6MB rss_peak=354.1MB cgroup_cur=385.4MB cgroup_peak=863.5MB t=+15.20s events=150000 workers=1
+2026-06-11T12:36:34.055846163Z	[ARCH:thread_scaling] ===== START log_types=['auth_flows'] max_events=50000 =====
+2026-06-11T12:35:57.856320072Z	[ARCH:thread_scaling] ===== END =====
+2026-06-11T12:35:57.769731869Z	[ARCH:thread_scaling] THREAD_SCALING_SUMMARY rss=202.8MB rss_peak=358.5MB cgroup_cur=460.3MB cgroup_peak=863.5MB t=+28.59s arm1_peak=355.2MB arm2_peak=358.5MB delta=3.3MB total_x=150000
+2026-06-11T12:35:57.768257784Z	[ARCH:thread_scaling] ARM2_multi_thread rss=202.8MB rss_peak=358.5MB cgroup_cur=460.3MB cgroup_peak=863.5MB t=+13.23s events=150000 workers=3

@@ -1,0 +1,4 @@
+=== multithread runs ===
+2026-06-11T12:02:32.177645259Z	[ARCH:multithread] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+2026-06-11T11:56:31.787965590Z	[ARCH:multithread] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+2026-06-11T11:50:31.804796291Z	[ARCH:multithread] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====

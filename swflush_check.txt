@@ -1,0 +1,12 @@
+=== latest ARCH lines (any arch) last 10m ===
+2026-06-11T06:28:34.345668218Z	[ARCH:send_and_flush] ===== END =====
+2026-06-11T06:28:34.344521086Z	[ARCH:send_and_flush] DONE rss=107.9MB rss_peak=115.9MB cgroup_cur=309.3MB cgroup_peak=863.5MB t=+4.92s events=50000
+2026-06-11T06:28:29.423090836Z	[ARCH:send_and_flush] ===== START log_types=['auth_flows'] max_events=50000 =====
+2026-06-11T06:27:34.920975636Z	[ARCH:baseline] ===== END =====
+2026-06-11T06:27:34.826376586Z	[ARCH:baseline] DONE rss=144.2MB rss_peak=311.9MB cgroup_cur=341.8MB cgroup_peak=863.5MB t=+5.63s events_sent=50000
+2026-06-11T06:27:30.090808009Z	[ARCH:baseline] after_fetch_all rss=144.1MB rss_peak=144.1MB cgroup_cur=357.3MB cgroup_peak=863.5MB t=+0.89s events=50000
+2026-06-11T06:27:29.199020240Z	[ARCH:baseline] ===== START log_types=['auth_flows'] max_events=50000 =====
+2026-06-11T06:26:34.938410451Z	[ARCH:baseline] ===== END =====
+2026-06-11T06:26:34.858871407Z	[ARCH:baseline] DONE rss=144.1MB rss_peak=313.1MB cgroup_cur=343.1MB cgroup_peak=863.5MB t=+5.66s events_sent=50000
+2026-06-11T06:26:30.054599688Z	[ARCH:baseline] after_fetch_all rss=144.1MB rss_peak=144.1MB cgroup_cur=347.5MB cgroup_peak=863.5MB t=+0.86s events=50000
+=== any errors/timeouts for the instance last 10m ===

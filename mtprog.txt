@@ -1,0 +1,17 @@
+=== multithread per-thread fetch progress (last cycle) ===
+2026-06-11T12:02:33.342159368Z	[web] Got 10000 events.
+2026-06-11T12:02:32.832914338Z	[auth_flows] Got 10000 events.
+2026-06-11T12:02:32.824793879Z	[web] Fetching: start=1784346250, end=1781179352, limit=10000
+2026-06-11T12:02:32.731255971Z	[safemail] Got 10000 events.
+2026-06-11T12:02:32.330510194Z	[auth_flows] Fetching: start=1781168552, end=1781179352, limit=10000
+2026-06-11T12:02:32.312662681Z	[safemail] Fetching: start=1781168552, end=1781179352, limit=10000
+2026-06-11T12:02:32.179864300Z	[fetch-events] Starting parallel fetch for: ['auth_flows', 'safemail', 'web']
+2026-06-11T12:02:32.175219338Z	[main] Command: fetch-events, token_type: Admin Token, params: {"credentials": {"credential": "", "credentials": {"cacheVersn": 0, "id": "", "locked": false, "modified": "0001-01-01T00:00:00Z", "name": "", "password": "MASKED_SECRET", "sizeInBytes": 0, "sshkey": "", "sshkeyPass": "", "user": "", "vaultInstanceId": "", "version": 0, "workgroup": ""}, "identifier": "", "password": "MASKED_SECRET", "passwordChanged": false}, "eventFetchInterval": "1", "insecure": false, "isFetchEvents": true, "log_types": ["auth_flows", "safemail", "web"], "max_events_per_fetch_per_type": "50000", "mock_mode": true, "mock_total_events": "50000", "proxy": false, "token_type": "Admin Token", "url": "https://logs.menlosecurity.com"}, args: {"lastRun": "{\"web\":{\"boundary_hashes\":[\"a8e061175fcd36f01d7feffc084eeb7a0bf2e43e8a1d045c2b9f9377f11f3642\"],\"last_fetch_time\":\"2026-07-18T03:44:10.000000\"}}"}
+2026-06-11T11:56:32.615449109Z	[web] Got 10000 events.
+2026-06-11T11:56:32.317065778Z	[web] Fetching: start=1784346250, end=1781178991, limit=10000
+2026-06-11T11:56:32.294927754Z	[auth_flows] Got 10000 events.
+2026-06-11T11:56:32.122364769Z	[auth_flows] Fetching: start=1781168191, end=1781178991, limit=10000
+2026-06-11T11:56:32.111404313Z	[safemail] Got 10000 events.
+2026-06-11T11:56:31.935342143Z	[safemail] Fetching: start=1781168191, end=1781178991, limit=10000
+2026-06-11T11:56:31.790015245Z	[fetch-events] Starting parallel fetch for: ['auth_flows', 'safemail', 'web']
+2026-06-11T11:56:31.785769166Z	[main] Command: fetch-events, token_type: Admin Token, params: {"credentials": {"credential": "", "credentials": {"cacheVersn": 0, "id": "", "locked": false, "modified": "0001-01-01T00:00:00Z", "name": "", "password": "MASKED_SECRET", "sizeInBytes": 0, "sshkey": "", "sshkeyPass": "", "user": "", "vaultInstanceId": "", "version": 0, "workgroup": ""}, "identifier": "", "password": "MASKED_SECRET", "passwordChanged": false}, "eventFetchInterval": "1", "insecure": false, "isFetchEvents": true, "log_types": ["auth_flows", "safemail", "web"], "max_events_per_fetch_per_type": "50000", "mock_mode": true, "mock_total_events": "50000", "proxy": false, "token_type": "Admin Token", "url": "https://logs.menlosecurity.com"}, args: {"lastRun": "{\"web\":{\"boundary_hashes\":[\"a8e061175fcd36f01d7feffc084eeb7a0bf2e43e8a1d045c2b9f9377f11f3642\"],\"last_fetch_time\":\"2026-07-18T03:44:10.000000\"}}"}

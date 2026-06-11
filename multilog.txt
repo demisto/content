@@ -1,0 +1,28 @@
+=== ARCH (multi log type) ===
+2026-06-10T21:40:31.738569840Z	[ARCH:baseline] after_fetch_all rss=239.1MB rss_peak=239.1MB cgroup_cur=406.6MB cgroup_peak=862.5MB t=+2.56s events=150000
+2026-06-10T21:40:29.180737015Z	[ARCH:baseline] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+2026-06-10T21:40:02.089968584Z	[ARCH:baseline] ===== END =====
+2026-06-10T21:40:01.909457072Z	[ARCH:baseline] DONE rss=239.1MB rss_peak=668.5MB cgroup_cur=402.6MB cgroup_peak=862.5MB t=+32.73s events_sent=150000
+2026-06-10T21:39:31.813655544Z	[ARCH:baseline] after_fetch_all rss=239.1MB rss_peak=239.1MB cgroup_cur=404.8MB cgroup_peak=862.5MB t=+2.63s events=150000
+2026-06-10T21:39:29.177574218Z	[ARCH:baseline] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+=== A-steps + breakdown ===
+2026-06-10T21:41:01.349860743Z	[CSPMEM] G_send_data_to_xsiam_done rss=431.8MB cgroup_cur=598.1MB cgroup_peak=863.5MB
+2026-06-10T21:40:35.241738272Z	[CSPMEM] A3_after_join_one_big_string rss=430.3MB cgroup_cur=598.6MB cgroup_peak=862.5MB
+2026-06-10T21:40:34.902533542Z	[CSPMEM-BREAKDOWN] A2_breakdown anon(us)=551.7MB file_cache=82.9MB slab=5.0MB sock=0.0MB kernel=7.9MB
+2026-06-10T21:40:34.900858008Z	[CSPMEM] A2_after_json_dumps_list rss=474.6MB cgroup_cur=642.6MB cgroup_peak=862.5MB
+2026-06-10T21:40:31.741916205Z	[CSPMEM-BREAKDOWN] A1_breakdown anon(us)=316.2MB file_cache=82.9MB slab=5.0MB sock=0.0MB kernel=7.4MB
+2026-06-10T21:40:31.740877790Z	[CSPMEM] A1_before_json_dumps_list rss=239.1MB cgroup_cur=407.1MB cgroup_peak=862.5MB
+2026-06-10T21:40:01.860637504Z	[CSPMEM] G_send_data_to_xsiam_done rss=431.8MB cgroup_cur=596.2MB cgroup_peak=862.5MB
+2026-06-10T21:39:35.247997848Z	[CSPMEM] A3_after_join_one_big_string rss=430.3MB cgroup_cur=597.1MB cgroup_peak=862.5MB
+2026-06-10T21:39:34.903602153Z	[CSPMEM-BREAKDOWN] A2_breakdown anon(us)=551.1MB file_cache=81.7MB slab=4.9MB sock=0.0MB kernel=7.8MB
+2026-06-10T21:39:34.902348831Z	[CSPMEM] A2_after_json_dumps_list rss=474.6MB cgroup_cur=640.7MB cgroup_peak=862.5MB
+2026-06-10T21:39:31.816880263Z	[CSPMEM-BREAKDOWN] A1_breakdown anon(us)=315.6MB file_cache=81.7MB slab=4.9MB sock=0.0MB kernel=7.4MB
+2026-06-10T21:39:31.815901395Z	[CSPMEM] A1_before_json_dumps_list rss=239.1MB cgroup_cur=405.3MB cgroup_peak=862.5MB
+2026-06-10T21:39:01.675800927Z	[CSPMEM] G_send_data_to_xsiam_done rss=431.4MB cgroup_cur=597.2MB cgroup_peak=862.5MB
+2026-06-10T21:38:35.344942581Z	[CSPMEM] A3_after_join_one_big_string rss=430.0MB cgroup_cur=596.0MB cgroup_peak=862.5MB
+2026-06-10T21:38:34.987436173Z	[CSPMEM-BREAKDOWN] A2_breakdown anon(us)=551.1MB file_cache=80.5MB slab=4.9MB sock=0.0MB kernel=7.8MB
+2026-06-10T21:38:34.985606709Z	[CSPMEM] A2_after_json_dumps_list rss=474.2MB cgroup_cur=639.5MB cgroup_peak=862.5MB
+2026-06-10T21:38:31.826212861Z	[CSPMEM-BREAKDOWN] A1_breakdown anon(us)=315.6MB file_cache=80.4MB slab=4.9MB sock=0.0MB kernel=7.4MB
+2026-06-10T21:38:31.825301113Z	[CSPMEM] A1_before_json_dumps_list rss=238.8MB cgroup_cur=403.9MB cgroup_peak=862.5MB
+2026-06-10T21:38:02.227752551Z	[CSPMEM] G_send_data_to_xsiam_done rss=431.4MB cgroup_cur=596.3MB cgroup_peak=862.5MB
+2026-06-10T21:37:35.204172192Z	[CSPMEM] A3_after_join_one_big_string rss=430.0MB cgroup_cur=590.6MB cgroup_peak=862.5MB

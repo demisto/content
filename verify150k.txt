@@ -1,0 +1,3 @@
+=== send_and_flush: per-page CSP F-step running totals (last cycle) ===
+=== module health / events pulled count ===
+=== how many distinct send-page calls (chunk sizes) ===

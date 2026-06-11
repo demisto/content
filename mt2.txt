@@ -1,0 +1,34 @@
+=== multithread runs (DONE/after_parallel_fetch) ===
+2026-06-11T12:21:44.296170200Z	[ARCH:multithread] ===== END =====
+2026-06-11T12:21:44.295172751Z	[ARCH:multithread] DONE rss=117.5MB rss_peak=356.1MB cgroup_cur=386.7MB cgroup_peak=863.5MB t=+15.04s 
+2026-06-11T12:21:32.973090483Z	[ARCH:multithread] after_parallel_fetch rss=354.9MB rss_peak=356.1MB cgroup_cur=624.7MB cgroup_peak=863.5MB t=+3.72s events=150000
+2026-06-11T12:21:29.255483846Z	[ARCH:multithread] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+2026-06-11T12:20:45.453183960Z	[ARCH:multithread] ===== END =====
+2026-06-11T12:20:45.452310140Z	[ARCH:multithread] DONE rss=117.5MB rss_peak=356.1MB cgroup_cur=377.5MB cgroup_peak=863.5MB t=+16.25s 
+2026-06-11T12:20:32.904401249Z	[ARCH:multithread] after_parallel_fetch rss=354.9MB rss_peak=356.1MB cgroup_cur=604.2MB cgroup_peak=863.5MB t=+3.70s events=150000
+2026-06-11T12:20:29.203266953Z	[ARCH:multithread] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+2026-06-11T12:19:45.776366715Z	[ARCH:multithread] ===== END =====
+2026-06-11T12:19:45.775226705Z	[ARCH:multithread] DONE rss=118.2MB rss_peak=359.8MB cgroup_cur=382.7MB cgroup_peak=863.5MB t=+16.57s 
+2026-06-11T12:19:32.937340646Z	[ARCH:multithread] after_parallel_fetch rss=359.6MB rss_peak=359.8MB cgroup_cur=618.5MB cgroup_peak=863.5MB t=+3.74s events=150000
+2026-06-11T12:19:29.199573692Z	[ARCH:multithread] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+=== per-page progress (new debug) ===
+2026-06-11T12:21:32.957014832Z	[web] page done: have 50000/50000, next_paging=False
+2026-06-11T12:21:32.644600168Z	[web] page done: have 40000/50000, next_paging=True
+2026-06-11T12:21:32.426338608Z	[web] page done: have 30000/50000, next_paging=True
+2026-06-11T12:21:32.231091176Z	[web] page done: have 20000/50000, next_paging=True
+2026-06-11T12:21:32.129985813Z	[auth_flows] page done: have 50000/50000, next_paging=False
+2026-06-11T12:21:31.976172182Z	[safemail] page done: have 50000/50000, next_paging=False
+2026-06-11T12:21:31.860196202Z	[web] page done: have 10000/50000, next_paging=True
+2026-06-11T12:21:31.469369920Z	[auth_flows] page done: have 40000/50000, next_paging=True
+2026-06-11T12:21:31.216288667Z	[safemail] page done: have 40000/50000, next_paging=True
+2026-06-11T12:21:30.879906734Z	[auth_flows] page done: have 30000/50000, next_paging=True
+2026-06-11T12:21:30.632534203Z	[safemail] page done: have 30000/50000, next_paging=True
+2026-06-11T12:21:30.255389317Z	[auth_flows] page done: have 20000/50000, next_paging=True
+2026-06-11T12:21:30.182675992Z	[safemail] page done: have 20000/50000, next_paging=True
+2026-06-11T12:21:29.792555985Z	[safemail] page done: have 10000/50000, next_paging=True
+2026-06-11T12:21:29.773559933Z	[auth_flows] page done: have 10000/50000, next_paging=True
+2026-06-11T12:20:32.887373819Z	[web] page done: have 50000/50000, next_paging=False
+2026-06-11T12:20:32.682517478Z	[web] page done: have 40000/50000, next_paging=True
+2026-06-11T12:20:32.469702303Z	[web] page done: have 30000/50000, next_paging=True
+2026-06-11T12:20:32.236275750Z	[web] page done: have 20000/50000, next_paging=True
+2026-06-11T12:20:32.225943764Z	[safemail] page done: have 50000/50000, next_paging=False
