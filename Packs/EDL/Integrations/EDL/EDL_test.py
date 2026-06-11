@@ -482,6 +482,55 @@ class TestHelperFunctions:
         assert edl_log == expected_log
         assert edl_log_stats == {"Added": 5, "Dropped": 1}
 
+    def test_create_new_edl_wildcard_domain_limit_counts_unique_entries(self, mocker, requests_mock):
+        """
+        Test that edl_size is enforced against unique output entries, not raw temp-file lines.
+        Given:
+            - A plain Domain indicator "alpha.com" followed by a wildcard "*.alpha.com" and "*.beta.com".
+            - create_text_out_format writes: "alpha.com", "alpha.com" (dup from wildcard), "*.alpha.com",
+              "beta.com", "*.beta.com" — 5 raw lines, 4 unique entries.
+            - edl_size (limit) set to 4, equal to the number of unique entries.
+        When:
+            - calling create_new_edl
+        Then:
+            - The fixed loop skips the duplicate "alpha.com", counts 4 unique entries, and includes
+              all four: "alpha.com", "*.alpha.com", "beta.com", "*.beta.com".
+            - The old (buggy) loop would have broken at raw line 4 ("beta.com"), missing "*.beta.com".
+        """
+
+        import EDL as edl
+
+        tlds = "com"
+        requests_mock.get("https://publicsuffix.org/list/public_suffix_list.dat", text=tlds)
+        requests_mock.get("https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat", text=tlds)
+
+        # Plain "alpha.com" comes first so create_text_out_format writes it as line 1.
+        # Then "*.alpha.com" also writes "alpha.com" (bare) as line 2 — a duplicate.
+        # Then "*.alpha.com" itself as line 3, "beta.com" as line 4, "*.beta.com" as line 5.
+        # Total: 5 raw lines, 4 unique entries.
+        # With limit=4 the old code breaks at raw line 4 and misses "*.beta.com".
+        # The fixed code counts 4 unique entries (skipping the dup) and includes "*.beta.com".
+        indicators = [
+            {"value": "alpha.com", "indicator_type": "Domain"},
+            {"value": "*.alpha.com", "indicator_type": "Domain"},
+            {"value": "*.beta.com", "indicator_type": "Domain"},
+        ]
+        f = "\n".join(json.dumps(indicator) for indicator in indicators)
+
+        request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, limit=4)
+        mocker.patch.object(edl, "get_indicators_to_format", return_value=(io.StringIO(f), 3))
+
+        with tempfile.NamedTemporaryFile() as wip_log_file:
+            edl.EDL_FULL_LOG_PATH_WIP = wip_log_file.name
+            edl_v, _, _ = edl.create_new_edl(request_args)
+
+        assert set(edl_v.split("\n")) == {
+            "alpha.com",
+            "*.alpha.com",
+            "beta.com",
+            "*.beta.com",
+        }
+
     def test_create_json_out_format(self):
         """
         Given:
