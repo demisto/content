@@ -162,17 +162,17 @@ def add_time_field(events: list[dict]) -> None:
         event["_time"] = received if received else fallback_time
 
 
-def update_id_field(events: list[dict]) -> None:
-    """Update each event's ``id`` field to be ``<id>|<recipientAddress>``.
+def add_unique_id_field(events: list[dict]) -> None:
+    """Add a ``_unique_id`` field to each event in the form ``<id>|<recipientAddress>``.
 
-    This guarantees uniqueness across events that share the same underlying
-    message id but were delivered to different recipients.
+    The new ``_unique_id`` field guarantees uniqueness across events that share
+    the same underlying message id but were delivered to different recipients.
     """
     for event in events:
         event_id = event.get("id")
         recipient = event.get("recipientAddress")
         if event_id and recipient:
-            event["id"] = f"{event_id}|{recipient}"
+            event["_unique_id"] = f"{event_id}|{recipient}"
 
 
 # ============================================================================
@@ -320,7 +320,7 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
     start_dt = parse_datetime(start_time, default=end_dt - timedelta(minutes=Config.DEFAULT_FIRST_FETCH_MINUTES))
 
     events = fetch_events_sequential(client, start_dt, end_dt, max_events=limit)
-    update_id_field(events)
+    add_unique_id_field(events)
     add_time_field(events)
 
     if should_push_events and events:
@@ -358,7 +358,7 @@ def fetch_events(client: Client, max_events: int) -> None:
 
     # Fetch all events in the window sequentially
     events = fetch_events_sequential(client, start_dt, end_dt, max_events=max_events)
-    update_id_field(events)
+    add_unique_id_field(events)
     demisto.debug(f"[Fetch] Fetched {len(events)} raw events before dedup")
 
     # Deduplicate against previous run's high-water-mark IDs
