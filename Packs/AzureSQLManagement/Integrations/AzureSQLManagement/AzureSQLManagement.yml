@@ -770,7 +770,7 @@ script:
     - contextPath: AzureSQL.FirewallRule.endIpAddress
       description: The end IP address of the firewall rule.
       type: String
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.8931184
   runonce: false
   script: '-'
   subtype: python3
