@@ -10,6 +10,11 @@ from GitHub import (
     get_branch_command,
     get_path_data,
     github_releases_list_command,
+    github_list_organization_repositories_command,
+    github_list_actions_caches_command,
+    github_delete_actions_cache_command,
+    github_list_actions_artifacts_command,
+    github_delete_actions_artifact_command,
     http_request,
     list_all_projects_command,
     list_branch_pull_requests,
@@ -690,3 +695,151 @@ def test_github_revoke_credentials_too_many(mocker):
 
     with pytest.raises(DemistoException, match="maximum of 1000 credentials"):
         GitHub.github_revoke_credentials_command()
+
+
+def test_list_organization_repositories_command(requests_mock, mocker):
+    """
+    Given:
+        Organization name and default args.
+    When:
+        Calling github-list-organization-repositories.
+    Then:
+        Ensure expected CommandResults are returned with GitHub.Repository prefix.
+    """
+    mocker.patch.object(demisto, "args", return_value={"organization": "my-org"})
+    GitHub.TOKEN, GitHub.USE_SSL = "", ""
+    GitHub.HEADERS = {}
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USER = "test"
+
+    test_data = load_test_data("./test_data/list_org_repos_response.json")
+    requests_mock.get(
+        f"{REGULAR_BASE_URL}/orgs/my-org/repos",
+        json=test_data,
+    )
+    mocker_results = mocker.patch("GitHub.return_results")
+    github_list_organization_repositories_command()
+
+    command_results: CommandResults = mocker_results.call_args[0][0]
+    assert command_results.outputs_prefix == "GitHub.Repository"
+    assert command_results.outputs_key_field == "id"
+    assert len(command_results.outputs) == 2
+    assert command_results.outputs[0]["name"] == "repo-alpha"
+
+
+def test_list_actions_caches_command(requests_mock, mocker):
+    """
+    Given:
+        Owner, repository, and default args.
+    When:
+        Calling github-list-actions-caches.
+    Then:
+        Ensure expected CommandResults are returned with GitHub.ActionsCache prefix.
+    """
+    mocker.patch.object(demisto, "args", return_value={"owner": "my-org", "repository": "my-repo"})
+    GitHub.TOKEN, GitHub.USE_SSL = "", ""
+    GitHub.HEADERS = {}
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USER = "test"
+    GitHub.REPOSITORY = "hello-world"
+
+    test_data = load_test_data("./test_data/list_actions_caches_response.json")
+    requests_mock.get(
+        f"{REGULAR_BASE_URL}/repos/my-org/my-repo/actions/caches",
+        json=test_data,
+    )
+    mocker_results = mocker.patch("GitHub.return_results")
+    github_list_actions_caches_command()
+
+    command_results: CommandResults = mocker_results.call_args[0][0]
+    assert command_results.outputs_prefix == "GitHub.ActionsCache"
+    assert command_results.outputs_key_field == "id"
+    assert len(command_results.outputs) == 2
+    assert command_results.outputs[0]["key"] == "npm-cache-linux-abc123"
+
+
+def test_delete_actions_cache_command(requests_mock, mocker):
+    """
+    Given:
+        Owner, repository, and cache_id.
+    When:
+        Calling github-delete-actions-cache.
+    Then:
+        Ensure DELETE request is sent and success message is returned.
+    """
+    mocker.patch.object(demisto, "args", return_value={"owner": "my-org", "repository": "my-repo", "cache_id": "501"})
+    GitHub.TOKEN, GitHub.USE_SSL = "", ""
+    GitHub.HEADERS = {}
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USER = "test"
+    GitHub.REPOSITORY = "hello-world"
+
+    requests_mock.delete(
+        f"{REGULAR_BASE_URL}/repos/my-org/my-repo/actions/caches/501",
+        status_code=204,
+    )
+    mocker_results = mocker.patch("GitHub.return_results")
+    github_delete_actions_cache_command()
+
+    result = mocker_results.call_args[0][0]
+    assert "501" in result
+    assert "deleted successfully" in result
+
+
+def test_list_actions_artifacts_command(requests_mock, mocker):
+    """
+    Given:
+        Owner, repository, and default args.
+    When:
+        Calling github-list-actions-artifacts.
+    Then:
+        Ensure expected CommandResults are returned with GitHub.ActionsArtifact prefix.
+    """
+    mocker.patch.object(demisto, "args", return_value={"owner": "my-org", "repository": "my-repo"})
+    GitHub.TOKEN, GitHub.USE_SSL = "", ""
+    GitHub.HEADERS = {}
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USER = "test"
+    GitHub.REPOSITORY = "hello-world"
+
+    test_data = load_test_data("./test_data/list_actions_artifacts_response.json")
+    requests_mock.get(
+        f"{REGULAR_BASE_URL}/repos/my-org/my-repo/actions/artifacts",
+        json=test_data,
+    )
+    mocker_results = mocker.patch("GitHub.return_results")
+    github_list_actions_artifacts_command()
+
+    command_results: CommandResults = mocker_results.call_args[0][0]
+    assert command_results.outputs_prefix == "GitHub.ActionsArtifact"
+    assert command_results.outputs_key_field == "id"
+    assert len(command_results.outputs) == 2
+    assert command_results.outputs[0]["name"] == "build-output"
+
+
+def test_delete_actions_artifact_command(requests_mock, mocker):
+    """
+    Given:
+        Owner, repository, and artifact_id.
+    When:
+        Calling github-delete-actions-artifact.
+    Then:
+        Ensure DELETE request is sent and success message is returned.
+    """
+    mocker.patch.object(demisto, "args", return_value={"owner": "my-org", "repository": "my-repo", "artifact_id": "801"})
+    GitHub.TOKEN, GitHub.USE_SSL = "", ""
+    GitHub.HEADERS = {}
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USER = "test"
+    GitHub.REPOSITORY = "hello-world"
+
+    requests_mock.delete(
+        f"{REGULAR_BASE_URL}/repos/my-org/my-repo/actions/artifacts/801",
+        status_code=204,
+    )
+    mocker_results = mocker.patch("GitHub.return_results")
+    github_delete_actions_artifact_command()
+
+    result = mocker_results.call_args[0][0]
+    assert "801" in result
+    assert "deleted successfully" in result
