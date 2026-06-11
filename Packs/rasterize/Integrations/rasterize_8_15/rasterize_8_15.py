@@ -116,13 +116,13 @@ except Exception as e:
 
 # Memory pressure tolerance (in bytes): if available memory drops below this value while a page
 # is loading, wait_for_page_load_with_memory_guard will abort the wait and take a screenshot of
-# whatever has rendered so far, preventing an OOM kill.  Defaults to 600MB.
+# whatever has rendered so far, preventing an OOM kill.  Defaults to 450MB.
 try:
-    _env_tolerance_mb = os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "600")
+    _env_tolerance_mb = os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "450")
     MEMORY_PRESSURE_TOLERANCE_BYTES = int(_env_tolerance_mb) * 1024 * 1024
 except Exception as e:
     demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_MB, {e}")
-    MEMORY_PRESSURE_TOLERANCE_BYTES = 600 * 1024 * 1024
+    MEMORY_PRESSURE_TOLERANCE_BYTES = 450 * 1024 * 1024
 
 # Polling for rasterization commands to complete
 DEFAULT_POLLING_INTERVAL = 0.1
@@ -230,9 +230,9 @@ def find_existing_chrome_port() -> str | None:
 
 def _safe_call_cdp(tab: Optional[pychrome.Tab], method_path: str, tab_id: str, path: str) -> None:
     """
-    Safely invokes a Chrome DevTools Protocol method on *tab*, swallowing and logging
-    any pychrome exception. Used so transient errors (tab already stopping/disconnected)
-    never propagate out of the page-load wait.
+    Safely invokes a Chrome DevTools Protocol method on *tab* with no arguments, swallowing
+    and logging any pychrome exception. Used so transient errors (tab already stopping/
+    disconnected) never propagate out of the page-load wait or freeze sequence.
 
     Args:
         tab: The pychrome tab (may be None — call is a no-op in that case).
@@ -240,21 +240,139 @@ def _safe_call_cdp(tab: Optional[pychrome.Tab], method_path: str, tab_id: str, p
         tab_id: Tab identifier for logging.
         path: URL/path being loaded, for logging.
     """
+    _safe_call_cdp_with_args(tab, method_path, tab_id, path)
+
+
+def _safe_call_cdp_with_args(
+    tab: Optional[pychrome.Tab],
+    method_path: str,
+    tab_id: str,
+    path: str,
+    **kwargs: Any,
+) -> None:
+    """
+    Safely invokes a Chrome DevTools Protocol method on *tab* with optional keyword
+    arguments, swallowing and logging any pychrome exception. Some CDP methods require
+    parameters (e.g. Network.emulateNetworkConditions, Fetch.enable) which the no-arg
+    helper cannot supply.
+
+    Args:
+        tab: The pychrome tab (may be None — call is a no-op in that case).
+        method_path: Dotted CDP method, e.g. "Network.emulateNetworkConditions".
+        tab_id: Tab identifier for logging.
+        path: URL/path being loaded, for logging.
+        **kwargs: Keyword arguments forwarded to the CDP method.
+    """
     if tab is None:
         return
     try:
         target: Any = tab
         for part in method_path.split("."):
             target = getattr(target, part)
-        target()
+        target(**kwargs)
         demisto.debug(
-            f"wait_for_page_load_with_memory_guard: {method_path}() called, {tab_id=}, {path=}",
+            f"wait_for_page_load_with_memory_guard: {method_path}({kwargs}) called, {tab_id=}, {path=}",
         )
     except Exception as ex:
         demisto.debug(
-            f"wait_for_page_load_with_memory_guard: {method_path}() failed "
+            f"wait_for_page_load_with_memory_guard: {method_path}({kwargs}) failed "
             f"(tab may already be stopping/disconnected): {ex}, {tab_id=}, {path=}",
         )
+
+
+def _freeze_tab_for_screenshot(tab: Optional[pychrome.Tab], tab_id: str, path: str) -> None:
+    """
+    Halts all further memory growth in *tab* while keeping it screenshot-able.
+
+    Unlike a single ``Page.stopLoading`` call (which only cancels the current navigation's
+    in-flight network requests), this sequence:
+
+    1. Takes the renderer offline (`Network.emulateNetworkConditions` + `Fetch.enable`)
+       so JS-initiated XHR/fetch/img requests fail instantly and stop allocating.
+    2. Cancels current in-flight requests (`Page.stopLoading`).
+    3. Halts the JS event loop (`Emulation.setScriptExecutionDisabled` and
+       `Page.setWebLifecycleState("frozen")`), so requestAnimationFrame, setInterval,
+       IntersectionObserver lazy-loaders, and SPA hydration stop allocating.
+    4. Runs GC / memory purge hints — now effective because nothing is allocating
+       on top of them.
+
+    After this returns the tab is still alive and ``Page.captureScreenshot`` will return
+    the last painted frame (the compositor surface survives a frozen tab). The caller is
+    expected to capture promptly and then close the tab.
+
+    Each CDP call is wrapped in a safe helper because some methods are not implemented in
+    every Chrome build (e.g. `Page.setWebLifecycleState` requires headless-shell with the
+    appropriate flag), so we tolerate per-call failures.
+
+    Args:
+        tab: The pychrome tab to freeze (may be None — call is a no-op in that case).
+        tab_id: Tab identifier for logging.
+        path: URL/path being loaded, for logging.
+    """
+    if tab is None:
+        return
+    demisto.debug(f"_freeze_tab_for_screenshot: starting freeze sequence, {tab_id=}, {path=}")
+
+    # 1a. Make sure the Network domain is enabled before issuing emulateNetworkConditions.
+    _safe_call_cdp(tab, "Network.enable", tab_id, path)
+
+    # 1b. Cut the network at the renderer: every new request fails immediately.
+    _safe_call_cdp_with_args(
+        tab,
+        "Network.emulateNetworkConditions",
+        tab_id,
+        path,
+        offline=True,
+        latency=0,
+        downloadThroughput=0,
+        uploadThroughput=0,
+    )
+
+    # 1c. Belt-and-braces: enable the Fetch domain with a catch-all blocking pattern so
+    #     even requests that slip past the network-conditions layer are intercepted.
+    _safe_call_cdp_with_args(
+        tab,
+        "Fetch.enable",
+        tab_id,
+        path,
+        patterns=[{"urlPattern": "*"}],
+    )
+
+    # 2. Cancel the current navigation's in-flight fetches.
+    _safe_call_cdp(tab, "Page.stopLoading", tab_id, path)
+
+    # 3a. Halt the JS event loop so rAF / setInterval / observers stop allocating.
+    _safe_call_cdp_with_args(
+        tab,
+        "Emulation.setScriptExecutionDisabled",
+        tab_id,
+        path,
+        value=True,
+    )
+
+    # 3b. Signal the page-lifecycle layer that we are frozen (best-effort; not all
+    #     Chrome builds support this CDP method).
+    _safe_call_cdp_with_args(
+        tab,
+        "Page.setWebLifecycleState",
+        tab_id,
+        path,
+        state="frozen",
+    )
+
+    # 4. With nothing allocating on top of them, the GC hints can actually shrink
+    #    the V8 heap and release renderer-side caches.
+    _safe_call_cdp(tab, "HeapProfiler.collectGarbage", tab_id, path)
+    _safe_call_cdp(tab, "Memory.forciblyPurgeJavaScriptMemory", tab_id, path)
+
+    # 5. Drop the browser-level network cache populated by this tab.
+    _safe_call_cdp(tab, "Network.clearBrowserCache", tab_id, path)
+
+    demisto.debug(
+        f"_freeze_tab_for_screenshot: freeze sequence complete, "
+        f"available={get_container_available_memory_bytes() / (1024 * 1024):.1f} MiB, "
+        f"{tab_id=}, {path=}",
+    )
 
 
 def wait_for_page_load_with_memory_guard(
@@ -270,9 +388,11 @@ def wait_for_page_load_with_memory_guard(
     Waits for *tab_ready_event* to be set, but aborts the wait early if available container
     memory drops below *tolerance_bytes*.
 
-    When memory pressure is detected the event is set immediately so that the caller can
-    capture a screenshot of whatever has rendered so far, rather than waiting for the full
-    page load and risking an OOM kill.
+    When memory pressure is detected the tab is **frozen** (network cut + JS halted +
+    GC purge — see :func:`_freeze_tab_for_screenshot`) and the event is set so the caller
+    can immediately capture a partial screenshot of whatever rendered so far. Freezing
+    halts further allocation without destroying the compositor surface, so the screenshot
+    still succeeds and the OOM is avoided.
 
     Args:
         tab_ready_event: The threading.Event that signals page load completion.
@@ -305,15 +425,13 @@ def wait_for_page_load_with_memory_guard(
         if tab_ready_event.wait(timeout=poll_interval):
             demisto.debug(f"wait_for_page_load_with_memory_guard: tab_ready_event set normally, {tab_id=}, {path=}")
             _safe_call_cdp(tab, "Page.stopLoading", tab_id, path)
-            get_container_available_memory_bytes()
-            time.sleep(1)  # let Chrome process the stop
             _safe_call_cdp(tab, "HeapProfiler.collectGarbage", tab_id, path)  # reclaim unreachable JS objects
             _safe_call_cdp(tab, "Memory.forciblyPurgeJavaScriptMemory", tab_id, path)  # more aggressive purge
-            get_container_available_memory_bytes()
-            for i in range(1, 4):
-                demisto.debug(f"iteration num: {i}")
-                time.sleep(10)
-                get_container_available_memory_bytes()
+            demisto.debug(
+                f"wait_for_page_load_with_memory_guard: normal completion, "
+                f"available={get_container_available_memory_bytes() / (1024 * 1024):.1f} MiB, "
+                f"{tab_id=}, {path=}",
+            )
             return True
 
         # Check for timeout.
@@ -329,24 +447,22 @@ def wait_for_page_load_with_memory_guard(
         available = get_container_available_memory_bytes()
 
         if available <= tolerance_bytes:
-            _safe_call_cdp(tab, "Page.stopLoading", tab_id, path)
-            tab_ready_event.set()
             demisto.debug(
                 f"wait_for_page_load_with_memory_guard: memory pressure detected — "
                 f"{available / (1024 * 1024):.1f} MiB available ≤ "
                 f"{tolerance_bytes / (1024 * 1024):.1f} MiB tolerance. "
-                f"Aborting page-load wait and capturing partial screenshot. {tab_id=}, {path=}",
+                f"Freezing tab and capturing partial screenshot. {tab_id=}, {path=}",
             )
-            get_container_available_memory_bytes()
-            time.sleep(1)  # let Chrome process the stop
-            _safe_call_cdp(tab, "HeapProfiler.collectGarbage", tab_id, path)  # reclaim unreachable JS objects
-            _safe_call_cdp(tab, "Memory.forciblyPurgeJavaScriptMemory", tab_id, path)  # more aggressive purge
-            get_container_available_memory_bytes()
+            # Freeze the tab: cuts network, halts JS, and runs GC/purge so further
+            # allocation stops immediately. The compositor surface survives, so the
+            # caller can still capture a screenshot of the partially-rendered page.
+            _freeze_tab_for_screenshot(tab, tab_id, path)
             for i in range(1, 4):
-                demisto.debug(f"iteration num: {i} before sleep")
+                demisto.debug(f"iteration num: {i} before sleep for path {path} and tab {tab_id}")
                 time.sleep(10)
-                demisto.debug(f"iteration num: {i} after sleep")
+                demisto.debug(f"iteration num: {i} after sleep for path {path} and tab {tab_id}")
                 get_container_available_memory_bytes()
+            tab_ready_event.set()
             return False  # False signals that we aborted early due to memory pressure.
 
 
@@ -448,6 +564,10 @@ class PychromeEventHandler:
         self.navigation_timeout = navigation_timeout
         self.is_private_network_url = False
         self.document_url = ""
+        # Set to True by navigate_to_path() when wait_for_page_load_with_memory_guard
+        # froze the tab early due to memory pressure. Consumed by screenshot_image() to
+        # switch to a memory-frugal JPEG/viewport-clip capture instead of a full-page PNG.
+        self.memory_pressured = False
 
     def page_frame_started_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}, {self.tab.id=}, {self.path=}")
@@ -1306,6 +1426,10 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
                 path=path,
                 tab=tab,
             )
+            # Record memory-pressure outcome on the handler so screenshot_image() can
+            # downgrade to a JPEG/viewport-clip capture and avoid allocating tens of MBs
+            # for a full-page PNG while the renderer is already at the cgroup edge.
+            tab_event_handler.memory_pressured = not page_loaded_normally
             if not page_loaded_normally:
                 return_warning(
                     f"Warning: Rasterize aborted page-load wait due to memory pressure. "
@@ -1434,7 +1558,33 @@ def screenshot_image(
     demisto.debug(f"{page_layout_metrics=} {tab.id=} {path=}.")
     css_content_size = page_layout_metrics["cssContentSize"]
     try:
-        if full_screen:
+        # Under memory pressure the tab has been frozen and the renderer is at the cgroup
+        # edge. A full-page PNG capture can allocate 10–30 MB just for the encoded buffer
+        # and frequently triggers an OOM during the capture itself. Downgrade to a JPEG
+        # clipped to the viewport — typically 100–300 KB — which is enough to show what
+        # was rendered at the moment of pressure without pushing us over the limit.
+        if tab_event_handler.memory_pressured:
+            visual_viewport = page_layout_metrics.get("visualViewport", {})
+            clip = {
+                "x": 0,
+                "y": 0,
+                "width": int(visual_viewport.get("clientWidth") or DEFAULT_WIDTH),
+                "height": int(visual_viewport.get("clientHeight") or DEFAULT_HEIGHT),
+                "scale": 1,
+            }
+            demisto.debug(
+                f"screenshot_image: memory_pressured=True, using JPEG/viewport-clip capture, "
+                f"{clip=}, {tab.id=}, {path=}"
+            )
+            screenshot_data = tab.Page.captureScreenshot(
+                format="jpeg",
+                quality=70,
+                clip=clip,
+                captureBeyondViewport=False,
+                optimizeForSpeed=True,
+                _timeout=SCREENSHOT_TIMEOUT,
+            )["data"]
+        elif full_screen:
             viewport = css_content_size
             viewport["scale"] = 1
             screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True, _timeout=SCREENSHOT_TIMEOUT)[
