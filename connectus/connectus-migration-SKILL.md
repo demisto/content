@@ -1601,9 +1601,61 @@ python3 connectus/connectus_migration/manifest_generator.py \
 > - **Invoke with NO subcommand** — `manifest_generator.py <yml>
 >   <title> <mapped> <auth> ...`, not `manifest_generator.py
 >   generate-manifest ...`.
-> - The integration's `provider` (vendor) and pack metadata
->   (`tags`/`categories`/`supported_modules`) are read from the YML /
->   `pack_metadata.json` automatically — nothing to pass.
+ > - The integration's `provider` (vendor) and pack metadata
+> >   (`tags`/`categories`/`supported_modules`) are read from the YML /
+> >   `pack_metadata.json` automatically — nothing to pass.
+> - The generated `connector.yaml` `settings` block is emitted
+>   automatically with `allow_skip_verification: true`, `grouped: true`,
+>   and `skip_cut_off_check: true` for **every** connector — do NOT add
+>   these by hand.
+
+#### Similarity-guard collision with a same-vendor connector
+
+The from-scratch flow runs a **similarity guard**
+([`check_connector_id_title_similarity()`](connectus_migration/manifest_generator.py:579))
+BEFORE writing any files. It computes the new connector's id/title from the
+**vendor** (`integration_yml["provider"]`) + capability suffix via
+[`derive_connector_id_and_title()`](connectus_migration/manifest_generator.py:172)
+(e.g. vendor `Atlassian` + collection caps → id `atlassian-automation-and-collection`,
+title `Atlassian Automation and Collection`) and rejects it with a
+`RuntimeError: found similiray ...` when the new id/title is a
+**case/space-insensitive substring** of (or contains) any EXISTING
+connector's id/title. Because the vendor prefix is a substring of the
+`<vendor>-automation-and-collection` pattern, **any pre-existing
+same-vendor connector trips this guard** — e.g. an existing SaaS-posture
+`atlassian` connector blocks a new `atlassian-automation-and-collection`
+connector, even though they are intentionally distinct products.
+
+**This is the documented decision point — do NOT guess; ask the user.**
+The `Connector ID` column is the source of truth for which connector the
+integration belongs to. Two legitimate resolutions, picked by what the
+`Connector ID` says vs. the existing folder:
+
+1. **The `Connector ID` is the intended SEPARATE connector** (the common
+   case for the `<Vendor> Automation and Collection` naming pattern, which
+   is deliberately namespaced to be distinct from a same-vendor
+   posture/identity connector). The guard is a false positive here. The
+   integration should get its OWN connector folder whose slug is
+   `title_to_slug(Connector ID)` = `connector_id.lower()` with spaces
+   removed (note: the on-disk target slug uses NO dashes, while the
+   guard's *derived* id uses dashes — they differ). To proceed, the
+   substring collision must be resolved deliberately — confirm with the
+   user, then either (a) pass an explicit `connector_title` whose derived
+   id is NOT a substring-match of the existing connector, or (b) if the
+   project decides the guard is too strict for this naming convention,
+   escalate rather than silently editing the guard.
+2. **The integration should be a HANDLER under the existing same-vendor
+   connector.** Pass `connector_title` equal to the EXISTING connector's
+   title (e.g. `"Atlassian"`) so `title_to_slug` matches the existing
+   folder and the generator takes the **append-handler** path (which does
+   NOT run the from-scratch similarity guard).
+
+Always read the `Connector ID` and inspect the existing same-vendor
+folder's product/capabilities before choosing. When the `Connector ID`
+clearly denotes a distinct product (different capabilities) from the
+existing folder, prefer resolution #1 (separate connector) and confirm
+with the user; only consolidate as a handler (resolution #2) when the
+integrations genuinely belong to the same connector.
 
 > **Shortcut.** The auto-runner
 > [`run_pre_manifest_steps.py`](connectus_migration/run_pre_manifest_steps.py:1)
@@ -1655,6 +1707,32 @@ and re-run the markpass. To explicitly reset the checkpoint:
 ```bash
 python3 connectus/workflow_state.py fail "<Integration ID>" "run manifest make validate"
 ```
+
+#### Recommended: run `make validate` directly first (fast feedback)
+
+**Always run `make validate` yourself before relying on the markpass gate**
+— it gives you the schema/OPA errors directly and lets you iterate without
+the state-machine ordering constraint (the markpass for this step is
+rejected until the earlier steps are complete, but a manual `make validate`
+can be run at ANY time once `connectors/<slug>/` exists, e.g. right after
+Step 3c generates the manifest). Scope it to the single connector you just
+generated with `connector=<path>` so it runs in seconds instead of
+validating every connector in the repo:
+
+```bash
+cd "$CONNECTUS_REPO_DIR"
+make validate connector=connectors/<slug>          # single connector (fast)
+make validate connector=connectors/<slug> json=1   # machine-readable output
+make validate                                       # ALL connectors (what the gate runs)
+```
+
+`make validate` runs two passes — **JSON Schema** validation then **OPA**
+policy validation — and prints `✅ <slug>: VALID` / a non-zero exit with
+the offending rule on failure. A clean run ends with
+`All validations completed successfully!`. Fix any reported error in the
+connector manifest, re-run the single-connector command until it is green,
+*then* let the markpass gate (which runs the full `make validate`) record
+the checkpoint.
 
 
 ### Step 8: `Release Notes` (data column)
@@ -1792,6 +1870,96 @@ After the code is merged to the branch:
 ```bash
 python3 connectus/workflow_state.py markpass "<Integration ID>" "code merged"
 ```
+
+
+## Deploying to a dev tenant
+
+Use this to push the generated ConnectUs connector manifest to a live dev
+tenant for testing (e.g. after Step 3c generates the manifest, or when
+verifying auth/params end-to-end). It is **not** a workflow checkpoint —
+it is an out-of-band testing action you can run any time the connector
+files exist in the ConnectUs repo.
+
+The tool is
+[`connectus/runtime_demisto.params_parity/deploy.py`](runtime_demisto.params_parity/deploy.py:1)
+(note the `runtime_demisto.params_parity/` SUBDIRECTORY — it is NOT
+directly under `connectus/`). What it does, in order:
+
+1. **Git ops** (skipped with `--skip-git`): `git fetch`, then **HARD-RESET**
+   `CONNECTUS_BRANCH` to `origin/<BASE_BRANCH>` (default `stable`) and
+   **force-push** it. ⚠️ This `git reset --hard` **DISCARDS any
+   uncommitted work in the ConnectUs repo** — including a freshly
+   generated `connectors/<slug>/` that has not been committed.
+2. **Trigger** a GitLab CI *skinny* pipeline on `CONNECTUS_BRANCH` with
+   variables `SKINNY_PIPELINE=true`, `TENANT_IDS=<tenant>`,
+   `OVERRIDE_REASON=<reason>`.
+3. **Poll** the pipeline to completion and print a summary (pipeline URL,
+   status, duration, failed jobs).
+
+### CRITICAL: commit before you deploy
+
+Because Step 1 hard-resets to base, the **only safe way** to deploy a
+just-generated manifest is:
+
+1. **Commit** the new `connectors/<slug>/` onto `CONNECTUS_BRANCH` in the
+   ConnectUs repo (`$CONNECTUS_REPO_DIR`).
+2. **Push** that branch to `origin` yourself.
+3. Run deploy with **`--skip-git`** so it does NOT reset/force-push — it
+   just triggers + polls the pipeline against the already-pushed branch.
+
+Running deploy **without** `--skip-git` against uncommitted manifest work
+will wipe it. Only run the full git flow when the work you want deployed
+is already committed on `origin/<BASE_BRANCH>` (rare during migration).
+
+> **SSH / signing gotchas (environment-dependent).** The ConnectUs repo
+> may be configured to SSH-sign commits (`commit.gpgsign=true`,
+> `gpg.format=ssh`) and push over SSH (`git@gitlab...`). If the configured
+> key is missing/unloadable, commits fail with `Couldn't load public key`
+> and pushes fail with `Permission denied (publickey)`. Do **NOT** edit
+> the user's git config to work around this. For a one-off commit you may
+> use `git commit --no-gpg-sign` (does not persist config). If `ssh`/push
+> is unavailable in your environment, ask the user to `git push` the
+> branch themselves, then run deploy with `--skip-git`.
+
+### Canonical invocation
+
+```bash
+# (1) In the ConnectUs repo: commit + push the manifest first.
+cd "$CONNECTUS_REPO_DIR"
+git add connectors/<slug>/
+git commit -m "Add UCP manifest for <Integration ID>"   # add --no-gpg-sign if signing is broken
+git push origin "$CONNECTUS_BRANCH"
+
+# (2) From the CONTENT repo: trigger + poll the pipeline (no git ops).
+cd <content-repo>
+python3 connectus/runtime_demisto.params_parity/deploy.py --skip-git --tenant <TENANT_ID>
+```
+
+### Configuration (priority: CLI args > env vars > .env > defaults)
+
+Read from the unified root `.env` via `load_env()`:
+
+| Var / flag | Purpose | Default |
+|---|---|---|
+| `--tenant` / `TENANT_ID` | Tenant ID(s) to deploy to (comma-separated). Sent to CI as `TENANT_IDS`. | (required) |
+| `--branch` / `CONNECTUS_BRANCH` | Branch in the ConnectUs repo to deploy. | `xsoar` |
+| `--base` / `BASE_BRANCH` | Branch `CONNECTUS_BRANCH` is hard-reset to (non-`--skip-git` only). | `stable` |
+| `--repo-dir` / `CONNECTUS_REPO_DIR` | Local ConnectUs repo clone (git ops run here). | (required for git ops) |
+| `--reason` / `OVERRIDE_REASON` | Dev-override reason string. | `dev-testing` |
+| `--gitlab-url` / `GITLAB_URL` | GitLab instance URL. | `https://gitlab.xdr.pan.local` |
+| `--token` / `GITLAB_TOKEN` | GitLab PAT with `api` scope. | (required) |
+| `--skip-git` | Skip the reset/force-push; only trigger + poll. | off |
+| `--poll-interval` / `--max-wait` | Polling cadence / timeout (seconds). | 2 / 600 |
+| `--diagnose` | Run GitLab connectivity diagnostics (HTTPS-only) and exit. | off |
+
+The GitLab project is hardcoded
+(`xdr/development/platform/unified-connectors-content`). Exit codes:
+`0` success, `1` pipeline failed (prints failed jobs), `2` timeout.
+
+> **Troubleshooting.** A `GITLAB_TOKEN`/connectivity problem surfaces as
+> 401/404 or a network error from the API calls — run
+> `deploy.py --diagnose` to test DNS → TCP → TLS → API → pipeline trigger
+> over HTTPS (no SSH needed) before debugging further.
 
 
 ## Error Recovery Commands
