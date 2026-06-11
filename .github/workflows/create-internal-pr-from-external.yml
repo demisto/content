@@ -3,7 +3,7 @@ on:
   pull_request_target:
     types: [closed]
     branches:
-      - contrib/**
+      - "**"
 
 permissions:
   pull-requests: write
@@ -50,6 +50,6 @@ jobs:
         run: |
           echo "Add a comment"
           gh pr comment "$PR_URL" --body "Thank you for your contribution. Your external PR has been merged and the changes are now included in one or more internal PRs for further review.
-                                          > [!NOTE] 
-                                          > Contributions containing XSIAM content (Modeling Rules, Parsing Rules, Correlation Rules, or Dashboards) are subject to an additional review process and may take longer to be merged to master."
+          > [!NOTE]
+          > Contributions containing XSIAM content (Modeling Rules, Parsing Rules, Correlation Rules, or Dashboards) are subject to an additional review process and may take longer to be merged to master."
           
