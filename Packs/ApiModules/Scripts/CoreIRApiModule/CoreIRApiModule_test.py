@@ -6176,7 +6176,6 @@ def test_get_issues_by_filter_bioc_description_render_failure_falls_back_to_simp
     """
     from CoreIRApiModule import CoreClient, get_issues_by_filter_command
 
-    error_mock = mocker.patch.object(demisto, "error")
     # Force the full renderer to fail so the simple fallback is exercised.
     mocker.patch("CoreIRApiModule.render_bioc_description", side_effect=Exception("boom"))
 
