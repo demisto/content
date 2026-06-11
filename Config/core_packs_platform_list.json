@@ -97,7 +97,8 @@
             "id": "CoreAlertFields",
             "supportedModules": [
                 "agentix",
-                "xsiam"
+                "xsiam",
+                "edr"
             ]
         },
         {

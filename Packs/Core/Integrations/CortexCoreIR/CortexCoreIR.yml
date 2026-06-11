@@ -4036,7 +4036,7 @@ script:
       name: agent_id
       prettyname: Run action on
       prettypredefined:
-        Affected host: ${issue.agentid}
+        Issue initiator host: ${issue.xdmsourceagentidentifier}
       isArray: false
       required: true
     - description: The causality ID.
