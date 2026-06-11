@@ -31,6 +31,11 @@
     "description": "Category of leak (account, combo-list, public-breach).",
     "marketplaces": [
         "xsoar",
+        "marketplacev2",
         "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
     ]
 }

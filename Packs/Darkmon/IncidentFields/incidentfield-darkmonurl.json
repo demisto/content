@@ -32,6 +32,11 @@
     "description": "URL where the credential was used.",
     "marketplaces": [
         "xsoar",
+        "marketplacev2",
         "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
     ]
 }

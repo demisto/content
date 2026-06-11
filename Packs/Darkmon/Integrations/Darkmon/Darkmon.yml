@@ -715,3 +715,4 @@ script:
 tests:
 - Darkmon - Test
 fromversion: 6.5.0
+provider: Darkmon

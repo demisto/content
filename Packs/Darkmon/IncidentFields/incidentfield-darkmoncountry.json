@@ -32,6 +32,11 @@
     "description": "Country code of the compromised machine.",
     "marketplaces": [
         "xsoar",
+        "marketplacev2",
         "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
     ]
 }

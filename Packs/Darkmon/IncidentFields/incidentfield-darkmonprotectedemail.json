@@ -31,6 +31,11 @@
     "description": "The board-protected email this leak references.",
     "marketplaces": [
         "xsoar",
+        "marketplacev2",
         "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
     ]
 }

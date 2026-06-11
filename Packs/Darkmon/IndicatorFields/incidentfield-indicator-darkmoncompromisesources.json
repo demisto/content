@@ -32,6 +32,11 @@
     "description": "Sources where this indicator appeared in compromise data (stealer logs, breaches, dark forums).",
     "marketplaces": [
         "xsoar",
+        "marketplacev2",
         "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
     ]
 }

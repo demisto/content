@@ -32,6 +32,11 @@
     "description": "Most recent date Darkmon observed this indicator in compromise data.",
     "marketplaces": [
         "xsoar",
+        "marketplacev2",
         "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
     ]
 }

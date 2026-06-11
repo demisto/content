@@ -8,11 +8,17 @@
     "fromVersion": "6.5.0",
     "marketplaces": [
         "xsoar",
+        "marketplacev2",
         "platform"
     ],
     "itemVersion": "",
     "locked": false,
     "nameLocked": false,
     "packID": "Darkmon",
-    "system": false
+    "system": false,
+    "supportedModules": [
+        "xsoar",
+        "xsiam",
+        "agentix"
+    ]
 }

@@ -32,6 +32,11 @@
     "description": "Stealer family names linked to this indicator (e.g. RedLine, Vidar, Raccoon).",
     "marketplaces": [
         "xsoar",
+        "marketplacev2",
         "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
     ]
 }

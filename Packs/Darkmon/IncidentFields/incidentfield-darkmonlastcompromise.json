@@ -32,6 +32,11 @@
     "description": "Most recent observation of this credential being compromised.",
     "marketplaces": [
         "xsoar",
+        "marketplacev2",
         "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
     ]
 }
