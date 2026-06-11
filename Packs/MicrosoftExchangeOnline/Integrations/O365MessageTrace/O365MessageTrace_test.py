@@ -96,22 +96,37 @@ class TestFormatDatetimeForFilter:
 
 
 class TestDeduplicateEvents:
+    """``deduplicate_events`` keys off the derived ``_unique_id`` field that
+    ``add_unique_id_field`` populates from ``<id>|<recipientAddress>``. Events
+    that lack a ``_unique_id`` are always kept (we cannot dedupe what we cannot
+    uniquely identify).
+    """
+
     def test_returns_all_events_when_seen_ids_empty(self, sample_events):
+        add_unique_id_field(sample_events)
         result = deduplicate_events(sample_events, set())
         assert result == sample_events
 
     def test_filters_out_seen_events(self, sample_events):
-        result = deduplicate_events(sample_events, {"evt-1"})
+        add_unique_id_field(sample_events)
+        result = deduplicate_events(sample_events, {"evt-1|bob@contoso.com"})
         assert len(result) == 1
         assert result[0]["id"] == "evt-2"
 
     def test_filters_all_when_all_seen(self, sample_events):
-        result = deduplicate_events(sample_events, {"evt-1", "evt-2"})
+        add_unique_id_field(sample_events)
+        result = deduplicate_events(
+            sample_events,
+            {"evt-1|bob@contoso.com", "evt-2|dave@contoso.com"},
+        )
         assert result == []
 
-    def test_keeps_events_without_id(self):
-        events = [{"id": "evt-1"}, {"receivedDateTime": "2025-01-01T00:00:00Z"}]
-        result = deduplicate_events(events, {"evt-1"})
+    def test_keeps_events_without_unique_id(self):
+        events = [
+            {"_unique_id": "evt-1|bob@contoso.com"},
+            {"receivedDateTime": "2025-01-01T00:00:00Z"},
+        ]
+        result = deduplicate_events(events, {"evt-1|bob@contoso.com"})
         assert len(result) == 1
         assert result[0] == {"receivedDateTime": "2025-01-01T00:00:00Z"}
 
@@ -485,8 +500,9 @@ class TestFetchEvents:
         assert "2025-01-01T09:00:00Z" in first_call_params["$filter"]
 
     def test_deduplicates_against_seen_ids(self, mock_client, sample_events, mocker):
-        # ``fetch_events`` deduplicates and tracks ``seen_ids`` using the raw ``id`` field.
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": ["evt-1"]}
+        # ``fetch_events`` deduplicates and tracks ``seen_ids`` using the derived
+        # ``_unique_id`` field (``<id>|<recipientAddress>``).
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": ["evt-1|bob@contoso.com"]}
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
@@ -520,14 +536,18 @@ class TestFetchEvents:
         new_state = set_last_run.call_args.args[0]
         # Latest event is evt-2 at 2025-01-01T10:01:00Z
         assert new_state["last_fetch"] == "2025-01-01T10:01:00Z"
-        # ``fetch_events`` stores the raw ``id`` field in ``seen_ids``.
-        assert "evt-2" in new_state["seen_ids"]
+        # ``fetch_events`` stores the derived ``_unique_id`` (``<id>|<recipientAddress>``) in ``seen_ids``.
+        assert "evt-2|dave@contoso.com" in new_state["seen_ids"]
 
     def test_merges_seen_ids_when_high_water_mark_unchanged(self, mock_client, mocker):
         """If new events share the same timestamp as the previous high-water mark, seen_ids should be merged."""
-        last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": ["evt-old"]}
+        last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": ["evt-old|bob@contoso.com"]}
         new_events = [
-            {"id": "evt-new", "receivedDateTime": "2025-01-01T10:00:00Z"},
+            {
+                "id": "evt-new",
+                "recipientAddress": "alice@contoso.com",
+                "receivedDateTime": "2025-01-01T10:00:00Z",
+            },
         ]
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
@@ -538,7 +558,7 @@ class TestFetchEvents:
 
         new_state = set_last_run.call_args.args[0]
         assert new_state["last_fetch"] == "2025-01-01T10:00:00Z"
-        assert set(new_state["seen_ids"]) == {"evt-old", "evt-new"}
+        assert set(new_state["seen_ids"]) == {"evt-old|bob@contoso.com", "evt-new|alice@contoso.com"}
 
     def test_first_page_failure_does_not_advance_last_run(self, mock_client, mocker):
         """If the very first page errors out, lastRun must NOT be advanced (data-loss protection)."""
