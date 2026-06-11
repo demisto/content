@@ -98,7 +98,7 @@ EXCLUDED_AUTOMATION_PATTERNS: list[str] = [
 
 
 # ---------------------------------------------------------------------------
-# Step 1: Decide capabilities
+# Phase 1: Decide capabilities
 # ---------------------------------------------------------------------------
 def _is_pure_event_collector(integration_yml: dict, command_names: list[str]) -> bool:
     """Check whether the integration qualifies as a 'pure' event collector for Rule 2's early-exit.
@@ -209,7 +209,7 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
     # Rule 7 - Long-running suggested capability
     # If the integration declares longRunning AND its id is in the
     # INTEGRATION_TO_LONGRUNNING_CAPABILITY override dict, ensure the suggested
-    # capability key exists in result so Step 2 has a target to route to.
+    # capability key exists in result so Phase 2 has a target to route to.
     if script.get("longRunning") is True:
         integration_id: str = (integration_yml.get("commonfields") or {}).get("id", "")
         suggested = INTEGRATION_TO_LONGRUNNING_CAPABILITY.get(integration_id, "")
@@ -226,7 +226,7 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
 
 
 # ---------------------------------------------------------------------------
-# Step 2: Map params to capabilities
+# Phase 2: Map params to capabilities
 # ---------------------------------------------------------------------------
 def _required_param_names(integration_yml: dict | None) -> set[str]:
     """Return the set of YML config param names marked ``required: true``.
@@ -252,7 +252,7 @@ def _handle_test_module(
     param_defaults: dict,
     integration_yml: dict | None = None,
 ) -> list[str]:
-    """Step 2.1 - Elevate REQUIRED ``test-module`` params (without a default)
+    """Phase 2.1 - Elevate REQUIRED ``test-module`` params (without a default)
     to the connection (``other_connection`` in Auth Details) instead of
     routing them into ``general_configurations``.
 
@@ -264,7 +264,7 @@ def _handle_test_module(
        belongs on the connection (the integration needs it to even
        authenticate / run the connection test), so it must NOT land in
        ``general_configurations``. It is returned in the elevation list so
-       the caller (Step 3b) can inject it into the integration's
+       the caller (Step 7) can inject it into the integration's
        ``Auth Details.other_connection`` via ``set-auth``. It is also kept
        out of every capability bucket so it never appears in the persisted
        ``Params to Capabilities`` cell (whose closed enum has no
@@ -321,7 +321,7 @@ def _apply_manual_mapping(
 ) -> set:
     """
     manual_command_to_capability - mapping command name -> list of capability names.
-    Step 2.1.5 — Apply manual command-to-capability overrides.
+    Phase 2.1.5 — Apply manual command-to-capability overrides.
 
     Manual mapping is the source of truth for any listed command. For each entry:
       1. Ensure each listed capability exists in the result dict (create with []).
@@ -360,7 +360,7 @@ def _single_capability_shortcut(
     command_params: dict,
     handled_commands: set | None = None,
 ) -> None:
-    """Step 2.2 - When only a single (non-general) capability exists, dump all
+    """Phase 2.2 - When only a single (non-general) capability exists, dump all
     unique command params (excluding those already placed in
     ``general_configurations`` and those handled by manual mapping) into that
     capability."""
@@ -433,9 +433,9 @@ def _multi_capability_mapping(
 ) -> None:
     """
     command_params structure- {integration: '', commands: {command: [params]}}
-    Step 2.3 - For each command, map its params to the matching capability
+    Phase 2.3 - For each command, map its params to the matching capability
     (or ``Automation``).  Skips test-module (handled in 2.1) and any command
-    already routed by manual mapping (Step 2.1.5).  Warns if the target
+    already routed by manual mapping (Phase 2.1.5).  Warns if the target
     capability is missing from the result mapping.
 
     ``integration_id`` is forwarded to ``_resolve_target_capability`` so the
@@ -476,7 +476,7 @@ def _multi_capability_mapping(
 
 
 def _deduplicate(result: dict[str, list[str]]) -> None:
-    """Step 2.4 - Move any param appearing in two or more capabilities (or in
+    """Phase 2.4 - Move any param appearing in two or more capabilities (or in
     ``general_configurations`` plus another capability) into
     ``general_configurations`` exactly once.
 
@@ -530,7 +530,7 @@ _MISSING = object()
 def _collect_hidden_params(
     integration_yml: dict, param_defaults: dict
 ) -> tuple[set, set]:
-    """Step 2.6 helper — Collect names of params to remove because they're
+    """Phase 2.6 helper — Collect names of params to remove because they're
     hidden on the Cortex Platform, plus any hidden params kept by the carve-out.
 
     A param is considered hidden on the platform if EITHER:
@@ -576,7 +576,7 @@ def _filter_hidden_params(
     hidden_params: set,
     kept_by_carveout: set | None = None,
 ) -> None:
-    """Step 2.6 — Remove hidden params from every capability list and log them.
+    """Phase 2.6 — Remove hidden params from every capability list and log them.
 
     Mutates ``result`` in place. Two log messages may be emitted:
       - ``"Removed the following params..."`` if any params were stripped
@@ -614,7 +614,7 @@ def _route_long_running_param(
     param_defaults: dict,
     integration_id: str,
 ) -> None:
-    """Step 2.0 — Route the literal ``longRunningPort`` config param to the
+    """Phase 2.0 — Route the literal ``longRunningPort`` config param to the
     suggested long-running capability for this integration.
 
     Pre-conditions for routing:
@@ -663,12 +663,12 @@ def map_params_to_capabilities(
     integration_yml: dict | None = None,
     elevated_out: list[str] | None = None,
 ) -> dict[str, list[str]]:
-    """Apply Step 2 - populate the capabilities mapping with parameter names
+    """Apply Phase 2 - populate the capabilities mapping with parameter names
     derived from the supplied ``command_params`` and ``param_defaults`` JSON
     inputs. ``manual_command_to_capability`` (optional) overrides automatic
     routing for any listed commands. ``integration_yml`` (optional) enables
-    Step 2.0 (long-running param routing), Step 2.1 elevation of required
-    test-module params to the connection, and Step 2.6 (filtering out params
+    Phase 2.0 (long-running param routing), Phase 2.1 elevation of required
+    test-module params to the connection, and Phase 2.6 (filtering out params
     hidden on the Cortex Platform).
 
     If ``elevated_out`` is provided, the sorted list of REQUIRED test-module
@@ -683,36 +683,36 @@ def map_params_to_capabilities(
     # Work on a fresh dict so the caller's data is untouched.
     result: dict[str, list[str]] = {k: list(v) for k, v in capabilities.items()}
 
-    # Step 2.0 (NEW) - route the longRunningPort config param to the suggested
+    # Phase 2.0 (NEW) - route the longRunningPort config param to the suggested
     # long-running capability (if applicable).
     _route_long_running_param(result, integration_yml, param_defaults, integration_id)
 
-    # Step 2.1 - elevate REQUIRED test-module params (no default) to the
+    # Phase 2.1 - elevate REQUIRED test-module params (no default) to the
     # connection (other_connection). They are stripped from `result` and
     # returned so the caller can inject them into Auth Details.
     elevated: list[str] = _handle_test_module(
         result, command_params, param_defaults, integration_yml
     )
 
-    # Step 2.1.5 - manual override (source of truth for listed commands)
+    # Phase 2.1.5 - manual override (source of truth for listed commands)
     handled_commands = _apply_manual_mapping(
         result, command_params, manual_command_to_capability
     )
 
     if is_single_capability(results=result):
-        # Step 2.2 - single-capability shortcut (skip 2.3)
+        # Phase 2.2 - single-capability shortcut (skip 2.3)
         _single_capability_shortcut(result, command_params, handled_commands)
     else:
-        # Step 2.3 - multi-capability mapping (forwards integration_id so the
+        # Phase 2.3 - multi-capability mapping (forwards integration_id so the
         # long-running-execution command is routed by the override dict)
         _multi_capability_mapping(
             result, command_params, handled_commands, integration_id, manual_command_to_capability
         )
 
-    # Step 2.4 - deduplicate
+    # Phase 2.4 - deduplicate
     _deduplicate(result)
 
-    # Step 2.6 (NEW) - filter hidden params
+    # Phase 2.6 (NEW) - filter hidden params
     if integration_yml is not None:
         to_remove, kept_by_carveout = _collect_hidden_params(
             integration_yml, param_defaults
@@ -793,7 +793,7 @@ def generate_param_mapping(
         command_params,
         param_defaults,
         manual_command_to_capability,
-        integration_yml=integration_yml,  # enables Step 2.1 elevation + Step 2.6
+        integration_yml=integration_yml,  # enables Phase 2.1 elevation + Phase 2.6
         elevated_out=elevated,
     )
 
@@ -803,7 +803,7 @@ def generate_param_mapping(
     logger.info(f"Param mapping written to {output_path}")
 
     # Surface the required test-module params that must be elevated to the
-    # connection (other_connection in Auth Details). Step 3b reads this
+    # connection (other_connection in Auth Details). Step 7 reads this
     # sidecar, injects them into the integration's Auth Details, and re-applies
     # via set-auth (which resets the workflow back to the Auth Details step;
     # the capability mapping survives because Params to Capabilities is

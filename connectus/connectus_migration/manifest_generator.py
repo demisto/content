@@ -4689,12 +4689,12 @@ def append_capability_to_files(
             connector_dir, existing_handler_id
         )
 
-        # Step 2.1: rename cap id inside the existing handler.yaml.
+        # Phase 2.1: rename cap id inside the existing handler.yaml.
         rename_handler_capability_id(
             existing_handler_path, cap_slug, existing_sub_cap_id
         )
 
-        # Step 2.2: introduce sub_capabilities on the parent in capabilities.yaml.
+        # Phase 2.2: introduce sub_capabilities on the parent in capabilities.yaml.
         existing_cap["sub_capabilities"] = [
             build_sub_capability_entry(
                 existing_sub_cap_id,
@@ -4703,7 +4703,7 @@ def append_capability_to_files(
             )
         ]
 
-        # Step 2.3: rename the existing top-level entry in configurations.yaml
+        # Phase 2.3: rename the existing top-level entry in configurations.yaml
         # (per spec: drop parent's entry — the renamed entry IS the new sub-cap entry).
         for cfg_entry in configurations_data.get("configurations", []) or []:
             if cfg_entry.get("id") == cap_slug:

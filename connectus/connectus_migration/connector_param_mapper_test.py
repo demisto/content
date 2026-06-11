@@ -29,7 +29,7 @@ def _build_yml(
 
 
 # ---------------------------------------------------------------------------
-# Step 1 - capability decision tests
+# Phase 1 - capability decision tests
 # ---------------------------------------------------------------------------
 class TestDecideCapabilities:
 
@@ -333,7 +333,7 @@ class TestDecideCapabilities:
 
 
 # ---------------------------------------------------------------------------
-# Step 2 - param mapping tests
+# Phase 2 - param mapping tests
 # ---------------------------------------------------------------------------
 class TestMapParamsToCapabilities:
     def test_test_module_param_without_default_goes_to_general(self):
@@ -362,7 +362,7 @@ class TestMapParamsToCapabilities:
                param_defaults.
         When:  map_params_to_capabilities is called.
         Then:  The param is NOT added to general_configurations
-               (Step 2.1 skips defaulted params).
+               (Phase 2.1 skips defaulted params).
         """
         capabilities = {"general_configurations": [], "Automation": []}
         command_params = {
@@ -383,7 +383,7 @@ class TestMapParamsToCapabilities:
                (general_configurations + Log Collection) and several commands
                whose params overlap with test-module.
         When:  map_params_to_capabilities is called.
-        Then:  Step 2.2 shortcut fires: all unique command params (minus the
+        Then:  Phase 2.2 shortcut fires: all unique command params (minus the
                one already in general_configurations) land in the single
                non-general capability.
         """
@@ -412,7 +412,7 @@ class TestMapParamsToCapabilities:
         Given: Multiple capabilities (Fetch Issues + Automation) plus a
                fetch-incidents command and an unrelated vendor command.
         When:  map_params_to_capabilities is called.
-        Then:  Step 2.3 routes 'fetch-incidents' params to 'Fetch Issues'
+        Then:  Phase 2.3 routes 'fetch-incidents' params to 'Fetch Issues'
                (via COMMAND_TO_CAPABILITY) and the vendor command's param
                to 'Automation'.
         """
@@ -490,7 +490,7 @@ class TestMapParamsToCapabilities:
         """
         Given: A single non-general capability plus mirroring commands that
                carry mirroring-only params.
-        When:  map_params_to_capabilities is called (Step 2.2 shortcut).
+        When:  map_params_to_capabilities is called (Phase 2.2 shortcut).
         Then:  The mirroring params are NOT dumped into the single
                capability; only the real command params land there.
         """
@@ -616,7 +616,7 @@ class TestMapParamsToCapabilities:
         Given: A capabilities mapping that does NOT contain 'Log Collection'
                and a command whose name contains 'get-events'.
         When:  map_params_to_capabilities is called.
-        Then:  With only 2 capabilities, Step 2.2 shortcut fires and the
+        Then:  With only 2 capabilities, Phase 2.2 shortcut fires and the
                get-events param lands in 'Automation' (no special routing).
         """
         capabilities = {
@@ -633,7 +633,7 @@ class TestMapParamsToCapabilities:
         result = map_params_to_capabilities(
             capabilities, command_params, param_defaults
         )
-        # With only 2 capabilities, Step 2.2 shortcut places everything in
+        # With only 2 capabilities, Phase 2.2 shortcut places everything in
         # the non-general capability (Automation).
         assert result["Automation"] == ["events_param"]
 
@@ -701,7 +701,7 @@ class TestMapParamsToCapabilities:
                commands routed to two different capabilities, plus a unique
                param.
         When:  map_params_to_capabilities is called.
-        Then:  Step 2.4 dedup moves 'shared' into general_configurations and
+        Then:  Phase 2.4 dedup moves 'shared' into general_configurations and
                removes it from both capabilities; 'unique' stays in
                'Automation'.
         """
@@ -733,7 +733,7 @@ class TestMapParamsToCapabilities:
         Given: A param ('url') that ends up in general_configurations (via
                test-module) AND in another capability (via fetch-incidents).
         When:  map_params_to_capabilities is called.
-        Then:  Step 2.4 dedup keeps a single occurrence in
+        Then:  Phase 2.4 dedup keeps a single occurrence in
                general_configurations and removes it from 'Fetch Issues'.
         """
         # If a param is in general_configurations AND in another capability,
@@ -760,7 +760,7 @@ class TestMapParamsToCapabilities:
 
 
 # ---------------------------------------------------------------------------
-# Step 2.1.5 - manual command-to-capability mapping tests
+# Phase 2.1.5 - manual command-to-capability mapping tests
 # ---------------------------------------------------------------------------
 class TestManualMapping:
     def test_manual_mapping_empty_dict_preserves_existing_behavior(self):
@@ -809,7 +809,7 @@ class TestManualMapping:
         When:  map_params_to_capabilities is called with the manual mapping.
         Then:  'Connection Health' is created with 'port'; 'filter' lands in
                'Automation'; 'url' (shared by 3 commands) is moved to
-               general_configurations by Step 2.4 dedup.
+               general_configurations by Phase 2.4 dedup.
         """
         capabilities = {"general_configurations": [], "Automation": []}
         command_params = {
@@ -876,7 +876,7 @@ class TestManualMapping:
                already exists in the initial mapping).
         When:  map_params_to_capabilities is called.
         Then:  No duplicate 'Automation' key is created and 'filter' appears
-               exactly once (Step 2.3 must skip the manually-handled command).
+               exactly once (Phase 2.3 must skip the manually-handled command).
         """
         capabilities = {"general_configurations": [], "Automation": []}
         command_params = {
@@ -993,7 +993,7 @@ class TestEndToEnd:
 
 
 # ---------------------------------------------------------------------------
-# Step 2.6 - hidden param filter tests
+# Phase 2.6 - hidden param filter tests
 # ---------------------------------------------------------------------------
 class TestHiddenParamFilter:
     def test_hidden_true_param_removed_from_result(self):
@@ -1339,9 +1339,9 @@ class TestLongRunningRouting:
     its ``commonfields.id`` is present in
     ``INTEGRATION_TO_LONGRUNNING_CAPABILITY``:
       - The suggested capability key is created in the result dict (Rule 7).
-      - The literal ``longRunningPort`` config param is routed there (Step 2.0).
+      - The literal ``longRunningPort`` config param is routed there (Phase 2.0).
       - The ``long-running-execution`` command's params are routed there
-        (Step 2.3 via ``_resolve_target_capability``).
+        (Phase 2.3 via ``_resolve_target_capability``).
 
     Also verifies that integrations NOT in the dict fall through to the existing
     behavior (no change), and that integrations without ``longRunning: true``
@@ -1375,7 +1375,7 @@ class TestLongRunningRouting:
                ``long-running-execution`` command with extra params.
         When:  decide_capabilities + map_params_to_capabilities are called.
         Then:  The suggested capability ('Log Collection') exists in the
-               result, ``longRunningPort`` is placed in it (Step 2.0), AND the
+               result, ``longRunningPort`` is placed in it (Phase 2.0), AND the
                ``long-running-execution`` command's params are routed there
                instead of 'Automation'.
         """
@@ -1400,9 +1400,9 @@ class TestLongRunningRouting:
             integration_yml=yml,
         )
 
-        # Step 2.0 - longRunningPort routed to suggested capability
+        # Phase 2.0 - longRunningPort routed to suggested capability
         assert "longRunningPort" in result["Log Collection"]
-        # Step 2.3 - long-running-execution params routed to suggested capability
+        # Phase 2.3 - long-running-execution params routed to suggested capability
         assert "listenerUrl" in result["Log Collection"]
         assert "certificate" in result["Log Collection"]
         # And NOT to Automation (which doesn't even exist in this minimal result)
@@ -1419,7 +1419,7 @@ class TestLongRunningRouting:
         Then:  No suggested-capability key is added (existing behavior). The
                ``long-running-execution`` command's params land in 'Automation'
                via the standard fallback. ``longRunningPort`` is NOT routed by
-               Step 2.0 (skipped due to no override).
+               Phase 2.0 (skipped due to no override).
         """
         yml = self._build_long_running_yml(
             integration_id="SomeUnknownIntegration",
@@ -1447,7 +1447,7 @@ class TestLongRunningRouting:
         )
         # Existing fallback: long-running-execution params land in Automation
         assert "listenerUrl" in result["Automation"]
-        # longRunningPort is NOT auto-routed by Step 2.0 (no override)
+        # longRunningPort is NOT auto-routed by Phase 2.0 (no override)
         assert "longRunningPort" not in result.get("Automation", [])
 
     def test_long_running_port_absent_no_error(self):
@@ -1522,7 +1522,7 @@ class TestLongRunningRouting:
         When:  decide_capabilities + map_params_to_capabilities are called.
         Then:  The dict is ignored entirely. No suggested-capability key added
                by Rule 7; ``longRunningPort`` (if present) is not routed by
-               Step 2.0; the ``long-running-execution`` command (if present)
+               Phase 2.0; the ``long-running-execution`` command (if present)
                falls through to Automation.
         """
         yml = self._build_long_running_yml(
@@ -1612,7 +1612,7 @@ class TestLongRunningRouting:
 class TestEmptyCapabilitiesPreserved:
     """Tests verifying that empty capability buckets (including
     ``general_configurations``) are PRESERVED in the final result — the
-    previous Step 2.7 cleanup pass has been removed."""
+    previous Phase 2.7 cleanup pass has been removed."""
 
     def test_capability_emptied_by_dedup_is_preserved(self):
         """
@@ -1651,7 +1651,7 @@ class TestEmptyCapabilitiesPreserved:
         Given: A capability that contains only params that are hidden on
                the platform (via integration_yml).
         When:  map_params_to_capabilities is called with the integration_yml.
-        Then:  Step 2.6 hidden filter strips all params, but the now-empty
+        Then:  Phase 2.6 hidden filter strips all params, but the now-empty
                capability is preserved (no cleanup pass).
         """
         integration_yml = {
@@ -1678,7 +1678,7 @@ class TestEmptyCapabilitiesPreserved:
             param_defaults,
             integration_yml=integration_yml,
         )
-        # Step 2.6 stripped 'vendor_arg' from Automation; the empty bucket and
+        # Phase 2.6 stripped 'vendor_arg' from Automation; the empty bucket and
         # the empty general_configurations are both preserved.
         assert result["Automation"] == []
         assert result["general_configurations"] == []
@@ -1871,7 +1871,7 @@ class TestAutomationEventCollectorRule:
 
 
 # ---------------------------------------------------------------------------
-# Step 2.1 — required test-module params elevated to the connection
+# Phase 2.1 — required test-module params elevated to the connection
 # (other_connection in Auth Details), non-required keep general_configurations
 # ---------------------------------------------------------------------------
 class TestRequiredParamNames:
