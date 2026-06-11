@@ -90,6 +90,7 @@ Defines the connector identity. Schema: [`connector.schema.json`](schema/connect
 | `settings.allow_skip_verification` | boolean | ❌ | Allow skipping the connection test. |
 | `settings.required_features` | string[] | ❌ | Tenant features required for visibility. |
 | `settings.grouped` | boolean | ❌ | `true` for Grouped connectors (multiple handlers per vendor). |
+| `settings.skip_cut_off_check` | boolean | ❌ | `true` to allow adding the connector **after the feature freeze (FF)**. Required for every mass-migration connector (§3.3). |
 
 ### 2.2 connection.yaml
 
@@ -219,7 +220,7 @@ profiles:
     title: "Acme API Credentials"
     description: "Stores Acme credentials; returned as-is to the handler."
     configurations:
-      - fields:
+      - fields:                                  # one field per fields block (§3.7 item 2)
           - id: "acme_client_id"
             title: "Client ID"
             field_type: "input"
@@ -228,6 +229,7 @@ profiles:
               mask: false
               create_modifiers: { required: true }
               edit_modifiers: { required: true }
+      - fields:
           - id: "acme_client_secret"
             title: "Client Secret"
             field_type: "input"
@@ -533,6 +535,16 @@ A sub-capability's `config.required_license` must contain only licenses present 
 | `metadata.ownership.team` | Always `"xsoar"`. |
 | `metadata.ownership.maintainers` | Always `["@xsoar-content"]`. |
 | `settings.allow_skip_verification` | `true` unless the vendor requires successful verification before enabling. |
+| `settings.skip_cut_off_check` | **Always `true`.** All mass-migration connectors are added **after the feature freeze (FF)**, so every connector MUST set `settings.skip_cut_off_check: true` to bypass the FF cut-off check (§3.3.2). |
+
+#### 3.3.2 Post-feature-freeze cut-off
+
+Connectors added **after the feature freeze (FF)** are blocked by a cut-off check unless they opt out via `settings.skip_cut_off_check: true`. Because the entire mass migration lands after FF, **every** migrated connector MUST include it:
+
+```yaml
+settings:
+  skip_cut_off_check: true
+```
 
 #### 3.3.1 ID and title naming
 
@@ -736,7 +748,34 @@ A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`
 #### Principles
 
 1. **All params in manifest** — including backend-managed ones (`engine`, `engine_group`, etc.).
-2. **One field per row** (each field its own `fields` block).
+2. **One field per `fields` block (one field per UI row).** Each field MUST be the sole entry of its own `fields:` block. **Reason**: every `fields` block renders as a **single UI row**; putting more than one field in a block puts them on the same row, and since we don't control the rendered layout this causes weird layout bugs. This applies **everywhere fields are emitted** — `configurations.yaml` (per-capability and `general_configurations`) **and** `connection.yaml` profile `configurations[].fields[]`. (Sole exception: a `checkbox_group`'s inner `fields[]` lists its checkbox items — that is one field/row by design.)
+
+   ```yaml
+   # ✅ CORRECT — one field per fields block (one row each)
+   configurations:
+     - fields:
+         - id: "automation_fetches_issues"
+           title: "Fetches issues/incidents"
+           field_type: "checkbox"
+           options:
+             create_modifiers: { required: false, hidden: false }
+             edit_modifiers: { required: false, hidden: false }
+     - fields:
+         - id: "outgoing_mapper"
+           title: "Outgoing mapper"
+           field_type: "input"
+           options:
+             default_value: ""
+             placeholder: ""
+             create_modifiers: { required: true, hidden: true }
+             edit_modifiers: { required: true, hidden: true }
+
+   # ❌ WRONG — two fields in one fields block (same row → layout bugs)
+   configurations:
+     - fields:
+         - { id: "automation_fetches_issues", title: "Fetches issues/incidents", field_type: "checkbox" }
+         - { id: "outgoing_mapper", title: "Outgoing mapper", field_type: "input" }
+   ```
 3. **Preserve field behavior** — type, default, options, title, id, tooltip, required must match the YML exactly (unless stated otherwise).
 4. **`integrationLogLevel`** and **`defaultIgnore`** are backend-managed but live in **different** places. **`integrationLogLevel`** lives in `general_configurations` — emitted **once per integration's `view_group`** for Grouped connectors (each `general_configurations.configurations[]` row tagged with that integration's `view_group`); for Standard/non-Grouped connectors it lives in `general_configurations` **without** a `view_group`. **`defaultIgnore`** lives at the **sub-capability** level — under the integration's `automation-and-remediation_<integration>` sub-capability `configurations[]` entry, and is **only relevant when the integration contributes an `automation-and-remediation` sub-capability** — it controls "Do not use in CLI by default" for the integration's **commands**, which collection-only capabilities (`fetch-issues`, `log-collection`, `fetch-assets-and-vulnerabilities`, `threat-intelligence-and-enrichment`, `fetch-secrets`) do not have. Omit `defaultIgnore` for integrations with no automation capability; otherwise emit it under that integration's `automation-and-remediation_<integration>` sub-capability. Collisions when >1 integration (for either field's id) are resolved via Appendix C.
 5. **`longRunning`** is supported
@@ -1110,6 +1149,7 @@ metadata:
 settings:
   allow_skip_verification: false
   grouped: true
+  skip_cut_off_check: true   # added after the feature freeze — mandatory for mass migration (§3.3.2)
 ```
 
 ### 4.2 connection.yaml
@@ -1132,7 +1172,7 @@ profiles:
     description: "Server-to-server authentication using client credentials"
     view_group: "salesforce"
     configurations:
-      - fields:
+      - fields:                       # one field per fields block (§3.7 item 2)
           - id: "domain"            # alphabetically first → keeps original id
             title: "Domain URL"
             field_type: "input"
@@ -1142,6 +1182,7 @@ profiles:
               placeholder: "https://<my_domain>"
               create_modifiers: { required: true, hidden: false }
               edit_modifiers: { required: true, hidden: false, read_only: true }
+      - fields:
           - id: "client_key"
             title: "Consumer Key (Client ID)"
             field_type: "input"
@@ -1150,6 +1191,7 @@ profiles:
               mask: false
               create_modifiers: { required: true, hidden: false }
               edit_modifiers: { required: true, hidden: true }
+      - fields:
           - id: "sf_client_secret"
             title: "Consumer Secret"
             field_type: "input"
@@ -1188,7 +1230,7 @@ profiles:
     view_group: "salesforce-iam"
     discovery_url: "https://{{salesforce-iam_domain}}/.well-known/openid-configuration"
     configurations:
-      - fields:
+      - fields:                              # one field per fields block (§3.7 item 2)
           - id: "salesforce-iam_domain"   # loses collision → prefixed
             title: "Domain URL"
             field_type: "input"
@@ -1198,6 +1240,7 @@ profiles:
               placeholder: "https://<my_domain>"
               create_modifiers: { required: true, hidden: false }
               edit_modifiers: { required: true, hidden: false, read_only: true }
+      - fields:
           - id: "salesforce-iam_client_key"
             title: "Consumer Key (Client ID)"
             field_type: "input"
@@ -1206,6 +1249,7 @@ profiles:
               mask: false
               create_modifiers: { required: true, hidden: false }
               edit_modifiers: { required: true, hidden: true }
+      - fields:
           - id: "salesforce-iam_client_secret"
             title: "Consumer Secret"
             field_type: "input"
@@ -1312,6 +1356,7 @@ configurations:
   - id: "automation-and-remediation_salesforce"
     view_group: "salesforce"
     configurations:
+      # one field per fields block (§3.7 item 2). checkbox_group is one row by design.
       - fields:
           - id: "user_operations"
             title: "User Operations"
@@ -1325,13 +1370,14 @@ configurations:
                 - { key: "disable_user_enabled", value: true }
               create_modifiers: { required: false, read_only: false, hidden: false }
               edit_modifiers: { required: false, read_only: false, hidden: false }
-            fields:
+            fields:   # checkbox_group items — NOT a violation (one control, one row)
               - { id: "create_user_enabled", title: "Allow creating users" }
               - { id: "update_user_enabled", title: "Allow updating users" }
               - { id: "enable_user_enabled", title: "Allow enabling users" }
               - { id: "disable_user_enabled", title: "Allow disabling users" }
-          # defaultIgnore — under salesforce's automation sub-capability (integrationLogLevel is in general_configurations).
-          # salesforce wins the collision → keeps original id (no serializer).
+      # defaultIgnore — its own fields block (own row).
+      # salesforce wins the collision → keeps original id (no serializer).
+      - fields:
           - id: "defaultIgnore"
             title: "Do not use in CLI by default"
             field_type: "checkbox"
@@ -1344,7 +1390,7 @@ configurations:
   - id: "automation-and-remediation_salesforce-iam"
     view_group: "salesforce-iam"
     configurations:
-      - fields:
+      - fields:                              # one field per fields block (§3.7 item 2)
           - id: "create_if_not_exists"   # unique to IAM → keep original id
             title: "Automatically create user if not found"
             field_type: "switch"
@@ -1353,8 +1399,9 @@ configurations:
               default_value: true
               create_modifiers: { required: false, read_only: false, hidden: false }
               edit_modifiers: { required: false, read_only: false, hidden: false }
-          # defaultIgnore — under salesforce-iam's automation sub-capability (integrationLogLevel is in general_configurations).
-          # salesforce-iam loses the collision → prefixed id (serializer remaps, §4.8).
+      # defaultIgnore — its own fields block (own row).
+      # salesforce-iam loses the collision → prefixed id (serializer remaps, §4.8).
+      - fields:
           - id: "salesforce-iam_defaultIgnore"
             title: "Do not use in CLI by default"
             field_type: "checkbox"
