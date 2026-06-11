@@ -379,7 +379,9 @@ def fetch_events(client: Client, max_events: int) -> None:
 
         if latest_time:
             new_last_fetch = latest_time
-            ids_at_latest = [eid for event in new_events if event.get("_time") == latest_time and (eid := event.get("_unique_id"))]
+            ids_at_latest = [
+                eid for event in new_events if event.get("_time") == latest_time and (eid := event.get("_unique_id"))
+            ]
             # If the high-water mark hasn't moved, merge with the existing seen_ids
             if latest_time == last_fetch_str:
                 new_seen_ids = list(set(seen_ids) | set(ids_at_latest))
