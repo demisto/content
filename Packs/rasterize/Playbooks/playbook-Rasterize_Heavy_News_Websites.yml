@@ -96,10 +96,9 @@ tasks:
         Rasterize integration. The url argument reads the JSON array from context;
         process_urls() in the integration detects the "[" prefix and splits it into
         individual URLs, rasterizing each in parallel using Chrome tabs.
-      script: Rasterize|||rasterize
+      script: '|||rasterize'
       type: regular
       iscommand: true
-      brand: Rasterize
     nexttasks:
       '#none#':
       - '3'
@@ -108,18 +107,6 @@ tasks:
         complex:
           root: RasterizeURLs
           accessor: NewsWebsites
-      type:
-        simple: png
-      width:
-        simple: 1280px
-      height:
-        simple: 1024px
-      full_screen:
-        simple: "False"
-      include_url:
-        simple: "True"
-      file_name:
-        simple: news_website_screenshot
     separatecontext: false
     view: |-
       {
