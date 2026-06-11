@@ -26,6 +26,36 @@ DBOT_SCORE_TO_VERDICT = {
 }
 
 
+# --- Utility Functions ---
+
+
+def split_into_chunks(items: list, num_chunks: int) -> list[list]:
+    """Split a list into roughly equal-sized chunks for parallel processing.
+
+    Args:
+        items: The list of elements to split (e.g. a list of indicator values).
+        num_chunks: The maximum number of chunks to create.  Must be >= 1.
+
+    Returns:
+        A list of non-empty sub-lists whose concatenation equals ``items``.
+
+    Examples:
+        >>> split_into_chunks(["a", "b", "c", "d", "e"], 3)
+        [['a', 'b'], ['c', 'd'], ['e']]
+
+        >>> split_into_chunks(["a", "b"], 5)
+        [['a'], ['b']]
+
+        >>> split_into_chunks([], 3)
+        []
+    """
+    if num_chunks == 0:
+        return items
+    k, m = divmod(len(items), num_chunks)
+    chunks = [items[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(num_chunks)]
+    return [c for c in chunks if c]
+
+
 # --- Core Enumerations and Data Classes ---
 class Status(Enum):
     """Enum for command status."""
