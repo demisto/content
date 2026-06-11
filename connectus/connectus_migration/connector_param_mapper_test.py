@@ -728,16 +728,16 @@ class TestMapParamsToCapabilities:
         assert "shared" not in result["Automation"]
         assert "unique" in result["Automation"]
 
-    def test_dedup_param_in_general_and_capability_keeps_general(self):
+    def test_test_module_param_also_in_capability_stays_in_capability(self):
         """
-        Given: A param ('url') that ends up in general_configurations (via
-               test-module) AND in another capability (via fetch-incidents).
+        Given: A non-required param ('url') read by test-module AND by a real
+               capability command (fetch-incidents).
         When:  map_params_to_capabilities is called.
-        Then:  Phase 2.4 dedup keeps a single occurrence in
-               general_configurations and removes it from 'Fetch Issues'.
+        Then:  The param is owned by its capability ('Fetch Issues') and is NOT
+               forced into general_configurations. test-module only reads it to
+               validate the connection, so its test-module appearance must not
+               promote it to general (Correction 3 in _handle_test_module).
         """
-        # If a param is in general_configurations AND in another capability,
-        # _deduplicate should remove it from the capability and keep it in general.
         capabilities = {
             "general_configurations": [],
             "Fetch Issues": [],
@@ -754,9 +754,10 @@ class TestMapParamsToCapabilities:
         result = map_params_to_capabilities(
             capabilities, command_params, param_defaults
         )
-        assert result["general_configurations"].count("url") == 1
-        # After dedup, 'Fetch Issues' is empty but preserved (no cleanup pass).
-        assert result["Fetch Issues"] == []
+        # Not promoted to general because a real capability command uses it.
+        assert "url" not in result["general_configurations"]
+        # Owned by the capability that actually consumes it.
+        assert result["Fetch Issues"] == ["url"]
 
 
 # ---------------------------------------------------------------------------

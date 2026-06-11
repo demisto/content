@@ -7419,9 +7419,10 @@ def test_append_handler_adds_profile_view_group_and_general_config(
     intb_xsoar = profiles_by_id["api_key.intb"]["metadata"]["xsoar"]
     assert inta_xsoar["interpolation_mapping"] == "password:creds.password"
     assert intb_xsoar["interpolation_mapping"] == "api_key:apikey"
-    # The interpolated boolean block is always present on each profile.
-    assert "interpolated" not in inta_xsoar
-    assert "interpolated" not in intb_xsoar
+    # The interpolated boolean is always True on each profile (ALWAYS-INTERPOLATE
+    # gate / Plan B INV-5); the append path preserves A's and adds B's.
+    assert inta_xsoar["interpolated"] is True
+    assert intb_xsoar["interpolated"] is True
 
 
 def test_append_handler_anonymous_leaves_connection_untouched(tmp_path: Path):
