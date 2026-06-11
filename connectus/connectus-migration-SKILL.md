@@ -1,6 +1,6 @@
 ---
 name: connectus-migration
-description: This skill should be used when migrating integrations to connectus
+description: Use when migrating an XSOAR/XSIAM integration to ConnectUs / the unified-connectors platform. Triggers: "migrate <integration>", "work on <integration>", "migrate connector <id>", "what's next for me", "continue my work", "migrate the next 10 integrations assigned to Joey"
 ---
 
 # ConnectUs Migration Skill
