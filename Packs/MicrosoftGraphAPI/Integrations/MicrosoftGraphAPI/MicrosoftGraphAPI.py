@@ -32,6 +32,7 @@ class MsGraphClient:
             "enc_key": app_secret,
             "tenant_id": tenant_id,
             "verify": verify,
+            "scope": f"{azure_cloud.endpoints.microsoft_graph_resource_id.rstrip('/')}/.default",
             "proxy": proxy,
             "self_deployed": True,
             "grant_type": AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS,
