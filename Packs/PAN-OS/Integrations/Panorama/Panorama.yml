@@ -10667,7 +10667,7 @@ script:
     - contextPath: Panorama.Certificate.devices_using_certificate
       type: Unknown
       description: List of devices using this certificate if it was pushed from Panorama.
-  dockerimage: demisto/pan-os-python:1.0.0.6975992
+  dockerimage: demisto/pan-os-python:1.0.0.9059085
   isfetch: true
   runonce: false
   script: ''
