@@ -10,6 +10,7 @@ from O365MessageTrace import (
     Client,
     Config,
     add_time_field,
+    add_unique_id_field,
     auth_test_command,
     deduplicate_events,
     fetch_events,
@@ -17,7 +18,6 @@ from O365MessageTrace import (
     format_datetime_for_filter,
     get_events_command,
     parse_datetime,
-    update_id_field,
 )
 
 # Reference the production ``test_module`` entrypoint via an alias that does
@@ -135,37 +135,64 @@ class TestAddTimeField:
         assert events[0]["_time"]  # non-empty fallback value
 
 
-class TestUpdateIdField:
-    def test_appends_recipient_address_to_id(self, sample_events):
-        update_id_field(sample_events)
-        assert sample_events[0]["id"] == "evt-1|bob@contoso.com"
-        assert sample_events[1]["id"] == "evt-2|dave@contoso.com"
+class TestAddUniqueIdField:
+    def test_adds_unique_id_from_id_and_recipient(self, sample_events):
+        add_unique_id_field(sample_events)
+        assert sample_events[0]["_unique_id"] == "evt-1|bob@contoso.com"
+        assert sample_events[1]["_unique_id"] == "evt-2|dave@contoso.com"
 
-    def test_leaves_id_unchanged_when_recipient_missing(self):
+    def test_does_not_mutate_original_id(self, sample_events):
+        add_unique_id_field(sample_events)
+        assert sample_events[0]["id"] == "evt-1"
+        assert sample_events[1]["id"] == "evt-2"
+
+    def test_skips_event_when_recipient_missing(self):
         events = [{"id": "evt-1"}]
-        update_id_field(events)
+        add_unique_id_field(events)
+        assert "_unique_id" not in events[0]
         assert events[0]["id"] == "evt-1"
 
-    def test_leaves_id_unchanged_when_id_missing(self):
+    def test_skips_event_when_id_missing(self):
         events = [{"recipientAddress": "bob@contoso.com"}]
-        update_id_field(events)
-        assert "id" not in events[0]
+        add_unique_id_field(events)
+        assert "_unique_id" not in events[0]
 
-    def test_leaves_id_unchanged_when_id_empty_string(self):
+    def test_skips_event_when_id_empty_string(self):
         events = [{"id": "", "recipientAddress": "bob@contoso.com"}]
-        update_id_field(events)
+        add_unique_id_field(events)
+        assert "_unique_id" not in events[0]
         assert events[0]["id"] == ""
 
-    def test_leaves_id_unchanged_when_recipient_empty_string(self):
+    def test_skips_event_when_recipient_empty_string(self):
         events = [{"id": "evt-1", "recipientAddress": ""}]
-        update_id_field(events)
+        add_unique_id_field(events)
+        assert "_unique_id" not in events[0]
         assert events[0]["id"] == "evt-1"
 
-    def test_leaves_id_unchanged_when_both_empty_strings(self):
+    def test_skips_event_when_both_empty_strings(self):
         events = [{"id": "", "recipientAddress": ""}]
-        update_id_field(events)
+        add_unique_id_field(events)
+        assert "_unique_id" not in events[0]
         assert events[0]["id"] == ""
         assert events[0]["recipientAddress"] == ""
+
+    def test_handles_empty_event_list(self):
+        events: list[dict] = []
+        add_unique_id_field(events)
+        assert events == []
+
+    def test_processes_mixed_valid_and_invalid_events(self):
+        events = [
+            {"id": "evt-1", "recipientAddress": "bob@contoso.com"},
+            {"id": "evt-2"},  # missing recipient
+            {"recipientAddress": "dave@contoso.com"},  # missing id
+            {"id": "evt-4", "recipientAddress": "alice@contoso.com"},
+        ]
+        add_unique_id_field(events)
+        assert events[0]["_unique_id"] == "evt-1|bob@contoso.com"
+        assert "_unique_id" not in events[1]
+        assert "_unique_id" not in events[2]
+        assert events[3]["_unique_id"] == "evt-4|alice@contoso.com"
 
 
 # ============================================================================
@@ -458,9 +485,8 @@ class TestFetchEvents:
         assert "2025-01-01T09:00:00Z" in first_call_params["$filter"]
 
     def test_deduplicates_against_seen_ids(self, mock_client, sample_events, mocker):
-        # ``update_id_field`` rewrites ids to ``<id>|<recipientAddress>``, so the
-        # seen_ids stored from the previous run must use the composite form.
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": ["evt-1|bob@contoso.com"]}
+        # ``fetch_events`` deduplicates and tracks ``seen_ids`` using the raw ``id`` field.
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": ["evt-1"]}
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
@@ -471,7 +497,7 @@ class TestFetchEvents:
         # evt-1 should have been filtered out
         sent_events = send_mock.call_args.kwargs["events"]
         assert len(sent_events) == 1
-        assert sent_events[0]["id"] == "evt-2|dave@contoso.com"
+        assert sent_events[0]["id"] == "evt-2"
 
     def test_no_events_does_not_call_send(self, mock_client, mocker):
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
@@ -494,8 +520,8 @@ class TestFetchEvents:
         new_state = set_last_run.call_args.args[0]
         # Latest event is evt-2 at 2025-01-01T10:01:00Z
         assert new_state["last_fetch"] == "2025-01-01T10:01:00Z"
-        # ``update_id_field`` rewrites ids to ``<id>|<recipientAddress>``.
-        assert "evt-2|dave@contoso.com" in new_state["seen_ids"]
+        # ``fetch_events`` stores the raw ``id`` field in ``seen_ids``.
+        assert "evt-2" in new_state["seen_ids"]
 
     def test_merges_seen_ids_when_high_water_mark_unchanged(self, mock_client, mocker):
         """If new events share the same timestamp as the previous high-water mark, seen_ids should be merged."""
