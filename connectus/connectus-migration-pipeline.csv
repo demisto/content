@@ -2,7 +2,10 @@ Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee
 AMP,Packs/AMP/Integrations/AMP/AMP.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
 AMPv2,Packs/AMP/Integrations/AMPv2/AMPv2.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
 APIVoid,Packs/APIVoid/Integrations/APIVoid/APIVoid.yml,APIVoid,,joeymizrahi,,,,,,,,,,,,,,
-AWS - ACM,Packs/AWS-ACM/Integrations/AWS-ACM/AWS-ACM.yml,AWS,,joeymizrahi,,,,,,,,,,,,,,
+AWS - ACM,Packs/AWS-ACM/Integrations/AWS-ACM/AWS-ACM.yml,AWS,,joeymizrahi,"{""auth_types"":[{""type"":""Passthrough"",""name"":""aws_credentials"",""xsoar_param_map"":{""credentials.identifier"":""aws_access_key_id"",""credentials.password"":""aws_secret_access_key"",""roleArn"":""role_arn"",""roleSessionName"":""role_session_name"",""sessionDuration"":""role_session_duration""},""interpolated"":true}],""other_connection"":[""defaultRegion"",""insecure"",""proxy"",""retries"",""sts_regional_endpoint"",""timeout""]}","[""Automation""]","{""commands"":{""aws-acm-add-tags-to-certificate"":[],""aws-acm-describe-certificate"":[],""aws-acm-get-certificate"":[],""aws-acm-list-certificates"":[],""aws-acm-list-tags-for-certificate"":[],""aws-acm-remove-tags-from-certificate"":[],""test-module"":[]},""integration"":""AWS - ACM""}",{},✅,"{
+  ""general_configurations"": [],
+  ""Automation"": []
+}",✅,✅,✅,"{""required"": false, ""path"": null, ""verified"": false}",✅,,,
 AWS - AccessAnalyzer,Packs/AWS-AccessAnalyzer/Integrations/AWS-AccessAnalyzer/AWS-AccessAnalyzer.yml,AWS,,joeymizrahi,,,,,,,,,,,,,,
 AWS - Athena - Beta,Packs/AWS-Athena/Integrations/AWS-Athena/AWS-Athena.yml,AWS,,joeymizrahi,,,,,,,,,,,,,,
 AWS - CloudTrail,Packs/AWS-CloudTrail/Integrations/AWS-CloudTrail/AWS-CloudTrail.yml,AWS,,joeymizrahi,,,,,,,,,,,,,,
