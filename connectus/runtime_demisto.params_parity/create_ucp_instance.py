@@ -148,7 +148,7 @@ def main(argv: list[str] | None = None) -> int:
     print()
 
     instance_name = f"{parity_inputs.connector_id.title()} Parity {uuid.uuid4().hex[:8]}"
-    captured = capture_ucp_params(
+    captured, _ = capture_ucp_params(
         xsoar_client=xsoar_client,
         xsoar_brand_name=parity_inputs.integration_brand,
         parity_inputs=parity_inputs,

@@ -1,18 +1,32 @@
-"""Unit tests for resolver.py (Phase 1 + multi-capability/auth-mapping revision).
+"""Unit tests for resolver.py (Phase 1 + multi-capability/interpolation revision).
 
 Covers:
   * slugify / handler_dir_name helpers,
   * resolve() happy path against a fixture connector,
   * MULTI-capability enumeration (parent + sub-capability + a second capability),
   * profile enumeration across capabilities (de-duped, ordered),
-  * Auth Details parsing (xsoar leaf → connector field via role + serializer),
+  * interpolation_mapping parsing (role → xsoar path) + role → connector field,
   * empty Connector Folder Path → clear ResolverError,
   * missing handler dir → clear ResolverError,
   * handler label mismatch → ResolverError,
   * param discovery (integration YML → connector),
   * serializer disambiguation (renamed field),
-  * interpolated-profile inclusion vs default-ignore (per profile),
+  * interpolated-profile inclusion vs default-ignore (per profile, by mapping
+    PRESENCE),
+  * a credentials.identifier + credentials.password pair collapses to ONE
+    top-level `credentials` compare param,
+  * param_to_connector_field points the xsoar param at the right connector field,
+  * malformed/blank interpolation pairs are tolerated,
   * hard ignore-list always dropped.
+
+The interpolation contract (NEW format):
+  * interpolation is signaled by a non-empty
+    ``profiles[].metadata.xsoar.interpolation_mapping`` (a comma-separated list
+    of ``ROLE:XSOAR_PATH`` pairs). The old boolean ``interpolated`` flag and the
+    CSV ``Auth Details`` column are GONE.
+  * LEFT (ROLE) matches a profile field's ``metadata.auth.parameter``.
+  * RIGHT (XSOAR_PATH) is the demisto.params() key path; the compared param is
+    its TOP-LEVEL segment (before the first ``.``).
 
 The tests build a minimal on-disk fixture (CSV + connector tree + integration
 YML) under tmp_path so they are hermetic and don't touch the real repos.
@@ -20,7 +34,6 @@ YML) under tmp_path so they are hermetic and don't touch the real repos.
 from __future__ import annotations
 
 import csv
-import json
 from pathlib import Path
 
 import pytest
@@ -28,12 +41,12 @@ import pytest
 import resolver
 from resolver import (
     HARD_IGNORE_PARAMS,
-    AuthMappingSpec,
     CapabilitySpec,
     ParityInputs,
     ProfileSpec,
     ResolverError,
     SubCapabilitySpec,
+    _is_hidden_param,
     handler_dir_name,
     resolve,
     slugify,
@@ -47,23 +60,11 @@ from resolver import (
 _INTEGRATION_ID = "Salesforce IAM"
 _CONNECTOR_FOLDER = "connectors/salesforce"
 
-# A handler that subscribes to MULTIPLE capabilities + a sub-capability:
-#   - automation-and-remediation_salesforce-iam (sub of automation-and-remediation)
-#   - fetch-secrets (a bare top-level capability)
-_AUTH_DETAILS = json.dumps(
-    {
-        "auth_types": [
-            {
-                "type": "APIKey",
-                "name": "credentials",
-                "xsoar_param_map": {
-                    "client_key": "client_key",
-                    "client_secret": "client_secret",
-                },
-            }
-        ],
-        "other_connection": ["url", "insecure", "proxy"],
-    }
+# The interpolation_mapping LEFT values are the connector auth ROLES (which match
+# each profile field's metadata.auth.parameter); RIGHT values are the xsoar param
+# PATHS. Here both client_key and client_secret are flat top-level xsoar params.
+_INTERPOLATION_MAPPING = (
+    "sfdc_client_key_role:client_key,sfdc_client_secret_role:client_secret"
 )
 
 
@@ -96,21 +97,29 @@ configuration:
     type: 0
   - name: only_in_integration
     type: 0
+  - name: legacy_hidden_flat
+    type: 4
+    hidden: true
 """,
     )
 
 
-def _make_connector(repo_dir: Path, *, interpolated: bool) -> None:
+def _make_connector(
+    repo_dir: Path,
+    *,
+    interpolation_mapping: str | None = _INTERPOLATION_MAPPING,
+) -> None:
     base = repo_dir / "connectors" / "salesforce"
     # connection.yaml: general_configurations (domain) + a profile with prefixed
-    # auth field ids carrying metadata.auth.parameter roles.
+    # auth field ids carrying metadata.auth.parameter roles. Interpolation is
+    # signaled by a non-empty metadata.xsoar.interpolation_mapping.
     interp_block = (
-        """
+        f"""
     metadata:
       xsoar:
-        interpolated: "true"
+        interpolation_mapping: {interpolation_mapping}
 """
-        if interpolated
+        if interpolation_mapping is not None
         else ""
     )
     _write(
@@ -128,11 +137,11 @@ profiles:
           - id: "sfdc_client_key"
             metadata:
               auth:
-                parameter: "client_key"
+                parameter: "sfdc_client_key_role"
           - id: "sfdc_client_secret"
             metadata:
               auth:
-                parameter: "client_secret"
+                parameter: "sfdc_client_secret_role"
 """,
     )
     # configurations.yaml: per-capability behavioral fields for BOTH capabilities.
@@ -184,7 +193,9 @@ capabilities:
       - id: "oauth2_client_credentials.salesforce"
 """,
     )
-    # serializer.yaml: renames domain -> url, and the prefixed auth fields back.
+    # serializer.yaml: renames domain -> url, and maps the prefixed profile auth
+    # field ids back to the integration's flat param ids (so a non-interpolated
+    # profile's auth params can be traced to their owning profile field).
     _write(
         handler / "serializer.yaml",
         """
@@ -203,16 +214,15 @@ def _make_csv(
     csv_path: Path,
     integration_yml_rel: str,
     connector_folder: str,
-    *,
-    auth_details: str = _AUTH_DETAILS,
 ) -> None:
+    # The resolver reads ONLY Integration File Path + Connector Folder Path from
+    # the CSV — no Auth Details column anymore.
     header = [
         "Integration ID",
         "Integration File Path",
         "Connector ID",
         "Connector Folder Path",
         "assignee",
-        "Auth Details",
     ]
     with open(csv_path, "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f)
@@ -224,7 +234,6 @@ def _make_csv(
                 "Salesforce",
                 connector_folder,
                 "",
-                auth_details,
             ]
         )
 
@@ -243,12 +252,11 @@ def env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 
     def _build(
         *,
-        interpolated: bool = False,
+        interpolation_mapping: str | None = _INTERPOLATION_MAPPING,
         connector_folder: str = _CONNECTOR_FOLDER,
-        auth_details: str = _AUTH_DETAILS,
     ):
-        _make_connector(repo_dir, interpolated=interpolated)
-        _make_csv(csv_path, yml_rel, connector_folder, auth_details=auth_details)
+        _make_connector(repo_dir, interpolation_mapping=interpolation_mapping)
+        _make_csv(csv_path, yml_rel, connector_folder)
         return csv_path
 
     return _build
@@ -261,10 +269,18 @@ def env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 def test_slugify():
     assert slugify("Salesforce IAM") == "salesforce-iam"
     assert slugify("  ServiceNow v2 ") == "servicenow-v2"
+    assert slugify("AWS - ACM") == "aws-acm"
 
 
 def test_handler_dir_name():
     assert handler_dir_name("Salesforce IAM") == "xsoar-salesforce-iam"
+    assert handler_dir_name("AWS - ACM") == "xsoar-aws-acm"
+
+
+def test_instance_name_in_hard_ignore_params():
+    """The connector-injected `instance_name` is on the hard ignore-list so it is
+    never flagged EXTRA_IN_CONNECTOR."""
+    assert "instance_name" in HARD_IGNORE_PARAMS
 
 
 # ---------------------------------------------------------------------------
@@ -272,7 +288,7 @@ def test_handler_dir_name():
 # ---------------------------------------------------------------------------
 
 def test_resolve_happy_path(env):
-    csv_path = env(interpolated=False)
+    csv_path = env(interpolation_mapping=None)
     out = resolve(_INTEGRATION_ID, csv_path=csv_path)
     assert isinstance(out, ParityInputs)
     assert out.connector_id == "salesforce"
@@ -283,7 +299,7 @@ def test_resolve_happy_path(env):
 def test_multi_capability_enumeration(env):
     """The handler subscribes to a sub-capability AND a bare top-level capability;
     both must be enumerated and the sub normalized to its parent."""
-    csv_path = env(interpolated=False)
+    csv_path = env(interpolation_mapping=None)
     out = resolve(_INTEGRATION_ID, csv_path=csv_path)
     parent_ids = {cap.id for cap in out.capabilities}
     assert parent_ids == {"automation-and-remediation", "fetch-secrets"}
@@ -297,7 +313,7 @@ def test_multi_capability_enumeration(env):
 
 
 def test_capability_config_fields_collected(env):
-    csv_path = env(interpolated=False)
+    csv_path = env(interpolation_mapping=None)
     out = resolve(_INTEGRATION_ID, csv_path=csv_path)
     automation = next(c for c in out.capabilities if c.id == "automation-and-remediation")
     assert "create_user_enabled" in automation.config_field_ids
@@ -307,46 +323,19 @@ def test_capability_config_fields_collected(env):
 
 def test_profiles_deduped_across_capabilities(env):
     """Both capabilities advertise the same profile id; it appears ONCE."""
-    csv_path = env(interpolated=False)
+    csv_path = env(interpolation_mapping=None)
     out = resolve(_INTEGRATION_ID, csv_path=csv_path)
     assert [p.id for p in out.profiles] == ["oauth2_client_credentials.salesforce"]
     prof = out.profiles[0]
     assert prof.type == "oauth2_client_credentials"
     # auth_field_to_role maps the prefixed connector field id → canonical role.
-    assert prof.auth_field_to_role.get("sfdc_client_key") == "client_key"
-    assert prof.auth_field_to_role.get("sfdc_client_secret") == "client_secret"
-
-
-def test_auth_details_parsed(env):
-    """xsoar_param_map values (roles) resolve to prefixed connector field ids."""
-    csv_path = env(interpolated=False)
-    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
-    assert len(out.auth_mappings) == 1
-    am = out.auth_mappings[0]
-    assert am.name == "credentials"
-    assert am.type == "APIKey"
-    # role "client_key" → prefixed connector field "sfdc_client_key" via profile role.
-    assert am.xsoar_to_connector_field.get("client_key") == "sfdc_client_key"
-    assert am.xsoar_to_connector_field.get("client_secret") == "sfdc_client_secret"
-    assert out.other_connection == ["url", "insecure", "proxy"]
-
-
-def test_auth_details_empty_tolerated(env):
-    csv_path = env(interpolated=False, auth_details="")
-    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
-    assert out.auth_mappings == []
-    assert out.other_connection == []
-
-
-def test_auth_details_invalid_json_tolerated(env):
-    csv_path = env(interpolated=False, auth_details="{not-json")
-    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
-    assert out.auth_mappings == []
+    assert prof.auth_field_to_role.get("sfdc_client_key") == "sfdc_client_key_role"
+    assert prof.auth_field_to_role.get("sfdc_client_secret") == "sfdc_client_secret_role"
 
 
 def test_serializer_disambiguation(env):
     """domain→url serializer means the integration `url` param maps to connector `domain`."""
-    csv_path = env(interpolated=False)
+    csv_path = env(interpolation_mapping=None)
     out = resolve(_INTEGRATION_ID, csv_path=csv_path)
     assert out.serializer_by_xsoar.get("url") == "domain"
     assert out.param_to_connector_field.get("url") == "domain"
@@ -354,7 +343,7 @@ def test_serializer_disambiguation(env):
 
 
 def test_hard_ignore_list_dropped(env):
-    csv_path = env(interpolated=False)
+    csv_path = env(interpolation_mapping=None)
     out = resolve(_INTEGRATION_ID, csv_path=csv_path)
     assert "brand" in out.ignored_params
     assert out.ignored_params["brand"] == "hard_ignore_list"
@@ -363,34 +352,311 @@ def test_hard_ignore_list_dropped(env):
     assert "integrationLogLevel" not in out.compare_params
 
 
-def test_profile_params_ignored_by_default(env):
-    csv_path = env(interpolated=False)
+def test_is_hidden_param():
+    """`_is_hidden_param` is True only when a param is hidden ON THE PLATFORM:
+    `hidden: true` (hidden everywhere) or a `hidden:` list that includes
+    "platform". A list naming only non-platform marketplaces (e.g. ["xsoar"],
+    ["marketplacev2"]) means the param is still on the platform → False. False
+    for `hidden: false`, an empty list, and an absent `hidden` key."""
+    assert _is_hidden_param({"name": "x", "hidden": True}) is True
+    assert _is_hidden_param({"name": "x", "hidden": ["platform"]}) is True
+    assert _is_hidden_param({"name": "x", "hidden": ["xsoar", "platform"]}) is True
+    assert _is_hidden_param({"name": "x", "hidden": ["xsoar"]}) is False
+    assert _is_hidden_param({"name": "x", "hidden": ["marketplacev2"]}) is False
+    assert _is_hidden_param({"name": "x", "hidden": False}) is False
+    assert _is_hidden_param({"name": "x", "hidden": []}) is False
+    assert _is_hidden_param({"name": "x"}) is False
+
+
+def test_hidden_yml_param_is_ignored_as_hidden(env):
+    """POLICY: a YML param marked `hidden: true` is NOT migrated to the connector,
+    so it is IGNORED with the DISTINCT reason "hidden" — and is NOT compared."""
+    csv_path = env(interpolation_mapping=None)
     out = resolve(_INTEGRATION_ID, csv_path=csv_path)
-    assert out.ignored_params.get("client_key") == "profile_not_interpolated"
-    assert out.ignored_params.get("client_secret") == "profile_not_interpolated"
-    assert "client_key" not in out.compare_params
+    assert "legacy_hidden_flat" in out.ignored_params
+    assert out.ignored_params["legacy_hidden_flat"] == "hidden"
+    assert "legacy_hidden_flat" not in out.compare_params
+
+
+def test_non_hidden_params_still_compared(env):
+    """Non-hidden params (incl type-9 credentials handled elsewhere, type-4 auth,
+    and plain config) remain compared — only hard-ignore + hidden are dropped."""
+    csv_path = env(interpolation_mapping=None)
+    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+    assert "url" in out.compare_params
+    assert "client_key" in out.compare_params
+    assert "client_secret" in out.compare_params
+    assert "only_in_integration" in out.compare_params
+
+
+# ---------------------------------------------------------------------------
+# Interpolation — by mapping PRESENCE (the NEW format)
+# ---------------------------------------------------------------------------
+
+def test_interpolation_mapping_parsed(env):
+    """A non-empty interpolation_mapping ⇒ ProfileSpec.interpolated is True and
+    the role → xsoar path mapping is parsed."""
+    csv_path = env()
+    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+    prof = out.profiles[0]
+    assert prof.interpolated is True
+    assert prof.interpolation_mapping == {
+        "sfdc_client_key_role": "client_key",
+        "sfdc_client_secret_role": "client_secret",
+    }
+    # connector_field_to_xsoar_param derives field id → top-level xsoar param.
+    f2x = prof.connector_field_to_xsoar_param()
+    assert f2x == {
+        "sfdc_client_key": "client_key",
+        "sfdc_client_secret": "client_secret",
+    }
+
+
+def test_connector_field_to_xsoar_path_returns_full_dotted_paths(env):
+    """connector_field_to_xsoar_path() preserves the FULL dotted xsoar destination
+    path (NOT collapsed to the top-level segment), so the connector-side value can
+    be dug out of the shared instance_values at the exact leaf the integration
+    sees. connector_field_to_xsoar_param() must STILL return the collapsed
+    top-level form (unchanged) for compare-scoping."""
+    csv_path = env(
+        interpolation_mapping=(
+            "sfdc_client_key_role:credentials.identifier,"
+            "sfdc_client_secret_role:credentials.password"
+        ),
+    )
+    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+    prof = out.profiles[0]
+
+    # FULL dotted paths preserved.
+    assert prof.connector_field_to_xsoar_path() == {
+        "sfdc_client_key": "credentials.identifier",
+        "sfdc_client_secret": "credentials.password",
+    }
+    # Collapsed top-level form UNCHANGED.
+    assert prof.connector_field_to_xsoar_param() == {
+        "sfdc_client_key": "credentials",
+        "sfdc_client_secret": "credentials",
+    }
+
+
+def test_connector_field_to_xsoar_path_flat_paths(env):
+    """For a flat (non-dotted) mapping the full path equals the top-level segment;
+    both methods agree."""
+    csv_path = env()  # default mapping: flat client_key / client_secret
+    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+    prof = out.profiles[0]
+    assert prof.connector_field_to_xsoar_path() == {
+        "sfdc_client_key": "client_key",
+        "sfdc_client_secret": "client_secret",
+    }
+    assert prof.connector_field_to_xsoar_param() == {
+        "sfdc_client_key": "client_key",
+        "sfdc_client_secret": "client_secret",
+    }
+
+
+def test_profile_params_compared_even_when_no_mapping(env):
+    """NEW POLICY: there is no 'profile_not_interpolated' ignore anymore. A
+    profile's auth params are COMPARED verbatim regardless of whether the profile
+    is interpolated — only HARD_IGNORE_PARAMS are dropped. The interpolation
+    mapping is retained ONLY for value-seeding, not for compare-scope."""
+    csv_path = env(interpolation_mapping=None)
+    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+    prof = out.profiles[0]
+    assert prof.interpolated is False
+    assert "client_key" not in out.ignored_params
+    assert "client_secret" not in out.ignored_params
+    assert "client_key" in out.compare_params
+    assert "client_secret" in out.compare_params
 
 
 def test_profile_params_compared_when_interpolated(env):
-    csv_path = env(interpolated=True)
+    """Presence of interpolation_mapping ⇒ the mapped xsoar params are compared,
+    and param_to_connector_field points each at the contributing connector field."""
+    csv_path = env()
     out = resolve(_INTEGRATION_ID, csv_path=csv_path)
     assert "client_key" in out.compare_params
     assert "client_secret" in out.compare_params
     assert "client_key" not in out.ignored_params
-    # And the mapped connector field is the prefixed id.
+    # The mapped connector field is the prefixed id.
     assert out.param_to_connector_field.get("client_key") == "sfdc_client_key"
+    assert out.param_to_connector_field.get("client_secret") == "sfdc_client_secret"
+
+
+def test_credentials_pair_collapses_to_one_top_level_param(env):
+    """A `credentials.identifier` + `credentials.password` mapping pair collapses
+    to ONE top-level `credentials` compare param (AWS-style)."""
+    csv_path = env(
+        interpolation_mapping=(
+            "sfdc_client_key_role:credentials.identifier,"
+            "sfdc_client_secret_role:credentials.password"
+        ),
+    )
+    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+    prof = out.profiles[0]
+    # Both fields map to the SAME top-level xsoar param `credentials`.
+    f2x = prof.connector_field_to_xsoar_param()
+    assert f2x == {
+        "sfdc_client_key": "credentials",
+        "sfdc_client_secret": "credentials",
+    }
+    # This test asserts only the connector_field_to_xsoar_param() de-dupe behavior
+    # (retained method): both fields collapse to the same top-level `credentials`.
+    # `credentials` is not a YML param in this fixture, so it is NOT compared.
+    # Under the NEW policy the YML flat params (client_key/client_secret) ARE
+    # compared verbatim (they are not on the hard ignore-list).
+    assert "credentials" not in out.compare_params
+    assert "client_key" in out.compare_params
+    assert "client_secret" in out.compare_params
+
+
+def _build_credentials_type9_fixture(tmp_path, monkeypatch, *, cred_type: int = 9):
+    """Build a hermetic fixture whose integration YML carries a top-level
+    `credentials` param (configurable type) and an INTERPOLATED profile whose
+    mapping targets `credentials.identifier` AND `credentials.password`. Returns
+    the csv_path so the caller can resolve()."""
+    workspace = tmp_path / "content"
+    repo_dir = tmp_path / "unified-connectors-content"
+    yml_rel = "Packs/X/Integrations/X/X.yml"
+    _write(
+        workspace / yml_rel,
+        f"""
+name: Salesforce IAM
+configuration:
+  - name: credentials
+    type: {cred_type}
+""",
+    )
+    base = repo_dir / "connectors" / "salesforce"
+    _write(
+        base / "connection.yaml",
+        """
+general_configurations:
+  configurations:
+    - fields: []
+profiles:
+  - id: "p.x"
+    type: "passthrough"
+    metadata:
+      xsoar:
+        interpolation_mapping: key_role:credentials.identifier,secret_role:credentials.password
+    configurations:
+      - fields:
+          - id: "f_key"
+            metadata:
+              auth:
+                parameter: "key_role"
+          - id: "f_secret"
+            metadata:
+              auth:
+                parameter: "secret_role"
+""",
+    )
+    _write(base / "configurations.yaml", "configurations: []\n")
+    _write(
+        base / "capabilities.yaml",
+        """
+general_configurations:
+  configurations:
+    - fields: []
+capabilities:
+  - id: "automation-and-remediation"
+""",
+    )
+    handler = base / "components" / "handlers" / "xsoar-salesforce-iam"
+    _write(
+        handler / "handler.yaml",
+        """
+id: "xsoar-salesforce-iam"
+triggering:
+  labels:
+    xsoar-integration-id: "Salesforce IAM"
+capabilities:
+  - id: "automation-and-remediation"
+    auth_options:
+      - id: "p.x"
+""",
+    )
+    csv_path = tmp_path / "pipeline.csv"
+    _make_csv(csv_path, yml_rel, "connectors/salesforce")
+
+    monkeypatch.setattr(resolver, "_WORKSPACE_ROOT", workspace)
+    monkeypatch.setenv("CONNECTUS_REPO_DIR", str(repo_dir))
+    return csv_path
+
+
+def test_credentials_type9_is_compared(tmp_path, monkeypatch):
+    """NEW POLICY: a type-9 (credentials) param is COMPARED verbatim like
+    everything else — there is no 'credentials_type9_interpolated' exclusion. The
+    full credentials object on the integration side vs the connector's delivered
+    {identifier,password} MUST surface as a real VALUE_MISMATCH at diff time; the
+    resolver no longer masks it. So `credentials` is in compare_params and NOT in
+    ignored_params, for ANY type."""
+    csv_path = _build_credentials_type9_fixture(tmp_path, monkeypatch, cred_type=9)
+
+    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+    assert "credentials" in out.compare_params
+    assert "credentials" not in out.ignored_params
+
+
+def test_credentials_compared_once_regardless_of_type(tmp_path, monkeypatch):
+    """The interpolated-mapped top-level `credentials` param is compared exactly
+    once whether it is type 9 or type 0 — type no longer changes the policy."""
+    for cred_type in (9, 0):
+        csv_path = _build_credentials_type9_fixture(
+            tmp_path / f"t{cred_type}", monkeypatch, cred_type=cred_type
+        )
+        out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+        assert "credentials" in out.compare_params
+        creds_count = sum(1 for p in out.compare_params if p == "credentials")
+        assert creds_count == 1
+        assert "credentials" not in out.ignored_params
+
+
+def test_malformed_interpolation_pairs_tolerated(env):
+    """Blank / malformed pairs (no colon, empty side) are silently ignored; the
+    valid pairs still parse."""
+    csv_path = env(
+        interpolation_mapping=(
+            "sfdc_client_key_role:client_key, ,no_colon_here,:emptyleft,emptyright:,"
+            "sfdc_client_secret_role:client_secret"
+        ),
+    )
+    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+    prof = out.profiles[0]
+    assert prof.interpolation_mapping == {
+        "sfdc_client_key_role": "client_key",
+        "sfdc_client_secret_role": "client_secret",
+    }
+    assert "client_key" in out.compare_params
+    assert "client_secret" in out.compare_params
+
+
+def test_blank_interpolation_mapping_is_not_interpolated(env):
+    """An empty / whitespace interpolation_mapping ⇒ NOT interpolated. Under the
+    new policy the profile's auth params are still COMPARED (not ignored)."""
+    csv_path = env(interpolation_mapping="   ")
+    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+    prof = out.profiles[0]
+    assert prof.interpolated is False
+    assert "client_key" not in out.ignored_params
+    assert "client_key" in out.compare_params
 
 
 def test_param_only_in_integration_is_still_compared(env):
-    """A YML param with no connector field still gets compared (→ MISSING_IN_CONNECTOR)."""
-    csv_path = env(interpolated=False)
+    """A YML param with no matching connector field is STILL compared. Under the
+    new policy param_to_connector_field records the identity mapping (serializer
+    rename → identity) for attribution; the absence of a real connector field
+    surfaces as MISSING_IN_CONNECTOR at diff time, which is correct."""
+    csv_path = env(interpolation_mapping=None)
     out = resolve(_INTEGRATION_ID, csv_path=csv_path)
     assert "only_in_integration" in out.compare_params
-    assert "only_in_integration" not in out.param_to_connector_field
+    assert out.param_to_connector_field.get("only_in_integration") == "only_in_integration"
+    assert "only_in_integration" not in out.ignored_params
 
 
 def test_capability_and_general_fields_compared(env):
-    csv_path = env(interpolated=False)
+    csv_path = env(interpolation_mapping=None)
     out = resolve(_INTEGRATION_ID, csv_path=csv_path)
     # create_user_enabled is a configurations.yaml[capability] field.
     assert out.param_to_connector_field.get("create_user_enabled") == "create_user_enabled"
@@ -407,19 +673,19 @@ def test_capability_and_general_fields_compared(env):
 # ---------------------------------------------------------------------------
 
 def test_empty_connector_folder_path_raises(env):
-    csv_path = env(interpolated=False, connector_folder="")
+    csv_path = env(interpolation_mapping=None, connector_folder="")
     with pytest.raises(ResolverError, match="Connector Folder Path"):
         resolve(_INTEGRATION_ID, csv_path=csv_path)
 
 
 def test_unknown_integration_raises(env):
-    csv_path = env(interpolated=False)
+    csv_path = env(interpolation_mapping=None)
     with pytest.raises(ResolverError, match="not found"):
         resolve("Does Not Exist", csv_path=csv_path)
 
 
 def test_missing_handler_dir_raises(env, tmp_path):
-    csv_path = env(interpolated=False, connector_folder="connectors/empty")
+    csv_path = env(interpolation_mapping=None, connector_folder="connectors/empty")
     # Create the connector dir but NOT the handler.
     (tmp_path / "unified-connectors-content" / "connectors" / "empty").mkdir(parents=True)
     with pytest.raises(ResolverError, match="Handler not found"):
@@ -427,7 +693,7 @@ def test_missing_handler_dir_raises(env, tmp_path):
 
 
 def test_handler_label_mismatch_raises(env, tmp_path):
-    csv_path = env(interpolated=False)
+    csv_path = env(interpolation_mapping=None)
     # Corrupt the handler label.
     handler = (
         tmp_path / "unified-connectors-content" / "connectors" / "salesforce"
@@ -451,7 +717,7 @@ capabilities:
 
 
 def test_missing_repo_dir_raises(env, monkeypatch):
-    csv_path = env(interpolated=False)
+    csv_path = env(interpolation_mapping=None)
     monkeypatch.delenv("CONNECTUS_REPO_DIR", raising=False)
     with pytest.raises(ResolverError, match="CONNECTUS_REPO_DIR"):
         resolve(_INTEGRATION_ID, csv_path=csv_path)

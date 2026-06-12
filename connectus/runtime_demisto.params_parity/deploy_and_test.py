@@ -114,6 +114,13 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Skip the prerequisite checks (env/repo/probe/tooling/resolver). Not recommended.",
     )
+    p.add_argument(
+        "--skip-deploy",
+        action="store_true",
+        help="Skip the deploy step and go straight to param-parity (assumes the "
+             "connector is ALREADY deployed to the tenant). For local iteration; "
+             "default is to deploy.",
+    )
     return p.parse_args(argv)
 
 
@@ -136,9 +143,16 @@ def _resolve_tenant(cli_tenant: str | None) -> str:
 # ---------------------------------------------------------------------------
 # Subprocess runners (mockable seams for tests)
 # ---------------------------------------------------------------------------
-def _run_deploy(tenant: str) -> int:
-    """Run deploy.py --tenant <t> from the package dir; return its exit code."""
+def _run_deploy(tenant: str, commit_path: str | None = None) -> int:
+    """Run deploy.py --tenant <t> from the package dir; return its exit code.
+
+    When ``commit_path`` is given, pass ``--commit-path`` so deploy.py
+    stages+commits the connector dir before pushing (else the deploy branch may
+    not contain the connector at all).
+    """
     cmd = [sys.executable, str(_DEPLOY_PY), "--tenant", tenant]
+    if commit_path:
+        cmd += ["--commit-path", commit_path]
     log.info("Running deploy: %s", " ".join(cmd))
     proc = subprocess.run(cmd, cwd=str(_SCRIPT_DIR))
     return proc.returncode
@@ -195,6 +209,7 @@ def run(
     max_wait: int,
     force: bool,
     skip_preflight: bool = False,
+    skip_deploy: bool = False,
 ) -> int:
     """Preflight → acquire → deploy → parity(per id) → release(finally)."""
     # ── Preflight (cheap, before paying for a deploy) ──
@@ -232,17 +247,31 @@ def run(
         return EXIT_LOCK_BUSY
 
     try:
-        # ── Deploy ONCE (whole-branch / whole-manifest) ──
-        deploy_rc = _run_deploy(tenant)
-        if deploy_rc == _DEPLOY_FAIL:
-            for integration_id in integration_ids:
-                _summary(integration_id, "DEPLOY_FAIL", EXIT_DEPLOY_FAIL)
-            return EXIT_DEPLOY_FAIL
-        if deploy_rc == _DEPLOY_TIMEOUT:
-            for integration_id in integration_ids:
-                _summary(integration_id, "DEPLOY_TIMEOUT", EXIT_DEPLOY_TIMEOUT)
-            return EXIT_DEPLOY_TIMEOUT
-        # deploy_rc == 0 → continue to parity.
+        # ── Resolve the connector dir for the (first) integration so deploy.py
+        # can stage+commit it before pushing. Best-effort: if resolution fails,
+        # fall back to no commit (deploy assumes content already committed). ──
+        import resolver as _resolver_mod
+        try:
+            _pi = _resolver_mod.resolve(integration_ids[0])
+            commit_path = _pi.connector_folder_path
+        except Exception:
+            commit_path = None
+
+        if skip_deploy:
+            log.warning("--skip-deploy set: skipping deploy, running parity against the "
+                        "ALREADY-deployed connector on tenant %s.", tenant)
+        else:
+            # ── Deploy ONCE (commit connector + ff-push + pipeline) ──
+            deploy_rc = _run_deploy(tenant, commit_path)
+            if deploy_rc == _DEPLOY_FAIL:
+                for integration_id in integration_ids:
+                    _summary(integration_id, "DEPLOY_FAIL", EXIT_DEPLOY_FAIL)
+                return EXIT_DEPLOY_FAIL
+            if deploy_rc == _DEPLOY_TIMEOUT:
+                for integration_id in integration_ids:
+                    _summary(integration_id, "DEPLOY_TIMEOUT", EXIT_DEPLOY_TIMEOUT)
+                return EXIT_DEPLOY_TIMEOUT
+            # deploy_rc == 0 → continue to parity.
 
         # ── Param-parity per id (loop under the same lock) ──
         return _run_parity_for_all(integration_ids)
@@ -269,6 +298,7 @@ def main(argv: list[str] | None = None) -> int:
         max_wait=args.max_wait,
         force=args.force_unlock,
         skip_preflight=args.skip_preflight,
+        skip_deploy=args.skip_deploy,
     )
 
 

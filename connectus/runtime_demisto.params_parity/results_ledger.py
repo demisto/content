@@ -34,10 +34,6 @@ from resolver import slugify
 # package .gitignore). Tests monkeypatch this to a tmp_path.
 RESULTS_DIR = Path(__file__).resolve().parent / "results"
 
-# The sentinel that replaces every captured value when ``scrub=True``. The
-# server may inject real tokens into ``demisto.params()``, so the default-on
-# scrub redacts the values while preserving the key structure for triage.
-_REDACTED = "<redacted>"
 
 # Exact ledger columns (DECIDED in the design — do not reorder/rename).
 LEDGER_COLUMNS = [
@@ -86,43 +82,21 @@ def result_filename(
     return f"{connector_slug}__{integration_slug}__{_utc_stamp(when)}.json"
 
 
-def _scrub_captures(envelope: dict) -> dict:
-    """Return a DEEP COPY of ``envelope`` with ``captures`` values redacted.
-
-    Both the ``integration`` and ``connector`` capture dicts have EVERY value
-    replaced by ``"<redacted>"`` while keys are preserved. The rest of the
-    envelope is untouched. Safe on envelopes that lack a ``captures`` block.
-    """
-    scrubbed = copy.deepcopy(envelope)
-    captures = scrubbed.get("captures")
-    if isinstance(captures, dict):
-        for side in ("integration", "connector"):
-            side_dict = captures.get(side)
-            if isinstance(side_dict, dict):
-                captures[side] = {key: _REDACTED for key in side_dict}
-    return scrubbed
-
 
 def write_result(
     envelope: dict,
     *,
     connector_id: str,
     integration_id: str,
-    when: datetime | None = None,
-    scrub: bool = True,
+    when: datetime | None = None
 ) -> Path:
     """Write ``envelope`` JSON to ``RESULTS_DIR/<result_filename>``.
-
-    When ``scrub`` is True (default), the ``captures`` block is deep-copied and
-    its values redacted BEFORE writing (the server may inject real tokens into
-    ``demisto.params()``). When ``scrub`` is False the envelope is written
-    verbatim (debugging only — see ``--no-scrub-results``).
 
     ``when`` is injectable so the filename + ledger row share one timestamp.
     Returns the :class:`~pathlib.Path` of the written file.
     """
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    payload = _scrub_captures(envelope) if scrub else envelope
+    payload =  envelope
     out_path = RESULTS_DIR / result_filename(connector_id, integration_id, when=when)
     out_path.write_text(json.dumps(payload, indent=2, sort_keys=False, default=str))
     return out_path

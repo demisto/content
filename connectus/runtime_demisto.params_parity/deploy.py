@@ -8,6 +8,7 @@ Configuration priority: CLI args > env vars > .env file > defaults
 """
 
 import os
+import re
 import sys
 import json
 import time
@@ -72,28 +73,26 @@ Examples:
   %(prog)s                              # Use .env defaults
   %(prog)s --tenant 123456              # Override tenant IDs (comma-separated)
   %(prog)s --branch my-branch           # Override branch name
-  %(prog)s --reason "testing auth"      # Override reason
   %(prog)s --skip-git                   # Skip git ops, just trigger pipeline
   %(prog)s --repo-dir /path/to/repo     # Override repo directory
 
 Environment variables (set in .env or shell):
-  GITLAB_URL, GITLAB_TOKEN, CONNECTUS_REPO_DIR, CONNECTUS_BRANCH,
-  BASE_BRANCH, TENANT_IDS, OVERRIDE_REASON
-  (PROJECT_PATH is hardcoded; POLL_INTERVAL/MAX_WAIT are CLI-only.)
+  GITLAB_TOKEN, CONNECTUS_REPO_DIR, CONNECTUS_BRANCH, TENANT_ID
+  (PROJECT_PATH, GITLAB_URL and OVERRIDE_REASON are hardcoded;
+   POLL_INTERVAL/MAX_WAIT are CLI-only.)
         """,
     )
-    parser.add_argument("--gitlab-url", default=None, help="GitLab instance URL")
     parser.add_argument("--token", default=None, help="GitLab personal access token")
     parser.add_argument("--project", default=None, help="GitLab project path (defaults to the hardcoded PROJECT_PATH)")
     parser.add_argument("--repo-dir", default=None, help="Path to the local unified-connectors-content repo (overrides CONNECTUS_REPO_DIR)")
-    parser.add_argument("--branch", default=None, help="Branch IN THE CONNECTUS REPO to create/force-push (overrides CONNECTUS_BRANCH)")
-    parser.add_argument("--base", default=None, help="Base branch; CONNECTUS_BRANCH is HARD-RESET (git reset --hard) to origin/<base> on every deploy")
+    parser.add_argument("--branch", default=None, help="Personal branch IN THE CONNECTUS REPO to commit+push (must be xsoar-migration-<name>; overrides CONNECTUS_BRANCH)")
     parser.add_argument("--tenant", default=None, help="Comma-separated tenant IDs for dev override")
-    parser.add_argument("--reason", default=None, help="Override reason")
     parser.add_argument("--skip-git", action="store_true", help="Skip git operations")
     parser.add_argument("--poll-interval", type=int, default=None, help="Seconds between status polls")
     parser.add_argument("--max-wait", type=int, default=None, help="Max seconds to wait for pipeline")
     parser.add_argument("--diagnose", action="store_true", help="Run connectivity diagnostics and exit")
+    parser.add_argument("--ssh-key", default=None, help="Path to the SSH private key git should use (overrides CONNECTUS_SSH_KEY; default ~/.ssh/id_ed25519)")
+    parser.add_argument("--commit-path", default=None, help="Repo-relative path of the connector dir to stage+commit before pushing (e.g. connectors/aws). If unset, no commit is made (assumes content already committed).")
     return parser.parse_args()
 
 
@@ -101,10 +100,35 @@ Environment variables (set in .env or shell):
 # only ever one project; it does not vary per developer.
 PROJECT_PATH = "xdr/development/platform/unified-connectors-content"
 
+# GitLab base URL for triggering the deploy pipeline. Hardcoded — there is only
+# ever one GitLab instance; it does not vary per developer.
+GITLAB_URL = "https://gitlab.xdr.pan.local"
+
+# Reason recorded for the deploy override in the GitLab pipeline. Hardcoded — all
+# deploys from this tooling are xsoar migration testing.
+OVERRIDE_REASON = "xsoar migration testing"
+
+# Personal-branch rule: every engineer deploys ONLY to their own long-lived
+# branch `xsoar-migration-<name>`. The deploy commits + pushes this branch, so
+# this guard makes it IMPOSSIBLE to commit/push to a shared/protected branch
+# (stable, dev, master, xsoar-playground, etc.) even if preflight is skipped.
+BRANCH_PATTERN = re.compile(r"^xsoar-migration-[a-z0-9][a-z0-9-]*$")
+
 # Polling defaults (seconds). Not exposed as env vars — override via --poll-interval
 # / --max-wait if ever needed.
 DEFAULT_POLL_INTERVAL = 2
 DEFAULT_MAX_WAIT = 600
+
+
+def _assert_personal_branch(branch: str) -> None:
+    """Hard guardrail: refuse to operate on any branch that is not a personal
+    `xsoar-migration-<name>` branch. Called before ANY commit/push."""
+    if not branch or not BRANCH_PATTERN.match(branch):
+        error(f"Refusing to deploy: branch {branch!r} is not a personal "
+              f"'xsoar-migration-<name>' branch (lowercase, e.g. "
+              f"xsoar-migration-joey). The deploy commits + pushes this branch; "
+              f"only a personal, namespaced branch is allowed.")
+        sys.exit(1)
 
 
 def get_config(args):
@@ -113,29 +137,36 @@ def get_config(args):
     Env vars consumed:
       * CONNECTUS_REPO_DIR — local clone of the unified-connectors-content repo
         (git ops run here). REQUIRED for git operations.
-      * CONNECTUS_BRANCH — branch IN THE CONNECTUS REPO that is force-pushed +
-        deployed. REQUIRED for git operations.
-      * BASE_BRANCH — what CONNECTUS_BRANCH is HARD-RESET to on every deploy.
+      * CONNECTUS_BRANCH — the engineer's PERSONAL branch (xsoar-migration-<name>)
+        that is committed to and fast-forward pushed + deployed. REQUIRED for git ops.
       * TENANT_ID (single tenant; sent to the GitLab pipeline as TENANT_IDS),
-        OVERRIDE_REASON, GITLAB_URL, GITLAB_TOKEN.
-    PROJECT_PATH is hardcoded; POLL_INTERVAL/MAX_WAIT are CLI-only.
+        GITLAB_TOKEN.
+    PROJECT_PATH, GITLAB_URL and OVERRIDE_REASON are hardcoded;
+    POLL_INTERVAL/MAX_WAIT are CLI-only.
     """
     return {
-        "gitlab_url": args.gitlab_url or os.getenv("GITLAB_URL", "https://gitlab.xdr.pan.local"),
+        "gitlab_url": GITLAB_URL,
         "gitlab_token": args.token or os.getenv("GITLAB_TOKEN", ""),
         "project_path": args.project or PROJECT_PATH,
         "repo_dir": args.repo_dir or os.getenv("CONNECTUS_REPO_DIR", ""),
         "branch_name": args.branch or os.getenv("CONNECTUS_BRANCH", "xsoar"),
-        "base_branch": args.base or os.getenv("BASE_BRANCH", "stable"),
         # Single tenant per shell. Input var is TENANT_ID; it is sent to the
         # GitLab pipeline as the CI-expected `TENANT_IDS` variable (see
         # trigger_pipeline). --tenant overrides.
         "tenant_ids": args.tenant or os.getenv("TENANT_ID", ""),
-        "override_reason": args.reason or os.getenv("OVERRIDE_REASON", "dev-testing"),
+        "override_reason": OVERRIDE_REASON,
         "poll_interval": args.poll_interval if args.poll_interval is not None else DEFAULT_POLL_INTERVAL,
         "max_wait": args.max_wait if args.max_wait is not None else DEFAULT_MAX_WAIT,
         "skip_git": args.skip_git,
         "diagnose": args.diagnose,
+        # SSH key git should use, so auth does NOT depend on a pre-loaded
+        # ssh-agent. Empty = use default resolution (~/.ssh/id_ed25519, id_rsa).
+        "ssh_key": args.ssh_key or os.getenv("CONNECTUS_SSH_KEY", ""),
+        # Repo-relative connector dir staged+committed before the fast-forward push.
+        # Comes from --commit-path only (deploy_and_test.py derives it from the
+        # integration id via the resolver); it is NOT an env var.
+        # Empty = no commit (assumes content already committed).
+        "commit_path": args.commit_path or "",
     }
 
 
@@ -306,14 +337,42 @@ def api_request(config, method, path, data=None):
 
 # ── Git Operations ──────────────────────────────────────────────────────────
 
+def _git_ssh_command(config) -> str | None:
+    """Build a GIT_SSH_COMMAND that forces git to use an explicit key, so git
+    does NOT depend on a pre-loaded ssh-agent. Resolves the key from config
+    ssh_key (CONNECTUS_SSH_KEY / --ssh-key) else the first existing default
+    (~/.ssh/id_ed25519, ~/.ssh/id_rsa). Returns None if no key file is found
+    (let ssh fall back to its own default behavior / agent)."""
+    candidates = []
+    if config.get("ssh_key"):
+        candidates.append(Path(config["ssh_key"]).expanduser())
+    candidates += [
+        Path("~/.ssh/id_ed25519").expanduser(),
+        Path("~/.ssh/id_rsa").expanduser(),
+        Path("~/.ssh/id_ecdsa").expanduser(),
+    ]
+    for key in candidates:
+        if key.is_file():
+            return f"ssh -i {key} -o IdentitiesOnly=yes"
+    return None
+
+
 def run_git(config, *args):
     """Run a git command in the repo directory."""
     cmd = ["git"] + list(args)
+    # Inject GIT_SSH_COMMAND for the subprocess WITHOUT clobbering the rest of
+    # the environment, so git auth works without a loaded ssh-agent. Respect an
+    # already-set GIT_SSH_COMMAND in the environment.
+    env = os.environ.copy()
+    ssh_cmd = _git_ssh_command(config)
+    if ssh_cmd and "GIT_SSH_COMMAND" not in env:
+        env["GIT_SSH_COMMAND"] = ssh_cmd
     result = subprocess.run(
         cmd,
         cwd=config["repo_dir"],
         capture_output=True,
         text=True,
+        env=env,
     )
     if result.returncode != 0:
         error(f"Git command failed: {' '.join(cmd)}")
@@ -324,12 +383,27 @@ def run_git(config, *args):
 
 
 def git_operations(config):
-    """Create/reset branch and push to GitLab."""
+    """Commit the connector dir to the engineer's personal branch and push.
+
+    Branch model (simple + safe):
+      * Each engineer works on ONE long-lived personal branch
+        (``xsoar-migration-<name>``, enforced by preflight).
+      * There is NO base branch and NO ``reset --hard``. We never overwrite
+        local/remote history. The engineer is responsible for keeping their
+        branch current (``git rebase origin/stable`` when they want stable's
+        changes) — the deploy does not do it for them.
+      * The push is a PLAIN, fast-forward-only ``git push`` (never ``--force``).
+        If it is rejected as non-fast-forward, the engineer's local branch is
+        behind its own remote → they must rebase/pull first. We never force.
+    """
     header("Step 1: Git Operations")
     branch = config["branch_name"]
-    base = config["base_branch"]
 
-    # Fetch latest
+    # HARD GUARDRAIL: never commit/push to anything but a personal branch. Runs
+    # before fetch/checkout/commit/push so even --skip-preflight cannot bypass it.
+    _assert_personal_branch(branch)
+
+    # Fetch latest (so the remote-tracking ref for the branch is current).
     info(f"Fetching from origin...")
     ok, _ = run_git(config, "fetch", "origin")
     if not ok:
@@ -338,26 +412,65 @@ def git_operations(config):
         sys.exit(1)
     success("Fetched latest from origin")
 
-    # Check if branch exists locally
-    ok, _ = run_git(config, "show-ref", "--verify", "--quiet", f"refs/heads/{branch}")
-    if ok:
-        info(f"Branch '{branch}' exists locally, resetting to origin/{base}...")
-        run_git(config, "checkout", branch)
-        run_git(config, "reset", "--hard", f"origin/{base}")
+    # Check out the engineer's personal branch WITHOUT resetting it.
+    #   * local exists            → checkout (keep its history).
+    #   * remote exists only      → create local tracking origin/<branch>.
+    #   * neither exists          → create a fresh branch at current HEAD.
+    local_ok, _ = run_git(config, "show-ref", "--verify", "--quiet", f"refs/heads/{branch}")
+    if local_ok:
+        info(f"Checking out existing local branch '{branch}' (no reset)...")
+        ok, err = run_git(config, "checkout", branch)
+        if not ok:
+            error(f"Failed to checkout branch '{branch}'")
+            sys.exit(1)
     else:
-        info(f"Creating branch '{branch}' from origin/{base}...")
-        ok, err = run_git(config, "checkout", "-b", branch, f"origin/{base}")
+        remote_ok, _ = run_git(
+            config, "show-ref", "--verify", "--quiet", f"refs/remotes/origin/{branch}"
+        )
+        if remote_ok:
+            info(f"Creating local '{branch}' tracking origin/{branch} (no reset)...")
+            ok, err = run_git(config, "checkout", "-b", branch, f"origin/{branch}")
+        else:
+            info(f"Branch '{branch}' is new — creating it at current HEAD...")
+            ok, err = run_git(config, "checkout", "-b", branch)
         if not ok:
             error(f"Failed to create branch '{branch}'")
             sys.exit(1)
-    success(f"Branch '{branch}' ready (based on origin/{base})")
+    success(f"On branch '{branch}'")
 
-    # Force push
-    info(f"Pushing '{branch}' to origin...")
-    ok, err = run_git(config, "push", "origin", branch, "--force")
+    # Stage + commit ONLY the connector dir for the integration being deployed.
+    commit_path = config.get("commit_path")
+    if commit_path:
+        info(f"Staging connector path: {commit_path}")
+        ok, err = run_git(config, "add", "--", commit_path)
+        if not ok:
+            error(f"Failed to stage {commit_path}")
+            sys.exit(1)
+        # Commit only if something is actually staged (avoid 'nothing to commit'
+        # failure). `git diff --cached --quiet` exits 0 when NOTHING is staged
+        # and 1 when there ARE staged changes. run_git returns ok=True on rc==0,
+        # so ok==True here means "nothing staged" → skip the commit.
+        nothing_staged, _ = run_git(config, "diff", "--cached", "--quiet")
+        if nothing_staged:
+            info("No connector changes to commit (already up to date).")
+        else:
+            ok, err = run_git(config, "commit", "-m", f"param-parity: deploy {commit_path}")
+            if not ok:
+                error("Failed to commit connector changes")
+                sys.exit(1)
+            success(f"Committed {commit_path}")
+
+    # Plain, fast-forward-only push. NEVER --force / --force-with-lease: we never
+    # rewrite history on push. If the remote rejects this as non-fast-forward,
+    # the engineer's branch is behind its own remote and they must rebase first.
+    info(f"Pushing '{branch}' to origin (fast-forward only)...")
+    ok, err = run_git(config, "push", "origin", branch)
     if not ok:
         error(f"Failed to push branch '{branch}'")
-        print("  Check your SSH keys or git credentials")
+        print("  This push is fast-forward-only (never forced). If it was rejected")
+        print("  as non-fast-forward, your local branch is behind origin/" + branch)
+        print("  — run `git pull --rebase origin " + branch + "` then re-deploy.")
+        print("  Otherwise check your SSH key / git credentials.")
         sys.exit(1)
     success(f"Pushed '{branch}' to origin")
 
@@ -451,7 +564,6 @@ def print_summary(config, pipeline_url, status_text, duration, failed_jobs=None)
 
     print(f"╔{'═' * 56}╗")
     print(f"║  {'Branch:':<14} {config['branch_name']:<38} ║")
-    print(f"║  {'Base:':<14} {config['base_branch']:<38} ║")
     print(f"║  {'Tenant IDs:':<14} {config['tenant_ids']:<38} ║")
     print(f"║  {'Reason:':<14} {config['override_reason']:<38} ║")
     print(f"║  {'Duration:':<14} {duration_str:<38} ║")
@@ -482,10 +594,10 @@ def main():
     print(f"\n{Colors.BOLD}🚀 Unified Connectors — Dev Deployment{Colors.RESET}")
     print(f"{Colors.DIM}Config: {_ENV_PATH}{Colors.RESET}\n")
 
-    # Step 1: Git operations — reset the branch from origin/<base> and force-push
-    # the connector-manifest branch so the pipeline deploys FROM that branch. This
-    # push step had been dropped from main(); without it the pipeline runs against a
-    # stale remote branch. Honored unless --skip-git is passed (re-trigger only).
+    # Step 1: Git operations — commit the connector dir to the engineer's personal
+    # branch (xsoar-migration-<name>) and fast-forward push it so the pipeline
+    # deploys FROM that branch. No base reset, no force-push (see git_operations).
+    # Honored unless --skip-git is passed (re-trigger only).
     if not config["skip_git"]:
         git_operations(config)
 

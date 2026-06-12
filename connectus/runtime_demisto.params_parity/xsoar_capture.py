@@ -737,7 +737,7 @@ def capture_xsoar_params(
     overrides: dict | None = None,
     client=None,
     keep_instance: bool = False,
-) -> dict | None:
+) -> tuple[dict | None, dict | None]:
     """Run the full legacy XSOAR-side capture flow end-to-end.
 
     Workflow:
@@ -761,8 +761,19 @@ def capture_xsoar_params(
             success — useful for debugging.
 
     Returns:
-        The captured ``demisto.params()`` dict on success, ``None`` on any
-        failure. Failures are logged with enough detail to diagnose.
+        A 2-tuple ``(captured, filled)``:
+
+        * ``captured`` — the captured ``demisto.params()`` dict on success, or
+          ``None`` on any failure.
+        * ``filled`` — the XSOAR-side instance-creation payload (the filled
+          params dict, including the magic key, that was sent to
+          ``create_integration_instance``). This is surfaced in the persisted
+          results envelope for debugging. It is ``None`` only when the flow
+          fails BEFORE ``filled`` is built (the no-name case); otherwise it is
+          returned even on later failures so the attempted payload is
+          recoverable.
+
+        Failures are logged with enough detail to diagnose.
     """
     overrides = dict(overrides or {})
     # Mandatory: arm the probe.
@@ -773,7 +784,8 @@ def capture_xsoar_params(
     yml_params = yml_data.get("configuration", []) or []
     if not integration_name:
         log.error("Integration YML at %s does not declare a 'name'.", integration_yml_path)
-        return None
+        # Failure before `filled` is built — no payload available.
+        return None, None
 
     log.info("Integration: %s (%d params declared in YML)", integration_name, len(yml_params))
 
@@ -784,12 +796,13 @@ def capture_xsoar_params(
 
     server_config = get_integration_config(client, integration_name)
     if not server_config:
-        return None
+        # `filled` is built — return it so the attempted payload is recoverable.
+        return None, filled
 
     module_instance, error = create_integration_instance(client, integration_name, server_config, filled)
     if not module_instance:
         log.error("Failed to create XSOAR instance: %s", error)
-        return None
+        return None, filled
 
     instance_id = module_instance["id"]
     try:
@@ -800,7 +813,7 @@ def capture_xsoar_params(
         else:
             log.info("keep_instance=True — leaving instance %s alive for inspection", instance_id)
 
-    return captured
+    return captured, filled
 
 
 # ============================================================================

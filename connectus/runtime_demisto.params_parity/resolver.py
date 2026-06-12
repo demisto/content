@@ -9,32 +9,43 @@ YAML files, and returns a :class:`ParityInputs` describing:
   * the integration YML path + brand,
   * the connector dir + id,
   * ALL (sub-)capabilities + profiles the handler subscribes to,
-  * the in-scope param set (discovered INTEGRATION-YML → CONNECTOR),
-  * the serializer mapping (connector field ↔ xsoar param),
-  * the Auth Details mapping (integration → connector auth field ids),
-  * the set of "interpolated" profile params that MUST be compared,
-  * the hard ignore-list.
+  * the compare set (every integration-YML param NOT on the hard ignore-list),
+  * the serializer mapping (connector field ↔ xsoar param, for attribution),
+  * the hard ignore-list (the ONLY ignore mechanism).
+
+The ONLY two values read from the migration pipeline CSV are the
+**Connector Folder Path** (connector location) and the **Integration File
+Path** (integration YML location). EVERYTHING else — including the auth field
+↔ xsoar param mapping — is derived from code by parsing the integration YML
+and the connector YAMLs. In particular, the CSV ``Auth Details`` column is NOT
+read.
 
 Design of record: ``plans/param-parity-pipeline-integration.md`` (Phase 1 +
 the "REVISED MULTI-CAPABILITY + AUTH-MAPPING DESIGN" section).
 
 CORE METHODOLOGY (see the plan's "CORE METHODOLOGY" section):
 
-  1. Param discovery is INTEGRATION-YML → CONNECTOR. We enumerate every param
-     from the integration's own YML ``configuration`` and look each one up in the
-     connector (connection.yaml + configurations.yaml[capability] +
-     capabilities.yaml general_configurations + profiles[]). The matched set is
-     what's in scope for THIS integration on THIS connector.
+  1. Param discovery is INTEGRATION-YML → COMPARE-EVERYTHING. We enumerate every
+     param from the integration's own YML ``configuration``. The COMPARISON
+     POLICY (USER-CONFIRMED): a param is IGNORED iff (a) its name is on
+     :data:`HARD_IGNORE_PARAMS` (reason ``"hard_ignore_list"``) OR (b) it is
+     HIDDEN in the integration YML (reason ``"hidden"`` — hidden params are not
+     migrated to the connector); EVERYTHING else is compared verbatim — including
+     type-4 encrypted params, auth/profile params, and type-9 ``credentials``
+     (the full object). A param the connector does not deliver surfaces as
+     MISSING_IN_CONNECTOR at diff time, which is correct.
   2. The handler's serializer.yaml resolves duplicate / renamed connector fields
-     to the TRUE id as it appears in the integration.
+     to the TRUE id as it appears in the integration (used only for diagnostic
+     attribution in ``param_to_connector_field`` — never to gate comparison).
   3. A single handler may subscribe to MULTIPLE capabilities + sub-capabilities;
      every one of them is enumerated (normalized to its PARENT capability id).
-  4. Profile / auth params are IGNORED by default, but COMPARED when the profile
-     carries ``metadata.xsoar.interpolated == "true"``. Interpolation is read
-     from the CONNECTOR PROFILE ONLY (connection.yaml
-     ``profiles[].metadata.xsoar.interpolated``); the ``Auth Details`` object is
-     used ONLY for the integration → connector auth field mapping.
-  5. A hard ignore-list is ALWAYS dropped (even inside an interpolated profile).
+  4. The connector profile's ``metadata.xsoar.interpolation_mapping`` is parsed
+     and retained ONLY for VALUE-SEEDING (see
+     :meth:`ProfileSpec.connector_field_to_xsoar_path`, consumed by
+     ``ucp_capture``). It plays NO role in deciding what to compare.
+  5. Two ignore mechanisms only: the hard ignore-list (reason
+     ``"hard_ignore_list"``) and HIDDEN integration-YML params (reason
+     ``"hidden"``). Both are ALWAYS dropped.
 
 This module is read-only and has no network / docker dependencies — it only
 reads files, so it is cheap to unit-test against a fixture connector.
@@ -43,7 +54,6 @@ reads files, so it is cheap to unit-test against a fixture connector.
 from __future__ import annotations
 
 import csv
-import json
 import logging
 import os
 from dataclasses import dataclass, field
@@ -93,8 +103,8 @@ def _repo_dir() -> Path:
 
 
 # ============================================================================
-# Hard ignore-list — params that NEVER appear in a comparable way in runtime
-# demisto.params(), even inside an interpolated profile. (USER-CONFIRMED.)
+# Hard ignore-list — the ONLY ignore mechanism. A param is ignored iff its name
+# is in this set; EVERYTHING else is compared verbatim. (USER-CONFIRMED.)
 # ============================================================================
 
 HARD_IGNORE_PARAMS: frozenset[str] = frozenset(
@@ -108,6 +118,10 @@ HARD_IGNORE_PARAMS: frozenset[str] = frozenset(
         "outgoingMapperId",
         "defaultIgnore",
         "integrationLogLevel",
+        # Connector-injected field (capabilities.yaml general_configurations) that
+        # legitimately appears in demisto.params() on the platform; must be
+        # IGNORED, never flagged EXTRA_IN_CONNECTOR.
+        "instance_name",
     }
 )
 
@@ -156,30 +170,64 @@ class CapabilitySpec:
 
 @dataclass
 class ProfileSpec:
-    """A connector auth profile the integration uses (one per advertised id)."""
+    """A connector auth profile the integration uses (one per advertised id).
+
+    Interpolation is signaled by a non-empty :attr:`interpolation_mapping`
+    (parsed from ``metadata.xsoar.interpolation_mapping``). The auth field ↔
+    xsoar param mapping is derived entirely from this profile — combining
+    :attr:`interpolation_mapping` (role → xsoar path) with
+    :attr:`auth_field_to_role` (connector field id → role).
+    """
 
     id: str  # e.g. "oauth2_client_credentials.ews_o365"
     type: str  # e.g. "oauth2_client_credentials"
-    #: interpolation flag — read ONLY from profiles[].metadata.xsoar.interpolated.
-    interpolated: bool = False
+    #: parsed ``metadata.xsoar.interpolation_mapping``: canonical auth ROLE
+    #: (matches a field's ``metadata.auth.parameter``) -> xsoar param PATH
+    #: (e.g. "credentials.identifier" or a plain "roleArn").
+    interpolation_mapping: dict[str, str] = field(default_factory=dict)
     #: prefixed connector auth field id -> canonical role (metadata.auth.parameter).
     auth_field_to_role: dict[str, str] = field(default_factory=dict)
     #: all field ids declared on this profile (prefixed connector ids).
     field_ids: list[str] = field(default_factory=list)
 
+    @property
+    def interpolated(self) -> bool:
+        """A profile IS interpolated iff it carries a non-empty interpolation mapping."""
+        return bool(self.interpolation_mapping)
 
-@dataclass
-class AuthMappingSpec:
-    """One parsed ``auth_types[]`` entry from the Auth Details CSV column.
+    def connector_field_to_xsoar_param(self) -> dict[str, str]:
+        """Map each prefixed connector field id → the TOP-LEVEL xsoar param.
 
-    Interpolation is NOT carried here — it is decided per profile (ProfileSpec).
-    """
+        For each ``(role, xsoar_path)`` in :attr:`interpolation_mapping`, find the
+        connector field id whose ``auth_field_to_role[field_id] == role``; the
+        top-level xsoar param is the segment before the first ``.`` in the path.
+        """
+        role_to_field: dict[str, str] = {
+            role: fid for fid, role in self.auth_field_to_role.items()
+        }
+        out: dict[str, str] = {}
+        for role, xsoar_path in self.interpolation_mapping.items():
+            fid = role_to_field.get(role)
+            if not fid:
+                continue
+            out[fid] = xsoar_path.split(".")[0]
+        return out
 
-    name: str  # auth_types[].name, e.g. "credentials"
-    type: str  # APIKey | Plain | Passthrough | NoneRequired
-    #: xsoar-leaf (e.g. "credentials.password") -> connector field id
-    #: (serializer/role-resolved).
-    xsoar_to_connector_field: dict[str, str] = field(default_factory=dict)
+    def connector_field_to_xsoar_path(self) -> dict[str, str]:
+        """Map each connector auth field id → the FULL xsoar destination PATH
+        from the interpolation mapping (e.g. credentials_username ->
+        'credentials.identifier'). Unlike connector_field_to_xsoar_param (which
+        returns only the top-level segment for compare-scoping), this preserves
+        the dotted leaf so the connector-side value can be dug out of the shared
+        instance_values at the exact sub-path the integration will see."""
+        role_to_field = {role: fid for fid, role in self.auth_field_to_role.items()}
+        out: dict[str, str] = {}
+        for role, xsoar_path in self.interpolation_mapping.items():
+            fid = role_to_field.get(role)
+            if not fid:
+                continue
+            out[fid] = xsoar_path
+        return out
 
 
 @dataclass
@@ -204,10 +252,6 @@ class ParityInputs:
     #: advertises.
     profiles: list[ProfileSpec] = field(default_factory=list)
 
-    # -- AUTH MAPPING (interpolation NOT here; it lives on ProfileSpec) --
-    auth_mappings: list[AuthMappingSpec] = field(default_factory=list)
-    other_connection: list[str] = field(default_factory=list)
-
     # Param discovery results.
     #: Integration YML param-id -> connector field-id it maps to (after serializer
     #: disambiguation). Params present in the integration YML but not found in the
@@ -216,8 +260,10 @@ class ParityInputs:
     param_to_connector_field: dict[str, str] = field(default_factory=dict)
     #: Integration param ids that are in scope and SHOULD be compared.
     compare_params: set[str] = field(default_factory=set)
-    #: Integration param ids explicitly ignored (auth/profile-not-interpolated +
-    #: hard ignore-list), with the reason — for diagnostics.
+    #: Integration param ids explicitly ignored. Reasons are ``"hard_ignore_list"``
+    #: (a name in :data:`HARD_IGNORE_PARAMS`) or ``"hidden"`` (hidden in the
+    #: integration YML, not migrated to the connector); everything else is
+    #: compared. Kept as a ``{name: reason}`` map for diagnostics.
     ignored_params: dict[str, str] = field(default_factory=dict)
     #: serializer maps (same shape as diff._load_serializer_mappings()).
     serializer_by_xsoar: dict[str, str] = field(default_factory=dict)
@@ -230,8 +276,14 @@ class ParityInputs:
 
 
 def slugify(integration_id: str) -> str:
-    """``"Salesforce IAM"`` -> ``"salesforce-iam"`` (lower + spaces -> dashes)."""
-    return integration_id.strip().lower().replace(" ", "-")
+    """``"Salesforce IAM"`` -> ``"salesforce-iam"``; ``"AWS - ACM"`` -> ``"aws-acm"``.
+
+    Lowercases, turns spaces into dashes, then collapses the ``---`` produced by
+    a spaced separator (`` - ``) into a single dash, matching the canonical
+    ``connectus_migration.manifest_generator.title_to_slug`` used to CREATE the
+    connector/handler directories on disk.
+    """
+    return integration_id.strip().lower().replace(" ", "-").replace("---", "-")
 
 
 def handler_dir_name(integration_id: str) -> str:
@@ -249,6 +301,25 @@ def _load_yaml(path: Path) -> Any:
     except Exception as e:  # pragma: no cover - defensive
         log.debug("Could not parse %s: %s", path, e)
         return None
+
+
+def _is_hidden_param(p: dict) -> bool:
+    """True when a YML configuration param is hidden ON THE PLATFORM, so it is NOT
+    migrated to the connector and must be excluded from param-parity comparison.
+
+    XSOAR's ``hidden`` field is either a boolean (hidden in ALL marketplaces) or a
+    LIST of the marketplaces/platforms where the param is hidden (e.g.
+    ``["xsoar"]``, ``["marketplacev2"]``, ``["platform"]``). A param hidden only
+    on a non-platform marketplace is still present on the platform and IS compared;
+    only ``hidden: true`` or a list that includes ``"platform"`` counts as hidden
+    here.
+    """
+    hidden = p.get("hidden")
+    if hidden is True:
+        return True
+    if isinstance(hidden, (list, tuple)):
+        return any(str(m).strip().lower() == "platform" for m in hidden)
+    return False
 
 
 def _read_csv_row(integration_id: str, csv_path: Path) -> dict[str, str]:
@@ -270,24 +341,6 @@ def _read_csv_row(integration_id: str, csv_path: Path) -> dict[str, str]:
 # ============================================================================
 
 
-def _fields_from_general_configurations(doc: Any) -> list[str]:
-    """Collect field ids from a ``general_configurations`` block (connection /
-    capabilities files share this shape)."""
-    out: list[str] = []
-    if not isinstance(doc, dict):
-        return out
-    gc = doc.get("general_configurations")
-    if not isinstance(gc, dict):
-        return out
-    for conf in gc.get("configurations") or []:
-        if not isinstance(conf, dict):
-            continue
-        for fld in conf.get("fields") or []:
-            if isinstance(fld, dict) and fld.get("id"):
-                out.append(fld["id"])
-    return out
-
-
 def _fields_from_capability_configurations(doc: Any, capability: str) -> list[str]:
     """Collect field ids from ``configurations.yaml`` scoped to ``capability``."""
     out: list[str] = []
@@ -307,24 +360,44 @@ def _fields_from_capability_configurations(doc: Any, capability: str) -> list[st
     return out
 
 
-def _is_interpolated(profile: dict) -> bool:
-    """Whether a profile's ``metadata.xsoar.interpolated`` is truthy.
+def _parse_interpolation_mapping(profile: dict) -> dict[str, str]:
+    """Parse a profile's ``metadata.xsoar.interpolation_mapping`` string.
 
-    SINGLE source of truth for the interpolation flag. The Auth Details object's
-    own ``interpolated`` key is intentionally NOT consulted.
+    SINGLE source of truth for interpolation. The mapping is a comma-separated
+    list of ``ROLE:XSOAR_PATH`` pairs where:
+
+      * ``ROLE`` matches a profile field's ``metadata.auth.parameter`` (the
+        connector auth role), and
+      * ``XSOAR_PATH`` is the ``demisto.params()`` key path (e.g.
+        ``credentials.identifier`` or a plain ``roleArn``).
+
+    Splits on ``,`` then ``:``, trims whitespace, and ignores blank/malformed
+    pairs. A profile is interpolated iff the returned dict is non-empty.
+
+    Returns:
+        ``{role: xsoar_path}``. Empty when the key is absent/blank/malformed.
     """
     meta = profile.get("metadata")
     if not isinstance(meta, dict):
-        return False
+        return {}
     xsoar = meta.get("xsoar")
     if not isinstance(xsoar, dict):
-        return False
-    val = xsoar.get("interpolated")
-    if isinstance(val, bool):
-        return val
-    if isinstance(val, str):
-        return val.strip().lower() == "true"
-    return False
+        return {}
+    raw = xsoar.get("interpolation_mapping")
+    if not isinstance(raw, str):
+        return {}
+    mapping: dict[str, str] = {}
+    for pair in raw.split(","):
+        pair = pair.strip()
+        if not pair or ":" not in pair:
+            continue
+        role, _, xsoar_path = pair.partition(":")
+        role = role.strip()
+        xsoar_path = xsoar_path.strip()
+        if not role or not xsoar_path:
+            continue
+        mapping[role] = xsoar_path
+    return mapping
 
 
 # ============================================================================
@@ -420,7 +493,7 @@ def _profiles_from_connection(
     """Build a :class:`ProfileSpec` for each advertised profile id.
 
     Reads field ids, the per-field canonical role (``metadata.auth.parameter``),
-    and the interpolation flag (``metadata.xsoar.interpolated`` ONLY).
+    and the interpolation mapping (``metadata.xsoar.interpolation_mapping``).
     """
     if not isinstance(connection_doc, dict):
         return []
@@ -443,7 +516,7 @@ def _profiles_from_connection(
         spec = ProfileSpec(
             id=pid,
             type=str(profile.get("type") or ""),
-            interpolated=_is_interpolated(profile),
+            interpolation_mapping=_parse_interpolation_mapping(profile),
         )
         for conf in profile.get("configurations") or []:
             if not isinstance(conf, dict):
@@ -460,77 +533,6 @@ def _profiles_from_connection(
                     spec.auth_field_to_role[fid] = role
         out.append(spec)
     return out
-
-
-# ============================================================================
-# Auth Details (CSV column) parsing
-# ============================================================================
-
-
-def _role_to_connector_field(
-    role: str, profiles: list[ProfileSpec], by_xsoar: dict[str, str]
-) -> str:
-    """Resolve a canonical auth ROLE (metadata.auth.parameter) to the actual
-    prefixed connector field id.
-
-    Strategy: prefer a profile field whose ``metadata.auth.parameter == role``
-    (the prefixed connector id). Fall back to the serializer (xsoar name -> field)
-    and finally to the role itself.
-    """
-    for prof in profiles:
-        for field_id, field_role in prof.auth_field_to_role.items():
-            if field_role == role:
-                return field_id
-    if role in by_xsoar:
-        return by_xsoar[role]
-    return role
-
-
-def _parse_auth_details(
-    cell: str,
-    profiles: list[ProfileSpec],
-    by_xsoar: dict[str, str],
-) -> tuple[list[AuthMappingSpec], list[str]]:
-    """Parse the ``Auth Details`` CSV cell into auth mappings + other_connection.
-
-    The cell is a JSON object ``{"auth_types": [...], "other_connection": [...]}``.
-    Tolerates empty/missing/invalid → ``([], [])``. The ``interpolated`` key (if
-    present on an ``auth_types[]`` entry) is IGNORED — interpolation is decided
-    per profile.
-    """
-    cell = (cell or "").strip()
-    if not cell:
-        return [], []
-    try:
-        obj = json.loads(cell)
-    except (ValueError, TypeError):
-        log.debug("Auth Details cell is not valid JSON; ignoring.")
-        return [], []
-    if not isinstance(obj, dict):
-        return [], []
-
-    mappings: list[AuthMappingSpec] = []
-    for entry in obj.get("auth_types") or []:
-        if not isinstance(entry, dict):
-            continue
-        spec = AuthMappingSpec(
-            name=str(entry.get("name") or ""),
-            type=str(entry.get("type") or ""),
-        )
-        xsoar_param_map = entry.get("xsoar_param_map") or {}
-        if isinstance(xsoar_param_map, dict):
-            for xsoar_leaf, role in xsoar_param_map.items():
-                if not xsoar_leaf or not role:
-                    continue
-                spec.xsoar_to_connector_field[xsoar_leaf] = _role_to_connector_field(
-                    str(role), profiles, by_xsoar
-                )
-        mappings.append(spec)
-
-    other_connection = [
-        str(x) for x in (obj.get("other_connection") or []) if x
-    ]
-    return mappings, other_connection
 
 
 # ============================================================================
@@ -653,11 +655,6 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
     # Serializer maps (this handler).
     by_xsoar, by_connector = _load_serializer_maps(handler_dir)
 
-    # ── Auth Details mapping (interpolation NOT here) ──
-    auth_mappings, other_connection = _parse_auth_details(
-        row.get("Auth Details") or "", profiles, by_xsoar
-    )
-
     # ── Build the result shell ──
     inputs = ParityInputs(
         integration_id=integration_id,
@@ -672,76 +669,45 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
         else None,
         capabilities=capabilities,
         profiles=profiles,
-        auth_mappings=auth_mappings,
-        other_connection=other_connection,
         serializer_by_xsoar=by_xsoar,
         serializer_by_connector=by_connector,
     )
 
-    # ── Param discovery: INTEGRATION YML → CONNECTOR ──
+    # ── Param discovery: enumerate EVERY integration-YML config param ──
+    #
+    # COMPARISON POLICY (USER-CONFIRMED): a param is IGNORED iff (a) its name is
+    # on the resolver's HARD_IGNORE_PARAMS list (reason "hard_ignore_list"), OR
+    # (b) it is HIDDEN in the integration YML (reason "hidden") — hidden params
+    # are not migrated to the connector at all. EVERYTHING else is compared
+    # verbatim: type-4 encrypted params, auth/profile params, and type-9
+    # `credentials` (the full object) are ALL compared. The interpolation_mapping
+    # is retained ONLY for value-seeding (connector_field_to_xsoar_path, used by
+    # ucp_capture) — it plays NO role in deciding what to compare.
     yml_doc = _load_yaml(Path(_abs_integration_yml(integration_yml_path)))
-    yml_params = [
-        p.get("name")
+    yml_config_entries = [
+        p
         for p in ((yml_doc or {}).get("configuration") or [])
         if isinstance(p, dict) and p.get("name")
     ]
-
-    # Non-profile connector fields: connection general + (UNION of all capability
-    # config fields) + instance-level (capabilities.yaml general_configurations).
-    connection_fields = set(_fields_from_general_configurations(connection_doc))
-    instance_fields = set(_fields_from_general_configurations(capabilities_doc))
-    capability_fields: set[str] = set()
-    for cap in capabilities:
-        capability_fields |= cap.config_field_ids
-    non_profile_fields = connection_fields | capability_fields | instance_fields
-
-    # Profile-field → owning ProfileSpec (for the per-profile interpolation gate).
-    profile_field_owner: dict[str, ProfileSpec] = {}
-    for prof in profiles:
-        for fid in prof.field_ids:
-            profile_field_owner.setdefault(fid, prof)
-
-    # Auth-mapping leaves keyed by xsoar leaf → (connector field, owning profile).
-    auth_leaf_to_field: dict[str, str] = {}
-    for am in auth_mappings:
-        auth_leaf_to_field.update(am.xsoar_to_connector_field)
+    hidden_param_names = {
+        p["name"] for p in yml_config_entries if _is_hidden_param(p)
+    }
+    yml_params = [p["name"] for p in yml_config_entries]
 
     for param in yml_params:
         # 1) Hard ignore-list always wins.
         if param in HARD_IGNORE_PARAMS:
             inputs.ignored_params[param] = "hard_ignore_list"
             continue
-
-        # 2) Resolve which connector field this integration param maps to.
-        #    Auth Details mapping wins, then serializer, then identity.
-        connector_field = (
-            auth_leaf_to_field.get(param)
-            or by_xsoar.get(param)
-            or param
-        )
-
-        # 3) Is this a profile (auth) field? Gate on THAT profile's interpolation.
-        owning_profile = (
-            profile_field_owner.get(connector_field)
-            or profile_field_owner.get(param)
-        )
-        if owning_profile is not None:
-            if owning_profile.interpolated:
-                inputs.param_to_connector_field[param] = connector_field
-                inputs.compare_params.add(param)
-            else:
-                inputs.ignored_params[param] = "profile_not_interpolated"
+        # 2) Hidden in the integration YML → not migrated to the connector → ignore.
+        if param in hidden_param_names:
+            inputs.ignored_params[param] = "hidden"
             continue
-
-        # 4) Non-profile connector field → compare if the connector declares it.
-        if connector_field in non_profile_fields:
-            inputs.param_to_connector_field[param] = connector_field
-            inputs.compare_params.add(param)
-        else:
-            # Param exists in the integration YML but the connector doesn't
-            # declare a matching field. Still compare it — it should surface as
-            # MISSING_IN_CONNECTOR (a real bug) rather than be silently dropped.
-            inputs.compare_params.add(param)
+        # 3) Everything else is compared. Record the connector field this param
+        #    maps to (serializer rename → identity) for diagnostics/attribution.
+        connector_field = by_xsoar.get(param) or param
+        inputs.param_to_connector_field[param] = connector_field
+        inputs.compare_params.add(param)
 
     log.info(
         "Resolved %s: connector=%s capabilities=%s profiles=%s "

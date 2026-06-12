@@ -1,6 +1,6 @@
 ---
 name: connectus-migration
-description: Use when migrating an XSOAR/XSIAM integration to ConnectUs / the unified-connectors platform. Triggers: migrate <integration>, work on <integration>, migrate connector <id>, what's next for me, continue my work, migrate the next 10 integrations assigned to Joey
+description: Use when migrating an XSOAR/XSIAM integration to ConnectUs / the unified-connectors platform. Triggers like 'migrate <integration>', 'work on <integration>', 'migrate connector <id>', 'what's next for me', 'continue my work', 'migrate the next 10 integrations assigned to Joey'
 ---
 
 # ConnectUs Migration Skill
@@ -1945,7 +1945,10 @@ Branch on the wrapper's exit code (do NOT re-interpret stdout):
 * **`11` — parity BLOCKED (setup).** Do NOT markpass. Tell the user the setup
   problem to fix (most commonly: `Connector Folder Path` unset → run
   `set-connector-path`; or the handler isn't on disk / `REPO_DIR` unset), then
-  re-run.
+  re-run. If the block is a GKE control-plane connection timeout during the
+  connector-side capture (`kubectl` → `Unable to connect to the server: dial tcp <ip>:443: i/o timeout` /
+  `Failed to find UCP shell pod`), switch the VPN to the `israel-gw` gateway and
+  re-run (verified fix; this is distinct from a proxy 403 to the tenant API).
 * **`20` — deploy FAILED.** Do NOT markpass. Report the failed GitLab jobs +
   pipeline URL; the user fixes the cause and re-runs the wrapper.
 * **`21` — deploy TIMEOUT.** Do NOT markpass. Report the still-running pipeline

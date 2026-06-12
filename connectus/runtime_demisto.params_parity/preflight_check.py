@@ -47,6 +47,20 @@ _COMMON_SERVER_PYTHON = (
 )
 _PROBE_MARKERS = ("__params_parity_dump__", "PARAMS_PARITY_DUMP::")
 
+#: The deploy pushes CONNECTUS_BRANCH. To make it impossible to push over a
+#: shared branch, every engineer works on ONE personal, long-lived branch named
+#: ``xsoar-migration-<name>`` (e.g. ``xsoar-migration-joey``). Preflight enforces
+#: this exact shape before any git op; generic/shared names are rejected. There
+#: is no base branch and no reset — the engineer keeps their branch current via
+#: rebase. See _check_branch_name().
+import re as _re
+
+_BRANCH_PATTERN = _re.compile(r"^xsoar-migration-[a-z0-9][a-z0-9-]*$")
+#: Names that must never be a deploy target even if they were to match loosely.
+_SHARED_BRANCH_DENYLIST = frozenset(
+    {"stable", "master", "main", "dev", "develop", "xsoar", "xsoar-playground"}
+)
+
 #: Env vars that MUST be set for a live deploy + test.
 _REQUIRED_ENV = (
     "DEMISTO_BASE_URL",
@@ -101,6 +115,37 @@ def _check_connectus_repo() -> CheckResult:
             f"{p} has no connectors/ dir — is this the unified-connectors-content repo?",
         )
     return CheckResult("CONNECTUS_REPO_DIR exists", True, str(p))
+
+
+def _check_branch_name() -> CheckResult:
+    """CONNECTUS_BRANCH (the branch the deploy pushes) MUST be a personal,
+    long-lived branch named ``xsoar-migration-<name>``.
+
+    Rationale: the deploy pushes this branch. Enforcing a per-engineer namespaced
+    name makes it impossible to push onto a shared branch (stable/master/dev/
+    xsoar-playground) or onto a generic name many people might reuse. Each
+    engineer reuses ONE branch (no per-run branches → no merge sprawl) and is
+    responsible for keeping it current via rebase (there is no base/reset)."""
+    branch = (os.getenv("CONNECTUS_BRANCH") or "").strip()
+    name = "deploy branch is personal ('xsoar-migration-<name>')"
+    if not branch:
+        return CheckResult(name, False, "CONNECTUS_BRANCH is unset")
+    if branch in _SHARED_BRANCH_DENYLIST:
+        return CheckResult(
+            name,
+            False,
+            f"CONNECTUS_BRANCH={branch!r} is a SHARED branch — refusing. Use a "
+            f"personal branch 'xsoar-migration-<name>' (e.g. xsoar-migration-joey).",
+        )
+    if not _BRANCH_PATTERN.match(branch):
+        return CheckResult(
+            name,
+            False,
+            f"CONNECTUS_BRANCH={branch!r} must match 'xsoar-migration-<name>' "
+            f"(lowercase, e.g. xsoar-migration-joey). The deploy pushes this "
+            f"branch; only a personal, namespaced branch is allowed.",
+        )
+    return CheckResult(name, True, f"CONNECTUS_BRANCH={branch}")
 
 
 def _check_probe() -> CheckResult:
@@ -176,6 +221,7 @@ def run_preflight(integration_id: Optional[str]) -> list[CheckResult]:
     """
     results = [
         _check_required_env(),
+        _check_branch_name(),
         _check_connectus_repo(),
         _check_probe(),
         _check_tool_on_path("gcloud"),

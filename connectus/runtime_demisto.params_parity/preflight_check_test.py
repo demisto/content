@@ -51,6 +51,35 @@ def test_required_env_missing(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
+# deploy branch name enforcement (xsoar-migration-<name>)
+# ---------------------------------------------------------------------------
+
+def test_branch_name_ok(monkeypatch):
+    monkeypatch.setenv("CONNECTUS_BRANCH", "xsoar-migration-joey")
+    assert pf._check_branch_name().ok
+
+
+def test_branch_name_unset(monkeypatch):
+    monkeypatch.delenv("CONNECTUS_BRANCH", raising=False)
+    r = pf._check_branch_name()
+    assert not r.ok and "unset" in r.detail
+
+
+def test_branch_name_rejects_shared(monkeypatch):
+    for shared in ("stable", "master", "main", "dev", "xsoar", "xsoar-playground"):
+        monkeypatch.setenv("CONNECTUS_BRANCH", shared)
+        r = pf._check_branch_name()
+        assert not r.ok, f"{shared} should be rejected"
+        assert "SHARED" in r.detail
+
+
+def test_branch_name_rejects_wrong_shape(monkeypatch):
+    for bad in ("xsoar-foo", "migration-joey", "xsoar-migration-", "xsoar-migration-Joey", "feature/x"):
+        monkeypatch.setenv("CONNECTUS_BRANCH", bad)
+        assert not pf._check_branch_name().ok, f"{bad} should be rejected"
+
+
+# ---------------------------------------------------------------------------
 # connectus repo
 # ---------------------------------------------------------------------------
 

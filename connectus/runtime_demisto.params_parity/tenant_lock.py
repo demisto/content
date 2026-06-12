@@ -3,7 +3,8 @@
 
 Why this exists (design §2/§3)
 ------------------------------
-``deploy.py`` is *whole-branch / whole-manifest*: deploying to tenant **X** clobbers
+``deploy.py`` deploys to tenant **X** (commits the connector to a personal branch,
+fast-forward pushes, triggers the pipeline); deploying to **X** clobbers
 whatever was on X. Two AI shells deploying to the SAME tenant concurrently corrupt each
 other's running instance mid-test. The indivisible critical section is::
 

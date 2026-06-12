@@ -92,7 +92,7 @@ def main() -> int:
         )
         return 2
 
-    captured = capture_xsoar_params(
+    captured, _ = capture_xsoar_params(
         integration_yml_path=INTEGRATION_YML_PATH,
         overrides=PARAM_OVERRIDES,
     )
