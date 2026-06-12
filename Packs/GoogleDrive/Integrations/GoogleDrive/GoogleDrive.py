@@ -711,7 +711,10 @@ def test_module(gsuite_client: "GSuiteClient", last_run: dict, params: dict[str,
     :return: raise ValueError if any error occurred during connection
     :raises DemistoException: If there is any other issues while making the http call.
     """
+    
+    demisto.debug(f'in test module fetch is { params.get("isFetch")}')
     if params.get("isFetch"):
+        demisto.debug('JUDAHLOOKHERE fetch was called')
         fetch_incidents(gsuite_client, last_run, params, is_test=True)
     else:
         with GSuiteClient.http_exception_handler():
@@ -2052,14 +2055,6 @@ def connectus_info_command(client: "GSuiteClient", args: dict[str, str]) -> Comm
 
     connectus_info: dict[str, Any] = {"ucp_enabled": using_ucp}
 
-    # if using_ucp:
-    #     with GSuiteClient.http_exception_handler():
-    #         capability = resolve_ucp_capability()
-    #         connectus_info["capability"] = capability
-    #         connectus_info["method_unique_id"] = get_ucp_method_unique_id(capability)
-    # else:
-    #     connectus_info["note"] = "ConnectUs (UCP) is not enabled for this instance."
-
     masked_params = demisto.params()
 
     outputs = {
@@ -2176,8 +2171,10 @@ def main() -> None:  # pragma: no cover
         # This is the call made when pressing the integration Test button.
         if command == "test-module":
             result = test_module(gsuite_client, demisto.getLastRun(), params)
-            return_results(result)
+            demisto.debug(f'{result=}')
+            demisto.results('ok')
         elif command == "fetch-incidents":
+            demisto.debug('fetch being called JUDAHLOOKHERE')
             incidents, next_run = fetch_incidents(
                 gsuite_client,
                 last_run=demisto.getLastRun(),
