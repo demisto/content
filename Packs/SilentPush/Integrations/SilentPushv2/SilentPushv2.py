@@ -36,11 +36,11 @@ THREAT_CHECK = "https://api.threatcheck.silentpush.com/v1/"
 V1 = "api/v1/"
 V2 = "api/v2/"
 MERGE_API = V1 + "merge-api/explore/"
-ENRICHMENT = MERGE_API + "enrich"
-BULK_IP6_INFO = MERGE_API + "bulk/ip2asn/ipv6"
+ENRICHMENT = V1 + "enrich"
 BULK_INFO = MERGE_API + "bulk/summary"
 BULK_DOMAIN_INFO = BULK_INFO + "/domain"
 BULK_IP4_INFO = BULK_INFO + "/ipv4"
+BULK_IP6_INFO = MERGE_API + "bulk/ip2asn/ipv6"
 FORWARD_PADNS = MERGE_API + "padns/lookup/query"
 REVERSE_PADNS = MERGE_API + "padns/lookup/answer"
 MULTI_CONDITIONAL_PADNS_LOOKUP = MERGE_API + "padns/lookup/both"
@@ -52,8 +52,8 @@ NAMESERVER_REPUTATION = MERGE_API + "nsreputation/history/nameserver"
 SUBNET_REPUTATION = MERGE_API + "ipreputation/history/subnet"
 IPV4_REPUTATION = MERGE_API + "ipreputation/history/ipv4"
 SEARCH_DOMAIN = MERGE_API + "domain/search"
-SEARCH_SCAN = MERGE_API + "spql/search"
-LIVE_SCAN_URL = V2 + "live-scan/scan-on-demand/query"
+SEARCH_SCAN = V1 + "spql-search/"
+LIVE_SCAN_URL = V1 + "live-scan/"
 WHOIS = MERGE_API + "domain/whois"
 DOMAIN_CERTIFICATE = MERGE_API + "domain/certificates"
 ADD_FEED = V1 + "feeds/"
@@ -1935,10 +1935,13 @@ class Client(BaseClient):
         except AttributeError:
             return False
         if has_job:
-            job_details = response.get("response", {}).get("job_status", {})
-            if not job_details:
-                job_details = response.get("job_status", {})
-            return job_details
+            try:
+                job_details = response.get("response", {}).get("job_status", {})
+                if not job_details:
+                    job_details = response.get("job_status", {})
+                return job_details
+            except AttributeError:
+                return response
         return False
 
     def format_job_command_response(self, job_details, response):
@@ -2055,13 +2058,10 @@ class Client(BaseClient):
 
         :return: dict: Enrichment data for the specified resource.
         """
-        endpoint = f"{ENRICHMENT}/{resource.value}/{value}"
+        endpoint = f"{ENRICHMENT}/{resource.value}/{value}/"
         query_params = {"explain": explain if explain else 0, "scan_data": scan_data if scan_data else 0}
         response = self._http_request(method="GET", url_suffix=endpoint, params=query_params)
-        if resource in [ResourceType.IP4, ResourceType.IP6]:
-            ip2asn_data = response.get("response", {}).get("ip2asn", [])
-            return ip2asn_data[0] if isinstance(ip2asn_data, list) and ip2asn_data else {}
-        return response.get("response", {})
+        return response
 
     def search_scan_data(self, query: str, args: dict) -> dict[str, Any]:
         """
@@ -2933,7 +2933,7 @@ def search_scan_data_command(client: Client, args: dict) -> CommandResults:
     if not query:
         raise ValueError("Query parameter is required")
     raw_response = client.search_scan_data(query, args)
-    scan_data = raw_response.get("response", {}).get("records", [])
+    scan_data = raw_response.get("data", [])
     if not scan_data:
         return CommandResults(readable_output="No scan data records found", outputs_prefix="SilentPush.ScanData", outputs=None)
     readable_output = tableToMarkdown("Raw Scan Data Results", scan_data, removeNull=True)

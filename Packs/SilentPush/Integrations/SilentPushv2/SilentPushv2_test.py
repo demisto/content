@@ -363,19 +363,17 @@ def test_live_url_scan_command_invalid_parameters(mock_client, mocker):
 def test_search_scan_data_command(mock_client, mocker):
     args = {"query": "domain:example.com"}
     mock_response = {
-        "response": {
-            "records": [
-                {"domain": "example.com", "ip": "192.168.1.1", "status": "active"},
-                {"domain": "example.org", "ip": "192.168.1.2", "status": "inactive"},
-            ]
-        }
+        "data": [
+            {"domain": "example.com", "ip": "192.168.1.1", "status": "active"},
+            {"domain": "example.org", "ip": "192.168.1.2", "status": "inactive"},
+        ]
     }
     mock_client.search_scan_data.return_value = mock_response
     result = search_scan_data_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.ScanData"
     assert result.outputs_key_field == "domain"
-    assert result.outputs["records"] == mock_response["response"]["records"]
+    assert result.outputs["records"] == mock_response["data"]
     assert result.outputs["query"] == "domain:example.com"
     assert result.readable_output == "Mocked Markdown Table"
 
