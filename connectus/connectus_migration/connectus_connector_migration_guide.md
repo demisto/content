@@ -711,7 +711,7 @@ triggers:
 | `metadata.description` | `"Enter the credentials to securely authorize the connection"`. Flag for writer review. |
 | `metadata.help` | Long Markdown: extract connection methods from the integration YMLs + READMEs (auth only — no commands/IO), combined with vendor knowledge. Flag for writer review. |
 
-> Migration of XSOAR type-9 credentials and related auth fields (`displaypassword`, `hiddenusername`, `hiddenpassword`, multi-token) is in scope but the profile language is still being refined. See [`plans/integration-parameter-and-types-overrides.md`](plans/integration-parameter-and-types-overrides.md:1).
+> **XSOAR type-9 credentials are in scope** and migrated into the **connection profile** (`profiles[].configurations[].fields[]`), exactly like type-4 secrets — each credential leaf becomes a profile auth field carrying `metadata.auth.parameter`, wired to `demisto.params()` via the profile's `interpolation_mapping` (§2.6.2). Honor the related auth fields (`displaypassword`, `hiddenusername`, `hiddenpassword`, multi-token) per the leaf semantics below. See [`plans/integration-parameter-and-types-overrides.md`](plans/integration-parameter-and-types-overrides.md:1).
 
 #### XSOAR type-9 credential leaf semantics
 
@@ -1611,7 +1611,7 @@ Also see [`plans/integration-parameter-and-types-overrides.md`](plans/integratio
 | 1 | Number / Integer | `input` | `false` | Text input (no separate number type in UCP). Example: `max_fetch`. |
 | 4 | Encrypted / Password | `input` | `true` | Masked input for secrets. Example: ApiKey. |
 | 8 | Boolean / Checkbox | `checkbox` | N/A | Single boolean toggle. |
-| 9 | Credentials / Authentication | **OUT OF SCOPE** | — | Handled by connection profiles. Type 9 params are removed by the auth migration script. |
+| 9 | Credentials / Authentication | `input` (per leaf) | `true` (password leaf) | **IN SCOPE.** Mapped into the **connection profile** (`connection.yaml profiles[].configurations[].fields[]`), same as type 4 — **not** into `configurations.yaml`. A `type: 9` credential renders as two leaves: an identifier (`<id>.identifier`) and a password (`<id>.password`); each becomes a profile auth field carrying `metadata.auth.parameter`, wired back to `demisto.params()` via the profile's `interpolation_mapping` (§2.6.2). Honor `hiddenusername`/`hiddenpassword`/`displaypassword` leaf semantics (§3.6). |
 | 12 | Long Text / TextArea | `text_area` | `false` | Multi-line text. |
 | 13 | Incident Type | `select` + `metadata.dynamic_values` | `false` | Option list fetched at runtime via the XSOAR provider (`dynamicField: "incident-type"`). **User-visible field** |
 | 14 | Encrypted Text Area | `text_area` | `true` | Masked textarea. Example: SSHKey. |

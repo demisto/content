@@ -2,9 +2,9 @@
 
 Covers:
   * result_filename() format with an injected `when` (deterministic timestamp),
-  * write_result() writes valid JSON and (default) redacts the `captures` values
-    while preserving keys + the rest of the envelope,
-  * write_result(scrub=False) keeps the raw captures verbatim,
+  * write_result() writes valid JSON persisting the `captures` verbatim (raw
+    values + keys) alongside the rest of the envelope,
+  * write_result() does not mutate the input envelope,
   * append_ledger() creates the header exactly once then appends rows with the
     EXACT columns and values.
 
@@ -68,10 +68,10 @@ def test_result_filename_naive_when_treated_as_utc():
     assert name.endswith("20260607T170006Z.json")
 
 
-# ── write_result (default scrub) ──────────────────────────────────────────────
+# ── write_result (persists RAW captures — scrubbing intentionally removed) ─────
 
 
-def test_write_result_default_scrub_redacts_captures_keeps_keys(results_dir):
+def test_write_result_persists_raw_captures(results_dir):
     when = datetime(2026, 6, 7, 17, 0, 6, tzinfo=timezone.utc)
     env = _envelope()
 
@@ -84,11 +84,13 @@ def test_write_result_default_scrub_redacts_captures_keeps_keys(results_dir):
 
     written = json.loads(path.read_text())
 
-    # captures keys preserved, values redacted
+    # captures keys preserved AND raw values persisted verbatim (no redaction)
     assert set(written["captures"]["integration"]) == {"url", "token"}
     assert set(written["captures"]["connector"]) == {"domain", "api_key"}
-    assert all(v == "<redacted>" for v in written["captures"]["integration"].values())
-    assert all(v == "<redacted>" for v in written["captures"]["connector"].values())
+    assert written["captures"]["integration"]["url"] == "https://dummy.example.com"
+    assert written["captures"]["integration"]["token"] == "real-secret-123"
+    assert written["captures"]["connector"]["domain"] == "test.salesforce.com"
+    assert written["captures"]["connector"]["api_key"] == "abc123"
 
     # rest of the envelope is untouched
     assert written["status"] == "fail"
@@ -97,13 +99,13 @@ def test_write_result_default_scrub_redacts_captures_keeps_keys(results_dir):
     assert written["inputs"] == env["inputs"]
 
 
-def test_write_result_scrub_does_not_mutate_input_envelope(results_dir):
+def test_write_result_does_not_mutate_input_envelope(results_dir):
     when = datetime(2026, 6, 7, 17, 0, 6, tzinfo=timezone.utc)
     env = _envelope()
     results_ledger.write_result(
         env, connector_id="c", integration_id="i", when=when
     )
-    # the ORIGINAL envelope still holds the real values (deep-copy, not in-place)
+    # the ORIGINAL envelope is unchanged after the write (no in-place mutation)
     assert env["captures"]["integration"]["token"] == "real-secret-123"
     assert env["captures"]["connector"]["api_key"] == "abc123"
 
@@ -115,19 +117,6 @@ def test_write_result_creates_results_dir_lazily(results_dir):
         when=datetime(2026, 6, 7, 17, 0, 6, tzinfo=timezone.utc),
     )
     assert results_dir.is_dir()
-
-
-# ── write_result (scrub=False) ────────────────────────────────────────────────
-
-
-def test_write_result_no_scrub_keeps_raw_captures(results_dir):
-    when = datetime(2026, 6, 7, 17, 0, 6, tzinfo=timezone.utc)
-    path = results_ledger.write_result(
-        _envelope(), connector_id="c", integration_id="i", when=when, scrub=False
-    )
-    written = json.loads(path.read_text())
-    assert written["captures"]["integration"]["token"] == "real-secret-123"
-    assert written["captures"]["connector"]["api_key"] == "abc123"
 
 
 # ── append_ledger ─────────────────────────────────────────────────────────────

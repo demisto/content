@@ -46,7 +46,7 @@ def mock_lock(monkeypatch):
 
 
 def _set_deploy(monkeypatch, code):
-    monkeypatch.setattr(dat, "_run_deploy", lambda tenant: code)
+    monkeypatch.setattr(dat, "_run_deploy", lambda tenant, commit_path=None: code)
 
 
 def _set_parity(monkeypatch, codes):
@@ -120,7 +120,7 @@ def test_lock_busy_exit_30(monkeypatch):
     monkeypatch.setattr(tenant_lock, "acquire", fake_acquire)
     monkeypatch.setattr(tenant_lock, "release", lambda *a, **k: released.__setitem__("n", released["n"] + 1))
     deployed = {"n": 0}
-    monkeypatch.setattr(dat, "_run_deploy", lambda tenant: deployed.__setitem__("n", deployed["n"] + 1) or 0)
+    monkeypatch.setattr(dat, "_run_deploy", lambda tenant, commit_path=None: deployed.__setitem__("n", deployed["n"] + 1) or 0)
 
     rc = dat.run(["IntA"], "T1", max_wait=0, force=False)
     assert rc == dat.EXIT_LOCK_BUSY
@@ -140,7 +140,7 @@ def test_preflight_fail_exit_40(monkeypatch):
                         lambda *a, **k: acquired.__setitem__("n", acquired["n"] + 1) or "s")
     monkeypatch.setattr(tenant_lock, "release", lambda *a, **k: True)
     monkeypatch.setattr(dat, "_run_deploy",
-                        lambda tenant: deployed.__setitem__("n", deployed["n"] + 1) or 0)
+                        lambda tenant, commit_path=None: deployed.__setitem__("n", deployed["n"] + 1) or 0)
     rc = dat.run(["IntA"], "T1", max_wait=0, force=False)
     assert rc == dat.EXIT_PREFLIGHT_FAIL
     assert acquired["n"] == 0  # never acquired the lock
@@ -157,10 +157,28 @@ def test_skip_preflight_bypasses_gate(monkeypatch, mock_lock):
 
 
 # ---------------------------------------------------------------------------
+# --skip-deploy bypasses deploy entirely and runs parity directly
+# ---------------------------------------------------------------------------
+def test_skip_deploy_bypasses_deploy(monkeypatch, mock_lock):
+    deployed = {"n": 0}
+
+    def boom(tenant, commit_path=None):
+        deployed["n"] += 1
+        raise AssertionError("_run_deploy must NOT be called when skip_deploy=True")
+
+    monkeypatch.setattr(dat, "_run_deploy", boom)
+    _set_parity(monkeypatch, 0)
+    rc = dat.run(["IntA"], "T1", max_wait=0, force=False, skip_deploy=True)
+    assert rc == dat.EXIT_ALL_PASS  # proceeded straight to parity → pass
+    assert deployed["n"] == 0  # deploy never invoked
+    assert mock_lock["release"]  # lock still released
+
+
+# ---------------------------------------------------------------------------
 # release() is called in finally even on an unexpected exception
 # ---------------------------------------------------------------------------
 def test_release_called_in_finally_on_exception(monkeypatch, mock_lock):
-    def boom(tenant):
+    def boom(tenant, commit_path=None):
         raise RuntimeError("deploy blew up")
 
     monkeypatch.setattr(dat, "_run_deploy", boom)
@@ -196,7 +214,7 @@ def test_multi_id_all_pass(monkeypatch, mock_lock):
 
 def test_multi_id_deploy_runs_once(monkeypatch, mock_lock):
     deploys = {"n": 0}
-    monkeypatch.setattr(dat, "_run_deploy", lambda tenant: deploys.__setitem__("n", deploys["n"] + 1) or 0)
+    monkeypatch.setattr(dat, "_run_deploy", lambda tenant, commit_path=None: deploys.__setitem__("n", deploys["n"] + 1) or 0)
     _set_parity(monkeypatch, 0)
     dat.run(["A", "B", "C"], "T1", max_wait=0, force=False)
     assert deploys["n"] == 1  # ONE deploy under ONE lock
@@ -220,6 +238,43 @@ def test_per_id_summary_lines_printed(monkeypatch, mock_lock, capsys):
     out = capsys.readouterr().out
     assert "DEPLOY_AND_TEST_RESULT integration=A result=PASS exit=0" in out
     assert "DEPLOY_AND_TEST_RESULT integration=B result=PARITY_FAIL exit=10" in out
+
+
+# ---------------------------------------------------------------------------
+# _run_deploy passes --commit-path through to deploy.py
+# ---------------------------------------------------------------------------
+class _FakeProc:
+    def __init__(self, returncode=0):
+        self.returncode = returncode
+
+
+def test_run_deploy_appends_commit_path(monkeypatch):
+    captured = {}
+
+    def fake_run(cmd, **kwargs):
+        captured["cmd"] = cmd
+        return _FakeProc(0)
+
+    monkeypatch.setattr(dat.subprocess, "run", fake_run)
+    rc = dat._run_deploy("T1", "connectors/aws")
+    assert rc == 0
+    assert "--commit-path" in captured["cmd"]
+    idx = captured["cmd"].index("--commit-path")
+    assert captured["cmd"][idx + 1] == "connectors/aws"
+    assert "--tenant" in captured["cmd"]
+
+
+def test_run_deploy_omits_commit_path_when_none(monkeypatch):
+    captured = {}
+
+    def fake_run(cmd, **kwargs):
+        captured["cmd"] = cmd
+        return _FakeProc(0)
+
+    monkeypatch.setattr(dat.subprocess, "run", fake_run)
+    rc = dat._run_deploy("T1")
+    assert rc == 0
+    assert "--commit-path" not in captured["cmd"]
 
 
 # ---------------------------------------------------------------------------

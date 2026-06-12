@@ -71,7 +71,7 @@ log = logging.getLogger("ucp_capture")
 DEFAULT_TENANT_ID = os.getenv("TENANT_ID", "")
 # Legacy/ad-hoc only: resolver-driven runs derive the connector id. Kept for
 # create_ucp_instance.py standalone usage.
-DEFAULT_UCP_PORT = int(os.getenv("UCP_PORT", "8080"))
+DEFAULT_UCP_PORT = 8080
 
 DEFAULT_GKE_ZONE = "us-central1-f"
 DEFAULT_K8S_NAMESPACE = "xdr-st"
@@ -173,7 +173,17 @@ def start_port_forward(
         text=True,
     )
     if pod_result.returncode != 0 or not pod_result.stdout.strip():
-        raise RuntimeError("Failed to find UCP shell pod:\n{}".format(pod_result.stderr))
+        stderr = pod_result.stderr or ""
+        hint = ""
+        low = stderr.lower()
+        if ("i/o timeout" in low or "unable to connect to the server" in low
+                or "couldn't get current server api group list" in low):
+            hint = ("\n\nHINT: kubectl could not reach the GKE cluster API "
+                    "(control-plane network timeout). Switch your VPN to the "
+                    "'israel-gw' gateway, then re-run. (This is the GKE/kubectl "
+                    "control-plane timeout — distinct from a proxy 403 to the "
+                    "tenant API.)")
+        raise RuntimeError("Failed to find UCP shell pod:\n{}{}".format(stderr, hint))
 
     pod_name = pod_result.stdout.strip()
     log.info("Pod: %s", pod_name)
@@ -283,6 +293,118 @@ def delete_ucp_instance(
         return True
     log.error("DELETE %s returned status %s: %s", url, resp.status_code, resp.text)
     return False
+
+
+def get_ucp_instance(
+    instance_id: str,
+    tenant_id: str,
+    port: int = DEFAULT_UCP_PORT,
+) -> dict | None:
+    """GET ``{base}/instances/<id>`` on UCP. Returns the parsed body on HTTP 200,
+    else ``None``.
+
+    Best-effort verification helper — never raises (a non-200 or transport error
+    just yields ``None``, so callers can fall back to the list route or treat it
+    as "not found"). NOTE: this single-instance GET route is NOT documented; it
+    mirrors the DELETE route shape and may not exist, hence the defensiveness.
+    """
+    url = f"{_ucp_base_url(port)}/instances/{instance_id}"
+    try:
+        resp = requests.get(url, headers={"x-tenant-id": tenant_id})
+    except Exception as e:
+        log.warning("GET %s raised: %s", url, e)
+        return None
+    if resp.status_code == 200:
+        try:
+            return resp.json()
+        except Exception:
+            return None
+    log.warning("GET %s returned status %s: %s", url, resp.status_code, resp.text[:300])
+    return None
+
+
+def list_ucp_instances(
+    tenant_id: str,
+    port: int = DEFAULT_UCP_PORT,
+) -> list | None:
+    """GET ``{base}/instances`` on UCP. Returns the parsed list on HTTP 200, else
+    ``None``.
+
+    Best-effort — never raises. Used as a fallback to verify a created instance
+    exists when the single-instance GET route is unavailable. Accepts either a
+    bare JSON list or a wrapper dict (``{"instances": [...]}`` / ``{"data": [...]}``
+    / ``{"items": [...]}``) since the list response shape is undocumented.
+    """
+    url = f"{_ucp_base_url(port)}/instances"
+    try:
+        resp = requests.get(url, headers={"x-tenant-id": tenant_id})
+    except Exception as e:
+        log.warning("GET %s raised: %s", url, e)
+        return None
+    if resp.status_code == 200:
+        try:
+            data = resp.json()
+        except Exception:
+            return None
+        # Accept either a bare list or a wrapped {"instances":[...]} / {"data":[...]}.
+        if isinstance(data, list):
+            return data
+        if isinstance(data, dict):
+            for key in ("instances", "data", "items"):
+                if isinstance(data.get(key), list):
+                    return data[key]
+        return None
+    log.warning("GET %s returned status %s: %s", url, resp.status_code, resp.text[:300])
+    return None
+
+
+def verify_ucp_instance_created(
+    *,
+    creation_view_id: str,
+    post_response: dict,
+    tenant_id: str,
+    port: int = DEFAULT_UCP_PORT,
+) -> dict:
+    """Verify a just-created UCP instance ACTUALLY exists (a 201 alone has been
+    observed to not guarantee the instance shows up).
+
+    Tries, in order: GET ``{base}/instances/<post_response.id>``, then
+    GET ``{base}/instances/<creation_view_id>``, then the list route filtered by
+    either id. Logs the POST-response id vs the creation-view id (they may
+    differ) and the instance's reported status.
+
+    Returns a dict::
+
+        {"exists": bool, "instance_id": <id or None>,
+         "status": <status or None>, "via": <"get-id"|"get-creation-id"|"list"|None>}
+
+    Never raises.
+    """
+    post_id = (post_response or {}).get("id")
+    status = (post_response or {}).get("status")
+    if post_id and creation_view_id and post_id != creation_view_id:
+        log.warning(
+            "UCP POST-response id (%s) DIFFERS from creation-view instance_id (%s) "
+            "— cleanup/verification must use the real one.", post_id, creation_view_id,
+        )
+    candidates = [cid for cid in (post_id, creation_view_id) if cid]
+    for cid in candidates:
+        body = get_ucp_instance(cid, tenant_id, port=port)
+        if body is not None:
+            via = "get-id" if cid == post_id else "get-creation-id"
+            return {"exists": True, "instance_id": cid,
+                    "status": body.get("status", status), "via": via}
+    # Fallback: list route, filter by either candidate id.
+    listed = list_ucp_instances(tenant_id, port=port)
+    if listed is not None:
+        ids = {i.get("id") for i in listed if isinstance(i, dict)}
+        for cid in candidates:
+            if cid in ids:
+                match = next(i for i in listed if isinstance(i, dict) and i.get("id") == cid)
+                return {"exists": True, "instance_id": cid,
+                        "status": match.get("status", status), "via": "list"}
+    return {"exists": False, "instance_id": post_id or creation_view_id,
+            "status": status, "via": None}
 
 
 # ============================================================================
@@ -447,6 +569,32 @@ def _dummy_auth_value(field_id: str) -> str:
     return f"dummy_{field_id}"
 
 
+def _dig(source, dotted_path):
+    # type: (Any, str) -> Any
+    """Walk a dotted path into nested dicts; return None if any segment is
+    missing or a non-dict is encountered. Generic — works for any depth."""
+    cur = source
+    for seg in dotted_path.split("."):
+        if isinstance(cur, dict) and seg in cur:
+            cur = cur[seg]
+        else:
+            return None
+    return cur
+
+
+#: Engine-related connector field ids that get the canonical "no engine" values
+#: in the UCP payload (see _ENGINE_FIELD_VALUES). Pushing a dummy value
+#: (e.g. engine="dummy_engine") makes UCP reject instance creation ("engine with
+#: id [dummy_engine] does not exist"); the real UI payload INCLUDES these fields
+#: set to no_engine/null/null, keeping the instance on "No Engine".
+_ENGINE_FIELD_IDS: frozenset[str] = frozenset({"engine", "engine_group", "engineGroup", "engine_mode"})
+
+#: Canonical "no engine" values the platform sends for engine fields. Setting
+#: these (rather than omitting, or sending a dummy which UCP rejects) matches the
+#: real UI payload and keeps the instance on "No Engine".
+_ENGINE_FIELD_VALUES = {"engine_mode": "no_engine", "engine": None, "engine_group": None}
+
+
 def _applied_for_method_ids(
     creation_view: dict, capability_id: str, profile_id: str
 ) -> list[str]:
@@ -469,7 +617,6 @@ def _build_instance_payload(
     instance_name: str,
     capabilities: list,          # list[resolver.CapabilitySpec]
     profiles: list,              # list[resolver.ProfileSpec]
-    auth_mappings: list,         # list[resolver.AuthMappingSpec]
     instance_values: dict[str, Any],
     connector_id: str,
 ) -> dict:
@@ -484,9 +631,11 @@ def _build_instance_payload(
            A handler may subscribe to several (e.g. automation AND fetch-secrets).
         2. **Configuration scope = union over all enabled (sub-)capabilities.**
         3. **Auth per profile, interpolation from ``ProfileSpec.interpolated``
-           ONLY**: interpolated → the connector auth fields are set to the SAME
-           values the INTEGRATION instance uses (via the Auth Details mapping);
-           non-interpolated → dummy-filled (never surfaced at runtime).
+           ONLY**: interpolated → each connector auth field whose role appears in
+           the profile's ``interpolation_mapping`` is set to the SAME value the
+           INTEGRATION instance uses (looked up by the field's xsoar top-level
+           param); fields not covered by the mapping fall back to a dummy.
+           Non-interpolated → dummy-filled (never surfaced at runtime).
         4. **Bidirectional dummy push, NEVER connector defaults.** ``instance_values``
            is the SAME dict pushed to the INTEGRATION side; it is written into the
            ``configuration`` block for every connector-declared field id. Keys the
@@ -496,8 +645,8 @@ def _build_instance_payload(
         creation_view: dict from :func:`get_creation_view`.
         instance_name: display name for the new UCP instance.
         capabilities: resolved ``CapabilitySpec`` list (parents + sub-capabilities).
-        profiles: resolved ``ProfileSpec`` list (carry the interpolated flag).
-        auth_mappings: parsed ``AuthMappingSpec`` list (xsoar leaf → connector field).
+        profiles: resolved ``ProfileSpec`` list (carry the interpolation mapping
+            from which the auth-field ↔ xsoar param mapping is derived).
         instance_values: the shared dummy/instance value dict (xsoar param ids →
             values) pushed to BOTH sides.
         connector_id: the UCP connector id.
@@ -566,11 +715,6 @@ def _build_instance_payload(
     )
 
     # ── 3. Per-profile auth, interpolation-aware ──
-    # Build a combined xsoar-leaf → connector-field map from all auth mappings.
-    leaf_to_field: dict[str, str] = {}
-    for am in auth_mappings:
-        leaf_to_field.update(am.xsoar_to_connector_field)
-
     profile_payloads: list[dict] = []
     for prof in profiles:
         # Which connection methods bind this profile (across all enabled caps)?
@@ -587,17 +731,42 @@ def _build_instance_payload(
             continue
 
         values: dict[str, Any] = {}
-        if prof.interpolated:
-            # Set connector auth fields to the SAME values the integration uses.
-            for leaf, connector_field in leaf_to_field.items():
-                if connector_field in prof.field_ids and leaf in (instance_values or {}):
-                    values[connector_field] = instance_values[leaf]
-            # Any profile field not covered by the mapping still needs a value.
-            for fid in prof.field_ids:
-                values.setdefault(fid, _dummy_auth_value(fid))
-        else:
-            for fid in prof.field_ids:
-                values[fid] = _dummy_auth_value(fid)
+        # The connector-field → FULL xsoar destination PATH map is derived from
+        # the profile's interpolation_mapping (role → xsoar path) + the fields'
+        # metadata.auth.parameter (field id → role). The FULL dotted path lets us
+        # dig the exact LEAF scalar out of the shared instance_values (e.g.
+        # credentials_username → credentials.identifier → instance_values
+        # ["credentials"]["identifier"]). For a NON-interpolated profile this is
+        # {}, so auth fields fall through to a dummy.
+        field_to_path = prof.connector_field_to_xsoar_path() if prof.interpolated else {}
+        for fid in prof.field_ids:
+            if fid in _ENGINE_FIELD_IDS:
+                # Engine fields: include with canonical "no engine" values as the
+                # UI does (no_engine / null / null), NOT skipped — a dummy here
+                # makes UCP reject creation.
+                values[fid] = _ENGINE_FIELD_VALUES.get(fid, None)
+                continue
+            is_auth_field = fid in prof.auth_field_to_role
+            if is_auth_field:
+                # Auth field: interpolated → the LEAF scalar dug from the shared
+                # instance_values at the field's FULL xsoar path; else a dummy.
+                dest_path = field_to_path.get(fid)
+                leaf = _dig(instance_values, dest_path) if dest_path else None
+                if leaf is not None:
+                    values[fid] = leaf
+                else:
+                    # Field not covered by the mapping, missing leaf, or
+                    # non-interpolated → dummy.
+                    values[fid] = _dummy_auth_value(fid)
+            else:
+                # Non-auth profile CONFIG field (e.g. defaultRegion, retries,
+                # insecure, proxy, timeout, sts_regional_endpoint). Push the SAME
+                # shared value the integration side received (keyed by field id ==
+                # xsoar param name for these); fall back to a dummy only if absent.
+                if fid in (instance_values or {}):
+                    values[fid] = instance_values[fid]
+                else:
+                    values[fid] = _dummy_auth_value(fid)
 
         profile_payloads.append(
             {
@@ -621,7 +790,7 @@ def _build_instance_payload(
                 if fid:
                     conn_accepted.add(fid)
     for k, v in (instance_values or {}).items():
-        if k in conn_accepted:
+        if k in conn_accepted and k not in _ENGINE_FIELD_IDS:
             connection_general[k] = v
 
     return {
@@ -633,7 +802,7 @@ def _build_instance_payload(
             "values": enabled_values,
         },
         "connection": {
-            "origin": "RECOMMENDED",
+            "origin": "GROUPED",
             "general_configurations": connection_general,
             "profiles": profile_payloads,
         },
@@ -657,7 +826,7 @@ def capture_ucp_params(
     instance_name: str | None = None,
     ucp_port: int = DEFAULT_UCP_PORT,
     keep_instance: bool = False,
-) -> dict | None:
+) -> tuple[dict | None, dict | None]:
     """Run the full UCP-side capture flow end-to-end.
 
     Workflow:
@@ -680,7 +849,8 @@ def capture_ucp_params(
         xsoar_brand_name: Brand of the XSOAR-mirrored integration
             (e.g. ``"Salesforce IAM"``).
         parity_inputs: The resolved :class:`resolver.ParityInputs` describing the
-            connector, ALL (sub-)capabilities, profiles, and the auth mapping.
+            connector, ALL (sub-)capabilities, and profiles (which carry the
+            interpolation mapping the auth-field values are derived from).
         instance_values: The SHARED dummy/instance value dict (xsoar param ids →
             values) pushed to BOTH the integration and connector sides. Empty if
             not provided.
@@ -693,12 +863,21 @@ def capture_ucp_params(
             success — useful for debugging.
 
     Returns:
-        The captured ``demisto.params()`` dict on success, ``None`` on any
-        failure.
+        A 2-tuple ``(captured, payload)``:
+
+        * ``captured`` — the captured ``demisto.params()`` dict on success, or
+          ``None`` on any failure.
+        * ``payload`` — the UCP-side instance-creation payload (the dict built
+          by :func:`_build_instance_payload` and POSTed to ``/instances``).
+          Surfaced in the persisted results envelope for debugging. It is
+          ``None`` when the flow fails BEFORE the payload is built (e.g. missing
+          ``tenant_id``, or a port-forward / creation-view error); otherwise it
+          is returned even on later failures so the attempted payload is
+          recoverable.
     """
     if not tenant_id:
         log.error("tenant_id is required (set TENANT_ID in .env or pass explicitly).")
-        return None
+        return None, None
 
     if connector_id is None:
         connector_id = parity_inputs.connector_id
@@ -727,6 +906,10 @@ def capture_ucp_params(
 
     ucp_instance_id: str | None = None
     captured: dict | None = None
+    # The UCP creation payload — built inside the try AFTER the port-forward +
+    # creation view. Initialized here so it's always defined for the return
+    # contract (it stays None if a failure happens before it's built).
+    payload: dict | None = None
     try:
         # 1. Port-forward
         start_port_forward(tenant_id=tenant_id, port=ucp_port)
@@ -747,7 +930,6 @@ def capture_ucp_params(
             instance_name=instance_name,
             capabilities=parity_inputs.capabilities,
             profiles=parity_inputs.profiles,
-            auth_mappings=parity_inputs.auth_mappings,
             instance_values=instance_values,
             connector_id=connector_id,
         )
@@ -762,11 +944,40 @@ def capture_ucp_params(
 
         # 4. Create UCP instance
         result = create_ucp_instance(payload, tenant_id, port=ucp_port)
+        # Prefer the POST-response id for cleanup/verification (the pre-allocated
+        # creation-view id is not guaranteed to be the created instance's id).
+        if result.get("id"):
+            ucp_instance_id = result["id"]
         log.info(
             "UCP instance created: id=%s name=%r status=%s",
             result.get("id"),
             result.get("name"),
             result.get("status"),
+        )
+
+        # 4b. VERIFY the instance actually exists (a 201 alone has been observed
+        # not to guarantee creation — confirmed missing from the UI). Fail fast
+        # with an accurate message instead of waiting ~42s for a mirror that will
+        # never appear.
+        verify = verify_ucp_instance_created(
+            creation_view_id=creation_view["instance_id"],
+            post_response=result,
+            tenant_id=tenant_id,
+            port=ucp_port,
+        )
+        if not verify["exists"]:
+            log.error(
+                "UCP returned 201 but the instance could not be retrieved afterward "
+                "(GET/list found nothing for id=%s) — the instance was not actually "
+                "created. Check the UCP shell pod logs and the POST payload.",
+                verify["instance_id"],
+            )
+            return None, payload
+        log.info(
+            "Verified UCP instance exists: id=%s status=%s (via %s)",
+            verify["instance_id"],
+            verify["status"],
+            verify["via"],
         )
 
         # 5. Wait for XSOAR mirror
@@ -777,21 +988,22 @@ def capture_ucp_params(
         )
         if mirror is None:
             log.error("UCP instance was created but its XSOAR mirror never appeared.")
-            return None
+            return None, payload
 
         # 6. Inject magic key and persist
         armed = inject_magic_key_and_persist(xsoar_client, mirror)
         if armed is None:
             log.error("Failed to arm the XSOAR-mirrored instance with the magic key.")
-            return None
+            return None, payload
 
         # 7. Run test-module via the reused helper from xsoar_capture.
         captured = run_test_module_and_capture_params(xsoar_client, armed)
-        return captured
+        return captured, payload
 
     except Exception as e:
         log.exception("capture_ucp_params failed: %s", e)
-        return None
+        log.exception("Execute command: 'gcloud auth login' and try again.")
+        return None, payload
 
     finally:
         # Cleanup: delete the UCP instance (which cascades to the XSOAR mirror).
@@ -814,8 +1026,11 @@ __all__ = [
     "create_ucp_instance",
     "delete_ucp_instance",
     "get_creation_view",
+    "get_ucp_instance",
     "inject_magic_key_and_persist",
+    "list_ucp_instances",
     "start_port_forward",
     "stop_port_forward",
+    "verify_ucp_instance_created",
     "wait_for_xsoar_mirror",
 ]

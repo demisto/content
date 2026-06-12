@@ -3,10 +3,18 @@
 Given a raw ``demisto.params()`` dict and the integration's YML, this module
 classifies every encountered key into one of:
 
-  * **IGNORE**  — silently dropped from comparison (credentials, encrypted
-    fields, mirroring params, framework noise, the probe protocol key).
+  * **IGNORE**  — silently dropped from comparison (mirroring params,
+    framework noise, the probe protocol key, and the caller-supplied
+    ``force_drop`` set / ``HARD_IGNORE_PARAM_NAMES``).
   * **MUST-COMPARE** — kept verbatim (values are NOT normalized; the diff
     engine sees exact values for exact-parity comparison).
+
+Type-4 (encrypted text) and type-9 (credentials) params are **compared**, not
+blanket-dropped: they DO arrive in runtime ``demisto.params()``. Whether a
+given auth param is dropped is governed entirely by the resolver's
+``force_drop`` decisions (hidden / hard-ignore / interpolated-type9-credentials,
+derived from the connector connection profile's ``interpolation_mapping``) and
+the name-ignore lists — NOT by a hardcoded YML type list.
 
 **Strict exact-match policy:** no value normalization is applied. This means
 any shape difference between the two sides surfaces as a real diff finding:
@@ -34,16 +42,6 @@ log = logging.getLogger("normalizers")
 # ============================================================================
 # IGNORE rules — kept as constants so the README + tests can reference them.
 # ============================================================================
-
-#: YML param type ids that are IGNORE'd outright. Source of truth: the
-#: ``XSOAR Parameter Type to Manifest Type`` table in
-#: ``connectus/connectus_migration/connectus_connector_migration_guide.md``
-#: (Appendix A), filtered down to the types UCP CANNOT deliver via
-#: ``demisto.params()``: credentials and encrypted-text fields.
-IGNORED_YML_TYPES: set[int] = {
-    4,  # encrypted text (consumer_key, consumer_secret, …)
-    9,  # credentials (user/pass, mostly auth-related)
-}
 
 #: Param names that are IGNORE'd regardless of YML type. These cover:
 #:
@@ -83,30 +81,11 @@ HARD_IGNORE_PARAM_NAMES: set[str] = {
     "outgoingMapperId",
     "defaultIgnore",
     "integrationLogLevel",
+    # Connector-injected field (capabilities.yaml general_configurations) that
+    # legitimately appears in demisto.params() on the platform; must be dropped,
+    # never flagged EXTRA_IN_CONNECTOR.
+    "instance_name",
 }
-
-
-# ============================================================================
-# YML parsing helper
-# ============================================================================
-
-
-def _build_yml_index(yml_configuration: list[dict]) -> dict[str, dict]:
-    """Index the integration's YML configuration list by param ``name``.
-
-    Args:
-        yml_configuration: The ``configuration`` list from the integration YML.
-
-    Returns:
-        Dict mapping param name → the raw YML entry.
-    """
-    index: dict[str, dict] = {}
-    for entry in yml_configuration or []:
-        name = entry.get("name")
-        if not name:
-            continue
-        index[name] = entry
-    return index
 
 
 # ============================================================================
@@ -121,6 +100,7 @@ def normalize_for_diff(
     side: str = "unknown",
     force_keep: set[str] | None = None,
     force_drop: set[str] | None = None,
+    force_drop_reasons: dict[str, str] | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, str]]]:
     """Apply the IGNORE policy and return the filtered dict (NO value normalization).
 
@@ -129,10 +109,22 @@ def normalize_for_diff(
             :mod:`xsoar_capture` or :mod:`ucp_capture`. May be ``None``
             (treated as empty).
         yml_configuration: The integration YML's ``configuration`` list.
-            Used to classify keys by type. Pass ``None`` to skip type-directed
-            dropping (only the name-based IGNORE list applies).
+            **Currently unused** — retained for API compatibility (callers pass
+            it positionally). Type-based dropping was removed; type-4/9 params
+            are now compared and removal is driven by ``force_drop`` /
+            name-ignore lists instead.
         side: A label (``"xsoar"`` or ``"ucp"``) used purely in the dropped
             log entries so the orchestrator can attribute each drop.
+        force_keep: Retained for API compatibility (see note below).
+        force_drop: Caller-supplied set of param names to drop on this side
+            (the resolver's hard-ignore decisions). See Rule 0.
+        force_drop_reasons: Optional ``{name: reason}`` map carrying the
+            SPECIFIC resolver reason for each ``force_drop`` key (one of
+            ``"hidden"``, ``"credentials_type9_interpolated"``,
+            ``"hard_ignore_list"``). When a force-dropped key has an entry
+            here, that specific reason is recorded in the dropped log instead
+            of the generic ``"hard_ignore_list"`` fallback. Optional →
+            backward compatible: callers that omit it still work.
 
     Returns:
         ``(filtered_dict, dropped_log)`` tuple.
@@ -144,7 +136,11 @@ def normalize_for_diff(
 
         * ``dropped_log`` — list of ``{"name": k, "reason": <str>, "side":
           side}`` dicts, one per dropped key. The reason is one of:
-          ``"yml_type_ignored:<type>"`` or ``"name_ignored"``.
+          ``"hidden"``, ``"credentials_type9_interpolated"``,
+          ``"hard_ignore_list"`` (Rule 0, the specific resolver reason when
+          carried in ``force_drop_reasons``; otherwise the
+          ``"hard_ignore_list"`` fallback for built-in
+          ``HARD_IGNORE_PARAM_NAMES``), or ``"name_ignored"`` (Rule 1).
 
     Notes:
         Connector-only keys (NOT in YML, e.g. the smoke-test surfaced
@@ -155,8 +151,9 @@ def normalize_for_diff(
         them.
     """
     raw_params = raw_params or {}
-    yml_index = _build_yml_index(yml_configuration or [])
-    force_keep = force_keep or set()
+    # NOTE: force_keep is retained in the signature for API compatibility
+    # (callers pass it), but the blanket type-4/9 drop it used to override is
+    # gone, so it no longer affects classification here.
     force_drop = force_drop or set()
 
     filtered: dict[str, Any] = {}
@@ -164,10 +161,19 @@ def normalize_for_diff(
 
     for key, value in raw_params.items():
         # Rule 0: HARD ignore-list (caller-supplied force_drop ∪ the built-in
-        # HARD_IGNORE_PARAM_NAMES) — always wins, even over force_keep. These
-        # never appear comparably in runtime demisto.params().
+        # HARD_IGNORE_PARAM_NAMES) — always wins. These never appear comparably
+        # in runtime demisto.params().
         if key in force_drop or key in HARD_IGNORE_PARAM_NAMES:
-            dropped.append({"name": key, "reason": "hard_ignore", "side": side})
+            # Preserve the SPECIFIC resolver reason (hidden /
+            # credentials_type9_interpolated / hard_ignore_list) so the report
+            # can explain WHY, not just collapse to a generic code.
+            reason = (force_drop_reasons or {}).get(key)
+            if not reason:
+                # Built-in HARD_IGNORE_PARAM_NAMES (engine, instance_name,
+                # brand, …) that aren't carried in the resolver's
+                # force_drop_reasons map fall back to the hard-ignore-list code.
+                reason = "hard_ignore_list"
+            dropped.append({"name": key, "reason": reason, "side": side})
             continue
 
         # Rule 1: name-based ignore — always wins.
@@ -175,24 +181,10 @@ def normalize_for_diff(
             dropped.append({"name": key, "reason": "name_ignored", "side": side})
             continue
 
-        # Rule 2: type-based ignore — only applies when the YML knows about this
-        # key AND the caller did NOT force-keep it. force_keep carries the params
-        # of an INTERPOLATED connector profile: those auth fields (YML type 4/9)
-        # DO arrive in runtime demisto.params(), so they must be compared rather
-        # than dropped.
-        if key not in force_keep:
-            yml_entry = yml_index.get(key)
-            if yml_entry is not None:
-                yml_type = yml_entry.get("type")
-                if yml_type in IGNORED_YML_TYPES:
-                    dropped.append({
-                        "name": key,
-                        "reason": "yml_type_ignored:{}".format(yml_type),
-                        "side": side,
-                    })
-                    continue
-
-        # Rule 3: keep this key verbatim (it's MUST-COMPARE).
+        # Rule 2: keep this key verbatim (it's MUST-COMPARE). Type-4/9 auth
+        # params land here too — they are compared, not blanket-dropped. The
+        # resolver removes the ones that should not be compared via force_drop
+        # (hidden / hard_ignore_list / credentials_type9_interpolated).
         filtered[key] = value
 
     log.debug(
@@ -207,7 +199,6 @@ def normalize_for_diff(
 
 __all__ = [
     "IGNORED_PARAM_NAMES",
-    "IGNORED_YML_TYPES",
     "HARD_IGNORE_PARAM_NAMES",
     "normalize_for_diff",
 ]

@@ -76,6 +76,24 @@ STATE_ALLOW_FLAG: dict[str, str] = {
     STATE_VALUE_MISMATCH: "allow_mismatch",
 }
 
+#: Human-readable explanations for each ignore reason code, surfaced in the
+#: OK_IGNORED per_param entries so triage is self-explanatory.
+_IGNORE_REASON_DESCRIPTIONS: dict[str, str] = {
+    "hidden": "hidden in the integration YML (hidden: true or hidden:<platform>), so it is not migrated to the connector and not compared",
+    "credentials_type9_interpolated": "type-9 credentials param reconstructed by the integration at runtime from the connector's interpolated credentials.identifier/.password; the full vault object is not value-compared",
+    "hard_ignore_list": "on the hard ignore-list (never appears comparably in runtime demisto.params(), e.g. brand/engine/instance_name/log-level)",
+    "name_ignored": "a framework/mirroring/probe field that is not user-configurable (e.g. outgoingMapperId, apiproxy, the parity-probe key)",
+    # legacy / safety fallbacks:
+    "hard_ignore": "on the hard ignore-list (never appears comparably in runtime demisto.params())",
+    "profile_not_interpolated": "an auth field of a non-interpolated profile (not delivered to runtime demisto.params())",
+}
+
+
+def _describe_ignore_reason(code: str) -> str:
+    """Map a terse ignore reason code to a human-readable sentence (falls back to
+    the raw code if unknown)."""
+    return _IGNORE_REASON_DESCRIPTIONS.get(code, code)
+
 
 # ============================================================================
 # Reason-hint resolver (grep the connector directory for EXTRA_IN_CONNECTOR fields)
@@ -454,13 +472,19 @@ def diff_params(
         i_reason = info.get("integration_reason")
         c_reason = info.get("connector_reason")
         if i_reason and c_reason and i_reason == c_reason:
-            reason = "ignored: {}".format(i_reason)
+            reason = "Ignored — {}".format(_describe_ignore_reason(i_reason))
         elif i_reason and c_reason:
-            reason = "ignored: integration={}, connector={}".format(i_reason, c_reason)
+            reason = "Ignored — integration: {}; connector: {}".format(
+                _describe_ignore_reason(i_reason), _describe_ignore_reason(c_reason)
+            )
         elif i_reason:
-            reason = "ignored: integration={}".format(i_reason)
+            reason = "Ignored — {} (integration side)".format(
+                _describe_ignore_reason(i_reason)
+            )
         else:
-            reason = "ignored: connector={}".format(c_reason)
+            reason = "Ignored — {} (connector side)".format(
+                _describe_ignore_reason(c_reason)
+            )
 
         entry = {
             "name": name,
