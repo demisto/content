@@ -13892,43 +13892,21 @@ def build_ucp_params(connector_metadata, capability=None):
         capability = resolve_ucp_capability()
 
     profiles = connector_metadata.get('connectionProfiles') or []
-    
-    # ── Full-object schema dump (for capturing real runtime shapes) ──
-    def _ucp_dump(obj):
-        try:
-            return json.dumps(obj, default=str, sort_keys=True)
-        except Exception:
-            return repr(obj)
-
-    demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: resolved capability={!r}'.format(capability))
-    demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FULL connector_metadata = {}'.format(_ucp_dump(connector_metadata)))
-    demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: connectionProfiles ({} total) = {}'.format(
-        len(profiles), _ucp_dump(profiles)))
 
     selected = _select_ucp_profiles(profiles, capability)
-    demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: selected {} profile(s) = {}'.format(
-        len(selected), _ucp_dump(selected)))
+    demisto.debug('build_ucp_params: capability={!r}, selected {} of {} profile(s)'.format(
+        capability, len(selected), len(profiles)))
 
     for profile in selected:
         method_unique_id = profile.get('method_unique_id')
-        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FULL profile (method_unique_id={}) = {}'.format(
-            method_unique_id, _ucp_dump(profile)))
         # The interpolation mapping lives under the profile's module-namespaced
         # metadata: profile['metadata']['xsoar']['interpolation_mapping'].
         interpolation_mapping = ((profile.get('metadata') or {}).get('xsoar') or {}).get('interpolation_mapping')
-        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: interpolation_mapping (type={}) = {}'.format(
-            type(interpolation_mapping).__name__, _ucp_dump(interpolation_mapping)))
         pairs = _parse_param_map(interpolation_mapping)
-        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: parsed pairs = {}'.format(_ucp_dump(pairs)))
         if not pairs:
             demisto.debug('there are no pairs for profile id {}'.format(method_unique_id))
             continue
-        # [UCP-CODE-VERSION] flatten-v3 — if this marker is ABSENT from the logs,
-        # the runtime is executing a STALE bundled CommonServerPython, not this file.
-        demisto.debug('[UCP-CODE-VERSION] build_ucp_params flatten-v3 active')
         credentials = get_ucp_credentials(method_unique_id)
-        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FULL get_ucp_credentials({}) envelope = {}'.format(
-            method_unique_id, _ucp_dump(credentials)))
         # The credentials envelope is nested under a type key, e.g.
         # {"type": "plain", "plain": {"username": "...", "password": "..."}}.
         # Flatten: look up the field inside creds[creds["type"]], with a
@@ -13950,8 +13928,9 @@ def build_ucp_params(connector_metadata, capability=None):
             if isinstance(inner_params, dict):
                 cred_values = inner_params
         cred_type = credentials.get('type') if isinstance(credentials, dict) else None
-        demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: cred_type={!r}, FLATTENED cred_values keys={}'.format(
-            cred_type, list(cred_values.keys())))
+        # Field names only (never values) to keep credential material out of logs.
+        demisto.debug('build_ucp_params: cred_type={!r}, flattened cred keys={}'.format(
+            cred_type, sorted(cred_values.keys())))
         # For fixed-schema types (api_key, plain) resolve the value from the
         # canonical envelope key, aliasing the mapping's field_id as needed
         # (e.g. api_key -> "key"). Free-form types (passthrough) fall back to a
@@ -13960,16 +13939,12 @@ def build_ucp_params(connector_metadata, capability=None):
         for field_id, destination in pairs:
             lookup_key = canonical_keys.get(field_id, field_id)
             field_value = cred_values.get(lookup_key)
-            demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: field_id={!r} (lookup_key={!r}) -> '
-                          'destination={!r}, found={} value_type={}'.format(
-                              field_id, lookup_key, destination, field_value is not None,
-                              type(field_value).__name__))
             if field_value is None:
                 demisto.debug('missing field value for field {} for profile id {}'.format(field_id, method_unique_id))
                 continue
             _place_by_path(result, destination, field_value)
 
-    demisto.debug('[UCP-SCHEMA-DUMP] build_ucp_params: FINAL interpolated params = {}'.format(_ucp_dump(result)))
+    demisto.debug('build_ucp_params: interpolated {} top-level param(s)'.format(len(result)))
     return result
 
 def interpolate_ucp_params(connector_metadata=None):
@@ -14007,14 +13982,6 @@ def interpolate_ucp_params(connector_metadata=None):
         demisto.error("[UCP][CommonServerPython.py] interpolate_ucp_params: unifiedConnectorMetadata() error: {}".format(e))
         return False
 
-    # ── Full-object schema dump (for capturing the real runtime metadata shape) ──
-    try:
-        demisto.debug('[UCP-SCHEMA-DUMP] interpolate_ucp_params: RAW unifiedConnectorMetadata() = {}'.format(
-            json.dumps(connector_metadata, default=str, sort_keys=True)))
-    except Exception:
-        demisto.debug('[UCP-SCHEMA-DUMP] interpolate_ucp_params: RAW unifiedConnectorMetadata() (repr) = {}'.format(
-            repr(connector_metadata)))
-
     # Capability-scoped, multi-profile: resolve the capability for the current
     # command and interpolate every active profile that carries a param_map.
     capability = None
@@ -14036,11 +14003,6 @@ def interpolate_ucp_params(connector_metadata=None):
         "[UCP][CommonServerPython.py] interpolate_ucp_params: interpolated {} top-level param(s) "
         "for capability={}.".format(len(interpolated), capability)
     )
-    try:
-        demisto.debug('[UCP-SCHEMA-DUMP] interpolate_ucp_params: FINAL demisto.callingContext["params"] = {}'.format(
-            json.dumps(params, default=str, sort_keys=True)))
-    except Exception:
-        demisto.debug('[UCP-SCHEMA-DUMP] interpolate_ucp_params: FINAL params (repr) = {}'.format(repr(params)))
     return True
 
 
