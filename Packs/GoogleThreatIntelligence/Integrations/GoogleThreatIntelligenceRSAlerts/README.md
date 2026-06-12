@@ -9,7 +9,7 @@ This integration allows the creation of incidents based on RS Alerts from Google
 | Server URL | URL of the GTI platform. | True |
 | API Key | Provide the API key for authentication. See [Acquiring your API key](#acquiring-your-api-key) | True |
 | Project ID | Specify the ID of the project. | True |
-| Fetch incidents | Whether to fetch RS Alerts as XSOAR Incidents. | False |
+| Fetch incidents | Whether to fetch RS Alerts as Cortex XSOAR incidents. | False |
 | Incident type | Select Incident type as "Google Threat Intelligence RS Alert". | False |
 | First Fetch Time | The date or relative timestamp from which to begin fetching RS Alerts. Default value is '3 days'.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2026, 01 May 2026 04:45:33, 2026-05-17T14:05:44Z. | False |
 | Max Fetch | The maximum number of Alerts to fetch each time. Default value is 100. The maximum is 200.<br/><br/>If the value is greater than 200, it will be considered as 200. | False |
@@ -18,12 +18,12 @@ This integration allows the creation of incidents based on RS Alerts from Google
 | Priority Level | Filter the alerts by the priority level. | False |
 | Status | Filter the alerts by the status. | False |
 | Threat Scenarios | Filter the alerts by the threat scenarios. | False |
-| Mirroring Direction | The mirroring direction in which to mirror the alert. You can mirror 'Incoming' \(from GTI to XSOAR\), 'Outgoing' \(from XSOAR to GTI\), or in both directions. | False |
-| Reopen Incident for Open Alert Status | Incident will reopen when the Alert status is 'Read', 'Triaged', 'Escalated'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'. | False |
-| Close Incident for Close Alert Status | Incident will close when the Alert status is 'False Positive' or 'Resolved' or 'Duplicate' or 'Benign' or 'Not Actionable' or 'Tracked Externally'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'. | False |
-| Alert Status for Incident Reopen | Alert Status set in GTI when Reopen incidents in XSOAR. Default value is 'Escalated'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'. | False |
-| Alert Status for Incident Closure | Alert Status set in GTI when closing incidents in XSOAR. Default value is 'Resolved'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'. | False |
-| Use system proxy settings | Whether to use XSOAR's system proxy settings to connect to the API. | False |
+| Mirroring Direction | The mirroring direction in which to mirror the alert. You can mirror 'Incoming' \(from GTI to Cortex XSOAR\), 'Outgoing' \(from Cortex XSOAR to GTI\), or in both directions. | False |
+| Reopen Incident for Open Alert Status | Whether to reopen the incident when the Alert status is 'Read', 'Triaged', or 'Escalated'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'. | False |
+| Close Incident for Close Alert Status | Whether to close the incident when the Alert status is 'False Positive', 'Resolved', 'Duplicate', 'Benign', 'Not Actionable', or 'Tracked Externally'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'. | False |
+| Alert Status for Incident Reopen | Alert Status set in GTI when reopening incidents in Cortex XSOAR. Default value is 'Escalated'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'. | False |
+| Alert Status for Incident Closure | Alert Status set in GTI when closing incidents in Cortex XSOAR. Default value is 'Resolved'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'. | False |
+| Use system proxy settings | Whether to use Cortex XSOAR's system proxy settings to connect to the API. | False |
 | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
 
 ### Acquiring your API key
@@ -48,13 +48,13 @@ To set up the mirroring:
     | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Google Threat Intelligence - RS Alerts events (outgoing mirrored fields). |
     | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Google Threat Intelligence - RS Alerts events will be reflected in both directions. |
 
-3. *(Incoming / Incoming And Outgoing only)* Enable the *Reopen Incident for Open Alert Status* parameter if you want a closed XSOAR incident to be automatically reopened when the corresponding GTI alert transitions back to an open status. The open statuses that trigger a reopen are: **Read**, **Triaged**, and **Escalated**.
+3. *(Incoming / Incoming And Outgoing only)* Enable the *Reopen Incident for Open Alert Status* parameter if you want a closed Cortex XSOAR incident to be automatically reopened when the corresponding GTI alert transitions back to an open status. The open statuses that trigger a reopen are: **Read**, **Triaged**, and **Escalated**.
 
-4. *(Incoming / Incoming And Outgoing only)* Enable the *Close Incident for Close Alert Status* parameter if you want a XSOAR incident to be automatically closed when the corresponding GTI alert is moved to a closed status. The closed statuses that trigger closure are: **False Positive**, **Resolved**, **Duplicate**, **Benign**, **Not Actionable**, and **Tracked Externally**.
+4. *(Incoming / Incoming And Outgoing only)* Enable the *Close Incident for Close Alert Status* parameter if you want a Cortex XSOAR incident to be automatically closed when the corresponding GTI alert is moved to a closed status. The closed statuses that trigger closure are: **False Positive**, **Resolved**, **Duplicate**, **Benign**, **Not Actionable**, and **Tracked Externally**.
 
-5. *(Outgoing / Incoming And Outgoing only)* Use the *Alert Status for Incident Reopen* parameter to specify which GTI alert status is set when a XSOAR incident is reopen. The default value is **Escalated**. Available options are: Read, Triaged, and Escalated.
+5. *(Outgoing / Incoming And Outgoing only)* Use the *Alert Status for Incident Reopen* parameter to specify which GTI alert status is set when a Cortex XSOAR incident is reopened. The default value is **Escalated**. Available options are: Read, Triaged, and Escalated.
 
-6. *(Outgoing / Incoming And Outgoing only)* Use the *Alert Status for Incident Closure* parameter to specify which GTI alert status is set when a XSOAR incident is closed. The default value is **Resolved**. Available options are: Resolved, Duplicate, False Positive, Benign, Not Actionable, and Tracked Externally.
+6. *(Outgoing / Incoming And Outgoing only)* Use the *Alert Status for Incident Closure* parameter to specify which GTI alert status is set when a Cortex XSOAR incident is closed. The default value is **Resolved**. Available options are: Resolved, Duplicate, False Positive, Benign, Not Actionable, and Tracked Externally.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
@@ -81,11 +81,11 @@ List the RS Alerts with provided filter arguments.
 | sort_by | Filter alerts by the provided sort field. Possible values are: Create Time, Update Time, Relevance Level, Severity Level, Priority Level. Default is Update Time. | Optional |
 | create_time | Filter the alerts by created on or after the provided time. Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
 | update_time | Filter the alerts by updated on or after the provided time. Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. Default is 3 days. | Optional |
-| relevance_level | Filter the alerts by the relevance level. Possible values are: Low, Medium, High. | Optional |
-| severity_level | Filter the alerts by the severity level. Possible values are: Low, Medium, High. | Optional |
-| priority_level | Filter the alerts by the priority level. Possible values are: Low, Medium, High, Critical. | Optional |
-| status | Filter the alerts by the status. Possible values are: New, Read, Triaged, Escalated, Resolved, Duplicate, False Positive, Not Actionable, Benign, Tracked Externally. | Optional |
-| threat_scenarios | Filter the alerts by the threat scenarios. Possible values are: Data Leak, Initial Access Broker, Insider Threat. | Optional |
+| relevance_level | A comma-separated list of relevance levels by which to filter the alerts. Possible values are: Low, Medium, High. | Optional |
+| severity_level | A comma-separated list of severity levels by which to filter the alerts. Possible values are: Low, Medium, High. | Optional |
+| priority_level | A comma-separated list of priority levels by which to filter the alerts. Possible values are: Low, Medium, High, Critical. | Optional |
+| status | A comma-separated list of statuses by which to filter the alerts. Possible values are: New, Read, Triaged, Escalated, Resolved, Duplicate, False Positive, Not Actionable, Benign, Tracked Externally. | Optional |
+| threat_scenarios | A comma-separated list of threat scenarios by which to filter the alerts. Possible values are: Data Leak, Initial Access Broker, Insider Threat. | Optional |
 
 #### Context Output
 

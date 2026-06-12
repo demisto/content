@@ -2,16 +2,16 @@
 
 To use the integration, an API Key and Project ID will be required from your Google Threat Intelligence account.
 
-## Authorization
+### Authorization
 
-Your API key can be found in your Google Threat Intelligence account user menu, clicking on your avatar.
+Your API key can be found in your Google Threat Intelligence account **user menu**, by clicking your **avatar**.
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
 ### Instance Configuration
 
 1. Configure a Google Threat Intelligence - RS Alerts integration instance with valid API Key and Project ID.
 2. Click **Test** to validate the connection.
-3. To fetch RS Alerts as incidents in XSOAR, select the option `Fetches incidents` and follow the table to update configuration parameters.
+3. To fetch RS Alerts as incidents in Cortex XSOAR, select the option `Fetches incidents` and follow the table to update configuration parameters.
 
 | **Parameter** | **Description** |
 | --- | --- |
@@ -27,7 +27,7 @@ Your API key carries all your privileges, so keep it secure and don't share it w
 | Status | Filter the alerts by the status. |
 | Threat Scenarios | Filter the alerts by the threat scenarios. |
 | Mirroring Direction | The mirroring direction in which to mirror the alert. You can mirror 'Incoming' \(from GTI to XSOAR\), 'Outgoing' \(from XSOAR to GTI\), or in both directions. |
-| Reopen Incident for Open Alert Status | Incident will reopen when the Alert status is 'Read', 'Triaged', 'Escalated'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'. |
-| Close Incident for Close Alert Status | Incident will close when the Alert status is 'False Positive' or 'Resolved' or 'Duplicate' or 'Benign' or 'Not Actionable' or 'Tracked Externally'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'. |
-| Alert Status for Incident Reopen | Alert Status set in GTI when Reopen incidents in XSOAR. Default value is 'Escalated'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'. |
+| Reopen Incident for Open Alert Status | Whether to reopen the incident when the Alert status is 'Read', 'Triaged', or 'Escalated'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'. |
+| Close Incident for Close Alert Status | Whether to close the incident when the Alert status is 'False Positive', 'Resolved', 'Duplicate', 'Benign', 'Not Actionable', or 'Tracked Externally'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'. |
+| Alert Status for Incident Reopen | Alert Status set in GTI when reopening incidents in XSOAR. Default value is 'Escalated'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'. |
 | Alert Status for Incident Closure | Alert Status set in GTI when closing incidents in XSOAR. Default value is 'Resolved'.<br/><br/>Note: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'. |

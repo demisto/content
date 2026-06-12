@@ -1,8 +1,8 @@
+name: GoogleThreatIntelligenceRSAlerts
+display: Google Threat Intelligence - Relevance System Alerts
 commonfields:
   id: GoogleThreatIntelligenceRSAlerts
   version: -1
-name: GoogleThreatIntelligenceRSAlerts
-display: Google Threat Intelligence - Relevance System Alerts
 fromversion: 6.10.0
 category: Data Enrichment & Threat Intelligence
 provider: Google
@@ -129,14 +129,14 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   required: false
-  additionalinfo: The mirroring direction in which to mirror the alert. You can mirror 'Incoming' (from GTI to XSOAR), 'Outgoing' (from XSOAR to GTI), or in both directions.
+  additionalinfo: The mirroring direction in which to mirror the alert. You can mirror 'Incoming' (from GTI to Cortex XSOAR), 'Outgoing' (from Cortex XSOAR to GTI), or in both directions.
   section: Collect
 - display: Reopen Incident for Open Alert Status
   name: reopen_incident_for_open_alert_status
   type: 8
   required: false
   defaultvalue: 'true'
-  additionalinfo: "Incident will reopen when the Alert status is 'Read', 'Triaged', 'Escalated'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
+  additionalinfo: "Whether to reopen the incident when the Alert status is 'Read', 'Triaged', or 'Escalated'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
   section: Collect
   advanced: true
 - display: Close Incident for Close Alert Status
@@ -144,7 +144,7 @@ configuration:
   type: 8
   required: false
   defaultvalue: 'true'
-  additionalinfo: "Incident will close when the Alert status is 'False Positive' or 'Resolved' or 'Duplicate' or 'Benign' or 'Not Actionable' or 'Tracked Externally'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
+  additionalinfo: "Whether to close the incident when the Alert status is 'False Positive', 'Resolved', 'Duplicate', 'Benign', 'Not Actionable', or 'Tracked Externally'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Incoming' or 'Incoming And Outgoing'."
   section: Collect
   advanced: true
 - display: Alert Status for Incident Reopen
@@ -156,7 +156,7 @@ configuration:
   - Escalated
   required: false
   defaultvalue: Escalated
-  additionalinfo: "Alert Status set in GTI when Reopen incidents in XSOAR. Default value is 'Escalated'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
+  additionalinfo: "Alert Status set in GTI when reopening incidents in XSOAR. Default value is 'Escalated'.\n\nNote: This parameter is only used when the mirroring direction is set to 'Outgoing' or 'Incoming And Outgoing'."
   section: Collect
   advanced: true
 - display: Alert Status for Incident Closure
@@ -231,7 +231,7 @@ script:
       - Low
       - Medium
       - High
-      description: Filter the alerts by the relevance level.
+      description: A comma-separated list of relevance levels by which to filter the alerts.
       required: false
     - name: severity_level
       isArray: true
@@ -240,7 +240,7 @@ script:
       - Low
       - Medium
       - High
-      description: Filter the alerts by the severity level.
+      description: A comma-separated list of severity levels by which to filter the alerts.
       required: false
     - name: priority_level
       isArray: true
@@ -250,7 +250,7 @@ script:
       - Medium
       - High
       - Critical
-      description: Filter the alerts by the priority level.
+      description: A comma-separated list of priority levels by which to filter the alerts.
       required: false
     - name: status
       isArray: true
@@ -266,7 +266,7 @@ script:
       - Not Actionable
       - Benign
       - Tracked Externally
-      description: Filter the alerts by the status.
+      description: A comma-separated list of statuses by which to filter the alerts.
       required: false
     - name: threat_scenarios
       isArray: true
@@ -275,7 +275,7 @@ script:
       - Data Leak
       - Initial Access Broker
       - Insider Threat
-      description: Filter the alerts by the threat scenarios.
+      description: A comma-separated list of threat scenarios by which to filter the alerts.
       required: false
     outputs:
     - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.name

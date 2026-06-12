@@ -1,7 +1,7 @@
 import json
 
 import pytest
-from CommonServerPython import DemistoException, GetModifiedRemoteDataResponse
+from CommonServerPython import DemistoException, GetModifiedRemoteDataResponse, IncidentSeverity
 
 from GoogleThreatIntelligenceRSAlerts import (
     RS_CLOSE_REASON_MAPPING,
@@ -1276,11 +1276,11 @@ def test_fetch_incidents_empty_api_response_preserves_last_update_time(mock_clie
 @pytest.mark.parametrize(
     "severity,expected_xsoar_severity",
     [
-        ("SEVERITY_LEVEL_LOW", 1),
-        ("SEVERITY_LEVEL_MEDIUM", 2),
-        ("SEVERITY_LEVEL_HIGH", 3),
-        ("SEVERITY_LEVEL_UNSPECIFIED", 0),
-        ("UNKNOWN_SEVERITY_XYZ", 0),
+        ("SEVERITY_LEVEL_LOW", IncidentSeverity.LOW),
+        ("SEVERITY_LEVEL_MEDIUM", IncidentSeverity.MEDIUM),
+        ("SEVERITY_LEVEL_HIGH", IncidentSeverity.HIGH),
+        ("SEVERITY_LEVEL_UNSPECIFIED", IncidentSeverity.UNKNOWN),
+        ("UNKNOWN_SEVERITY_XYZ", IncidentSeverity.UNKNOWN),
     ],
 )
 def test_fetch_incidents_severity_mapped_to_xsoar(mock_client, mocker, severity, expected_xsoar_severity):
@@ -2111,10 +2111,9 @@ def test_get_mirroring_returns_correct_direction(mocker, mirror_direction_param,
     from GoogleThreatIntelligenceRSAlerts import get_mirroring
 
     mock_demisto = mocker.patch("GoogleThreatIntelligenceRSAlerts.demisto")
-    mock_demisto.params.return_value = {"mirror_direction": mirror_direction_param}
     mock_demisto.integrationInstance.return_value = "test-instance"
 
-    result = get_mirroring()
+    result = get_mirroring(params={"mirror_direction": mirror_direction_param})
 
     assert result["mirror_direction"] == expected_direction
     assert result["mirror_instance"] == "test-instance"

@@ -77,10 +77,10 @@ RS_CLOSE_REASON_MAPPING: dict[str, str] = {
 }
 
 RS_SEVERITY_TO_XSOAR_SEVERITY: dict[str, int] = {
-    "SEVERITY_LEVEL_LOW": 1,
-    "SEVERITY_LEVEL_MEDIUM": 2,
-    "SEVERITY_LEVEL_HIGH": 3,
-    "SEVERITY_LEVEL_UNSPECIFIED": 0,
+    "SEVERITY_LEVEL_LOW": IncidentSeverity.LOW,
+    "SEVERITY_LEVEL_MEDIUM": IncidentSeverity.MEDIUM,
+    "SEVERITY_LEVEL_HIGH": IncidentSeverity.HIGH,
+    "SEVERITY_LEVEL_UNSPECIFIED": IncidentSeverity.UNKNOWN,
 }
 RS_SEVERITY_LEVEL_HR_LIST = ["Low", "Medium", "High"]
 RS_SEVERITY_LEVEL_API_MAP: dict[str, str] = {
@@ -228,7 +228,7 @@ class Client(BaseClient):
             try:
                 err_msg = ERROR_MESSAGES["UNAUTHORIZED_REQUEST"].format(response.status_code, str(response.json()))
             except ValueError:
-                err_msg = ERROR_MESSAGES["UNAUTHORIZED_REQUEST"].format(response.status_code, str(response))
+                err_msg = ERROR_MESSAGES["UNAUTHORIZED_REQUEST"].format(response.status_code, response.text)
             raise DemistoException(err_msg)
 
         try:
@@ -303,7 +303,7 @@ class Client(BaseClient):
             try:
                 err_msg = ERROR_MESSAGES["UNAUTHORIZED_REQUEST"].format(res.status_code, str(res.json()))
             except ValueError:
-                err_msg = ERROR_MESSAGES["UNAUTHORIZED_REQUEST"].format(res.status_code, str(res))
+                err_msg = ERROR_MESSAGES["UNAUTHORIZED_REQUEST"].format(res.status_code, res.text)
             raise DemistoException(err_msg)
 
         if response_type == "json":
@@ -775,9 +775,8 @@ def _build_rs_alert_status_update_output(alert_data: dict, title: str) -> tuple:
     return context, readable_output
 
 
-def get_mirroring() -> dict:
+def get_mirroring(params: dict) -> dict:
     """Return mirror direction and instance name from integration params."""
-    params = demisto.params()
     mirror_direction = (params.get("mirror_direction") or "").strip()
     return {
         "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
@@ -1134,7 +1133,7 @@ def update_remote_system_command(client: Client, args: dict) -> str:
         else:
             demisto.debug(f"alert_status_for_incident_closure value '{alert_status}' is not a valid RS status, skipping")
 
-    # Updating GTI alert status while incident is reopen in XSOAR
+    # Updating GTI alert status while incident is reopened in XSOAR
     if delta and delta.get("closingUserId") == "":
         demisto.debug(f"Incident {remote_alert_id} is reopened.")
         if remote_alert_id in processed_alerts:
@@ -1252,7 +1251,7 @@ def fetch_incidents(
             f"{PLATFORM_URL}/alerts/{alert_id}?project=projects/{project_id}" if alert_id and project_id else ""
         )
 
-        mirror_params = get_mirroring()
+        mirror_params = get_mirroring(params)
         mirror_params["mirror_id"] = alert_id
         alert.update(mirror_params)
 
