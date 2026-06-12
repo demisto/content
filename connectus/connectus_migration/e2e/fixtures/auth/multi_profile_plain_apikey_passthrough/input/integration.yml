@@ -1,0 +1,32 @@
+commonfields:
+  id: GitHub MCP
+  version: -1
+name: GitHub MCP
+display: GitHub MCP
+category: Utilities
+provider: GitHub
+configuration:
+  - name: creds
+    display: Credentials
+    type: 9
+    required: true
+  - name: token
+    display: Auth Token
+    type: 4
+    required: false
+  - name: tenant
+    display: Tenant ID
+    type: 0
+    required: false
+  - name: base_url
+    display: Base URL
+    type: 0
+    required: true
+  - name: scope
+    display: Scope
+    type: 0
+    required: false
+script:
+  script: ''
+  type: python
+  commands: []

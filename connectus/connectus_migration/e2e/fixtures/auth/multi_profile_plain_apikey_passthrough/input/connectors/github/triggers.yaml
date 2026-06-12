@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=../../schema/triggers.schema.json
+triggers:
+- conditions:
+    id: engine_mode
+    behavior: value
+    operator: neq
+    value: engine
+  effects:
+  - id: engine
+    action:
+      hidden: true
+- conditions:
+    id: engine_mode
+    behavior: value
+    operator: neq
+    value: engine_group
+  effects:
+  - id: engine_group
+    action:
+      hidden: true
+- conditions:
+    id: engine_mode
+    behavior: value
+    operator: neq
+    value: engine
+  effects:
+  - id: engine
+    action:
+      hidden: true
+- conditions:
+    id: engine_mode
+    behavior: value
+    operator: neq
+    value: engine_group
+  effects:
+  - id: engine_group
+    action:
+      hidden: true
