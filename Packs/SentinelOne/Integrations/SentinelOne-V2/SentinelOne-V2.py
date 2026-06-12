@@ -5357,17 +5357,31 @@ def fetch_handler(client: Client, args):
     last_fetch = last_run.get("time")
     uam_last_fetch = last_run.get("uam_time")
 
-    if last_fetch is None:
-        last_fetch = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
-        if not last_fetch:
-            raise DemistoException("Please provide an initial First fetch timestamp")
-        last_fetch = int(last_fetch.timestamp() * 1000)
+    fetch_type = args.get("fetch_type")
+    fetch_uam = args.get("fetch_uam_alert_type")
 
-    if uam_last_fetch is None:
-        uam_last_fetch = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
+    # Only initialize time-based timestamps for active fetch types.
+    # This avoids freezing a stale timestamp for a fetch type that isn't enabled yet.
+    # if the user enables it later, it will start fresh from first_fetch_time at that point.
+    if fetch_type in ("Both", "Alerts", "Threats"):
+        if not last_fetch:
+            last_fetch = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
+            if not last_fetch:
+                raise DemistoException("Please provide an initial First fetch timestamp")
+            last_fetch = int(last_fetch.timestamp() * 1000)
+    else:
+        # fetch_type not active — preserve existing timestamp or default to 0
+        last_fetch = last_fetch or 0
+
+    if fetch_uam:
         if not uam_last_fetch:
-            raise DemistoException("Please provide an initial First fetch timestamp")
-        uam_last_fetch = int(uam_last_fetch.timestamp() * 1000)
+            uam_last_fetch = dateparser.parse(args.get("first_fetch_time"), settings={"TIMEZONE": "UTC"})
+            if not uam_last_fetch:
+                raise DemistoException("Please provide an initial First fetch timestamp")
+            uam_last_fetch = int(uam_last_fetch.timestamp() * 1000)
+    else:
+        # UAM not active — preserve existing timestamp or default to 0
+        uam_last_fetch = uam_last_fetch or 0
 
     current_fetch = last_fetch
     uam_current_fetch = uam_last_fetch
@@ -5380,9 +5394,7 @@ def fetch_handler(client: Client, args):
     args["uam_current_fetch"] = uam_current_fetch
 
     incidents = []
-    current_fetch = 0
-    uam_current_fetch = 0
-    if args.get("fetch_type") == "Both":
+    if fetch_type == "Both":
         alert_incidents, alert_current_fetch = fetch_alerts(client, args)
         threat_incidents, threat_current_fetch = fetch_threats(client, args)
 
@@ -5390,19 +5402,19 @@ def fetch_handler(client: Client, args):
 
         incidents = alert_incidents + threat_incidents
 
-    elif args.get("fetch_type") == "Alerts":
+    elif fetch_type == "Alerts":
         incidents, current_fetch = fetch_alerts(client, args)
-    elif args.get("fetch_type") == "Threats":
+    elif fetch_type == "Threats":
         incidents, current_fetch = fetch_threats(client, args)
 
     # Fetch UAM alerts independently
-    if args.get("fetch_uam_alert_type"):
+    if fetch_uam:
         uam_incidents, uam_current_fetch = fetch_uam_alerts(client, args)
         incidents += uam_incidents
     # Debug log if no incidents
     if not incidents:
         demisto.debug(
-            f"{args.get('fetch_type')=}, {args.get('fetch_uam_alert_type')=} -> "
+            f"{fetch_type=}, {fetch_uam=} -> "
             f"{incidents=} {current_fetch=} {uam_current_fetch=}"
         )
 
