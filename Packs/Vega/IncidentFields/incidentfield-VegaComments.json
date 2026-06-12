@@ -1,0 +1,72 @@
+{
+    "id": "incident_vegacomments",
+    "version": -1,
+    "name": "Vega Comments",
+    "ownerOnly": false,
+    "description": "Analyst comments on this Vega incident.",
+    "cliName": "vegacomments",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Vega Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "text",
+            "displayName": "Comment",
+            "type": "longText",
+            "required": false,
+            "script": "",
+            "width": 400,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "addedBy",
+            "displayName": "Added By",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 200,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "addedAt",
+            "displayName": "Added At",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 200,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

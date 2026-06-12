@@ -1,0 +1,26 @@
+comment: >-
+  Internal field-change router for Vega Status, Vega Incident Status, and Vega Verdict layout fields.
+  Routes updates to the Vega integration commands based on investigation type.
+commonfields:
+  id: vega-sync-field-on-change
+  version: -1
+dockerimage: demisto/python3:3.12.8.3296088
+enabled: true
+name: vega-sync-field-on-change
+runas: DBotWeakRole
+script: ""
+scripttarget: 0
+subtype: python3
+tags:
+  - field-change-triggered
+type: python
+fromversion: 6.10.0
+tests:
+  - No tests (auto formatted)
+args:
+  - name: old
+    description: Previous field value when triggered by a layout field change.
+    hidden: true
+  - name: new
+    description: New field value when triggered by a layout field change.
+    hidden: true
