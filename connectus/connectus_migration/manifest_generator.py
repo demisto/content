@@ -1597,6 +1597,432 @@ def register_computed_field_entry(
         _dump_yaml(existing, fh)
 
 
+# ============================================================
+# Hidden-default → serializer "sweep" (authoritative final pass)
+#
+# Guideline (per migration owner):
+#   Every XSOAR param that is BOTH hidden-on-platform AND carries a
+#   ``defaultvalue`` MUST be moved out of ``configurations.yaml`` and into the
+#   handler's ``serializer.yaml`` ``computed_fields`` (the platform injects the
+#   fixed default at runtime, gated on the relevant capability). A hidden field
+#   with a default value must NEVER survive in ``configurations.yaml``.
+#
+# The per-field path (:func:`emit_field_for_param`) already implements this for
+# params that flow through it, but two classes of param escape that path:
+#   1. Params emitted by dedicated capability builders (e.g.
+#      ``eventFetchInterval`` / ``alertFetchInterval`` via ``_map_type_19``),
+#      which honour ``hidden`` but do NOT reroute to the serializer.
+#   2. "Orphan" config-only params the param-mapper never routes into any
+#      capability bucket (e.g. ``max_concurrent_tasks``), so they never reach
+#      ``emit_field_for_param`` at all.
+#
+# This sweep runs AFTER ``configurations.yaml`` is fully assembled (so it sees
+# every field regardless of which code path produced it) and BEFORE the file is
+# written. It is the single, provably-complete choke point for the rule.
+# ============================================================
+
+# Params that are hidden-on-platform WITH a default but must NEVER be swept to
+# the serializer because they are managed by a different, intentional mechanism:
+#   - ``feedExpirationInterval`` is hidden-by-default and revealed via its own
+#     ``feedExpirationPolicy == 'interval'`` trigger (see
+#     :func:`_build_feed_expiration_interval_trigger`). It is a genuine
+#     user-editable field once revealed, so it stays in configurations.yaml.
+# Connection-section params and ``defaultIgnore`` are excluded dynamically by
+# the caller (they are not driven off this static set).
+# NOTE: literal rather than ``FEEDEXPIRATIONINTERVAL_PARAM_NAME`` because that
+# constant is defined later in the module; this set is evaluated at import time.
+# Kept in lockstep with ``FEEDEXPIRATIONINTERVAL_PARAM_NAME`` ("feedExpirationInterval").
+SWEEP_EXCLUDED_PARAMS: frozenset[str] = frozenset(
+    {
+        "feedExpirationInterval", "longRunning"
+    }
+)
+
+# XSOAR-param-name → connector-field-id renames applied by capability builders
+# that the platform consumes DIRECTLY (no serializer ``field_mappings`` bridge
+# back to the XSOAR name). The fetch-issues builder migrates the legacy
+# "incident" names to the Platform "alert" names (guide §line 889-890):
+#   incidentFetchInterval -> alertFetchInterval
+#   incidentType          -> alertType
+# When the sweep moves one of these hidden+default params to the serializer it
+# must (a) remove the RENAMED field id from configurations.yaml and (b) emit the
+# computed_fields output using the RENAMED id (what the platform reads).
+# Literals kept in lockstep with ``ALERTFETCHINTERVAL_FIELD_ID`` /
+# ``ALERTTYPE_FIELD_ID`` (defined later in the module).
+_KNOWN_BUILDER_FIELD_RENAMES: dict[str, str] = {
+    "incidentFetchInterval": "alertFetchInterval",
+    "incidentType": "alertType",
+}
+
+# XSOAR-param-name → owning capability BUCKET KEY for params emitted by the
+# dedicated capability builders. A swept param listed here is attached to a
+# SINGLE capability, so its serializer computed_fields rule must gate ONLY on
+# that capability's sub-cap id (not OR-gated across the whole handler). Params
+# NOT in this map and NOT routed into a specific ``mapped_params`` bucket are
+# treated as unattached "orphans" (e.g. ``max_concurrent_tasks``) and fall back
+# to OR-gating across all of the handler's sub-capabilities.
+#
+# Bucket-key literals kept in lockstep with the ``*_BUCKET_KEY`` constants
+# (defined later in the module) — ``LOG_COLLECTION_BUCKET_KEY`` ("Log
+# Collection"), ``FETCH_ISSUES_BUCKET_KEY`` ("Fetch Issues"), "Fetch Assets and
+# Vulnerabilities", "Threat Intelligence & Enrichment".
+_BUILDER_PARAM_TO_BUCKET_KEY: dict[str, str] = {
+    # Log Collection builder
+    "isFetchEvents": "Log Collection",
+    "eventFetchInterval": "Log Collection",
+    # Fetch Issues builder
+    "isFetch": "Fetch Issues",
+    "incidentType": "Fetch Issues",
+    "incidentFetchInterval": "Fetch Issues",
+    # Fetch Assets and Vulnerabilities builder
+    "isFetchAssets": "Fetch Assets and Vulnerabilities",
+    "assetsFetchInterval": "Fetch Assets and Vulnerabilities",
+    # Indicators / feed builder (feedExpirationInterval is excluded from the
+    # sweep entirely; the rest gate on the TI&E capability).
+    "feedFetchInterval": "Threat Intelligence & Enrichment",
+    "feedReliability": "Threat Intelligence & Enrichment",
+    "feedExpirationPolicy": "Threat Intelligence & Enrichment",
+    "feedReputation": "Threat Intelligence & Enrichment",
+    "feedBypassExclusionList": "Threat Intelligence & Enrichment",
+    "feedIncremental": "Threat Intelligence & Enrichment",
+}
+
+
+def _load_serializer_field_mappings(handler_dir: Path | None) -> dict[str, str]:
+    """Return a ``{connector_field_id: original_xsoar_name}`` map from a
+    handler's ``serializer.yaml`` ``field_mappings`` block.
+
+    The dedup-via-rename step (:func:`dedup_field_id_and_register`) and the
+    capability builders register ``field_mappings`` entries shaped
+    ``{"id": <renamed_id>, "field_name": <original_name>}`` whenever a field id
+    is renamed (e.g. ``<handler>_eventFetchInterval`` → ``eventFetchInterval``).
+
+    The sweep matches configurations fields by their original XSOAR param name;
+    this reverse map lets it also recognise a field that was renamed away from
+    its bare name. Returns an empty dict when no serializer / no mappings exist.
+    """
+    if handler_dir is None:
+        return {}
+    serializer_path = handler_dir / "serializer.yaml"
+    if not serializer_path.is_file():
+        return {}
+    with open(serializer_path) as fh:
+        body = _strip_leading_comments(fh.read())
+    loaded = yaml.safe_load(io.StringIO(body)) if body.strip() else None
+    if not isinstance(loaded, dict):
+        return {}
+    mapping: dict[str, str] = {}
+    for fm in loaded.get("field_mappings", []) or []:
+        if isinstance(fm, dict) and fm.get("id") and fm.get("field_name"):
+            mapping[str(fm["id"])] = str(fm["field_name"])
+    return mapping
+
+
+def connection_param_names_from_auth(auth_methods: dict | None) -> set[str]:
+    """Return the set of XSOAR param names that live on the connection.
+
+    These are excluded from the configurations sweep because they belong to
+    ``connection.yaml`` (auth profiles + other_connection), never
+    ``configurations.yaml``.
+
+    Sources (mirrors what :func:`build_connection_yaml` consumes):
+      - Every ``auth_types[*].xsoar_param_map`` KEY. Keys may be a bare param
+        name (``clientToken``) or a credentials leaf (``creds.password`` /
+        ``creds.identifier``); we take the base param name (before the first
+        ``.``) so the type-9 credentials param itself is matched.
+      - Every entry in the top-level ``other_connection`` list.
+
+    Returns an empty set when ``auth_methods`` is falsy.
+    """
+    if not auth_methods:
+        return set()
+    names: set[str] = set()
+    for auth_type in auth_methods.get("auth_types", []) or []:
+        if not isinstance(auth_type, dict):
+            continue
+        for map_key in (auth_type.get("xsoar_param_map") or {}):
+            base = str(map_key).split(".", 1)[0]
+            if base:
+                names.add(base)
+    for entry in auth_methods.get("other_connection", []) or []:
+        if entry:
+            names.add(str(entry))
+    return names
+
+
+def collect_swept_hidden_default_params(
+    integration_yml: dict,
+    connection_param_names: set[str] | None = None,
+) -> dict[str, Any]:
+    """Collect XSOAR params that must be moved to serializer ``computed_fields``.
+
+    A param qualifies when ALL of the following hold:
+      1. It is hidden-on-platform (:func:`_is_hidden_on_platform` — i.e.
+         ``hidden: true`` OR ``hidden`` is a list containing ``"platform"``).
+      2. It carries a non-``None`` ``defaultvalue`` in the YAML.
+      3. It is NOT in :data:`SWEEP_EXCLUDED_PARAMS` (``feedExpirationInterval``).
+      4. It is NOT ``defaultIgnore`` (managed by the automation capability).
+      5. It is NOT a connection-section param (auth / other_connection) — those
+         live on connection.yaml, never configurations.yaml.
+
+    Returns a ``{param_name: coerced_default_value}`` dict (the value coerced to
+    its native serializer type via :func:`_coerce_hidden_default_value`).
+    """
+    connection_param_names = connection_param_names or set()
+    swept: dict[str, Any] = {}
+    for param in integration_yml.get("configuration", []) or []:
+        name = param.get("name", "")
+        if not name:
+            continue
+        if name in SWEEP_EXCLUDED_PARAMS or name == _DEFAULT_IGNORE_PARAM:
+            continue
+        if name in connection_param_names:
+            continue
+        if not _is_hidden_on_platform(param):
+            continue
+        default = param.get("defaultvalue")
+        if default is None:
+            continue
+        swept[name] = _coerce_hidden_default_value(param)
+    return swept
+
+
+def _remove_field_from_configurations(
+    configurations_data: dict, field_ids: set[str]
+) -> set[str]:
+    """Remove every field whose ``id`` is in ``field_ids`` from a
+    configurations.yaml data dict, scanning BOTH the per-capability
+    ``configurations`` entries AND the ``general_configurations`` block.
+
+    Empty field groups left behind by the removal are pruned. Returns the set
+    of field ids that were actually found and removed (for logging / accuracy).
+    """
+    removed: set[str] = set()
+
+    def _scrub_group_list(groups: list) -> None:
+        for group in groups:
+            if not isinstance(group, dict):
+                continue
+            fields = group.get("fields")
+            if not isinstance(fields, list):
+                continue
+            kept = []
+            for f in fields:
+                if isinstance(f, dict) and f.get("id") in field_ids:
+                    removed.add(str(f.get("id")))
+                    continue
+                kept.append(f)
+            group["fields"] = kept
+        # Prune now-empty field groups.
+        groups[:] = [g for g in groups if (g.get("fields") if isinstance(g, dict) else g)]
+
+    # Per-capability configuration entries.
+    for entry in configurations_data.get("configurations", []) or []:
+        if isinstance(entry, dict) and isinstance(entry.get("configurations"), list):
+            _scrub_group_list(entry["configurations"])
+
+    # general_configurations block.
+    gc = configurations_data.get("general_configurations")
+    if isinstance(gc, dict) and isinstance(gc.get("configurations"), list):
+        _scrub_group_list(gc["configurations"])
+
+    return removed
+
+
+def sweep_hidden_defaults_to_serializer(
+    configurations_data: dict,
+    integration_yml: dict,
+    handler_id: str,
+    handler_dir: Path,
+    mapped_params: dict[str, Any] | None = None,
+    connection_param_names: set[str] | None = None,
+) -> dict[str, Any]:
+    """Final authoritative pass: move every hidden+default XSOAR param out of
+    ``configurations_data`` and into the handler's serializer ``computed_fields``.
+
+    For each param returned by :func:`collect_swept_hidden_default_params`:
+      1. Remove its field from ``configurations_data`` — matched by the original
+         XSOAR param name AND any renamed connector id that maps back to it via
+         the handler's ``serializer.yaml`` ``field_mappings`` (so a renamed
+         ``<handler>_eventFetchInterval`` is caught too).
+      2. Register a capability-gated ``computed_fields`` rule whose ``output``
+         id is the ORIGINAL XSOAR param name (the runtime contract) and value is
+         the coerced default. The rule is gated (OR logic) on ALL of the
+         handler's sub-capability ids — correct for orphan params not attached
+         to any single capability (e.g. ``max_concurrent_tasks``) and harmless
+         for params that happen to belong to one capability.
+
+    Idempotent: :func:`register_computed_field_entry` dedupes identical rules, so
+    a param already moved by :func:`emit_field_for_param` is not duplicated.
+
+    Returns the ``{param_name: value}`` dict that was swept (for logging/tests).
+    """
+    swept = collect_swept_hidden_default_params(
+        integration_yml, connection_param_names
+    )
+    if not swept:
+        return {}
+
+    mapped_params = mapped_params or {}
+
+    def _sub_cap_id(cap_name: str) -> str:
+        return (
+            make_sub_capability_id(handler_id, cap_name)
+            if handler_id
+            else slugify_capability_name(cap_name)
+        )
+
+    # All of the handler's sub-capability ids — the OR-gating fallback used only
+    # for unattached "orphan" params (not owned by any single capability).
+    all_cap_ids = [
+        _sub_cap_id(cap_name)
+        for cap_name in mapped_params
+        if cap_name != "general_configurations"
+    ]
+
+    def _owning_capability_ids(param_name: str) -> list[str]:
+        """Resolve the sub-cap id(s) a swept param should gate on.
+
+        Resolution order (most specific first):
+          1. Builder-owned param (:data:`_BUILDER_PARAM_TO_BUCKET_KEY`) — gate on
+             that single capability's sub-cap id, when the bucket is present for
+             this handler.
+          2. Mapper-routed param — if the param appears in exactly one
+             ``mapped_params`` bucket, gate on that bucket's sub-cap id.
+          3. Orphan (config-only, not attached anywhere, e.g.
+             ``max_concurrent_tasks``) — OR-gate across ALL of the handler's
+             sub-capabilities.
+        """
+        # 1. Builder-owned single capability.
+        bucket = _BUILDER_PARAM_TO_BUCKET_KEY.get(param_name)
+        if bucket and bucket in mapped_params:
+            return [_sub_cap_id(bucket)]
+
+        # 2. Mapper-routed: find the bucket(s) that list this param.
+        owning_buckets = [
+            cap_name
+            for cap_name, params in mapped_params.items()
+            if cap_name != "general_configurations" and param_name in (params or [])
+        ]
+        if len(owning_buckets) == 1:
+            return [_sub_cap_id(owning_buckets[0])]
+
+        # 3. Orphan / ambiguous → OR-gate across all handler sub-capabilities.
+        return all_cap_ids
+
+    # Reverse map for fields renamed via the serializer ``field_mappings``
+    # (dedup-via-rename + sub-cap prefixing) so removal also catches those ids.
+    renamed_to_original = _load_serializer_field_mappings(handler_dir)
+    original_to_renamed: dict[str, set[str]] = {}
+    for renamed_id, original_name in renamed_to_original.items():
+        original_to_renamed.setdefault(original_name, set()).add(renamed_id)
+
+    for name, value in swept.items():
+        # Determine the connector-side field id + the serializer output id.
+        #
+        # Some capability builders rename the XSOAR param to a Platform
+        # "alert" id that the platform consumes DIRECTLY (no field_mappings
+        # bridge back to the XSOAR name) — e.g. fetch-issues maps
+        # ``incidentFetchInterval`` -> ``alertFetchInterval`` (see
+        # :data:`_KNOWN_BUILDER_FIELD_RENAMES`). For those, both the field to
+        # remove AND the computed_fields output id are the RENAMED id.
+        # Otherwise the field id == the XSOAR param name and the output id is
+        # the XSOAR name (the runtime contract).
+        builder_renamed = _KNOWN_BUILDER_FIELD_RENAMES.get(name)
+        output_id = builder_renamed or name
+
+        # Field ids that could represent this param in configurations.yaml:
+        # the XSOAR name, any field_mappings-renamed id, and the known
+        # builder-renamed id.
+        candidate_ids = {name} | original_to_renamed.get(name, set())
+        if builder_renamed:
+            candidate_ids.add(builder_renamed)
+        removed = _remove_field_from_configurations(
+            configurations_data, candidate_ids
+        )
+
+        # Gate on the param's OWNING capability (single) when known; fall back
+        # to OR across all sub-capabilities only for unattached orphans.
+        gating_ids = _owning_capability_ids(name)
+
+        rule = build_capability_gated_computed_field(
+            output_id=output_id,
+            value=value,
+            sub_capability_ids=gating_ids,
+        )
+        register_computed_field_entry(handler_dir, rule)
+
+        logger.info(
+            "[manifest_generator] Sweep moved hidden+default param '%s' "
+            "(handler='%s') to serializer computed_fields as output '%s' with "
+            "value %r (removed field ids %s, gated on %s).",
+            name,
+            handler_id,
+            output_id,
+            value,
+            sorted(removed) if removed else "<none in configurations>",
+            gating_ids,
+        )
+
+    return swept
+
+
+def assert_no_hidden_defaults_in_configurations(
+    configurations_data: dict,
+) -> None:
+    """Safety guard: raise if any configurations.yaml field is BOTH hidden AND
+    carries a ``default_value``.
+
+    Such a field violates the hidden+default → serializer rule (it should have
+    been swept to ``computed_fields``). The only sanctioned exception is
+    :data:`SWEEP_EXCLUDED_PARAMS` (``feedExpirationInterval``), which is hidden
+    until its reveal trigger fires.
+
+    A field is considered hidden when EITHER its ``create_modifiers.hidden`` or
+    ``edit_modifiers.hidden`` is ``True``.
+    """
+    offenders: list[str] = []
+
+    def _field_is_hidden(options: dict) -> bool:
+        for mod_key in ("create_modifiers", "edit_modifiers"):
+            mod = options.get(mod_key)
+            if isinstance(mod, dict) and mod.get("hidden") is True:
+                return True
+        return False
+
+    def _check_groups(groups: list) -> None:
+        for group in groups or []:
+            if not isinstance(group, dict):
+                continue
+            for field in group.get("fields", []) or []:
+                if not isinstance(field, dict):
+                    continue
+                fid = str(field.get("id", ""))
+                if fid in SWEEP_EXCLUDED_PARAMS:
+                    continue
+                options = field.get("options")
+                if not isinstance(options, dict):
+                    continue
+                has_default = "default_value" in options
+                if has_default and _field_is_hidden(options):
+                    offenders.append(fid)
+
+    for entry in configurations_data.get("configurations", []) or []:
+        if isinstance(entry, dict):
+            _check_groups(entry.get("configurations", []))
+
+    gc = configurations_data.get("general_configurations")
+    if isinstance(gc, dict):
+        _check_groups(gc.get("configurations", []))
+
+    if offenders:
+        raise ValueError(
+            "configurations.yaml contains hidden fields that still carry a "
+            "default_value (these must be moved to serializer computed_fields "
+            f"via the sweep): {sorted(offenders)}"
+        )
+
+
 def _strip_leading_comments(text: str) -> str:
     """Strip leading comment lines (``# ...``) and blank lines.
 
@@ -2710,7 +3136,6 @@ def add_assets_capability(
 
 # Default human-readable titles for the synthetic / fallback emission
 # paths in ``add_indicators_capability``.
-_FEED_DEFAULT_TITLE = "Fetch indicators"
 _FEEDFETCHINTERVAL_DEFAULT_TITLE = "Feed Fetch Interval"
 _FEEDRELIABILITY_DEFAULT_TITLE = "Source Reliability"
 _FEEDEXPIRATIONPOLICY_DEFAULT_TITLE = ""  # module.go does not set a display
@@ -2792,28 +3217,6 @@ FEED_EXPIRATION_INTERVAL_DEFAULT = "20160"
 # ---------------------------------------------------------------------------
 # Per-field builders for the indicators capability
 # ---------------------------------------------------------------------------
-
-
-def _build_feed_toggle_field(
-    field_id: str,
-    title: str,
-) -> dict:
-    """Build the ``feed`` checkbox field — always default ``True``, hidden.
-
-    Per spec: the ``feed`` param is always emitted as a hidden checkbox
-    with ``default_value: true``. The yml's hidden/default values are
-    IGNORED — this is a hardcoded synthetic field.
-    """
-    return {
-        "id": field_id,
-        "title": title,
-        "field_type": "checkbox",
-        "options": {
-            "default_value": True,
-            "create_modifiers": {"required": False, "hidden": True},
-            "edit_modifiers": {"required": False, "hidden": True},
-        },
-    }
 
 
 def _build_feedfetchinterval_field(
@@ -3121,17 +3524,16 @@ def add_indicators_capability(
     handler_dir: Path | None = None,
 ) -> dict:
     """Build the per-capability template dict for the ``Threat Intelligence
-    & Enrichment`` capability with up to 8 fields:
+    & Enrichment`` capability with up to 7 fields:
 
-      1. ``feed`` — checkbox, always default true + hidden true
-      2. ``feedFetchInterval`` — duration picker (fallback 240 min = 4h)
-      3. ``feedReliability`` — select (required, fallback Undetermined)
-      4. ``feedExpirationPolicy`` — select (type 17 hardcoded values)
-      5. ``feedExpirationInterval`` — numeric input (hidden, no display,
+      1. ``feedFetchInterval`` — duration picker (fallback 240 min = 4h)
+      2. ``feedReliability`` — select (required, fallback Undetermined)
+      3. ``feedExpirationPolicy`` — select (type 17 hardcoded values)
+      4. ``feedExpirationInterval`` — numeric input (hidden, no display,
          revealed via trigger when feedExpirationPolicy == interval)
-      6. ``feedReputation`` — select (type 18 hardcoded values)
-      7. ``feedBypassExclusionList`` — checkbox
-      8. ``feedIncremental`` — checkbox, emitted **only when present in the
+      5. ``feedReputation`` — select (type 18 hardcoded values)
+      6. ``feedBypassExclusionList`` — checkbox
+      7. ``feedIncremental`` — checkbox, emitted **only when present in the
          integration yml** (no synthetic fallback). Its ``hidden``,
          ``display`` (title) and ``defaultvalue`` (default_value) are taken
          verbatim from the yml. When the yml omits it, this field is not
@@ -3175,7 +3577,6 @@ def add_indicators_capability(
     def _field_id(original: str) -> str:
         return f"{capability_id}_{original}" if is_sub_capability else original
 
-    feed_field_id = _field_id(FEED_PARAM_NAME)
     ffi_field_id = _field_id(FEEDFETCHINTERVAL_PARAM_NAME)
     fr_field_id = _field_id(FEEDRELIABILITY_PARAM_NAME)
     fep_field_id = _field_id(FEEDEXPIRATIONPOLICY_PARAM_NAME)
@@ -3184,9 +3585,6 @@ def add_indicators_capability(
     fbe_field_id = _field_id(FEEDBYPASSEXCLUSIONLIST_PARAM_NAME)
 
     # --- §2. Resolve titles (generic helper) ----------------------------
-    feed_title = _resolve_title_from_yml(
-        yml_params_by_name, FEED_PARAM_NAME, fallback=_FEED_DEFAULT_TITLE
-    )
     ffi_title = _resolve_title_from_yml(
         yml_params_by_name, FEEDFETCHINTERVAL_PARAM_NAME,
         fallback=_FEEDFETCHINTERVAL_DEFAULT_TITLE,
@@ -3217,51 +3615,53 @@ def add_indicators_capability(
     def _yml(name: str) -> dict | None:
         return yml_params_by_name.get(name) if yml_params_by_name else None
 
-    # --- §4. Build the 7 fields -----------------------------------------
+    # --- §4. Build the fields -------------------------------------------
+    # NOTE: ``feed`` is NOT emitted as a configurations field. Like
+    # ``isFetch`` / ``isFetchEvents``, the feed toggle is auto-enabled via
+    # a serializer ``computed_fields`` rule (registered in §6 below) that
+    # injects ``feed: true`` into the lifecycle notification when this
+    # capability is ``on``. There is no long-running case for feed and no
+    # user choice to make, so the platform turns it on implicitly when the
+    # sub-capability is selected — no hidden checkbox is carried over.
     fields: list[dict] = []
 
-    # 1. feed — always synthetic (hardcoded true + hidden)
-    fields.append(_build_feed_toggle_field(
-        field_id=feed_field_id, title=feed_title,
-    ))
-
-    # 2. feedFetchInterval — duration picker
+    # 1. feedFetchInterval — duration picker
     fields.append(_build_feedfetchinterval_field(
         yml_param=_yml(FEEDFETCHINTERVAL_PARAM_NAME),
         field_id=ffi_field_id, title=ffi_title,
     ))
 
-    # 3. feedReliability — select (required)
+    # 2. feedReliability — select (required)
     fields.append(_build_feedreliability_field(
         yml_param=_yml(FEEDRELIABILITY_PARAM_NAME),
         field_id=fr_field_id, title=fr_title,
     ))
 
-    # 4. feedExpirationPolicy — select (type 17)
+    # 3. feedExpirationPolicy — select (type 17)
     fields.append(_build_feedexpirationpolicy_field(
         yml_param=_yml(FEEDEXPIRATIONPOLICY_PARAM_NAME),
         field_id=fep_field_id, title=fep_title,
     ))
 
-    # 5. feedExpirationInterval — numeric input (hidden, no display)
+    # 4. feedExpirationInterval — numeric input (hidden, no display)
     fields.append(_build_feedexpirationinterval_field(
         yml_param=_yml(FEEDEXPIRATIONINTERVAL_PARAM_NAME),
         field_id=fei_field_id,
     ))
 
-    # 6. feedReputation — select (type 18)
+    # 5. feedReputation — select (type 18)
     fields.append(_build_feedreputation_field(
         yml_param=_yml(FEEDREPUTATION_PARAM_NAME),
         field_id=frep_field_id, title=frep_title,
     ))
 
-    # 7. feedBypassExclusionList — checkbox
+    # 6. feedBypassExclusionList — checkbox
     fields.append(_build_feedbypassexclusionlist_field(
         yml_param=_yml(FEEDBYPASSEXCLUSIONLIST_PARAM_NAME),
         field_id=fbe_field_id, title=fbe_title,
     ))
 
-    # 8. feedIncremental — checkbox, emitted ONLY when present in the yml.
+    # 7. feedIncremental — checkbox, emitted ONLY when present in the yml.
     #    hidden/display/default_value are taken verbatim from the yml.
     fi_yml_param = _yml(FEEDINCREMENTAL_PARAM_NAME)
     fi_field_id = _field_id(FEEDINCREMENTAL_PARAM_NAME)
@@ -3278,10 +3678,24 @@ def add_indicators_capability(
             n for n in names if n not in _FEED_STRIPPED_PARAMS
         ]
 
+    # --- §6a. Feed auto-enable via serializer computed_fields ------------
+    # Like ``isFetch`` / ``isFetchEvents``, the ``feed`` toggle is NOT a
+    # configurations field. Instead we inject ``feed: true`` into the
+    # lifecycle notification when this capability is ``on`` (RULE 5 style).
+    # There is no long-running case for feed, so this is unconditional.
+    if handler_dir is not None:
+        register_computed_field_entry(
+            handler_dir,
+            build_capability_gated_computed_field(
+                output_id=FEED_PARAM_NAME,
+                value=True,
+                sub_capability_ids=[capability_id],
+            ),
+        )
+
     # --- §6. Sub-cap rename bridges (per emitted field) -----------------
     if is_sub_capability and handler_dir is not None:
         _original_to_renamed = {
-            FEED_PARAM_NAME: feed_field_id,
             FEEDFETCHINTERVAL_PARAM_NAME: ffi_field_id,
             FEEDRELIABILITY_PARAM_NAME: fr_field_id,
             FEEDEXPIRATIONPOLICY_PARAM_NAME: fep_field_id,
@@ -5662,7 +6076,7 @@ def build_connection_profile(
     auth_type_entry: dict,
     integration_id: str,
     connector_title: str = "",
-    yml_params_by_name: dict[str, dict] | None = None,
+    yml_params_by_name: dict[str, dict] = {},
     seen_profile_ids: set[str] | None = None,
 ) -> dict:
     """Build ONE ``connection.yaml`` ``profiles[]`` entry (Part A — auth fields only).
@@ -5692,6 +6106,11 @@ def build_connection_profile(
         field_id = _connection_field_id_from_map_key(map_key, map_keys)
         auth_parameter = _auth_parameter_for_role(profile_type, role)
         is_username = auth_parameter == "username"
+        mask = not is_username
+        if "." not in map_key:
+            if yml_params_by_name.get(map_key, {}).get('type', 4) in [4, 9, 14] and not is_username:
+                mask = True
+            
         fields.append(
             {
                 "id": field_id,
@@ -5699,7 +6118,7 @@ def build_connection_profile(
                 "field_type": "input",
                 "metadata": {"auth": {"parameter": auth_parameter}},
                 "options": {
-                    "mask": not is_username,
+                    "mask": mask,
                     "create_modifiers": {"required": True, "hidden": False},
                     "edit_modifiers": {"required": True, "hidden": False},
                 },
@@ -6772,6 +7191,22 @@ def create_manifest_from_scratch(
         )
         synthetic_cap_fields[av_bucket_key] = av_result.get("fields", [])
 
+    # Fetch Secrets: the isFetchCredentials toggle is emitted ONLY as a
+    # serializer computed_fields rule (gated on the sub-cap id), NOT as a
+    # configurations.yaml field. add_secret_capability returns "fields": []
+    # so nothing is injected into the sub-cap entry — it only registers the
+    # serializer rule via handler_dir.
+    fs_bucket_key = "Fetch Secrets"
+    if fs_bucket_key in mapped_params:
+        fs_result = add_secret_capability(
+            capability_id=make_sub_capability_id(handler_id, fs_bucket_key),
+            is_sub_capability=False,
+            mapped_params=mapped_params,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=handler_dir,
+        )
+        synthetic_cap_fields[fs_bucket_key] = fs_result.get("fields", [])
+
     # Generate configurations.yaml (no schema directive)
     configurations_data = build_configurations_yaml(
         mapped_params,
@@ -6828,9 +7263,28 @@ def create_manifest_from_scratch(
             handler_id=handler_id,
         )
 
+    # Authoritative final pass: move EVERY hidden+default XSOAR param out of
+    # configurations.yaml and into the handler's serializer computed_fields.
+    # Runs after all builders / synthetic injection so it sees every field
+    # regardless of which code path produced it (e.g. eventFetchInterval via
+    # the log-collection builder, or orphan config-only params like
+    # max_concurrent_tasks the mapper never routed anywhere).
+    sweep_hidden_defaults_to_serializer(
+        configurations_data,
+        integration_yml,
+        handler_id,
+        handler_dir,
+        mapped_params=mapped_params,
+        connection_param_names=connection_param_names_from_auth(auth_methods),
+    )
+
     configurations_data = deep_merge_dicts(
         configurations_data, manual_configurations_fields or {}
     )
+    # Safety net: no hidden field may carry a default_value (it must have been
+    # swept to the serializer). Runs AFTER the manual merge so a manual override
+    # cannot reintroduce a violation.
+    assert_no_hidden_defaults_in_configurations(configurations_data)
     configurations_yaml_path = connector_dir / "configurations.yaml"
     with open(configurations_yaml_path, "w") as fh:
         _dump_yaml(_ordered_configurations(configurations_data), fh)
@@ -7268,10 +7722,46 @@ def add_handler_to_existing_connector(
             av_result.get("fields", []),
         )
 
+    # Fetch Secrets: emit the isFetchCredentials toggle ONLY as a serializer
+    # computed_fields rule (gated on the new handler's sub-cap id), NOT as a
+    # configurations.yaml field. add_secret_capability returns "fields": [] so
+    # the inject call is a no-op for configurations — only the serializer rule
+    # is registered via new_handler_dir.
+    fs_bucket_key = "Fetch Secrets"
+    if fs_bucket_key in mapped_params:
+        fs_result = add_secret_capability(
+            capability_id=make_sub_capability_id(new_handler_id, fs_bucket_key),
+            is_sub_capability=False,
+            mapped_params=mapped_params,
+            yml_params_by_name=yml_params_by_name,
+            handler_dir=new_handler_dir,
+        )
+        _inject_append_capability_fields(
+            configurations_data,
+            cap_name_to_handler_cap_id.get(fs_bucket_key),
+            new_handler_id,
+            fs_result.get("fields", []),
+        )
+
+    # Authoritative final pass: move EVERY hidden+default XSOAR param of THIS
+    # new handler out of configurations.yaml into its serializer computed_fields
+    # (see :func:`sweep_hidden_defaults_to_serializer`). Scoped to the new
+    # handler's yml + sub-cap ids so an existing handler's fields are untouched.
+    sweep_hidden_defaults_to_serializer(
+        configurations_data,
+        integration_yml,
+        new_handler_id,
+        new_handler_dir,
+        mapped_params=mapped_params,
+        connection_param_names=connection_param_names_from_auth(auth_methods),
+    )
+
     # Write configurations.yaml back (no schema directive).
     configurations_data = deep_merge_dicts(
         configurations_data, manual_configurations_fields or {}
     )
+    # Safety net: no hidden field may carry a default_value after the merge.
+    assert_no_hidden_defaults_in_configurations(configurations_data)
     with open(configurations_yaml_path, "w") as fh:
         _dump_yaml(_ordered_configurations(configurations_data), fh)
     logger.info(f"[manifest_generator] Updated {configurations_yaml_path}")
