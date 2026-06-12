@@ -1634,7 +1634,7 @@ def register_computed_field_entry(
 # Kept in lockstep with ``FEEDEXPIRATIONINTERVAL_PARAM_NAME`` ("feedExpirationInterval").
 SWEEP_EXCLUDED_PARAMS: frozenset[str] = frozenset(
     {
-        "feedExpirationInterval",
+        "feedExpirationInterval", "longRunning"
     }
 )
 
