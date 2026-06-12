@@ -971,11 +971,7 @@ class TestEndToEnd:
                blocked by the platform flag, and general_configurations is
                empty.
         """
-        yml_path = Path(
-            "/Users/yhayun/dev/demisto/content/Packs/"
-            "ExabeamSecurityOperationsPlatform/Integrations/"
-            "ExabeamSecOpsPlatform/ExabeamSecOpsPlatform.yml"
-        )
+        yml_path = Path.cwd().parent.parent / "Packs/ExabeamSecurityOperationsPlatform/Integrations/ExabeamSecOpsPlatform/ExabeamSecOpsPlatform.yml"
         if not yml_path.exists():
             pytest.skip(f"Exabeam YML not found at {yml_path}")
         with open(yml_path) as f:
