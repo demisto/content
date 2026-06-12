@@ -36,6 +36,7 @@ from Vega import (
     _normalize_entity_id,
     _parse_alert_events_results,
     _resolve_fetch_from_time,
+    _resolve_next_fetch_state,
     _should_ingest_entity,
     _update_fetch_state,
     alert_to_incident,
@@ -295,6 +296,57 @@ def test_update_fetch_state_preserves_state_when_empty():
 
     assert last_fetch == TIMESTAMP_T1
     assert last_ids == previous_ids
+
+
+def test_resolve_next_fetch_state_advances_to_now_on_empty_initial_backfill(mocker):
+    mocker.patch.object(demisto, "debug")
+    fixed_now = datetime(2026, 6, 4, 17, 30, 45, tzinfo=UTC)
+    mocker.patch("Vega.datetime", wraps=datetime)
+    mocker.patch("Vega.datetime.now", return_value=fixed_now)
+
+    last_fetch, last_ids = _resolve_next_fetch_state({}, "alerts_last_fetch", [], FIRST_FETCH_TIME, [])
+
+    assert last_fetch == "2026-06-04T17:30:45Z"
+    assert last_ids == []
+
+
+def test_resolve_next_fetch_state_preserves_cursor_on_empty_subsequent_fetch():
+    last_run = {"alerts_last_fetch": TIMESTAMP_T1, "alerts_last_ids": ["alert-a"]}
+
+    last_fetch, last_ids = _resolve_next_fetch_state(last_run, "alerts_last_fetch", [], TIMESTAMP_T1, ["alert-a"])
+
+    assert last_fetch == TIMESTAMP_T1
+    assert last_ids == ["alert-a"]
+
+
+def test_fetch_incidents_command_empty_initial_backfill_advances_cursor(mocker):
+    mocker.patch.object(demisto, "debug")
+    fixed_now = datetime(2026, 6, 4, 17, 30, 45, tzinfo=UTC)
+    mocker.patch("Vega.datetime", wraps=datetime)
+    mocker.patch("Vega.datetime.now", return_value=fixed_now)
+    mock_client = mocker.Mock()
+    mock_client.get_alerts.return_value = {"alerts": [], "total": 0, "limit": 200, "offset": 0}
+    mock_client.get_incidents.return_value = {"incidents": [], "total": 0, "limit": 200, "offset": 0}
+
+    next_run, incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run={},
+        fetch_alerts=True,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+    )
+
+    assert incidents == []
+    assert next_run["alerts_last_fetch"] == "2026-06-04T17:30:45Z"
+    assert next_run["incidents_last_fetch"] == "2026-06-04T17:30:45Z"
+    assert next_run["alerts_last_ids"] == []
+    assert next_run["incidents_last_ids"] == []
 
 
 def test_update_fetch_state_merges_ids_at_same_timestamp():

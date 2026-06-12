@@ -3209,6 +3209,26 @@ def _format_fetch_timestamp(created_at: datetime) -> str:
     return _normalize_fetch_datetime(created_at).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _current_fetch_timestamp() -> str:
+    """Return the current UTC time formatted for last_run cursors."""
+    return _format_fetch_timestamp(datetime.now(UTC))
+
+
+def _resolve_next_fetch_state(
+    last_run: dict,
+    last_fetch_key: str,
+    fetched_entities: list[dict],
+    previous_last_fetch: str,
+    previous_last_ids: list[str],
+) -> tuple[str, list[str]]:
+    """Advance fetch cursor state, using current time when initial backfill returns nothing."""
+    new_last_fetch, new_last_ids = _update_fetch_state(fetched_entities, previous_last_fetch, previous_last_ids)
+    if last_run.get(last_fetch_key) in (None, "") and not fetched_entities:
+        demisto.debug(f"Vega {last_fetch_key}: initial backfill returned no entities, advancing cursor to current time.")
+        return _current_fetch_timestamp(), []
+    return new_last_fetch, new_last_ids
+
+
 def _should_ingest_entity(
     entity: dict,
     last_fetch: str,
@@ -3482,8 +3502,8 @@ def fetch_incidents_command(
                 xsoar_incidents.append(alert_to_incident(alert, integration_url=integration_url))
                 new_alerts += 1
 
-            next_run["alerts_last_fetch"], next_run["alerts_last_ids"] = _update_fetch_state(
-                alerts, alerts_last_fetch, alerts_last_ids
+            next_run["alerts_last_fetch"], next_run["alerts_last_ids"] = _resolve_next_fetch_state(
+                last_run, "alerts_last_fetch", alerts, alerts_last_fetch, alerts_last_ids
             )
             previous_alerts_fetch_config = last_run.get("alerts_fetch_config")
             if previous_alerts_fetch_config is not None and previous_alerts_fetch_config != alerts_fetch_config:
@@ -3530,8 +3550,8 @@ def fetch_incidents_command(
                 xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events))
                 new_incidents += 1
 
-            next_run["incidents_last_fetch"], next_run["incidents_last_ids"] = _update_fetch_state(
-                incidents, incidents_last_fetch, incidents_last_ids
+            next_run["incidents_last_fetch"], next_run["incidents_last_ids"] = _resolve_next_fetch_state(
+                last_run, "incidents_last_fetch", incidents, incidents_last_fetch, incidents_last_ids
             )
             previous_incidents_fetch_config = last_run.get("incidents_fetch_config")
             if previous_incidents_fetch_config is not None and previous_incidents_fetch_config != incidents_fetch_config:
