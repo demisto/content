@@ -742,8 +742,14 @@ CANONICAL_CAPABILITY_DESCRIPTIONS: dict[str, str] = {
 # licenses of every sub-capability registered under it. This file is the
 # single source of truth — there is no ``supportedModules`` fallback and no
 # agentix/xsiam post-filtering.
-SUB_CAPABILITIES_TO_LICENSES_PATH = (
-    Path(__file__).resolve().parent / "sub_capabilities_to_licenses.json"
+# The path defaults to the production registry next to this module, but can be
+# overridden via the ``CONNECTUS_SUB_CAPABILITIES_TO_LICENSES_PATH`` environment
+# variable. The override exists so the e2e (golden-file) suite — which runs this
+# generator as a subprocess — can point at a per-case fixture registry instead
+# of mutating the shared production file.
+SUB_CAPABILITIES_TO_LICENSES_PATH = Path(
+    os.environ.get("CONNECTUS_SUB_CAPABILITIES_TO_LICENSES_PATH")
+    or (Path(__file__).resolve().parent / "sub_capabilities_to_licenses.json")
 )
 
 # Module-level cache of the parsed JSON so we don't re-read the file on every

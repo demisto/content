@@ -30,3 +30,7 @@ field_mappings:
   field_name: engine
 - id: passthrough.github_iam_engine_group
   field_name: engineGroup
+- id: passthrough.github_iam_credentials_password
+  field_name: credentials_password
+- id: passthrough.github_iam_credentials_username
+  field_name: credentials_username

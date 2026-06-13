@@ -89,6 +89,14 @@ EXPECTED_DIR = "expected"
 INTEGRATION_YML = "integration.yml"
 CONNECTORS_DIRNAME = "connectors"
 
+# OPTIONAL per-case override for the sub-capability -> licenses registry. When
+# ``input/sub_capabilities_to_licenses.json`` exists, the harness points the
+# generator at it (via the env var the generator honours) instead of the shared
+# production registry. This lets a case introduce synthetic sub-capability ids
+# without mutating the real file.
+LICENSES_OVERRIDE_FILENAME = "sub_capabilities_to_licenses.json"
+LICENSES_OVERRIDE_ENV = "CONNECTUS_SUB_CAPABILITIES_TO_LICENSES_PATH"
+
 # Map of case.json ``manual_fields`` keys -> the CLI option name.
 _MANUAL_FIELD_OPTIONS = {
     "connector": "--manual-connector-fields",
@@ -139,6 +147,11 @@ class E2ECase:
     def input_connectors(self) -> Path:
         """The optional pre-seeded connectus manifest tree (may not exist)."""
         return self.input_dir / CONNECTORS_DIRNAME
+
+    @property
+    def licenses_override(self) -> Path:
+        """The optional per-case sub-capability licenses registry (may not exist)."""
+        return self.input_dir / LICENSES_OVERRIDE_FILENAME
 
     @property
     def expected_connectors(self) -> Path:
@@ -229,6 +242,13 @@ def run_generator(case: E2ECase, tmp_path: Path) -> RunResult:
             )
         cmd.extend([option, json.dumps(value)])
 
+    # Inherit the parent environment, optionally overriding the sub-capability
+    # licenses registry with this case's fixture file so synthetic sub-cap ids
+    # resolve without touching the shared production registry.
+    env = os.environ.copy()
+    if case.licenses_override.is_file():
+        env[LICENSES_OVERRIDE_ENV] = str(case.licenses_override.resolve())
+
     proc = subprocess.run(
         cmd,
         capture_output=True,
@@ -238,6 +258,7 @@ def run_generator(case: E2ECase, tmp_path: Path) -> RunResult:
         # the author image (path is relative to the content root). All other
         # paths we pass (integration yml, --connectors-root) are absolute.
         cwd=str(CONTENT_ROOT),
+        env=env,
     )
     return RunResult(
         returncode=proc.returncode,
