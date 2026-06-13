@@ -48,6 +48,30 @@ configurations:
 - id: fetch-issues_github
   configurations:
   - fields:
+    - id: alertType
+      title: Issue Type
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: GitHub
+            dynamicField: incident-type
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        help_text: select if classifier doesn't exist
+        placeholder: Select an issue type
+  - fields:
     - id: alertFetchInterval
       field_type: duration
       title: Issues Fetch Interval
@@ -62,7 +86,7 @@ configurations:
         - days
         - hours
         - minutes
-      output_format: minutes
+        output_format: minutes
   - fields:
     - id: incomingMapperId
       title: Incoming Mapper
@@ -129,12 +153,12 @@ configurations:
     - id: feedFetchInterval
       title: Feed Fetch Interval
       field_type: duration
-      output_format: minutes
       options:
         units:
         - days
         - hours
         - minutes
+        output_format: minutes
         default_value:
           hours: 4
         create_modifiers:
@@ -174,8 +198,8 @@ configurations:
       field_type: select
       options:
         values:
-        - key: Indicator Type
-          label: Indicator Type
+        - key: indicatorType
+          label: indicatorType
         - key: Time Interval
           label: Time Interval
         - key: Never Expire
@@ -192,12 +216,12 @@ configurations:
   - fields:
     - id: feedExpirationInterval
       field_type: duration
-      output_format: minutes
       options:
         units:
         - days
         - hours
         - minutes
+        output_format: minutes
         default_value:
           days: 14
         create_modifiers:

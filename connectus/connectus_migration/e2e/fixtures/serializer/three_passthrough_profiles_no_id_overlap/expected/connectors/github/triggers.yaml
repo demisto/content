@@ -62,9 +62,6 @@ triggers:
   - id: github_passthrough_secondary_proxy
     action:
       read_only: false
-
-
-
 - conditions:
     id: github_passthrough_tenant_engine_mode
     behavior: value

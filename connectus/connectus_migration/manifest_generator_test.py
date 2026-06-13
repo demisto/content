@@ -7816,7 +7816,7 @@ def test_add_connector_to_code_owners_appends_entry_to_existing_file(
     assert content.startswith("# Existing header\n* @someone\n")
     assert (
         "# My Connector\n"
-        "connectors/myconnector/ @sbenyakir @ybenshalom\n"
+        "connectors/myconnector/ @sbenyakir @ybenshalom @juschwartz\n"
         "\n"
     ) in content
 
@@ -7837,7 +7837,7 @@ def test_add_connector_to_code_owners_creates_file_when_missing(
     assert code_owners.is_file()
     assert code_owners.read_text() == (
         "# My Connector\n"
-        "connectors/myconnector/ @sbenyakir @ybenshalom\n"
+        "connectors/myconnector/ @sbenyakir @ybenshalom @juschwartz\n"
         "\n"
     )
 
@@ -7855,7 +7855,7 @@ def test_add_connector_to_code_owners_uses_connector_dir_slug_in_path(
 
     content = (repo_root / "CODEOWNERS").read_text()
     assert "# Salesforce Collection\n" in content
-    assert "connectors/salesforce/ @sbenyakir @ybenshalom\n" in content
+    assert "connectors/salesforce/ @sbenyakir @ybenshalom @juschwartz\n" in content
 
 
 def test_create_manifest_from_scratch_updates_code_owners(
@@ -7883,7 +7883,7 @@ def test_create_manifest_from_scratch_updates_code_owners(
     content = code_owners.read_text()
     assert "# My Connector\n" in content
     assert (
-        "connectors/myconnector/ @sbenyakir @ybenshalom\n"
+        "connectors/myconnector/ @sbenyakir @ybenshalom @juschwartz\n"
         in content
     )
 

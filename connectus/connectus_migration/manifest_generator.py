@@ -2689,9 +2689,9 @@ def _build_numeric_fetch_interval_field(
             "id": field_id,
             "title": title,
             "field_type": "duration",
-            "output_format": "minutes",
             "options": {
                 "units": list(DURATION_UNITS),
+                "output_format": "minutes",
                 "default_value": default_value,
                 "create_modifiers": {"required": False, "hidden": False},
                 "edit_modifiers": {"required": False, "hidden": False},
@@ -3374,9 +3374,9 @@ def _build_feedexpirationinterval_field(
     return {
         "id": field_id,
         "field_type": "duration",
-        "output_format": "minutes",
         "options": {
             "units": list(DURATION_UNITS),
+            "output_format": "minutes",
             "default_value": default_value,
             "create_modifiers": {"hidden": True},
             "edit_modifiers": {"hidden": True},
@@ -4089,17 +4089,15 @@ def add_fetch_issues_capability(
     # ``defaultvalue`` (resolved into ``inctype_default`` above). The field is
     # migrated as ``alertType`` with NO serializer bridge back to
     # ``incidentType`` — the platform consumes ``alertType`` directly.
-    emit_alerttype = _yml(INCIDENTTYPE_PARAM_NAME) is not None
-    if emit_alerttype:
-        fields.append(_build_dynamic_select_field(
-            field_id=inctype_field_id,
-            title=inctype_title,
-            dynamic_field_type="incident-type",
-            integration_id=integration_id,
-            default_value=inctype_default,
-            help_text=_ALERTTYPE_HELP_TEXT,
-            placeholder=_ALERTTYPE_PLACEHOLDER,
-        ))
+    fields.append(_build_dynamic_select_field(
+        field_id=inctype_field_id,
+        title=inctype_title,
+        dynamic_field_type="incident-type",
+        integration_id=integration_id,
+        default_value=inctype_default,
+        help_text=_ALERTTYPE_HELP_TEXT,
+        placeholder=_ALERTTYPE_PLACEHOLDER,
+    ))
 
     # 3. alertFetchInterval (XSOAR incidentFetchInterval) — duration picker.
     # Same migration rule: emit ONLY when the source param exists in the yml,
@@ -5597,7 +5595,7 @@ def _map_type_16(yml_param: dict) -> dict:
 
 # Per guide Appendix A type 17: "Feed Expiration Policy".
 FEED_EXPIRATION_POLICY_VALUES: list[dict] = [
-    {"key": "Indicator Type", "label": "Indicator Type"},
+    {"key": "IndicatorType", "label": "IndicatorType"},
     {"key": "Time Interval", "label": "Time Interval"},
     {"key": "Never Expire", "label": "Never Expire"},
     {"key": "When removed from the feed", "label": "When removed from the feed"},
@@ -5680,7 +5678,7 @@ def _map_type_19(yml_param: dict) -> dict:
 
     options = field.setdefault("options", {})
     options["units"] = list(DURATION_UNITS)
-    field["output_format"] = "minutes"
+    options["output_format"] = "minutes"
 
     # Convert the raw minutes default (set as a string by
     # _apply_common_field_metadata) into a per-unit object. When absent or
@@ -6909,7 +6907,7 @@ def merge_connection_data(
 # Default owners appended for every newly-scaffolded connector. The trailing
 # space after the last owner is intentional to mirror the existing CODEOWNERS
 # formatting convention.
-CODE_OWNERS_DEFAULT_OWNERS = "@sbenyakir @ybenshalom"
+CODE_OWNERS_DEFAULT_OWNERS = "@sbenyakir @ybenshalom @juschwartz"
 
 
 def _find_repo_root_for_code_owners(connector_dir: Path) -> Path:
@@ -6939,7 +6937,7 @@ def add_connector_to_code_owners(
     parent of the top-level ``connectors/`` directory. The appended block is::
 
         # <connector_title>
-        connectors/<slug>/ @sbenyakir @ybenshalom
+        connectors/<slug>/ @sbenyakir @ybenshalom @juschwartz
 
     followed by a trailing blank line. ``<slug>`` is the connector directory's
     own name (``connector_dir.name``). The file is created if it does not yet

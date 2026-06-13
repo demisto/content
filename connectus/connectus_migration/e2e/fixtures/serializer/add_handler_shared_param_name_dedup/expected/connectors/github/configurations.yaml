@@ -37,7 +37,7 @@ general_configurations:
           hidden: false
   - view_group: github-iam
     fields:
-    - id: integrationLogLevel
+    - id: xsoar-github-iam_integrationLogLevel
       title: Log Level
       field_type: select
       metadata:

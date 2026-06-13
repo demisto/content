@@ -211,7 +211,7 @@ profiles:
         event:
           publish: true
   - fields:
-    - id: github_proxy
+    - id: github_passthrough_secondary_proxy
       title: Use system proxy settings
       field_type: checkbox
       metadata:

@@ -4,3 +4,5 @@ field_mappings:
   field_name: team
 - id: xsoar-github-iam_defaultIgnore
   field_name: defaultIgnore
+- id: xsoar-github-iam_integrationLogLevel
+  field_name: integrationLogLevel
