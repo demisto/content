@@ -7244,7 +7244,7 @@ def create_manifest_from_scratch(
     configurations_data.setdefault("view_groups", []).extend(
         build_view_groups_registry(
             [(_cfg_integration_id, _cfg_integration_display)],
-            "Confiurations"
+            "Configurations"
         )
     )
 
@@ -7587,7 +7587,7 @@ def add_handler_to_existing_connector(
         configurations_data.setdefault("view_groups", []).extend(
             build_view_groups_registry(
                 [(_cfg_integration_id, _cfg_integration_display)],
-                "Confiurations"
+                "Configurations"
             )
         )
 

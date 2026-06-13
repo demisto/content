@@ -229,7 +229,7 @@ profiles:
           hidden: false
           read_only: true
   - fields:
-    - id: github_insecure
+    - id: github_passthrough_secondary_insecure
       title: Trust any certificate (not secure)
       field_type: checkbox
       metadata:
@@ -247,7 +247,7 @@ profiles:
           hidden: false
           read_only: false
   - fields:
-    - id: github_engine_mode
+    - id: github_passthrough_secondary_engine_mode
       title: Engine
       field_type: select
       options:
@@ -267,7 +267,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_engine
+    - id: github_passthrough_secondary_engine
       title: Engine
       field_type: select
       metadata:
@@ -293,7 +293,7 @@ profiles:
           required: false
           hidden: false
   - fields:
-    - id: github_engine_group
+    - id: github_passthrough_secondary_engine_group
       title: Engine Group
       field_type: select
       metadata:
@@ -344,7 +344,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_url
+    - id: github_passthrough_tenant_url
       field_type: input
       title: Server URL
       options:
@@ -359,7 +359,7 @@ profiles:
         event:
           publish: true
   - fields:
-    - id: github_proxy
+    - id: github_passthrough_tenant_proxy
       title: Use system proxy settings
       field_type: checkbox
       metadata:
@@ -377,7 +377,7 @@ profiles:
           hidden: false
           read_only: true
   - fields:
-    - id: github_insecure
+    - id: github_passthrough_tenant_insecure
       title: Trust any certificate (not secure)
       field_type: checkbox
       metadata:
@@ -395,7 +395,7 @@ profiles:
           hidden: false
           read_only: false
   - fields:
-    - id: github_engine_mode
+    - id: github_passthrough_tenant_engine_mode
       title: Engine
       field_type: select
       options:
@@ -415,7 +415,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_engine
+    - id: github_passthrough_tenant_engine
       title: Engine
       field_type: select
       metadata:
@@ -441,7 +441,7 @@ profiles:
           required: false
           hidden: false
   - fields:
-    - id: github_engine_group
+    - id: github_passthrough_tenant_engine_group
       title: Engine Group
       field_type: select
       metadata:

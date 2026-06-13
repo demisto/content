@@ -4,7 +4,7 @@ metadata:
 view_groups:
 - id: github
   label: GitHub
-  help_text: Confiurations settings for GitHub.
+  help_text: Configurations settings for GitHub.
 general_configurations:
   configurations:
   - view_group: github

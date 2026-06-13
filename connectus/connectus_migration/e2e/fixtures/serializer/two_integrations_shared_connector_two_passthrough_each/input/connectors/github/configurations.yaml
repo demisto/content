@@ -4,7 +4,7 @@ metadata:
 view_groups:
 - id: github
   label: GitHub
-  help_text: Confiurations settings for GitHub.
+  help_text: Configurations settings for GitHub.
 general_configurations:
   configurations:
   - view_group: github
@@ -32,4 +32,22 @@ general_configurations:
         edit_modifiers:
           required: false
           hidden: false
-configurations: []
+configurations:
+- id: automation-and-remediation_github
+  configurations:
+  - fields:
+    - id: defaultIgnore
+      title: Do not use in CLI by default
+      field_type: checkbox
+      metadata:
+        xsoar:
+          config_type: backend
+      options:
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+

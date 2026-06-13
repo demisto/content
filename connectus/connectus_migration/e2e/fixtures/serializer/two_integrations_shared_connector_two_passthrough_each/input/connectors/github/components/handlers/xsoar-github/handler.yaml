@@ -16,7 +16,18 @@ triggering:
     xsoar-integration-id: GitHub
     xsoar-pack-id: GitHub
   args: {}
-capabilities: []
+capabilities:
+- id: automation-and-remediation_github
+  auth_options:
+  - id: passthrough.github
+    workloads:
+    - xsoar-pod
+  - id: passthrough.github_passthrough_secondary
+    workloads:
+    - xsoar-pod
+  - id: passthrough.github_passthrough_tenant
+    workloads:
+    - xsoar-pod
 test_connection:
   type: service
   service: xsoar

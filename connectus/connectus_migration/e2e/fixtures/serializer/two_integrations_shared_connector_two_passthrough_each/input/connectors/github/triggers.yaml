@@ -32,33 +32,33 @@ triggers:
     action:
       read_only: false
 - conditions:
-    id: github_engine_mode
+    id: passthrough.github_passthrough_secondary_engine_mode
     behavior: value
     operator: neq
     value: engine
   effects:
-  - id: github_engine
+  - id: passthrough.github_passthrough_secondary_engine
     action:
       hidden: true
 - conditions:
-    id: github_engine_mode
+    id: passthrough.github_passthrough_secondary_engine_mode
     behavior: value
     operator: neq
     value: engine_group
   effects:
-  - id: github_engine_group
+  - id: passthrough.github_passthrough_secondary_engine_group
     action:
       hidden: true
 - conditions:
     operator: OR
     children:
-    - id: github_engine
+    - id: passthrough.github_passthrough_secondary_engine
       behavior: value
       operator: is_not_empty
-    - id: github_engine_group
+    - id: passthrough.github_passthrough_secondary_engine_group
       behavior: value
       operator: is_not_empty
   effects:
-  - id: github_proxy
+  - id: passthrough.github_passthrough_secondary_proxy
     action:
       read_only: false

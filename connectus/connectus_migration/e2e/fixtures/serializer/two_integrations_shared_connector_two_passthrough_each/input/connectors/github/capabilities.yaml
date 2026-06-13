@@ -31,4 +31,31 @@ general_configurations:
           required: true
           read_only: false
           hidden: false
-capabilities: []
+capabilities:
+- id: automation-and-remediation
+  title: Automation and Remediation
+  description: Run automation and remediation commands for this connector.
+  default_enabled: false
+  required: false
+  sub_capabilities:
+  - id: automation-and-remediation_github
+    title: GitHub
+    default_enabled: false
+    required: false
+    config:
+      required_license:
+      - cloud_posture
+      - cloud
+      - cloud_runtime_security
+      - edr
+      - xsiam
+      - agentix
+  config:
+    required_license:
+    - agentix
+    - cloud
+    - cloud_posture
+    - cloud_runtime_security
+    - edr
+    - xsiam
+
