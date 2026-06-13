@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+field_mappings:
+- id: github_iam_url
+  field_name: url
+- id: github_iam_proxy
+  field_name: proxy
+- id: github_iam_insecure
+  field_name: insecure
+- id: github_iam_engine_mode
+  field_name: engine_mode
+- id: github_iam_engine
+  field_name: engine
+- id: github_iam_engine_group
+  field_name: engineGroup

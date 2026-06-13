@@ -1,0 +1,27 @@
+{
+  "description": "Two integrations sharing ONE connector, each with TWO passthrough auth profiles (add-handler path). The 'github' connector already has the first migrated handler (xsoar-github, integration 'GitHub') whose connection.yaml carries TWO passthrough profiles plus the per-profile url/proxy/insecure + engine 3-field pattern (see input/connectors/github/). This run generates the SECOND integration ('GitHub IAM') which ALSO declares two passthrough auth methods, so the generator appends a second handler (xsoar-github-iam) and merges its two passthrough profiles into the same connection.yaml. Across the resulting FOUR profiles every profiles[].configurations[].fields[].id (auth fields + the duplicated url/proxy/insecure/engine fields) must stay globally unique, every renamed id must round-trip through the new handler's serializer.yaml field_mappings, and triggers.yaml must reference the resolved per-profile ids. The golden captures the merged four-profile connection, the appended handler, its serializer bridges, and the combined triggers.",
+  "connector_title": "GitHub",
+  "mapped_params": {},
+  "auth_methods": {
+    "auth_types": [
+      {
+        "type": "Passthrough",
+        "name": "passthrough_primary",
+        "interpolated": true,
+        "xsoar_param_map": {
+          "credentials.identifier": "client_id",
+          "credentials.password": "client_secret"
+        }
+      },
+      {
+        "type": "Passthrough",
+        "name": "passthrough_secondary",
+        "interpolated": true,
+        "xsoar_param_map": {
+          "token": "access_token"
+        }
+      }
+    ],
+    "other_connection": ["url", "proxy", "insecure"]
+  }
+}
