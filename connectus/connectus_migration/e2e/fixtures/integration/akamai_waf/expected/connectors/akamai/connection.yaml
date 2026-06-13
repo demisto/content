@@ -1,0 +1,137 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: akamai-waf
+  label: Akamai WAF
+  help_text: Connection settings for Akamai WAF.
+profiles:
+- id: plain.akamai_waf
+  type: plain
+  view_group: akamai-waf
+  title: plain
+  description: Authentication profile for Akamai (plain).
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: credentials_client_token:credentials.identifier,credentials_client_secret:credentials.password
+  configurations:
+  - fields:
+    - id: credentials_username
+      title: Credentials Username
+      field_type: input
+      metadata:
+        auth:
+          parameter: credentials_client_token
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: credentials_password
+      title: Credentials Password
+      field_type: input
+      metadata:
+        auth:
+          parameter: credentials_client_secret
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: host
+      field_type: input
+      title: Server URL (e.g., https://example.net)
+      options:
+        default_value: https://example.net
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: select
+      options:
+        mask: false
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Akamai WAF
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Akamai WAF
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

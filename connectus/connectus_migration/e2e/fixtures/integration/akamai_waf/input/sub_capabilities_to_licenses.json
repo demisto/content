@@ -1,0 +1,10 @@
+{
+  "automation-and-remediation_akamai-waf": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ]
+}

@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-jamf-protect-event-collector
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for Jamf Protect Event Collector.
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: Jamf Protect Event Collector
+    xsoar-pack-id: integration
+  args: {}
+capabilities:
+- id: automation-and-remediation_jamf-protect-event-collector
+  auth_options:
+  - id: plain.jamf_protect_event_collector
+    workloads:
+    - xsoar-pod
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification

@@ -1,0 +1,137 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: qradar-v3
+  label: IBM QRadar v3
+  help_text: Connection settings for IBM QRadar v3.
+profiles:
+- id: plain.qradar_v3
+  type: plain
+  view_group: qradar-v3
+  title: plain
+  description: Authentication profile for IBM QRadar (plain).
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: credentials:credentials.identifier,credentials:credentials.password
+  configurations:
+  - fields:
+    - id: credentials_username
+      title: Username
+      field_type: input
+      metadata:
+        auth:
+          parameter: credentials
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: credentials_password
+      title: Username
+      field_type: input
+      metadata:
+        auth:
+          parameter: credentials
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: server
+      field_type: input
+      title: Server URL
+      options:
+        description: (e.g., https://192.168.0.1)
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: select
+      options:
+        mask: false
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: QRadar v3
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: QRadar v3
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

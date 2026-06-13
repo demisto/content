@@ -1,0 +1,18 @@
+{
+  "description": "Jamf Protect Event Collector (from scratch): an XSIAM event collector content integration (isfetchevents/isfetchassets, marketplaces marketplacev2/platform, supportedModules xsiam) with a client-id type-9 credential, generated as the 'Jamf' connector. Exercises the from-scratch scaffold over an event-collector integration with an Automation capability and a Plain auth profile derived from the Jamf client credentials param.",
+  "connector_title": "Jamf",
+  "mapped_params": {"Automation": []},
+  "auth_methods": {
+    "auth_types": [
+      {
+        "type": "Plain",
+        "name": "plain",
+        "xsoar_param_map": {
+          "credentials.identifier": "client",
+          "credentials.password": "client"
+        }
+      }
+    ],
+    "other_connection": ["base_url"]
+  }
+}

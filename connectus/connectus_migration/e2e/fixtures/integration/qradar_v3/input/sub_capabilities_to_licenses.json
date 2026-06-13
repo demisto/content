@@ -1,0 +1,10 @@
+{
+  "automation-and-remediation_qradar-v3": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
+    "xsiam",
+    "agentix"
+  ]
+}
