@@ -97,15 +97,14 @@ The orchestrator injects `__params_parity_dump__: "1"` into both creation payloa
    The REQUIRED values are: `DEMISTO_BASE_URL`, `DEMISTO_API_KEY`, `XSIAM_AUTH_ID`, `CONNECTUS_REPO_DIR` (local clone of unified-connectors-content — used by both deploy git ops AND the resolver), `CONNECTUS_BRANCH` (your PERSONAL branch `xsoar-migration-<name>`; deploy.py commits the connector here and fast-forward pushes — never force, no reset), `TENANT_ID` (your single tenant — one per shell; sent to the GitLab pipeline as `TENANT_IDS`), and `GITLAB_TOKEN` (scope `api`). Git auth auto-detects your SSH key (`~/.ssh/id_ed25519` / `id_rsa` / `id_ecdsa`) — no extra config needed. GitLab URL, the pipeline override reason, and the UCP port are hardcoded constants, not env vars.
 
    Every script here loads this root `.env` automatically via the shared loader [`connectus/env_loader.py`](../env_loader.py) (`load_env()`), which resolves the repo root from `__file__` and loads `<repo_root>/.env` by an explicit path — so it works no matter which directory you run the tools from. **Do not** create a per-tool `.env` in this folder, and **do not** call `load_dotenv()` directly; use `load_env()`.
-2. **Patched Base pack on the tenant** — the probe must be present on the tenant's `CommonServerPython` script. Upload via:
+2. **Patched Base pack + target integration on the tenant — uploaded automatically by the deploy.** The probe must be present on the tenant's `CommonServerPython` script (Base pack) and the integration's own pack must be installed. **You no longer upload these by hand:** `deploy.py` now uploads them as **Step 0** of every deploy, before the connector push. `deploy_and_test.py` derives the two pack dirs from the resolver (always `Packs/Base`, plus the integration's pack — e.g. `Packs/AMP` for `AMPv2`, taken from the integration YML path) and passes them to `deploy.py` as `--upload-pack`. Under the hood each pack is uploaded with:
    ```bash
-   demisto-sdk upload -i Packs/Base -z -mp platform
+   demisto-sdk upload -i <pack> -z -mp platform [--insecure]
    ```
-3. **Target integration installed** — for Salesforce IAM:
-   ```bash
-   demisto-sdk upload -i Packs/Salesforce -z -mp platform
-   ```
-4. **Target connector deployed to UCP** — use [`deploy.py`](deploy.py) (GitLab CI/CD path).
+   * For a tenant with a self-signed cert in the chain, enable `--insecure` by setting `DEMISTO_VERIFY_SSL=false` (or `UPLOAD_INSECURE=true`) in your `.env` — `deploy_and_test.py` then passes `--upload-insecure` through.
+   * To skip the upload (packs already current on the tenant), pass `deploy.py --skip-pack-upload`.
+   * Running `deploy.py` standalone uploads nothing unless you pass `--upload-pack <dir>` yourself (e.g. `--upload-pack Packs/Base --upload-pack Packs/Salesforce`).
+3. **Target connector deployed to UCP** — use [`deploy.py`](deploy.py) (GitLab CI/CD path).
 5. **GKE access for UCP-side capture**:
    * `gcloud` CLI authenticated (`gcloud auth login`).
    * `kubectl` on `PATH`.
@@ -197,12 +196,13 @@ The wrapper performs the whole indivisible critical section inside a
 `try/finally` (the lock is ALWAYS released, even on crash):
 
 ```
-acquire tenant lock → deploy.py (commit connector + ff-push + pipeline) → check_param_parity.py → release
+acquire tenant lock → deploy.py (upload Base + integration packs → commit connector + ff-push + pipeline) → check_param_parity.py → release
 ```
 
 ### Deploy git model (safe by design)
 
 - **Branch guardrail (enforced in code).** The deploy refuses to commit or push to any branch that is not your personal `xsoar-migration-<name>` branch (regex `^xsoar-migration-[a-z0-9][a-z0-9-]*$`). This check is in `git_operations` itself — it holds even if preflight is skipped or `deploy.py` is run standalone, so a shared/protected branch (stable, dev, master, xsoar-playground) can never be touched.
+- Before any git op, deploy uploads the required content packs to the tenant (Step 0: patched `Packs/Base` + the integration's own pack, auto-derived by `deploy_and_test.py` from the integration id). This is a tenant content upload via `demisto-sdk`, NOT a git commit — it never touches your branch.
 - Deploy commits ONLY the connector dir being tested (`--commit-path connectors/<slug>`, auto-derived by `deploy_and_test.py` from the integration id) onto your personal `xsoar-migration-<name>` branch.
 - It NEVER runs `git reset --hard` and NEVER force-pushes — your local/remote history and any un-pushed migrated connectors are safe. The push is fast-forward-only; if rejected, you rebase (`git pull --rebase origin <branch>`) and re-run.
 - There is NO base branch / no `BASE_BRANCH`. You keep your branch current yourself via `git rebase origin/stable`.

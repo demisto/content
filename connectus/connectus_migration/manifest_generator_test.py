@@ -4438,8 +4438,8 @@ def test_log_collection_scenario_A_not_long_running_synthetic_eventFetchInterval
     assert efi["options"]["units"] == ["days", "hours", "minutes"]
     assert efi["options"]["default_value"] == {"minutes": 1}
     assert "is_number_input" not in efi["options"]
-    assert efi["options"]["create_modifiers"] == {"required": False, "hidden": False}
-    assert efi["options"]["edit_modifiers"] == {"required": False, "hidden": False}
+    assert efi["options"]["create_modifiers"] == {"hidden": False}
+    assert efi["options"]["edit_modifiers"] == {"hidden": False}
 
 
 def test_log_collection_scenario_A_yml_eventFetchInterval_with_defaultvalue_is_honored():
@@ -4864,8 +4864,8 @@ def test_assets_assetsFetchInterval_no_yml_synthetic_visible_with_fallback_720()
     assert afi["options"]["units"] == ["days", "hours", "minutes"]
     assert afi["options"]["default_value"] == {"hours": 12}
     assert "is_number_input" not in afi["options"]
-    assert afi["options"]["create_modifiers"] == {"required": False, "hidden": False}
-    assert afi["options"]["edit_modifiers"] == {"required": False, "hidden": False}
+    assert afi["options"]["create_modifiers"] == {"hidden": False}
+    assert afi["options"]["edit_modifiers"] == {"hidden": False}
 
 
 def test_assets_assetsFetchInterval_yml_with_defaultvalue_is_honored():
@@ -5397,7 +5397,7 @@ def test_add_indicators_capability_top_level_emits_6_fields_with_defaults():
     # The "20160" (2 weeks in minutes) default converts to {"days": 14}.
     fei = by_id["feedExpirationInterval"]
     assert fei["field_type"] == "duration"
-    assert fei["output_format"] == "minutes"
+    assert fei["options"]["output_format"] == "minutes"
     assert fei["options"]["units"] == ["days", "hours", "minutes"]
     assert "is_number_input" not in fei["options"]
     assert fei["options"]["default_value"] == {"days": 14}
@@ -5739,7 +5739,7 @@ def test_add_indicators_capability_feedexpirationinterval_yml_driven():
     )
     fei = {f["id"]: f for f in template["fields"]}["feedExpirationInterval"]
     assert fei["field_type"] == "duration"
-    assert fei["output_format"] == "minutes"
+    assert fei["options"]["output_format"] == "minutes"
     assert fei["options"]["units"] == ["days", "hours", "minutes"]
     assert fei["options"]["default_value"] == {"days": 1}
     assert fei["options"]["create_modifiers"]["hidden"] is True

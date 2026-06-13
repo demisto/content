@@ -54,6 +54,17 @@ def test_hard_ignore_always_dropped():
     assert reasons["integrationLogLevel"] == "hard_ignore_list"
 
 
+def test_ucp_credentials_dropped_never_extra_in_connector():
+    """The platform/UCP-injected encrypted auth container ``ucp_credentials``
+    (appears ONLY on the connector side, declared in no connector YAML) must be
+    dropped as a hard-ignore artifact so it is never flagged EXTRA_IN_CONNECTOR."""
+    raw = {"url": "x", "ucp_credentials": "{ENCRYPTED}abc123=="}
+    kept, dropped = normalize_for_diff(raw, _YML, side="connector")
+    assert "ucp_credentials" not in kept
+    reasons = {d["name"]: d["reason"] for d in dropped}
+    assert reasons["ucp_credentials"] == "hard_ignore_list"
+
+
 def test_force_drop_drops_extra_keys():
     raw = {"url": "x", "some_extra": "y"}
     kept, dropped = normalize_for_diff(raw, _YML, side="t", force_drop={"some_extra"})
@@ -154,5 +165,7 @@ def test_hard_ignore_list_membership():
         # connector-injected field that legitimately appears in demisto.params()
         # on the platform — must be dropped, never flagged EXTRA_IN_CONNECTOR.
         "instance_name",
+        # platform/UCP-injected encrypted auth container — same treatment.
+        "ucp_credentials",
     ]:
         assert name in HARD_IGNORE_PARAM_NAMES
