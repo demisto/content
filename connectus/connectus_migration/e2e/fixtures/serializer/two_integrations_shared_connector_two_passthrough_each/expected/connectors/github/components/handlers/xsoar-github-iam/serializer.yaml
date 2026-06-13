@@ -2,15 +2,31 @@
 field_mappings:
 - id: xsoar-github-iam_defaultIgnore
   field_name: defaultIgnore
-- id: github_iam_url
+- id: xsoar-github-iam_integrationLogLevel
+  field_name: integrationLogLevel
+- id: passthrough.github_iam_passthrough_secondary_url
   field_name: url
-- id: github_iam_proxy
+- id: passthrough.github_iam_passthrough_secondary_proxy
   field_name: proxy
-- id: github_iam_insecure
+- id: passthrough.github_iam_passthrough_secondary_insecure
   field_name: insecure
-- id: github_iam_engine_mode
+- id: passthrough.github_iam_passthrough_secondary_engine_mode
   field_name: engine_mode
-- id: github_iam_engine
+- id: passthrough.github_iam_passthrough_secondary_engine
   field_name: engine
-- id: github_iam_engine_group
+- id: passthrough.github_iam_passthrough_secondary_engine_group
+  field_name: engineGroup
+- id: xsoar-github-iam_defaultIgnore
+  field_name: defaultIgnore
+- id: passthrough.github_iam_url
+  field_name: url
+- id: passthrough.github_iam_proxy
+  field_name: proxy
+- id: passthrough.github_iam_insecure
+  field_name: insecure
+- id: passthrough.github_iam_engine_mode
+  field_name: engine_mode
+- id: passthrough.github_iam_engine
+  field_name: engine
+- id: passthrough.github_iam_engine_group
   field_name: engineGroup

@@ -347,7 +347,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: credentials_password
+    - id: passthrough.github_iam_credentials_password
       title: Username / Password
       field_type: input
       metadata:
@@ -362,7 +362,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: url
+    - id: passthrough.github_iam_url
       field_type: input
       title: Server URL
       options:
@@ -377,7 +377,7 @@ profiles:
         event:
           publish: true
   - fields:
-    - id: proxy
+    - id: passthrough.github_iam_proxy
       title: Use system proxy settings
       field_type: checkbox
       metadata:
@@ -395,7 +395,7 @@ profiles:
           hidden: false
           read_only: true
   - fields:
-    - id: insecure
+    - id: passthrough.github_iam_insecure
       title: Trust any certificate (not secure)
       field_type: checkbox
       metadata:
@@ -413,7 +413,7 @@ profiles:
           hidden: false
           read_only: false
   - fields:
-    - id: engine_mode
+    - id: passthrough.github_iam_engine_mode
       title: Engine
       field_type: select
       options:
@@ -433,7 +433,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: engine
+    - id: passthrough.github_iam_engine
       title: Engine
       field_type: select
       metadata:
@@ -459,7 +459,7 @@ profiles:
           required: false
           hidden: false
   - fields:
-    - id: engine_group
+    - id: passthrough.github_iam_engine_group
       title: Engine Group
       field_type: select
       metadata:
@@ -495,7 +495,7 @@ profiles:
       interpolation_mapping: access_token:token
   configurations:
   - fields:
-    - id: token
+    - id: passthrough.github_iam_passthrough_secondary_token
       title: API Token
       field_type: input
       metadata:
@@ -510,7 +510,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_iam_url
+    - id: passthrough.github_iam_passthrough_secondary_url
       field_type: input
       title: Server URL
       options:
@@ -525,7 +525,7 @@ profiles:
         event:
           publish: true
   - fields:
-    - id: github_iam_proxy
+    - id: passthrough.github_iam_passthrough_secondary_proxy
       title: Use system proxy settings
       field_type: checkbox
       metadata:
@@ -543,7 +543,7 @@ profiles:
           hidden: false
           read_only: true
   - fields:
-    - id: github_iam_insecure
+    - id: passthrough.github_iam_passthrough_secondary_insecure
       title: Trust any certificate (not secure)
       field_type: checkbox
       metadata:
@@ -561,7 +561,7 @@ profiles:
           hidden: false
           read_only: false
   - fields:
-    - id: github_iam_engine_mode
+    - id: passthrough.github_iam_passthrough_secondary_engine_mode
       title: Engine
       field_type: select
       options:
@@ -581,7 +581,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_iam_engine
+    - id: passthrough.github_iam_passthrough_secondary_engine
       title: Engine
       field_type: select
       metadata:
@@ -607,7 +607,7 @@ profiles:
           required: false
           hidden: false
   - fields:
-    - id: github_iam_engine_group
+    - id: passthrough.github_iam_passthrough_secondary_engine_group
       title: Engine Group
       field_type: select
       metadata:
