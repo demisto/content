@@ -78,6 +78,7 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
+  view_group: github
 - id: automation-and-remediation_github-iam
   configurations:
   - fields:
@@ -95,3 +96,4 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
+  view_group: github-iam
