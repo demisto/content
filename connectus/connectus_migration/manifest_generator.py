@@ -2683,12 +2683,12 @@ def _build_numeric_fetch_interval_field(
             "id": field_id,
             "title": title,
             "field_type": "duration",
-            "output_format": "minutes",
             "options": {
                 "units": list(DURATION_UNITS),
+                "output_format": "minutes",
                 "default_value": default_value,
-                "create_modifiers": {"required": False, "hidden": False},
-                "edit_modifiers": {"required": False, "hidden": False},
+                "create_modifiers": {"hidden": False},
+                "edit_modifiers": {"hidden": False},
             },
         }
 
@@ -3368,9 +3368,9 @@ def _build_feedexpirationinterval_field(
     return {
         "id": field_id,
         "field_type": "duration",
-        "output_format": "minutes",
         "options": {
             "units": list(DURATION_UNITS),
+            "output_format": "minutes",
             "default_value": default_value,
             "create_modifiers": {"hidden": True},
             "edit_modifiers": {"hidden": True},
@@ -5674,7 +5674,7 @@ def _map_type_19(yml_param: dict) -> dict:
 
     options = field.setdefault("options", {})
     options["units"] = list(DURATION_UNITS)
-    field["output_format"] = "minutes"
+    options["output_format"] = "minutes"
 
     # Convert the raw minutes default (set as a string by
     # _apply_common_field_metadata) into a per-unit object. When absent or
@@ -6387,16 +6387,17 @@ def _engine_common_metadata(
 
 
 def build_engine_mode_field(field_id: str, *, single_engine: bool) -> dict:
-    """Static ``engine_mode`` select (2-option for Appendix H, else 3-option)."""
+    """Static ``engine_mode`` horizontal radio (2-option for Appendix H, else 3-option)."""
     values = (
         _ENGINE_MODE_VALUES_SINGLE if single_engine else _ENGINE_MODE_VALUES_FULL
     )
     return {
         "id": field_id,
         "title": "Engine",
-        "field_type": "select",
+        "field_type": "radio",
         "options": {
             "mask": False,
+            "orientation": "horizontal",
             "default_value": "no_engine",
             "values": [dict(v) for v in values],
             "create_modifiers": {"required": True, "hidden": False},

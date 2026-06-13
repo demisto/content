@@ -569,6 +569,17 @@ def _dummy_auth_value(field_id: str) -> str:
     return f"dummy_{field_id}"
 
 
+def _dummy_config_value(field_id: str) -> str:
+    """A guaranteed-non-empty dummy for a connector CONFIG field that has NO
+    matching integration-YML param (an orphan / undeclared-rename field).
+
+    Setting it (rather than omitting it) makes the orphan field present at
+    runtime on the CONNECTOR side only, so the diff correctly reports it as
+    EXTRA_IN_CONNECTOR instead of silently hiding it. The distinct prefix makes
+    the value recognizable in the persisted creation payload during triage."""
+    return f"dummy_config_{field_id}"
+
+
 def _dig(source, dotted_path):
     # type: (Any, str) -> Any
     """Walk a dotted path into nested dicts; return None if any segment is
@@ -679,39 +690,106 @@ def _build_instance_payload(
         enabled_cap_ids.extend(sub_ids)
 
     # ── 2. Configuration scope = union over all enabled (sub-)capabilities ──
-    config_step = creation_view["steps"][2]
+    #
+    # SOURCE OF TRUTH = the CONNECTOR MANIFEST (configurations.yaml), NOT the
+    # live `GET /creation` view. The resolver already parsed every config field
+    # id declared for each enabled (sub-)capability into
+    # ``CapabilitySpec.config_field_ids`` (scoped to BOTH parent and sub ids).
+    # The connector field ids it yields are exactly the keys the configuration
+    # block must carry — and they already account for serializer field_mappings
+    # because ``instance_values`` is pre-keyed by connector field id upstream
+    # (see check_param_parity._build connector_instance_values).
+    #
+    # We previously derived ``accepted_field_ids`` from
+    # ``creation_view["steps"][2].sections``; that made the configuration block
+    # collapse to ``{}`` whenever the live creation view's step shape didn't
+    # match (e.g. capability-gated fields not yet deployed on the tenant, a
+    # different section-key shape, or step-index drift) — silently dropping every
+    # behavioral param. The manifest is the authoritative declaration of what the
+    # connector accepts, so we trust it and use the creation view only as a
+    # logged cross-check below.
     configuration: dict[str, Any] = {}
     accepted_field_ids: set[str] = set()
-    scope = set(enabled_cap_ids)
-    for section in config_step.get("sections", []):
-        if section.get("capability_id") not in scope:
-            continue
-        for row in section.get("data", []):
-            for field in row.get("fields", []):
-                field_id = field.get("id")
-                if not field_id:
-                    continue
-                accepted_field_ids.add(field_id)
-                # NOTE: we intentionally DO NOT seed connector default_values —
-                # the bidirectional-push contract forbids defaults so a silently
-                # dropped param can't false-pass via server default re-injection.
+    for cap in capabilities:
+        accepted_field_ids.update(getattr(cap, "config_field_ids", None) or set())
 
-    # ── 4. Bidirectional dummy push (never defaults) ──
-    applied = 0
-    skipped: list[str] = []
-    for k, v in (instance_values or {}).items():
-        if k in accepted_field_ids:
-            configuration[k] = v
-            applied += 1
+    # Logged cross-check (non-fatal): compare the manifest-declared field ids to
+    # what the live creation view exposes for the enabled (sub-)capabilities, so
+    # UCP-side schema drift is visible without zeroing the configuration block.
+    try:
+        config_step = creation_view["steps"][2]
+        scope = set(enabled_cap_ids)
+        creation_view_field_ids: set[str] = set()
+        for section in config_step.get("sections", []) or []:
+            if section.get("capability_id") not in scope:
+                continue
+            for row in section.get("data", []) or []:
+                for field in row.get("fields", []) or []:
+                    fid = field.get("id")
+                    if fid:
+                        creation_view_field_ids.add(fid)
+        only_in_manifest = accepted_field_ids - creation_view_field_ids
+        only_in_creation_view = creation_view_field_ids - accepted_field_ids
+        if only_in_manifest:
+            log.warning(
+                "Config fields declared in the connector manifest but ABSENT from "
+                "the live creation view (kept anyway — likely not-yet-deployed / "
+                "capability-gated on this tenant): %s",
+                ", ".join(sorted(only_in_manifest)),
+            )
+        if only_in_creation_view:
+            log.info(
+                "Config fields present in the live creation view but NOT declared "
+                "in the connector manifest (ignored — manifest is authoritative): %s",
+                ", ".join(sorted(only_in_creation_view)),
+            )
+    except Exception as e:  # pragma: no cover - cross-check must never break the build
+        log.debug("Creation-view config cross-check skipped: %s", e)
+
+    # ── 4. Bidirectional push — SET EVERY manifest-declared config field ──
+    #
+    # CONTRACT (USER-CONFIRMED): every field the connector declares (here, the
+    # per-(sub-)capability ``configurations.yaml`` fields) MUST be set in the
+    # creation payload so it is present at runtime and participates in the diff.
+    # Two cases per connector field id:
+    #
+    #   (a) It has a matching integration-YML param — ``instance_values`` carries
+    #       a value under that connector field id (the upstream
+    #       ``connector_instance_values`` builder already keyed serializer-renamed
+    #       and identity fields by CONNECTOR field id). Set the SAME value the
+    #       integration side uses → parity OK.
+    #
+    #   (b) It has NO integration-YML match (an orphan connector field, e.g. one
+    #       whose rename is not declared in the serializer ``field_mappings``).
+    #       Set a DUMMY value so the field shows up at runtime ONLY on the
+    #       connector side → correctly fails as EXTRA_IN_CONNECTOR, surfacing the
+    #       orphan/undeclared-rename instead of hiding it.
+    #
+    # The bidirectional-push contract forbids seeding connector default_values, so
+    # a silently dropped param can't false-pass via server default re-injection.
+    matched: list[str] = []
+    orphan: list[str] = []
+    for fid in sorted(accepted_field_ids):
+        if fid in (instance_values or {}):
+            configuration[fid] = instance_values[fid]
+            matched.append(fid)
         else:
-            skipped.append(k)
+            configuration[fid] = _dummy_config_value(fid)
+            orphan.append(fid)
+
+    # instance_values keys that are NOT connector config fields (e.g. auth/profile
+    # params, connection-general fields) are handled by other blocks; log them.
+    non_config = [k for k in (instance_values or {}) if k not in accepted_field_ids]
     log.info(
-        "Applied %d/%d instance_values to UCP configuration "
-        "(skipped %d non-connector-declared fields: %s)",
-        applied,
-        len(instance_values or {}),
-        len(skipped),
-        ", ".join(sorted(skipped)) if skipped else "<none>",
+        "UCP configuration: %d manifest-declared fields set "
+        "(%d matched an integration param, %d orphan→dummy→EXTRA_IN_CONNECTOR: %s). "
+        "%d instance_values not config fields (handled elsewhere: %s).",
+        len(accepted_field_ids),
+        len(matched),
+        len(orphan),
+        ", ".join(orphan) if orphan else "<none>",
+        len(non_config),
+        ", ".join(sorted(non_config)) if non_config else "<none>",
     )
 
     # ── 3. Per-profile auth, interpolation-aware ──

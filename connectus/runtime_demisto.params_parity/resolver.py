@@ -122,6 +122,12 @@ HARD_IGNORE_PARAMS: frozenset[str] = frozenset(
         # legitimately appears in demisto.params() on the platform; must be
         # IGNORED, never flagged EXTRA_IN_CONNECTOR.
         "instance_name",
+        # Platform/UCP-injected ENCRYPTED auth container for an interpolated
+        # profile's credentials (username/password packed into one blob at
+        # runtime). Not declared in any connector YAML and not sent by the parity
+        # tool — it appears ONLY on the connector side in demisto.params(); must
+        # be IGNORED, never flagged EXTRA_IN_CONNECTOR.
+        "ucp_credentials",
     }
 )
 
