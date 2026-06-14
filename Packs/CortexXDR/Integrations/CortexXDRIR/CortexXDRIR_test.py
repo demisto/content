@@ -3018,7 +3018,7 @@ def test_automation_playbook_delete_command(mocker, field, value):
 
 
 @pytest.mark.parametrize(
-    "args, expected_filters, expected_sort",
+    "args, expected_filters, expected_sort, expected_search_from, expected_search_to",
     [
         (
             {"case_id": "100", "status": "new"},
@@ -3027,27 +3027,51 @@ def test_automation_playbook_delete_command(mocker, field, value):
                 {"field": "status_progress", "operator": "in", "value": ["new"]},
             ],
             {},
+            # automatic pagination: no page/page_size -> window [0, default limit=50)
+            0,
+            50,
         ),
         (
             {"severity": "high", "sort_field": "creation_time", "sort_order": "asc"},
             [{"field": "severity", "operator": "in", "value": ["high"]}],
             {"field": "creation_time", "keyword": "asc"},
+            0,
+            50,
         ),
         (
             {"case_domain": "example.com", "limit": "10"},
             [{"field": "case_domain", "operator": "in", "value": ["example.com"]}],
             {},
+            # automatic pagination driven by limit -> window [0, 10)
+            0,
+            10,
+        ),
+        (
+            # manual pagination with page + page_size -> limit is ignored
+            {"case_domain": "example.com", "limit": "10", "page": "2", "page_size": "5"},
+            [{"field": "case_domain", "operator": "in", "value": ["example.com"]}],
+            {},
+            10,
+            15,
+        ),
+        (
+            # manual pagination with only page -> page_size falls back to limit (default 50)
+            {"case_domain": "example.com", "page": "1"},
+            [{"field": "case_domain", "operator": "in", "value": ["example.com"]}],
+            {},
+            50,
+            100,
         ),
     ],
 )
-def test_case_list_command(args, expected_filters, expected_sort):
+def test_case_list_command(args, expected_filters, expected_sort, expected_search_from, expected_search_to):
     """
     Given:
         - args for case list command
     When:
         - Running case_list_command
     Then:
-        - Verify the client.search_cases is called with correct arguments
+        - Verify the client.search_cases is called with correct filters, sort and pagination window
     """
     from CortexXDRIR import Client, case_list_command
 
@@ -3058,6 +3082,42 @@ def test_case_list_command(args, expected_filters, expected_sort):
         call_args = mock_search.call_args[0][0]
         assert call_args["request_data"]["filters"] == expected_filters
         assert call_args["request_data"]["sort"] == expected_sort
+        assert call_args["request_data"]["search_from"] == expected_search_from
+        assert call_args["request_data"]["search_to"] == expected_search_to
+
+
+@pytest.mark.parametrize(
+    "args, expected_search_from, expected_limit",
+    [
+        # automatic pagination: default limit=50, no page/page_size -> window [0, 50)
+        ({"extra_data": "true"}, 0, 50),
+        # automatic pagination driven by limit -> window [0, 10)
+        ({"extra_data": "true", "limit": "10"}, 0, 10),
+        # manual pagination with page + page_size -> limit ignored, window [10, 20)
+        ({"extra_data": "true", "limit": "10", "page": "2", "page_size": "5"}, 10, 20),
+    ],
+    ids=["auto-default", "auto-limit", "manual-paged"],
+)
+def test_case_list_command_extra_data_pagination(mocker, args, expected_search_from, expected_limit):
+    """
+    Given:
+        - args for case list command with extra_data=true
+    When:
+        - Running case_list_command (extra data path)
+    Then:
+        - Verify client.get_multiple_incidents_extra_data is called with a paging window
+          that respects manual ('page'/'page_size') vs automatic ('limit') pagination
+    """
+    from CortexXDRIR import Client, case_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_extra_data = mocker.patch.object(Client, "get_multiple_incidents_extra_data", return_value=[])
+
+    case_list_command(client, args)
+
+    call_kwargs = mock_extra_data.call_args.kwargs
+    assert call_kwargs["search_from"] == expected_search_from
+    assert call_kwargs["limit"] == expected_limit
 
 
 @pytest.mark.parametrize(
