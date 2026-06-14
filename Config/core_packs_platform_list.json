@@ -96,9 +96,14 @@
         {
             "id": "CoreAlertFields",
             "supportedModules": [
+                "exposure_management",
+                "cloud",
+                "cloud_runtime_security",
                 "agentix",
+                "cloud_posture",
                 "xsiam",
-                "edr"
+                "edr",
+                "agentix_xsiam"
             ]
         },
         {
