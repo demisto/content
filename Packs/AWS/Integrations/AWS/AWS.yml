@@ -18145,6 +18145,540 @@ script:
         description: A comma-separated list of tag keys to remove from the resource.
         required: true
         isArray: true
+  - name: aws-network-firewall-firewall-describe
+    description: "Returns the data objects for the specified firewall. Required permissions: network-firewall:DescribeFirewall."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: firewall_name
+      description: The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided.
+    - name: firewall_arn
+      description: The Amazon Resource Name (ARN) of the firewall. Required if the firewall name is not specified, though both can be provided.
+    outputs:
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
+      description: The descriptive name of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
+      description: The Amazon Resource Name (ARN) of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyArn
+      description: The Amazon Resource Name (ARN) of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.VpcId
+      description: The unique identifier of the VPC where the firewall is in use.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.Description
+      description: The description of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallId
+      description: The unique identifier for the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
+      description: An optional token used for optimistic locking to track the state of the firewall resource at the time of the request.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId
+      description: The unique identifier for the subnet.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.IPAddressType
+      description: The subnet's IP address type.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
+      description: Whether it is possible to delete the firewall.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewalls.SubnetChangeProtection
+      description: Whether the firewall is protected against changes to the subnet associations.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyChangeProtection
+      description: Whether the firewall is protected against a change to the firewall policy association.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewalls.Tags.Key
+      description: The key of the tag.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.Tags.Value
+      description: The value of the tag.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.EncryptionConfiguration.KeyId
+      description: The ID of the Amazon Web Services Key Management Service (KMS) customer managed key.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.EncryptionConfiguration.Type
+      description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.NumberOfAssociations
+      description: The number of associations.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.Firewalls.EnabledAnalysisTypes
+      description: The enabled analysis types.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayId
+      description: The unique identifier for the transit gateway.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayOwnerAccountId
+      description: The account ID of the transit gateway owner.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneMappings.AvailabilityZone
+      description: The Availability Zone.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneChangeProtection
+      description: Whether the firewall is protected against changes to the Availability Zone associations.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.Status
+      description: The readiness status of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.ConfigurationSyncStateSummary
+      description: The configuration sync state for the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.SyncStates
+      description: The status for the subnets configured in the firewall.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.CapacityUsageSummary
+      description: The capacity usage of the resources contained in a firewall’s reference sets.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.TransitGatewayAttachmentSyncState
+      description: The synchronization state of the transit gateway attachment. Indicates whether the firewall’s transit gateway configuration is properly synchronized and operational.
+      type: Unknown
+  - name: aws-network-firewall-firewalls-list
+    description: "Retrieves the metadata for the firewalls that you have defined. Required permissions: network-firewall:ListFirewalls."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of objects that you want Network Firewall to return for this request.
+    - name: next_token
+      description: The NextToken value returned from a previous paginated ListFirewalls request. The next_token will be at AWS.NetworkFirewall.FirewallsNextToken.
+    - name: vpc_ids
+      description: A comma-separated list of unique identifiers of the VPCs that you want to retrieve the firewalls for.
+      isArray: true
+    outputs:
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
+      description: The descriptive name of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
+      description: The Amazon Resource Name (ARN) of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayAttachmentId
+      description: The unique identifier of the transit gateway attachment associated with this firewall. This field is only present for transit gateway-attached firewalls.
+      type: String
+    - contextPath: AWS.NetworkFirewall.FirewallsNextToken
+      description: The token used to request the next page of results when a limit is set. Provided in the response of a previous request when the number of remaining objects exceeds the maximum limit specified.
+      type: String
+
+  - name: aws-network-firewall-firewall-create
+    description: "Creates an AWS Network Firewall firewall for your VPC. Required permissions: network-firewall:CreateFirewall, network-firewall:TagResource, ec2:DescribeSubnets, ec2:DescribeVpcs, network-firewall:DescribeFirewallPolicy."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: firewall_name
+      required: true
+      description: The descriptive name of the firewall.
+    - name: firewall_policy_arn
+      required: true
+      description: The Amazon Resource Name (ARN) of the FirewallPolicy that you want to use for the firewall.
+    - name: vpc_id
+      description: The unique identifier of the VPC where Network Firewall should create the firewall.
+    - name: subnet_mappings
+      description: 'A JSON string specifying the public subnets to use for your Network Firewall firewalls. [{\"SubnetId\": \"string\", \"IPAddressType\": \"DUALSTACK\"}]. The possible values for the IPAddressType are DUALSTACK, IPV4 ,IPV6.'
+    - name: delete_protection
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: Whether the firewall is protected against deletion. If "true", deletion protection is enabled, preventing accidental deletion. If "false", the firewall can be deleted. Default is "true".
+    - name: subnet_change_protection
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: Whether the firewall is protected against changes to the subnet associations. If "true", configuration changes to subnet associations are blocked to prevent accidental modifications. If "false", subnet associations can be modified. Default is "true".
+    - name: firewall_policy_change_protection
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: Whether the firewall is protected against changes to the firewall policy association. If "true", changes to the firewall policy association are blocked to prevent accidental modifications. If "false", the firewall policy association can be modified. Default is "true".
+    - name: description
+      description: A description of the firewall.
+    - name: tags
+      description: 'The key:value pairs to associate with the resource. For example: key=abc,value=123;key=fed,value=456.'
+    - name: encryption_config_id
+      description: The ID of the Amazon Web Services Key Management Service (KMS) customer managed key.
+    - name: encryption_config_type
+      description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
+      auto: PREDEFINED
+      predefined:
+        - CUSTOMER_KMS
+        - AWS_OWNED_KMS_KEY
+    - name: enabled_analysis_types
+      description: "A comma-separated list of the enabled analysis types to enable on the firewall. Valid Values: TLS_SNI | HTTP_HOST."
+      isArray: true
+    - name: transit_gateway_id
+      description: The unique identifier for the transit gateway. Required when creating a transit gateway-attached firewall. After creating the firewall, you cannot change the transit gateway association. To use a different transit gateway, you must create a new firewall.
+    - name: availability_zone_mappings
+      description: A comma-separated list of Availability Zones where you want to create firewall endpoints for a transit gateway-attached firewall.
+      isArray: true
+    - name: availability_zone_change_protection
+      description: Whether the firewall is protected against changes to its Availability Zone configuration.
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+    outputs:
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
+      description: The descriptive name of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
+      description: The Amazon Resource Name (ARN) of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyArn
+      description: The Amazon Resource Name (ARN) of the firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.VpcId
+      description: The unique identifier of the VPC where the firewall is in use.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId
+      description: The unique identifier for the subnet.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.SubnetMappings.IPAddressType
+      description: The subnet's IP address type.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.DeleteProtection
+      description: Whether it is possible to delete the firewall.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewalls.SubnetChangeProtection
+      description: Whether it is possible to change the associated subnet(s).
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyChangeProtection
+      description: Whether it is possible to change the associated firewall policy.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewalls.Description
+      description: The description of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallId
+      description: The unique identifier for the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.Tags.Key
+      description: The key of the tag.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.Tags.Value
+      description: The value of the tag.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.EncryptionConfiguration.KeyId
+      description: The ID of the Amazon Web Services Key Management Service (KMS) customer managed key.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.EncryptionConfiguration.Type
+      description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.NumberOfAssociations
+      description: The number of VpcEndpointAssociation resources that use this firewall.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.Firewalls.EnabledAnalysisTypes
+      description: The enabled analysis types.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayId
+      description: The unique identifier of the transit gateway associated with this firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.TransitGatewayOwnerAccountId
+      description: The Amazon Web Services account ID that owns the transit gateway.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneMappings.AvailabilityZone
+      description: The ID of the Availability Zone where the firewall endpoint is located.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.AvailabilityZoneChangeProtection
+      description: Whether the firewall is protected against changes to its Availability Zone configuration.
+      type: Boolean
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.Status
+      description: The readiness status of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.ConfigurationSyncStateSummary
+      description: The configuration sync state for the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.SyncStates
+      description: The status for the subnets configured in the firewall.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.CapacityUsageSummary
+      description: The capacity usage of the resources contained in a firewall’s reference sets.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallStatus.TransitGatewayAttachmentSyncState
+      description: The synchronization state of the transit gateway attachment. Indicates whether the firewall’s transit gateway configuration is properly synchronized and operational.
+      type: Unknown
+
+  - name: aws-network-firewall-firewall-delete
+    description: "Deletes the specified firewall and its status. Requires the firewall deletion protection flag to be 'false'. This operation is irreversible. Required permissions: network-firewall:DeleteFirewall."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: firewall_name
+      description: The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided.
+    - name: firewall_arn
+      description: The Amazon Resource Name (ARN) of the firewall. Required if the firewall name is not specified, though both can be provided.
+
+  - name: aws-network-firewall-firewall-delete-protection-update
+    description: "Modifies the flag, DeleteProtection, which indicates whether it is possible to delete the firewall. Requires permissions: network-firewall:UpdateFirewallDeleteProtection."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: update_token
+      description: An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
+    - name: firewall_name
+      description: The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided.
+    - name: firewall_arn
+      description: The Amazon Resource Name (ARN) of the firewall. Required if the firewall name is not specified, though both can be provided.
+    - name: delete_protection
+      description: Whether the firewall is protected against deletion. If "true", deletion protection is enabled, preventing accidental deletion. If "false", the firewall can be deleted. Default is "true".
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+
+  - name: aws-network-firewall-firewall-description-update
+    description: "Modifies the description for the specified firewall. Required permissions: network-firewall:UpdateFirewallDescription."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: update_token
+      description: An optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request.
+    - name: firewall_name
+      description: The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided.
+    - name: firewall_arn
+      description: The Amazon Resource Name (ARN) of the firewall. Required if the firewall name is not specified, though both can be provided.
+    - name: description
+      description: The new description for the firewall. If you omit this setting, Network Firewall removes the description for the firewall.
+      required: true
 
   isfetch: false
   runonce: false

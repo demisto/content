@@ -812,6 +812,18 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def validate_network_firewall_identifier(kwargs: dict):
+    """
+    Validates that at least one of the network firewall identifiers (FirewallName or FirewallArn) is provided and raises
+    a DemistoException otherwise.
+
+    Args:
+        kwargs (dict): The arguments dictionary containing the firewall identifiers.
+    """
+    if "FirewallName" not in kwargs and "FirewallArn" not in kwargs:
+        raise DemistoException("Please enter at least one of the arguments firewall_name or firewall_arn.")
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -984,6 +996,7 @@ class AWSServices(str, Enum):
     SSM = "ssm"
     Redshift = "redshift"
     CloudWatchLogs = "logs"
+    NetworkFirewall = "network-firewall"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -9723,6 +9736,276 @@ class CloudWatchLogs:
         )
 
 
+class NetworkFirewall:
+    service = AWSServices.NetworkFirewall
+
+    @staticmethod
+    def describe_firewall_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Returns the data objects for the specified firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn
+
+        Returns:
+            CommandResults: Formatted results with firewall information
+        """
+        kwargs = {"FirewallName": args.get("firewall_name"), "FirewallArn": args.get("firewall_arn")}
+        remove_nulls_from_dictionary(kwargs)
+        validate_network_firewall_identifier(kwargs)
+        print_debug_logs(client, f"Describing firewall with parameters: {kwargs.keys()}")
+        response = client.describe_firewall(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response_outputs = copy.deepcopy(response)
+        firewall = response_outputs.get("Firewall", {})
+        firewall["FirewallStatus"] = response_outputs.pop("FirewallStatus", {})
+        firewall["UpdateToken"] = response_outputs.pop("UpdateToken", None)
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=firewall,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall",
+                firewall,
+                headers=["FirewallName", "FirewallArn", "FirewallPolicyArn", "VpcId", "Description", "FirewallId"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def list_firewalls_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Retrieves the metadata for the firewalls that you have defined.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing:
+                - limit: The maximum number of objects that you want Network Firewall to return for this request.
+                - next_token: When you request a list of objects with a MaxResults setting, if the number of objects that are
+                    still available for retrieval exceeds the maximum you requested, Network Firewall returns a NextToken value
+                    in the response.
+                - vpc_ids: The unique identifiers of the VPCs that you want to retrieve the firewalls for.
+
+        Returns:
+            CommandResults: Formatted results with firewalls information
+        """
+        kwargs = {"VpcIds": argToList(args.get("vpc_ids"))}
+        kwargs.update(build_pagination_kwargs(args, next_token_name="NextToken", limit_name="MaxResults", max_limit=100))
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Listing firewalls with parameters: {kwargs.keys()}")
+        response = client.list_firewalls(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        firewalls = response.get("Firewalls", [])
+
+        outputs = {
+            "AWS.NetworkFirewall.Firewalls(val.FirewallArn == obj.FirewallArn)": firewalls,
+            "AWS.NetworkFirewall(true)": {"FirewallsNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewalls",
+                firewalls,
+                headers=["FirewallName", "FirewallArn"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def create_firewall_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Creates an AWS Network Firewall firewall for your VPC.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): The Command arguments.
+
+        Returns:
+            CommandResults: Formatted results with firewall information
+        """
+        vpc_id = args.get("vpc_id")
+        subnet_mappings_raw = args.get("subnet_mappings")
+        transit_gateway_id = args.get("transit_gateway_id")
+        availability_zone_mappings = args.get("availability_zone_mappings")
+
+        if vpc_id and transit_gateway_id:
+            raise ValueError(
+                "You must provide exactly one of the following pairs 'vpc_id' and 'subnet_mappings' or 'transit_gateway_id' "
+                "and 'availability_zone_mappings'."
+            )
+        if not vpc_id and not transit_gateway_id:
+            raise ValueError(
+                "You must provide exactly one of the following pairs 'vpc_id' and 'subnet_mappings' or 'transit_gateway_id' "
+                "and 'availability_zone_mappings'."
+            )
+        if vpc_id and not subnet_mappings_raw:
+            raise ValueError("The argument 'subnet_mappings' is required when 'vpc_id' is provided.")
+        if transit_gateway_id and not availability_zone_mappings:
+            raise ValueError("The argument 'availability_zone_mappings' is required when 'transit_gateway_id' is provided.")
+
+        subnet_mappings = None
+        if subnet_mappings_raw:
+            try:
+                subnet_mappings = json.loads(subnet_mappings_raw)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"subnet_mappings must be a valid JSON string: {e}") from e
+
+        kwargs = remove_empty_elements(
+            {
+                "FirewallName": args.get("firewall_name"),
+                "FirewallPolicyArn": args.get("firewall_policy_arn"),
+                "VpcId": vpc_id,
+                "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection")),
+                "SubnetChangeProtection": arg_to_bool_or_none(args.get("subnet_change_protection")),
+                "FirewallPolicyChangeProtection": arg_to_bool_or_none(args.get("firewall_policy_change_protection")),
+                "Description": args.get("description"),
+                "SubnetMappings": subnet_mappings,
+                "Tags": parse_tag_field(args.get("tags", "")),
+                "EncryptionConfiguration": {
+                    "KeyId": args.get("encryption_config_id"),
+                    "Type": args.get("encryption_config_type"),
+                },
+                "EnabledAnalysisTypes": argToList(args.get("enabled_analysis_types")),
+                "TransitGatewayId": transit_gateway_id,
+                "AvailabilityZoneMappings": [
+                    {"AvailabilityZone": az} for az in argToList(args.get("availability_zone_mappings"))
+                ],
+                "AvailabilityZoneChangeProtection": arg_to_bool_or_none(args.get("availability_zone_change_protection")),
+            }
+        )
+
+        print_debug_logs(client, f"Creating firewall with parameters: {kwargs.keys()}")
+        response = client.create_firewall(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response_outputs = copy.deepcopy(response)
+        firewall = response_outputs.get("Firewall", {})
+        firewall["FirewallStatus"] = response_outputs.pop("FirewallStatus", {})
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=firewall,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall",
+                firewall,
+                headers=["FirewallName", "FirewallArn", "FirewallPolicyArn", "VpcId", "Description", "FirewallId"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def delete_firewall_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Deletes the specified firewall and its firewall policy.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn
+
+        Returns:
+            CommandResults: Formatted results with firewall information
+        """
+        kwargs = {
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        validate_network_firewall_identifier(kwargs)
+        print_debug_logs(client, f"Deleting firewall with parameters: {kwargs.keys()}")
+        response = client.delete_firewall(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"The command was executed successfully. The current firewall status is "
+            f"{response.get('FirewallStatus', {}).get('Status')}.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def update_firewall_delete_protection_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Modifies the flag, DeleteProtection, which indicates whether it is possible to delete the firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, and delete_protection
+
+        Returns:
+            CommandResults: Formatted results with firewall information
+        """
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection")),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        validate_network_firewall_identifier(kwargs)
+
+        print_debug_logs(client, f"Updating firewall delete protection with parameters: {kwargs.keys()}")
+        response = client.update_firewall_delete_protection(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output="The delete protection flag of the firewall was updated successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def update_firewall_description_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Modifies the description for the specified firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, and description
+
+        Returns:
+            CommandResults: Formatted results with firewall information
+        """
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "Description": args.get("description"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        validate_network_firewall_identifier(kwargs)
+
+        print_debug_logs(client, f"Updating firewall description with parameters: {kwargs.keys()}")
+        response = client.update_firewall_description(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output="The firewall description was updated successfully.",
+            raw_response=response,
+        )
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -9930,6 +10213,12 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-logs-metric-filter-put": CloudWatchLogs.metric_filter_put_command,
     "aws-logs-metric-filter-delete": CloudWatchLogs.metric_filter_delete_command,
     "aws-logs-metric-filters-describe": CloudWatchLogs.metric_filters_describe_command,
+    "aws-network-firewall-firewall-describe": NetworkFirewall.describe_firewall_command,
+    "aws-network-firewall-firewalls-list": NetworkFirewall.list_firewalls_command,
+    "aws-network-firewall-firewall-create": NetworkFirewall.create_firewall_command,
+    "aws-network-firewall-firewall-delete": NetworkFirewall.delete_firewall_command,
+    "aws-network-firewall-firewall-delete-protection-update": NetworkFirewall.update_firewall_delete_protection_command,
+    "aws-network-firewall-firewall-description-update": NetworkFirewall.update_firewall_description_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10107,6 +10396,13 @@ REQUIRED_ACTIONS: list[str] = [
     "logs:DeleteMetricFilter",
     "logs:DescribeMetricFilters",
     "logs:TagResource",
+    "network-firewall:DescribeFirewall",
+    "network-firewall:ListFirewalls",
+    "network-firewall:CreateFirewall",
+    "network-firewall:DeleteFirewall",
+    "network-firewall:UpdateFirewallDeleteProtection",
+    "network-firewall:UpdateFirewallDescription",
+    "network-firewall:TagResource",
 ]
 
 COMMAND_SERVICE_MAP = {
@@ -10253,6 +10549,8 @@ def get_service_client(
     # Resolve service name
     if command in COMMAND_SERVICE_MAP:
         service_name = COMMAND_SERVICE_MAP[command]
+    elif "network-firewall" in command:
+        service_name = "network-firewall"
     service_name = service_name or command.split("-")[1]
     service = AWSServices(service_name)
 
