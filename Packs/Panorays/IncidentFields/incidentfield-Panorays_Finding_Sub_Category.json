@@ -5,6 +5,7 @@
     "id": "incident_panoraysfindingsubcategory",
     "name": "Panorays Finding Sub Category",
     "associatedTypes": ["Panorays Finding"],
+    "associatedToAll": false,
     "type": "shortText",
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.10.0"
 }

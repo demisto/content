@@ -5,6 +5,7 @@
     "id": "incident_panoraysfindingassetname",
     "name": "Panorays Finding Asset Name",
     "associatedTypes": ["Panorays Finding"],
+    "associatedToAll": false,
     "type": "shortText",
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.10.0"
 }

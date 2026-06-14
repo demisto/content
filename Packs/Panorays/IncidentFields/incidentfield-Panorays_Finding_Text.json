@@ -5,6 +5,7 @@
     "id": "incident_panoraysfindingfindingtext",
     "name": "Panorays Finding Text",
     "associatedTypes": ["Panorays Finding"],
+    "associatedToAll": false,
     "type": "longText",
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.10.0"
 }
