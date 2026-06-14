@@ -1,6 +1,7 @@
 """Unit tests for the IvantiHeat integration."""
 
 import pytest
+from CommonServerPython import DemistoException
 
 from IvantiHeat import Client, upload_attachment_command
 
@@ -37,6 +38,24 @@ class TestUploadAttachmentCommand:
         # Error must name the offending argument so users can act on it
         assert missing_arg in str(exc.value)
         # And the HTTP call must NOT have been made
+        http_spy.assert_not_called()
+
+    def test_wraps_get_file_failure_with_entry_id_context(self, mocker):
+        """``get_file`` failures must be re-raised with the offending entry-id."""
+        mocker.patch(
+            "IvantiHeat.get_file",
+            side_effect=ValueError("entry id not found"),
+        )
+        http_spy = mocker.patch.object(Client, "do_request")
+
+        with pytest.raises(DemistoException) as exc:
+            upload_attachment_command(_client(), dict(self.VALID_ARGS))
+
+        # The wrapped error must mention the offending entry-id and preserve the cause
+        assert self.VALID_ARGS["entry-id"] in str(exc.value)
+        assert "entry id not found" in str(exc.value)
+        assert isinstance(exc.value.__cause__, ValueError)
+        # No HTTP call must have been made because file resolution failed
         http_spy.assert_not_called()
 
     def test_uploads_when_all_required_args_are_present(self, mocker):
