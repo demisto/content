@@ -85,6 +85,13 @@ configuration:
   type: 0
   section: Collect
   additionalinfo: The maximum number of events to fetch in a single fetch cycle.
+- name: event_type
+  auto: PREDEFINED
+  predefined:
+  - "message_trace"
+  - "message"
+  description: event type to fetch
+  section: Collect
 - name: isFetchEvents
   display: Fetch Events
   required: false
