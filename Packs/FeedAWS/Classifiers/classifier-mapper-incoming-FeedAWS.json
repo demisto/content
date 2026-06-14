@@ -4,7 +4,7 @@
     "type": "mapping-incoming",
     "description": "Maps incoming AWS indicator fields.",
 	"defaultIncidentType": "",
-	"feed": true,
+	"feed": false,
 	"mapping": {
 		"CIDR": {
 			"dontMapEventToLabels": false,

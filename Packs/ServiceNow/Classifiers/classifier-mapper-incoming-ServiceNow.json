@@ -1,7 +1,7 @@
 {
     "defaultIncidentType": "ServiceNow Ticket",
     "description": "Maps incoming ServiceNow incidents fields.",
-    "feed": false,
+    "feed": true,
     "fromVersion": "6.0.0",
     "id": "ServiceNow-incoming-mapper",
     "mapping": {
