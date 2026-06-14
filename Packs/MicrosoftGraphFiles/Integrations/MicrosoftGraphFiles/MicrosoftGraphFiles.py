@@ -1698,6 +1698,7 @@ def assign_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]
 
 def main():
     params: dict = demisto.params()
+    print(params)
     args = demisto.args()
     command = demisto.command()
 

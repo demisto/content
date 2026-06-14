@@ -210,8 +210,161 @@ Azure Compute v2,Packs/AzureCompute/Integrations/AzureCompute_v2/AzureCompute_v2
   ],
   ""Automation"": []
 }",,,,,,,,
-Azure Firewall,Packs/AzureFirewall/Integrations/AzureFirewall/AzureFirewall.yml,Azure Firewall,,noydavidi,,,,,,,,,,,,,,
-Azure Kubernetes Services,Packs/AzureKubernetesServices/Integrations/AzureKubernetesServices/AzureKubernetesServices.yml,Azure Services,,noydavidi,,,,,,,,,,,,,,
+Azure Firewall,Packs/AzureFirewall/Integrations/AzureFirewall/AzureFirewall.yml,Azure Firewall,,noydavidi,"{
+  ""auth_types"": [
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""certificate"",
+      ""interpolated"": true,
+      ""xsoar_param_map"": {
+        ""tenant_id"": ""tenant_id"",
+        ""client_id"": ""client_id"",
+        ""certificate_thumbprint"": ""certificate_thumbprint"",
+        ""private_key"": ""private_key""
+      }
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""client_creds"",
+      ""interpolated"": true,
+      ""xsoar_param_map"": {
+        ""tenant_id"": ""tenant_id"",
+        ""client_id"": ""client_id"",
+        ""client_secret"": ""client_secret""
+      }
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""device_code"",
+      ""interpolated"": true,
+      ""verify_connection_skip"": true,
+      ""xsoar_param_map"": {
+        ""client_id"": ""client_id"",
+        ""tenant_id"": ""tenant_id""
+      }
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""managed_identity"",
+      ""interpolated"": true,
+      ""xsoar_param_map"": {
+        ""managed_identities_client_id.password"": ""managed_identities_client_id""
+      }
+    }
+  ],
+  ""other_connection"": [""insecure"", ""proxy""]
+}","[
+  ""Automation""
+]","{
+  ""integration"": ""Azure Firewall"",
+  ""commands"": {
+    ""test-module"": [],
+    ""azure-firewall-auth-test"": [],
+    ""azure-firewall-auth-start"": [],
+    ""azure-firewall-auth-complete"": [],
+    ""azure-firewall-auth-reset"": [],
+    ""azure-firewall-list"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-get"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-rule-collection-list"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-rule-list"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-rule-get"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-policy-create"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-policy-update"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-policy-get"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-policy-delete"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-policy-list"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-policy-attach"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-policy-detach"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-network-rule-collection-create"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-network-rule-collection-update"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-network-rule-collection-delete"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-network-rule-create"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-network-rule-update"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-network-rule-delete"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-ip-group-create"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-ip-group-update"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-ip-group-get"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-ip-group-delete"": [""resource_group"", ""subscription_id""],
+    ""azure-firewall-ip-group-list"": [""subscription_id""],
+    ""azure-firewall-service-tag-list"": [""subscription_id""],
+    ""azure-firewall-subscriptions-list"": [""subscription_id""],
+    ""azure-firewall-resource-group-list"": [""subscription_id""]
+  }
+}",{},✅,"{
+  ""general_configurations"": [],
+  ""Automation"": [
+    ""resource_group"",
+    ""subscription_id""
+  ]
+}",,,,,,,,
+Azure Kubernetes Services,Packs/AzureKubernetesServices/Integrations/AzureKubernetesServices/AzureKubernetesServices.yml,Azure Services,,noydavidi,"{
+  ""auth_types"": [
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""authorization_code"",
+      ""interpolated"": true,
+      ""verify_connection_skip"": true,
+      ""xsoar_param_map"": {
+        ""app_id"": ""client_id"",
+        ""tenant_id"": ""tenant_id"",
+        ""credentials.password"": ""client_secret"",
+        ""auth_code.password"": ""auth_code"",
+        ""redirect_uri"": ""redirect_uri""
+      }
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""client_credentials"",
+      ""interpolated"": true,
+      ""xsoar_param_map"": {
+        ""app_id"": ""client_id"",
+        ""tenant_id"": ""tenant_id"",
+        ""credentials.password"": ""client_secret""
+      }
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""device_code"",
+      ""interpolated"": true,
+      ""verify_connection_skip"": true,
+      ""xsoar_param_map"": {
+        ""app_id"": ""client_id"",
+        ""tenant_id"": ""tenant_id""
+      }
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""managed_identity"",
+      ""interpolated"": true,
+      ""xsoar_param_map"": {
+        ""managed_identities_client_id.password"": ""managed_identities_client_id""
+      }
+    }
+  ],
+  ""other_connection"": [""azure_ad_endpoint"", ""azure_cloud"", ""insecure"", ""proxy""]
+}","[
+  ""Automation""
+]","{
+  ""integration"": ""Azure Kubernetes Services"",
+  ""commands"": {
+    ""test-module"": [],
+    ""azure-ks-auth-test"": [],
+    ""azure-ks-auth-start"": [],
+    ""azure-ks-auth-complete"": [],
+    ""azure-ks-auth-reset"": [],
+    ""azure-ks-generate-login-url"": [],
+    ""azure-ks-clusters-list"": [""subscription_id""],
+    ""azure-ks-cluster-addon-update"": [""resource_group_name"", ""subscription_id""],
+    ""azure-ks-subscriptions-list"": [],
+    ""azure-ks-resource-group-list"": [""subscription_id""]
+  }
+}",{},✅,"{
+  ""general_configurations"": [],
+  ""Automation"": [
+    ""subscription_id"",
+    ""resource_group_name""
+  ]
+}",,,,,,,,
 Azure Log Analytics,Packs/AzureLogAnalytics/Integrations/AzureLogAnalytics/AzureLogAnalytics.yml,Azure Log Analytics,,noydavidi,,,,,,,,,,,,,,
 Azure Network Security Groups,Packs/AzureNetworkSecurityGroups/Integrations/AzureNetworkSecurityGroups/AzureNetworkSecurityGroups.yml,Azure Services,,noydavidi,,,,,,,,,,,,,,
 Azure Resource Graph,Packs/AzureResourceGraph/Integrations/AzureResourceGraph/AzureResourceGraph.yml,Azure Services,,noydavidi,,,,,,,,,,,,,,
