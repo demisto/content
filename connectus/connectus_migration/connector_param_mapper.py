@@ -943,9 +943,6 @@ def generate_param_mapping(
         elevated_out=elevated,
     )
 
-    with open(output_path, "w") as f:
-        json.dump(result, f, indent=2)
-
     logger.info(f"Param mapping written to {output_path}")
 
     # Surface the required test-module params that must be elevated to the
@@ -955,8 +952,6 @@ def generate_param_mapping(
     # the capability mapping survives because Params to Capabilities is
     # preserve_on_reset=true).
     elevated_path = output_path.with_suffix(output_path.suffix + ".elevated.json")
-    with open(elevated_path, "w") as f:
-        json.dump(elevated, f, indent=2)
     if elevated:
         logger.info(
             f"{len(elevated)} param(s) must be elevated to other_connection "
