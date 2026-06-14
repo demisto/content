@@ -23,7 +23,7 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 | 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id> --json` → **fail-and-ask if `pass:false`** → `markpass "handler param coverage"` | §9 |
 | 10 | Validate manifest | `demisto-sdk validate` → `markpass "run manifest make validate"` | §10 |
 | 11 | Release Notes | `set-release-notes "<id>"` (only if .py/.yml changed) | §11 |
-| 12 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` | §12 |
+| 12 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` (only if RN produced or .py/.yml changed; else `markpass` directly) | §12 |
 | 13 | Param parity | `markpass "param parity test passes"` | §13 |
 | 14 | Code reviewed | `markpass "code reviewed"` | §14 |
 | 15 | Code merged | `markpass "code merged"` | §15 |
@@ -1887,7 +1887,24 @@ cell shape and validator rules.
 
 ### Step 12: `precommit/validate/unit tests passed`
 
-Run pre-commit, validate, and unit tests via demisto-sdk pre-commit (Docker):
+**Trigger (same as Step 11).** Only run pre-commit / unit tests when the
+migration actually touched the integration's own source. Run them if EITHER:
+
+- a `Release Notes` file was produced for this integration (Step 11
+  required one — i.e. `Release Notes` cell has `"required": true`), OR
+- `git diff HEAD --name-only -- <integration>.py <integration>.yml`
+  is **non-empty** (the .py and/or .yml were modified).
+
+If NEITHER condition holds (no RN, and the .py/.yml were untouched), there
+is nothing for pre-commit/unit tests to verify — **skip the run** and pass
+the checkpoint directly:
+
+```bash
+python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
+```
+
+Otherwise (RN produced OR .py/.yml changed), run pre-commit, validate, and
+unit tests via demisto-sdk pre-commit (Docker):
 
 ```bash
 demisto-sdk pre-commit -i Packs/<PackName>/Integrations/<IntegrationName>/
