@@ -2108,9 +2108,9 @@ class TestPanoramaCommitCommand:
 
     EXPECTED_COMMIT_REQUEST_URL_PARAMS = {
         "action": "partial",
-        "cmd": "<commit><device-group><entry "
-        'name="some_device"/></device-group><description>a simple commit</description><partial><admin>'
-        "<member>some_admin_name</member></admin></partial></commit>",
+        "cmd": "<commit><description>a simple commit</description>"
+        "<partial><device-group><member>some_device</member></device-group>"
+        "<admin><member>some_admin_name</member></admin></partial></commit>",
         "key": "APIKEY",
         "type": "commit",
     }
@@ -2162,10 +2162,9 @@ class TestPanoramaCommitCommand:
                 },
                 {
                     "action": "partial",
-                    "cmd": "<commit><device-group><entry "
-                    'name="some_device"/></device-group><description>a simple commit</description>'
-                    "<partial><admin>"
-                    "<member>some_admin_name</member></admin></partial></commit>",
+                    "cmd": "<commit><description>a simple commit</description>"
+                    "<partial><device-group><member>some_device</member></device-group>"
+                    "<admin><member>some_admin_name</member></admin></partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2176,13 +2175,21 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "a simple commit", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "a simple commit",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device; admin=some_admin_name",
+                },
                 id="only admin changes commit",
             ),
             pytest.param(
                 {"device-group": "some_device", "force_commit": "true", "polling": "false"},
                 {
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group><force></force></commit>',
+                    "action": "partial",
+                    "cmd": "<commit><force></force>"
+                    "<partial><device-group><member>some_device</member></device-group></partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2193,16 +2200,23 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device",
+                },
                 id="force commit",
             ),
             pytest.param(
                 {"device-group": "some_device", "exclude_device_network_configuration": "true", "polling": "false"},
                 {
                     "action": "partial",
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group>'
-                    "<partial><device-and-network>excluded</"
-                    "device-and-network></partial></commit>",
+                    "cmd": "<commit><partial>"
+                    "<device-group><member>some_device</member></device-group>"
+                    "<device-and-network>excluded</device-and-network>"
+                    "</partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2213,16 +2227,23 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device; exclude_device_network_configuration=true",
+                },
                 id="device and network excluded",
             ),
             pytest.param(
                 {"device-group": "some_device", "exclude_shared_objects": "true", "polling": "false"},
                 {
                     "action": "partial",
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group>'
-                    "<partial><shared-object>excluded"
-                    "</shared-object></partial></commit>",
+                    "cmd": "<commit><partial>"
+                    "<device-group><member>some_device</member></device-group>"
+                    "<shared-object>excluded</shared-object>"
+                    "</partial></commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2233,13 +2254,20 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device; exclude_shared_objects=true",
+                },
                 id="exclude shared objects",
             ),
             pytest.param(
                 {"device-group": "some_device", "polling": "false"},
                 {
-                    "cmd": '<commit><device-group><entry name="some_device"/></device-group></commit>',
+                    "action": "partial",
+                    "cmd": "<commit>" "<partial><device-group><member>some_device</member></device-group></partial>" "</commit>",
                     "key": "thisisabogusAPIKEY!",
                     "type": "commit",
                 },
@@ -2250,7 +2278,13 @@ class TestPanoramaCommitCommand:
                     status_code=200,
                     reason="",
                 ),
-                {"Description": "", "JobID": "19420", "Status": "Pending"},
+                {
+                    "Description": "",
+                    "JobID": "19420",
+                    "Status": "Pending",
+                    "Scope": "Partial",
+                    "Details": "device-group=some_device",
+                },
                 id="no args",
             ),
         ],
@@ -2339,7 +2373,17 @@ class TestPanoramaCommitCommand:
         assert called_request_params == expected_commit_request_url_params  # check that the URL is sent as expected.
         assert command_result.readable_output == f'Waiting for commit "{description}" with job ID 123 to finish...'
 
-        polling_args = {"commit_job_id": "123", "description": description, "hide_polling_output": True, "polling": True}
+        polling_args = {
+            "commit_job_id": "123",
+            "description": description,
+            "hide_polling_output": True,
+            "polling": True,
+            "device-group": args.get("device-group"),
+            "admin_name": args.get("admin_name"),
+            "template": args.get("template"),
+            "exclude_device_network_configuration": args.get("exclude_device_network_configuration"),
+            "exclude_shared_objects": args.get("exclude_shared_objects"),
+        }
 
         command_result = panorama_commit_command(polling_args)
         while command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
@@ -2348,7 +2392,13 @@ class TestPanoramaCommitCommand:
             command_result = panorama_commit_command(polling_args)
 
         # last response of the command should be job status and the commit description
-        assert command_result.outputs == {"JobID": "123", "Description": description, "Status": "Success"}
+        assert command_result.outputs == {
+            "JobID": "123",
+            "Description": description,
+            "Status": "Success",
+            "Scope": "Partial",
+            "Details": "device-group=some_device; admin=some_admin_name",
+        }
 
 
 class TestPanoramaPushToDeviceGroupCommand:
