@@ -3909,6 +3909,12 @@ script:
     - contextPath: Panorama.Commit.Description
       description: The commit description from the the command input.
       type: String
+    - contextPath: Panorama.Commit.Scope
+      description: Whether the commit is partial.
+      type: String
+    - contextPath: Panorama.Commit.Details
+      description: The summary of the targeted device group and templates.
+      type: String
   - arguments:
     - default: true
       description: The device group to which to push (Panorama instances).

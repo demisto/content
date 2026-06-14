@@ -1215,6 +1215,36 @@ def panorama_commit(args):
     return result
 
 
+def _build_commit_scope_and_details(args: dict) -> tuple[str, str]:
+    """Compute Panorama.Commit.Scope ('Partial' / 'Full') and a human-readable Panorama.Commit.Details
+    summary string from the commit args.
+
+    The 'Partial' classification mirrors the same logic used by panorama_commit() when building
+    the <partial> XML element, so the context value always agrees with what was actually sent
+    on the wire.
+    """
+    parts: list[str] = []
+
+    if device_group := args.get("device-group"):
+        parts.append(f"device-group={device_group}")
+
+    if templates := argToList(args.get("template")):
+        parts.append(f"template={', '.join(templates)}")
+
+    if admin_name := args.get("admin_name"):
+        parts.append(f"admin={admin_name}")
+
+    if argToBoolean(args.get("exclude_device_network_configuration") or False):
+        parts.append("exclude_device_network_configuration=true")
+
+    if argToBoolean(args.get("exclude_shared_objects") or False):
+        parts.append("exclude_shared_objects=true")
+
+    if parts:
+        return "Partial", "; ".join(parts)
+    return "Full", "Full commit"
+
+
 @polling_function(
     name=demisto.command(),  # should fit to both pan-os-commit and panorama-commit (deprecated)
     interval=arg_to_number(demisto.args().get("interval_in_seconds", 10)),
@@ -1227,6 +1257,7 @@ def panorama_commit_command(args: dict):
     Supports polling as well.
     """
     commit_description = args.get("description", "")
+    commit_scope, commit_details = _build_commit_scope_and_details(args)
 
     if job_id := args.get("commit_job_id"):
         commit_status = panorama_commit_status({"job_id": job_id}).get("response", {}).get("result", {})
@@ -1235,6 +1266,8 @@ def panorama_commit_command(args: dict):
             "JobID": job_id,
             "Description": commit_description,
             "Status": "Success" if job_result == "OK" else "Failure",
+            "Scope": commit_scope,
+            "Details": commit_details,
         }
         return PollResult(
             response=CommandResults(  # this is what the response will be in case job has finished
@@ -1249,7 +1282,13 @@ def panorama_commit_command(args: dict):
         result = panorama_commit(args)
         job_id = result.get("response", {}).get("result", {}).get("job", "")
         if job_id:
-            context_output = {"JobID": job_id, "Description": commit_description, "Status": "Pending"}
+            context_output = {
+                "JobID": job_id,
+                "Description": commit_description,
+                "Status": "Pending",
+                "Scope": commit_scope,
+                "Details": commit_details,
+            }
             continue_to_poll = True
             commit_output = CommandResults(  # type: ignore[assignment]
                 outputs_prefix="Panorama.Commit",
@@ -1270,6 +1309,11 @@ def panorama_commit_command(args: dict):
                 "polling": argToBoolean(args.get("polling")),
                 "interval_in_seconds": arg_to_number(args.get("interval_in_seconds")),
                 "timeout": arg_to_number(args.get("timeout")),
+                "device-group": args.get("device-group"),
+                "template": args.get("template"),
+                "admin_name": args.get("admin_name"),
+                "exclude_device_network_configuration": args.get("exclude_device_network_configuration"),
+                "exclude_shared_objects": args.get("exclude_shared_objects"),
             },
             partial_result=CommandResults(
                 readable_output=f'Waiting for commit "{commit_description}" with job ID {job_id} to finish...'
