@@ -1,5 +1,5 @@
 Cloud integrations are installed from the **Data Sources** page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select AWS, then in Advanced Settings > Security Capabilities, enable "Automation".
-This integration was integrated and tested with version xx of AWS.
+This integration was integrated and tested with version 2.4.0 of AWS.
 
 ## Configure Amazon Web Services in Cortex
 
