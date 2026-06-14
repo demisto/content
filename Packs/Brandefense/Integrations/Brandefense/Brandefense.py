@@ -8,7 +8,7 @@ def get_assets(api_token):
         "accept": "application/json",
         "content-type": "application/json",
         "authorization": "Bearer " + api_token,
-    }
+    }!!
     response = requests.get(url, headers=headers)
     allassets = {"assets": response.json()}
     result = CommandResults(outputs=allassets, outputs_prefix="branddefense_assets")
