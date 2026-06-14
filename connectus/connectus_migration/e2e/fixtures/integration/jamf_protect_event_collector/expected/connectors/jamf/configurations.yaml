@@ -33,21 +33,43 @@ general_configurations:
           required: false
           hidden: false
 configurations:
-- id: automation-and-remediation_jamf-protect-event-collector
+- id: log-collection_jamf-protect-event-collector
   configurations:
   - fields:
-    - id: defaultIgnore
-      title: Do not use in CLI by default
-      field_type: checkbox
-      metadata:
-        xsoar:
-          config_type: backend
+    - id: eventFetchInterval
+      title: Events Fetch Interval
+      field_type: duration
       options:
-        default_value: false
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
+        default_value:
+          minutes: 1
         create_modifiers:
-          required: false
           hidden: false
         edit_modifiers:
-          required: false
           hidden: false
+  view_group: jamf-protect-event-collector
+- id: fetch-assets-and-vulnerabilities_jamf-protect-event-collector
+  configurations:
+  - fields:
+    - id: assetsFetchInterval
+      field_type: duration
+      title: Fetch Computer Assets Interval
+      options:
+        description: The fetch interval. It is recommended to set it to 12 hours.
+          The minimum interval is 1 hour.
+        default_value:
+          hours: 12
+        create_modifiers:
+          hidden: false
+        edit_modifiers:
+          hidden: false
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
   view_group: jamf-protect-event-collector

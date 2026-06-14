@@ -18,3 +18,36 @@ triggers:
   - id: engine_group
     action:
       hidden: true
+- conditions:
+    operator: OR
+    children:
+    - id: engine
+      behavior: value
+      operator: is_not_empty
+    - id: engine_group
+      behavior: value
+      operator: is_not_empty
+  effects:
+  - id: proxy
+    action:
+      read_only: false
+- conditions:
+    id: fetch-issues_akamai-waf-siem
+    behavior: selected
+    operator: eq
+    value: true
+  effects:
+  - id: log-collection_akamai-waf-siem
+    action:
+      read_only: true
+    message: Select only one fetch option.
+- conditions:
+    id: log-collection_akamai-waf-siem
+    behavior: selected
+    operator: eq
+    value: true
+  effects:
+  - id: fetch-issues_akamai-waf-siem
+    action:
+      read_only: true
+    message: Select only one fetch option.

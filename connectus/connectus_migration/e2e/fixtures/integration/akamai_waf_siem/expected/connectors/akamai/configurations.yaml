@@ -2,12 +2,12 @@ metadata:
   title: Configuration
   description: Adjust and refine your configuration
 view_groups:
-- id: akamai-waf
-  label: Akamai WAF
-  help_text: Configurations settings for Akamai WAF.
+- id: akamai-waf-siem
+  label: Akamai WAF SIEM
+  help_text: Configurations settings for Akamai WAF SIEM.
 general_configurations:
   configurations:
-  - view_group: akamai-waf
+  - view_group: akamai-waf-siem
     fields:
     - id: integrationLogLevel
       title: Log Level
@@ -16,7 +16,7 @@ general_configurations:
         xsoar:
           config_type: backend
       options:
-        description: Set the log level for xsoar-akamai-waf.
+        description: Set the log level for xsoar-akamai-waf-siem.
         placeholder: Select log level
         default_value: 'Off'
         values:
@@ -33,15 +33,43 @@ general_configurations:
           required: false
           hidden: false
 configurations:
-- id: automation-and-remediation_akamai-waf
+- id: log-collection_akamai-waf-siem
   configurations:
   - fields:
-    - id: defaultIgnore
-      title: Do not use in CLI by default
+    - id: isFetchEvents
       field_type: checkbox
-      metadata:
-        xsoar:
-          config_type: backend
+      options:
+        description: Make sure this feature is not used with long running configured
+          in the integration params and that there's no config ID used for 2 different
+          instances / features.
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        default_value: false
+      title: Fetch Events
+  - fields:
+    - id: eventFetchInterval
+      field_type: duration
+      title: Events Fetch Interval
+      options:
+        default_value:
+          minutes: 1
+        create_modifiers:
+          hidden: false
+        edit_modifiers:
+          hidden: false
+        units:
+        - days
+        - hours
+        - minutes
+        output_format: minutes
+  - fields:
+    - id: longRunning
+      title: Long running instance
+      field_type: checkbox
       options:
         default_value: false
         create_modifiers:
@@ -50,4 +78,79 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
-  view_group: akamai-waf
+  view_group: akamai-waf-siem
+- id: fetch-issues_akamai-waf-siem
+  configurations:
+  - fields:
+    - id: alertType
+      title: Issue Type
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Akamai WAF SIEM
+            dynamicField: incident-type
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        help_text: select if classifier doesn't exist
+        placeholder: Select an issue type
+  - fields:
+    - id: incomingMapperId
+      title: Incoming Mapper
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Akamai WAF SIEM
+            dynamicField: mapper-incoming
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: mappingId
+      title: Classifier
+      field_type: select
+      metadata:
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: Akamai WAF SIEM
+            dynamicField: classifier
+        xsoar:
+          config_type: backend
+      options:
+        searchable: true
+        clearable: true
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  view_group: akamai-waf-siem

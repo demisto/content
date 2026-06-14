@@ -13,6 +13,6 @@
         }
       }
     ],
-    "other_connection": ["base_url"]
+    "other_connection": ["base_url", "proxy", "insecure"]
   }
 }

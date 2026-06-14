@@ -32,29 +32,39 @@ general_configurations:
           read_only: false
           hidden: false
 capabilities:
-- id: automation-and-remediation
-  title: Automation and Remediation
-  description: Run automation and remediation commands for this connector.
+- id: log-collection
+  title: Log Collection
+  description: Collect logs and events from this connector.
   default_enabled: false
   required: false
   sub_capabilities:
-  - id: automation-and-remediation_akamai-waf
-    title: Akamai WAF
+  - id: log-collection_akamai-waf-siem
+    title: Akamai WAF SIEM
     default_enabled: false
     required: false
     config:
       required_license:
-      - cloud_posture
-      - cloud
-      - cloud_runtime_security
-      - edr
       - xsiam
       - agentix
   config:
     required_license:
     - agentix
-    - cloud
-    - cloud_posture
-    - cloud_runtime_security
-    - edr
+    - xsiam
+- id: fetch-issues
+  title: Fetch Issues
+  description: Fetch issues from this connector.
+  default_enabled: false
+  required: false
+  sub_capabilities:
+  - id: fetch-issues_akamai-waf-siem
+    title: Akamai WAF SIEM
+    default_enabled: false
+    required: false
+    config:
+      required_license:
+      - xsiam
+      - agentix
+  config:
+    required_license:
+    - agentix
     - xsiam

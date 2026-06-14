@@ -1,29 +1,11 @@
 # yaml-language-server: $schema=../../../../../schema/serializer.schema.json
 computed_fields:
 - output:
-  - id: mirror_options
-    value: No Mirroring
+  - id: longRunning
+    value: true
   any_of:
   - conditions:
     - type: capability
       options:
-        capability_id: automation-and-remediation_qradar-v3
-        value: 'on'
-- output:
-  - id: close_incident
-    value: false
-  any_of:
-  - conditions:
-    - type: capability
-      options:
-        capability_id: automation-and-remediation_qradar-v3
-        value: 'on'
-- output:
-  - id: mirror_limit
-    value: '100'
-  any_of:
-  - conditions:
-    - type: capability
-      options:
-        capability_id: automation-and-remediation_qradar-v3
+        capability_id: fetch-issues_qradar-v3
         value: 'on'

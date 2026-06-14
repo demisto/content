@@ -58,3 +58,29 @@ capabilities:
     - cloud_runtime_security
     - edr
     - xsiam
+- id: fetch-issues
+  title: Fetch Issues
+  description: Fetch issues from this connector.
+  default_enabled: false
+  required: false
+  sub_capabilities:
+  - id: fetch-issues_qradar-v3
+    title: QRadar v3
+    default_enabled: false
+    required: false
+    config:
+      required_license:
+      - cloud_posture
+      - cloud
+      - cloud_runtime_security
+      - edr
+      - xsiam
+      - agentix
+  config:
+    required_license:
+    - agentix
+    - cloud
+    - cloud_posture
+    - cloud_runtime_security
+    - edr
+    - xsiam

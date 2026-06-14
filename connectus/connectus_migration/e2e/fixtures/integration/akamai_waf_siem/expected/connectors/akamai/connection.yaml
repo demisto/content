@@ -3,13 +3,13 @@ metadata:
   title: Connection
   description: Enter the credentials to securely authorize the connection
 view_groups:
-- id: akamai-waf
-  label: Akamai WAF
-  help_text: Connection settings for Akamai WAF.
+- id: akamai-waf-siem
+  label: Akamai WAF SIEM
+  help_text: Connection settings for Akamai WAF SIEM.
 profiles:
-- id: plain.akamai_waf
+- id: plain.akamai_waf_siem
   type: plain
-  view_group: akamai-waf
+  view_group: akamai-waf-siem
   title: plain
   description: Authentication profile for Akamai (plain).
   metadata:
@@ -50,9 +50,9 @@ profiles:
   - fields:
     - id: host
       field_type: input
-      title: Server URL (e.g., https://example.net)
+      title: Server URL (e.g., https://akaa-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net)
       options:
-        default_value: https://example.net
+        default_value: https://akaa-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net
         create_modifiers:
           required: true
           hidden: false
@@ -64,11 +64,48 @@ profiles:
         event:
           publish: true
   - fields:
-    - id: engine_mode
-      title: Engine
-      field_type: select
+    - id: proxy
+      title: Use system proxy settings
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
       options:
         mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: true
+  - fields:
+    - id: insecure
+      title: Trust any certificate (not secure)
+      field_type: checkbox
+      metadata:
+        event:
+          publish: true
+      options:
+        mask: false
+        default_value: false
+        create_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+        edit_modifiers:
+          required: false
+          hidden: false
+          read_only: false
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: radio
+      options:
+        mask: false
+        orientation: horizontal
         default_value: no_engine
         values:
         - key: no_engine
@@ -86,7 +123,7 @@ profiles:
   - fields:
     - id: engine
       title: Engine
-      field_type: radio
+      field_type: select
       metadata:
         event:
           publish: true
@@ -98,11 +135,10 @@ profiles:
           - on_create
           - on_edit
           params:
-            integrationID: Akamai WAF
+            integrationID: Akamai WAF SIEM
             dynamicField: engine
       options:
         mask: false
-        orientation: horizontal
         placeholder: Select an engine
         create_modifiers:
           required: false
@@ -125,7 +161,7 @@ profiles:
           - on_create
           - on_edit
           params:
-            integrationID: Akamai WAF
+            integrationID: Akamai WAF SIEM
             dynamicField: engine-group
       options:
         mask: false

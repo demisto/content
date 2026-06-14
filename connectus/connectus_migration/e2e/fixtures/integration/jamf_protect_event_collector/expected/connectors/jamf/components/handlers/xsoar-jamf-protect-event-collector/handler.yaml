@@ -17,11 +17,20 @@ triggering:
     xsoar-pack-id: integration
   args: {}
 capabilities:
-- id: automation-and-remediation_jamf-protect-event-collector
+- id: log-collection_jamf-protect-event-collector
   auth_options:
   - id: plain.jamf_protect_event_collector
     workloads:
     - xsoar-pod
+  actions:
+  - type: reset_events_last_run
+- id: fetch-assets-and-vulnerabilities_jamf-protect-event-collector
+  auth_options:
+  - id: plain.jamf_protect_event_collector
+    workloads:
+    - xsoar-pod
+  actions:
+  - type: reset_assets_last_run
 test_connection:
   type: service
   service: xsoar

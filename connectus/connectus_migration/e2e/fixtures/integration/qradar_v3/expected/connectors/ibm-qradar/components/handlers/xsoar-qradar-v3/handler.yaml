@@ -22,6 +22,13 @@ capabilities:
   - id: plain.qradar_v3
     workloads:
     - xsoar-pod
+- id: fetch-issues_qradar-v3
+  auth_options:
+  - id: plain.qradar_v3
+    workloads:
+    - xsoar-pod
+  actions:
+  - type: reset_incidents_last_run
 test_connection:
   type: service
   service: xsoar
