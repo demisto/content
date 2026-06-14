@@ -5035,7 +5035,7 @@ def _make_integration_yml(
     return yml
 
 
-# Issue #8: the alert fields (alertType / alertFetchInterval) are emitted ONLY
+# Issue #8: the alert fields (incidentType / alertFetchInterval) are emitted ONLY
 # when their source XSOAR params (incidentType / incidentFetchInterval) exist in
 # the integration yml config params. This shared lookup declares both so the
 # fetch-issues tests that expect the alert fields keep exercising the full
@@ -5060,12 +5060,12 @@ def test_add_fetch_issues_capability_top_level_emits_4_fields_standard():
     When:  add_fetch_issues_capability runs.
     Then:  4 fields are emitted. isFetch is the lone fetch checkbox → it is
            NOT emitted as a manifest field (moved to serializer
-           computed_fields); the remaining 4 are alertType, alertFetchInterval,
+           computed_fields); the remaining 4 are incidentType, alertFetchInterval,
            incomingMapperId, mappingId. No longRunning field.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     integration_yml = _make_integration_yml()
-    # Issue #8: alertType / alertFetchInterval are emitted ONLY when the source
+    # Issue #8: incidentType / alertFetchInterval are emitted ONLY when the source
     # XSOAR params exist in the integration yml. Supply them so all 4 fields
     # are emitted (the realistic fetch-issues migration case).
     template = add_fetch_issues_capability(
@@ -5086,11 +5086,11 @@ def test_add_fetch_issues_capability_top_level_emits_4_fields_standard():
     # computed_fields (no manifest field).
     assert "isFetch" not in by_id
 
-    # 2. alertType (XSOAR incidentType) — dynamic select. Per migration
-    # guide §line 889-890 the connector-side id is the Platform "alertType",
+    # 2. incidentType (XSOAR incidentType) — dynamic select. Per migration
+    # guide §line 889-890 the connector-side id is the Platform "incidentType",
     # the title is hardcoded "Issue Type", and the field carries a tooltip +
     # placeholder. The dynamicField provider hint stays "incident-type".
-    inctype = by_id["alertType"]
+    inctype = by_id["incidentType"]
     assert inctype["title"] == "Issue Type"
     assert inctype["field_type"] == "select"
     assert inctype["metadata"]["dynamic_values"]["provider"] == "xsoar"
@@ -5173,7 +5173,7 @@ def test_add_fetch_issues_capability_classifier_and_mapper_are_backend_managed()
     When:  the classifier (mappingId) and mapper (incomingMapperId) fields are
            emitted.
     Then:  both carry metadata.xsoar.config_type == "backend" (Appendix J),
-           while the user-visible alertType field does NOT.
+           while the user-visible incidentType field does NOT.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     template = add_fetch_issues_capability(
@@ -5187,8 +5187,8 @@ def test_add_fetch_issues_capability_classifier_and_mapper_are_backend_managed()
     by_id = {f["id"]: f for f in template["fields"]}
     assert by_id["mappingId"]["metadata"]["xsoar"]["config_type"] == "backend"
     assert by_id["incomingMapperId"]["metadata"]["xsoar"]["config_type"] == "backend"
-    # alertType is user-visible — must NOT be backend-managed.
-    assert "xsoar" not in by_id["alertType"]["metadata"]
+    # incidentType is user-visible — must NOT be backend-managed.
+    assert "xsoar" not in by_id["incidentType"]["metadata"]
 
 
 def test_add_fetch_issues_capability_replaces_incidents_with_issues_in_titles():
@@ -5198,7 +5198,7 @@ def test_add_fetch_issues_capability_replaces_incidents_with_issues_in_titles():
     When:  add_fetch_issues_capability runs.
     Then:  the isFetch title uses "Issues" (Platform terminology), proving
            align_incidents_to_issues actually performs the replacement
-           (guide §3.7 field rule 2 / Appendix A). The alertType title is
+           (guide §3.7 field rule 2 / Appendix A). The incidentType title is
            NOT derived from the yml display — per guide §line 890 it is the
            hardcoded Platform label "Issue Type" regardless of the yml.
     """
@@ -5218,8 +5218,8 @@ def test_add_fetch_issues_capability_replaces_incidents_with_issues_in_titles():
     by_id = {f["id"]: f for f in template["fields"]}
     # isFetch is the lone fetch checkbox → dropped to serializer; no field.
     assert "isFetch" not in by_id
-    # alertType title is hardcoded, ignoring the yml "Incidents Type" display.
-    assert by_id["alertType"]["title"] == "Issue Type"
+    # incidentType title is hardcoded, ignoring the yml "Incidents Type" display.
+    assert by_id["incidentType"]["title"] == "Issue Type"
 
 
 def test_add_fetch_issues_capability_long_running_emits_6_fields():
@@ -5692,9 +5692,9 @@ def test_add_fetch_issues_capability_incidenttype_default_from_yml():
     """
     Given: yml carries incidentType param with defaultvalue='Phishing'.
     When:  add_fetch_issues_capability runs.
-    Then:  The alertType field (XSOAR incidentType) has default_value='Phishing'
+    Then:  The incidentType field (XSOAR incidentType) has default_value='Phishing'
            — the default is sourced from the XSOAR yml param, the connector-side
-           id is the Platform "alertType".
+           id is the Platform "incidentType".
     """
     yml_lookup = {
         "incidentType": {
@@ -5714,7 +5714,7 @@ def test_add_fetch_issues_capability_incidenttype_default_from_yml():
         integration_yml=integration_yml,
         yml_params_by_name=yml_lookup,
     )
-    inctype = {f["id"]: f for f in template["fields"]}["alertType"]
+    inctype = {f["id"]: f for f in template["fields"]}["incidentType"]
     assert inctype["options"]["default_value"] == "Phishing"
 
 
@@ -5768,7 +5768,7 @@ def test_add_fetch_issues_capability_sub_capability_renames_field_ids():
     # isFetch is the lone fetch checkbox → dropped to serializer (no field).
     assert f"{cap_id}_isFetch" not in field_ids
     # Platform "alert" ids (guide §line 889-890), still sub-cap prefixed.
-    assert f"{cap_id}_alertType" in field_ids
+    assert f"{cap_id}_incidentType" in field_ids
     assert f"{cap_id}_alertFetchInterval" in field_ids
     assert f"{cap_id}_incomingMapperId" in field_ids
     assert f"{cap_id}_mappingId" in field_ids
@@ -5780,7 +5780,7 @@ def test_add_fetch_issues_capability_sub_cap_writes_serializer_bridges(tmp_path:
     When:  add_fetch_issues_capability runs.
     Then:  serializer.yaml at handler_dir contains field_mappings entries for
            the sub-cap-prefixed fields. Per Issue #8 the alert fields
-           (alertType / alertFetchInterval) are NOT bridged. isFetch is the
+           (incidentType / alertFetchInterval) are NOT bridged. isFetch is the
            lone fetch checkbox → dropped to computed_fields (NOT a
            field_mappings bridge) — so only incomingMapperId / mappingId get
            bridges, plus the isFetch computed_fields rule.
@@ -5810,7 +5810,7 @@ def test_add_fetch_issues_capability_sub_cap_writes_serializer_bridges(tmp_path:
     # isFetch is NOT a field_mappings bridge (moved to computed_fields).
     assert f"{cap_id}_isFetch" not in mapping_dict
     # Issue #8: alert fields are NOT bridged (no incident* mapping).
-    assert f"{cap_id}_alertType" not in mapping_dict
+    assert f"{cap_id}_incidentType" not in mapping_dict
     assert f"{cap_id}_alertFetchInterval" not in mapping_dict
     # isFetch value flows via computed_fields gated on the sub-capability.
     assert data["computed_fields"][0]["output"] == [
@@ -5853,7 +5853,7 @@ def test_add_fetch_issues_capability_long_running_sub_cap_writes_4_bridges(tmp_p
     mapping_dict = {m["id"]: m["field_name"] for m in mappings}
     assert mapping_dict[f"{cap_id}_longRunning"] == "longRunning"
     # Issue #8: alert fields are NOT bridged.
-    assert f"{cap_id}_alertType" not in mapping_dict
+    assert f"{cap_id}_incidentType" not in mapping_dict
     assert f"{cap_id}_alertFetchInterval" not in mapping_dict
 
 
@@ -5903,7 +5903,7 @@ def test_add_fetch_issues_capability_dynamic_fields_use_integration_id():
         yml_params_by_name=dict(_FETCH_ISSUES_YML_PARAMS),
     )
     by_id = {f["id"]: f for f in template["fields"]}
-    for field_id in ["alertType", "incomingMapperId", "mappingId"]:
+    for field_id in ["incidentType", "incomingMapperId", "mappingId"]:
         dv = by_id[field_id]["metadata"]["dynamic_values"]
         assert dv["params"]["integrationID"] == "Salesforce"
 

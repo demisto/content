@@ -1673,15 +1673,15 @@ MIRROR_PARAMS: frozenset[str] = frozenset(
 # back to the XSOAR name). The fetch-issues builder migrates the legacy
 # "incident" names to the Platform "alert" names (guide §line 889-890):
 #   incidentFetchInterval -> alertFetchInterval
-#   incidentType          -> alertType
+#   incidentType          -> incidentType
 # When the sweep moves one of these hidden+default params to the serializer it
 # must (a) remove the RENAMED field id from configurations.yaml and (b) emit the
 # computed_fields output using the RENAMED id (what the platform reads).
 # Literals kept in lockstep with ``ALERTFETCHINTERVAL_FIELD_ID`` /
-# ``ALERTTYPE_FIELD_ID`` (defined later in the module).
+# ``incidentType_FIELD_ID`` (defined later in the module).
 _KNOWN_BUILDER_FIELD_RENAMES: dict[str, str] = {
     "incidentFetchInterval": "alertFetchInterval",
-    "incidentType": "alertType",
+    "incidentType": "incidentType",
 }
 
 # XSOAR-param-name → owning capability BUCKET KEY for params emitted by the
@@ -3784,8 +3784,8 @@ _LONGRUNNING_DEFAULT_TITLE = "Long running instance"
 
 # Per migration guide §line 890: the incident-type select carries a tooltip
 # and a placeholder on the Platform.
-_ALERTTYPE_HELP_TEXT = "select if classifier doesn't exist"
-_ALERTTYPE_PLACEHOLDER = "Select an issue type"
+_incidentType_HELP_TEXT = "select if classifier doesn't exist"
+_incidentType_PLACEHOLDER = "Select an issue type"
 
 # Fallback default for incidentFetchInterval when the yml doesn't carry
 # the param. DefaultIncidentFetchTime = 1 * time.Minute = 1 minute.
@@ -3810,13 +3810,13 @@ FETCH_ISSUES_BUCKET_KEY = "Fetch Issues"
 
 # Connector-side (Platform) field ids for the fetch-issues type/interval
 # fields. Per migration guide §line 889-890 the Platform renames the legacy
-# XSOAR ``incidentType``/``incidentFetchInterval`` params to ``alertType``/
+# XSOAR ``incidentType``/``incidentFetchInterval`` params to ``incidentType``/
 # ``alertFetchInterval`` on the connector side. The original XSOAR names are
 # still consumed by the integration at runtime, so a serializer field_mapping
 # bridges the Platform id back to the XSOAR name (see §6 of
 # ``add_fetch_issues_capability``). ``dynamicField`` keeps the XSOAR provider
 # hint ``"incident-type"`` regardless of the connector-side id.
-ALERTTYPE_FIELD_ID = "alertType"
+incidentType_FIELD_ID = "incidentType"
 ALERTFETCHINTERVAL_FIELD_ID = "alertFetchInterval"
 
 # Connector-side field ids for the dynamic fields (mapper + classifier).
@@ -4022,7 +4022,7 @@ def add_fetch_issues_capability(
          When the mapper routed ``longRunning`` here, also strips
          ``longRunning``.
       2. Rename bridges via serializer for each renamed field. The
-         Platform "alert" renames (``incidentType`` -> ``alertType`` and
+         Platform "alert" renames (``incidentType`` -> ``incidentType`` and
          ``incidentFetchInterval`` -> ``alertFetchInterval``, guide
          §line 889-890) always apply, so bridges are registered in BOTH the
          top-level and sub-capability paths whenever ``handler_dir`` is set;
@@ -4054,7 +4054,7 @@ def add_fetch_issues_capability(
     # Per migration guide §line 889-890: the connector-side ids are the
     # Platform "alert" names, not the legacy XSOAR "incident" names. The
     # XSOAR names are bridged back via the serializer in §6 below.
-    inctype_field_id = _field_id(ALERTTYPE_FIELD_ID)
+    inctype_field_id = _field_id(incidentType_FIELD_ID)
     incfi_field_id = _field_id(ALERTFETCHINTERVAL_FIELD_ID)
     mapper_field_id = _field_id(MAPPER_INCOMING_FIELD_ID)
     classifier_field_id = _field_id(CLASSIFIER_FIELD_ID)
@@ -4114,20 +4114,20 @@ def add_fetch_issues_capability(
     )
     fields.append(isfetch_field)
 
-    # 2. alertType (XSOAR incidentType) — dynamic select.
+    # 2. incidentType (XSOAR incidentType) — dynamic select.
     # Migration rule (Issue #8): emit the alert field ONLY when the source
     # XSOAR param exists in the integration yml. When present we carry its
     # ``defaultvalue`` (resolved into ``inctype_default`` above). The field is
-    # migrated as ``alertType`` with NO serializer bridge back to
-    # ``incidentType`` — the platform consumes ``alertType`` directly.
+    # migrated as ``incidentType`` with NO serializer bridge back to
+    # ``incidentType`` — the platform consumes ``incidentType`` directly.
     fields.append(_build_dynamic_select_field(
         field_id=inctype_field_id,
         title=inctype_title,
         dynamic_field_type="incident-type",
         integration_id=integration_id,
         default_value=inctype_default,
-        help_text=_ALERTTYPE_HELP_TEXT,
-        placeholder=_ALERTTYPE_PLACEHOLDER,
+        help_text=_incidentType_HELP_TEXT,
+        placeholder=_incidentType_PLACEHOLDER,
     ))
 
     # 3. alertFetchInterval (XSOAR incidentFetchInterval) — duration picker.
@@ -4226,9 +4226,9 @@ def add_fetch_issues_capability(
     # ``is_sub_capability`` is True.
     #
     # Migration rule (Issue #8): the Platform "alert" renames
-    # (``incidentType`` -> ``alertType`` and
+    # (``incidentType`` -> ``incidentType`` and
     # ``incidentFetchInterval`` -> ``alertFetchInterval``) are NO LONGER
-    # bridged — the alert fields are migrated as ``alertType`` /
+    # bridged — the alert fields are migrated as ``incidentType`` /
     # ``alertFetchInterval`` and the platform consumes those names directly.
     # They are therefore excluded from the bridge map. (Sub-cap prefixing is
     # also not bridged for the alert fields, matching the no-serialization

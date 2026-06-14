@@ -581,7 +581,7 @@ settings:
 2. An integration may map to multiple capabilities (e.g. fetch + commands) — emit each, with one sub-capability per integration (`<capability_id>_<integration_id>`).
 3. Multiple integrations may share a capability; each is its own sub-capability (`title` = integration name; `id` = `<capability_id>_<integration_id>`).
 4. **Flag** (but allow) if two integrations declare the same fetch type, or one integration declares multiple fetch/feed/credential capabilities.
-5. When `isFetchEvents`/`isFetchAssets` etc. are set, **omit** the corresponding checkbox param — choosing the capability implies the feature is on. Still emit the related fields (interval, classifier, mapper, alertType, etc.)..
+5. When `isFetchEvents`/`isFetchAssets` etc. are set, **omit** the corresponding checkbox param — choosing the capability implies the feature is on. Still emit the related fields (interval, classifier, mapper, incidentType, etc.)..
 6. **Fetch mutex (per handler/integration)**: a single integration MUST NOT enable more than one of the five fetch capabilities at once (each handler → exactly one XSOAR instance, which cannot have multiple fetches). Multiple fetches across **different** integrations are fine. The UI prevents the conflict (no error) by marking the other fetch sub-capabilities of that same integration `read_only: true` with the message *"Select only one fetch option for this capability"* — enforced via [`triggers.yaml`](README.md:833) (§3.5).
 
 #### Metadata & general_configurations
@@ -852,8 +852,8 @@ See [Appendix A](#appendix-a-xsoar-type--manifest-type-mapping).
 | `integrationLogLevel` | `configurations.yaml` `general_configurations`, per `view_group` (one per integration; Standard connectors: no `view_group`) | `select` | `"backend"` | Off/Debug/Verbose. |
 | `defaultIgnore` | `configurations.yaml`, under the `automation-and-remediation_<integration>` sub-capability | `checkbox` | `"backend"` | "Do not use in CLI by default". **Only for integrations with an `automation-and-remediation` sub-capability** — it governs commands, which collection-only capabilities don't have. Omit otherwise. |
 | `engine` / `engine_group` | connection profile (§3.6) | `select` + `dynamic_values` | `"backend"` | Engine 3-field pattern (below). Omit for Appendix G. |
-| `mappingId` (label "Classifier") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "classifier"`. `default_value` ← `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `alertType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
-| `incomingMapperId` (label "Mapper (incoming)") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "mapper-incoming"`. `default_value` ← `defaultMapperIn` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `alertType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
+| `mappingId` (label "Classifier") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "classifier"`. `default_value` ← `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `incidentType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
+| `incomingMapperId` (label "Mapper (incoming)") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "mapper-incoming"`. `default_value` ← `defaultMapperIn` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `incidentType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
 | `defaultClassifier` | → `default_value` of `mappingId` | — | — | Not a UI field. Best-effort literal pre-selection (§2.16). |
 | `defaultMapperIn` | → `default_value` of `incomingMapperId` | — | — | Not a UI field. Best-effort literal pre-selection (§2.16). |
 | `outgoingMapperId` / `defaultMapperOut` | **OUT OF SCOPE** | — | — | Mirroring not supported. |
@@ -993,17 +993,17 @@ When a `script` flag is true, the BE used to auto-add params. Define them explic
 
 **`script.IsFetch: true`** → `fetch-issues` sub-capability:
 - `alertFetchInterval` — `duration` default to 1 minute or whats given in integration YML.
-- `incidentType`/`alertType` (Platform uses `alertType`) — `select` + `dynamic_values` (`dynamicField: "incident-type"`). **User-visible** (do NOT mark backend). Title "Issue Type", tooltip "select if classifier doesn't exist".
+- `incidentType`/`incidentType` (Platform uses `incidentType`) — `select` + `dynamic_values` (`dynamicField: "incident-type"`). **User-visible** (do NOT mark backend). Title "Issue Type", tooltip "select if classifier doesn't exist".
   - Placed under **each** `fetch-issues` sub-capability's `configurations[]` (pinned to that integration's `view_group`) — never in `general_configurations` or on the parent capability.
   - **Always emit** for every `fetch-issues` sub-capability, regardless of whether the YML has a type-13 param.
   - Never emit under non-issue fetch sub-capabilities.
   - When `script.isfetchsamples: true`, force it always-visible.
-- `mappingId` — label "Classifier", `select` + `dynamic_values` (provider `xsoar`, `dynamicField: "classifier"`), `config_type: backend`. `default_value` ← integration YML `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Placed only under each `fetch-issues_<integration>` sub-capability (like `alertType`) — never under other fetch capabilities or general configurations.
-- `incomingMapperId` — label "Mapper (incoming)", `select` + `dynamic_values` (provider `xsoar`, `dynamicField: "mapper-incoming"`), `config_type: backend`. `default_value` ← integration YML `defaultMapperIn` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Placed only under each `fetch-issues_<integration>` sub-capability (like `alertType`) — never under other fetch capabilities or general configurations.
+- `mappingId` — label "Classifier", `select` + `dynamic_values` (provider `xsoar`, `dynamicField: "classifier"`), `config_type: backend`. `default_value` ← integration YML `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Placed only under each `fetch-issues_<integration>` sub-capability (like `incidentType`) — never under other fetch capabilities or general configurations.
+- `incomingMapperId` — label "Mapper (incoming)", `select` + `dynamic_values` (provider `xsoar`, `dynamicField: "mapper-incoming"`), `config_type: backend`. `default_value` ← integration YML `defaultMapperIn` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Placed only under each `fetch-issues_<integration>` sub-capability (like `incidentType`) — never under other fetch capabilities or general configurations.
 
 ```yaml
 # inside the fetch-issues_<integration> sub-capability
-- id: "alertType"
+- id: "incidentType"
   title: "Issue Type"
   field_type: "select"
   metadata:
@@ -1662,7 +1662,7 @@ Determinism guarantees:
 - The prefix is always `<normalized-integration-id>_`, never an ad-hoc abbreviation.
 - Fields that do **not** collide are **never** renamed.
 
-> This rule is the single source of truth for id collisions everywhere in the guide (config fields, `integrationLogLevel`, `defaultIgnore`, `alertType`, engine fields, `domain`, etc.). Wherever a prefixed id appears in this guide, it follows exactly this rule.
+> This rule is the single source of truth for id collisions everywhere in the guide (config fields, `integrationLogLevel`, `defaultIgnore`, `incidentType`, engine fields, `domain`, etc.). Wherever a prefixed id appears in this guide, it follows exactly this rule.
 
 ## Appendix D: Excluded Integrations (Out of Scope)
 

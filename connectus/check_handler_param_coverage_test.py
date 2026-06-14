@@ -583,7 +583,7 @@ def _alert_connector(tmp_path: Path, *, alert_field_id: str):
 
 
 def test_incident_type_covered_by_bare_alert_type(tmp_path: Path) -> None:
-    _, handler_dir = _alert_connector(tmp_path, alert_field_id="alertType")
+    _, handler_dir = _alert_connector(tmp_path, alert_field_id="incidentType")
     yml = _write_integration_yml(tmp_path, [{"name": "incidentType"}])
     passed, missing = mod.check_coverage(handler_dir, yml)
     assert passed is True
@@ -592,7 +592,7 @@ def test_incident_type_covered_by_bare_alert_type(tmp_path: Path) -> None:
 
 def test_incident_type_covered_by_prefixed_alert_type(tmp_path: Path) -> None:
     _, handler_dir = _alert_connector(
-        tmp_path, alert_field_id="fetch-issues_xsoar_alertType"
+        tmp_path, alert_field_id="fetch-issues_xsoar_incidentType"
     )
     yml = _write_integration_yml(tmp_path, [{"name": "incidentType"}])
     passed, missing = mod.check_coverage(handler_dir, yml)

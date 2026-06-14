@@ -77,7 +77,7 @@ configurations:
   configurations:
   - fields:
   - fields:
-    - id: alertType
+    - id: incidentType
       title: Issue Type
       field_type: select
       metadata:
@@ -307,7 +307,7 @@ configurations:
   configurations:
   - fields:
   - fields:
-    - id: xsoar-github-iam_alertType
+    - id: xsoar-github-iam_incidentType
       title: Issue Type
       field_type: select
       metadata:

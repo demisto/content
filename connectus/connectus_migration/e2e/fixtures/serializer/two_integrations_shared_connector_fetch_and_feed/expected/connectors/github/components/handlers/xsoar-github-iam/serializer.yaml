@@ -24,8 +24,8 @@ field_mappings:
   field_name: mappingId
 - id: xsoar-github-iam_incomingMapperId
   field_name: incomingMapperId
-- id: xsoar-github-iam_alertType
-  field_name: alertType
+- id: xsoar-github-iam_incidentType
+  field_name: incidentType
 - id: passthrough.github_iam_url
   field_name: url
 - id: passthrough.github_iam_proxy

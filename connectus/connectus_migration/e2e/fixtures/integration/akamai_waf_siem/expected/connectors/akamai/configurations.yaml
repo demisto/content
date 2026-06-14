@@ -82,7 +82,7 @@ configurations:
 - id: fetch-issues_akamai-waf-siem
   configurations:
   - fields:
-    - id: alertType
+    - id: incidentType
       title: Issue Type
       field_type: select
       metadata:

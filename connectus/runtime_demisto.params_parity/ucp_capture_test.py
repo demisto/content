@@ -225,7 +225,7 @@ def test_orphan_config_field_gets_dummy_for_extra_detection():
     """CONTRACT: every manifest-declared connector config field is SET in the
     payload. A field WITH a matching integration param gets the shared value; a
     field WITHOUT one (an orphan / undeclared-rename, e.g. cisco-security's
-    ``alertType``) gets a DUMMY so it surfaces at runtime on the connector side
+    ``incidentType``) gets a DUMMY so it surfaces at runtime on the connector side
     only -> the diff reports EXTRA_IN_CONNECTOR instead of hiding it."""
     caps = [
         CapabilitySpec(

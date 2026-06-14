@@ -48,7 +48,7 @@ configurations:
 - id: fetch-issues_github
   configurations:
   - fields:
-    - id: alertType
+    - id: incidentType
       title: Issue Type
       field_type: select
       metadata:

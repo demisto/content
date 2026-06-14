@@ -49,8 +49,8 @@ param (anything not ``hidden: true`` / ``hidden: platform`` /
 two Platform-rename special cases:
 
   * an integration ``incidentType`` param is considered covered when the
-    connector exposes an ``alertType`` field (bare or sub-capability
-    prefixed, e.g. ``fetch-issues_<int>_alertType``);
+    connector exposes an ``incidentType`` field (bare or sub-capability
+    prefixed, e.g. ``fetch-issues_<int>_incidentType``);
   * an integration ``incidentFetchInterval`` param is considered covered
     when the connector exposes an ``alertFetchInterval`` field (bare or
     sub-capability prefixed).
@@ -130,12 +130,12 @@ HANDLERS_DIR = "handlers"
 COMPUTED_FIELDS_KEY = "computed_fields"
 
 # Platform "alert" renames. The Platform migrates the legacy XSOAR
-# ``incidentType`` / ``incidentFetchInterval`` params to ``alertType`` /
+# ``incidentType`` / ``incidentFetchInterval`` params to ``incidentType`` /
 # ``alertFetchInterval`` on the connector side with NO serializer bridge back
 # to the original names. The connector id may also be sub-capability prefixed
-# (e.g. ``fetch-issues_<int>_alertType``), so coverage uses a suffix match.
+# (e.g. ``fetch-issues_<int>_incidentType``), so coverage uses a suffix match.
 INCIDENT_TYPE_PARAM = "incidentType"
-ALERT_TYPE_SUFFIX = "alertType"
+ALERT_TYPE_SUFFIX = "incidentType"
 INCIDENT_FETCH_INTERVAL_PARAM = "incidentFetchInterval"
 ALERT_FETCH_INTERVAL_SUFFIX = "alertFetchInterval"
 IGNORED_PARAMS = {"is_mirroring", "mirror_direction", "mirror_limit", "close_incident"}
@@ -545,7 +545,7 @@ def collect_connector_raw_field_ids(
     Unions field ids from capability configs, view-group general configs, auth
     profiles, and serializer ``computed_fields[].output[].id`` — WITHOUT
     resolving them through the serializer ``field_mappings``. Raw ids are what
-    the alert-rename suffix match (``alertType`` / ``alertFetchInterval``)
+    the alert-rename suffix match (``incidentType`` / ``alertFetchInterval``)
     needs, since those fields are migrated with no serializer bridge and may be
     sub-capability prefixed.
     """
@@ -606,10 +606,10 @@ def collect_connector_params(
 def _alert_rename_covered(missing: set[str], raw_field_ids: list[str]) -> set[str]:
     """Drop Platform-renamed alert params from ``missing`` when covered.
 
-    The Platform migrates ``incidentType`` -> ``alertType`` and
+    The Platform migrates ``incidentType`` -> ``incidentType`` and
     ``incidentFetchInterval`` -> ``alertFetchInterval`` on the connector side
     with no serializer bridge, and the connector id may be sub-capability
-    prefixed (e.g. ``fetch-issues_<int>_alertType``). So an integration
+    prefixed (e.g. ``fetch-issues_<int>_incidentType``). So an integration
     ``incidentType`` / ``incidentFetchInterval`` is considered covered when any
     raw connector field id equals or ends with the matching alert suffix.
     """
@@ -745,7 +745,7 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
     print(f"Got the following integration params: {yml_params=}")
     print(f"Got the following handler params: {connector_params=}")
     missing = yml_params - connector_params
-    # Platform "alert" renames: incidentType -> alertType,
+    # Platform "alert" renames: incidentType -> incidentType,
     # incidentFetchInterval -> alertFetchInterval (no serializer bridge).
     missing = _alert_rename_covered(missing, raw_field_ids)
     # type:9 credentials widgets split into <name>_username / <name>_password
