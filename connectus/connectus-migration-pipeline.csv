@@ -31,7 +31,59 @@ AWS-WAF,Packs/AWS_WAF/Integrations/AWSWAF/AWSWAF.yml,AWS,,joeymizrahi,,,,,,,,,,,
 Abnormal Security Event Collector,Packs/AbnormalSecurity/Integrations/AbnormalSecurityEventCollector/AbnormalSecurityEventCollector.yml,Abnormal Security,,juschwartz,,,,,,,,,,,,,,
 Absolute,Packs/Absolute/Integrations/Absolute/Absolute.yml,Absolute,,juschwartz,,,,,,,,,,,,,,
 AbuseIPDB,Packs/AbuseDB/Integrations/AbuseDB/AbuseDB.yml,AbuseIPDB,,juschwartz,,,,,,,,,,,,,,
-Active Directory Query v2,Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml,Microsoft Active Directory,,noydavidi,,,,,,,,,,,,,,
+Active Directory Query v2,Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml,Microsoft Active Directory,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""ntlm"", ""port"", ""secure_connection"", ""server_ip"", ""ssl_version"", ""unsecure""]}","[
+  ""Automation""
+]","{
+  ""integration"": ""Active Directory Query v2"",
+  ""commands"": {
+    ""test-module"": [""base_dn"", ""verify_base_dn""],
+    ""ad-search"": [""base_dn"", ""page_size"", ""verify_base_dn""],
+    ""ad-expire-password"": [""base_dn"", ""verify_base_dn""],
+    ""ad-set-new-password"": [""base_dn"", ""verify_base_dn""],
+    ""ad-unlock-account"": [""base_dn"", ""verify_base_dn""],
+    ""ad-disable-account"": [""base_dn"", ""page_size"", ""verify_base_dn""],
+    ""ad-enable-account"": [""base_dn"", ""page_size"", ""verify_base_dn""],
+    ""ad-remove-from-group"": [""base_dn"", ""verify_base_dn""],
+    ""ad-add-to-group"": [""base_dn"", ""verify_base_dn""],
+    ""ad-create-user"": [""base_dn"", ""verify_base_dn""],
+    ""ad-create-contact"": [""base_dn"", ""verify_base_dn""],
+    ""ad-update-contact"": [""base_dn"", ""verify_base_dn""],
+    ""ad-update-user"": [""base_dn"", ""verify_base_dn""],
+    ""ad-update-group"": [""base_dn"", ""verify_base_dn""],
+    ""ad-modify-computer-ou"": [""base_dn"", ""verify_base_dn""],
+    ""ad-modify-user-ou"": [""base_dn"", ""verify_base_dn""],
+    ""ad-delete-user"": [""base_dn"", ""verify_base_dn""],
+    ""ad-delete-group"": [""base_dn"", ""verify_base_dn""],
+    ""ad-create-group"": [""base_dn"", ""verify_base_dn""],
+    ""ad-get-user"": [""base_dn"", ""default_base_query"", ""page_size"", ""verify_base_dn""],
+    ""ad-get-computer"": [""base_dn"", ""page_size"", ""verify_base_dn""],
+    ""ad-get-group-members"": [""base_dn"", ""page_size"", ""verify_base_dn""],
+    ""ad-modify-password-never-expire"": [""base_dn"", ""verify_base_dn""],
+    ""ad-test-credentials"": [""base_dn"", ""verify_base_dn""],
+    ""iam-get-user"": [""base_dn"", ""mapper-in"", ""mapper-out"", ""verify_base_dn""],
+    ""iam-create-user"": [""base_dn"", ""group-cn"", ""mapper-out"", ""verify_base_dn""],
+    ""iam-update-user"": [""base_dn"", ""create-if-not-exists"", ""group-cn"", ""mapper-out"", ""verify_base_dn""],
+    ""iam-disable-user"": [""base_dn"", ""group-cn"", ""mapper-out"", ""verify_base_dn""],
+    ""get-mapping-fields"": [""base_dn"", ""verify_base_dn""]
+  }
+}","{
+  ""base_dn"": """",
+  ""mapper-in"": ""User Profile - Active Directory (Incoming)"",
+  ""mapper-out"": ""User Profile - Active Directory (Outgoing)""
+}",✅,"{
+  ""general_configurations"": [
+    ""verify_base_dn""
+  ],
+  ""Automation"": [
+    ""base_dn"",
+    ""page_size"",
+    ""default_base_query"",
+    ""mapper-in"",
+    ""mapper-out"",
+    ""group-cn"",
+    ""create-if-not-exists""
+  ]
+}",,,,,,,,
 ActiveMQ,Packs/ActiveMQ/Integrations/ActiveMQ/ActiveMQ.yml,Apache,,juschwartz,,,,,,,,,,,,,,
 AdminByRequest,Packs/AdminByRequest/Integrations/AdminByRequestEventCollector/AdminByRequestEventCollector.yml,AdminByRequest,,juschwartz,,,,,,,,,,,,,,
 Aha,Packs/AHA/Integrations/AHA/AHA.yml,Aha,,juschwartz,,,,,,,,,,,,,,
@@ -73,8 +125,75 @@ AtlassianJiraServiceManagement,Packs/AtlassianJiraServiceManagement/Integrations
 AttackIQFireDrill,Packs/AttackIQFireDrill/Integrations/AttackIQFireDrill/AttackIQFireDrill.yml,AttackIQ,,,,,,,,,,,,,,,,
 Awake Security,Packs/AwakeSecurity/Integrations/AwakeSecurity/AwakeSecurity.yml,Arista Networks,,juschwartz,,,,,,,,,,,,,,
 AwsSecretsManager,Packs/Aws-SecretsManager/Integrations/AwsSecretsManager/AwsSecretsManager.yml,AWS,,joeymizrahi,,,,,,,,,,,,,,
-Azure AD Connect Health Feed,Packs/FeedAzureADConnectHealth/Integrations/AzureADConnectHealthFeed/AzureADConnectHealthFeed.yml,Microsoft Identity,,noydavidi,,,,,,,,,,,,,,
-Azure Compute v2,Packs/AzureCompute/Integrations/AzureCompute_v2/AzureCompute_v2.yml,Azure Services,,noydavidi,,,,,,,,,,,,,,
+Azure AD Connect Health Feed,Packs/FeedAzureADConnectHealth/Integrations/AzureADConnectHealthFeed/AzureADConnectHealthFeed.yml,Microsoft Identity,,noydavidi,"{
+  ""auth_types"": [],
+  ""other_connection"": [""insecure"", ""proxy"", ""url""]
+}","[
+  ""Threat Intelligence & Enrichment""
+]","{
+  ""integration"": ""Azure AD Connect Health Feed"",
+  ""commands"": {
+    ""test-module"": [],
+    ""azure-ad-health-get-indicators"": [""feedTags"", ""tlp_color""]
+  }
+}",{},✅,"{
+  ""general_configurations"": [],
+  ""Threat Intelligence & Enrichment"": [
+    ""feedTags"",
+    ""tlp_color""
+  ]
+}",,,,,,,,
+Azure Compute v2,Packs/AzureCompute/Integrations/AzureCompute_v2/AzureCompute_v2.yml,Azure Services,,noydavidi,"{
+  ""auth_types"": [
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""cert"",
+      ""xsoar_param_map"": {
+        ""cred_token.password"": ""tenant_id"",
+        ""cred_auth_id.password"": ""client_id"",
+        ""cred_certificate_thumbprint.password"": ""certificate_thumbprint"",
+        ""private_key"": ""private_key""
+      },
+      ""interpolated"": true
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""secret"",
+      ""xsoar_param_map"": {
+        ""cred_token.password"": ""tenant_id"",
+        ""cred_auth_id.password"": ""client_id"",
+        ""cred_enc_key.password"": ""client_secret""
+      },
+      ""interpolated"": true
+    }
+  ],
+  ""other_connection"": [""host"", ""proxy"", ""resource_group"", ""unsecure""]
+}","[
+  ""Automation""
+]","{
+  ""integration"": ""Azure Compute v2"",
+  ""commands"": {
+    ""test-module"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-vm-list-instances"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-vm-start-instance"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-vm-poweroff-instance"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-vm-get-instance-details"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-vm-create-instance"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-list-resource-groups"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-vm-delete-instance"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-list-subscriptions"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-vm-get-nic-details"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-vm-get-public-ip-details"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-vm-create-nic"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-vm-get-all-public-ip-details"": [""cred_subscription_id"", ""subscription_id""],
+    ""azure-vm-auth-reset"": []
+  }
+}",{},✅,"{
+  ""general_configurations"": [
+    ""cred_subscription_id""
+  ],
+  ""Automation"": []
+}",,,,,,,,
 Azure Firewall,Packs/AzureFirewall/Integrations/AzureFirewall/AzureFirewall.yml,Azure Firewall,,noydavidi,,,,,,,,,,,,,,
 Azure Kubernetes Services,Packs/AzureKubernetesServices/Integrations/AzureKubernetesServices/AzureKubernetesServices.yml,Azure Services,,noydavidi,,,,,,,,,,,,,,
 Azure Log Analytics,Packs/AzureLogAnalytics/Integrations/AzureLogAnalytics/AzureLogAnalytics.yml,Azure Log Analytics,,noydavidi,,,,,,,,,,,,,,
