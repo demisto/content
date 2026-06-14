@@ -253,6 +253,108 @@ script:
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
 
+  - name: gpt-analyze-email-header
+    description: Analyze email headers for potential security issues using the OpenAI Responses API. This is the Responses-API counterpart of gpt-check-email-header (which uses the Chat Completions API).
+    arguments:
+    - name: entry_id
+      description: Entry ID of an uploaded '.eml' file.
+      required: true
+      type: String
+
+    - name: additional_instructions
+      description: Additional instructions or security issue to focus on. Substituted into the prompt template.
+      required: false
+      type: String
+
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response. Maps internally to the API body field max_output_tokens.
+      type: Number
+
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+      type: Number
+
+    - name: top_p
+      required: false
+      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended altering this or temperature but not both.
+      type: Number
+
+    - name: reasoning_effort
+      required: false
+      description: Reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
+      auto: PREDEFINED
+      predefined:
+      - 'low'
+      - 'medium'
+      - 'high'
+      type: String
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Response
+      description: Conversation state including the response_id.
+      type: Unknown
+    - contextPath: OpenAiChatGPTV3.Response.user
+      description: The prompt sent to the model.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.assistant
+      description: The assistant response text.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.response_id
+      description: The OpenAI response ID.
+      type: String
+
+  - name: gpt-analyze-email-body
+    description: Analyze email body for potential security risks using the OpenAI Responses API. This is the Responses-API counterpart of gpt-check-email-body (which uses the Chat Completions API).
+    arguments:
+    - name: entry_id
+      description: Entry ID of an uploaded '.eml' file.
+      required: true
+      type: String
+
+    - name: additional_instructions
+      description: Additional instructions or security issue to focus on. Substituted into the prompt template.
+      required: false
+      type: String
+
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response. Maps internally to the API body field max_output_tokens.
+      type: Number
+
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+      type: Number
+
+    - name: top_p
+      required: false
+      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended altering this or temperature but not both.
+      type: Number
+
+    - name: reasoning_effort
+      required: false
+      description: Reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
+      auto: PREDEFINED
+      predefined:
+      - 'low'
+      - 'medium'
+      - 'high'
+      type: String
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Response
+      description: Conversation state including the response_id.
+      type: Unknown
+    - contextPath: OpenAiChatGPTV3.Response.user
+      description: The prompt sent to the model.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.assistant
+      description: The assistant response text.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.response_id
+      description: The OpenAI response ID.
+      type: String
+
   - name: gpt-check-email-body
     description: Check email body for possible security issues. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
     arguments:
@@ -356,6 +458,7 @@ script:
       required: false
       description: Discard the existing OpenAiChatGPTV3.ResponsesConversation and start fresh.
       defaultValue: 'no'
+      auto: PREDEFINED
       predefined:
       - 'yes'
       - 'no'
@@ -363,14 +466,17 @@ script:
     - name: max_tokens
       required: false
       description: The maximum number of output tokens. Falls back to instance config. Maps internally to the API body field max_output_tokens.
+      type: Number
 
     - name: temperature
       required: false
       description: Falls back to instance config. Range 0-2. Sets the randomness in responses.
+      type: Number
 
     - name: top_p
       required: false
       description: Falls back to instance config. Range 0-1. Enables nucleus sampling.
+      type: Number
 
     - name: reasoning_effort
       required: false
@@ -387,6 +493,7 @@ script:
     - name: background
       required: false
       description: Whether to run the model response in the background. When true, the command uses polling to wait for the response to complete.
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -394,6 +501,7 @@ script:
     - name: compact_threshold
       required: false
       description: Token threshold at which compaction should be triggered for this entry. Minimum 1000.
+      type: Number
 
     - name: model
       required: false

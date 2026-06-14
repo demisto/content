@@ -849,6 +849,217 @@ def check_email_body_command(client: OpenAiClient, args: dict[str, Any]) -> Comm
     return check_email_part(EmailParts.BODY, client, args)
 
 
+def analyze_email_header_command(client: OpenAiClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+    """Analyze email headers using the OpenAI Responses API.
+
+    This is the Responses-API counterpart of ``gpt-check-email-header`` (which uses
+    Chat Completions). It parses the uploaded ``.eml`` file, builds the same prompt
+    template, and sends it via ``POST /v1/responses`` with ``store: false``.
+
+    Two war-room entries are produced (matching the ``gpt-check-email-header`` UX):
+      1. A table of the parsed email headers.
+      2. The AI verdict followed by a token-usage table (with a *Reasoning tokens*
+         row when a reasoning model is used).
+
+    Args:
+        client: The configured ``OpenAiClient`` instance.
+        args: Command arguments from ``demisto.args()``.
+        params: Instance parameters from ``demisto.params()``.
+
+    Returns:
+        A ``CommandResults`` with the AI analysis and usage info.
+    """
+    # --- Parse the .eml file ---
+    entry_id: str = args.get(ArgAndParamNames.ENTRY_ID, "")
+    email_headers, _, _, file_name = get_email_parts(entry_id)
+
+    if not email_headers:
+        raise DemistoException("'parse_emails' did not extract any email headers from the provided file.")
+
+    # --- Build the prompt (identical template to gpt-check-email-header) ---
+    additional_instructions = (
+        args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "") if args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "") else ""
+    )
+
+    email_headers_formatted = {
+        header["name"]: header["value"] for header in email_headers if "name" in header and "value" in header
+    }
+    readable_input = tableToMarkdown(name=f"{file_name} headers:", t=email_headers_formatted, sort_headers=False)
+    prompt = CHECK_EMAIL_HEADERS_PROMPT.format(additional_instructions, readable_input)
+
+    demisto.debug(f"[Analyze Email Header] Built prompt | length={len(prompt)} chars")
+
+    # --- Resolve model: command arg > instance param ---
+    model: str = args.get(ArgAndParamNames.MODEL, "") or client.model
+    if not model:
+        raise DemistoException("No model specified. Provide it as a command argument or configure it in the instance settings.")
+
+    # --- Build the Responses API request body ---
+    body: dict[str, Any] = {
+        "model": model,
+        "input": prompt,
+        "store": False,
+    }
+
+    # max_output_tokens: command arg > instance param
+    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS) or params.get(ArgAndParamNames.MAX_TOKENS)
+    if max_output_tokens:
+        body["max_output_tokens"] = int(max_output_tokens)
+
+    # temperature: command arg > instance param
+    temperature = args.get(ArgAndParamNames.TEMPERATURE) or params.get(ArgAndParamNames.TEMPERATURE)
+    if temperature:
+        body["temperature"] = float(temperature)
+
+    # top_p: command arg > instance param
+    top_p = args.get(ArgAndParamNames.TOP_P) or params.get(ArgAndParamNames.TOP_P)
+    if top_p:
+        body["top_p"] = float(top_p)
+
+    # reasoning_effort (only for reasoning model families)
+    reasoning_effort = args.get("reasoning_effort")
+    if reasoning_effort:
+        body["reasoning"] = {"effort": reasoning_effort}
+
+    # --- Call the Responses API ---
+    response = client.create_response(body)
+
+    # --- Extract the assistant's verdict ---
+    assistant_message = extract_response_output_text(response)
+    readable_output = _build_response_readable_output(response, assistant_message, model)
+
+    # --- Emit the headers table as a first war-room entry (same UX as gpt-check-email-header) ---
+    return_results(
+        CommandResults(
+            readable_output=readable_input,
+            outputs_prefix="OpenAiChatGPTV3.EmailHeaders",
+            outputs={"EmailHeaders": readable_input, "Response": response},
+            replace_existing=True,
+        )
+    )
+
+    # --- Return the AI verdict + usage table as the second war-room entry ---
+    return CommandResults(
+        outputs_prefix="OpenAiChatGPTV3.Response",
+        outputs=[
+            {
+                Roles.USER: prompt,
+                Roles.ASSISTANT: assistant_message,
+                "response_id": response.get("id", ""),
+            }
+        ],
+        replace_existing=True,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def analyze_email_body_command(client: OpenAiClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+    """Analyze email body for security risks using the OpenAI Responses API.
+
+    This is the Responses-API counterpart of ``gpt-check-email-body`` (which uses
+    Chat Completions). It parses the uploaded ``.eml`` file, builds the same prompt
+    template, and sends it via ``POST /v1/responses`` with ``store: false``.
+
+    Two war-room entries are produced (matching the ``gpt-check-email-body`` UX):
+      1. A table of the parsed email body (text and HTML).
+      2. The AI verdict followed by a token-usage table (with a *Reasoning tokens*
+         row when a reasoning model is used).
+
+    Args:
+        client: The configured ``OpenAiClient`` instance.
+        args: Command arguments from ``demisto.args()``.
+        params: Instance parameters from ``demisto.params()``.
+
+    Returns:
+        A ``CommandResults`` with the AI analysis and usage info.
+    """
+    # --- Parse the .eml file ---
+    entry_id: str = args.get(ArgAndParamNames.ENTRY_ID, "")
+    _, email_text_body, email_html_body, file_name = get_email_parts(entry_id)
+
+    if not email_text_body and not email_html_body:
+        raise DemistoException("'email_parser' did not extract any email body from the provided file.")
+
+    # --- Build the prompt (identical template to gpt-check-email-body) ---
+    additional_instructions = (
+        args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "") if args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "") else ""
+    )
+
+    email_text_body = email_text_body if email_text_body else ""
+    email_html_body = email_html_body if email_html_body else ""
+    email_body = {"Body/Text": email_text_body, "HTML/Text": email_html_body}
+
+    readable_input = tableToMarkdown(name=f"{file_name} body:", t=email_body, sort_headers=False)
+    prompt = CHECK_EMAIL_BODY_PROMPT.format(additional_instructions, readable_input)
+
+    demisto.debug(f"[Analyze Email Body] Built prompt | length={len(prompt)} chars")
+
+    # --- Resolve model: command arg > instance param ---
+    model: str = args.get(ArgAndParamNames.MODEL, "") or client.model
+    if not model:
+        raise DemistoException("No model specified. Provide it as a command argument or configure it in the instance settings.")
+
+    # --- Build the Responses API request body ---
+    body: dict[str, Any] = {
+        "model": model,
+        "input": prompt,
+        "store": False,
+    }
+
+    # max_output_tokens: command arg > instance param
+    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS) or params.get(ArgAndParamNames.MAX_TOKENS)
+    if max_output_tokens:
+        body["max_output_tokens"] = int(max_output_tokens)
+
+    # temperature: command arg > instance param
+    temperature = args.get(ArgAndParamNames.TEMPERATURE) or params.get(ArgAndParamNames.TEMPERATURE)
+    if temperature:
+        body["temperature"] = float(temperature)
+
+    # top_p: command arg > instance param
+    top_p = args.get(ArgAndParamNames.TOP_P) or params.get(ArgAndParamNames.TOP_P)
+    if top_p:
+        body["top_p"] = float(top_p)
+
+    # reasoning_effort (only for reasoning model families)
+    reasoning_effort = args.get("reasoning_effort")
+    if reasoning_effort:
+        body["reasoning"] = {"effort": reasoning_effort}
+
+    # --- Call the Responses API ---
+    response = client.create_response(body)
+
+    # --- Extract the assistant's verdict ---
+    assistant_message = extract_response_output_text(response)
+    readable_output = _build_response_readable_output(response, assistant_message, model)
+
+    # --- Emit the body table as a first war-room entry (same UX as gpt-check-email-body) ---
+    return_results(
+        CommandResults(
+            readable_output=readable_input,
+            outputs_prefix="OpenAiChatGPTV3.EmailBody",
+            outputs={"EmailBody": readable_input, "Response": response},
+            replace_existing=True,
+        )
+    )
+
+    # --- Return the AI verdict + usage table as the second war-room entry ---
+    return CommandResults(
+        outputs_prefix="OpenAiChatGPTV3.Response",
+        outputs=[
+            {
+                Roles.USER: prompt,
+                Roles.ASSISTANT: assistant_message,
+                "response_id": response.get("id", ""),
+            }
+        ],
+        replace_existing=True,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def create_soc_email_template_command(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
     additional_instructions = (
         f"Additional instructions: {args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS)}\n"
@@ -1130,11 +1341,13 @@ def _build_completed_response_result(response: dict[str, Any], args: dict[str, A
     response_id = response.get("id", "")
 
     # Store conversation step with response_id for multi-turn continuity
-    conversation_step = [{
-        Roles.USER: message,
-        Roles.ASSISTANT: assistant_message,
-        "response_id": response_id,
-    }]
+    conversation_step = [
+        {
+            Roles.USER: message,
+            Roles.ASSISTANT: assistant_message,
+            "response_id": response_id,
+        }
+    ]
 
     readable_output = _build_response_readable_output(response, assistant_message, model)
 
@@ -1984,6 +2197,10 @@ COMMAND_MAP: dict[str, Callable[["OpenAiClient", dict[str, Any], dict[str, Any]]
     "gpt-check-email-header": lambda client, args, params: check_email_headers_command(client=client, args=args),
     "gpt-check-email-body": lambda client, args, params: check_email_body_command(client=client, args=args),
     "gpt-create-soc-email-template": lambda client, args, params: create_soc_email_template_command(client=client, args=args),
+    "gpt-analyze-email-header": lambda client, args, params: analyze_email_header_command(
+        client=client, args=args, params=params
+    ),
+    "gpt-analyze-email-body": lambda client, args, params: analyze_email_body_command(client=client, args=args, params=params),
     "gpt-create-response": lambda client, args, params: create_response_command(client=client, args=args, params=params),
     "fetch-events": lambda client, args, params: fetch_events_command(client=client, params=params),
     "openai-get-events": lambda client, args, params: get_events_command(client=client, args=args, params=params),

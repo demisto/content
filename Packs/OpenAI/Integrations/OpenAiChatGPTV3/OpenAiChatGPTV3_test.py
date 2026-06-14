@@ -16,6 +16,8 @@ from OpenAiChatGPTV3 import (
     SourceLogType,
     _extract_credential,
     _parse_json_or_concatenated,
+    analyze_email_body_command,
+    analyze_email_header_command,
     check_email_part,
     deduplicate_events,
     enrich_audit_event,
@@ -97,6 +99,134 @@ def test_check_email_parts(mocker, email_part: str, args: dict):
 
     client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-4", proxy=False, verify=False)
     check_email_part(email_part, client, args)
+
+
+@pytest.mark.parametrize(
+    "args, params",
+    [
+        (
+            {"entry_id": "XYZ", "additional_instructions": "Pay close attention to SPF/DKIM."},
+            {},
+        ),
+        (
+            {"entry_id": "XYZ"},
+            {"max_tokens": "200", "temperature": "0.5", "top_p": "0.9"},
+        ),
+        (
+            {
+                "entry_id": "XYZ",
+                "max_tokens": "100",
+                "temperature": "0.1",
+                "top_p": "0.5",
+                "reasoning_effort": "high",
+            },
+            {},
+        ),
+    ],
+    ids=[
+        "with-additional-instructions",
+        "with-instance-params-fallback",
+        "with-all-args-and-reasoning",
+    ],
+)
+def test_analyze_email_header_command(mocker, args: dict, params: dict):
+    """Tests 'analyze_email_header_command' using the Responses API."""
+    mock_response = util_load_json("test_data/mock_responses_api_response.json")
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=mock_response)
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/attachment_malicious_url.eml", "name": "attachment_malicious_url.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    result = analyze_email_header_command(client, args, params)
+
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.raw_response == mock_response
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["response_id"] == "resp_XXXX"
+    assert "SPF" in result.outputs[0]["assistant"]
+    assert result.readable_output is not None
+    assert "gpt-5" in result.readable_output
+
+
+def test_analyze_email_header_command_no_headers(mocker):
+    """Tests that analyze_email_header_command raises when no headers are found."""
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/dummy_file.txt", "name": "dummy_file.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    with pytest.raises(Exception):
+        analyze_email_header_command(client, {"entry_id": "XYZ"}, {})
+
+
+@pytest.mark.parametrize(
+    "args, params",
+    [
+        (
+            {"entry_id": "XYZ", "additional_instructions": "Check for phishing links."},
+            {},
+        ),
+        (
+            {"entry_id": "XYZ"},
+            {"max_tokens": "200", "temperature": "0.5", "top_p": "0.9"},
+        ),
+        (
+            {
+                "entry_id": "XYZ",
+                "max_tokens": "100",
+                "temperature": "0.1",
+                "top_p": "0.5",
+                "reasoning_effort": "high",
+            },
+            {},
+        ),
+    ],
+    ids=[
+        "with-additional-instructions",
+        "with-instance-params-fallback",
+        "with-all-args-and-reasoning",
+    ],
+)
+def test_analyze_email_body_command(mocker, args: dict, params: dict):
+    """Tests 'analyze_email_body_command' using the Responses API."""
+    mock_response = util_load_json("test_data/mock_responses_api_response.json")
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=mock_response)
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/attachment_malicious_url.eml", "name": "attachment_malicious_url.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    result = analyze_email_body_command(client, args, params)
+
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.raw_response == mock_response
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["response_id"] == "resp_XXXX"
+    assert result.readable_output is not None
+    assert "gpt-5" in result.readable_output
+
+
+def test_analyze_email_body_command_no_body(mocker):
+    """Tests that analyze_email_body_command raises when no body is found."""
+    # Mock an .eml file that has headers but no body
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/dummy_file.txt", "name": "dummy_file.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    with pytest.raises(Exception):
+        analyze_email_body_command(client, {"entry_id": "XYZ"}, {})
 
 
 @pytest.mark.parametrize(
