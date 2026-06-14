@@ -12,7 +12,7 @@ from googleapiclient import discovery
 
 """ IMPORTS """
 
-""" GLOBALS/PARAMS """!
+""" GLOBALS/PARAMS """!j
 
 # Params for assembling object of the Service Account Credentials File Contents
 PARAMS = demisto.params()
