@@ -64,6 +64,19 @@ A single XSOAR field that legitimately feeds more than one profile
 an OAuth profile that share the same secret) appears in **multiple
 entries**, listed inside each entry's `xsoar_param_map`. Entries are
 sorted by `(type, name)` ascending.
+
+**Distinct XSOAR keysets (validated).** No two profiles may consume the
+*exact same set* of XSOAR fields — i.e. two `auth_types[]` entries whose
+`xsoar_param_map` **keys** form the identical set are rejected by
+`set-auth`. Because profile relations are exclusive-OR, there must always
+be a distinct way to attribute a connection back to exactly one profile;
+two profiles reading the identical set of XSOAR fields are
+indistinguishable at runtime. Note the check is on the set of keys (the
+XSOAR field paths), independent of the role *values* they map to, so two
+profiles that read the same fields but assign different roles still
+collide. Sharing *some* fields is fine (a field may appear in multiple
+entries, and one profile's field set may be a subset of another's); only
+an *identical* field set across entries is an error.
 - `auth_types[].type` — Auth-type enum value identifying the kind of
   connection this entry describes (see the enum table in
   [`Readme.md`](Readme.md:19)). Pick exactly one.
