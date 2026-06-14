@@ -270,6 +270,29 @@ def create_client(
     Returns:
         A configured ``demisto_client`` instance with TLS verification disabled
         (suitable for dev tenants — do not use in production with that flag).
+
+    PROXY BYPASS (why ``proxy=""`` below)
+    -------------------------------------
+    When this runs under the idex CLI / VS Code, that process injects
+    ``HTTPS_PROXY`` / ``HTTP_PROXY`` into the agent subprocess. The corporate
+    proxy then 403s the HTTPS ``CONNECT`` tunnel to the XSOAR tenant, producing
+    ``ProxyError('Unable to connect to proxy', ...)`` against the
+    ``api-<tenant>`` host. In a plain terminal (no proxy injected) the same call
+    works because the SDK connects directly.
+
+    Setting ``NO_PROXY`` does NOT help here: ``demisto_client.configure()``
+    reads ``HTTPS_PROXY``/``HTTP_PROXY`` directly via ``os.getenv`` and passes
+    the URL to a raw ``urllib3.ProxyManager`` (see ``demisto_api/rest.py``),
+    which has no ``NO_PROXY`` bypass logic — every request is proxied
+    unconditionally. The tenant is proven reachable directly (urllib 200 /
+    curl 303 with no proxy), and it is the only host this client talks to, so we
+    explicitly disable the proxy for this SDK client.
+
+    Mechanism: pass ``proxy=""`` so ``configure()`` does NOT fall back to
+    ``os.getenv('HTTPS_PROXY')`` (its fallback only triggers when ``proxy is
+    None``); an empty string is falsy in ``rest.py``'s ``if configuration.proxy``
+    check, so the SDK builds a plain ``urllib3.PoolManager`` (direct, no proxy).
+    We also defensively null out ``configuration.proxy`` on the built client.
     """
     base_url = base_url or DEFAULT_BASE_URL
     api_key = api_key or DEFAULT_API_KEY
@@ -284,7 +307,13 @@ def create_client(
         api_key=api_key,
         auth_id=auth_id,
         verify_ssl=False,
+        # Empty string (not None) so the SDK does NOT fall back to the injected
+        # HTTPS_PROXY/HTTP_PROXY env vars. Reaches the tenant directly.
+        proxy="",
     )
+    # Defense-in-depth: ensure the configuration carries no proxy even if a
+    # future SDK version changes how the proxy arg is interpreted.
+    client.api_client.configuration.proxy = None
     client.api_client.user_agent = "connectus-params-parity/xsoar_capture"
     return client
 

@@ -18,10 +18,12 @@ import tenant_lock
 # ---------------------------------------------------------------------------
 @pytest.fixture(autouse=True)
 def _pass_preflight(monkeypatch):
-    """These tests exercise the deploy/parity/lock logic, not preflight — make
-    preflight always pass so it doesn't short-circuit (it's tested separately in
-    preflight_check_test.py)."""
+    """These tests exercise the deploy/parity/lock logic, not preflight/session —
+    make preflight always pass AND the session always live so they don't
+    short-circuit (preflight is tested in preflight_check_test.py, the session in
+    session_env_test.py)."""
     monkeypatch.setattr(dat, "_run_preflight", lambda integration_ids: True)
+    monkeypatch.setattr(dat.session_env, "assert_session_live", lambda: None)
 
 
 @pytest.fixture
@@ -145,6 +147,20 @@ def test_preflight_fail_exit_40(monkeypatch):
     assert rc == dat.EXIT_PREFLIGHT_FAIL
     assert acquired["n"] == 0  # never acquired the lock
     assert deployed["n"] == 0  # never deployed
+
+
+def test_session_not_ready_exit_11(monkeypatch):
+    """A dead/missing session (SessionNotReady) → exit 11 BLOCKED, before lock/deploy."""
+    def _boom():
+        raise dat.session_env.SessionNotReady(
+            dat.session_env.STATUS_NOT_INITIALIZED, "run session_setup.py"
+        )
+    monkeypatch.setattr(dat.session_env, "assert_session_live", _boom)
+    # If it proceeded, these would be called — ensure they are NOT reached.
+    monkeypatch.setattr(tenant_lock, "acquire",
+                        lambda *a, **k: (_ for _ in ()).throw(AssertionError("should not acquire")))
+    rc = dat.run(["IntA"], "T1", max_wait=0, force=False)
+    assert rc == dat.EXIT_PARITY_BLOCK
 
 
 def test_skip_preflight_bypasses_gate(monkeypatch, mock_lock):

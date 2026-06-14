@@ -208,16 +208,137 @@ def _check_tool_on_path(tool: str) -> CheckResult:
     )
 
 
+def _check_gcloud_authed() -> CheckResult:
+    """gcloud must have an active account (a valid identity for GKE access).
+
+    Human-only dependency: if unset/expired the operator must run
+    ``gcloud auth login`` — the agent cannot perform a browser login.
+    """
+    import subprocess
+
+    name = "gcloud authenticated"
+    try:
+        res = subprocess.run(
+            ["gcloud", "config", "get-value", "account"],
+            capture_output=True, text=True, timeout=30,
+        )
+    except Exception as e:  # pragma: no cover - defensive
+        return CheckResult(name, False, f"gcloud auth check failed to run: {e}")
+    account = (res.stdout or "").strip()
+    if res.returncode != 0 or not account or account.lower() == "(unset)":
+        return CheckResult(
+            name, False,
+            "no active gcloud account - run `gcloud auth login` in your terminal.",
+        )
+    return CheckResult(name, True, account)
+
+
+def _check_auth_plugin() -> CheckResult:
+    """gke-gcloud-auth-plugin must be on PATH for kubectl->GKE auth.
+
+    On failure, try to LOCATE the plugin next to the real gcloud (the Homebrew
+    cask bundles it in the SDK bin but does NOT symlink it onto PATH). If found,
+    emit the exact PATH remedy; otherwise give platform-appropriate install
+    advice. The pass/fail semantics depend ONLY on PATH availability — locating
+    the bundled binary just makes the failure detail actionable.
+    """
+    name = "gke-gcloud-auth-plugin present"
+    path = shutil.which("gke-gcloud-auth-plugin")
+    if path:
+        return CheckResult(name, True, path)
+
+    # Not on PATH. Try to find it bundled next to the real gcloud binary.
+    gcloud_path = shutil.which("gcloud")
+    if gcloud_path:
+        real = os.path.realpath(gcloud_path)
+        sdk_bin = os.path.dirname(real)
+        candidate = os.path.join(sdk_bin, "gke-gcloud-auth-plugin")
+        if os.path.isfile(candidate):
+            return CheckResult(
+                name, False,
+                f"gke-gcloud-auth-plugin is installed at {candidate} but not on "
+                f"PATH. Add its dir to PATH: "
+                f"echo 'export PATH=\"{sdk_bin}:$PATH\"' >> ~/.zshrc && exec zsh  "
+                f"(Note: 'gcloud components install' is a no-op for Homebrew-"
+                f"managed gcloud, and there is no 'brew install "
+                f"gke-gcloud-auth-plugin' formula.)",
+            )
+
+    # Truly missing — distinguish macOS/Homebrew from Linux.
+    if _sys.platform == "darwin":
+        return CheckResult(
+            name, False,
+            "gke-gcloud-auth-plugin not found on PATH and not bundled next to "
+            "gcloud. On macOS reinstall the cask: brew reinstall --cask "
+            "google-cloud-sdk, then add the SDK bin to PATH "
+            "(e.g. echo 'export PATH=\"$(dirname \"$(readlink -f \"$(which "
+            "gcloud)\")\"):$PATH\"' >> ~/.zshrc && exec zsh). Note: 'gcloud "
+            "components install' is a no-op for Homebrew-managed gcloud.",
+        )
+    return CheckResult(
+        name, False,
+        "gke-gcloud-auth-plugin not found on PATH - install it "
+        "(gcloud components install gke-gcloud-auth-plugin, or the apt package "
+        "google-cloud-cli-gke-gcloud-auth-plugin).",
+    )
+
+
+def _check_gke_reachable() -> CheckResult:
+    """The GKE control-plane must be reachable (i.e. on the israel-gw VPN).
+
+    Lightweight ``kubectl version`` round-trip. A control-plane timeout means
+    the host is not on the israel-gw VPN. Assumes ``gcloud get-credentials`` has
+    already configured a kubeconfig context (run by session_setup AFTER it).
+    """
+    import subprocess
+
+    name = "GKE control-plane reachable (israel-gw VPN)"
+    try:
+        res = subprocess.run(
+            ["kubectl", "version", "--output=json", "--request-timeout=10s"],
+            capture_output=True, text=True, timeout=30,
+        )
+    except subprocess.TimeoutExpired:
+        return CheckResult(
+            name, False,
+            "kubectl timed out reaching the cluster - connect to the 'israel-gw' VPN.",
+        )
+    except Exception as e:  # pragma: no cover - defensive
+        return CheckResult(name, False, f"kubectl reachability check failed to run: {e}")
+    low = (res.stderr or "").lower()
+    if res.returncode != 0 and (
+        "i/o timeout" in low
+        or "unable to connect to the server" in low
+        or "couldn't get current server api group list" in low
+    ):
+        return CheckResult(
+            name, False,
+            "GKE control-plane unreachable (timeout) - connect to the 'israel-gw' VPN.",
+        )
+    # A non-connectivity non-zero rc still proves the control-plane answered.
+    return CheckResult(name, True, "control-plane answered")
+
+
 # ---------------------------------------------------------------------------
 # Orchestration
 # ---------------------------------------------------------------------------
 
 
-def run_preflight(integration_id: Optional[str]) -> list[CheckResult]:
+def run_preflight(
+    integration_id: Optional[str],
+    *,
+    for_session_setup: bool = False,
+) -> list[CheckResult]:
     """Run all preflight checks; return the per-check results.
 
     ``integration_id`` is optional — when None, the resolver check is skipped
     (useful for a pure environment check).
+
+    ``for_session_setup`` — when True, ALSO run the session-establishment VERIFY
+    checks the human-run ``session_setup.py`` needs: gcloud authenticated and the
+    gke-gcloud-auth-plugin present. (The GKE-reachability check
+    ``_check_gke_reachable`` is run separately by session_setup AFTER
+    get-credentials, since it needs a configured kubeconfig.)
     """
     results = [
         _check_required_env(),
@@ -227,6 +348,9 @@ def run_preflight(integration_id: Optional[str]) -> list[CheckResult]:
         _check_tool_on_path("gcloud"),
         _check_tool_on_path("kubectl"),
     ]
+    if for_session_setup:
+        results.append(_check_gcloud_authed())
+        results.append(_check_auth_plugin())
     if integration_id:
         results.append(_check_resolver(integration_id))
     return results
