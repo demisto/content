@@ -440,7 +440,7 @@ def create_integration_instance(
         extra_fields: Optional mapping of field name -> value for params that
             are NOT declared in the server configuration schema but must still
             be sent in the instance ``data`` list (e.g. backend-synthesized
-            fetch/feed config params like ``alertFetchInterval`` / ``alertType``
+            fetch/feed config params like ``alertFetchInterval`` / ``incidentType``
             that the BE auto-adds based on the YML script flags). Each is
             injected into ``data`` (mirroring the magic-key injection) unless a
             param of the same name is already present from the server schema.
