@@ -154,7 +154,12 @@ def extract_file_info(entry_id: str) -> tuple:
             demisto.debug(f"{file_type=} seems wrong, changing it to {file_info=}")
             file_type = file_info
 
-        if file_name and file_name.lower().endswith(".eml") and file_type and ("iso-8859" in file_type.lower() or "mime entity" in file_type.lower()):
+        if (
+            file_name
+            and file_name.lower().endswith(".eml")
+            and file_type
+            and ("iso-8859" in file_type.lower() or "mime entity" in file_type.lower())
+        ):
             demisto.debug(f"Detected EML file misclassified as text ({file_type}). Forcing RFC822 parsing.")
             file_type = "RFC 822 mail text"
 
