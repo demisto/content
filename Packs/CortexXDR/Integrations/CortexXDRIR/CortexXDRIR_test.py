@@ -3093,8 +3093,8 @@ def test_case_list_command(args, expected_filters, expected_sort, expected_searc
         ({"extra_data": "true"}, 0, 50),
         # automatic pagination driven by limit -> window [0, 10)
         ({"extra_data": "true", "limit": "10"}, 0, 10),
-        # manual pagination with page + page_size -> limit ignored, window [10, 20)
-        ({"extra_data": "true", "limit": "10", "page": "2", "page_size": "5"}, 10, 20),
+        # manual pagination with page + page_size -> limit ignored, window [10, 15)
+        ({"extra_data": "true", "limit": "10", "page": "2", "page_size": "5"}, 10, 15),
     ],
     ids=["auto-default", "auto-limit", "manual-paged"],
 )
@@ -4267,6 +4267,7 @@ def test_case_list_command_extra_data_returns_normalized_cases(mocker):
     assert result.outputs_key_field == "case_id"
     assert result.raw_response == raw_records
 
+    assert isinstance(result.outputs, list)
     assert len(result.outputs) == 1
     case = result.outputs[0]
     assert case["case_id"] == "100"

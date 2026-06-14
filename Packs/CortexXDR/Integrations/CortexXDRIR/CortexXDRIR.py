@@ -2848,21 +2848,17 @@ def normalize_case_data_record(incident_record: Dict[str, Any]) -> Dict[str, Any
 
     case_id = case.get("case_id")
 
-    issues = dict_safe_get("alerts", "data")
-    if issues:
-        for issue in issues:
-            issue.setdefault("case_id", case_id)
-        case["Issues"] = issues
-    file_artifacts = dict_safe_get("file_artifacts", "data")
-    if file_artifacts:
-        for file_artifact in file_artifacts:
-            file_artifact.setdefault("case_id", case_id)
-        case["FileArtifacts"] = file_artifacts
-    network_artifacts = dict_safe_get("network_artifacts", "data")
-    if network_artifacts:
-        for network_artifact in network_artifacts:
-            network_artifact.setdefault("case_id", case_id)
-        case["NetworkArtifacts"] = network_artifacts
+    nested_data_map = {
+        "alerts": "Issues",
+        "file_artifacts": "FileArtifacts",
+        "network_artifacts": "NetworkArtifacts",
+    }
+    for source_key, case_key in nested_data_map.items():
+        records = dict_safe_get(incident_record, [source_key, "data"], default_return_value=[], return_type=list)
+        if records:
+            for record in records:
+                record.setdefault("case_id", case_id)
+            case[case_key] = records
 
     return case
 
@@ -2974,11 +2970,10 @@ def case_list_with_extra_data(
     search_from: int,
     search_to: int,
 ) -> CommandResults:
-
     mapped_sort_field = {
         "case_id": "incident_id",
         "creation_time": "creation_time",
-    }.get(sort_field)
+    }.get(sort_field or "")
 
     raw_records = client.get_multiple_incidents_extra_data(
         exclude_artifacts=False,
