@@ -20,6 +20,7 @@ fixtures/
       input/
         integration.yml                        # the integration being generated
         connectors/<slug>/...                  # OPTIONAL pre-existing manifest
+        sub_capabilities_to_licenses.json      # OPTIONAL per-case license registry
       expected/
         connectors/<slug>/...                  # expected output tree
         CODEOWNERS                             # OPTIONAL (from-scratch cases)
@@ -82,7 +83,21 @@ contains a `case.json` and turns each into its own parametrized pytest case
 2. **Licenses:** every sub-capability id the run produces
    (`<capability>_<integration-id-slug>`) MUST exist in
    `sub_capabilities_to_licenses.json`, or the run raises `RuntimeError`. Pick
-   integration `commonfields.id` values and `mapped_params` accordingly.
+   integration `commonfields.id` values and `mapped_params` accordingly — **or**
+   drop a per-case `input/sub_capabilities_to_licenses.json` (see below) so the
+   case introduces synthetic sub-capability ids without touching the shared
+   production registry.
+
+### Per-case license registry override (optional)
+
+When a case needs sub-capability ids that aren't in the production
+`sub_capabilities_to_licenses.json`, add an `input/sub_capabilities_to_licenses.json`
+to the case. When present, the harness points the generator at it (via the
+`CONNECTUS_SUB_CAPABILITIES_TO_LICENSES_PATH` env var the generator honours)
+instead of the shared production file — so the production registry stays
+untouched. The override file must list **every** sub-capability id the run
+produces for this case (e.g. `fetch-issues_<slug>`,
+`threat-intelligence-and-enrichment_<slug>`, `automation-and-remediation_<slug>`).
 
 > Tip: choosing a `connector_title` + integration ids that match a real
 > already-migrated connector (e.g. title `GitHub` with ids `GitHub` /

@@ -741,7 +741,7 @@ with the right network settings.
 - **XSOAR framework params** — `longRunning`, `feedReputation`,
   `feedExpirationInterval`, `feedReliability`, `feedTags`. Ignored
   entirely; not in `Auth Details`, not in `Params to Commands`.
-- **Hidden / deprecated params** — strictly excluded. A param with `hidden: true` or `hidden: [<list>]` does NOT go in `other_connection`, even if it's a connection-adjacent name like a legacy `host` or `url` alias. Use the visible variant only.
+- **Platform-hidden / deprecated params** — excluded. A param with `hidden: true` OR a `hidden:` list containing `platform` does NOT go in `other_connection`, even if it's a connection-adjacent name like a legacy `host` or `url` alias. Use the visible variant only. A `hidden:` list WITHOUT `platform` (e.g. `hidden: [xsoar]`) is NOT excluded — the param is visible on the platform and IS carried through (see §1.3).
 
 ##### Sorting requirement
 
@@ -816,16 +816,18 @@ Open the YML file and examine the `configuration` section. Extract ALL auth-rela
 | `hiddenusername: true` on type=9 params | Often means the credentials widget is being used as an API key, NOT username/password. The `<id>.identifier` leaf is **suppressed** — do NOT include it as a key in `xsoar_param_map`. The `<id>.password` leaf (if not also hidden) still maps normally. |
 | `hiddenpassword: true` on type=9 params | The `<id>.password` leaf is **suppressed** analogously — do NOT include it as a key in `xsoar_param_map`. The `<id>.identifier` leaf (if not also hidden) still maps normally. |
 | `display` and `displaypassword` labels | Reveal what the credential actually is (e.g., "Client ID" / "Client Secret" vs "Username" / "Password") |
-| `hidden: true` OR `hidden: [<list>]` (any non-empty hidden value) | **Excluded entirely from every CSV column** — does not appear as a key in any `xsoar_param_map`, not in `other_connection`, not in `Params to Commands`. Even if the source code still reads the param as a legacy fallback, the migration treats it as if it does not exist. |
+| `hidden: true` OR a `hidden:` list that contains `platform` | **Excluded entirely from every CSV column** — does not appear as a key in any `xsoar_param_map`, not in `other_connection`, not in `Params to Commands`. Even if the source code still reads the param as a legacy fallback, the migration treats it as if it does not exist. A `hidden:` list that does NOT contain `platform` (e.g. `hidden: [xsoar]`, `hidden: [marketplacev2]`) is **NOT** excluded — the param is still visible on the platform target and must be carried through. |
 | `deprecated: true` or `_deprecated` in param names | Ignore these entirely — they are no longer functional |
 | `additionalinfo` text | Often describes the auth mechanism in plain English |
 | Params named `auth_type` with `type: 15` | Indicates multi-auth integrations with user-selectable auth flow |
 
-**Key rule for hidden/deprecated params (strict):**
+**Key rule for hidden/deprecated params (platform-aware):**
 
-> Hidden YML params (either `hidden: true` or `hidden: [<list>]`) are **invisible to all migration tooling**. They are excluded from every workflow-data column. The visible siblings define the entire authentication / connection / per-command surface. This rule supersedes the older "check if they represent an old input path" guidance — even if a hidden param backs the same secret as a visible one, you do NOT key the hidden id in any `xsoar_param_map`. Key ONLY the visible id(s).
+> A YML param is excluded from all migration tooling ONLY when it is hidden **on the platform target** — i.e. `hidden: true` (hidden everywhere) OR a `hidden:` list that **contains `platform`**. Such params are **invisible to all migration tooling**: they are excluded from every workflow-data column, the visible siblings define the entire authentication / connection / per-command surface, and even if a platform-hidden param backs the same secret as a visible one, you do NOT key the hidden id in any `xsoar_param_map` — key ONLY the visible id(s).
 >
-> Rationale: the migration produces a clean, forward-looking ConnectUs manifest. Hidden params are by definition not exposed to the user; carrying them through the migration would re-surface them in places they shouldn't appear and would confuse downstream tooling that has no notion of XSOAR's per-platform `hidden` list.
+> **A `hidden:` list that does NOT contain `platform` is NOT excluded.** Params hidden only on other modules (`hidden: [xsoar]`, `hidden: [marketplacev2]`, `hidden: [xsoar, marketplacev2]`, etc.) remain **visible on the platform** and MUST be carried through the migration normally — they appear in `xsoar_param_map` / `other_connection` / `Params to Commands` exactly as any visible param would. Only the presence of `platform` in the list (or `hidden: true`) triggers exclusion.
+>
+> Rationale: the migration produces a clean, forward-looking ConnectUs manifest for the **platform** target. A param the platform user can still see and set must be migrated; only params the platform itself hides are dropped.
 
 **Hidden-leaf suppression for `type: 9` credentials (per-leaf, not per-param):**
 
@@ -970,7 +972,7 @@ Note: there is **no `markpass "auth params set"`** anymore — the verification 
 
 Before invoking `set-auth`, walk this checklist mentally. The validator will catch most of these but it's faster (and clearer) to catch them locally.
 
-- [ ] No `hidden: true` or `hidden: [<list>]` YML param appears as a key in any `auth_types[].xsoar_param_map`, in `other_connection`, or in `Params to Commands`. Hidden params are excluded entirely. (See §1.3.)
+- [ ] No platform-hidden YML param (`hidden: true`, or a `hidden:` list containing `platform`) appears as a key in any `auth_types[].xsoar_param_map`, in `other_connection`, or in `Params to Commands`. Params hidden only on non-platform modules (e.g. `hidden: [xsoar]`) are NOT excluded and ARE carried through. (See §1.3.)
 - [ ] Every YML param the source code reads as an auth secret is keyed in some `auth_types[].xsoar_param_map`.
 - [ ] No NON-auth param (URL, proxy, fetch interval, feature toggle, verify-SSL boolean) is keyed in any `xsoar_param_map`.
 - [ ] Every credentials-typed (YML type `9`) auth param appears in `xsoar_param_map` as the appropriate leaves, with `<id>.identifier` suppressed if YML `hiddenusername: true` and `<id>.password` suppressed if YML `hiddenpassword: true`. (See §1.3.)
@@ -1091,7 +1093,7 @@ How the collector maps YML → capabilities (so you can sanity-check, or derive 
 Define which integration commands need which parameter IDs (excluding connection-level params). See [`connectus/column-schemas.md`](column-schemas.md) for the JSON shape.
 
 - **The auth-aware ignore list is auto-unioned by the analyzer.** When the analyzer is run with `--integration-id "<Integration ID>"` (the canonical invocation above), the standalone `auth-params` call is NOT needed — the analyzer auto-unions every YML param id already declared in `Auth Details` (both the auth-secret params projected from `auth_types[].xsoar_param_map.keys()` — dotted leaves collapse to the segment before the first `.` — and every entry in `other_connection`) into its ignore set. These params MUST NOT appear in `Params to Commands` — `set-params-to-commands` will hard-reject the call if any of them does. `auth-params` / `context.auth_ignore_params` remain available for human display only.
-- Hidden YML params (`hidden: true` or `hidden: [<list>]`) MUST NOT appear in any per-command list. The `set-params-to-commands` validator does not currently enforce this; it is the analyst's responsibility per skill §1.3.
+- Platform-hidden YML params (`hidden: true`, or a `hidden:` list containing `platform`) MUST NOT appear in any per-command list. Params hidden only on non-platform modules (e.g. `hidden: [xsoar]`) ARE included normally. The `set-params-to-commands` validator does not currently enforce this; it is the analyst's responsibility per skill §1.3.
 
 > **Single-capability shortcut (run-through optimization).** When the `Collect Capabilities` cell (Step 3) resolved to **exactly one** capability (e.g. `["Automation"]`), every command trivially routes to that single capability in `Params to Capabilities` (Step 7 uses `connector_param_mapper.py`'s `_single_capability_shortcut`). The only command whose per-command param analysis is still needed for the connection is `test-module`. Pass `--single-capability-test-module-only` to the analyzer to skip analyzing the other commands:
 > ```bash

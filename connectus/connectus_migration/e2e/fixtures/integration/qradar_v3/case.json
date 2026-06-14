@@ -1,0 +1,18 @@
+{
+  "description": "IBM QRadar v3 (from scratch): a large SIEM content integration with many collection-tuning configuration params (fetch mode, mirroring options, advanced params) and a credentials (type 9) parameter, generated as the 'IBM QRadar' connector. Exercises the from-scratch scaffold over a high-command-count integration with an Automation capability and a Plain (Username & Password) auth profile derived from the QRadar credentials param.",
+  "connector_title": "IBM QRadar",
+  "mapped_params": {"Automation": [], "Fetch Issues": ["longRunning"]},
+  "auth_methods": {
+    "auth_types": [
+      {
+        "type": "Plain",
+        "name": "plain",
+        "xsoar_param_map": {
+          "credentials.identifier": "credentials",
+          "credentials.password": "credentials"
+        }
+      }
+    ],
+    "other_connection": ["server", "proxy", "insecure"]
+  }
+}

@@ -89,6 +89,14 @@ EXPECTED_DIR = "expected"
 INTEGRATION_YML = "integration.yml"
 CONNECTORS_DIRNAME = "connectors"
 
+# OPTIONAL per-case override for the sub-capability -> licenses registry. When
+# ``input/sub_capabilities_to_licenses.json`` exists, the harness points the
+# generator at it (via the env var the generator honours) instead of the shared
+# production registry. This lets a case introduce synthetic sub-capability ids
+# without mutating the real file.
+LICENSES_OVERRIDE_FILENAME = "sub_capabilities_to_licenses.json"
+LICENSES_OVERRIDE_ENV = "CONNECTUS_SUB_CAPABILITIES_TO_LICENSES_PATH"
+
 # Map of case.json ``manual_fields`` keys -> the CLI option name.
 _MANUAL_FIELD_OPTIONS = {
     "connector": "--manual-connector-fields",
@@ -139,6 +147,11 @@ class E2ECase:
     def input_connectors(self) -> Path:
         """The optional pre-seeded connectus manifest tree (may not exist)."""
         return self.input_dir / CONNECTORS_DIRNAME
+
+    @property
+    def licenses_override(self) -> Path:
+        """The optional per-case sub-capability licenses registry (may not exist)."""
+        return self.input_dir / LICENSES_OVERRIDE_FILENAME
 
     @property
     def expected_connectors(self) -> Path:
@@ -229,6 +242,13 @@ def run_generator(case: E2ECase, tmp_path: Path) -> RunResult:
             )
         cmd.extend([option, json.dumps(value)])
 
+    # Inherit the parent environment, optionally overriding the sub-capability
+    # licenses registry with this case's fixture file so synthetic sub-cap ids
+    # resolve without touching the shared production registry.
+    env = os.environ.copy()
+    if case.licenses_override.is_file():
+        env[LICENSES_OVERRIDE_ENV] = str(case.licenses_override.resolve())
+
     proc = subprocess.run(
         cmd,
         capture_output=True,
@@ -238,6 +258,7 @@ def run_generator(case: E2ECase, tmp_path: Path) -> RunResult:
         # the author image (path is relative to the content root). All other
         # paths we pass (integration yml, --connectors-root) are absolute.
         cwd=str(CONTENT_ROOT),
+        env=env,
     )
     return RunResult(
         returncode=proc.returncode,
@@ -267,6 +288,39 @@ def _strip_schema_directive(text: str) -> str:
 def load_yaml_semantic(path: Path) -> Any:
     """Load a YAML file as a plain Python object, directive line stripped."""
     return yaml.safe_load(_strip_schema_directive(path.read_text())) or {}
+
+
+def _canonicalize(value: Any) -> Any:
+    """Return an order-insensitive canonical form of a parsed-YAML object.
+
+    Ordering of list elements within a connector manifest (the order of fields
+    inside a capability / auth profile / serializer block, the order of
+    ``field_mappings`` entries, the order of sub-capability entries, etc.) is
+    NOT semantically meaningful — the platform keys everything by ``id`` /
+    ``field_name``, not by position. What matters is *existence*, *naming*, and
+    that every emitted/renamed id is referenced consistently across files.
+
+    This helper recursively canonicalizes so two trees that differ only in list
+    ordering compare equal:
+
+      * dict  -> dict with canonicalized values (dict comparison is already
+                 order-insensitive in Python).
+      * list  -> list of canonicalized elements, sorted by a stable key derived
+                 from each element's canonical JSON serialization.
+      * scalar -> unchanged.
+
+    Duplicate detection is preserved: a list with two identical elements stays
+    length-2 after sorting, so a genuine missing/extra entry still fails.
+    """
+    if isinstance(value, dict):
+        return {k: _canonicalize(v) for k, v in value.items()}
+    if isinstance(value, list):
+        canonical_items = [_canonicalize(item) for item in value]
+        return sorted(
+            canonical_items,
+            key=lambda item: json.dumps(item, sort_keys=True, default=str),
+        )
+    return value
 
 
 def _relative_files(root: Path) -> set[str]:
@@ -333,7 +387,10 @@ def compare_trees(produced: Path, expected: Path) -> TreeDiff:
         if rel.endswith((".yaml", ".yml")):
             p_data = load_yaml_semantic(p_file)
             e_data = load_yaml_semantic(e_file)
-            if p_data != e_data:
+            # Compare order-insensitively: list ordering inside a manifest is
+            # not meaningful (everything is keyed by id/field_name). Only
+            # existence, naming and values matter.
+            if _canonicalize(p_data) != _canonicalize(e_data):
                 diff.yaml_mismatches.append(
                     f"{rel}: produced={p_data!r} expected={e_data!r}"
                 )

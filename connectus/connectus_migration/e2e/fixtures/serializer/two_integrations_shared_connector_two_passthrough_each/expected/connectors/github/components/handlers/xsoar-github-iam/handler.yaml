@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-github-iam
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for GitHub IAM.
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: GitHub IAM
+    xsoar-pack-id: serializer
+  args: {}
+capabilities:
+- id: automation-and-remediation_github-iam
+  auth_options:
+  - id: passthrough.github_iam
+    workloads:
+    - xsoar-pod
+  - id: passthrough.github_iam_passthrough_secondary
+    workloads:
+    - xsoar-pod
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification
