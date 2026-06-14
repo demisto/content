@@ -1,0 +1,10 @@
+{
+    "cliName": "panoraysfindingfindingtext",
+    "description": "The detailed finding text from Panorays.",
+    "group": 0,
+    "id": "incident_panoraysfindingfindingtext",
+    "name": "Panorays Finding Text",
+    "associatedTypes": ["Panorays Finding"],
+    "type": "longText",
+    "fromVersion": "6.0.0"
+}

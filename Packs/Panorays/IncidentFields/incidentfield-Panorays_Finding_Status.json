@@ -1,0 +1,10 @@
+{
+    "cliName": "panoraysfindingstatus",
+    "description": "The current status of the Panorays finding.",
+    "group": 0,
+    "id": "incident_panoraysfindingstatus",
+    "name": "Panorays Finding Status",
+    "associatedTypes": ["Panorays Finding"],
+    "type": "shortText",
+    "fromVersion": "6.0.0"
+}

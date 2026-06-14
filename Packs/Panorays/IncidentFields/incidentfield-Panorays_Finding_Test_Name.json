@@ -1,0 +1,10 @@
+{
+    "cliName": "panoraysfindingstestname",
+    "description": "The name of the test that produced the Panorays finding.",
+    "group": 0,
+    "id": "incident_panoraysfindingstestname",
+    "name": "Panorays Finding Test Name",
+    "associatedTypes": ["Panorays Finding"],
+    "type": "shortText",
+    "fromVersion": "6.0.0"
+}

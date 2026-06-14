@@ -1,0 +1,10 @@
+{
+    "cliName": "panoraysfindingsubcategory",
+    "description": "The sub-category of the Panorays finding.",
+    "group": 0,
+    "id": "incident_panoraysfindingsubcategory",
+    "name": "Panorays Finding Sub Category",
+    "associatedTypes": ["Panorays Finding"],
+    "type": "shortText",
+    "fromVersion": "6.0.0"
+}
