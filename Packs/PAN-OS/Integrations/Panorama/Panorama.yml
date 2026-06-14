@@ -3852,6 +3852,9 @@ script:
   - arguments:
     - description: The device group to commit (Panorama instances). If omitted, commits all changes.
       name: device-group
+    - description: template
+      name: template
+      isArray: True
     - description: The commit description.
       name: description
     - description: The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request.
