@@ -767,6 +767,7 @@ print(f"General errors: {metrics.general_error}")
 ```
 
 ### Diagnostic Mode
+>
 > **Warning: `diagnostic_mode` is for debugging only**
 >
 > This mode is intended for short, supervised debugging sessions only, such as a single fetch cycle or a command run on verbose log levels.
