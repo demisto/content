@@ -182,7 +182,7 @@ def get_boundary_hashes(events: list[dict], boundary_time: str) -> list[str]:
         boundary_time: The event_time of the last (most recent) event.
 
     Returns:
-        MD5 hashes of all events at the boundary timestamp.
+        SHA-256 hashes of all events at the boundary timestamp.
     """
     hashes: list[str] = []
     for event in reversed(events):
@@ -228,10 +228,10 @@ def get_events_for_log_type(
         last_fetch_time: The previous cycle's last event_time; pairs with ``boundary_hashes``.
         on_page: Optional callback invoked once per post-dedup, post-enrichment page.
             When supplied, the function streams pages out instead of accumulating all
-            events in memory (used by long-running mode to bound peak RAM).
+            events in memory (used by fetch-events to bound peak RAM).
 
     Returns:
-        Either the full event list (legacy mode, ``on_page`` is None) OR only the last
+        Either the full event list (non-streaming, ``on_page`` is None) OR only the last
         page (streaming mode) — the caller needs the trailing slice to compute next-run
         state. Total event count is tracked separately via ``on_page`` invocations.
     """
@@ -365,7 +365,7 @@ def get_events_for_log_type(
             events.extend(processed)
 
         # Free the raw API response + wrappers we no longer need. In streaming mode this
-        # is critical (each page is ~17 MB), in legacy mode it's a small saving.
+        # is critical (each page is ~17 MB), in non-streaming mode it's a small saving.
         del page_events
         del processed
         del response
@@ -423,7 +423,7 @@ class FetchResult:
     """
 
     log_type_ui: str
-    events: list[dict] = field(default_factory=list)  # streaming: last page only; legacy: full list
+    events: list[dict] = field(default_factory=list)  # streaming: last page only; non-streaming: full list
     events_emitted: int = 0  # total events handed to consumer (or accumulated); used for saturation check
     next_run_state: dict | None = None  # None means preserve previous state
     error: str | None = None
@@ -436,7 +436,6 @@ def _fetch_log_type_task(
     last_run: dict,
     first_fetch_time: str,
     end_epoch: int,
-    end_timestamp: str,
     max_events_per_fetch_per_type: int,
     on_page: Callable[[list[dict]], None] | None = None,
 ) -> FetchResult:
@@ -446,9 +445,8 @@ def _fetch_log_type_task(
     Results are merged by the main thread after all threads complete.
 
     When ``on_page`` is supplied, events are streamed page-by-page to the callback
-    (used by long-running mode to keep memory bounded). The dedup that used to
-    live here now runs INSIDE get_events_for_log_type so it executes BEFORE pages
-    are emitted to the consumer.
+    (used by fetch-events to keep memory bounded). The dedup runs INSIDE
+    get_events_for_log_type so it executes BEFORE pages are emitted to the consumer.
 
     Args:
         client: Thread-safe API client (ContentClient/httpx).
@@ -456,9 +454,8 @@ def _fetch_log_type_task(
         last_run: Copy of the current last_run state dict.
         first_fetch_time: Human-readable first fetch time (e.g. "5 minutes").
         end_epoch: Fetch end time as epoch seconds (read-only).
-        end_timestamp: Fetch end time as ISO 8601 string (read-only).
         max_events_per_fetch_per_type: Maximum events to fetch for this log type.
-        on_page: Optional callback to stream each page out (long-running mode).
+        on_page: Optional callback to stream each page out (streaming mode).
 
     Returns:
         FetchResult with events (last page in streaming mode), events_emitted,
@@ -520,12 +517,12 @@ def _fetch_log_type_task(
             on_page=effective_callback,
         )
 
-        # In legacy mode `events` is the full list; in streaming mode it's only the last page
+        # Non-streaming: `events` is the full list. Streaming: it's only the last page,
         # but `page_count["n"]` is the true total handed to the consumer.
         result.events = events
         result.events_emitted = page_count["n"] if on_page is not None else len(events)
-        # Tell the caller whether this log type still has more windows to drain. When True, the
-        # long-running loop should keep looping immediately (we're behind), regardless of cap.
+        # Tell the caller whether this log type still has more windows to drain. When True, we're
+        # behind ⇒ fetch_events sets nextTrigger=0 so the engine re-dispatches immediately.
         result.window_capped = window_capped
 
         if events:
@@ -584,8 +581,8 @@ def fetch_events(
     returned event list will be EMPTY in this mode — the caller is responsible for
     counting/persisting events as they stream out.
 
-    Legacy mode (no ``on_page``): returns the full event list — preserved for the
-    classic fetch-events scheduled-command path (no breaking change).
+    Non-streaming mode (no ``on_page``): returns the full event list — used by the
+    manual ``menlo-security-get-events`` command.
 
     Args:
         client: Thread-safe API client.
@@ -593,14 +590,12 @@ def fetch_events(
         log_types: Selected log type UI names.
         first_fetch_time: Human-readable first fetch time (e.g. "5 minutes").
         max_events_per_fetch_per_type: Maximum events per log type per cycle.
-        on_page: Optional callback to stream pages out (long-running mode).
+        on_page: Optional callback to stream pages out (streaming mode).
 
     Returns:
         (next_run dict, list of all events — empty in streaming mode)
     """
-    end_dt = datetime.now(UTC)
-    end_epoch = int(end_dt.timestamp())
-    end_timestamp = end_dt.strftime(DATE_FORMAT)
+    end_epoch = int(datetime.now(UTC).timestamp())
     streaming = on_page is not None
 
     demisto.debug(f"[fetch-events] Starting parallel fetch for: {log_types} (streaming={streaming})")
@@ -615,7 +610,6 @@ def fetch_events(
                 last_run=dict(last_run),  # copy per thread — no shared mutable state
                 first_fetch_time=first_fetch_time,
                 end_epoch=end_epoch,
-                end_timestamp=end_timestamp,
                 max_events_per_fetch_per_type=max_events_per_fetch_per_type,
                 on_page=on_page,
             ): log_type_ui
@@ -647,9 +641,9 @@ def fetch_events(
         if result.error:
             demisto.error(f"[fetch-events] {result.log_type_ui}: error — previous state preserved.")
             continue
-        # In legacy mode, accumulate the full list; in streaming mode, the producer already
-        # handed pages to the consumer — `result.events` is only the last page (used above
-        # for boundary computation) and must NOT be re-emitted here.
+        # Non-streaming: accumulate the full list. Streaming: the producer already handed pages
+        # to the consumer — `result.events` is only the last page (used for boundary computation)
+        # and must NOT be re-emitted here.
         if not streaming:
             all_events.extend(result.events)
         total_emitted += result.events_emitted
@@ -734,56 +728,15 @@ def get_events_command(
     return results
 
 
-""" LONG-RUNNING EXECUTION """
+""" EVENT COLLECTION (producer/consumer streaming) """
 
 
-# Sleep when caught up (saturation signal not set) — avoid hammering the API with empty calls.
-LONG_RUNNING_IDLE_SLEEP_SECONDS = 30
-# Back-off after an unexpected error inside the loop.
-LONG_RUNNING_ERROR_SLEEP_SECONDS = 10
-# Key used in integrationContext for state persistence (survives container restart in long-running mode).
-LONG_RUNNING_STATE_KEY = "last_run"
 # Producer/consumer queue capacity. Each page is ~17 MB (10k web events).
 # maxsize=2 holds at most ~34 MB per log_type in flight = comfortable backpressure
 # under the 1 GB container limit, while letting the producer race one page ahead of the consumer.
-LONG_RUNNING_PAGE_QUEUE_MAXSIZE = 2
+PAGE_QUEUE_MAXSIZE = 2
 # Sentinel placed on the queue to signal the consumer to drain + exit cleanly.
 _QUEUE_SENTINEL = object()
-
-
-def _init_long_running_state() -> dict:
-    """Load the initial state for the long-running loop.
-
-    Resolution order (first non-empty wins):
-    1. integrationContext['last_run']  ← authoritative for long-running, survives container restart
-    2. demisto.getLastRun()            ← migration path on first long-running iteration after upgrade
-    3. {}                              ← fresh install, fetch_events will use DEFAULT_FIRST_FETCH
-
-    After init, state is kept in a local Python variable. We never re-read inside the loop.
-    """
-    ctx = demisto.getIntegrationContext() or {}
-    state = ctx.get(LONG_RUNNING_STATE_KEY)
-    if state:
-        demisto.info(f"[long-running] Recovered state from integrationContext: {state}")
-        return state
-    last_run = demisto.getLastRun() or {}
-    if last_run:
-        demisto.info(f"[long-running] Migrating state from lastRun: {last_run}")
-        return last_run
-    demisto.info("[long-running] No previous state — first fetch will start from DEFAULT_FIRST_FETCH.")
-    return {}
-
-
-def _persist_long_running_state(state: dict) -> None:
-    """Persist state to integrationContext (the only valid store in long-running mode).
-
-    setLastRun is intentionally NOT called inside the loop: it's a scheduled-command mechanism
-    that the engine does not honor reliably from a long-running process. integrationContext is
-    the documented pattern for long-running state (see Akamai_SIEM, ProofpointEmailSecurity).
-    """
-    ctx = demisto.getIntegrationContext() or {}
-    ctx[LONG_RUNNING_STATE_KEY] = state
-    demisto.setIntegrationContext(ctx)
 
 
 def _xsiam_consumer_loop(
@@ -794,15 +747,14 @@ def _xsiam_consumer_loop(
 
     Single-threaded send (no ``multiple_threads=True``) because:
       1. The whole point of the producer/consumer split is bounded memory — fan-out would
-         re-introduce in-flight chunk accumulation that triggered the OOM in v1.
+         re-introduce in-flight chunk accumulation that triggered the OOM in earlier versions.
       2. The producer fetches the next page concurrently with the consumer's send, so we
          already get pipeline parallelism without per-page fan-out.
 
     On send failure, the exception is recorded in ``stats['error']`` and the consumer keeps
     draining the queue (it MUST consume the sentinel to let the producer's ``put()`` unblock).
-    The producer loop checks ``stats['error']`` after join and re-raises so the outer
-    long-running loop logs + back-off-sleeps + retries on the next cycle (dedup catches
-    anything that already landed).
+    The caller checks ``stats['error']`` after join and re-raises so the engine logs the
+    failure and retries on the next cycle (dedup catches anything that already landed).
     """
     while True:
         item = page_queue.get()
@@ -819,7 +771,7 @@ def _xsiam_consumer_loop(
                 stats["events_sent"] = stats.get("events_sent", 0) + len(item)
             except Exception as e:
                 stats["error"] = e
-                demisto.error(f"[long-running][consumer] send_events_to_xsiam failed: {e}\n{traceback.format_exc()}")
+                demisto.error(f"[fetch-events][consumer] send_events_to_xsiam failed: {e}\n{traceback.format_exc()}")
         finally:
             page_queue.task_done()
             # Release the ~17 MB page reference BEFORE the next blocking `get()`.
@@ -829,130 +781,76 @@ def _xsiam_consumer_loop(
             del item
 
 
-def long_running_execution_command(
+def fetch_events_command(
     client: Client,
     log_types: list[str],
     first_fetch_time: str,
     max_events_per_fetch_per_type: int,
 ) -> None:
-    """Infinite event-collection loop (long-running mode, producer/consumer pipeline).
+    """Scheduled fetch-events collector (producer/consumer streaming send).
 
-    Eliminates the per-cycle engine scheduling overhead (~25s gap in fetch-events mode) AND
-    bounds peak memory so the container doesn't OOM under high event volume.
+    A single invocation fetches ONE window per log type (each capped to MAX_FETCH_WINDOW_SECONDS),
+    streaming every page to XSIAM as it arrives, then persists state via setLastRun. When there is
+    still more to pull — because we hit the per-type event cap OR the query window was bounded
+    below ``now`` (we're behind) — ``fetch_events`` sets ``nextTrigger=0`` so the engine
+    immediately re-dispatches us back-to-back (no ~25s scheduling gap) and the backlog drains
+    across successive invocations.
 
-    Per iteration:
-      1. Spawn a single consumer thread + a bounded ``queue.Queue(maxsize=LONG_RUNNING_PAGE_QUEUE_MAXSIZE)``.
-      2. Call ``fetch_events(on_page=queue.put)`` — the producer threads emit each post-dedup,
-         post-enrichment page to the queue. ``put()`` blocks when the queue is full (backpressure).
-      3. After fetch_events returns, place the sentinel on the queue + ``join()`` the consumer.
-      4. Persist next_run state to integrationContext.
-      5. If the consumer recorded an error, re-raise it so the outer ``try/except`` back-off-sleeps.
-      6. Sleep LONG_RUNNING_IDLE_SLEEP_SECONDS if no log type was saturated; otherwise loop immediately.
-
-    Why this fixes v1:
-    - v1 accumulated up to ``len(log_types) × max_events_per_fetch_per_type`` events (~100 MB+ of dicts)
-      in memory before calling ``send_events_to_xsiam(..., multiple_threads=True)`` which then forked
-      ~1MB chunks (each fully materialized in memory) into a thread pool — peak RAM blew past 1 GB → OOM.
-    - v2 holds at most ``LONG_RUNNING_PAGE_QUEUE_MAXSIZE`` pages (~34 MB) in flight per log_type
-      and sends them sequentially. Memory stays comfortably under the container limit.
-    - Bonus: HTTP fetch (~21s/page) and XSIAM send (~4s/page) overlap → throughput gain.
-
-    State storage notes:
-    - Reads state ONCE on startup via _init_long_running_state (IntegrationContext → lastRun fallback for migration).
-    - Holds state in a local Python variable between iterations (no engine RPC inside the loop).
-    - Writes ONLY to integrationContext per iteration (setLastRun is not honored reliably in long-running mode).
-    - Pops "nextTrigger" from next_state before persistence so it never lands in IntegrationContext.
-
-    On exception: logs + updates module health + back-off sleep. Cortex's long-running supervisor
-    restarts the container if this function ever returns or the process exits.
+    Memory: pages stream through a bounded queue (PAGE_QUEUE_MAXSIZE) and are sent sequentially —
+    peak RAM stays ~2 pages regardless of total volume (the OOM fix). The "nextTrigger" key, when
+    set by fetch_events, is intentionally persisted in lastRun so the engine acts on it.
     """
-    state = _init_long_running_state()
+    state = demisto.getLastRun() or {}
     demisto.info(
-        f"[long-running] Starting infinite collection loop (log_types={log_types}, "
-        f"max_events_per_fetch_per_type={max_events_per_fetch_per_type}, "
-        f"queue_maxsize={LONG_RUNNING_PAGE_QUEUE_MAXSIZE})"
+        f"[fetch-events] Starting collection (log_types={log_types}, "
+        f"max_events_per_fetch_per_type={max_events_per_fetch_per_type}, queue_maxsize={PAGE_QUEUE_MAXSIZE})"
     )
 
-    iteration = 0
-    while True:
-        iteration += 1
-        cycle_start = time.monotonic()
-        page_queue: queue.Queue[Any] = queue.Queue(maxsize=LONG_RUNNING_PAGE_QUEUE_MAXSIZE)
-        consumer_stats: dict[str, Any] = {"pages_sent": 0, "events_sent": 0, "error": None}
-        consumer = threading.Thread(
-            target=_xsiam_consumer_loop,
-            args=(page_queue, consumer_stats),
-            name=f"xsiam-consumer-iter-{iteration}",
-            daemon=True,
+    cycle_start = time.monotonic()
+    page_queue: queue.Queue[Any] = queue.Queue(maxsize=PAGE_QUEUE_MAXSIZE)
+    consumer_stats: dict[str, Any] = {"pages_sent": 0, "events_sent": 0, "error": None}
+    consumer = threading.Thread(
+        target=_xsiam_consumer_loop,
+        args=(page_queue, consumer_stats),
+        name="xsiam-consumer",
+        daemon=True,
+    )
+    consumer.start()
+    try:
+        next_run, _ = fetch_events(
+            client=client,
+            last_run=state,
+            log_types=log_types,
+            first_fetch_time=first_fetch_time,
+            max_events_per_fetch_per_type=max_events_per_fetch_per_type,
+            on_page=page_queue.put,
         )
-        consumer.start()
+    finally:
+        # ALWAYS signal + join the consumer, even if fetch_events raised, so the thread doesn't
+        # leak. The defensive timeout gives a definitive exit path if it somehow stalls.
         try:
-            try:
-                next_state, _ = fetch_events(
-                    client=client,
-                    last_run=state,
-                    log_types=log_types,
-                    first_fetch_time=first_fetch_time,
-                    max_events_per_fetch_per_type=max_events_per_fetch_per_type,
-                    on_page=page_queue.put,
-                )
-            finally:
-                # ALWAYS signal + join the consumer, even if fetch_events raised, so the
-                # consumer thread doesn't leak across iterations.
-                # Defensive: if the consumer somehow died before draining (shouldn't happen — we
-                # catch all exceptions in the loop), a full queue would make `put` block forever.
-                # The 60s timeout + alive-check gives us a definitive exit path.
-                try:
-                    if consumer.is_alive():
-                        page_queue.put(_QUEUE_SENTINEL, timeout=60)
-                except queue.Full:
-                    demisto.error("[long-running] queue full and consumer not draining — aborting cycle.")
-                consumer.join(timeout=120)
-                if consumer.is_alive():
-                    demisto.error(
-                        "[long-running] consumer thread did not exit within 120s — leaking thread; "
-                        "next iteration will spawn a fresh one. Investigate XSIAM ingestion latency."
-                    )
+            if consumer.is_alive():
+                page_queue.put(_QUEUE_SENTINEL, timeout=60)
+        except queue.Full:
+            demisto.error("[fetch-events] queue full and consumer not draining — aborting cycle.")
+        consumer.join(timeout=120)
+        if consumer.is_alive():
+            demisto.error("[fetch-events] consumer thread did not exit within 120s. Investigate XSIAM ingestion latency.")
 
-            # If the consumer logged a send failure mid-cycle, propagate it now so the outer
-            # except clause logs + back-off-sleeps + retries on the next iteration. State has
-            # NOT yet been persisted, so the next cycle re-fetches from the previous boundary.
-            consumer_error = consumer_stats["error"]
-            if consumer_error is not None:
-                # Bind to a typed local so pylint/mypy know it's a BaseException, not Any.
-                assert isinstance(consumer_error, BaseException)
-                raise consumer_error
+    # If the consumer hit a send failure, propagate it WITHOUT persisting state so the next cycle
+    # re-fetches from the previous boundary (dedup catches anything that already landed).
+    consumer_error = consumer_stats["error"]
+    if consumer_error is not None:
+        assert isinstance(consumer_error, BaseException)  # narrow type for pylint/mypy
+        raise consumer_error
 
-            # nextTrigger key inside next_state is meaningful only to the engine scheduler. In
-            # long-running mode the engine isn't scheduling us, so we POP it (don't persist) and
-            # reuse its presence as the "was saturated" flag to decide whether to sleep.
-            was_saturated = next_state.pop("nextTrigger", None) == "0"
-            state = next_state
-
-            _persist_long_running_state(state)
-            demisto.updateModuleHealth({"eventsPulled": consumer_stats["events_sent"]})
-
-            cycle_seconds = time.monotonic() - cycle_start
-            demisto.info(
-                f"[long-running] iter={iteration} cycle_seconds={cycle_seconds:.1f}s "
-                f"events_sent={consumer_stats['events_sent']} pages_sent={consumer_stats['pages_sent']} "
-                f"saturated={was_saturated}"
-            )
-
-            if not was_saturated:
-                # Caught up — give the API a break before checking for new events.
-                time.sleep(LONG_RUNNING_IDLE_SLEEP_SECONDS)
-            # else: loop immediately (still draining backlog)
-
-        except Exception as e:
-            demisto.error(f"[long-running] iter={iteration} failed: {e}\n{traceback.format_exc()}")
-            demisto.updateModuleHealth(str(e), is_error=True)
-            time.sleep(LONG_RUNNING_ERROR_SLEEP_SECONDS)
-        # No explicit per-iteration cleanup: CPython refcounting reclaims `page_queue`,
-        # `consumer`, and `consumer_stats` the moment they're rebound at the next iter.
-        # The real memory wins live in `get_events_for_log_type` and `_xsiam_consumer_loop`
-        # (the per-page `del` calls); adding `gc.collect()` here would be cargo-cult overhead
-        # with no observed cycles to collect.
+    # Persist next_run (including "nextTrigger"=0 when behind/saturated, so the engine re-dispatches).
+    demisto.setLastRun(next_run)
+    demisto.info(
+        f"[fetch-events] Done in {time.monotonic() - cycle_start:.1f}s — "
+        f"events_sent={consumer_stats['events_sent']} pages_sent={consumer_stats['pages_sent']} "
+        f"more_work={next_run.get('nextTrigger') == '0'}"
+    )
 
 
 """ MAIN FUNCTION """
@@ -975,12 +873,6 @@ def main() -> None:
         arg_to_number(params.get("max_events_per_fetch_per_type", DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE))
         or DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE
     )
-    # TODO remove before release
-    demisto.info(
-        f"[main] *** MenloSecurity build: MAX_EVENTS_PER_PAGE={MAX_EVENTS_PER_PAGE}, "
-        f"fast_time_parse=on, next_trigger=on, long_running=on, streaming=on, "
-        f"windowed_fetch={MAX_FETCH_WINDOW_SECONDS}s ***"
-    )
     demisto.debug(f"[main] Command: {command}, token_type: {token_type}, params: {json.dumps(params)}, args: {json.dumps(args)}")
 
     try:
@@ -989,27 +881,13 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client, log_types))
 
-        elif command == "long-running-execution":
-            # When longRunning:true is set in YAML, the engine ALSO dispatches fetch-events in parallel.
-            # The real work happens here; the fetch-events handler below is a deliberate no-op so we
-            # don't run two concurrent collectors. Pattern from ProofpointEmailSecurityEventCollector.
-            if params.get("isFetchEvents", False):
-                long_running_execution_command(
-                    client=client,
-                    log_types=log_types,
-                    first_fetch_time=DEFAULT_FIRST_FETCH,
-                    max_events_per_fetch_per_type=max_events_per_fetch_per_type,
-                )
-            else:
-                demisto.info("[main] isFetchEvents disabled — long-running-execution idling.")
-                time.sleep(60)
-
         elif command == "fetch-events":
-            # The YAML has longRunning: true, so the engine ALSO dispatches fetch-events alongside
-            # long-running-execution. This is ALWAYS a no-op — events are collected by the
-            # long-running loop. Without this guard, two collectors would race on the same state.
-            # (Pattern matches ProofpointEmailSecurityEventCollector.)
-            demisto.info("[main] fetch-events is a no-op — events are collected via long-running-execution.")
+            fetch_events_command(
+                client=client,
+                log_types=log_types,
+                first_fetch_time=DEFAULT_FIRST_FETCH,
+                max_events_per_fetch_per_type=max_events_per_fetch_per_type,
+            )
 
         elif command == "menlo-security-get-events":
             return_results(

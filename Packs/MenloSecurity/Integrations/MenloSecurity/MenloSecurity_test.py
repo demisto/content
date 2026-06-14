@@ -8,6 +8,7 @@ from MenloSecurity import (
     DATE_FORMAT,
     MAX_EVENTS_PER_PAGE,
     fetch_events,
+    fetch_events_command,
     get_boundary_hashes,
     get_events_command,
     get_events_for_log_type,
@@ -1039,3 +1040,120 @@ class TestTestModule:
         result = test_module(mock_client, ["web"])
 
         assert "Connection Error" in result
+
+
+class TestFetchEventsCommand:
+    """Tests for the scheduled fetch-events orchestration (producer/consumer send + setLastRun).
+
+    The command spawns a real consumer thread that drains a queue and calls send_events_to_xsiam.
+    We patch ``fetch_events`` (the producer) to push pages via the ``on_page`` callback and return
+    a controlled next_run, and patch ``send_events_to_xsiam`` so no real network call is made.
+    """
+
+    @staticmethod
+    def _make_producer(next_run: dict, pages: list[list[dict]]):
+        """Return a fake fetch_events that streams ``pages`` to on_page and returns ``next_run``."""
+
+        def _fake_fetch_events(*, on_page=None, **_kwargs):
+            if on_page is not None:
+                for page in pages:
+                    on_page(page)
+            return dict(next_run), []  # copy so the command's pop() doesn't mutate our fixture
+
+        return _fake_fetch_events
+
+    def test_caught_up_persists_state_without_next_trigger(self, mock_client: Client, mocker):
+        """
+        Given:
+            - fetch_events reports caught up (no nextTrigger) and streams one page.
+        When:
+            - Calling fetch_events_command.
+        Then:
+            - The page is sent to XSIAM, state is persisted via setLastRun, and no nextTrigger is set.
+        """
+        mocker.patch("MenloSecurity.demisto.getLastRun", return_value={})
+        set_last_run = mocker.patch("MenloSecurity.demisto.setLastRun")
+        send = mocker.patch("MenloSecurity.send_events_to_xsiam")
+        mocker.patch(
+            "MenloSecurity.fetch_events",
+            side_effect=self._make_producer(
+                {"web": {"last_fetch_time": "2024-01-15T10:00:00Z", "boundary_hashes": []}},
+                pages=[[{"event_time": "2024-01-15T10:00:00Z"}]],
+            ),
+        )
+
+        fetch_events_command(
+            client=mock_client,
+            log_types=["web"],
+            first_fetch_time="5 minutes",
+            max_events_per_fetch_per_type=5000,
+        )
+
+        send.assert_called_once()  # the streamed page was sent
+        last_call = set_last_run.call_args_list[-1].args[0]
+        assert "nextTrigger" not in last_call
+        assert last_call["web"]["last_fetch_time"] == "2024-01-15T10:00:00Z"
+
+    def test_behind_persists_next_trigger_for_engine_redispatch(self, mock_client: Client, mocker):
+        """
+        Given:
+            - fetch_events reports "behind" (next_run carries nextTrigger=0).
+        When:
+            - Calling fetch_events_command.
+        Then:
+            - setLastRun persists nextTrigger=0 so the engine immediately re-dispatches the command.
+        """
+        mocker.patch("MenloSecurity.demisto.getLastRun", return_value={})
+        set_last_run = mocker.patch("MenloSecurity.demisto.setLastRun")
+        mocker.patch("MenloSecurity.send_events_to_xsiam")
+        mocker.patch(
+            "MenloSecurity.fetch_events",
+            side_effect=self._make_producer(
+                {"web": {"last_fetch_time": "2024-01-15T09:05:00Z", "boundary_hashes": []}, "nextTrigger": "0"},
+                pages=[[{"event_time": "2024-01-15T09:05:00Z"}]],
+            ),
+        )
+
+        fetch_events_command(
+            client=mock_client,
+            log_types=["web"],
+            first_fetch_time="5 minutes",
+            max_events_per_fetch_per_type=5000,
+        )
+
+        last_call = set_last_run.call_args_list[-1].args[0]
+        assert last_call.get("nextTrigger") == "0"
+
+    def test_send_error_aborts_without_persisting_state(self, mock_client: Client, mocker):
+        """
+        Given:
+            - send_events_to_xsiam raises inside the consumer thread.
+        When:
+            - Calling fetch_events_command.
+        Then:
+            - The error propagates (main() converts it to return_error) and state is NOT persisted,
+              so the next cycle re-fetches from the previous boundary (dedup handles overlap).
+        """
+        mocker.patch("MenloSecurity.demisto.getLastRun", return_value={"web": {"last_fetch_time": "2024-01-15T09:00:00Z"}})
+        set_last_run = mocker.patch("MenloSecurity.demisto.setLastRun")
+        # The consumer logs the failure via demisto.error (writes to stdout); mock it so the test
+        # harness's "no stdout output" check stays happy while we assert on the raised exception.
+        mocker.patch("MenloSecurity.demisto.error")
+        mocker.patch("MenloSecurity.send_events_to_xsiam", side_effect=RuntimeError("XSIAM send failed"))
+        mocker.patch(
+            "MenloSecurity.fetch_events",
+            side_effect=self._make_producer(
+                {"web": {"last_fetch_time": "2024-01-15T09:05:00Z", "boundary_hashes": []}},
+                pages=[[{"event_time": "2024-01-15T09:05:00Z"}]],
+            ),
+        )
+
+        with pytest.raises(RuntimeError, match="XSIAM send failed"):
+            fetch_events_command(
+                client=mock_client,
+                log_types=["web"],
+                first_fetch_time="5 minutes",
+                max_events_per_fetch_per_type=5000,
+            )
+
+        set_last_run.assert_not_called()  # state must NOT advance past a failed send
