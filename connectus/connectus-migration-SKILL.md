@@ -1927,8 +1927,7 @@ acquires the per-tenant lock, deploys the whole manifest to the `.env` tenant,
 runs the param-parity test, and releases the lock (always, via `try/finally`):
 
 ```bash
-cd connectus/runtime_demisto.params_parity
-python deploy_and_test.py --integration-id "<Integration ID>"
+python3 connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id "<Integration ID>"
 ```
 
 Branch on the wrapper's exit code (do NOT re-interpret stdout):
@@ -1956,7 +1955,7 @@ Branch on the wrapper's exit code (do NOT re-interpret stdout):
 * **`30` — tenant lock BUSY (could not acquire).** Do NOT markpass and do NOT
   auto-retry. Report the holder (shell id / integration / since-when) and the
   options to the user: (a) wait and retry later, (b) use a different tenant,
-  (c) `python tenant_lock.py force-unlock --tenant <X>` if the holder is dead.
+  (c) `python3 connectus/runtime_demisto.params_parity/tenant_lock.py force-unlock --tenant <X>` (run from repo root, no `cd`) if the holder is dead.
 
 The wrapper persists every run under `results/` (per-run envelope JSON +
 `ledger.csv`); the `param parity test passes = ✅` cell in the pipeline CSV is the
