@@ -4,6 +4,7 @@
         "ON_CALL_DEVS": "A list of on-call users, Use PANW account username",
         "DOC_REVIEWER": "The GitHub username for documentation reviews owner",
         "TIM_REVIEWER": "The GitHub username for TIM reviews owner",
+        "MAPPING_REVIEWER": "The GitHub username for mapping reviews owner",
         "AUTO_UPDATE_DOCKER_REVIEWER": "The GitHub username for auto-update-docker PRs reviews owner"
     },
     "CONTRIBUTION_REVIEWERS": [
@@ -11,6 +12,7 @@
     ],
     "CONTRIBUTION_TL": "kamalq97",
     "CONTRIBUTION_SECURITY_REVIEWER": ["Benimanela"],
+    "MAPPING_REVIEWER": ["eepstain"],
     "ON_CALL_DEVS": [
         "jbabazadeh",
         "YairGlick",
