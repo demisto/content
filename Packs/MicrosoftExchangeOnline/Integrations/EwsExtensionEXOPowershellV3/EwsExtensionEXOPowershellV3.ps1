@@ -2710,110 +2710,18 @@ function Main
     $ucp_creds = $null
     $exo_client = $null
     try {
-        if (Test-ShouldUseUcpAuth) {
-            ReturnOutputs "Running on UCP, preparing to obtain creds" $null $null | Out-Null
-
-            # Bypass the Get-UcpCredentials wrapper (which is currently broken on
-            # capability/profile resolution for this connector). Pick the
-            # method_unique_id from the first connection profile directly, then
-            # call $demisto.GetUCPCredentials with fromCache=$false.
-            $ucpInfo = $demisto.UnifiedConnectorMetadata()
-            ReturnOutputs "UCP metadata: $($ucpInfo | ConvertTo-Json -Compress -Depth 10)" $null $null | Out-Null
-
-            $firstProfile = $null
-            if ($ucpInfo -is [System.Collections.IDictionary] -and $ucpInfo.Contains('connectionProfiles')) {
-                $firstProfile = @($ucpInfo['connectionProfiles'])[0]
-            } elseif ($ucpInfo.PSObject -and $ucpInfo.PSObject.Properties['connectionProfiles']) {
-                $firstProfile = @($ucpInfo.connectionProfiles)[0]
-            }
-            if ($null -eq $firstProfile) {
-                throw "[UCP][EwsExtensionEXOPowershellV3.ps1] No connection profile found in connector metadata."
-            }
-
-            # Try the standard snake_case key first, then common alternatives.
-            $methodId = $null
-            foreach ($candidate in @('method_unique_id', 'methodUniqueId', 'methodUniqueID', 'id', 'unique_id')) {
-                if ($firstProfile -is [System.Collections.IDictionary] -and $firstProfile.Contains($candidate)) {
-                    $methodId = "$($firstProfile[$candidate])"
-                } elseif ($firstProfile.PSObject -and $firstProfile.PSObject.Properties[$candidate]) {
-                    $methodId = "$($firstProfile.$candidate)"
-                }
-                if (-not [string]::IsNullOrEmpty($methodId)) { break }
-            }
-            ReturnOutputs "Resolved methodId='$methodId'" $null $null | Out-Null
-            if ([string]::IsNullOrEmpty($methodId)) {
-                throw "[UCP][EwsExtensionEXOPowershellV3.ps1] Could not resolve method_unique_id from first connection profile."
-            }
-
-            $ucp_creds = $demisto.GetUCPCredentials($methodId, $false)
-            ReturnOutputs "obtained ucp_creds (type=$(if ($null -eq $ucp_creds) { 'null' } else { $ucp_creds.GetType().FullName }))" $null $null | Out-Null
-
-            # Convert PSCustomObject -> nested [hashtable] via JSON round-trip
-            # (-AsHashtable requires PowerShell 7+). Then $ucp_creds_ht['plain']['username'] etc. works.
-            $ucp_creds_ht = $ucp_creds | ConvertTo-Json -Depth 10 | ConvertFrom-Json -AsHashtable
-            # DEBUG: print full ucp_creds_ht to the War Room. Remove before shipping - this leaks credentials.
-            ReturnOutputs "ucp_creds_ht: $($ucp_creds_ht | ConvertTo-Json -Depth 10)" $null $null | Out-Null
-
-            # The 'plain' credentials response only contains username/password
-            # (per ps_demo/connection.yaml auth.parameter mapping: organization -> username,
-            # password -> password). The remaining fields (url, certificate, app_id)
-            # live elsewhere - we need to discover where.
-            # DEBUG: print $firstProfile, full $ucpInfo, and $demisto.Params() to find the
-            # actual location of url/certificate/app_id. Remove before shipping.
-            ReturnOutputs "firstProfile: $($firstProfile | ConvertTo-Json -Depth 10)" $null $null | Out-Null
-            ReturnOutputs "FULL UCP metadata: $($ucpInfo | ConvertTo-Json -Depth 10)" $null $null | Out-Null
-            ReturnOutputs "demisto.Params(): $($demisto.Params() | ConvertTo-Json -Depth 10)" $null $null | Out-Null
-
-            $ucp_url          = "$($firstProfile.url)"
-            $ucp_app_id       = "$($firstProfile.app_id)"
-            $ucp_certificate  = "$($firstProfile.certificate)"
-            $ucp_organization = "$($ucp_creds_ht['plain']['username'])"   # mapped via auth.parameter: username
-            $ucp_password_str = "$($ucp_creds_ht['plain']['password'])"
-
-            ReturnOutputs "Resolved EXO fields: url='$ucp_url' app_id='$ucp_app_id' organization='$ucp_organization' certificate.len=$($ucp_certificate.Length) password.len=$($ucp_password_str.Length)" $null $null | Out-Null
-
-            $password = if (-not [string]::IsNullOrEmpty($ucp_password_str)) {
-                ConvertTo-SecureString $ucp_password_str -AsPlainText -Force
-            } else { $null }
-
-            $exo_client = [ExchangeOnlinePowershellV3Client]::new(
-                $ucp_url,
-                $ucp_app_id,
-                $ucp_organization,
-                $ucp_certificate,
-                $password
-            )
+        # DEBUG: print the unified connector metadata and demisto params to the
+        # War Room for diagnostics. Remove before shipping - Params() may leak
+        # sensitive values.
+        try {
+            ReturnOutputs "UnifiedConnectorMetadata: $($demisto.UnifiedConnectorMetadata() | ConvertTo-Json -Depth 10)" $null $null | Out-Null
+        } catch {
+            ReturnOutputs "UnifiedConnectorMetadata: <unavailable: $($_.Exception.Message)>" $null $null | Out-Null
         }
-        else {
-            ReturnOutputs "Not running on UCP" $null $null | Out-Null
-            $ucp_creds = $null
-            $command = $demisto.GetCommand()
-            $command_arguments = $demisto.Args()
-            $integration_params = [Hashtable] $demisto.Params()
-            if ($integration_params.password.password)
-            {
-                $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
-            }
-            else
-            {
-                $password = $null
-            }
-            $exo_client = [ExchangeOnlinePowershellV3Client]::new(
-                    $integration_params.url,
-                    $integration_params.app_id,
-                    $integration_params.organization,
-                    $integration_params.certificate.password,
-                    $password
-            )
-        } 
-    } catch {
-        # Surface the failure but continue with the fallback path so legacy
-        # installs keep working.
-        ReturnOutputs "in catch close.." $null $null | Out-Null
-        $ucp_creds = $null
-        $command = $demisto.GetCommand()
-        $command_arguments = $demisto.Args()
-        $integration_params = [Hashtable] $demisto.Params()
+        ReturnOutputs "demisto.Params(): $($demisto.Params() | ConvertTo-Json -Depth 10)" $null $null | Out-Null
+    }
+    catch {
+        ReturnOutputs "demisto.Params(): <unavailable: $($_.Exception.Message)>" $null $null | Out-Null
     }
     ReturnOutputs "Done" $null $null | Out-Null
 
