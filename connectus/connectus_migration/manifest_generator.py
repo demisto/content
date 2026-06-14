@@ -1644,6 +1644,30 @@ SWEEP_EXCLUDED_PARAMS: frozenset[str] = frozenset(
     }
 )
 
+# Mirroring params are managed by the platform's incident-mirroring machinery,
+# NOT by the serializer. Even when they are hidden-on-platform and carry a
+# ``defaultvalue``, they must NEVER be swept into ``serializer.yaml``
+# ``computed_fields`` — injecting a fixed default for them would break/override
+# the mirroring contract. These are the standard XSOAR mirroring param names
+# (see the incident-mirroring integration template); add more here if a new
+# mirroring param is introduced.
+MIRROR_PARAMS: frozenset[str] = frozenset(
+    {
+        "mirror_options",
+        "close_incident",
+        "mirror_limit",
+        # Common siblings of the mirroring trio (suggested additions):
+        "mirror_direction",
+        "mirror_tag",
+        "incoming_tags",
+        "outgoing_tags",
+        "comment_tag",
+        "work_notes_tag",
+        "close_out",
+        "close_notes",
+    }
+)
+
 # XSOAR-param-name → connector-field-id renames applied by capability builders
 # that the platform consumes DIRECTLY (no serializer ``field_mappings`` bridge
 # back to the XSOAR name). The fetch-issues builder migrates the legacy
@@ -1770,6 +1794,9 @@ def collect_swept_hidden_default_params(
       4. It is NOT ``defaultIgnore`` (managed by the automation capability).
       5. It is NOT a connection-section param (auth / other_connection) — those
          live on connection.yaml, never configurations.yaml.
+      6. It is NOT a mirroring param (:data:`MIRROR_PARAMS` — ``mirror_options``,
+         ``close_incident``, ``mirror_limit``, …) — those are owned by the
+         platform's mirroring machinery, not the serializer.
 
     Returns a ``{param_name: coerced_default_value}`` dict (the value coerced to
     its native serializer type via :func:`_coerce_hidden_default_value`).
@@ -1781,6 +1808,10 @@ def collect_swept_hidden_default_params(
         if not name:
             continue
         if name in SWEEP_EXCLUDED_PARAMS or name == _DEFAULT_IGNORE_PARAM:
+            continue
+        # Mirroring params are owned by the platform's mirroring machinery —
+        # never sweep them into serializer computed_fields.
+        if name in MIRROR_PARAMS:
             continue
         if name in connection_param_names:
             continue
@@ -6206,6 +6237,69 @@ def classify_connection_param(pid: str) -> str | None:
     return None
 
 
+def validate_other_connection_completeness(
+    other_connection: list[str],
+    yml_params_by_name: dict[str, dict] | None,
+    integration_id: str = "",
+) -> None:
+    """Fail loudly when a proxy / insecure param exists in the integration YML
+    but is missing from ``other_connection``.
+
+    The connection-section classifier (:func:`classify_connection_param`)
+    recognizes proxy synonyms (``proxy`` / ``useproxy`` / ``use_proxy`` …) and
+    insecure synonyms (``insecure`` / ``unsecure`` / ``verify`` / ``secure`` /
+    ``trust`` …). Every such param declared on the integration MUST also be
+    listed in the connector's ``other_connection`` so it is materialized onto
+    the connection page. If the upstream mapper dropped one, the generated
+    connection.yaml would silently omit a security-relevant toggle — a
+    discrepancy we refuse to migrate.
+
+    Raises:
+        ValueError: when any proxy/insecure integration param is absent from
+            ``other_connection``. The message names the offending param(s) and
+            directs the developer to contact Judah.
+    """
+    if not yml_params_by_name:
+        return
+
+    other_connection_set = set(other_connection or [])
+
+    missing_proxy: list[str] = []
+    missing_insecure: list[str] = []
+    for param_name in yml_params_by_name:
+        if param_name in other_connection_set:
+            continue
+        classification = classify_connection_param(param_name)
+        if classification == "proxy":
+            missing_proxy.append(param_name)
+        elif classification == "insecure":
+            missing_insecure.append(param_name)
+
+    if not missing_proxy and not missing_insecure:
+        return
+
+    parts: list[str] = []
+    if missing_proxy:
+        parts.append(
+            f"proxy param(s) {sorted(missing_proxy)} (e.g. proxy/useproxy/"
+            f"use_proxy)"
+        )
+    if missing_insecure:
+        parts.append(
+            f"insecure param(s) {sorted(missing_insecure)} (e.g. insecure/"
+            f"unsecure/verify/secure/trust)"
+        )
+    discrepancy = " and ".join(parts)
+    raise ValueError(
+        f"other_connection discrepancy for integration "
+        f"'{integration_id or '<unknown>'}': the following are declared in the "
+        f"integration YML but missing from other_connection: {discrepancy}. "
+        f"This means the connection page would silently drop a "
+        f"security-relevant toggle. Please contact Judah to resolve this "
+        f"discrepancy before migrating."
+    )
+
+
 def _bool_switch_field(
     *,
     field_id: str,
@@ -6799,6 +6893,13 @@ def build_connection_yaml(
             f"scope for this generator)."
         )
     other_connection = list(auth_methods.get("other_connection") or [])
+
+    # Validate that every proxy/insecure param declared on the integration YML
+    # is also present in other_connection — otherwise the connection page would
+    # silently drop a security-relevant toggle. Fails loudly per migration rule.
+    validate_other_connection_completeness(
+        other_connection, yml_params_by_name, integration_id
+    )
 
     # Part A — auth-only profiles.
     seen_profile_ids: set[str] = set()

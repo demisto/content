@@ -104,9 +104,10 @@ profiles:
   - fields:
     - id: engine_mode
       title: Engine
-      field_type: select
+      field_type: radio
       options:
         mask: false
+        orientation: horizontal
         default_value: no_engine
         values:
         - key: no_engine
@@ -124,7 +125,7 @@ profiles:
   - fields:
     - id: engine
       title: Engine
-      field_type: radio
+      field_type: select
       metadata:
         event:
           publish: true
@@ -140,7 +141,6 @@ profiles:
             dynamicField: engine
       options:
         mask: false
-        orientation: horizontal
         placeholder: Select an engine
         create_modifiers:
           required: false
@@ -253,9 +253,10 @@ profiles:
   - fields:
     - id: passthrough.github_passthrough_secondary_engine_mode
       title: Engine
-      field_type: select
+      field_type: radio
       options:
         mask: false
+        orientation: horizontal
         default_value: no_engine
         values:
         - key: no_engine
@@ -273,7 +274,7 @@ profiles:
   - fields:
     - id: passthrough.github_passthrough_secondary_engine
       title: Engine
-      field_type: radio
+      field_type: select
       metadata:
         event:
           publish: true
@@ -289,7 +290,6 @@ profiles:
             dynamicField: engine
       options:
         mask: false
-        orientation: horizontal
         placeholder: Select an engine
         create_modifiers:
           required: false
@@ -417,9 +417,10 @@ profiles:
   - fields:
     - id: passthrough.github_iam_engine_mode
       title: Engine
-      field_type: select
+      field_type: radio
       options:
         mask: false
+        orientation: horizontal
         default_value: no_engine
         values:
         - key: no_engine
@@ -437,7 +438,7 @@ profiles:
   - fields:
     - id: passthrough.github_iam_engine
       title: Engine
-      field_type: radio
+      field_type: select
       metadata:
         event:
           publish: true
@@ -453,7 +454,6 @@ profiles:
             dynamicField: engine
       options:
         mask: false
-        orientation: horizontal
         placeholder: Select an engine
         create_modifiers:
           required: false
@@ -566,9 +566,10 @@ profiles:
   - fields:
     - id: passthrough.github_iam_passthrough_secondary_engine_mode
       title: Engine
-      field_type: select
+      field_type: radio
       options:
         mask: false
+        orientation: horizontal
         default_value: no_engine
         values:
         - key: no_engine
@@ -586,7 +587,7 @@ profiles:
   - fields:
     - id: passthrough.github_iam_passthrough_secondary_engine
       title: Engine
-      field_type: radio
+      field_type: select
       metadata:
         event:
           publish: true
@@ -602,7 +603,6 @@ profiles:
             dynamicField: engine
       options:
         mask: false
-        orientation: horizontal
         placeholder: Select an engine
         create_modifiers:
           required: false
