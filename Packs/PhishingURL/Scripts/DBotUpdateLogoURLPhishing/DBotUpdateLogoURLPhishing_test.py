@@ -76,9 +76,7 @@ def test_update_domain_for_custom_logo():
 
     assert res == "Logo 'PANW' successfully modified."
     assert model_data["top_domains"] == dict.fromkeys(new_associated_domains, 0)
-    assert (
-        model_data["custom_logo_associated_domain"][logo_name] == new_associated_domains
-    )
+    assert model_data["custom_logo_associated_domain"][logo_name] == new_associated_domains
 
 
 def test_display_all_logos(mocker: MockerFixture):
@@ -97,7 +95,7 @@ def test_display_all_logos(mocker: MockerFixture):
     display_all_logos(model_data)
 
     mocked_file_result.assert_called_once_with(
-        filename='0 (Default Logo), 1 (Custom Logo, domain1.com), 2 (Default Logo)',
+        filename="0 (Default Logo), 1 (Custom Logo, domain1.com), 2 (Default Logo)",
         data=load_image("test_data/image.png"),
         file_type=7,
     )
@@ -113,7 +111,7 @@ def test_load_data_from_xsoar(mocker: MockerFixture):
 
     mocker.patch(
         "demistomock.executeCommand",
-        return_value=[{"Type": 0, "Contents": {"modelData": 'WyJtb2RlbF9kYXRhIl0='}}],
+        return_value=[{"Type": 0, "Contents": {"modelData": "WyJtb2RlbF9kYXRhIl0="}}],
     )
 
     res = load_data_from_xsoar()
@@ -144,8 +142,10 @@ def test_load_data_from_xsoar_old_data(mocker: MockerFixture):
     """
     from DBotUpdateLogoURLPhishing import load_data_from_xsoar
 
-    mocker.patch("demistomock.executeCommand", return_value=[
-                 {"Type": 1, "Contents": {"modelData": "model_data", 'model': {'extra': {'minor': 0}}}}])
+    mocker.patch(
+        "demistomock.executeCommand",
+        return_value=[{"Type": 1, "Contents": {"modelData": "model_data", "model": {"extra": {"minor": 0}}}}],
+    )
     mock_loader = mocker.patch("DBotUpdateLogoURLPhishing.load_old_model_data")
 
     load_data_from_xsoar()
