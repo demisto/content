@@ -197,7 +197,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_passthrough_secondary_url
+    - id: passthrough.github_passthrough_secondary_url
       field_type: input
       title: Server URL
       options:
@@ -212,7 +212,7 @@ profiles:
         event:
           publish: true
   - fields:
-    - id: github_passthrough_secondary_proxy
+    - id: passthrough.github_passthrough_secondary_proxy
       title: Use system proxy settings
       field_type: checkbox
       metadata:
@@ -230,7 +230,7 @@ profiles:
           hidden: false
           read_only: true
   - fields:
-    - id: github_passthrough_secondary_insecure
+    - id: passthrough.github_passthrough_secondary_insecure
       title: Trust any certificate (not secure)
       field_type: checkbox
       metadata:
@@ -248,7 +248,7 @@ profiles:
           hidden: false
           read_only: false
   - fields:
-    - id: github_passthrough_secondary_engine_mode
+    - id: passthrough.github_passthrough_secondary_engine_mode
       title: Engine
       field_type: select
       options:
@@ -268,7 +268,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_passthrough_secondary_engine
+    - id: passthrough.github_passthrough_secondary_engine
       title: Engine
       field_type: radio
       metadata:
@@ -295,7 +295,7 @@ profiles:
           required: false
           hidden: false
   - fields:
-    - id: github_passthrough_secondary_engine_group
+    - id: passthrough.github_passthrough_secondary_engine_group
       title: Engine Group
       field_type: select
       metadata:
@@ -346,7 +346,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_passthrough_tenant_url
+    - id: passthrough.github_passthrough_tenant_url
       field_type: input
       title: Server URL
       options:
@@ -361,7 +361,7 @@ profiles:
         event:
           publish: true
   - fields:
-    - id: github_passthrough_tenant_proxy
+    - id: passthrough.github_passthrough_tenant_proxy
       title: Use system proxy settings
       field_type: checkbox
       metadata:
@@ -379,7 +379,7 @@ profiles:
           hidden: false
           read_only: true
   - fields:
-    - id: github_passthrough_tenant_insecure
+    - id: passthrough.github_passthrough_tenant_insecure
       title: Trust any certificate (not secure)
       field_type: checkbox
       metadata:
@@ -397,7 +397,7 @@ profiles:
           hidden: false
           read_only: false
   - fields:
-    - id: github_passthrough_tenant_engine_mode
+    - id: passthrough.github_passthrough_tenant_engine_mode
       title: Engine
       field_type: select
       options:
@@ -417,7 +417,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_passthrough_tenant_engine
+    - id: passthrough.github_passthrough_tenant_engine
       title: Engine
       field_type: radio
       metadata:
@@ -444,7 +444,7 @@ profiles:
           required: false
           hidden: false
   - fields:
-    - id: github_passthrough_tenant_engine_group
+    - id: passthrough.github_passthrough_tenant_engine_group
       title: Engine Group
       field_type: select
       metadata:

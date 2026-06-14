@@ -1,7 +1,7 @@
 {
   "description": "Akamai WAF (from scratch): a large real-world content integration with many deprecated and active commands, multiple hidden type-4 credential params and three type-9 credentials (client token / access token / client secret), generated as the 'Akamai' connector. Exercises the from-scratch scaffold over a high-command-count integration with an Automation capability and a Plain auth profile derived from the Akamai client-secret credentials pair.",
   "connector_title": "Akamai",
-  "mapped_params": {"Automation": []},
+  "mapped_params": {"Log Collection": ["longRunning"], "Fetch Issues": []},
   "auth_methods": {
     "auth_types": [
       {

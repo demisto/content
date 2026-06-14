@@ -162,10 +162,8 @@ configurations:
         default_value:
           hours: 4
         create_modifiers:
-          required: false
           hidden: false
         edit_modifiers:
-          required: false
           hidden: false
   - fields:
     - id: feedReliability
