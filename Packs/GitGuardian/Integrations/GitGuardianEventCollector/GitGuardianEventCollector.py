@@ -19,7 +19,7 @@ EVENT_TYPE_TO_TIME_MAPPING = {
 }
 EVENT_TYPE_TO_ENDPOINT = {
     "audit_log": "/audit_logs",
-    "incident": "/secrets",
+    "incident": "/incidents/secrets",
 }
 
 """ CLIENT CLASS """
@@ -340,7 +340,7 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     api_key = params.get("api_key", {}).get("password")
-    base_url = urljoin(params.get("url"), "/api/v1")
+    base_url = urljoin(params.get("url"), "/v1")
     proxy = params.get("proxy", False)
     verify = not params.get("insecure", False)
     max_events_per_fetch = int(params.get("max_events_per_fetch", 5000))
