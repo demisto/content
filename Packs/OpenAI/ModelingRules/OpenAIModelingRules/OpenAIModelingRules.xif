@@ -26,8 +26,8 @@ alter
     xdm.source.location.country   = json_extract_scalar(actor, "$.session.ip_address_details.country"),
     xdm.source.location.city      = json_extract_scalar(actor, "$.session.ip_address_details.city"),
     xdm.source.location.region    = json_extract_scalar(actor, "$.session.ip_address_details.region"),
-    xdm.source.location.latitude  = to_number(json_extract_scalar(actor, "$.session.ip_address_details.latitude")),
-    xdm.source.location.longitude = to_number(json_extract_scalar(actor, "$.session.ip_address_details.longitude")),
+    xdm.source.location.latitude  = to_float(json_extract_scalar(actor, "$.session.ip_address_details.latitude")),
+    xdm.source.location.longitude = to_float(json_extract_scalar(actor, "$.session.ip_address_details.longitude")),
     xdm.observer.type    = "openai",
     xdm.target.resource.name = object;
 
@@ -72,8 +72,8 @@ alter
     xdm.source.location.country   = json_extract_scalar(request_metadata, "$.client_ip_details.country"),
     xdm.source.location.city      = json_extract_scalar(request_metadata, "$.client_ip_details.city"),
     xdm.source.location.region    = json_extract_scalar(request_metadata, "$.client_ip_details.region"),
-    xdm.source.location.latitude  = to_number(json_extract_scalar(request_metadata, "$.client_ip_details.latitude")),
-    xdm.source.location.longitude = to_number(json_extract_scalar(request_metadata, "$.client_ip_details.longitude")),
+    xdm.source.location.latitude  = to_float(json_extract_scalar(request_metadata, "$.client_ip_details.latitude")),
+    xdm.source.location.longitude = to_float(json_extract_scalar(request_metadata, "$.client_ip_details.longitude")),
     xdm.observer.type    = "openai",
     xdm.target.resource.id   = workspace_id,
     xdm.target.resource.name = json_extract_scalar(request_metadata, "$.destination_hostname"),
