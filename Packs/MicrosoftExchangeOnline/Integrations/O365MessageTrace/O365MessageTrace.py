@@ -480,7 +480,7 @@ def main() -> None:  # pragma: no cover
             return_results(get_events_command(client, args))
         elif command == "fetch-events":
             fetch_events(client, max_events=max_events)
-        elif demisto.command() == "o365-message-trace-generate-login-url":
+        elif command == "o365-message-trace-generate-login-url":
             return_results(generate_login_url(client.ms_client))
 
         else:
