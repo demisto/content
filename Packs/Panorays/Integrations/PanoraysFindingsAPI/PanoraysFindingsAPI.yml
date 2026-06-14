@@ -8,18 +8,6 @@ name: PanoraysFindingsAPI
 display: Panorays Findings API
 category: Vulnerability Management
 description: Retrieve and monitor internal security findings for your organization from the Panorays platform to streamline self-assessment posture and automate internal incident response within Cortex XSOAR.
-detaileddescription: |-
-  ## How to get your Panorays API Key
-
-  1. Log in to your Panorays platform.
-  2. Navigate to **Settings → Integrations → Public API**.
-  3. Click **Generate API Key** and copy the token.
-
-  For full instructions, see the [Panorays Public API documentation](https://support.panoraysapp.com/en/articles/520347-panorays-public-api).
-
-  ## Support
-
-  For assistance, contact Panorays support at **support@panorays.com**.
 fromversion: "6.0.0"
 provider: Panorays
 configuration:
