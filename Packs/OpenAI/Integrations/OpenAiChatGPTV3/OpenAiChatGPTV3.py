@@ -877,9 +877,7 @@ def analyze_email_header_command(client: OpenAiClient, args: dict[str, Any], par
         raise DemistoException("'parse_emails' did not extract any email headers from the provided file.")
 
     # --- Build the prompt (identical template to gpt-check-email-header) ---
-    additional_instructions = (
-        args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "") if args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "") else ""
-    )
+    additional_instructions = args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "")
 
     email_headers_formatted = {
         header["name"]: header["value"] for header in email_headers if "name" in header and "value" in header
@@ -982,9 +980,7 @@ def analyze_email_body_command(client: OpenAiClient, args: dict[str, Any], param
         raise DemistoException("'email_parser' did not extract any email body from the provided file.")
 
     # --- Build the prompt (identical template to gpt-check-email-body) ---
-    additional_instructions = (
-        args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "") if args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "") else ""
-    )
+    additional_instructions = args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "")
 
     email_text_body = email_text_body if email_text_body else ""
     email_html_body = email_html_body if email_html_body else ""
@@ -1077,6 +1073,104 @@ def create_soc_email_template_command(client: OpenAiClient, args: dict[str, Any]
     return send_message_command_results
 
 
+def draft_soc_email_command(client: OpenAiClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+    """Draft a SOC email template using the OpenAI Responses API.
+
+    This is the Responses-API counterpart of ``gpt-create-soc-email-template``
+    (which uses Chat Completions). It uses the same prompt template and is
+    designed to consume prior conversation context (e.g. from a preceding
+    ``gpt-analyze-email-body`` call).
+
+    There is no ``reset_conversation_history`` argument — this command consumes
+    prior conversation context by design.
+
+    Two war-room entries are produced (matching the ``gpt-create-soc-email-template`` UX):
+      1. The SOC email template context output.
+      2. The AI-generated template followed by a token-usage table (with a
+         *Reasoning tokens* row when a reasoning model is used).
+
+    Args:
+        client: The configured ``OpenAiClient`` instance.
+        args: Command arguments from ``demisto.args()``.
+        params: Instance parameters from ``demisto.params()``.
+
+    Returns:
+        A ``CommandResults`` with the AI-generated SOC email template and usage info.
+    """
+    # --- Build the prompt (identical template to gpt-create-soc-email-template) ---
+    additional_instructions = (
+        f"Additional instructions: {args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS)}\n"
+        if args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "")
+        else ""
+    )
+    prompt = CREATE_SOC_EMAIL_TEMPLATE_PROMPT.format(additional_instructions)
+
+    demisto.debug(f"[Draft SOC Email] Built prompt | length={len(prompt)} chars")
+
+    # --- Resolve model: command arg > instance param ---
+    model: str = args.get(ArgAndParamNames.MODEL, "") or client.model
+    if not model:
+        raise DemistoException("No model specified. Provide it as a command argument or configure it in the instance settings.")
+
+    # --- Build the Responses API request body ---
+    body: dict[str, Any] = {
+        "model": model,
+        "input": prompt,
+        "store": False,
+    }
+
+    # max_output_tokens: command arg > instance param
+    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS) or params.get(ArgAndParamNames.MAX_TOKENS)
+    if max_output_tokens:
+        body["max_output_tokens"] = int(max_output_tokens)
+
+    # temperature: command arg > instance param
+    temperature = args.get(ArgAndParamNames.TEMPERATURE) or params.get(ArgAndParamNames.TEMPERATURE)
+    if temperature:
+        body["temperature"] = float(temperature)
+
+    # top_p: command arg > instance param
+    top_p = args.get(ArgAndParamNames.TOP_P) or params.get(ArgAndParamNames.TOP_P)
+    if top_p:
+        body["top_p"] = float(top_p)
+
+    # reasoning_effort (only for reasoning model families)
+    reasoning_effort = args.get("reasoning_effort")
+    if reasoning_effort:
+        body["reasoning"] = {"effort": reasoning_effort}
+
+    # --- Call the Responses API ---
+    response = client.create_response(body)
+
+    # --- Extract the assistant's draft ---
+    assistant_message = extract_response_output_text(response)
+    readable_output = _build_response_readable_output(response, assistant_message, model)
+
+    # --- Emit the SOC email template context as a first war-room entry (same UX as gpt-create-soc-email-template) ---
+    return_results(
+        CommandResults(
+            outputs_prefix="OpenAiChatGPTV3.SocEmailTemplate",
+            outputs={"Response": response},
+            replace_existing=True,
+        )
+    )
+
+    # --- Return the AI draft + usage table as the second war-room entry ---
+    return CommandResults(
+        outputs_prefix="OpenAiChatGPTV3.Response",
+        outputs=[
+            {
+                Roles.USER: prompt,
+                Roles.ASSISTANT: assistant_message,
+                "response_id": response.get("id", ""),
+            }
+        ],
+        replace_existing=True,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def extract_response_output_text(response: dict[str, Any]) -> str:
     """Extract the assistant's text from a Responses API response.
 
@@ -1163,7 +1257,13 @@ def _build_response_readable_output(
     )
 
 
-def create_response_command(client: OpenAiClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+@polling_function(
+    name="gpt-create-response",
+    interval=DEFAULT_POLLING_INTERVAL_SECS,
+    timeout=DEFAULT_POLLING_TIMEOUT_SECS,
+    polling_arg_name="background",
+)
+def create_response_command(args: dict[str, Any], client: OpenAiClient, params: dict[str, Any]) -> PollResult:
     """Execute the ``gpt-create-response`` command using the OpenAI Responses API.
 
     Builds the request body from command arguments (falling back to instance params
@@ -1181,21 +1281,20 @@ def create_response_command(client: OpenAiClient, args: dict[str, Any], params: 
 
     Polling:
         When ``background=true`` is set, the initial API call returns immediately with
-        a ``queued`` or ``in_progress`` status. The command schedules itself for re-execution
-        via ``ScheduledCommand`` and polls ``GET /v1/responses/{id}`` until the response
-        reaches a terminal state (``completed``, ``failed``, ``cancelled``, ``incomplete``).
+        a ``queued`` or ``in_progress`` status. The ``@polling_function`` decorator
+        handles re-scheduling automatically based on the returned ``PollResult``.
 
     Note:
         This command uses a **separate** context key (``Response``) from
         the existing ``gpt-send-message`` command (``Conversation``) to avoid clashing.
 
     Args:
-        client: The configured ``OpenAiClient`` instance.
         args: Command arguments from ``demisto.args()``.
+        client: The configured ``OpenAiClient`` instance.
         params: Instance parameters from ``demisto.params()``.
 
     Returns:
-        A ``CommandResults`` object with the conversation context and readable output.
+        A ``PollResult`` indicating whether polling should continue or the final result.
     """
     # --- Polling re-entry: if we already have a response_id, poll for completion ---
     polling_response_id = args.get("_polling_response_id")
@@ -1206,28 +1305,39 @@ def create_response_command(client: OpenAiClient, args: dict[str, Any], params: 
         demisto.debug(f"[Responses] Poll status={status}")
 
         if status in BACKGROUND_PENDING_STATUSES:
-            # Still running — schedule next poll
-            polling_args = {**args, "_polling_response_id": polling_response_id, "polling": "true"}
-            scheduled_command = ScheduledCommand(
-                command="gpt-create-response",
-                next_run_in_seconds=DEFAULT_POLLING_INTERVAL_SECS,
-                args=polling_args,
-                timeout_in_seconds=DEFAULT_POLLING_TIMEOUT_SECS,
-            )
-            return CommandResults(
-                readable_output=f"⏳ Response `{polling_response_id}` is still {status}. Polling...",
-                scheduled_command=scheduled_command,
+            # Still running — continue polling
+            return PollResult(
+                response=None,
+                continue_to_poll=True,
+                args_for_next_run=args,
+                partial_result=CommandResults(
+                    readable_output=f"⏳ Response `{polling_response_id}` is still {status}. Polling...",
+                ),
             )
 
-        if status != "completed":
+        if status == "failed":
             error_info = response.get("error") or {}
             raise DemistoException(
-                f"Background response reached terminal status '{status}'. "
+                f"Background response failed. "
                 f"Error: {error_info.get('message', 'N/A')} (code={error_info.get('code', 'N/A')})"
             )
 
-        # Completed — fall through to build the final result
-        return _build_completed_response_result(response, args)
+        if status == "incomplete":
+            incomplete_details = response.get("incomplete_details") or {}
+            raise DemistoException(f"Background response is incomplete. " f"Reason: {incomplete_details.get('reason', 'N/A')}")
+
+        if status == "cancelled":
+            raise DemistoException("Background response was cancelled.")
+
+        if status != "completed":
+            raise DemistoException(f"Background response reached unexpected status '{status}'. " f"Full response: {response}")
+
+        # Completed — return the final result
+        return PollResult(
+            response=_build_completed_response_result(response, args),
+            continue_to_poll=False,
+            partial_result=CommandResults(readable_output="Response completed successfully."),
+        )
 
     # --- First call: build and send the request ---
     message: str = args.get(ArgAndParamNames.MESSAGE, "")
@@ -1308,20 +1418,20 @@ def create_response_command(client: OpenAiClient, args: dict[str, Any], params: 
     if body.get("background") and response_status in BACKGROUND_PENDING_STATUSES:
         response_id = response.get("id", "")
         demisto.debug(f"[Responses] Background response queued | id={response_id} status={response_status}")
-        polling_args = {**args, "_polling_response_id": response_id, "polling": "true"}
-        scheduled_command = ScheduledCommand(
-            command="gpt-create-response",
-            next_run_in_seconds=DEFAULT_POLLING_INTERVAL_SECS,
-            args=polling_args,
-            timeout_in_seconds=DEFAULT_POLLING_TIMEOUT_SECS,
-        )
-        return CommandResults(
-            readable_output=f"⏳ Background response `{response_id}` is {response_status}. Polling started...",
-            scheduled_command=scheduled_command,
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run={**args, "_polling_response_id": response_id},
+            partial_result=CommandResults(
+                readable_output=f"⏳ Background response `{response_id}` is {response_status}. Polling started...",
+            ),
         )
 
-    # Synchronous completion — build the final result
-    return _build_completed_response_result(response, args)
+    # Synchronous completion — return the final result
+    return PollResult(
+        response=_build_completed_response_result(response, args),
+        continue_to_poll=False,
+    )
 
 
 def _build_completed_response_result(response: dict[str, Any], args: dict[str, Any]) -> CommandResults:
@@ -2199,11 +2309,12 @@ COMMAND_MAP: dict[str, Callable[["OpenAiClient", dict[str, Any], dict[str, Any]]
     "gpt-check-email-header": lambda client, args, params: check_email_headers_command(client=client, args=args),
     "gpt-check-email-body": lambda client, args, params: check_email_body_command(client=client, args=args),
     "gpt-create-soc-email-template": lambda client, args, params: create_soc_email_template_command(client=client, args=args),
+    "gpt-draft-soc-email": lambda client, args, params: draft_soc_email_command(client=client, args=args, params=params),
     "gpt-analyze-email-header": lambda client, args, params: analyze_email_header_command(
         client=client, args=args, params=params
     ),
     "gpt-analyze-email-body": lambda client, args, params: analyze_email_body_command(client=client, args=args, params=params),
-    "gpt-create-response": lambda client, args, params: create_response_command(client=client, args=args, params=params),
+    "gpt-create-response": lambda client, args, params: create_response_command(args=args, client=client, params=params),
     "fetch-events": lambda client, args, params: fetch_events_command(client=client, params=params),
     "openai-get-events": lambda client, args, params: get_events_command(client=client, args=args, params=params),
 }

@@ -206,6 +206,45 @@ Create an email template out of the conversation context to be sent from the SOC
 | temperature            | Sets the randomness in responses. Overrides text generation setting for the specific message sent.                                                          | No           |
 | top_p                  | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Overrides text generation setting for the specific message sent. | No           |
 
+### gpt-draft-soc-email
+
+***
+Draft a SOC email template using the OpenAI Responses API. This command uses the Responses API which is recommended for all new projects (instead of `gpt-create-soc-email-template` which uses the Chat Completions API). Consumes prior conversation context by design (e.g. from a preceding `gpt-analyze-email-body` call).
+
+#### XSOAR sequence (typical phishing flow)
+
+```
+!gpt-analyze-email-body entry_id="3@123"
+…assistant returns analysis…
+!gpt-draft-soc-email additional_instructions="Notify the user the email was quarantined."
+```
+
+#### Input
+
+| **Argument Name**        | **Description**                                                                                                                                                                                                                                                    | **Required** |
+|--------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| additional_instructions  | Specific issue or focus area to weave into the template. Substituted into the prompt template.                                                                                                                                                                     | No           |
+| max_tokens               | The maximum number of tokens that can be generated for the response. Maps internally to the API body field `max_output_tokens`.                                                                                                                                    | No           |
+| temperature              | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety.                                                                                     | No           |
+| top_p                    | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Range 0–1.                                                                                                                                                              | No           |
+| reasoning_effort         | Reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding. Possible values: `low`, `medium`, `high`.                                                                                           | No           |
+
+#### Context Output
+
+| **Path**                              | **Type** | **Description**                        |
+|---------------------------------------|----------|----------------------------------------|
+| OpenAiChatGPTV3.Response              | Unknown  | Conversation state including the response_id. |
+| OpenAiChatGPTV3.Response.user         | String   | The prompt sent to the model.          |
+| OpenAiChatGPTV3.Response.assistant    | String   | The assistant response text.           |
+| OpenAiChatGPTV3.Response.response_id  | String   | The OpenAI response ID.                |
+
+#### Human Readable Output
+
+Two war-room entries are produced:
+
+1. The SOC email template context output (`replace_existing=True` — running twice overwrites the previous draft).
+2. The AI-generated template followed by a token-usage table. A _Reasoning tokens_ row appears in the usage table when a reasoning model is used.
+
 ### openai-get-events
 
 ***
@@ -241,3 +280,32 @@ Manually fetch a bounded batch of Audit and/or Compliance events for development
 >|---|---|---|---|
 >| FAKE_AUDIT_EVENT_001 |  | openai_audit_logs | 2099-01-01T00:00:00Z |
 >| FAKE_LISTING_002 | AUDIT_LOG | compliance_audit_log | 2099-01-02T00:00:00Z |
+
+### gpt-create-response
+
+***
+Send a message to the OpenAI Responses API and receive the generated response. This command uses the Responses API which is recommended for all new projects (instead of `gpt-send-message` which uses the Chat Completions API). Supports multi-turn conversations via `previous_response_id`, reasoning effort control for o-series and gpt-5 models, and background execution.
+
+`!gpt-create-response message="What is the capital of France?"`
+
+#### Input
+
+| **Argument Name**            | **Description**                                                                                                                                                                                                                                                    | **Required** |
+|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| message                      | The user message to send.                                                                                                                                                                                                                                          | Yes          |
+| reset_conversation_history   | Discard the existing conversation and start fresh. Possible values: `yes`, `no`. Default: `no`.                                                                                                                                                                    | No           |
+| max_tokens                   | The maximum number of output tokens. Maps internally to the API body field `max_output_tokens`.                                                                                                                                                                    | No           |
+| temperature                  | Sets the randomness in responses. Range 0–2.                                                                                                                                                                                                                       | No           |
+| top_p                        | Enables nucleus sampling. Range 0–1.                                                                                                                                                                                                                               | No           |
+| reasoning_effort              | Reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Possible values: `none`, `minimal`, `low`, `medium`, `high`, `xhigh`.                                                                                                                            | No           |
+| background                   | Whether to run the model response in the background. When `true`, the command uses polling to wait for the response to complete. Possible values: `true`, `false`.                                                                                                 | No           |
+| model                        | The model to use. Falls back to instance config.                                                                                                                                                                                                                   | No           |
+
+#### Context Output
+
+| **Path**                              | **Type** | **Description**                                                    |
+|---------------------------------------|----------|--------------------------------------------------------------------|
+| OpenAiChatGPTV3.Response              | Unknown  | Conversation state including the response_id for multi-turn continuity. |
+| OpenAiChatGPTV3.Response.user         | String   | The user message sent.                                             |
+| OpenAiChatGPTV3.Response.assistant    | String   | The assistant response text.                                       |
+| OpenAiChatGPTV3.Response.response_id  | String   | The OpenAI response ID used for multi-turn conversation continuity.|

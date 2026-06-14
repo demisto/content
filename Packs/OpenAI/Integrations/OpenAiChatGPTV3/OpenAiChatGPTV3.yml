@@ -447,8 +447,53 @@ script:
     - contextPath: OpenAiChatGPTV3.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
+  - name: gpt-draft-soc-email
+    description: Draft a SOC email template using the OpenAI Responses API. This command uses the Responses API which is recommended for all new projects (instead of gpt-create-soc-email-template which uses the Chat Completions API). Consumes prior conversation context by design (e.g. from a preceding gpt-analyze-email-body call).
+    arguments:
+    - name: additional_instructions
+      description: Specific issue or focus area to weave into the template. Substituted into the prompt template.
+      required: false
+      type: String
+
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response. Maps internally to the API body field max_output_tokens.
+      type: Number
+
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+      type: Number
+
+    - name: top_p
+      required: false
+      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended altering this or temperature but not both.
+      type: Number
+
+    - name: reasoning_effort
+      required: false
+      description: Reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
+      auto: PREDEFINED
+      predefined:
+      - 'low'
+      - 'medium'
+      - 'high'
+      type: String
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Response
+      description: Conversation state including the response_id.
+      type: Unknown
+    - contextPath: OpenAiChatGPTV3.Response.user
+      description: The prompt sent to the model.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.assistant
+      description: The assistant response text.
+      type: String
+    - contextPath: OpenAiChatGPTV3.Response.response_id
+      description: The OpenAI response ID.
+      type: String
   - name: gpt-create-response
-    description: Send a message to the OpenAI Responses API and receive the generated response. Supports multi-turn conversations via previous_response_id, reasoning effort control for o-series and gpt-5 models, and background execution.
+    description: Send a message to the OpenAI Responses API and receive the generated response. This command uses the Responses API which is recommended for all new projects (instead of gpt-send-message which uses the Chat Completions API). Supports multi-turn conversations via previous_response_id, reasoning effort control for o-series and gpt-5 models, and background execution.
     arguments:
     - name: message
       required: true
@@ -507,8 +552,14 @@ script:
       required: false
       description: The model to use. Use the get-list-models command to see available models. Falls back to instance config.
 
-    - name: polling
-      description: Whether to poll for the command result. Used internally for background execution.
+    - name: interval_in_seconds
+      description: Interval in seconds between each poll.
+      defaultValue: "10"
+      hidden: true
+
+    - name: timeout_in_seconds
+      description: Timeout in seconds until polling stops.
+      defaultValue: "600"
       hidden: true
 
     - name: _polling_response_id

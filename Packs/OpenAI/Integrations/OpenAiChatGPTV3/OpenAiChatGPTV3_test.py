@@ -20,6 +20,7 @@ from OpenAiChatGPTV3 import (
     analyze_email_header_command,
     check_email_part,
     deduplicate_events,
+    draft_soc_email_command,
     enrich_audit_event,
     enrich_compliance_event,
     event_id,
@@ -227,6 +228,58 @@ def test_analyze_email_body_command_no_body(mocker):
     client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
     with pytest.raises(Exception):
         analyze_email_body_command(client, {"entry_id": "XYZ"}, {})
+
+
+@pytest.mark.parametrize(
+    "args, params",
+    [
+        (
+            {"additional_instructions": "Notify the user the email was quarantined."},
+            {},
+        ),
+        (
+            {},
+            {"max_tokens": "200", "temperature": "0.5", "top_p": "0.9"},
+        ),
+        (
+            {
+                "additional_instructions": "Include remediation steps.",
+                "max_tokens": "100",
+                "temperature": "0.1",
+                "top_p": "0.5",
+                "reasoning_effort": "high",
+            },
+            {},
+        ),
+    ],
+    ids=[
+        "with-additional-instructions",
+        "with-instance-params-fallback",
+        "with-all-args-and-reasoning",
+    ],
+)
+def test_draft_soc_email_command(mocker, args: dict, params: dict):
+    """Tests 'draft_soc_email_command' using the Responses API."""
+    mock_response = util_load_json("test_data/mock_responses_api_response.json")
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=mock_response)
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    result = draft_soc_email_command(client, args, params)
+
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.raw_response == mock_response
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["response_id"] == "resp_XXXX"
+    assert result.readable_output is not None
+    assert "gpt-5" in result.readable_output
+
+
+def test_draft_soc_email_command_no_model(mocker):
+    """Tests that draft_soc_email_command raises when no model is configured."""
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="", proxy=False, verify=False)
+    with pytest.raises(Exception, match="No model specified"):
+        draft_soc_email_command(client, {}, {})
 
 
 @pytest.mark.parametrize(
