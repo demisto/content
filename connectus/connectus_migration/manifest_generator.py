@@ -1424,6 +1424,7 @@ def collect_existing_field_ids(
 
     Conflict scope (per Q1=a, Q4=b in the design):
       - ``capabilities.yaml`` general_configurations[].configurations[].fields[].id
+      - ``configurations.yaml`` general_configurations[].configurations[].fields[].id
       - ``configurations.yaml`` configurations[].configurations[].fields[].id
       - ``connection.yaml``    profiles[].configurations[].fields[].id
 
@@ -1442,6 +1443,18 @@ def collect_existing_field_ids(
                     result.add(fid)
 
     if configurations_data:
+        # configurations.yaml general_configurations block — where per-handler
+        # ``integrationLogLevel`` and user-mapped general_configurations fields
+        # live. Mirrors :func:`sweep_hidden_defaults_to_serializer`, which also
+        # scans BOTH this block and the per-capability entries. Omitting it
+        # meant a second handler's general_configurations field ids never
+        # collided, so they kept their bare id with no serializer bridge.
+        gc = configurations_data.get("general_configurations") or {}
+        for group in gc.get("configurations") or []:
+            for field in group.get("fields") or []:
+                fid = (field or {}).get("id")
+                if fid:
+                    result.add(fid)
         for cfg in configurations_data.get("configurations") or []:
             for group in cfg.get("configurations") or []:
                 for field in group.get("fields") or []:
@@ -1514,6 +1527,7 @@ def build_capability_gated_computed_field(
     output_id: str,
     value: Any,
     sub_capability_ids: list[str],
+    single_group: bool = False,
 ) -> dict:
     """Build a single ``computed_fields`` rule that injects ``output_id``=``value``.
 
@@ -1544,17 +1558,20 @@ def build_capability_gated_computed_field(
             ],
         }
     """
-    groups = [
-        {
-            "conditions": [
-                {
-                    "type": "capability",
-                    "options": {"capability_id": sub_cap_id, "value": "on"},
-                }
-            ]
+    def _condition(sub_cap_id: str) -> dict:
+        return {
+            "type": "capability",
+            "options": {"capability_id": sub_cap_id, "value": "on"},
         }
-        for sub_cap_id in sub_capability_ids
-    ]
+
+    if single_group:
+        # All sub-capabilities listed as conditions within ONE ``any_of`` group.
+        # Used by the sweep for orphan hidden+default params (e.g. ``first_fetch``)
+        # whose golden lists every capability as conditions in a single group.
+        groups = [{"conditions": [_condition(cid) for cid in sub_capability_ids]}]
+    else:
+        # One ``any_of`` group PER sub-capability id (OR-of-groups).
+        groups = [{"conditions": [_condition(cid)]} for cid in sub_capability_ids]
     return {
         "output": [{"id": output_id, "value": value}],
         "any_of": groups,
@@ -1817,7 +1834,11 @@ def collect_swept_hidden_default_params(
             continue
         if not _is_hidden_on_platform(param):
             continue
+        # XSOAR yml conventionally uses ``defaultvalue`` (no underscore), but
+        # some content / migration inputs use ``default_value``. Accept either.
         default = param.get("defaultvalue")
+        if default is None:
+            default = param.get("default_value")
         if default is None:
             continue
         swept[name] = _coerce_hidden_default_value(param)
@@ -1825,7 +1846,9 @@ def collect_swept_hidden_default_params(
 
 
 def _remove_field_from_configurations(
-    configurations_data: dict, field_ids: set[str]
+    configurations_data: dict,
+    field_ids: set[str],
+    general_config_view_group: str | None = None,
 ) -> set[str]:
     """Remove every field whose ``id`` is in ``field_ids`` from a
     configurations.yaml data dict, scanning BOTH the per-capability
@@ -1833,12 +1856,27 @@ def _remove_field_from_configurations(
 
     Empty field groups left behind by the removal are pruned. Returns the set
     of field ids that were actually found and removed (for logging / accuracy).
+
+    ``general_config_view_group``: when set, the ``general_configurations``
+    scrub is RESTRICTED to field groups whose ``view_group`` matches it. This
+    scopes the sweep to the NEW handler's general_configurations rows on the
+    append path — without it, a bare-id field shared with an EXISTING handler
+    (e.g. ``first_fetch`` under a different view_group) would be wrongly removed
+    from that other handler. ``None`` preserves the previous behaviour (scrub
+    every general_configurations group — correct for the single-handler
+    from-scratch path).
     """
     removed: set[str] = set()
 
-    def _scrub_group_list(groups: list) -> None:
+    def _scrub_group_list(groups: list, view_group_filter: str | None = None) -> None:
         for group in groups:
             if not isinstance(group, dict):
+                continue
+            if (
+                view_group_filter is not None
+                and group.get("view_group") != view_group_filter
+            ):
+                # Group belongs to a different handler — leave it untouched.
                 continue
             fields = group.get("fields")
             if not isinstance(fields, list):
@@ -1853,15 +1891,26 @@ def _remove_field_from_configurations(
         # Prune now-empty field groups.
         groups[:] = [g for g in groups if (g.get("fields") if isinstance(g, dict) else g)]
 
-    # Per-capability configuration entries.
+    # Per-capability configuration entries. Scope to the new handler's entries
+    # (matched by ``view_group``) when a filter is supplied so a builder-renamed
+    # field shared with an EXISTING handler (e.g. ``alertFetchInterval`` in that
+    # handler's fetch-issues entry) is not wrongly removed.
     for entry in configurations_data.get("configurations", []) or []:
-        if isinstance(entry, dict) and isinstance(entry.get("configurations"), list):
-            _scrub_group_list(entry["configurations"])
+        if not (isinstance(entry, dict) and isinstance(entry.get("configurations"), list)):
+            continue
+        if (
+            general_config_view_group is not None
+            and entry.get("view_group") != general_config_view_group
+        ):
+            continue
+        _scrub_group_list(entry["configurations"])
 
-    # general_configurations block.
+    # general_configurations block (optionally scoped to one view_group).
     gc = configurations_data.get("general_configurations")
     if isinstance(gc, dict) and isinstance(gc.get("configurations"), list):
-        _scrub_group_list(gc["configurations"])
+        _scrub_group_list(
+            gc["configurations"], view_group_filter=general_config_view_group
+        )
 
     return removed
 
@@ -1974,18 +2023,32 @@ def sweep_hidden_defaults_to_serializer(
         candidate_ids = {name} | original_to_renamed.get(name, set())
         if builder_renamed:
             candidate_ids.add(builder_renamed)
+        # Scope the general_configurations scrub to THIS handler's view_group so
+        # a bare-id field shared with an existing handler (e.g. ``first_fetch``
+        # under another handler's view_group) is not wrongly removed.
         removed = _remove_field_from_configurations(
-            configurations_data, candidate_ids
+            configurations_data,
+            candidate_ids,
+            general_config_view_group=(
+                view_group_id_for_handler(handler_id) if handler_id else None
+            ),
         )
 
         # Gate on the param's OWNING capability (single) when known; fall back
         # to OR across all sub-capabilities only for unattached orphans.
         gating_ids = _owning_capability_ids(name)
 
+        # Orphan params (gated across ALL the handler's sub-capabilities, e.g.
+        # ``first_fetch``) list every capability as conditions in a SINGLE
+        # ``any_of`` group. Params attached to a single owning capability keep
+        # the one-group-per-id form.
+        is_orphan_gating = gating_ids == all_cap_ids and len(gating_ids) > 1
+
         rule = build_capability_gated_computed_field(
             output_id=output_id,
             value=value,
             sub_capability_ids=gating_ids,
+            single_group=is_orphan_gating,
         )
         register_computed_field_entry(handler_dir, rule)
 
@@ -2035,7 +2098,12 @@ def assert_no_hidden_defaults_in_configurations(
                 if not isinstance(field, dict):
                     continue
                 fid = str(field.get("id", ""))
-                if fid in SWEEP_EXCLUDED_PARAMS:
+                # Allow the sanctioned exception both as a bare id and as a
+                # dedup-renamed id (``<handler_id>_feedExpirationInterval``),
+                # since a 2nd+ handler's copy is id-prefixed.
+                if fid in SWEEP_EXCLUDED_PARAMS or any(
+                    fid.endswith(f"_{p}") for p in SWEEP_EXCLUDED_PARAMS
+                ):
                     continue
                 options = field.get("options")
                 if not isinstance(options, dict):
@@ -2116,7 +2184,17 @@ def _coerce_hidden_default_value(yml_param: dict) -> Any:
       - everything else -> the raw ``defaultvalue`` passed through unchanged
         (string / number — already JSON-serializable).
     """
+    # Accept both ``defaultvalue`` (XSOAR convention) and ``default_value``.
+    # XSOAR stores ``defaultvalue`` as a STRING even for numeric params; the
+    # ``default_value`` fallback (used by some migration inputs) may be parsed
+    # by YAML as an int/float, so normalize it to a string to match the XSOAR
+    # convention (the serializer ``computed_fields`` value is then consistent
+    # with builder-emitted defaults like ``alertFetchInterval: '30'``).
     raw = yml_param.get("defaultvalue")
+    if raw is None:
+        raw = yml_param.get("default_value")
+        if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+            raw = str(raw)
     if yml_param.get("type") == 8:
         return _coerce_toggle_default(raw)
     return raw
@@ -4869,21 +4947,118 @@ def inject_synthetic_capability_fields(
     first_group["fields"] = to_add + existing
 
 
+def _is_sweep_removed_field(field: dict) -> bool:
+    """Return True if ``field`` is a hidden+default field the sweep will REMOVE.
+
+    :func:`sweep_hidden_defaults_to_serializer` moves hidden fields that carry a
+    ``default_value`` OUT of configurations.yaml into the handler's serializer
+    ``computed_fields``, matching them by their ORIGINAL (builder) id. Such
+    fields must therefore NOT be id-renamed by the connector-wide dedup at
+    injection time: renaming would (a) hide them from the sweep's original-name
+    match and (b) leave a hidden+default field in configurations.yaml, tripping
+    :func:`assert_no_hidden_defaults_in_configurations`.
+
+    EXCEPTION — :data:`SWEEP_EXCLUDED_PARAMS` (currently only
+    ``feedExpirationInterval``): these are the one class of fields that
+    legitimately STAY in configurations.yaml hidden+with-default (revealed by a
+    visibility trigger). They are NOT removed by the sweep, so they DO get
+    deduped+serialized like every other field (and their trigger is updated to
+    the renamed id by the caller). Hence they return False here.
+
+    Detection mirrors the guard: hidden when EITHER ``create_modifiers`` or
+    ``edit_modifiers`` has ``hidden: True``, and a ``default_value`` is present.
+    """
+    if str(field.get("id", "")) in SWEEP_EXCLUDED_PARAMS:
+        # Stays in configurations.yaml — dedup it like a normal field.
+        return False
+    options = field.get("options")
+    if not isinstance(options, dict):
+        return False
+    if "default_value" not in options:
+        return False
+    for mod_key in ("create_modifiers", "edit_modifiers"):
+        mod = options.get(mod_key)
+        if isinstance(mod, dict) and mod.get("hidden") is True:
+            return True
+    return False
+
+
+def _rewrite_trigger_field_ids(
+    triggers: list[dict], rename_map: dict[str, str]
+) -> list[dict]:
+    """Rewrite every ``id`` reference inside ``triggers`` using ``rename_map``.
+
+    Capability builders emit visibility triggers (e.g. the
+    ``feedExpirationInterval`` reveal trigger) keyed by the field's BARE id.
+    When the connector-wide dedup renames a referenced field on a 2nd+ handler
+    (``feedExpirationInterval`` -> ``<handler_id>_feedExpirationInterval``), the
+    trigger must reference the renamed id too, or triggers.yaml points at a
+    field that no longer exists under that id. This walks the trigger structure
+    (``conditions`` / ``effects`` / nested ``children``) and replaces any ``id``
+    value present in ``rename_map``. Returns the same list (mutated in place);
+    a no-op when ``rename_map`` is empty.
+    """
+    if not rename_map:
+        return triggers
+
+    def _walk(node: Any) -> None:
+        if isinstance(node, dict):
+            fid = node.get("id")
+            if isinstance(fid, str) and fid in rename_map:
+                node["id"] = rename_map[fid]
+            for value in node.values():
+                _walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                _walk(item)
+
+    for trigger in triggers:
+        _walk(trigger)
+    return triggers
+
+
 def _inject_append_capability_fields(
     configurations_data: dict,
     sub_cap_id: str | None,
     handler_id: str,
     synthetic_fields: list[dict],
-) -> None:
+    existing_ids: set[str] | None = None,
+    handler_dir: Path | None = None,
+) -> dict[str, str]:
     """Inject synthetic capability fields by an already-resolved sub-cap id.
 
     The append path resolves each capability's sub-cap id up front
     (``cap_name_to_handler_cap_id``); this matches the configurations sub-cap
     entry by that exact id and prepends the builder's synthetic fields. When
     no matching entry exists yet, a new view_group-pinned entry is created.
+
+    Generic id-dedup (Appendix C): every synthetic field a capability builder
+    produces (``isFetch`` / ``incidentType`` / ``mappingId`` / ``feed*`` /
+    ``defaultIgnore`` / assets / secrets / ... — ANY capability type) carries a
+    BARE id. When ``existing_ids`` (the connector-wide claimed-id set) and
+    ``handler_dir`` are supplied, each injected field is deduped against that
+    set via :func:`dedup_field_id_and_register`: on collision the field is
+    renamed ``<handler_id>_<id>`` and a serializer ``field_mappings`` bridge is
+    registered so the XSOAR runtime still receives the canonical param name.
+    ``existing_ids`` is mutated in place so later injects (and other field
+    surfaces) see freshly-claimed ids. Without those args the previous
+    local-only dedup applies (back-compat for callers that don't dedup).
+
+    Returns a ``{original_id: renamed_id}`` map of every field actually renamed
+    by the dedup. The caller uses this to rewrite any builder-produced TRIGGER
+    that references a renamed field id (e.g. the ``feedExpirationInterval``
+    reveal trigger) so triggers.yaml stays consistent with the renamed fields.
+
+    Hidden+default fields the sweep will REMOVE (per :func:`_is_sweep_removed_field`)
+    are left bare so :func:`sweep_hidden_defaults_to_serializer` can relocate
+    them by their original id. The one exception class, ``SWEEP_EXCLUDED_PARAMS``
+    (``feedExpirationInterval``), STAYS in configurations.yaml hidden+default and
+    IS deduped like a normal field — its trigger is rewritten via the returned
+    map.
     """
+    rename_map: dict[str, str] = {}
     if not synthetic_fields or not sub_cap_id:
-        return
+        return rename_map
 
     entries = configurations_data.setdefault("configurations", [])
     target = next((e for e in entries if e.get("id") == sub_cap_id), None)
@@ -4898,9 +5073,35 @@ def _inject_append_capability_fields(
         groups.append({"fields": []})
     first_group = groups[0]
     existing = first_group.setdefault("fields", [])
-    existing_ids = {f.get("id") for f in existing}
-    to_add = [f for f in synthetic_fields if f.get("id") not in existing_ids]
+    local_ids = {f.get("id") for f in existing}
+
+    to_add: list[dict] = []
+    for field in synthetic_fields:
+        original_id = field.get("id")
+        if original_id in local_ids:
+            # Already present in THIS group (idempotent re-inject) — skip.
+            continue
+        if (
+            original_id
+            and existing_ids is not None
+            and handler_dir is not None
+            and not _is_sweep_removed_field(field)
+        ):
+            # Connector-wide dedup: rename + serializer-bridge on collision.
+            # Fields the sweep will REMOVE are excluded (left bare) so the sweep
+            # finds them by original id; everything else — including the
+            # hidden+default ``feedExpirationInterval`` that STAYS in configs —
+            # is deduped here.
+            resolved_id = dedup_field_id_and_register(
+                existing_ids, handler_id, handler_dir, original_id
+            )
+            if resolved_id != original_id:
+                field = dict(field)
+                field["id"] = resolved_id
+                rename_map[original_id] = resolved_id
+        to_add.append(field)
     first_group["fields"] = to_add + existing
+    return rename_map
 
 
 def find_existing_handler_for_capability(
@@ -5067,6 +5268,18 @@ def append_capability_to_files(
     def _emit_fields(params: list[str]) -> list[dict]:
         result: list[dict] = []
         for p in params:
+            # Skip params OWNED by a rich capability builder
+            # (:func:`add_indicators_capability` /
+            # :func:`add_fetch_issues_capability`). Those builders emit the
+            # full-shape field (with values / triggers) and inject it
+            # separately later in the append flow; emitting them here too would
+            # duplicate the field in the sub-capability entry (e.g. a generic
+            # ``feedReliability`` with empty ``values`` AND the rich one). The
+            # from-scratch path avoids this by stripping these from
+            # ``mapped_params`` BEFORE building configurations; on the append
+            # path the builders run after this emit, so we filter here instead.
+            if p in _FEED_STRIPPED_PARAMS or p in _FETCH_ISSUES_STRIPPED_PARAMS:
+                continue
             result.extend(
                 emit_field_for_param(
                     p,
@@ -5120,6 +5333,7 @@ def append_capability_to_files(
         configurations_data.setdefault("configurations", []).append(
             {
                 "id": new_sub_cap_id,
+                "view_group": view_group_id_for_handler(new_handler_id),
                 "configurations": [{"fields": _emit_fields(cap_params)}],
             }
         )
@@ -5168,6 +5382,7 @@ def append_capability_to_files(
     configurations_data.setdefault("configurations", []).append(
         {
             "id": new_sub_cap_id,
+            "view_group": view_group_id_for_handler(new_handler_id),
             "configurations": [{"fields": _emit_fields(cap_params)}],
         }
     )
@@ -5626,7 +5841,7 @@ def _map_type_16(yml_param: dict) -> dict:
 
 # Per guide Appendix A type 17: "Feed Expiration Policy".
 FEED_EXPIRATION_POLICY_VALUES: list[dict] = [
-    {"key": "IndicatorType", "label": "IndicatorType"},
+    {"key": "indicatorType", "label": "indicatorType"},
     {"key": "Time Interval", "label": "Time Interval"},
     {"key": "Never Expire", "label": "Never Expire"},
     {"key": "When removed from the feed", "label": "When removed from the feed"},
@@ -6682,6 +6897,7 @@ def attach_per_profile_connection_fields(
     handler_dir: Path | None = None,
     serializer_bridge: SerializerBridge | None = None,
     field_mapper: FieldMapper | None = None,
+    connector_existing_ids: set[str] | None = None,
 ) -> list[dict]:
     """Append the non-auth connection fields into EACH profile (D-D8 home 1).
 
@@ -6703,7 +6919,6 @@ def attach_per_profile_connection_fields(
     Honors Appendix G (no proxy + no engine) and Appendix H (no engine_group).
     """
     excl = engine_exclusion_class(integration_id)
-    prefix = _slug_word(integration_id)
 
     # Classify other_connection: proxy / insecure / engine are special; the
     # REST (host/url/port/region) are generic non-auth fields.
@@ -6715,15 +6930,62 @@ def attach_per_profile_connection_fields(
         p for p in other_connection if classify_connection_param(p) is None
     ]
 
-    # Track ids already used across profiles for dedup-via-rename.
-    existing_ids: set[str] = set()
+    # Track ids already used across profiles for dedup-via-rename. Seed from
+    # the connector-wide claimed-id set (``connector_existing_ids``) so that
+    # when a SECOND handler is appended, its duplicated connection fields
+    # (url / proxy / insecure / engine* / credentials_*) collide with the
+    # FIRST handler's already-claimed bare ids and get a per-profile-id prefix
+    # plus a serializer bridge — instead of silently re-emitting bare ids that
+    # clash in the merged connection.yaml. From-scratch (single handler) passes
+    # ``None``, so the first profile keeps bare ids as before. NOTE: this is a
+    # COPY-free reference only for SEEDING — we copy so the local prefixing
+    # logic (which expects the first-profile-keeps-bare-id semantics within
+    # THIS call) is preserved, while still seeing prior-handler ids as taken.
+    existing_ids: set[str] = (
+        set(connector_existing_ids) if connector_existing_ids is not None else set()
+    )
     all_triggers: list[dict] = []
 
     for profile in profiles:
+        # Dedup prefix is the PROFILE's own id verbatim (auth-type agnostic),
+        # NOT a single integration-wide slug. Every non-auth field is duplicated
+        # into every profile; the first profile to claim a bare id keeps it, and
+        # each subsequent profile prefixes its duplicate with that profile's id
+        # — e.g. ``passthrough.github_passthrough_secondary_url``. Using one
+        # integration slug for all profiles would make the 3rd+ profile's
+        # prefixed id collide with the 2nd profile's, silently producing
+        # duplicate ids across profiles. Per-profile ids are globally unique by
+        # construction, so the prefixed ids never collide regardless of how many
+        # profiles share a type. The profile id is used verbatim (it already
+        # contains the ``<type>.<slug>`` shape, e.g. ``passthrough.github``);
+        # do NOT run it through ``_slug_word`` or the leading ``.`` segment is
+        # lost. Falls back to the integration slug only for an unnamed profile.
+        prefix = profile.get("id", "") or _slug_word(integration_id)
+
         cfgs = profile.setdefault("configurations", [{"fields": []}])
         if not cfgs:
             cfgs.append({"fields": []})
         target_fields = cfgs[0].setdefault("fields", [])
+
+        # Dedup the AUTH fields too (credentials_username / credentials_password
+        # / token / api_key / ...) that ``build_connection_profile`` already
+        # placed in this profile. They are id-prefixed + serializer-bridged the
+        # same way as the non-auth fields below: the first profile to claim a
+        # bare id keeps it; a 2nd+ profile (or a 2nd handler appended to an
+        # existing connector) prefixes its duplicate with the profile id and
+        # bridges the renamed id back to the original XSOAR param name. Without
+        # this, two handlers sharing a connector would emit colliding bare auth
+        # field ids in the merged connection.yaml.
+        for cfg_group in cfgs:
+            for auth_field in cfg_group.get("fields", []) or []:
+                aid = auth_field.get("id")
+                if not aid:
+                    continue
+                resolved = _maybe_prefixed_id(
+                    aid, prefix, existing_ids, handler_dir, serializer_bridge, aid
+                )
+                if resolved != aid:
+                    auth_field["id"] = resolved
 
         # --- rest of other_connection (host / url / port / region / ...) ---
         # Emitted FIRST so the server/host fields render at the top of the
@@ -6878,6 +7140,7 @@ def build_connection_yaml(
     handler_dir: Path | None = None,
     serializer_bridge: SerializerBridge | None = None,
     integration_display: str = "",
+    existing_ids: set[str] | None = None,
 ) -> tuple[dict, list[dict]]:
     """Assemble the full ``connection.yaml`` dict for a single-integration
     (one-tile) grouped connector, plus the engine-visibility triggers.
@@ -6927,6 +7190,7 @@ def build_connection_yaml(
         handler_dir=handler_dir,
         serializer_bridge=serializer_bridge,
         field_mapper=field_mapper,
+        connector_existing_ids=existing_ids,
     )
 
     connection: dict[str, Any] = {
@@ -7762,12 +8026,21 @@ def add_handler_to_existing_connector(
             yml_params_by_name=yml_params_by_name,
             handler_dir=new_handler_dir,
         )
-        all_triggers.extend(ti_result.get("triggers", []))
-        _inject_append_capability_fields(
+        # Inject FIRST so we learn which field ids the connector-wide dedup
+        # renamed (e.g. ``feedExpirationInterval`` ->
+        # ``<handler_id>_feedExpirationInterval`` on a 2nd handler), then
+        # rewrite the builder's reveal trigger to reference the renamed ids so
+        # triggers.yaml stays consistent with configurations.yaml.
+        ti_rename_map = _inject_append_capability_fields(
             configurations_data,
             cap_name_to_handler_cap_id.get(ti_bucket_key),
             new_handler_id,
             ti_result.get("fields", []),
+            existing_ids=existing_field_ids,
+            handler_dir=new_handler_dir,
+        )
+        all_triggers.extend(
+            _rewrite_trigger_field_ids(ti_result.get("triggers", []), ti_rename_map)
         )
 
     fi_bucket_key = "Fetch Issues"
@@ -7789,6 +8062,8 @@ def add_handler_to_existing_connector(
             cap_name_to_handler_cap_id.get(fi_bucket_key),
             new_handler_id,
             fi_result.get("fields", []),
+            existing_ids=existing_field_ids,
+            handler_dir=new_handler_dir,
         )
 
     lc_bucket_key = LOG_COLLECTION_BUCKET_KEY
@@ -7810,6 +8085,8 @@ def add_handler_to_existing_connector(
             cap_name_to_handler_cap_id.get(lc_bucket_key),
             new_handler_id,
             lc_result.get("fields", []),
+            existing_ids=existing_field_ids,
+            handler_dir=new_handler_dir,
         )
 
     av_bucket_key = "Fetch Assets and Vulnerabilities"
@@ -7826,6 +8103,8 @@ def add_handler_to_existing_connector(
             cap_name_to_handler_cap_id.get(av_bucket_key),
             new_handler_id,
             av_result.get("fields", []),
+            existing_ids=existing_field_ids,
+            handler_dir=new_handler_dir,
         )
 
     # Fetch Secrets: emit the isFetchCredentials toggle ONLY as a serializer
@@ -7847,6 +8126,8 @@ def add_handler_to_existing_connector(
             cap_name_to_handler_cap_id.get(fs_bucket_key),
             new_handler_id,
             fs_result.get("fields", []),
+            existing_ids=existing_field_ids,
+            handler_dir=new_handler_dir,
         )
 
     # Authoritative final pass: move EVERY hidden+default XSOAR param of THIS
@@ -7897,6 +8178,11 @@ def add_handler_to_existing_connector(
             handler_dir=new_handler_dir,
             serializer_bridge=register_serializer_entry,
             integration_display=integration_display,
+            # Append path: seed the per-profile connection dedup with the
+            # connector-wide claimed-id set so the new handler's duplicated
+            # connection fields collide with the existing handler's bare ids
+            # and get per-profile-id prefixes + serializer bridges.
+            existing_ids=existing_field_ids,
         )
         all_triggers.extend(engine_triggers)
         merge_connection_data(connection_data, new_connection)

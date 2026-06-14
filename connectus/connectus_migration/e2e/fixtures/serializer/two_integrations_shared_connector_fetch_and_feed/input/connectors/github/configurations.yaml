@@ -188,7 +188,7 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
-        default_value: F - Reliability cannot be judged
+        default_value: A - Completely reliable
         description: Reliability of the source providing the intelligence data
       title: Source Reliability
   - fields:

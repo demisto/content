@@ -24,10 +24,20 @@ configuration:
     required: false
     hidden: true
     default_value: 10
-  - name: feedReliability
+  - additionalinfo: Reliability of the source providing the intelligence data
+    defaultvalue: A - Completely reliable
     display: Source Reliability
+    name: feedReliability
+    options:
+    - A - Completely reliable
+    - B - Usually reliable
+    - C - Fairly reliable
+    - D - Not usually reliable
+    - E - Unreliable
+    - F - Reliability cannot be judged
+    required: true
     type: 15
-    required: false
+    section: Collect
   - name: feedTags
     display: Tags
     type: 0

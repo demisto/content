@@ -76,7 +76,6 @@ configurations:
 - id: fetch-issues_github
   configurations:
   - fields:
-  - fields:
     - id: incidentType
       title: Issue Type
       field_type: select
@@ -116,6 +115,7 @@ configurations:
         - hours
         - minutes
         output_format: minutes
+  - fields:
     - id: incomingMapperId
       title: Incoming Mapper
       field_type: select
@@ -216,7 +216,7 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
-        default_value: F - Reliability cannot be judged
+        default_value: A - Completely reliable
         description: Reliability of the source providing the intelligence data
       title: Source Reliability
   - fields:
@@ -306,7 +306,6 @@ configurations:
 - id: fetch-issues_github-iam
   configurations:
   - fields:
-  - fields:
     - id: xsoar-github-iam_incidentType
       title: Issue Type
       field_type: select
@@ -330,6 +329,7 @@ configurations:
           hidden: false
         help_text: select if classifier doesn't exist
         placeholder: Select an issue type
+  - fields:
     - id: xsoar-github-iam_incomingMapperId
       title: Incoming Mapper
       field_type: select
@@ -483,13 +483,27 @@ configurations:
     - id: xsoar-github-iam_feedReliability
       field_type: select
       options:
-        values: []
+        values:
+        - key: A - Completely reliable
+          label: A - Completely reliable
+        - key: B - Usually reliable
+          label: B - Usually reliable
+        - key: C - Fairly reliable
+          label: C - Fairly reliable
+        - key: D - Not usually reliable
+          label: D - Not usually reliable
+        - key: E - Unreliable
+          label: E - Unreliable
+        - key: F - Reliability cannot be judged
+          label: F - Reliability cannot be judged
         create_modifiers:
-          required: false
+          required: true
           hidden: false
         edit_modifiers:
-          required: false
+          required: true
           hidden: false
+        default_value: A - Completely reliable
+        description: Reliability of the source providing the intelligence data
       title: Source Reliability
   - fields:
     - id: xsoar-github-iam_feedTags

@@ -32,3 +32,5 @@ field_mappings:
   field_name: credentials_password
 - id: passthrough.github_iam_credentials_username
   field_name: credentials_username
+- id: passthrough.github_iam_passthrough_secondary_token
+  field_name: token

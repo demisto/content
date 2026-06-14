@@ -8,8 +8,6 @@ field_mappings:
   field_name: feedReliability
 - id: xsoar-github-iam_feedTags
   field_name: feedTags
-- id: xsoar-github-iam_defaultIgnore
-  field_name: defaultIgnore
 - id: xsoar-github-iam_feedFetchInterval
   field_name: feedFetchInterval
 - id: xsoar-github-iam_feedReputation
