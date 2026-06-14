@@ -138,7 +138,20 @@ INCIDENT_TYPE_PARAM = "incidentType"
 ALERT_TYPE_SUFFIX = "incidentType"
 INCIDENT_FETCH_INTERVAL_PARAM = "incidentFetchInterval"
 ALERT_FETCH_INTERVAL_SUFFIX = "alertFetchInterval"
-IGNORED_PARAMS = {"is_mirroring", "mirror_direction", "mirror_limit", "close_incident"}
+IGNORED_PARAMS = {
+    "is_mirroring",
+    "mirror_options",
+    "close_incident",
+    "mirror_limit",
+    "mirror_direction",
+    "mirror_tag",
+    "incoming_tags",
+    "outgoing_tags",
+    "comment_tag",
+    "work_notes_tag",
+    "close_out",
+    "close_notes",
+}
 
 # XSOAR ``type: 9`` — the credentials widget. A single integration YML param
 # of this type is a *compound* field: the integration reads it as

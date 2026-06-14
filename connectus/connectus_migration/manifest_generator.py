@@ -97,6 +97,22 @@ _AUTOMATION_CAP_ID = "automation-and-remediation"
 # same capability family (a handler maps each fetch family to exactly one
 # sub-capability).
 _FETCH_MUTEX_MESSAGE = "Select only one fetch option."
+
+# ---------------------------------------------------------------------------
+# Collection → automation auto-enable + lock (per guide §3.5.1)
+# ---------------------------------------------------------------------------
+# Every fetch (collection) sub-capability a handler contributes MUST
+# auto-enable AND lock that handler's ``automation-and-remediation``
+# sub-capability — every fetch type also needs automation. When any of the
+# handler's collection sub-capabilities is selected, the automation sub-cap is
+# turned ON (``enabled: true``) and locked (``read_only: true``) so the user
+# cannot clear it while the dependency is active. The effect is reversible
+# (guide §2.10): when no collection sub-cap is selected the lock/auto-enable
+# are lifted. Message text is verbatim from guide §3.5.1.
+_COLLECTION_AUTOMATION_MESSAGE = (
+    "A selected capability enables this setting. "
+    "Clear the active dependency to disable it"
+)
 CONNECTOR_TO_AUTHOR_IMAGE_PATH = Path(__file__).resolve().parent / "connector_to_author_image.json"
 
 def derive_connector_suffix(mapped_params: dict) -> tuple[str, str]:
@@ -4621,6 +4637,10 @@ def _per_handler_log_level_field(handler_id: str, field_id: str) -> dict:
             "description": f"Set the log level for {handler_id}.",
             "placeholder": "Select log level",
             "default_value": "Off",
+            # Every select/multi_select must be searchable + clearable
+            # (guide §2.15).
+            "searchable": True,
+            "clearable": True,
             "values": [
                 {"key": "Off", "label": "Off"},
                 {"key": "Debug", "label": "Debug"},
@@ -5315,6 +5335,11 @@ def append_capability_to_files(
         new_cap_entry = {
             "id": cap_slug,
             "title": CANONICAL_CAPABILITY_TITLES[cap_slug],
+            # capabilities.schema REQUIRES a non-empty description on every
+            # capability — mirror the from-scratch build_capabilities_yaml path
+            # so append-created capabilities (fetch-issues, log-collection, …)
+            # are not emitted without one.
+            "description": CANONICAL_CAPABILITY_DESCRIPTIONS[cap_slug],
             "default_enabled": False,
             "required": False,
             "sub_capabilities": [
@@ -5535,6 +5560,59 @@ def build_fetch_mutex_triggers(fetch_sub_cap_ids: list[str]) -> list[dict]:
                     ],
                 }
             )
+    return triggers
+
+
+def build_collection_automation_triggers(
+    fetch_sub_cap_ids: list[str], automation_sub_cap_id: str
+) -> list[dict]:
+    """Build the collection → automation auto-enable + lock triggers (guide §3.5.1).
+
+    For EACH of a handler's fetch (collection) sub-capability ids, emit one
+    trigger that — when that collection sub-capability is selected — auto-enables
+    AND locks the handler's ``automation-and-remediation`` sub-capability. Every
+    fetch type also needs automation, so selecting a collection sub-cap forces
+    the automation sub-cap ON (``enabled: true``) and locks it
+    (``read_only: true``) until the dependency is cleared. The effect is
+    reversible (guide §2.10).
+
+    Args:
+        fetch_sub_cap_ids: The handler's fetch (collection) sub-capability ids
+            (e.g. from :func:`collect_fetch_sub_cap_ids`).
+        automation_sub_cap_id: The handler's ``automation-and-remediation``
+            sub-capability id (target of the auto-enable + lock effect).
+
+    Returns:
+        One trigger per fetch sub-cap id, all targeting
+        ``automation_sub_cap_id``. Empty list when the handler contributes no
+        collection sub-capabilities (nothing to gate the automation lock on)
+        or has no automation sub-capability.
+
+    Condition shape uses the Triggers v2 capability-state form
+    (``behavior: selected``, ``operator: eq``, ``value: true``); ``message`` is
+    allowed because the condition tree contains a capability condition.
+    """
+    if not automation_sub_cap_id:
+        return []
+    triggers: list[dict] = []
+    for fetch_id in fetch_sub_cap_ids:
+        triggers.append(
+            {
+                "conditions": {
+                    "id": fetch_id,
+                    "behavior": "selected",
+                    "operator": "eq",
+                    "value": True,
+                },
+                "effects": [
+                    {
+                        "id": automation_sub_cap_id,
+                        "action": {"read_only": True, "enabled": True},
+                        "message": _COLLECTION_AUTOMATION_MESSAGE,
+                    }
+                ],
+            }
+        )
     return triggers
 
 
@@ -5787,6 +5865,20 @@ def _build_select_values(yml_param: dict, label_key: str = "label") -> list[dict
     return items
 
 
+def _apply_searchable_clearable(field: dict) -> dict:
+    """Set ``options.searchable`` / ``options.clearable`` to ``True`` in place.
+
+    Every ``select`` / ``multi_select`` field MUST be searchable and clearable
+    (guide §2.15 / §3.7 field rule 9). Centralizes the rule so all
+    select/multi_select mappers stay in lockstep. Returns ``field`` for
+    chaining.
+    """
+    options = field.setdefault("options", {})
+    options["searchable"] = True
+    options["clearable"] = True
+    return field
+
+
 def _map_type_13(yml_param: dict) -> dict:
     """XSOAR type 13 — Single-select (system catalogue) → connectus `select`."""
     field = {
@@ -5794,6 +5886,7 @@ def _map_type_13(yml_param: dict) -> dict:
         "field_type": "select",
         "options": {"values": _build_select_values(yml_param, label_key="label")},
     }
+    _apply_searchable_clearable(field)
     _apply_common_field_metadata(field, yml_param)
     return field
 
@@ -5812,6 +5905,7 @@ def _map_type_15(yml_param: dict) -> dict:
         "field_type": "select",
         "options": {"values": _build_select_values(yml_param, label_key="label")},
     }
+    _apply_searchable_clearable(field)
     _apply_common_field_metadata(field, yml_param)
     return field
 
@@ -5826,6 +5920,7 @@ def _map_type_16(yml_param: dict) -> dict:
         "field_type": "multi_select",
         "options": {"values": _build_select_values(yml_param, label_key="label")},
     }
+    _apply_searchable_clearable(field)
     if "defaultvalue" in yml_param and yml_param["defaultvalue"] is not None:
         field["options"]["default_value"] = _coerce_multi_select_default(
             yml_param["defaultvalue"]
@@ -5875,6 +5970,7 @@ def _map_type_17(yml_param: dict) -> dict:
         "field_type": "select",
         "options": {"values": list(FEED_EXPIRATION_POLICY_VALUES)},
     }
+    _apply_searchable_clearable(field)
     _apply_common_field_metadata(field, yml_param)
     return field
 
@@ -5896,6 +5992,7 @@ def _map_type_18(yml_param: dict) -> dict:
         "field_type": "select",
         "options": {"values": list(INDICATOR_REPUTATION_VALUES)},
     }
+    _apply_searchable_clearable(field)
     _apply_common_field_metadata(field, yml_param)
     return field
 
@@ -6729,6 +6826,12 @@ def build_engine_field(field_id: str, integration_id: str) -> dict:
         "options": {
             "mask": False,
             "placeholder": "Select an engine",
+            # Mandatory empty-state message (guide §3.7 engine 3-field pattern).
+            "empty_values_message": "No engines available",
+            # Every select/multi_select must be searchable + clearable
+            # (guide §2.15 / §3.7 field rule 9).
+            "searchable": True,
+            "clearable": True,
             "create_modifiers": {"required": False, "hidden": False},
             "edit_modifiers": {"required": False, "hidden": False},
         },
@@ -6745,6 +6848,12 @@ def build_engine_group_field(field_id: str, integration_id: str) -> dict:
         "options": {
             "mask": False,
             "placeholder": "Select an engine group",
+            # Mandatory empty-state message (guide §3.7 engine 3-field pattern).
+            "empty_values_message": "No engine groups available",
+            # Every select/multi_select must be searchable + clearable
+            # (guide §2.15 / §3.7 field rule 9).
+            "searchable": True,
+            "clearable": True,
             "create_modifiers": {"required": False, "hidden": False},
             "edit_modifiers": {"required": False, "hidden": False},
         },
@@ -7730,6 +7839,20 @@ def create_manifest_from_scratch(
     fetch_sub_cap_ids = collect_fetch_sub_cap_ids(mapped_params, handler_id)
     all_triggers.extend(build_fetch_mutex_triggers(fetch_sub_cap_ids))
 
+    # Collection → automation auto-enable + lock (guide §3.5.1): every fetch
+    # sub-cap this handler contributes auto-enables AND locks the handler's
+    # automation-and-remediation sub-cap. Only emitted when the handler
+    # actually declares the Automation capability (there is a target to lock).
+    if _AUTOMATION_BUCKET_KEY in mapped_params:
+        automation_sub_cap_id = make_sub_capability_id(
+            handler_id, _AUTOMATION_BUCKET_KEY
+        )
+        all_triggers.extend(
+            build_collection_automation_triggers(
+                fetch_sub_cap_ids, automation_sub_cap_id
+            )
+        )
+
     if all_triggers:
         triggers_data = build_triggers_yaml(all_triggers)
         triggers_yaml_path = connector_dir / "triggers.yaml"
@@ -7873,25 +7996,13 @@ def add_handler_to_existing_connector(
         if p.get("name")
     }
 
-    # All sub-capability ids this new handler contributes — used to gate
-    # general_configurations hidden-default params (moved to serializer
-    # computed_fields) across ALL of the handler's capabilities (OR logic).
-    _append_all_cap_ids = [
-        make_sub_capability_id(new_handler_id, cap_name)
-        for cap_name in mapped_params
-        if cap_name != "general_configurations"
-    ]
-
-    # Merge general configurations (deduplicated by field id).
-    merge_general_configurations(
-        capabilities_data,
-        mapped_params.get("general_configurations", []) or [],
-        yml_params_by_name=yml_params_by_name,
-        new_handler_id=new_handler_id,
-        handler_dir=handler_dir,
-        existing_ids=existing_field_ids,
-        gating_capability_ids=_append_all_cap_ids,
-    )
+    # NOTE: user-mapped ``general_configurations`` params are emitted ONLY in
+    # configurations.yaml (view_group-pinned, dedup'd) via
+    # build_per_handler_general_config below — they are intentionally NOT added
+    # to capabilities.yaml, whose general_configurations carries ONLY the
+    # mandatory ``instance_name`` field (mirrors the from-scratch
+    # build_capabilities_yaml path). Adding them here too produced a duplicate
+    # (and view-group-less) copy in capabilities.yaml.
 
     # Per-capability append: compute the cap id mapping the new handler
     # should use, while mutating capabilities/configurations data.
@@ -8209,6 +8320,19 @@ def add_handler_to_existing_connector(
     )
     all_triggers.extend(
         build_fetch_mutex_triggers(new_handler_fetch_sub_cap_ids)
+    )
+
+    # Collection → automation auto-enable + lock (guide §3.5.1): scope is
+    # PER-HANDLER. Each of the NEW handler's fetch sub-caps auto-enables AND
+    # locks the NEW handler's automation-and-remediation sub-cap. Only emitted
+    # when the new handler declares the Automation capability.
+    new_handler_automation_sub_cap_id = cap_name_to_handler_cap_id.get(
+        _AUTOMATION_BUCKET_KEY, ""
+    )
+    all_triggers.extend(
+        build_collection_automation_triggers(
+            new_handler_fetch_sub_cap_ids, new_handler_automation_sub_cap_id
+        )
     )
 
     if all_triggers:
