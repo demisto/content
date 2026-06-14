@@ -46,6 +46,7 @@ from pathlib import Path as _Path  # noqa: E402
 
 _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
 from env_loader import load_env  # noqa: E402
+from be_config_params import compute_be_synthesized_params, default_dummy_for  # noqa: E402
 
 # Load the canonical root .env via the single unified loader.
 load_env()
@@ -394,6 +395,7 @@ def create_integration_instance(
     server_configuration: dict,
     filled_params: dict,
     instance_name: str | None = None,
+    extra_fields: dict | None = None,
 ) -> tuple[dict | None, str]:
     """Create an integration instance via PUT /settings/integration.
 
@@ -406,6 +408,13 @@ def create_integration_instance(
         filled_params: The dict returned by :func:`fill_params_from_yml`.
         instance_name: Optional explicit instance name. When ``None``, a
             sanity-test name with a uuid suffix is generated.
+        extra_fields: Optional mapping of field name -> value for params that
+            are NOT declared in the server configuration schema but must still
+            be sent in the instance ``data`` list (e.g. backend-synthesized
+            fetch/feed config params like ``alertFetchInterval`` / ``alertType``
+            that the BE auto-adds based on the YML script flags). Each is
+            injected into ``data`` (mirroring the magic-key injection) unless a
+            param of the same name is already present from the server schema.
 
     Returns:
         ``(module_instance_dict, error_message)``.
@@ -479,6 +488,26 @@ def create_integration_instance(
                 "required": False,
             })
             log.debug("Injected magic key %r into module_instance.data", PARITY_DUMP_PARAM_KEY)
+
+    # Inject backend-synthesized config params (e.g. fetch/feed fields the BE
+    # auto-adds from the YML script flags) that are NOT in the server's
+    # configuration schema, so they are persisted on the instance and surface in
+    # demisto.params() at runtime. Mirrors the magic-key injection above.
+    for field_name, field_value in (extra_fields or {}).items():
+        already_present = any(
+            entry.get("name") == field_name for entry in module_instance["data"]
+        )
+        if already_present:
+            continue
+        module_instance["data"].append({
+            "name": field_name,
+            "display": field_name,
+            "type": PARAM_TYPE_SHORT_TEXT,
+            "value": field_value,
+            "hasvalue": bool(field_value),
+            "required": False,
+        })
+        log.debug("Injected BE-synthesized field %r into module_instance.data", field_name)
 
     try:
         res = demisto_client.generic_request_func(
@@ -791,6 +820,24 @@ def capture_xsoar_params(
 
     filled = fill_params_from_yml(yml_params, overrides)
 
+    # Backend-synthesized fetch/feed config params (alertFetchInterval, etc.)
+    # are NOT in the YML `configuration`, so fill_params_from_yml() drops them.
+    # Compute them from the YML script flags and pull their values from the
+    # caller overrides (the shared dummies) so BOTH parity sides use the same
+    # value. These get injected into the instance data list by
+    # create_integration_instance(extra_fields=...).
+    be_added, be_stripped = compute_be_synthesized_params(yml_data.get("script"))
+    extra_fields: dict = {}
+    for name in be_added:
+        if name in overrides:
+            extra_fields[name] = overrides[name]
+        else:
+            extra_fields[name] = default_dummy_for(name)
+    # BE strips these when no fetch flag is on — ensure they are not sent.
+    for name in be_stripped:
+        filled.pop(name, None)
+        extra_fields.pop(name, None)
+
     if client is None:
         client = create_client()
 
@@ -799,7 +846,9 @@ def capture_xsoar_params(
         # `filled` is built — return it so the attempted payload is recoverable.
         return None, filled
 
-    module_instance, error = create_integration_instance(client, integration_name, server_config, filled)
+    module_instance, error = create_integration_instance(
+        client, integration_name, server_config, filled, extra_fields=extra_fields
+    )
     if not module_instance:
         log.error("Failed to create XSOAR instance: %s", error)
         return None, filled
