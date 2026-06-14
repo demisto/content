@@ -119,13 +119,19 @@ def validate_auth_details(data: str | dict) -> list[str]:
                 seen_names.add(entry["name"])
                 entry_name_ok = True
             # --- xsoar_param_map validation ---
+            # 'NoneRequired' describes an integration with no credentials,
+            # so it is exempt from the non-empty xsoar_param_map rule: the
+            # map may be absent or empty. If it IS present and non-empty,
+            # the structural checks below still apply.
+            is_none_required = entry.get("type") == AuthType.NoneRequired.value
             if "xsoar_param_map" not in entry:
-                errors.append(
-                    f"auth_types[{i}].xsoar_param_map: missing "
-                    "'xsoar_param_map' (required and non-empty). "
-                    "See connectus/column-schemas.md §Auth Details "
-                    "for the shape."
-                )
+                if not is_none_required:
+                    errors.append(
+                        f"auth_types[{i}].xsoar_param_map: missing "
+                        "'xsoar_param_map' (required and non-empty). "
+                        "See connectus/column-schemas.md §Auth Details "
+                        "for the shape."
+                    )
             elif not isinstance(entry["xsoar_param_map"], dict):
                 errors.append(
                     f"auth_types[{i}].xsoar_param_map: must be an "
@@ -135,12 +141,13 @@ def validate_auth_details(data: str | dict) -> list[str]:
                     "the shape."
                 )
             elif len(entry["xsoar_param_map"]) == 0:
-                errors.append(
-                    f"auth_types[{i}].xsoar_param_map: must be a "
-                    "non-empty object (each entry must declare at "
-                    "least one xsoar field path). See "
-                    "connectus/column-schemas.md §Auth Details."
-                )
+                if not is_none_required:
+                    errors.append(
+                        f"auth_types[{i}].xsoar_param_map: must be a "
+                        "non-empty object (each entry must declare at "
+                        "least one xsoar field path). See "
+                        "connectus/column-schemas.md §Auth Details."
+                    )
             else:
                 # Structural per-(key,value) check.
                 structural_ok = True
