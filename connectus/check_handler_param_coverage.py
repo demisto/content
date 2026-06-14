@@ -151,7 +151,7 @@ IGNORED_PARAMS = {
     "work_notes_tag",
     "close_out",
     "close_notes",
-}
+, "longRunning", "longRunningPort"}
 
 # XSOAR ``type: 9`` — the credentials widget. A single integration YML param
 # of this type is a *compound* field: the integration reads it as

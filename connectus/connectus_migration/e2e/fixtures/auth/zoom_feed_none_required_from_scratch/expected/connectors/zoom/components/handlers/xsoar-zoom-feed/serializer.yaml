@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+computed_fields:
+- output:
+  - id: feed
+    value: true
+  any_of:
+  - conditions:
+    - type: capability
+      options:
+        capability_id: threat-intelligence-and-enrichment_zoom-feed
+        value: 'on'

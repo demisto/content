@@ -6148,6 +6148,15 @@ AUTH_TYPE_TO_PROFILE_TYPE: dict[str, str] = {
     "APIKey": "api_key",
     "Plain": "plain",
     "Passthrough": "passthrough",
+    # A NoneRequired integration (a no-auth feed such as Zoom Feed that only
+    # pulls public data over a URL) has NO credentials. The connection schema
+    # still requires >=1 profile (profiles.minItems == 1), so it is rendered as
+    # an ``external_auth`` profile that carries ONLY the connection-adjacent
+    # fields (the ``other_connection`` list — url/proxy/insecure — plus the
+    # engine pattern) and no auth fields. ``external_auth`` is chosen because
+    # the schema permits free-form (or absent) auth parameters for it and
+    # requires only ``configurations`` (satisfied by those connection fields).
+    "NoneRequired": "external_auth",
 }
 
 # (profile_type, classifier-role) → connection.yaml metadata.auth.parameter.
