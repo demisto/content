@@ -395,7 +395,6 @@ def fetch_sign_on_logs(client: Client, limit_to_fetch: int, from_date: str, to_d
         sign_on_logs.extend(sign_on_events_from_api)
         pages_remaining -= 1
         demisto.debug(f"{pages_remaining} pages left to fetch. Total fetched so far: {total_fetched}.")
-
     return sign_on_logs
 
 
@@ -470,11 +469,7 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
         }
         demisto.debug(f"Saving last run as {last_run}")
     else:
-        # Handle the case where no events were retrieved.
-        # IMPORTANT: store the timestamp as a string (REQUEST_DATE_FORMAT). Storing a raw datetime
-        # object causes demisto.setLastRun to fail JSON serialization on the docker code loop,
-        # which results in a 5-minute script timeout, "Could not fetch new incidents", and the
-        # cursor never being persisted - leading to data loss on subsequent runs (XSUP-68167).
+        # Handle the case where no events were retrieved
         last_run["last_fetch_time"] = current_time.strftime(REQUEST_DATE_FORMAT)
         non_duplicates = []
 
@@ -543,6 +538,7 @@ def main() -> None:  # pragma: no cover
                 # saves next_run for the time fetch-events is invoked
                 demisto.info(f"Setting new last_run to {new_last_run}")
                 demisto.setLastRun(new_last_run)
+                demisto.info(f'last_run value set to {new_last_run}"')
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
