@@ -164,6 +164,14 @@ def upload_attachment_command(client, args):
     entry_id = args.get("entry-id")
     rec_id = args.get("rec-id")
 
+    # Validate all required arguments are present and non-empty
+    for arg_name, arg_value in (("object-type", object_type), ("entry-id", entry_id), ("rec-id", rec_id)):
+        if arg_value is None or (isinstance(arg_value, str) and not arg_value.strip()):
+            raise ValueError(
+                f'Required argument "{arg_name}" is missing or empty. '
+                "Verify the calling automation provides all of: object-type, entry-id, rec-id."
+            )
+
     body = {"ObjectID": rec_id, "ObjectType": f"{object_type}#"}
     raw_res = client.do_request("POST", "rest/Attachment", data=body, files={"file": get_file(entry_id)})
     if raw_res:
