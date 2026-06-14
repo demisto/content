@@ -1,0 +1,1258 @@
+{
+  "_meta": {
+    "assignee": "YuvHayun",
+    "scope": "steps 0-7 (auth -> capabilities -> params-to-commands -> param-defaults -> ucp-review -> params-to-capabilities)",
+    "mode": "full-auto, unattended",
+    "note": "All auth/param decisions made autonomously per connectus-migration-SKILL.md. Low-confidence calls flagged with 'confidence' and 'flags'. set-auth forces interpolated:true on every profile."
+  },
+  "integrations": {
+    "Akamai WAF": {
+      "connector_id": "Akamai",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "EdgeGrid",
+        "reason": "Akamai EdgeGrid signing uses 3 co-equal tokens (clientToken+accessToken+clientSecret) via EdgeGridAuth at Akamai_WAF.py:7447. No dominant canonical role -> Passthrough per skill 1.2.2a. interpolated:true forced by set-auth.",
+        "xsoar_param_map": {
+          "credentials_client_token.password": "client_token",
+          "credentials_access_token.password": "access_token",
+          "credentials_client_secret.password": "client_secret"
+        },
+        "other_connection": [
+          "host",
+          "insecure",
+          "proxy"
+        ],
+        "notes": "Old flat type:4 params (clientToken/accessToken/clientSecret) are hidden:true -> excluded; only the visible type:9 credentials .password leaves mapped (hiddenusername:true suppresses .identifier).",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass-after-fix",
+        "fix": "Akamai_WAF.py:7437 proxy = params.get(\"proxy\", False) (behavior-preserving; BaseClient consumes proxy truthily)",
+        "code_modified": true
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "Akamai WAF SIEM": {
+      "connector_id": "Akamai",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "EdgeGrid",
+        "reason": "EdgeGrid 3-token signing (clienttoken/accesstoken/clientsecret _creds) via EdgeGridAuth at Akamai_SIEM.py:1235. Passthrough per 1.2.2a (3 co-equal tokens). interpolated forced.",
+        "xsoar_param_map": {
+          "clienttoken_creds.password": "client_token",
+          "accesstoken_creds.password": "access_token",
+          "clientsecret_creds.password": "client_secret"
+        },
+        "other_connection": [
+          "configIds",
+          "host",
+          "insecure",
+          "proxy"
+        ],
+        "notes": "Flat type:4 token params hidden:true -> excluded. configIds (required, no default, connection-routing) rejected as a code default and moved to other_connection per branch-b reject rule.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Log Collection",
+        "Fetch Issues",
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "fetch-events": [
+          "fetchTime",
+          "fetchLimit"
+        ],
+        "fetch-incidents": [
+          "fetchTime",
+          "fetchLimit"
+        ],
+        "long-running-execution": [
+          "fetchTime",
+          "fetchLimit"
+        ],
+        "akamai-siem-get-events": [],
+        "akamai-siem-reset-offset": []
+      },
+      "params_to_commands_note": "Static analyzer returned empty per-command lists; fetch behavioral params (fetchTime,fetchLimit) added by source review per err-on-inclusion. Hidden:[xsoar] params (page_size,beta_page_size,max_concurrent_tasks,isFetchEvents,should_skip_decode_events,eventFetchInterval) excluded.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass-after-fix",
+        "fixes": [
+          "Akamai_SIEM.py proxy=get(proxy,False)",
+          "fetchLimit arg_to_number default 20",
+          "fetch_incidents_command call: fetchTime default 1 hours, fetchLimit default 20"
+        ],
+        "code_modified": true,
+        "remaining_uncertain_justified": [
+          "<dynamic> splat @100 = local request params not config",
+          "configIds = connection-injected via other_connection"
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [
+          "fetchTime",
+          "fetchLimit"
+        ],
+        "Log Collection": [
+          "longRunning"
+        ],
+        "Fetch Issues": [],
+        "Automation": []
+      },
+      "flags": [
+        "mapper emitted longRunning under Log Collection though it is in default_ignore_params; persisted verbatim as mapper is authoritative for step 7 - review if undesired"
+      ]
+    },
+    "G Suite Security Alert Center": {
+      "connector_id": "Google Workspace Automation and Collection",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "Google service-account JWT: admin_email_creds.identifier=subject email, .password=SA JSON (GSuiteSecurityAlertCenter.py:314). Passthrough (credentials_file/subject flow). interpolated forced.",
+        "xsoar_param_map": {
+          "admin_email_creds.identifier": "subject_email",
+          "admin_email_creds.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "notes": "Flat user_service_account_json (type4) and admin_email (type0) are hidden:true -> excluded.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Fetch Issues",
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [
+          "alert_type",
+          "fetch_feedback",
+          "filter",
+          "first_fetch",
+          "max_fetch"
+        ],
+        "fetch-incidents": [
+          "alert_type",
+          "fetch_feedback",
+          "filter",
+          "first_fetch",
+          "max_fetch"
+        ]
+      },
+      "param_defaults": {
+        "max_fetch": 15
+      },
+      "param_defaults_note": "Only max_fetch is required:true; branch(c) code default 15 (line112) == YML default. Other tm params required:false -> excluded.",
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "first_fetch defaulted via if/else DEFAULT_FIRST_FETCH at line103"
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Fetch Issues": [
+          "alert_type",
+          "fetch_feedback",
+          "filter",
+          "first_fetch",
+          "max_fetch"
+        ],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GCP-IAM": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GCP service-account JSON keyfile via ServiceAccountCredentials.from_json_keyfile_dict (GCPIAM.py:21). credentials type9 hiddenusername:true -> only .password (SA JSON). Passthrough.",
+        "xsoar_param_map": {
+          "credentials.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "16 <dynamic> sites are **params splats into Google API client calls (local request dicts, not config)"
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GSuiteAdmin": {
+      "connector_id": "Google Workspace Automation and Collection",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "Google SA JWT: admin_email_creds.identifier=admin email (subject), .password=SA JSON. Passthrough.",
+        "xsoar_param_map": {
+          "admin_email_creds.identifier": "subject_email",
+          "admin_email_creds.password": "credentials_file"
+        },
+        "other_connection": [
+          "customer_id",
+          "insecure",
+          "proxy"
+        ],
+        "notes": "customer_id is connection-level routing -> other_connection. Flat user_service_account_json/admin_email hidden:true excluded.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GSuiteAuditor": {
+      "connector_id": "Google Workspace Automation and Collection",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "Google SA JWT: credentials.password=SA JSON (GsuiteAuditor.py:110), credentials.identifier=admin email (line198). Passthrough.",
+        "xsoar_param_map": {
+          "credentials.identifier": "subject_email",
+          "credentials.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "Gmail": {
+      "connector_id": "Google Workspace Automation and Collection",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "Google SA JWT w/ domain-wide delegation: adminEmail.identifier=admin email (subject), .password=SA JSON (Gmail.py:187-190 from_service_account_info+with_subject). Passthrough.",
+        "xsoar_param_map": {
+          "adminEmail.identifier": "subject_email",
+          "adminEmail.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Fetch Issues",
+        "Automation"
+      ],
+      "params_to_commands_note": "analyzer attributed fetch params; fetch_time added to fetch-incidents and legacy_name to mail get/search commands per err-on-inclusion.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass-after-fix",
+        "fixes": [
+          "Gmail.py:79 PROXY=get(proxy,False)"
+        ],
+        "code_modified": true,
+        "justified": [
+          "queryUserKey optional string read, no strict converter"
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Fetch Issues": [
+          "fetch_limit",
+          "fetch_time",
+          "query",
+          "queryUserKey"
+        ],
+        "Automation": [
+          "legacy_name"
+        ]
+      },
+      "flags": []
+    },
+    "Gmail Single User": {
+      "connector_id": "Google Workspace Automation and Collection",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "OAuth",
+        "reason": "OAuth2 Authorization Code flow (user runs gmail-auth-link, supplies auth code). credentials.identifier=Client ID, .password=Client Secret (lines 48-49); auth_code_creds.password=Auth Code (line 42, hiddenusername). Passthrough; test_module returns instructional message and does NOT hit HTTP -> verify_connection_skip:true.",
+        "xsoar_param_map": {
+          "credentials.identifier": "client_id",
+          "credentials.password": "client_secret",
+          "auth_code_creds.password": "auth_code"
+        },
+        "other_connection": [
+          "email",
+          "insecure",
+          "proxy",
+          "redirect_uri",
+          "send_as"
+        ],
+        "verify_connection_skip": true,
+        "notes": "Flat client_id/client_secret/code params hidden:true excluded. email/send_as/redirect_uri are connection-level config -> other_connection.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Fetch Issues",
+        "Automation"
+      ],
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [
+          "query"
+        ],
+        "Fetch Issues": [
+          "fetch_time",
+          "fetch_limit"
+        ],
+        "Automation": [
+          "legacy_name"
+        ]
+      },
+      "flags": []
+    },
+    "Google Apigee": {
+      "connector_id": "Google Apigee",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "OAuth",
+        "reason": "OAuth2 ROPC: username+password posted to /oauth/token with grant_type=password (GoogleApigeeEventCollector.py:133), returns Bearer access/refresh tokens. Passthrough per decision table (ROPC).",
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "insecure",
+          "org_name",
+          "proxy",
+          "url",
+          "zone"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Log Collection"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "fetch-events": [
+          "max_fetch"
+        ],
+        "google-apigee-get-events": [
+          "max_fetch"
+        ]
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass-after-fix",
+        "fixes": [
+          "GoogleApigeeEventCollector.py:344 max_fetch=arg_to_number(get(max_fetch,DEFAULT_LIMIT)) or DEFAULT_LIMIT"
+        ],
+        "code_modified": true
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Log Collection": [
+          "max_fetch"
+        ]
+      },
+      "flags": [
+        "FIXED: re-ran full analyzer + source review so max_fetch is now routed to Log Collection (previously dropped by single-cap tm-only shortcut)."
+      ]
+    },
+    "Google BigQuery": {
+      "connector_id": "Google BigQuery",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GCP SA JSON via credentials_google_service.password (hiddenusername:true). Passthrough. Flat google_service_creds type4 hidden:true excluded.",
+        "xsoar_param_map": {
+          "credentials_google_service.password": "credentials_file"
+        },
+        "other_connection": [
+          "region"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Fetch Issues",
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "fetch-incidents": [
+          "fetch_query",
+          "fetch_time_field",
+          "first_fetch",
+          "max_fetch"
+        ],
+        "bigquery-query": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Fetch Issues": [
+          "fetch_query",
+          "fetch_time_field",
+          "first_fetch",
+          "max_fetch"
+        ],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "Google Cloud Compute": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GCP SA JSON via credentials_service_account_json.password (hiddenusername:true), from_service_account_info (GoogleCloudCompute.py:167). Passthrough. Flat service type4 hidden:true excluded.",
+        "xsoar_param_map": {
+          "credentials_service_account_json.password": "credentials_file"
+        },
+        "other_connection": [
+          "default_search_scope",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "Google Cloud Functions": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GCP SA JSON: project_id_creds.identifier=project id, .password=SA JSON; from_json_keyfile_dict (GoogleCloudFunctions.py:36). Passthrough. Flat credentials_json/project_id hidden:true excluded.",
+        "xsoar_param_map": {
+          "project_id_creds.identifier": "project_id",
+          "project_id_creds.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "region"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "region defaulted via kwargs.get(region,'-') line35 + in other_connection"
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "Google Cloud Storage": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GCP SA JSON via credentials_service_account_json.password (hiddenusername:true); from_service_account_json (GoogleCloudStorage.py:47). Passthrough. Flat service_account_json type4 hidden:true excluded.",
+        "xsoar_param_map": {
+          "credentials_service_account_json.password": "credentials_file"
+        },
+        "other_connection": [
+          "default_bucket",
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "default_bucket used truthily (if default_bucket / args or default_bucket) + in other_connection"
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "Google IP Ranges Feed": {
+      "connector_id": "Google IP Ranges Feed",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "NoneRequired",
+        "name": null,
+        "reason": "JSONFeedApiModule feed integration hitting public Google IP ranges (no credentials). auth_types=[] (NoneRequired). Per skill 1.9.1 feed integrations need no auth secrets.",
+        "xsoar_param_map": {},
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Threat Intelligence & Enrichment"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Threat Intelligence & Enrichment": []
+      },
+      "flags": [
+        "Feed framework (JSONFeedApiModule); ip_ranges/feed* params are framework-managed."
+      ]
+    },
+    "Google Key Management Service": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GCP SA JSON via credentials_service_account.password (hiddenusername:true) (GoogleKeyManagementService.py:42). Passthrough. Flat service_account type4 hidden:true excluded.",
+        "xsoar_param_map": {
+          "credentials_service_account.password": "credentials_file"
+        },
+        "other_connection": [
+          "key_ring",
+          "location",
+          "project",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "10 <dynamic> int() calls are on API response fields (res.create_time etc), not config params"
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "Google Resource Manager": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "SA JSON assembled from individual fields (GoogleResourceManager.py:20-40): private_key_id_creds.password, private_key_creds.password, client_email_creds.identifier=client_email, client_email_creds.password=client_id. Multiple co-equal secret components -> Passthrough.",
+        "xsoar_param_map": {
+          "private_key_id_creds.password": "private_key_id",
+          "private_key_creds.password": "private_key",
+          "client_email_creds.identifier": "client_email",
+          "client_email_creds.password": "client_id"
+        },
+        "other_connection": [
+          "client_x509_cert_url",
+          "insecure",
+          "project_id",
+          "proxy"
+        ],
+        "notes": "Flat private_key_id/private_key/client_email/client_id hidden:true excluded. project_id and client_x509_cert_url are non-secret SA-JSON components -> other_connection.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": [
+        "client_email_creds is a single type:9 widget whose identifier=client_email and password=client_id (unusual labeling per YML display)."
+      ]
+    },
+    "Google Safe Browsing v2": {
+      "connector_id": "Google Safe Browsing",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "API Key",
+        "reason": "API key sent as ?key=<api_key> query param (GoogleSafeBrowsingV2.py:217). api_creds.password=API key, api_creds.identifier=client_id (sent as clientId in request body). Two leaves (key + client_id); client_id is non-canonical role so classified Passthrough rather than APIKey (which only allows role 'key').",
+        "xsoar_param_map": {
+          "api_creds.password": "api_key",
+          "api_creds.identifier": "client_id"
+        },
+        "other_connection": [
+          "client_version",
+          "insecure",
+          "proxy",
+          "url"
+        ],
+        "notes": "Flat api_key/client_id hidden:true excluded.",
+        "confidence": "medium",
+        "confidence_reason": "client_id role placement (in profile vs other_connection) is a judgment call; kept in profile because it is part of the auth/client identity sent with each request."
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": [
+        "client_id treated as auth-adjacent and kept in profile; alternatively could be other_connection. Review."
+      ]
+    },
+    "Google Vision AI": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GCP SA JSON via auth_json_creds.password (hiddenusername:true); from_json_keyfile_dict (GoogleVisionAPI.py:50). Passthrough. Flat auth_json type4 hidden:true excluded.",
+        "xsoar_param_map": {
+          "auth_json_creds.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass-after-fix",
+        "fixes": [
+          "GoogleVisionAPI.py:28 PROXY=get(proxy,False)"
+        ],
+        "code_modified": true
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GoogleCalendar": {
+      "connector_id": "Google Workspace Automation and Collection",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GSuite SA JSON via user_service_account_json_creds.password (hiddenusername:true) (GoogleCalendar.py:266). Passthrough. Flat user_service_account_json type4 hidden:true excluded.",
+        "xsoar_param_map": {
+          "user_service_account_json_creds.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GoogleCloudLogging": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GCP SA JSON via credentials.password (hiddenusername:true) (GoogleCloudLogging.py:35). Passthrough.",
+        "xsoar_param_map": {
+          "credentials.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GoogleCloudTranslate": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GCP SA JSON: project_creds.identifier=project, .password=SA JSON. Passthrough. Flat service_account_json/project hidden:true excluded.",
+        "xsoar_param_map": {
+          "project_creds.identifier": "project_id",
+          "project_creds.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GoogleDocs": {
+      "connector_id": "Google Workspace Automation and Collection",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "SA JSON via credentials_service_account.password (hiddenusername:true); from_json_keyfile_dict (GoogleDocs.py:77). Passthrough. Flat service_account_credentials type4 hidden:true excluded.",
+        "xsoar_param_map": {
+          "credentials_service_account.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GoogleGemini": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "XOR (2 profiles)",
+        "name": "API Key | Service Account",
+        "reason": "Multi-auth via auth_type selector (GoogleGemini.py:86 branches on AUTH_TYPE_AI_STUDIO). Genuine alternatives (user picks one) -> XOR -> 2 entries. AI Studio: api_key.password used as x-goog-api-key header -> APIKey (role key). Vertex AI: service_account_key.password = SA JSON -> Passthrough.",
+        "xsoar_param_map": {
+          "profile_APIKey": {
+            "api_key.password": "key"
+          },
+          "profile_Passthrough": {
+            "service_account_key.password": "credentials_file"
+          }
+        },
+        "other_connection": [
+          "auth_type",
+          "insecure",
+          "location",
+          "project_id",
+          "proxy",
+          "url"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "google-gemini-send-message": [
+          "model",
+          "max_tokens",
+          "temperature",
+          "top_p",
+          "top_k"
+        ]
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "model",
+          "max_tokens",
+          "temperature",
+          "top_p",
+          "top_k"
+        ]
+      },
+      "flags": [
+        "FIXED: behavioral params (model,max_tokens,temperature,top_p,top_k) now routed to Automation (previously dropped by single-cap tm-only shortcut). All have code defaults (branch c) so no .py edits needed.",
+        "auth_type selector kept in other_connection (it drives which XOR profile is active)."
+      ]
+    },
+    "GoogleKubernetesEngine": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GCP SA JSON via credentials.password (hiddenusername:true); from_service_account_info (GoogleKubernetesEngine.py:79). Passthrough. Flat credentials_json type4 hidden:true excluded.",
+        "xsoar_param_map": {
+          "credentials.password": "credentials_file"
+        },
+        "other_connection": [
+          "default_project",
+          "default_zone"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GoogleMaps": {
+      "connector_id": "Google Maps",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "APIKey",
+        "name": "API Key",
+        "reason": "Single API key via api_key.password (hiddenusername:true) sent as ?key= query param (GoogleMaps.py:26). Single canonical key -> APIKey.",
+        "xsoar_param_map": {
+          "api_key.password": "key"
+        },
+        "other_connection": [
+          "base_url",
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "google-maps-geocode": [
+          "error_on_no_results"
+        ]
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "error_on_no_results"
+        ]
+      },
+      "flags": [
+        "FIXED: error_on_no_results now routed to Automation (previously dropped by single-cap tm-only shortcut)."
+      ]
+    },
+    "GooglePubSub": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "GCP SA JSON via credentials.password (hiddenusername:true); from_json_keyfile_dict (GooglePubSub.py:89). Passthrough. Flat service_account_json type4 hidden:true excluded.",
+        "xsoar_param_map": {
+          "credentials.password": "credentials_file"
+        },
+        "other_connection": [
+          "default_project",
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Fetch Issues",
+        "Automation"
+      ],
+      "params_to_commands_note": "analyzer returned empty per-command; fetch behavioral params (default_subscription,default_max_msgs,first_fetch_time,ack_incidents) added to fetch-incidents by source review per err-on-inclusion.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "init_google_client(**params) splat - named params have signature defaults; isFetch/ack_incidents are None-safe boolean flags; default_max_msgs has YML default 50 and no strict read-site conversion"
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Fetch Issues": [
+          "default_subscription",
+          "default_max_msgs",
+          "first_fetch_time",
+          "ack_incidents"
+        ],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GoogleSheets": {
+      "connector_id": "Google Workspace Automation and Collection",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "SA JSON via service_account_credentials.password (hiddenusername:true); from_json_keyfile_dict (GoogleSheets.py:840). Passthrough.",
+        "xsoar_param_map": {
+          "service_account_credentials.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "user_id"
+        ],
+        "notes": "user_id (email to associate w/ Drive) is connection identity -> other_connection.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "google-vault": {
+      "connector_id": "Google Workspace Automation and Collection",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Service Account",
+        "reason": "Google Vault SA JWT w/ delegation: gsuite_credentials.identifier=admin email (subject, line22), auth_json_creds.password=SA JSON (line23). Passthrough. Flat auth_json type4 hidden:true excluded.",
+        "xsoar_param_map": {
+          "gsuite_credentials.identifier": "subject_email",
+          "auth_json_creds.password": "credentials_file"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "notes": "gsuite_credentials type9 only uses .identifier (admin email); its password leaf unused.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GuardiCore v2": {
+      "connector_id": "Akamai",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Plain",
+        "name": "Basic Auth",
+        "reason": "Username+password posted to GuardiCore login endpoint returning an access_token (GuardiCoreV2.py:46 self.login()). Canonical 2-field username/password -> Plain. credentials.identifier=username, .password=password.",
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "base_url",
+          "insecure",
+          "proxy",
+          "timeout"
+        ],
+        "notes": "timeout is a global request timeout (connection-level). NOTE: connector_id is 'Akamai' per CSV - verify this is correct (GuardiCore is an Akamai product, so likely intentional).",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Fetch Issues",
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "fetch-incidents": [
+          "source",
+          "destination",
+          "tag",
+          "incident_type",
+          "severity",
+          "max_fetch",
+          "first_fetch"
+        ]
+      },
+      "params_to_commands_note": "analyzer returned empty fetch-incidents; fetch filter params added by source review per err-on-inclusion.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass-after-fix",
+        "fixes": [
+          "GuardiCoreV2.py:451 severity = params.get(severity) or [All]",
+          "GuardiCoreV2.py:458 incident_type = params.get(incident_type) or [All]"
+        ],
+        "code_modified": true,
+        "new_pattern": "multi-select (type:16) param with YML default read bare then used with 'in'/'join' breaks under UCP when absent (None) -> 'All' in None raises TypeError. Fix: params.get(x) or [default-list].",
+        "justified": [
+          "isFetch passed to test_module is None-safe boolean"
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Fetch Issues": [
+          "source",
+          "destination",
+          "tag",
+          "incident_type",
+          "severity",
+          "max_fetch",
+          "first_fetch"
+        ],
+        "Automation": []
+      },
+      "flags": [
+        "connector_id='Akamai' in CSV - unexpected for GuardiCore; flagged for review (GuardiCore is Akamai-owned so may be intentional)."
+      ]
+    },
+    "Looker": {
+      "connector_id": "Google Cloud",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Client Credentials",
+        "reason": "OAuth2 client-credentials style: API3 client_id+client_secret POSTed to /login returning access_token (Looker.py:95-101). No user code -> Passthrough. credentials_api3_client.identifier=client_id, .password=client_secret.",
+        "xsoar_param_map": {
+          "credentials_api3_client.identifier": "client_id",
+          "credentials_api3_client.password": "client_secret"
+        },
+        "other_connection": [
+          "proxy",
+          "unsecure",
+          "url"
+        ],
+        "notes": "Flat client_secret type4 hidden:true excluded. Flat client_id type0 is VISIBLE+required (legacy alt path) but redundant with credentials_api3_client.identifier; mapped the widget leaves only to avoid double-mapping.",
+        "confidence": "medium",
+        "confidence_reason": "flat visible client_id not placed anywhere (widget identifier covers it); a reviewer may prefer adding flat client_id to other_connection."
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": [
+        "flat visible 'client_id' param (type0, required) left unmapped - covered by credentials_api3_client.identifier. Review if it should be in other_connection.",
+        "connector_id='Google Cloud' for Looker in CSV - unexpected (Looker is not GCP); flagged for review."
+      ]
+    }
+  }
+}
