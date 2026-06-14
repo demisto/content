@@ -22,13 +22,13 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 | 8 | Generated manifest | `manifest_generator.py <yml> <title=Connector ID> <Params-to-Capabilities raw> <Auth-Details raw>` → `set-connector-path "<id>" connectors/<slug Connector ID>` → `markpass "generated manifest"` (title comes from the `Connector ID` column so a connector's integrations share one folder) | §8 |
 | 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id> --json` → **fail-and-ask if `pass:false`** → `markpass "handler param coverage"` | §9 |
 | 10 | Validate manifest | `demisto-sdk validate` → `markpass "run manifest make validate"` | §10 |
-| 11 | Release Notes | `set-release-notes "<id>"` (only if .py/.yml changed) | §11 |
-| 12 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` (only if RN produced or .py/.yml changed; else `markpass` directly) | §12 |
-| 13 | Param parity | `markpass "param parity test passes"` | §13 |
-| 14 | Code reviewed | `markpass "code reviewed"` | §14 |
-| 15 | Code merged | `markpass "code merged"` | §15 |
+| 11 | Param parity | `markpass "param parity test passes"` | §13 |
+| 12 | Code reviewed | `markpass "code reviewed"` | §14 |
+| 13 | Code merged | `markpass "code merged"` | §15 |
+| 14 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` (only if RN produced or .py/.yml changed; else `markpass` directly) | §12 |
+| 15 | Release Notes | `set-release-notes "<id>"` (only if .py/.yml changed) | §11 |
 
-> **Step order note.** The live CSV workflow has **15 steps**, and `Collect Capabilities` is step **#3** — a hard prerequisite gate that the state machine enforces **before** `Params to Commands`. Do `set-capabilities` first or `set-params-to-commands` will be rejected with `current step is #3 'Collect Capabilities'`. The `UCP param-default review` checkpoint (Step 6) sits right after `Params for test with default in code` and before `Params to Capabilities`.
+> **Step order note.** The live CSV workflow has **15 steps**, and `Collect Capabilities` is step **#3** — a hard prerequisite gate that the state machine enforces **before** `Params to Commands`. Do `set-capabilities` first or `set-params-to-commands` will be rejected with `current step is #3 'Collect Capabilities'`. The `UCP param-default review` checkpoint (Step 6) sits right after `Params for test with default in code` and before `Params to Capabilities`. As of 2026-06, the `precommit/validate/unit tests passed` (Step 14) and `Release Notes` (Step 15) steps were moved to the **end** of the workflow — they now run *after* `param parity test passes` (Step 11), `code reviewed` (Step 12), and `code merged` (Step 13), with precommit before Release Notes.
 
 **Pause for user approval ONLY on the 4 JSON-write setters** (`set-auth`, `set-params-to-commands`, `set-param-defaults`, `set-params-to-capabilities`). Everything else (reads, `markpass`, `fail`, `set-capabilities`, analyzer/validate/pre-commit runs) runs straight through. `set-capabilities` is deterministically generated from YML fetch flags by `connectus_migration/capabilities_collector.py`, so it is a run-through (no pause). Setter output already echoes `Current step:` — do NOT re-run `status` to confirm.
 
@@ -1096,7 +1096,7 @@ Define which integration commands need which parameter IDs (excluding connection
 > ```bash
 > python3 connectus/check_command_params.py --integration-id "<Integration ID>" --static-only --single-capability-test-module-only
 > ```
-> The flag is **self-guarding**: it requires `--integration-id` (it reads the capability count from the cell), it is a **no-op** when the capability count is 0 (not yet collected) or >1 (a full analysis runs), and an explicit `--commands` always wins. The resulting cell contains just `{"test-module": [...]}`, which is exactly what `test_module_params` / Step 5 and the auth-parity command selection (Step 13) consume — and it directly tells you which non-auth params `test-module` needs. The auto-runner harness ([`run_pre_manifest_steps.py`](connectus_migration/run_pre_manifest_steps.py:1)) applies this same heuristic automatically; the standalone flag brings the manual flow to parity. This remains a run-through step (no extra approval beyond the standard pre-`set-params-to-commands` confirmation).
+> The flag is **self-guarding**: it requires `--integration-id` (it reads the capability count from the cell), it is a **no-op** when the capability count is 0 (not yet collected) or >1 (a full analysis runs), and an explicit `--commands` always wins. The resulting cell contains just `{"test-module": [...]}`, which is exactly what `test_module_params` / Step 5 and the auth-parity command selection (Step 11) consume — and it directly tells you which non-auth params `test-module` needs. The auto-runner harness ([`run_pre_manifest_steps.py`](connectus_migration/run_pre_manifest_steps.py:1)) applies this same heuristic automatically; the standalone flag brings the manual flow to parity. This remains a run-through step (no extra approval beyond the standard pre-`set-params-to-commands` confirmation).
 
 ```bash
 python3 connectus/workflow_state.py set-params-to-commands "<Integration ID>" '<JSON>'
@@ -1394,7 +1394,7 @@ python3 connectus/workflow_state.py markpass "<Integration ID>" "UCP param-defau
 > tier. The irreducible residue — interprocedural indirection, dynamic access,
 > the semantic ambiguity of the silent class, non-Python — is exactly what the
 > UNCERTAIN bucket hands to you, and what the runtime param-parity test
-> (Step 13) ultimately backstops. JS/PS are not statically analyzed (no stdlib
+> (Step 11) ultimately backstops. JS/PS are not statically analyzed (no stdlib
 > AST) and short-circuit.
 
 > **Reset semantics.** A plain checkpoint with no data cell; cleared like any
@@ -1687,7 +1687,7 @@ The slug is the **same mapping the generator uses on disk**
 ([`title_to_slug()`](connectus_migration/manifest_generator.py:211)): take the
 `Connector ID` column, lowercase it, and replace internal whitespace runs with
 single dashes (collapsing any `---` to `-`). This guarantees the recorded path
-matches the folder the generator just wrote, so Step 13's param-parity resolver
+matches the folder the generator just wrote, so Step 11's param-parity resolver
 (which reads `Connector Folder Path`) and Step 9's handler-coverage resolver
 both find the connector without a manual fix-up.
 
@@ -1786,7 +1786,7 @@ user explicitly chose mark-pass) do you run
 
 This is a **self-executing gate**: `markpass` RUNS `make validate` in the
 ConnectUs repo and only writes the checkpoint marker if it exits 0 (no
-bypass — mirrors the `precommit` gate at Step 12 and the auth-parity gate
+bypass — mirrors the `precommit` gate at Step 14 and the auth-parity gate
 inside `set-auth`).
 
 ```bash
@@ -1839,94 +1839,7 @@ connector manifest, re-run the single-connector command until it is green,
 the checkpoint.
 
 
-### Step 11: `Release Notes` (data column)
-
-This step gates the migration on a release-notes file when the
-integration's own .py/.yml were modified by the migration.
-
-**Trigger.** `git diff HEAD --name-only -- <integration>.py <integration>.yml`.
-
-- **Empty diff** (no code touch) → the cell auto-passes with
-  `{"required": false, "path": null, "verified": false}`. No RN needed.
-- **Non-empty diff** → the operator must produce a release-notes file
-  containing the exact case-sensitive substring `"Enabled support for UCP"`.
-
-**Operator workflow** (when the trigger fires):
-
-1. Generate the RN scaffold:
-   ```bash
-   demisto-sdk update-release-notes -i Packs/<PackName>
-   # The SDK may expose --update-type documentation (or revision); use
-   # whichever flag matches your pack's existing RN convention. When
-   # in doubt, omit and let the SDK infer.
-   ```
-2. Edit the generated `Packs/<PackName>/ReleaseNotes/<Version>.md` to
-   include the required substring `"Enabled support for UCP"`
-   (anywhere in the file — bullet, paragraph, heading; substring match
-   is robust to formatting).
-3. Commit the RN file alongside the migration's other code edits.
-4. Run the setter:
-   ```bash
-   python3 connectus/workflow_state.py set-release-notes "<Integration ID>"
-   ```
-
-The setter takes **no JSON payload** — it auto-computes the cell shape
-from the working tree. If the trigger fired AND the verification did
-NOT pass, the setter rejects with a clear diagnostic plus a one-line
-hint (per the Hints policy — the prescription is unambiguous):
-
-```
-ERROR: Release Notes step rejected for '<id>': <reason>.
-  HINT: run `demisto-sdk update-release-notes -i Packs/<PackName>`,
-  then edit the generated RN file to include the substring
-  'Enabled support for UCP' and re-run set-release-notes.
-```
-
-See [`column-schemas.md`](column-schemas.md) §`Release Notes` for the
-cell shape and validator rules.
-
-### Step 12: `precommit/validate/unit tests passed`
-
-**Trigger (same as Step 11).** Only run pre-commit / unit tests when the
-migration actually touched the integration's own source. Run them if EITHER:
-
-- a `Release Notes` file was produced for this integration (Step 11
-  required one — i.e. `Release Notes` cell has `"required": true`), OR
-- `git diff HEAD --name-only -- <integration>.py <integration>.yml`
-  is **non-empty** (the .py and/or .yml were modified).
-
-If NEITHER condition holds (no RN, and the .py/.yml were untouched), there
-is nothing for pre-commit/unit tests to verify — **skip the run** and pass
-the checkpoint directly:
-
-```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
-```
-
-Otherwise (RN produced OR .py/.yml changed), run pre-commit, validate, and
-unit tests via demisto-sdk pre-commit (Docker):
-
-```bash
-demisto-sdk pre-commit -i Packs/<PackName>/Integrations/<IntegrationName>/
-```
-
-When everything passes (Yuval decides which checks may be skipped):
-
-```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
-```
-
-> **Workaround note.** `demisto-sdk pre-commit` crashes on the second
-> and subsequent invocations with `FileExistsError: [Errno 17] File
-> exists: '/Users/<you>/.demisto-sdk/cache/pre-commit'`. Delete the
-> cache dir before re-running:
->
-> ```bash
-> rm -rf ~/.demisto-sdk/cache/pre-commit
-> demisto-sdk pre-commit -i Packs/<PackName>/Integrations/<IntegrationName>/
-> ```
-
-### Step 13: `param parity test passes`
+### Step 11: `param parity test passes`
 
 > **Prerequisite — `Connector Folder Path` must be set.** The param-parity
 > resolver looks up the connector tree from the pipeline CSV's
@@ -1979,7 +1892,7 @@ The wrapper persists every run under `results/` (per-run envelope JSON +
 `ledger.csv`); the `param parity test passes = ✅` cell in the pipeline CSV is the
 only durable pass recorded.
 
-### Step 14: `code reviewed`
+### Step 12: `code reviewed`
 
 After code review is complete:
 
@@ -1987,13 +1900,100 @@ After code review is complete:
 python3 connectus/workflow_state.py markpass "<Integration ID>" "code reviewed"
 ```
 
-### Step 15: `code merged`
+### Step 13: `code merged`
 
 After the code is merged to the branch:
 
 ```bash
 python3 connectus/workflow_state.py markpass "<Integration ID>" "code merged"
 ```
+
+### Step 14: `precommit/validate/unit tests passed`
+
+**Trigger.** Only run pre-commit / unit tests when the migration actually
+touched the integration's own source. Run them if EITHER:
+
+- a `Release Notes` file was produced for this integration (Step 15
+  required one — i.e. `Release Notes` cell has `"required": true`), OR
+- `git diff HEAD --name-only -- <integration>.py <integration>.yml`
+  is **non-empty** (the .py and/or .yml were modified).
+
+If NEITHER condition holds (no RN, and the .py/.yml were untouched), there
+is nothing for pre-commit/unit tests to verify — **skip the run** and pass
+the checkpoint directly:
+
+```bash
+python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
+```
+
+Otherwise (RN produced OR .py/.yml changed), run pre-commit, validate, and
+unit tests via demisto-sdk pre-commit (Docker):
+
+```bash
+demisto-sdk pre-commit -i Packs/<PackName>/Integrations/<IntegrationName>/
+```
+
+When everything passes (Yuval decides which checks may be skipped):
+
+```bash
+python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
+```
+
+> **Workaround note.** `demisto-sdk pre-commit` crashes on the second
+> and subsequent invocations with `FileExistsError: [Errno 17] File
+> exists: '/Users/<you>/.demisto-sdk/cache/pre-commit'`. Delete the
+> cache dir before re-running:
+>
+> ```bash
+> rm -rf ~/.demisto-sdk/cache/pre-commit
+> demisto-sdk pre-commit -i Packs/<PackName>/Integrations/<IntegrationName>/
+> ```
+
+### Step 15: `Release Notes` (data column)
+
+This step gates the migration on a release-notes file when the
+integration's own .py/.yml were modified by the migration.
+
+**Trigger.** `git diff HEAD --name-only -- <integration>.py <integration>.yml`.
+
+- **Empty diff** (no code touch) → the cell auto-passes with
+  `{"required": false, "path": null, "verified": false}`. No RN needed.
+- **Non-empty diff** → the operator must produce a release-notes file
+  containing the exact case-sensitive substring `"Enabled support for UCP"`.
+
+**Operator workflow** (when the trigger fires):
+
+1. Generate the RN scaffold:
+   ```bash
+   demisto-sdk update-release-notes -i Packs/<PackName>
+   # The SDK may expose --update-type documentation (or revision); use
+   # whichever flag matches your pack's existing RN convention. When
+   # in doubt, omit and let the SDK infer.
+   ```
+2. Edit the generated `Packs/<PackName>/ReleaseNotes/<Version>.md` to
+   include the required substring `"Enabled support for UCP"`
+   (anywhere in the file — bullet, paragraph, heading; substring match
+   is robust to formatting).
+3. Commit the RN file alongside the migration's other code edits.
+4. Run the setter:
+   ```bash
+   python3 connectus/workflow_state.py set-release-notes "<Integration ID>"
+   ```
+
+The setter takes **no JSON payload** — it auto-computes the cell shape
+from the working tree. If the trigger fired AND the verification did
+NOT pass, the setter rejects with a clear diagnostic plus a one-line
+hint (per the Hints policy — the prescription is unambiguous):
+
+```
+ERROR: Release Notes step rejected for '<id>': <reason>.
+  HINT: run `demisto-sdk update-release-notes -i Packs/<PackName>`,
+  then edit the generated RN file to include the substring
+  'Enabled support for UCP' and re-run set-release-notes.
+```
+
+See [`column-schemas.md`](column-schemas.md) §`Release Notes` for the
+cell shape and validator rules.
 
 
 ## Deploying to a dev tenant
