@@ -1,6 +1,6 @@
 {
  "id": "text-placeholder",
- "dataType": "incidents",
+ "dataType": "scripts",
  "name": "Text Widget",
  "dateRange": {
   "period": {
@@ -12,6 +12,7 @@
  "version": -1,
  "category": "utilities",
  "widgetType": "text",
+ "query": "WidgetNoOp",
  "params": {
   "text": "Place your text here.."
  },

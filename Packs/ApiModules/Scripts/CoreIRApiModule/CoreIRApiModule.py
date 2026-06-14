@@ -15,6 +15,11 @@ from re import Match
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
+COVERAGE_API_FIELDS_MAPPING = {
+    "vendor_name": "asset_provider",
+    "asset_provider": "unified_provider",
+}
+
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     "Other": "resolved_other",
     "Duplicate": "resolved_duplicate",
@@ -148,10 +153,8 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
-COVERAGE_API_FIELDS_MAPPING = {
-    "vendor_name": "asset_provider",
-    "asset_provider": "unified_provider",
-}
+MAX_GET_ISSUES_LIMIT = 50
+ALERTS_TABLE = "ALERTS_VIEW_TABLE"
 
 # Filter object query operators
 EQ = "EQ"
@@ -1435,6 +1438,13 @@ class CoreClient(BaseClient):
         )
         return response.get("reply")
 
+    def get_webapp_data(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_data/",
+            json_data=request_data,
+        )
+
 
 class AlertFilterArg:
     def __init__(self, search_field: str, search_type: str, arg_type: str, option_mapper: dict = {}):
@@ -1480,6 +1490,8 @@ class FilterBuilder:
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
         WILDCARD = ("WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
+        IPLIST_MATCH = ("IPLIST_MATCH", "OR")
+        IP_MATCH = ("IP_MATCH", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
         ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
         RELATIVE_TIMESTAMP = ("RELATIVE_TIMESTAMP", "OR")
@@ -1613,10 +1625,10 @@ class FilterBuilder:
     @staticmethod
     def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
         """Prepare start and end time from args, parsing relative time strings."""
-        if end_time_str and not start_time_str:
-            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
-
         start_time, end_time = None, None
+
+        if end_time_str and not start_time_str:
+            start_time = 0
 
         if start_time_str:
             if start_dt := dateparser.parse(str(start_time_str)):
@@ -1990,6 +2002,7 @@ def create_filter_from_args(args: dict) -> dict:
                     delta_in_milliseconds = int((datetime.now() - relative_date).total_seconds() * 1000)
                     search_value = str(delta_in_milliseconds)
 
+            demisto.debug(f"Processing search field: {arg_properties.search_field}")
             and_operator_list.append(
                 {"SEARCH_FIELD": arg_properties.search_field, "SEARCH_TYPE": search_type, "SEARCH_VALUE": search_value}
             )
@@ -4061,7 +4074,501 @@ ALERT_STATUS_TYPES = {
     "BLOCKED_TRIGGER_4": "prevented (on write)",
 }
 
+ISSUE_FIELDS = {
+    "action_local_port": "action_local_port",
+    "action_local_ip": "action_local_ip",
+    "action_remote_port": "action_remote_port",
+    "action_remote_ip": "action_remote_ip",
+    "actor_process_image_sha256": "actor_process_image_sha256",
+    "action_file_macro_sha256": "action_file_macro_sha256",
+    "issue_source": "alert_source",
+    "user_name": "actor_effective_username",
+    "asset_ids": "asset_ids",
+    "issue_action_status": "alert_action_status",
+    "issue_description": "alert_description",
+    "severity": "severity",
+    "issue_name": "alert_name",
+    "issue_category": "alert_category",
+    "issue_domain": "alert_domain",
+    "start_time": "source_insert_ts",
+    "starred": "starred",
+    "assignee": "assigned_to_pretty",
+    "assignee_mail": "assigned_to",
+    "issue_id": "internal_id",
+    "mitre_technique_id_and_name": "mitre_technique_id_and_name",
+    "status": "status.progress",
+    "actor_process_image_name": "actor_process_image_name",
+    "dst_action_external_hostname": "dst_action_external_hostname",
+    "os_actor_process_image_sha256": "os_actor_process_image_sha256",
+    "agent_id": "agent_id",
+    "Identity_type": "identity_type",
+    "action_external_hostname": "action_external_hostname",
+    "host_ip": "agent_ip_addresses",
+    "actor_process_image_command_line": "actor_process_command_line",
+    "action_process_image_command_line": "action_process_image_command_line",
+    "action_file_image_sha256": "action_file_sha256",
+    "action_registry_name": "action_registry_key_name",
+    "action_registry_key_data": "action_registry_data",
+    "rule_name": "fw_rule",
+    "rule_id": "matching_service_rule_id",
+    "causality_actor_process_image_command_line": "causality_actor_process_command_line",
+    "causality_actor_process_image_sha256": "causality_actor_process_image_sha256",
+    "action_process_image_sha256": "action_process_image_sha256",
+}
+
 ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
+
+
+def determine_email_or_name(assignee_list: list) -> str:
+    if not assignee_list:
+        return ""
+
+    assignee = assignee_list[0]
+
+    if "@" in assignee:
+        return "email"
+    else:
+        return "name"
+
+
+def determine_issue_assignee_filter_field(assignee_list: list) -> str:
+    """
+    Determine whether the assignee should be filtered by email or pretty name.
+
+    Args:
+        assignee (list): The assignee values to filter on.
+
+    Returns:
+        str: The appropriate field to filter on based on the input.
+    """
+    if determine_email_or_name(assignee_list) == "email":
+        return ISSUE_FIELDS["assignee_mail"]
+    else:
+        return ISSUE_FIELDS["assignee"]
+
+
+def create_issues_filter(args) -> dict:
+    """Build filter dictionary for issues based on provided arguments."""
+    filter_builder = FilterBuilder()
+    # To maintain backward compatibility for time_frame
+    filter_builder.add_time_range_field(
+        ISSUE_FIELDS["start_time"], start_time=args.get("start_time"), end_time=args.get("end_time")
+    )
+    if args.get("time_frame") and args.get("time_frame") != "custom":
+        filter_builder.add_time_range_field(
+            ISSUE_FIELDS["start_time"], start_time=args.get("time_frame"), end_time=args.get("end_time")
+        )
+    if (starred_arg := args.get("starred")) is not None:
+        filter_builder.add_field(ISSUE_FIELDS["starred"], FilterType.EQ, argToBoolean(starred_arg))
+    filter_builder.add_field(ISSUE_FIELDS["issue_id"], FilterType.WILDCARD, argToList(args.get("issue_id")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_external_hostname"], FilterType.CONTAINS, argToList(args.get("action_external_hostname"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["rule_id"], FilterType.CONTAINS, argToList(args.get("rule_id")))
+    filter_builder.add_field(ISSUE_FIELDS["rule_name"], FilterType.CONTAINS, argToList(args.get("rule_name")))
+    filter_builder.add_field(ISSUE_FIELDS["issue_name"], FilterType.CONTAINS, argToList(args.get("issue_name")))
+    filter_builder.add_field(ISSUE_FIELDS["user_name"], FilterType.CONTAINS, argToList(args.get("user_name")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_name"], FilterType.CONTAINS, argToList(args.get("actor_process_image_name"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["causality_actor_process_image_command_line"],
+        FilterType.EQ,
+        argToList(args.get("causality_actor_process_image_command_line")),
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_command_line"],
+        FilterType.CONTAINS,
+        argToList(args.get("actor_process_image_command_line")),
+    )
+    filter_builder.add_field(ISSUE_FIELDS["agent_id"], FilterType.EQ, argToList(args.get("endpoint_id")))
+    filter_builder.add_field(ISSUE_FIELDS["Identity_type"], FilterType.EQ, argToList(args.get("Identity_type")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_process_image_command_line"],
+        FilterType.CONTAINS,
+        argToList(args.get("action_process_image_command_line")),
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["actor_process_image_sha256"], FilterType.EQ, argToList(args.get("actor_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["causality_actor_process_image_sha256"],
+        FilterType.EQ,
+        argToList(args.get("causality_actor_process_image_sha256")),
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_process_image_sha256"], FilterType.EQ, argToList(args.get("action_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_file_image_sha256"], FilterType.EQ, argToList(args.get("action_file_image_sha256"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["action_registry_name"], FilterType.EQ, argToList(args.get("action_registry_name")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_registry_key_data"], FilterType.CONTAINS, argToList(args.get("action_registry_key_data"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["host_ip"], FilterType.IPLIST_MATCH, argToList(args.get("host_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_local_ip"], FilterType.IP_MATCH, argToList(args.get("action_local_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_remote_ip"], FilterType.IP_MATCH, argToList(args.get("action_remote_ip")))
+    filter_builder.add_field(ISSUE_FIELDS["action_local_port"], FilterType.EQ, argToList(args.get("action_local_port")))
+    filter_builder.add_field(ISSUE_FIELDS["action_remote_port"], FilterType.EQ, argToList(args.get("action_remote_port")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["dst_action_external_hostname"], FilterType.CONTAINS, argToList(args.get("dst_action_external_hostname"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["mitre_technique_id_and_name"], FilterType.CONTAINS, argToList(args.get("mitre_technique_id_and_name"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["issue_category"], FilterType.EQ, argToList(args.get("issue_category")))
+    if issue_domain := args.get("issue_domain"):
+        filter_builder.add_field(
+            ISSUE_FIELDS["issue_domain"], FilterType.EQ, argToList(ALERT_DOMAIN.get(issue_domain, issue_domain))
+        )
+    filter_builder.add_field(ISSUE_FIELDS["issue_description"], FilterType.CONTAINS, argToList(args.get("issue_description")))
+    filter_builder.add_field(
+        ISSUE_FIELDS["os_actor_process_image_sha256"], FilterType.EQ, argToList(args.get("os_actor_process_image_sha256"))
+    )
+    filter_builder.add_field(
+        ISSUE_FIELDS["action_file_macro_sha256"], FilterType.EQ, argToList(args.get("action_file_macro_sha256"))
+    )
+    filter_builder.add_field(ISSUE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
+    source_values = [DETECTION_METHOD_HR_TO_MACHINE_NAME.get(val, val) for val in argToList(args.get("issue_source"))]
+    filter_builder.add_field(ISSUE_FIELDS["issue_source"], FilterType.CONTAINS, source_values)
+    status_values = [STATUS_PROGRESS.get(val, val) for val in argToList(args.get("status"))]
+    filter_builder.add_field(ISSUE_FIELDS["status"], FilterType.EQ, status_values)
+    not_status_values = [STATUS_PROGRESS.get(val, val) for val in argToList(args.get("not_status"))]
+    filter_builder.add_field(ISSUE_FIELDS["status"], FilterType.NEQ, not_status_values)
+    severity_values = [SEVERITY_STATUSES.get(val, val) for val in argToList(args.get("severity"))]
+    filter_builder.add_field(ISSUE_FIELDS["severity"], FilterType.EQ, severity_values)
+    action_status_values = [ALERT_STATUS_TYPES_REVERSE_DICT.get(val, val) for val in argToList(args.get("issue_action_status"))]
+    filter_builder.add_field(ISSUE_FIELDS["issue_action_status"], FilterType.EQ, action_status_values)
+    filter_builder.add_field_with_mappings(
+        determine_issue_assignee_filter_field(argToList(args.get("assignee", "").lower())),
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
+    )
+
+    filter_dict = filter_builder.to_dict()
+    demisto.debug(f"{filter_dict=}")
+    return filter_dict
+
+
+def _is_or_connector(block: dict) -> bool:
+    """Port of the front-end BiocIndicatorComponent.isOrConnector()."""
+    return block.get("render_type") == "connector" and block.get("pretty_name") == "OR"
+
+
+def _find_closing_parenthesis_after(data: list[dict], start_index: int) -> int:
+    """Port of the front-end BiocIndicatorComponent.findClosingParenthesisAfter()."""
+    closing_index = start_index
+    for i in range(start_index, len(data)):
+        if _is_or_connector(data[i]):
+            closing_index = i - 1
+            break
+    if closing_index == start_index:
+        closing_index = len(data) - 1
+    return closing_index
+
+
+def _add_parenthesis_metadata(data: list[dict]) -> None:
+    """Port of the front-end BiocIndicatorComponent.addParenthesisMetadata().
+
+    Mutates the (already deep-copied) token list in place, wrapping OR-groups in
+    parentheses by prefixing/suffixing the relevant tokens' `pretty_name`.
+    """
+    indexes_with_parenthesis: list[int] = []
+    value_before_index: int | None = None
+    or_block_start_before_index = 0
+    for i, block in enumerate(data):
+        if block.get("render_type") == "value":
+            value_before_index = i
+
+        if _is_or_connector(block):
+            or_index = i
+            try:
+                if (
+                    value_before_index is not None
+                    and or_block_start_before_index < len(data)
+                    and value_before_index < len(data)
+                    and or_block_start_before_index not in indexes_with_parenthesis
+                    and value_before_index not in indexes_with_parenthesis
+                ):
+                    # Add wrapping parenthesis PREVIOUS the 'OR' operator
+                    data[or_block_start_before_index]["pretty_name"] = "(" + str(
+                        data[or_block_start_before_index].get("pretty_name", "")
+                    )
+                    data[value_before_index]["pretty_name"] = str(data[value_before_index].get("pretty_name", "")) + ")"
+                    indexes_with_parenthesis.append(or_block_start_before_index)
+                    indexes_with_parenthesis.append(value_before_index)
+                if (
+                    i + 1 < len(data)
+                    and i + 3 < len(data)
+                    and (i + 1) not in indexes_with_parenthesis
+                    and (i + 3) not in indexes_with_parenthesis
+                ):
+                    # Add wrapping parenthesis AFTER the 'OR' operator
+                    closing_index = _find_closing_parenthesis_after(data, or_index + 1)
+                    data[i + 1]["pretty_name"] = "(" + str(data[i + 1].get("pretty_name", ""))
+                    data[closing_index]["pretty_name"] = str(data[closing_index].get("pretty_name", "")) + ")"
+                    indexes_with_parenthesis.append(i + 1)
+                    indexes_with_parenthesis.append(closing_index)
+            except (IndexError, KeyError) as e:
+                demisto.debug(f"Failed to add BIOC OR parentheses due to malformed token structure: {e}")
+                # Fallback: leave tokens unchanged rather than rendering incorrect logical grouping.
+            or_block_start_before_index = i
+
+
+def render_bioc_description(  # noqa: C901
+    indicator_data: list[dict], render_type: str = "DESCRIPTION_PIPE", hide_and: bool = False
+) -> str:
+    """Render a BIOC/IOC structured `description` (list of dicts) into plain text.
+
+    Python port of the front-end `BiocIndicatorComponent.createIndicatorHtml()`
+    plain-text (`ruleInnerTitle`) path. The XDR BIOC issue `description` returned
+    by /api/webapp/get_data (table_name=ALERTS_VIEW_TABLE) is a list of token
+    dicts, each with `render_type` (entity|attribute|operator|connector|value|
+    introduction), `pretty_name`, and optionally `dml_ui`. This produces the same
+    readable string the UI shows in the description cell - text only, no markup.
+
+    Args:
+        indicator_data: The structured indicator token list.
+        render_type: DESCRIPTION_PIPE / DESCRIPTION_NEWLINE / IOC / EVENT - controls
+            attribute separators, matching the UI.
+        hide_and: When True, suppresses the implicit "AND" entity connector.
+
+    Returns:
+        The rendered plain-text description.
+    """
+    entity_connector = "AND"
+    data = copy.deepcopy(indicator_data)
+    _add_parenthesis_metadata(data)
+
+    inner_title = ""
+    has_open_brackets = False
+    count_open_nested_brackets = 0
+    previous_entity_is_dml = False
+    last_index = len(data) - 1
+
+    for i, block in enumerate(data):
+        render_block_type = block.get("render_type")
+        text = str(block.get("pretty_name", ""))
+
+        if render_block_type == "connector":
+            inner_title += f"{text} " if text == "," else f" {text} "
+
+        elif render_block_type == "entity":
+            not_first_entity = last_index != i and i != 0
+            if not_first_entity:
+                if has_open_brackets and block.get("dml_ui") is not True:
+                    close_nested_brackets = ""
+                    if block.get("dml_ui") is False and count_open_nested_brackets > 0:
+                        close_nested_brackets = "]" * count_open_nested_brackets
+                        count_open_nested_brackets = 0
+                    inner_title += f" ]{close_nested_brackets} {entity_connector} "
+                    has_open_brackets = False
+                elif has_open_brackets and previous_entity_is_dml and count_open_nested_brackets > 0:
+                    count_open_nested_brackets -= 1
+                    inner_title += f" ] {entity_connector} "
+                else:
+                    previous_block = data[i - 1] if i - 1 >= 0 else None
+                    added_space = ""
+                    if (
+                        block.get("dml_ui") is True and previous_block and previous_block.get("render_type") != "entity"
+                    ) or not has_open_brackets:
+                        added_space = " "
+                    added_connector = (
+                        "" if (previous_block and previous_block.get("render_type") == "entity") or hide_and else entity_connector
+                    )
+                    inner_title += f"{added_space}{added_connector}{added_space}"
+            inner_title += f"{text} "
+            next_block = data[i + 1] if i + 1 <= last_index else None
+            if (not not_first_entity) and i == 0 and block.get("pretty_name") == "All Actions":
+                inner_title += f" {entity_connector}"
+            if next_block and (
+                next_block.get("render_type") == "attribute"
+                or (next_block.get("render_type") == "entity" and next_block.get("dml_ui") is True)
+            ):
+                inner_title += " [ "
+                has_open_brackets = True
+                if block.get("dml_ui") is True:
+                    count_open_nested_brackets += 1
+            previous_entity_is_dml = bool(block.get("dml_ui"))
+
+        elif render_block_type == "introduction":
+            intro = text.strip()
+            if intro and intro.endswith("-"):
+                intro = intro[:-1]
+            inner_title += f"{intro}"
+
+        elif render_block_type == "attribute":
+            if i > 0 and render_type in ("IOC", "EVENT"):
+                inner_title += f" {text}"
+            elif render_type in ("DESCRIPTION_PIPE", "DESCRIPTION_NEWLINE"):
+                inner_title += f"{chr(10) if i > 0 else ''}{text}"
+            else:
+                inner_title += f"{text}"
+
+        elif render_block_type == "operator":
+            inner_title += f" {text} "
+
+        elif render_block_type == "value":
+            inner_title += f"{text}"
+
+        if i == last_index and has_open_brackets:
+            inner_title += " ]"
+            has_open_brackets = False
+
+    return inner_title
+
+
+def render_bioc_description_simple(indicator_data: list[dict]) -> str:
+    """
+    Simply joins the `pretty_name` values of the indicator tokens with spaces.
+    """
+    return " ".join(str(token.get("pretty_name", "")) for token in indicator_data)
+
+
+def get_issues_by_filter_command(client: CoreClient, args: Dict):
+    def fix_array_value(match: Match[str]) -> str:
+        """
+        Fixes malformed array values in the 'agent_id' custom_filter argument.
+        It converts a stringified list (e.g., "[\"a\",\"b\"]") into a proper JSON array.
+        """
+        array_content = match.group(1)
+        elements = [elem.strip().strip('"') for elem in array_content.split(",")]
+        fixed_array = json.dumps(elements)
+        # Return the full match with only SEARCH_VALUE fixed
+        full_match = match.group(0)
+        return full_match.replace(f'"[{array_content}]"', fixed_array)
+
+    prefix = args.pop("integration_context_brand", "CoreApiModule")
+    args.pop("integration_name", None)
+    on_demand_fields = [
+        "action_file_sha256",
+        "action_file_macro_sha256",
+        "action_process_image_sha256",
+        "actor_process_image_sha256",
+        "os_actor_process_image_sha256",
+        "causality_actor_process_image_sha256",
+        "actor_process_command_line",
+        "action_file_path",
+        "alert_action_status",
+        "agent_ip_addresses",
+        "agent_hostname",
+        "Identity_type",
+    ]
+    filter_dict = create_issues_filter(args)
+    custom_filter = {}
+    custom_filter_str = args.get("custom_filter", None)
+
+    if custom_filter_str:
+        try:
+            custom_filter = json.loads(custom_filter_str)
+        except json.JSONDecodeError:
+            demisto.debug(
+                "Failed to load custom filter, trying to fix malformed array values in the agent_id custom_filter argument"
+            )  # noqa: E501
+            # Trying to fix malformed array values in the agent_id custom_filter argument
+            pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
+            fixed_json_str = re.sub(pattern, fix_array_value, custom_filter_str)
+            custom_filter = json.loads(fixed_json_str)
+
+        except Exception as e:
+            raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
+
+    if custom_filter:  # if exists, add custom filter to the built filter
+        if not filter_dict:
+            filter_dict = {"AND": []}
+        if "AND" in custom_filter:
+            filter_obj = custom_filter["AND"]
+            filter_dict["AND"].extend(filter_obj)
+        else:
+            filter_dict["AND"].append(custom_filter)
+
+    page = arg_to_number(args.get("offset")) or arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("limit")) or arg_to_number(args.get("page_size")) or MAX_GET_ISSUES_LIMIT
+    start_index = page * page_size
+    end_index = start_index + page_size
+
+    sort_field = args.get("sort_field", "source_insert_ts")
+    sort_order = args.get("sort_order", "DESC")
+    request_data = build_webapp_request_data(
+        table_name=ALERTS_TABLE,
+        filter_dict=filter_dict,
+        limit=end_index,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        on_demand_fields=on_demand_fields,
+        start_page=start_index,
+    )
+    demisto.debug(f"{request_data=}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    demisto.debug(f"{reply=}")
+    data = reply.get("DATA", [])
+
+    filtered_count = int(reply.get("FILTER_COUNT") or "0")
+    returned_count = len(data)
+
+    for issue in data:
+        if "alert_action_status" in issue:
+            action_status = issue.get("alert_action_status")
+            issue["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
+
+        if "BIOC" in str(issue.get("alert_source", "")) and isinstance(issue.get("alert_description"), list):
+            raw_description = issue["alert_description"]
+            try:
+                rendered = render_bioc_description(raw_description)
+                demisto.debug(
+                    f"get_issues_by_filter_command: rendered BIOC description for issue "
+                    f"{issue.get('internal_id')}: {len(raw_description)} tokens -> {rendered!r}"
+                )
+                issue["alert_description"] = rendered
+            except Exception as e:
+                issue["alert_description"] = render_bioc_description_simple(raw_description)
+                demisto.debug(
+                    f"get_issues_by_filter_command: failed to render BIOC description for issue "
+                    f"{issue.get('internal_id')}: {e}. Falling back to simple rendering. tokens={raw_description!r}"
+                )
+
+    human_readable = [
+        {
+            "Issue ID": alert.get("internal_id"),
+            "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
+            "Name": alert.get("alert_name"),
+            "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")) if is_platform() else alert.get("severity"),
+            "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress"))
+            if is_platform()
+            else alert.get("status.progress"),
+            "Category": alert.get("alert_category"),
+            "Action": alert.get("alert_action_status_readable"),
+            "Description": alert.get("alert_description"),
+            "Host IP": alert.get("agent_ip_addresses"),
+            "Host Name": alert.get("agent_hostname"),
+        }
+        for alert in data
+    ]
+    command_results = []
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{prefix}.Issue",
+            outputs_key_field="internal_id",
+            outputs=data,
+            readable_output=tableToMarkdown("Issue", human_readable),
+            raw_response=data,
+        )
+    )
+
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{prefix}.IssueMetadata",
+            outputs={"filtered_count": filtered_count, "returned_count": returned_count},
+        )
+    )
+
+    return command_results
 
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:

@@ -691,7 +691,9 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         """
         # Use a separate client for token refresh to avoid recursion/deadlocks
         # and to not share state with the main client
-        async with httpx.AsyncClient(verify=client._verify, timeout=httpx.Timeout(self.token_timeout)) as token_client:
+        async with httpx.AsyncClient(
+            verify=client._verify, timeout=httpx.Timeout(self.token_timeout), follow_redirects=True
+        ) as token_client:
             data = {
                 "grant_type": "client_credentials",
                 "client_id": self.client_id,
@@ -1362,6 +1364,10 @@ class ContentClient:
             rate_limiter: Optional rate limiting policy.
             circuit_breaker: Optional circuit breaker policy.
             diagnostic_mode: Whether to enable diagnostic logging.
+                WARNING: intended for short, supervised debugging sessions only.
+                Request traces retain full response bodies in memory, so leaving
+                this enabled on high-volume or long-running integrations may
+                exhaust container memory.
             client_name: Name for logging identification.
             is_multithreaded: Whether to enable multithreading support.
             reuse_client: Whether to reuse the HTTP client across sync requests (default: True).
@@ -1450,6 +1456,7 @@ class ContentClient:
                         headers={"User-Agent": DEFAULT_USER_AGENT},
                         verify=self._verify,
                         http2=True,
+                        follow_redirects=True,
                     )
             except ImportError:
                 self._http2_available = False
@@ -1462,6 +1469,7 @@ class ContentClient:
                     headers={"User-Agent": DEFAULT_USER_AGENT},
                     verify=self._verify,
                     http2=False,
+                    follow_redirects=True,
                 )
 
             self._local_storage.client_event_loop = current_loop

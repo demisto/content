@@ -1,0 +1,10 @@
+{
+  "Vectra.Detection.Notes(val.detection_id && val.detection_id == obj.detection_id && val.note_id && val.note_id == obj.note_id)": {
+    "id": 19,
+    "date_created": "2023-06-21T06:19:15.224449Z",
+    "created_by": "test_user",
+    "note": "test_note",
+    "note_id": 19,
+    "detection_id": 1
+  }
+}

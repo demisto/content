@@ -5,3 +5,5 @@ rules: ''
 schema: ''
 tags: Illusive Networks
 toversion: 6.9.9
+supportedModules:
+- xsiam

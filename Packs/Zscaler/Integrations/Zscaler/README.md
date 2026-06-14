@@ -1204,6 +1204,7 @@ Updates the IP destination group information for the specified group ID.
 | ip_categories | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrieve a list of possible values you can execute the zscaler-get-categories command. | Optional |
 | countries | Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here <https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put>. | Optional |
 | is_non_editable | If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified. Possible values are: True, False. Default is False. | Optional |
+| override | When set to true (default), the existing IP destination group configuration is replaced with the new values. When set to false, the existing configuration is preserved and new entries are appended. Possible values are: True, False. Default is True. | Optional |
 
 #### Context Output
 

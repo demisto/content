@@ -39,7 +39,13 @@ isInternal: true
 subtype: python3
 tests:
 - No tests
-dockerimage: demisto/python3:3.12.13.7444307
+dockerimage: demisto/python3:3.12.13.9059085
+dependson:
+  must:
+  - findIndicators
+  - associateIndicatorsToAlert
+  - core-get-issues
+  - setIndicator
 fromversion: 6.1.0
 marketplaces:
 - platform

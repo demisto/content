@@ -1,6 +1,7 @@
 import os
 import subprocess
 import traceback
+from math import ceil
 from multiprocessing import Process
 from pathlib import Path
 from signal import SIGUSR1
@@ -53,6 +54,35 @@ server {
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
     $extra_headers
+# Thundering-herd protection
+proxy_cache_lock on;
+proxy_cache_lock_timeout $cache_lock_timeout;
+proxy_cache_lock_age $cache_lock_age;
+
+# Cache validity by status
+proxy_cache_valid 200 301 302 $cache_refresh_rate;
+
+# Optional: cache other responses briefly (helps absorb spikes)
+proxy_cache_valid 404 $cache_404_ttl;
+proxy_cache_valid any $cache_default_ttl;
+
+# Revalidation (use conditional requests when expired)
+proxy_cache_revalidate on;
+
+# Serve stale content in failure/update scenarios
+proxy_cache_use_stale
+    updating
+    error
+    timeout
+    invalid_header
+    http_500
+    http_502
+    http_503
+    http_504;
+
+# Background refresh of expired cache
+proxy_cache_background_update on;
+
     # Static test file
     location = /nginx-test {
         alias /var/lib/nginx/html/index.html;
@@ -92,7 +122,31 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
     template_str = params.get("nginx_server_conf") or NGINX_SERVER_CONF
     certificate: str = params.get("certificate", "")
     private_key: str = params.get("key", "")
-    timeout: str = params.get("timeout") or "3600"
+    # Normalize all five `cache_*` time params (plus `timeout`) through a single helper so the
+    # rendered nginx directives are always a safe `<int>s` token.
+    timeout = _normalize_nginx_time(params.get("timeout"), default="3600", param_name="timeout")
+    cache_refresh_rate = _normalize_nginx_time(params.get("cache_refresh_rate"), default=timeout, param_name="cache_refresh_rate")
+
+    # Ensure cache lock directives are at least as large as the upstream timeout. Otherwise, when an
+    # upstream request takes longer than the lock timeout/age, waiting clients bypass the cache lock
+    # and stampede the upstream (each waiter then produces an uncached response), defeating the purpose
+    # of `proxy_cache_lock on`. Defaults match `timeout`; explicit smaller values are bumped up.
+    cache_lock_timeout = _normalize_nginx_time(params.get("cache_lock_timeout"), default=timeout, param_name="cache_lock_timeout")
+    cache_lock_age = _normalize_nginx_time(params.get("cache_lock_age"), default=timeout, param_name="cache_lock_age")
+    cache_404_ttl = _normalize_nginx_time(params.get("cache_404_ttl"), default="1m", param_name="cache_404_ttl")
+    cache_default_ttl = _normalize_nginx_time(params.get("cache_default_ttl"), default="1m", param_name="cache_default_ttl")
+
+    # Ensure cache_refresh_rate is at least as large as timeout, and apply the same anti-stampede
+    # floor to the cache lock directives. All values are now guaranteed to end in "s" (the helper
+    # always returns `<int>s`), so an O(1) integer compare on the prefix is safe.
+    timeout_seconds = int(timeout[:-1])
+    if int(cache_refresh_rate[:-1]) < timeout_seconds:
+        cache_refresh_rate = timeout
+    if int(cache_lock_timeout[:-1]) < timeout_seconds:
+        cache_lock_timeout = timeout
+    if int(cache_lock_age[:-1]) < timeout_seconds:
+        cache_lock_age = timeout
+
     ssl, extra_headers, sslcerts, proxy_set_range_header = "", "", "", ""
     serverport = port + 1
     extra_cache_keys = []
@@ -126,6 +180,11 @@ def create_nginx_server_conf(file_path: str, port: int, params: dict):
         extra_cache_key=extra_cache_keys_str,
         proxy_set_range_header=proxy_set_range_header,
         timeout=timeout,
+        cache_refresh_rate=cache_refresh_rate,
+        cache_lock_timeout=cache_lock_timeout,
+        cache_lock_age=cache_lock_age,
+        cache_404_ttl=cache_404_ttl,
+        cache_default_ttl=cache_default_ttl,
         extra_headers=extra_headers,
     )
     with open(file_path, mode="w+") as f:
@@ -265,6 +324,161 @@ def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
     except (TypeError, ValueError):
         raise DemistoException(err_msg)
     return res
+
+
+def parse_nginx_time_to_seconds(time_str: str) -> int:
+    """Parses an NGINX time string (or a human-readable equivalent) into seconds.
+
+    NGINX uses suffixes to denote time units (e.g., ``"3600"``, ``"1h"``,
+    ``"30m"``, ``"60s"``). Supported suffixes are ``s`` (seconds), ``m``
+    (minutes), ``h`` (hours), ``d`` (days), ``w`` (weeks), ``M`` (30 days),
+    and ``y`` (years). If no suffix is supplied, the value is treated as
+    seconds.
+
+    Additionally, human-readable values used by some integrations (e.g., EDL's
+    ``cache_refresh_rate`` parameter such as ``"5 minutes"``, ``"1 hour"``,
+    ``"2 days"``) are also supported by falling back to ``dateparser``.
+
+    Args:
+        time_str (str): The time string to parse.
+
+    Returns:
+        int: The time converted to seconds.
+
+    Raises:
+        DemistoException: If ``time_str`` is empty, whitespace-only, ``None``,
+            or otherwise cannot be parsed as a valid time value.
+    """
+    if not time_str or not (time_str := time_str.strip()):
+        raise DemistoException(f"Invalid NGINX time format: {time_str}")
+    if time_str.isdigit():
+        return int(time_str)
+
+    units = {
+        "s": 1,
+        "m": 60,
+        "h": 3600,
+        "d": 86400,
+        "w": 604800,
+        "M": 2592000,  # 30 days
+        "y": 31536000,
+    }
+
+    unit = time_str[-1]
+    value_str = time_str[:-1]
+
+    if unit in units and value_str.isdigit():
+        return int(value_str) * units[unit]
+
+    # If it doesn't match the NGINX-native format, try parsing it as a
+    # human-readable relative time (e.g., "5 minutes", "1 hour", "2 days").
+    try:
+        seconds = ceil((datetime.now() - dateparser.parse(time_str)).total_seconds())  # type: ignore[operator]
+        if seconds > 0:
+            return seconds
+    except Exception:
+        pass
+
+    # Last resort: try to interpret the value as an integer number of seconds.
+    try:
+        return int(time_str)
+    except (ValueError, TypeError):
+        raise DemistoException(f"Invalid NGINX time format: {time_str}")
+
+
+# Human-readable units accepted in the "<int> <unit>" form (e.g. "12 hours",
+# "1 minute"). Anything outside this allow-list is rejected up-front so we do
+# not silently inherit dateparser's permissive interpretation of unit-only
+# tokens (e.g. "hours" -> midnight today) or compound expressions
+# (e.g. "12 hours and 5 minutes" -> "12 hours ago at 23:25").
+_NORMALIZE_NGINX_TIME_HUMAN_UNITS = frozenset(
+    {
+        "second",
+        "seconds",
+        "minute",
+        "minutes",
+        "hour",
+        "hours",
+        "day",
+        "days",
+        "week",
+        "weeks",
+        "month",
+        "months",
+        "year",
+        "years",
+    }
+)
+
+
+def _normalize_nginx_time(value: Any, default: str, param_name: str) -> str:
+    """Normalize a user-supplied time value to an nginx-valid ``"<int>s"`` token.
+
+    Accepts:
+      * pure ints       : ``300``, ``"300"`` (must be non-negative)
+      * nginx-native    : ``"12h"``, ``"30m"``, ``"1d"``, ``"2w"``, ``"1M"``,
+                          ``"1y"``, ``"60s"``
+      * human-readable  : strict ``"<positive-int> <unit>"`` form, where unit
+                          is one of ``second(s)``, ``minute(s)``, ``hour(s)``,
+                          ``day(s)``, ``week(s)``, ``month(s)``, ``year(s)``.
+
+    Always returns ``f"{seconds}s"`` (e.g. ``"43200s"``) so the rendered nginx
+    directive is unambiguous and unit-safe — the entire class of unit-string
+    typo bugs in the template is eliminated.
+
+    Falls back to ``default`` (which is itself normalized through the same
+    helper) when ``value`` is ``None``, an empty string, or whitespace-only,
+    so callers can pass either form for the default.
+
+    Args:
+        value: The user-supplied value (may be ``None``, ``int``, or ``str``).
+        default: The fallback value used when ``value`` is empty/missing.
+            Accepts the same formats as ``value``.
+        param_name: Name of the originating parameter; included verbatim in
+            error messages so users can pinpoint the offending field.
+
+    Returns:
+        An nginx-valid time token of the form ``"<int>s"``.
+
+    Raises:
+        DemistoException: If ``value`` (or, when ``value`` is empty,
+            ``default``) is non-empty but cannot be parsed as a valid time
+            value, or resolves to a non-positive number of seconds. The
+            message includes ``param_name`` and the original ``value``.
+    """
+    raw = "" if value is None else str(value).strip()
+    if not raw:
+        raw = str(default).strip()
+
+    # Pre-validate the shape before delegating.
+    tokens = raw.split()
+    accepted_shape = (
+        # nginx-native single token: pure int, or <int><unit-letter>
+        (len(tokens) == 1 and (raw.isdigit() or (raw[:-1].isdigit() and raw[-1] in "smhdwMy")))
+        # strict "<int> <unit>" human-readable form
+        or (len(tokens) == 2 and tokens[0].isdigit() and tokens[1].lower() in _NORMALIZE_NGINX_TIME_HUMAN_UNITS)
+    )
+    if not accepted_shape:
+        raise DemistoException(
+            f"Invalid value for parameter '{param_name}': {value!r}. "
+            f"Expected an nginx-native value (e.g. '12h', '30m', '300') "
+            f"or a human-readable value (e.g. '12 hours', '30 minutes')."
+        )
+
+    try:
+        seconds = parse_nginx_time_to_seconds(raw)
+    except DemistoException as e:
+        raise DemistoException(
+            f"Invalid value for parameter '{param_name}': {value!r}. "
+            f"Expected an nginx-native value (e.g. '12h', '30m', '300') "
+            f"or a human-readable value (e.g. '12 hours', '30 minutes'). "
+            f"Original parser error: {e}"
+        )
+    if seconds <= 0:
+        raise DemistoException(
+            f"Invalid value for parameter '{param_name}': {value!r}. " f"Value must resolve to a positive number of seconds."
+        )
+    return f"{seconds}s"
 
 
 def get_params_port(params: dict = None) -> int:

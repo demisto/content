@@ -11,12 +11,11 @@ This integration was integrated and tested with version 3 API of TrendAI Vision 
 | Incidents Fetch Interval |  | False |
 | Incident type |  | False |
 | Sync On First Run (days) |  | False |
-| Max Incidents |  | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Severity | Severity of the incident being fetched. | False |
-| Incident Mirroring Direction | Choose the direction to mirror incidents between XSOAR and Vision One. Options: None, Incoming, Outgoing, Incoming And Outgoing. | False |
+| Incident Mirroring Direction | Choose the direction to mirror incidents. Outgoing mirrors XSOAR changes to Vision One alerts. Cortex XSOAR only parameter. | False |
 
 ## Commands
 

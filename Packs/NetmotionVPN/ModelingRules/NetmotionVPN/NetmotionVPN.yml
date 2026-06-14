@@ -4,3 +4,5 @@ name: Netmotion VPN Modeling Rule
 rules: ''
 schema: ''
 tags: netmotion
+supportedModules:
+- xsiam
