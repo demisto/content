@@ -344,7 +344,7 @@ AnsibleCiscoNXOS,Packs/AnsibleCiscoNXOS/Integrations/AnsibleCiscoNXOS/AnsibleCis
   },
   ""integration"": ""Ansible Cisco NXOS""
 }",{},✅,{},,,,,,,,
-AnsibleDNS,Packs/AnsibleLinux/Integrations/AnsibleDNS/AnsibleDNS.yml,Red Hat Ansible,,juschwartz,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""creds"", ""interpolated"": true, ""xsoar_param_map"": {""creds.identifier"": ""username"", ""creds.password"": ""password""}}], ""other_connection"": [""port"", ""server""]}","[""Automation""]","{""commands"": {""test-module"": []}, ""integration"": ""Ansible DNS""}",{},✅,,,,,,,,,
+AnsibleDNS,Packs/AnsibleLinux/Integrations/AnsibleDNS/AnsibleDNS.yml,Red Hat Ansible,,juschwartz,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""creds"", ""interpolated"": true, ""xsoar_param_map"": {""creds.identifier"": ""username"", ""creds.password"": ""password""}}], ""other_connection"": [""port"", ""server""]}","[""Automation""]","{""commands"": {""test-module"": []}, ""integration"": ""Ansible DNS""}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
 AnsibleHCloud,Packs/AnsibleHetznerCloud/Integrations/AnsibleHCloud/AnsibleHCloud.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
 AnsibleKubernetes,Packs/AnsibleKubernetes/Integrations/AnsibleKubernetes/AnsibleKubernetes.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
 AnsibleLinux,Packs/AnsibleLinux/Integrations/AnsibleLinux/AnsibleLinux.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
