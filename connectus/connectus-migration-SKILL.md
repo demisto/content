@@ -1,6 +1,6 @@
 ---
 name: connectus-migration
-description: Use when migrating an XSOAR/XSIAM integration to ConnectUs / the unified-connectors platform. Triggers: migrate <integration>, work on <integration>, migrate connector <id>, what's next for me, continue my work, migrate the next 10 integrations assigned to Joey
+description: Use when migrating an XSOAR/XSIAM integration to ConnectUs / the unified-connectors platform. Triggers like 'migrate <integration>', 'work on <integration>', 'migrate connector <id>', 'what's next for me', 'continue my work', 'migrate the next 10 integrations assigned to Joey'
 ---
 
 # ConnectUs Migration Skill
@@ -13,14 +13,14 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 |---|------|---------|---|
 | 0 | Identify | `context "<id>"` (one call: state + files + auth-ignore set) | Step 0 |
 | 1 | Assignee | `set-assignee "<id>" "<name>"` | §1 |
-| 2 | Auth Details | `set-auth "<id>" '<json>' --dry-run` → then apply | §2 |
+| 2 | Auth Details | `set-auth "<id>" '<json>'` (validate-and-apply in one step) | §2 |
 | 3 | Collect Capabilities | `connectus_migration/capabilities_collector.py <yml> -o <path>` → `set-capabilities` | §3 |
 | 4 | Params to Commands | run analyzer w/ `--integration-id` → `set-params-to-commands` | §4 |
 | 5 | Param defaults | `set-param-defaults "<id>" '<json>'` (required-only) | §5 |
 | 6 | UCP param-default review | `check_param_defaults.py --integration-id <id> --human` → present → fix → `markpass "UCP param-default review"` | §6 |
 | 7 | Params to Capabilities | mapper → `set-params-to-capabilities` | §7 |
-| 8 | Generated manifest | `manifest_generator.py <yml> <title=Connector ID> <Params-to-Capabilities raw> <Auth-Details raw>` → `markpass "generated manifest"` (title comes from the `Connector ID` column so a connector's integrations share one folder) | §8 |
-| 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id>` → `markpass "handler param coverage"` | §9 |
+| 8 | Generated manifest | `manifest_generator.py <yml> <title=Connector ID> <Params-to-Capabilities raw> <Auth-Details raw>` → `set-connector-path "<id>" connectors/<slug Connector ID>` → `markpass "generated manifest"` (title comes from the `Connector ID` column so a connector's integrations share one folder) | §8 |
+| 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id> --json` → **fail-and-ask if `pass:false`** → `markpass "handler param coverage"` | §9 |
 | 10 | Validate manifest | `demisto-sdk validate` → `markpass "run manifest make validate"` | §10 |
 | 11 | Release Notes | `set-release-notes "<id>"` (only if .py/.yml changed) | §11 |
 | 12 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` | §12 |
@@ -256,7 +256,7 @@ which is then applied verbatim).
 
 | # | CLI verb | Column written | What to show before asking |
 |---|---|---|---|
-| 1 | `set-auth` | `Auth Details` | The full JSON payload; a per-`auth_types[]`-entry evidence table that MUST include, for each profile, the **XSOAR fields** (the `xsoar_param_map` keys) it consumes alongside the role each field plays, the YML param + code site that justifies the type, and any `verify_connection_skip` / `interpolated` flags. Any XSOAR field that appears in more than one profile MUST be **highlighted** (🔶 marker by default) and called out in a mandatory overlap note beneath the table (see [§1.2](#12-researching-auth-details--the-four-sources-of-truth) for the table format and highlight conventions); the `other_connection` list. Note that this call resets the workflow + wipes the downstream Params\* columns AND runs the auth-parity test on the candidate payload — the cell is **rejected** unless parity passes or short-circuits structurally (see [§1.12 Auth-parity gate inside `set-auth`](#112-auth-parity-gate-inside-set-auth)). If the gate fails, treat the printed diff as the next problem to solve (most often: a non-standard auth header that needs a `_apply_ucp_<type>` override on the integration's `Client`, or a multi-auth integration with a startup validator that needs `is_ucp_enabled()` gating) — see the same §1.12 for the troubleshooting playbook. |
+| 1 | `set-auth` | `Auth Details` | The full JSON payload; a per-`auth_types[]`-entry evidence table that MUST include, for each profile, the **XSOAR fields** (the `xsoar_param_map` keys) it consumes alongside the role each field plays, the YML param + code site that justifies the type, and any `verify_connection_skip` / `interpolated` flags. Any XSOAR field that appears in more than one profile MUST be **highlighted** (🔶 marker by default) and called out in a mandatory overlap note beneath the table (see [§1.2](#12-researching-auth-details--the-four-sources-of-truth) for the table format and highlight conventions); the `other_connection` list. Note that this call resets the workflow + wipes the downstream Params\* columns. `set-auth` forces `interpolated: true` onto every `auth_types[]` entry and short-circuits the parity test, so the write **always succeeds once the JSON passes schema validation** — there is no parity diff to resolve (see [§1.12 Auth-parity gate inside `set-auth`](#112-auth-parity-gate-inside-set-auth)). |
 | 2 | `set-params-to-commands` | `Params to Commands` | The full JSON payload; the analyzer's per-command findings vs. the final list (call out any commands where you overrode the analyzer); the auth-ignore set pulled from `auth-params`. **Include a per-param scores table** (max `rollup_confidence`, top source, and your decision) so the user can see what the analyzer proved vs. what you elevated by source review — explicitly flag the "investigated myself" rows (analyzer score below your inclusion bar) and why. Get scores via a throwaway `--with-diagnostics` run. See [analyzer-manual §12.4](analyzer-manual.md) for the table format and §11/§12 for arg-seeding + the params-access spy (the `dynamic_access` 0.9 source). |
 | 3 | `set-param-defaults` | `Params for test with default in code` | The full JSON payload AND, for each entry, a one-line attribution: **(a)** *param `foo`: YML `defaultvalue` is `<yml default>` — use as code fallback? confirm / edit / reject (move to `other_connection`).* **(b)** *param `foo`: NO YML default; proposed default `<value>` — confirm / edit / reject (move to `other_connection`).* **(c)** *param `foo`: code already supplies fallback `<existing default>`; recorded for the cell, no code edit.* Branches (a) AND (b) are per-param sub-confirmations that pause the workflow (within the same outer pause-before-`set-param-defaults` step) — the YML default in branch (a) is NEVER accepted silently. The skill MUST collect all branch-(a)/(b) confirmations before applying any `.py` edits, AND before calling `set-param-defaults`. If a branch-(a)/(b) param is **rejected**, drop it from the JSON, skip its code edit, add it to `other_connection`, and re-apply via `set-auth` first (note: `set-auth` resets the workflow — see Step 5 "Rejecting a default"). |
 | 4 | `set-params-to-capabilities` | `Params to Capabilities` | The full JSON payload from the mapping helper; any `MANUAL_COMMAND_TO_CAPABILITY_JSON` overrides applied and why. |
@@ -408,9 +408,8 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 7. ☐ Extract the **connection-adjacent** YML params (URL, proxy, insecure, port, host, region, …) into the sorted `other_connection` list — see [1.2.5](#125-building-the-other_connection-list)
 8. ☐ Sanity-check against [Known Misclassification Patterns](#16-known-misclassification-patterns) and the [Decision Tree](#19-decision-tree-for-auth-type)
 9. ☐ Run the [Pre-flight self-check](#111-pre-flight-self-check)
-10. ☐ **Dry-run first.** Validate the candidate payload with `set-auth … --dry-run` BEFORE the real apply — this runs the schema validator + the auth-parity gate and reports the top-level **`pass`** boolean **without** writing the cell or resetting the workflow. Inspect the JSON result, then present the evidence table to the user. See [1.10](#110-applying-corrections).
-11. ☐ Apply via `set-auth` (no `--dry-run`) once the dry-run reports `pass: true` and the user approves (this validates the JSON schema, **runs the auth-parity test on the candidate payload**, and on success resets the workflow) — see [1.10](#110-applying-corrections)
-12. ☐ If the dry-run (or the real `set-auth`) reports a parity-gate failure, apply the troubleshooting playbook in [§1.12](#112-auth-parity-gate-inside-set-auth) (UCP header override, startup-validator gating, `interpolated: true` fallback, etc.) and re-run the dry-run
+10. ☐ Present the evidence table to the user and get approval.
+11. ☐ Apply via `set-auth` once the user approves (this validates the JSON schema, forces `interpolated: true` onto every entry, and on success resets the workflow). The write always succeeds once the JSON passes schema validation — no parity check is performed. See [1.10](#110-applying-corrections).
 
 `set-auth`'s own output echoes the new `Current step:` on success — do **not** re-run `status` to confirm.
 
@@ -937,31 +936,11 @@ Examples currently in the pipeline: `SpamhausFeed`, `MalwareBazaarFeed`, `AbuseI
 
 #### 1.10 Applying Corrections
 
-##### Always dry-run first (`--dry-run`)
-
-**Before the real `set-auth`, ALWAYS validate the candidate payload with `--dry-run`.** This runs the full schema validator and the auth-parity gate against the candidate JSON and prints a machine-readable verdict, but does **NOT** write the `Auth Details` cell and does **NOT** reset the workflow:
-
-```bash
-python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details JSON>' --dry-run
-```
-
-The JSON result leads with a single unambiguous top-level **`pass`** boolean — **this is the field to branch on.** The remaining blocks explain *why*:
-
-- **`pass`** — top-level boolean. `true` ⇒ the payload would commit (parity passed or structurally short-circuited); `false` ⇒ it would not. **Use this as the decision signal.** (It mirrors `verdict.would_commit`, which is retained for its human-readable `reason`; the `--dry-run` text output prints it as the `PASS:` line.)
-- `validator` — `passed` + any schema `errors` (unsorted `auth_types[]`, role-enum violations, missing `other_connection`, etc.).
-- `seed_overlap` — `passed` for the field-overlap / seed check.
-- `parity` — the auth-parity gate outcome. Either a clean pass, an interpolated short-circuit (`ERROR_ALL_INTERPOLATED` / `ERROR_CONNECTION_INTERPOLATED`), or an `error` with a cannot-verify `code` (e.g. `APIMODULE_INTEGRATION_CANNOT_VERIFY`, `ERROR_NO_BASECLIENT`, `ERROR_NON_PYTHON`, `MULTI_SECRET_PASSTHROUGH`) and a `message`.
-- `verdict` — `would_commit` (boolean, same as top-level `pass`) + a human-readable `reason`. Only an interpolated short-circuit (`ERROR_ALL_INTERPOLATED` / `ERROR_CONNECTION_INTERPOLATED`) yields `pass: true` as a structural skip. A cannot-verify code yields `pass: false` (AUTH-PARITY GATE STRICTNESS FIX, 2026-06-03) — the `reason` spells out the two valid resolutions (mark the auth `interpolated: true`, or make parity runnable).
-
-**Decision rule:**
-- `pass == true` → the payload is good. Present the evidence table to the user, get approval, then run the **same command without `--dry-run`** to actually commit.
-- `pass == false` (validator/parity failure) → do NOT run the real apply. Fix the JSON or apply the [§1.12](#112-auth-parity-gate-inside-set-auth) troubleshooting playbook (UCP header override, startup-validator gating, `interpolated: true` fallback, etc.), then re-run the dry-run until it passes.
-
-Re-running a dry-run is free and side-effect-free — iterate on it as many times as needed. Only the final, `--dry-run`-clean, user-approved payload should be committed.
-
 ##### Committing the value
 
-When corrections are needed (or for the initial set), use `set-auth` (drop `--dry-run` to actually write):
+> **No dry-run step.** `set-auth` only ever forces `interpolated: true` and short-circuits the parity test, so there is nothing to verify ahead of time — the write succeeds the moment the JSON passes schema validation. Just present the evidence table, get user approval, and apply. (The `--dry-run` flag is no longer part of the Auth Details flow.)
+
+When corrections are needed (or for the initial set), use `set-auth`:
 
 ```bash
 python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details JSON>'
@@ -1081,7 +1060,15 @@ This column is **deterministically generated** from the integration's YML fetch 
 **Generate it with the collector helper, then apply.** The collector lives at **`connectus/connectus_migration/capabilities_collector.py`** — note the `connectus_migration/` SUBDIRECTORY (it is NOT directly under `connectus/`; `ls connectus/capabilities_collector.py` will fail — always use the full `connectus/connectus_migration/` path). It is a single-command Typer app — invoke it with the YML path directly, with **NO subcommand name**:
 
 ```bash
-# Generate (writes the array to a workspace path — NOT /tmp, which the sandbox blocks)
+# Preferred — resolve the YML from the workflow CSV id and ALSO emit the
+# reference-aligned JSON envelope ({integration, pass, capabilities}) on stdout.
+# The bare array is still written to the -o file for set-capabilities.
+python3 connectus/connectus_migration/capabilities_collector.py \
+  --integration-id "<Integration ID>" \
+  -o connectus/connectus_migration/_caps.json \
+  --report
+
+# Legacy positional form (still supported — pass the YML path directly):
 python3 connectus/connectus_migration/capabilities_collector.py \
   Packs/<PackName>/Integrations/<Name>/<Name>.yml \
   -o connectus/connectus_migration/_caps.json
@@ -1252,7 +1239,7 @@ Procedure for each rejected param:
 
 1. **Drop it from this cell.** Do not add a `or "<default>"` fallback in the `.py`, and do not include the param id as a key in the `set-param-defaults` JSON payload.
 2. **Add it to `other_connection`.** Take the param id and append it to the sorted `other_connection` list inside the current `Auth Details` JSON (read the current value from the Step-0 `context` output's `data_columns["Auth Details"]`). Keep `other_connection` sorted and de-duplicated.
-3. **Re-apply via `set-auth`.** Run `set-auth "<Integration ID>" '<updated Auth Details JSON>'` with the param now present in `other_connection`. Follow the normal Step 2 pause-and-confirm + dry-run flow — this is a `set-auth` write, so present the evidence table and the updated `other_connection` list to the user before applying.
+3. **Re-apply via `set-auth`.** Run `set-auth "<Integration ID>" '<updated Auth Details JSON>'` with the param now present in `other_connection`. Follow the normal Step 2 pause-and-confirm flow — this is a `set-auth` write, so present the evidence table and the updated `other_connection` list to the user before applying.
 4. **Mind the reset.** `set-auth` **resets the workflow back to `generated manifest` and wipes the downstream `Params*` columns** (including any `Params for test with default in code` work already done for the OTHER params in this batch). Because of this, **collect ALL branch-(a)/(b) confirmations and rejections for the whole integration FIRST**, then:
    - If there is at least one rejection, do the `set-auth` re-apply (Step 2) for all rejected params **before** re-running Steps 4 and 5 for the surviving params. This avoids losing the param-defaults cell to a later reset.
    - If there are no rejections, proceed straight to `set-param-defaults` as normal.
@@ -1438,8 +1425,28 @@ spotted immediately.
 #### Canonical mapper invocation
 
 [`connector_param_mapper.py`](connectus_migration/connector_param_mapper.py:1)
-is a single-command Typer app — invoke it **without** a subcommand name;
-the four positionals come straight after the script path:
+is a single-command Typer app — invoke it **without** a subcommand name.
+
+**Preferred — `--integration-id` (reference-aligned I/O).** The mapper now
+resolves all three data inputs (`Params to Commands`, `Params for test with
+default in code`, and the integration YML) straight from the workflow CSV id
+via [`workflow_state.py`](workflow_state.py), so you no longer hand-paste them.
+With `--report` it ALSO emits a JSON envelope
+`{"integration", "pass", "mapping", "elevated"}` on stdout (add `--human` for a
+stderr summary); the bare mapping is still written to `-o`, and the
+`<output>.elevated.json` sidecar is still produced. Exit 0 on success, 2 on a
+usage/resolution error.
+
+```bash
+python3 connectus/connectus_migration/connector_param_mapper.py \
+  --integration-id "<Integration ID>" \
+  '<MANUAL_COMMAND_TO_CAPABILITY_JSON — optional, default {}>' \
+  -o connectus/connectus_migration/_<integration>_param_mapping.json \
+  --report
+```
+
+**Legacy positional form (still supported).** Pass the four positionals
+straight after the script path:
 
 ```bash
 python3 connectus/connectus_migration/connector_param_mapper.py \
@@ -1487,7 +1494,7 @@ elevation when that list is non-empty:**
 2. Append each elevated param id to that JSON's `other_connection` list;
    keep it sorted ascending and de-duplicated.
 3. Re-apply via `set-auth "<Integration ID>" '<updated Auth Details JSON>'`
-   (normal Step 2 pause-and-confirm + `--dry-run` first). This is the
+   (normal Step 2 pause-and-confirm). This is the
    "inject into Auth Details" step.
 
 > **`set-auth` resets the workflow — but the capability mapping
@@ -1669,9 +1676,35 @@ integrations genuinely belong to the same connector.
 > `Auth Details`). Running the auto-runner is equivalent to the manual
 > invocation above.
 
-#### Markpass the checkpoint
+#### Record the connector folder path, then markpass the checkpoint
 
-After the generator exits 0:
+After the generator exits 0, do TWO things, in order:
+
+**1. Write the `Connector Folder Path` identity column.** Record the
+connector folder relative to the ConnectUs `connectors/` root —
+`connectors/<slugged Connector ID>` — into the CSV via `set-connector-path`.
+The slug is the **same mapping the generator uses on disk**
+([`title_to_slug()`](connectus_migration/manifest_generator.py:211)): take the
+`Connector ID` column, lowercase it, and replace internal whitespace runs with
+single dashes (collapsing any `---` to `-`). This guarantees the recorded path
+matches the folder the generator just wrote, so Step 13's param-parity resolver
+(which reads `Connector Folder Path`) and Step 9's handler-coverage resolver
+both find the connector without a manual fix-up.
+
+```bash
+# slug = Connector ID, lowercased, spaces → dashes (e.g. "AWS" → "aws",
+#        "Cisco Security" → "cisco-security", "Atlassian Automation and
+#        Collection" → "atlassian-automation-and-collection")
+python3 connectus/workflow_state.py set-connector-path "<Integration ID>" "connectors/<slugged Connector ID>"
+```
+
+> The `Connector ID` (NOT the Integration ID) is the slug source — every
+> integration in a multi-integration connector (e.g. all `AWS - *`
+> integrations) shares ONE `connectors/<slug>/` folder, exactly as Step 8's
+> generator scaffolds them. `set-connector-path` is an identity-column write:
+> it does NOT cascade a workflow reset.
+
+**2. Markpass the checkpoint:**
 
 ```bash
 python3 connectus/workflow_state.py markpass "<Integration ID>" "generated manifest"
@@ -1682,12 +1715,72 @@ machine enforces this and tells you what's missing.
 
 ### Step 9: `handler param coverage`
 
-Verify every connection/capability param declared in the generated
-manifest is covered by a handler. Run
-`python3 connectus/check_handler_param_coverage.py --integration-id "<id>"`
-and address any gaps, then `markpass "handler param coverage"`. This
-checkpoint sits between `generated manifest` (Step 8) and
-`run manifest make validate` (Step 10).
+Verify every non-hidden integration YML param is covered by the generated
+connector handler. This checkpoint sits between `generated manifest`
+(Step 8) and `run manifest make validate` (Step 10).
+
+#### Run the coverage check (reference-aligned I/O)
+
+The script resolves BOTH the handler `handler.yaml` and the integration YML
+from the workflow CSV id (via [`workflow_state.py`](workflow_state.py)'s gate
+resolvers — the same source `run manifest make validate` uses), mirroring
+[`check_param_defaults.py`](check_param_defaults.py) /
+[`check_auth_parity.py`](check_auth_parity.py) /
+[`check_command_params.py`](check_command_params.py). Pass `--json` to get the
+structured envelope on stdout:
+
+```bash
+python3 connectus/check_handler_param_coverage.py \
+  --integration-id "<Integration ID>" --json
+```
+
+The stdout JSON envelope is
+`{"integration", "pass", "missing", "ignored_params"}`:
+
+- **`pass`** — top-level boolean. `true` ⇒ every non-hidden YML param is
+  covered. **Branch on this.**
+- **`missing`** — the sorted list of non-hidden YML params NOT covered by the
+  handler (the cause of a `false`).
+- **`ignored_params`** — the params the script deliberately excludes from the
+  coverage requirement (the `IGNORED_PARAMS` constant in
+  [`check_handler_param_coverage.py`](check_handler_param_coverage.py:110) —
+  mirroring fields, etc.). Surfaced so you can see exactly what was excluded.
+
+(The legacy explicit-path form
+`--handler-path <handler.yaml> --integration-yml <yml>` is still supported for
+standalone runs; inside the workflow use `--integration-id`.)
+
+Exit codes mirror the reference analyzers: `0` = pass, `1` = at least one
+param missing, `2` = usage / resolution error.
+
+#### This step FAILS the workflow when the script fails
+
+**If `pass` is `false` (exit `1`), do NOT `markpass`.** Treat a non-empty
+`missing` list as a hard stop. Present the `missing` and `ignored_params`
+lists to the user, then **pause and wait for the user's explicit decision** —
+the AI must NOT pick a resolution on its own. Offer exactly these three
+options:
+
+1. **Mark-pass anyway.** The user judges the missing params are acceptable
+   to skip. Only then run
+   `markpass "<Integration ID>" "handler param coverage"`.
+2. **Add some params to the `IGNORED_PARAMS` constant.** The user names
+   which params to add to
+   [`IGNORED_PARAMS`](check_handler_param_coverage.py:110); the AI edits the
+   constant ONLY for the params the user explicitly approved, re-runs the
+   check, and proceeds. **Under no circumstances may the AI decide on its own
+   to add any param to `IGNORED_PARAMS`** — that constant is changed only on
+   an explicit user instruction naming the params.
+3. **Fix an earlier step and re-run from there.** The missing param indicates
+   an upstream input was wrong (e.g. a param mis-routed in
+   `Params to Capabilities`, or an `Auth Details` / `other_connection`
+   classification error). Go back to the relevant step (Step 2 `set-auth`,
+   Step 7 `set-params-to-capabilities`, etc.), correct the input, regenerate
+   the manifest (Step 8), and re-run this check.
+
+Only after the user picks an option and the resulting state is clean (or the
+user explicitly chose mark-pass) do you run
+`markpass "<Integration ID>" "handler param coverage"`.
 
 ### Step 10: `run manifest make validate`
 
@@ -1834,8 +1927,7 @@ acquires the per-tenant lock, deploys the whole manifest to the `.env` tenant,
 runs the param-parity test, and releases the lock (always, via `try/finally`):
 
 ```bash
-cd connectus/runtime_demisto.params_parity
-python deploy_and_test.py --integration-id "<Integration ID>"
+python3 connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id "<Integration ID>"
 ```
 
 Branch on the wrapper's exit code (do NOT re-interpret stdout):
@@ -1852,7 +1944,10 @@ Branch on the wrapper's exit code (do NOT re-interpret stdout):
 * **`11` — parity BLOCKED (setup).** Do NOT markpass. Tell the user the setup
   problem to fix (most commonly: `Connector Folder Path` unset → run
   `set-connector-path`; or the handler isn't on disk / `REPO_DIR` unset), then
-  re-run.
+  re-run. If the block is a GKE control-plane connection timeout during the
+  connector-side capture (`kubectl` → `Unable to connect to the server: dial tcp <ip>:443: i/o timeout` /
+  `Failed to find UCP shell pod`), switch the VPN to the `israel-gw` gateway and
+  re-run (verified fix; this is distinct from a proxy 403 to the tenant API).
 * **`20` — deploy FAILED.** Do NOT markpass. Report the failed GitLab jobs +
   pipeline URL; the user fixes the cause and re-runs the wrapper.
 * **`21` — deploy TIMEOUT.** Do NOT markpass. Report the still-running pipeline
@@ -1860,7 +1955,7 @@ Branch on the wrapper's exit code (do NOT re-interpret stdout):
 * **`30` — tenant lock BUSY (could not acquire).** Do NOT markpass and do NOT
   auto-retry. Report the holder (shell id / integration / since-when) and the
   options to the user: (a) wait and retry later, (b) use a different tenant,
-  (c) `python tenant_lock.py force-unlock --tenant <X>` if the holder is dead.
+  (c) `python3 connectus/runtime_demisto.params_parity/tenant_lock.py force-unlock --tenant <X>` (run from repo root, no `cd`) if the holder is dead.
 
 The wrapper persists every run under `results/` (per-run envelope JSON +
 `ledger.csv`); the `param parity test passes = ✅` cell in the pipeline CSV is the

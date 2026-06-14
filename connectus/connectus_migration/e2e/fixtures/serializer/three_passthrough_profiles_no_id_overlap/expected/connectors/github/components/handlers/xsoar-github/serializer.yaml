@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=../../../../../schema/serializer.schema.json
+field_mappings:
+- id: github_passthrough_secondary_url
+  field_name: url
+- id: github_passthrough_secondary_proxy
+  field_name: proxy
+- id: github_passthrough_secondary_insecure
+  field_name: insecure
+- id: github_passthrough_secondary_engine_mode
+  field_name: engine_mode
+- id: github_passthrough_secondary_engine
+  field_name: engine
+- id: github_passthrough_secondary_engine_group
+  field_name: engineGroup
+- id: github_passthrough_tenant_url
+  field_name: url
+- id: github_passthrough_tenant_proxy
+  field_name: proxy
+- id: github_passthrough_tenant_insecure
+  field_name: insecure
+- id: github_passthrough_tenant_engine_mode
+  field_name: engine_mode
+- id: github_passthrough_tenant_engine
+  field_name: engine
+- id: github_passthrough_tenant_engine_group
+  field_name: engineGroup

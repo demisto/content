@@ -2128,6 +2128,27 @@ var _UCP_COMMAND_CAPABILITIES = {
     'fetch-assets': 'collection-and-ingestion'
 };
 
+// Canonical credential-envelope schema per profile type.
+// Mirrors Python _UCP_CANONICAL_FIELD_KEYS.
+//
+// 'api_key' and 'plain' profiles have FIXED envelope schemas: the secret always
+// lives under a known key inside creds[creds.type] regardless of what
+// interpolation_mapping left-hand id (field_id) the manifest emits. The common
+// scripts therefore OWN this knowledge and resolve those values from the
+// canonical location, rather than trusting the generator-emitted field_id.
+//
+// Each entry maps the mapping's left-hand field_id (which equals the field's
+// metadata.auth.parameter) to the actual key inside the flattened envelope.
+// Note the api_key alias: auth.parameter is 'api_key' (per the connection
+// schema / OPA contract) but the runtime envelope stores the value under 'key'.
+//
+// 'passthrough' is the free-form escape hatch and intentionally has NO entry:
+// its values are looked up generically by field_id.
+var _UCP_CANONICAL_FIELD_KEYS = {
+    'api_key': {'api_key': 'key'},
+    'plain': {'username': 'username', 'password': 'password'}
+};
+
 // ── UCP TTL Cache (mirrors Python _ttl_cache) ──
 var _ucpCredentialsCache = {};
 
@@ -2696,9 +2717,9 @@ function buildUcpParams(connectorMetadata, capability) {
             logDebug('there are no pairs for profile id ' + methodUniqueId);
             continue;
         }
-        // [UCP-CODE-VERSION] flatten-v2 — if this marker is ABSENT from the logs,
+        // [UCP-CODE-VERSION] flatten-v3 — if this marker is ABSENT from the logs,
         // the runtime is executing a STALE bundled CommonServer.js, not this file.
-        logDebug('[UCP-CODE-VERSION] buildUcpParams flatten-v2 active');
+        logDebug('[UCP-CODE-VERSION] buildUcpParams flatten-v3 active');
 
         // Fetch the RAW credentials envelope by method id (mirrors Python
         // get_ucp_credentials) and generically flatten — do NOT reuse the
@@ -2709,10 +2730,18 @@ function buildUcpParams(connectorMetadata, capability) {
 
         var credValues = _flattenUcpCredentialsGeneric(credentials);
 
+        // For fixed-schema types (api_key, plain) resolve the value from the
+        // canonical envelope key, aliasing the mapping's field_id as needed
+        // (e.g. api_key -> 'key'). Free-form types (passthrough) fall back to a
+        // generic field_id lookup. Mirrors Python _UCP_CANONICAL_FIELD_KEYS.
+        var credType = (credentials && typeof credentials === 'object') ? credentials.type : null;
+        var canonicalKeys = _UCP_CANONICAL_FIELD_KEYS[credType] || {};
+
         for (var p = 0; p < pairs.length; p++) {
             var fieldId = pairs[p][0];
             var destination = pairs[p][1];
-            var fieldValue = (credValues && typeof credValues === 'object') ? credValues[fieldId] : undefined;
+            var lookupKey = (canonicalKeys[fieldId] !== undefined) ? canonicalKeys[fieldId] : fieldId;
+            var fieldValue = (credValues && typeof credValues === 'object') ? credValues[lookupKey] : undefined;
             // Match Python's `if field_value is None`: only skip null/undefined.
             // Empty string, 0 and false ARE valid values and get placed.
             if (fieldValue === null || fieldValue === undefined) {
@@ -2804,3 +2833,48 @@ try {
 } catch (e) {
     // Load-time safety net: never let interpolation break script load.
 }
+
+///////////////////////////////////////////
+//     Params Parity Test Probe (BEGIN)  //
+///////////////////////////////////////////
+// Purpose:
+//   Support the connectus param-parity test (see connectus/runtime_demisto.params_parity/).
+//   When the framework invokes ``test-module``, this probe short-circuits the
+//   integration's own command dispatch and emits the full ``params`` object as an
+//   error payload. The parity-test orchestrator parses that payload to compare what
+//   the integration actually receives at runtime via the legacy XSOAR
+//   instance-creation path vs the new ConnectUs UCP-driven path.
+//
+// Safety:
+//   * Hard-wrapped in try/catch: any failure here MUST NOT break unrelated integrations.
+//     On any exception we silently fall through and let the integration's own code run.
+//   * Gated on ``command === 'test-module'``.
+//     Normal traffic pays only one string compare.
+//   * The probe runs at CommonServer.js load-time, which happens once per command
+//     dispatch BEFORE the integration's own code is reached. ``throw`` halts execution,
+//     so the integration's command dispatch never starts when the probe fires.
+try {
+    if (command === 'test-module') {
+        var _pp_payload = {
+            '__params_parity_dump__': true,
+            'params': params
+        };
+        // Sort keys to match Python's json.dumps(sort_keys=True)
+        var _pp_keys = Object.keys(_pp_payload.params || {}).sort();
+        var _pp_sorted = {};
+        for (var _pp_i = 0; _pp_i < _pp_keys.length; _pp_i++) {
+            _pp_sorted[_pp_keys[_pp_i]] = _pp_payload.params[_pp_keys[_pp_i]];
+        }
+        _pp_payload.params = _pp_sorted;
+        throw 'PARAMS_PARITY_DUMP::' + JSON.stringify(_pp_payload);
+    }
+} catch (_pp_ex) {
+    if (typeof _pp_ex === 'string' && _pp_ex.indexOf('PARAMS_PARITY_DUMP::') === 0) {
+        // Re-throw so the test-module call ends with the dump message.
+        throw _pp_ex;
+    }
+    // Probe must never break unrelated integrations. Swallow and continue.
+}
+///////////////////////////////////////////
+//     Params Parity Test Probe (END)    //
+///////////////////////////////////////////

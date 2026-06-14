@@ -13,6 +13,7 @@
 - [Section 3: Migration Rules and Defaults](#section-3-migration-rules-and-defaults)
 - [Section 4: Worked Reference — Salesforce Connector (Grouped)](#section-4-worked-reference--salesforce-connector-grouped)
 - [Section 5: Your Task](#section-5-your-task)
+- [Section 6: Open Items](#section-6-open-items)
 - [Appendix A: XSOAR Parameter Type → Manifest Type Mapping](#appendix-a-xsoar-parameter-type--manifest-type-mapping)
 - [Appendix B: Authentication Frontend Rendering](#appendix-b-authentication-frontend-rendering)
 - [Appendix C: Field ID Uniqueness Rule](#appendix-c-field-id-uniqueness-rule)
@@ -330,7 +331,7 @@ How a handler uses the connector. Schema: [`handler.schema.json`](schema/handler
 Field name/value transforms. Schema: [`serializer.schema.json`](schema/serializer.schema.json). Two optional sections (at least one required):
 
 1. **`field_mappings`** — rename fields and/or transform values (processed first). Each entry: `id` (✅, must match a defined field), `field_name` (rename target), `field_value` (transform function). At least one of `field_name`/`field_value` required.
-2. **`computed_fields`** — synthetic output fields (processed second). Each rule has `output` (fields to emit) and `any_of` (condition groups: AND within a group, OR across groups). Condition `type` is `capability` (`{capability_id, value: on|off}`) or `field` (`{field_id, op, value}`). Evaluated against **original** field IDs (before `field_mappings`).
+2. **`computed_fields`** — synthetic output fields (processed second). Each rule has `output` (fields to emit) and `any_of` (condition groups: AND within a group, OR across groups). Condition `type` is `capability` (`{capability_id, value: on|off}`) or `field` (`{field_id, op, value}`). Evaluated against **original** field IDs (before `field_mappings`). This is the mechanism used to emit the **BE fetch flags** for every collection sub-capability (§3.9.1).
 
 ### 2.10 triggers.yaml
 
@@ -370,6 +371,7 @@ Icons are excluded from `connectors.tar.gz` and uploaded by CI to GCS at `images
 | `input` | Text input. |
 | `text_area` | Multi-line text. |
 | `select` | Single-choice dropdown (scalar value). |
+| `radio` | Single-choice radio-button group (scalar value). Same `{key, label}` options and scalar `default_value` as `select`; set `options.orientation` (`horizontal`/`vertical`). Used for `engine_mode` (§3.7). |
 | `multi_select` | Multi-choice dropdown (array of keys). |
 | `checkbox` | Single boolean toggle. |
 | `checkbox_group` | Multiple checkboxes (uses `fields[]` for items). |
@@ -395,6 +397,7 @@ Schema: [`field-options.schema.json`](schema/definitions/field-options.schema.js
 | `clearable` | ❌ | Whether the user can clear the selection back to empty. **Migration MUST set `true` on every `select`/`multi_select`.** Only valid on those types. |
 | `units` | duration | Ordered unique time-unit boxes. **Migration MUST emit exactly `["days","hours","minutes"]`.** |
 | `output_format` | duration | `"iso8601"` (default) or `"minutes"`. **Migration MUST set `"minutes"`.** |
+| `orientation` | ❌ | `"horizontal"` or `"vertical"`. Layout direction for `radio` (and checkbox groups). **Migration MUST set `"horizontal"` on `engine_mode`.** |
 | `layout` | ❌ | `cols` (≤ 6) and `row_span`. |
 | `create_modifiers` / `edit_modifiers` | ❌ | `{required, hidden, read_only}`. **`duration` forbids `required`.** |
 
@@ -502,19 +505,7 @@ A sub-capability's `config.required_license` must contain only licenses present 
 2. Deprecated, community, or partner integrations.
 3. Mirroring (not supported on Platform): `outgoingMapperId`, `defaultMapperOut`.
 
-> **Open items** are tracked in [this spreadsheet](https://docs.google.com/spreadsheets/d/1C1nZ70rJlBWB0vdH_rc_xe5RFk22CiA9Z2yBtSLgJg4/edit?gid=0#gid=0) (authoritative status + Jira links). Remaining unresolved opens:
->
-> - 🔴 **Credentials vaults** — support in progress.
-> - 🔴 **`advanced: true`** — legacy per-parameter collapsible "Advanced" sections have no manifest equivalent. Emit such fields as regular fields and note them in Gap Analysis.
-> - 🟡 **Per-integration action `display`/`description` overrides** — migration omits both (platform defaults); track integrations needing custom wording (e.g. EWS "Reset Mailbox Last Sync").
-> - 🟡 **`metadata.documentation`** and **`help` generation** — tooling TBD by the tech team.
-> - 🟡 **Skip the connection screen** for integrations that have no auth/connection — there will be an option to skip the connection screen (no block).
-> - 🟡 **`allow_skip_verification` / skip-verify** — option to skip the connection test exists (`settings.allow_skip_verification`, §2.1); confirm UX.
-> - 🔴 **Capability auto-select gap** — there is no way to flip a capability's `selected` state from a trigger effect (`EffectAction` exposes only `hidden`/`required`/`read_only`/`enabled`, where `enabled` = UI interactivity, NOT on/off selection). So "auto-enable capability B when A is chosen" / single-sub-capability auto-select cannot be expressed today. Track separately.
-> - 🔴 **`duration` field production-block** — connectors with interval (`duration`) fields are blocked from production until the duration field type fully ships in UCP.
-> - 🔴 **"No issue type" empty-option** for `incidentType`/`alertType` dynamic dropdowns — legacy FE prepends a selectable empty option whose stored value is `""`. How to express in the manifest is undecided (likely a per-provider `dynamic_values.empty_label` convention). Note: `options.empty_values_message` (§2.15) does NOT solve this — it only supplies placeholder text when there are no options at all, it does not prepend a selectable empty option. Owners: Shahar/Guy.
-> - 🔴 **`mail-listener` synthetic fetch toggle** — legacy FE `SYSTEM_ALWAYS_FETCH_BRANDS` forces `mail-listener` to always render a disabled, always-checked fetch toggle. Believed server-managed; confirm with engineering management before authoring a manifest.
-> - 🟢 **`SYSTEM_OPTIONAL_FETCH_BRANDS`** (elasticsearch, google, kafka, esm, syslog, crowdstrike-streaming-api) — legacy XSOAR runtime fallback for integrations missing a proper `integrationScript`. Not a migration concern (manifest declares capabilities explicitly); documented for transparency. TODO verify with Guy it's XSOAR-only.
+> **Open items** are tracked in [Section 6: Open Items](#section-6-open-items) and in [this spreadsheet](https://docs.google.com/spreadsheets/d/1C1nZ70rJlBWB0vdH_rc_xe5RFk22CiA9Z2yBtSLgJg4/edit?gid=0#gid=0) (authoritative status + Jira links).
 
 ### 3.3 connector.yaml Rules
 
@@ -590,9 +581,8 @@ settings:
 2. An integration may map to multiple capabilities (e.g. fetch + commands) — emit each, with one sub-capability per integration (`<capability_id>_<integration_id>`).
 3. Multiple integrations may share a capability; each is its own sub-capability (`title` = integration name; `id` = `<capability_id>_<integration_id>`).
 4. **Flag** (but allow) if two integrations declare the same fetch type, or one integration declares multiple fetch/feed/credential capabilities.
-5. When `isFetchEvents`/`isFetchAssets` etc. are set, **omit** the corresponding checkbox param — choosing the capability implies the feature is on. Still emit the related fields (interval, classifier, mapper, alertType, etc.).
-6. `fetch-issues`, `log-collection`, `fetch-assets-and-vulnerabilities` are shown only to `agentix`/`xsiam` licenses (via `config.required_license`).
-7. **Fetch mutex (per handler/integration)**: a single integration MUST NOT enable more than one of the five fetch capabilities at once (each handler → exactly one XSOAR instance, which cannot have multiple fetches). Multiple fetches across **different** integrations are fine. The UI prevents the conflict (no error) by marking the other fetch sub-capabilities of that same integration `read_only: true` with the message *"Select only one fetch option for this capability"* — enforced via [`triggers.yaml`](README.md:833) (§3.5).
+5. When `isFetchEvents`/`isFetchAssets` etc. are set, **omit** the corresponding checkbox param — choosing the capability implies the feature is on. Still emit the related fields (interval, classifier, mapper, alertType, etc.)..
+6. **Fetch mutex (per handler/integration)**: a single integration MUST NOT enable more than one of the five fetch capabilities at once (each handler → exactly one XSOAR instance, which cannot have multiple fetches). Multiple fetches across **different** integrations are fine. The UI prevents the conflict (no error) by marking the other fetch sub-capabilities of that same integration `read_only: true` with the message *"Select only one fetch option for this capability"* — enforced via [`triggers.yaml`](README.md:833) (§3.5).
 
 #### Metadata & general_configurations
 
@@ -658,6 +648,7 @@ Optional connector-root file defining reactive, reversible UI behavior. See [`RE
 - **Capability → field gating** — reveal/require a field only when a capability is on (e.g. show `feedExpirationInterval` only when `threat-intelligence-and-enrichment` is on AND `feedExpirationPolicy == "interval"`).
 - **Field → field gating** — show `longRunningPort` only when `longRunning == true` AND no engine/group is selected AND the integration is engine-excluded.
 - **Fetch mutex** (§3.4 note 6) — for every fetch sub-capability of an integration, author one trigger per *other* fetch sub-capability **of the same integration**: condition = that other sub-capability is `on`; effect = `read_only: true` on the current one with message *"Select only one fetch option"*. Only pair sub-capabilities of the **same** integration. For `n` fetch sub-capabilities, emit `n × (n-1)` triggers.
+- **Collection → automation auto-enable** (§3.5.1) — every collection (fetch) sub-capability of an integration MUST auto-enable **and lock** that integration's `automation-and-remediation` sub-capability, because every fetch type also needs automation. Condition = the collection sub-capability is `selected`; effect = `{ read_only: true, enabled: true }` on the `automation-and-remediation` sub-capability with the standard dependency message.
 
 ```yaml
 triggers:
@@ -681,6 +672,39 @@ triggers:
         message: "Select only one fetch option"
 ```
 
+#### 3.5.1 Collection sub-capability → auto-enable `automation-and-remediation`
+
+Every fetch type requires the integration's automation. So for **each** collection (fetch) sub-capability the integration contributes (`fetch-issues_<i>`, `log-collection_<i>`, `fetch-assets-and-vulnerabilities_<i>`, `threat-intelligence-and-enrichment_<i>`, `fetch-secrets_<i>`), author a trigger that, when that sub-capability is selected, **auto-enables and locks** the integration's `automation-and-remediation_<i>` sub-capability.
+
+- **Condition**: the collection sub-capability is `selected`.
+- **Effect**: `{ read_only: true, enabled: true }` on `automation-and-remediation_<i>` — `enabled: true` turns it on (selected), `read_only: true` locks it so the user can't clear it while the dependency is active.
+- **Message** (verbatim): *"A selected capability enables this setting. Clear the active dependency to disable it"*.
+
+The effect is reversible (§2.10): when no collection sub-capability of the integration is selected, the lock and auto-enable are lifted and `automation-and-remediation_<i>` returns to its prior state. Emit **one such trigger per collection sub-capability** the integration contributes, all targeting the same `automation-and-remediation_<i>`.
+
+```yaml
+# triggers.yaml — collection sub-capability auto-enables + locks automation-and-remediation
+triggers:
+  - conditions:
+      operator: "eq"
+      behavior: "selected"
+      id: "fetch-issues_<i>"
+      value: "true"
+    effects:
+      - id: "automation-and-remediation_<i>"
+        action: { read_only: true, enabled: true }
+        message: "A selected capability enables this setting. Clear the active dependency to disable it"
+  - conditions:
+      operator: "eq"
+      behavior: "selected"
+      id: "log-collection_<i>"
+      value: "true"
+    effects:
+      - id: "automation-and-remediation_<i>"
+        action: { read_only: true, enabled: true }
+        message: "A selected capability enables this setting. Clear the active dependency to disable it"
+```
+
 ### 3.6 connection.yaml Rules
 
 | Field | Rule |
@@ -689,7 +713,7 @@ triggers:
 | `metadata.description` | `"Enter the credentials to securely authorize the connection"`. Flag for writer review. |
 | `metadata.help` | Long Markdown: extract connection methods from the integration YMLs + READMEs (auth only — no commands/IO), combined with vendor knowledge. Flag for writer review. |
 
-> Migration of XSOAR type-9 credentials and related auth fields (`displaypassword`, `hiddenusername`, `hiddenpassword`, multi-token) is in scope but the profile language is still being refined. See [`plans/integration-parameter-and-types-overrides.md`](plans/integration-parameter-and-types-overrides.md:1).
+> **XSOAR type-9 credentials are in scope** and migrated into the **connection profile** (`profiles[].configurations[].fields[]`), exactly like type-4 secrets — each credential leaf becomes a profile auth field carrying `metadata.auth.parameter`, wired to `demisto.params()` via the profile's `interpolation_mapping` (§2.6.2). Honor the related auth fields (`displaypassword`, `hiddenusername`, `hiddenpassword`, multi-token) per the leaf semantics below. See [`plans/integration-parameter-and-types-overrides.md`](plans/integration-parameter-and-types-overrides.md:1).
 
 #### XSOAR type-9 credential leaf semantics
 
@@ -730,7 +754,7 @@ A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`
 
 1. For each profile, follow §2.2 and the auth-parameter tagging in §2.6.
 2. **Mass-migration profile types are restricted to `plain`, `api_key`, and `passthrough`** (§2.2). Use **`plain`** for user/password auth and **`api_key`** for a single API-key secret; use **`passthrough`** (§2.6.1) when the credentials can't be cleanly mapped to `plain`/`api_key` or need several inputs at once (e.g. Slack v3).
-3. **`engine`/`engine_group`/`proxy`/`insecure`** appear once inside each profile that needs them. Because a handler binds to exactly one profile, the user supplies a single value per instance.
+3. **`engine`/`engine_group`/`proxy`/`insecure`** appear once inside each profile that needs them. Because a handler binds to exactly one profile, the user supplies a single value per instance. `proxy` & `insecure` will only be used if the integration YML has defined them.
 4. **`profiles[].view_group`** (Grouped): every profile references one `connection.yaml view_groups[].id`.
    - **A profile cannot be shared across two integrations/handlers.** The chain is causal: a profile points to **exactly one** `view_group`, and each `view_group` belongs to **exactly one** integration — therefore a single profile can only ever serve one integration. Declare a **separate profile per integration** even when the auth is identical (e.g. `oauth2_client_credentials.salesforce` and `.salesforce-iam`). Two handlers MUST NOT reference the same profile id.
 5. **One profile per handler — OR, never AND.** A handler binds to a single profile at runtime. Multiple auth methods → separate profiles sharing one `view_group`, advertised as alternatives in `auth_options[]` (user picks one). If an integration needs several inputs simultaneously, model it as one `passthrough` profile.
@@ -840,7 +864,7 @@ Replaces legacy `engine`/`engineGroup`. The three fields live **inside the conne
 
 | ID | Type | Default | `event.publish` | `config_type` |
 |---|---|---|---|---|
-| `engine_mode` | `select` (radio) | `no_engine` | ❌ (the only non-published, non-secret field) | — |
+| `engine_mode` | `radio` (horizontal) | `no_engine` | ❌ (the only non-published, non-secret field) | — |
 | `engine` | `select` + `dynamic_values` (`dynamicField: engine`) | — | ✅ | `backend` |
 | `engine_group` | `select` + `dynamic_values` (`dynamicField: engine-group`) | — | ✅ | `backend` |
 
@@ -853,10 +877,11 @@ Replaces legacy `engine`/`engineGroup`. The three fields live **inside the conne
 ```yaml
 # connection.yaml — inside a profile's configurations[].fields[]
 - id: engine_mode
-  field_type: select
+  field_type: radio          # horizontal radio group — NOT a select dropdown
   title: Engine
   options:
     required: true
+    orientation: horizontal  # render the radio options in a single horizontal row
     default_value: no_engine
     values:
       - { key: no_engine, label: "No engine" }
@@ -904,6 +929,7 @@ The `proxy` field (a `checkbox`) lives in the same connection profile alongside 
 - **`proxy` is `read_only` (locked, unchecked) while `engine_mode == "no_engine"`** (i.e. no engine and no engine group is chosen).
 - **Once the user selects an engine OR an engine group** (`engine_mode == "engine"` OR `engine_mode == "engine_group"`), `proxy` becomes editable so the user can check it.
 - A tooltip explains the lock: **"Use system proxy settings is enabled only when an engine or engine group are chosen."**
+- proxy is only a field in the profile if the integration YML has this field defined
 
 The lock is enforced via a reversible [`triggers.yaml`](README.md:833) effect: `read_only: true` while `engine_mode == "no_engine"`, automatically reversed when an engine/engine group is selected.
 
@@ -939,6 +965,7 @@ triggers:
 #### Insecure field — always editable
 
 The `insecure` field (a `checkbox`) also lives in the same connection profile. Its title is **"Trust any certificate (not secure)"**, it defaults to **off** (`false`), and — unlike `proxy` — it is **always editable** (`read_only: false` at all times, no engine gating, no trigger).
+- `insecure` is only a field in the profile if the integration YML has this field defined
 
 | ID | Type | Title | Default | `read_only` | `event.publish` | `config_type` |
 |---|---|---|---|---|---|---|
@@ -958,7 +985,7 @@ The `insecure` field (a `checkbox`) also lives in the same connection profile. I
     edit_modifiers: { required: false, read_only: false, hidden: false }
 ```
 
-**Carve-outs:** [Appendix G](#appendix-g-engine--proxy-exclusion-list) — emit none of the engine fields and no `proxy`. [Appendix H](#appendix-h-single-engine-integrations) — emit `engine_mode` (2 options: `no_engine` + `engine`) and `engine` only; omit `engine_group` (the proxy read-only rule still applies, gated on `engine_mode == "no_engine"`). If the FE lacks a horizontal-radio `select`, fall back to plain `select` (IDs/keys/triggers unchanged).
+**Carve-outs:** [Appendix G](#appendix-g-engine--proxy-exclusion-list) — emit none of the engine fields and no `proxy`. [Appendix H](#appendix-h-single-engine-integrations) — emit `engine_mode` (2 options: `no_engine` + `engine`) and `engine` only; omit `engine_group` (the proxy read-only rule still applies, gated on `engine_mode == "no_engine"`).
 
 #### BE-auto-added params (now explicit)
 
@@ -1092,7 +1119,52 @@ Use a serializer when a connector field id differs from the integration's expect
 **Field id naming**: keep the original param name when unique; on a real collision, apply [Appendix C](#appendix-c-field-id-uniqueness-rule) — alphabetically-first integration keeps the name (no serializer entry); others are prefixed and remapped.
 
 - **`field_mappings`** — see §2.9.
-- **`computed_fields`** — synthetic outputs from connector state; evaluated against original field IDs (§2.9).
+- **`computed_fields`** — synthetic outputs from connector state; evaluated against original field IDs (§2.9). Used to emit the **BE fetch flags** for collection sub-capabilities (§3.9.1).
+
+#### 3.9.1 Fetch flags — mandatory `computed_fields` per collection sub-capability
+
+The XSOAR BE runtime is **capability-agnostic**: it does not understand UCP capabilities/sub-capabilities. When a collection capability is chosen, the BE still needs the legacy per-fetch flag to drive its runtime logic (e.g. creating the recurring job that executes the relevant fetch command every interval).
+
+In legacy XSOAR a checkbox in the instance form let the user opt in to fetching (e.g. "Fetches incidents"). In UCP we have dedicated fetch capabilities, so the checkbox is removed (§3.4 note 5) — **choosing the integration's fetch sub-capability IS the opt-in**. We still must send the corresponding flag to the BE.
+
+**Rule:** for **every collection sub-capability the handler subscribes to**, the handler's [`serializer.yaml`](README.md:1381) MUST emit a `computed_fields` block that sends the matching flag (value `true`) **only when that sub-capability is enabled** (`value: "on"`). This is required on **every** handler that subscribes to one or more of the five fetch capabilities — even when no other serializer entry is needed.
+
+**Flag mapping** (sub-capability → flag emitted):
+
+| Collection capability (sub-capability `<capability-id>_<integration>`) | Flag emitted |
+|---|---|
+| `fetch-issues` | `isFetch` |
+| `log-collection` | `isFetchEvents` |
+| `fetch-assets-and-vulnerabilities` | `isFetchAssets` |
+| `fetch-secrets` | `isFetchCredentials` |
+| `threat-intelligence-and-enrichment` | `feed` |
+
+> **Note:** `automation-and-remediation` is **not** a collection capability and emits **no** fetch flag.
+
+**Example** — a handler subscribing to `fetch-issues_my-integration` and `log-collection_my-integration`:
+
+```yaml
+# components/handlers/<handler-folder>/serializer.yaml
+computed_fields:
+  - output:
+      - id: "isFetch"
+        value: true
+    any_of:
+      - conditions:
+          - type: "capability"
+            options: { capability_id: "fetch-issues_my-integration", value: "on" }
+  - output:
+      - id: "isFetchEvents"
+        value: true
+    any_of:
+      - conditions:
+          - type: "capability"
+            options: { capability_id: "log-collection_my-integration", value: "on" }
+```
+
+One `computed_fields` rule per collection sub-capability the handler subscribes to. The `capability_id` is the **sub-capability** id (`<capability-id>_<integration>`), matching the handler's `capabilities[].id` (§3.8 rule 3). Emit the flag with `value: true`; the BE treats the flag's absence as "not fetching".
+
+> **Open gap (§6):** these flags are delivered on the create/edit pub/sub event, but **not** on the `/verify` API payload. Some `test-module` (verify) implementations need to know whether the instance is fetching. Tracked in [Section 6: Open Items](#section-6-open-items).
 
 ### 3.10 Inventory Checklist
 
@@ -1517,6 +1589,22 @@ This document; the connector (provider) name; the XSOAR Pack content (integratio
 
 ---
 
+## Section 6: Open Items
+
+Open items are tracked in [this spreadsheet](https://docs.google.com/spreadsheets/d/1C1nZ70rJlBWB0vdH_rc_xe5RFk22CiA9Z2yBtSLgJg4/edit?gid=0#gid=0) (authoritative status + Jira links). Remaining unresolved opens:
+
+- 🔴 **Credentials vaults** — support in progress.
+- 🔴 **`advanced: true`** — legacy per-parameter collapsible "Advanced" sections have no manifest equivalent. Emit such fields as regular fields and note them in Gap Analysis.
+- 🟡 **Per-integration action `display`/`description` overrides** — migration omits both (platform defaults); track integrations needing custom wording (e.g. EWS "Reset Mailbox Last Sync").
+- 🟡 **`metadata.documentation`** and **`help` generation** — tooling TBD by the tech team.
+- 🟡 **Skip the connection screen** for integrations that have no auth/connection — there will be an option to skip the connection screen (no block).
+- 🟡 **`allow_skip_verification` / skip-verify** — **deferred to October** (not in this release). Option to skip the connection test will be `settings.allow_skip_verification` (§2.1).
+- 🔴 **Serializer ID change on a profile field (e.g. `engine`)** — we don't know whether the serializer can change/remap the **ID** of a field that lives in the **connection profile** (e.g. `engine`/`engine_group`). Serializer `field_mappings` are documented for configuration fields; whether profile-level (connection.yaml) field IDs can be remapped via the serializer is undetermined. Confirm with engineering.
+- 🔴 **Fetch flags missing from `/verify` payload** — the BE fetch flags (`isFetch`, `isFetchEvents`, `isFetchAssets`, `isFetchCredentials`, `feed`) emitted via the per-handler `computed_fields` serializer (§3.9.1) are delivered on the create/edit **pub/sub** event, but are **NOT** present on the `/verify` API payload. Some `test-module` (verify) implementations need to know whether the instance is fetching, so they currently can't read the flag at verify time. Needs BE support to include the computed flags in the verify payload.
+- 🔴 **Single sub-capability auto-enable (Grouped connectors)** — in grouped connectors, when a capability has only **one** sub-capability under it, enabling the parent capability should also enable that lone sub-capability. We need to check in the UI how this behaves today (does enabling the parent auto-select the single sub-capability, or must the user select it separately?). Related to the "Capability auto-select gap" 
+
+---
+
 ## Appendix A: XSOAR Parameter Type → Manifest Type Mapping
 
 XSOAR types in use (if you come across another type when migrating, fail and raise a flag).
@@ -1528,7 +1616,7 @@ Also see [`plans/integration-parameter-and-types-overrides.md`](plans/integratio
 | 1 | Number / Integer | `input` | `false` | Text input (no separate number type in UCP). Example: `max_fetch`. |
 | 4 | Encrypted / Password | `input` | `true` | Masked input for secrets. Example: ApiKey. |
 | 8 | Boolean / Checkbox | `checkbox` | N/A | Single boolean toggle. |
-| 9 | Credentials / Authentication | **OUT OF SCOPE** | — | Handled by connection profiles. Type 9 params are removed by the auth migration script. |
+| 9 | Credentials / Authentication | `input` (per leaf) | `true` (password leaf) | **IN SCOPE.** Mapped into the **connection profile** (`connection.yaml profiles[].configurations[].fields[]`), same as type 4 — **not** into `configurations.yaml`. A `type: 9` credential renders as two leaves: an identifier (`<id>.identifier`) and a password (`<id>.password`); each becomes a profile auth field carrying `metadata.auth.parameter`, wired back to `demisto.params()` via the profile's `interpolation_mapping` (§2.6.2). Honor `hiddenusername`/`hiddenpassword`/`displaypassword` leaf semantics (§3.6). |
 | 12 | Long Text / TextArea | `text_area` | `false` | Multi-line text. |
 | 13 | Incident Type | `select` + `metadata.dynamic_values` | `false` | Option list fetched at runtime via the XSOAR provider (`dynamicField: "incident-type"`). **User-visible field** |
 | 14 | Encrypted Text Area | `text_area` | `true` | Masked textarea. Example: SSHKey. |

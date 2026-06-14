@@ -226,7 +226,7 @@ def test_general_config_view_group_filtering() -> None:
             ]
         }
     }
-    ids = mod.collect_general_config_field_ids([doc], "xsoar-test")
+    ids = mod.collect_general_config_field_ids([doc], {"xsoar-test"})
     assert set(ids) == {"mine", "shared"}
     assert "theirs" not in ids
 
@@ -251,9 +251,57 @@ def test_general_config_flattens_nested_checkbox_group() -> None:
             ]
         }
     }
-    ids = mod.collect_general_config_field_ids([doc], "xsoar-test")
+    ids = mod.collect_general_config_field_ids([doc], {"xsoar-test"})
     assert set(ids) == {"create_user_enabled", "disable_user_enabled"}
     assert "user_operations" not in ids
+
+
+# ---------------------------------------------------------------------------
+# handler view-group resolver
+# ---------------------------------------------------------------------------
+def test_resolve_handler_view_groups_from_configurations() -> None:
+    """View groups come from the per-capability config entries, not the id."""
+    configurations = {
+        "configurations": [
+            {"id": "automation-and-remediation_psps", "view_group": "psps"},
+            {"id": "unrelated_cap", "view_group": "other"},
+        ]
+    }
+    capabilities: dict = {"capabilities": []}
+    view_groups = mod.resolve_handler_view_groups(
+        configurations, capabilities, {"automation-and-remediation_psps"}
+    )
+    assert view_groups == {"psps"}
+
+
+def test_resolve_handler_view_groups_from_inline_capabilities() -> None:
+    """Inline view_group on a capability / sub-capability is also collected."""
+    configurations: dict = {"configurations": []}
+    capabilities = {
+        "capabilities": [
+            {
+                "id": "automation",
+                "view_group": "vg-top",
+                "sub_capabilities": [
+                    {"id": "automation_sub", "view_group": "vg-sub"},
+                ],
+            }
+        ]
+    }
+    view_groups = mod.resolve_handler_view_groups(
+        configurations, capabilities, {"automation_sub"}
+    )
+    assert view_groups == {"vg-sub"}
+
+
+def test_resolve_handler_view_groups_empty_when_no_match() -> None:
+    configurations = {
+        "configurations": [{"id": "some_cap", "view_group": "psps"}]
+    }
+    view_groups = mod.resolve_handler_view_groups(
+        configurations, {"capabilities": []}, {"different_cap"}
+    )
+    assert view_groups == set()
 
 
 # ---------------------------------------------------------------------------
@@ -338,6 +386,58 @@ def test_check_coverage_pass(tmp_path: Path) -> None:
             {"name": "client_key"},
             {"name": "secret_hidden", "hidden": True},  # excluded
         ],
+    )
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+def test_check_coverage_general_config_view_group_differs_from_handler_id(
+    tmp_path: Path,
+) -> None:
+    """General-config params pinned to the sub-capability's view group are
+    covered even when the handler id differs from the view group.
+
+    Mirrors the real ``psps`` connector: the handler id is ``xsoar-psps`` but
+    the per-capability config entry (and its general-config group) is pinned to
+    the ``psps`` view group. The view group must be derived from the config
+    entry, not the handler id, or ``integrationLogLevel`` is missed.
+    """
+    handler = {
+        "id": "xsoar-psps",
+        "capabilities": [{"id": "automation-and-remediation_psps"}],
+    }
+    capabilities = {
+        "capabilities": [
+            {
+                "id": "automation-and-remediation",
+                "sub_capabilities": [{"id": "automation-and-remediation_psps"}],
+            }
+        ]
+    }
+    configurations = {
+        "configurations": [
+            {
+                "id": "automation-and-remediation_psps",
+                "view_group": "psps",
+                "configurations": [{"fields": [{"id": "defaultIgnore"}]}],
+            }
+        ],
+        "general_configurations": {
+            "configurations": [
+                {"view_group": "psps", "fields": [{"id": "integrationLogLevel"}]},
+            ]
+        },
+    }
+    _, handler_dir = _build_connector(
+        tmp_path,
+        handler=handler,
+        capabilities=capabilities,
+        configurations=configurations,
+    )
+    yml = _write_integration_yml(
+        tmp_path,
+        [{"name": "defaultIgnore"}, {"name": "integrationLogLevel"}],
     )
     passed, missing = mod.check_coverage(handler_dir, yml)
     assert passed is True
@@ -574,3 +674,155 @@ def test_salesforce_fixture_collects_expected_params(tmp_path: Path) -> None:
     assert "InstanceURL" in params
     # auth-profile field from the referenced oauth2 profile.
     assert "client_key" in params
+
+
+# ---------------------------------------------------------------------------
+# type:9 credentials params
+# ---------------------------------------------------------------------------
+def test_collect_type9_params_maps_name_to_hiddenusername() -> None:
+    cfg = [
+        {"name": "creds", "type": mod.YML_TYPE_CREDENTIALS},
+        {"name": "apikey_creds", "type": mod.YML_TYPE_CREDENTIALS, "hiddenusername": True},
+        {"name": "plain", "type": 0},  # not credentials
+        {"name": "enc", "type": 4},  # encrypted, not credentials
+        {"name": "hidden_creds", "type": mod.YML_TYPE_CREDENTIALS, "hidden": True},
+    ]
+    result = mod.collect_type9_params({"configuration": cfg})
+    assert result == {"creds": False, "apikey_creds": True}
+
+
+def test_collect_type9_params_excludes_hidden() -> None:
+    cfg = [
+        {"name": "h1", "type": mod.YML_TYPE_CREDENTIALS, "hidden": True},
+        {"name": "h2", "type": mod.YML_TYPE_CREDENTIALS, "hidden": "platform"},
+        {"name": "h3", "type": mod.YML_TYPE_CREDENTIALS, "hidden": ["platform"]},
+        {"name": "visible", "type": mod.YML_TYPE_CREDENTIALS},
+    ]
+    assert mod.collect_type9_params({"configuration": cfg}) == {"visible": False}
+
+
+@pytest.mark.parametrize(
+    "leaf_id,raw_ids,expected",
+    [
+        ("creds_password", ["creds_password"], True),  # exact
+        ("creds_password", ["fetch-issues_int_creds_password"], True),  # prefixed
+        ("creds_password", ["other"], False),  # absent
+        ("name_password", ["xname_password"], False),  # partial-token guard
+    ],
+)
+def test_raw_id_matches_leaf(leaf_id, raw_ids, expected) -> None:
+    assert mod._raw_id_matches_leaf(leaf_id, raw_ids) is expected
+
+
+def test_type9_default_requires_both_leaves() -> None:
+    type9 = {"creds": False}
+    # Both halves present → covered.
+    assert mod._type9_leaf_covered(
+        {"creds"}, ["creds_username", "creds_password"], set(), type9
+    ) == set()
+    # Only password half → NOT covered for a default credentials param.
+    assert mod._type9_leaf_covered(
+        {"creds"}, ["creds_password"], set(), type9
+    ) == {"creds"}
+    # Only username half → NOT covered.
+    assert mod._type9_leaf_covered(
+        {"creds"}, ["creds_username"], set(), type9
+    ) == {"creds"}
+
+
+def test_type9_hiddenusername_password_only() -> None:
+    type9 = {"apikey_creds": True}
+    # Bare name (the password-only field id) → covered.
+    assert mod._type9_leaf_covered(
+        {"apikey_creds"}, ["apikey_creds"], set(), type9
+    ) == set()
+    # <name>_password also covers it.
+    assert mod._type9_leaf_covered(
+        {"apikey_creds"}, ["apikey_creds_password"], set(), type9
+    ) == set()
+    # No leaf at all → still missing.
+    assert mod._type9_leaf_covered(
+        {"apikey_creds"}, ["unrelated"], set(), type9
+    ) == {"apikey_creds"}
+
+
+def test_type9_serializer_bridged_is_noop() -> None:
+    """When the serializer already maps a connector field back to the bare
+    name, the param is in connector_params and stays covered."""
+    type9 = {"creds": False}
+    assert mod._type9_leaf_covered(
+        {"creds"}, [], {"creds"}, type9
+    ) == set()
+
+
+def test_type9_prefixed_leaves_covered() -> None:
+    type9 = {"creds": False}
+    raw = [
+        "fetch-issues_int_creds_username",
+        "fetch-issues_int_creds_password",
+    ]
+    assert mod._type9_leaf_covered({"creds"}, raw, set(), type9) == set()
+
+
+def _type9_connector(tmp_path: Path, *, fields: list[dict]):
+    handler = {
+        "id": "xsoar-test",
+        "capabilities": [{"id": "automation"}],
+    }
+    capabilities = {"capabilities": [{"id": "automation"}]}
+    configurations = {
+        "configurations": [
+            {"id": "automation", "configurations": [{"fields": fields}]}
+        ]
+    }
+    return _build_connector(
+        tmp_path,
+        handler=handler,
+        capabilities=capabilities,
+        configurations=configurations,
+    )
+
+
+def test_check_coverage_type9_both_leaves_pass(tmp_path: Path) -> None:
+    _, handler_dir = _type9_connector(
+        tmp_path, fields=[{"id": "creds_username"}, {"id": "creds_password"}]
+    )
+    yml = _write_integration_yml(
+        tmp_path, [{"name": "creds", "type": mod.YML_TYPE_CREDENTIALS}]
+    )
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+def test_check_coverage_type9_password_only_default_fails(tmp_path: Path) -> None:
+    """A default credentials param needs BOTH halves; password-only fails."""
+    _, handler_dir = _type9_connector(tmp_path, fields=[{"id": "creds_password"}])
+    yml = _write_integration_yml(
+        tmp_path, [{"name": "creds", "type": mod.YML_TYPE_CREDENTIALS}]
+    )
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is False
+    assert missing == {"creds"}
+
+
+def test_check_coverage_type9_hiddenusername_bare_pass(tmp_path: Path) -> None:
+    _, handler_dir = _type9_connector(tmp_path, fields=[{"id": "apikey_creds"}])
+    yml = _write_integration_yml(
+        tmp_path,
+        [{"name": "apikey_creds", "type": mod.YML_TYPE_CREDENTIALS, "hiddenusername": True}],
+    )
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is True
+    assert missing == set()
+
+
+def test_check_coverage_type9_uncovered_fails(tmp_path: Path) -> None:
+    """A credentials param whose leaves are absent is reported missing."""
+    _, handler_dir = _type9_connector(tmp_path, fields=[{"id": "unrelated"}])
+    yml = _write_integration_yml(
+        tmp_path, [{"name": "creds", "type": mod.YML_TYPE_CREDENTIALS}]
+    )
+    passed, missing = mod.check_coverage(handler_dir, yml)
+    assert passed is False
+    assert missing == {"creds"}

@@ -1,0 +1,426 @@
+# yaml-language-server: $schema=../../schema/connection.schema.json
+metadata:
+  title: Connection
+  description: Enter the credentials to securely authorize the connection
+view_groups:
+- id: github
+  label: GitHub
+  help_text: Connection settings for GitHub.
+- id: github-iam
+  label: GitHub IAM
+  help_text: Connection settings for GitHub IAM.
+- id: github-mcp
+  label: GitHub MCP
+  help_text: Connection settings for GitHub MCP.
+profiles:
+- id: plain.github
+  type: plain
+  view_group: github
+  title: plain
+  description: Authentication profile for GitHub (plain).
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: username:credentials.identifier,password:credentials.password
+  configurations:
+  - fields:
+    - id: credentials_username
+      title: Username / Password
+      field_type: input
+      metadata:
+        auth:
+          parameter: username
+      options:
+        mask: false
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: credentials_password
+      title: Username / Password
+      field_type: input
+      metadata:
+        auth:
+          parameter: password
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: url
+      field_type: input
+      title: Server URL
+      options:
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: select
+      options:
+        mask: false
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: GitHub
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: GitHub
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+- id: api_key.github_iam
+  type: api_key
+  view_group: github-iam
+  title: api_key
+  description: Authentication profile for GitHub (api_key).
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: api_key:apikey
+  configurations:
+  - fields:
+    - id: apikey
+      title: API Key
+      field_type: input
+      metadata:
+        auth:
+          parameter: api_key
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: server
+      field_type: input
+      title: Server URL
+      options:
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: select
+      options:
+        mask: false
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: GitHub IAM
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: GitHub IAM
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+- id: passthrough.github_mcp
+  type: passthrough
+  view_group: github-mcp
+  title: passthrough
+  description: Authentication profile for GitHub (passthrough).
+  metadata:
+    xsoar:
+      interpolated: true
+      interpolation_mapping: client_id:creds.identifier,client_secret:creds.password,tenant_id:tenant,access_token:token
+  configurations:
+  - fields:
+    - id: creds_username
+      title: Credentials
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_id
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: creds_password
+      title: Credentials
+      field_type: input
+      metadata:
+        auth:
+          parameter: client_secret
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: tenant
+      title: Tenant ID
+      field_type: input
+      metadata:
+        auth:
+          parameter: tenant_id
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: token
+      title: Auth Token
+      field_type: input
+      metadata:
+        auth:
+          parameter: access_token
+      options:
+        mask: true
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: base_url
+      field_type: input
+      title: Base URL
+      options:
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: scope
+      field_type: input
+      title: Scope
+      options:
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+        mask: false
+      metadata:
+        event:
+          publish: true
+  - fields:
+    - id: engine_mode
+      title: Engine
+      field_type: select
+      options:
+        mask: false
+        default_value: no_engine
+        values:
+        - key: no_engine
+          label: No engine
+        - key: engine
+          label: Engine
+        - key: engine_group
+          label: Engine Group
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+  - fields:
+    - id: engine
+      title: Engine
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: GitHub MCP
+            dynamicField: engine
+      options:
+        mask: false
+        placeholder: Select an engine
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false
+  - fields:
+    - id: engine_group
+      title: Engine Group
+      field_type: select
+      metadata:
+        event:
+          publish: true
+        xsoar:
+          config_type: backend
+        dynamic_values:
+          provider: xsoar
+          trigger:
+          - on_create
+          - on_edit
+          params:
+            integrationID: GitHub MCP
+            dynamicField: engine-group
+      options:
+        mask: false
+        placeholder: Select an engine group
+        create_modifiers:
+          required: false
+          hidden: false
+        edit_modifiers:
+          required: false
+          hidden: false

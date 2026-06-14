@@ -14,9 +14,14 @@ the handler:
     ``configurations`` / ``capabilities`` entries whose ``id`` is one of the
     handler's ``capabilities[].id`` (sub-capabilities included).
   * **General-configuration params** — every ``fields[].id`` inside a
-    ``general_configurations`` field group whose ``view_group`` matches the
-    handler's view group (= the handler id). General-config field groups that
-    are pinned to a *different* handler's view group are ignored.
+    ``general_configurations`` field group whose ``view_group`` matches one
+    of the handler's view groups. The handler's view groups are derived from
+    the ``configurations.yaml`` (and inline ``capabilities.yaml``) config
+    entries whose ``id`` is one of the handler's ``capabilities[].id`` (sub-
+    capabilities included) — all sub-capabilities of a handler share the same
+    view group. A general-config field group with no ``view_group`` is shared
+    (belongs to every handler); a group pinned to a *different* handler's view
+    group is ignored.
   * **Auth-profile params** — every ``fields[].id`` of each
     ``connection.yaml`` profile whose ``id`` is referenced by the handler's
     ``capabilities[].auth_options[].id``.
@@ -50,8 +55,28 @@ two Platform-rename special cases:
     when the connector exposes an ``alertFetchInterval`` field (bare or
     sub-capability prefixed).
 
-No other special-casing of credentials, backend-only, or reserved
-framework fields is applied on either side.
+One more special case covers XSOAR ``type: 9`` credentials widgets. A
+credentials param is a *compound* field that the integration reads through
+the dotted-leaf form ``params.get("<name>", {}).get("identifier")`` /
+``.get("password")`` (see ``connectus/analyzer-manual.md``). The manifest
+generator splits it on the connector side into a ``<name>_username`` +
+``<name>_password`` pair (or a password-only field, with the bare ``<name>``
+as its id, when the YML carries ``hiddenusername: true``). So a credentials
+param is considered covered when:
+
+  * the serializer already bridged a connector field back to the bare
+    ``<name>``; OR
+  * ``hiddenusername: true`` and the connector exposes the bare ``<name>``
+    OR the ``<name>_password`` half; OR
+  * (default) the connector exposes BOTH the ``<name>_username`` AND the
+    ``<name>_password`` halves.
+
+Leaf ids may be sub-capability prefixed (e.g.
+``fetch-issues_<int>_<name>_password``), so coverage uses the same
+underscore-boundary suffix match as the alert renames.
+
+No other special-casing of backend-only or reserved framework fields is
+applied on either side.
 
 Exit codes:
   * ``0`` — every non-hidden YML param is covered.
@@ -70,11 +95,17 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 from pathlib import Path
 
 import yaml
+
+# Make sibling connectus modules (workflow_state) importable regardless of CWD.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +139,22 @@ ALERT_TYPE_SUFFIX = "alertType"
 INCIDENT_FETCH_INTERVAL_PARAM = "incidentFetchInterval"
 ALERT_FETCH_INTERVAL_SUFFIX = "alertFetchInterval"
 IGNORED_PARAMS = {"is_mirroring", "mirror_direction", "mirror_limit", "close_incident"}
+
+# XSOAR ``type: 9`` — the credentials widget. A single integration YML param
+# of this type is a *compound* field: the integration reads it as
+# ``params.get("<name>", {}).get("identifier")`` / ``.get("password")`` (the
+# dotted-leaf rule, see ``connectus/analyzer-manual.md``). On the connector
+# side it is split by the manifest generator into TWO fields:
+#   * ``<name>_username`` (from the ``.identifier`` leaf), and
+#   * ``<name>_password`` (from the ``.password`` leaf).
+# When the YML param carries ``hiddenusername: true`` the username half is
+# suppressed and only the password half is emitted, with the *bare* ``<name>``
+# as its id. Either connector id may be sub-capability prefixed (e.g.
+# ``fetch-issues_<int>_<name>_password``), so coverage uses an
+# underscore-boundary suffix match just like the alert renames above.
+YML_TYPE_CREDENTIALS = 9
+USERNAME_LEAF_SUFFIX = "_username"
+PASSWORD_LEAF_SUFFIX = "_password"
 
 class CoverageError(Exception):
     """Raised for usage / resolution errors that should exit with EXIT_USAGE."""
@@ -192,6 +239,30 @@ def collect_yml_params(integration_yml: dict) -> set[str]:
         if name:
             params.add(name)
     return params
+
+
+def collect_type9_params(integration_yml: dict) -> dict[str, bool]:
+    """Map each non-hidden ``type: 9`` credentials param to its hiddenusername.
+
+    A credentials widget is special on the connector side: it splits into a
+    ``<name>_username`` + ``<name>_password`` pair (or a password-only field
+    when ``hiddenusername: true``). The returned ``{name: hiddenusername}``
+    map lets :func:`_type9_leaf_covered` recognise that the leaves cover the
+    original compound param. Only non-hidden params are included, matching
+    :func:`collect_yml_params`.
+    """
+    creds: dict[str, bool] = {}
+    for param in integration_yml.get("configuration", []) or []:
+        if not isinstance(param, dict):
+            continue
+        if _is_hidden(param):
+            continue
+        if param.get("type") != YML_TYPE_CREDENTIALS:
+            continue
+        name = param.get("name")
+        if name:
+            creds[name] = bool(param.get("hiddenusername"))
+    return creds
 
 
 # ---------------------------------------------------------------------------
@@ -372,14 +443,60 @@ def collect_capability_config_field_ids(
 
 
 # ---------------------------------------------------------------------------
-# Step 8: general-configurations collector
+# Step 8: handler view-group resolver + general-configurations collector
 # ---------------------------------------------------------------------------
-def collect_general_config_field_ids(docs: list[dict], view_group: str) -> list[str]:
-    """Collect general-config field ids pinned to the handler's view group.
+def resolve_handler_view_groups(
+    configurations_doc: dict,
+    capabilities_doc: dict,
+    handler_capability_ids: set[str],
+) -> set[str]:
+    """Resolve the set of view groups that belong to the handler.
+
+    All sub-capabilities of a handler share the same view group. The view
+    group is not the handler id — it is the ``view_group`` slug attached to
+    the per-capability config entries. This walks every ``configurations[]``
+    entry in ``configurations.yaml`` (and any inline ``configurations`` block
+    on a ``capabilities.yaml`` capability / sub-capability) whose ``id`` is
+    one of the handler's ``capabilities[].id`` (sub-capabilities included) and
+    collects the ``view_group`` value declared on that entry.
+    """
+    view_groups: set[str] = set()
+
+    # configurations.yaml — list of {id, configurations, view_group}.
+    for entry in configurations_doc.get("configurations", []) or []:
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("id") in handler_capability_ids:
+            view_group = entry.get("view_group")
+            if view_group:
+                view_groups.add(view_group)
+
+    # capabilities.yaml — capabilities / sub-capabilities may carry an inline
+    # view_group alongside inline configurations.
+    for entry in capabilities_doc.get("capabilities", []) or []:
+        if not isinstance(entry, dict):
+            continue
+        chain = _capability_id_chain(entry)
+        if not any(cid in handler_capability_ids for cid in chain):
+            continue
+        if entry.get("id") in handler_capability_ids and entry.get("view_group"):
+            view_groups.add(entry["view_group"])
+        for sub in entry.get("sub_capabilities", []) or []:
+            if not isinstance(sub, dict):
+                continue
+            if sub.get("id") in handler_capability_ids and sub.get("view_group"):
+                view_groups.add(sub["view_group"])
+
+    return view_groups
+
+
+def collect_general_config_field_ids(docs: list[dict], view_groups: set[str]) -> list[str]:
+    """Collect general-config field ids pinned to the handler's view groups.
 
     A general-config field group with no ``view_group`` is treated as shared
     (belongs to every handler) and is always included. A group whose
-    ``view_group`` differs from the handler's is skipped.
+    ``view_group`` is in ``view_groups`` is included; a group pinned to any
+    other view group is skipped.
     """
     field_ids: list[str] = []
     for doc in docs:
@@ -390,7 +507,7 @@ def collect_general_config_field_ids(docs: list[dict], view_group: str) -> list[
             if not isinstance(group, dict):
                 continue
             group_view_group = group.get("view_group")
-            if group_view_group and group_view_group != view_group:
+            if group_view_group and group_view_group not in view_groups:
                 continue
             field_ids.extend(_iter_leaf_field_ids(group.get("fields", [])))
     return field_ids
@@ -432,7 +549,17 @@ def collect_connector_raw_field_ids(
     needs, since those fields are migrated with no serializer bridge and may be
     sub-capability prefixed.
     """
-    view_group, capability_ids, auth_profile_ids = parse_handler(handler_yaml)
+    handler_view_group, capability_ids, auth_profile_ids = parse_handler(handler_yaml)
+
+    # The handler's view groups come from the per-capability config entries
+    # (all sub-capabilities of a handler share the same view group), NOT the
+    # handler id. Fall back to the handler id for back-compat when no config
+    # entry yields a view group.
+    view_groups = resolve_handler_view_groups(
+        configurations_doc, capabilities_doc, capability_ids
+    )
+    if not view_groups and handler_view_group:
+        view_groups = {handler_view_group}
 
     raw_field_ids: list[str] = []
     raw_field_ids.extend(
@@ -442,7 +569,7 @@ def collect_connector_raw_field_ids(
     )
     raw_field_ids.extend(
         collect_general_config_field_ids(
-            [capabilities_doc, configurations_doc, connection_doc], view_group
+            [capabilities_doc, configurations_doc, connection_doc], view_groups
         )
     )
     raw_field_ids.extend(
@@ -499,6 +626,70 @@ def _alert_rename_covered(missing: set[str], raw_field_ids: list[str]) -> set[st
     return resolved
 
 
+def _raw_id_matches_leaf(leaf_id: str, raw_field_ids: list[str]) -> bool:
+    """Return True when a connector leaf id is present in the raw field ids.
+
+    A leaf is present when a raw field id equals it OR ends with
+    ``_<leaf_id>`` (the underscore boundary guards against partial-token
+    matches while still recognising sub-capability prefixes such as
+    ``fetch-issues_<int>_<name>_password``).
+    """
+    underscore_suffix = f"_{leaf_id}"
+    return any(
+        fid == leaf_id or fid.endswith(underscore_suffix) for fid in raw_field_ids
+    )
+
+
+def _type9_leaf_covered(
+    missing: set[str],
+    raw_field_ids: list[str],
+    connector_params: set[str],
+    type9_params: dict[str, bool],
+) -> set[str]:
+    """Drop ``type: 9`` credentials params from ``missing`` when their split
+    connector leaves cover them.
+
+    A credentials widget never appears as its bare ``<name>`` on the connector
+    config side — the manifest generator splits it into ``<name>_username`` +
+    ``<name>_password`` (or a password-only field when ``hiddenusername:
+    true``). So an integration credentials param is considered covered when:
+
+      * the serializer already bridged a connector field back to ``<name>``
+        (``<name>`` is in the resolved ``connector_params`` set); OR
+      * ``hiddenusername: true`` and the connector exposes the bare ``<name>``
+        OR the ``<name>_password`` half; OR
+      * (default) the connector exposes BOTH the ``<name>_username`` AND the
+        ``<name>_password`` halves.
+
+    Leaf ids are matched against the RAW connector field ids with an
+    underscore-boundary suffix match (see :func:`_raw_id_matches_leaf`) so
+    sub-capability-prefixed ids are recognised.
+    """
+    resolved = set(missing)
+    for name, hidden_username in type9_params.items():
+        if name not in resolved:
+            continue
+        # Serializer already bridged a connector field back to the bare name.
+        if name in connector_params:
+            resolved.discard(name)
+            continue
+        password_present = _raw_id_matches_leaf(
+            f"{name}{PASSWORD_LEAF_SUFFIX}", raw_field_ids
+        )
+        if hidden_username:
+            # Only the password half is emitted; its id is the bare name.
+            if _raw_id_matches_leaf(name, raw_field_ids) or password_present:
+                resolved.discard(name)
+            continue
+        # Default: require BOTH the username and password halves.
+        username_present = _raw_id_matches_leaf(
+            f"{name}{USERNAME_LEAF_SUFFIX}", raw_field_ids
+        )
+        if username_present and password_present:
+            resolved.discard(name)
+    return resolved
+
+
 def _resolve_handler_paths(handler_path: Path) -> tuple[Path, Path]:
     """Resolve ``(handler_dir, handler_yaml_path)`` from a handler path.
 
@@ -539,6 +730,7 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
     integration_yml = load_yaml(integration_yml_path)
 
     yml_params = collect_yml_params(integration_yml)
+    type9_params = collect_type9_params(integration_yml)
     raw_field_ids = collect_connector_raw_field_ids(
         handler_dir,
         capabilities_doc,
@@ -556,8 +748,57 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
     # Platform "alert" renames: incidentType -> alertType,
     # incidentFetchInterval -> alertFetchInterval (no serializer bridge).
     missing = _alert_rename_covered(missing, raw_field_ids)
+    # type:9 credentials widgets split into <name>_username / <name>_password
+    # leaves on the connector (or a password-only field when hiddenusername).
+    missing = _type9_leaf_covered(
+        missing, raw_field_ids, connector_params, type9_params
+    )
     missing = missing - IGNORED_PARAMS
     return (len(missing) == 0), missing
+
+
+# ---------------------------------------------------------------------------
+# --integration-id resolution
+# ---------------------------------------------------------------------------
+def _resolve_paths_from_id(integration_id: str) -> tuple[Path, Path]:
+    """Resolve ``(handler_yaml_path, integration_yml_path)`` from a CSV id.
+
+    Reuses the workflow's own gate resolvers (the single source of truth the
+    ``run manifest make validate`` gate uses), mirroring how the reference
+    analyzers resolve ``--integration-id``:
+
+    * ``workflow_state.gates._handler_dir_abs`` → the connector handler dir
+      (``<connectus_repo>/<connector folder>/components/handlers/<handler-id>``),
+      to which ``handler.yaml`` is appended.
+    * ``workflow_state.gates._integration_yml_abs`` → the integration YML path.
+
+    Raises ``CoverageError`` (→ exit 2) on any resolution failure so the CLI
+    surfaces a clean usage error.
+    """
+    try:
+        from workflow_state.gates import (  # type: ignore
+            _handler_dir_abs,
+            _integration_yml_abs,
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise CoverageError(
+            f"could not import workflow_state for --integration-id "
+            f"{integration_id!r}: {type(exc).__name__}: {exc}"
+        ) from exc
+
+    yml_abs = _integration_yml_abs(integration_id)
+    if not yml_abs:
+        raise CoverageError(
+            f"--integration-id {integration_id!r}: no integration YML path "
+            f"resolved (id not in CSV or 'Integration File Path' unset)."
+        )
+    handler_dir = _handler_dir_abs(integration_id)
+    if not handler_dir:
+        raise CoverageError(
+            f"--integration-id {integration_id!r}: could not resolve the "
+            f"connector handler dir (id not in CSV)."
+        )
+    return Path(handler_dir) / HANDLER_FILE, Path(yml_abs)
 
 
 # ---------------------------------------------------------------------------
@@ -572,19 +813,37 @@ def build_arg_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--integration-id",
+        type=str,
+        default=None,
+        help=(
+            "Resolve --handler-path and --integration-yml from the workflow "
+            "CSV id (preferred). Replaces the two explicit path flags."
+        ),
+    )
+    parser.add_argument(
         "--handler-path",
-        required=True,
         type=Path,
+        default=None,
         help=(
             "Path to the handler's handler.yaml file "
-            "(the handler directory is also accepted)."
+            "(the handler directory is also accepted). "
+            "Omit when using --integration-id."
         ),
     )
     parser.add_argument(
         "--integration-yml",
-        required=True,
         type=Path,
-        help="Path to the integration YML file.",
+        default=None,
+        help="Path to the integration YML file. Omit when using --integration-id.",
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help=(
+            "Emit the reference-aligned JSON envelope to stdout "
+            "({integration, pass, missing, ignored_params})."
+        ),
     )
     parser.add_argument(
         "-v",
@@ -603,25 +862,52 @@ def main(argv: list[str] | None = None) -> int:
         format="%(levelname)s %(message)s",
     )
 
-    handler_path = args.handler_path
-    integration_yml_path = args.integration_yml
-    # handler_path = Path("/Users/yhayun/dev/demisto/unified-connectors-content/connectors/azure-devops/components/handlers/xsoar-azuredevops/handler.yaml")
-    # integration_yml_path = Path("Packs/AzureDevOps/Integrations/AzureDevOps/AzureDevOps.yml")
+    if args.integration_id:
+        try:
+            handler_path, integration_yml_path = _resolve_paths_from_id(
+                args.integration_id
+            )
+        except CoverageError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)  # noqa: T201
+            return EXIT_USAGE
+    else:
+        if not args.handler_path or not args.integration_yml:
+            print(  # noqa: T201
+                "ERROR: provide --integration-id, OR both --handler-path and "
+                "--integration-yml.",
+                file=sys.stderr,
+            )
+            return EXIT_USAGE
+        handler_path = args.handler_path
+        integration_yml_path = args.integration_yml
 
     try:
         passed, missing = check_coverage(handler_path, integration_yml_path)
     except CoverageError as exc:
+        if args.json:
+            print(json.dumps({"error": str(exc)}, indent=2, sort_keys=True))
         print(f"ERROR: {exc}", file=sys.stderr)  # noqa: T201
         return EXIT_USAGE
 
+    sorted_missing = sorted(missing)
+
+    if args.json:
+        envelope = {
+            "integration": integration_yml_path.stem,
+            "pass": passed,
+            "missing": sorted_missing,
+            "ignored_params": sorted(IGNORED_PARAMS),
+        }
+        print(json.dumps(envelope, indent=2, sort_keys=True))
+
     if passed:
-        print(  # noqa: T201
-            "PASS: every non-hidden integration YML param is covered by the "
-            "connector handler."
-        )
+        if not args.json:
+            print(  # noqa: T201
+                "PASS: every non-hidden integration YML param is covered by "
+                "the connector handler."
+            )
         return EXIT_OK
 
-    sorted_missing = sorted(missing)
     print(  # noqa: T201
         "FAIL: the following integration YML params are NOT covered by the "
         f"connector handler ({len(sorted_missing)}):",

@@ -50,6 +50,7 @@ from pathlib import Path
 
 import resolver as resolver_mod
 import results_ledger
+from be_config_params import apply_be_config_transform
 from diff import _load_serializer_mappings, diff_params
 from normalizers import normalize_for_diff
 from resolver import ResolverError
@@ -174,16 +175,6 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
 
     p.add_argument(
-        "--no-scrub-results",
-        action="store_true",
-        help=(
-            "DEBUGGING ONLY: write the persisted result JSON with RAW captures "
-            "(do NOT redact demisto.params() values). Default is to scrub, because "
-            "the server may inject real tokens into demisto.params()."
-        ),
-    )
-
-    p.add_argument(
         "--verbose", "-v",
         action="store_true",
         help="Enable DEBUG logging from all capture/diff modules.",
@@ -206,8 +197,25 @@ def _load_dict_from_json_file(path: str) -> dict:
 # ============================================================================
 
 
+def _force_drop_from(ignored_params: dict) -> set[str]:
+    """Params to drop on BOTH sides: the resolver's hard ignore-list AND params
+    hidden in the integration YML (not migrated to the connector)."""
+    return {
+        name
+        for name, reason in ignored_params.items()
+        if reason in ("hard_ignore_list", "hidden")
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
+
+    # Instance-creation payloads (what we POST/send to CREATE each side's
+    # instance). Captured below and attached to the results envelope for
+    # debugging. Initialized here so they're defined on EVERY path that reaches
+    # the envelope build (e.g. the --skip-* file-load branches leave them None).
+    integration_payload: dict | None = None
+    connector_payload: dict | None = None
 
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(
@@ -234,14 +242,19 @@ def main(argv: list[str] | None = None) -> int:
     connector_id = args.connector_id or parity_inputs.connector_id
     connector_dir = args.connector_dir or parity_inputs.connector_dir
 
-    # force_keep = the params the resolver decided to compare (includes
-    # interpolated-profile auth fields that are YML type-4/9 but DO arrive at
-    # runtime). force_drop = the hard ignore-list the resolver dropped.
+    # force_keep = the params the resolver decided to compare (EVERY YML param
+    # that is neither hard-ignored nor hidden — including type-4 and type-9
+    # credentials params). force_drop = the resolver's hard ignore-list PLUS
+    # params hidden in the integration YML (those surface as OK_IGNORED, not
+    # MISSING/EXTRA).
     force_keep: set[str] = set(parity_inputs.compare_params)
-    force_drop: set[str] = {
-        name
+    force_drop: set[str] = _force_drop_from(parity_inputs.ignored_params)
+    # Specific drop reason per param (so the report can explain WHY, not just
+    # "hard_ignore"). Only the reasons _force_drop_from admits are relevant here.
+    force_drop_reasons: dict[str, str] = {
+        name: reason
         for name, reason in parity_inputs.ignored_params.items()
-        if reason == "hard_ignore_list"
+        if name in force_drop
     }
     log.info(
         "Resolver: connector_dir=%s connector_id=%s integration_yml=%s "
@@ -256,13 +269,16 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     # ── Parse the integration YML once (used by both captures + the normalizer) ──
+    # Resolve a relative path against the CONTENT-REPO WORKSPACE ROOT (not the CWD).
+    # The CSV stores repo-relative paths (e.g. Packs/.../X.yml) and the wrapper runs
+    # us with cwd=runtime_demisto.params_parity/, so os.path.abspath() (CWD-relative)
+    # would look in the wrong place. resolver._abs_integration_yml resolves against
+    # the workspace root (resolver._WORKSPACE_ROOT).
     if not os.path.isabs(integration_yml):
-        # Resolve relative paths against the workspace root (one up from this script).
-        candidate = os.path.abspath(integration_yml)
-        if not os.path.exists(candidate):
-            log.error("integration-yml not found: %s (resolved to %s)", integration_yml, candidate)
-            return 2
-        integration_yml = candidate
+        integration_yml = resolver_mod._abs_integration_yml(integration_yml)
+    if not os.path.exists(integration_yml):
+        log.error("integration-yml not found: %s", integration_yml)
+        return 2
 
     log.info("Parsing integration YML: %s", integration_yml)
     yml_data = parse_integration_yml(integration_yml)
@@ -292,6 +308,11 @@ def main(argv: list[str] | None = None) -> int:
     # `fill_params_from_yml` walks the YML's configuration list and, for every
     # param, produces a dummy value via `generate_dummy_value_for_param`.
     shared_dummies = fill_params_from_yml(yml_configuration, {})
+    # Replicate the backend's ValidateConfiguration auto-add/strip of
+    # fetch/feed/long-running config params (these are injected by the BE based
+    # on the YML script flags and are NOT in the YML `configuration` list, so we
+    # must add them here so BOTH parity sides receive the same value).
+    shared_dummies = apply_be_config_transform(shared_dummies, yml_data.get("script"))
     log.info(
         "Pre-computed %d shared dummy values to push to BOTH sides.",
         len(shared_dummies),
@@ -313,15 +334,24 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         log.info("Loading INTEGRATION-side capture from %s", args.integration_capture_file)
         integration_raw = _load_dict_from_json_file(args.integration_capture_file)
+        # No creation payload available when loading a pre-captured dump.
+        integration_payload = None
     else:
         log.info("=" * 70)
         log.info("Capturing INTEGRATION-side demisto.params() via legacy XSOAR flow...")
         log.info("=" * 70)
-        integration_raw = capture_xsoar_params(
-            integration_yml_path=integration_yml,
-            overrides=shared_dummies,  # full pre-computed dummy dict
-            client=xsoar_client,
-        )
+        try:
+            integration_raw, integration_payload = capture_xsoar_params(
+                integration_yml_path=integration_yml,
+                overrides=shared_dummies,  # full pre-computed dummy dict
+                client=xsoar_client,
+            )
+        except Exception as e:  # noqa: BLE001 — a capture crash is setup-blocked, not a diff
+            log.error(
+                "INTEGRATION-side capture FAILED with an exception (setup-blocked, "
+                "not a parity diff): %s", e,
+            )
+            return 2
     if integration_raw is None:
         # A capture FAILURE is a setup/runtime problem (tenant unreachable, flow
         # error), NOT a real parity diff. The wrapper maps 2 → "setup-blocked"
@@ -337,21 +367,30 @@ def main(argv: list[str] | None = None) -> int:
             return 2
         log.info("Loading CONNECTOR-side capture from %s", args.connector_capture_file)
         connector_raw = _load_dict_from_json_file(args.connector_capture_file)
+        # No creation payload available when loading a pre-captured dump.
+        connector_payload = None
     else:
         log.info("=" * 70)
         log.info("Capturing CONNECTOR-side demisto.params() via UCP flow...")
         log.info("=" * 70)
-        connector_raw = capture_ucp_params(
-            xsoar_client=xsoar_client,
-            xsoar_brand_name=integration_brand,
-            parity_inputs=parity_inputs,
-            # The bidirectional push: the SAME values that fed the INTEGRATION
-            # side, keyed by connector field id. The builder enables ALL handler
-            # (sub-)capabilities and pushes these into the configuration + the
-            # interpolated-profile auth fields (never connector defaults).
-            instance_values=connector_instance_values,
-            connector_id=connector_id,
-        )
+        try:
+            connector_raw, connector_payload = capture_ucp_params(
+                xsoar_client=xsoar_client,
+                xsoar_brand_name=integration_brand,
+                parity_inputs=parity_inputs,
+                # The bidirectional push: the SAME values that fed the INTEGRATION
+                # side, keyed by connector field id. The builder enables ALL handler
+                # (sub-)capabilities and pushes these into the configuration + the
+                # interpolated-profile auth fields (never connector defaults).
+                instance_values=connector_instance_values,
+                connector_id=connector_id,
+            )
+        except Exception as e:  # noqa: BLE001 — a capture crash is setup-blocked, not a diff
+            log.error(
+                "CONNECTOR-side capture FAILED with an exception (setup-blocked, "
+                "not a parity diff): %s", e,
+            )
+            return 2
     if connector_raw is None:
         # Capture FAILURE = setup-blocked (return 2), not a parity diff (1).
         # See design §4 / the wrapper's exit-code mapping.
@@ -365,10 +404,12 @@ def main(argv: list[str] | None = None) -> int:
     integration_norm, integration_dropped = normalize_for_diff(
         integration_raw, yml_configuration, side="integration",
         force_keep=force_keep, force_drop=force_drop,
+        force_drop_reasons=force_drop_reasons,
     )
     connector_norm, connector_dropped = normalize_for_diff(
         connector_raw, yml_configuration, side="connector",
         force_keep=force_keep, force_drop=force_drop,
+        force_drop_reasons=force_drop_reasons,
     )
     log.info(
         "After normalization: INTEGRATION %d→%d (dropped %d), CONNECTOR %d→%d (dropped %d)",
@@ -430,21 +471,25 @@ def main(argv: list[str] | None = None) -> int:
         "allow_mismatch": args.allow_mismatch,
     }
 
+    # Attach the instance-creation payloads (what we sent to CREATE each side's
+    # instance) so failures are reproducible/debuggable from the persisted JSON.
+    envelope["creation_payloads"] = {
+        "integration": integration_payload,
+        "connector": connector_payload,
+    }
+
     # ── Emit the envelope to stdout ──
     print(json.dumps(envelope, indent=2, sort_keys=False, default=str))
 
     # ── Persist the run (Phase 7) ──
     # Write the envelope JSON + append a ledger row BEFORE returning the exit
     # code. Guarded so a write failure logs a warning but NEVER changes the
-    # exit-code contract (0 pass / 1 parity-fail / 2 setup-blocked). Captures
-    # are scrubbed by default (the server may inject real tokens); pass
-    # --no-scrub-results to keep raw values for debugging.
+    # exit-code contract (0 pass / 1 parity-fail / 2 setup-blocked).
     try:
         result_path = results_ledger.write_result(
             envelope,
             connector_id=connector_id,
             integration_id=args.integration_id,
-            scrub=not args.no_scrub_results,
         )
         results_ledger.append_ledger(
             envelope,

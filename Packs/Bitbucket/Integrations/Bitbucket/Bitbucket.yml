@@ -2326,16 +2326,6 @@ script:
     - contextPath: Bitbucket.WorkspaceMember.workspace.links
       description: Links to information about the workspace.
       type: String
-  - name: bitbucket-debug-params
-    description: 'Debug helper: prints the unified-connector metadata and the resolved demisto.params() so UCP interpolation can be inspected. The credential password is masked in the human-readable output.'
-    arguments: []
-    outputs:
-    - contextPath: Bitbucket.DebugParams.params
-      description: The resolved demisto.params() (credential password masked).
-      type: Unknown
-    - contextPath: Bitbucket.DebugParams.unifiedConnectorMetadata
-      description: The unified-connector metadata returned by demisto.unifiedConnectorMetadata().
-      type: Unknown
   runonce: false
   script: "-"
   type: python

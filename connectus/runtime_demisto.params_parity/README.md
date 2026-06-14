@@ -35,11 +35,12 @@ Any non-trivial difference between these two `demisto.params()` snapshots indica
               │                                          │
               ▼                                          ▼
                 ┌──────────────────────────────┐
-                │ normalizers.py               │
-                │ deterministic IGNORE policy: │
-                │ drop type 4/9, mirror_out,   │
-                │ magic key, framework noise   │
-                └──────────────┬───────────────┘
+                 │ normalizers.py               │
+                 │ deterministic IGNORE policy: │
+                 │ drop force_drop/hard-ignore, │
+                 │ mirror_out, magic key,       │
+                 │ framework noise              │
+                 └──────────────┬───────────────┘
                                │
                                ▼
                 ┌──────────────────────────────┐
@@ -75,14 +76,14 @@ The orchestrator injects `__params_parity_dump__: "1"` into both creation payloa
 | [`ucp_capture.py`](ucp_capture.py) | CONNECTOR-side capture: port-forward to UCP shell pod → GET creation view → POST /instances → poll XSOAR for mirror → inject magic key → test-module → parse → cleanup. Top-level: `capture_ucp_params()`. |
 | [`normalizers.py`](normalizers.py) | Deterministic IGNORE policy. Strict exact-match comparison (no value normalization in MVP). Top-level: `normalize_for_diff()`. |
 | [`diff.py`](diff.py) | 5-state symmetric key-union diff engine + serializer-mapping annotations + connector-file `reason_hint` grep. Top-level: `diff_params()`. |
-| [`resolver.py`](resolver.py) | Resolves `--integration-id` → connector dir/id, integration YML/brand, capabilities/profiles, and the compare/ignore policy from the pipeline CSV + connector repo. Top-level: `resolve()`; shared `slugify()`. |
+| [`resolver.py`](resolver.py) | Resolves `--integration-id` → connector dir/id, integration YML/brand, capabilities/profiles, and the compare/ignore policy. The ONLY values read from the pipeline CSV are the **Connector Folder Path** + **Integration File Path**; everything else (including the auth field ↔ xsoar param mapping) is derived from the integration YML + connector YAMLs. Top-level: `resolve()`; shared `slugify()`. |
 | [`check_param_parity.py`](check_param_parity.py) | **Orchestrator CLI** (the main entry point; resolver-driven). |
-| [`results_ledger.py`](results_ledger.py) | Phase 7 results persistence: writes the per-run envelope JSON (captures scrubbed by default) + appends a row to `results/ledger.csv`. Top-level: `write_result()`, `append_ledger()`, `result_filename()`. |
+| [`results_ledger.py`](results_ledger.py) | Phase 7 results persistence: writes the per-run envelope JSON (raw captures persisted verbatim) + appends a row to `results/ledger.csv`. Top-level: `write_result()`, `append_ledger()`, `result_filename()`. |
 | [`tenant_lock.py`](tenant_lock.py) | Per-tenant filesystem lock (acquire/release/force-unlock; TTL/heartbeat/stale-reclaim). Keeps parallel shells from deploying to the same tenant at once. |
 | [`deploy_and_test.py`](deploy_and_test.py) | Atomic wrapper the skill runs per integration: acquire lock → `deploy.py` → `check_param_parity.py` → release (try/finally). Exit codes `0/10/11/20/21/30`. |
 | [`main.py`](main.py) | Thin CLI wrapper around `xsoar_capture` for ad-hoc INTEGRATION-side capture in isolation. |
 | [`create_ucp_instance.py`](create_ucp_instance.py) | Thin CLI wrapper around `ucp_capture` for ad-hoc CONNECTOR-side capture in isolation (with interactive Slack-permissions reminder). |
-| [`deploy.py`](deploy.py) | GitLab CI/CD helper for deploying connector content to a tenant (whole-manifest / whole-branch). |
+| [`deploy.py`](deploy.py) | GitLab CI/CD deploy helper: commits the connector dir to your personal `xsoar-migration-<name>` branch, fast-forward pushes (never force, no reset), then triggers + polls the pipeline. SSH-agent-independent (uses an explicit key). |
 | [`test_data/connectors/<name>/`](test_data/connectors/) | Pre-built connector YAMLs the test suite diffs against. |
 | `results/` | Git-ignored Phase 7 artifacts: per-run envelope JSONs + `ledger.csv`. |
 | `.locks/` | Git-ignored per-tenant lockfiles (see `tenant_lock.py`). |
@@ -93,18 +94,17 @@ The orchestrator injects `__params_parity_dump__: "1"` into both creation payloa
    ```bash
    cp .env.example .env   # run from the content-repo root
    ```
-   The REQUIRED values are: `DEMISTO_BASE_URL`, `DEMISTO_API_KEY`, `XSIAM_AUTH_ID`, `CONNECTUS_REPO_DIR` (local clone of unified-connectors-content — used by both deploy git ops AND the resolver), `CONNECTUS_BRANCH` (the connectus-repo branch deploy.py force-pushes), `TENANT_ID` (your single tenant — one per shell; sent to the GitLab pipeline as `TENANT_IDS`), and `GITLAB_TOKEN` (scope `api`). The rest have safe defaults. ⚠️ `BASE_BRANCH` controls a `git reset --hard origin/<base>` on every deploy — it discards un-pushed local changes on `CONNECTUS_BRANCH`.
+   The REQUIRED values are: `DEMISTO_BASE_URL`, `DEMISTO_API_KEY`, `XSIAM_AUTH_ID`, `CONNECTUS_REPO_DIR` (local clone of unified-connectors-content — used by both deploy git ops AND the resolver), `CONNECTUS_BRANCH` (your PERSONAL branch `xsoar-migration-<name>`; deploy.py commits the connector here and fast-forward pushes — never force, no reset), `TENANT_ID` (your single tenant — one per shell; sent to the GitLab pipeline as `TENANT_IDS`), and `GITLAB_TOKEN` (scope `api`). Git auth auto-detects your SSH key (`~/.ssh/id_ed25519` / `id_rsa` / `id_ecdsa`) — no extra config needed. GitLab URL, the pipeline override reason, and the UCP port are hardcoded constants, not env vars.
 
    Every script here loads this root `.env` automatically via the shared loader [`connectus/env_loader.py`](../env_loader.py) (`load_env()`), which resolves the repo root from `__file__` and loads `<repo_root>/.env` by an explicit path — so it works no matter which directory you run the tools from. **Do not** create a per-tool `.env` in this folder, and **do not** call `load_dotenv()` directly; use `load_env()`.
-2. **Patched Base pack on the tenant** — the probe must be present on the tenant's `CommonServerPython` script. Upload via:
+2. **Patched Base pack + target integration on the tenant — uploaded automatically by the deploy.** The probe must be present on the tenant's `CommonServerPython` script (Base pack) and the integration's own pack must be installed. **You no longer upload these by hand:** `deploy.py` now uploads them as **Step 0** of every deploy, before the connector push. `deploy_and_test.py` derives the two pack dirs from the resolver (always `Packs/Base`, plus the integration's pack — e.g. `Packs/AMP` for `AMPv2`, taken from the integration YML path) and passes them to `deploy.py` as `--upload-pack`. Under the hood each pack is uploaded with:
    ```bash
-   demisto-sdk upload -i Packs/Base -z -mp platform
+   demisto-sdk upload -i <pack> -z -mp platform [--insecure]
    ```
-3. **Target integration installed** — for Salesforce IAM:
-   ```bash
-   demisto-sdk upload -i Packs/Salesforce -z -mp platform
-   ```
-4. **Target connector deployed to UCP** — use [`deploy.py`](deploy.py) (GitLab CI/CD path).
+   * For a tenant with a self-signed cert in the chain, enable `--insecure` by setting `DEMISTO_VERIFY_SSL=false` (or `UPLOAD_INSECURE=true`) in your `.env` — `deploy_and_test.py` then passes `--upload-insecure` through.
+   * To skip the upload (packs already current on the tenant), pass `deploy.py --skip-pack-upload`.
+   * Running `deploy.py` standalone uploads nothing unless you pass `--upload-pack <dir>` yourself (e.g. `--upload-pack Packs/Base --upload-pack Packs/Salesforce`).
+3. **Target connector deployed to UCP** — use [`deploy.py`](deploy.py) (GitLab CI/CD path).
 5. **GKE access for UCP-side capture**:
    * `gcloud` CLI authenticated (`gcloud auth login`).
    * `kubectl` on `PATH`.
@@ -119,8 +119,12 @@ The orchestrator injects `__params_parity_dump__: "1"` into both creation payloa
 The orchestrator is **resolver-driven**: the ONLY required input is the
 integration id. Everything else — the connector dir/id, the integration
 YML/brand, ALL (sub-)capabilities + profiles, and the compare/ignore policy —
-is resolved at runtime from the migration pipeline CSV + the connector repo by
-[`resolver.resolve()`](resolver.py). There are NO connector-specific defaults;
+is resolved at runtime by [`resolver.resolve()`](resolver.py). The migration
+pipeline CSV supplies ONLY two values: the **Connector Folder Path** (connector
+location) and the **Integration File Path** (integration YML location).
+Everything else — including the auth field ↔ xsoar param mapping — is derived
+from code by parsing the integration YML and the connector YAMLs; the CSV
+`Auth Details` column is NOT read. There are NO connector-specific defaults;
 this is a mass-migration tool, not a single-integration POC.
 
 ```bash
@@ -174,7 +178,6 @@ knob the resolver would otherwise supply.
 | `--integration-brand <name>` | Override: pin the brand string for the XSOAR-mirror lookup. |
 | `--connector-id <id>` | Override: pin the connector id. |
 | `--connector-dir <path>` | Override: pin the connector YAML directory (used for `reason_hint` attribution and serializer parsing). |
-| `--no-scrub-results` | DEBUGGING ONLY: write the persisted result JSON with RAW captures (do NOT redact `demisto.params()` values). Default scrubs — see [Results & ledger](#results--ledger-phase-7). |
 | `--skip-xsoar` + `--integration-capture-file <path>` | Dev convenience: re-use a previously-captured INTEGRATION-side dict from disk. |
 | `--skip-ucp` + `--connector-capture-file <path>` | Same, for the CONNECTOR-side. |
 | `--verbose` | Enable DEBUG logging. |
@@ -193,8 +196,17 @@ The wrapper performs the whole indivisible critical section inside a
 `try/finally` (the lock is ALWAYS released, even on crash):
 
 ```
-acquire tenant lock → deploy.py (whole-manifest) → check_param_parity.py → release
+acquire tenant lock → deploy.py (upload Base + integration packs → commit connector + ff-push + pipeline) → check_param_parity.py → release
 ```
+
+### Deploy git model (safe by design)
+
+- **Branch guardrail (enforced in code).** The deploy refuses to commit or push to any branch that is not your personal `xsoar-migration-<name>` branch (regex `^xsoar-migration-[a-z0-9][a-z0-9-]*$`). This check is in `git_operations` itself — it holds even if preflight is skipped or `deploy.py` is run standalone, so a shared/protected branch (stable, dev, master, xsoar-playground) can never be touched.
+- Before any git op, deploy uploads the required content packs to the tenant (Step 0: patched `Packs/Base` + the integration's own pack, auto-derived by `deploy_and_test.py` from the integration id). This is a tenant content upload via `demisto-sdk`, NOT a git commit — it never touches your branch.
+- Deploy commits ONLY the connector dir being tested (`--commit-path connectors/<slug>`, auto-derived by `deploy_and_test.py` from the integration id) onto your personal `xsoar-migration-<name>` branch.
+- It NEVER runs `git reset --hard` and NEVER force-pushes — your local/remote history and any un-pushed migrated connectors are safe. The push is fast-forward-only; if rejected, you rebase (`git pull --rebase origin <branch>`) and re-run.
+- There is NO base branch / no `BASE_BRANCH`. You keep your branch current yourself via `git rebase origin/stable`.
+- Git auth is ssh-agent-independent: it auto-detects an explicit key (`~/.ssh/id_ed25519` / `id_rsa` / `id_ecdsa`), so it works on any machine without `ssh-add` first.
 
 ### Wrapper exit-code contract
 
@@ -215,9 +227,10 @@ stdout):
 
 ## The per-tenant lock (`tenant_lock.py`)
 
-Deployment is **whole-manifest**: [`deploy.py`](deploy.py) resets/force-pushes the
-`xsoar` branch and triggers a GitLab skinny pipeline against the `.env`
-`TENANT_IDS`. A deploy to tenant **X** clobbers whatever was on X, so two shells
+Deployment triggers a GitLab skinny pipeline on your personal
+`xsoar-migration-<name>` branch against the `.env` `TENANT_IDS` (deploy.py commits
+the connector + fast-forward pushes first — no reset, no force). A deploy to
+tenant **X** clobbers whatever was on X, so two shells
 deploying to the SAME tenant concurrently corrupt each other's test. The lock is
 therefore **per-tenant** (keyed by the ICaaS / `TENANT_IDS` value) — not global,
 not per-integration. Shells on *different* tenants run fully in parallel.
@@ -264,11 +277,7 @@ connectus/runtime_demisto.params_parity/results/
 
 * **Per-run JSON** — the envelope written verbatim, e.g.
   `salesforce__salesforce-iam__20260607T170006Z.json` (timestamp is
-  `YYYYMMDDTHHMMSSZ`, UTC; append-only, never overwritten). **By default the
-  `captures` block is SCRUBBED**: every value under `captures.integration` /
-  `captures.connector` is replaced with `"<redacted>"` (keys preserved) because
-  the server may inject real tokens into `demisto.params()`. Pass
-  `--no-scrub-results` to write raw captures for debugging.
+  `YYYYMMDDTHHMMSSZ`, UTC; append-only, never overwritten).
 * **`ledger.csv`** — one row per run; created with a header the first time.
   Columns (exact):
 
@@ -333,8 +342,8 @@ still records only a single ✅ in `param parity test passes`.
 
   "normalizer_dropped": {
     // Keys the normalizer dropped from each side, with the reason.
-    "integration": [ {"name": "...", "reason": "yml_type_ignored:9", "side": "integration"}, ... ],
-    "connector":   [ {"name": "...", "reason": "name_ignored",       "side": "connector"},   ... ]
+    "integration": [ {"name": "...", "reason": "hard_ignore",  "side": "integration"}, ... ],
+    "connector":   [ {"name": "...", "reason": "name_ignored", "side": "connector"},   ... ]
   },
 
   "inputs": {
@@ -358,7 +367,7 @@ still records only a single ✅ in `param parity test passes`.
 | State | Meaning | Fails gate? | What to do |
 |---|---|---|---|
 | `OK` | Same key, same value on both sides. | No | ✅ |
-| `OK_IGNORED` | Key was IGNORE'd by the normalizer policy (credentials, encrypted, mirroring, framework noise, magic key). Surfaced in `per_param` for visibility with a `reason` field explaining the policy. | No | ✅ Read the `reason` to confirm the IGNORE classification is intentional. |
+| `OK_IGNORED` | Key was IGNORE'd by the normalizer policy (force_drop/hard-ignore, mirroring, framework noise, magic key). Surfaced in `per_param` for visibility with a `reason` field explaining the policy. Note: type-4/9 auth params are no longer blanket-IGNORE'd by type — they are compared unless force_drop'd. | No | ✅ Read the `reason` to confirm the IGNORE classification is intentional. |
 | `MISSING_IN_CONNECTOR` | Integration's YML declares the param; connector doesn't deliver it. | Yes (unless `--allow-missing`) | Add the param to the connector's `configurations.yaml`. |
 | `EXTRA_IN_CONNECTOR` | Connector delivers a field; integration's YML doesn't declare it. | Yes (unless `--allow-extra`) | Either add it to the integration YML, add a serializer mapping that maps/drops it, or remove it from the connector. The `reason_hint` field names the connector YAML that declared the leak. |
 | `VALUE_MISMATCH` | Both sides have the key but the values differ. | Yes (unless `--allow-mismatch`) | Real default-value drift or serializer bug. **If `serialized_from` is present, the value was rewritten by a serializer** — check whether the serializer is implementing the right transformation. Note: the orchestrator auto-aligns inputs across serializer mappings (see below), so most serializer-driven VALUE_MISMATCH findings are real bugs, not test-setup drift. |
@@ -398,11 +407,35 @@ Together these make the report self-explanatory when serializer mappings are in 
 
 Some param-name patterns are dropped from comparison *before* the diff engine ever sees them. The policy is hard-coded in [`normalizers.py`](normalizers.py):
 
-* **YML type 9 (credentials)** — UCP doesn't deliver credentials through `demisto.params()`. Examples: `credentials`, `credentials_consumer`.
-* **YML type 4 (encrypted text)** — same reason. Examples: `consumer_key`, `consumer_secret`.
+* **`force_drop` / hard-ignore names** — params the resolver decided must NOT be compared: hidden params (reason `hidden`), the hard-ignore list (`brand`, `engine`, `instance_name`, …), and interpolated type-9 credentials (reason `credentials_type9_interpolated`). Always wins.
 * **Mirroring fields** — XSOAR-only concept, not supported on the Platform. Names: `mapper_out`, `outgoingMapperId`, `defaultMapperOut`.
 * **Probe protocol** — `__params_parity_dump__` must never leak into the diff.
 * **Framework noise** — `apiproxy` and similar XSOAR-runtime-injected fields.
+
+**Type-4 (encrypted text) and type-9 (credentials) params are COMPARED, not blanket-dropped.**
+These params DO arrive in runtime `demisto.params()`, so the normalizer no longer
+drops them by YML type. The way a connection param maps integration ↔ connector
+is the connector connection profile's `interpolation_mapping`, and the resolver
+turns that mapping into per-param `force_keep` / `force_drop` decisions:
+
+* A profile's `connection.yaml`
+  `profiles[].metadata.xsoar.interpolation_mapping` is a non-empty,
+  comma-separated list of `ROLE:XSOAR_PATH` pairs — where `ROLE` matches a profile
+  field's `metadata.auth.parameter` and `XSOAR_PATH` is the `demisto.params()`
+  key path (e.g. `credentials.identifier`, or a plain `roleArn`). The compared
+  param is the TOP-LEVEL segment of `XSOAR_PATH` (before the first `.`), so
+  `credentials.identifier` + `credentials.password` collapse to ONE `credentials`
+  compare param. The auth field ↔ xsoar param mapping is derived entirely from
+  the connector profile — NOT from any CSV column.
+* Interpolation-mapped params land in `compare_params` → `force_keep` (and are
+  compared); interpolated type-9 credentials are excluded via `force_drop`
+  (reason `credentials_type9_interpolated`), as are hidden params (reason
+  `hidden`).
+
+Net effect: a type-4/9 param is dropped ONLY if it's in `force_drop` (hidden /
+hard-ignore / `credentials_type9_interpolated`) or the name-ignore lists;
+otherwise it is COMPARED. An unmapped, non-hidden type-4/9 param will now surface
+as a finding — the desired signal.
 
 **Strict exact-match policy:** within the MUST-COMPARE bucket, NO value normalization is applied. This means `True` (bool) vs `"true"` (string) will surface as a `VALUE_MISMATCH`. Intentional for max signal in MVP.
 
@@ -469,4 +502,6 @@ Use `--allow-mismatch` to downgrade the `url` finding once you've decided which 
 | `<XX_REPLACED>` appears in captured values | The probe ran but `LOG.replace_strs = []` clear didn't take effect. | Verify the patched probe block is the latest version in `CommonServerPython.py`. |
 | UCP-side capture fails at "No XSOAR mirror appeared" | UCP created the instance but it didn't mirror to XSOAR within 45s. | Check XSIAM UI for the new instance; verify `--integration-brand` matches the YML's `name` field. |
 | `gcloud / kubectl` errors during port-forward | Missing GKE permissions, expired auth, or wrong `UCP_TENANT_ID`. | Re-auth `gcloud`; request permissions in `#xdr-permissions-dev`; verify `UCP_TENANT_ID` in `.env`. |
+| `kubectl` can't reach the GKE cluster API during the CONNECTOR-side capture: `Unable to connect to the server: dial tcp <ip>:443: i/o timeout` (and `couldn't get current server API group list`), raised as `Failed to find UCP shell pod` → wrapper exit 11. `gcloud get-credentials` already succeeded; the failure is the network path to the GKE control-plane IP. | Your VPN/network can't reach the GKE control-plane endpoint (private/authorized-network cluster). | **Switch your VPN to the `israel-gw` gateway**, then re-run. (Verified: with `israel-gw` the cluster API is reachable and the full flow completes.) Note: this is specific to the GKE/kubectl control-plane timeout — it is NOT the same as a proxy `403` to the tenant API, which a gateway switch did not resolve. |
 | Test takes > 2 min | Mirror polling is the slow step. | Normal — UCP→XSOAR mirroring can take 30+ seconds on a loaded dev tenant. |
+| `Tunnel connection failed: 403 Forbidden` / `ProxyError('Unable to connect to proxy', ...)` during the capture stage (wrapper exit 11, "setup-blocked, not a parity diff") | An ambient HTTP/HTTPS/ALL proxy is set in the environment (e.g. `HTTP_PROXY` / `HTTPS_PROXY` / `ALL_PROXY`) and that proxy refuses the HTTPS CONNECT tunnel to the tenant API host. The tenant is directly reachable (a direct request returns 200); the proxy is the thing breaking it. This shows up in sandboxed/agent environments that inject a local proxy (e.g. `localhost:<port>`); a normal workstation without such a proxy is unaffected. The deploy half still succeeds (pipeline goes green) — only the capture can't reach the tenant. | Bypass the proxy for the run. Either add the tenant domain to `NO_PROXY` (e.g. `NO_PROXY='*'` or the specific `*.xdr-qa2-uat.us.paloaltonetworks.com`), or unset the proxy vars for the invocation: `env -u HTTP_PROXY -u HTTPS_PROXY -u ALL_PROXY -u http_proxy -u https_proxy -u all_proxy python deploy_and_test.py --integration-id "<id>"`. Verified: with the proxy unset, the tenant API returns 200 and the capture proceeds. |

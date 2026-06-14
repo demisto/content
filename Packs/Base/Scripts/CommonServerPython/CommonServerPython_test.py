@@ -13867,13 +13867,45 @@ class TestUcpInterpolationByProfileType:
         assert result == {'credentials': {'identifier': 'alice', 'password': 's3cr3t'}}
 
     def test_api_key_profile_flat_envelope(self, mocker):
-        """api_key: single secret flat under the type key -> credentials.password."""
+        """api_key: the secret always lives under the canonical envelope key
+        'key' (NOT 'api_key'), per captured runtime logs:
+            {"type": "api_key", "api_key": {"header_name": ..., "key": <secret>}}
+        The mapping's left-hand field_id is 'api_key' (== auth.parameter), and the
+        common scripts alias it to the canonical 'key' via _UCP_CANONICAL_FIELD_KEYS.
+        """
         mocker.patch.object(demisto, 'debug')
-        envelope = {'type': 'api_key', 'api_key': {'api_key': 'TOKEN-123'}}
+        envelope = {'type': 'api_key', 'api_key': {'header_name': 'X-API-Key', 'key': 'TOKEN-123'}}
         mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
         meta = self._metadata('api_key:credentials.password', 'api_key')
         result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
         assert result == {'credentials': {'password': 'TOKEN-123'}}
+
+    def test_api_key_profile_canonical_alias_ignores_mapping_left_side(self, mocker):
+        """Regression: even when the mapping left-side does not match the envelope
+        key, api_key resolves from the canonical 'key' location. The left-side is
+        enum-enforced to 'api_key' at the workflow step, so the runtime trusts the
+        canonical schema, not the generator-emitted field_id.
+        """
+        mocker.patch.object(demisto, 'debug')
+        envelope = {'type': 'api_key', 'api_key': {'header_name': 'X-API-Key', 'key': 'TOKEN-123'}}
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        meta = self._metadata('api_key:credentials.password', 'api_key')
+        result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
+        # Value comes from envelope['api_key']['key'] despite field_id being 'api_key'.
+        assert result == {'credentials': {'password': 'TOKEN-123'}}
+
+    def test_plain_profile_canonical_keys_no_alias_needed(self, mocker):
+        """plain: username/password left-sides already equal their envelope keys,
+        so the canonical table is a no-op identity mapping (documents parity).
+        """
+        mocker.patch.object(demisto, 'debug')
+        envelope = {'type': 'plain', 'plain': {'username': 'alice', 'password': 's3cr3t'}}
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        meta = self._metadata(
+            'username:credentials.identifier,password:credentials.password', 'plain'
+        )
+        result = CommonServerPython.build_ucp_params(meta, capability='automation-and-remediation')
+        assert result == {'credentials': {'identifier': 'alice', 'password': 's3cr3t'}}
 
     def test_passthrough_profile_parameters_wrapped_envelope(self, mocker):
         """passthrough: values wrapped under parameters -> deep nested credentials."""
