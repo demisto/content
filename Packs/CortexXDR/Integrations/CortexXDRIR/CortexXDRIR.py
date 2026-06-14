@@ -2842,23 +2842,23 @@ def normalize_case_data_record(incident_record: Dict[str, Any]) -> Dict[str, Any
     """
     incident = incident_record.get("incident", incident_record)
 
-    case: Dict[str, Any] = {}
+    case: dict[str, Any] = {}
     for field, value in incident.items():
         case[INCIDENT_TO_CASE_FIELD_MAP.get(field, field)] = value
 
     case_id = case.get("case_id")
 
-    issues = (incident_record.get("alerts") or {}).get("data", [])
+    issues = dict_safe_get("alerts", "data")
     if issues:
         for issue in issues:
             issue.setdefault("case_id", case_id)
         case["Issues"] = issues
-    file_artifacts = (incident_record.get("file_artifacts") or {}).get("data", [])
+    file_artifacts = dict_safe_get("file_artifacts", "data")
     if file_artifacts:
         for file_artifact in file_artifacts:
             file_artifact.setdefault("case_id", case_id)
         case["FileArtifacts"] = file_artifacts
-    network_artifacts = (incident_record.get("network_artifacts") or {}).get("data", [])
+    network_artifacts = dict_safe_get("network_artifacts", "data")
     if network_artifacts:
         for network_artifact in network_artifacts:
             network_artifact.setdefault("case_id", case_id)
@@ -2978,7 +2978,7 @@ def case_list_with_extra_data(
     mapped_sort_field = {
         "case_id": "incident_id",
         "creation_time": "creation_time",
-    }.get(sort_field or "")
+    }.get(sort_field)
 
     raw_records = client.get_multiple_incidents_extra_data(
         exclude_artifacts=False,

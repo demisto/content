@@ -4154,3 +4154,146 @@ def test_update_issue_command(args, expected_update_data):
 
         assert result.readable_output == f"Issue with ID {args['issue_id']} updated successfully"
         mock_update.assert_called_with(args["issue_id"], {"request_data": {"update_data": expected_update_data}})
+
+
+def test_normalize_case_data_record_maps_fields_and_nests_data():
+    """
+    Given:
+        - A raw record from the get_multiple_incidents_extra_data endpoint, wrapped in an
+          "incident" key and containing nested alerts, file_artifacts and network_artifacts.
+    When:
+        - Running normalize_case_data_record (used by the xdr-case-list extra_data path).
+    Then:
+        - Incident fields are renamed to their case-shaped equivalents (e.g. incident_id -> case_id).
+        - Nested alerts/artifacts are surfaced under Issues/FileArtifacts/NetworkArtifacts.
+        - Each nested record inherits the parent case_id when one is not already set.
+    """
+    from CortexXDRIR import normalize_case_data_record
+
+    incident_record = {
+        "incident": {
+            "incident_id": "100",
+            "incident_name": "My Case",
+            "status": "new",
+            "incident_domain": "example.com",
+            "alert_count": 3,
+            "description": "some description",
+        },
+        "alerts": {"data": [{"alert_id": "a1"}, {"alert_id": "a2", "case_id": "999"}]},
+        "file_artifacts": {"data": [{"name": "file.exe"}]},
+        "network_artifacts": {"data": [{"ip": "1.2.3.4"}]},
+    }
+
+    case = normalize_case_data_record(incident_record)
+
+    # Renamed incident fields.
+    assert case["case_id"] == "100"
+    assert case["case_name"] == "My Case"
+    assert case["status_progress"] == "new"
+    assert case["case_domain"] == "example.com"
+    assert case["issue_count"] == 3
+    # Fields without a mapping are kept as-is.
+    assert case["description"] == "some description"
+    assert "incident_id" not in case
+
+    # Nested data surfaced under the case-shaped keys.
+    assert case["Issues"] == [
+        {"alert_id": "a1", "case_id": "100"},
+        {"alert_id": "a2", "case_id": "999"},
+    ]
+    assert case["FileArtifacts"] == [{"name": "file.exe", "case_id": "100"}]
+    assert case["NetworkArtifacts"] == [{"ip": "1.2.3.4", "case_id": "100"}]
+
+
+def test_normalize_case_data_record_flat_record_without_nested_data():
+    """
+    Given:
+        - A flat record (no "incident" wrapper) and without any nested alerts/artifacts.
+    When:
+        - Running normalize_case_data_record.
+    Then:
+        - The flat fields are mapped and no Issues/FileArtifacts/NetworkArtifacts keys are added.
+    """
+    from CortexXDRIR import normalize_case_data_record
+
+    case = normalize_case_data_record({"incident_id": "200", "incident_name": "Flat Case"})
+
+    assert case["case_id"] == "200"
+    assert case["case_name"] == "Flat Case"
+    assert "Issues" not in case
+    assert "FileArtifacts" not in case
+    assert "NetworkArtifacts" not in case
+
+
+def test_case_list_command_extra_data_returns_normalized_cases(mocker):
+    """
+    Given:
+        - args for the case list command with extra_data=true.
+        - The client returns raw extra-data records with nested alerts/artifacts.
+    When:
+        - Running case_list_command.
+    Then:
+        - The extra-data client method is used (search_cases is NOT called).
+        - The outputs are normalized into case-shaped records (mapped fields + nested data).
+        - The CommandResults metadata (outputs_prefix, key field, raw_response) is correct.
+    """
+    from CortexXDRIR import Client, case_list_command
+
+    raw_records = [
+        {
+            "incident": {
+                "incident_id": "100",
+                "incident_name": "My Case",
+                "status": "new",
+                "incident_domain": "example.com",
+            },
+            "alerts": {"data": [{"alert_id": "a1"}]},
+            "file_artifacts": {"data": [{"name": "file.exe"}]},
+            "network_artifacts": {"data": [{"ip": "1.2.3.4"}]},
+        }
+    ]
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_extra_data = mocker.patch.object(Client, "get_multiple_incidents_extra_data", return_value=raw_records)
+    mock_search = mocker.patch.object(Client, "search_cases")
+
+    result = case_list_command(client, {"extra_data": "true", "case_id": "100"})
+
+    # The extra-data path was taken, not the regular search path.
+    mock_extra_data.assert_called_once()
+    mock_search.assert_not_called()
+
+    assert result.outputs_prefix == "PaloAltoNetworksXDR.Case"
+    assert result.outputs_key_field == "case_id"
+    assert result.raw_response == raw_records
+
+    assert len(result.outputs) == 1
+    case = result.outputs[0]
+    assert case["case_id"] == "100"
+    assert case["case_name"] == "My Case"
+    assert case["case_domain"] == "example.com"
+    assert case["Issues"] == [{"alert_id": "a1", "case_id": "100"}]
+    assert case["FileArtifacts"] == [{"name": "file.exe", "case_id": "100"}]
+    assert case["NetworkArtifacts"] == [{"ip": "1.2.3.4", "case_id": "100"}]
+
+
+def test_case_list_command_extra_data_maps_sort_field(mocker):
+    """
+    Given:
+        - args for the case list command with extra_data=true and sort_field=case_id.
+    When:
+        - Running case_list_command.
+    Then:
+        - The case-shaped sort field is translated to the incident-shaped sort field
+          (case_id -> incident_id) before calling the extra-data client method.
+    """
+    from CortexXDRIR import Client, case_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_extra_data = mocker.patch.object(Client, "get_multiple_incidents_extra_data", return_value=[])
+
+    case_list_command(client, {"extra_data": "true", "sort_field": "case_id", "sort_order": "asc"})
+
+    call_kwargs = mock_extra_data.call_args.kwargs
+    assert call_kwargs["sort_field"] == "incident_id"
+    assert call_kwargs["sort_order"] == "asc"
