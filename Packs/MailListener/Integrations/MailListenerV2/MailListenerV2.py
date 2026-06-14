@@ -405,12 +405,13 @@ def fetch_incidents(
         uid_to_fetch_from=uid_to_fetch_from,  # type: ignore[arg-type]
     )
     incidents: list = []
-    demisto.debug(f"fetched {len(incidents)} incidents")
+    demisto.debug(f"fetched {len(incidents)} incidents.")
     for mail in mails_fetched:
         incidents.append(mail.convert_to_incident())
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
         time_to_fetch_from = max(time_to_fetch_from, mail.date)
-    next_run = {}
+    next_run: dict = {}
+    demisto.debug(f"introducing {next_run=}")
     if time_to_fetch_from:
         next_run["last_date"] = time_to_fetch_from.isoformat()
     if uid_to_fetch_from != 0:
@@ -773,7 +774,7 @@ def main():  # pragma: no cover
                     save_file=save_file,
                     date_fetch=date_fetch,
                 )
-                demisto.debug(f" next runn is: {next_run}")
+                demisto.debug(f" next run is: {next_run}")
                 # if next_run is None, we will not update last_run
                 if next_run:
                     demisto.setLastRun(next_run)
