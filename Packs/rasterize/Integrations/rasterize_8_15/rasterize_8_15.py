@@ -68,6 +68,23 @@ CHROME_OPTIONS = [
     "--disable-speech-api",  # Disables the Web Speech API
 ]
 
+LIGHTWEIGHT_CHROME_OPTIONS = [
+    # Cap the V8 heap per renderer. A runaway page heap is the single most common OOM cause;
+    # this is the biggest lever available.
+    '--js-flags="--max-old-space-size=256 --max-semi-space-size=2"',
+    # Collapse browser + renderer into one process to remove per-renderer process overhead
+    # (~30-80MB). Safe here because only one tab ever runs and Chrome is killed after each use.
+    "--single-process",
+    "--disable-software-rasterizer",  # Pairs with --disable-gpu, removes the SwiftShader fallback
+    "--disable-extensions",  # No extensions are ever needed
+    "--disable-plugins",  # No plugins are ever needed
+    "--disable-sync",  # No account sync
+    "--disable-translate",  # No translation service
+    "--disk-cache-size=1",  # Effectively disable the on-disk (tmpfs-backed) HTTP cache
+    "--media-cache-size=1",  # Effectively disable the media cache
+    "--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints",
+]
+
 WITH_ERRORS = demisto.params().get("with_error", True)
 IS_HTTPS = argToBoolean(demisto.params().get("is_https", False))
 
@@ -128,6 +145,11 @@ if IS_LIGHTWEIGHT:  # In lightweight mode, we only allow one Chrome instance and
     MAX_CHROMES_COUNT = 1
     MAX_CHROME_TABS_COUNT = 1
     MAX_RASTERIZATIONS_COUNT = 1
+    # Apply the extra memory-saving launch flags only in lightweight mode.
+    CHROME_OPTIONS = CHROME_OPTIONS + LIGHTWEIGHT_CHROME_OPTIONS
+    # Lightweight mode runs effectively a single rasterization worker, so a single glibc malloc
+    # arena is enough. 
+    os.environ.setdefault("MALLOC_ARENA_MAX", "1")
 
 # Polling for rasterization commands to complete
 DEFAULT_POLLING_INTERVAL = 0.1
@@ -421,12 +443,14 @@ def wait_for_page_load_with_memory_guard(
         if available <= tolerance_bytes:
             _freeze_tab_for_screenshot(tab, tab_id, path)
             tab_ready_event.set()
-            demisto.debug(
-                f"wait_for_page_load_with_memory_guard: memory pressure detected — "
-                f"{available / (1024 * 1024):.1f} MiB available ≤ "
-                f"{tolerance_bytes / (1024 * 1024):.1f} MiB tolerance. "
-                f"Freezing tab and capturing partial screenshot. {tab_id=}, {path=}",
-            )
+            for i in range(1, 4):
+                demisto.debug(
+                    f"wait_for_page_load_with_memory_guard: memory pressure detected — {path=} "
+                    f"{get_container_available_memory_bytes() / (1024 * 1024):.1f} MiB available ≤ "
+                    f"{tolerance_bytes / (1024 * 1024):.1f} MiB tolerance. "
+                    f"Freezing tab and capturing partial screenshot. {tab_id=}",
+                )
+                time.sleep(10)
             return False  # False signals that we aborted early due to memory pressure.
 
 # region utility classes
@@ -522,7 +546,6 @@ class PychromeEventHandler:
         self.navigation_timeout = navigation_timeout
         self.is_private_network_url = False
         self.document_url = ""
-        self.memory_pressured = False
 
     def page_frame_started_loading(self, frameId):
         demisto.debug(f"PychromeEventHandler.page_frame_started_loading, {frameId=}, {self.tab.id=}, {self.path=}")
@@ -1402,7 +1425,6 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
                 path=path,
                 tab=tab,
             )
-            tab_event_handler.memory_pressured = not page_loaded_normally
             if not page_loaded_normally:
                 return_warning(
                     f"Warning: Rasterize aborted page-load wait due to memory pressure. "
@@ -1531,12 +1553,8 @@ def screenshot_image(
     demisto.debug(f"{page_layout_metrics=} {tab.id=} {path=}.")
     css_content_size = page_layout_metrics["cssContentSize"]
     try:
-        # Under memory pressure the tab has been frozen and the renderer is at the cgroup
-        # edge. A full-page PNG capture can allocate 10–30 MB just for the encoded buffer
-        # and frequently triggers an OOM during the capture itself. Downgrade to a JPEG
-        # clipped to the viewport — typically 100–300 KB — which is enough to show what
-        # was rendered at the moment of pressure without pushing us over the limit.
-        if tab_event_handler.memory_pressured:
+        if IS_LIGHTWEIGHT:
+            demisto.debug(f"screenshot_image: lightweight viewport-only capture, {tab.id=}, {path=}")
             visual_viewport = page_layout_metrics.get("visualViewport", {})
             # CDP Page.Viewport defining the rectangle to capture, limited to the visible viewport.
             clip = {
@@ -1547,7 +1565,7 @@ def screenshot_image(
                 "scale": 1,
             }
             demisto.debug(
-                f"screenshot_image: memory_pressured=True, using JPEG/viewport-clip capture, "
+                f"screenshot_image: lightweight=True, using JPEG/viewport-clip capture, "
                 f"{clip=}, {tab.id=}, {path=}"
             )
             screenshot_data = tab.Page.captureScreenshot(
@@ -1582,6 +1600,9 @@ def screenshot_image(
     demisto.debug(f"heapUsage after screenshot {heapUsage=} on {tab.id=}, {path=}")
 
     captured_image = base64.b64decode(screenshot_data)
+    # Release the (potentially large) base64 string immediately so we do not hold the encoded and
+    # decoded copies of the image in memory at the same time.
+    del screenshot_data
     if not captured_image:
         demisto.info(f"Empty snapshot, {screenshot_data=}, {tab.id=}, {path=}")
     else:
@@ -1601,10 +1622,15 @@ def screenshot_image(
 
         img_byte_arr = BytesIO()
         image_with_url.save(img_byte_arr, format="PNG")
-        img_byte_arr = img_byte_arr.getvalue()
-        demisto.debug(f"Size of image with URL: {len(img_byte_arr)} bytes, {tab.id=}, {path=}")
+        ret_value = img_byte_arr.getvalue()
+        demisto.debug(f"Size of image with URL: {len(ret_value)} bytes, {tab.id=}, {path=}")
 
-        ret_value = img_byte_arr
+        # Release the intermediate PIL images and buffers; otherwise the source bitmap, the new
+        # canvas and the re-encoded buffer (three full-size copies) stay alive until function exit.
+        captured_image_object.close()
+        image_with_url.close()
+        img_byte_arr.close()
+        del captured_image_object, image_with_url, img_byte_arr, captured_image
     else:
         ret_value = captured_image
 
@@ -1805,7 +1831,7 @@ def extract_hostname(url: str) -> str:
         return ""
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=128)
 def is_private_network(url: str) -> bool:
     """
     Check if a URL's hostname belongs to a private network.
@@ -1963,7 +1989,9 @@ def perform_rasterize(
             )
             if not chrome_port:
                 demisto.debug(f"perform_rasterize: the chrome port was not found, {path=}")
-            elif rasterization_count >= MAX_RASTERIZATIONS_COUNT:
+            elif IS_LIGHTWEIGHT or rasterization_count >= MAX_RASTERIZATIONS_COUNT:
+                # In lightweight mode we always terminate Chrome at the end of the command so no Chrome
+                # process (and its renderer RSS) survives into the next playbook iteration / command run.
                 demisto.info(f"perform_rasterize: terminating Chrome after {rasterization_count=} rasterization, {path=}")
                 terminate_chrome(chrome_port=chrome_port)
             else:
