@@ -861,6 +861,18 @@ def build_arg_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--force",
+        action="store_true",
+        help=(
+            "Override a coverage FAIL: still compute and report the uncovered "
+            "params, but exit 0 (pass) and set 'forced': true in the JSON "
+            "envelope. Use ONLY on explicit operator instruction when the "
+            "uncovered params are known-safe to skip (e.g. a deprecated, "
+            "label-less auth alternative). The real gap is never hidden — it "
+            "remains in 'missing' for transparency."
+        ),
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -906,12 +918,19 @@ def main(argv: list[str] | None = None) -> int:
 
     sorted_missing = sorted(missing)
 
+    # --force: a genuine FAIL is overridden to a pass, but the uncovered
+    # params are NEVER hidden — they stay in 'missing' and the override is
+    # recorded as 'forced': true so the decision is auditable.
+    forced_pass = bool(getattr(args, "force", False)) and not passed
+    effective_pass = passed or forced_pass
+
     if args.json:
         envelope = {
             "integration": integration_yml_path.stem,
-            "pass": passed,
+            "pass": effective_pass,
             "missing": sorted_missing,
             "ignored_params": sorted(IGNORED_PARAMS),
+            "forced": forced_pass,
         }
         print(json.dumps(envelope, indent=2, sort_keys=True))
 
@@ -921,6 +940,17 @@ def main(argv: list[str] | None = None) -> int:
                 "PASS: every non-hidden integration YML param is covered by "
                 "the connector handler."
             )
+        return EXIT_OK
+
+    if forced_pass:
+        print(  # noqa: T201
+            "FORCED PASS: the following integration YML params are NOT covered "
+            f"by the connector handler ({len(sorted_missing)}), overridden via "
+            "--force:",
+            file=sys.stderr,
+        )
+        for name in sorted_missing:
+            print(f"  - {name}", file=sys.stderr)  # noqa: T201
         return EXIT_OK
 
     print(  # noqa: T201

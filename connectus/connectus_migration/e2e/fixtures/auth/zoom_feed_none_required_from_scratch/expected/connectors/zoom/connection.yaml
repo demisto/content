@@ -93,6 +93,9 @@ profiles:
       options:
         mask: false
         placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
         create_modifiers:
           required: false
           hidden: false
@@ -119,6 +122,9 @@ profiles:
       options:
         mask: false
         placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
         create_modifiers:
           required: false
           hidden: false

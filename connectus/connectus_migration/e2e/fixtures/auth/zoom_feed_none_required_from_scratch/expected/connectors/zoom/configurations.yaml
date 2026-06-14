@@ -19,6 +19,8 @@ general_configurations:
         description: Set the log level for xsoar-zoom-feed.
         placeholder: Select log level
         default_value: 'Off'
+        searchable: true
+        clearable: true
         values:
         - key: 'Off'
           label: 'Off'
@@ -68,6 +70,8 @@ configurations:
           label: E - Unreliable
         - key: F - Reliability cannot be judged
           label: F - Reliability cannot be judged
+        searchable: true
+        clearable: true
         default_value: A - Completely reliable
         create_modifiers:
           required: true
@@ -82,8 +86,8 @@ configurations:
       field_type: select
       options:
         values:
-        - key: Indicator Type
-          label: Indicator Type
+        - key: indicatorType
+          label: indicatorType
         - key: Time Interval
           label: Time Interval
         - key: Never Expire
@@ -99,6 +103,7 @@ configurations:
           hidden: false
   - fields:
     - id: feedExpirationInterval
+      title: Feed Expiration Interval
       field_type: duration
       options:
         units:
@@ -125,6 +130,8 @@ configurations:
           label: Suspicious
         - key: Malicious
           label: Malicious
+        searchable: true
+        clearable: true
         default_value: Good
         create_modifiers:
           required: false
