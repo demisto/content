@@ -40,7 +40,7 @@ In the [Google Cloud Console](https://console.cloud.google.com/apis/library), en
 
 #### Step 2 — Create a Service Account
 
-1. In the Google Cloud Console, go to **IAM & Admin → Service Accounts**.
+1. In the Google Cloud console, navigate to **IAM & Admin → Service Accounts**.
 2. Click **Create Service Account** and give it a descriptive name (e.g., `cortex-xsoar-gcp`).
 3. Grant the service account the IAM roles required for the commands you intend to use (see [Required Permissions](#required-permissions) below).
 4. Click **Done**.
@@ -58,10 +58,10 @@ In the integration instance configuration:
 
 | Field | Value |
 |---|---|
-| **Service Account Private Key (JSON)** | Paste the full contents of the downloaded JSON key file |
-| **GCP Project ID** | Your GCP project ID (e.g., `my-project-123`) |
-| **Trust any certificate (not secure)** | Enable only if your environment uses SSL inspection |
-| **Use system proxy settings** | Enable if your environment requires a proxy |
+| **Service Account Private Key (JSON)** | Paste the full contents of the downloaded JSON key file. |
+| **GCP Project ID** | Enter your GCP project ID (e.g., `my-project-123`). |
+| **Trust any certificate (not secure)** | Enable only if your environment uses SSL inspection. |
+| **Use system proxy settings** | Enable if your environment requires a proxy. |
 
 Click **Test** to verify connectivity.
 

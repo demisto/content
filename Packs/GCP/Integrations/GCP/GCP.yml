@@ -12,7 +12,7 @@ configuration:
   type: 9
   hiddenusername: true
   section: Connect
-  additionalinfo: "The full contents of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM. Not required on Cortex Platform, where authentication is handled automatically via the cloud connector."
+  additionalinfo: "The full content of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM (version < 3.0). Not required for Cortex Cloud or Cortex XSIAM (version >= 3.0), where authentication is handled automatically via the cloud connector."
 - display: GCP Project ID
   name: project_id
   type: 0
@@ -35,7 +35,7 @@ name: GCP
 display: Google Cloud Platform
 category: Cloud Services
 provider: Google
-description: "Manage and secure Google Cloud Platform resources. On Cortex Cloud, authentication is handled automatically via the cloud connector. On Cortex XSOAR and Cortex XSIAM, configure a GCP Service Account private key JSON and a default GCP Project ID."
+description: "Manage and secure Google Cloud Platform resources. On Cortex Cloud or Cortex XSIAM (version >=3.0), authentication is handled automatically via the cloud connector. For Cortex XSOAR and Cortex XSIAM (version < 3.0), configure a GCP Service Account private key JSON and a default GCP Project ID."
 script:
   commands:
   - name: gcp-compute-firewall-patch
@@ -2882,7 +2882,7 @@ script:
       name: project_id
       required: false
       required:platform: true
-    - description: Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
+    - description: The name of the resource, provided by the client when the resource is created. The name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit. The last character cannot be a dash.
       name: name
       required: true
     - description: An optional description of this resource.
