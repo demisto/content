@@ -115,7 +115,6 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/CrowdStrikeFalcon @Shellyber @talzich
 /Packs/CrowdStrikeFalconSandbox @Shellyber
 /Packs/CrowdStrikeFalconStreamingV2 @Shellyber
-/Packs/MicrosoftExchangeOnline @Shellyber @noydavidi
 /Packs/AggregatedScripts @Shellyber
 /Packs/MicrosoftExchangeOnPremise/ @Shellyber @noydavidi
 /Packs/Office365AndAzureAuditLog @Shellyber @noydavidi
