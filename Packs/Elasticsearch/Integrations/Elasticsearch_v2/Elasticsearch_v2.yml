@@ -83,6 +83,12 @@ configuration:
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
   required: false
+- display: Fields to Fetch
+  name: fetch_fields
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: Comma-separated list of fields to fetch (the `_source` field is always included).
 - display: Index time field
   name: fetch_time_field
   type: 0
