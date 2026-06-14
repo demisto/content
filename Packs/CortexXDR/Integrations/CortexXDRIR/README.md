@@ -3934,7 +3934,7 @@ Returns a list of asset groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sort_field | The field by which to sort the results. For example: XDM.ASSET_GROUP.NAME. Use the documentation for finding more fields https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-asset-groups. | Optional |
+| sort_field | The field by which to sort the results. For example: XDM.ASSET_GROUP.NAME. Use the documentation for finding more fields [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-asset-groups). | Optional |
 | sort_order | The order in which to sort the results. Possible values are: asc, desc. | Optional |
 | filter_json | The JSON to use for the "filter" field in the API. For example: "{\"AND\": [{\"SEARCH_FIELD\": \"XDM.ASSET_GROUP.TYPE\", \"SEARCH_TYPE\": \"EQ\", \"SEARCH_VALUE\": \"Dynamic\"}]}". For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-asset-groups. | Optional |
 | limit | Maximum number of asset groups to return. Default is 50. Default is 50. | Optional |
@@ -4033,9 +4033,9 @@ Returns a list of assets.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | asset_id | A comma-separated list of asset IDs. For example: "1,2,3". When using this argument, the other filters will not be used. | Optional |
-| sort_field | The field by which to sort the results. For example: xdm.asset.first_observed. Use the documentation for finding more fields https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets. | Optional |
+| sort_field | The field by which to sort the results. For example: xdm.asset.first_observed. Use the documentation for finding more fields [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets). | Optional |
 | sort_order | The order in which to sort the results. Possible values are: asc, desc. | Optional |
-| filter_json | The JSON to use for the "filter" field in the API. You can use xdr-asset-schema-get in order to get the schema. For more information, please refer to the documentation: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets. | Optional |
+| filter_json | The JSON to use for the "filter" field in the API. You can use xdr-asset-schema-get to get the schema. For more information, please refer to the documentation: [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Get-all-or-filtered-assets). | Optional |
 | limit | Maximum number of assets to return. Default is 50. Default is 50. | Optional |
 | page_size | Page size for pagination. Default is 50. | Optional |
 | page | Page number for pagination. Default is 0. | Optional |
@@ -4179,7 +4179,7 @@ Creates a new BIOC.
 | is_xql | Whether the new BIOC is XQL. Possible values are: true, false. | Optional |
 | comment | The BIOC comment. | Optional |
 | status | The BIOC status. Possible values are: enabled, disabled. | Optional |
-| indicator | The BIOC indicator,<br/>for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.<br/>For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs. | Required |
+| indicator | The BIOC indicator,<br/>for example: '{"runOnCGO":true,"investigationType":"FILE_EVENT","investigation":{"FILE_EVENT":{"filter":{"AND":[{"SEARCH_FIELD":"action_file_name","SEARCH_TYPE":"EQ","SEARCH_VALUE":"testfile.exe"}]}}}}'.<br/>For more information, refer to the documentation [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs). | Required |
 | mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
 | mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional |
 
@@ -4209,7 +4209,7 @@ Updates an existing BIOC.
 | is_xql | Whether the BIOC is XQL. Possible values are: true, false. | Optional |
 | comment | BIOC comment. | Optional |
 | status | BIOC status. Possible values are: enabled, disabled. | Optional |
-| indicator | The BIOC indicator,<br/>for example: '{\"runOnCGO\":true,\"investigationType\":\"FILE_EVENT\",\"investigation\":{\"FILE_EVENT\":{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"action_file_name\",\"SEARCH_TYPE\":\"EQ\",\"SEARCH_VALUE\":\"testfile.exe\"}]}}}}'.<br/>For more information, refer to the documentation https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs. | Required |
+| indicator | The BIOC indicator,<br/>for example: '{"runOnCGO":true,"investigationType":"FILE_EVENT","investigation":{"FILE_EVENT":{"filter":{"AND":[{"SEARCH_FIELD":"action_file_name","SEARCH_TYPE":"EQ","SEARCH_VALUE":"testfile.exe"}]}}}}'.<br/>For more information, refer to the documentation [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Insert-or-update-BIOCs). | Required |
 | mitre_technique_id_and_name | The MITRE technique ID and name. Must be in format 'ID - Name', for example: ['T1566 - Phishing']. | Optional |
 | mitre_tactic_id_and_name | The MITRE tactic ID and name. Must be in format 'ID - Name', for example: ['TA0001 - Initial Access']. | Optional |
 
@@ -4530,9 +4530,13 @@ Updates an existing case with the specified details.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | case_id | The ID of the case to update. | Required |
-| status | The status to set for the case. if the status is updated to "resolved", resolve_reason must be provided. Possible values are: new, under_investigation, resolved. | Optional |
-| resolve_reason | The reason for resolving the case. Possible values are: resolved_known_issue, resolved_duplicate, resolved_false_positive, resolved_other. | Optional |
-| resolve_comment | A comment explaining the resolution. | Optional |
+| status | The status to set for the case. When set to "resolved", the resolve_reason argument is required. Possible values are: new, under_investigation, resolved. | Optional |
+| resolve_reason | The reason for resolving the case. Can only be provided when the status is set to "resolved", and is required when resolving. Possible values are: resolved_known_issue, resolved_duplicate, resolved_false_positive, resolved_true_positive, resolved_security_testing, resolved_other. | Optional |
+| resolve_comment | A free-text comment explaining the resolution. Can only be provided when the status is set to "resolved". | Optional |
+| user_severity | The user-defined severity to set for the case. Provide an empty string to clear the severity. Possible values are: low, medium, high, critical. | Optional |
+| assigned_user | A valid Cortex XDR user email address to assign the case to. | Optional |
+| notes | A free-text note for the case, used for operational or intermediate comments (e.g., a ServiceNow Ticket ID). | Optional |
+| custom_fields | A JSON object string of tenant-defined custom fields to update on the case. The keys must be the exact custom field names as configured in your Cortex XDR tenant, and the values must match each field's configuration. Ensure the custom field names are valid for the tenant; the integration only validates that the input is valid JSON. Example: `{"my_custom_field": "value", "another_field": 42}`. | Optional |
 
 #### Context Output
 

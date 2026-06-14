@@ -3123,14 +3123,55 @@ def test_case_list_command_extra_data_pagination(mocker, args, expected_search_f
 @pytest.mark.parametrize(
     "args, expected_update_data",
     [
-        ({"case_id": "100", "status": "new"}, {"status_progress": "NEW"}),
+        # status mapping to the exact API strings
+        ({"case_id": "100", "status": "new"}, {"status_progress": "New"}),
+        ({"case_id": "100", "status": "under_investigation"}, {"status_progress": "In Progress"}),
+        # notes-only update (operational comment, e.g. a ServiceNow ticket id)
+        ({"case_id": "100", "notes": "SNOW-12345"}, {"notes": "SNOW-12345"}),
+        # assigned_user update
+        ({"case_id": "100", "assigned_user": "analyst@example.com"}, {"assigned_user": "analyst@example.com"}),
+        # user_severity update
+        ({"case_id": "100", "user_severity": "high"}, {"user_severity": "high"}),
+        # clearing user_severity with an explicit empty string
+        ({"case_id": "100", "user_severity": ""}, {"user_severity": ""}),
+        # each resolve_reason mapping (requires status Resolved)
         (
-            {"case_id": "100", "resolve_reason": "resolved_known_issue", "resolve_comment": "done"},
-            {"resolve_reason": "Resolved - Known Issue", "resolve_comment": "done"},
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_known_issue"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - Known Issue"},
         ),
         (
-            {"case_id": "100", "status": "closed", "resolve_reason": "resolved_other"},
-            {"status_progress": "CLOSED", "resolve_reason": "Resolved - Other"},
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_duplicate"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - Duplicate Case"},
+        ),
+        (
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_false_positive"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - False Positive"},
+        ),
+        (
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_true_positive"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - True Positive"},
+        ),
+        (
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_security_testing"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - Security Testing"},
+        ),
+        (
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_other"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - Other"},
+        ),
+        # resolving with a resolve_comment as well
+        (
+            {
+                "case_id": "100",
+                "status": "resolved",
+                "resolve_reason": "resolved_known_issue",
+                "resolve_comment": "done",
+            },
+            {
+                "status_progress": "Resolved",
+                "resolve_reason": "Resolved - Known Issue",
+                "resolve_comment": "done",
+            },
         ),
     ],
 )
@@ -3141,7 +3182,7 @@ def test_case_update_command(args, expected_update_data):
     When:
         - Running case_update_command
     Then:
-        - Verify the client.update_case is called with correct arguments
+        - Verify the client.update_case is called with the correct update_data payload
     """
     from CortexXDRIR import Client, case_update_command
 
@@ -3151,6 +3192,115 @@ def test_case_update_command(args, expected_update_data):
 
         assert res.readable_output == f"Case {args['case_id']} updated successfully"
         mock_update.assert_called_with(args["case_id"], request_data={"request_data": {"update_data": expected_update_data}})
+
+
+@pytest.mark.parametrize(
+    "args, expected_error",
+    [
+        # resolving without a resolve_reason
+        (
+            {"case_id": "100", "status": "resolved"},
+            "The 'resolve_reason' argument is required when resolving a case",
+        ),
+        # resolve_reason provided without status Resolved
+        (
+            {"case_id": "100", "resolve_reason": "resolved_other"},
+            "can only be provided when 'status' is set to 'Resolved'",
+        ),
+        # resolve_comment provided without status Resolved
+        (
+            {"case_id": "100", "resolve_comment": "some comment"},
+            "can only be provided when 'status' is set to 'Resolved'",
+        ),
+        # empty update (no updatable fields)
+        ({"case_id": "100"}, "No fields to update were provided"),
+    ],
+)
+def test_case_update_command_errors(args, expected_error):
+    """
+    Given:
+        - args that violate the case update conditional rules
+    When:
+        - Running case_update_command
+    Then:
+        - A DemistoException is raised with a clear message and no API call is made
+    """
+    from CortexXDRIR import Client, case_update_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "update_case") as mock_update:
+        with pytest.raises(DemistoException, match=expected_error):
+            case_update_command(client, args)
+        mock_update.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "args, expected_update_data",
+    [
+        # custom_fields valid JSON object only -> merged keys appear in update_data
+        (
+            {"case_id": "100", "custom_fields": '{"my_custom_field": "value", "another_field": 42}'},
+            {"my_custom_field": "value", "another_field": 42},
+        ),
+        # custom_fields combined with a standard field (notes) -> both present
+        (
+            {"case_id": "100", "notes": "see ticket", "custom_fields": '{"my_custom_field": "value"}'},
+            {"notes": "see ticket", "my_custom_field": "value"},
+        ),
+        # custom_fields key colliding with a standard field name must NOT override the standard value
+        (
+            {"case_id": "100", "notes": "authoritative", "custom_fields": '{"notes": "override-attempt", "extra": 1}'},
+            {"notes": "authoritative", "extra": 1},
+        ),
+    ],
+)
+def test_case_update_command_custom_fields(args, expected_update_data):
+    """
+    Given:
+        - args for case update command including a custom_fields JSON object
+    When:
+        - Running case_update_command
+    Then:
+        - Verify the parsed custom_fields are merged into update_data and standard fields win on collision
+    """
+    from CortexXDRIR import Client, case_update_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "update_case") as mock_update:
+        res = case_update_command(client, args)
+
+        assert res.readable_output == f"Case {args['case_id']} updated successfully"
+        mock_update.assert_called_with(args["case_id"], request_data={"request_data": {"update_data": expected_update_data}})
+
+
+@pytest.mark.parametrize(
+    "custom_fields_value",
+    [
+        # invalid JSON string
+        "{not valid json}",
+        # valid JSON but not an object (a list)
+        "[1, 2, 3]",
+        # valid JSON but not an object (a bare string)
+        '"a string"',
+    ],
+)
+def test_case_update_command_custom_fields_errors(custom_fields_value):
+    """
+    Given:
+        - args with a custom_fields value that is not a valid JSON object
+    When:
+        - Running case_update_command
+    Then:
+        - A DemistoException is raised with a clear message and no API call is made
+    """
+    from CortexXDRIR import Client, case_update_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {"case_id": "100", "custom_fields": custom_fields_value}
+    with patch.object(Client, "update_case") as mock_update:
+        with pytest.raises(DemistoException, match="The 'custom_fields' argument must be a valid JSON object."):
+            case_update_command(client, args)
+        mock_update.assert_not_called()
 
 
 @pytest.mark.parametrize(
