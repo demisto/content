@@ -110,6 +110,7 @@ class Client:
         params = {
             "$filter": f"receivedDateTime ge {start_date} and receivedDateTime le {end_date}",
             "$top": page_size,
+            "$type": demisto.params().get("event_type"),
         }
         demisto.debug(f"[API] First page request | params={params}")
         return self.ms_client.http_request(method="GET", url_suffix=Config.MESSAGE_TRACES_PATH, params=params, ok_codes=[200])
@@ -480,7 +481,7 @@ def main() -> None:  # pragma: no cover
             return_results(get_events_command(client, args))
         elif command == "fetch-events":
             fetch_events(client, max_events=max_events)
-        elif demisto.command() == "o365-message-trace-generate-login-url":
+        elif command == "o365-message-trace-generate-login-url":
             return_results(generate_login_url(client.ms_client))
 
         else:
