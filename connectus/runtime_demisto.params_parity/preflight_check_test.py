@@ -196,3 +196,116 @@ def test_run_preflight_skips_resolver_when_no_id(monkeypatch, tmp_path):
 def test_all_passed_true_and_false():
     assert pf.all_passed([pf.CheckResult("a", True, ""), pf.CheckResult("b", True, "")])
     assert not pf.all_passed([pf.CheckResult("a", True, ""), pf.CheckResult("b", False, "")])
+
+
+# ---------------------------------------------------------------------------
+# session-setup VERIFY checks (gcloud authed, auth plugin, gke reachable)
+# ---------------------------------------------------------------------------
+
+from unittest import mock  # noqa: E402
+
+
+def test_check_gcloud_authed_ok(monkeypatch):
+    res = mock.Mock(returncode=0, stdout="joey@example.com\n")
+    monkeypatch.setattr("subprocess.run", lambda *a, **k: res)
+    r = pf._check_gcloud_authed()
+    assert r.ok and "joey@example.com" in r.detail
+
+
+def test_check_gcloud_authed_unset(monkeypatch):
+    res = mock.Mock(returncode=0, stdout="(unset)\n")
+    monkeypatch.setattr("subprocess.run", lambda *a, **k: res)
+    r = pf._check_gcloud_authed()
+    assert not r.ok and "gcloud auth login" in r.detail
+
+
+def test_check_auth_plugin_present(monkeypatch):
+    monkeypatch.setattr(pf.shutil, "which",
+                        lambda t: "/usr/bin/gke-gcloud-auth-plugin" if t == "gke-gcloud-auth-plugin" else None)
+    r = pf._check_auth_plugin()
+    assert r.ok
+
+
+def test_check_auth_plugin_missing(monkeypatch):
+    monkeypatch.setattr(pf.shutil, "which", lambda t: None)
+    r = pf._check_auth_plugin()
+    assert not r.ok and "gke-gcloud-auth-plugin" in r.detail
+
+
+def test_check_auth_plugin_missing_but_found_in_sdk_bin(monkeypatch, tmp_path):
+    # Build a fake SDK bin holding a stub gcloud + the bundled plugin.
+    sdk_bin = tmp_path / "google-cloud-sdk" / "bin"
+    sdk_bin.mkdir(parents=True)
+    gcloud = sdk_bin / "gcloud"
+    gcloud.write_text("#!/bin/sh\n", encoding="utf-8")
+    (sdk_bin / "gke-gcloud-auth-plugin").write_text("#!/bin/sh\n", encoding="utf-8")
+
+    # Plugin NOT on PATH, but `which("gcloud")` resolves into the SDK bin.
+    def _which(tool):
+        if tool == "gke-gcloud-auth-plugin":
+            return None
+        if tool == "gcloud":
+            return str(gcloud)
+        return None
+
+    monkeypatch.setattr(pf.shutil, "which", _which)
+    r = pf._check_auth_plugin()
+    assert not r.ok
+    assert str(sdk_bin) in r.detail
+    assert "export PATH" in r.detail
+
+
+def test_check_auth_plugin_missing_and_not_in_sdk_bin(monkeypatch, tmp_path):
+    # Plugin not on PATH and gcloud's dir does NOT contain the plugin.
+    sdk_bin = tmp_path / "bin"
+    sdk_bin.mkdir(parents=True)
+    gcloud = sdk_bin / "gcloud"
+    gcloud.write_text("#!/bin/sh\n", encoding="utf-8")
+
+    def _which(tool):
+        if tool == "gcloud":
+            return str(gcloud)
+        return None
+
+    monkeypatch.setattr(pf.shutil, "which", _which)
+    monkeypatch.setattr(pf._sys, "platform", "darwin")
+    r = pf._check_auth_plugin()
+    assert not r.ok
+    assert "brew reinstall --cask google-cloud-sdk" in r.detail
+
+
+def test_check_gke_reachable_ok(monkeypatch):
+    res = mock.Mock(returncode=0, stdout="{}", stderr="")
+    monkeypatch.setattr("subprocess.run", lambda *a, **k: res)
+    r = pf._check_gke_reachable()
+    assert r.ok
+
+
+def test_check_gke_reachable_timeout_hints_vpn(monkeypatch):
+    res = mock.Mock(returncode=1, stdout="",
+                    stderr="Unable to connect to the server: dial tcp 1.2.3.4:443: i/o timeout")
+    monkeypatch.setattr("subprocess.run", lambda *a, **k: res)
+    r = pf._check_gke_reachable()
+    assert not r.ok and "israel-gw" in r.detail
+
+
+def test_run_preflight_includes_session_setup_checks(monkeypatch):
+    _set_env(monkeypatch)
+    monkeypatch.setattr(pf.shutil, "which", lambda t: "/usr/bin/" + t)
+    monkeypatch.setattr(pf, "_check_connectus_repo", lambda: pf.CheckResult("repo", True, ""))
+    monkeypatch.setattr(pf, "_check_probe", lambda: pf.CheckResult("probe", True, ""))
+    monkeypatch.setattr(pf, "_check_gcloud_authed", lambda: pf.CheckResult("gcloud authenticated", True, "x"))
+    monkeypatch.setattr(pf, "_check_auth_plugin", lambda: pf.CheckResult("gke-gcloud-auth-plugin present", True, "x"))
+    names = [r.name for r in pf.run_preflight(None, for_session_setup=True)]
+    assert "gcloud authenticated" in names
+    assert "gke-gcloud-auth-plugin present" in names
+
+
+def test_run_preflight_omits_session_setup_checks_by_default(monkeypatch):
+    _set_env(monkeypatch)
+    monkeypatch.setattr(pf.shutil, "which", lambda t: "/usr/bin/" + t)
+    monkeypatch.setattr(pf, "_check_connectus_repo", lambda: pf.CheckResult("repo", True, ""))
+    monkeypatch.setattr(pf, "_check_probe", lambda: pf.CheckResult("probe", True, ""))
+    names = [r.name for r in pf.run_preflight(None)]
+    assert "gcloud authenticated" not in names
+    assert "gke-gcloud-auth-plugin present" not in names
