@@ -507,6 +507,14 @@ script:
       required: false
       description: The model to use. Use the get-list-models command to see available models. Falls back to instance config.
 
+    - name: polling
+      description: Whether to poll for the command result. Used internally for background execution.
+      hidden: true
+
+    - name: _polling_response_id
+      description: The response ID to poll for completion. Used internally by the scheduled command for polling and should not be provided manually.
+      hidden: true
+
     polling: true
 
     outputs:

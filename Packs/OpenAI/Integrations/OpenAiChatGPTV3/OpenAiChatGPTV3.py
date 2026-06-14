@@ -1207,10 +1207,11 @@ def create_response_command(client: OpenAiClient, args: dict[str, Any], params: 
 
         if status in BACKGROUND_PENDING_STATUSES:
             # Still running — schedule next poll
+            polling_args = {**args, "_polling_response_id": polling_response_id, "polling": "true"}
             scheduled_command = ScheduledCommand(
                 command="gpt-create-response",
                 next_run_in_seconds=DEFAULT_POLLING_INTERVAL_SECS,
-                args={**args, "_polling_response_id": polling_response_id},
+                args=polling_args,
                 timeout_in_seconds=DEFAULT_POLLING_TIMEOUT_SECS,
             )
             return CommandResults(
@@ -1307,10 +1308,11 @@ def create_response_command(client: OpenAiClient, args: dict[str, Any], params: 
     if body.get("background") and response_status in BACKGROUND_PENDING_STATUSES:
         response_id = response.get("id", "")
         demisto.debug(f"[Responses] Background response queued | id={response_id} status={response_status}")
+        polling_args = {**args, "_polling_response_id": response_id, "polling": "true"}
         scheduled_command = ScheduledCommand(
             command="gpt-create-response",
             next_run_in_seconds=DEFAULT_POLLING_INTERVAL_SECS,
-            args={**args, "_polling_response_id": response_id},
+            args=polling_args,
             timeout_in_seconds=DEFAULT_POLLING_TIMEOUT_SECS,
         )
         return CommandResults(
