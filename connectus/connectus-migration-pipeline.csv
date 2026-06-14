@@ -349,7 +349,68 @@ Microsoft Defender for Cloud Apps Event Collector,Packs/MicrosoftCloudAppSecurit
 Microsoft Defender for Cloud Event Collector,Packs/AzureSecurityCenter/Integrations/MicrosoftDefenderForCloudEventCollector/MicrosoftDefenderForCloudEventCollector.yml,Microsoft Security,,noydavidi,,,,,,,,,,,,,,
 Microsoft Endpoint Configuration Manager,Packs/MicrosoftECM/Integrations/MicrosoftECM/MicrosoftECM.yml,M365 Automation and Collection,,noydavidi,,,,,,,,,,,,,,
 Microsoft Graph,Packs/MicrosoftGraphSecurity/Integrations/MicrosoftGraphSecurity/MicrosoftGraphSecurity.yml,Microsoft Security,,noydavidi,,,,,,,,,,,,,,
-Microsoft Graph API,Packs/MicrosoftGraphAPI/Integrations/MicrosoftGraphAPI/MicrosoftGraphAPI.yml,Microsoft Graph,,noydavidi,,,,,,,,,,,,,,
+Microsoft Graph API,Packs/MicrosoftGraphAPI/Integrations/MicrosoftGraphAPI/MicrosoftGraphAPI.yml,Microsoft Graph,connectors/microsoft-graph,noydavidi,"{
+  ""auth_types"": [
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""auth_code"",
+      ""xsoar_param_map"": {
+        ""app_id"": ""client_id"",
+        ""tenant_id"": ""tenant_id"",
+        ""credentials.password"": ""client_secret"",
+        ""auth_code.password"": ""authorization_code"",
+        ""redirect_uri"": ""redirect_uri""
+      },
+      ""interpolated"": true,
+      ""verify_connection_skip"": true
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""certificate"",
+      ""xsoar_param_map"": {
+        ""app_id"": ""client_id"",
+        ""tenant_id"": ""tenant_id"",
+        ""creds_certificate.identifier"": ""certificate_thumbprint"",
+        ""creds_certificate.password"": ""private_key""
+      },
+      ""interpolated"": true
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""client_credentials"",
+      ""xsoar_param_map"": {
+        ""app_id"": ""client_id"",
+        ""tenant_id"": ""tenant_id"",
+        ""credentials.password"": ""client_secret""
+      },
+      ""interpolated"": true
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""device_code"",
+      ""xsoar_param_map"": {
+        ""app_id"": ""client_id"",
+        ""scope"": ""scope""
+      },
+      ""interpolated"": true,
+      ""verify_connection_skip"": true
+    },
+    {
+      ""type"": ""Passthrough"",
+      ""name"": ""managed_identity"",
+      ""xsoar_param_map"": {
+        ""managed_identities_client_id.password"": ""client_id""
+      },
+      ""interpolated"": true
+    }
+  ],
+  ""other_connection"": [""azure_ad_endpoint"", ""azure_cloud"", ""insecure"", ""proxy""]
+}","[
+  ""Automation""
+]","{""integration"": ""Microsoft Graph API"", ""commands"": {""msgraph-api-request"": [], ""msgraph-api-auth-start"": [], ""msgraph-api-auth-complete"": [], ""msgraph-api-test"": [], ""msgraph-api-auth-reset"": [], ""msgraph-api-generate-login-url"": [], ""test-module"": []}}",{},✅,"{
+  ""general_configurations"": [],
+  ""Automation"": []
+}",✅,✅,✅,"{""required"": true, ""path"": ""Packs/MicrosoftGraphAPI/ReleaseNotes/1_1_67.md"", ""verified"": true}",,,,
 Microsoft Graph Calendar,Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGraphCalendar/MicrosoftGraphCalendar.yml,M365 Automation and Collection,,noydavidi,,,,,,,,,,,,,,
 Microsoft Graph Device Management,Packs/MicrosoftGraphDeviceManagement/Integrations/MicrosoftGraphDeviceManagement/MicrosoftGraphDeviceManagement.yml,Microsoft Graph,,noydavidi,,,,,,,,,,,,,,
 Microsoft Graph Groups,Packs/MicrosoftGraphGroups/Integrations/MicrosoftGraphGroups/MicrosoftGraphGroups.yml,Microsoft Identity,,noydavidi,,,,,,,,,,,,,,
