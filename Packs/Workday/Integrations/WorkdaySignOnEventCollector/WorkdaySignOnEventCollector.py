@@ -1,3 +1,4 @@
+# THIS IS A CUSTOM INTEGRATION TO FIX THE TIMEOUT ISSUE
 from xml.sax.saxutils import escape
 
 import demistomock as demisto
