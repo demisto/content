@@ -21,9 +21,9 @@ API_KEY = demisto.params().get("credentials", {}).get("password") or demisto.par
 ABUSECH_API_KEY = demisto.params().get("hunting_credentials", {}).get("password")
 ABUSECH_URL = demisto.params().get("abusech_hunting_url")
 DISABLE_PRIVATE_IP_LOOKUP = argToBoolean(demisto.params().get("disable_private_ip_lookup", "False"))
-MAX_AGE = demisto.params().get("days", "30")
-THRESHOLD = demisto.params().get("threshold", "80")
-INSECURE = demisto.params().get("insecure", False)
+MAX_AGE = demisto.params().get("days")
+THRESHOLD = demisto.params().get("threshold")
+INSECURE = demisto.params().get("insecure")
 TEST_IP = "127.0.0.2"
 BLACKLIST_SCORE = 3
 CHECK_CMD = "check"
@@ -38,7 +38,7 @@ API_QUOTA_REACHED_MESSAGE = "Too many requests (possibly bad API key). Status co
 
 HEADERS = {"Key": API_KEY, "Accept": "application/json"}
 
-PROXY = demisto.params().get("proxy", False)
+PROXY = demisto.params().get("proxy")
 if not demisto.params().get("proxy", False):
     # Remove proxy environment variables if they exist
     for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:

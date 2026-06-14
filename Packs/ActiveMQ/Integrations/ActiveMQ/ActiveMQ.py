@@ -8,7 +8,7 @@ import stomp
 """ GLOBAL VARS """
 
 HOSTNAME = demisto.params()["hostname"]
-PORT = int(demisto.params().get("port") or 61613)
+PORT = int(demisto.params()["port"])
 USERNAME = demisto.params().get("credentials", {}).get("identifier")
 PASSWORD = demisto.params().get("credentials", {}).get("password")
 CLIENT_CERT = demisto.params().get("client_cert")
@@ -190,7 +190,7 @@ def main():
             subscribe(client, conn, subscription_id, topic_name, queue_name)
 
         elif demisto.command() == "fetch-incidents":
-            subscription_id = demisto.params().get("subscription-id", "1")
+            subscription_id = demisto.params().get("subscription-id")
             queue_name = demisto.params().get("queue_name")
             topic_name = demisto.params().get("topic-name")
 

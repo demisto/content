@@ -172,7 +172,7 @@ def main():
     access_key = demisto_params.get("access_key").get("password")
     access_key_id = demisto_params.get("access_key").get("identifier")
     query = demisto_params.get("query")
-    from_ = get_alibaba_timestamp_format(demisto_params.get("from") or "3 days")
+    from_ = get_alibaba_timestamp_format(demisto_params.get("from"))
     should_push_events = argToBoolean(demisto_params.get("should_push_events", "false"))
 
     headers = {

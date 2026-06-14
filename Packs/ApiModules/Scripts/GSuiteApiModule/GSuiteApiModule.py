@@ -13,6 +13,7 @@ from google.oauth2 import service_account
 from google_auth_httplib2 import AuthorizedHttp
 
 """ CONSTANTS """
+
 COMMON_MESSAGES: dict[str, str] = {
     "TIMEOUT_ERROR": "Connection Timeout Error - potential reasons might be that the Server URL parameter"
     " is incorrect or that the Server is not accessible from your host. Reason: {}",
@@ -56,9 +57,8 @@ class GSuiteClient:
         method_id = get_ucp_method_unique_id(resolve_ucp_capability())
 
         body = {"extra": {"subject": subject}} if subject else None
-        demisto.debug("before {body=}")
         credentials = get_ucp_credentials(method_id, body=body)
-        demisto.debug(f"after {credentials=}")
+
         cred_type = credentials.get("type")
         token_data = credentials.get(cred_type, credentials) if cred_type else credentials
         access_token = token_data.get("access_token") if isinstance(token_data, dict) else None
