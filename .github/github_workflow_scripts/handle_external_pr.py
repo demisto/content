@@ -47,13 +47,24 @@ WELCOME_MSG_WITH_GFORM = (
     "reviewed.\nFor your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) "
     "to the contributions SLAs document."
 )
+XSIAM_ITEMS_MSG = """
+Thank you for contributing XSIAM content (Modeling Rules, Parsing Rules, Correlation Rules, or Dashboards)!
+To allow our teams to properly evaluate and implement your contribution, we need a bit more information from you.
 
+Please fill out the **[XSIAM Content Information Form](https://forms.gle/Nt6Vup45dNq1zo3HA)**
+
+> [!IMPORTANT]
+> Contributions that do not include the information form may not be evaluated for implementation due to insufficient context.
+
+If you have any questions, feel free to reach out to your assigned reviewer.
+"""
 XSOAR_SUPPORT_LEVEL_LABEL = "Xsoar Support Level"
 PARTNER_SUPPORT_LEVEL_LABEL = "Partner Support Level"
 COMMUNITY_SUPPORT_LEVEL_LABEL = "Community Support Level"
 CONTRIBUTION_LABEL = "Contribution"
 EXTERNAL_LABEL = "External PR"
 SECURITY_LABEL = "Security Review"
+XSIAM_CONTENT_LABEL = "Mapping Contribution"
 TIM_LABEL = "TIM Review"
 TIM_TAGS = "Threat Intelligence Management"
 TIM_CATEGORIES = "Data Enrichment & Threat Intelligence"
@@ -69,6 +80,7 @@ SECURITY_CONTENT_ITEMS = [
     "Dashboards",
     "Triggers",
 ]
+XSIAM_CONTENT = ["ModelingRules", "ParsingRules", "CorrelationRules", "Dashboards", "XSIAMDashboards"]
 PR_AUTHOR_PATTERN = "## Contributor\n@(.*)"
 LABELS_TO_SKIP_PR_REVIEW = {"contribution on hold"}
 
@@ -243,9 +255,9 @@ def get_highest_support_label(packs_support_levels: set[str]) -> str:
         return COMMUNITY_SUPPORT_LEVEL_LABEL
 
 
-def is_requires_security_reviewer(pr_files: list[str]) -> bool:
+def is_requires_specific_reviewer(pr_files: list[str], content_items) -> bool:
     """
-    Checks whether a security engineer is needed in the review.
+    Checks whether a specific engineer is needed in the review. For example Security engineer or XSIAM content items engineer
 
     Arguments:
         - `pr_files`: ``List[str]``: The list of files changed in the Pull Request. Will be used to determine
@@ -255,7 +267,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     """
 
     for pr_file in pr_files:
-        for item in SECURITY_CONTENT_ITEMS:
+        for item in content_items:
             if item in Path(pr_file).parts:
                 return True
 
@@ -582,7 +594,7 @@ def main():
     reviewers = [content_reviewer]
 
     # Add a security architect reviewer if the PR contains security content items
-    if is_requires_security_reviewer(pr_files):
+    if is_requires_specific_reviewer(pr_files, SECURITY_CONTENT_ITEMS):
         if isinstance(security_reviewer, list):
             security_reviewer = determine_random_reviewer(security_reviewer, content_repo)
         # else security_reviewer is a string of a single reviewer, just add it to the list of reviewers
@@ -591,6 +603,11 @@ def main():
             reviewers.append(security_reviewer)
             pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
+
+    # Add an xsiam items reviewer if the PR contains xsiam content items
+    if is_requires_specific_reviewer(pr_files, XSIAM_CONTENT):
+        pr.add_to_labels(XSIAM_CONTENT_LABEL)
+        pr.create_issue_comment(XSIAM_ITEMS_MSG)
 
     # adding TIM reviewer
     if is_tim_reviewer_needed(pr_files, support_label, pr.head.ref, remote_fork_owner, repo_name):
