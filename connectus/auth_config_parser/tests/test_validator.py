@@ -426,6 +426,24 @@ class TestXsoarParamMapStructural:
         joined = "\n".join(errors)
         assert "non-empty" in joined
 
+    def test_missing_xsoar_param_map_allowed_for_none_required(self) -> None:
+        """NoneRequired describes no-credential auth, so an absent
+        xsoar_param_map is valid (unlike credential profile types)."""
+        detail = _wrap({
+            "type": "NoneRequired", "name": "No authentication",
+            "interpolated": True,
+        })
+        assert validate_auth_details(detail) == []
+
+    def test_empty_xsoar_param_map_allowed_for_none_required(self) -> None:
+        """An explicitly empty xsoar_param_map is also valid for
+        NoneRequired."""
+        detail = _wrap({
+            "type": "NoneRequired", "name": "No authentication",
+            "xsoar_param_map": {}, "interpolated": True,
+        })
+        assert validate_auth_details(detail) == []
+
     def test_xsoar_param_map_value_must_be_string(self) -> None:
         """Non-string values rejected with field path named."""
         detail = _wrap({
