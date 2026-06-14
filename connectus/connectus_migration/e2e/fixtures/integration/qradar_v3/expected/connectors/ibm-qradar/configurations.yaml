@@ -19,6 +19,8 @@ general_configurations:
         description: Set the log level for xsoar-qradar-v3.
         placeholder: Select log level
         default_value: 'Off'
+        searchable: true
+        clearable: true
         values:
         - key: 'Off'
           label: 'Off'

@@ -59,6 +59,8 @@ general_configurations:
         description: Set the log level for xsoar-github-iam.
         placeholder: Select log level
         default_value: 'Off'
+        searchable: true
+        clearable: true
         values:
         - key: 'Off'
           label: 'Off'
@@ -304,6 +306,7 @@ configurations:
           hidden: false
   view_group: github
 - id: fetch-issues_github-iam
+  view_group: github-iam
   configurations:
   - fields:
     - id: xsoar-github-iam_incidentType
@@ -388,8 +391,8 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
-  view_group: github-iam
 - id: threat-intelligence-and-enrichment_github-iam
+  view_group: github-iam
   configurations:
   - fields:
     - id: xsoar-github-iam_feedFetchInterval
@@ -407,6 +410,34 @@ configurations:
           hidden: false
         edit_modifiers:
           hidden: false
+  - fields:
+    - id: xsoar-github-iam_feedReliability
+      field_type: select
+      options:
+        values:
+        - key: A - Completely reliable
+          label: A - Completely reliable
+        - key: B - Usually reliable
+          label: B - Usually reliable
+        - key: C - Fairly reliable
+          label: C - Fairly reliable
+        - key: D - Not usually reliable
+          label: D - Not usually reliable
+        - key: E - Unreliable
+          label: E - Unreliable
+        - key: F - Reliability cannot be judged
+          label: F - Reliability cannot be judged
+        searchable: true
+        clearable: true
+        description: Reliability of the source providing the intelligence data
+        default_value: A - Completely reliable
+        create_modifiers:
+          required: true
+          hidden: false
+        edit_modifiers:
+          required: true
+          hidden: false
+      title: Source Reliability
   - fields:
     - id: xsoar-github-iam_feedExpirationPolicy
       field_type: select
@@ -480,32 +511,6 @@ configurations:
           required: false
           hidden: false
   - fields:
-    - id: xsoar-github-iam_feedReliability
-      field_type: select
-      options:
-        values:
-        - key: A - Completely reliable
-          label: A - Completely reliable
-        - key: B - Usually reliable
-          label: B - Usually reliable
-        - key: C - Fairly reliable
-          label: C - Fairly reliable
-        - key: D - Not usually reliable
-          label: D - Not usually reliable
-        - key: E - Unreliable
-          label: E - Unreliable
-        - key: F - Reliability cannot be judged
-          label: F - Reliability cannot be judged
-        create_modifiers:
-          required: true
-          hidden: false
-        edit_modifiers:
-          required: true
-          hidden: false
-        default_value: A - Completely reliable
-        description: Reliability of the source providing the intelligence data
-      title: Source Reliability
-  - fields:
     - id: xsoar-github-iam_feedTags
       field_type: input
       title: Tags
@@ -516,4 +521,3 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
-  view_group: github-iam

@@ -31,3 +31,15 @@ triggers:
   - id: proxy
     action:
       read_only: false
+- conditions:
+    id: fetch-issues_qradar-v3
+    behavior: selected
+    operator: eq
+    value: true
+  effects:
+  - id: automation-and-remediation_qradar-v3
+    action:
+      read_only: true
+      enabled: true
+    message: A selected capability enables this setting. Clear the active dependency
+      to disable it

@@ -47,6 +47,8 @@ general_configurations:
         description: Set the log level for xsoar-github-iam.
         placeholder: Select log level
         default_value: 'Off'
+        searchable: true
+        clearable: true
         values:
         - key: 'Off'
           label: 'Off'
@@ -91,6 +93,7 @@ configurations:
           hidden: false
   view_group: github
 - id: automation-and-remediation_github-iam
+  view_group: github-iam
   configurations:
   - fields:
     - id: xsoar-github-iam_defaultIgnore
@@ -118,4 +121,3 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
-  view_group: github-iam
