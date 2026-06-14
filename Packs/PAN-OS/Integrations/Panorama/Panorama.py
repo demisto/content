@@ -1170,7 +1170,13 @@ def panorama_commit(args):
     partial_command: str = ""
     is_partial = False
     if device_group := args.get("device-group"):
-        command += f'<device-group><entry name="{device_group}"/></device-group>'
+        is_partial = True
+        partial_command += f"<device-group><member>{device_group}</member></device-group>"
+
+    if templates := argToList(args.get("template")):
+        is_partial = True
+        templates_command = "".join(f"<member>{t}</member>" for t in templates)
+        partial_command += f"<template>{templates_command}</template>"
 
     admin_name = args.get("admin_name")
     if admin_name:
