@@ -1087,6 +1087,20 @@ class TestClientClass:
             "Error in API call [500] - None\nError Code: 999\nError Message: Internal error. Please contact customer support.",
         ),
         (MockResponse("Invalid XML", 500), "Error in API call [500] - None\nInvalid XML"),
+        (
+            MockResponse(
+                """<?xml version="1.0" encoding="UTF-8" ?>
+<SIMPLE_RETURN>
+  <RESPONSE>
+    <CODE>1965</CODE>
+    <TEXT>This API cannot be run again for another 40 seconds.</TEXT>
+  </RESPONSE>
+</SIMPLE_RETURN>""",
+                409,
+            ),
+            "Rate limit reached - the Qualys API rate limit was exceeded.\nError in API call [409] - None\n"
+            "Error Code: 1965\nError Message: This API cannot be run again for another 40 seconds.",
+        ),
     ]
 
     @pytest.mark.parametrize("response, error_message", ERROR_HANDLER_INPUTS)
@@ -2102,3 +2116,81 @@ def test_fetch_assets_and_vulnerabilities_by_date_last_page_empty(mocker: Mocker
     assert next_run["stage"] == "vulnerabilities"
     assert next_run["total_assets"] == last_total_assets
     assert next_run["snapshot_id"] == SNAPSHOT_ID
+
+
+def _make_rate_limit_exception(wait_seconds: str | None = "40") -> Qualysv2.DemistoException:
+    """Build a DemistoException mimicking a Qualys 409 rate-limit response."""
+    response = Mock()
+    response.status_code = Qualysv2.RATE_LIMIT_STATUS_CODE
+    response.headers = {Qualysv2.RATE_LIMIT_TO_WAIT_HEADER: wait_seconds} if wait_seconds is not None else {}
+    return Qualysv2.DemistoException("rate limited", res=response)
+
+
+class TestRateLimitRetry:
+    def test_retry_then_success(self, mocker: MockerFixture, client: Client):
+        """
+        Given: a first 409 rate-limit response followed by a successful response.
+        When:  _http_request_with_rate_limit_retry is called.
+        Then:  it waits using the header value and returns the successful result.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(client, "_http_request", side_effect=[_make_rate_limit_exception("40"), "ok"])
+
+        result = client._http_request_with_rate_limit_retry(method="GET", url_suffix="x")
+
+        assert result == "ok"
+        assert http_mock.call_count == 2
+        sleep_mock.assert_called_once_with(42)  # 40 + RATE_LIMIT_WAIT_BUFFER_SEC
+
+    def test_retry_exhausted_raises(self, mocker: MockerFixture, client: Client):
+        """
+        Given: 409 rate-limit responses on both the initial call and the single retry.
+        When:  _http_request_with_rate_limit_retry is called.
+        Then:  the rate-limit DemistoException is raised after one retry.
+        """
+        mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(
+            client, "_http_request", side_effect=[_make_rate_limit_exception("10"), _make_rate_limit_exception("10")]
+        )
+
+        with pytest.raises(Qualysv2.DemistoException):
+            client._http_request_with_rate_limit_retry(method="GET", url_suffix="x")
+
+        assert http_mock.call_count == 2
+
+    def test_non_rate_limit_error_raised_immediately(self, mocker: MockerFixture, client: Client):
+        """
+        Given: a non-409 error on the first call.
+        When:  _http_request_with_rate_limit_retry is called.
+        Then:  the error is raised immediately without retrying or sleeping.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        other_response = Mock()
+        other_response.status_code = 500
+        http_mock = mocker.patch.object(
+            client, "_http_request", side_effect=Qualysv2.DemistoException("server error", res=other_response)
+        )
+
+        with pytest.raises(Qualysv2.DemistoException):
+            client._http_request_with_rate_limit_retry(method="GET", url_suffix="x")
+
+        assert http_mock.call_count == 1
+        sleep_mock.assert_not_called()
+
+    @pytest.mark.parametrize(
+        "raw_wait, expected",
+        [
+            ("40", 42),  # header value + buffer
+            ("100", Qualysv2.RATE_LIMIT_MAX_WAIT_SEC),  # capped
+            (
+                "not-a-number",
+                Qualysv2.RATE_LIMIT_DEFAULT_WAIT_SEC + Qualysv2.RATE_LIMIT_WAIT_BUFFER_SEC,
+            ),  # unparseable -> default
+            (None, Qualysv2.RATE_LIMIT_DEFAULT_WAIT_SEC + Qualysv2.RATE_LIMIT_WAIT_BUFFER_SEC),  # missing header -> default
+        ],
+    )
+    def test_get_rate_limit_wait_seconds(self, raw_wait, expected):
+        """Validate parsing of X-RateLimit-ToWait-Sec into a bounded wait value."""
+        response = Mock()
+        response.headers = {Qualysv2.RATE_LIMIT_TO_WAIT_HEADER: raw_wait} if raw_wait is not None else {}
+        assert Client._get_rate_limit_wait_seconds(response) == expected
