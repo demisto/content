@@ -736,7 +736,7 @@ class CoreClient(BaseClient):
             method="POST",
             url_suffix="/hash_exceptions/blocklist/",
             json_data={"request_data": request_data},
-            ok_codes=(200, 201, 500),
+            ok_codes=(200, 201),
             timeout=self.timeout,
         )
         return reply.get("reply")
