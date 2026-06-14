@@ -170,6 +170,86 @@ class TestValidateAuthDetails:
             "duplicate 'name' 'x'" in e for e in errors
         ), errors
 
+    def test_distinct_keysets_identical_rejected(self) -> None:
+        """Two profiles consuming the exact same set of XSOAR fields are
+        indistinguishable at runtime and must be rejected."""
+        detail = (
+            '{"auth_types":['
+            '{"type":"OAuth2ClientCreds","name":"client_creds",'
+            '"xsoar_param_map":{"creds.identifier":"client_id",'
+            '"creds.password":"client_secret"},"interpolated":true},'
+            '{"type":"Passthrough","name":"passthrough",'
+            '"xsoar_param_map":{"creds.identifier":"client_id",'
+            '"creds.password":"client_secret"},"interpolated":true}'
+            '],"other_connection":[]}'
+        )
+        errors = validate_auth_details(detail)
+        assert any(
+            "share the same set of XSOAR fields" in e for e in errors
+        ), errors
+        # The offending entry indices and the shared fields are named.
+        assert any(
+            "[0, 1]" in e and "creds.identifier" in e and "creds.password" in e
+            for e in errors
+        ), errors
+
+    def test_distinct_keysets_different_roles_same_keys_rejected(self) -> None:
+        """Same KEYS but different role VALUES still collide — the check
+        is on the set of XSOAR field keys, not the roles."""
+        detail = (
+            '{"auth_types":['
+            '{"type":"APIKey","name":"a","xsoar_param_map":{"token":"key"}},'
+            '{"type":"Passthrough","name":"b",'
+            '"xsoar_param_map":{"token":"access_token"}}'
+            '],"other_connection":[]}'
+        )
+        errors = validate_auth_details(detail)
+        assert any(
+            "share the same set of XSOAR fields" in e for e in errors
+        ), errors
+
+    def test_distinct_keysets_distinct_fields_allowed(self) -> None:
+        """Profiles consuming distinct field sets are valid."""
+        detail = (
+            '{"auth_types":['
+            '{"type":"APIKey","name":"api_key",'
+            '"xsoar_param_map":{"api_key":"key"}},'
+            '{"type":"Plain","name":"credentials",'
+            '"xsoar_param_map":{"credentials.identifier":"username",'
+            '"credentials.password":"password"}}'
+            '],"other_connection":[]}'
+        )
+        assert validate_auth_details(detail) == []
+
+    def test_distinct_keysets_subset_allowed(self) -> None:
+        """A profile whose field set is a strict subset of another's is
+        allowed — only exact keyset duplicates are flagged."""
+        detail = (
+            '{"auth_types":['
+            '{"type":"APIKey","name":"a","xsoar_param_map":{"token":"key"}},'
+            '{"type":"Passthrough","name":"b",'
+            '"xsoar_param_map":{"token":"access_token",'
+            '"tenant":"tenant_id"}}'
+            '],"other_connection":[]}'
+        )
+        assert validate_auth_details(detail) == []
+
+    def test_distinct_keysets_three_way_collision(self) -> None:
+        """Three profiles with identical keysets are reported as one
+        colliding group naming all three indices."""
+        detail = (
+            '{"auth_types":['
+            '{"type":"APIKey","name":"a","xsoar_param_map":{"k":"key"}},'
+            '{"type":"Passthrough","name":"b","xsoar_param_map":{"k":"x"}},'
+            '{"type":"Passthrough","name":"c","xsoar_param_map":{"k":"y"}}'
+            '],"other_connection":[]}'
+        )
+        errors = validate_auth_details(detail)
+        assert any(
+            "share the same set of XSOAR fields" in e and "[0, 1, 2]" in e
+            for e in errors
+        ), errors
+
     def test_other_connection_valid(self) -> None:
         detail = (
             '{"auth_types":[{"type":"APIKey","name":"api_key",'
