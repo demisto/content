@@ -2693,8 +2693,8 @@ def _build_numeric_fetch_interval_field(
                 "units": list(DURATION_UNITS),
                 "output_format": "minutes",
                 "default_value": default_value,
-                "create_modifiers": {"required": False, "hidden": False},
-                "edit_modifiers": {"required": False, "hidden": False},
+                "create_modifiers": {"hidden": False},
+                "edit_modifiers": {"hidden": False},
             },
         }
 
@@ -6391,16 +6391,17 @@ def _engine_common_metadata(
 
 
 def build_engine_mode_field(field_id: str, *, single_engine: bool) -> dict:
-    """Static ``engine_mode`` select (2-option for Appendix H, else 3-option)."""
+    """Static ``engine_mode`` horizontal radio (2-option for Appendix H, else 3-option)."""
     values = (
         _ENGINE_MODE_VALUES_SINGLE if single_engine else _ENGINE_MODE_VALUES_FULL
     )
     return {
         "id": field_id,
         "title": "Engine",
-        "field_type": "select",
+        "field_type": "radio",
         "options": {
             "mask": False,
+            "orientation": "horizontal",
             "default_value": "no_engine",
             "values": [dict(v) for v in values],
             "create_modifiers": {"required": True, "hidden": False},

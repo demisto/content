@@ -3191,8 +3191,8 @@ def test_log_collection_scenario_A_not_long_running_synthetic_eventFetchInterval
     assert efi["options"]["units"] == ["days", "hours", "minutes"]
     assert efi["options"]["default_value"] == {"minutes": 1}
     assert "is_number_input" not in efi["options"]
-    assert efi["options"]["create_modifiers"] == {"required": False, "hidden": False}
-    assert efi["options"]["edit_modifiers"] == {"required": False, "hidden": False}
+    assert efi["options"]["create_modifiers"] == {"hidden": False}
+    assert efi["options"]["edit_modifiers"] == {"hidden": False}
 
 
 def test_log_collection_scenario_A_yml_eventFetchInterval_with_defaultvalue_is_honored():
@@ -3617,8 +3617,8 @@ def test_assets_assetsFetchInterval_no_yml_synthetic_visible_with_fallback_720()
     assert afi["options"]["units"] == ["days", "hours", "minutes"]
     assert afi["options"]["default_value"] == {"hours": 12}
     assert "is_number_input" not in afi["options"]
-    assert afi["options"]["create_modifiers"] == {"required": False, "hidden": False}
-    assert afi["options"]["edit_modifiers"] == {"required": False, "hidden": False}
+    assert afi["options"]["create_modifiers"] == {"hidden": False}
+    assert afi["options"]["edit_modifiers"] == {"hidden": False}
 
 
 def test_assets_assetsFetchInterval_yml_with_defaultvalue_is_honored():
@@ -4100,6 +4100,76 @@ def test_assetsfetchinterval_yml_without_defaultvalue_falls_back_to_one_minute()
 # Threat Intelligence & Enrichment capability builder:
 # add_indicators_capability
 # ============================================================
+def test_add_indicators_capability_top_level_emits_6_fields_with_defaults():
+    """
+    Given: add_indicators_capability called with is_sub_capability=False,
+           no yml params (pure synthetic fallback path).
+    When:  add_indicators_capability runs.
+    Then:  6 fields are emitted with the correct ids, types, and defaults.
+           The ``feed`` toggle is NOT a field — it is auto-enabled via a
+           serializer computed_fields rule.
+    """
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    template = add_indicators_capability(
+        capability_id="threat-intelligence-and-enrichment",
+        is_sub_capability=False,
+        mapped_params=mapped,
+    )
+    assert template["capability_id"] == "threat-intelligence-and-enrichment"
+    fields = template["fields"]
+    assert len(fields) == 6
+
+    by_id = {f["id"]: f for f in fields}
+
+    # feed is NOT emitted as a configurations field.
+    assert "feed" not in by_id
+
+    # feedFetchInterval — duration, fallback 240 min = 4h
+    ffi = by_id["feedFetchInterval"]
+    assert ffi["field_type"] == "duration"
+    assert ffi["options"]["default_value"] == {"hours": 4}
+    assert ffi["options"]["units"] == DURATION_UNITS
+
+    # 3. feedReliability — select, required, default Undetermined
+    fr = by_id["feedReliability"]
+    assert fr["field_type"] == "select"
+    assert fr["options"]["default_value"] == FEED_RELIABILITY_DEFAULT
+    assert fr["options"]["create_modifiers"]["required"] is True
+    assert fr["options"]["description"] == FEED_RELIABILITY_ADDITIONAL_INFO
+    assert len(fr["options"]["values"]) == 6
+
+    # 4. feedExpirationPolicy — select, type 17 values
+    fep = by_id["feedExpirationPolicy"]
+    assert fep["field_type"] == "select"
+    assert fep["options"]["default_value"] == FEED_EXPIRATION_POLICY_DEFAULT
+    assert fep["options"]["values"] == FEED_EXPIRATION_POLICY_VALUES
+
+    # 5. feedExpirationInterval — duration picker, hidden, no title.
+    # The "20160" (2 weeks in minutes) default converts to {"days": 14}.
+    fei = by_id["feedExpirationInterval"]
+    assert fei["field_type"] == "duration"
+    assert fei["options"]["output_format"] == "minutes"
+    assert fei["options"]["units"] == ["days", "hours", "minutes"]
+    assert "is_number_input" not in fei["options"]
+    assert fei["options"]["default_value"] == {"days": 14}
+    assert fei["options"]["create_modifiers"]["hidden"] is True
+    assert fei["options"]["edit_modifiers"]["hidden"] is True
+    # required is forbidden on a duration field.
+    assert "required" not in fei["options"]["create_modifiers"]
+    assert "title" not in fei
+
+    # 6. feedReputation — select, type 18 values
+    frep = by_id["feedReputation"]
+    assert frep["field_type"] == "select"
+    assert frep["options"]["default_value"] == FEED_REPUTATION_DEFAULT
+    assert frep["options"]["values"] == INDICATOR_REPUTATION_VALUES
+    assert frep["options"]["description"] == FEED_REPUTATION_ADDITIONAL_INFO
+
+    # 7. feedBypassExclusionList — checkbox
+    fbe = by_id["feedBypassExclusionList"]
+    assert fbe["field_type"] == "checkbox"
+    assert fbe["options"]["description"] == FEED_BYPASS_EXCLUSION_ADDITIONAL_INFO
+
 def test_add_indicators_capability_feed_auto_enabled_via_serializer(tmp_path: Path):
     """
     Given: add_indicators_capability with a handler_dir (yml may carry a
@@ -4395,6 +4465,34 @@ def test_add_indicators_capability_feedfetchinterval_no_yml_uses_240_min_fallbac
     assert ffi["field_type"] == "duration"
     assert ffi["options"]["default_value"] == {"hours": 4}
 
+def test_add_indicators_capability_feedexpirationinterval_yml_driven():
+    """
+    Given: yml carries feedExpirationInterval with defaultvalue='1440'.
+    When:  add_indicators_capability runs.
+    Then:  The field is a duration picker using the yml default (1440 min =
+           {"days": 1}), is still hidden, and has no title.
+    """
+    yml_lookup = {
+        "feedExpirationInterval": {
+            "name": "feedExpirationInterval",
+            "type": 1,
+            "defaultvalue": "1440",
+        },
+    }
+    mapped: dict[str, list[str]] = {"general_configurations": []}
+    template = add_indicators_capability(
+        capability_id="threat-intelligence-and-enrichment",
+        is_sub_capability=False,
+        mapped_params=mapped,
+        yml_params_by_name=yml_lookup,
+    )
+    fei = {f["id"]: f for f in template["fields"]}["feedExpirationInterval"]
+    assert fei["field_type"] == "duration"
+    assert fei["options"]["output_format"] == "minutes"
+    assert fei["options"]["units"] == ["days", "hours", "minutes"]
+    assert fei["options"]["default_value"] == {"days": 1}
+    assert fei["options"]["create_modifiers"]["hidden"] is True
+    assert "title" not in fei
 
 def test_add_indicators_capability_uses_yml_display_for_titles():
     """

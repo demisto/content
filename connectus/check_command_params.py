@@ -320,7 +320,7 @@ from capture_proxy import CaptureProxy  # noqa: E402
 # --------------------------------------------------------------------------
 
 PARAMS_VAR_ALIASES = {"params", "integration_params", "config", "PARAMS"}
-URL_PARAM_NAMES = {"url", "server", "base_url", "host", "endpoint"}
+URL_PARAM_NAMES = {"url", "server","server_url", "base_url", "host", "endpoint"}
 
 
 # Change 1: verdict labels emitted on ParamAttribution to power the

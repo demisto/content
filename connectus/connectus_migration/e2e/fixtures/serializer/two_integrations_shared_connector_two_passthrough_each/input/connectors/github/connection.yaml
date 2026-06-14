@@ -121,7 +121,7 @@ profiles:
   - fields:
     - id: engine
       title: Engine
-      field_type: select
+      field_type: radio
       metadata:
         event:
           publish: true
@@ -136,6 +136,7 @@ profiles:
             integrationID: GitHub
             dynamicField: engine
       options:
+        orientation: horizontal
         mask: false
         placeholder: Select an engine
         create_modifiers:
@@ -269,7 +270,7 @@ profiles:
   - fields:
     - id: passthrough.github_passthrough_secondary_engine
       title: Engine
-      field_type: select
+      field_type: radio
       metadata:
         event:
           publish: true
@@ -285,6 +286,7 @@ profiles:
             dynamicField: engine
       options:
         mask: false
+        orientation: horizontal
         placeholder: Select an engine
         create_modifiers:
           required: false

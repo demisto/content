@@ -1,11 +1,21 @@
 Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details,Collect Capabilities,Params to Commands,Params for test with default in code,UCP param-default review,Params to Capabilities,generated manifest,handler param coverage,run manifest make validate,Release Notes,precommit/validate/unit tests passed,param parity test passes,code reviewed,code merged
-AMP,Packs/AMP/Integrations/AMP/AMP.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
-AMPv2,Packs/AMP/Integrations/AMPv2/AMPv2.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
-APIVoid,Packs/APIVoid/Integrations/APIVoid/APIVoid.yml,APIVoid,,joeymizrahi,,,,,,,,,,,,,,
-AWS - ACM,Packs/AWS-ACM/Integrations/AWS-ACM/AWS-ACM.yml,AWS,connectors/aws,joeymizrahi,"{""auth_types"":[{""type"":""Passthrough"",""name"":""aws_credentials"",""xsoar_param_map"":{""credentials.identifier"":""aws_access_key_id"",""credentials.password"":""aws_secret_access_key"",""roleArn"":""role_arn"",""roleSessionName"":""role_session_name"",""sessionDuration"":""role_session_duration""},""interpolated"":true}],""other_connection"":[""defaultRegion"",""insecure"",""proxy"",""retries"",""sts_regional_endpoint"",""timeout""]}","[""Automation""]","{""commands"":{""aws-acm-add-tags-to-certificate"":[],""aws-acm-describe-certificate"":[],""aws-acm-get-certificate"":[],""aws-acm-list-certificates"":[],""aws-acm-list-tags-for-certificate"":[],""aws-acm-remove-tags-from-certificate"":[],""test-module"":[]},""integration"":""AWS - ACM""}",{},✅,"{
+AMP,Packs/AMP/Integrations/AMP/AMP.yml,Cisco Security,,joeymizrahi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""server""]}",,,,,,,,,,,,,
+AMPv2,Packs/AMP/Integrations/AMPv2/AMPv2.yml,Cisco Security,connectors/cisco-security,joeymizrahi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""server_url""]}","[""Fetch Issues"", ""Automation""]","{""commands"":{""cisco-amp-app-trajectory-query-list"":[],""cisco-amp-computer-activity-list"":[],""cisco-amp-computer-delete"":[],""cisco-amp-computer-isolation-create"":[],""cisco-amp-computer-isolation-delete"":[],""cisco-amp-computer-isolation-feature-availability-get"":[],""cisco-amp-computer-isolation-get"":[],""cisco-amp-computer-list"":[],""cisco-amp-computer-move"":[],""cisco-amp-computer-trajectory-list"":[],""cisco-amp-computer-user-activity-list"":[],""cisco-amp-computer-user-trajectory-list"":[],""cisco-amp-computer-vulnerabilities-list"":[],""cisco-amp-event-list"":[""create_relationships"",""integrationReliability""],""cisco-amp-event-type-list"":[],""cisco-amp-file-list-item-create"":[],""cisco-amp-file-list-item-delete"":[],""cisco-amp-file-list-item-list"":[],""cisco-amp-file-list-list"":[],""cisco-amp-group-create"":[],""cisco-amp-group-delete"":[],""cisco-amp-group-list"":[],""cisco-amp-group-parent-update"":[],""cisco-amp-group-policy-update"":[],""cisco-amp-indicator-list"":[],""cisco-amp-license-get"":[],""cisco-amp-policy-list"":[],""cisco-amp-version-get"":[],""cisco-amp-vulnerability-list"":[],""endpoint"":[],""fetch-incidents"":[""event_types"",""first_fetch"",""incident_severities"",""include_null_severities"",""max_fetch""],""file"":[""integrationReliability""],""test-module"":[]},""integration"":""AMPv2""}",{},✅,"{
   ""general_configurations"": [],
-  ""Automation"": []
-}",✅,✅,✅,"{""required"": false, ""path"": null, ""verified"": false}",✅,✅,,
+  ""Fetch Issues"": [
+    ""event_types"",
+    ""first_fetch"",
+    ""incident_severities"",
+    ""include_null_severities"",
+    ""max_fetch""
+  ],
+  ""Automation"": [
+    ""create_relationships"",
+    ""integrationReliability""
+  ]
+}",✅,✅,✅,"{""required"": false, ""path"": null, ""verified"": false}",,,,
+APIVoid,Packs/APIVoid/Integrations/APIVoid/APIVoid.yml,APIVoid,,joeymizrahi,,,,,,,,,,,,,,
+AWS - ACM,Packs/AWS-ACM/Integrations/AWS-ACM/AWS-ACM.yml,AWS,connectors/aws,joeymizrahi,"{""auth_types"":[{""type"":""Passthrough"",""name"":""aws_credentials"",""xsoar_param_map"":{""credentials.identifier"":""aws_access_key_id"",""credentials.password"":""aws_secret_access_key"",""roleArn"":""role_arn"",""roleSessionName"":""role_session_name"",""sessionDuration"":""role_session_duration""},""interpolated"":true}],""other_connection"":[""defaultRegion"",""insecure"",""proxy"",""retries"",""sts_regional_endpoint"",""timeout""]}","[""Automation""]","{""commands"":{""aws-acm-add-tags-to-certificate"":[],""aws-acm-describe-certificate"":[],""aws-acm-get-certificate"":[],""aws-acm-list-certificates"":[],""aws-acm-list-tags-for-certificate"":[],""aws-acm-remove-tags-from-certificate"":[],""test-module"":[]},""integration"":""AWS - ACM""}",,,,,,,,,,,
 AWS - AccessAnalyzer,Packs/AWS-AccessAnalyzer/Integrations/AWS-AccessAnalyzer/AWS-AccessAnalyzer.yml,AWS,,joeymizrahi,,,,,,,,,,,,,,
 AWS - Athena - Beta,Packs/AWS-Athena/Integrations/AWS-Athena/AWS-Athena.yml,AWS,,joeymizrahi,,,,,,,,,,,,,,
 AWS - CloudTrail,Packs/AWS-CloudTrail/Integrations/AWS-CloudTrail/AWS-CloudTrail.yml,AWS,,joeymizrahi,,,,,,,,,,,,,,

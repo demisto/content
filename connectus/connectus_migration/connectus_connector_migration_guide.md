@@ -371,6 +371,7 @@ Icons are excluded from `connectors.tar.gz` and uploaded by CI to GCS at `images
 | `input` | Text input. |
 | `text_area` | Multi-line text. |
 | `select` | Single-choice dropdown (scalar value). |
+| `radio` | Single-choice radio-button group (scalar value). Same `{key, label}` options and scalar `default_value` as `select`; set `options.orientation` (`horizontal`/`vertical`). Used for `engine_mode` (§3.7). |
 | `multi_select` | Multi-choice dropdown (array of keys). |
 | `checkbox` | Single boolean toggle. |
 | `checkbox_group` | Multiple checkboxes (uses `fields[]` for items). |
@@ -396,6 +397,7 @@ Schema: [`field-options.schema.json`](schema/definitions/field-options.schema.js
 | `clearable` | ❌ | Whether the user can clear the selection back to empty. **Migration MUST set `true` on every `select`/`multi_select`.** Only valid on those types. |
 | `units` | duration | Ordered unique time-unit boxes. **Migration MUST emit exactly `["days","hours","minutes"]`.** |
 | `output_format` | duration | `"iso8601"` (default) or `"minutes"`. **Migration MUST set `"minutes"`.** |
+| `orientation` | ❌ | `"horizontal"` or `"vertical"`. Layout direction for `radio` (and checkbox groups). **Migration MUST set `"horizontal"` on `engine_mode`.** |
 | `layout` | ❌ | `cols` (≤ 6) and `row_span`. |
 | `create_modifiers` / `edit_modifiers` | ❌ | `{required, hidden, read_only}`. **`duration` forbids `required`.** |
 
@@ -752,7 +754,7 @@ A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`
 
 1. For each profile, follow §2.2 and the auth-parameter tagging in §2.6.
 2. **Mass-migration profile types are restricted to `plain`, `api_key`, and `passthrough`** (§2.2). Use **`plain`** for user/password auth and **`api_key`** for a single API-key secret; use **`passthrough`** (§2.6.1) when the credentials can't be cleanly mapped to `plain`/`api_key` or need several inputs at once (e.g. Slack v3).
-3. **`engine`/`engine_group`/`proxy`/`insecure`** appear once inside each profile that needs them. Because a handler binds to exactly one profile, the user supplies a single value per instance.
+3. **`engine`/`engine_group`/`proxy`/`insecure`** appear once inside each profile that needs them. Because a handler binds to exactly one profile, the user supplies a single value per instance. `proxy` & `insecure` will only be used if the integration YML has defined them.
 4. **`profiles[].view_group`** (Grouped): every profile references one `connection.yaml view_groups[].id`.
    - **A profile cannot be shared across two integrations/handlers.** The chain is causal: a profile points to **exactly one** `view_group`, and each `view_group` belongs to **exactly one** integration — therefore a single profile can only ever serve one integration. Declare a **separate profile per integration** even when the auth is identical (e.g. `oauth2_client_credentials.salesforce` and `.salesforce-iam`). Two handlers MUST NOT reference the same profile id.
 5. **One profile per handler — OR, never AND.** A handler binds to a single profile at runtime. Multiple auth methods → separate profiles sharing one `view_group`, advertised as alternatives in `auth_options[]` (user picks one). If an integration needs several inputs simultaneously, model it as one `passthrough` profile.
@@ -862,7 +864,7 @@ Replaces legacy `engine`/`engineGroup`. The three fields live **inside the conne
 
 | ID | Type | Default | `event.publish` | `config_type` |
 |---|---|---|---|---|
-| `engine_mode` | `select` (radio) | `no_engine` | ❌ (the only non-published, non-secret field) | — |
+| `engine_mode` | `radio` (horizontal) | `no_engine` | ❌ (the only non-published, non-secret field) | — |
 | `engine` | `select` + `dynamic_values` (`dynamicField: engine`) | — | ✅ | `backend` |
 | `engine_group` | `select` + `dynamic_values` (`dynamicField: engine-group`) | — | ✅ | `backend` |
 
@@ -875,10 +877,11 @@ Replaces legacy `engine`/`engineGroup`. The three fields live **inside the conne
 ```yaml
 # connection.yaml — inside a profile's configurations[].fields[]
 - id: engine_mode
-  field_type: select
+  field_type: radio          # horizontal radio group — NOT a select dropdown
   title: Engine
   options:
     required: true
+    orientation: horizontal  # render the radio options in a single horizontal row
     default_value: no_engine
     values:
       - { key: no_engine, label: "No engine" }
@@ -926,6 +929,7 @@ The `proxy` field (a `checkbox`) lives in the same connection profile alongside 
 - **`proxy` is `read_only` (locked, unchecked) while `engine_mode == "no_engine"`** (i.e. no engine and no engine group is chosen).
 - **Once the user selects an engine OR an engine group** (`engine_mode == "engine"` OR `engine_mode == "engine_group"`), `proxy` becomes editable so the user can check it.
 - A tooltip explains the lock: **"Use system proxy settings is enabled only when an engine or engine group are chosen."**
+- proxy is only a field in the profile if the integration YML has this field defined
 
 The lock is enforced via a reversible [`triggers.yaml`](README.md:833) effect: `read_only: true` while `engine_mode == "no_engine"`, automatically reversed when an engine/engine group is selected.
 
@@ -961,6 +965,7 @@ triggers:
 #### Insecure field — always editable
 
 The `insecure` field (a `checkbox`) also lives in the same connection profile. Its title is **"Trust any certificate (not secure)"**, it defaults to **off** (`false`), and — unlike `proxy` — it is **always editable** (`read_only: false` at all times, no engine gating, no trigger).
+- `insecure` is only a field in the profile if the integration YML has this field defined
 
 | ID | Type | Title | Default | `read_only` | `event.publish` | `config_type` |
 |---|---|---|---|---|---|---|
@@ -980,7 +985,7 @@ The `insecure` field (a `checkbox`) also lives in the same connection profile. I
     edit_modifiers: { required: false, read_only: false, hidden: false }
 ```
 
-**Carve-outs:** [Appendix G](#appendix-g-engine--proxy-exclusion-list) — emit none of the engine fields and no `proxy`. [Appendix H](#appendix-h-single-engine-integrations) — emit `engine_mode` (2 options: `no_engine` + `engine`) and `engine` only; omit `engine_group` (the proxy read-only rule still applies, gated on `engine_mode == "no_engine"`). If the FE lacks a horizontal-radio `select`, fall back to plain `select` (IDs/keys/triggers unchanged).
+**Carve-outs:** [Appendix G](#appendix-g-engine--proxy-exclusion-list) — emit none of the engine fields and no `proxy`. [Appendix H](#appendix-h-single-engine-integrations) — emit `engine_mode` (2 options: `no_engine` + `engine`) and `engine` only; omit `engine_group` (the proxy read-only rule still applies, gated on `engine_mode == "no_engine"`).
 
 #### BE-auto-added params (now explicit)
 
