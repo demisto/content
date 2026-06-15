@@ -2084,14 +2084,7 @@ def main() -> None:  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    masked_params = demisto.params()
 
-    outputs = {
-        "metadata": demisto.unifiedConnectorMetadata(),
-        "Params": masked_params,
-    }
-
-    demisto.info(f"{outputs=}")
     # Commands dictionary
     commands: dict[str, Callable] = {
         "google-drive-create": drive_create_command,
@@ -2122,7 +2115,7 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
 
     try:
-        demisto.info("guy afik where are my logs")
+
         params = demisto.params()
 
         account_json = params.get("user_creds", {}).get("password") or params.get("user_service_account_json")
