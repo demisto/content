@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../../../../../schema/handler.schema.json
+id: xsoar-zoom_iam
+metadata:
+  version: 1.0.0
+  description: XSOAR handler for Zoom_IAM.
+  module: xsoar
+  tags: []
+  ownership:
+    team: xsoar
+    maintainers:
+    - '@xsoar-content'
+enabled: true
+triggering:
+  type: PUB_SUB
+  labels:
+    xsoar-integration-id: Zoom_IAM
+    xsoar-pack-id: auth
+  args: {}
+capabilities:
+- id: automation-and-remediation_zoom_iam
+  auth_options:
+  - id: passthrough.zoom_iam
+    workloads:
+    - xsoar-pod
+test_connection:
+  type: service
+  service: xsoar
+  endpoint: /settings/integration/connector/verification
