@@ -1,5 +1,5 @@
 comment: >-
-  Internal field-change router for Vega Status, Vega Incident Status, and Vega Verdict layout fields.
+  Internal field-change router for Vega Status, Vega Incident Status, Vega Verdict, and Vega Severity layout fields.
   Routes updates to the Vega integration commands based on investigation type.
 commonfields:
   id: vega-sync-field-on-change
@@ -12,15 +12,15 @@ script: ""
 scripttarget: 0
 subtype: python3
 tags:
-  - field-change-triggered
+- field-change-triggered
 type: python
 fromversion: 6.10.0
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
 args:
-  - name: old
-    description: Previous field value when triggered by a layout field change.
-    hidden: true
-  - name: new
-    description: New field value when triggered by a layout field change.
-    hidden: true
+- name: old
+  description: Previous field value when triggered by a layout field change.
+  hidden: true
+- name: new
+  description: New field value when triggered by a layout field change.
+  hidden: true

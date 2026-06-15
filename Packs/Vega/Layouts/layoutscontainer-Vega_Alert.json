@@ -34,7 +34,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "severity",
+								"fieldId": "vegaalertseverity",
 								"height": 26,
 								"id": "incident-severity-field",
 								"index": 1,
@@ -362,7 +362,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "severity",
+								"fieldId": "vegaalertseverity",
 								"height": 53,
 								"id": "4a6b4542-e1f7-4c3a-86c4-386caff57a61",
 								"index": 0,
@@ -496,7 +496,7 @@
 					},
 					{
 						"h": 6,
-						"hideName": false,
+						"hideName": true,
 						"i": "kmppymlq3f-alert-events-section",
 						"items": [],
 						"maxW": 3,

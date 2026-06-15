@@ -7,7 +7,7 @@
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Vega Alert ID": {
-                    "simple": "id"
+                    "simple": "vegaAlertId"
                 },
                 "Vega Detection ID": {
                     "simple": "detectionId"
@@ -69,8 +69,8 @@
                 "dbotMirrorTags": {
                     "simple": "mirror_tags"
                 },
-                "severity": {
-                    "simple": "xsoarSeverity"
+                "Vega Alert Severity": {
+                    "simple": "severity"
                 }
             }
         },
@@ -128,6 +128,9 @@
                 "Vega Timeline Events": {
                     "simple": "vegaTimelineEvents"
                 },
+                "Vega Comments": {
+                    "simple": "comments"
+                },
                 "External Link": {
                     "simple": "link"
                 },
@@ -143,8 +146,8 @@
                 "dbotMirrorTags": {
                     "simple": "mirror_tags"
                 },
-                "severity": {
-                    "simple": "xsoarSeverity"
+                "Vega Severity": {
+                    "simple": "severity"
                 }
             }
         }

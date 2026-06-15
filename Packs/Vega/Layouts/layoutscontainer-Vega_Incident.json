@@ -65,7 +65,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "severity",
+								"fieldId": "vegaseverity",
 								"height": 26,
 								"id": "incident-severity-field",
 								"index": 1,
@@ -407,7 +407,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "severity",
+								"fieldId": "vegaseverity",
 								"height": 53,
 								"id": "c9000510-fa11-4568-a9a8-c0b2b362638e",
 								"index": 2,
@@ -513,7 +513,7 @@
 						"moved": false,
 						"name": "Investigation Timeline",
 						"static": false,
-						"w": 3,
+						"w": 2,
 						"x": 0,
 						"y": 8
 					},
@@ -535,18 +535,20 @@
 							{
 								"endCol": 2,
 								"fieldId": "vegalastupdated",
-								"height": 26,
+								"height": 53,
 								"id": "bce6c176-69ef-4c64-9021-e56936a962b2",
-								"index": 2,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
+								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "vegadatasources",
 								"height": 53,
 								"id": "a618b688-c7e2-4d94-a86b-9aff7a9a8891",
-								"index": 1,
+								"index": 2,
+								"listId": "js3vpk9qph-08fbf591-b28b-4665-a558-8ad4519f25f6",
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -559,6 +561,31 @@
 						"w": 1,
 						"x": 2,
 						"y": 3
+					},
+					{
+						"displayType": "CARD",
+						"h": 7,
+						"hideName": true,
+						"i": "js3vpk9qph-f9e9e215-7864-4007-a6e5-e88126b82ac9",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "vegacomments",
+								"height": 106,
+								"id": "vega-incident-comments-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Comment",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 8
 					}
 				],
 				"type": "custom"

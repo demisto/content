@@ -10,16 +10,16 @@ script: ""
 scripttarget: 0
 subtype: python3
 tags:
-  - widget
+- widget
 type: python
 fromversion: 6.10.0
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
 args:
-  - name: alert_id
-    description: Vega alert ID. When omitted, uses vegaalertid from the current incident.
-  - name: limit
-    description: Number of alert events to display per page. All events are fetched from Vega automatically.
-    defaultValue: "200"
-  - name: offset
-    description: Pagination offset for alert events.
+- name: alert_id
+  description: Vega alert ID. When omitted, uses vegaalertid from the current incident.
+- name: limit
+  description: Number of alert events to display per page. All events are fetched from Vega automatically.
+  defaultValue: "200"
+- name: offset
+  description: Pagination offset for alert events.

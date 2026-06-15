@@ -175,7 +175,7 @@ def _resolve_alert_id(args: dict, incident: dict, custom_fields: dict) -> str | 
                     return None
                 if not incident_type and raw.get("vegaEntityType") not in (None, VEGA_ALERT_INCIDENT_TYPE):
                     return None
-                raw_id = raw.get("id")
+                raw_id = raw.get("vegaAlertId") or raw.get("id")
                 if raw_id is not None and str(raw_id).strip():
                     return str(raw_id).strip()
         except (json.JSONDecodeError, TypeError, ValueError):

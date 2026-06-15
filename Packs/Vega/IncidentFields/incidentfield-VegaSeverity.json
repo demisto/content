@@ -1,17 +1,17 @@
 {
-    "id": "incident_vegastatus",
+    "id": "incident_vegaseverity",
     "version": -1,
-    "name": "Vega Status",
+    "name": "Vega Severity",
     "ownerOnly": false,
-    "description": "The current status of a Vega alert.",
-    "cliName": "vegastatus",
+    "description": "The severity assigned to the Vega incident.",
+    "cliName": "vegaseverity",
     "script": "vega-sync-field-on-change",
     "type": "singleSelect",
     "selectValues": [
-        "OPEN",
-        "IN PROGRESS",
-        "PEER REVIEW",
-        "RESOLVED"
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
     ],
     "openEnded": false,
     "closeForm": false,
@@ -26,7 +26,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Vega Alert"
+        "Vega Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,
