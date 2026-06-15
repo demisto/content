@@ -673,8 +673,16 @@ def derive_handler_id(integration_id: str) -> str:
         derive_handler_id("My Integration") → "xsoar-my-integration"
         derive_handler_id("CrowdStrike Falcon") → "xsoar-crowdstrike-falcon"
         derive_handler_id("EWS v2") → "xsoar-ews-v2"
+        derive_handler_id("Zoom_IAM") → "xsoar-zoom_iam"
     """
     # Lowercase + collapse internal whitespace runs to single dashes.
+    # NOTE: underscores are intentionally PRESERVED here — the integration
+    # slug embedded in the handler id is the same slug used to key
+    # ``sub_capabilities_to_licenses.json`` (e.g. ``zoom_iam``,
+    # ``netskope_api_v2``), so normalizing ``_`` -> ``-`` would desync the
+    # sub-capability id from the license map. ``slugify_view_group_id`` is
+    # kept in lockstep (it also preserves ``_``) so the view_group registry
+    # and references agree.
     slug = re.sub(r"\s+", "-", integration_id.strip().lower())
     slug = slug.replace("---", "-")
     return f"xsoar-{slug}"
@@ -3270,7 +3278,12 @@ def add_assets_capability(
 _FEEDFETCHINTERVAL_DEFAULT_TITLE = "Feed Fetch Interval"
 _FEEDRELIABILITY_DEFAULT_TITLE = "Source Reliability"
 _FEEDEXPIRATIONPOLICY_DEFAULT_TITLE = ""  # module.go does not set a display
-_FEEDEXPIRATIONINTERVAL_DEFAULT_TITLE = ""  # no display name per spec
+# The XSOAR YML carries display: "" for this field, but the connectus
+# configurations schema requires a non-empty ``title`` on every field. Emit the
+# standard XSOAR label so the field is schema-valid (it is hidden by default and
+# revealed via the feedExpirationPolicy == interval trigger, so the title is only
+# shown once revealed).
+_FEEDEXPIRATIONINTERVAL_DEFAULT_TITLE = "Feed Expiration Interval"
 _FEEDREPUTATION_DEFAULT_TITLE = "Indicator Verdict"
 _FEEDBYPASSEXCLUSIONLIST_DEFAULT_TITLE = "Bypass exclusion list"
 _FEEDINCREMENTAL_DEFAULT_TITLE = "Incremental Feed"
@@ -3482,8 +3495,11 @@ def _build_feedexpirationinterval_field(
         # per-unit default / required stripped).
         field = _map_type_19(yml_param)
         field["id"] = field_id
-        # No display name per spec.
-        field.pop("title", None)
+        # The XSOAR YML display is empty, but the configurations schema requires
+        # a non-empty title on every field — emit the standard label (the field
+        # is hidden until the feedExpirationPolicy == interval trigger reveals it).
+        if not field.get("title"):
+            field["title"] = _FEEDEXPIRATIONINTERVAL_DEFAULT_TITLE
         options = field.setdefault("options", {})
         # Force hidden — the trigger reveals it.
         for mod_key in ("create_modifiers", "edit_modifiers"):
@@ -3491,13 +3507,14 @@ def _build_feedexpirationinterval_field(
             mod["hidden"] = True
         return field
 
-    # Synthetic fallback path — duration field, hidden, no title.
+    # Synthetic fallback path — duration field, hidden, schema-required title.
     minutes = _coerce_interval_minutes(FEED_EXPIRATION_INTERVAL_DEFAULT)
     default_value = _minutes_to_duration_default(
         minutes if minutes is not None else 1
     )
     return {
         "id": field_id,
+        "title": _FEEDEXPIRATIONINTERVAL_DEFAULT_TITLE,
         "field_type": "duration",
         "options": {
             "units": list(DURATION_UNITS),
@@ -5734,6 +5751,35 @@ def _apply_common_field_metadata(field: dict, yml_param: dict) -> None:
     options["edit_modifiers"] = {"required": required, "hidden": hidden}
 
 
+def _remap_select_default(field: dict, remap: dict[str, str]) -> None:
+    """Remap a select field's legacy ``default_value`` to a canonical option key.
+
+    Some XSOAR select params (type 17 ``feedExpirationPolicy``, type 18
+    ``feedReputation``) carry a legacy ``defaultvalue`` whose key does not match
+    the new canonical ``values[].key`` set the generator emits. Carrying the
+    legacy key verbatim trips the OPA ``default_value does not match any
+    values[].key`` check. This rewrites the default through ``remap`` when a
+    mapping exists. If the current default is already a valid option key it is
+    left as-is; if it is neither a valid key nor remappable, it is dropped so
+    the field falls back to the platform's own default rather than emitting an
+    invalid one.
+    """
+    options = field.get("options") or {}
+    if "default_value" not in options:
+        return
+    current = options["default_value"]
+    valid_keys = {v.get("key") for v in options.get("values", []) or []}
+    if current in valid_keys:
+        return
+    mapped = remap.get(current)
+    if mapped is not None and mapped in valid_keys:
+        options["default_value"] = mapped
+    else:
+        # Unmappable / unknown legacy value — drop it rather than emit an
+        # invalid default that fails OPA validation.
+        options.pop("default_value", None)
+
+
 def _coerce_toggle_default(raw: Any) -> bool:
     """Convert XSOAR's str/bool default for type 8 (boolean) into a Python bool."""
     if isinstance(raw, str):
@@ -5942,6 +5988,22 @@ FEED_EXPIRATION_POLICY_VALUES: list[dict] = [
     {"key": "When removed from the feed", "label": "When removed from the feed"},
 ]
 
+# Legacy XSOAR ``feedExpirationPolicy`` ``defaultvalue`` keys -> the canonical
+# option keys above. The XSOAR YML carries the legacy form
+# (``never`` / ``interval`` / ``indicatorType`` / ``suddenDeath``) which does
+# NOT match the new ``values[].key`` set, so a verbatim carry-over produces a
+# ``default_value does not match any values[].key`` OPA violation. Mapping:
+#   never        -> Never Expire
+#   interval     -> Time Interval
+#   indicatorType-> indicatorType (unchanged)
+#   suddenDeath  -> When removed from the feed
+FEED_EXPIRATION_POLICY_DEFAULT_REMAP: dict[str, str] = {
+    "never": "Never Expire",
+    "interval": "Time Interval",
+    "indicatorType": "indicatorType",
+    "suddenDeath": "When removed from the feed",
+}
+
 # Per guide Appendix A type 18: "Indicator / Feed Reputation". The
 # "new mapped values" — the legacy XSOAR values were
 # None/Good/Suspicious/Bad. The platform consumer (BE+FE) expects the
@@ -5952,6 +6014,18 @@ INDICATOR_REPUTATION_VALUES: list[dict] = [
     {"key": "Suspicious", "label": "Suspicious"},
     {"key": "Malicious", "label": "Malicious"},
 ]
+
+# Legacy XSOAR ``feedReputation`` ``defaultvalue`` keys -> canonical option
+# keys above. Legacy XSOAR values were None/Good/Suspicious/Bad; the platform
+# expects Unknown/Benign/Suspicious/Malicious. A verbatim carry-over of the
+# legacy default (e.g. ``Good``) yields a ``default_value does not match any
+# values[].key`` OPA violation.
+INDICATOR_REPUTATION_DEFAULT_REMAP: dict[str, str] = {
+    "None": "Unknown",
+    "Good": "Benign",
+    "Suspicious": "Suspicious",
+    "Bad": "Malicious",
+}
 
 
 def _map_type_17(yml_param: dict) -> dict:
@@ -5972,6 +6046,7 @@ def _map_type_17(yml_param: dict) -> dict:
     }
     _apply_searchable_clearable(field)
     _apply_common_field_metadata(field, yml_param)
+    _remap_select_default(field, FEED_EXPIRATION_POLICY_DEFAULT_REMAP)
     return field
 
 
@@ -5994,6 +6069,7 @@ def _map_type_18(yml_param: dict) -> dict:
     }
     _apply_searchable_clearable(field)
     _apply_common_field_metadata(field, yml_param)
+    _remap_select_default(field, INDICATOR_REPUTATION_DEFAULT_REMAP)
     return field
 
 
@@ -6148,6 +6224,15 @@ AUTH_TYPE_TO_PROFILE_TYPE: dict[str, str] = {
     "APIKey": "api_key",
     "Plain": "plain",
     "Passthrough": "passthrough",
+    # A NoneRequired integration (a no-auth feed such as Zoom Feed that only
+    # pulls public data over a URL) has NO credentials. The connection schema
+    # still requires >=1 profile (profiles.minItems == 1), so it is rendered as
+    # an ``external_auth`` profile that carries ONLY the connection-adjacent
+    # fields (the ``other_connection`` list — url/proxy/insecure — plus the
+    # engine pattern) and no auth fields. ``external_auth`` is chosen because
+    # the schema permits free-form (or absent) auth parameters for it and
+    # requires only ``configurations`` (satisfied by those connection fields).
+    "NoneRequired": "external_auth",
 }
 
 # (profile_type, classifier-role) → connection.yaml metadata.auth.parameter.
@@ -7191,11 +7276,23 @@ def attach_per_profile_connection_fields(
 # Part D — view_groups registry + general_configurations (rest of other_connection)
 # ---------------------------------------------------------------------------
 def slugify_view_group_id(integration_id: str) -> str:
-    """Tile id for an integration (lowercase, dashes)."""
+    """Tile id for an integration (lowercase, whitespace -> dashes).
+
+    Underscores are PRESERVED (not converted to dashes) so this stays in
+    lockstep with the handler-derived view_group id
+    (``view_group_id_for_handler`` -> ``handler_id_to_integration_slug`` ->
+    ``derive_handler_id``, which keeps underscores). For an integration id
+    like ``Zoom_IAM`` both sides yield ``zoom_iam``; converting ``_`` -> ``-``
+    here would desync the registry id (``zoom-iam``) from the referencing
+    entries (``zoom_iam``) and leave the view_group unregistered (OPA
+    cross-file violation). The same underscore slug also keys the license map.
+    """
     s = integration_id.strip().lower()
-    s = re.sub(r"[^a-z0-9-]+", "-", s)
+    # Allow word chars (incl. underscore) and dashes; everything else (spaces,
+    # punctuation) collapses to a dash.
+    s = re.sub(r"[^a-z0-9_-]+", "-", s)
     s = re.sub(r"-+", "-", s).strip("-")
-    return s.replace("---", "-")
+    return s
 
 
 def view_group_id_for_handler(handler_id: str) -> str:

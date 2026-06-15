@@ -22,7 +22,7 @@ One up-front read replaces several calls: `python3 content/connectus/workflow_st
 | 6 | UCP param-default review | `check_param_defaults.py --integration-id <id> --human` → present → fix → `markpass "UCP param-default review"` | §6 |
 | 7 | Params to Capabilities | mapper → `set-params-to-capabilities` | §7 |
 | 8 | Generated manifest | `manifest_generator.py <yml> <title=Connector ID> <Params-to-Capabilities raw> <Auth-Details raw>` → `set-connector-path "<id>" connectors/<slug Connector ID>` → `markpass "generated manifest"` (title comes from the `Connector ID` column so a connector's integrations share one folder) | §8 |
-| 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id> --json` → **fail-and-ask if `pass:false`** → `markpass "handler param coverage"` | §9 |
+| 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id> --json` → **fail-and-ask if `pass:false`** (resolve via IGNORED_PARAMS, fix-upstream, or `--force` override) → `markpass "handler param coverage"` | §9 |
 | 10 | Validate manifest | `demisto-sdk validate` → `markpass "run manifest make validate"` | §10 |
 | 11 | Param parity | `markpass "param parity test passes"` | §13 |
 | 12 | Code reviewed | `markpass "code reviewed"` | §14 |
@@ -1780,9 +1780,39 @@ options:
    classification error). Go back to the relevant step (Step 2 `set-auth`,
    Step 7 `set-params-to-capabilities`, etc.), correct the input, regenerate
    the manifest (Step 8), and re-run this check.
+4. **Force-override the gate (`--force`).** When the user explicitly judges
+   the uncovered params are known-safe to skip — e.g. a **deprecated,
+   label-less auth alternative** (a `type: 9` credentials pair whose only
+   label is a `displaypassword` reading "…(Deprecated)" and which the code
+   treats as a mutually-exclusive fallback) — the coverage checker accepts a
+   `--force` flag. It STILL computes and reports the uncovered params (they
+   remain in `missing`) but exits `0` and sets `"forced": true` in the JSON
+   envelope, so the override is auditable and the real gap is never hidden:
+
+   ```bash
+   # direct checker run (transparency): shows missing + forced:true, exits 0
+   python3 content/connectus/check_handler_param_coverage.py \
+     --integration-id "<Integration ID>" --json --force
+   ```
+
+   To make the **self-executing `markpass` gate** apply the override, set the
+   `CONNECTUS_HANDLER_COVERAGE_FORCE` env var (the gate appends `--force` when
+   it is truthy):
+
+   ```bash
+   CONNECTUS_HANDLER_COVERAGE_FORCE=1 \
+     python3 content/connectus/workflow_state.py markpass \
+     "<Integration ID>" "handler param coverage"
+   ```
+
+   Prefer `--force` over editing `IGNORED_PARAMS` when the skip is a
+   one-off, integration-specific judgment (the env var/flag is scoped to a
+   single run and does not silently affect every other integration the way a
+   shared-constant edit does). Like option 2, `--force` is used ONLY on the
+   user's explicit instruction.
 
 Only after the user picks an option and the resulting state is clean (or the
-user explicitly chose mark-pass) do you run
+user explicitly chose mark-pass / force) do you run
 `markpass "<Integration ID>" "handler param coverage"`.
 
 ### Step 10: `run manifest make validate`
