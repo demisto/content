@@ -87,18 +87,19 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def _prereq_reminder(gke_project: str) -> bool:
     """Show the prerequisites prompt; return True if the user wants to continue."""
-    print("⚠️  Prerequisites:")
-    print("    1. Request permissions in #xdr-permissions-dev:")
-    print(
-        f"       permissions role=xsoar-content-tier1, project={gke_project}, "
-        f"reason=port forwarding for testing, approver=<your username>"
+    log.info("⚠️  Prerequisites:")
+    log.info("    1. Request permissions in #xdr-permissions-dev:")
+    log.info(
+        "       permissions role=xsoar-content-tier1, project=%s, "
+        "reason=port forwarding for testing, approver=<your username>",
+        gke_project,
     )
-    print()
+    log.info("")
     try:
         input("    Press Enter to continue (or Ctrl+C to abort)... ")
         return True
     except KeyboardInterrupt:
-        print("\n    Aborted.")
+        log.info("Aborted.")
         return False
 
 
@@ -108,46 +109,57 @@ def main(argv: list[str] | None = None) -> int:
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         datefmt="%H:%M:%S",
+        stream=sys.stdout,
+        # force=True is required because importing xsoar_capture runs
+        # logging.basicConfig() at module-import time (with no stream → stderr).
+        # basicConfig is a no-op once the root logger already has a handler, so
+        # without force=True our stream=sys.stdout would be silently ignored and
+        # records would land on the pre-installed stderr handler. force=True
+        # removes that handler and reinstalls one on stdout (matching the prior
+        # print(...) behavior).
+        force=True,
     )
 
-    print("🔧 UCP Instance Creator (with params-parity probe)")
-    print("━" * 60)
-    print()
+    log.info("🔧 UCP Instance Creator (with params-parity probe)")
+    log.info("━" * 60)
+    log.info("")
 
     if not args.tenant_id:
-        print("❌ TENANT_ID is not set. Add it to .env or pass --tenant-id.")
+        log.error("❌ TENANT_ID is not set. Add it to .env or pass --tenant-id.")
         return 2
 
     # Resolve everything from the integration id.
     try:
         parity_inputs = resolver_mod.resolve(args.integration_id)
     except ResolverError as e:
-        print(f"❌ Resolver failed for {args.integration_id!r}: {e}")
+        log.error("❌ Resolver failed for %r: %s", args.integration_id, e)
         return 2
 
     gke_project = f"qa2-test-{args.tenant_id}"
     if not args.yes and not _prereq_reminder(gke_project):
         return 0
-    print()
+    log.info("")
 
-    print("🔌 Connecting to XSOAR tenant for the mirror-lookup + magic-key inject step...")
+    log.info("🔌 Connecting to XSOAR tenant for the mirror-lookup + magic-key inject step...")
     try:
         xsoar_client = create_client()
     except Exception as e:
-        print(f"   ❌ Could not build XSOAR client: {e}")
+        log.error("   ❌ Could not build XSOAR client: %s", e)
         return 1
-    print("   ✅ XSOAR client ready.")
-    print()
+    log.info("   ✅ XSOAR client ready.")
+    log.info("")
 
     cap_ids = [c.id for c in parity_inputs.capabilities]
     profile_ids = [p.id for p in parity_inputs.profiles]
-    print(
-        f"🚀 Driving UCP capture for connector={parity_inputs.connector_id!r} "
-        f"capabilities={cap_ids} profiles={profile_ids}..."
+    log.info(
+        "🚀 Driving UCP capture for connector=%r capabilities=%s profiles=%s...",
+        parity_inputs.connector_id,
+        cap_ids,
+        profile_ids,
     )
-    print()
+    log.info("")
 
-    instance_name = f"{parity_inputs.connector_id.title()} Parity {uuid.uuid4().hex[:8]}"
+    instance_name = f"Connector_instance_{parity_inputs.connector_id.title()}_Parity_{uuid.uuid4().hex[:8]}"
     captured, _ = capture_ucp_params(
         xsoar_client=xsoar_client,
         xsoar_brand_name=parity_inputs.integration_brand,
@@ -160,13 +172,15 @@ def main(argv: list[str] | None = None) -> int:
         keep_instance=args.keep_instance,
     )
 
-    print()
+    log.info("")
     if captured is None:
-        print("❌ Capture failed. See logs above for details.")
+        log.error("❌ Capture failed. See logs above for details.")
         return 1
 
-    print(f"✅ Captured UCP-side demisto.params() ({len(captured)} keys):")
-    print(json.dumps(captured, indent=2, sort_keys=True, default=str))
+    log.info("✅ Captured UCP-side demisto.params() (%d keys):", len(captured))
+    log.info("Created UCP instance name: %s", instance_name)
+    log.info("━" * 60)
+    log.info(json.dumps(captured, indent=2, sort_keys=True, default=str))
     return 0
 
 

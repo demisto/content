@@ -70,12 +70,19 @@ PARAM_TYPE_SHORT_TEXT = 0
 PARAM_TYPE_ENCRYPTED = 4
 PARAM_TYPE_BOOLEAN = 8
 PARAM_TYPE_AUTH = 9
-PARAM_TYPE_MULTI_LINE = 12
+PARAM_TYPE_MULTI_LINE = 12  # Long Text / TextArea
 PARAM_TYPE_INCIDENT_TYPE = 13
-PARAM_TYPE_MULTI_SELECT = 14
+# NOTE: type 14 is XSOAR's ENCRYPTED Text Area (masked textarea, e.g. SSHKey /
+# Zoom's `key`), NOT a multi-select. Multi-select is type 16. Previously
+# MULTI_SELECT was (incorrectly) bound to 14, so every type-14 secret hit the
+# multi-select branch and was emitted as a LIST `["<override_x>"]`. XSOAR cannot
+# store a list into a scalar secret field, so the value came back "" on BOTH
+# parity sides — a false "OK" verdict. Type-14 must fall through to the scalar
+# sentinel branch ("<override_name>") like every other text field.
+PARAM_TYPE_ENCRYPTED_TEXTAREA = 14
 PARAM_TYPE_SINGLE_SELECT = 15
-PARAM_TYPE_LONG_TEXT = 16
-PARAM_TYPE_EXPIRATION = 17
+PARAM_TYPE_MULTI_SELECT = 16
+PARAM_TYPE_EXPIRATION = 17  # Feed Expiration Policy (select)
 
 # ============================================================================
 # Probe protocol — must stay in sync with the CommonServerPython.py probe.
@@ -143,6 +150,10 @@ def generate_dummy_value_for_param(param: dict) -> object:
         ``"<override_user_{name}>"`` / ``"<override_pass_{name}>"`` —
         always overrides regardless of YML default (defaults are usually
         empty anyway).
+      * **type 14 (encrypted text area, e.g. SSHKey / Zoom ``key``)** — a SCALAR
+        masked secret. Emits the scalar sentinel ``"<override_{name}>"`` via the
+        catch-all branch. (It must NOT be list-wrapped: type 14 is a single
+        value, not a multi-select — see the constants block above.)
       * **type 15 (single select)** — pick an option that is NOT the YML
         default; fall back to ``"<override_{name}>"`` if there's only one
         option (or none) to pick from.
@@ -204,8 +215,10 @@ def generate_dummy_value_for_param(param: dict) -> object:
             return [options[0]] if options else [sentinel]
         return []
 
-    # All other types (SHORT_TEXT, ENCRYPTED, MULTI_LINE, INCIDENT_TYPE,
-    # LONG_TEXT, EXPIRATION, etc.) — emit the per-param sentinel.
+    # All other types (SHORT_TEXT, ENCRYPTED type-4, MULTI_LINE type-12,
+    # INCIDENT_TYPE, ENCRYPTED_TEXTAREA type-14, EXPIRATION, etc.) — emit the
+    # scalar per-param sentinel. NOTE: type 14 (encrypted text area / private
+    # key) intentionally lands here as a SCALAR string, not a list.
     return sentinel
 
 
@@ -453,7 +466,7 @@ def create_integration_instance(
         non-empty.
     """
     if instance_name is None:
-        instance_name = f'{integration_name.replace(" ", "_")}_parity_{uuid.uuid4().hex[:8]}'
+        instance_name = f'xsoar_instance_for_{integration_name.replace(" ", "_")}_runtime_parity_{uuid.uuid4().hex[:8]}'
     log.info("Creating instance %r for integration %r...", instance_name, integration_name)
 
     module_configuration = server_configuration.get("configuration", []) or []
@@ -558,7 +571,7 @@ def create_integration_instance(
         return None, error_msg
 
     module_instance["id"] = res[0]["id"]
-    log.info("Instance created. ID=%s name=%r", module_instance["id"], instance_name)
+    log.info("XSOAR Integration Instance created. ID=%s name=%r", module_instance["id"], instance_name)
     return module_instance, ""
 
 
@@ -589,7 +602,7 @@ def test_integration_instance(client, module_instance: dict) -> tuple[bool, str 
     integration_of_instance = module_instance.get("brand", "")
     instance_name = module_instance.get("name", "")
     log.info(
-        'Running "test-module" for instance %r of integration %r.',
+        'Running "test-module" for integration instance %r of integration %r.',
         instance_name,
         integration_of_instance,
     )

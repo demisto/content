@@ -99,6 +99,7 @@ class TestDryRunAuthEnvelopeShape:
             "dry_run",
             "integration_id",
             "validator",
+            "yml_cross_check",
             "seed_overlap",
             "parity",
             "verdict",

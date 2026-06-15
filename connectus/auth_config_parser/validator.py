@@ -319,6 +319,30 @@ def validate_auth_details(data: str | dict) -> list[str]:
                     )
                     all_strings = False
             if all_strings:
+                # An ``other_connection`` entry must be a connection-adjacent
+                # param (URL, proxy, insecure, region, ...), NEVER an auth
+                # secret. A dotted leaf path ending in ``.identifier`` or
+                # ``.password`` is the unambiguous signature of a type-9
+                # (Credentials) param — those leaves are auth secrets and
+                # belong in an ``auth_types[]`` profile's ``xsoar_param_map``,
+                # not here. Catch the misclassification at set-auth time.
+                _CRED_LEAF_SUFFIXES = (".identifier", ".password")
+                cred_leaks = [
+                    item
+                    for item in other_connection
+                    if item.endswith(_CRED_LEAF_SUFFIXES)
+                ]
+                if cred_leaks:
+                    errors.append(
+                        "'other_connection' contains credential leaf "
+                        f"path(s) {sorted(cred_leaks)}: a "
+                        "'.identifier'/'.password' leaf is a type-9 "
+                        "(Credentials) auth secret and must be declared in "
+                        "an auth_types[] profile's xsoar_param_map (a "
+                        "'Plain' profile maps it to 'username'/'password'), "
+                        "not in other_connection. See "
+                        "connectus/column-schemas.md §Auth Details."
+                    )
                 if len(set(other_connection)) != len(other_connection):
                     seen: set[str] = set()
                     dups: list[str] = []
