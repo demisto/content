@@ -144,7 +144,7 @@ def get_elastic_token():
             )
 
             payload = {"grant_type": "refresh_token", "refresh_token": refresh_token}
-            response = requests.post(url, headers=headers, json=payload, verify=INSECURE, auth=(USERNAME, PASSWORD))
+            response = requests.post(url, headers=headers, json=payload, verify=INSECURE, auth=(USERNAME, PASSWORD), proxies=proxies)
 
             if response.status_code == 200:
                 now = datetime.now(UTC)
@@ -260,7 +260,7 @@ def elasticsearch_builder(proxies):
     return es
 
 
-def http_request(method, url_suffix, headers, auth=AUTH, params=None, data=None, files=None, safe=False, parse_json=True):
+def http_request(method, url_suffix, headers, auth=AUTH, params=None, data=None, files=None, safe=False, parse_json=True, proxies=None):
     """
     A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -296,9 +296,10 @@ def http_request(method, url_suffix, headers, auth=AUTH, params=None, data=None,
             json=data,
             files=files,
             headers=headers,
+            proxies=proxies,
         )
     except requests.exceptions.RequestException as e:
-        LOG(str(e))
+        demisto.debug(str(e))
         return_error("Error in connection to the server. Please make sure you entered the URL correctly.")
     # Handle error responses gracefully
 
@@ -424,7 +425,7 @@ def kibana_find_cases(args, proxies):
 
     query_params = {"status": status, "severity": severity, "from": from_time}
 
-    response = http_request(method="GET", url_suffix="/api/cases/_find", params=query_params, headers=headers)
+    response = http_request(method="GET", url_suffix="/api/cases/_find", params=query_params, headers=headers, proxies=proxies)
     json_data = response["cases"]
 
     # output results to markdown table
@@ -446,7 +447,7 @@ def kibana_find_alerts_for_case(args, proxies):
 
     case_id = args.get("case_id")
 
-    response = http_request(method="GET", url_suffix=f"/api/cases/{case_id}/alerts", headers=headers)
+    response = http_request(method="GET", url_suffix=f"/api/cases/{case_id}/alerts", headers=headers, proxies=proxies)
 
     # output results to markdown table
     md = tableToMarkdown("Kibana Alerts For Case", response, headers=[])
@@ -475,7 +476,7 @@ def kibana_update_alert_status(args, proxies):
         ],
     }
 
-    http_request(method="POST", url_suffix="/api/detection_engine/signals/status", data=data, headers=headers)
+    http_request(method="POST", url_suffix="/api/detection_engine/signals/status", data=data, headers=headers, proxies=proxies)
 
     return f"Updated alert ID {alert_id} to status of {status}"
 
@@ -514,7 +515,7 @@ def kibana_find_user_spaces(args, proxies):
         "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
-    response = http_request(method="GET", url_suffix="/api/spaces/space", headers=headers)
+    response = http_request(method="GET", url_suffix="/api/spaces/space", headers=headers, proxies=proxies)
 
     # output results to markdown table
     md = tableToMarkdown("Kibana User Spaces", response, headers=[])
@@ -535,7 +536,7 @@ def kibana_find_case_comments(args, proxies):
 
     case_id = args.get("case_id")
 
-    response = http_request(method="GET", url_suffix=f"/api/cases/{case_id}/comments/_find", headers=headers)
+    response = http_request(method="GET", url_suffix=f"/api/cases/{case_id}/comments/_find", headers=headers, proxies=proxies)
     response = response["comments"]
 
     # output results to markdown table
@@ -562,7 +563,7 @@ def kibana_delete_case(args, proxies):
 
     params = {"ids": case_list}
 
-    http_request(method="DELETE", url_suffix="/api/cases", params=params, headers=headers)
+    http_request(method="DELETE", url_suffix="/api/cases", params=params, headers=headers, proxies=proxies)
 
     return f"Successfully deleted case with ID of {case_id}"
 
@@ -596,7 +597,7 @@ def kibana_search_rule_details(args, proxies):
 
     params = {"filter": kql_query}
 
-    response = http_request(method="GET", url_suffix="/api/alerting/rules/_find", params=params, headers=headers)
+    response = http_request(method="GET", url_suffix="/api/alerting/rules/_find", params=params, headers=headers, proxies=proxies)
     response = response["data"]
 
     # output results to markdown table
@@ -678,7 +679,7 @@ def kibana_assign_alert_user(args, proxies):
         },
     }
 
-    http_request(method="POST", url_suffix="/api/detection_engine/signals/assignees", data=json_data, headers=headers)
+    http_request(method="POST", url_suffix="/api/detection_engine/signals/assignees", data=json_data, headers=headers, proxies=proxies)
 
     return f"Assigned user ID {user_id} to alert {alert_id}"
 
@@ -754,7 +755,7 @@ def kibana_add_alert_note(args, proxies):
         },
     }
 
-    http_request(method="PATCH", url_suffix="/api/note", data=json_data, headers=headers)
+    http_request(method="PATCH", url_suffix="/api/note", data=json_data, headers=headers, proxies=proxies)
 
     return f"Added note {note} to alert {event_id}"
 
@@ -768,7 +769,7 @@ def kibana_get_alerting_health(args, proxies):
         "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
-    response = http_request(method="GET", url_suffix="/api/alerting/_health", headers=headers)
+    response = http_request(method="GET", url_suffix="/api/alerting/_health", headers=headers, proxies=proxies)
 
     # output results to markdown table
     md = tableToMarkdown("Alerting Framework Health", response, headers=[])
@@ -793,7 +794,7 @@ def kibana_disable_alert_rule(args, proxies):
         "untrack": True,
     }
 
-    http_request(method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_disable", data=json_data, headers=headers)
+    http_request(method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_disable", data=json_data, headers=headers, proxies=proxies)
 
     return f"Successfully disabled rule with ID of {rule_id}"
 
@@ -809,7 +810,7 @@ def kibana_enable_alert_rule(args, proxies):
 
     rule_id = args.get("rule_id")
 
-    http_request(method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_enable", headers=headers)
+    http_request(method="POST", url_suffix=f"/api/alerting/rule/{rule_id}/_enable", headers=headers, proxies=proxies)
 
     return f"Successfully enabled rule with ID of {rule_id}"
 
@@ -823,7 +824,7 @@ def kibana_get_exception_lists(args, proxies):
         "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
-    response = http_request(method="GET", url_suffix="/api/exception_lists/_find", headers=headers)
+    response = http_request(method="GET", url_suffix="/api/exception_lists/_find", headers=headers, proxies=proxies)
     response = response["data"]
 
     # output results to markdown table
@@ -855,7 +856,7 @@ def kibana_create_value_list(args, proxies):
         "description": description,
     }
 
-    http_request(method="POST", url_suffix="/api/lists", data=json_data, headers=headers)
+    http_request(method="POST", url_suffix="/api/lists", data=json_data, headers=headers, proxies=proxies)
 
     return f"Successfully created value list with name of {name}"
 
@@ -869,7 +870,7 @@ def kibana_get_value_lists(args, proxies):
         "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
-    response = http_request(method="GET", url_suffix="/api/lists/_find", headers=headers)
+    response = http_request(method="GET", url_suffix="/api/lists/_find", headers=headers, proxies=proxies)
     result_json = response["data"]
 
     # output results to markdown table
@@ -898,7 +899,7 @@ def kibana_import_value_list_items(args, proxies):
 
     files = {"file": ("value_list.txt", file_content, "text/plain")}
 
-    http_request(method="POST", url_suffix="/api/lists/items/_import", params=json_data, files=files, headers=headers)
+    http_request(method="POST", url_suffix="/api/lists/items/_import", params=json_data, files=files, headers=headers, proxies=proxies)
 
     return f"Successfully imported {file_content} to value list with ID of {list_id}"
 
@@ -917,7 +918,7 @@ def kibana_create_value_list_item(args, proxies):
 
     json_data = {"value": new_item, "list_id": list_id}
 
-    http_request(method="POST", url_suffix="/api/lists/items", data=json_data, headers=headers)
+    http_request(method="POST", url_suffix="/api/lists/items", data=json_data, headers=headers, proxies=proxies)
 
     return f"Successfully added {new_item} to value list with ID of {list_id}"
 
@@ -936,7 +937,7 @@ def kibana_get_value_list_items(args, proxies):
 
     params = {"list_id": list_id, "sort_field": "created_at", "sort_order": "asc", "per_page": result_size}
 
-    response = http_request(method="GET", url_suffix="/api/lists/items/_find", params=params, headers=headers)
+    response = http_request(method="GET", url_suffix="/api/lists/items/_find", params=params, headers=headers, proxies=proxies)
     result_output = response["data"]
 
     # output results to markdown table
@@ -962,7 +963,7 @@ def kibana_delete_value_list_item(args, proxies):
 
     json_data = {"id": item_id, "list_id": list_id}
 
-    http_request(method="DELETE", url_suffix="/api/lists/items", params=json_data, headers=headers)
+    http_request(method="DELETE", url_suffix="/api/lists/items", params=json_data, headers=headers, proxies=proxies)
 
     return f"Successfully deleted {item_id} from value list with ID of {list_id}"
 
@@ -981,7 +982,7 @@ def kibana_delete_value_list(args, proxies):
 
     params = {"id": list_id}
 
-    http_request(method="DELETE", url_suffix="/api/lists", params=params, headers=headers)
+    http_request(method="DELETE", url_suffix="/api/lists", params=params, headers=headers, proxies=proxies)
 
     return f"Successfully deleted value list with ID of {list_id}"
 
@@ -995,7 +996,7 @@ def kibana_get_status(args, proxies):
         "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
-    response = http_request(method="GET", url_suffix="/api/status", headers=headers)
+    response = http_request(method="GET", url_suffix="/api/status", headers=headers, proxies=proxies)
     response = response["status"]
 
     # output results to markdown table
@@ -1035,7 +1036,7 @@ def kibana_get_upgrade_readiness_status(args, proxies):
         "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
-    response = http_request(method="GET", url_suffix="/api/upgrade_assistant/status", headers=headers)
+    response = http_request(method="GET", url_suffix="/api/upgrade_assistant/status", headers=headers, proxies=proxies)
 
     # output results to markdown table
     md = tableToMarkdown("Kibana Upgrade Readiness Status", response, headers=[])
@@ -1057,7 +1058,7 @@ def kibana_delete_case_comment(args, proxies):
     case_id = args.get("case_id")
     comment_id = args.get("comment_id")
 
-    http_request(method="DELETE", url_suffix=f"/api/cases/{case_id}/comments/{comment_id}", headers=headers)
+    http_request(method="DELETE", url_suffix=f"/api/cases/{case_id}/comments/{comment_id}", headers=headers, proxies=proxies)
 
     return f"Deleted comment with ID {comment_id} from case {case_id}"
 
@@ -1081,7 +1082,7 @@ def kibana_add_file_to_case(args, proxies):
     with open(file_path, "rb") as f:
         files = {"file": (file_name, f)}
 
-        http_request(method="POST", url_suffix=f"/api/cases/{case_id}/files", files=files, headers=headers)
+        http_request(method="POST", url_suffix=f"/api/cases/{case_id}/files", files=files, headers=headers, proxies=proxies)
         return f"Successfully added file {file_name} to case {case_id}"
 
 
@@ -1138,7 +1139,7 @@ def main():  # pragma: no cover
     proxies = proxies if proxies else None
     args = demisto.args()
     try:
-        LOG(f"command is {demisto.command()}")
+        demisto.debug(f"command is {demisto.command()}")
         if demisto.command() == "test-module":
             return_results(test_func(proxies))
         elif demisto.command() == "kibana-cases-find":
@@ -1207,21 +1208,8 @@ def main():  # pragma: no cover
             return_results(kibana_get_case_information(args, proxies))
 
     except Exception as e:
-        if "The client noticed that the server is not a supported distribution of Elasticsearch" in str(e):
-            return_error(
-                f"Failed executing {demisto.command()}. Seems that the client does not support the server's "
-                f"distribution, Please try using the Open Search client in the instance configuration."
-                f"\nError message: {e!s}",
-                error=str(e),
-            )
-        if "failed to parse date field" in str(e):
-            return_error(
-                f"Failed to execute the {demisto.command()} command. Make sure the `Time field type` is correctly set.",
-                error=str(e),
-            )
-        return_error(f"Failed executing {demisto.command()}.\nError message: {e}", error=str(e))
-
+        error_message = traceback.format_exc()
+        logging.error("An unexpected error occurred:\n%s", error_message)
 
 if __name__ in ("__main__", "builtin", "builtins"):
     main()
-    
