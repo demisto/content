@@ -148,3 +148,81 @@ def test_instance_creation_failure_returns_none_filled(monkeypatch):
     assert captured is None
     assert payload is not None
     assert payload["k"] == "v"
+
+
+# ---------------------------------------------------------------------------
+# create_client proxy bypass
+# ---------------------------------------------------------------------------
+#
+# The idex CLI / VS Code injects HTTPS_PROXY into the subprocess env; a
+# corporate proxy then 403s the CONNECT tunnel to the tenant's api-<host>.
+# The demisto_client SDK reads HTTPS_PROXY directly (os.getenv) and hands it to
+# a raw urllib3.ProxyManager that ignores NO_PROXY, so the only reliable fix is
+# to build the tenant client WITHOUT a proxy. These tests pin that behavior.
+
+
+class _FakeConfiguration:
+    def __init__(self):
+        self.proxy = "SENTINEL_NOT_SET"
+
+
+class _FakeApiClient:
+    def __init__(self):
+        self.configuration = _FakeConfiguration()
+        self.user_agent = None
+
+
+class _FakeClient:
+    def __init__(self):
+        self.api_client = _FakeApiClient()
+
+
+def _install_fake_configure(monkeypatch):
+    """Replace demisto_client.configure with a spy returning a fake client.
+
+    Returns the dict that records the kwargs configure() was called with.
+    """
+    recorded: dict = {}
+
+    def fake_configure(**kwargs):
+        recorded.update(kwargs)
+        client = _FakeClient()
+        # Mimic the real SDK: it would set configuration.proxy from the proxy
+        # arg (or HTTPS_PROXY). We set it to the passed proxy so the test can
+        # verify create_client() neutralizes it afterwards.
+        client.api_client.configuration.proxy = kwargs.get("proxy")
+        return client
+
+    monkeypatch.setattr(xsoar_capture.demisto_client, "configure", fake_configure)
+    return recorded
+
+
+def test_create_client_passes_empty_proxy_even_when_https_proxy_set(monkeypatch):
+    """create_client() must pass proxy="" to configure(), not the env proxy."""
+    monkeypatch.setenv("HTTPS_PROXY", "http://corp-proxy:8080")
+    monkeypatch.setenv("HTTP_PROXY", "http://corp-proxy:8080")
+    recorded = _install_fake_configure(monkeypatch)
+
+    xsoar_capture.create_client(
+        base_url="https://tenant.example.com",
+        api_key="k",
+        auth_id="4",
+    )
+
+    # The SDK's only fallback to HTTPS_PROXY happens when proxy is None; passing
+    # an empty string prevents that fallback and yields a direct PoolManager.
+    assert recorded.get("proxy") == ""
+
+
+def test_create_client_nulls_configuration_proxy(monkeypatch):
+    """create_client() must defensively null configuration.proxy on the client."""
+    monkeypatch.setenv("HTTPS_PROXY", "http://corp-proxy:8080")
+    _install_fake_configure(monkeypatch)
+
+    client = xsoar_capture.create_client(
+        base_url="https://tenant.example.com",
+        api_key="k",
+        auth_id="4",
+    )
+
+    assert client.api_client.configuration.proxy is None

@@ -101,9 +101,10 @@ profiles:
   - fields:
     - id: engine_mode
       title: Engine
-      field_type: select
+      field_type: radio
       options:
         mask: false
+        orientation: horizontal
         default_value: no_engine
         values:
         - key: no_engine
@@ -138,6 +139,9 @@ profiles:
       options:
         mask: false
         placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
         create_modifiers:
           required: false
           hidden: false
@@ -164,6 +168,9 @@ profiles:
       options:
         mask: false
         placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
         create_modifiers:
           required: false
           hidden: false
@@ -196,7 +203,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_passthrough_secondary_url
+    - id: passthrough.github_passthrough_secondary_url
       field_type: input
       title: Server URL
       options:
@@ -211,7 +218,7 @@ profiles:
         event:
           publish: true
   - fields:
-    - id: github_proxy
+    - id: passthrough.github_passthrough_secondary_proxy
       title: Use system proxy settings
       field_type: checkbox
       metadata:
@@ -229,7 +236,7 @@ profiles:
           hidden: false
           read_only: true
   - fields:
-    - id: github_passthrough_secondary_insecure
+    - id: passthrough.github_passthrough_secondary_insecure
       title: Trust any certificate (not secure)
       field_type: checkbox
       metadata:
@@ -247,11 +254,12 @@ profiles:
           hidden: false
           read_only: false
   - fields:
-    - id: github_passthrough_secondary_engine_mode
+    - id: passthrough.github_passthrough_secondary_engine_mode
       title: Engine
-      field_type: select
+      field_type: radio
       options:
         mask: false
+        orientation: horizontal
         default_value: no_engine
         values:
         - key: no_engine
@@ -267,7 +275,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_passthrough_secondary_engine
+    - id: passthrough.github_passthrough_secondary_engine
       title: Engine
       field_type: select
       metadata:
@@ -286,6 +294,9 @@ profiles:
       options:
         mask: false
         placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
         create_modifiers:
           required: false
           hidden: false
@@ -293,7 +304,7 @@ profiles:
           required: false
           hidden: false
   - fields:
-    - id: github_passthrough_secondary_engine_group
+    - id: passthrough.github_passthrough_secondary_engine_group
       title: Engine Group
       field_type: select
       metadata:
@@ -312,6 +323,9 @@ profiles:
       options:
         mask: false
         placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
         create_modifiers:
           required: false
           hidden: false
@@ -344,7 +358,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_passthrough_tenant_url
+    - id: passthrough.github_passthrough_tenant_url
       field_type: input
       title: Server URL
       options:
@@ -359,7 +373,7 @@ profiles:
         event:
           publish: true
   - fields:
-    - id: github_passthrough_tenant_proxy
+    - id: passthrough.github_passthrough_tenant_proxy
       title: Use system proxy settings
       field_type: checkbox
       metadata:
@@ -377,7 +391,7 @@ profiles:
           hidden: false
           read_only: true
   - fields:
-    - id: github_passthrough_tenant_insecure
+    - id: passthrough.github_passthrough_tenant_insecure
       title: Trust any certificate (not secure)
       field_type: checkbox
       metadata:
@@ -395,11 +409,12 @@ profiles:
           hidden: false
           read_only: false
   - fields:
-    - id: github_passthrough_tenant_engine_mode
+    - id: passthrough.github_passthrough_tenant_engine_mode
       title: Engine
-      field_type: select
+      field_type: radio
       options:
         mask: false
+        orientation: horizontal
         default_value: no_engine
         values:
         - key: no_engine
@@ -415,7 +430,7 @@ profiles:
           required: true
           hidden: false
   - fields:
-    - id: github_passthrough_tenant_engine
+    - id: passthrough.github_passthrough_tenant_engine
       title: Engine
       field_type: select
       metadata:
@@ -434,6 +449,9 @@ profiles:
       options:
         mask: false
         placeholder: Select an engine
+        empty_values_message: No engines available
+        searchable: true
+        clearable: true
         create_modifiers:
           required: false
           hidden: false
@@ -441,7 +459,7 @@ profiles:
           required: false
           hidden: false
   - fields:
-    - id: github_passthrough_tenant_engine_group
+    - id: passthrough.github_passthrough_tenant_engine_group
       title: Engine Group
       field_type: select
       metadata:
@@ -460,6 +478,9 @@ profiles:
       options:
         mask: false
         placeholder: Select an engine group
+        empty_values_message: No engine groups available
+        searchable: true
+        clearable: true
         create_modifiers:
           required: false
           hidden: false

@@ -225,7 +225,7 @@ def test_orphan_config_field_gets_dummy_for_extra_detection():
     """CONTRACT: every manifest-declared connector config field is SET in the
     payload. A field WITH a matching integration param gets the shared value; a
     field WITHOUT one (an orphan / undeclared-rename, e.g. cisco-security's
-    ``alertType``) gets a DUMMY so it surfaces at runtime on the connector side
+    ``incidentType``) gets a DUMMY so it surfaces at runtime on the connector side
     only -> the diff reports EXTRA_IN_CONNECTOR instead of hiding it."""
     caps = [
         CapabilitySpec(
@@ -838,8 +838,10 @@ def test_capture_ucp_params_returns_captured_and_payload_tuple(monkeypatch):
     captured_sentinel = {"captured": True}
 
     monkeypatch.setattr(ucp_capture, "get_instances_by_brand", lambda c, b: [])
+    # The capture now ASSUMES a live session instead of starting a port-forward.
     monkeypatch.setattr(
-        ucp_capture, "start_port_forward", lambda *, tenant_id, port: None
+        ucp_capture.session_env, "assert_session_live",
+        lambda: types.SimpleNamespace(ucp_port=8080, tenant_id="tenant-1"),
     )
     monkeypatch.setattr(
         ucp_capture,
@@ -877,7 +879,6 @@ def test_capture_ucp_params_returns_captured_and_payload_tuple(monkeypatch):
         lambda client, armed: captured_sentinel,
     )
     monkeypatch.setattr(ucp_capture, "delete_ucp_instance", lambda *a, **k: None)
-    monkeypatch.setattr(ucp_capture, "stop_port_forward", lambda: None)
 
     parity_inputs = types.SimpleNamespace(
         connector_id="aws-acm", capabilities=[], profiles=[]
@@ -909,7 +910,8 @@ def test_capture_ucp_params_failure_returns_none_and_payload(monkeypatch):
 
     monkeypatch.setattr(ucp_capture, "get_instances_by_brand", lambda c, b: [])
     monkeypatch.setattr(
-        ucp_capture, "start_port_forward", lambda *, tenant_id, port: None
+        ucp_capture.session_env, "assert_session_live",
+        lambda: types.SimpleNamespace(ucp_port=8080, tenant_id="tenant-1"),
     )
     monkeypatch.setattr(
         ucp_capture,
@@ -932,7 +934,6 @@ def test_capture_ucp_params_failure_returns_none_and_payload(monkeypatch):
     # Mirror never appears → the function returns None for `captured`.
     monkeypatch.setattr(ucp_capture, "wait_for_xsoar_mirror", lambda *a, **k: None)
     monkeypatch.setattr(ucp_capture, "delete_ucp_instance", lambda *a, **k: None)
-    monkeypatch.setattr(ucp_capture, "stop_port_forward", lambda: None)
 
     parity_inputs = types.SimpleNamespace(
         connector_id="aws-acm", capabilities=[], profiles=[]

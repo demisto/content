@@ -22,12 +22,16 @@ Wrapper exit-code contract (EXACT — design §4):
 Multi-id worst-case aggregation (still report per-id): setup-block (11) > parity-fail (10)
 > pass (0). A deploy failure/timeout short-circuits before any parity run.
 
-Usage::
+Prerequisite: a human runs ``session_setup.py`` ONCE per batch (on the israel-gw
+VPN) to establish the param-parity session (GKE creds + the session-scoped
+kubectl port-forward). This wrapper only ASSUMES that session; it never sets up
+the environment itself.
 
-    cd connectus/runtime_demisto.params_parity
-    python deploy_and_test.py --integration-id "Salesforce IAM"
-    # future batch (one lock, one deploy, loop parity):
-    python deploy_and_test.py --integration-id A --integration-id B --tenant 123
+Usage (run from the content-repo root; no ``cd`` needed)::
+
+    python3 connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id "Salesforce IAM"
+    # batch (one lock, one deploy, loop parity):
+    python3 connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id A --integration-id B --tenant 123
 """
 
 from __future__ import annotations
@@ -40,6 +44,7 @@ import sys
 from pathlib import Path
 
 import preflight_check
+import session_env
 import tenant_lock
 
 _SCRIPT_DIR = Path(__file__).resolve().parent
@@ -257,7 +262,19 @@ def run(
     skip_preflight: bool = False,
     skip_deploy: bool = False,
 ) -> int:
-    """Preflight → acquire → deploy → parity(per id) → release(finally)."""
+    """Session-gate → preflight → acquire → deploy → parity(per id) → release(finally)."""
+    # ── Session gate (the environment is established ONCE by the human-run
+    # session_setup.py; here we only ASSUME it, auto-reviving a dead port-forward
+    # and hard-stopping with an actionable message on gcloud-auth expiry / no
+    # session). This replaces the old per-run gcloud/port-forward setup. ──
+    try:
+        session_env.assert_session_live()
+    except session_env.SessionNotReady as e:
+        print(f"\n❌ Param-parity session not ready: {e}", file=sys.stderr)
+        for integration_id in integration_ids:
+            _summary(integration_id, "SESSION_BLOCK", EXIT_PARITY_BLOCK)
+        return EXIT_PARITY_BLOCK
+
     # ── Preflight (cheap, before paying for a deploy) ──
     if not skip_preflight:
         if not _run_preflight(integration_ids):
