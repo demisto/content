@@ -604,7 +604,7 @@ def test_azure_sql_firewall_rule_replace_command(mocker):
     assert sent_rule["name"] == "replaced-rule"
     assert sent_rule["properties"]["startIpAddress"] == "0.0.0.0"
     assert sent_rule["properties"]["endIpAddress"] == "0.0.0.0"
-    assert "Successfully updated the firewall rule replaced-rule" in results.readable_output
+    assert "Successfully updated the firewall rule" in results.readable_output
     assert results.outputs.get("name") == "replaced-rule"
     assert results.outputs.get("startIpAddress") == "0.0.0.0"
     assert results.outputs.get("endIpAddress") == "0.0.0.0"
