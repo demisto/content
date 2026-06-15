@@ -497,7 +497,7 @@ def main() -> None:  # pragma: no cover
     max_events = config.pop("max_events")
 
     try:
-        client = Client(**config)
+        client = Client(**config)  # pylint: disable=E1123
 
         if command == "test-module":
             return_results(test_module(client))

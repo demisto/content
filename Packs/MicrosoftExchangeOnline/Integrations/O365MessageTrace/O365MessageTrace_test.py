@@ -386,23 +386,26 @@ class TestModuleHealthCheck:
         with pytest.raises(DemistoException, match="Test module is not available"):
             run_test_module(mock_client)
 
-    def test_returns_authorization_error_on_401(self, mock_client):
+    def test_returns_authorization_error_on_401(self, mock_client, mocker):
         mock_client.ms_client.grant_type = "client_credentials"
         mock_client.ms_client.http_request.side_effect = Exception("Got 401 Unauthorized")
+        mocker.patch.object(O365MessageTrace.demisto, "error")
 
         result = run_test_module(mock_client)
         assert "Authorization Error" in result
 
-    def test_returns_authorization_error_on_403(self, mock_client):
+    def test_returns_authorization_error_on_403(self, mock_client, mocker):
         mock_client.ms_client.grant_type = "client_credentials"
         mock_client.ms_client.http_request.side_effect = Exception("403 Forbidden")
+        mocker.patch.object(O365MessageTrace.demisto, "error")
 
         result = run_test_module(mock_client)
         assert "Authorization Error" in result
 
-    def test_reraises_unexpected_errors(self, mock_client):
+    def test_reraises_unexpected_errors(self, mock_client, mocker):
         mock_client.ms_client.grant_type = "client_credentials"
         mock_client.ms_client.http_request.side_effect = Exception("network timeout")
+        mocker.patch.object(O365MessageTrace.demisto, "error")
 
         with pytest.raises(Exception, match="network timeout"):
             run_test_module(mock_client)
