@@ -58,6 +58,22 @@ _HANDLER_PARAM_COVERAGE_SCRIPT = str(
 # sibling-of-content-repo default.
 _CONNECTUS_REPO_ENV = "CONNECTUS_REPO_DIR"
 
+# Operator override for the handler_param_coverage gate. When truthy, the gate
+# appends ``--force`` to the checker so a genuine coverage FAIL is overridden to
+# a pass (uncovered params are still reported, never hidden). Used ONLY on
+# explicit operator instruction — see the connectus-migration skill, Step 9.
+_HANDLER_COVERAGE_FORCE_ENV = "CONNECTUS_HANDLER_COVERAGE_FORCE"
+
+
+def _coverage_force_enabled() -> bool:
+    """Whether the handler-param-coverage gate should run with ``--force``."""
+    load_env()
+    return os.environ.get(_HANDLER_COVERAGE_FORCE_ENV, "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+
 
 def _connectus_repo_root() -> str:
     """Resolve the ConnectUs repo root (where ``make validate`` runs).
@@ -259,11 +275,19 @@ GATES: dict[str, GateSpec] = {
         # connector handler's params, or errors (exit 2) on a path-
         # resolution problem. Runs BEFORE the make_validate gate so a
         # missing param is caught before connector-level schema validation.
+        #
+        # Operator override: set ``CONNECTUS_HANDLER_COVERAGE_FORCE=1`` to
+        # append ``--force`` so a genuine FAIL is overridden to a pass (the
+        # uncovered params are still reported, never hidden). Use ONLY on
+        # explicit instruction when the uncovered params are known-safe to
+        # skip (e.g. a deprecated, label-less auth alternative). See the
+        # connectus-migration skill, Step 9.
         build_argv=lambda abs_dir, iid: [
             sys.executable,
             _HANDLER_PARAM_COVERAGE_SCRIPT,
             "--handler-path", _handler_dir_abs(iid),
             "--integration-yml", _integration_yml_abs(iid),
+            *(["--force"] if _coverage_force_enabled() else []),
         ],
         # Run from the content repo root (paths resolved above are absolute,
         # so cwd is incidental — match the precommit gate's root cwd).
