@@ -285,20 +285,52 @@ class TestFetchEventsSequential:
         assert [e["id"] for e in result] == ["evt-1", "evt-2"]
         assert mock_client.ms_client.http_request.call_count == 2
 
-    def test_stops_at_max_events(self, mock_client):
+    def test_fetches_all_pages_then_truncates_to_max_events(self, mock_client):
+        """All pages are fetched while @odata.nextLink exists, even when the running
+        count already exceeds max_events. The result is then truncated to max_events."""
         page1 = {
-            "value": [{"id": f"evt-{i}"} for i in range(5)],
+            "value": [
+                {"id": "evt-3", "receivedDateTime": "2025-01-01T10:03:00Z"},
+                {"id": "evt-2", "receivedDateTime": "2025-01-01T10:02:00Z"},
+            ],
             "@odata.nextLink": "https://graph.microsoft.com/next",
         }
-        mock_client.ms_client.http_request.return_value = page1
+        page2 = {
+            "value": [
+                {"id": "evt-1", "receivedDateTime": "2025-01-01T10:01:00Z"},
+                {"id": "evt-0", "receivedDateTime": "2025-01-01T10:00:00Z"},
+            ],
+        }
+        mock_client.ms_client.http_request.side_effect = [page1, page2]
 
         start = datetime(2025, 1, 1, tzinfo=UTC)
         end = start + timedelta(minutes=5)
         result = fetch_events_sequential(mock_client, start, end, max_events=3)
 
+        # Both pages must be fetched even though page1 already exceeded max_events.
+        assert mock_client.ms_client.http_request.call_count == 2
+        # After sorting ascending by receivedDateTime, the earliest 3 events are returned.
         assert len(result) == 3
-        # Only one call should be made because limit reached after first page
-        assert mock_client.ms_client.http_request.call_count == 1
+        assert [e["id"] for e in result] == ["evt-0", "evt-1", "evt-2"]
+
+    def test_returns_earliest_events_sorted_ascending(self, mock_client):
+        """Events from all pages are sorted ascending by receivedDateTime so the
+        earliest events come first, and max_events truncates from the start."""
+        page1 = {
+            "value": [{"id": "evt-late", "receivedDateTime": "2025-01-01T10:05:00Z"}],
+            "@odata.nextLink": "https://graph.microsoft.com/next",
+        }
+        page2 = {
+            "value": [{"id": "evt-early", "receivedDateTime": "2025-01-01T10:00:00Z"}],
+        }
+        mock_client.ms_client.http_request.side_effect = [page1, page2]
+
+        start = datetime(2025, 1, 1, tzinfo=UTC)
+        end = start + timedelta(minutes=10)
+        result = fetch_events_sequential(mock_client, start, end, max_events=1)
+
+        assert mock_client.ms_client.http_request.call_count == 2
+        assert [e["id"] for e in result] == ["evt-early"]
 
     def test_reraises_when_first_page_fails(self, mock_client, mocker):
         """If the very first page fails we must propagate so lastRun is NOT advanced."""
