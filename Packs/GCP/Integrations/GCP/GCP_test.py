@@ -5548,3 +5548,112 @@ def test_test_module_marketplace_api_failure_raises(mocker):
 
     with pytest.raises(DemistoException, match="Failed to connect to GCP project 'dummy-project-id'"):
         test_module(creds, params)
+
+
+def test_build_http_client_defaults_returns_none(mocker):
+    """
+    Given:
+        - Default connection settings (proxy off, SSL verification on).
+    When:
+        - build_http_client is called.
+    Then:
+        - None is returned so the Google client uses its standard transport.
+    """
+    import GCP
+
+    mocker.patch.object(GCP, "USE_PROXY", False)
+    mocker.patch.object(GCP, "VERIFY_SSL", True)
+
+    assert GCP.build_http_client() is None
+
+
+def test_build_http_client_insecure_disables_ssl_validation(mocker):
+    """
+    Given:
+        - 'Trust any certificate' enabled (VERIFY_SSL is False), no proxy.
+    When:
+        - build_http_client is called.
+    Then:
+        - An httplib2.Http is returned with SSL certificate validation disabled.
+    """
+    import GCP
+
+    mocker.patch.object(GCP, "USE_PROXY", False)
+    mocker.patch.object(GCP, "VERIFY_SSL", False)
+
+    http = GCP.build_http_client()
+
+    assert http is not None
+    assert http.disable_ssl_certificate_validation is True
+
+
+def test_build_http_client_proxy_sets_proxy_info(mocker):
+    """
+    Given:
+        - 'Use system proxy settings' enabled and HTTPS_PROXY env var set.
+    When:
+        - build_http_client is called.
+    Then:
+        - An httplib2.Http is returned with proxy_info pointing at the proxy host/port.
+    """
+    import GCP
+
+    mocker.patch.object(GCP, "USE_PROXY", True)
+    mocker.patch.object(GCP, "VERIFY_SSL", True)
+    mocker.patch.dict("GCP.os.environ", {"HTTPS_PROXY": "https://proxy.example.com:8080"})
+
+    http = GCP.build_http_client()
+
+    assert http is not None
+    assert http.proxy_info.proxy_host == "proxy.example.com"
+    assert http.proxy_info.proxy_port == 8080
+
+
+def test_gcpservices_build_wraps_credentials_when_custom_http(mocker):
+    """
+    Given:
+        - A custom http transport is required (insecure enabled).
+    When:
+        - GCPServices.COMPUTE.build is called with credentials.
+    Then:
+        - build() is invoked with an AuthorizedHttp http transport and WITHOUT
+          passing credentials directly (AuthorizedHttp carries them).
+    """
+    import GCP
+
+    fake_http = MagicMock()
+    mocker.patch.object(GCP, "build_http_client", return_value=fake_http)
+    mock_authorized = mocker.patch("GCP.AuthorizedHttp", return_value="authorized-http")
+    mock_build = mocker.patch("GCP.build", return_value="client")
+
+    creds = MagicMock()
+    result = GCP.GCPServices.COMPUTE.build(creds)
+
+    assert result == "client"
+    mock_authorized.assert_called_once_with(creds, http=fake_http)
+    _, kwargs = mock_build.call_args
+    assert kwargs["http"] == "authorized-http"
+    assert "credentials" not in kwargs
+
+
+def test_gcpservices_build_uses_default_transport_when_no_custom_http(mocker):
+    """
+    Given:
+        - No custom http transport is required (defaults apply).
+    When:
+        - GCPServices.COMPUTE.build is called with credentials.
+    Then:
+        - build() is invoked with credentials directly and no http override.
+    """
+    import GCP
+
+    mocker.patch.object(GCP, "build_http_client", return_value=None)
+    mock_build = mocker.patch("GCP.build", return_value="client")
+
+    creds = MagicMock()
+    result = GCP.GCPServices.COMPUTE.build(creds)
+
+    assert result == "client"
+    _, kwargs = mock_build.call_args
+    assert kwargs["credentials"] is creds
+    assert "http" not in kwargs

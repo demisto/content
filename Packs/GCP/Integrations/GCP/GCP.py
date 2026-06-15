@@ -3,11 +3,49 @@ from CommonServerUserPython import *  # noqa
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.oauth2 import service_account as google_service_account
+from google_auth_httplib2 import AuthorizedHttp
+import httplib2
+import urllib.parse
 import urllib3
 from COOCApiModule import *
 from googleapiclient.errors import HttpError
 
 urllib3.disable_warnings()
+
+
+USE_PROXY: bool = False
+VERIFY_SSL: bool = True
+
+
+def build_http_client() -> "httplib2.Http | None":
+    """Builds an httplib2.Http honoring the module-level proxy and SSL settings.
+
+    Returns:
+        httplib2.Http | None: A configured HTTP client when a proxy is requested
+            or SSL verification is disabled; ``None`` when the defaults apply
+            (no proxy, SSL verification on) so the Google client uses its
+            standard transport.
+    """
+    proxy_info = None
+    if USE_PROXY:
+        https_proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
+        if https_proxy:
+            if not https_proxy.startswith(("http://", "https://")):
+                https_proxy = f"https://{https_proxy}"
+            parsed = urllib.parse.urlparse(https_proxy)
+            proxy_info = httplib2.ProxyInfo(
+                proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
+                proxy_host=parsed.hostname,
+                proxy_port=parsed.port,
+                proxy_user=parsed.username,
+                proxy_pass=parsed.password,
+            )
+
+    if proxy_info is None and VERIFY_SSL:
+        # Defaults apply - let the Google client use its standard transport.
+        return None
+
+    return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=not VERIFY_SSL)
 
 
 class GCPServices(Enum):
@@ -69,6 +107,10 @@ class GCPServices(Enum):
         """
         Build a Google API client for this service.
 
+        Honors the integration's proxy and SSL settings: when a proxy is
+        configured or SSL verification is disabled, the credentials are wrapped
+        in an ``AuthorizedHttp`` over a custom ``httplib2.Http`` transport.
+
         Args:
             credentials: Google Cloud credentials object.
             **kwargs: Additional arguments passed to the Google API client builder.
@@ -76,6 +118,12 @@ class GCPServices(Enum):
         Returns:
             Google API client instance for this service.
         """
+        http = build_http_client()
+        if http is not None and "http" not in kwargs:
+            # When passing a custom http transport, credentials must NOT also be
+            # passed to build() - AuthorizedHttp carries them instead.
+            kwargs["http"] = AuthorizedHttp(credentials, http=http)
+            return build(self.api_name, self.version, **kwargs)
         return build(self.api_name, self.version, credentials=credentials, **kwargs)
 
     def test_connectivity(self, credentials, project_id: str) -> tuple[bool, str]:
@@ -2802,6 +2850,13 @@ def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     params = demisto.params()
+
+    # Apply connection settings from the integration params so every Google API
+    # client (built via GCPServices.build) honors proxy and SSL configuration.
+    global USE_PROXY, VERIFY_SSL
+    USE_PROXY = params.get("proxy", False)
+    VERIFY_SSL = not argToBoolean(params.get("insecure", False))
+    handle_proxy()  # populates HTTPS_PROXY env vars when the proxy param is enabled
 
     try:
         command_map: dict[str, Callable[[Any, dict], Any]] = {
