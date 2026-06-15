@@ -18725,7 +18725,7 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: limit
-      description: The maximum number of objects that you want Network Firewall to return for this request.
+      description: The maximum number of objects that you want Network Firewall to return for this request. Default value is 50.
     - name: next_token
       description: The nextToken value returned from a previous paginated request.
     outputs:
@@ -18898,14 +18898,17 @@ script:
       description: The ResourceArn:Priority pairs, references to the stateless rule groups that are used in the policy. Format is ResourceArn=arn1,Priority=priority1;ResourceArn=arn1,Priority=priority2.
     - name: stateless_default_actions
       description: A comma-separated list of the actions to take on a packet if it doesn’t match any of the stateless rules in the policy.
+      isArray: true
     - name: stateless_fragment_default_actions
-      description: A comma-separated list of the ctions to take on a fragmented UDP packet if it doesn’t match any of the stateless rules in the policy.
+      description: A comma-separated list of the actions to take on a fragmented UDP packet if it doesn’t match any of the stateless rules in the policy.
+      isArray: true
     - name: stateless_custom_actions
       description: 'A JSON string specifying the custom action definitions that are available for use in the firewall policy’s StatelessDefaultActions setting. For example: [{\"ActionName\": \"string\", \"ActionDefinition\": {\"PublishMetricAction\": {\"Dimensions\":[{\"Value\": \"string\"}]}}}].'
     - name: stateful_rule_group_references
       description: 'A JSON string specifying the stateful rule groups that are used in the policy. For example: [{\"ResourceArn\": \"string\", \"Priority\": 123, \"Override\": {\"Action\": \"DROP_TO_ALERT\"}, \"DeepThreatInspection\": \"True\"}].'
     - name: stateful_default_actions
       description: A comma-separated list of the default actions to take on a packet that doesn’t match any stateful rules.
+      isArray: true
     - name: stateful_engine_options_rule_order
       description: Indicates how to manage the order of stateful rule evaluation for the policy.
       auto: PREDEFINED
@@ -18930,7 +18933,7 @@ script:
     - name: tags
       description: The key:value pairs to associate with the resource. Format is key=key1,value=value1;key=key2,value=value2.
     - name: enable_tls_session_holding
-      description: When true, prevents TCP and TLS packets from reaching destination servers until TLS Inspection has evaluated Server Name Indication (SNI) rules.
+      description: Whether TCP and TLS packets are prevented from reaching destination servers until TLS Inspection has evaluated Server Name Indication (SNI) rules.
       auto: PREDEFINED
       predefined:
         - "true"
@@ -19189,14 +19192,17 @@ script:
       description: The ResourceArn:Priority pairs, references to the stateless rule groups that are used in the policy. Format is ResourceArn=arn1,Priority=priority1;ResourceArn=arn1,Priority=priority2.
     - name: stateless_default_actions
       description: A comma-separated list of the actions to take on a packet if it doesn’t match any of the stateless rules in the policy.
+      isArray: true
     - name: stateless_fragment_default_actions
       description: A comma-separated list of the actions to take on a fragmented UDP packet if it doesn’t match any of the stateless rules in the policy.
+      isArray: true
     - name: stateless_custom_actions
       description: 'A JSON string specifying the custom action definitions that are available for use in the firewall policy’s StatelessDefaultActions setting. For example: [{\"ActionName\": \"string\", \"ActionDefinition\": {\"PublishMetricAction\": {\"Dimensions\":[{\"Value\": \"string\"}]}}}].'
     - name: stateful_rule_group_references
       description: 'A JSON string specifying the stateful rule groups that are used in the policy. For example: [{\"ResourceArn\": \"string\", \"Priority\": 123, \"Override\": {\"Action\": \"DROP_TO_ALERT\"}, \"DeepThreatInspection\": \"True\"}].'
     - name: stateful_default_actions
       description: A comma-separated list of the default actions to take on a packet that doesn’t match any stateful rules.
+      isArray: true
     - name: stateful_engine_options_rule_order
       description: Indicates how to manage the order of stateful rule evaluation for the policy.
       auto: PREDEFINED
@@ -19317,7 +19323,7 @@ script:
     - name: firewall_arn
       description: The Amazon Resource Name (ARN) of the firewall policy. You must specify the ARN or the name, and you can specify both.
     - name: firewall_policy_change_protection
-      description: A setting indicating whether the firewall is protected against a change to the firewall policy association. Use this setting to protect against accidentally modifying the firewall policy for a firewall that is in use. When you create a firewall, the operation initializes this setting to TRUE.
+      description: Whether the firewall is protected against a change to the firewall policy association. Use this setting to protect against accidentally modifying the firewall policy for a firewall that is in use. When you create a firewall, the operation initializes this setting to TRUE.
       required: true
       auto: PREDEFINED
       predefined:
@@ -19331,7 +19337,7 @@ script:
       description: The Amazon Resource Name (ARN) of the firewall policy.
       type: String
     - contextPath: AWS.NetworkFirewall.Firewalls.FirewallPolicyChangeProtection
-      description: A setting indicating whether the firewall is protected against a change to the firewall policy association. A setting of TRUE indicates that the firewall policy association is protected against change.
+      description: Whether the firewall is protected against a change to the firewall policy association. A setting of TRUE indicates that the firewall policy association is protected against change.
       type: Boolean
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
       description: An optional token that you can use for optimistic locking.

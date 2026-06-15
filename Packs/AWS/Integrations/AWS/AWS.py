@@ -442,7 +442,7 @@ def parse_resource_arn_priority_field(refs_string: str | None) -> list:
         if match_ref is None:
             raise ValueError(
                 f"Could not parse field: {ref}. Please make sure you provided like so: "
-                "ResourceArn=arn1,Priority=priority1;ResourceArn=arn2,Priority=priority2"
+                "ResourceArn=arn:aws1,Priority=priority1;ResourceArn=arn:aws2,Priority=priority2"
             )
         references.append({"ResourceArn": match_ref.group(1), "Priority": int(match_ref.group(2))})
 
@@ -10131,6 +10131,7 @@ class NetworkFirewall:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
+        raw_response = copy.deepcopy(response)
         firewall_policy_response = response.get("FirewallPolicyResponse", {})
         firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
         firewall_policy_response.update(response.get("FirewallPolicy", {}))
@@ -10146,7 +10147,7 @@ class NetworkFirewall:
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
-            raw_response=response,
+            raw_response=raw_response,
         )
 
     @staticmethod
@@ -10190,6 +10191,7 @@ class NetworkFirewall:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
+        raw_response = copy.deepcopy(response)
         firewall_policy_response = response.get("FirewallPolicyResponse", {})
         firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
 
@@ -10204,7 +10206,7 @@ class NetworkFirewall:
                 removeNull=True,
                 headerTransform=pascalToSpace,
             ),
-            raw_response=response,
+            raw_response=raw_response,
         )
 
     @staticmethod
@@ -10271,12 +10273,7 @@ class NetworkFirewall:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        firewall_policy_response = response.get("FirewallPolicyResponse", {})
-
         return CommandResults(
-            outputs_prefix="AWS.NetworkFirewall.FirewallPolicies",
-            outputs_key_field="FirewallPolicyArn",
-            outputs=firewall_policy_response,
             readable_output="The AWS Network Firewall policy was deleted successfully.",
             raw_response=response,
         )
@@ -10320,20 +10317,8 @@ class NetworkFirewall:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        firewall_policy_response = response.get("FirewallPolicyResponse", {})
-        firewall_policy_response["UpdateToken"] = response.get("UpdateToken")
-
         return CommandResults(
-            outputs_prefix="AWS.NetworkFirewall.FirewallPolicies",
-            outputs_key_field="FirewallPolicyArn",
-            outputs=firewall_policy_response,
-            readable_output=tableToMarkdown(
-                "AWS Network Firewall Policy",
-                firewall_policy_response,
-                headers=["FirewallPolicyName", "FirewallPolicyArn", "Description", "FirewallPolicyStatus"],
-                removeNull=True,
-                headerTransform=pascalToSpace,
-            ),
+            readable_output="The firewall policy was updated successfully.",
             raw_response=response,
         )
 
