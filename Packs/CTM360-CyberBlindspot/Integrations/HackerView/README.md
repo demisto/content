@@ -6,10 +6,12 @@ This integration was integrated and tested with version `1.0.0` of CTM360_Hacker
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from HackerView to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to HackerView\), or Incoming and Outgoing \(from/to Cortex XSOAR and HackerView\). | False |
+| Module To Use | Choose the module: Light Scan or Deep Scan. | False |
 | First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours. Default is `7 days`) | The time the incidents should be fetched starting from. | False |
 | API Key | The CTM360 HackerView API Key to use for fetching data. | True |
 | Maximum Number of Incidents per Fetch | Default is 25. Maximum is 200. | True |
 | Fetch incidents |  | False |
+| Fetch events |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Incident type |  | False |
@@ -101,29 +103,42 @@ Fetch details of a single incident from the HackerView platform.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HackerView.RemoteIncident.id | unknown | Symbolic Incident ID |
-| HackerView.RemoteIncident.timestamp | unknown | DB timestamp |
-| HackerView.RemoteIncident.confidence | unknown | Confidence of report |
-| HackerView.RemoteIncident.cve_id | unknown | ID of associated CVE |
-| HackerView.RemoteIncident.cwe | unknown | List of associated CWEs |
-| HackerView.RemoteIncident.issue_category | unknown | Category of Incident |
-| HackerView.RemoteIncident.issue_name | unknown | Name of Incident |
-| HackerView.RemoteIncident.potential_attack_type | unknown | Potential attack to make use of incident |
-| HackerView.RemoteIncident.potential_impact | unknown | Potential impact of incident |
-| HackerView.RemoteIncident.status | unknown | Active status of Incident |
-| HackerView.RemoteIncident.progress_status | unknown | Progress of incident response |
-| HackerView.RemoteIncident.severity | unknown | Severity of incident |
-| HackerView.RemoteIncident.resolved_ip | unknown | IP resolved on affected asset |
-| HackerView.RemoteIncident.first_seen | unknown | Incident creation date |
-| HackerView.RemoteIncident.last_seen | unknown | Last discovery date for incident |
-| HackerView.RemoteIncident.last_updated | unknown | Last update date for incident |
-| HackerView.RemoteIncident.environments | unknown | env |
-| HackerView.RemoteIncident.ticket_id | unknown | Ticket ID |
-| HackerView.RemoteIncident.technologies | unknown | Technologies on affected asset |
-| HackerView.RemoteIncident.domain | unknown | domain of affected asset |
-| HackerView.RemoteIncident.host | unknown | host of affected asset |
-| HackerView.RemoteIncident.asset_type | unknown | affected asset type |
-| HackerView.RemoteIncident.asset | unknown | affected asset |
+| HackerView.RemoteIncident.id | unknown | Symbolic Incident ID. |
+| HackerView.RemoteIncident.timestamp | unknown | DB timestamp. |
+| HackerView.RemoteIncident.confidence | unknown | Confidence of report. |
+| HackerView.RemoteIncident.cve_id | unknown | ID of associated CVE. |
+| HackerView.RemoteIncident.cwe | unknown | List of associated CWEs. |
+| HackerView.RemoteIncident.issue_category | unknown | Category of Incident. |
+| HackerView.RemoteIncident.issue_name | unknown | Name of Incident. |
+| HackerView.RemoteIncident.potential_attack_type | unknown | Potential attack to make use of incident. |
+| HackerView.RemoteIncident.potential_impact | unknown | Potential impact of incident. |
+| HackerView.RemoteIncident.status | unknown | Active status of Incident. |
+| HackerView.RemoteIncident.progress_status | unknown | Progress of incident response. |
+| HackerView.RemoteIncident.severity | unknown | Severity of incident. |
+| HackerView.RemoteIncident.resolved_ip | unknown | IP resolved on affected asset. |
+| HackerView.RemoteIncident.first_seen | unknown | Incident creation date. |
+| HackerView.RemoteIncident.last_seen | unknown | Last discovery date for incident. |
+| HackerView.RemoteIncident.last_updated | unknown | Last update date for incident. |
+| HackerView.RemoteIncident.environments | unknown | env. |
+| HackerView.RemoteIncident.ticket_id | unknown | Ticket ID. |
+| HackerView.RemoteIncident.technologies | unknown | Technologies on affected asset. |
+| HackerView.RemoteIncident.domain | unknown | domain of affected asset. |
+| HackerView.RemoteIncident.host | unknown | host of affected asset. |
+| HackerView.RemoteIncident.asset_type | unknown | affected asset type. |
+| HackerView.RemoteIncident.asset | unknown | affected asset. |
+| HackerView.RemoteIncident.ip | unknown | The IP address associated with the finding. |
+| HackerView.RemoteIncident.port | unknown | The network port associated with the finding. |
+| HackerView.RemoteIncident.uri | unknown | The URI path or resource related to the finding. |
+| HackerView.RemoteIncident.url | unknown | Base URL of the affected asset or service. |
+| HackerView.RemoteIncident.issue_type | unknown | The type or classification of the issue. |
+| HackerView.RemoteIncident.issue_description | unknown | A detailed description of the issue. |
+| HackerView.RemoteIncident.cpe | unknown | Common Platform Enumeration \(CPE\) identifier if applicable. |
+| HackerView.RemoteIncident.cvss_metrics | unknown | CVSS vector or metric string for the vulnerability. |
+| HackerView.RemoteIncident.cvss_score | unknown | CVSS base score for the vulnerability. |
+| HackerView.RemoteIncident.epss_score | unknown | Exploit Prediction Scoring System \(EPSS\) score. |
+| HackerView.RemoteIncident.known_exploited | unknown | Whether the vulnerability is known to be exploited. |
+| HackerView.RemoteIncident.hackerview_link | unknown | Link to the issue in the HackerView platform. |
+| HackerView.RemoteIncident.evidence | unknown | Request/response evidence for the finding \(e.g. request, response, curl_command\). |
 
 ### get-remote-data
 

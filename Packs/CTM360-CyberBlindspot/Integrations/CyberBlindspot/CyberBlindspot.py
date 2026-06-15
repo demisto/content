@@ -37,6 +37,17 @@ API = {
 }
 LOGGING_PREFIX = "[CYBER-BLINDSPOT]"
 
+CBS_MODULE_DISPLAY_TO_TYPE = {
+    "Incidents": "incidents",
+    "Compromised Cards": "compromised_cards",
+    "Breached Credentials": "breached_credentials",
+    "Malware Logs": "malware_logs",
+    "Domain Infringement": "domain_infringement",
+    "Subdomain Infringement": "subdomain_infringement",
+}
+CBS_DEFAULT_MODULE_DISPLAY = "Incidents"
+CBS_DEFAULT_MODULE_TYPE = "incidents"
+
 DEFAULT_FIELDS = [
     {"name": "first_seen", "description": "The creation date of the incident"},
     {"name": "last_seen", "description": "The date the incident got last updated"},
@@ -109,6 +120,18 @@ MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming
 )
 
 
+def resolve_cbs_module(module_to_use: str | None = None) -> str:
+    """Resolve API module_type from instance config.
+
+    Pre-upgrade instances may omit module_to_use; treat missing/blank/unknown as Incidents.
+    """
+    if module_to_use is None:
+        module_to_use = demisto.params().get("module_to_use", CBS_DEFAULT_MODULE_DISPLAY)
+    if not module_to_use or not str(module_to_use).strip():
+        return CBS_DEFAULT_MODULE_TYPE
+    return CBS_MODULE_DISPLAY_TO_TYPE.get(module_to_use, CBS_DEFAULT_MODULE_TYPE)
+
+
 class Instance:
     def __init__(self, **kwargs) -> None:
         self.module: str = kwargs.get("module", "incidents")
@@ -129,16 +152,7 @@ class Instance:
                 self.mapping_fields = CBS_INCIDENT_FIELDS
 
 
-INSTANCE = Instance(
-    module={
-        "Incidents": "incidents",
-        "Compromised Cards": "compromised_cards",
-        "Breached Credentials": "breached_credentials",
-        "Malware Logs": "malware_logs",
-        "Domain Infringement": "domain_infringement",
-        "Subdomain Infringement": "subdomain_infringement",
-    }.get(demisto.params().get("module_to_use", "Incidents"), "incidents")
-)
+INSTANCE = Instance(module=resolve_cbs_module())
 
 
 INTEGRATION_INSTANCE = demisto.integrationInstance()
@@ -325,6 +339,14 @@ def convert_to_demisto_severity(severity: str) -> int | float:
     }[severity.lower()]
 
 
+def use_text_severity() -> bool:
+    """Return True when incidents should keep API severity text (XSIAM/unified platform)."""
+    if is_xsiam():
+        return True
+    is_platform_fn = globals().get("is_platform")
+    return bool(callable(is_platform_fn) and is_platform_fn())
+
+
 def convert_time_string(
     time_string: str,
     input_format_string: str,
@@ -408,6 +430,8 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
     """
     unmapped_incident.pop("screenshots", "")
     incident_id: str = unmapped_incident.pop("id", "")
+    api_severity = unmapped_incident.pop("severity", "low")
+    mapped_severity: int | float | str = api_severity if use_text_severity() else convert_to_demisto_severity(api_severity)
     mapped_incident = {
         "name": unmapped_incident.pop("remarks", ""),
         "occurred": convert_time_string(
@@ -415,7 +439,7 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
         ),
         "externalstatus": unmapped_incident.pop("status", "monitoring"),
         "externallink": unmapped_incident.pop("external_link", ""),
-        "severity": convert_to_demisto_severity(unmapped_incident.pop("severity", "low")),
+        "severity": mapped_severity,
         "CustomFields": {
             "cbs_type": unmapped_incident.pop("type", ""),
             "cbs_module": INSTANCE.module,
@@ -474,8 +498,6 @@ def test_module(client: Client, params) -> str:
         date_from = params.get("date_from", "")
         date_to = params.get("date_to", "")
         api_key = params.get("api_key", {}).get("password", "")
-        module_to_use = params.get("module_to_use", "")
-
         if mirror_direction not in ["None", "Incoming", "Outgoing", "Incoming And Outgoing"]:
             log(INFO, 'Invalid "Mirror Direction" Value')
             raise DemistoException('Invalid "Mirroring Direction" Value')
@@ -500,9 +522,7 @@ def test_module(client: Client, params) -> str:
         if not api_key:
             log(INFO, 'Invalid "API Key" Value')
             raise DemistoException('Invalid "API Key" Value')
-        if not module_to_use:
-            log(INFO, 'Invalid "Module" Value')
-            raise DemistoException('Invalid "Module" Value')
+        args["module_type"] = resolve_cbs_module(params.get("module_to_use"))
         incidents = client.test_configuration(args)
         if max_fetch and len(incidents) > max_fetch:
             log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
@@ -564,6 +584,36 @@ def fetch_incidents(
     log(INFO, f"setting last fetched timestamp - {last_fetched_timestamp=}")
     next_run = {"last_fetched_timestamp": last_fetched_timestamp, "last_fetch_ids": incident_ids}
     return next_run, unique_incidents
+
+
+def build_fetch_params(demisto_params: dict[str, Any], last_run: dict[str, Any]) -> dict[str, Any]:
+    """Build API params for fetch-incidents."""
+    last_fetched_timestamp = last_run.get("last_fetched_timestamp", "")
+    first_fetch = demisto_params.get("first_fetch", "7 days")
+    try:
+        dateparser.parse(f"{first_fetch} UTC")
+    except Exception:
+        log(DEBUG, "first_fetch is not parsable, setting to `7 days`")
+        first_fetch = "7 days"
+
+    if not last_fetched_timestamp:
+        log(DEBUG, f"Fetch is set to fetch from the {first_fetch} ago.")
+
+    params: dict[str, Any] = {
+        "date_field": "@timestamp",
+        "order": "asc",
+        "max_hits": MAX_FETCH,
+        "module_type": INSTANCE.module,
+        "date_from": last_fetched_timestamp
+        if last_fetched_timestamp
+        else convert_time_string(f"{first_fetch} UTC", "", timestamp=True),
+        "t": datetime.now().timestamp() * 1000,
+    }
+    if "domain_infringement" in INSTANCE.module:
+        params["finding_status"] = demisto_params.get("finding_status", "")
+        params["risk_score_min"] = demisto_params.get("risk_score_min", "")
+        params["risk_score_max"] = demisto_params.get("risk_score_max", "")
+    return params
 
 
 def get_remote_data_command(client: Client, args: dict):
@@ -899,50 +949,17 @@ def main() -> None:
         }
 
         if demisto_command == "fetch-incidents":
-            log(DEBUG, "at fetch command")
+            log(DEBUG, "at fetch-incidents command")
             last_run = demisto.getLastRun()
-            last_fetched_timestamp = last_run.get("last_fetched_timestamp", "")
             last_fetch_ids = last_run.get("last_fetch_ids", [])
-            first_fetch = demisto_params.get("first_fetch", "7 days")
-            try:
-                dateparser.parse(f"{first_fetch} UTC")
-            except Exception:
-                log(DEBUG, "first_fetch is not parsable, setting to `7 days`")
-                first_fetch = "7 days"
+            params = build_fetch_params(demisto_params, last_run)
 
-            if not last_fetched_timestamp:
-                log(DEBUG, f"Fetch is set to fetch incidents from the {first_fetch} ago.")
-
-            params = {
-                "date_field": "@timestamp",
-                "order": "asc",
-                "max_hits": MAX_FETCH,
-                "module_type": INSTANCE.module,
-                "date_from": last_fetched_timestamp
-                if last_fetched_timestamp
-                else convert_time_string(f"{first_fetch} UTC", "", timestamp=True),
-                "t": datetime.now().timestamp() * 1000,
-            }
-
-            if "domain_infringement" in INSTANCE.module:
-                params["finding_status"] = demisto_params.get("finding_status", "")
-                params["risk_score_min"] = demisto_params.get("risk_score_min", "")
-                params["risk_score_max"] = demisto_params.get("risk_score_max", "")
-
-            log(DEBUG, f'{demisto_params.get("date_from")=}')
-
-            log(INFO, f"Will be fetching {MAX_FETCH} incidents.")
-
-            log(DEBUG, f'LastRun was {last_fetched_timestamp if last_fetched_timestamp else "NOT FOUND"}')
-            log(DEBUG, f'last run\'s calculated ids were {last_run.get("last_fetch_ids")}')
-
+            log(INFO, f"Will be fetching up to {MAX_FETCH} records.")
             log(DEBUG, f"Calling fetch with the following: {params=}")
             log(DEBUG, f"Mirroring set as: {MIRROR_DIRECTION}")
 
             next_run, incidents = fetch_incidents(client, last_fetch_ids, params, last_run)
-
-            log(DEBUG, "Setting incidents and last run")
-            log(DEBUG, f"Fetched {len(incidents)} incidents")
+            log(DEBUG, f"Fetched {len(incidents)} incidents, {next_run=}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif demisto_command == "test-module":

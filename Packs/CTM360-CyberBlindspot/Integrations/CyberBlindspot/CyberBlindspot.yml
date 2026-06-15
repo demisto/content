@@ -36,9 +36,6 @@ configuration:
   - Domain Infringement
   - Subdomain Infringement
   section: Collect
-  hidden:
-  - marketplacev2
-  - platform
 - name: retrieve_screenshots
   required: false
   type: 8
@@ -278,7 +275,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4095827
+  dockerimage: demisto/python3:3.12.13.9059085
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

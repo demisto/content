@@ -1,14 +1,14 @@
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa: F401
 
-from typing import Any
-
-
 """ IMPORTS """
 
 from inspect import getfullargspec
+
 import urllib3
 
 # Disable insecure warnings
@@ -28,41 +28,102 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 HV_OUTGOING_DATE_FORMAT = "%d-%m-%Y %H:%M"
 HV_INCOMING_DATE_FORMAT = "%d-%m-%Y %H:%M:%S"
 HV_BASE_URL = "https://hackerview.ctm360.com"
-HV_API_ENDPOINT = "/api/v2/issues"
+HV_API_ENDPOINT = "/api/v2/issues"  # Usual endpoint that also gets lightscan data
 API = {
-    "CHANGE_STATUS": "/progress_status/",
+    "DEEPSCAN": "/deepscan",  # Deepscan endpoint
+    "CHANGE_STATUS": "/progress_status",
 }
 LOGGING_PREFIX = "[HACKERVIEW]"
 
-HV_INCIDENT_FIELDS = [
+DEFAULT_FIELDS = [
+    {"name": "brand", "description": "The organization brand the incident belongs to."},
+    {"name": "ticket_id", "description": "Ticket ID"},
+    {"name": "first_seen", "description": "Incident creation date."},
+    {"name": "last_seen", "description": "Last discovery date for incident."},
+    {"name": "progress_status", "description": "Progress of incident response."},
+    {"name": "severity", "description": "Severity of incident."},
+    {"name": "asset", "description": "affected asset"},
+    {"name": "issue_name", "description": "Name of Incident."},
+    {"name": "cve_id", "description": "Associated CVE identifier(s)."},
+]
+
+HV_LIGHTSCAN_FIELDS = [
     {"name": "id", "description": "Symbolic Incident ID."},
     {"name": "timestamp", "description": "DB timestamp."},
     {"name": "confidence", "description": "Confidence of report."},
-    {"name": "cve_id", "description": "ID of associated CVE."},
     {"name": "cwe", "description": "List of associated CWEs."},
     {"name": "issue_category", "description": "Category of Incident"},
-    {"name": "issue_name", "description": "Name of Incident."},
     {"name": "potential_attack_type", "description": "Potential attack to make use of incident."},
     {"name": "potential_impact", "description": "Potential impact of incident."},
     {"name": "status", "description": "Active status of Incident."},
-    {"name": "progress_status", "description": "Progress of incident response."},
-    {"name": "severity", "description": "Severity of incident."},
     {"name": "resolved_ip", "description": "IP resolved on affected asset."},
-    {"name": "first_seen", "description": "Incident creation date."},
-    {"name": "last_seen", "description": "Last discovery date for incident."},
     {"name": "last_updated", "description": "Last update date for incident."},
     {"name": "environments", "description": "env."},
-    {"name": "ticket_id", "description": "Ticket ID"},
     {"name": "technologies", "description": "Technologies on affected asset."},
     {"name": "domain", "description": "domain of affected asset"},
     {"name": "host", "description": "host of affected asset"},
     {"name": "asset_type", "description": "affected asset type"},
-    {"name": "asset", "description": "affected asset"},
+    *DEFAULT_FIELDS,
+]
+
+HV_DEEPSCAN_FIELDS = [
+    {"name": "ip", "description": "The IP address associated with the finding."},
+    {"name": "port", "description": "The network port associated with the finding."},
+    {"name": "uri", "description": "The URI path or resource related to the finding."},
+    {"name": "url", "description": "Base URL of the affected asset or service."},
+    {"name": "issue_type", "description": "The type or classification of the issue."},
+    {"name": "issue_description", "description": "A detailed description of the issue."},
+    {"name": "cpe", "description": "Common Platform Enumeration (CPE) identifier if applicable."},
+    {"name": "cvss_metrics", "description": "CVSS vector or metric string for the vulnerability."},
+    {"name": "cvss_score", "description": "CVSS base score for the vulnerability."},
+    {"name": "epss_score", "description": "Exploit Prediction Scoring System (EPSS) score."},
+    {"name": "known_exploited", "description": "Whether the vulnerability is known to be exploited."},
+    {"name": "hackerview_link", "description": "Link to the issue in the HackerView platform."},
+    {"name": "evidence", "description": "Request/response evidence for the finding (e.g. request, response, curl_command)."},
+    {"name": "domain", "description": "Domain associated with the asset."},
+    {"name": "host", "description": "Hostnames associated with the asset."},
+    {"name": "asset_type", "description": "Type of affected asset (e.g. services)."},
+    *DEFAULT_FIELDS,
 ]
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}.get(
     demisto.params().get("mirror_direction", "None")
 )
+
+HV_MODULE_DISPLAY_TO_TYPE = {
+    "Light Scan": "lightscan",
+    "Deep Scan": "deepscan",
+}
+HV_DEFAULT_MODULE_DISPLAY = "Light Scan"
+HV_DEFAULT_MODULE_TYPE = "lightscan"
+
+
+def resolve_hv_module(module_to_use: str | None = None) -> str:
+    """Resolve API module_type from instance config.
+
+    Pre-upgrade instances may omit module_to_use; treat missing/blank/unknown as Light Scan.
+    """
+    if module_to_use is None:
+        module_to_use = demisto.params().get("module_to_use", HV_DEFAULT_MODULE_DISPLAY)
+    if not module_to_use or not str(module_to_use).strip():
+        return HV_DEFAULT_MODULE_TYPE
+    return HV_MODULE_DISPLAY_TO_TYPE.get(module_to_use, HV_DEFAULT_MODULE_TYPE)
+
+
+class Instance:
+    def __init__(self, **kwargs) -> None:
+        self.module: str = kwargs.get("module", "lightscan")
+        match self.module:
+            case "lightscan":
+                self.mapping_fields = HV_LIGHTSCAN_FIELDS
+            case "deepscan":
+                self.mapping_fields = HV_DEEPSCAN_FIELDS
+            case _:
+                raise ValueError(f"Invalid module: {self.module}")
+
+
+INSTANCE = Instance(module=resolve_hv_module())
+
 
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
@@ -151,13 +212,18 @@ class Client(BaseClient):
         :return: Response from the remote server carrying the result of the request
         :rtype: dict[str, Any]
         """
-        log(DEBUG, f"status change params {args=}")
+        url_suffix = (
+            f"{HV_API_ENDPOINT}{API['DEEPSCAN']}{API['CHANGE_STATUS']}"
+            if INSTANCE.module == "deepscan"
+            else f"{HV_API_ENDPOINT}{API['CHANGE_STATUS']}"
+        )
+        log(DEBUG, f"status change params {args=} {url_suffix=}")
         response = self._http_request(
             method="POST",
             retries=MAX_RETRIES,
             backoff_factor=10,
             status_list_to_retry=[400, 429, 500],
-            url_suffix=HV_API_ENDPOINT + API["CHANGE_STATUS"],
+            url_suffix=url_suffix,
             data=args,
             params={"t": datetime.now().timestamp()},
         )
@@ -211,6 +277,14 @@ def convert_to_demisto_severity(severity: str) -> int | float:
     }[severity.lower()]
 
 
+def use_text_severity() -> bool:
+    """Return True when incidents should keep API severity text (XSIAM/unified platform)."""
+    if is_xsiam():
+        return True
+    is_platform_fn = globals().get("is_platform")
+    return bool(callable(is_platform_fn) and is_platform_fn())
+
+
 def convert_time_string(
     time_string: str | int,
     input_format_string: str,
@@ -235,8 +309,8 @@ def convert_time_string(
     """
     output: datetime | None
     try:
-        if isinstance(time_string, int):
-            output = datetime.fromtimestamp(time_string / 1000)
+        if isinstance(time_string, int | float):
+            output = datetime.fromtimestamp(time_string / 1000, tz=timezone.utc)
         else:
             output = dateparser.parse(time_string, [input_format_string], **parser_args)
         if not isinstance(output, datetime):
@@ -296,14 +370,17 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
     # Remove unnecessary fields
     unmapped_incident.pop("ticket_id", "")
     unmapped_incident.pop("last_updated", "")
+    api_severity = unmapped_incident.pop("severity", "low")
+    mapped_severity: int | float | str = api_severity if use_text_severity() else convert_to_demisto_severity(api_severity)
     mapped_incident = {
         "name": unmapped_incident.pop("issue_name"),
         "occurred": convert_time_string(
             unmapped_incident.pop("first_seen", ""), HV_INCOMING_DATE_FORMAT, in_iso_format=True, is_utc=True
         ),
         "external_status": unmapped_incident.pop("status", ""),
-        "severity": convert_to_demisto_severity(unmapped_incident.pop("severity", "low")),
+        "severity": mapped_severity,
         "CustomFields": {
+            "hv_module": INSTANCE.module,
             "updated_date": convert_time_string(
                 unmapped_incident.pop("last_seen", ""), HV_INCOMING_DATE_FORMAT, in_iso_format=True, is_utc=True
             ),
@@ -383,6 +460,7 @@ def test_module(client: Client, params) -> str:
         if not api_key:
             log(INFO, 'Invalid "API Key" Value')
             raise DemistoException('Invalid "API Key" Value')
+        args["module_type"] = resolve_hv_module(params.get("module_to_use", HV_DEFAULT_MODULE_TYPE))
         incidents = client.test_configuration(args)
         if max_fetch and len(incidents) > max_fetch:
             log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
@@ -398,6 +476,7 @@ def test_module(client: Client, params) -> str:
             "Date From",
             "Date To",
             "API Key",
+            "Module",
             "does not match format '%d-%m-%Y %H:%M'",
         ]
         for word in expected_words:
@@ -448,6 +527,31 @@ def fetch_incidents(
     return next_run, unique_incidents
 
 
+def build_fetch_params(demisto_params: dict[str, Any], last_run: dict[str, Any]) -> dict[str, Any]:
+    """Build API params for fetch-incidents."""
+    last_fetched_timestamp = last_run.get("last_fetched_timestamp", "")
+    first_fetch = demisto_params.get("first_fetch", "7 days")
+    try:
+        dateparser.parse(f"{first_fetch} UTC")
+    except Exception:
+        log(DEBUG, "first_fetch is not parsable, setting to `7 days`")
+        first_fetch = "7 days"
+
+    if not last_fetched_timestamp:
+        log(DEBUG, f"Fetch is set to fetch from the {first_fetch} ago.")
+
+    return {
+        "date_field": "@timestamp",
+        "order": "asc",
+        "max_hits": MAX_FETCH,
+        "module_type": INSTANCE.module,
+        "date_from": last_fetched_timestamp
+        if last_fetched_timestamp
+        else convert_time_string(f"{first_fetch} UTC", "", timestamp=True),
+        "t": datetime.now().timestamp() * 1000,
+    }
+
+
 def get_remote_data_command(client: Client, args: dict) -> GetRemoteDataResponse:
     """get-remote-data command: Returns an updated incident and error entry (if needed)
 
@@ -471,7 +575,7 @@ def get_remote_data_command(client: Client, args: dict) -> GetRemoteDataResponse
 
     log(DEBUG, f"Performing get-remote-data command for the incident: {remote_incident_id}")
 
-    params = {"ticket_id": remote_incident_id, "t": datetime.now().timestamp() * 1000}
+    params = {"ticket_id": remote_incident_id, "module_type": INSTANCE.module, "t": datetime.now().timestamp() * 1000}
 
     updated_incident = client.fetch_incident(params)
     log(DEBUG, f"{updated_incident=}")
@@ -560,6 +664,7 @@ def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteD
         "order": "asc",
         "date_from": last_timestamp,
         "max_hits": ABSOLUTE_MAX_FETCH,
+        "module_type": INSTANCE.module,
         "t": datetime.now().timestamp() * 1000,
     }
     modified_incident_ids.extend(item["id"] for item in client.fetch_incidents(params))
@@ -615,7 +720,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     :rtype: GetMappingFieldsResponse
     """
     incident_type_scheme = SchemeTypeMapping(type_name="HackerView Incident")
-    for field in HV_INCIDENT_FIELDS:
+    for field in INSTANCE.mapping_fields:
         incident_type_scheme.add_field(name=field["name"], description=field["description"])
 
     return GetMappingFieldsResponse([incident_type_scheme])
@@ -636,7 +741,7 @@ def ctm360_hv_incident_list_command(client: Client, args: dict[str, Any]) -> Com
     if args.get("dateTo"):
         args["dateTo"] = convert_time_string(args["dateTo"], HV_OUTGOING_DATE_FORMAT, timestamp=True)
     params = {to_snake_case(key): v for key, v in args.items()}
-    params |= {"date_field": "@timestamp", "t": datetime.now().timestamp()}
+    params |= {"date_field": "@timestamp", "module_type": INSTANCE.module, "t": datetime.now().timestamp()}
     result = client.fetch_incidents(params)
     log(INFO, f"Received {len(result)} incidents")
     if len(result) > 0:
@@ -663,7 +768,7 @@ def ctm360_hv_incident_details_command(client: Client, args: dict[str, Any]) -> 
     :rtype: CommandResults
     """
     params = {to_snake_case(key): v for key, v in args.items()}
-    params["t"] = datetime.now().timestamp()
+    params |= {"module_type": INSTANCE.module, "t": datetime.now().timestamp()}
     result = client.fetch_incident(params)
     log(INFO, f"Received {result}")
 
@@ -734,46 +839,17 @@ def main() -> None:
         }
 
         if demisto_command == "fetch-incidents":
-            log(DEBUG, "at fetch command")
+            log(DEBUG, "at fetch-incidents command")
             last_run = demisto.getLastRun()
-            last_fetched_timestamp = last_run.get("last_fetched_timestamp", "")
             last_fetch_ids = last_run.get("last_fetch_ids", [])
-            first_fetch = demisto_params.get("first_fetch", "7 days")
+            params = build_fetch_params(demisto_params, last_run)
 
-            try:
-                dateparser.parse(f"{first_fetch} UTC")
-            except Exception:
-                log(DEBUG, "first_fetch is not parsable, setting to `7 days`")
-                first_fetch = "7 days"
-
-            if not last_fetched_timestamp:
-                log(DEBUG, f"Fetch is set to fetch incidents from the {first_fetch} ago.")
-
-            params = {
-                "date_field": "@timestamp",
-                "order": "asc",
-                "max_hits": MAX_FETCH,
-                "date_from": last_fetched_timestamp
-                if last_fetched_timestamp
-                else convert_time_string(f"{first_fetch} UTC", "", timestamp=True),
-                "t": datetime.now().timestamp() * 1000,
-            }
-
-            log(DEBUG, f'{demisto_params.get("date_from")=}')
-
-            log(INFO, f"Will be fetching {MAX_FETCH} incidents.")
-
-            log(DEBUG, f'LastRun was {last_fetched_timestamp if last_fetched_timestamp else "NOT FOUND"}')
-            log(DEBUG, f'last run\'s ids were {last_run.get("last_fetch_ids")}')
-
+            log(INFO, f"Will be fetching up to {MAX_FETCH} records.")
             log(DEBUG, f"Calling fetch with the following: {params=}")
             log(DEBUG, f"Mirroring set as: {MIRROR_DIRECTION}")
 
             next_run, incidents = fetch_incidents(client, last_fetch_ids, params, last_run)
-
-            log(DEBUG, "Setting incidents and last run")
-            log(DEBUG, f"{next_run=}")
-            log(DEBUG, f"Fetched {len(incidents)} incidents")
+            log(DEBUG, f"Fetched {len(incidents)} incidents, {next_run=}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif demisto_command == "test-module":

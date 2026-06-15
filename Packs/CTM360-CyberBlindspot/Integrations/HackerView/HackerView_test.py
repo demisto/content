@@ -2,11 +2,24 @@ import pytest
 import logging
 from datetime import datetime
 from dateparser import parse
-from CommonServerPython import DemistoException, IncidentStatus
-from HackerView import LOGGING_PREFIX, HV_INCOMING_DATE_FORMAT, HV_OUTGOING_DATE_FORMAT, ABSOLUTE_MAX_FETCH
+from unittest.mock import patch
+from CommonServerPython import DemistoException, IncidentStatus, IncidentSeverity
+from HackerView import (
+    LOGGING_PREFIX,
+    HV_INCOMING_DATE_FORMAT,
+    HV_OUTGOING_DATE_FORMAT,
+    ABSOLUTE_MAX_FETCH,
+    HV_LIGHTSCAN_FIELDS,
+    HV_DEEPSCAN_FIELDS,
+)
 
 """CONSTANTS"""  # pylint: disable="pointless-string-statement”
 BASE_URL = "https://example.com:443"
+
+MODULES = [
+    ("lightscan", HV_LIGHTSCAN_FIELDS),
+    ("deepscan", HV_DEEPSCAN_FIELDS),
+]
 
 
 def load_mock_response(file_name: str) -> dict | list:
@@ -21,8 +34,12 @@ def load_mock_response(file_name: str) -> dict | list:
     import json
     import os
 
-    with open(os.path.join("test_data", file_name), encoding="utf-8") as mock_file:
+    base = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
+    with open(os.path.join(base, file_name), encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
+
+
+DEEPSCAN_INCIDENT_DETAILS_EXPECTED = load_mock_response("incident_details_response_deepscan_valid.json")[0]
 
 
 """ MOCK CLIENT"""  # pylint: disable="pointless-string-statement”
@@ -44,25 +61,6 @@ def mock_client():
         verify=False,
         headers={"api-key": "some_mock_api_key"},
     )
-
-
-""" MOCK IDS"""  # pylint: disable="pointless-string-statement”
-
-
-@pytest.fixture()
-def mock_last_fetch_ids():
-    """
-    Given: Nothing
-    When:
-        - mock_last_fetch_ids is called.
-    Then:
-        - Return a list of ids.
-    """
-    return [
-        "HVI-75466160",
-        "HVI-11136324",
-        "HVI-98944790",
-    ]
 
 
 """ HELPER FUNCTION TESTS"""  # pylint: disable="pointless-string-statement”
@@ -218,12 +216,13 @@ def test_convert_time_string(mock_input, mock_args, mock_asserts, capfd, caplog)
 
 
 @pytest.mark.parametrize(
-    "mock_input_file,mock_assert_file",
+    "mock_input_file,mock_assert_file,module",
     [
-        ("fetch_incidents_response_valid.json", "incident_list_cmd_result_valid.json"),
+        ("fetch_incidents_response_valid.json", "incident_list_cmd_result_valid.json", "lightscan"),
+        ("fetch_incidents_response_deepscan_valid.json", "map_and_create_deepscan_expected.json", "deepscan"),
     ],
 )
-def test_map_and_create_incident(mock_input_file, mock_assert_file):
+def test_map_and_create_incident(mock_input_file, mock_assert_file, module):
     """
     Given:
         - A dictionary of an unmapped incident.
@@ -232,24 +231,30 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file):
     Then:
         - Create a new incident dictionary that is in XSOAR-appropriate structure and return it.
     """
-    from HackerView import map_and_create_incident
+    from HackerView import map_and_create_incident, Instance
 
-    mock_fetched_incident = load_mock_response(mock_input_file)[0]
-    mock_assert = load_mock_response(mock_assert_file)[0]
-    del mock_assert["rawJson"]
-    result = map_and_create_incident(mock_fetched_incident)
-    del result["rawJson"]
+    mock_fetched_incident = dict(load_mock_response(mock_input_file)[0])
+    expected_raw = load_mock_response(mock_assert_file)
+    mock_assert = dict(expected_raw[0] if isinstance(expected_raw, list) else expected_raw)
+    mock_assert.pop("rawJson", None)
+    with patch("HackerView.INSTANCE", Instance(module=module)):
+        result = map_and_create_incident(mock_fetched_incident)
+    result.pop("rawJson", None)
+    assert result == mock_assert
 
 
 @pytest.mark.parametrize(
-    "input_file_name,mock_input,mock_asserts",
+    "input_file_name,last_run_ids,expected_num_ids,expected_num_unique",
     [
-        ("", ([], []), ([], [])),
-        ("fetch_incidents_response_valid.json", 2, ([], [])),
-        ("fetch_incidents_response_valid.json", -2, ([], [])),
+        ("", [], 0, 0),
+        ("fetch_incidents_response_valid.json", [], 3, 3),
+        ("fetch_incidents_response_valid.json", ["HVI-98944790"], 3, 2),
+        ("fetch_incidents_response_deepscan_valid.json", [], 3, 3),
+        ("fetch_incidents_response_deepscan_valid.json", ["HVI-23813230"], 3, 2),
+        ("fetch_incidents_response_deepscan_valid.json", ["HVI-99912344"], 3, 2),
     ],
 )
-def test_deduplicate_and_create_incidents(input_file_name, mock_input, mock_asserts, mock_last_fetch_ids, capfd, caplog):
+def test_deduplicate_and_create_incidents(input_file_name, last_run_ids, expected_num_ids, expected_num_unique, capfd, caplog):
     """
     Given:
         - List of fetched incidents.
@@ -264,11 +269,10 @@ def test_deduplicate_and_create_incidents(input_file_name, mock_input, mock_asse
 
     with capfd.disabled():
         caplog.set_level(logging.DEBUG)
-        if input_file_name:
-            mock_input = [load_mock_response(input_file_name), mock_last_fetch_ids[mock_input:] if mock_input != -2 else []]
-        new_ids, unique_incidents = deduplicate_and_create_incidents(mock_input[1], mock_input[0])
-        assert new_ids == mock_asserts[0]
-        assert unique_incidents == mock_asserts[1]
+        fetched = load_mock_response(input_file_name) if input_file_name else []
+        new_ids, unique_incidents = deduplicate_and_create_incidents(fetched, last_run_ids)
+        assert len(new_ids) == expected_num_ids
+        assert len(unique_incidents) == expected_num_unique
 
 
 @pytest.mark.parametrize(
@@ -358,7 +362,21 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
     assert str(e.value) == mock_side_effect.message
 
 
-def test_get_mapping_fields_command(mocker):
+def test_test_module_ok_when_module_to_use_missing(mock_client, mocker):
+    """Upgraded instances without module_to_use should still test and fetch as Light Scan."""
+    from HackerView import test_module
+
+    mock_test = mocker.patch.object(mock_client, "test_configuration", return_value=[])
+    result = test_module(
+        mock_client,
+        {"mirror_direction": "None", "api_key": {"password": "test"}},
+    )
+    assert result == "ok"
+    assert mock_test.call_args[0][0]["module_type"] == "lightscan"
+
+
+@pytest.mark.parametrize("mock_module,module_fields", MODULES)
+def test_get_mapping_fields_command(mock_module, module_fields):
     """
     Given: Nothing.
     When:
@@ -367,51 +385,66 @@ def test_get_mapping_fields_command(mocker):
     Then:
         - Ensure a GetMappingFieldsResponse object that contains the application fields is returned.
     """
-    from HackerView import get_mapping_fields_command
+    from HackerView import get_mapping_fields_command, Instance
 
-    mappings = get_mapping_fields_command()
-    expected_mappings = {
-        "HackerView Incident": {
-            "asset": "affected asset",
-            "asset_type": "affected asset type",
-            "confidence": "Confidence of report.",
-            "cve_id": "ID of associated CVE.",
-            "cwe": "List of associated CWEs.",
-            "domain": "domain of affected asset",
-            "environments": "env.",
-            "first_seen": "Incident creation date.",
-            "host": "host of affected asset",
-            "id": "Symbolic Incident ID.",
-            "issue_category": "Category of Incident",
-            "issue_name": "Name of Incident.",
-            "last_seen": "Last discovery date for incident.",
-            "last_updated": "Last update date for incident.",
-            "potential_attack_type": "Potential attack to make use of incident.",
-            "potential_impact": "Potential impact of incident.",
-            "progress_status": "Progress of incident response.",
-            "resolved_ip": "IP resolved on affected asset.",
-            "severity": "Severity of incident.",
-            "status": "Active status of Incident.",
-            "technologies": "Technologies on affected asset.",
-            "ticket_id": "Ticket ID",
-            "timestamp": "DB timestamp.",
-        }
-    }
+    mock_instance = Instance(module=mock_module)
+    with patch("HackerView.INSTANCE", new=mock_instance):
+        mappings = get_mapping_fields_command()
+
+    expected_mappings = {"HackerView Incident": {field["name"]: field["description"] for field in module_fields}}
     assert mappings.extract_mapping() == expected_mappings
 
 
+# Both modules use three incidents in `fetch_incidents_response_*_valid.json` so fetch/dedup tests stay parallel.
+FETCH_INCIDENTS_CASES = [
+    {
+        "module": "lightscan",
+        "last_fetch_ids": ["HVI-75466160", "HVI-11136324", "HVI-98944790"],
+        "dup_prefix": 1,
+        "after_dup_incidents": 2,
+        "after_dup_ids_len": 3,
+        "first_incident_name": "SSL Expiring in 30 days",
+        "expect_issue_category": ["Web Communication"],
+        "mirror_id_if_dup": "HVI-11136324",
+        "nodup_incidents": 3,
+        "second_incident_name": "SSL Expiring in 30 days",
+    },
+    {
+        "module": "deepscan",
+        "last_fetch_ids": ["HVI-23813230", "HVI-56431595", "HVI-99912344"],
+        "dup_prefix": 1,
+        "after_dup_incidents": 2,
+        "after_dup_ids_len": 3,
+        "first_incident_name": "robots.txt file",
+        "expect_issue_category": None,
+        "mirror_id_if_dup": "HVI-56431595",
+        "nodup_incidents": 3,
+        "second_incident_name": "robots.txt file",
+        "nodup_ids_match_remote": {"HVI-23813230", "HVI-56431595", "HVI-99912344"},
+    },
+]
+
+
 @pytest.mark.parametrize(
-    "response_files_names,mock_params",
+    "response_files_names,mock_params,fetch_case",
     [
         (
             ["fetch_incidents_response_valid.json", "fetch_incidents_response_invalid.json"],
             {
                 "max_hits": "3",
             },
+            FETCH_INCIDENTS_CASES[0],
+        ),
+        (
+            ["fetch_incidents_response_deepscan_valid.json", "fetch_incidents_response_invalid.json"],
+            {
+                "max_hits": "3",
+            },
+            FETCH_INCIDENTS_CASES[1],
         ),
     ],
 )
-def test_fetch_incidents_command(response_files_names, mock_params, mock_last_fetch_ids, mock_client, mocker):
+def test_fetch_incidents_command(response_files_names, mock_params, fetch_case, mock_client, mocker):
     """
     Given:
         - HackerView Client
@@ -440,61 +473,83 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_last_fe
         # Case 4:
             - DemistoException is raised.
     """
-    from HackerView import fetch_incidents
+    from HackerView import fetch_incidents, Instance
 
-    # First run with no incidents returned
-    mocker.patch.object(mock_client, "fetch_incidents", return_value=[])
-    next_run, incidents = fetch_incidents(mock_client, [], mock_params, {})
-    assert next_run == {}
-    assert incidents == []
+    last_fetch_ids = fetch_case["last_fetch_ids"]
+    # `main()` merges `module_type` into fetch params before calling this helper.
+    fetch_params = {**mock_params, "module_type": fetch_case["module"]}
 
-    # Not first run with 1 duplicate in the returned incidents
-    mocker.patch.object(mock_client, "fetch_incidents", return_value=load_mock_response(response_files_names[0]))
-    next_run, incidents = fetch_incidents(mock_client, mock_last_fetch_ids[:1], mock_params, {"not_empty": ""})
-    assert len(incidents) == 2
-    assert len(next_run.get("last_fetch_ids", [])) == 3
-    if incidents and incidents[0].get("xsoar_mirroring", {}).get("mirror_direction"):
-        assert incidents[0].get("xsoar_mirroring", {}).get("mirror_id") == "HVI-11136324"
-    assert incidents[0].get("name") == "SSL Expiring in 30 days"
-    assert incidents[0].get("CustomFields", {}).get("issue_category") == ["Web Communication"]
+    with patch("HackerView.INSTANCE", Instance(module=fetch_case["module"])):
+        # First run with no incidents returned
+        mocker.patch.object(mock_client, "fetch_incidents", return_value=[])
+        next_run, incidents = fetch_incidents(mock_client, [], fetch_params, {})
+        assert next_run == {}
+        assert incidents == []
 
-    # Not first run with no duplicates in the returned incidents
+        # Not first run with 1 duplicate in the returned incidents
+        mocker.patch.object(mock_client, "fetch_incidents", return_value=load_mock_response(response_files_names[0]))
+        next_run, incidents = fetch_incidents(
+            mock_client, last_fetch_ids[: fetch_case["dup_prefix"]], fetch_params, {"not_empty": ""}
+        )
+        assert mock_client.fetch_incidents.call_args[0][0].get("module_type") == fetch_case["module"]
+        assert len(incidents) == fetch_case["after_dup_incidents"]
+        assert len(next_run.get("last_fetch_ids", [])) == fetch_case["after_dup_ids_len"]
+        if incidents and incidents[0].get("xsoar_mirroring", {}).get("mirror_direction"):
+            assert incidents[0].get("xsoar_mirroring", {}).get("mirror_id") == fetch_case["mirror_id_if_dup"]
+        assert incidents[0].get("name") == fetch_case["first_incident_name"]
+        if fetch_case["expect_issue_category"]:
+            assert incidents[0].get("CustomFields", {}).get("issue_category") == fetch_case["expect_issue_category"]
 
-    mocker.patch.object(mock_client, "fetch_incidents", return_value=load_mock_response(response_files_names[0]))
-    next_run, incidents = fetch_incidents(mock_client, [], mock_params, {"not_empty": ""})
-    assert len(incidents) == 3
-    assert next_run.get("last_fetch_ids") == mock_last_fetch_ids
-    if incidents and incidents[0].get("xsoar_mirroring", {}).get("mirror_direction"):
-        assert incidents[0].get("xsoar_mirroring", {}).get("mirror_id") != ""
-    assert incidents[1].get("name") == "SSL Expiring in 30 days"
-    assert incidents[1].get("CustomFields", {}).get("issue_category") == ["Web Communication"]
+        # Not first run with no duplicates in the returned incidents
 
-    # Run with bad params
+        mocker.patch.object(mock_client, "fetch_incidents", return_value=load_mock_response(response_files_names[0]))
+        next_run, incidents = fetch_incidents(mock_client, [], fetch_params, {"not_empty": ""})
+        assert len(incidents) == fetch_case["nodup_incidents"]
+        assert next_run.get("last_fetch_ids") == last_fetch_ids
+        if incidents and incidents[0].get("xsoar_mirroring", {}).get("mirror_direction"):
+            assert incidents[0].get("xsoar_mirroring", {}).get("mirror_id") != ""
+        if fetch_case["module"] == "lightscan":
+            assert incidents[1].get("name") == fetch_case["second_incident_name"]
+            assert incidents[1].get("CustomFields", {}).get("issue_category") == ["Web Communication"]
+        elif fetch_case.get("nodup_ids_match_remote"):
+            assert {inc.get("CustomFields", {}).get("id") for inc in incidents} == fetch_case["nodup_ids_match_remote"]
+            if fetch_case.get("second_incident_name"):
+                assert incidents[1].get("name") == fetch_case["second_incident_name"]
 
-    fetch_exception = DemistoException("Error received: Please contact Threat Manager Team")
-    mocker.patch.object(mock_client, "fetch_incidents", side_effect=fetch_exception)
-    bad_mock_params = {**mock_params, "date_from": "abcdefg123"}
-    with pytest.raises(DemistoException) as e:
-        fetch_incidents(mock_client, [], bad_mock_params, {"not_empty": ""})
-    assert str(e.value) == "Error received: Please contact Threat Manager Team"
+        # Run with bad params
+
+        fetch_exception = DemistoException("Error received: Please contact Threat Manager Team")
+        mocker.patch.object(mock_client, "fetch_incidents", side_effect=fetch_exception)
+        bad_mock_params = {**fetch_params, "date_from": "abcdefg123"}
+        with pytest.raises(DemistoException) as e:
+            fetch_incidents(mock_client, [], bad_mock_params, {"not_empty": ""})
+        assert str(e.value) == "Error received: Please contact Threat Manager Team"
 
 
 @pytest.mark.parametrize(
-    "response_file_name,mock_args,mock_asserts_file",
+    "response_file_name,mock_args,mock_asserts_file,module",
     [
         (
             "fetch_incidents_response_valid.json",
             {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
             "incident_list_cmd_result_valid.json",
+            "lightscan",
         ),
         (
             False,
             {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
             False,
+            "lightscan",
+        ),
+        (
+            "fetch_incidents_response_deepscan_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "deepscan_incident_list_cmd_result_valid.json",
+            "deepscan",
         ),
     ],
 )
-def test_ctm360_hv_incident_list_command(response_file_name, mock_args, mock_asserts_file, mock_client, mocker):
+def test_ctm360_hv_incident_list_command(response_file_name, mock_args, mock_asserts_file, module, mock_client, mocker):
     """
     Given:
         - HackerView Client.
@@ -504,13 +559,16 @@ def test_ctm360_hv_incident_list_command(response_file_name, mock_args, mock_ass
     Then:
         - Fetch the list of incidents from the remote server.
     """
-    from HackerView import ctm360_hv_incident_list_command
+    from HackerView import ctm360_hv_incident_list_command, Instance
 
     patched_response = load_mock_response(response_file_name) if response_file_name else []
     mocker.patch.object(mock_client, "fetch_incidents", return_value=patched_response)
-    cmd_results = ctm360_hv_incident_list_command(mock_client, mock_args)
+    with patch("HackerView.INSTANCE", Instance(module=module)):
+        cmd_results = ctm360_hv_incident_list_command(mock_client, mock_args)
     expected_results = load_mock_response(mock_asserts_file) if mock_asserts_file else []
     cmd_results = cmd_results.to_context().get("Contents")
+    called_params = mock_client.fetch_incidents.call_args[0][0]
+    assert called_params.get("module_type") == module
     if cmd_results and expected_results:
         cmd_results = [{k: v for k, v in item.items() if k != "rawJson"} for item in cmd_results]
         expected_results = [{k: v for k, v in item.items() if k != "rawJson"} for item in expected_results]
@@ -518,7 +576,7 @@ def test_ctm360_hv_incident_list_command(response_file_name, mock_args, mock_ass
 
 
 @pytest.mark.parametrize(
-    "response_file_name,mock_args,mock_asserts",
+    "response_file_name,mock_args,mock_asserts,module",
     [
         (
             "incident_details_response_valid.json",
@@ -545,17 +603,26 @@ def test_ctm360_hv_incident_list_command(response_file_name, mock_args, mock_ass
                 "port": 443,
                 "asset_type": "ip",
                 "asset": "10.161.216.126",
+                "brand": "REPERSEA",
                 "last_updated": 1733839847270,
             },
+            "lightscan",
         ),
         (
             False,
             {"ticketId": "HVI-NOTFOUND"},
             {},
+            "lightscan",
+        ),
+        (
+            "incident_details_response_deepscan_valid.json",
+            {"ticketId": "HVI-99912344"},
+            DEEPSCAN_INCIDENT_DETAILS_EXPECTED,
+            "deepscan",
         ),
     ],
 )
-def test_ctm360_hv_incident_details_command(response_file_name, mock_args, mock_asserts, mock_client, mocker):
+def test_ctm360_hv_incident_details_command(response_file_name, mock_args, mock_asserts, module, mock_client, mocker):
     """
     Given:
         - Ticket ID of incident.
@@ -564,11 +631,14 @@ def test_ctm360_hv_incident_details_command(response_file_name, mock_args, mock_
     Then:
         - Ensure result is as expected.
     """
-    from HackerView import ctm360_hv_incident_details_command
+    from HackerView import ctm360_hv_incident_details_command, Instance
 
     patched_response = load_mock_response(response_file_name)[0] if response_file_name else {}
     mocker.patch.object(mock_client, "fetch_incident", return_value=patched_response)
-    cmd_results = ctm360_hv_incident_details_command(mock_client, mock_args)
+    with patch("HackerView.INSTANCE", Instance(module=module)):
+        cmd_results = ctm360_hv_incident_details_command(mock_client, mock_args)
+    called_params = mock_client.fetch_incident.call_args[0][0]
+    assert called_params.get("module_type") == module
     assert cmd_results.to_context().get("Contents") == mock_asserts
 
 
@@ -663,6 +733,8 @@ def test_get_remote_data(mock_last_seen, mock_last_updated, mock_status, mock_cl
         if isinstance(mock_result2, dict):
             del mock_result2["rawJson"]
         result = get_remote_data_command(mock_client, mock_args)
+        called_params = mock_client.fetch_incident.call_args[0][0]
+        assert called_params.get("module_type") == "lightscan"
         entry = result.entries[0] if len(result.entries) >= 1 else []
 
         if isinstance(result.mirrored_object, dict):
@@ -693,12 +765,13 @@ def test_get_remote_data(mock_last_seen, mock_last_updated, mock_status, mock_cl
 
 
 @pytest.mark.parametrize(
-    "mock_input_file",
+    "mock_input_file,module",
     [
-        ("fetch_incidents_response_valid.json"),
+        ("fetch_incidents_response_valid.json", "lightscan"),
+        ("fetch_incidents_response_deepscan_valid.json", "deepscan"),
     ],
 )
-def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
+def test_get_modified_remote_data(mock_input_file, module, mock_client, mocker):
     """
     Given:
         - HackerView Client.
@@ -708,7 +781,7 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
     Then:
         - Ensure result is as expected
     """
-    from HackerView import get_modified_remote_data_command
+    from HackerView import get_modified_remote_data_command, Instance
 
     mock_args = {
         "date_field": "last_updated",
@@ -719,8 +792,11 @@ def test_get_modified_remote_data(mock_input_file, mock_client, mocker):
     }
     mock_result = load_mock_response(mock_input_file)
     mocker.patch.object(mock_client, "fetch_incidents", return_value=mock_result)
-    result = get_modified_remote_data_command(mock_client, mock_args)
-    mock_assert = [item["id"] for item in mock_result]
+    with patch("HackerView.INSTANCE", Instance(module=module)):
+        result = get_modified_remote_data_command(mock_client, mock_args)
+    called_params = mock_client.fetch_incidents.call_args[0][0]
+    assert called_params.get("module_type") == module
+    mock_assert = [str(item["id"]) for item in mock_result]
     assert result.modified_incident_ids == mock_assert
 
 
@@ -783,3 +859,47 @@ def test_update_remote_system(mock_response_file, mock_args, mock_log_asserts, m
         result = update_remote_system_command(mock_client, mock_args)
         assert result == mock_args["remoteId"]
         assert mock_log_asserts in caplog.text
+
+
+@pytest.mark.parametrize(
+    "module_to_use,expected",
+    [
+        (None, "lightscan"),
+        ("", "lightscan"),
+        ("Light Scan", "lightscan"),
+        ("Deep Scan", "deepscan"),
+        ("legacy-unknown", "lightscan"),
+    ],
+)
+def test_resolve_hv_module_defaults_to_lightscan(module_to_use, expected):
+    """Missing or blank module_to_use must keep pre-DeepScan behavior (Light Scan)."""
+    from HackerView import resolve_hv_module
+
+    assert resolve_hv_module(module_to_use) == expected
+
+
+@pytest.mark.parametrize(
+    "is_xsiam_platform, expected_severity",
+    [
+        (True, "medium"),
+        (False, IncidentSeverity.MEDIUM),
+    ],
+)
+def test_map_and_create_incident_severity_by_platform(is_xsiam_platform, expected_severity, mocker):
+    """XSIAM keeps API severity text; XSOAR maps to numeric incident severity."""
+    from HackerView import Instance, map_and_create_incident
+
+    mocker.patch("HackerView.is_xsiam", return_value=is_xsiam_platform)
+    issue = {
+        "issue_name": "Test Issue",
+        "first_seen": "05-07-2024 06:28:28",
+        "last_seen": "26-10-2024 12:15:24",
+        "status": "active",
+        "severity": "medium",
+        "id": "HVI-1",
+        "timestamp": 1720161042000,
+    }
+    with patch("HackerView.INSTANCE", Instance(module="lightscan")):
+        result = map_and_create_incident(issue)
+
+    assert result["severity"] == expected_severity

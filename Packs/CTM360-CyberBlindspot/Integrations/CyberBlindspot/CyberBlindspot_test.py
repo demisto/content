@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from dateparser import parse
 from unittest.mock import patch
-from CommonServerPython import DemistoException, IncidentStatus, EntryType, CommandResults
+from CommonServerPython import DemistoException, IncidentStatus, IncidentSeverity, EntryType, CommandResults
 from CyberBlindspot import (
     LOGGING_PREFIX,
     CBS_INCOMING_DATE_FORMAT,
@@ -492,10 +492,6 @@ def test_test_configuration(mock_response, mock_client, mocker):
             DemistoException('Invalid "Date To" Value (Does not match format "%d-%m-%Y %H:%M")'),
         ),
         ({"mirror_direction": "None", "api_key": {"password": ""}}, DemistoException('Invalid "API Key" Value')),
-        (
-            {"mirror_direction": "None", "api_key": {"password": "test"}, "module_to_use": ""},
-            DemistoException('Invalid "Module" Value'),
-        ),
     ],
 )
 def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
@@ -519,6 +515,63 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
     with pytest.raises(DemistoException) as e:
         test_module(mock_client, mock_params)
     assert str(e.value) == mock_side_effect.message
+
+
+def test_test_module_ok_when_module_to_use_missing(mock_client, mocker):
+    """Upgraded instances without module_to_use should still test and fetch as Incidents."""
+    from CyberBlindspot import test_module
+
+    mock_test = mocker.patch.object(mock_client, "test_configuration", return_value=[])
+    result = test_module(
+        mock_client,
+        {"mirror_direction": "None", "api_key": {"password": "test"}},
+    )
+    assert result == "ok"
+    assert mock_test.call_args[0][0]["module_type"] == "incidents"
+
+
+@pytest.mark.parametrize(
+    "module_to_use,expected",
+    [
+        (None, "incidents"),
+        ("", "incidents"),
+        ("Incidents", "incidents"),
+        ("Malware Logs", "malware_logs"),
+        ("legacy-unknown", "incidents"),
+    ],
+)
+def test_resolve_cbs_module_defaults_to_incidents(module_to_use, expected):
+    """Missing or blank module_to_use must keep pre-module-selector behavior (Incidents)."""
+    from CyberBlindspot import resolve_cbs_module
+
+    assert resolve_cbs_module(module_to_use) == expected
+
+
+@pytest.mark.parametrize(
+    "is_xsiam_platform, expected_severity",
+    [
+        (True, "medium"),
+        (False, IncidentSeverity.MEDIUM),
+    ],
+)
+def test_map_and_create_incident_severity_by_platform(is_xsiam_platform, expected_severity, mocker):
+    """XSIAM keeps API severity text; XSOAR maps to numeric incident severity."""
+    from CyberBlindspot import map_and_create_incident
+
+    mocker.patch("CyberBlindspot.is_xsiam", return_value=is_xsiam_platform)
+    record = {
+        "remarks": "Test incident",
+        "first_seen": "05-07-2024 06:28:28",
+        "last_seen": "26-10-2024 12:15:24",
+        "status": "monitoring",
+        "severity": "medium",
+        "id": "CBS-1",
+        "timestamp": 1720161042000,
+        "external_link": "https://example.com",
+    }
+    result = map_and_create_incident(record)
+
+    assert result["severity"] == expected_severity
 
 
 @pytest.mark.parametrize(
