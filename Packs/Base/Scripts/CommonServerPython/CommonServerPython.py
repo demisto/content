@@ -13947,6 +13947,42 @@ def build_ucp_params(connector_metadata, capability=None):
     demisto.debug('build_ucp_params: interpolated {} top-level param(s)'.format(len(result)))
     return result
 
+
+def _deep_merge_dicts(target, source):
+    # type: (dict, dict) -> dict
+    """Recursively merge ``source`` into ``target`` in place.
+
+    For every key in ``source``:
+
+    * If both the existing value in ``target`` and the incoming value in
+      ``source`` are dicts, the two are merged recursively (deep-merge).
+    * Otherwise the incoming value overwrites the existing one (this includes
+      the cases where types differ, e.g. a dict overwrites a scalar or a scalar
+      overwrites a dict).
+
+    Keys present only in ``target`` are preserved; keys present only in
+    ``source`` are added. ``target`` is mutated in place (its object identity,
+    and the identity of any nested dicts that are recursed into, is preserved)
+    and returned.
+
+    :type target: ``dict``
+    :param target: The dict to merge into (mutated in place).
+
+    :type source: ``dict``
+    :param source: The dict whose values take precedence on conflicts.
+
+    :return: The same ``target`` dict, mutated in place.
+    :rtype: ``dict``
+    """
+    for key, source_value in source.items():
+        target_value = target.get(key)
+        if isinstance(target_value, dict) and isinstance(source_value, dict):
+            _deep_merge_dicts(target_value, source_value)
+        else:
+            target[key] = source_value
+    return target
+
+
 def interpolate_ucp_params(connector_metadata=None):
     # type: (Optional[dict]) -> bool
     """Interpolate UCP connector field values into ``demisto.params()``.
@@ -13997,7 +14033,7 @@ def interpolate_ucp_params(connector_metadata=None):
         return False
 
     params = demisto.callingContext.setdefault('params', {})
-    params.update(interpolated)
+    _deep_merge_dicts(params, interpolated)
     _UCP_AUTH_PARAMS_INJECTED = True
     demisto.debug(
         "[UCP][CommonServerPython.py] interpolate_ucp_params: interpolated {} top-level param(s) "

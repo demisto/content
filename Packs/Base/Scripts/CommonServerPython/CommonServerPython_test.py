@@ -13673,6 +13673,84 @@ class TestUcpInterpolation:
         assert CommonServerPython._UCP_AUTH_PARAMS_INJECTED is False
         assert demisto.callingContext['params'] == {'url': 'flat-url'}
 
+    def test_interpolate_deep_merges_preserves_existing_nested_siblings(self, mocker, ucp_reset_injected_flag):
+        meta = {
+            'connectionProfiles': [
+                {'capability': 'automation-and-remediation', 'method_unique_id': 'A',
+                 'type': 'plain',
+                 'metadata': {'xsoar': {'interpolation_mapping':
+                                        'username:credentials.identifier,password:credentials.password'}}},
+            ]
+        }
+        envelope = {'type': 'plain', 'plain': {'username': 'somevalue', 'password': 'somthing'}}
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=meta)
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(CommonServerPython, 'get_ucp_credentials', return_value=envelope)
+        demisto.callingContext = {
+            'params': {
+                'credentials': {'identifier': 'original', 'password': 'some value', 'field3': 'value'}
+            }
+        }
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+
+        result = CommonServerPython.interpolate_ucp_params()
+        assert result is True
+        assert CommonServerPython._UCP_AUTH_PARAMS_INJECTED is True
+        # Deep-merge: incoming identifier/password win, pre-existing sibling
+        # field3 is preserved instead of being dropped by a shallow update.
+        assert demisto.callingContext['params']['credentials'] == {
+            'identifier': 'somevalue',
+            'password': 'somthing',
+            'field3': 'value',
+        }
+
+    # ── _deep_merge_dicts ──
+
+    def test_deep_merge_dicts_nested_merge_preserves_siblings(self):
+        target = {'credentials': {'identifier': 'original', 'password': 'some value', 'field3': 'value'}}
+        source = {'credentials': {'identifier': 'somevalue', 'password': 'somthing'}}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        assert result == {
+            'credentials': {'identifier': 'somevalue', 'password': 'somthing', 'field3': 'value'}
+        }
+
+    def test_deep_merge_dicts_incoming_wins_on_conflict(self):
+        target = {'a': 1, 'b': 2}
+        source = {'a': 99}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        assert result == {'a': 99, 'b': 2}
+
+    def test_deep_merge_dicts_dict_overwrites_scalar(self):
+        target = {'a': 'scalar'}
+        source = {'a': {'nested': 1}}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        assert result == {'a': {'nested': 1}}
+
+    def test_deep_merge_dicts_scalar_overwrites_dict(self):
+        target = {'a': {'nested': 1}}
+        source = {'a': 'scalar'}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        assert result == {'a': 'scalar'}
+
+    def test_deep_merge_dicts_keys_only_in_incoming_added(self):
+        target = {'a': 1}
+        source = {'b': 2}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        assert result == {'a': 1, 'b': 2}
+
+    def test_deep_merge_dicts_mutates_target_in_place(self):
+        target = {'credentials': {'identifier': 'original'}}
+        original_target = target
+        original_credentials = target['credentials']
+        source = {'credentials': {'password': 'pw'}}
+        result = CommonServerPython._deep_merge_dicts(target, source)
+        # identity preserved: returns the same target object and mutates the
+        # same nested dict object rather than replacing it.
+        assert result is original_target
+        assert result['credentials'] is original_credentials
+        assert result == {'credentials': {'identifier': 'original', 'password': 'pw'}}
+
 @pytest.mark.skipif(not IS_PY3, reason='UCP requires Python 3')
 class TestUcpInterpolationPassthroughDeep:
     """End-to-end test of build_ucp_params for a passthrough profile with a
