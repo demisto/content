@@ -1393,35 +1393,19 @@ def get_labels_command(client: "GSuiteClient", args: dict[str, str]) -> CommandR
 
 @logger
 def file_delete_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
-    """Delete a file in Google Drive, or move it to Trash when soft_delete=true.
+    """
+    Delete a file in Google Drive
 
-    Args:
-        client: The authorized GSuite API client.
-        args: Command arguments. When ``soft_delete`` is true, the file is moved
-            to Trash by patching the file with ``{"trashed": true}`` instead of
-            being permanently deleted; default behavior is preserved otherwise.
+    :param client: Client object.
+    :param args: Command arguments.
 
-    Returns:
-        CommandResults with the file context. When soft_delete=true the
-        response's ``trashed`` (and ``trashedTime`` for shared drive items) are
-        surfaced under ``GoogleDrive.File.File``.
+    :return: Command Result.
     """
 
     prepare_file_command_res = prepare_file_command_request(client, args, scopes=COMMAND_SCOPES["FILE_DELETE"])
     http_request_params = prepare_file_command_res["http_request_params"]
 
     url_suffix = URL_SUFFIX["DRIVE_FILES_ID"].format(args.get("file_id"))
-    soft_delete = argToBoolean(args.get("soft_delete") or "false")
-
-    if soft_delete:
-        response = client.http_request(
-            url_suffix=url_suffix,
-            method="PATCH",
-            params=http_request_params,
-            body={"trashed": True},
-        )
-        return handle_response_file_single(response, args)
-
     client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
     outputs_context = {
         "id": args.get("file_id"),
@@ -1638,8 +1622,6 @@ def file_permission_create_command(client: "GSuiteClient", args: dict[str, str])
     http_request_params.update(
         assign_params(
             sendNotificationEmail=args.get("send_notification_email"),
-            transferOwnership=args.get("transfer_ownership"),
-            moveToNewOwnersRoot=args.get("move_to_new_owners_root"),
         )
     )
 
@@ -1682,18 +1664,13 @@ def file_permission_update_command(client: "GSuiteClient", args: dict[str, str])
 
 @logger
 def file_permission_delete_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
-    """Delete a file permission, optionally treating Not Found as success.
+    """
+    Delete file permissions
 
-    Args:
-        client: The authorized GSuite API client.
-        args: Command arguments. When ``ignore_not_found`` is true, a Not Found
-            response (the permission was already removed) is treated as success
-            and surfaced via the ``alreadyRemoved`` output flag.
+    :param client: Client object.
+    :param args: Command arguments.
 
-    Returns:
-        CommandResults with the targeted file id, permission id, and the
-        ``alreadyRemoved`` flag (true only when ignore_not_found=true and the
-        vendor returned Not Found).
+    :return: Command Result.
     """
 
     prepare_file_permission_request_res = prepare_file_permission_request(
@@ -1702,32 +1679,11 @@ def file_permission_delete_command(client: "GSuiteClient", args: dict[str, str])
     http_request_params = prepare_file_permission_request_res["http_request_params"]
 
     url_suffix = URL_SUFFIX["FILE_PERMISSION_DELETE"].format(args.get("file_id"), args.get("permission_id"))
-    ignore_not_found = argToBoolean(args.get("ignore_not_found") or "false")
-
-    already_removed = False
-    try:
-        client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
-    except DemistoException as exc:
-        # Narrow match: only swallow "permission not found" so a typo in file_id
-        # (which surfaces as "file not found") still raises.
-        # See GSuiteApiModule.COMMON_MESSAGES for the exact error templates.
-        exc_str = str(exc).lower()
-        is_permission_not_found = ignore_not_found and (
-            "permission not found" in exc_str or "permission_not_found" in exc_str or "permissionnotfound" in exc_str
-        )
-        if is_permission_not_found:
-            demisto.debug(
-                f"google-drive-file-permission-delete: permission {args.get('permission_id')} "
-                "already removed; treating Not Found as success"
-            )
-            already_removed = True
-        else:
-            raise
+    client.http_request(url_suffix=url_suffix, method="DELETE", params=http_request_params)
 
     outputs_context: dict = {
         "fileId": args.get("file_id"),
         "id": args.get("permission_id"),
-        "alreadyRemoved": already_removed,
     }
     outputs: dict = {
         OUTPUT_PREFIX["GOOGLE_DRIVE_FILE_PERMISSION_HEADER"]: {
@@ -2080,11 +2036,71 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     )
 
 
+@logger
+def connectus_info_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
+    """
+    google-drive-connectus-info
+    Print ConnectUs (UCP) connection information and integration parameters available
+    in the demisto object. Sensitive values are masked.
+
+    :param client: Client object (unused, kept for command signature consistency).
+    :param args: Command arguments.
+
+    :return: Command Result.
+    """
+    using_ucp = should_use_ucp_auth()
+
+    connectus_info: dict[str, Any] = {"ucp_enabled": using_ucp}
+
+    # if using_ucp:
+    #     with GSuiteClient.http_exception_handler():
+    #         capability = resolve_ucp_capability()
+    #         connectus_info["capability"] = capability
+    #         connectus_info["method_unique_id"] = get_ucp_method_unique_id(capability)
+    # else:
+    #     connectus_info["note"] = "ConnectUs (UCP) is not enabled for this instance."
+
+    masked_params = demisto.params()
+
+    outputs = {
+        "ConnectUs": connectus_info,
+        "metadata": demisto.unifiedConnectorMetadata(),
+        "Params": masked_params,
+    }
+
+    readable_output = tableToMarkdown(
+        "ConnectUs Information",
+        connectus_info,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    readable_output += tableToMarkdown(
+        "Integration Parameters (sensitive values masked)",
+        masked_params,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="GoogleDrive.ConnectUsInfo",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=outputs,
+    )
+
+
 def main() -> None:  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    masked_params = demisto.params()
 
+    outputs = {
+        "metadata": demisto.unifiedConnectorMetadata(),
+        "Params": masked_params,
+    }
+
+    demisto.info(f"{outputs=}")
     # Commands dictionary
     commands: dict[str, Callable] = {
         "google-drive-create": drive_create_command,
@@ -2111,27 +2127,40 @@ def main() -> None:  # pragma: no cover
         "google-drive-file-get-parents": file_get_parents,
         "google-drive-file-move": file_move_command,
         "google-drive-file-create": file_create_command,
+        "google-drive-connectus-info": connectus_info_command,
     }
     command = demisto.command()
 
     try:
+        demisto.info("guy afik where are my logs")
         params = demisto.params()
 
         account_json = params.get("user_creds", {}).get("password") or params.get("user_service_account_json")
-        user_id = params.get("user_creds", {}).get("identifier") or params.get("user_id", "")
+
+        # Resolve the subject (user to impersonate) once, up front. A per-command
+        # ``user_id`` argument overrides the instance-level parameter so the UCP
+        # token is fetched for the correct user. Falls back to the credentials
+        # identifier and finally the plain ``user_id`` param.
+        command_user_id = GSuiteClient.strip_dict(demisto.args()).get("user_id")
+        user_id = command_user_id or params.get("user_creds", {}).get("identifier") or params.get("user_id", "")
         params["user_id"] = user_id
         params["user_service_account_json"] = account_json
 
-        if not account_json:
+        # In UCP (ConnectUs) mode the service-account JSON is provided by the
+        # connection profile, so the integration parameter is optional.
+        using_ucp = should_use_ucp_auth()
+
+        if not account_json and not using_ucp:
             raise DemistoException("Please fill out the User's Service Account JSON field.")
 
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(account_json)
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(account_json) if not using_ucp else None
         verify_certificate = not params.get("insecure", False)
         proxy = params.get("proxy", False)
 
         headers = {"Content-Type": "application/json"}
 
-        # prepare client class object
+        # prepare client class object. When service_account_dict is None and UCP
+        # is active, GSuiteClient fetches the credentials from the UCP profile.
         gsuite_client = GSuiteClient(
             service_account_dict,
             base_url="https://www.googleapis.com/",
