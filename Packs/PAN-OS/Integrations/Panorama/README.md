@@ -2707,8 +2707,8 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device-group | The device group to commit (Panorama instances). If omitted, commits all changes. | Optional |
-| template | template. | Optional |
+| device-group | Panorama only. Limits the commit scope to the specified device group(s), so only pending changes for those device groups are committed. If omitted, all pending changes are committed. | Optional |
+| template | Panorama only. Limits the commit scope to the specified template(s), so only pending changes for those templates are committed. If omitted, all pending changes are committed. | Optional |
 | description | The commit description. | Optional |
 | admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
 | force_commit | Forces a commit. Possible values are: true, false. | Optional |

@@ -3850,9 +3850,9 @@ script:
       description: The SSDeep hash of the file.
       type: string
   - arguments:
-    - description: The device group to commit (Panorama instances). If omitted, commits all changes.
+    - description: Panorama only. Limits the commit scope to the specified device group(s), so only pending changes for those device groups are committed. If omitted, all pending changes are committed.
       name: device-group
-    - description: template
+    - description: Panorama only. Limits the commit scope to the specified template(s), so only pending changes for those templates are committed. If omitted, all pending changes are committed.
       name: template
       isArray: True
     - description: The commit description.
