@@ -186,6 +186,61 @@ def get_boundary_hashes(events: list[dict], boundary_time: str) -> list[str]:
     return hashes
 
 
+def _normalize_page(response: dict | list) -> tuple[list[dict], dict | None]:
+    """Flatten a Menlo API response into (events, next_paging_cursor).
+
+    The v2 `web` endpoint returns a LIST of wrappers; other shapes are single objects. Events live
+    under ``result.events``; the last non-empty ``pagingIdentifiers`` is the next-page cursor.
+    """
+    wrappers = response if isinstance(response, list) else [response]
+    page_events: list[dict] = []
+    next_paging: dict | None = None
+    for wrapper in wrappers:
+        result = wrapper.get("result", wrapper)
+        page_events.extend(result.get("events", []))
+        if wrapper_paging := (result.get("pagingIdentifiers") or None):
+            next_paging = wrapper_paging
+    return page_events, next_paging
+
+
+def _enrich_events(page_events: list[dict], log_type_ui: str, enrich: bool) -> list[dict]:
+    """Unwrap each ``{"event": {...}}`` envelope and, when ``enrich`` is set, add _time and
+    source_log_type (used when sending to XSIAM).
+    """
+    source_log_type = SOURCE_LOG_TYPE_MAP[log_type_ui] if enrich else None
+    processed: list[dict] = []
+    for event in page_events:
+        inner = event.get("event", event)
+        if enrich:
+            event_time_str = inner.get("event_time")
+            if event_time_str:
+                # fromisoformat is ~1000x faster than arg_to_datetime and handles Menlo's naive
+                # ISO 8601 (e.g. "2026-05-26T17:20:28.090"); fall back to arg_to_datetime otherwise.
+                try:
+                    inner["_time"] = datetime.fromisoformat(event_time_str).strftime(DATE_FORMAT)
+                except (ValueError, TypeError):
+                    fallback_dt: datetime | None = arg_to_datetime(event_time_str)
+                    inner["_time"] = fallback_dt.strftime(DATE_FORMAT) if fallback_dt else event_time_str
+            inner["source_log_type"] = source_log_type
+        processed.append(inner)
+    return processed
+
+
+def _drop_boundary_duplicates(events: list[dict], last_fetch_time: str, boundary_hashes: set[str]) -> list[dict]:
+    """Drop leading events that duplicate the previous cycle's boundary.
+
+    The API start is inclusive and events are time-ordered, so only the first page's leading events
+    (those at ``last_fetch_time`` whose hash matches) can be duplicates.
+    """
+    skip = 0
+    for e in events:
+        if e.get("event_time", "") == last_fetch_time and hash_event(e) in boundary_hashes:
+            skip += 1
+        else:
+            break
+    return events[skip:] if skip else events
+
+
 def get_events_for_log_type(
     client: Client,
     log_type_ui: str,
@@ -220,7 +275,6 @@ def get_events_for_log_type(
     threading.current_thread().name = log_type_ui
     thread_name = log_type_ui
     api_log_type = LOG_TYPE_MAP[log_type_ui]
-    streaming = on_page is not None
     events: list[dict] = []  # In streaming mode: only the LAST page is kept (for boundary computation).
     total_emitted = 0  # Counts events handed to the consumer (or accumulated) AFTER dedup.
     paging_identifiers: dict | None = None
@@ -250,21 +304,7 @@ def get_events_for_log_type(
             demisto.debug(f"[{thread_name}] Empty response — no data.")
             break
 
-        # The v2 `web` endpoint returns a LIST of wrappers; other shapes are single objects.
-        # Normalize to a list and flatten the inner events.
-        wrappers = response if isinstance(response, list) else [response]
-
-        page_events: list[dict] = []
-        next_paging: dict | None = None
-        for wrapper in wrappers:
-            # Per docs the events live under result.events; some shapes have events at top level.
-            result = wrapper.get("result", wrapper)
-            page_events.extend(result.get("events", []))
-            # Use the LAST non-empty pagingIdentifiers as the cursor for the next request.
-            wrapper_paging = result.get("pagingIdentifiers") or None
-            if wrapper_paging:
-                next_paging = wrapper_paging
-
+        page_events, next_paging = _normalize_page(response)
         if not page_events:
             demisto.debug(f"[{thread_name}] No more events.")
             break
@@ -275,41 +315,16 @@ def get_events_for_log_type(
                 f"[{thread_name}] API returned {len(page_events)} events but we requested limit={page_limit} "
                 f"(server may be capping page size below {MAX_EVENTS_PER_PAGE})."
             )
-
         demisto.debug(f"[{thread_name}] Got {len(page_events)} events (requested limit={page_limit}).")
 
-        # Per the API docs, each element in the events list is {"event": {...}}.
-        # Unwrap + enrich + (on page 1 only) drop leading boundary duplicates.
-        source_log_type = SOURCE_LOG_TYPE_MAP[log_type_ui] if enrich else None
-        processed: list[dict] = []
-        for event in page_events:
-            inner = event.get("event", event)  # unwrap the {"event": {...}} envelope
-            if enrich:
-                event_time_str = inner.get("event_time")
-                if event_time_str:
-                    # fromisoformat is ~1000x faster than arg_to_datetime and handles Menlo's naive
-                    # ISO 8601 (e.g. "2026-05-26T17:20:28.090"); fall back to arg_to_datetime otherwise.
-                    try:
-                        inner["_time"] = datetime.fromisoformat(event_time_str).strftime(DATE_FORMAT)
-                    except (ValueError, TypeError):
-                        fallback_dt: datetime | None = arg_to_datetime(event_time_str)
-                        inner["_time"] = fallback_dt.strftime(DATE_FORMAT) if fallback_dt else event_time_str
-                inner["source_log_type"] = source_log_type
-            processed.append(inner)
+        processed = _enrich_events(page_events, log_type_ui, enrich)
 
-        # Dedup the first page only: start is inclusive, so leading events can repeat the previous
-        # boundary; later pages have strictly later timestamps and can't collide.
+        # Dedup the first page only (leading events can repeat the previous cycle's boundary).
         if is_first_page and last_fetch_time and boundary_hashes:
-            skip = 0
-            for e in processed:
-                if e.get("event_time", "") == last_fetch_time and hash_event(e) in boundary_hashes:
-                    skip += 1
-                else:
-                    break
-            if skip:
-                demisto.debug(f"[{thread_name}] removed {skip} duplicate(s) at {last_fetch_time!r}")
-                processed = processed[skip:]
-
+            before = len(processed)
+            processed = _drop_boundary_duplicates(processed, last_fetch_time, boundary_hashes)
+            if (removed := before - len(processed)):
+                demisto.debug(f"[{thread_name}] removed {removed} duplicate(s) at {last_fetch_time!r}")
         is_first_page = False
 
         # Cap to max_events (last page may overshoot).
@@ -341,7 +356,7 @@ def get_events_for_log_type(
             demisto.debug(f"[{thread_name}] All events fetched.")
             break
 
-    demisto.debug(f"[{thread_name}] Collected {total_emitted} events total (streaming={streaming}).")
+    demisto.debug(f"[{thread_name}] Collected {total_emitted} events total (streaming={on_page is not None}).")
     return events
 
 
@@ -439,19 +454,14 @@ def _fetch_log_type_task(
 
         boundary_hashes: set[str] = set(last_run.get(log_type_ui, {}).get("boundary_hashes", []))
 
-        # Count events emitted so the caller can compute saturation (in streaming mode
-        # ``events`` only holds the last page).
-        page_count = {"n": 0}
-        if on_page is not None:
-            original_callback = on_page
+        # Wrap on_page to count events emitted (in streaming mode ``events`` only holds the last
+        # page, so we can't derive the total from it — we tally it as pages stream out).
+        emitted_count = 0
 
-            def _counting_callback(page: list[dict]) -> None:
-                page_count["n"] += len(page)
-                original_callback(page)
-
-            effective_callback: Callable[[list[dict]], None] | None = _counting_callback
-        else:
-            effective_callback = None
+        def _counting_callback(page: list[dict]) -> None:
+            nonlocal emitted_count
+            emitted_count += len(page)
+            on_page(page)  # type: ignore[misc]  # only called when on_page is not None
 
         events = get_events_for_log_type(
             client=client,
@@ -461,22 +471,19 @@ def _fetch_log_type_task(
             max_events=max_events_per_fetch_per_type,
             boundary_hashes=boundary_hashes,
             last_fetch_time=last_fetch_time,
-            on_page=effective_callback,
+            on_page=_counting_callback if on_page is not None else None,
         )
 
         # Non-streaming: `events` is the full list. Streaming: it's only the last page,
-        # but `page_count["n"]` is the true total handed to the consumer.
+        # but `emitted_count` is the true total handed to the consumer.
         result.events = events
-        result.events_emitted = page_count["n"] if on_page is not None else len(events)
+        result.events_emitted = emitted_count if on_page is not None else len(events)
         # Tell the caller whether this log type still has more windows to drain. When True, we're
         # behind ⇒ fetch_events sets nextTrigger=0 so the engine re-dispatches immediately.
         result.window_capped = window_capped
 
         if events:
             last_event_time = events[-1].get("event_time") or events[-1].get("_time", "")
-            # Resume from last_event_time either way — it's the safe boundary whether we hit the
-            # cap (more events may share it) or drained the window (later events may remain). Dedup
-            # handles any overlap on the next cycle's first page.
             next_fetch_time = last_event_time or window_end_timestamp
             next_boundary_hashes = get_boundary_hashes(events, last_event_time)
             demisto.debug(f"[{thread_name}] next fetch from {next_fetch_time} ({len(next_boundary_hashes)} boundary hash(es))")
@@ -523,9 +530,8 @@ def fetch_events(
     "nextTrigger"=0 when any log type is saturated or behind, so the engine re-dispatches.
     """
     end_epoch = int(datetime.now(UTC).timestamp())
-    streaming = on_page is not None
 
-    demisto.debug(f"[fetch-events] Starting parallel fetch for: {log_types} (streaming={streaming})")
+    demisto.debug(f"[fetch-events] Starting parallel fetch for: {log_types} (streaming={on_page is not None})")
 
     fetch_results: list[FetchResult] = []
     with ThreadPoolExecutor(max_workers=len(log_types)) as executor:
@@ -565,7 +571,7 @@ def fetch_events(
             continue
         # Non-streaming: accumulate. Streaming: pages were already sent; result.events is only
         # the last page (for boundary computation) and must NOT be re-emitted.
-        if not streaming:
+        if on_page is None:
             all_events.extend(result.events)
         total_emitted += result.events_emitted
         if result.next_run_state is not None:
