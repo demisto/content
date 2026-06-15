@@ -265,3 +265,218 @@ class TestCheckOtherConnectionNoYmlCredentials:
         assert ws_api._check_other_connection_no_yml_credentials(
             "Dummy", "not json"
         ) == []
+
+
+# ---------------------------------------------------------------------------
+# _check_type9_companions_present
+# ---------------------------------------------------------------------------
+
+
+def _auth_json(xsoar_param_map: dict) -> str:
+    """Build an auth payload with one auth_types[] entry carrying the given
+    xsoar_param_map (other keys are immaterial to the companion check)."""
+    return json.dumps({
+        "auth_types": [{
+            "name": "credentials",
+            "type": "Plain",
+            "interpolated": True,
+            "xsoar_param_map": xsoar_param_map,
+        }],
+        "other_connection": [],
+    })
+
+
+class TestCheckType9CompanionsPresent:
+    def test_pass_both_companions_present(self, tmp_path: Path) -> None:
+        yml = _write_yml(tmp_path, [{"name": "credentials", "type": 9}])
+        payload = _auth_json({
+            "credentials.identifier": "username",
+            "credentials.password": "password",
+        })
+        p_files, p_base = _patch_files_to(yml)
+        with p_files, p_base:
+            errors = ws_api._check_type9_companions_present("Dummy", payload)
+        assert errors == []
+
+    def test_fail_missing_password(self, tmp_path: Path) -> None:
+        yml = _write_yml(tmp_path, [{"name": "credentials", "type": 9}])
+        payload = _auth_json({"credentials.identifier": "username"})
+        p_files, p_base = _patch_files_to(yml)
+        with p_files, p_base:
+            errors = ws_api._check_type9_companions_present("Dummy", payload)
+        assert len(errors) == 1
+        assert "credentials.password" in errors[0]
+        assert "credentials.identifier" not in errors[0].split("Missing:")[1]
+
+    def test_fail_missing_identifier(self, tmp_path: Path) -> None:
+        yml = _write_yml(tmp_path, [{"name": "credentials", "type": 9}])
+        payload = _auth_json({"credentials.password": "password"})
+        p_files, p_base = _patch_files_to(yml)
+        with p_files, p_base:
+            errors = ws_api._check_type9_companions_present("Dummy", payload)
+        assert len(errors) == 1
+        assert "credentials.identifier" in errors[0].split("Missing:")[1]
+        assert "credentials.password" not in errors[0].split("Missing:")[1]
+
+    def test_fail_missing_both(self, tmp_path: Path) -> None:
+        yml = _write_yml(tmp_path, [{"name": "credentials", "type": 9}])
+        payload = _auth_json({"unrelated.key": "x"})
+        p_files, p_base = _patch_files_to(yml)
+        with p_files, p_base:
+            errors = ws_api._check_type9_companions_present("Dummy", payload)
+        assert len(errors) == 1
+        missing = errors[0].split("Missing:")[1]
+        assert "credentials.identifier" in missing
+        assert "credentials.password" in missing
+
+    def test_pass_hiddenpassword_exemption(self, tmp_path: Path) -> None:
+        yml = _write_yml(tmp_path, [
+            {"name": "credentials", "type": 9, "hiddenpassword": True},
+        ])
+        payload = _auth_json({"credentials.identifier": "username"})
+        p_files, p_base = _patch_files_to(yml)
+        with p_files, p_base:
+            errors = ws_api._check_type9_companions_present("Dummy", payload)
+        assert errors == []
+
+    def test_pass_hiddenusername_exemption(self, tmp_path: Path) -> None:
+        yml = _write_yml(tmp_path, [
+            {"name": "credentials", "type": 9, "hiddenusername": True},
+        ])
+        payload = _auth_json({"credentials.password": "password"})
+        p_files, p_base = _patch_files_to(yml)
+        with p_files, p_base:
+            errors = ws_api._check_type9_companions_present("Dummy", payload)
+        assert errors == []
+
+    def test_skip_fully_hidden_param(self, tmp_path: Path) -> None:
+        yml = _write_yml(tmp_path, [
+            {"name": "credentials", "type": 9, "hidden": True},
+        ])
+        payload = _auth_json({})
+        p_files, p_base = _patch_files_to(yml)
+        with p_files, p_base:
+            errors = ws_api._check_type9_companions_present("Dummy", payload)
+        assert errors == []
+
+    def test_missing_yml_is_nonfatal(self) -> None:
+        payload = _auth_json({})
+        with mock.patch.object(
+            ws_api, "get_integration_files",
+            return_value={"error": "boom"},
+        ):
+            errors = ws_api._check_type9_companions_present("Dummy", payload)
+        assert errors == []
+
+    def test_type4_and_type14_are_ignored(self, tmp_path: Path) -> None:
+        yml = _write_yml(tmp_path, [
+            {"name": "apikey", "type": 4},
+            {"name": "cert", "type": 14},
+        ])
+        payload = _auth_json({})
+        p_files, p_base = _patch_files_to(yml)
+        with p_files, p_base:
+            errors = ws_api._check_type9_companions_present("Dummy", payload)
+        assert errors == []
+
+    def test_multiple_type9_one_incomplete(self, tmp_path: Path) -> None:
+        yml = _write_yml(tmp_path, [
+            {"name": "creds_a", "type": 9},
+            {"name": "creds_b", "type": 9},
+        ])
+        payload = json.dumps({
+            "auth_types": [{
+                "name": "p",
+                "type": "Plain",
+                "interpolated": True,
+                "xsoar_param_map": {
+                    "creds_a.identifier": "username",
+                    "creds_a.password": "password",
+                    "creds_b.identifier": "username",
+                    # creds_b.password missing
+                },
+            }],
+            "other_connection": [],
+        })
+        p_files, p_base = _patch_files_to(yml)
+        with p_files, p_base:
+            errors = ws_api._check_type9_companions_present("Dummy", payload)
+        assert len(errors) == 1
+        assert "creds_b" in errors[0]
+        assert "creds_b.password" in errors[0]
+        assert "creds_a" not in errors[0]
+
+
+# ---------------------------------------------------------------------------
+# Dry-run path surfaces the type-9 companion failure
+# ---------------------------------------------------------------------------
+
+
+class TestDryRunSurfacesType9CompanionFailure:
+    def test_dry_run_real_path_reports_yml_cross_check_failure(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A type-9 param missing its password companion makes the dry-run
+        envelope report yml_cross_check.passed == False and would_commit
+        == False — exercising the real wiring end-to-end."""
+        yml = _write_yml(tmp_path, [{"name": "credentials", "type": 9}])
+        payload = _auth_json({"credentials.identifier": "username"})
+
+        rows = [{
+            "Integration ID": "Dummy",
+            "Integration File Path": yml.name,
+            "Connector ID": "dummy",
+            "Auth Details": "",
+        }]
+        monkeypatch.setattr(ws_api, "load_csv", lambda: rows)
+        monkeypatch.setattr(
+            ws_api, "save_csv",
+            lambda _r: (_ for _ in ()).throw(
+                AssertionError("dry-run must not write")
+            ),
+        )
+
+        p_files, p_base = _patch_files_to(yml)
+        with p_files, p_base:
+            env = ws_api.dry_run_auth("Dummy", payload)
+
+        assert env["yml_cross_check"]["passed"] is False
+        assert any(
+            "credentials.password" in e
+            for e in env["yml_cross_check"]["errors"]
+        )
+        assert env["verdict"]["would_commit"] is False
+        assert env["verdict"]["reason"] == "YML cross-check failed"
+        assert "skipped" in env["seed_overlap"]
+        assert "skipped" in env["parity"]
+        assert env["pass"] is False
+
+    def test_dry_run_patched_helper_surfaces_error(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Belt-and-suspenders: patch _check_type9_companions_present to a
+        fake error and assert it flows into the dry-run envelope."""
+        yml = _write_yml(tmp_path, [{"name": "credentials", "type": 9}])
+        payload = _auth_json({
+            "credentials.identifier": "username",
+            "credentials.password": "password",
+        })
+        rows = [{
+            "Integration ID": "Dummy",
+            "Integration File Path": yml.name,
+            "Connector ID": "dummy",
+            "Auth Details": "",
+        }]
+        monkeypatch.setattr(ws_api, "load_csv", lambda: rows)
+        monkeypatch.setattr(
+            ws_api, "_check_type9_companions_present",
+            lambda _i, _j: ["FAKE companion error"],
+        )
+
+        p_files, p_base = _patch_files_to(yml)
+        with p_files, p_base:
+            env = ws_api.dry_run_auth("Dummy", payload)
+
+        assert env["yml_cross_check"]["passed"] is False
+        assert "FAKE companion error" in env["yml_cross_check"]["errors"]
+        assert env["verdict"]["would_commit"] is False

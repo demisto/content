@@ -737,25 +737,28 @@ def _force_interpolated_auth_details(auth_detail_json: str) -> tuple[str, bool]:
 _AUTH_SECRET_YML_TYPES = {4, 9, 14}
 
 
-def _credential_param_names_from_yml(integration_id: str) -> tuple[set[str], Optional[str]]:
-    """Return the set of YML param names whose ``type`` is an auth-secret type.
+def _load_yml_configuration(
+    integration_id: str,
+) -> tuple[list[dict], Optional[str]]:
+    """Load the integration YML and return its ``configuration`` param dicts.
 
-    Reads the integration's own YML ``configuration`` and collects every
-    param ``name`` whose ``type`` is in :data:`_AUTH_SECRET_YML_TYPES`
-    (type 4 Encrypted text, type 9 Credentials, type 14 Authentication
-    Certificate).
+    Resolves the integration's YML via :func:`get_integration_files`
+    (joining ``BASE_DIR`` + the returned relative path) and parses it with
+    PyYAML. Returns ``(params, error)`` where ``params`` is the list of
+    configuration param dicts (only ``dict`` entries are kept) and ``error``
+    is a human-readable string on any resolution/parse problem.
 
-    Returns ``(names, error)``. On any resolution/parse problem ``names``
-    is an empty set and ``error`` is a human-readable string (the caller
-    decides whether a missing YML should be fatal — here it is NON-fatal:
-    we simply cannot run the YML cross-check, so we don't block the write).
+    On error ``params`` is an empty list — a missing/unparseable YML is
+    NON-fatal for callers: the YML cross-checks are simply skipped rather
+    than blocking the write. This is the single shared loader behind every
+    type-4/9/14 auth-secret YML cross-check below.
     """
     info = get_integration_files(integration_id)
     if "error" in info:
-        return set(), info["error"]
+        return [], info["error"]
     yml_rel = info.get("yml")
     if not yml_rel:
-        return set(), f"Integration '{integration_id}' has no YML on disk."
+        return [], f"Integration '{integration_id}' has no YML on disk."
     yml_abs = os.path.join(BASE_DIR, yml_rel)
     try:
         import yaml  # PyYAML; already a project dependency.
@@ -763,12 +766,31 @@ def _credential_param_names_from_yml(integration_id: str) -> tuple[set[str], Opt
         with open(yml_abs, encoding="utf-8") as fh:
             doc = yaml.safe_load(fh) or {}
     except (OSError, yaml.YAMLError) as e:  # type: ignore[name-defined]
-        return set(), f"Could not read/parse YML '{yml_rel}': {e}"
+        return [], f"Could not read/parse YML '{yml_rel}': {e}"
+
+    params = [p for p in (doc.get("configuration", []) or []) if isinstance(p, dict)]
+    return params, None
+
+
+def _credential_param_names_from_yml(integration_id: str) -> tuple[set[str], Optional[str]]:
+    """Return the set of YML param names whose ``type`` is an auth-secret type.
+
+    Reads the integration's own YML ``configuration`` (via
+    :func:`_load_yml_configuration`) and collects every param ``name`` whose
+    ``type`` is in :data:`_AUTH_SECRET_YML_TYPES` (type 4 Encrypted text,
+    type 9 Credentials, type 14 Authentication Certificate).
+
+    Returns ``(names, error)``. On any resolution/parse problem ``names``
+    is an empty set and ``error`` is a human-readable string (the caller
+    decides whether a missing YML should be fatal — here it is NON-fatal:
+    we simply cannot run the YML cross-check, so we don't block the write).
+    """
+    params, err = _load_yml_configuration(integration_id)
+    if err is not None:
+        return set(), err
 
     names: set[str] = set()
-    for param in doc.get("configuration", []) or []:
-        if not isinstance(param, dict):
-            continue
+    for param in params:
         if param.get("type") in _AUTH_SECRET_YML_TYPES:
             name = param.get("name")
             if isinstance(name, str) and name:
@@ -835,6 +857,99 @@ def _check_other_connection_no_yml_credentials(
         f"'Plain' profile's 'username'/'password'). See "
         f"connectus/column-schemas.md §Auth Details."
     ]
+
+
+def _check_type9_companions_present(
+    integration_id: str,
+    auth_detail_json: str,
+) -> list[str]:
+    """Require both companion leaves of every live type-9 credentials param.
+
+    A type-9 (Credentials) YML param is a COMPOUND secret whose two leaves —
+    ``<name>.identifier`` (username) and ``<name>.password`` (password) — must
+    each appear as a dotted key inside some ``auth_types[]`` profile's
+    ``xsoar_param_map``. This cross-check rejects any candidate ``Auth
+    Details`` payload that declares a type-9 param in the integration YML but
+    fails to wire up both companion keys.
+
+    A companion is exempt when the YML param suppresses that half:
+    ``hiddenusername: true`` drops the ``.identifier`` requirement and
+    ``hiddenpassword: true`` drops the ``.password`` requirement (mirrors the
+    manifest emitter's half-suppression rules). Fully-hidden params (see
+    :func:`check_type9_in_profile._is_hidden` semantics — ``hidden`` is
+    ``True``, a non-empty string, or a non-empty list) are not part of the
+    live auth surface and are skipped entirely.
+
+    Returns a list of error strings, one per offending param, sorted by param
+    name for determinism ([] = no violation, or the YML could not be
+    consulted — a missing/unparseable YML is non-fatal and simply skips this
+    cross-check).
+    """
+    try:
+        payload = json.loads(auth_detail_json)
+    except json.JSONDecodeError:
+        return []  # schema validation upstream surfaces JSON errors.
+    if not isinstance(payload, dict):
+        return []
+
+    params, err = _load_yml_configuration(integration_id)
+    if err is not None or not params:
+        # YML unavailable, unparseable, or simply has no params — nothing to
+        # cross-check. Non-fatal: don't block the write.
+        return []
+
+    # Gather every dotted key declared across all auth_types[] xsoar_param_map
+    # dicts. We need EXACT membership of '<name>.identifier'/'<name>.password',
+    # so collect the raw keys with no projection.
+    mapped_keys: set[str] = set()
+    auth_types = payload.get("auth_types")
+    if isinstance(auth_types, list):
+        for entry in auth_types:
+            if not isinstance(entry, dict):
+                continue
+            xpm = entry.get("xsoar_param_map")
+            if isinstance(xpm, dict):
+                mapped_keys.update(xpm.keys())
+
+    errors: list[str] = []
+    for param in params:
+        # Skip fully-hidden params (not part of the live auth surface).
+        hidden = param.get("hidden")
+        is_hidden = (
+            hidden is True
+            or (isinstance(hidden, str) and bool(hidden))
+            or (isinstance(hidden, list) and len(hidden) > 0)
+        )
+        if is_hidden:
+            continue
+        if param.get("type") != 9:
+            continue
+        name = param.get("name")
+        if not isinstance(name, str) or not name:
+            continue
+
+        required: list[str] = []
+        if param.get("hiddenusername") is not True:
+            required.append(f"{name}.identifier")
+        if param.get("hiddenpassword") is not True:
+            required.append(f"{name}.password")
+
+        missing = sorted(c for c in required if c not in mapped_keys)
+        if not missing:
+            continue
+
+        errors.append(
+            f"type-9 (Credentials) param '{name}' requires both "
+            f"'{name}.identifier' (username) and '{name}.password' "
+            f"(password) as keys in an auth_types[] profile's "
+            f"xsoar_param_map (unless hiddenusername/hiddenpassword is set "
+            f"on the param). Missing: {missing}."
+        )
+
+    # One error per offending param; sort by the param name embedded in each
+    # message for deterministic ordering.
+    errors.sort(key=lambda e: e.split("'", 2)[1])
+    return errors
 
 
 def set_integration_auth(
@@ -916,6 +1031,22 @@ def set_integration_auth(
         return {
             "error": "Auth Details YML cross-check failed:\n"
             + "\n".join(f"  - {e}" for e in yml_cred_errors)
+        }
+
+    # ----- YML cross-check: type-9 companions present ----------------------
+    # Consults the integration's own YML and rejects any candidate payload
+    # that declares a live type-9 (Credentials) param but fails to wire BOTH
+    # of its companion leaves ('<name>.identifier' / '<name>.password') as
+    # keys in some auth_types[] profile's xsoar_param_map (each companion is
+    # exempt when the param carries hiddenusername / hiddenpassword). A
+    # missing or unparseable YML is non-fatal (the check is simply skipped).
+    type9_companion_errors = _check_type9_companions_present(
+        integration_id, auth_detail_json
+    )
+    if type9_companion_errors:
+        return {
+            "error": "Auth Details type-9 companion check failed:\n"
+            + "\n".join(f"  - {e}" for e in type9_companion_errors)
         }
 
     # ----- Seed-overrides ∩ Auth Details overlap check ---------------------
@@ -1368,6 +1499,7 @@ def _dry_run_auth_impl(
             "dry_run": True,
             "integration_id": integration_id,
             "validator": {"passed": False, "errors": schema_errors},
+            "yml_cross_check": {"skipped": skipped_marker},
             "seed_overlap": {"skipped": skipped_marker},
             "parity": {"skipped": skipped_marker},
             "verdict": {
@@ -1386,6 +1518,7 @@ def _dry_run_auth_impl(
             "dry_run": True,
             "integration_id": integration_id,
             "validator": validator_block,
+            "yml_cross_check": {"skipped": skipped_marker},
             "seed_overlap": {"skipped": skipped_marker},
             "parity": {"skipped": skipped_marker},
             "verdict": {
@@ -1396,7 +1529,34 @@ def _dry_run_auth_impl(
 
     row = rows[idx]
 
-    # ----- 3. Seed-overrides ∩ Auth Details overlap -----------------------
+    # ----- 3. YML cross-checks (other_connection + type-9 companions) ------
+    # Close the gap with the real set-auth path: consult the integration's
+    # own YML and run BOTH auth-secret cross-checks against the candidate
+    # payload — (a) no auth secret may sit in other_connection, and (b) every
+    # live type-9 param must wire up both its companion leaves. A missing or
+    # unparseable YML is non-fatal (both checks simply skip). On any violation
+    # we short-circuit with would_commit=False, marking the downstream
+    # seed-overlap / parity steps as skipped to keep the envelope uniform.
+    yml_errors = _check_other_connection_no_yml_credentials(
+        integration_id, auth_detail_json
+    ) + _check_type9_companions_present(integration_id, auth_detail_json)
+    if yml_errors:
+        return {
+            "dry_run": True,
+            "integration_id": integration_id,
+            "validator": validator_block,
+            "yml_cross_check": {"passed": False, "errors": yml_errors},
+            "seed_overlap": {"skipped": skipped_marker},
+            "parity": {"skipped": skipped_marker},
+            "verdict": {
+                "would_commit": False,
+                "reason": "YML cross-check failed",
+            },
+        }
+
+    yml_cross_check_block = {"passed": True}
+
+    # ----- 4. Seed-overrides ∩ Auth Details overlap -----------------------
     if seed_overrides:
         try:
             candidate_for_overlap = json.loads(auth_detail_json)
@@ -1411,6 +1571,7 @@ def _dry_run_auth_impl(
                 "dry_run": True,
                 "integration_id": integration_id,
                 "validator": validator_block,
+                "yml_cross_check": yml_cross_check_block,
                 "seed_overlap": {
                     "passed": False,
                     "error": {
@@ -1432,7 +1593,7 @@ def _dry_run_auth_impl(
 
     seed_overlap_block = {"passed": True}
 
-    # ----- 4. Always-interpolate gate (read-only preview) -----------------
+    # ----- 5. Always-interpolate gate (read-only preview) -----------------
     # ALWAYS-INTERPOLATE GATE (2026-06-09): mirror the real set-auth path —
     # every auth_types[] entry is forced to interpolated: true and the parity
     # test is short-circuited, so the gate always allows. The preview reports
@@ -1454,6 +1615,7 @@ def _dry_run_auth_impl(
         "dry_run": True,
         "integration_id": integration_id,
         "validator": validator_block,
+        "yml_cross_check": yml_cross_check_block,
         "seed_overlap": seed_overlap_block,
         "parity": parity_payload,
         "verdict": {"would_commit": True, "reason": reason},
