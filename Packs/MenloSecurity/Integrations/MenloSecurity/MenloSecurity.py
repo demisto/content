@@ -323,7 +323,7 @@ def get_events_for_log_type(
         if is_first_page and last_fetch_time and boundary_hashes:
             before = len(processed)
             processed = _drop_boundary_duplicates(processed, last_fetch_time, boundary_hashes)
-            if (removed := before - len(processed)):
+            if removed := before - len(processed):
                 demisto.debug(f"[{thread_name}] removed {removed} duplicate(s) at {last_fetch_time!r}")
         is_first_page = False
 
