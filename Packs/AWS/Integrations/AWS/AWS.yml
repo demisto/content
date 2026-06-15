@@ -19336,14 +19336,6 @@ script:
     - contextPath: AWS.NetworkFirewall.Firewalls.UpdateToken
       description: An optional token that you can use for optimistic locking.
       type: String
-=======
-      description: The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided.
-    - name: firewall_arn
-      description: The Amazon Resource Name (ARN) of the firewall. Required if the firewall name is not specified, though both can be provided.
-    - name: description
-      description: The new description for the firewall. If you omit this setting, Network Firewall removes the description for the firewall.
-      required: true
->>>>>>> 1f602d0a6d0bbb97e73aadbb9add04bea0b91660
 
   isfetch: false
   runonce: false

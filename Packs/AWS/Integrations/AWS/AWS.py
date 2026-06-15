@@ -847,7 +847,7 @@ def validate_network_firewall_identifier(kwargs: dict, obj: str):
         obj (str): The identifier object (firewall, firewall policy, etc.).
     """
     if f"{obj}Name" not in kwargs and f"{obj}Arn" not in kwargs:
-        raise DemistoException(f"Please enter at least one of the network firewall identifier arguments.")
+        raise DemistoException("Please enter at least one of the network firewall identifier arguments.")
 
 
 def create_network_firewall_policy_obj(args: dict) -> dict:

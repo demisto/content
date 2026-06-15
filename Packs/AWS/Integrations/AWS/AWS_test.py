@@ -17280,7 +17280,7 @@ def test_describe_firewall_command_missing_args(mocker):
     client = mocker.MagicMock()
     args = {}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.describe_firewall_command(client, args)
 
 
@@ -17703,7 +17703,7 @@ def test_delete_firewall_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.delete_firewall_command(mock_client, args)
 
 
@@ -17832,7 +17832,7 @@ def test_update_firewall_delete_protection_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {"delete_protection": "true"}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.update_firewall_delete_protection_command(mock_client, args)
 
 
@@ -17961,7 +17961,7 @@ def test_update_firewall_description_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {"description": "New description"}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.update_firewall_description_command(mock_client, args)
 
 
@@ -18107,7 +18107,7 @@ def test_associate_firewall_policy_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {"firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.associate_firewall_policy_command(mock_client, args)
 
 
@@ -18220,7 +18220,7 @@ def test_delete_firewall_policy_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.delete_firewall_policy_command(mock_client, args)
 
 
@@ -18416,7 +18416,7 @@ def test_update_firewall_policy_command_missing_arguments(mocker):
     mock_client = mocker.Mock()
     args = {"update_token": "token-123", "description": "Updated description"}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.update_firewall_policy_command(mock_client, args)
 
 
@@ -18553,7 +18553,7 @@ def test_update_firewall_policy_change_protection_command_missing_arguments(mock
     mock_client = mocker.Mock()
     args = {"firewall_policy_change_protection": "true"}
 
-    with pytest.raises(DemistoException, match="Please enter at least one of the arguments firewall_name or firewall_arn."):
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
         NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
 
 
@@ -18838,7 +18838,7 @@ def test_validate_network_firewall_identifier_missing_both_raises():
     # When / Then
     with pytest.raises(
         DemistoException,
-        match="Please enter at least one of the arguments firewall_name or firewall_arn.",
+        match="Please enter at least one of the network firewall identifier arguments.",
     ):
         validate_network_firewall_identifier(kwargs, "Firewall")
 
@@ -18860,7 +18860,7 @@ def test_validate_network_firewall_identifier_empty_kwargs_raises():
     # When / Then
     with pytest.raises(
         DemistoException,
-        match="Please enter at least one of the arguments firewall_name or firewall_arn.",
+        match="Please enter at least one of the network firewall identifier arguments.",
     ):
         validate_network_firewall_identifier(kwargs, "Firewall")
 
@@ -18884,7 +18884,7 @@ def test_validate_network_firewall_identifier_wrong_obj_prefix_raises():
     # When / Then
     with pytest.raises(
         DemistoException,
-        match="Please enter at least one of the arguments firewall_name or firewall_arn.",
+        match="Please enter at least one of the network firewall identifier arguments.",
     ):
         validate_network_firewall_identifier(kwargs, "FirewallPolicy")
 
