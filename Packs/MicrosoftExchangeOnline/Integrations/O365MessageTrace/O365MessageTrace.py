@@ -176,6 +176,94 @@ def add_unique_id_field(events: list[dict]) -> None:
 
 
 # ============================================================================
+# Configuration parsing
+# ============================================================================
+def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
+    """Parse and validate integration configuration parameters.
+
+    Extracts authentication settings, connection settings, and validates the
+    resulting authentication credentials from the raw ``demisto.params()``
+    dictionary. Supports client-credentials, certificate, authorization-code
+    and Azure managed-identities flows.
+
+    Args:
+        params: Raw parameters from ``demisto.params()``.
+
+    Returns:
+        Validated configuration dictionary with the keys required to
+        construct a :class:`Client` instance, plus ``max_events``.
+
+    Raises:
+        DemistoException: If required authentication credentials are missing
+            or inconsistent for the resolved grant type.
+    """
+    # ----- Tenant / Auth ID / Secret (support both creds objects and legacy plain params) -----
+    tenant_id = params.get("tenant_id", "")
+
+    credentials_client_id = params.get("credentials_client_id") or {}
+    client_id = credentials_client_id.get("password")
+
+    credentials = params.get("credentials") or {}
+    client_secret = credentials.get("password") or params.get("client_secret", "")
+
+    # ----- Certificate auth -----
+    creds_certificate = params.get("creds_certificate") or {}
+    certificate_thumbprint = creds_certificate.get("identifier")
+    private_key_raw = creds_certificate.get("password")
+    private_key = replace_spaces_in_credential(private_key_raw) if private_key_raw else None
+
+    # ----- Authorization-code flow -----
+    auth_code_param = params.get("auth_code") or {}
+    auth_code = auth_code_param.get("password")
+
+    redirect_uri = params.get("redirect_uri")
+
+    # ----- Managed Identities -----
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+
+    # ----- Common settings -----
+    azure_cloud = get_azure_cloud(params, "O365MessageTrace")
+    base_url = (params.get("url") or urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, "/")).rstrip("/") + "/"
+    verify = not argToBoolean(params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
+    max_events = arg_to_number(params.get("max_fetch")) or Config.DEFAULT_MAX_EVENTS
+
+    # ----- Validation -----
+    if not managed_identities_client_id:
+        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
+        if grant_type == AUTHORIZATION_CODE:
+            if not tenant_id or not client_id or not client_secret or not auth_code or not redirect_uri:
+                raise DemistoException(
+                    "Tenant ID, Client ID, Client Secret, Authorization code and Application redirect URI "
+                    "are required for the authorization code flow."
+                )
+        elif grant_type == CLIENT_CREDENTIALS and (not tenant_id or not client_id or not client_secret):
+            raise DemistoException("Tenant ID, Client ID and Client Secret are required for the client credentials flow.")
+        if not client_secret and not (certificate_thumbprint and private_key) and not auth_code:
+            raise DemistoException(
+                "An authentication credential must be provided: Client Secret, "
+                "Certificate Thumbprint + Private Key, or Authorization Code."
+            )
+
+    return {
+        "tenant_id": tenant_id,
+        "auth_id": client_id or "",
+        "enc_key": client_secret or None,
+        "app_name": Config.APP_NAME,
+        "base_url": base_url,
+        "verify": verify,
+        "proxy": proxy,
+        "certificate_thumbprint": certificate_thumbprint,
+        "private_key": private_key,
+        "auth_code": auth_code,
+        "redirect_uri": redirect_uri,
+        "managed_identities_client_id": managed_identities_client_id,
+        "azure_cloud": azure_cloud,
+        "max_events": max_events,
+    }
+
+
+# ============================================================================
 # Core fetch logic
 # ============================================================================
 def fetch_events_sequential(
@@ -405,70 +493,11 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     demisto.debug(f"[Main] Command={command}")
 
-    # ----- Tenant / Auth ID / Secret (support both creds objects and legacy plain params) -----
-    tenant_id = params.get("tenant_id", "")
-
-    credentials_client_id = params.get("credentials_client_id") or {}
-    client_id = credentials_client_id.get("password")
-
-    credentials = params.get("credentials") or {}
-    client_secret = credentials.get("password") or params.get("client_secret", "")
-
-    # ----- Certificate auth -----
-    creds_certificate = params.get("creds_certificate") or {}
-    certificate_thumbprint = creds_certificate.get("identifier")
-    private_key_raw = creds_certificate.get("password")
-    private_key = replace_spaces_in_credential(private_key_raw) if private_key_raw else None
-
-    # ----- Authorization-code flow -----
-    auth_code_param = params.get("auth_code") or {}
-    auth_code = auth_code_param.get("password")
-
-    redirect_uri = params.get("redirect_uri")
-
-    # ----- Managed Identities -----
-    managed_identities_client_id = get_azure_managed_identities_client_id(params)
-
-    # ----- Common settings -----
-    azure_cloud = get_azure_cloud(params, "O365MessageTrace")
-    base_url = (params.get("url") or urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, "/")).rstrip("/") + "/"
-    verify = not argToBoolean(params.get("insecure", False))
-    proxy = argToBoolean(params.get("proxy", False))
-    max_events = arg_to_number(params.get("max_fetch")) or Config.DEFAULT_MAX_EVENTS
-
-    # ----- Validation -----
-    if not managed_identities_client_id:
-        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
-        if grant_type == AUTHORIZATION_CODE:
-            if not tenant_id or not client_id or not client_secret or not auth_code or not redirect_uri:
-                raise DemistoException(
-                    "Tenant ID, Client ID, Client Secret, Authorization code and Application redirect URI "
-                    "are required for the authorization code flow."
-                )
-        elif grant_type == CLIENT_CREDENTIALS and (not tenant_id or not client_id or not client_secret):
-            raise DemistoException("Tenant ID, Client ID and Client Secret are required for the client credentials flow.")
-        if not client_secret and not (certificate_thumbprint and private_key) and not auth_code:
-            raise DemistoException(
-                "An authentication credential must be provided: Client Secret, "
-                "Certificate Thumbprint + Private Key, or Authorization Code."
-            )
+    config = parse_integration_params(params)
+    max_events = config.pop("max_events")
 
     try:
-        client = Client(
-            tenant_id=tenant_id,
-            auth_id=client_id or "",
-            enc_key=client_secret or None,
-            app_name=Config.APP_NAME,
-            base_url=base_url,
-            verify=verify,
-            proxy=proxy,
-            certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key,
-            auth_code=auth_code,
-            redirect_uri=redirect_uri,
-            managed_identities_client_id=managed_identities_client_id,
-            azure_cloud=azure_cloud,
-        )
+        client = Client(**config)
 
         if command == "test-module":
             return_results(test_module(client))
@@ -486,8 +515,9 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command '{command}' is not implemented.")
     except Exception as e:
-        demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute '{command}' command. Error: {e}")
+        error_msg = f"Failed to execute {command}. Error: {e!s}"
+        demisto.error(f"{error_msg}\n{traceback.format_exc()}")
+        return_error(error_msg)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
