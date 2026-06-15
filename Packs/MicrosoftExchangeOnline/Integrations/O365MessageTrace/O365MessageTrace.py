@@ -274,8 +274,11 @@ def fetch_events_sequential(
 ) -> list[dict]:
     """Fetch all message-trace pages for the [start, end] window sequentially.
 
-    Iterates through all available pages using ``@odata.nextLink`` until either
-    ``max_events`` is reached or no more pages remain.
+    Iterates through ALL available pages using ``@odata.nextLink`` until no more
+    pages remain, even when the running total already exceeds ``max_events``.
+    The API returns the latest events first, so all events must be collected
+    before they can be sorted ascending by ``receivedDateTime`` and truncated to
+    the earliest ``max_events`` events.
 
     If the first page fails the exception is re-raised so the calling
     ``fetch_events`` cycle aborts and ``lastRun`` is not advanced (preventing
@@ -292,8 +295,9 @@ def fetch_events_sequential(
 
     collected: list[dict] = []
     next_link: str | None = None
+    page_events: list[dict] = [{}]  # Sentinel non-empty value to enter the loop.
 
-    while True:
+    while page_events:
         try:
             response = client.get_message_traces_page(
                 start_date=start_str,
@@ -314,30 +318,30 @@ def fetch_events_sequential(
         page_events = response.get("value", []) or []
         collected.extend(page_events)
 
-        # Sort collected by receivedDateTime (parsed as datetime) so the latest event is last.
-        # ``safe_strptime`` (from CommonServerPython) gracefully handles timestamps both
-        # with and without fractional seconds (e.g. ``2025-01-01T10:00:00Z`` and ``2025-01-01T10:00:00.06Z``).
-        # Events that are missing ``receivedDateTime`` are sorted first (datetime.min).
-        collected.sort(
-            key=lambda event: safe_strptime(event["receivedDateTime"], Config.DATE_FORMAT_EVENT)
-            if event.get("receivedDateTime")
-            else datetime.min
-        )
-
         demisto.debug(
             f"[Fetch] Window {start_str} -> {end_str}: page returned {len(page_events)} events "
             f"(running total: {len(collected)})"
         )
 
-        if len(collected) >= max_events:
-            demisto.debug(f"[Fetch] Reached max_events ({max_events}). Stopping.")
-            collected = collected[:max_events]
-            break
-
+        # The API returns the latest events first, so we must follow every
+        # ``@odata.nextLink`` (even past ``max_events``) to be able to keep the
+        # earliest events after sorting below.
         next_link = response.get("@odata.nextLink")
         if not next_link:
             demisto.debug(f"[Fetch] Window {start_str} -> {end_str}: no more pages.")
             break
+
+    # Sort all collected events ascending by receivedDateTime (parsed as datetime) so the
+    # earliest event is first.
+    collected.sort(
+        key=lambda event: safe_strptime(event["receivedDateTime"], Config.DATE_FORMAT_EVENT)
+        if event.get("receivedDateTime")
+        else datetime.min
+    )
+
+    if len(collected) > max_events:
+        demisto.debug(f"[Fetch] Collected {len(collected)} events, truncating to max_events ({max_events}).")
+        collected = collected[:max_events]
 
     return collected
 
