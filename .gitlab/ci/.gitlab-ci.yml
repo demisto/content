@@ -1,8 +1,8 @@
 variables:
-  CURRENT_BRANCH_NAME: "add-content-item-skill"
+  CURRENT_BRANCH_NAME: "add-skill-dependency"
 
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "add-content-item-skill"
+    ref: "add-skill-dependency"
     project: "${CI_PROJECT_NAMESPACE}/infra"
