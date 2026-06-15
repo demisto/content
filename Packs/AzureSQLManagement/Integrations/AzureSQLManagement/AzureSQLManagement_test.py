@@ -651,7 +651,7 @@ def test_azure_sql_firewall_rule_replace_command_with_entry_id(mocker):
 
     request_body = client.http_request.call_args.kwargs["data"]
     sent_rule = request_body["values"][0]
-    assert sent_rule["name"] == "firewallrulecrudtest-5370"
+    assert sent_rule["name"] == "test-rule"
     assert sent_rule["properties"]["startIpAddress"] == "0.0.0.0"
     assert sent_rule["properties"]["endIpAddress"] == "0.0.0.0"
     assert "Successfully updated the firewall rule" in results.readable_output

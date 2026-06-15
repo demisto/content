@@ -1,7 +1,7 @@
 {
     "values": [
         {
-            "name": "firewallrulecrudtest-5370",
+            "name": "test-rule",
             "properties": {
                 "startIpAddress": "0.0.0.0",
                 "endIpAddress": "0.0.0.0"
