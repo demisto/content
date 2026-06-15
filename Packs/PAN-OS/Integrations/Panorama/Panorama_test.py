@@ -3339,6 +3339,65 @@ class TestTopology:
         # Because it's panorama, should be; [shared, device-group, template]
         assert len(result) == 3
 
+    @patch("Panorama.PanDevice.create_from_device")
+    def test_get_direct_device_with_api_key(self, mock_create_from_device, mock_firewall):
+        """
+        Given a Topology with an api_key set and a firewall without a hostname,
+        When get_direct_device is called,
+        Then create_from_device should be called with only hostname and api_key (no username/password).
+        """
+        from Panorama import Topology
+
+        topology = Topology()
+        topology.api_key = "test_api_key"
+        topology.username = ""
+        topology.password = ""
+
+        mock_firewall.hostname = None
+        mock_firewall.show_system_info.return_value = {"system": {"ip-address": "10.0.0.1"}}
+        mock_create_from_device.return_value = mock_firewall
+
+        topology.get_direct_device(mock_firewall)
+
+        mock_create_from_device.assert_called_once_with(hostname="10.0.0.1", api_key="test_api_key")
+
+    @patch("Panorama.PanDevice.create_from_device")
+    def test_get_direct_device_with_username_password(self, mock_create_from_device, mock_firewall):
+        """
+        Given a Topology with username/password set and no api_key,
+        When get_direct_device is called,
+        Then create_from_device should be called with only hostname, api_username, and api_password (no api_key).
+        """
+        from Panorama import Topology
+
+        topology = Topology()
+        topology.api_key = ""
+        topology.username = "admin"
+        topology.password = "secret"
+
+        mock_firewall.hostname = None
+        mock_firewall.show_system_info.return_value = {"system": {"ip-address": "10.0.0.1"}}
+        mock_create_from_device.return_value = mock_firewall
+
+        topology.get_direct_device(mock_firewall)
+
+        mock_create_from_device.assert_called_once_with(hostname="10.0.0.1", api_username="admin", api_password="secret")
+
+    def test_get_direct_device_with_existing_hostname(self, mock_firewall):
+        """
+        Given a firewall that already has a hostname set (direct connection),
+        When get_direct_device is called,
+        Then the firewall should be returned directly without calling create_from_device.
+        """
+        from Panorama import Topology
+
+        topology = Topology()
+        mock_firewall.hostname = "10.0.0.1"
+
+        result = topology.get_direct_device(mock_firewall)
+
+        assert result is mock_firewall
+
 
 class TestUtilityFunctions:
     """Tests all the utility fucntions like dataclass_to_dict, etc"""

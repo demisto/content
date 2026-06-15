@@ -9796,9 +9796,10 @@ class Topology:
 
         ip_address = ip_address or (firewall.show_system_info().get("system") or {}).get("ip-address")
 
-        return PanDevice.create_from_device(
-            hostname=ip_address, api_username=self.username, api_password=self.password, api_key=self.api_key
-        )
+        if self.api_key:
+            return PanDevice.create_from_device(hostname=ip_address, api_key=self.api_key)
+        else:
+            return PanDevice.create_from_device(hostname=ip_address, api_username=self.username, api_password=self.password)
 
     def get_all_object_containers(
         self,
