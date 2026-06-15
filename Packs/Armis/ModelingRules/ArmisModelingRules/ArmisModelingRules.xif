@@ -102,7 +102,8 @@ alter // extract the device name from the activity title, according to the activ
 	xdm.target.ipv6 = arrayindex(target_ipv6_addresses, 0),
 	xdm.target.port = to_integer(target_port),
 	xdm.target.host.hostname = coalesce(target_device_name, target_host),
-	xdm.target.user.username = target_username;
+	xdm.target.user.username = target_username,
+	xdm.target.identity.username = target_username;
 
 
 [MODEL: dataset=armis_security_devices_raw] 
@@ -122,5 +123,6 @@ alter os = uppercase(operatingSystem)
 	xdm.source.ipv4 = ipaddress, 
 	xdm.source.ipv6 = ipv6, 
 	xdm.source.user.identifier = arraystring(userIds -> [], ";"),
+	xdm.source.identity.identifier = arraystring(userIds -> [], ";"),
 	xdm.source.host.os = concat(operatingSystem, " ", operatingSystemVersion),
     xdm.source.host.os_family = if(os contains "WINDOWS", XDM_CONST.OS_FAMILY_WINDOWS, os contains "MAC", XDM_CONST.OS_FAMILY_MACOS, os contains "LINUX", XDM_CONST.OS_FAMILY_LINUX, os contains "ANDROID", XDM_CONST.OS_FAMILY_ANDROID, os contains "IOS", XDM_CONST.OS_FAMILY_IOS, os contains "UBUNTU", XDM_CONST.OS_FAMILY_UBUNTU, os contains "DEBIAN", XDM_CONST.OS_FAMILY_DEBIAN, os contains "FEDORA", XDM_CONST.OS_FAMILY_FEDORA, os contains "CENTOS", XDM_CONST.OS_FAMILY_CENTOS, os contains "CHROME", XDM_CONST.OS_FAMILY_CHROMEOS, os contains "SOLARIS", XDM_CONST.OS_FAMILY_SOLARIS, os contains "SCADA", XDM_CONST.OS_FAMILY_SCADA, os);

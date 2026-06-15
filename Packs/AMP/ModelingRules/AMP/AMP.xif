@@ -23,6 +23,7 @@ alter
         xdm.alert.risks = vulnerabilities -> [],
         xdm.source.host.hostname = computer -> hostname,
         xdm.source.user.username = computer -> user,
+        xdm.source.identity.username = computer -> user,
         xdm.source.agent.identifier = connector_guid,
         xdm.intermediate.ipv4 = if(external_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", external_ip, null),
         xdm.intermediate.ipv6 = if(external_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", external_ip, null),

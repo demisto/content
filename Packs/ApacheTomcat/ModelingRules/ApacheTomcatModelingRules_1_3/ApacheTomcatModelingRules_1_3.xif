@@ -16,6 +16,7 @@ filter _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains 
     | alter
     //    _time = parse_timestamp("%d/%b/%Y:%k:%M:%S", request_time),
     xdm.source.user.username = username,
+    xdm.source.identity.username = username,
     xdm.network.http.url = url,
     xdm.target.sent_bytes = to_number(bytes_size),
     xdm.source.ipv4 = sourceipv4,
