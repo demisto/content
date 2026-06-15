@@ -1,5 +1,5 @@
 Support for AWS cloud
-This integration was integrated and tested with version 2.3.0 of AWS.
+This integration was integrated and tested with version 1.0.0 of AWS.
 
 ## Configure Amazon Web Services in Cortex
 
