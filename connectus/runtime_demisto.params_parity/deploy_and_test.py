@@ -333,10 +333,21 @@ def run(
         try:
             _pi = _resolver_mod.resolve(integration_ids[0])
             commit_path = _pi.connector_folder_path
-            # Patched Base pack + the integration's own pack, derived from the
-            # resolver's integration YML path. Uploaded to the tenant by deploy.py
-            # before the connector deploy (removes the manual upload prerequisite).
-            upload_packs = _packs_to_upload(_pi.integration_yml_path)
+            # Patched Base pack FIRST (the probe must be present before any
+            # integration pack), then EVERY tested integration's own pack — not
+            # just the first. In batch mode the wrapper deploys once but tests
+            # all --integration-id values, so each integration's pack must be
+            # installed on the tenant or its parity capture fails with
+            # "Integration not found on the server" (SETUP_BLOCK).
+            upload_packs = [_BASE_PACK]
+            for _iid in integration_ids:
+                try:
+                    _pi_each = _resolver_mod.resolve(_iid)
+                    _pack = _integration_pack_dir(_pi_each.integration_yml_path)
+                    if _pack and _pack not in upload_packs:
+                        upload_packs.append(_pack)
+                except Exception:
+                    log.warning("Could not resolve pack for '%s'; skipping its upload.", _iid)
         except Exception:
             commit_path = None
             # Fall back to at least the Base pack (probe) when resolution fails.
