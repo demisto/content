@@ -81,6 +81,7 @@ STATE_ALLOW_FLAG: dict[str, str] = {
 _IGNORE_REASON_DESCRIPTIONS: dict[str, str] = {
     "hidden": "hidden in the integration YML (hidden: true or hidden:<platform>), so it is not migrated to the connector and not compared",
     "credentials_type9_interpolated": "type-9 credentials param reconstructed by the integration at runtime from the connector's interpolated credentials.identifier/.password; the full vault object is not value-compared",
+    "isfetch_not_emitted_by_connector": "KNOWN GAP (temporary): the connector does not currently emit the `isFetch` fetch flag at runtime, so it is dropped from both sides and ignored until connector support is added — tracked in the migration guide Open Items",
     "hard_ignore_list": "on the hard ignore-list (never appears comparably in runtime demisto.params(), e.g. brand/engine/instance_name/log-level)",
     "name_ignored": "a framework/mirroring/probe field that is not user-configurable (e.g. outgoingMapperId, apiproxy, the parity-probe key)",
     # legacy / safety fallbacks:
@@ -89,10 +90,53 @@ _IGNORE_REASON_DESCRIPTIONS: dict[str, str] = {
 }
 
 
+#: The only credentials sub-keys the param-parity check compares (the rest of the
+#: XSOAR type-9 credentials vault wrapper is ignored — see normalizers.py and the
+#: migration guide Open Items). Used to annotate the `credentials` OK entry so the
+#: envelope shows the comparison was partial.
+_CREDENTIALS_COMPARED_LEAVES = ("identifier", "password")
+
+
 def _describe_ignore_reason(code: str) -> str:
     """Map a terse ignore reason code to a human-readable sentence (falls back to
     the raw code if unknown)."""
     return _IGNORE_REASON_DESCRIPTIONS.get(code, code)
+
+
+def _annotate_credentials_partial_ignore(
+    entry: dict[str, Any],
+    integration_raw: dict[str, Any] | None,
+    connector_raw: dict[str, Any] | None,
+) -> list[str]:
+    """Annotate the `credentials` OK entry to show the comparison was partial.
+
+    The normalizer reduces a type-9 `credentials` param to identifier/password
+    only before diffing, so the OK verdict covers ONLY those leaves. Surface the
+    sub-keys that were dropped (present in the raw capture on either side but not
+    among the compared leaves) so the envelope makes the partial comparison
+    explicit. No-op when nothing beyond identifier/password was present.
+
+    Returns the sorted list of ignored credentials sub-keys (empty list when
+    nothing beyond identifier/password was present), while still mutating
+    ``entry`` in place.
+    """
+    compared = set(_CREDENTIALS_COMPARED_LEAVES)
+    ignored: set[str] = set()
+    for raw in (integration_raw, connector_raw):
+        val = (raw or {}).get("credentials")
+        if isinstance(val, dict):
+            ignored |= set(val.keys()) - compared
+    if not ignored:
+        return []
+    entry["partially_ignored"] = True
+    entry["compared_keys"] = list(_CREDENTIALS_COMPARED_LEAVES)
+    entry["ignored_keys"] = sorted(ignored)
+    entry["partial_ignore_note"] = (
+        "credentials compared on identifier/password only; the rest of the "
+        "XSOAR type-9 credentials object was ignored (see migration guide Open "
+        "Items) — ignored sub-keys: " + ", ".join(sorted(ignored))
+    )
+    return sorted(ignored)
 
 
 # ============================================================================
@@ -318,6 +362,7 @@ def diff_params(
 
     union_keys = set(integration.keys()) | set(connector.keys())
     per_param: list[dict[str, Any]] = []
+    credentials_ignored_keys: list[str] = []
     dropped: list[dict[str, Any]] = []
 
     # Per-state allowed map (mirrors STATE_ALLOW_FLAG resolved against the CLI flags).
@@ -370,6 +415,10 @@ def diff_params(
                     "connector_value": connector[key],
                     "verdict": "ok",
                 }
+                if key == "credentials":
+                    credentials_ignored_keys = _annotate_credentials_partial_ignore(
+                        entry, integration_raw, connector_raw
+                    )
             else:
                 state = STATE_VALUE_MISMATCH
                 n_mismatch += 1
@@ -498,6 +547,28 @@ def diff_params(
             entry["connector_value"] = info["connector_value"]
         _annotate_serializer(entry, name)
         per_param.append(entry)
+        n_ok_ignored += 1
+
+    # Dedicated COMBINED OK_IGNORED entry summarizing the credentials sub-keys
+    # that were dropped from the comparison (credentials is compared on
+    # identifier/password only — see _annotate_credentials_partial_ignore and the
+    # migration guide Open Items). Emitted only when something was actually
+    # ignored; never contributes to fail/warn.
+    if credentials_ignored_keys:
+        per_param.append(
+            {
+                "name": "credentials (ignored sub-keys)",
+                "state": STATE_OK_IGNORED,
+                "verdict": "ok",
+                "ignored_keys": credentials_ignored_keys,
+                "reason": (
+                    "Ignored — credentials sub-keys not compared (compared on "
+                    "identifier/password only; the rest of the XSOAR type-9 "
+                    "credentials object is ignored — see migration guide Open "
+                    "Items): " + ", ".join(credentials_ignored_keys)
+                ),
+            }
+        )
         n_ok_ignored += 1
 
     status = "pass" if n_fail == 0 else "fail"

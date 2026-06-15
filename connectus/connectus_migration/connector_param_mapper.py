@@ -105,6 +105,28 @@ IGNORED_COMMANDS: frozenset[str] = frozenset(
 #     even if they appear elsewhere — Rule 7 is authoritative)
 PINNED_LONG_RUNNING_PARAMS: frozenset[str] = frozenset({LONG_RUNNING_FLAG_PARAM})
 
+# Mirroring / remote-sync related params that must never appear in the final
+# capability mapping. They are stripped from every bucket (including
+# ``general_configurations``) at the end of Phase 2, regardless of how they
+# were routed. These params are owned by the mirroring/remote-sync machinery
+# and have no place in a connector capability mapping.
+IGNORED_PARAMS: frozenset[str] = frozenset(
+    {
+        "is_mirroring",
+        "mirror_options",
+        "close_incident",
+        "mirror_limit",
+        "mirror_direction",
+        "mirror_tag",
+        "incoming_tags",
+        "outgoing_tags",
+        "comment_tag",
+        "work_notes_tag",
+        "close_out",
+        "close_notes",
+    }
+)
+
 EXCLUDED_AUTOMATION_PATTERNS: list[str] = [
     "get-indicators",
     "get-events",
@@ -685,6 +707,27 @@ def _route_long_running_param(
         result[suggested].append(LONG_RUNNING_PORT_PARAM)
 
 
+def _filter_ignored_params(result: dict[str, list[str]]) -> None:
+    """Strip ``IGNORED_PARAMS`` from every capability list in ``result``.
+
+    Mirroring / remote-sync params (see ``IGNORED_PARAMS``) must never appear
+    in the final capability mapping. This pass removes them from every bucket
+    (including ``general_configurations``) after all routing/dedup is done, and
+    logs the removed names at INFO level.
+    """
+    removed: set = set()
+    for capability, params in result.items():
+        filtered = [p for p in params if p not in IGNORED_PARAMS]
+        if len(filtered) != len(params):
+            removed.update(p for p in params if p in IGNORED_PARAMS)
+            result[capability] = filtered
+    if removed:
+        logger.info(
+            f"Removed the following mirroring/remote-sync params from the "
+            f"final result (IGNORED_PARAMS): {sorted(removed)}"
+        )
+
+
 def is_single_capability(results):
     return len(results) == 2
 
@@ -771,6 +814,10 @@ def map_params_to_capabilities(
 
     if elevated_out is not None:
         elevated_out[:] = elevated
+
+    # Final cleanup - strip mirroring/remote-sync params that must never appear
+    # in the capability mapping (run last so it overrides any earlier routing).
+    _filter_ignored_params(result)
 
     # NOTE: empty capability buckets (including general_configurations) are
     # intentionally preserved in the final result — no cleanup pass is run.
@@ -943,9 +990,6 @@ def generate_param_mapping(
         elevated_out=elevated,
     )
 
-    with open(output_path, "w") as f:
-        json.dump(result, f, indent=2)
-
     logger.info(f"Param mapping written to {output_path}")
 
     # Surface the required test-module params that must be elevated to the
@@ -955,8 +999,6 @@ def generate_param_mapping(
     # the capability mapping survives because Params to Capabilities is
     # preserve_on_reset=true).
     elevated_path = output_path.with_suffix(output_path.suffix + ".elevated.json")
-    with open(elevated_path, "w") as f:
-        json.dump(elevated, f, indent=2)
     if elevated:
         logger.info(
             f"{len(elevated)} param(s) must be elevated to other_connection "

@@ -5,7 +5,10 @@ These test the PURE payload-builder logic (no network/k8s): given a fake UCP
 builder must:
 
   * enable ALL parent capabilities + their subscribed sub-capabilities,
-  * union the configuration scope over every enabled (sub-)capability,
+  * union the configuration scope over every enabled (sub-)capability — the
+    accepted config field ids come from the CONNECTOR MANIFEST
+    (CapabilitySpec.config_field_ids parsed from configurations.yaml), NOT the
+    live GET /creation view (which is now only a logged cross-check),
   * push the SHARED instance_values into the configuration (never connector defaults),
   * skip config keys the connector doesn't declare (→ MISSING_IN_CONNECTOR later),
   * set interpolated-profile auth fields to the SAME instance values (the
@@ -185,7 +188,7 @@ def test_unknown_capability_raises():
 
 def test_configuration_union_and_no_defaults():
     """Config scope spans BOTH enabled capabilities; connector defaults are NOT
-    seeded (only pushed instance_values land)."""
+    seeded (only pushed instance_values / dummies land)."""
     payload = _build_instance_payload(
         _creation_view(),
         instance_name="x",
@@ -203,6 +206,9 @@ def test_configuration_union_and_no_defaults():
 
 
 def test_unknown_config_key_is_skipped():
+    """An instance_values key that is NOT a manifest-declared connector config
+    field is not pushed into the configuration block (handled by another block
+    or simply noise)."""
     payload = _build_instance_payload(
         _creation_view(),
         instance_name="x",
@@ -213,6 +219,81 @@ def test_unknown_config_key_is_skipped():
     )
     assert "create_user_enabled" in payload["configuration"]
     assert "not_a_connector_field" not in payload["configuration"]
+
+
+def test_orphan_config_field_gets_dummy_for_extra_detection():
+    """CONTRACT: every manifest-declared connector config field is SET in the
+    payload. A field WITH a matching integration param gets the shared value; a
+    field WITHOUT one (an orphan / undeclared-rename, e.g. cisco-security's
+    ``incidentType``) gets a DUMMY so it surfaces at runtime on the connector side
+    only -> the diff reports EXTRA_IN_CONNECTOR instead of hiding it."""
+    caps = [
+        CapabilitySpec(
+            id="fetch-secrets",  # present in _creation_view() steps[0]
+            sub_capabilities=[],
+            config_field_ids={"fetch_secret_path", "orphan_field"},
+            profile_ids=[],
+        ),
+    ]
+    payload = _build_instance_payload(
+        _creation_view(),
+        instance_name="x",
+        capabilities=caps,
+        profiles=[],
+        instance_values={"fetch_secret_path": "/x"},  # no value for orphan_field
+        connector_id="salesforce",
+    )
+    cfg = payload["configuration"]
+    # Matched field -> shared value.
+    assert cfg["fetch_secret_path"] == "/x"
+    # Orphan field -> set to a recognizable dummy, NOT omitted.
+    assert cfg["orphan_field"] == "dummy_config_orphan_field"
+
+
+def test_configuration_is_manifest_authoritative_not_creation_view():
+    """Regression: a config field declared in the connector MANIFEST
+    (CapabilitySpec.config_field_ids) must land in the configuration block EVEN
+    WHEN it is ABSENT from the live creation view's steps[2] sections.
+
+    This is the cisco-security/AMPv2 bug: capability-gated / not-yet-deployed
+    fields were missing from the live creation view, so the old creation-view-
+    driven accepted_field_ids collapsed and configuration came out ``{}``.
+    """
+    # A creation view whose config step (steps[2]) declares NO fields at all —
+    # simulating a tenant where the connector's config schema isn't deployed.
+    # (The capability id must still exist in steps[0]; this test isolates the
+    # CONFIG-FIELD sourcing, not the capability-enablement guard.)
+    cv = _creation_view()
+    cv["steps"][2] = {"sections": []}
+
+    caps = [
+        CapabilitySpec(
+            id="fetch-secrets",  # present in _creation_view() steps[0]
+            sub_capabilities=[],
+            config_field_ids={"first_fetch", "max_fetch", "event_types"},
+            profile_ids=[],
+        ),
+    ]
+    payload = _build_instance_payload(
+        cv,
+        instance_name="x",
+        capabilities=caps,
+        profiles=[],
+        instance_values={
+            "first_fetch": "3 days",
+            "max_fetch": "50",
+            "event_types": "abc",
+            "not_declared": "z",
+        },
+        connector_id="cisco-security",
+    )
+    cfg = payload["configuration"]
+    # All manifest-declared fields land despite the empty creation view.
+    assert cfg["first_fetch"] == "3 days"
+    assert cfg["max_fetch"] == "50"
+    assert cfg["event_types"] == "abc"
+    # A value not declared by the manifest is still skipped.
+    assert "not_declared" not in cfg
 
 
 def test_interpolated_profile_uses_instance_values():
@@ -757,8 +838,10 @@ def test_capture_ucp_params_returns_captured_and_payload_tuple(monkeypatch):
     captured_sentinel = {"captured": True}
 
     monkeypatch.setattr(ucp_capture, "get_instances_by_brand", lambda c, b: [])
+    # The capture now ASSUMES a live session instead of starting a port-forward.
     monkeypatch.setattr(
-        ucp_capture, "start_port_forward", lambda *, tenant_id, port: None
+        ucp_capture.session_env, "assert_session_live",
+        lambda: types.SimpleNamespace(ucp_port=8080, tenant_id="tenant-1"),
     )
     monkeypatch.setattr(
         ucp_capture,
@@ -796,7 +879,6 @@ def test_capture_ucp_params_returns_captured_and_payload_tuple(monkeypatch):
         lambda client, armed: captured_sentinel,
     )
     monkeypatch.setattr(ucp_capture, "delete_ucp_instance", lambda *a, **k: None)
-    monkeypatch.setattr(ucp_capture, "stop_port_forward", lambda: None)
 
     parity_inputs = types.SimpleNamespace(
         connector_id="aws-acm", capabilities=[], profiles=[]
@@ -828,7 +910,8 @@ def test_capture_ucp_params_failure_returns_none_and_payload(monkeypatch):
 
     monkeypatch.setattr(ucp_capture, "get_instances_by_brand", lambda c, b: [])
     monkeypatch.setattr(
-        ucp_capture, "start_port_forward", lambda *, tenant_id, port: None
+        ucp_capture.session_env, "assert_session_live",
+        lambda: types.SimpleNamespace(ucp_port=8080, tenant_id="tenant-1"),
     )
     monkeypatch.setattr(
         ucp_capture,
@@ -851,7 +934,6 @@ def test_capture_ucp_params_failure_returns_none_and_payload(monkeypatch):
     # Mirror never appears → the function returns None for `captured`.
     monkeypatch.setattr(ucp_capture, "wait_for_xsoar_mirror", lambda *a, **k: None)
     monkeypatch.setattr(ucp_capture, "delete_ucp_instance", lambda *a, **k: None)
-    monkeypatch.setattr(ucp_capture, "stop_port_forward", lambda: None)
 
     parity_inputs = types.SimpleNamespace(
         connector_id="aws-acm", capabilities=[], profiles=[]

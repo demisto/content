@@ -1,0 +1,126 @@
+# yaml-language-server: $schema=../../schema/triggers.schema.json
+triggers:
+- conditions:
+    id: engine_mode
+    behavior: value
+    operator: neq
+    value: engine
+  effects:
+  - id: engine
+    action:
+      hidden: true
+- conditions:
+    id: engine_mode
+    behavior: value
+    operator: neq
+    value: engine_group
+  effects:
+  - id: engine_group
+    action:
+      hidden: true
+- conditions:
+    operator: OR
+    children:
+    - id: engine
+      behavior: value
+      operator: is_not_empty
+    - id: engine_group
+      behavior: value
+      operator: is_not_empty
+  effects:
+  - id: proxy
+    action:
+      read_only: false
+- conditions:
+    id: passthrough.github_passthrough_secondary_engine_mode
+    behavior: value
+    operator: neq
+    value: engine
+  effects:
+  - id: passthrough.github_passthrough_secondary_engine
+    action:
+      hidden: true
+- conditions:
+    id: passthrough.github_passthrough_secondary_engine_mode
+    behavior: value
+    operator: neq
+    value: engine_group
+  effects:
+  - id: passthrough.github_passthrough_secondary_engine_group
+    action:
+      hidden: true
+- conditions:
+    operator: OR
+    children:
+    - id: passthrough.github_passthrough_secondary_engine
+      behavior: value
+      operator: is_not_empty
+    - id: passthrough.github_passthrough_secondary_engine_group
+      behavior: value
+      operator: is_not_empty
+  effects:
+  - id: passthrough.github_passthrough_secondary_proxy
+    action:
+      read_only: false
+- conditions:
+    id: passthrough.github_iam_engine_mode
+    behavior: value
+    operator: neq
+    value: engine
+  effects:
+  - id: passthrough.github_iam_engine
+    action:
+      hidden: true
+- conditions:
+    id: passthrough.github_iam_engine_mode
+    behavior: value
+    operator: neq
+    value: engine_group
+  effects:
+  - id: passthrough.github_iam_engine_group
+    action:
+      hidden: true
+- conditions:
+    operator: OR
+    children:
+    - id: passthrough.github_iam_engine
+      behavior: value
+      operator: is_not_empty
+    - id: passthrough.github_iam_engine_group
+      behavior: value
+      operator: is_not_empty
+  effects:
+  - id: passthrough.github_iam_proxy
+    action:
+      read_only: false
+- conditions:
+    id: passthrough.github_iam_passthrough_secondary_engine_mode
+    behavior: value
+    operator: neq
+    value: engine
+  effects:
+  - id: passthrough.github_iam_passthrough_secondary_engine
+    action:
+      hidden: true
+- conditions:
+    id: passthrough.github_iam_passthrough_secondary_engine_mode
+    behavior: value
+    operator: neq
+    value: engine_group
+  effects:
+  - id: passthrough.github_iam_passthrough_secondary_engine_group
+    action:
+      hidden: true
+- conditions:
+    operator: OR
+    children:
+    - id: passthrough.github_iam_passthrough_secondary_engine
+      behavior: value
+      operator: is_not_empty
+    - id: passthrough.github_iam_passthrough_secondary_engine_group
+      behavior: value
+      operator: is_not_empty
+  effects:
+  - id: passthrough.github_iam_passthrough_secondary_proxy
+    action:
+      read_only: false

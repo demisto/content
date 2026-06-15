@@ -46,6 +46,7 @@ from pathlib import Path as _Path  # noqa: E402
 
 _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
 from env_loader import load_env  # noqa: E402
+from be_config_params import compute_be_synthesized_params, default_dummy_for  # noqa: E402
 
 # Load the canonical root .env via the single unified loader.
 load_env()
@@ -269,6 +270,29 @@ def create_client(
     Returns:
         A configured ``demisto_client`` instance with TLS verification disabled
         (suitable for dev tenants — do not use in production with that flag).
+
+    PROXY BYPASS (why ``proxy=""`` below)
+    -------------------------------------
+    When this runs under the idex CLI / VS Code, that process injects
+    ``HTTPS_PROXY`` / ``HTTP_PROXY`` into the agent subprocess. The corporate
+    proxy then 403s the HTTPS ``CONNECT`` tunnel to the XSOAR tenant, producing
+    ``ProxyError('Unable to connect to proxy', ...)`` against the
+    ``api-<tenant>`` host. In a plain terminal (no proxy injected) the same call
+    works because the SDK connects directly.
+
+    Setting ``NO_PROXY`` does NOT help here: ``demisto_client.configure()``
+    reads ``HTTPS_PROXY``/``HTTP_PROXY`` directly via ``os.getenv`` and passes
+    the URL to a raw ``urllib3.ProxyManager`` (see ``demisto_api/rest.py``),
+    which has no ``NO_PROXY`` bypass logic — every request is proxied
+    unconditionally. The tenant is proven reachable directly (urllib 200 /
+    curl 303 with no proxy), and it is the only host this client talks to, so we
+    explicitly disable the proxy for this SDK client.
+
+    Mechanism: pass ``proxy=""`` so ``configure()`` does NOT fall back to
+    ``os.getenv('HTTPS_PROXY')`` (its fallback only triggers when ``proxy is
+    None``); an empty string is falsy in ``rest.py``'s ``if configuration.proxy``
+    check, so the SDK builds a plain ``urllib3.PoolManager`` (direct, no proxy).
+    We also defensively null out ``configuration.proxy`` on the built client.
     """
     base_url = base_url or DEFAULT_BASE_URL
     api_key = api_key or DEFAULT_API_KEY
@@ -283,7 +307,13 @@ def create_client(
         api_key=api_key,
         auth_id=auth_id,
         verify_ssl=False,
+        # Empty string (not None) so the SDK does NOT fall back to the injected
+        # HTTPS_PROXY/HTTP_PROXY env vars. Reaches the tenant directly.
+        proxy="",
     )
+    # Defense-in-depth: ensure the configuration carries no proxy even if a
+    # future SDK version changes how the proxy arg is interpreted.
+    client.api_client.configuration.proxy = None
     client.api_client.user_agent = "connectus-params-parity/xsoar_capture"
     return client
 
@@ -394,6 +424,7 @@ def create_integration_instance(
     server_configuration: dict,
     filled_params: dict,
     instance_name: str | None = None,
+    extra_fields: dict | None = None,
 ) -> tuple[dict | None, str]:
     """Create an integration instance via PUT /settings/integration.
 
@@ -406,6 +437,13 @@ def create_integration_instance(
         filled_params: The dict returned by :func:`fill_params_from_yml`.
         instance_name: Optional explicit instance name. When ``None``, a
             sanity-test name with a uuid suffix is generated.
+        extra_fields: Optional mapping of field name -> value for params that
+            are NOT declared in the server configuration schema but must still
+            be sent in the instance ``data`` list (e.g. backend-synthesized
+            fetch/feed config params like ``alertFetchInterval`` / ``incidentType``
+            that the BE auto-adds based on the YML script flags). Each is
+            injected into ``data`` (mirroring the magic-key injection) unless a
+            param of the same name is already present from the server schema.
 
     Returns:
         ``(module_instance_dict, error_message)``.
@@ -479,6 +517,26 @@ def create_integration_instance(
                 "required": False,
             })
             log.debug("Injected magic key %r into module_instance.data", PARITY_DUMP_PARAM_KEY)
+
+    # Inject backend-synthesized config params (e.g. fetch/feed fields the BE
+    # auto-adds from the YML script flags) that are NOT in the server's
+    # configuration schema, so they are persisted on the instance and surface in
+    # demisto.params() at runtime. Mirrors the magic-key injection above.
+    for field_name, field_value in (extra_fields or {}).items():
+        already_present = any(
+            entry.get("name") == field_name for entry in module_instance["data"]
+        )
+        if already_present:
+            continue
+        module_instance["data"].append({
+            "name": field_name,
+            "display": field_name,
+            "type": PARAM_TYPE_SHORT_TEXT,
+            "value": field_value,
+            "hasvalue": bool(field_value),
+            "required": False,
+        })
+        log.debug("Injected BE-synthesized field %r into module_instance.data", field_name)
 
     try:
         res = demisto_client.generic_request_func(
@@ -791,6 +849,24 @@ def capture_xsoar_params(
 
     filled = fill_params_from_yml(yml_params, overrides)
 
+    # Backend-synthesized fetch/feed config params (alertFetchInterval, etc.)
+    # are NOT in the YML `configuration`, so fill_params_from_yml() drops them.
+    # Compute them from the YML script flags and pull their values from the
+    # caller overrides (the shared dummies) so BOTH parity sides use the same
+    # value. These get injected into the instance data list by
+    # create_integration_instance(extra_fields=...).
+    be_added, be_stripped = compute_be_synthesized_params(yml_data.get("script"))
+    extra_fields: dict = {}
+    for name in be_added:
+        if name in overrides:
+            extra_fields[name] = overrides[name]
+        else:
+            extra_fields[name] = default_dummy_for(name)
+    # BE strips these when no fetch flag is on — ensure they are not sent.
+    for name in be_stripped:
+        filled.pop(name, None)
+        extra_fields.pop(name, None)
+
     if client is None:
         client = create_client()
 
@@ -799,7 +875,9 @@ def capture_xsoar_params(
         # `filled` is built — return it so the attempted payload is recoverable.
         return None, filled
 
-    module_instance, error = create_integration_instance(client, integration_name, server_config, filled)
+    module_instance, error = create_integration_instance(
+        client, integration_name, server_config, filled, extra_fields=extra_fields
+    )
     if not module_instance:
         log.error("Failed to create XSOAR instance: %s", error)
         return None, filled

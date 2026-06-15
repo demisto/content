@@ -371,6 +371,7 @@ Icons are excluded from `connectors.tar.gz` and uploaded by CI to GCS at `images
 | `input` | Text input. |
 | `text_area` | Multi-line text. |
 | `select` | Single-choice dropdown (scalar value). |
+| `radio` | Single-choice radio-button group (scalar value). Same `{key, label}` options and scalar `default_value` as `select`; set `options.orientation` (`horizontal`/`vertical`). Used for `engine_mode` (§3.7). |
 | `multi_select` | Multi-choice dropdown (array of keys). |
 | `checkbox` | Single boolean toggle. |
 | `checkbox_group` | Multiple checkboxes (uses `fields[]` for items). |
@@ -396,6 +397,7 @@ Schema: [`field-options.schema.json`](schema/definitions/field-options.schema.js
 | `clearable` | ❌ | Whether the user can clear the selection back to empty. **Migration MUST set `true` on every `select`/`multi_select`.** Only valid on those types. |
 | `units` | duration | Ordered unique time-unit boxes. **Migration MUST emit exactly `["days","hours","minutes"]`.** |
 | `output_format` | duration | `"iso8601"` (default) or `"minutes"`. **Migration MUST set `"minutes"`.** |
+| `orientation` | ❌ | `"horizontal"` or `"vertical"`. Layout direction for `radio` (and checkbox groups). **Migration MUST set `"horizontal"` on `engine_mode`.** |
 | `layout` | ❌ | `cols` (≤ 6) and `row_span`. |
 | `create_modifiers` / `edit_modifiers` | ❌ | `{required, hidden, read_only}`. **`duration` forbids `required`.** |
 
@@ -579,7 +581,7 @@ settings:
 2. An integration may map to multiple capabilities (e.g. fetch + commands) — emit each, with one sub-capability per integration (`<capability_id>_<integration_id>`).
 3. Multiple integrations may share a capability; each is its own sub-capability (`title` = integration name; `id` = `<capability_id>_<integration_id>`).
 4. **Flag** (but allow) if two integrations declare the same fetch type, or one integration declares multiple fetch/feed/credential capabilities.
-5. When `isFetchEvents`/`isFetchAssets` etc. are set, **omit** the corresponding checkbox param — choosing the capability implies the feature is on. Still emit the related fields (interval, classifier, mapper, alertType, etc.)..
+5. When `isFetchEvents`/`isFetchAssets` etc. are set, **omit** the corresponding checkbox param — choosing the capability implies the feature is on. Still emit the related fields (interval, classifier, mapper, incidentType, etc.)..
 6. **Fetch mutex (per handler/integration)**: a single integration MUST NOT enable more than one of the five fetch capabilities at once (each handler → exactly one XSOAR instance, which cannot have multiple fetches). Multiple fetches across **different** integrations are fine. The UI prevents the conflict (no error) by marking the other fetch sub-capabilities of that same integration `read_only: true` with the message *"Select only one fetch option for this capability"* — enforced via [`triggers.yaml`](README.md:833) (§3.5).
 
 #### Metadata & general_configurations
@@ -752,7 +754,7 @@ A `view_groups[]` entry has exactly three keys (schema [`connection.schema.json`
 
 1. For each profile, follow §2.2 and the auth-parameter tagging in §2.6.
 2. **Mass-migration profile types are restricted to `plain`, `api_key`, and `passthrough`** (§2.2). Use **`plain`** for user/password auth and **`api_key`** for a single API-key secret; use **`passthrough`** (§2.6.1) when the credentials can't be cleanly mapped to `plain`/`api_key` or need several inputs at once (e.g. Slack v3).
-3. **`engine`/`engine_group`/`proxy`/`insecure`** appear once inside each profile that needs them. Because a handler binds to exactly one profile, the user supplies a single value per instance.
+3. **`engine`/`engine_group`/`proxy`/`insecure`** appear once inside each profile that needs them. Because a handler binds to exactly one profile, the user supplies a single value per instance. `proxy` & `insecure` will only be used if the integration YML has defined them.
 4. **`profiles[].view_group`** (Grouped): every profile references one `connection.yaml view_groups[].id`.
    - **A profile cannot be shared across two integrations/handlers.** The chain is causal: a profile points to **exactly one** `view_group`, and each `view_group` belongs to **exactly one** integration — therefore a single profile can only ever serve one integration. Declare a **separate profile per integration** even when the auth is identical (e.g. `oauth2_client_credentials.salesforce` and `.salesforce-iam`). Two handlers MUST NOT reference the same profile id.
 5. **One profile per handler — OR, never AND.** A handler binds to a single profile at runtime. Multiple auth methods → separate profiles sharing one `view_group`, advertised as alternatives in `auth_options[]` (user picks one). If an integration needs several inputs simultaneously, model it as one `passthrough` profile.
@@ -850,8 +852,8 @@ See [Appendix A](#appendix-a-xsoar-type--manifest-type-mapping).
 | `integrationLogLevel` | `configurations.yaml` `general_configurations`, per `view_group` (one per integration; Standard connectors: no `view_group`) | `select` | `"backend"` | Off/Debug/Verbose. |
 | `defaultIgnore` | `configurations.yaml`, under the `automation-and-remediation_<integration>` sub-capability | `checkbox` | `"backend"` | "Do not use in CLI by default". **Only for integrations with an `automation-and-remediation` sub-capability** — it governs commands, which collection-only capabilities don't have. Omit otherwise. |
 | `engine` / `engine_group` | connection profile (§3.6) | `select` + `dynamic_values` | `"backend"` | Engine 3-field pattern (below). Omit for Appendix G. |
-| `mappingId` (label "Classifier") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "classifier"`. `default_value` ← `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `alertType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
-| `incomingMapperId` (label "Mapper (incoming)") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "mapper-incoming"`. `default_value` ← `defaultMapperIn` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `alertType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
+| `mappingId` (label "Classifier") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "classifier"`. `default_value` ← `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `incidentType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
+| `incomingMapperId` (label "Mapper (incoming)") | `configurations.yaml`, **fetch-issues sub-capability only** | `select` + `dynamic_values` | `"backend"` | When `isFetch`. Provider `xsoar`, `dynamicField: "mapper-incoming"`. `default_value` ← `defaultMapperIn` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Same scoping as `incidentType` — never under `log-collection`/`fetch-assets-and-vulnerabilities`/`threat-intelligence-and-enrichment`/`fetch-secrets` or general configurations. |
 | `defaultClassifier` | → `default_value` of `mappingId` | — | — | Not a UI field. Best-effort literal pre-selection (§2.16). |
 | `defaultMapperIn` | → `default_value` of `incomingMapperId` | — | — | Not a UI field. Best-effort literal pre-selection (§2.16). |
 | `outgoingMapperId` / `defaultMapperOut` | **OUT OF SCOPE** | — | — | Mirroring not supported. |
@@ -862,7 +864,7 @@ Replaces legacy `engine`/`engineGroup`. The three fields live **inside the conne
 
 | ID | Type | Default | `event.publish` | `config_type` |
 |---|---|---|---|---|
-| `engine_mode` | `select` (radio) | `no_engine` | ❌ (the only non-published, non-secret field) | — |
+| `engine_mode` | `radio` (horizontal) | `no_engine` | ❌ (the only non-published, non-secret field) | — |
 | `engine` | `select` + `dynamic_values` (`dynamicField: engine`) | — | ✅ | `backend` |
 | `engine_group` | `select` + `dynamic_values` (`dynamicField: engine-group`) | — | ✅ | `backend` |
 
@@ -875,10 +877,11 @@ Replaces legacy `engine`/`engineGroup`. The three fields live **inside the conne
 ```yaml
 # connection.yaml — inside a profile's configurations[].fields[]
 - id: engine_mode
-  field_type: select
+  field_type: radio          # horizontal radio group — NOT a select dropdown
   title: Engine
   options:
     required: true
+    orientation: horizontal  # render the radio options in a single horizontal row
     default_value: no_engine
     values:
       - { key: no_engine, label: "No engine" }
@@ -926,6 +929,7 @@ The `proxy` field (a `checkbox`) lives in the same connection profile alongside 
 - **`proxy` is `read_only` (locked, unchecked) while `engine_mode == "no_engine"`** (i.e. no engine and no engine group is chosen).
 - **Once the user selects an engine OR an engine group** (`engine_mode == "engine"` OR `engine_mode == "engine_group"`), `proxy` becomes editable so the user can check it.
 - A tooltip explains the lock: **"Use system proxy settings is enabled only when an engine or engine group are chosen."**
+- proxy is only a field in the profile if the integration YML has this field defined
 
 The lock is enforced via a reversible [`triggers.yaml`](README.md:833) effect: `read_only: true` while `engine_mode == "no_engine"`, automatically reversed when an engine/engine group is selected.
 
@@ -961,6 +965,7 @@ triggers:
 #### Insecure field — always editable
 
 The `insecure` field (a `checkbox`) also lives in the same connection profile. Its title is **"Trust any certificate (not secure)"**, it defaults to **off** (`false`), and — unlike `proxy` — it is **always editable** (`read_only: false` at all times, no engine gating, no trigger).
+- `insecure` is only a field in the profile if the integration YML has this field defined
 
 | ID | Type | Title | Default | `read_only` | `event.publish` | `config_type` |
 |---|---|---|---|---|---|---|
@@ -980,7 +985,7 @@ The `insecure` field (a `checkbox`) also lives in the same connection profile. I
     edit_modifiers: { required: false, read_only: false, hidden: false }
 ```
 
-**Carve-outs:** [Appendix G](#appendix-g-engine--proxy-exclusion-list) — emit none of the engine fields and no `proxy`. [Appendix H](#appendix-h-single-engine-integrations) — emit `engine_mode` (2 options: `no_engine` + `engine`) and `engine` only; omit `engine_group` (the proxy read-only rule still applies, gated on `engine_mode == "no_engine"`). If the FE lacks a horizontal-radio `select`, fall back to plain `select` (IDs/keys/triggers unchanged).
+**Carve-outs:** [Appendix G](#appendix-g-engine--proxy-exclusion-list) — emit none of the engine fields and no `proxy`. [Appendix H](#appendix-h-single-engine-integrations) — emit `engine_mode` (2 options: `no_engine` + `engine`) and `engine` only; omit `engine_group` (the proxy read-only rule still applies, gated on `engine_mode == "no_engine"`).
 
 #### BE-auto-added params (now explicit)
 
@@ -988,17 +993,17 @@ When a `script` flag is true, the BE used to auto-add params. Define them explic
 
 **`script.IsFetch: true`** → `fetch-issues` sub-capability:
 - `alertFetchInterval` — `duration` default to 1 minute or whats given in integration YML.
-- `incidentType`/`alertType` (Platform uses `alertType`) — `select` + `dynamic_values` (`dynamicField: "incident-type"`). **User-visible** (do NOT mark backend). Title "Issue Type", tooltip "select if classifier doesn't exist".
+- `incidentType` — `select` + `dynamic_values` (`dynamicField: "incident-type"`). **User-visible** (do NOT mark backend). Title "Issue Type", tooltip "select if classifier doesn't exist".
   - Placed under **each** `fetch-issues` sub-capability's `configurations[]` (pinned to that integration's `view_group`) — never in `general_configurations` or on the parent capability.
   - **Always emit** for every `fetch-issues` sub-capability, regardless of whether the YML has a type-13 param.
   - Never emit under non-issue fetch sub-capabilities.
   - When `script.isfetchsamples: true`, force it always-visible.
-- `mappingId` — label "Classifier", `select` + `dynamic_values` (provider `xsoar`, `dynamicField: "classifier"`), `config_type: backend`. `default_value` ← integration YML `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Placed only under each `fetch-issues_<integration>` sub-capability (like `alertType`) — never under other fetch capabilities or general configurations.
-- `incomingMapperId` — label "Mapper (incoming)", `select` + `dynamic_values` (provider `xsoar`, `dynamicField: "mapper-incoming"`), `config_type: backend`. `default_value` ← integration YML `defaultMapperIn` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Placed only under each `fetch-issues_<integration>` sub-capability (like `alertType`) — never under other fetch capabilities or general configurations.
+- `mappingId` — label "Classifier", `select` + `dynamic_values` (provider `xsoar`, `dynamicField: "classifier"`), `config_type: backend`. `default_value` ← integration YML `defaultClassifier` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Placed only under each `fetch-issues_<integration>` sub-capability (like `incidentType`) — never under other fetch capabilities or general configurations.
+- `incomingMapperId` — label "Mapper (incoming)", `select` + `dynamic_values` (provider `xsoar`, `dynamicField: "mapper-incoming"`), `config_type: backend`. `default_value` ← integration YML `defaultMapperIn` (best-effort literal, §2.16). `options.searchable: true`, `options.clearable: true`. Placed only under each `fetch-issues_<integration>` sub-capability (like `incidentType`) — never under other fetch capabilities or general configurations.
 
 ```yaml
 # inside the fetch-issues_<integration> sub-capability
-- id: "alertType"
+- id: "incidentType"
   title: "Issue Type"
   field_type: "select"
   metadata:
@@ -1597,6 +1602,8 @@ Open items are tracked in [this spreadsheet](https://docs.google.com/spreadsheet
 - 🔴 **Serializer ID change on a profile field (e.g. `engine`)** — we don't know whether the serializer can change/remap the **ID** of a field that lives in the **connection profile** (e.g. `engine`/`engine_group`). Serializer `field_mappings` are documented for configuration fields; whether profile-level (connection.yaml) field IDs can be remapped via the serializer is undetermined. Confirm with engineering.
 - 🔴 **Fetch flags missing from `/verify` payload** — the BE fetch flags (`isFetch`, `isFetchEvents`, `isFetchAssets`, `isFetchCredentials`, `feed`) emitted via the per-handler `computed_fields` serializer (§3.9.1) are delivered on the create/edit **pub/sub** event, but are **NOT** present on the `/verify` API payload. Some `test-module` (verify) implementations need to know whether the instance is fetching, so they currently can't read the flag at verify time. Needs BE support to include the computed flags in the verify payload.
 - 🔴 **Single sub-capability auto-enable (Grouped connectors)** — in grouped connectors, when a capability has only **one** sub-capability under it, enabling the parent capability should also enable that lone sub-capability. We need to check in the UI how this behaves today (does enabling the parent auto-select the single sub-capability, or must the user select it separately?). Related to the "Capability auto-select gap" 
+- 🔴 **Param-parity `credentials` comparison is a temporary workaround** — the runtime param-parity check (`runtime_demisto.params_parity/normalizers.py`) currently reduces a type-9 `credentials` param to **only** its `identifier`/`password` leaves before diffing, because the XSOAR side emits the full nested credentials vault wrapper (`credential`, `passwordChanged`, nested `credentials` object, etc.) while the connector side emits a flat `{identifier, password}`. This was done so the wrapper shape drift stops producing a spurious `VALUE_MISMATCH` (first hit on AMPv2 / `cisco-security`). **We need to come back and resolve this correctly** — i.e. compare the credentials object properly end-to-end (decide the canonical shape on both sides) rather than masking the extra keys. Until then, parity does NOT verify any credentials field beyond identifier/password.
+- 🔴 **Param-parity ignores `isFetch` until the connector emits it (known gap)** — the runtime param-parity check (`runtime_demisto.params_parity/normalizers.py`, `KNOWN_GAP_IGNORE_REASONS`) currently DROPS the `isFetch` fetch flag from **both** sides and surfaces it as `OK_IGNORED` (reason `isfetch_not_emitted_by_connector`), because the connector instance does **not** currently emit `isFetch` at runtime — without this it shows as a spurious `MISSING_IN_CONNECTOR` (first hit on AMPv2 / `cisco-security`). This is a **temporary** measure: **we need to manage this later** by making the connector emit `isFetch` (and then removing the entry from `KNOWN_GAP_IGNORE_REASONS`). Until then, parity does NOT verify `isFetch` parity. Note this is scoped to `isFetch` ONLY — related fetch-config params like `incidentType` are still compared normally.
 
 ---
 
@@ -1657,7 +1664,7 @@ Determinism guarantees:
 - The prefix is always `<normalized-integration-id>_`, never an ad-hoc abbreviation.
 - Fields that do **not** collide are **never** renamed.
 
-> This rule is the single source of truth for id collisions everywhere in the guide (config fields, `integrationLogLevel`, `defaultIgnore`, `alertType`, engine fields, `domain`, etc.). Wherever a prefixed id appears in this guide, it follows exactly this rule.
+> This rule is the single source of truth for id collisions everywhere in the guide (config fields, `integrationLogLevel`, `defaultIgnore`, engine fields, `domain`, etc.). Wherever a prefixed id appears in this guide, it follows exactly this rule.
 
 ## Appendix D: Excluded Integrations (Out of Scope)
 

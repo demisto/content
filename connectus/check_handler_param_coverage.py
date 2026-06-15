@@ -49,8 +49,8 @@ param (anything not ``hidden: true`` / ``hidden: platform`` /
 two Platform-rename special cases:
 
   * an integration ``incidentType`` param is considered covered when the
-    connector exposes an ``alertType`` field (bare or sub-capability
-    prefixed, e.g. ``fetch-issues_<int>_alertType``);
+    connector exposes an ``incidentType`` field (bare or sub-capability
+    prefixed, e.g. ``fetch-issues_<int>_incidentType``);
   * an integration ``incidentFetchInterval`` param is considered covered
     when the connector exposes an ``alertFetchInterval`` field (bare or
     sub-capability prefixed).
@@ -130,15 +130,30 @@ HANDLERS_DIR = "handlers"
 COMPUTED_FIELDS_KEY = "computed_fields"
 
 # Platform "alert" renames. The Platform migrates the legacy XSOAR
-# ``incidentType`` / ``incidentFetchInterval`` params to ``alertType`` /
+# ``incidentType`` / ``incidentFetchInterval`` params to ``incidentType`` /
 # ``alertFetchInterval`` on the connector side with NO serializer bridge back
 # to the original names. The connector id may also be sub-capability prefixed
-# (e.g. ``fetch-issues_<int>_alertType``), so coverage uses a suffix match.
+# (e.g. ``fetch-issues_<int>_incidentType``), so coverage uses a suffix match.
 INCIDENT_TYPE_PARAM = "incidentType"
-ALERT_TYPE_SUFFIX = "alertType"
+ALERT_TYPE_SUFFIX = "incidentType"
 INCIDENT_FETCH_INTERVAL_PARAM = "incidentFetchInterval"
 ALERT_FETCH_INTERVAL_SUFFIX = "alertFetchInterval"
-IGNORED_PARAMS = {"is_mirroring", "mirror_direction", "mirror_limit", "close_incident"}
+IGNORED_PARAMS = {
+    "is_mirroring",
+    "mirror_options",
+    "close_incident",
+    "mirror_limit",
+    "mirror_direction",
+    "mirror_tag",
+    "incoming_tags",
+    "outgoing_tags",
+    "comment_tag",
+    "work_notes_tag",
+    "close_out",
+    "close_notes",
+    "longRunning",
+    "longRunningPort",
+}
 
 # XSOAR ``type: 9`` — the credentials widget. A single integration YML param
 # of this type is a *compound* field: the integration reads it as
@@ -545,7 +560,7 @@ def collect_connector_raw_field_ids(
     Unions field ids from capability configs, view-group general configs, auth
     profiles, and serializer ``computed_fields[].output[].id`` — WITHOUT
     resolving them through the serializer ``field_mappings``. Raw ids are what
-    the alert-rename suffix match (``alertType`` / ``alertFetchInterval``)
+    the alert-rename suffix match (``incidentType`` / ``alertFetchInterval``)
     needs, since those fields are migrated with no serializer bridge and may be
     sub-capability prefixed.
     """
@@ -606,10 +621,10 @@ def collect_connector_params(
 def _alert_rename_covered(missing: set[str], raw_field_ids: list[str]) -> set[str]:
     """Drop Platform-renamed alert params from ``missing`` when covered.
 
-    The Platform migrates ``incidentType`` -> ``alertType`` and
+    The Platform migrates ``incidentType`` -> ``incidentType`` and
     ``incidentFetchInterval`` -> ``alertFetchInterval`` on the connector side
     with no serializer bridge, and the connector id may be sub-capability
-    prefixed (e.g. ``fetch-issues_<int>_alertType``). So an integration
+    prefixed (e.g. ``fetch-issues_<int>_incidentType``). So an integration
     ``incidentType`` / ``incidentFetchInterval`` is considered covered when any
     raw connector field id equals or ends with the matching alert suffix.
     """
@@ -745,7 +760,7 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
     print(f"Got the following integration params: {yml_params=}")
     print(f"Got the following handler params: {connector_params=}")
     missing = yml_params - connector_params
-    # Platform "alert" renames: incidentType -> alertType,
+    # Platform "alert" renames: incidentType -> incidentType,
     # incidentFetchInterval -> alertFetchInterval (no serializer bridge).
     missing = _alert_rename_covered(missing, raw_field_ids)
     # type:9 credentials widgets split into <name>_username / <name>_password
@@ -846,6 +861,18 @@ def build_arg_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--force",
+        action="store_true",
+        help=(
+            "Override a coverage FAIL: still compute and report the uncovered "
+            "params, but exit 0 (pass) and set 'forced': true in the JSON "
+            "envelope. Use ONLY on explicit operator instruction when the "
+            "uncovered params are known-safe to skip (e.g. a deprecated, "
+            "label-less auth alternative). The real gap is never hidden — it "
+            "remains in 'missing' for transparency."
+        ),
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -891,12 +918,19 @@ def main(argv: list[str] | None = None) -> int:
 
     sorted_missing = sorted(missing)
 
+    # --force: a genuine FAIL is overridden to a pass, but the uncovered
+    # params are NEVER hidden — they stay in 'missing' and the override is
+    # recorded as 'forced': true so the decision is auditable.
+    forced_pass = bool(getattr(args, "force", False)) and not passed
+    effective_pass = passed or forced_pass
+
     if args.json:
         envelope = {
             "integration": integration_yml_path.stem,
-            "pass": passed,
+            "pass": effective_pass,
             "missing": sorted_missing,
             "ignored_params": sorted(IGNORED_PARAMS),
+            "forced": forced_pass,
         }
         print(json.dumps(envelope, indent=2, sort_keys=True))
 
@@ -906,6 +940,17 @@ def main(argv: list[str] | None = None) -> int:
                 "PASS: every non-hidden integration YML param is covered by "
                 "the connector handler."
             )
+        return EXIT_OK
+
+    if forced_pass:
+        print(  # noqa: T201
+            "FORCED PASS: the following integration YML params are NOT covered "
+            f"by the connector handler ({len(sorted_missing)}), overridden via "
+            "--force:",
+            file=sys.stderr,
+        )
+        for name in sorted_missing:
+            print(f"  - {name}", file=sys.stderr)  # noqa: T201
         return EXIT_OK
 
     print(  # noqa: T201

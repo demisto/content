@@ -24,13 +24,9 @@ UCP Shell API access requires:
 
 from __future__ import annotations
 
-import atexit
 import json
 import logging
 import os
-import signal
-import socket
-import subprocess
 import sys
 import time
 import uuid
@@ -55,6 +51,7 @@ from pathlib import Path as _Path  # noqa: E402
 
 sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
 from env_loader import load_env  # noqa: E402
+import session_env  # noqa: E402  (single session/env authority; owns the port-forward)
 
 # Load the canonical root .env via the single unified loader.
 load_env()
@@ -82,137 +79,17 @@ def _ucp_base_url(port: int) -> str:
 
 
 # ============================================================================
-# Port-Forward Management
+# Session assumption (port-forward is owned by session_setup, not here)
 # ============================================================================
-
-#: Singleton handle to the kubectl port-forward subprocess. Set by
-#: :func:`start_port_forward`, torn down by :func:`stop_port_forward` (also
-#: registered as an ``atexit`` hook).
-_port_forward_proc: subprocess.Popen | None = None
-
-
-def _cleanup_port_forward() -> None:
-    """Terminate the port-forward subprocess if it's still running."""
-    global _port_forward_proc
-    if _port_forward_proc and _port_forward_proc.poll() is None:
-        _port_forward_proc.terminate()
-        try:
-            _port_forward_proc.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            _port_forward_proc.kill()
-        log.info("Port-forward stopped.")
-    _port_forward_proc = None
-
-
-# Idempotent atexit registration — multiple callers calling start_port_forward
-# only register one cleanup hook.
-atexit.register(_cleanup_port_forward)
-
-
-def _wait_for_port(port: int, timeout: int = 30) -> bool:
-    """Wait until ``localhost:port`` accepts a TCP connection (poll loop)."""
-    deadline = time.time() + timeout
-    while time.time() < deadline:
-        try:
-            with socket.create_connection(("127.0.0.1", port), timeout=1):
-                return True
-        except OSError:
-            time.sleep(0.5)
-    return False
-
-
-def start_port_forward(
-    tenant_id: str,
-    port: int = DEFAULT_UCP_PORT,
-    gke_zone: str = DEFAULT_GKE_ZONE,
-    k8s_namespace: str = DEFAULT_K8S_NAMESPACE,
-) -> None:
-    """Discover the UCP shell pod for ``tenant_id`` and start a kubectl port-forward.
-
-    The call is blocking until the local port becomes reachable. On success,
-    the subprocess is kept alive in :data:`_port_forward_proc` and the
-    :func:`atexit` hook tears it down on interpreter exit. Calling this
-    multiple times tears down any previous port-forward first.
-
-    Raises:
-        RuntimeError: if ``gcloud`` or ``kubectl`` is unavailable, if the pod
-            cannot be located, or if the local port does not become reachable
-            within 30 seconds.
-    """
-    global _port_forward_proc
-
-    # Tear down any prior port-forward to keep state clean.
-    _cleanup_port_forward()
-
-    gke_project = f"qa2-test-{tenant_id}"
-    gke_cluster = f"cluster-{tenant_id}"
-    k8s_app_label = f"xdr-st-{tenant_id}-unified-connector-shell"
-
-    log.info("Getting GKE credentials for cluster %s (project %s)...", gke_cluster, gke_project)
-    result = subprocess.run(
-        [
-            "gcloud", "container", "clusters", "get-credentials",
-            gke_cluster, "--zone", gke_zone, "--project", gke_project,
-        ],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        raise RuntimeError("Failed to get GKE credentials:\n{}".format(result.stderr))
-    log.info("GKE credentials configured.")
-
-    log.info("Starting port-forward (localhost:%d → shell pod:%d)...", port, port)
-    pod_result = subprocess.run(
-        [
-            "kubectl", "get", "pod",
-            "--namespace", k8s_namespace,
-            f"--selector=app={k8s_app_label}",
-            "--output", "jsonpath={.items[0].metadata.name}",
-        ],
-        capture_output=True,
-        text=True,
-    )
-    if pod_result.returncode != 0 or not pod_result.stdout.strip():
-        stderr = pod_result.stderr or ""
-        hint = ""
-        low = stderr.lower()
-        if ("i/o timeout" in low or "unable to connect to the server" in low
-                or "couldn't get current server api group list" in low):
-            hint = ("\n\nHINT: kubectl could not reach the GKE cluster API "
-                    "(control-plane network timeout). Switch your VPN to the "
-                    "'israel-gw' gateway, then re-run. (This is the GKE/kubectl "
-                    "control-plane timeout — distinct from a proxy 403 to the "
-                    "tenant API.)")
-        raise RuntimeError("Failed to find UCP shell pod:\n{}{}".format(stderr, hint))
-
-    pod_name = pod_result.stdout.strip()
-    log.info("Pod: %s", pod_name)
-
-    _port_forward_proc = subprocess.Popen(
-        [
-            "kubectl", "port-forward",
-            "--namespace", k8s_namespace,
-            pod_name,
-            f"{port}:{port}",
-        ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE,
-    )
-
-    # Re-install SIGINT/SIGTERM handlers so Ctrl-C cleanly tears down the port-forward.
-    signal.signal(signal.SIGINT, lambda *_: sys.exit(0))
-    signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))
-
-    if not _wait_for_port(port):
-        stderr = _port_forward_proc.stderr.read().decode() if _port_forward_proc.stderr else ""
-        raise RuntimeError("Port-forward did not become ready within 30s.\n{}".format(stderr))
-
-    log.info("Port-forward ready on localhost:%d", port)
-
-
-def stop_port_forward() -> None:
-    """Public alias of the internal cleanup helper."""
-    _cleanup_port_forward()
+#
+# Per SESSION_ENV_ARCHITECTURE.md (FINAL): the UCP capture no longer establishes
+# the environment. The kubectl port-forward + GKE credentials are set up ONCE by
+# the human-run ``session_setup.py`` and tracked in a session descriptor. This
+# module simply ASSUMES a live session (via ``session_env.assert_session_live``,
+# which auto-revives a dead tunnel and hard-stops only on gcloud-auth expiry).
+#
+# The old start_port_forward / stop_port_forward / _wait_for_port / atexit /
+# signal machinery has been removed.
 
 
 # ============================================================================
@@ -569,6 +446,17 @@ def _dummy_auth_value(field_id: str) -> str:
     return f"dummy_{field_id}"
 
 
+def _dummy_config_value(field_id: str) -> str:
+    """A guaranteed-non-empty dummy for a connector CONFIG field that has NO
+    matching integration-YML param (an orphan / undeclared-rename field).
+
+    Setting it (rather than omitting it) makes the orphan field present at
+    runtime on the CONNECTOR side only, so the diff correctly reports it as
+    EXTRA_IN_CONNECTOR instead of silently hiding it. The distinct prefix makes
+    the value recognizable in the persisted creation payload during triage."""
+    return f"dummy_config_{field_id}"
+
+
 def _dig(source, dotted_path):
     # type: (Any, str) -> Any
     """Walk a dotted path into nested dicts; return None if any segment is
@@ -679,39 +567,106 @@ def _build_instance_payload(
         enabled_cap_ids.extend(sub_ids)
 
     # ── 2. Configuration scope = union over all enabled (sub-)capabilities ──
-    config_step = creation_view["steps"][2]
+    #
+    # SOURCE OF TRUTH = the CONNECTOR MANIFEST (configurations.yaml), NOT the
+    # live `GET /creation` view. The resolver already parsed every config field
+    # id declared for each enabled (sub-)capability into
+    # ``CapabilitySpec.config_field_ids`` (scoped to BOTH parent and sub ids).
+    # The connector field ids it yields are exactly the keys the configuration
+    # block must carry — and they already account for serializer field_mappings
+    # because ``instance_values`` is pre-keyed by connector field id upstream
+    # (see check_param_parity._build connector_instance_values).
+    #
+    # We previously derived ``accepted_field_ids`` from
+    # ``creation_view["steps"][2].sections``; that made the configuration block
+    # collapse to ``{}`` whenever the live creation view's step shape didn't
+    # match (e.g. capability-gated fields not yet deployed on the tenant, a
+    # different section-key shape, or step-index drift) — silently dropping every
+    # behavioral param. The manifest is the authoritative declaration of what the
+    # connector accepts, so we trust it and use the creation view only as a
+    # logged cross-check below.
     configuration: dict[str, Any] = {}
     accepted_field_ids: set[str] = set()
-    scope = set(enabled_cap_ids)
-    for section in config_step.get("sections", []):
-        if section.get("capability_id") not in scope:
-            continue
-        for row in section.get("data", []):
-            for field in row.get("fields", []):
-                field_id = field.get("id")
-                if not field_id:
-                    continue
-                accepted_field_ids.add(field_id)
-                # NOTE: we intentionally DO NOT seed connector default_values —
-                # the bidirectional-push contract forbids defaults so a silently
-                # dropped param can't false-pass via server default re-injection.
+    for cap in capabilities:
+        accepted_field_ids.update(getattr(cap, "config_field_ids", None) or set())
 
-    # ── 4. Bidirectional dummy push (never defaults) ──
-    applied = 0
-    skipped: list[str] = []
-    for k, v in (instance_values or {}).items():
-        if k in accepted_field_ids:
-            configuration[k] = v
-            applied += 1
+    # Logged cross-check (non-fatal): compare the manifest-declared field ids to
+    # what the live creation view exposes for the enabled (sub-)capabilities, so
+    # UCP-side schema drift is visible without zeroing the configuration block.
+    try:
+        config_step = creation_view["steps"][2]
+        scope = set(enabled_cap_ids)
+        creation_view_field_ids: set[str] = set()
+        for section in config_step.get("sections", []) or []:
+            if section.get("capability_id") not in scope:
+                continue
+            for row in section.get("data", []) or []:
+                for field in row.get("fields", []) or []:
+                    fid = field.get("id")
+                    if fid:
+                        creation_view_field_ids.add(fid)
+        only_in_manifest = accepted_field_ids - creation_view_field_ids
+        only_in_creation_view = creation_view_field_ids - accepted_field_ids
+        if only_in_manifest:
+            log.warning(
+                "Config fields declared in the connector manifest but ABSENT from "
+                "the live creation view (kept anyway — likely not-yet-deployed / "
+                "capability-gated on this tenant): %s",
+                ", ".join(sorted(only_in_manifest)),
+            )
+        if only_in_creation_view:
+            log.info(
+                "Config fields present in the live creation view but NOT declared "
+                "in the connector manifest (ignored — manifest is authoritative): %s",
+                ", ".join(sorted(only_in_creation_view)),
+            )
+    except Exception as e:  # pragma: no cover - cross-check must never break the build
+        log.debug("Creation-view config cross-check skipped: %s", e)
+
+    # ── 4. Bidirectional push — SET EVERY manifest-declared config field ──
+    #
+    # CONTRACT (USER-CONFIRMED): every field the connector declares (here, the
+    # per-(sub-)capability ``configurations.yaml`` fields) MUST be set in the
+    # creation payload so it is present at runtime and participates in the diff.
+    # Two cases per connector field id:
+    #
+    #   (a) It has a matching integration-YML param — ``instance_values`` carries
+    #       a value under that connector field id (the upstream
+    #       ``connector_instance_values`` builder already keyed serializer-renamed
+    #       and identity fields by CONNECTOR field id). Set the SAME value the
+    #       integration side uses → parity OK.
+    #
+    #   (b) It has NO integration-YML match (an orphan connector field, e.g. one
+    #       whose rename is not declared in the serializer ``field_mappings``).
+    #       Set a DUMMY value so the field shows up at runtime ONLY on the
+    #       connector side → correctly fails as EXTRA_IN_CONNECTOR, surfacing the
+    #       orphan/undeclared-rename instead of hiding it.
+    #
+    # The bidirectional-push contract forbids seeding connector default_values, so
+    # a silently dropped param can't false-pass via server default re-injection.
+    matched: list[str] = []
+    orphan: list[str] = []
+    for fid in sorted(accepted_field_ids):
+        if fid in (instance_values or {}):
+            configuration[fid] = instance_values[fid]
+            matched.append(fid)
         else:
-            skipped.append(k)
+            configuration[fid] = _dummy_config_value(fid)
+            orphan.append(fid)
+
+    # instance_values keys that are NOT connector config fields (e.g. auth/profile
+    # params, connection-general fields) are handled by other blocks; log them.
+    non_config = [k for k in (instance_values or {}) if k not in accepted_field_ids]
     log.info(
-        "Applied %d/%d instance_values to UCP configuration "
-        "(skipped %d non-connector-declared fields: %s)",
-        applied,
-        len(instance_values or {}),
-        len(skipped),
-        ", ".join(sorted(skipped)) if skipped else "<none>",
+        "UCP configuration: %d manifest-declared fields set "
+        "(%d matched an integration param, %d orphan→dummy→EXTRA_IN_CONNECTOR: %s). "
+        "%d instance_values not config fields (handled elsewhere: %s).",
+        len(accepted_field_ids),
+        len(matched),
+        len(orphan),
+        ", ".join(orphan) if orphan else "<none>",
+        len(non_config),
+        ", ".join(sorted(non_config)) if non_config else "<none>",
     )
 
     # ── 3. Per-profile auth, interpolation-aware ──
@@ -911,8 +866,11 @@ def capture_ucp_params(
     # contract (it stays None if a failure happens before it's built).
     payload: dict | None = None
     try:
-        # 1. Port-forward
-        start_port_forward(tenant_id=tenant_id, port=ucp_port)
+        # 1. ASSUME a live session (port-forward + GKE creds established once by
+        #    the human-run session_setup.py). This auto-revives a dead tunnel and
+        #    raises SessionNotReady only when gcloud auth expired / no session.
+        _desc = session_env.assert_session_live()
+        ucp_port = _desc.ucp_port  # the descriptor is the source of truth for the port
 
         # 2. Creation view
         log.info("Fetching creation view for connector=%r, tenant=%r", connector_id, tenant_id)
@@ -1000,19 +958,26 @@ def capture_ucp_params(
         captured = run_test_module_and_capture_params(xsoar_client, armed)
         return captured, payload
 
+    except session_env.SessionNotReady:
+        # Session needs human action (gcloud auth expired / not set up). Let it
+        # propagate so the caller maps it to exit 11 (BLOCKED) with the exact
+        # human-actionable message — do NOT swallow it as a generic failure.
+        raise
+
     except Exception as e:
         log.exception("capture_ucp_params failed: %s", e)
-        log.exception("Execute command: 'gcloud auth login' and try again.")
         return None, payload
 
     finally:
         # Cleanup: delete the UCP instance (which cascades to the XSOAR mirror).
+        # NOTE: the port-forward is SESSION-SCOPED — established once by
+        # session_setup.py and reused across integrations — so it is deliberately
+        # NOT torn down here. session_teardown.py stops it at the end of the batch.
         if ucp_instance_id and not keep_instance:
             log.info("Cleaning up UCP instance %s...", ucp_instance_id)
             delete_ucp_instance(ucp_instance_id, tenant_id, port=ucp_port)
         elif keep_instance:
             log.info("keep_instance=True — leaving UCP instance %s alive for inspection", ucp_instance_id)
-        stop_port_forward()
 
 
 # ============================================================================
@@ -1029,8 +994,6 @@ __all__ = [
     "get_ucp_instance",
     "inject_magic_key_and_persist",
     "list_ucp_instances",
-    "start_port_forward",
-    "stop_port_forward",
     "verify_ucp_instance_created",
     "wait_for_xsoar_mirror",
 ]

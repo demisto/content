@@ -10,7 +10,11 @@ Focus:
 """
 from __future__ import annotations
 
-from normalizers import HARD_IGNORE_PARAM_NAMES, normalize_for_diff
+from normalizers import (
+    HARD_IGNORE_PARAM_NAMES,
+    KNOWN_GAP_IGNORE_REASONS,
+    normalize_for_diff,
+)
 
 _YML = [
     {"name": "url", "type": 0},
@@ -23,12 +27,22 @@ _YML = [
 
 def test_baseline_keeps_all_non_ignored_including_auth():
     """NEW behavior: type-4/9 auth params are compared by default (no type drop)."""
-    raw = {"url": "x", "client_key": "k", "credentials": {"u": "a"}, "max_fetch": 50}
+    raw = {
+        "url": "x",
+        "client_key": "k",
+        "credentials": {
+            "identifier": "user1",
+            "password": "pw1",
+            "credential": "",
+            "passwordChanged": False,
+        },
+        "max_fetch": 50,
+    }
     kept, dropped = normalize_for_diff(raw, _YML, side="t")
     assert kept == {
         "url": "x",
         "client_key": "k",
-        "credentials": {"u": "a"},
+        "credentials": {"identifier": "user1", "password": "pw1"},
         "max_fetch": 50,
     }
     assert dropped == []
@@ -40,7 +54,7 @@ def test_type4_9_compared_by_default():
     raw = {"client_key": "x", "credentials": {"identifier": "u"}}
     kept, dropped = normalize_for_diff(raw, yml, side="t")
     assert "client_key" in kept
-    assert "credentials" in kept
+    assert kept["credentials"] == {"identifier": "u"}
     assert dropped == []
 
 
@@ -52,6 +66,17 @@ def test_hard_ignore_always_dropped():
     reasons = {d["name"]: d["reason"] for d in dropped}
     assert reasons["brand"] == "hard_ignore_list"
     assert reasons["integrationLogLevel"] == "hard_ignore_list"
+
+
+def test_ucp_credentials_dropped_never_extra_in_connector():
+    """The platform/UCP-injected encrypted auth container ``ucp_credentials``
+    (appears ONLY on the connector side, declared in no connector YAML) must be
+    dropped as a hard-ignore artifact so it is never flagged EXTRA_IN_CONNECTOR."""
+    raw = {"url": "x", "ucp_credentials": "{ENCRYPTED}abc123=="}
+    kept, dropped = normalize_for_diff(raw, _YML, side="connector")
+    assert "ucp_credentials" not in kept
+    reasons = {d["name"]: d["reason"] for d in dropped}
+    assert reasons["ucp_credentials"] == "hard_ignore_list"
 
 
 def test_force_drop_drops_extra_keys():
@@ -154,5 +179,65 @@ def test_hard_ignore_list_membership():
         # connector-injected field that legitimately appears in demisto.params()
         # on the platform — must be dropped, never flagged EXTRA_IN_CONNECTOR.
         "instance_name",
+        # platform/UCP-injected encrypted auth container — same treatment.
+        "ucp_credentials",
     ]:
         assert name in HARD_IGNORE_PARAM_NAMES
+
+
+def test_credentials_reduced_to_identifier_and_password_only():
+    """TEMPORARY workaround: the type-9 `credentials` param is compared on only
+    its identifier/password leaves; the full nested XSOAR vault wrapper that the
+    integration side carries (credential, passwordChanged, nested `credentials`
+    object, etc.) is dropped before the diff so it does not spuriously mismatch
+    the connector's flat {identifier, password}."""
+    raw = {
+        "credentials": {
+            "credential": "",
+            "credentials": {
+                "cacheVersn": 0, "id": "", "locked": False, "name": "",
+                "password": "", "user": "", "version": 0,
+            },
+            "identifier": "alice",
+            "password": "s3cret",
+            "passwordChanged": False,
+        },
+    }
+    kept, dropped = normalize_for_diff(raw, _YML, side="integration")
+    assert kept == {"credentials": {"identifier": "alice", "password": "s3cret"}}
+    assert dropped == []
+
+
+def test_credentials_connector_side_flat_form_unchanged():
+    """The connector side already emits the flat form; reduction is a no-op for it,
+    so both sides converge to the same {identifier, password} shape -> OK in diff."""
+    raw = {"credentials": {"identifier": "alice", "password": "s3cret"}}
+    kept, _ = normalize_for_diff(raw, _YML, side="connector")
+    assert kept == {"credentials": {"identifier": "alice", "password": "s3cret"}}
+
+
+def test_credentials_non_dict_value_left_untouched():
+    """Defensive: a non-dict credentials value is not reduced (left verbatim)."""
+    raw = {"credentials": "not-a-dict"}
+    kept, _ = normalize_for_diff(raw, _YML, side="t")
+    assert kept == {"credentials": "not-a-dict"}
+
+
+def test_isfetch_is_ignored_until_connector_support():
+    """KNOWN GAP: the connector does not currently emit `isFetch`, so parity drops
+    it on both sides and records it as an explicit ignore (surfaced as OK_IGNORED),
+    rather than flagging MISSING_IN_CONNECTOR. To be removed once the connector
+    emits isFetch."""
+    raw = {"url": "x", "isFetch": True}
+    kept, dropped = normalize_for_diff(raw, _YML, side="integration")
+    assert "isFetch" not in kept
+    reasons = {d["name"]: d["reason"] for d in dropped}
+    assert reasons["isFetch"] == "isfetch_not_emitted_by_connector"
+
+
+def test_isfetch_ignored_on_connector_side_too():
+    raw = {"url": "x", "isFetch": True}
+    kept, dropped = normalize_for_diff(raw, _YML, side="connector")
+    assert "isFetch" not in kept
+    reasons = {d["name"]: d["reason"] for d in dropped}
+    assert reasons["isFetch"] == "isfetch_not_emitted_by_connector"

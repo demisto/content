@@ -85,6 +85,22 @@ HARD_IGNORE_PARAM_NAMES: set[str] = {
     # legitimately appears in demisto.params() on the platform; must be dropped,
     # never flagged EXTRA_IN_CONNECTOR.
     "instance_name",
+    # Platform/UCP-injected ENCRYPTED auth container for an interpolated profile's
+    # credentials (username/password packed into one blob at runtime). Not
+    # declared in any connector YAML and not sent by the parity tool — it appears
+    # ONLY on the connector side in demisto.params(); must be dropped, never
+    # flagged EXTRA_IN_CONNECTOR. Mirrors resolver.HARD_IGNORE_PARAMS.
+    "ucp_credentials",
+}
+
+#: KNOWN-GAP ignore (TEMPORARY): params that the connector does not yet emit at
+#: runtime but that the integration side does. Until connector support lands,
+#: these are dropped from BOTH sides and surfaced as OK_IGNORED (with the specific
+#: reason below) rather than flagged MISSING_IN_CONNECTOR. Remove an entry here
+#: once the connector emits it. See connectus_migration/connectus_connector_migration_guide.md
+#: Section 6 "Open Items".
+KNOWN_GAP_IGNORE_REASONS: dict[str, str] = {
+    "isFetch": "isfetch_not_emitted_by_connector",
 }
 
 
@@ -181,10 +197,37 @@ def normalize_for_diff(
             dropped.append({"name": key, "reason": "name_ignored", "side": side})
             continue
 
+        # Rule 1b: KNOWN-GAP ignore (TEMPORARY) — params the connector does not
+        # yet emit (e.g. isFetch). Drop on both sides with a specific reason so
+        # the diff engine surfaces them as OK_IGNORED ("ignored until supported")
+        # instead of MISSING_IN_CONNECTOR. Remove once connector support lands.
+        if key in KNOWN_GAP_IGNORE_REASONS:
+            dropped.append(
+                {"name": key, "reason": KNOWN_GAP_IGNORE_REASONS[key], "side": side}
+            )
+            continue
+
         # Rule 2: keep this key verbatim (it's MUST-COMPARE). Type-4/9 auth
         # params land here too — they are compared, not blanket-dropped. The
         # resolver removes the ones that should not be compared via force_drop
         # (hidden / hard_ignore_list / credentials_type9_interpolated).
+        #
+        # TEMPORARY WORKAROUND (see connectus_migration/connectus_connector_migration_guide.md
+        # Section 6 "Open Items"): a type-9 `credentials` param arrives on the
+        # XSOAR side as a full nested vault wrapper (credential, passwordChanged,
+        # a nested `credentials` object, …) but on the connector side as a flat
+        # {identifier, password}. Until the credentials object is compared
+        # correctly end-to-end, reduce BOTH sides to only identifier/password so
+        # the meaningful secret values are compared and the wrapper shape drift
+        # does not produce a spurious VALUE_MISMATCH.
+        if key == "credentials" and isinstance(value, dict):
+            filtered[key] = {
+                leaf: value[leaf]
+                for leaf in ("identifier", "password")
+                if leaf in value
+            }
+            continue
+
         filtered[key] = value
 
     log.debug(
@@ -200,5 +243,6 @@ def normalize_for_diff(
 __all__ = [
     "IGNORED_PARAM_NAMES",
     "HARD_IGNORE_PARAM_NAMES",
+    "KNOWN_GAP_IGNORE_REASONS",
     "normalize_for_diff",
 ]

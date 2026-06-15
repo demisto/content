@@ -7,7 +7,9 @@ description: Use when migrating an XSOAR/XSIAM integration to ConnectUs / the un
 
 ## QUICK START — happy path (single integration)
 
-One up-front read replaces several calls: `python3 connectus/workflow_state.py context "<id>"` returns all data columns + file paths + current step + auth-ignore set as one JSON. (`status "<id>" --format=json` is also available.)
+> **Topology / cwd (read first).** The idex shell cwd is the **PARENT** dir that contains `content/` and `unified-connectors-content/` as **siblings** (the runtime-parity Python lives under `content/connectus/...`). **All shell command paths in this skill are written relative to that parent**, so every `python3` invocation carries the `content/` prefix (e.g. `python3 content/connectus/workflow_state.py ...`). Run them as-written from the parent cwd — do **NOT** `cd` into `content/` first, or the `content/` prefix would resolve to a non-existent `content/content/...`.
+
+One up-front read replaces several calls: `python3 content/connectus/workflow_state.py context "<id>"` returns all data columns + file paths + current step + auth-ignore set as one JSON. (`status "<id>" --format=json` is also available.)
 
 | # | Step | Command | § |
 |---|------|---------|---|
@@ -20,15 +22,14 @@ One up-front read replaces several calls: `python3 connectus/workflow_state.py c
 | 6 | UCP param-default review | `check_param_defaults.py --integration-id <id> --human` → present → fix → `markpass "UCP param-default review"` | §6 |
 | 7 | Params to Capabilities | mapper → `set-params-to-capabilities` | §7 |
 | 8 | Generated manifest | `manifest_generator.py <yml> <title=Connector ID> <Params-to-Capabilities raw> <Auth-Details raw>` → `set-connector-path "<id>" connectors/<slug Connector ID>` → `markpass "generated manifest"` (title comes from the `Connector ID` column so a connector's integrations share one folder) | §8 |
-| 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id> --json` → **fail-and-ask if `pass:false`** → `markpass "handler param coverage"` | §9 |
+| 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id> --json` → **fail-and-ask if `pass:false`** (resolve via IGNORED_PARAMS, fix-upstream, or `--force` override) → `markpass "handler param coverage"` | §9 |
 | 10 | Validate manifest | `demisto-sdk validate` → `markpass "run manifest make validate"` | §10 |
-| 11 | Release Notes | `set-release-notes "<id>"` (only if .py/.yml changed) | §11 |
-| 12 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` | §12 |
-| 13 | Param parity | `markpass "param parity test passes"` | §13 |
-| 14 | Code reviewed | `markpass "code reviewed"` | §14 |
-| 15 | Code merged | `markpass "code merged"` | §15 |
+| 11 | Param parity | `markpass "param parity test passes"` | §13 |
+| 12 | Code reviewed | `markpass "code reviewed"` | §14 |
+| 13 | Code merged | `markpass "code merged"` | §15 |
+| 14 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` (only if RN produced or .py/.yml changed; else `markpass` directly) | §12 |
 
-> **Step order note.** The live CSV workflow has **15 steps**, and `Collect Capabilities` is step **#3** — a hard prerequisite gate that the state machine enforces **before** `Params to Commands`. Do `set-capabilities` first or `set-params-to-commands` will be rejected with `current step is #3 'Collect Capabilities'`. The `UCP param-default review` checkpoint (Step 6) sits right after `Params for test with default in code` and before `Params to Capabilities`.
+> **Step order note.** The live CSV workflow has **15 steps**, and `Collect Capabilities` is step **#3** — a hard prerequisite gate that the state machine enforces **before** `Params to Commands`. Do `set-capabilities` first or `set-params-to-commands` will be rejected with `current step is #3 'Collect Capabilities'`. The `UCP param-default review` checkpoint (Step 6) sits right after `Params for test with default in code` and before `Params to Capabilities`. As of 2026-06, the `precommit/validate/unit tests passed` (Step 14) and `Release Notes` (Step 15) steps were moved to the **end** of the workflow — they now run *after* `param parity test passes` (Step 11), `code reviewed` (Step 12), and `code merged` (Step 13), with precommit before Release Notes.
 
 **Pause for user approval ONLY on the 4 JSON-write setters** (`set-auth`, `set-params-to-commands`, `set-param-defaults`, `set-params-to-capabilities`). Everything else (reads, `markpass`, `fail`, `set-capabilities`, analyzer/validate/pre-commit runs) runs straight through. `set-capabilities` is deterministically generated from YML fetch flags by `connectus_migration/capabilities_collector.py`, so it is a run-through (no pause). Setter output already echoes `Current step:` — do NOT re-run `status` to confirm.
 
@@ -69,7 +70,7 @@ Both batch flows are an **outer loop** wrapped around the existing per-integrati
 > `reset-to`) also accepts a **1-based CSV column number** (1..18).
 > Identity columns (#1-#3) are addressable only by read-only `show-step`;
 > write verbs reject them. Example:
-> `python3 connectus/workflow_state.py show-step CrowdstrikeFalcon 5`
+> `python3 content/connectus/workflow_state.py show-step CrowdstrikeFalcon 5`
 > resolves to `Auth Details`.
 
 ## Assignee batch flow
@@ -80,13 +81,13 @@ Use when the user says something like "migrate everything assigned to me" / "con
 2. **Enumerate candidates.** Run:
 
    ```bash
-   python3 connectus/workflow_state.py next --mine
+   python3 content/connectus/workflow_state.py next --mine
    ```
 
    Or from Python: `from workflow_state import integrations_for_assignee` and call `integrations_for_assignee("<name>")`. Each result dict carries `integration_id`, `connector_id`, `assignee`, `current_step`, `current_step_index`, `completed_steps`, `all_complete`, `has_progress`.
 3. **Empty result?** Tell the user there is nothing assigned + in-progress for them, and offer two follow-ups:
    - bulk-assign a connector via `set-assignee-by-connector <connector_id> "<name>"` (suggest running `list-connectors` first to pick one), or
-   - browse via `python3 connectus/workflow_state.py dashboard`.
+   - browse via `python3 content/connectus/workflow_state.py dashboard`.
    Then stop.
 4. **Multiple results?** Before starting, present them as a numbered list with `Integration ID`, `Connector ID`, current step, and `completed_steps / 15`. Apply the [Order-of-work disambiguation](#order-of-work-disambiguation) heuristic. The order is "obvious" only when:
    - There is exactly one integration, OR
@@ -96,7 +97,7 @@ Use when the user says something like "migrate everything assigned to me" / "con
 5. **Walk one integration at a time.** For each integration in the chosen order:
    - Follow the existing per-integration migration procedure starting at [Step 0: Identify the Integration](#step-0-identify-the-integration-pre-flight). Do **not** duplicate the 15 steps here — the rest of this skill already documents them.
    - Between integrations, print a short progress recap (`X/N done in this batch — next: <integration id>`) and confirm before moving on, **unless** the user has explicitly said "do them all without asking" / "no confirmations" / equivalent.
-6. **Mid-loop "what's next" check.** Re-run `python3 connectus/workflow_state.py next --mine` after finishing each integration so the queue reflects any newly-assigned or just-completed work.
+6. **Mid-loop "what's next" check.** Re-run `python3 content/connectus/workflow_state.py next --mine` after finishing each integration so the queue reflects any newly-assigned or just-completed work.
 7. **Finish.** When the queue is empty, summarize what was done and ask whether to start a new batch (e.g., a connector batch, or assigning more work).
 
 ## Connector batch flow
@@ -106,16 +107,16 @@ Use when the user says something like "migrate connector `<connector_id>`" / "do
 1. **Validate the connector id.** Run:
 
    ```bash
-   python3 connectus/workflow_state.py list-by-connector "<connector_id>"
+   python3 content/connectus/workflow_state.py list-by-connector "<connector_id>"
    ```
 
-   Or programmatically: `from workflow_state import list_integrations_by_connector` → `list_integrations_by_connector("<connector_id>")`. If the result is empty, suggest `python3 connectus/workflow_state.py list-connectors` to discover valid ids and stop.
+   Or programmatically: `from workflow_state import list_integrations_by_connector` → `list_integrations_by_connector("<connector_id>")`. If the result is empty, suggest `python3 content/connectus/workflow_state.py list-connectors` to discover valid ids and stop.
 2. **Inspect ownership** on the matched rows (look at the `assignee` field on each dict). One of three cases applies:
    - **All rows assigned to the current git user** → proceed straight to step 4.
    - **All rows unassigned** → offer to bulk-assign to the current user. Confirm before running:
 
      ```bash
-     python3 connectus/workflow_state.py set-assignee-by-connector "<connector_id>" "<git user name>"
+     python3 content/connectus/workflow_state.py set-assignee-by-connector "<connector_id>" "<git user name>"
      ```
 
      Then proceed.
@@ -128,7 +129,7 @@ Use when the user says something like "migrate connector `<connector_id>`" / "do
 5. **Mid-loop "what's next in this batch" check.** After finishing each integration, run:
 
    ```bash
-   python3 connectus/workflow_state.py next --connector "<connector_id>" --mine
+   python3 content/connectus/workflow_state.py next --connector "<connector_id>" --mine
    ```
 
    to see the remaining in-progress integrations in this connector that belong to you.
@@ -158,11 +159,11 @@ When in doubt, surface the candidates and the rule that's pulling each direction
 1. **NEVER edit [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv) directly.** All CSV modifications MUST go through [`connectus/workflow_state.py`](workflow_state.py) CLI commands.
 2. **Follow the workflow checkpoints sequentially.** You cannot skip ahead — the state machine enforces ordering.
 3. **Always check status first** before doing any work on an integration.
-4. **Use `execute_command`** to run all `workflow_state.py` commands from the workspace root.
-5. **Use `set-auth` to update Auth Details.** When correcting auth classifications, use `python3 connectus/workflow_state.py set-auth "<Integration ID>" '<json>'`. This validates the JSON schema and automatically resets the workflow back to the first checkpoint (`generated manifest`).
+4. **Use `execute_command`** to run all `workflow_state.py` commands from the **idex parent cwd** (e.g `/Users/<username>/dev/connectus-content`). That parent dir contains `content/` and `unified-connectors-content/` as siblings, so every command path in this skill is written relative to that parent — hence the `content/` prefix on `python3 content/connectus/...`. Do **NOT** prepend a `cd` into the content repo; the `content/` prefix already resolves correctly from the parent cwd.
+5. **Use `set-auth` to update Auth Details.** When correcting auth classifications, use `python3 content/connectus/workflow_state.py set-auth "<Integration ID>" '<json>'`. This validates the JSON schema and automatically resets the workflow back to the first checkpoint (`generated manifest`).
 6. If a checkpoint does not pass, it might be because a previous step was not done well — go back to it via `fail` or `reset-to`. Both verbs **preserve** `Params to Commands` only (it is the sole column carrying `preserve_on_reset: true` in [`connectus/workflow_state_config.yml`](workflow_state_config.yml)) so per-command param research survives a failed checkpoint. The CLI prints `Preserved (preserve_on_reset=true): [...]` listing what was kept; the api response includes the same names in `result["preserved"]`. **`set-auth` is NOT covered by this carve-out** — auth changes invalidate downstream artifacts, so `set-auth` continues to wipe `Params to Commands` by design (see Step 2 below). Plain `reset` (the "wipe the whole row" verb) also wipes it; preservation is for `reset-to`/`fail` only.
 7. Try to be efficient in what needs input from the user. If you have an option to read files instead of grep, or batch commands to the cli, it is better.
-8. **NEVER use the Neo4j graph (`idex_graph_query`) or `demisto-sdk graph` to resolve, search for, or look up integrations in the ConnectUs migration workflow.** The graph is unrelated to this workflow and is frequently not running. The ONLY source of truth for resolving an integration (its ID, file path, connector, and workflow state) is the [`connectus/workflow_state.py`](workflow_state.py) CLI against [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv). To find an integration by a partial/informal name (e.g. "aha"), run `python3 connectus/workflow_state.py list` and match against the result, then use `context "<Integration ID>"`. Do NOT fall back to graph queries, `find`/`ls`/`grep` over the repo, or any other discovery mechanism for this purpose.
+8. **NEVER use the Neo4j graph (`idex_graph_query`) or `demisto-sdk graph` to resolve, search for, or look up integrations in the ConnectUs migration workflow.** The graph is unrelated to this workflow and is frequently not running. The ONLY source of truth for resolving an integration (its ID, file path, connector, and workflow state) is the [`connectus/workflow_state.py`](workflow_state.py) CLI against [`connectus/connectus-migration-pipeline.csv`](connectus-migration-pipeline.csv). To find an integration by a partial/informal name (e.g. "aha"), run `python3 content/connectus/workflow_state.py list` and match against the result, then use `context "<Integration ID>"`. Do NOT fall back to graph queries, `find`/`ls`/`grep` over the repo, or any other discovery mechanism for this purpose.
 
 ### Environment Configuration (unified `.env`)
 
@@ -344,7 +345,7 @@ When the user asks to migrate an integration, first identify it. **The primary r
 
 ```bash
 # One call: state + file paths + data columns + auth-ignore set as one JSON
-python3 connectus/workflow_state.py context "<Integration ID>"
+python3 content/connectus/workflow_state.py context "<Integration ID>"
 ```
 
 The `context` JSON has these top-level keys (read from these directly instead of issuing follow-up calls):
@@ -368,9 +369,9 @@ The `context` JSON has these top-level keys (read from these directly instead of
 
 ```bash
 # Alternatives (still available):
-python3 connectus/workflow_state.py list                       # list all integration IDs
-python3 connectus/workflow_state.py status "<Integration ID>"  # human-readable status
-python3 connectus/workflow_state.py files "<Integration ID>"   # source-file paths only
+python3 content/connectus/workflow_state.py list                       # list all integration IDs
+python3 content/connectus/workflow_state.py status "<Integration ID>"  # human-readable status
+python3 content/connectus/workflow_state.py files "<Integration ID>"   # source-file paths only
 ```
 
 The `context` (and `status`) output shows:
@@ -386,7 +387,7 @@ The `context` (and `status`) output shows:
 If the integration has no assignee, set one:
 
 ```bash
-python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
+python3 content/connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 ```
 
 ## Workflow Steps
@@ -399,7 +400,7 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 
 #### Procedure (do every step in order)
 
-1. ☐ Resolve all integration source-file paths via `python3 connectus/workflow_state.py files "<Integration ID>"` (or [`get_integration_files()`](workflow_state.py) programmatically). Do **NOT** search the repo manually with `find` / `ls` / `grep`. See [1.1](#11-locate-integration-files) and [1.2](#12-researching-auth-details--the-four-sources-of-truth).
+1. ☐ Resolve all integration source-file paths via `python3 content/connectus/workflow_state.py files "<Integration ID>"` (or [`get_integration_files()`](workflow_state.py) programmatically). Do **NOT** search the repo manually with `find` / `ls` / `grep`. See [1.1](#11-locate-integration-files) and [1.2](#12-researching-auth-details--the-four-sources-of-truth).
 2. ☐ Walk the four sources of truth in order — see [1.2](#12-researching-auth-details--the-four-sources-of-truth)
 3. ☐ Extract every auth-related param from the YML `configuration` section — see [1.3](#13-yml-analysis-procedure)
 4. ☐ Read the Python code to determine the actual auth mechanism(s) used at runtime — see [1.4](#14-python-code-analysis--specific-patterns)
@@ -416,7 +417,7 @@ python3 connectus/workflow_state.py set-assignee "<Integration ID>" "<Name>"
 The current CSV value, if any, is informational only — show it to the user for context but derive the new value entirely from the source code:
 
 ```bash
-python3 connectus/workflow_state.py show-step "<Integration ID>" "Auth Details"
+python3 content/connectus/workflow_state.py show-step "<Integration ID>" "Auth Details"
 ```
 
 ---
@@ -426,7 +427,7 @@ python3 connectus/workflow_state.py show-step "<Integration ID>" "Auth Details"
 **The canonical way to get an integration's source files is the `files` subcommand of [`workflow_state.py`](workflow_state.py).** Do **NOT** manually `find` / `ls` / `grep` the repo for these files — the `Integration File Path` column in the CSV is populated for all 609 integrations, and `files` resolves every sibling (YML, code, description, README, test) from it.
 
 ```bash
-python3 connectus/workflow_state.py files "<Integration ID>"
+python3 content/connectus/workflow_state.py files "<Integration ID>"
 ```
 
 Sample output (default `text` format):
@@ -451,7 +452,7 @@ Three output formats are available — pick the one that matches how you'll cons
 | Format | Flag | Use when |
 |---|---|---|
 | `text` (default) | _(none)_ | Human review — eyeball the paths and confirm the integration. |
-| `paths` | `--format=paths` | Piping into other tools. Emits one path per line in canonical order (`yml`, `code`, `description`, `readme`, `test`) — ideal for `xargs` / `cat` pipelines, e.g. `python3 connectus/workflow_state.py files "<Integration ID>" --format=paths \| xargs -I{} cat {}`. |
+| `paths` | `--format=paths` | Piping into other tools. Emits one path per line in canonical order (`yml`, `code`, `description`, `readme`, `test`) — ideal for `xargs` / `cat` pipelines, e.g. `python3 content/connectus/workflow_state.py files "<Integration ID>" --format=paths \| xargs -I{} cat {}`. |
 | `json` | `--format=json` | Programmatic / scripted consumption (machine-readable, all fields keyed). |
 
 For in-process Python use, import the helper directly:
@@ -740,7 +741,7 @@ with the right network settings.
 - **XSOAR framework params** — `longRunning`, `feedReputation`,
   `feedExpirationInterval`, `feedReliability`, `feedTags`. Ignored
   entirely; not in `Auth Details`, not in `Params to Commands`.
-- **Hidden / deprecated params** — strictly excluded. A param with `hidden: true` or `hidden: [<list>]` does NOT go in `other_connection`, even if it's a connection-adjacent name like a legacy `host` or `url` alias. Use the visible variant only.
+- **Platform-hidden / deprecated params** — excluded. A param with `hidden: true` OR a `hidden:` list containing `platform` does NOT go in `other_connection`, even if it's a connection-adjacent name like a legacy `host` or `url` alias. Use the visible variant only. A `hidden:` list WITHOUT `platform` (e.g. `hidden: [xsoar]`) is NOT excluded — the param is visible on the platform and IS carried through (see §1.3).
 
 ##### Sorting requirement
 
@@ -815,16 +816,18 @@ Open the YML file and examine the `configuration` section. Extract ALL auth-rela
 | `hiddenusername: true` on type=9 params | Often means the credentials widget is being used as an API key, NOT username/password. The `<id>.identifier` leaf is **suppressed** — do NOT include it as a key in `xsoar_param_map`. The `<id>.password` leaf (if not also hidden) still maps normally. |
 | `hiddenpassword: true` on type=9 params | The `<id>.password` leaf is **suppressed** analogously — do NOT include it as a key in `xsoar_param_map`. The `<id>.identifier` leaf (if not also hidden) still maps normally. |
 | `display` and `displaypassword` labels | Reveal what the credential actually is (e.g., "Client ID" / "Client Secret" vs "Username" / "Password") |
-| `hidden: true` OR `hidden: [<list>]` (any non-empty hidden value) | **Excluded entirely from every CSV column** — does not appear as a key in any `xsoar_param_map`, not in `other_connection`, not in `Params to Commands`. Even if the source code still reads the param as a legacy fallback, the migration treats it as if it does not exist. |
+| `hidden: true` OR a `hidden:` list that contains `platform` | **Excluded entirely from every CSV column** — does not appear as a key in any `xsoar_param_map`, not in `other_connection`, not in `Params to Commands`. Even if the source code still reads the param as a legacy fallback, the migration treats it as if it does not exist. A `hidden:` list that does NOT contain `platform` (e.g. `hidden: [xsoar]`, `hidden: [marketplacev2]`) is **NOT** excluded — the param is still visible on the platform target and must be carried through. |
 | `deprecated: true` or `_deprecated` in param names | Ignore these entirely — they are no longer functional |
 | `additionalinfo` text | Often describes the auth mechanism in plain English |
 | Params named `auth_type` with `type: 15` | Indicates multi-auth integrations with user-selectable auth flow |
 
-**Key rule for hidden/deprecated params (strict):**
+**Key rule for hidden/deprecated params (platform-aware):**
 
-> Hidden YML params (either `hidden: true` or `hidden: [<list>]`) are **invisible to all migration tooling**. They are excluded from every workflow-data column. The visible siblings define the entire authentication / connection / per-command surface. This rule supersedes the older "check if they represent an old input path" guidance — even if a hidden param backs the same secret as a visible one, you do NOT key the hidden id in any `xsoar_param_map`. Key ONLY the visible id(s).
+> A YML param is excluded from all migration tooling ONLY when it is hidden **on the platform target** — i.e. `hidden: true` (hidden everywhere) OR a `hidden:` list that **contains `platform`**. Such params are **invisible to all migration tooling**: they are excluded from every workflow-data column, the visible siblings define the entire authentication / connection / per-command surface, and even if a platform-hidden param backs the same secret as a visible one, you do NOT key the hidden id in any `xsoar_param_map` — key ONLY the visible id(s).
 >
-> Rationale: the migration produces a clean, forward-looking ConnectUs manifest. Hidden params are by definition not exposed to the user; carrying them through the migration would re-surface them in places they shouldn't appear and would confuse downstream tooling that has no notion of XSOAR's per-platform `hidden` list.
+> **A `hidden:` list that does NOT contain `platform` is NOT excluded.** Params hidden only on other modules (`hidden: [xsoar]`, `hidden: [marketplacev2]`, `hidden: [xsoar, marketplacev2]`, etc.) remain **visible on the platform** and MUST be carried through the migration normally — they appear in `xsoar_param_map` / `other_connection` / `Params to Commands` exactly as any visible param would. Only the presence of `platform` in the list (or `hidden: true`) triggers exclusion.
+>
+> Rationale: the migration produces a clean, forward-looking ConnectUs manifest for the **platform** target. A param the platform user can still see and set must be migrated; only params the platform itself hides are dropped.
 
 **Hidden-leaf suppression for `type: 9` credentials (per-leaf, not per-param):**
 
@@ -943,7 +946,7 @@ Examples currently in the pipeline: `SpamhausFeed`, `MalwareBazaarFeed`, `AbuseI
 When corrections are needed (or for the initial set), use `set-auth`:
 
 ```bash
-python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details JSON>'
+python3 content/connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details JSON>'
 ```
 
 This command:
@@ -956,7 +959,7 @@ This command:
 Example:
 
 ```bash
-python3 connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"API Key","xsoar_param_map":{"api_key":"key"}}],"other_connection":["insecure","proxy","url"]}'
+python3 content/connectus/workflow_state.py set-auth "Abnormal Security" '{"auth_types":[{"type":"APIKey","name":"API Key","xsoar_param_map":{"api_key":"key"}}],"other_connection":["insecure","proxy","url"]}'
 ```
 
 `set-auth`'s own output echoes the new `Current step:` — do NOT re-run `status` to confirm.
@@ -969,7 +972,7 @@ Note: there is **no `markpass "auth params set"`** anymore — the verification 
 
 Before invoking `set-auth`, walk this checklist mentally. The validator will catch most of these but it's faster (and clearer) to catch them locally.
 
-- [ ] No `hidden: true` or `hidden: [<list>]` YML param appears as a key in any `auth_types[].xsoar_param_map`, in `other_connection`, or in `Params to Commands`. Hidden params are excluded entirely. (See §1.3.)
+- [ ] No platform-hidden YML param (`hidden: true`, or a `hidden:` list containing `platform`) appears as a key in any `auth_types[].xsoar_param_map`, in `other_connection`, or in `Params to Commands`. Params hidden only on non-platform modules (e.g. `hidden: [xsoar]`) are NOT excluded and ARE carried through. (See §1.3.)
 - [ ] Every YML param the source code reads as an auth secret is keyed in some `auth_types[].xsoar_param_map`.
 - [ ] No NON-auth param (URL, proxy, fetch interval, feature toggle, verify-SSL boolean) is keyed in any `xsoar_param_map`.
 - [ ] Every credentials-typed (YML type `9`) auth param appears in `xsoar_param_map` as the appropriate leaves, with `<id>.identifier` suppressed if YML `hiddenusername: true` and `<id>.password` suppressed if YML `hiddenpassword: true`. (See §1.3.)
@@ -1027,8 +1030,8 @@ Populate `Params to Commands` (Step 4) by running the analyzer, then merging its
 
 ```bash
 DEMISTO_SDK_LOG_FILE_PATH="$PWD/.tmp_migration/sdk-logs" \
-  python3 connectus/check_command_params.py \
-    --ignore-params-file connectus/default_ignore_params.txt \
+  python3 content/connectus/check_command_params.py \
+    --ignore-params-file content/connectus/default_ignore_params.txt \
     --integration-id "<Integration ID>"
 ```
 
@@ -1063,19 +1066,19 @@ This column is **deterministically generated** from the integration's YML fetch 
 # Preferred — resolve the YML from the workflow CSV id and ALSO emit the
 # reference-aligned JSON envelope ({integration, pass, capabilities}) on stdout.
 # The bare array is still written to the -o file for set-capabilities.
-python3 connectus/connectus_migration/capabilities_collector.py \
+python3 content/connectus/connectus_migration/capabilities_collector.py \
   --integration-id "<Integration ID>" \
-  -o connectus/connectus_migration/_caps.json \
+  -o content/connectus/connectus_migration/_caps.json \
   --report
 
 # Legacy positional form (still supported — pass the YML path directly):
-python3 connectus/connectus_migration/capabilities_collector.py \
+python3 content/connectus/connectus_migration/capabilities_collector.py \
   Packs/<PackName>/Integrations/<Name>/<Name>.yml \
-  -o connectus/connectus_migration/_caps.json
+  -o content/connectus/connectus_migration/_caps.json
 
 # Apply (paste the generated array verbatim), then clean up the temp file
-python3 connectus/workflow_state.py set-capabilities "<Integration ID>" '["Fetch Issues", "Automation"]'
-rm -f connectus/connectus_migration/_caps.json
+python3 content/connectus/workflow_state.py set-capabilities "<Integration ID>" '["Fetch Issues", "Automation"]'
+rm -f content/connectus/connectus_migration/_caps.json
 ```
 
 How the collector maps YML → capabilities (so you can sanity-check, or derive by hand if the script ever fails to run): `isfetch:true` → `Fetch Issues`; `isfetchevents:true` → `Log Collection`; `isFetchCredentials` → `Fetch Secrets`; `feed:true` → `Threat Intelligence & Enrichment`; `isfetchassets:true` → `Fetch Assets and Vulnerabilities`; plus `Automation` when there is ≥1 non-fetch command. (Source: [`capabilities_collector.py`](connectus_migration/capabilities_collector.py) `collect_capabilities()`.) Worked example: a plain command integration with no fetch/feed flags but ≥1 command → only the `Automation` rule fires → `["Automation"]`.
@@ -1090,22 +1093,22 @@ How the collector maps YML → capabilities (so you can sanity-check, or derive 
 Define which integration commands need which parameter IDs (excluding connection-level params). See [`connectus/column-schemas.md`](column-schemas.md) for the JSON shape.
 
 - **The auth-aware ignore list is auto-unioned by the analyzer.** When the analyzer is run with `--integration-id "<Integration ID>"` (the canonical invocation above), the standalone `auth-params` call is NOT needed — the analyzer auto-unions every YML param id already declared in `Auth Details` (both the auth-secret params projected from `auth_types[].xsoar_param_map.keys()` — dotted leaves collapse to the segment before the first `.` — and every entry in `other_connection`) into its ignore set. These params MUST NOT appear in `Params to Commands` — `set-params-to-commands` will hard-reject the call if any of them does. `auth-params` / `context.auth_ignore_params` remain available for human display only.
-- Hidden YML params (`hidden: true` or `hidden: [<list>]`) MUST NOT appear in any per-command list. The `set-params-to-commands` validator does not currently enforce this; it is the analyst's responsibility per skill §1.3.
+- Platform-hidden YML params (`hidden: true`, or a `hidden:` list containing `platform`) MUST NOT appear in any per-command list. Params hidden only on non-platform modules (e.g. `hidden: [xsoar]`) ARE included normally. The `set-params-to-commands` validator does not currently enforce this; it is the analyst's responsibility per skill §1.3.
 
 > **Single-capability shortcut (run-through optimization).** When the `Collect Capabilities` cell (Step 3) resolved to **exactly one** capability (e.g. `["Automation"]`), every command trivially routes to that single capability in `Params to Capabilities` (Step 7 uses `connector_param_mapper.py`'s `_single_capability_shortcut`). The only command whose per-command param analysis is still needed for the connection is `test-module`. Pass `--single-capability-test-module-only` to the analyzer to skip analyzing the other commands:
 > ```bash
-> python3 connectus/check_command_params.py --integration-id "<Integration ID>" --static-only --single-capability-test-module-only
+> python3 content/connectus/check_command_params.py --integration-id "<Integration ID>" --static-only --single-capability-test-module-only
 > ```
-> The flag is **self-guarding**: it requires `--integration-id` (it reads the capability count from the cell), it is a **no-op** when the capability count is 0 (not yet collected) or >1 (a full analysis runs), and an explicit `--commands` always wins. The resulting cell contains just `{"test-module": [...]}`, which is exactly what `test_module_params` / Step 5 and the auth-parity command selection (Step 13) consume — and it directly tells you which non-auth params `test-module` needs. The auto-runner harness ([`run_pre_manifest_steps.py`](connectus_migration/run_pre_manifest_steps.py:1)) applies this same heuristic automatically; the standalone flag brings the manual flow to parity. This remains a run-through step (no extra approval beyond the standard pre-`set-params-to-commands` confirmation).
+> The flag is **self-guarding**: it requires `--integration-id` (it reads the capability count from the cell), it is a **no-op** when the capability count is 0 (not yet collected) or >1 (a full analysis runs), and an explicit `--commands` always wins. The resulting cell contains just `{"test-module": [...]}`, which is exactly what `test_module_params` / Step 5 and the auth-parity command selection (Step 11) consume — and it directly tells you which non-auth params `test-module` needs. The auto-runner harness ([`run_pre_manifest_steps.py`](connectus_migration/run_pre_manifest_steps.py:1)) applies this same heuristic automatically; the standalone flag brings the manual flow to parity. This remains a run-through step (no extra approval beyond the standard pre-`set-params-to-commands` confirmation).
 
 ```bash
-python3 connectus/workflow_state.py set-params-to-commands "<Integration ID>" '<JSON>'
+python3 content/connectus/workflow_state.py set-params-to-commands "<Integration ID>" '<JSON>'
 ```
 
 > **The setter reads the JSON from a positional argument, NOT stdin.** Piping the analyzer directly into it (`analyzer | set-params-to-commands "<id>"`) fails. Capture the analyzer output into a shell variable first, then pass it as the argument:
 > ```bash
-> OUT=$(python3 connectus/check_command_params.py --integration-id "<Integration ID>" [--seed-param ...] 2>/dev/null)
-> python3 connectus/workflow_state.py set-params-to-commands "<Integration ID>" "$OUT"
+> OUT=$(python3 content/connectus/check_command_params.py --integration-id "<Integration ID>" [--seed-param ...] 2>/dev/null)
+> python3 content/connectus/workflow_state.py set-params-to-commands "<Integration ID>" "$OUT"
 > ```
 
 Derive the contents from the integration's existing YAML `configuration` and `script.commands` sections, plus any per-command param usage in the Python code.
@@ -1115,7 +1118,7 @@ Example (post-ignore-list — only behavioral params; `url`,
 [`connectus/default_ignore_params.txt`](default_ignore_params.txt)):
 
 ```bash
-python3 connectus/workflow_state.py set-params-to-commands "QRadar v3" '{"integration":"IBM QRadar v3","commands":{"test-module":["adv_params","fetch_interval"],"qradar-offenses-list":["adv_params","fetch_interval"]}}'
+python3 content/connectus/workflow_state.py set-params-to-commands "QRadar v3" '{"integration":"IBM QRadar v3","commands":{"test-module":["adv_params","fetch_interval"],"qradar-offenses-list":["adv_params","fetch_interval"]}}'
 ```
 
 **Validation:** The command rejects (a) invalid JSON with the parse error, AND (b) any payload whose per-command param lists overlap with the integration's `Auth Details` cell — every offending `(command, param_id)` pair is named, the auth-detail source for each offending param is named (e.g. `param 'credentials' overlaps with auth_types[].name='credentials' (xsoar_param_map keys=['credentials.identifier','credentials.password'])` or `param 'proxy' overlaps with other_connection`), and the row is NOT mutated.
@@ -1128,7 +1131,7 @@ If `set-params-to-commands` rejects your payload because a param is already in `
 
 2. **The param was misclassified into Auth Details and is genuinely used per-command** (rare but real — e.g., a YML param that doubles as both a connection setting AND a per-command override). Revert to Step 2: re-run `set-auth` with a corrected `Auth Details` JSON that removes the param from `auth_types[].xsoar_param_map` / `other_connection`. This will reset the workflow back to `generated manifest`, but that's the correct outcome — the original auth classification was wrong and downstream artifacts need to be regenerated against the fix. Do NOT bypass the rejection by hand-stripping just to make the call go through.
 
-Use `python3 connectus/workflow_state.py auth-params "<Integration ID>"` at any time to inspect the current exclusion list. The same list is what the analyzer pulls when invoked with `--integration-id "<Integration ID>"`, so re-running the analyzer with the flag after fixing scenario (2) will produce a payload that is disjoint from `Auth Details` by construction.
+Use `python3 content/connectus/workflow_state.py auth-params "<Integration ID>"` at any time to inspect the current exclusion list. The same list is what the analyzer pulls when invoked with `--integration-id "<Integration ID>"`, so re-running the analyzer with the flag after fixing scenario (2) will produce a payload that is disjoint from `Auth Details` by construction.
 
 Whenever you set params to command not strictly what the script returned, present the evidence clearly and concisely to the user why you decided to do it, and allow them to tweak the input.
 
@@ -1145,7 +1148,7 @@ This column records the **per-param defaults that `test-module` relies on** when
 The canonical qualification list is:
 
 ```bash
-python3 connectus/workflow_state.py test-module-params "<Integration ID>"
+python3 content/connectus/workflow_state.py test-module-params "<Integration ID>"
 ```
 
 (`--format=json` for programmatic consumption; the same value is available programmatically as [`test_module_params(integration_id)`](workflow_state/api.py:1) returning `list[str]`.)
@@ -1251,7 +1254,7 @@ Procedure for each rejected param:
 1. Fetch the canonical qualification list:
 
    ```bash
-   python3 connectus/workflow_state.py test-module-params "<Integration ID>"
+   python3 content/connectus/workflow_state.py test-module-params "<Integration ID>"
    ```
 
 2. If the list is empty, the payload is `{}` — call `set-param-defaults "<id>" '{}'` and proceed to Step 7. Skip steps 3–6 below.
@@ -1286,7 +1289,7 @@ Example payload:
 - [ ] If the required-only filtered list is empty, the payload is `{}` (empty object) — branches (a/b/c) do not apply.
 
 ```bash
-python3 connectus/workflow_state.py set-param-defaults "<Integration ID>" '<JSON>'
+python3 content/connectus/workflow_state.py set-param-defaults "<Integration ID>" '<JSON>'
 ```
 
 Validator reference:
@@ -1316,7 +1319,7 @@ skill, and only then markpasses.
 #### 1. Run the analyzer
 
 ```bash
-python3 connectus/check_param_defaults.py --integration-id "<Integration ID>" --human
+python3 content/connectus/check_param_defaults.py --integration-id "<Integration ID>" --human
 ```
 
 It is a read-only static (stdlib `ast`) pass — seconds, no docker. It also
@@ -1386,7 +1389,7 @@ Once every unsafe and confirmed-uncertain finding is fixed (or justified and
 ignored):
 
 ```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "UCP param-default review"
+python3 content/connectus/workflow_state.py markpass "<Integration ID>" "UCP param-default review"
 ```
 
 > **Confidence & scope (honest).** Python loud/crash class ≈ **90%** (inline
@@ -1394,7 +1397,7 @@ python3 connectus/workflow_state.py markpass "<Integration ID>" "UCP param-defau
 > tier. The irreducible residue — interprocedural indirection, dynamic access,
 > the semantic ambiguity of the silent class, non-Python — is exactly what the
 > UNCERTAIN bucket hands to you, and what the runtime param-parity test
-> (Step 13) ultimately backstops. JS/PS are not statically analyzed (no stdlib
+> (Step 11) ultimately backstops. JS/PS are not statically analyzed (no stdlib
 > AST) and short-circuit.
 
 > **Reset semantics.** A plain checkpoint with no data cell; cleared like any
@@ -1438,10 +1441,10 @@ stderr summary); the bare mapping is still written to `-o`, and the
 usage/resolution error.
 
 ```bash
-python3 connectus/connectus_migration/connector_param_mapper.py \
+python3 content/connectus/connectus_migration/connector_param_mapper.py \
   --integration-id "<Integration ID>" \
   '<MANUAL_COMMAND_TO_CAPABILITY_JSON — optional, default {}>' \
-  -o connectus/connectus_migration/_<integration>_param_mapping.json \
+  -o content/connectus/connectus_migration/_<integration>_param_mapping.json \
   --report
 ```
 
@@ -1449,12 +1452,12 @@ python3 connectus/connectus_migration/connector_param_mapper.py \
 straight after the script path:
 
 ```bash
-python3 connectus/connectus_migration/connector_param_mapper.py \
+python3 content/connectus/connectus_migration/connector_param_mapper.py \
   '<COMMAND_PARAMS_JSON from Params to Commands cell>' \
   '<PARAM_DEFAULTS_JSON from Params for test with default in code cell>' \
   '<INTEGRATION_YML_PATH from workflow_state.py files>' \
   '<MANUAL_COMMAND_TO_CAPABILITY_JSON — optional, default {}>' \
-  -o connectus/connectus_migration/_<integration>_param_mapping.json
+  -o content/connectus/connectus_migration/_<integration>_param_mapping.json
 ```
 
 `MANUAL_COMMAND_TO_CAPABILITY_JSON` should be `'{}'` unless the user
@@ -1513,14 +1516,14 @@ elevation when that list is non-empty:**
 #### Persist the mapper's output verbatim
 
 ```bash
-python3 connectus/workflow_state.py set-params-to-capabilities "<Integration ID>" \
-  "$(cat connectus/connectus_migration/_<integration>_param_mapping.json)"
+python3 content/connectus/workflow_state.py set-params-to-capabilities "<Integration ID>" \
+  "$(cat content/connectus/connectus_migration/_<integration>_param_mapping.json)"
 ```
 
 Concrete example for Gmail Single User:
 
 ```bash
-python3 connectus/workflow_state.py set-params-to-capabilities "Gmail Single User" \
+python3 content/connectus/workflow_state.py set-params-to-capabilities "Gmail Single User" \
   '{"general_configurations":["fetch_limit","query"],"Fetch Issues":["fetch_time"],"Automation":["legacy_name","send_as","redirect_uri"]}'
 ```
 
@@ -1578,20 +1581,20 @@ omit it if there's no match.
 ID="<Integration ID>"
 
 # 1. integration YML path (identity column, via context's file_paths.yml)
-YML=$(python3 connectus/workflow_state.py files "$ID" --format=paths | head -1)
+YML=$(python3 content/connectus/workflow_state.py files "$ID" --format=paths | head -1)
 
 # 2. connector title = the Connector ID identity column (groups all of a
 #    connector's integrations into ONE connectors/<slug>/ folder).
-TITLE=$(python3 connectus/workflow_state.py context "$ID" | python3 -c 'import json,sys; print(json.load(sys.stdin)["connector_id"])')
+TITLE=$(python3 content/connectus/workflow_state.py context "$ID" | python3 -c 'import json,sys; print(json.load(sys.stdin)["connector_id"])')
 
 # 3. mapped_params  ← Params to Capabilities cell (Step 7)
-MAPPED=$(python3 connectus/workflow_state.py show-step --raw "$ID" "Params to Capabilities")
+MAPPED=$(python3 content/connectus/workflow_state.py show-step --raw "$ID" "Params to Capabilities")
 
 # 4. auth_methods   ← Auth Details cell (Step 2)
-AUTH=$(python3 connectus/workflow_state.py show-step --raw "$ID" "Auth Details")
+AUTH=$(python3 content/connectus/workflow_state.py show-step --raw "$ID" "Auth Details")
 
 # Generate (NO subcommand name; --connectors-root points into the ConnectUs repo)
-python3 connectus/connectus_migration/manifest_generator.py \
+python3 content/connectus/connectus_migration/manifest_generator.py \
   "$YML" "$TITLE" "$MAPPED" "$AUTH" \
   --connectors-root "../unified-connectors-content/connectors"
 ```
@@ -1687,7 +1690,7 @@ The slug is the **same mapping the generator uses on disk**
 ([`title_to_slug()`](connectus_migration/manifest_generator.py:211)): take the
 `Connector ID` column, lowercase it, and replace internal whitespace runs with
 single dashes (collapsing any `---` to `-`). This guarantees the recorded path
-matches the folder the generator just wrote, so Step 13's param-parity resolver
+matches the folder the generator just wrote, so Step 11's param-parity resolver
 (which reads `Connector Folder Path`) and Step 9's handler-coverage resolver
 both find the connector without a manual fix-up.
 
@@ -1695,7 +1698,7 @@ both find the connector without a manual fix-up.
 # slug = Connector ID, lowercased, spaces → dashes (e.g. "AWS" → "aws",
 #        "Cisco Security" → "cisco-security", "Atlassian Automation and
 #        Collection" → "atlassian-automation-and-collection")
-python3 connectus/workflow_state.py set-connector-path "<Integration ID>" "connectors/<slugged Connector ID>"
+python3 content/connectus/workflow_state.py set-connector-path "<Integration ID>" "connectors/<slugged Connector ID>"
 ```
 
 > The `Connector ID` (NOT the Integration ID) is the slug source — every
@@ -1707,7 +1710,7 @@ python3 connectus/workflow_state.py set-connector-path "<Integration ID>" "conne
 **2. Markpass the checkpoint:**
 
 ```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "generated manifest"
+python3 content/connectus/workflow_state.py markpass "<Integration ID>" "generated manifest"
 ```
 
 Prerequisite: `Params to Commands` must be set (valid JSON). The state
@@ -1730,7 +1733,7 @@ resolvers — the same source `run manifest make validate` uses), mirroring
 structured envelope on stdout:
 
 ```bash
-python3 connectus/check_handler_param_coverage.py \
+python3 content/connectus/check_handler_param_coverage.py \
   --integration-id "<Integration ID>" --json
 ```
 
@@ -1777,20 +1780,50 @@ options:
    classification error). Go back to the relevant step (Step 2 `set-auth`,
    Step 7 `set-params-to-capabilities`, etc.), correct the input, regenerate
    the manifest (Step 8), and re-run this check.
+4. **Force-override the gate (`--force`).** When the user explicitly judges
+   the uncovered params are known-safe to skip — e.g. a **deprecated,
+   label-less auth alternative** (a `type: 9` credentials pair whose only
+   label is a `displaypassword` reading "…(Deprecated)" and which the code
+   treats as a mutually-exclusive fallback) — the coverage checker accepts a
+   `--force` flag. It STILL computes and reports the uncovered params (they
+   remain in `missing`) but exits `0` and sets `"forced": true` in the JSON
+   envelope, so the override is auditable and the real gap is never hidden:
+
+   ```bash
+   # direct checker run (transparency): shows missing + forced:true, exits 0
+   python3 content/connectus/check_handler_param_coverage.py \
+     --integration-id "<Integration ID>" --json --force
+   ```
+
+   To make the **self-executing `markpass` gate** apply the override, set the
+   `CONNECTUS_HANDLER_COVERAGE_FORCE` env var (the gate appends `--force` when
+   it is truthy):
+
+   ```bash
+   CONNECTUS_HANDLER_COVERAGE_FORCE=1 \
+     python3 content/connectus/workflow_state.py markpass \
+     "<Integration ID>" "handler param coverage"
+   ```
+
+   Prefer `--force` over editing `IGNORED_PARAMS` when the skip is a
+   one-off, integration-specific judgment (the env var/flag is scoped to a
+   single run and does not silently affect every other integration the way a
+   shared-constant edit does). Like option 2, `--force` is used ONLY on the
+   user's explicit instruction.
 
 Only after the user picks an option and the resulting state is clean (or the
-user explicitly chose mark-pass) do you run
+user explicitly chose mark-pass / force) do you run
 `markpass "<Integration ID>" "handler param coverage"`.
 
 ### Step 10: `run manifest make validate`
 
 This is a **self-executing gate**: `markpass` RUNS `make validate` in the
 ConnectUs repo and only writes the checkpoint marker if it exits 0 (no
-bypass — mirrors the `precommit` gate at Step 12 and the auth-parity gate
+bypass — mirrors the `precommit` gate at Step 14 and the auth-parity gate
 inside `set-auth`).
 
 ```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "run manifest make validate"
+python3 content/connectus/workflow_state.py markpass "<Integration ID>" "run manifest make validate"
 ```
 
 Under the hood this runs `make validate` (JSON Schema + OPA validation of
@@ -1801,7 +1834,7 @@ location with the `CONNECTUS_REPO_DIR` env var when the layout differs:
 
 ```bash
 CONNECTUS_REPO_DIR=/path/to/unified-connectors-content \
-  python3 connectus/workflow_state.py markpass "<Integration ID>" "run manifest make validate"
+  python3 content/connectus/workflow_state.py markpass "<Integration ID>" "run manifest make validate"
 ```
 
 If `make validate` fails, the markpass is rejected with the command's exit
@@ -1809,7 +1842,7 @@ code and an output tail — fix the connector manifest in the ConnectUs repo
 and re-run the markpass. To explicitly reset the checkpoint:
 
 ```bash
-python3 connectus/workflow_state.py fail "<Integration ID>" "run manifest make validate"
+python3 content/connectus/workflow_state.py fail "<Integration ID>" "run manifest make validate"
 ```
 
 #### Recommended: run `make validate` directly first (fast feedback)
@@ -1839,7 +1872,206 @@ connector manifest, re-run the single-connector command until it is green,
 the checkpoint.
 
 
-### Step 11: `Release Notes` (data column)
+### Step 11: `param parity test passes`
+
+#### Machine prerequisites (one-time per engineer)
+
+> **`gke-gcloud-auth-plugin` must be on PATH** before `session_setup.py` will
+> pass. On macOS with Homebrew-installed gcloud, the plugin is bundled in the SDK
+> but is **not** symlinked onto PATH (the cask only links `gcloud`/`gsutil`/`bq`).
+> The binary lives next to the real gcloud, e.g.
+> `/opt/homebrew/share/google-cloud-sdk/bin/gke-gcloud-auth-plugin`. Fix:
+>
+> ```bash
+> echo 'export PATH="$(dirname "$(readlink -f "$(which gcloud)")"):$PATH"' >> ~/.zshrc && exec zsh
+> gke-gcloud-auth-plugin --version
+> ```
+>
+> **Do NOT rely on these — they do nothing here:**
+> - `gcloud components install gke-gcloud-auth-plugin` reports "All components
+>   are up to date" but is a **no-op** for Homebrew-managed gcloud (the component
+>   manager is disabled).
+> - `brew install gke-gcloud-auth-plugin` fails ("No formulae or casks found") —
+>   there is **no** standalone formula; the plugin ships inside the
+>   `google-cloud-sdk` cask.
+>
+> This is a **one-time machine setup**: once the SDK bin is on PATH it persists
+> for all future runs.
+
+#### Step 13.0 — Session gate (deterministic; this is what makes setup ONE-TIME)
+
+The param-parity runtime needs a live GKE port-forward + gcloud credentials,
+established ONCE per work session by a **human** in a normal terminal on the
+**israel-gw VPN**. The agent does NOT set this up and does NOT rely on remembering
+whether it already asked. Instead, **every time you reach Step 13, first run this
+deterministic check** (it is silent, needs no human, and does not establish
+anything):
+
+```bash
+python3 content/connectus/runtime_demisto.params_parity/session_setup.py --check
+```
+
+Branch on its exit code:
+
+* **exit `0` (`SESSION_READY: ...`)** — a live session already exists. **Proceed
+  directly to Step 13.1. Do NOT prompt the user.** This is the normal case for
+  every integration after the first — the check passes silently, so you never
+  re-ask.
+* **exit non-zero (`SESSION_NOT_READY: ...`)** — no live session yet (first run
+  of the batch, or the session expired / gcloud auth died). ONLY THEN pause and
+  ask the user to run, in their terminal on the israel-gw VPN:
+  ```bash
+  python3 content/connectus/runtime_demisto.params_parity/session_setup.py
+  ```
+  (If the message says auth expired, they run `gcloud auth login` first.) Wait
+  for the user to reply that it printed `✅ SESSION READY`, then re-run the
+  `--check` above to confirm exit `0`, and proceed.
+
+Because liveness is a **checked fact** (not a remembered action), setup is
+naturally one-time: the human runs `session_setup.py` once, and every subsequent
+Step 13 in the batch sees `--check` → exit `0` and continues unattended.
+
+> At the END of the batch, ask the user (once) to run
+> `python3 content/connectus/runtime_demisto.params_parity/session_teardown.py` to stop
+> the port-forward.
+>
+> One-time host setting (not something the agent can set): the idex
+> **Auto-Approve → Execute** toggle must be ON so the per-integration commands
+> run unattended.
+
+#### Step 13.1 — Run the atomic wrapper
+
+> **Prerequisite — `Connector Folder Path` must be set.** The param-parity
+> resolver looks up the connector tree from the pipeline CSV's
+> `Connector Folder Path` column. Before this step can run, that cell MUST be
+> populated:
+>
+> ```bash
+> python3 content/connectus/workflow_state.py set-connector-path "<Integration ID>" connectors/<slug>
+> ```
+>
+> If it is unset, `deploy_and_test.py` returns exit `11` (parity setup-blocked).
+
+Run the **atomic deploy + test wrapper** — ONE command per integration (from the
+content-repo root; no `cd`). It assumes the live session (auto-reviving a dead
+port-forward), acquires the per-tenant lock, deploys the whole manifest to the
+`.env` tenant, runs the param-parity test, and releases the lock (always, via
+`try/finally`):
+
+```bash
+python3 content/connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id "<Integration ID>"
+```
+
+Branch on the wrapper's exit code (do NOT re-interpret stdout):
+
+* **`0` — deployed + parity PASSED.** Apply the **markpass policy** in Step 13.2.
+* **`10` — parity FAILED (real diff).** Do NOT markpass. Read the persisted
+  envelope (`results/<connector>__<integration>__<ts>.json`, path echoed on the
+  `Result written:` line) and tell the user exactly which params are
+  `MISSING_IN_CONNECTOR` / `EXTRA_IN_CONNECTOR` / `VALUE_MISMATCH`, then fix the
+  connector YAMLs and re-run the wrapper.
+* **`11` — parity BLOCKED (setup).** Do NOT markpass. Most common causes:
+  (a) **session not ready** — go back to Step 13.0 (ask the user to run
+  `session_setup.py`; if it says gcloud auth expired, `gcloud auth login` first).
+  Note: a merely-dead port-forward is auto-revived, so a session exit `11` means
+  auth/setup that needs the human. (b) `Connector Folder Path` unset → run
+  `set-connector-path`. (c) handler not on disk / `REPO_DIR` unset. A GKE
+  control-plane timeout (`Unable to connect to the server: dial tcp <ip>:443:
+  i/o timeout` / `Failed to find UCP shell pod`) means the host is off the
+  `israel-gw` VPN — ask the user to connect and re-run `session_setup.py`.
+* **`20` — deploy FAILED.** Do NOT markpass. Report the failed GitLab jobs +
+  pipeline URL; the user fixes the cause and re-runs the wrapper.
+* **`21` — deploy TIMEOUT.** Do NOT markpass. Report the still-running pipeline
+  URL; re-run later.
+* **`30` — tenant lock BUSY (could not acquire).** Do NOT markpass and do NOT
+  auto-retry. Report the holder (shell id / integration / since-when) and the
+  options to the user: (a) wait and retry later, (b) use a different tenant,
+  (c) `python3 content/connectus/runtime_demisto.params_parity/tenant_lock.py force-unlock --tenant <X>` (run from the idex parent cwd as-written, no `cd`) if the holder is dead.
+
+#### Step 13.2 — Markpass policy for exit 0 (confidence-gated)
+
+On exit `0`, read the persisted results envelope and decide:
+
+* **AUTO-markpass (no prompt) when ALL hold** — confident clean pass:
+  * `n_fail == 0`, AND
+  * no `credentials` `VALUE_MISMATCH`, AND
+  * no unexpected `OK_IGNORED` beyond the known hard-ignore set
+    (`__params_parity_dump__`, `instance_name`, `ucp_credentials`).
+  ```bash
+  python3 content/connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
+  ```
+  Then move straight to the next integration (no confirmation) — this is what
+  makes an unattended batch possible.
+* **PAUSE — present the results + `per_param` and ASK for ACK** when the
+  confidence conditions are NOT all met (e.g. a `credentials` `VALUE_MISMATCH`,
+  unexpected ignored params, or anything that makes you unsure). Only markpass
+  after the user's explicit ACK.
+
+> Deliberate change from the old "exit 0 → always markpass" contract: confident
+> clean passes are auto-marked; failures and low-confidence results are escalated.
+
+The wrapper persists every run under `results/` (per-run envelope JSON +
+`ledger.csv`); the `param parity test passes = ✅` cell in the pipeline CSV is the
+only durable pass recorded.
+
+### Step 12: `code reviewed`
+
+After code review is complete:
+
+```bash
+python3 content/connectus/workflow_state.py markpass "<Integration ID>" "code reviewed"
+```
+
+### Step 13: `code merged`
+
+After the code is merged to the branch:
+
+```bash
+python3 content/connectus/workflow_state.py markpass "<Integration ID>" "code merged"
+```
+
+### Step 14: `precommit/validate/unit tests passed`
+
+**Trigger.** Only run pre-commit / unit tests when the migration actually
+touched the integration's own source. Run them if EITHER:
+
+- a `Release Notes` file was produced for this integration (Step 15
+  required one — i.e. `Release Notes` cell has `"required": true`), OR
+- `git diff HEAD --name-only -- <integration>.py <integration>.yml`
+  is **non-empty** (the .py and/or .yml were modified).
+
+If NEITHER condition holds (no RN, and the .py/.yml were untouched), there
+is nothing for pre-commit/unit tests to verify — **skip the run** and pass
+the checkpoint directly:
+
+```bash
+python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
+```
+
+Otherwise (RN produced OR .py/.yml changed), run pre-commit, validate, and
+unit tests via demisto-sdk pre-commit (Docker):
+
+```bash
+demisto-sdk pre-commit -i Packs/<PackName>/Integrations/<IntegrationName>/
+```
+
+When everything passes (Yuval decides which checks may be skipped):
+
+```bash
+python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
+```
+
+> **Workaround note.** `demisto-sdk pre-commit` crashes on the second
+> and subsequent invocations with `FileExistsError: [Errno 17] File
+> exists: '/Users/<you>/.demisto-sdk/cache/pre-commit'`. Delete the
+> cache dir before re-running:
+>
+> ```bash
+> rm -rf ~/.demisto-sdk/cache/pre-commit
+> demisto-sdk pre-commit -i Packs/<PackName>/Integrations/<IntegrationName>/
+> ```
+
+### Step 15: `Release Notes` (data column)
 
 This step gates the migration on a release-notes file when the
 integration's own .py/.yml were modified by the migration.
@@ -1884,99 +2116,6 @@ ERROR: Release Notes step rejected for '<id>': <reason>.
 
 See [`column-schemas.md`](column-schemas.md) §`Release Notes` for the
 cell shape and validator rules.
-
-### Step 12: `precommit/validate/unit tests passed`
-
-Run pre-commit, validate, and unit tests via demisto-sdk pre-commit (Docker):
-
-```bash
-demisto-sdk pre-commit -i Packs/<PackName>/Integrations/<IntegrationName>/
-```
-
-When everything passes (Yuval decides which checks may be skipped):
-
-```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "precommit/validate/unit tests passed"
-```
-
-> **Workaround note.** `demisto-sdk pre-commit` crashes on the second
-> and subsequent invocations with `FileExistsError: [Errno 17] File
-> exists: '/Users/<you>/.demisto-sdk/cache/pre-commit'`. Delete the
-> cache dir before re-running:
->
-> ```bash
-> rm -rf ~/.demisto-sdk/cache/pre-commit
-> demisto-sdk pre-commit -i Packs/<PackName>/Integrations/<IntegrationName>/
-> ```
-
-### Step 13: `param parity test passes`
-
-> **Prerequisite — `Connector Folder Path` must be set.** The param-parity
-> resolver looks up the connector tree from the pipeline CSV's
-> `Connector Folder Path` column. Before this step can run, that cell MUST be
-> populated:
->
-> ```bash
-> python3 connectus/workflow_state.py set-connector-path "<Integration ID>" connectors/<slug>
-> ```
->
-> If it is unset, `deploy_and_test.py` returns exit `11` (parity setup-blocked).
-
-Run the **atomic deploy + test wrapper** — ONE command per integration. It
-acquires the per-tenant lock, deploys the whole manifest to the `.env` tenant,
-runs the param-parity test, and releases the lock (always, via `try/finally`):
-
-```bash
-cd connectus/runtime_demisto.params_parity
-python deploy_and_test.py --integration-id "<Integration ID>"
-```
-
-Branch on the wrapper's exit code (do NOT re-interpret stdout):
-
-* **`0` — deployed + parity PASSED.** Mark the checkpoint and move on:
-  ```bash
-  python3 connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
-  ```
-* **`10` — parity FAILED (real diff).** Do NOT markpass. Read the persisted
-  envelope (`results/<connector>__<integration>__<ts>.json`, path echoed on the
-  `Result written:` line) and tell the user exactly which params are
-  `MISSING_IN_CONNECTOR` / `EXTRA_IN_CONNECTOR` / `VALUE_MISMATCH`, then fix the
-  connector YAMLs and re-run the wrapper.
-* **`11` — parity BLOCKED (setup).** Do NOT markpass. Tell the user the setup
-  problem to fix (most commonly: `Connector Folder Path` unset → run
-  `set-connector-path`; or the handler isn't on disk / `REPO_DIR` unset), then
-  re-run. If the block is a GKE control-plane connection timeout during the
-  connector-side capture (`kubectl` → `Unable to connect to the server: dial tcp <ip>:443: i/o timeout` /
-  `Failed to find UCP shell pod`), switch the VPN to the `israel-gw` gateway and
-  re-run (verified fix; this is distinct from a proxy 403 to the tenant API).
-* **`20` — deploy FAILED.** Do NOT markpass. Report the failed GitLab jobs +
-  pipeline URL; the user fixes the cause and re-runs the wrapper.
-* **`21` — deploy TIMEOUT.** Do NOT markpass. Report the still-running pipeline
-  URL; re-run later.
-* **`30` — tenant lock BUSY (could not acquire).** Do NOT markpass and do NOT
-  auto-retry. Report the holder (shell id / integration / since-when) and the
-  options to the user: (a) wait and retry later, (b) use a different tenant,
-  (c) `python tenant_lock.py force-unlock --tenant <X>` if the holder is dead.
-
-The wrapper persists every run under `results/` (per-run envelope JSON +
-`ledger.csv`); the `param parity test passes = ✅` cell in the pipeline CSV is the
-only durable pass recorded.
-
-### Step 14: `code reviewed`
-
-After code review is complete:
-
-```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "code reviewed"
-```
-
-### Step 15: `code merged`
-
-After the code is merged to the branch:
-
-```bash
-python3 connectus/workflow_state.py markpass "<Integration ID>" "code merged"
-```
 
 
 ## Deploying to a dev tenant
@@ -2037,9 +2176,8 @@ git add connectors/<slug>/
 git commit -m "Add UCP manifest for <Integration ID>"   # add --no-gpg-sign if signing is broken
 git push origin "$CONNECTUS_BRANCH"
 
-# (2) From the CONTENT repo: trigger + poll the pipeline (no git ops).
-cd <content-repo>
-python3 connectus/runtime_demisto.params_parity/deploy.py --skip-git --tenant <TENANT_ID>
+# (2) From the idex parent cwd: trigger + poll the pipeline (no git ops).
+python3 content/connectus/runtime_demisto.params_parity/deploy.py --skip-git --tenant <TENANT_ID>
 ```
 
 ### Configuration (priority: CLI args > env vars > .env > defaults)
@@ -2080,19 +2218,19 @@ The GitLab project is hardcoded
 ### Fail a checkpoint (clears it and all subsequent non-preserved steps)
 
 ```bash
-python3 connectus/workflow_state.py fail "<Integration ID>" "<checkpoint name>"
+python3 content/connectus/workflow_state.py fail "<Integration ID>" "<checkpoint name>"
 ```
 
 ### Reset to a specific checkpoint (alias of fail)
 
 ```bash
-python3 connectus/workflow_state.py reset-to "<Integration ID>" "<checkpoint name>"
+python3 content/connectus/workflow_state.py reset-to "<Integration ID>" "<checkpoint name>"
 ```
 
 ### Reset all workflow columns (no preserve carve-out)
 
 ```bash
-python3 connectus/workflow_state.py reset "<Integration ID>"
+python3 content/connectus/workflow_state.py reset "<Integration ID>"
 ```
 
 ## Dashboard and Batch Commands
@@ -2101,28 +2239,28 @@ python3 connectus/workflow_state.py reset "<Integration ID>"
 # ONE-CALL CONTEXT (preferred read for a single integration): emits all
 # data columns + file paths + current step + auth-ignore set as one JSON
 # document. Replaces separate status + show-step + files + auth-params calls.
-python3 connectus/workflow_state.py context "<Integration ID>"
+python3 content/connectus/workflow_state.py context "<Integration ID>"
 
 # Machine-readable status (JSON list, one element per id)
-python3 connectus/workflow_state.py status "<Integration ID>" --format=json
+python3 content/connectus/workflow_state.py status "<Integration ID>" --format=json
 
 # See all integrations with progress
-python3 connectus/workflow_state.py dashboard
+python3 content/connectus/workflow_state.py dashboard
 
 # See all integrations at a specific checkpoint
-python3 connectus/workflow_state.py at-step "<checkpoint name>"
+python3 content/connectus/workflow_state.py at-step "<checkpoint name>"
 
 # See all integrations with any progress
-python3 connectus/workflow_state.py status-all
+python3 content/connectus/workflow_state.py status-all
 
 # See all integrations assigned to a specific person
-python3 connectus/workflow_state.py list-by-assignee "<assignee name>"
+python3 content/connectus/workflow_state.py list-by-assignee "<assignee name>"
 
 # Show one column's value for an integration (pretty-prints JSON)
-python3 connectus/workflow_state.py show-step "<Integration ID>" "<column>"
+python3 content/connectus/workflow_state.py show-step "<Integration ID>" "<column>"
 
 # Set Auth Details (validates JSON schema, resets workflow to 'generated manifest')
-python3 connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details JSON>'
+python3 content/connectus/workflow_state.py set-auth "<Integration ID>" '<Auth Details JSON>'
 ```
 
 ### Connector- and assignee-scoped batch commands
@@ -2131,19 +2269,19 @@ These power the [Assignee batch flow](#assignee-batch-flow) and [Connector batch
 
 ```bash
 # All distinct connector ids with per-connector counts (total / in progress / complete)
-python3 connectus/workflow_state.py list-connectors
+python3 content/connectus/workflow_state.py list-connectors
 
 # All integrations belonging to one connector (with assignee + current step)
-python3 connectus/workflow_state.py list-by-connector "<connector_id>"
+python3 content/connectus/workflow_state.py list-by-connector "<connector_id>"
 
 # Bulk-assign every integration in a connector to one owner.
 # NEVER cascades — existing migration progress is preserved.
-python3 connectus/workflow_state.py set-assignee-by-connector "<connector_id>" "<assignee name>"
+python3 content/connectus/workflow_state.py set-assignee-by-connector "<connector_id>" "<assignee name>"
 
 # `next` flags for batch flows:
-python3 connectus/workflow_state.py next --mine                         # in-progress + assigned to current git user (alias of bare `next`)
-python3 connectus/workflow_state.py next --connector "<connector_id>"   # in-progress integrations in that connector
-python3 connectus/workflow_state.py next --connector "<id>" --mine      # intersection of the above
+python3 content/connectus/workflow_state.py next --mine                         # in-progress + assigned to current git user (alias of bare `next`)
+python3 content/connectus/workflow_state.py next --connector "<connector_id>"   # in-progress integrations in that connector
+python3 content/connectus/workflow_state.py next --connector "<id>" --mine      # intersection of the above
 ```
 
 Programmatic API (importable from `connectus.workflow_state`) used by the batch flows:

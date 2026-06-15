@@ -50,6 +50,7 @@ from pathlib import Path
 
 import resolver as resolver_mod
 import results_ledger
+from be_config_params import apply_be_config_transform
 from diff import _load_serializer_mappings, diff_params
 from normalizers import normalize_for_diff
 from resolver import ResolverError
@@ -307,6 +308,11 @@ def main(argv: list[str] | None = None) -> int:
     # `fill_params_from_yml` walks the YML's configuration list and, for every
     # param, produces a dummy value via `generate_dummy_value_for_param`.
     shared_dummies = fill_params_from_yml(yml_configuration, {})
+    # Replicate the backend's ValidateConfiguration auto-add/strip of
+    # fetch/feed/long-running config params (these are injected by the BE based
+    # on the YML script flags and are NOT in the YML `configuration` list, so we
+    # must add them here so BOTH parity sides receive the same value).
+    shared_dummies = apply_be_config_transform(shared_dummies, yml_data.get("script"))
     log.info(
         "Pre-computed %d shared dummy values to push to BOTH sides.",
         len(shared_dummies),

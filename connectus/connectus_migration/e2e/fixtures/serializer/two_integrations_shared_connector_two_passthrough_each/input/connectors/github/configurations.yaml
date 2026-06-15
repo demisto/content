@@ -50,4 +50,5 @@ configurations:
         edit_modifiers:
           required: false
           hidden: false
+  view_group: github
 

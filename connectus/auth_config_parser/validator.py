@@ -41,6 +41,10 @@ def validate_auth_details(data: str | dict) -> list[str]:
         to be narrowed in a future PR).
       * ``NoneRequired`` → no entries in ``auth_types[]``; rule moot.
     - ``auth_types[]`` sort order by ``(type, name)``
+    - ``auth_types[]`` distinct XSOAR keysets: no two profiles may
+      consume the exact same set of XSOAR fields (``xsoar_param_map``
+      keys), so a connection can always be attributed to exactly one
+      profile.
     - ``other_connection``: list of non-empty unique sorted strings
       (required; may be an empty list)
 
@@ -78,6 +82,9 @@ def validate_auth_details(data: str | dict) -> list[str]:
     # Track per-entry validity for the sort check (only consider entries
     # whose `type` and `name` are both well-formed).
     sortable: list[tuple[int, str, str]] = []
+    # Track each entry's set of XSOAR field paths for the cross-entry
+    # distinctness check (two profiles must not consume the same fields).
+    keyset_by_entry: list[tuple[int, frozenset[str]]] = []
     valid_auth_types_list = isinstance(detail["auth_types"], list)
     if not valid_auth_types_list:
         errors.append(
@@ -119,13 +126,19 @@ def validate_auth_details(data: str | dict) -> list[str]:
                 seen_names.add(entry["name"])
                 entry_name_ok = True
             # --- xsoar_param_map validation ---
+            # 'NoneRequired' describes an integration with no credentials,
+            # so it is exempt from the non-empty xsoar_param_map rule: the
+            # map may be absent or empty. If it IS present and non-empty,
+            # the structural checks below still apply.
+            is_none_required = entry.get("type") == AuthType.NoneRequired.value
             if "xsoar_param_map" not in entry:
-                errors.append(
-                    f"auth_types[{i}].xsoar_param_map: missing "
-                    "'xsoar_param_map' (required and non-empty). "
-                    "See connectus/column-schemas.md §Auth Details "
-                    "for the shape."
-                )
+                if not is_none_required:
+                    errors.append(
+                        f"auth_types[{i}].xsoar_param_map: missing "
+                        "'xsoar_param_map' (required and non-empty). "
+                        "See connectus/column-schemas.md §Auth Details "
+                        "for the shape."
+                    )
             elif not isinstance(entry["xsoar_param_map"], dict):
                 errors.append(
                     f"auth_types[{i}].xsoar_param_map: must be an "
@@ -135,12 +148,13 @@ def validate_auth_details(data: str | dict) -> list[str]:
                     "the shape."
                 )
             elif len(entry["xsoar_param_map"]) == 0:
-                errors.append(
-                    f"auth_types[{i}].xsoar_param_map: must be a "
-                    "non-empty object (each entry must declare at "
-                    "least one xsoar field path). See "
-                    "connectus/column-schemas.md §Auth Details."
-                )
+                if not is_none_required:
+                    errors.append(
+                        f"auth_types[{i}].xsoar_param_map: must be a "
+                        "non-empty object (each entry must declare at "
+                        "least one xsoar field path). See "
+                        "connectus/column-schemas.md §Auth Details."
+                    )
             else:
                 # Structural per-(key,value) check.
                 structural_ok = True
@@ -232,6 +246,40 @@ def validate_auth_details(data: str | dict) -> list[str]:
 
             if entry_type_ok and entry_name_ok:
                 sortable.append((i, entry["type"], entry["name"]))
+
+            # Collect the set of XSOAR field paths this profile consumes,
+            # for the cross-entry distinctness check below. Only entries
+            # with a well-formed, non-empty dict map (string keys) are
+            # considered — malformed maps already produce their own errors.
+            if isinstance(entry.get("xsoar_param_map"), dict) and entry[
+                "xsoar_param_map"
+            ]:
+                keys = {
+                    k
+                    for k in entry["xsoar_param_map"]
+                    if isinstance(k, str) and k
+                }
+                if keys:
+                    keyset_by_entry.append((i, frozenset(keys)))
+
+        # Distinct-xsoar-keyset check: every profile must consume a
+        # distinct SET of XSOAR fields so a connection can always be
+        # attributed back to exactly one profile. Two profiles that read
+        # the exact same set of XSOAR fields are indistinguishable at
+        # runtime — there is no way to tell which profile a connection
+        # came from. Report each colliding group once.
+        seen_keysets: dict[frozenset[str], list[int]] = {}
+        for idx, keyset in keyset_by_entry:
+            seen_keysets.setdefault(keyset, []).append(idx)
+        for keyset, indices in seen_keysets.items():
+            if len(indices) > 1:
+                errors.append(
+                    f"auth_types entries {indices} share the same set of "
+                    f"XSOAR fields {sorted(keyset)}; each profile must "
+                    "consume a distinct set of XSOAR fields so a "
+                    "connection can be attributed to exactly one profile. "
+                    "See connectus/column-schemas.md §Auth Details."
+                )
 
         # Sort-order check: report the first out-of-order adjacent pair
         # among the entries that have valid `type` and `name`.

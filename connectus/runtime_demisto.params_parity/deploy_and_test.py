@@ -22,12 +22,16 @@ Wrapper exit-code contract (EXACT — design §4):
 Multi-id worst-case aggregation (still report per-id): setup-block (11) > parity-fail (10)
 > pass (0). A deploy failure/timeout short-circuits before any parity run.
 
-Usage::
+Prerequisite: a human runs ``session_setup.py`` ONCE per batch (on the israel-gw
+VPN) to establish the param-parity session (GKE creds + the session-scoped
+kubectl port-forward). This wrapper only ASSUMES that session; it never sets up
+the environment itself.
 
-    cd connectus/runtime_demisto.params_parity
-    python deploy_and_test.py --integration-id "Salesforce IAM"
-    # future batch (one lock, one deploy, loop parity):
-    python deploy_and_test.py --integration-id A --integration-id B --tenant 123
+Usage (run from the content-repo root; no ``cd`` needed)::
+
+    python3 connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id "Salesforce IAM"
+    # batch (one lock, one deploy, loop parity):
+    python3 connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id A --integration-id B --tenant 123
 """
 
 from __future__ import annotations
@@ -40,6 +44,7 @@ import sys
 from pathlib import Path
 
 import preflight_check
+import session_env
 import tenant_lock
 
 _SCRIPT_DIR = Path(__file__).resolve().parent
@@ -69,6 +74,37 @@ EXIT_PREFLIGHT_FAIL = 40
 # Absolute paths to the tools we shell out to (always run from the package dir).
 _DEPLOY_PY = _SCRIPT_DIR / "deploy.py"
 _PARITY_PY = _SCRIPT_DIR / "check_param_parity.py"
+
+# The patched Base pack (carries the param-parity probe in CommonServerPython) is
+# ALWAYS uploaded alongside the integration's own pack before the connector deploy.
+_BASE_PACK = "Packs/Base"
+
+
+def _integration_pack_dir(integration_yml_path: str) -> str | None:
+    """Derive the content-repo pack dir from an integration YML path.
+
+    ``Packs/AMP/Integrations/AMPv2/AMPv2.yml`` -> ``Packs/AMP``. Returns None if
+    the path is not under ``Packs/<pack>/`` (so the caller can skip it safely).
+    """
+    if not integration_yml_path:
+        return None
+    parts = Path(integration_yml_path).parts
+    if len(parts) >= 2 and parts[0] == "Packs":
+        return str(Path(parts[0]) / parts[1])
+    return None
+
+
+def _packs_to_upload(integration_yml_path: str) -> list[str]:
+    """Base pack + the integration's own pack, de-duped, order preserved.
+
+    The patched Base pack is always first (the probe must be present before the
+    integration pack so the param-parity capture works).
+    """
+    packs = [_BASE_PACK]
+    pack_dir = _integration_pack_dir(integration_yml_path)
+    if pack_dir and pack_dir not in packs:
+        packs.append(pack_dir)
+    return packs
 
 
 # ---------------------------------------------------------------------------
@@ -143,16 +179,31 @@ def _resolve_tenant(cli_tenant: str | None) -> str:
 # ---------------------------------------------------------------------------
 # Subprocess runners (mockable seams for tests)
 # ---------------------------------------------------------------------------
-def _run_deploy(tenant: str, commit_path: str | None = None) -> int:
+def _run_deploy(
+    tenant: str,
+    commit_path: str | None = None,
+    upload_packs: list[str] | None = None,
+    upload_insecure: bool = False,
+) -> int:
     """Run deploy.py --tenant <t> from the package dir; return its exit code.
 
     When ``commit_path`` is given, pass ``--commit-path`` so deploy.py
     stages+commits the connector dir before pushing (else the deploy branch may
     not contain the connector at all).
+
+    When ``upload_packs`` is given, pass one ``--upload-pack`` per pack dir so
+    deploy.py uploads them to the tenant (patched Base pack + the integration's
+    own pack) BEFORE the connector deploy — this removes the old manual
+    "upload Base + integration pack" prerequisite. ``upload_insecure`` adds
+    ``--upload-insecure`` (skip TLS validation) for self-signed tenant certs.
     """
     cmd = [sys.executable, str(_DEPLOY_PY), "--tenant", tenant]
     if commit_path:
         cmd += ["--commit-path", commit_path]
+    for pack in upload_packs or []:
+        cmd += ["--upload-pack", pack]
+    if upload_insecure:
+        cmd.append("--upload-insecure")
     log.info("Running deploy: %s", " ".join(cmd))
     proc = subprocess.run(cmd, cwd=str(_SCRIPT_DIR))
     return proc.returncode
@@ -211,7 +262,19 @@ def run(
     skip_preflight: bool = False,
     skip_deploy: bool = False,
 ) -> int:
-    """Preflight → acquire → deploy → parity(per id) → release(finally)."""
+    """Session-gate → preflight → acquire → deploy → parity(per id) → release(finally)."""
+    # ── Session gate (the environment is established ONCE by the human-run
+    # session_setup.py; here we only ASSUME it, auto-reviving a dead port-forward
+    # and hard-stopping with an actionable message on gcloud-auth expiry / no
+    # session). This replaces the old per-run gcloud/port-forward setup. ──
+    try:
+        session_env.assert_session_live()
+    except session_env.SessionNotReady as e:
+        print(f"\n❌ Param-parity session not ready: {e}", file=sys.stderr)
+        for integration_id in integration_ids:
+            _summary(integration_id, "SESSION_BLOCK", EXIT_PARITY_BLOCK)
+        return EXIT_PARITY_BLOCK
+
     # ── Preflight (cheap, before paying for a deploy) ──
     if not skip_preflight:
         if not _run_preflight(integration_ids):
@@ -254,15 +317,28 @@ def run(
         try:
             _pi = _resolver_mod.resolve(integration_ids[0])
             commit_path = _pi.connector_folder_path
+            # Patched Base pack + the integration's own pack, derived from the
+            # resolver's integration YML path. Uploaded to the tenant by deploy.py
+            # before the connector deploy (removes the manual upload prerequisite).
+            upload_packs = _packs_to_upload(_pi.integration_yml_path)
         except Exception:
             commit_path = None
+            # Fall back to at least the Base pack (probe) when resolution fails.
+            upload_packs = [_BASE_PACK]
+
+        # Self-signed tenant cert in the chain → demisto-sdk upload needs --insecure.
+        # Off by default; opt in via DEMISTO_VERIFY_SSL=false (or UPLOAD_INSECURE=true).
+        upload_insecure = (
+            os.getenv("DEMISTO_VERIFY_SSL", "").strip().lower() in ("false", "0", "no")
+            or os.getenv("UPLOAD_INSECURE", "").strip().lower() in ("true", "1", "yes")
+        )
 
         if skip_deploy:
             log.warning("--skip-deploy set: skipping deploy, running parity against the "
                         "ALREADY-deployed connector on tenant %s.", tenant)
         else:
-            # ── Deploy ONCE (commit connector + ff-push + pipeline) ──
-            deploy_rc = _run_deploy(tenant, commit_path)
+            # ── Deploy ONCE (upload packs + commit connector + ff-push + pipeline) ──
+            deploy_rc = _run_deploy(tenant, commit_path, upload_packs, upload_insecure)
             if deploy_rc == _DEPLOY_FAIL:
                 for integration_id in integration_ids:
                     _summary(integration_id, "DEPLOY_FAIL", EXIT_DEPLOY_FAIL)

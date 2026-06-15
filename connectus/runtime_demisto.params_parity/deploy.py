@@ -93,6 +93,9 @@ Environment variables (set in .env or shell):
     parser.add_argument("--diagnose", action="store_true", help="Run connectivity diagnostics and exit")
     parser.add_argument("--ssh-key", default=None, help="Path to the SSH private key git should use (overrides CONNECTUS_SSH_KEY; default ~/.ssh/id_ed25519)")
     parser.add_argument("--commit-path", default=None, help="Repo-relative path of the connector dir to stage+commit before pushing (e.g. connectors/aws). If unset, no commit is made (assumes content already committed).")
+    parser.add_argument("--upload-pack", action="append", default=None, dest="upload_packs", help="Content-repo pack dir to upload to the tenant via demisto-sdk BEFORE the connector deploy (repeatable, e.g. Packs/Base, Packs/AMP). Removes the manual 'upload Base + integration pack' prerequisite. If unset, no packs are uploaded.")
+    parser.add_argument("--upload-insecure", action="store_true", help="Pass --insecure to demisto-sdk upload (skip TLS cert validation). Needed for tenants with a self-signed cert in the chain.")
+    parser.add_argument("--skip-pack-upload", action="store_true", help="Skip the pack-upload step even if --upload-pack is given (e.g. packs already current on the tenant).")
     return parser.parse_args()
 
 
@@ -167,6 +170,16 @@ def get_config(args):
         # integration id via the resolver); it is NOT an env var.
         # Empty = no commit (assumes content already committed).
         "commit_path": args.commit_path or "",
+        # Content-repo pack dirs uploaded to the tenant (via demisto-sdk) BEFORE
+        # the connector deploy, so deploying no longer requires the engineer to
+        # manually upload the patched Base pack + the integration's own pack.
+        # Comes from --upload-pack only (deploy_and_test.py derives them from the
+        # integration id via the resolver); empty list = upload nothing.
+        "upload_packs": list(args.upload_packs or []),
+        # Skip TLS cert validation for the upload (self-signed tenant cert).
+        "upload_insecure": args.upload_insecure,
+        # Bypass the upload step even if packs were supplied.
+        "skip_pack_upload": args.skip_pack_upload,
     }
 
 
@@ -475,6 +488,70 @@ def git_operations(config):
     success(f"Pushed '{branch}' to origin")
 
 
+# ── Content Pack Upload ─────────────────────────────────────────────────────
+
+# Content-repo root = the directory holding the canonical root .env (loaded by
+# load_env above). Pack paths (Packs/Base, Packs/<pack>) are resolved against it.
+_CONTENT_REPO_ROOT = Path(_ENV_PATH).resolve().parent
+
+
+def upload_packs(config):
+    """Upload the required content packs to the tenant BEFORE the connector deploy.
+
+    Replaces the old manual prerequisite ("upload the patched Base pack + the
+    integration's own pack with demisto-sdk"). Each pack dir in
+    ``config['upload_packs']`` is uploaded with::
+
+        demisto-sdk upload -i <pack> -z -mp platform [--insecure]
+
+    The tenant/auth come from the env (DEMISTO_BASE_URL / DEMISTO_API_KEY /
+    XSIAM_AUTH_ID), already loaded from the root .env and inherited by the
+    subprocess. ``--insecure`` (config['upload_insecure']) skips TLS validation
+    for tenants whose chain has a self-signed cert.
+
+    Exits non-zero on the first failed upload — a missing Base probe or integration
+    pack makes the downstream param-parity capture meaningless.
+    """
+    header("Step 0: Upload Content Packs To Tenant")
+
+    if config.get("skip_pack_upload"):
+        warn("--skip-pack-upload set: not uploading content packs (assuming they "
+             "are already current on the tenant).")
+        return
+
+    packs = config.get("upload_packs") or []
+    if not packs:
+        info("No content packs to upload (none supplied) — skipping.")
+        return
+
+    for pack in packs:
+        pack_path = Path(pack)
+        if not pack_path.is_absolute():
+            pack_path = (_CONTENT_REPO_ROOT / pack).resolve()
+        if not pack_path.is_dir():
+            error(f"Pack directory not found: {pack_path}")
+            print(f"  Resolved from --upload-pack {pack!r} against {_CONTENT_REPO_ROOT}")
+            sys.exit(1)
+
+        cmd = ["demisto-sdk", "upload", "-i", str(pack_path), "-z", "-mp", "platform"]
+        if config.get("upload_insecure"):
+            cmd.append("--insecure")
+
+        info(f"Uploading pack '{pack}' → tenant {config['tenant_ids']} ...")
+        info(f"  {' '.join(cmd)}")
+        # Inherit the current environment (carries the .env-loaded DEMISTO_*
+        # auth vars that demisto-sdk reads). Stream output so the engineer sees
+        # demisto-sdk progress live.
+        result = subprocess.run(cmd, cwd=str(_CONTENT_REPO_ROOT), env=os.environ.copy())
+        if result.returncode != 0:
+            error(f"Failed to upload pack '{pack}' (demisto-sdk exit {result.returncode})")
+            print("  Check DEMISTO_BASE_URL / DEMISTO_API_KEY / XSIAM_AUTH_ID in your .env,")
+            print("  network/VPN access to the tenant, and (for a self-signed cert) that")
+            print("  --upload-insecure is set.")
+            sys.exit(1)
+        success(f"Uploaded pack '{pack}'")
+
+
 # ── Pipeline Operations ────────────────────────────────────────────────────
 
 def trigger_pipeline(config):
@@ -593,6 +670,12 @@ def main():
 
     print(f"\n{Colors.BOLD}🚀 Unified Connectors — Dev Deployment{Colors.RESET}")
     print(f"{Colors.DIM}Config: {_ENV_PATH}{Colors.RESET}\n")
+
+    # Step 0: Upload required content packs (patched Base pack + the integration's
+    # own pack) to the tenant. This used to be a manual prerequisite; it is now
+    # part of the deploy so the param-parity capture has the probe + integration
+    # present. No-op when no packs are supplied or --skip-pack-upload is set.
+    upload_packs(config)
 
     # Step 1: Git operations — commit the connector dir to the engineer's personal
     # branch (xsoar-migration-<name>) and fast-forward push it so the pipeline

@@ -931,7 +931,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    integration_id = "WildFire-v2"
+    integration_id = "QRadar v3"
     out_dir = Path(args.out_dir)
     out_dir = Path.cwd().parent / "unified-connectors-content" / "connectors"
     print(out_dir)
