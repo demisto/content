@@ -1,0 +1,60 @@
+{
+  "integration_id": "CIRCL",
+  "connector_id": "CIRCL",
+  "connector_folder_path": "",
+  "assignee": "jlevypaloalto",
+  "file_paths": {
+    "yml": "Packs/CIRCL/Integrations/CIRCL/CIRCL.yml",
+    "code": "Packs/CIRCL/Integrations/CIRCL/CIRCL.py",
+    "description": null,
+    "readme": "Packs/CIRCL/Integrations/CIRCL/README.md",
+    "test": null
+  },
+  "data_columns": {
+    "Auth Details": {
+      "auth_types": [
+        {
+          "type": "Plain",
+          "name": "credentials",
+          "xsoar_param_map": {
+            "credentials.identifier": "username",
+            "credentials.password": "password"
+          },
+          "interpolated": true
+        }
+      ],
+      "other_connection": [
+        "insecure",
+        "proxy",
+        "url"
+      ]
+    },
+    "Params to Commands": {
+      "integration": "CIRCL",
+      "commands": {
+        "test-module": [],
+        "circl-dns-get": [],
+        "circl-ssl-list-certificates": [],
+        "circl-ssl-query-certificate": [],
+        "circl-ssl-get-certificate": []
+      }
+    },
+    "Params for test with default in code": {},
+    "Params to Capabilities": {
+      "Automation": [],
+      "general_configurations": []
+    },
+    "Release Notes": null
+  },
+  "auth_ignore_params": [
+    "credentials",
+    "insecure",
+    "proxy",
+    "url"
+  ],
+  "current_step": "generated manifest",
+  "current_step_index": 8,
+  "completed_steps": 7,
+  "total_steps": 15,
+  "all_complete": false
+}

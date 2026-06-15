@@ -1,0 +1,47 @@
+{
+  "integration_id": "CIRCL CVE Search",
+  "connector_id": "CIRCL",
+  "connector_folder_path": "",
+  "assignee": "jlevypaloalto",
+  "file_paths": {
+    "yml": "Packs/CIRCL/Integrations/CirclCVESearch/CirclCVESearch.yml",
+    "code": "Packs/CIRCL/Integrations/CirclCVESearch/CirclCVESearch.py",
+    "description": "Packs/CIRCL/Integrations/CirclCVESearch/CirclCVESearch_description.md",
+    "readme": "Packs/CIRCL/Integrations/CirclCVESearch/README.md",
+    "test": "Packs/CIRCL/Integrations/CirclCVESearch/CirclCVESearch_test.py"
+  },
+  "data_columns": {
+    "Auth Details": {
+      "auth_types": [],
+      "other_connection": [
+        "insecure",
+        "proxy",
+        "url"
+      ]
+    },
+    "Params to Commands": {
+      "integration": "CIRCL CVE Search",
+      "commands": {
+        "test-module": [],
+        "cve": [],
+        "cve-latest": []
+      }
+    },
+    "Params for test with default in code": {},
+    "Params to Capabilities": {
+      "Automation": [],
+      "general_configurations": []
+    },
+    "Release Notes": null
+  },
+  "auth_ignore_params": [
+    "insecure",
+    "proxy",
+    "url"
+  ],
+  "current_step": "generated manifest",
+  "current_step_index": 8,
+  "completed_steps": 7,
+  "total_steps": 15,
+  "all_complete": false
+}

@@ -1,0 +1,55 @@
+{
+  "integration_id": "Demisto Lock",
+  "connector_id": "None - Local Utitilites",
+  "connector_folder_path": "",
+  "assignee": "jlevypaloalto",
+  "file_paths": {
+    "yml": "Packs/DemistoLocking/Integrations/DemistoLock/DemistoLock.yml",
+    "code": "Packs/DemistoLocking/Integrations/DemistoLock/DemistoLock.js",
+    "description": "Packs/DemistoLocking/Integrations/DemistoLock/DemistoLock_description.md",
+    "readme": "Packs/DemistoLocking/Integrations/DemistoLock/README.md",
+    "test": null
+  },
+  "data_columns": {
+    "Auth Details": {
+      "auth_types": [],
+      "other_connection": []
+    },
+    "Params to Commands": {
+      "integration": "Demisto Lock",
+      "commands": {
+        "test-module": [],
+        "demisto-lock-get": [
+          "timeout",
+          "polling_interval",
+          "sync"
+        ],
+        "demisto-lock-release": [
+          "sync"
+        ],
+        "demisto-lock-release-all": [
+          "sync"
+        ],
+        "demisto-lock-info": [
+          "sync"
+        ]
+      }
+    },
+    "Params for test with default in code": {},
+    "Params to Capabilities": {
+      "Automation": [
+        "timeout",
+        "polling_interval",
+        "sync"
+      ],
+      "general_configurations": []
+    },
+    "Release Notes": null
+  },
+  "auth_ignore_params": [],
+  "current_step": "generated manifest",
+  "current_step_index": 8,
+  "completed_steps": 7,
+  "total_steps": 15,
+  "all_complete": false
+}

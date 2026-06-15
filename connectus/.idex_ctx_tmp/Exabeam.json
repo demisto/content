@@ -1,0 +1,133 @@
+{
+  "integration_id": "Exabeam",
+  "connector_id": "Exabeam",
+  "connector_folder_path": "",
+  "assignee": "jlevypaloalto",
+  "file_paths": {
+    "yml": "Packs/Exabeam/Integrations/Exabeam/Exabeam.yml",
+    "code": "Packs/Exabeam/Integrations/Exabeam/Exabeam.py",
+    "description": "Packs/Exabeam/Integrations/Exabeam/Exabeam_description.md",
+    "readme": "Packs/Exabeam/Integrations/Exabeam/README.md",
+    "test": "Packs/Exabeam/Integrations/Exabeam/Exabeam_test.py"
+  },
+  "data_columns": {
+    "Auth Details": {
+      "auth_types": [
+        {
+          "type": "APIKey",
+          "name": "api_token",
+          "xsoar_param_map": {
+            "api_token.password": "key"
+          },
+          "interpolated": true
+        },
+        {
+          "type": "Plain",
+          "name": "credentials",
+          "xsoar_param_map": {
+            "credentials.identifier": "username",
+            "credentials.password": "password"
+          },
+          "interpolated": true
+        }
+      ],
+      "other_connection": [
+        "insecure",
+        "proxy",
+        "url"
+      ]
+    },
+    "Params to Commands": {
+      "integration": "Exabeam",
+      "commands": {
+        "test-module": [
+          "fetch_type",
+          "max_fetch_users",
+          "notable_users_fetch_interval"
+        ],
+        "fetch-incidents": [
+          "fetch_type",
+          "look_back",
+          "first_fetch",
+          "incident_type",
+          "priority",
+          "status",
+          "max_fetch",
+          "notable_users_fetch_interval",
+          "notable_users_first_fetch",
+          "max_fetch_users",
+          "minimum_risk_score_to_fetch_users"
+        ],
+        "get-notable-users": [],
+        "exabeam-get-notable-users": [],
+        "get-watchlists": [],
+        "exabeam-get-watchlists": [],
+        "get-peer-groups": [],
+        "exabeam-get-peer-groups": [],
+        "get-user-info": [],
+        "exabeam-get-user-info": [],
+        "get-user-labels": [],
+        "exabeam-get-user-labels": [],
+        "get-user-sessions": [],
+        "exabeam-get-user-sessions": [],
+        "exabeam-delete-watchlist": [],
+        "exabeam-get-asset-data": [],
+        "exabeam-get-session-info-by-id": [],
+        "exabeam-list-top-domains": [],
+        "exabeam-list-triggered-rules": [],
+        "exabeam-get-asset-info": [],
+        "exabeam-list-asset-timeline-next-events": [],
+        "exabeam-list-security-alerts-by-asset": [],
+        "exabeam-search-rules": [],
+        "exabeam-get-rule-string": [],
+        "exabeam-fetch-rules": [],
+        "exabeam-get-rules-model-definition": [],
+        "exabeam-watchlist-add-items": [],
+        "exabeam-watchlist-asset-search": [],
+        "exabeam-watchlist-remove-items": [],
+        "exabeam-list-context-table-records": [],
+        "exabeam-add-context-table-records": [],
+        "exabeam-update-context-table-records": [],
+        "exabeam-get-context-table-in-csv": [],
+        "exabeam-add-context-table-records-from-csv": [],
+        "exabeam-delete-context-table-records": [],
+        "exabeam-get-notable-assets": [],
+        "exabeam-get-notable-session-details": [],
+        "exabeam-get-notable-sequence-details": [],
+        "exabeam-get-sequence-eventtypes": [],
+        "exabeam-list-incident": []
+      }
+    },
+    "Params for test with default in code": {},
+    "Params to Capabilities": {
+      "Automation": [],
+      "Fetch Issues": [
+        "fetch_type",
+        "look_back",
+        "first_fetch",
+        "incident_type",
+        "priority",
+        "status",
+        "max_fetch",
+        "notable_users_fetch_interval",
+        "notable_users_first_fetch",
+        "max_fetch_users",
+        "minimum_risk_score_to_fetch_users"
+      ],
+      "general_configurations": []
+    },
+    "Release Notes": null
+  },
+  "auth_ignore_params": [
+    "api_token",
+    "credentials",
+    "insecure",
+    "proxy",
+    "url"
+  ],
+  "current_step": "generated manifest",
+  "current_step_index": 8,
+  "completed_steps": 7,
+  "total_steps": 15,
+  "all_complete": false
+}

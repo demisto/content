@@ -1,0 +1,83 @@
+{
+  "integration_id": "ExabeamSecOpsPlatform",
+  "connector_id": "Exabeam",
+  "connector_folder_path": "",
+  "assignee": "jlevypaloalto",
+  "file_paths": {
+    "yml": "Packs/ExabeamSecurityOperationsPlatform/Integrations/ExabeamSecOpsPlatform/ExabeamSecOpsPlatform.yml",
+    "code": "Packs/ExabeamSecurityOperationsPlatform/Integrations/ExabeamSecOpsPlatform/ExabeamSecOpsPlatform.py",
+    "description": "Packs/ExabeamSecurityOperationsPlatform/Integrations/ExabeamSecOpsPlatform/ExabeamSecOpsPlatform_description.md",
+    "readme": "Packs/ExabeamSecurityOperationsPlatform/Integrations/ExabeamSecOpsPlatform/README.md",
+    "test": "Packs/ExabeamSecurityOperationsPlatform/Integrations/ExabeamSecOpsPlatform/ExabeamSecOpsPlatform_test.py"
+  },
+  "data_columns": {
+    "Auth Details": {
+      "auth_types": [
+        {
+          "type": "Passthrough",
+          "name": "credentials",
+          "xsoar_param_map": {
+            "credentials.identifier": "client_id",
+            "credentials.password": "client_secret"
+          },
+          "interpolated": true
+        }
+      ],
+      "other_connection": [
+        "insecure",
+        "proxy",
+        "url"
+      ]
+    },
+    "Params to Commands": {
+      "integration": "ExabeamSecOpsPlatform",
+      "commands": {
+        "test-module": [
+          "fetch_query",
+          "max_fetch",
+          "first_fetch"
+        ],
+        "fetch-incidents": [
+          "fetch_query",
+          "max_fetch",
+          "first_fetch"
+        ],
+        "fetch-events": [
+          "max_events_fetch"
+        ],
+        "exabeam-platform-event-search": [],
+        "exabeam-platform-get-events": [],
+        "exabeam-platform-case-search": [],
+        "exabeam-platform-alert-search": [],
+        "exabeam-platform-context-table-list": [],
+        "exabeam-platform-context-table-delete": [],
+        "exabeam-platform-table-record-list": [],
+        "exabeam-platform-table-record-create": [],
+        "exabeam-get-threat-summary": [],
+        "exabeam-update-case-details": [],
+        "exabeam-platform-list-case-notes": [],
+        "exabeam-platform-create-case-note": []
+      }
+    },
+    "Params for test with default in code": {},
+    "Params to Capabilities": {
+      "Automation": [],
+      "Log Collection": [
+        "max_events_fetch"
+      ],
+      "general_configurations": []
+    },
+    "Release Notes": null
+  },
+  "auth_ignore_params": [
+    "credentials",
+    "insecure",
+    "proxy",
+    "url"
+  ],
+  "current_step": "generated manifest",
+  "current_step_index": 8,
+  "completed_steps": 7,
+  "total_steps": 15,
+  "all_complete": false
+}

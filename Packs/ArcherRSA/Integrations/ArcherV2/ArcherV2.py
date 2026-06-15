@@ -1695,7 +1695,7 @@ def fetch_incidents(client: Client, params: dict, from_time: datetime, fetch_par
     # Not using get method as those params are a must
     app_id = params["applicationId"]
     date_field = params["applicationDateField"]
-    max_results = arg_to_number(params.get("fetch_limit")) or 10
+    max_results = arg_to_number(params.get("fetch_limit") or 10)
     fields_to_display = argToList(params.get("fields_to_fetch"))
     fields_to_display.append(date_field)
     xml_filter_conditions = params.get("fetch_xml")  # API uses "AND" logical operator by default to join multiple filters

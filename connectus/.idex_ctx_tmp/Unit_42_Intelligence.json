@@ -1,0 +1,62 @@
+{
+  "integration_id": "Unit 42 Intelligence",
+  "connector_id": "None - Local Utitilites",
+  "connector_folder_path": "",
+  "assignee": "jlevypaloalto",
+  "file_paths": {
+    "yml": "Packs/Unit42ThreatIntelligencebyPaloAltoNetworks/Integrations/Unit42Intelligence/Unit42Intelligence.yml",
+    "code": "Packs/Unit42ThreatIntelligencebyPaloAltoNetworks/Integrations/Unit42Intelligence/Unit42Intelligence.py",
+    "description": "Packs/Unit42ThreatIntelligencebyPaloAltoNetworks/Integrations/Unit42Intelligence/Unit42Intelligence_description.md",
+    "readme": "Packs/Unit42ThreatIntelligencebyPaloAltoNetworks/Integrations/Unit42Intelligence/README.md",
+    "test": "Packs/Unit42ThreatIntelligencebyPaloAltoNetworks/Integrations/Unit42Intelligence/Unit42Intelligence_test.py"
+  },
+  "data_columns": {
+    "Auth Details": {
+      "auth_types": [],
+      "other_connection": [
+        "insecure",
+        "proxy"
+      ]
+    },
+    "Params to Commands": {
+      "integration": "Unit 42 Intelligence",
+      "commands": {
+        "test-module": [],
+        "ip": [
+          "create_relationships",
+          "create_threat_object_indicators"
+        ],
+        "domain": [
+          "create_relationships",
+          "create_threat_object_indicators"
+        ],
+        "url": [
+          "create_relationships",
+          "create_threat_object_indicators"
+        ],
+        "file": [
+          "create_relationships",
+          "create_threat_object_indicators"
+        ]
+      }
+    },
+    "Params for test with default in code": {},
+    "Params to Capabilities": {
+      "Automation": [
+        "create_relationships",
+        "create_threat_object_indicators"
+      ],
+      "general_configurations": []
+    },
+    "Release Notes": null
+  },
+  "auth_ignore_params": [
+    "insecure",
+    "proxy"
+  ],
+  "current_step": "generated manifest",
+  "current_step_index": 8,
+  "completed_steps": 7,
+  "total_steps": 15,
+  "all_complete": false
+}
