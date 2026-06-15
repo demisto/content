@@ -132,13 +132,13 @@ except Exception as e:
 
 # Memory pressure tolerance (in bytes): if available memory drops below this value while a page
 # is loading, wait_for_page_load_with_memory_guard will abort the wait and take a screenshot of
-# whatever has rendered so far, preventing an OOM kill.  Defaults to 450MB.
+# whatever has rendered so far, preventing an OOM kill.  Defaults to 650MB.
 try:
-    _env_tolerance_mb = os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "450")
+    _env_tolerance_mb = os.getenv("MEMORY_PRESSURE_TOLERANCE_MB", "650")
     MEMORY_PRESSURE_TOLERANCE_BYTES = int(_env_tolerance_mb) * 1024 * 1024
 except Exception as e:
     demisto.info(f"Exception trying to parse MEMORY_PRESSURE_TOLERANCE_MB, {e}")
-    MEMORY_PRESSURE_TOLERANCE_BYTES = 450 * 1024 * 1024
+    MEMORY_PRESSURE_TOLERANCE_BYTES = 650 * 1024 * 1024
 
 IS_LIGHTWEIGHT = argToBoolean(demisto.params().get("lightweight", False))
 if IS_LIGHTWEIGHT:  # In lightweight mode, we only allow one Chrome instance and one tab per instance
@@ -376,7 +376,7 @@ def wait_for_page_load_with_memory_guard(
     tab_ready_event: Event,
     navigation_timeout: int,
     tolerance_bytes: int = MEMORY_PRESSURE_TOLERANCE_BYTES,
-    poll_interval: float = 0.5,
+    poll_interval: float = 0.1,
     tab_id: str = "",
     path: str = "",
     tab: Optional[pychrome.Tab] = None,
@@ -419,9 +419,7 @@ def wait_for_page_load_with_memory_guard(
     while True:
         # Check if the page has finished loading.
         if tab_ready_event.wait(timeout=poll_interval):
-            _safe_call_cdp_with_args(tab, "Page.stopLoading", tab_id, path)
-            _safe_call_cdp_with_args(tab, "HeapProfiler.collectGarbage", tab_id, path)  # reclaim unreachable JS objects
-            _safe_call_cdp_with_args(tab, "Memory.forciblyPurgeJavaScriptMemory", tab_id, path)  # more aggressive purge
+            _freeze_tab_for_screenshot(tab, tab_id, path)
             demisto.debug(
                 f"wait_for_page_load_with_memory_guard: normal completion, "
                 f"available={get_container_available_memory_bytes() / (1024 * 1024):.1f} MiB, "
