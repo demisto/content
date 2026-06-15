@@ -5,10 +5,10 @@ sectionorder:
 - Connect
 - Collect
 name: Trend Micro Deep Discovery Analyzer
-display: Trend Micro Deep Discovery Analyzer (Beta)
+display: TrendAI™ Deep Discovery™ Analyzer (Beta)
 category: Forensics & Malware Analysis
-provider: Trend Micro
-description: Deep Discovery Analyzer is a turnkey appliance that uses virtual images of endpoint configurations to analyze and detect targeted attacks.
+provider: TrendAI™
+description: TrendAI™ Deep Discovery™ Analyzer is a turnkey appliance that uses virtual images of endpoint configurations to analyze and detect targeted attacks.
 configuration:
 - display: DDA Server and Port  (e.g https://192.168.0.1:<port>)
   name: server
@@ -262,7 +262,7 @@ script:
     - contextPath: TrendMicroDDA.Submission.URL
       description: The submitted URL.
       type: string
-    description: 'Upload a URL to Trend Micro DDA '
+    description: 'Upload a URL to TrendAI™ DDA '
   - name: trendmicro-dda-upload-file
     arguments:
     - name: entryID
@@ -273,7 +273,7 @@ script:
     - contextPath: TrendMicroDDA.Submission.SHA1
       description: The SHA1 of the submission.
       type: string
-    description: 'Upload a file to Trend Micro DDA '
+    description: 'Upload a file to TrendAI™ DDA '
   - name: trendmicro-dda-get-brief-report
     arguments:
     - name: sha1

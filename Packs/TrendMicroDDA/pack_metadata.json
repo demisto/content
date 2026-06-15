@@ -1,5 +1,5 @@
 {
-    "name": "Trend Micro Deep Discovery Analyzer",
+    "name": "TrendAI™ Deep Discovery™ Analyzer",
     "description": "Deep Discovery Analyzer is a turnkey appliance that uses virtual images of endpoint configurations to analyze and detect targeted attacks.",
     "support": "xsoar",
     "currentVersion": "1.0.23",
