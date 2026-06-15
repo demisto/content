@@ -225,8 +225,8 @@ def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
 
-    is_disable_enabled = argToBoolean(params.get("disable-user-enabled"))
-    is_enable_enabled = argToBoolean(params.get("enable-user-enabled"))
+    is_disable_enabled = argToBoolean(params.get("disable-user-enabled", False))
+    is_enable_enabled = argToBoolean(params.get("enable-user-enabled", False))
 
     iam_command = IAMCommand(
         is_create_enabled=False,
