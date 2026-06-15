@@ -3,8 +3,8 @@ name: O365 Message Trace
 category: Analytics & SIEM
 provider: Microsoft
 commonfields:
-  id: O365 Message Trace
-  version: -1
+    id: O365 Message Trace
+    version: 11
 configuration:
 - name: url
   display: Server URL
@@ -12,7 +12,7 @@ configuration:
   defaultvalue: https://graph.microsoft.com
   type: 0
   section: Connect
-  additionalinfo: The Microsoft Graph base URL.
+  additionalinfo: The Microsoft \r\n Graph base URL.
 - name: tenant_id
   display: Tenant ID
   required: false
@@ -94,8 +94,8 @@ configuration:
   section: Collect
 - name: isFetchEvents
   display: Fetch Events
-  required: false
-  type: 8
+  required: "false"
+  type: "8"
   section: Collect
 - defaultvalue: '1'
   display: Events Fetch Interval
@@ -124,7 +124,7 @@ script:
     arguments:
     - name: limit
       description: The maximum number of events to return.
-      defaultValue: '50'
+      defaultValue: "50"
     - name: start_time
       description: Filter events received at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "10 minutes ago", "2024-01-01T00:00:00Z").
     - name: end_time
@@ -133,16 +133,16 @@ script:
       description: Whether the command sends the retrieved events to Cortex XSIAM. If false, it only displays them.
       auto: PREDEFINED
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
       defaultValue: 'false'
     outputs:
     - contextPath: O365MessageTrace.Event.id
       description: The unique identifier of the message trace event.
       type: String
-    - contextPath: O365MessageTrace.Event.receivedDateTime
-      description: The timestamp when the message was received (e.g., "2020-01-01T00:11:22Z").
-      type: Date
+        - contextPath: O365MessageTrace.Event.receivedDateTime
+          description: The timestamp when the message was received (e.g., "2020-01-01T00:11:22Z").
+          type: Date
     - contextPath: O365MessageTrace.Event.senderAddress
       description: The sender email address.
       type: String
@@ -161,17 +161,21 @@ script:
   isfetchevents: true
   runonce: false
   script: '-'
+  # hi there
+  # TODO: remove this line
   type: python
   subtype: python3
   dockerimage: demisto/crypto:1.0.0.8187750
-fromversion: 8.4.0
-marketplaces:
-- marketplacev2
-- platform
+
+
+marketplaces: [marketplacev2222, platform]
 supportedModules:
-- xsiam
+- xpanse
 tests:
 - No tests (auto formatted)
-sectionorder:
-- Connect
-- Collect
+sectionOrder:
+- Connect - Collect
+
+
+
+
