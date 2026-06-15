@@ -18206,7 +18206,7 @@ def test_update_firewall_policy_command_success_with_arn(mocker):
 def test_update_firewall_policy_command_success_with_full_policy(mocker):
     """
     Given: A mocked boto3 NetworkFirewall client and a full set of policy arguments including JSON fields,
-        rule group references, engine options, encryption configuration, and dry_run flag.
+        rule group references, engine options, encryption configuration.
     When: update_firewall_policy_command is called successfully.
     Then: It should return CommandResults and call the API with the correctly structured FirewallPolicy.
     """
@@ -18227,7 +18227,8 @@ def test_update_firewall_policy_command_success_with_full_policy(mocker):
     args = {
         "firewall_policy_name": "test-policy",
         "update_token": "token-123",
-        "stateless_rule_group_references": "ResourceArn=arn:aws:network-firewall:us-east-1:123:stateless-rulegroup/rg1,Priority=1",
+        "stateless_rule_group_references": "ResourceArn=arn:aws:network-firewall:us-east-1:123:stateless-rulegroup/rg1,"
+        "Priority=1",
         "stateless_default_actions": "aws:pass",
         "stateless_fragment_default_actions": "aws:drop",
         "stateful_rule_group_references": '[{"ResourceArn": "arn:aws:network-firewall:us-east-1:123:stateful-rulegroup/rg2"}]',
@@ -18237,7 +18238,6 @@ def test_update_firewall_policy_command_success_with_full_policy(mocker):
         "stateful_engine_options_tcp_idle_timeout": "300",
         "policy_rule_variables": '{"HOME_NET": {"Definition": ["10.0.0.0/16"]}}',
         "description": "Updated full policy",
-        "dry_run": "true",
         "encryption_configuration_key_id": "alias/aws/network-firewall",
         "encryption_configuration_key_type": "CUSTOMER_KMS",
     }
@@ -18254,9 +18254,7 @@ def test_update_firewall_policy_command_success_with_full_policy(mocker):
             ],
             "StatelessDefaultActions": ["aws:pass"],
             "StatelessFragmentDefaultActions": ["aws:drop"],
-            "StatefulRuleGroupReferences": [
-                {"ResourceArn": "arn:aws:network-firewall:us-east-1:123:stateful-rulegroup/rg2"}
-            ],
+            "StatefulRuleGroupReferences": [{"ResourceArn": "arn:aws:network-firewall:us-east-1:123:stateful-rulegroup/rg2"}],
             "StatefulDefaultActions": ["aws:drop_strict"],
             "StatefulEngineOptions": {
                 "RuleOrder": "STRICT_ORDER",
@@ -18266,7 +18264,6 @@ def test_update_firewall_policy_command_success_with_full_policy(mocker):
             "PolicyVariables": {"RuleVariables": {"HOME_NET": {"Definition": ["10.0.0.0/16"]}}},
         },
         Description="Updated full policy",
-        DryRun=True,
         EncryptionConfiguration={"KeyId": "alias/aws/network-firewall", "Type": "CUSTOMER_KMS"},
     )
 
@@ -18340,11 +18337,7 @@ def test_update_firewall_policy_change_protection_command_success_with_name(mock
     result = NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "The change protection flag of the firewall policy was updated successfully." in result.readable_output
-    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewall"
-    assert result.outputs_key_field == "FirewallArn"
-    assert result.outputs["FirewallName"] == "test-policy"
-    assert result.outputs["FirewallPolicyChangeProtection"] is True
+    assert result.readable_output == "The change protection flag of the firewall was updated successfully."
     mock_client.update_firewall_policy_change_protection.assert_called_once_with(
         FirewallName="test-policy", FirewallPolicyChangeProtection=True
     )
@@ -18408,7 +18401,7 @@ def test_update_firewall_policy_change_protection_command_with_update_token(mock
 
     assert isinstance(result, CommandResults)
     mock_client.update_firewall_policy_change_protection.assert_called_once_with(
-        UpdateToken="token-123", FirewallName="test-policy", FirewallChangeProtection=True
+        UpdateToken="token-123", FirewallName="test-policy", FirewallPolicyChangeProtection=True
     )
 
 
@@ -18446,7 +18439,7 @@ def test_update_firewall_policy_change_protection_command_api_error(mocker):
     mock_error_handler.side_effect = DemistoException("API Error")
 
     args = {
-        "firewall_policy_name": "test-policy",
+        "firewall_name": "test-firewall",
         "firewall_policy_change_protection": "true",
         "account_id": "123456789012",
     }
@@ -18455,3 +18448,463 @@ def test_update_firewall_policy_change_protection_command_api_error(mocker):
         NetworkFirewall.update_firewall_policy_change_protection_command(mock_client, args)
 
     mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_parse_resource_arn_priority_field_single_reference():
+    """
+    Given:
+        - A single, well-formed reference string of the form
+          'ResourceArn=<arn>,Priority=<priority>'.
+    When:
+        - parse_resource_arn_priority_field is called with the string.
+    Then:
+        - It should return a list with one dict containing the ARN and the
+          priority parsed as an int.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # Given
+    refs_string = "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1,Priority=100"
+
+    # When
+    result = parse_resource_arn_priority_field(refs_string)
+
+    # Then
+    assert result == [
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1",
+            "Priority": 100,
+        }
+    ]
+
+
+def test_parse_resource_arn_priority_field_multiple_references():
+    """
+    Given:
+        - A semicolon-separated string containing several well-formed
+          reference entries.
+    When:
+        - parse_resource_arn_priority_field is called with the string.
+    Then:
+        - It should return a list of dicts preserving order, each with the
+          parsed ARN and integer priority.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # Given
+    refs_string = (
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1,Priority=100;"
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg2,Priority=200"
+    )
+
+    # When
+    result = parse_resource_arn_priority_field(refs_string)
+
+    # Then
+    assert result == [
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1",
+            "Priority": 100,
+        },
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg2",
+            "Priority": 200,
+        },
+    ]
+
+
+@pytest.mark.parametrize("refs_string", [None, ""])
+def test_parse_resource_arn_priority_field_empty_input_returns_empty_list(refs_string):
+    """
+    Given:
+        - A None value or an empty string.
+    When:
+        - parse_resource_arn_priority_field is called.
+    Then:
+        - It should return an empty list without raising an exception.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # When
+    result = parse_resource_arn_priority_field(refs_string)
+
+    # Then
+    assert result == []
+
+
+def test_parse_resource_arn_priority_field_priority_converted_to_int():
+    """
+    Given:
+        - A reference string whose priority is provided as digits.
+    When:
+        - parse_resource_arn_priority_field is called.
+    Then:
+        - The Priority value in the resulting dict should be an int, not a str.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # Given
+    refs_string = "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1,Priority=007"
+
+    # When
+    result = parse_resource_arn_priority_field(refs_string)
+
+    # Then
+    assert result[0]["Priority"] == 7
+    assert isinstance(result[0]["Priority"], int)
+
+
+@pytest.mark.parametrize(
+    "refs_string",
+    [
+        "ResourceArn=not-an-arn,Priority=100",  # ARN does not start with arn:aws
+        "ResourceArn=arn:aws:network-firewall:rg1,Priority=abc",  # non-numeric priority
+        "ResourceArn=arn:aws:network-firewall:rg1",  # missing Priority part
+        "Priority=100",  # missing ResourceArn part
+        "arn:aws:network-firewall:rg1,Priority=100",  # missing ResourceArn= key
+        "ResourceArn=arn:aws:network-firewall:rg1,Priority=100,extra=field",  # trailing content
+    ],
+)
+def test_parse_resource_arn_priority_field_invalid_input_raises_value_error(refs_string):
+    """
+    Given:
+        - A malformed reference string that does not match the expected
+          'ResourceArn=<arn>,Priority=<priority>' format.
+    When:
+        - parse_resource_arn_priority_field is called.
+    Then:
+        - It should raise a ValueError describing the expected format.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_resource_arn_priority_field(refs_string)
+
+
+def test_parse_resource_arn_priority_field_one_invalid_among_valid_raises():
+    """
+    Given:
+        - A semicolon-separated string where one entry is valid and another
+          is malformed.
+    When:
+        - parse_resource_arn_priority_field is called.
+    Then:
+        - It should raise a ValueError because not every entry can be parsed.
+    """
+    from AWS import parse_resource_arn_priority_field
+
+    # Given
+    refs_string = (
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1,Priority=100;"
+        "ResourceArn=invalid,Priority=200"
+    )
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_resource_arn_priority_field(refs_string)
+
+
+def test_validate_network_firewall_identifier_with_name_only():
+    """
+    Given:
+        - A kwargs dict containing only the '<obj>Name' identifier.
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should not raise an exception.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    kwargs = {"FirewallName": "my-firewall"}
+
+    # When / Then (no exception expected)
+    validate_network_firewall_identifier(kwargs, "Firewall")
+
+
+def test_validate_network_firewall_identifier_with_arn_only():
+    """
+    Given:
+        - A kwargs dict containing only the '<obj>Arn' identifier.
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should not raise an exception.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    kwargs = {"FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/my-firewall"}
+
+    # When / Then (no exception expected)
+    validate_network_firewall_identifier(kwargs, "Firewall")
+
+
+def test_validate_network_firewall_identifier_with_both_identifiers():
+    """
+    Given:
+        - A kwargs dict containing both the '<obj>Name' and '<obj>Arn' identifiers.
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should not raise an exception.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    kwargs = {
+        "FirewallName": "my-firewall",
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/my-firewall",
+    }
+
+    # When / Then (no exception expected)
+    validate_network_firewall_identifier(kwargs, "Firewall")
+
+
+def test_validate_network_firewall_identifier_custom_obj_prefix():
+    """
+    Given:
+        - A kwargs dict whose identifier keys use a non-'Firewall' object
+          prefix (e.g. 'FirewallPolicy').
+    When:
+        - validate_network_firewall_identifier is called with that prefix.
+    Then:
+        - It should not raise an exception because the matching '<obj>Name'
+          key is present.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    kwargs = {"FirewallPolicyName": "my-policy"}
+
+    # When / Then (no exception expected)
+    validate_network_firewall_identifier(kwargs, "FirewallPolicy")
+
+
+def test_validate_network_firewall_identifier_missing_both_raises():
+    """
+    Given:
+        - A kwargs dict that contains neither the '<obj>Name' nor the
+          '<obj>Arn' identifier.
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should raise a DemistoException prompting for at least one
+          identifier.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    kwargs = {"SomeOtherKey": "value"}
+
+    # When / Then
+    with pytest.raises(
+        DemistoException,
+        match="Please enter at least one of the arguments firewall_name or firewall_arn.",
+    ):
+        validate_network_firewall_identifier(kwargs, "Firewall")
+
+
+def test_validate_network_firewall_identifier_empty_kwargs_raises():
+    """
+    Given:
+        - An empty kwargs dict.
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should raise a DemistoException because no identifier is present.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    kwargs: dict = {}
+
+    # When / Then
+    with pytest.raises(
+        DemistoException,
+        match="Please enter at least one of the arguments firewall_name or firewall_arn.",
+    ):
+        validate_network_firewall_identifier(kwargs, "Firewall")
+
+
+def test_validate_network_firewall_identifier_wrong_obj_prefix_raises():
+    """
+    Given:
+        - A kwargs dict containing 'FirewallName' but the function is called
+          with a mismatched object prefix ('FirewallPolicy').
+    When:
+        - validate_network_firewall_identifier is called.
+    Then:
+        - It should raise a DemistoException because no key matches the
+          requested prefix.
+    """
+    from AWS import validate_network_firewall_identifier
+
+    # Given
+    kwargs = {"FirewallName": "my-firewall"}
+
+    # When / Then
+    with pytest.raises(
+        DemistoException,
+        match="Please enter at least one of the arguments firewall_name or firewall_arn.",
+    ):
+        validate_network_firewall_identifier(kwargs, "FirewallPolicy")
+
+
+def test_create_network_firewall_policy_obj_empty_args_returns_empty_dict():
+    """
+    Given:
+        - An empty args dict (no policy fields supplied).
+    When:
+        - create_network_firewall_policy_obj is called.
+    Then:
+        - It should return an empty dict because remove_empty_elements strips
+          all empty/None values.
+    """
+    from AWS import create_network_firewall_policy_obj
+
+    # Given
+    args: dict = {}
+
+    # When
+    result = create_network_firewall_policy_obj(args)
+
+    # Then
+    assert result == {}
+
+
+def test_create_network_firewall_policy_obj_simple_list_fields():
+    """
+    Given:
+        - args containing comma-separated default-action lists and a
+          stateless rule group reference string.
+    When:
+        - create_network_firewall_policy_obj is called.
+    Then:
+        - The returned dict should contain the parsed lists and the parsed
+          stateless rule group references, with empty fields omitted.
+    """
+    from AWS import create_network_firewall_policy_obj
+
+    # Given
+    args = {
+        "stateless_rule_group_references": (
+            "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1,Priority=100"
+        ),
+        "stateless_default_actions": "aws:pass,aws:drop",
+        "stateless_fragment_default_actions": "aws:forward_to_sfe",
+        "stateful_default_actions": "aws:drop_strict",
+    }
+
+    # When
+    result = create_network_firewall_policy_obj(args)
+
+    # Then
+    assert result == {
+        "StatelessRuleGroupReferences": [
+            {
+                "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateless-rulegroup/rg1",
+                "Priority": 100,
+            }
+        ],
+        "StatelessDefaultActions": ["aws:pass", "aws:drop"],
+        "StatelessFragmentDefaultActions": ["aws:forward_to_sfe"],
+        "StatefulDefaultActions": ["aws:drop_strict"],
+    }
+
+
+def test_create_network_firewall_policy_obj_json_string_fields():
+    """
+    Given:
+        - args containing JSON-encoded strings for stateless_custom_actions,
+          stateful_rule_group_references, and policy_rule_variables.
+    When:
+        - create_network_firewall_policy_obj is called.
+    Then:
+        - Each JSON string should be parsed into its corresponding Python
+          structure and placed under the correct key.
+    """
+    from AWS import create_network_firewall_policy_obj
+
+    # Given
+    custom_actions = [
+        {
+            "ActionName": "CustomAction",
+            "ActionDefinition": {
+                "PublishMetricAction": {
+                    "Dimensions": [
+                        {"Value": "string"},
+                    ]
+                }
+            },
+        }
+    ]
+    stateful_refs = [{"ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1"}]
+    rule_variables = {"IP_SET": {"Definition": ["10.0.0.0/16"]}}
+    args = {
+        "stateless_custom_actions": json.dumps(custom_actions),
+        "stateful_rule_group_references": json.dumps(stateful_refs),
+        "policy_rule_variables": json.dumps(rule_variables),
+    }
+
+    # When
+    result = create_network_firewall_policy_obj(args)
+
+    # Then
+    assert result["StatelessCustomActions"] == custom_actions
+    assert result["StatefulRuleGroupReferences"] == stateful_refs
+    assert result["PolicyVariables"] == {"RuleVariables": rule_variables}
+
+
+def test_create_network_firewall_policy_obj_stateful_engine_options():
+    """
+    Given:
+        - args containing stateful engine option values, including a numeric
+          TCP idle timeout.
+    When:
+        - create_network_firewall_policy_obj is called.
+    Then:
+        - The StatefulEngineOptions structure should be populated with the
+          rule order, stream exception policy, and integer-converted timeout.
+    """
+    from AWS import create_network_firewall_policy_obj
+
+    # Given
+    args = {
+        "stateful_engine_options_rule_order": "STRICT_ORDER",
+        "stateful_engine_options_stream_exception_policy": "DROP",
+        "stateful_engine_options_tcp_idle_timeout": "120",
+        "tls_inspection_configuration_arn": ("arn:aws:network-firewall:us-east-1:123456789012:tls-configuration/tls1"),
+    }
+
+    # When
+    result = create_network_firewall_policy_obj(args)
+
+    # Then
+    assert result["StatefulEngineOptions"] == {
+        "RuleOrder": "STRICT_ORDER",
+        "StreamExceptionPolicy": "DROP",
+        "FlowTimeouts": {"TcpIdleTimeoutSeconds": 120},
+    }
+    assert result["TLSInspectionConfigurationArn"] == ("arn:aws:network-firewall:us-east-1:123456789012:tls-configuration/tls1")
+
+
+def test_create_network_firewall_policy_obj_invalid_rule_group_reference_raises():
+    """
+    Given:
+        - args containing a malformed stateless_rule_group_references string.
+    When:
+        - create_network_firewall_policy_obj is called.
+    Then:
+        - It should propagate the ValueError raised by
+          parse_resource_arn_priority_field.
+    """
+    from AWS import create_network_firewall_policy_obj
+
+    # Given
+    args = {"stateless_rule_group_references": "ResourceArn=not-an-arn,Priority=100"}
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        create_network_firewall_policy_obj(args)

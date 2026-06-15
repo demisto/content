@@ -436,7 +436,7 @@ def parse_resource_arn_priority_field(refs_string: str | None) -> list:
     """
     references: list = []
     list_refs = argToList(refs_string, separator=";")
-    regex = re.compile(r"^ResourceArn=(^arn:aws.*),Priority=(\d+)$", flags=re.UNICODE)
+    regex = re.compile(r"^ResourceArn=(arn:aws.*),Priority=(\d+)$", flags=re.UNICODE)
     for ref in list_refs:
         match_ref = regex.match(ref)
         if match_ref is None:
@@ -10085,10 +10085,7 @@ class NetworkFirewall:
         firewall_policies = response.get("FirewallPolicies", [])
 
         key_map = {"Name": "FirewallPolicyName", "Arn": "FirewallPolicyArn"}
-        updated_firewall_policies = [
-            {key_map.get(k, k): v for k, v in d.items()}
-            for d in firewall_policies
-        ]
+        updated_firewall_policies = [{key_map.get(k, k): v for k, v in d.items()} for d in firewall_policies]
 
         outputs = {
             "AWS.NetworkFirewall.FirewallPolicies(val.FirewallPolicyArn == obj.FirewallPolicyArn)": updated_firewall_policies,
@@ -10363,13 +10360,7 @@ class NetworkFirewall:
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
-        outputs = copy.deepcopy(response)
-        outputs.pop("ResponseMetadata", None)
-
         return CommandResults(
-            outputs_prefix="AWS.NetworkFirewall.Firewalls",
-            outputs_key_field="FirewallArn",
-            outputs=outputs,
             readable_output="The change protection flag of the firewall was updated successfully.",
             raw_response=response,
         )
