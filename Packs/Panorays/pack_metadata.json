@@ -26,10 +26,6 @@
         "Risk Assessment",
         "External Security Posture"
     ],
-    "supportedModules": [
-        "xsiam",
-        "agentix"
-    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
