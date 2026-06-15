@@ -1,8 +1,8 @@
-id: Darkmon - Enrich File
+id: silent-Darkmon - Enrich File
 version: -1
-name: Darkmon - Enrich File
+name: silent-Darkmon - Enrich File
 description: Sub-playbook that calls the Darkmon !file command and returns DBotScore + Common.File for the input File indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
 - platform
@@ -117,10 +117,10 @@ tasks:
     quietmode: 0
   '101':
     id: '101'
-    taskid: f5781173-307f-4d82-a44e-ba8d9978no-x
+    taskid: 6c174b89-dc22-4926-85dc-4965fc1be2ef
     type: title
     task:
-      id: f5781173-307f-4d82-a44e-ba8d9978no-x
+      id: 6c174b89-dc22-4926-85dc-4965fc1be2ef
       version: -1
       name: Done
       description: ''
@@ -144,7 +144,7 @@ inputs:
       accessor: MD5
   required: true
   description: The File indicator value to enrich. Defaults to ${File.MD5}.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
   description: The indicator value.
@@ -175,3 +175,4 @@ outputs:
   type: unknown
 tests:
 - No tests
+issilent: true

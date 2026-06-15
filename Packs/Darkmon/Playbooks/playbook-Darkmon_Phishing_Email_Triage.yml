@@ -1,11 +1,10 @@
-id: Darkmon - Phishing Email Triage
+id: silent-Darkmon - Phishing Email Triage
 version: -1
-name: Darkmon - Phishing Email Triage
+name: silent-Darkmon - Phishing Email Triage
 description: Extracts URLs/IPs/file-hashes from a reported phishing email, enriches each via the Darkmon - Enrich * sub-playbooks, and if any indicator is scored Bad (DBotScore=3) calls Generic Block Indicator on it. Notifies the reporter and the SOC at the end.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
-- platform
 - platform
 tags:
 - darkmon
@@ -201,15 +200,15 @@ tasks:
       iscommand: false
       brand: ''
     message:
-      to: null
+      to:
       subject:
         simple: Approve block of ${DBotScore(val.Score >= 3).Indicator}?
       body:
         simple: Darkmon scored the following indicator(s) Bad. Approve to send to Darkmon - Generic Block Indicator.
       methods: []
       format: ''
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 0
         retriesinterval: 0
@@ -317,7 +316,7 @@ inputs:
     simple: 'false'
   required: false
   description: When true, indicators scored Bad by Darkmon are sent to Darkmon - Generic Block Indicator without an analyst approval task. Defaults to false (a manual approval is presented before any block).
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: ExtractedIndicators
   description: IOCs extracted from the phishing email body.
@@ -327,3 +326,4 @@ outputs:
   type: unknown
 tests:
 - No tests
+issilent: true

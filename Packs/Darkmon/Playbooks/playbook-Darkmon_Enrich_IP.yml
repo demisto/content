@@ -1,8 +1,8 @@
-id: Darkmon - Enrich IP
+id: silent-Darkmon - Enrich IP
 version: -1
-name: Darkmon - Enrich IP
+name: silent-Darkmon - Enrich IP
 description: Sub-playbook that calls the Darkmon !ip command and returns DBotScore + Common.IP for the input IP indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
 - platform
@@ -117,10 +117,10 @@ tasks:
     quietmode: 0
   '101':
     id: '101'
-    taskid: f17e41a6-59bf-4214-a907-cd4faf85no-x
+    taskid: 9d585275-ca9b-4e42-af71-f69061c86e10
     type: title
     task:
-      id: f17e41a6-59bf-4214-a907-cd4faf85no-x
+      id: 9d585275-ca9b-4e42-af71-f69061c86e10
       version: -1
       name: Done
       description: ''
@@ -144,7 +144,7 @@ inputs:
       accessor: Address
   required: true
   description: The IP indicator value to enrich. Defaults to ${IP.Address}.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
   description: The indicator value.
@@ -175,3 +175,4 @@ outputs:
   type: unknown
 tests:
 - No tests
+issilent: true

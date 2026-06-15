@@ -1902,7 +1902,7 @@ def test_indicator_field_schema(path):
         "boolean",
         "tagsSelect",
     }
-    assert data["fromVersion"] == "6.5.0"
+    assert data["fromVersion"] == "6.8.0"
     assert set(data["marketplaces"]) == {"xsoar", "platform"}
     assert isinstance(data["associatedTypes"], list)
     assert data["associatedTypes"]
@@ -1968,7 +1968,7 @@ def test_indicator_layout_schema_and_field_references(path):
     for k in ("id", "name", "group", "fromVersion", "marketplaces", "indicatorsDetails"):
         assert k in data, f"{os.path.basename(path)}: missing '{k}'"
     assert data["group"] == "indicator"
-    assert data["fromVersion"] == "6.5.0"
+    assert data["fromVersion"] == "6.8.0"
     assert data["name"] in EXPECTED_LAYOUT_NAMES
 
     referenced = set()
@@ -2005,7 +2005,7 @@ def test_incident_layout_schema_and_field_references(path):
     for k in ("id", "name", "group", "fromVersion", "marketplaces", "detailsV2"):
         assert k in data, f"{os.path.basename(path)}: missing '{k}'"
     assert data["group"] == "incident"
-    assert data["fromVersion"] == "6.5.0"
+    assert data["fromVersion"] == "6.8.0"
     assert data["name"] in EXPECTED_INCIDENT_LAYOUT_NAMES
 
     referenced = set()
@@ -2056,7 +2056,7 @@ def test_enrichment_playbook_schema(path):
     for k in ("id", "name", "description", "fromversion", "marketplaces", "starttaskid", "tasks", "inputs", "outputs"):
         assert k in data, f"{os.path.basename(path)}: missing '{k}'"
 
-    assert data["fromversion"] == "6.5.0"
+    assert data["fromversion"] == "6.8.0"
     assert set(data["marketplaces"]) == {"xsoar", "platform"}
     assert data["name"] in EXPECTED_PLAYBOOK_NAMES
     assert data["id"] == data["name"]
@@ -2124,7 +2124,7 @@ def test_test_playbook_present():
     with open(paths[0], encoding="utf-8") as f:
         data = yaml.safe_load(f)
     assert data["name"] == "Darkmon - Test"
-    assert data["fromversion"] == "6.5.0"
+    assert data["fromversion"] == "6.8.0"
 
 
 def test_test_playbook_invokes_each_reputation_command(yml):
@@ -2182,7 +2182,7 @@ def test_yaml_script_body_is_empty(yml):
 
 
 def test_yaml_has_fromversion(yml):
-    assert yml.get("fromversion"), "fromversion missing - XSOAR feed integrations should set 6.5.0+"
+    assert yml.get("fromversion"), "fromversion missing - XSOAR feed integrations should set 6.8.0+"
 
 
 def test_yaml_all_user_facing_commands_have_descriptions(yml):

@@ -1,11 +1,10 @@
-id: Darkmon - Compromised Account Response
+id: silent-Darkmon - Compromised Account Response
 version: -1
-name: Darkmon - Compromised Account Response
+name: silent-Darkmon - Compromised Account Response
 description: Incident-type playbook for 'Darkmon Compromised Credential' (and similar). Identifies the user via the configured directory, suspends, forces a password reset, revokes active sessions, and notifies SOC + the user.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
-- platform
 - platform
 tags:
 - darkmon
@@ -84,7 +83,7 @@ tasks:
       Action:
         simple: reset-password
       NewPassword:
-        simple: ${GeneratePassword.NewPassword}
+        simple: ${NEW_PASSWORD}
     nexttasks:
       '#none#':
       - '3'
@@ -263,15 +262,15 @@ tasks:
       iscommand: false
       brand: ''
     message:
-      to: null
+      to:
       subject:
         simple: Approve compromised account response for ${incident.darkmonusername}?
       body:
         simple: Darkmon reported credentials for ${incident.darkmonusername} as compromised. Approving will disable the account, force a password reset, and revoke active sessions. Reject to skip all three and only notify.
       methods: []
       format: ''
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 0
         retriesinterval: 0
@@ -300,7 +299,8 @@ inputs:
     simple: 'false'
   required: false
   description: When true, the playbook proceeds straight to the disable + password-reset + revoke-sessions sequence without an analyst approval task. Defaults to false. Accounts in the Darkmon - Auto-Disable Allowlist are never auto-disabled regardless of this input.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests
+issilent: true

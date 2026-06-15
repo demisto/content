@@ -7,16 +7,14 @@ sectionorder:
 - Collect
 display: Darkmon
 category: Data Enrichment & Threat Intelligence
-description: "Stay ahead of cyber threats with Darkmon TIP - real-time threat intelligence from the Clear, Deep, and Dark Web tailored to your assets.\nPack also helps with integration with Cortex\
-  \ XSOAR and provides pre-made playbooks/templates to ease integration use."
+description: "Stay ahead of cyber threats with Darkmon TIP - real-time threat intelligence from the Clear, Deep, and Dark Web tailored to your assets.\nPack also helps with integration with Cortex XSOAR and provides pre-made playbooks/templates to ease integration use."
 configuration:
 - display: API Base URL
   name: base_url
   defaultvalue: https://api.darkmon.com/tip/2025.1
   type: 0
   required: false
-  additionalinfo: Override the Darkmon TIP API base URL only if your tenant points at a non-default endpoint. The default value already targets the production Darkmon TIP service (https://api.darkmon.com/tip/2025.1).
-    Leave blank to use the default.
+  additionalinfo: Override the Darkmon TIP API base URL only if your tenant points at a non-default endpoint. The default value already targets the production Darkmon TIP service (https://api.darkmon.com/tip/2025.1). Leave blank to use the default.
   section: Connect
 - display: ''
   displaypassword: API key
@@ -41,19 +39,6 @@ configuration:
   type: 8
   required: false
   additionalinfo: When enabled, replaces password/card-number values in markdown table output with '***'. Raw values remain in rawJSON for playbook automation. Disable only in non-production debugging contexts.
-  section: Connect
-- display: Employee compromise disable mode
-  name: employee_disable_mode
-  defaultvalue: notify-only
-  type: 15
-  required: false
-  options:
-  - notify-only
-  - approval-required
-  - auto-disable
-  additionalinfo: 'Controls how the Compromised Employee Auto-Disable playbook reacts when a new compromised employee account is observed. notify-only (default - safe): creates an incident, no AD action.  approval-required:
-    creates an incident with a manual approval task; on approve, runs the disable.  auto-disable: disables the account immediately. Accounts in the "Darkmon - Auto-Disable Allowlist" list are NEVER auto-disabled
-    regardless of mode.'
   section: Connect
 - display: First fetch time
   name: first_fetch
@@ -81,8 +66,7 @@ configuration:
   - Ransomware Mention
   - Typosquatting Threat
   - VIP Email Leak
-  additionalinfo: Which Darkmon record kinds the integration ingests as XSOAR incidents. Defaults to the high-signal trio. Lower-signal kinds (e.g. Ransomware Mention) are typically better handled via the
-    monitoring playbooks rather than native fetch.
+  additionalinfo: Which Darkmon record kinds the integration ingests as XSOAR incidents. Defaults to the high-signal trio. Lower-signal kinds (e.g. Ransomware Mention) are typically better handled via the monitoring playbooks rather than native fetch.
   section: Collect
 - display: Incident type
   name: incidentType
@@ -127,9 +111,7 @@ script:
     - name: size
       description: Page size (1-100).
       defaultValue: '20'
-    description: The dmontip-global-search command performs a comprehensive search across the Darkmon Threat Intelligence Platform. This command allows users to search for indicators, threat actors, malware,
-      and other intelligence data using keywords or specific search terms. It queries multiple data sources simultaneously and returns consolidated results, helping analysts quickly find relevant intelligence
-      across the platform.
+    description: The dmontip-global-search command performs a comprehensive search across the Darkmon Threat Intelligence Platform. This command allows users to search for indicators, threat actors, malware, and other intelligence data using keywords or specific search terms. It queries multiple data sources simultaneously and returns consolidated results, helping analysts quickly find relevant intelligence across the platform.
     outputs:
     - contextPath: Darkmon.SearchResult
       description: Search results matching the query, with type-specific fields.
@@ -356,10 +338,8 @@ script:
       description: 1-indexed page number.
     - name: sort
       type: textArea
-      description: 'Sort field and direction in Spring Pageable format, e.g. ''firstSeen,desc'' or ''lastCompromiseDate,asc''. Leave blank to use the default: combo-lists defaults to firstSeen,desc; other
-        types use the backend default order.'
-    description: Retrieve compromised data of a given type from Darkmon - leaked accounts, leaked bank cards, combo lists, public breaches, or compromised employee accounts. Use the 'type' argument to choose
-      the data set.
+      description: 'Sort field and direction in Spring Pageable format, e.g. ''firstSeen,desc'' or ''lastCompromiseDate,asc''. Leave blank to use the default: combo-lists defaults to firstSeen,desc; other types use the backend default order.'
+    description: Retrieve compromised data of a given type from Darkmon - leaked accounts, leaked bank cards, combo lists, public breaches, or compromised employee accounts. Use the 'type' argument to choose the data set.
     outputs:
     - contextPath: Darkmon.Compromised.Account
       description: Leaked account records (when type=accounts).
@@ -508,8 +488,7 @@ script:
       defaultValue: publishedAt,desc
       type: textArea
       description: Sort field and direction in Spring Pageable format. Default sorts newest first by publishedAt.
-    description: Retrieve ransomware articles or company-specific ransomware mentions with details such as victim name, threat actor, published date, and matched keywords. Sorted newest first by publishedAt
-      unless overridden.
+    description: Retrieve ransomware articles or company-specific ransomware mentions with details such as victim name, threat actor, published date, and matched keywords. Sorted newest first by publishedAt unless overridden.
     outputs:
     - contextPath: Darkmon.Ransomware
       description: Ransomware article or mention records.
@@ -604,11 +583,11 @@ script:
     - contextPath: Darkmon.BoardLeak.Page
       description: Pagination metadata.
       type: Unknown
-  dockerimage: demisto/python3:3.12.13.9059085
+  dockerimage: demisto/python3:3.12.13.10116658
   runonce: false
   subtype: python3
 defaultclassifier: Darkmon - Classifier
 defaultmapperin: Darkmon - Incoming Mapper
 tests:
 - Darkmon - Test
-fromversion: 6.5.0
+fromversion: 6.8.0

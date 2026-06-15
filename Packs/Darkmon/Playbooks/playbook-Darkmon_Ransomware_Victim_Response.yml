@@ -1,11 +1,10 @@
-id: Darkmon - Ransomware Victim Response
+id: silent-Darkmon - Ransomware Victim Response
 version: -1
-name: Darkmon - Ransomware Victim Response
+name: silent-Darkmon - Ransomware Victim Response
 description: Triggered when our company surfaces in a Darkmon ransomware mention. Verifies the match, opens a war-room channel via Generic Notify, pages the CISO, and prints next-step guidance for the customer's IR runbook.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
-- platform
 - platform
 tags:
 - darkmon
@@ -183,13 +182,14 @@ inputs:
     simple: ''
   required: true
   description: Mailbox to notify when this playbook fires. Replaces the orphan ${customer_domain} variable so deployments do not silently send to a non-resolving address.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: WarRoomChannel
   value:
     simple: '#soc-warroom'
   required: false
   description: Slack / Teams channel where SOC discussion of this ransomware victim incident happens. Defaults to
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests
+issilent: true

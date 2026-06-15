@@ -4,12 +4,7 @@
     "name": "Darkmon - Umbrella Block List ID",
     "description": "Single-value list - the Cisco Umbrella destination-list ID to append to. Required only when 'Darkmon - Block Provider' is set to 'umbrella'.",
     "type": "plain_text",
-    "data": "",
-    "fromVersion": "6.5.0",
-    "marketplaces": [
-        "xsoar",
-        "platform"
-    ],
+    "fromVersion": "6.8.0",
     "itemVersion": "",
     "locked": false,
     "nameLocked": false,

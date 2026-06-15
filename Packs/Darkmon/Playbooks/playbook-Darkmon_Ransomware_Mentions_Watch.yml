@@ -1,8 +1,8 @@
-id: Darkmon - Ransomware Mentions Watch
+id: silent-Darkmon - Ransomware Mentions Watch
 version: -1
-name: Darkmon - Ransomware Mentions Watch
+name: silent-Darkmon - Ransomware Mentions Watch
 description: Every 6 hours, polls ransomware mentions for the customer organisation. New entries open a critical 'Darkmon Ransomware Mention' incident and notify the CISO via Generic Notify.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
 - platform
@@ -213,10 +213,10 @@ tasks:
     quietmode: 0
   '101':
     id: '101'
-    taskid: a0cc153a-7371-4459-b6b0-6452aaeano-x
+    taskid: e0152525-25c2-4228-8e17-fb3643621b34
     type: title
     task:
-      id: a0cc153a-7371-4459-b6b0-6452aaeano-x
+      id: e0152525-25c2-4228-8e17-fb3643621b34
       version: -1
       name: Done
       description: ''
@@ -236,3 +236,4 @@ inputs: []
 outputs: []
 tests:
 - No tests
+issilent: true

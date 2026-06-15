@@ -1,8 +1,8 @@
-id: Darkmon - Critical CVE Pipeline
+id: silent-Darkmon - Critical CVE Pipeline
 version: -1
-name: Darkmon - Critical CVE Pipeline
+name: silent-Darkmon - Critical CVE Pipeline
 description: Daily filter of new CVEs (CVSS >= 9) against the customer's tech-stack tags. Matches open a 'Darkmon Critical CVE' incident per match and ticket via Generic Notify.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
 - platform
@@ -241,10 +241,10 @@ tasks:
     quietmode: 0
   '101':
     id: '101'
-    taskid: c0b7b1cc-2920-4740-83ae-a130cea9no-x
+    taskid: 98cafe08-c4e9-41f8-b0cc-2ed9a72898cb
     type: title
     task:
-      id: c0b7b1cc-2920-4740-83ae-a130cea9no-x
+      id: 98cafe08-c4e9-41f8-b0cc-2ed9a72898cb
       version: -1
       name: Done
       description: ''
@@ -266,10 +266,11 @@ inputs:
     simple: '9.0'
   required: false
   description: Minimum CVSS score for a CVE to qualify as critical and create an incident. Defaults to 9.0 (Critical band per NVD). Lower to 7.0 to include High severity, or 8.5 to include borderline High/Critical.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: FilteredCVEs
   description: CVEs that passed the CVSS + tech-stack filter.
   type: unknown
 tests:
 - No tests
+issilent: true

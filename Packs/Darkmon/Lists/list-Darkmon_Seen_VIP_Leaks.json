@@ -2,14 +2,9 @@
     "id": "Darkmon - Seen VIP Leaks",
     "version": -1,
     "name": "Darkmon - Seen VIP Leaks",
-    "description": "State store: composite '<email>::<leak_type>::<leak_id>' entries already actioned.",
+    "description": "State store: composite '\u003cemail\u003e::\u003cleak_type\u003e::\u003cleak_id\u003e' entries already actioned.",
     "type": "plain_text",
-    "data": "",
-    "fromVersion": "6.5.0",
-    "marketplaces": [
-        "xsoar",
-        "platform"
-    ],
+    "fromVersion": "6.8.0",
     "itemVersion": "",
     "locked": false,
     "nameLocked": false,

@@ -1,8 +1,8 @@
-id: Darkmon - VIP Email Monitor
+id: silent-Darkmon - VIP Email Monitor
 version: -1
-name: Darkmon - VIP Email Monitor
+name: silent-Darkmon - VIP Email Monitor
 description: Hourly poll of board-protected emails. For each protected email, checks accounts/combo-lists/public-breaches and opens a 'Darkmon VIP Email Leak' incident per new entry.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
 - platform
@@ -145,10 +145,10 @@ tasks:
     quietmode: 0
   '101':
     id: '101'
-    taskid: 3f85937b-1e21-4bc5-bf80-0f73ea0bno-x
+    taskid: 02bc6ae1-fd63-4623-b7c8-64ab06e26f0d
     type: title
     task:
-      id: 3f85937b-1e21-4bc5-bf80-0f73ea0bno-x
+      id: 02bc6ae1-fd63-4623-b7c8-64ab06e26f0d
       version: -1
       name: Done
       description: ''
@@ -171,3 +171,4 @@ outputs:
   type: unknown
 tests:
 - No tests
+issilent: true

@@ -1,8 +1,8 @@
-id: Darkmon - Enrich URL
+id: silent-Darkmon - Enrich URL
 version: -1
-name: Darkmon - Enrich URL
+name: silent-Darkmon - Enrich URL
 description: Sub-playbook that calls the Darkmon !url command and returns DBotScore + Common.URL for the input URL indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
 - platform
@@ -117,10 +117,10 @@ tasks:
     quietmode: 0
   '101':
     id: '101'
-    taskid: fff40573-b7b1-4ed8-884e-a0e47407no-x
+    taskid: 1afff1a7-2489-4bd0-b868-d91ef93a218d
     type: title
     task:
-      id: fff40573-b7b1-4ed8-884e-a0e47407no-x
+      id: 1afff1a7-2489-4bd0-b868-d91ef93a218d
       version: -1
       name: Done
       description: ''
@@ -144,7 +144,7 @@ inputs:
       accessor: Data
   required: true
   description: The URL indicator value to enrich. Defaults to ${URL.Data}.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
   description: The indicator value.
@@ -175,3 +175,4 @@ outputs:
   type: unknown
 tests:
 - No tests
+issilent: true

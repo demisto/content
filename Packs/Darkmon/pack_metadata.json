@@ -6,7 +6,9 @@
     "author": "Darkmon",
     "url": "https://darkmon.com",
     "email": "support@darkmon.com",
-    "devEmail": ["support@darkmon.com"],
+    "devEmail": [
+        "support@darkmon.com"
+    ],
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
@@ -60,5 +62,8 @@
             "display_name": "Common Types"
         }
     },
-    "githubUser": ["darkmon-cybersecurity"]
+    "githubUser": [
+        "darkmon-cybersecurity"
+    ],
+    "serverMinVersion": "6.8.0"
 }

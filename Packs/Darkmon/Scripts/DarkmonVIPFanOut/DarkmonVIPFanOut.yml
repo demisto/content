@@ -5,7 +5,7 @@ name: DarkmonVIPFanOut
 script: ""
 type: python
 subtype: python3
-fromversion: 6.5.0
+fromversion: 6.8.0
 tags:
 - darkmon
 comment: "For each protected email, calls dmontip-get-boardemails three times (accounts, combo-lists, public-breaches), filters new entries, creates incidents."
@@ -73,7 +73,7 @@ outputs:
   type: number
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.12.13.9059085
+dockerimage: demisto/python3:3.12.13.10116658
 marketplaces:
 - xsoar
 - platform

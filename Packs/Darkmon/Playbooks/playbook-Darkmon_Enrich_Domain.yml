@@ -1,8 +1,8 @@
-id: Darkmon - Enrich Domain
+id: silent-Darkmon - Enrich Domain
 version: -1
-name: Darkmon - Enrich Domain
+name: silent-Darkmon - Enrich Domain
 description: Sub-playbook that calls the Darkmon !domain command and returns DBotScore + Common.Domain for the input Domain indicator. Designed to be invoked from a parent playbook; does not auto-run on indicator creation.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
 - platform
@@ -117,10 +117,10 @@ tasks:
     quietmode: 0
   '101':
     id: '101'
-    taskid: e21c0719-eddc-4915-9fc1-3d6bae42no-x
+    taskid: fb102262-922c-4a60-8a90-225004f04f81
     type: title
     task:
-      id: e21c0719-eddc-4915-9fc1-3d6bae42no-x
+      id: fb102262-922c-4a60-8a90-225004f04f81
       version: -1
       name: Done
       description: ''
@@ -144,7 +144,7 @@ inputs:
       accessor: Name
   required: true
   description: The Domain indicator value to enrich. Defaults to ${Domain.Name}.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
   description: The indicator value.
@@ -175,3 +175,4 @@ outputs:
   type: unknown
 tests:
 - No tests
+issilent: true

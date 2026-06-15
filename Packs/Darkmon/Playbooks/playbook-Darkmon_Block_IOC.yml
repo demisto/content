@@ -1,11 +1,10 @@
-id: Darkmon - Block IOC
+id: silent-Darkmon - Block IOC
 version: -1
-name: Darkmon - Block IOC
+name: silent-Darkmon - Block IOC
 description: Analyst-facing wrapper around Darkmon - Generic Block Indicator. Lets analysts paste an IOC into a War Room form and trigger a provider-routed block action.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
-- platform
 - platform
 tags:
 - darkmon
@@ -135,3 +134,4 @@ inputs:
 outputs: []
 tests:
 - No tests
+issilent: true

@@ -4,12 +4,7 @@
     "name": "Darkmon - Block Provider",
     "description": "Single-value list with the configured block target. One of: panos, fortinet, umbrella, cloudflare. Read by Darkmon - Generic Block Indicator.",
     "type": "plain_text",
-    "data": "",
-    "fromVersion": "6.5.0",
-    "marketplaces": [
-        "xsoar",
-        "platform"
-    ],
+    "fromVersion": "6.8.0",
     "itemVersion": "",
     "locked": false,
     "nameLocked": false,

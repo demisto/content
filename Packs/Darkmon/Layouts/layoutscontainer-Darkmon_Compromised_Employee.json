@@ -1,7 +1,6 @@
 {
-    "definitionId": "",
     "version": -1,
-    "fromVersion": "6.5.0",
+    "fromVersion": "6.8.0",
     "name": "Darkmon Compromised Employee",
     "id": "Darkmon Compromised Employee",
     "group": "incident",
@@ -97,6 +96,24 @@
                                 "height": 22,
                                 "id": "field-incident_darkmonlastcompromise",
                                 "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonurl",
+                                "height": 22,
+                                "id": "field-incident_darkmonurl",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_darkmonpasswordredacted",
+                                "height": 22,
+                                "id": "field-incident_darkmonpasswordredacted",
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

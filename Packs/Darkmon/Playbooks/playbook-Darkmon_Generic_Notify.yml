@@ -1,8 +1,8 @@
-id: Darkmon - Generic Notify
+id: silent-Darkmon - Generic Notify
 version: -1
-name: Darkmon - Generic Notify
+name: silent-Darkmon - Generic Notify
 description: Provider-agnostic notification dispatcher. Reads "Darkmon - Notification Provider" List for the configured target (slack | teams | email | servicenow | jira) and routes to the matching command.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
 - platform
@@ -371,3 +371,4 @@ inputs:
 outputs: []
 tests:
 - No tests
+issilent: true

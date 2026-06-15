@@ -1,8 +1,8 @@
-id: Darkmon - Brand-Targeted NRD Watch
+id: silent-Darkmon - Brand-Targeted NRD Watch
 version: -1
-name: Darkmon - Brand-Targeted NRD Watch
+name: silent-Darkmon - Brand-Targeted NRD Watch
 description: Daily sweep of newly-registered domains. Each candidate's root label is compared against the brand list via DarkmonLevenshtein; matches with distance <= 2 (configurable) open a 'Darkmon Typosquatting Threat' incident.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
 - platform
@@ -241,10 +241,10 @@ tasks:
     quietmode: 0
   '101':
     id: '101'
-    taskid: fe0a47b7-3893-4934-bd6c-5dba166cno-x
+    taskid: b5c89fd3-d44d-4b4d-80a8-5aaf1c29e87d
     type: title
     task:
-      id: fe0a47b7-3893-4934-bd6c-5dba166cno-x
+      id: b5c89fd3-d44d-4b4d-80a8-5aaf1c29e87d
       version: -1
       name: Done
       description: ''
@@ -266,10 +266,11 @@ inputs:
     simple: '2'
   required: false
   description: Maximum Levenshtein distance between a newly registered domain root label and any brand in the Darkmon - Brand Names list for the NRD to be flagged as a typosquatting candidate. Defaults to 2. Lower (1) for stricter brand-protection, raise (3) for broader recall.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Typosquats
   description: NRD entries flagged as typosquats with their best-match brand and distance.
   type: unknown
 tests:
 - No tests
+issilent: true

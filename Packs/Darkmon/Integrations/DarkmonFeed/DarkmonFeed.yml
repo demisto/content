@@ -18,9 +18,7 @@ configuration:
   defaultvalue: https://api.darkmon.com/tip/2025.1
   type: 0
   required: false
-  additionalinfo: Override the Darkmon TIP API base URL only if your tenant points
-    at a non-default endpoint. The default value already targets the production
-    Darkmon TIP service. Leave blank to use the default.
+  additionalinfo: Override the Darkmon TIP API base URL only if your tenant points at a non-default endpoint. The default value already targets the production Darkmon TIP service. Leave blank to use the default.
   section: Connect
 - display: ""
   displaypassword: API key
@@ -130,7 +128,7 @@ script:
   subtype: python3
   feed: true
   runonce: false
-  dockerimage: demisto/python3:3.12.13.9059085
+  dockerimage: demisto/python3:3.12.13.10116658
   commands:
   - name: darkmon-get-indicators
     description: Fetch a page of Darkmon indicators on demand without waiting for the next scheduled feed cycle. Useful for debugging.
@@ -142,4 +140,4 @@ defaultclassifier: Darkmon - Feed Classifier
 defaultmapperin: Darkmon - Feed Mapper
 tests:
 - No tests
-fromversion: 6.5.0
+fromversion: 6.8.0

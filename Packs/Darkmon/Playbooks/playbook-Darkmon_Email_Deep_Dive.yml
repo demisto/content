@@ -1,8 +1,8 @@
-id: Darkmon - Email Deep Dive
+id: silent-Darkmon - Email Deep Dive
 version: -1
-name: Darkmon - Email Deep Dive
+name: silent-Darkmon - Email Deep Dive
 description: Analyst-driven full Darkmon profile for a single email address. Runs board-protection check, all three boardemails categories, and global search. Outputs a unified summary into the incident War Room.
-fromversion: 6.5.0
+fromversion: 6.8.0
 marketplaces:
 - xsoar
 - platform
@@ -267,10 +267,10 @@ tasks:
     quietmode: 0
   '101':
     id: '101'
-    taskid: 8b43a433-9534-49f0-91ba-7cf10d22no-x
+    taskid: 47522341-b318-4e30-b880-5e0ae9dd5671
     type: title
     task:
-      id: 8b43a433-9534-49f0-91ba-7cf10d22no-x
+      id: 47522341-b318-4e30-b880-5e0ae9dd5671
       version: -1
       name: Done
       description: ''
@@ -309,3 +309,4 @@ outputs:
   type: unknown
 tests:
 - No tests
+issilent: true
