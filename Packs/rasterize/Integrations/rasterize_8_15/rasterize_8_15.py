@@ -69,11 +69,7 @@ CHROME_OPTIONS = [
 ]
 
 LIGHTWEIGHT_CHROME_OPTIONS = [
-    # Cap the V8 heap per renderer. A runaway page heap is the single most common OOM cause;
-    # this is the biggest lever available.
     '--js-flags="--max-old-space-size=256 --max-semi-space-size=2"',
-    # Collapse browser + renderer into one process to remove per-renderer process overhead
-    # (~30-80MB). Safe here because only one tab ever runs and Chrome is killed after each use.
     "--single-process",
     "--disable-software-rasterizer",  # Pairs with --disable-gpu, removes the SwiftShader fallback
     "--disable-extensions",  # No extensions are ever needed
@@ -1828,8 +1824,7 @@ def extract_hostname(url: str) -> str:
     except Exception:
         return ""
 
-
-@lru_cache(maxsize=128)
+@lru_cache(maxsize=128 if IS_LIGHTWEIGHT else 1024)
 def is_private_network(url: str) -> bool:
     """
     Check if a URL's hostname belongs to a private network.
