@@ -383,57 +383,7 @@ Azure AD Connect Health Feed,Packs/FeedAzureADConnectHealth/Integrations/AzureAD
     ""tlp_color""
   ]
 }",,,,,,,,
-Azure Compute v2,Packs/AzureCompute/Integrations/AzureCompute_v2/AzureCompute_v2.yml,Azure Services,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""cert"",
-      ""xsoar_param_map"": {
-        ""cred_token.password"": ""tenant_id"",
-        ""cred_auth_id.password"": ""client_id"",
-        ""cred_certificate_thumbprint.password"": ""certificate_thumbprint"",
-        ""private_key"": ""private_key""
-      },
-      ""interpolated"": true
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""secret"",
-      ""xsoar_param_map"": {
-        ""cred_token.password"": ""tenant_id"",
-        ""cred_auth_id.password"": ""client_id"",
-        ""cred_enc_key.password"": ""client_secret""
-      },
-      ""interpolated"": true
-    }
-  ],
-  ""other_connection"": [""host"", ""proxy"", ""resource_group"", ""unsecure""]
-}","[
-  ""Automation""
-]","{
-  ""integration"": ""Azure Compute v2"",
-  ""commands"": {
-    ""test-module"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-vm-list-instances"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-vm-start-instance"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-vm-poweroff-instance"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-vm-get-instance-details"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-vm-create-instance"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-list-resource-groups"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-vm-delete-instance"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-list-subscriptions"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-vm-get-nic-details"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-vm-get-public-ip-details"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-vm-create-nic"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-vm-get-all-public-ip-details"": [""cred_subscription_id"", ""subscription_id""],
-    ""azure-vm-auth-reset"": []
-  }
-}",{},✅,"{
-  ""general_configurations"": [
-    ""cred_subscription_id""
-  ],
-  ""Automation"": []
-}",,,,,,,,
+Azure Compute v2,Packs/AzureCompute/Integrations/AzureCompute_v2/AzureCompute_v2.yml,Azure Services,,noydavidi,,,,,,,,,,,,,,
 Azure Firewall,Packs/AzureFirewall/Integrations/AzureFirewall/AzureFirewall.yml,Azure Firewall,,noydavidi,,,,,,,,,,,,,,
 Azure Kubernetes Services,Packs/AzureKubernetesServices/Integrations/AzureKubernetesServices/AzureKubernetesServices.yml,Azure Services,,noydavidi,,,,,,,,,,,,,,
 Azure Log Analytics,Packs/AzureLogAnalytics/Integrations/AzureLogAnalytics/AzureLogAnalytics.yml,Azure Log Analytics,,noydavidi,,,,,,,,,,,,,,
@@ -982,11 +932,11 @@ Zendesk v2,Packs/Zendesk/Integrations/Zendeskv2/Zendeskv2.yml,Zendesk,,hyaffe839
 ZeroNetworksSegmentEventCollector,Packs/ZeroNetworksSegment/Integrations/ZeroNetworksSegmentEventCollector/ZeroNetworksSegmentEventCollector.yml,Zero Networks,,joeymizrahi,,,,,,,,,,,,,,
 Zimperium,Packs/Zimperium/Integrations/Zimperium/Zimperium.yml,Zimperium,,joeymizrahi,,,,,,,,,,,,,,
 Zimperium v2,Packs/Zimperium/Integrations/ZimperiumV2/ZimperiumV2.yml,Zimperium,,joeymizrahi,,,,,,,,,,,,,,
-Zoom,Packs/Zoom/Integrations/Zoom/Zoom.yml,Zoom,connectors/zoom,juschwartz,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""OAuth (Server-to-Server)"", ""xsoar_param_map"": {""account_id"": ""account_id"", ""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret"", ""bot_credentials.identifier"": ""bot_client_id"", ""bot_credentials.password"": ""bot_client_secret""}, ""interpolated"": true}], ""other_connection"": [""botJID"", ""certificate"", ""insecure"", ""key"", ""mirroring"", ""proxy"", ""secret_token"", ""url"", ""verification_token""]}","[""Automation""]","{""integration"": ""Zoom"", ""commands"": {""close-channel"": [], ""long-running-execution"": [], ""mirror-investigation"": [], ""send-notification"": [], ""test-module"": [], ""zoom-create-channel"": [], ""zoom-create-meeting"": [], ""zoom-create-user"": [], ""zoom-delete-channel"": [], ""zoom-delete-message"": [], ""zoom-delete-user"": [], ""zoom-delete-user-token"": [], ""zoom-fetch-recording"": [], ""zoom-invite-to-channel"": [], ""zoom-list-account-public-channels"": [], ""zoom-list-messages"": [], ""zoom-list-user-channels"": [], ""zoom-list-users"": [], ""zoom-meeting-get"": [], ""zoom-meeting-list"": [], ""zoom-remove-from-channel"": [], ""zoom-send-file"": [], ""zoom-send-message"": [], ""zoom-update-channel"": [], ""zoom-update-message"": []}}",{},✅,"{""general_configurations"": [], ""Automation"": []}",✅,✅,✅,,,,,
+Zoom,Packs/Zoom/Integrations/Zoom/Zoom.yml,Zoom,connectors/zoom,juschwartz,,,,,,,,,,,,,,
 Zoom Feed,Packs/FeedZoom/Integrations/FeedZoom/FeedZoom.yml,Zoom,connectors/zoom,juschwartz,"{""auth_types"": [{""type"": ""NoneRequired"", ""name"": ""No authentication"", ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy""]}","[""Threat Intelligence & Enrichment""]","{""integration"": ""Zoom Feed"", ""commands"": {""fetch-indicators"": [""feedTags"", ""tlp_color""], ""zoom-get-indicators"": [""feedTags"", ""tlp_color""], ""test-module"": []}}",{},✅,"{""general_configurations"":[],""Threat Intelligence & Enrichment"":[""feedTags"",""tlp_color"",""zoom_clients_certificate_validation"",""zoom_clients_user_browser""]}",✅,✅,,,,,,
 Zoom Mail,Packs/ZoomMail/Integrations/ZoomMail/ZoomMail.yml,Zoom,connectors/zoom,juschwartz,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""OAuth (Server-to-Server)"", ""xsoar_param_map"": {""account_id"": ""account_id"", ""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[""Fetch Issues"", ""Automation""]","{""integration"": ""Zoom Mail"", ""commands"": {""fetch-incidents"": [""fetch_from"", ""fetch_labels"", ""fetch_query"", ""fetch_threads"", ""first_fetch"", ""max_fetch""], ""test-module"": [], ""zoom-mail-email-attachment-get"": [], ""zoom-mail-email-list"": [], ""zoom-mail-email-move-trash"": [], ""zoom-mail-mailbox-profile-get"": [], ""zoom-mail-send-email"": [], ""zoom-mail-thread-list"": [], ""zoom-mail-user-list"": []}}",{},✅,"{""general_configurations"": [], ""Fetch Issues"": [""fetch_from"", ""fetch_labels"", ""fetch_query"", ""fetch_threads"", ""first_fetch"", ""max_fetch""], ""Automation"": []}",✅,✅,,,,,,
 ZoomEventCollector,Packs/Zoom/Integrations/ZoomEventCollector/ZoomEventCollector.yml,Zoom,connectors/zoom,juschwartz,"{""auth_types"":[{""type"":""Passthrough"",""name"":""OAuth (Server-to-Server)"",""xsoar_param_map"":{""account_id"":""account_id"",""credentials.identifier"":""client_id"",""credentials.password"":""client_secret""},""interpolated"":true}],""other_connection"":[""insecure"",""proxy"",""url""]}","[""Log Collection""]","{""integration"":""ZoomEventCollector"",""commands"":{""fetch-events"":[],""test-module"":[],""zoom-get-events"":[]}}",{},✅,"{""Log Collection"":[""first_fetch""],""general_configurations"":[]}",✅,✅,,,,,,
-Zoom_IAM,Packs/Zoom/Integrations/Zoom_IAM/Zoom_IAM.yml,Zoom,connectors/zoom,juschwartz,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""OAuth (Server-to-Server)"", ""xsoar_param_map"": {""account_id"": ""account_id"", ""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[""Automation""]","{""integration"": ""Zoom_IAM"", ""commands"": {""iam-disable-user"": [""disable-user-enabled"", ""mapper_in""], ""iam-enable-user"": [""enable-user-enabled"", ""mapper_in""], ""iam-get-user"": [""mapper_in""], ""get-mapping-fields"": [], ""test-module"": []}}",{},✅,"{""general_configurations"": [], ""Automation"": [""disable-user-enabled"", ""enable-user-enabled"", ""mapper_in""]}",✅,✅,,,,,,
+Zoom_IAM,Packs/Zoom/Integrations/Zoom_IAM/Zoom_IAM.yml,Zoom,connectors/zoom,juschwartz,,,,,,,,,,,,,,
 Zscaler,Packs/Zscaler/Integrations/Zscaler/Zscaler.yml,Zscaler,,jlevypaloalto,,,,,,,,,,,,,,
 ZscalerZIdentity,Packs/Zscaler/Integrations/ZscalerZIdentity/ZscalerZIdentity.yml,Zscaler,,jlevypaloalto,,,,,,,,,,,,,,
 abuse.ch SSL Blacklist Feed,Packs/Feedsslabusech/Integrations/Feedsslabusech/Feedsslabusech.yml,abuse.ch,,hyaffe839,,,,,,,,,,,,,,
