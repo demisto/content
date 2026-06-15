@@ -868,58 +868,6 @@ Gets all the resource groups for a subscription.
 > |---|---|---|---|
 > | name | location | Name: name | Succeeded |
 
-### azure-sql-firewall-rule-delete
-
-***
-Deletes a firewall rule. Required Permissions: Microsoft.Sql/servers/firewallRules/delete.
-
-#### Base Command
-
-`azure-sql-firewall-rule-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| server_name | The name of the server. | Required |
-| firewall_rule_name | The name of the firewall rule. | Required |
-| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'. | Optional |
-| resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### azure-sql-firewall-rule-replace
-
-***
-Replaces all firewall rules on the server. Required Permissions: Microsoft.Sql/servers/firewallRules/write.
-
-#### Base Command
-
-`azure-sql-firewall-rule-replace`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| server_name | The name of the server. | Required |
-| firewall_rule_name | The name of the firewall rule. | Required |
-| end_ip_address | The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses. | Optional |
-| start_ip_address | The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses. | Optional |
-| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'. | Optional |
-| resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSQL.FirewallRule.id | String | Resource ID. |
-| AzureSQL.FirewallRule.name | String | Resource name. |
-| AzureSQL.FirewallRule.type | String | Resource type. |
-| AzureSQL.FirewallRule.startIpAddress | String | The start IP address of the firewall rule. |
-| AzureSQL.FirewallRule.endIpAddress | String | The end IP address of the firewall rule. |
-
 ### azure-sql-firewall-rule-list
 
 ***
@@ -937,8 +885,39 @@ Gets a list of firewall rules or a specific firewall rule. Required Permissions:
 | firewall_rule_name | The name of the firewall rule. If not provided, all firewall rules for the server are returned. | Optional |
 | subscription_id | Subscription ID. This value will override the instance param 'subscription_id'. | Optional |
 | resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'. | Optional |
-| limit | The number of items to return. Default is 50. Default is 50. | Optional |
-| offset | Offset in the data set. Default is 0. Default is 0. | Optional |
+| limit | The maximum number of items to return. Applies only when listing all firewall rules (ignored when firewall_rule_name is provided). Default is 50. | Optional |
+| offset | Offset in the data set. Applies only when listing all firewall rules (ignored when firewall_rule_name is provided). Default is 0. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSQL.FirewallRule.id | String | Resource ID. |
+| AzureSQL.FirewallRule.name | String | Resource name. |
+| AzureSQL.FirewallRule.type | String | Resource type. |
+| AzureSQL.FirewallRule.startIpAddress | String | The start IP address of the firewall rule. |
+| AzureSQL.FirewallRule.endIpAddress | String | The end IP address of the firewall rule. |
+
+### azure-sql-firewall-rule-replace
+
+***
+Replaces all firewall rules on the server. Required Permissions: Microsoft.Sql/servers/firewallRules/write.
+
+#### Base Command
+
+`azure-sql-firewall-rule-replace`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the server. | Required |
+| firewall_rule_name | The name of the firewall rule. Required unless 'entry_id' is provided. | Optional |
+| end_ip_address | The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses. Required unless 'entry_id' is provided. | Optional |
+| start_ip_address | The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses. Required unless 'entry_id' is provided. | Optional |
+| entry_id | The entry ID of a file containing the full request JSON (in the FirewallRuleList format). If provided, the 'firewall_rule_name', 'start_ip_address', and 'end_ip_address' arguments are ignored and must not be set. | Optional |
+| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'. | Optional |
+| resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'. | Optional |
 
 #### Context Output
 
@@ -965,8 +944,8 @@ Creates or updates a firewall rule. Required Permissions: Microsoft.Sql/servers/
 | --- | --- | --- |
 | server_name | The name of the server. | Required |
 | firewall_rule_name | The name of the firewall rule. | Required |
-| end_ip_address | The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses. | Optional |
-| start_ip_address | The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses. | Optional |
+| end_ip_address | The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses. | Required |
+| start_ip_address | The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses. | Required |
 | subscription_id | Subscription ID. This value will override the instance param 'subscription_id'. | Optional |
 | resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'. | Optional |
 
@@ -979,3 +958,25 @@ Creates or updates a firewall rule. Required Permissions: Microsoft.Sql/servers/
 | AzureSQL.FirewallRule.type | String | Resource type. |
 | AzureSQL.FirewallRule.startIpAddress | String | The start IP address of the firewall rule. |
 | AzureSQL.FirewallRule.endIpAddress | String | The end IP address of the firewall rule. |
+
+### azure-sql-firewall-rule-delete
+
+***
+Deletes a firewall rule. Required Permissions: Microsoft.Sql/servers/firewallRules/delete.
+
+#### Base Command
+
+`azure-sql-firewall-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| server_name | The name of the server. | Required |
+| firewall_rule_name | The name of the firewall rule. | Required |
+| subscription_id | Subscription ID. This value will override the instance param 'subscription_id'. | Optional |
+| resource_group_name | A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

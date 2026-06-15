@@ -3,6 +3,7 @@ import json
 import demistomock as demisto
 import pytest
 from AzureSQLManagement import Client
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -509,6 +510,10 @@ def test_azure_sql_firewall_rule_create_update_command(mocker):
         start_ip_address="0.0.0.0",
         end_ip_address="0.0.0.0",
     )
+    # Verify the IP addresses reached the request body sent to the API.
+    request_body = client.http_request.call_args.kwargs["data"]
+    assert request_body["properties"]["startIpAddress"] == "0.0.0.0"
+    assert request_body["properties"]["endIpAddress"] == "0.0.0.0"
     assert "### Successfully updated the firewall rule new-rule" in results.readable_output
     assert results.outputs.get("name") == "new-rule"
     assert results.outputs.get("startIpAddress") == "0.0.0.0"
@@ -591,6 +596,13 @@ def test_azure_sql_firewall_rule_replace_command(mocker):
         start_ip_address="0.0.0.0",
         end_ip_address="0.0.0.0",
     )
+    # The replace endpoint has no rule name in the URL, so the body must carry it
+    # in the FirewallRuleList schema: {"values": [{"name": ..., "properties": {...}}]}.
+    request_body = client.http_request.call_args.kwargs["data"]
+    sent_rule = request_body["values"][0]
+    assert sent_rule["name"] == "replaced-rule"
+    assert sent_rule["properties"]["startIpAddress"] == "0.0.0.0"
+    assert sent_rule["properties"]["endIpAddress"] == "0.0.0.0"
     assert "### Successfully updated the firewall rule replaced-rule" in results.readable_output
     assert results.outputs.get("name") == "replaced-rule"
     assert results.outputs.get("startIpAddress") == "0.0.0.0"
@@ -618,3 +630,71 @@ def test_azure_sql_firewall_rule_replace_command_with_not_found(mocker):
     }
     result = azure_sql_firewall_rule_replace_command(client, args, "resourceGroupName")
     assert result.readable_output == failure_message
+
+
+def test_azure_sql_firewall_rule_replace_command_with_entry_id(mocker):
+    """
+    Given:
+        - An entry_id pointing to a file containing the full request JSON.
+    When:
+        - Replacing firewall rules using azure_sql_firewall_rule_replace_command.
+    Then:
+        - Assert the request body is taken from the file as-is.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_replace_command
+
+    client = mock_client(mocker, util_load_json("test_data/azure_sql_firewall_rule_replace_result.json"))
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/azure_sql_firewall_rule_replace_request.json"})
+    args = {"server_name": "integration", "entry_id": "123@456"}
+    results = azure_sql_firewall_rule_replace_command(client, args, "resourceGroupName")
+
+    request_body = client.http_request.call_args.kwargs["data"]
+    sent_rule = request_body["values"][0]
+    assert sent_rule["name"] == "firewallrulecrudtest-5370"
+    assert sent_rule["properties"]["startIpAddress"] == "0.0.0.0"
+    assert sent_rule["properties"]["endIpAddress"] == "100.0.0.0"
+    assert "### Successfully updated the firewall rule" in results.readable_output
+
+
+@pytest.mark.parametrize(
+    "extra_arg",
+    [
+        {"firewall_rule_name": "replaced-rule"},
+        {"start_ip_address": "0.0.0.0"},
+        {"end_ip_address": "0.0.0.0"},
+    ],
+)
+def test_azure_sql_firewall_rule_replace_command_entry_id_with_other_args(mocker, extra_arg):
+    """
+    Given:
+        - An entry_id together with one of firewall_rule_name / start_ip_address / end_ip_address.
+    When:
+        - Replacing firewall rules using azure_sql_firewall_rule_replace_command.
+    Then:
+        - Assert a meaningful DemistoException is raised.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_replace_command
+
+    client = mock_client(mocker, None)
+    args = {"server_name": "integration", "entry_id": "123@456", **extra_arg}
+    with pytest.raises(DemistoException) as e:
+        azure_sql_firewall_rule_replace_command(client, args, "resourceGroupName")
+    assert "When 'entry_id' is provided" in str(e.value)
+
+
+def test_azure_sql_firewall_rule_replace_command_missing_required_args(mocker):
+    """
+    Given:
+        - No entry_id and missing rule arguments.
+    When:
+        - Replacing firewall rules using azure_sql_firewall_rule_replace_command.
+    Then:
+        - Assert a meaningful DemistoException is raised.
+    """
+    from AzureSQLManagement import azure_sql_firewall_rule_replace_command
+
+    client = mock_client(mocker, None)
+    args = {"server_name": "integration", "firewall_rule_name": "replaced-rule"}
+    with pytest.raises(DemistoException) as e:
+        azure_sql_firewall_rule_replace_command(client, args, "resourceGroupName")
+    assert "Either 'entry_id' must be provided" in str(e.value)

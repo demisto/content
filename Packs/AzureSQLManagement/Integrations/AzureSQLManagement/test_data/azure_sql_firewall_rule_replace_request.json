@@ -1,0 +1,11 @@
+{
+    "values": [
+        {
+            "name": "firewallrulecrudtest-5370",
+            "properties": {
+                "startIpAddress": "0.0.0.0",
+                "endIpAddress": "100.0.0.0"
+            }
+        }
+    ]
+}

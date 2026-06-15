@@ -250,11 +250,14 @@ class Client:
         Returns:
             The API response.
         """
-        properties = assign_params(
-            startIpAddress=start_ip_address,
-            endIpAddress=end_ip_address,
+        request_body = remove_empty_elements(
+            {
+                "properties": {
+                    "startIpAddress": start_ip_address,
+                    "endIpAddress": end_ip_address,
+                }
+            }
         )
-        request_body = {"properties": properties} if properties else {}
         url_suffix = (
             f"resourceGroups/{resource_group_name}/providers/Microsoft.Sql/servers/"
             f"{server_name}/firewallRules/{firewall_rule_name}"
@@ -282,9 +285,10 @@ class Client:
         self,
         server_name: str,
         resource_group_name: str,
-        firewall_rule_name: str,
+        firewall_rule_name: str = None,
         start_ip_address: str = None,
         end_ip_address: str = None,
+        request_body: dict = None,
     ):
         """Replaces all firewall rules on the server.
         Args:
@@ -293,14 +297,20 @@ class Client:
             firewall_rule_name: The name of the firewall rule.
             start_ip_address: The start IP address of the firewall rule.
             end_ip_address: The end IP address of the firewall rule.
+            request_body: A pre-built request body. If provided, it is used as-is and the
+                individual rule arguments are ignored.
         Returns:
             The API response.
         """
-        properties = assign_params(
-            startIpAddress=start_ip_address,
-            endIpAddress=end_ip_address,
-        )
-        request_body = {"properties": properties} if properties else {}
+        if request_body is None:
+            properties = assign_params(
+                startIpAddress=start_ip_address,
+                endIpAddress=end_ip_address,
+            )
+            rule: dict = {"name": firewall_rule_name}
+            if properties:
+                rule["properties"] = properties
+            request_body = {"values": [rule]}
         url_suffix = f"resourceGroups/{resource_group_name}/providers/Microsoft.Sql/servers/" f"{server_name}/firewallRules"
         return self.http_request("PUT", url_suffix, params={"api-version": FIREWALL_API_VERSION}, data=request_body)
 
@@ -753,8 +763,8 @@ def azure_sql_firewall_rule_create_update_command(
     """
     server_name = args["server_name"]
     firewall_rule_name = args["firewall_rule_name"]
-    start_ip_address = args.get("start_ip_address")
-    end_ip_address = args.get("end_ip_address")
+    start_ip_address = args["start_ip_address"]
+    end_ip_address = args["end_ip_address"]
     demisto.debug(
         f"Creating/updating firewall rule: {server_name=}, {firewall_rule_name=}, {start_ip_address=}, {end_ip_address=}"
     )
@@ -808,11 +818,14 @@ def azure_sql_firewall_rule_delete_command(client: Client, args: Dict[str, str],
     firewall_rule_name = args["firewall_rule_name"]
     demisto.debug(f"Deleting firewall rule: {server_name=}, {firewall_rule_name=}")
 
-    client.azure_sql_firewall_rule_delete(
+    response = client.azure_sql_firewall_rule_delete(
         server_name=server_name,
         resource_group_name=resource_group_name,
         firewall_rule_name=firewall_rule_name,
     )
+
+    if isinstance(response, str):  # if there is a 404, an error message will return
+        return CommandResults(readable_output=response)
 
     return CommandResults(
         readable_output=f"The firewall rule {firewall_rule_name} has been successfully deleted.",
@@ -832,10 +845,32 @@ def azure_sql_firewall_rule_replace_command(client: Client, args: Dict[str, str]
         A ``CommandResults`` object that is then passed to ``return_results``.
     """
     server_name = args["server_name"]
-    firewall_rule_name = args["firewall_rule_name"]
+    entry_id = args.get("entry_id")
+    firewall_rule_name = args.get("firewall_rule_name")
     start_ip_address = args.get("start_ip_address")
     end_ip_address = args.get("end_ip_address")
-    demisto.debug(f"Replacing firewall rules: {server_name=}, {firewall_rule_name=}, {start_ip_address=}, {end_ip_address=}")
+
+    request_body = None
+    if entry_id:
+        if firewall_rule_name or start_ip_address or end_ip_address:
+            raise DemistoException(
+                "When 'entry_id' is provided, the 'firewall_rule_name', 'start_ip_address', and "
+                "'end_ip_address' arguments must not be set, as the request body is taken entirely from the file."
+            )
+        file_path = demisto.getFilePath(entry_id).get("path")
+        with open(file_path) as f:
+            try:
+                request_body = json.loads(f.read())
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Failed to parse the JSON file in entry_id '{entry_id}': {e}")
+        demisto.debug(f"Replacing firewall rules using request body from {entry_id=}")
+    else:
+        if not (firewall_rule_name and start_ip_address and end_ip_address):
+            raise DemistoException(
+                "Either 'entry_id' must be provided, or all of 'firewall_rule_name', 'start_ip_address', "
+                "and 'end_ip_address' must be provided."
+            )
+        demisto.debug(f"Replacing firewall rules: {server_name=}, {firewall_rule_name=}, {start_ip_address=}, {end_ip_address=}")
 
     raw_response = client.azure_sql_firewall_rule_replace(
         server_name=server_name,
@@ -843,26 +878,20 @@ def azure_sql_firewall_rule_replace_command(client: Client, args: Dict[str, str]
         firewall_rule_name=firewall_rule_name,
         start_ip_address=start_ip_address,
         end_ip_address=end_ip_address,
+        request_body=request_body,
     )
 
     if isinstance(raw_response, str):
         return CommandResults(readable_output=raw_response)
 
+    # The Replace endpoint returns the affected firewall rule object.
     fixed_response = copy.deepcopy(raw_response)
     if properties := fixed_response.get("properties", {}):
         fixed_response.update(properties)
         del fixed_response["properties"]
 
-    human_readable = tableToMarkdown(
-        name=f"Successfully updated the firewall rule {firewall_rule_name}",
-        t=fixed_response,
-        headers=["id", "name", "startIpAddress", "endIpAddress", "type"],
-        headerTransform=pascalToSpace,
-        removeNull=True,
-    )
-
     return CommandResults(
-        readable_output=human_readable,
+        readable_output="Successfully updated the firewall rule",
         outputs_prefix="AzureSQL.FirewallRule",
         outputs_key_field="id",
         outputs=fixed_response,

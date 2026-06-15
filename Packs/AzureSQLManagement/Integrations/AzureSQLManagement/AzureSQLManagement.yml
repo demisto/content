@@ -665,10 +665,10 @@ script:
       isArray: true
       name: resource_group_name
     - defaultValue: '50'
-      description: The number of items to return. Default is 50.
+      description: The maximum number of items to return. Applies only when listing all firewall rules (ignored when firewall_rule_name is provided).
       name: limit
     - defaultValue: '0'
-      description: Offset in the data set. Default is 0.
+      description: Offset in the data set. Applies only when listing all firewall rules (ignored when firewall_rule_name is provided).
       name: offset
     description: "Gets a list of firewall rules or a specific firewall rule. Required Permissions: Microsoft.Sql/servers/firewallRules/read."
     name: azure-sql-firewall-rule-list
@@ -697,8 +697,10 @@ script:
       required: true
     - description: "The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses."
       name: end_ip_address
+      required: true
     - description: "The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses."
       name: start_ip_address
+      required: true
     - description: Subscription ID. This value will override the instance param 'subscription_id'.
       name: subscription_id
     - description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
@@ -740,13 +742,14 @@ script:
     - description: The name of the server.
       name: server_name
       required: true
-    - description: The name of the firewall rule.
+    - description: The name of the firewall rule. Required unless 'entry_id' is provided.
       name: firewall_rule_name
-      required: true
-    - description: "The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses."
+    - description: "The end IP address of the firewall rule. Must be IPv4 format. Must be greater than or equal to startIpAddress. Use value '0.0.0.0' for all Azure-internal IP addresses. Required unless 'entry_id' is provided."
       name: end_ip_address
-    - description: "The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses."
+    - description: "The start IP address of the firewall rule. Must be IPv4 format. Use value '0.0.0.0' for all Azure-internal IP addresses. Required unless 'entry_id' is provided."
       name: start_ip_address
+    - description: "The entry ID of a file containing the full request JSON (in the FirewallRuleList format). If provided, the 'firewall_rule_name', 'start_ip_address', and 'end_ip_address' arguments are ignored and must not be set."
+      name: entry_id
     - description: Subscription ID. This value will override the instance param 'subscription_id'.
       name: subscription_id
     - description: A comma-separated list of resource group names. This value will override the instance param 'resource_group_name'.
