@@ -386,7 +386,7 @@ Schema: [`field-options.schema.json`](schema/definitions/field-options.schema.js
 
 | Property | Req | Description |
 |---|---|---|
-| `mask` | ✅ | Mask in UI. **`true`** for `file_upload`. |
+| `mask` | ✅ | Mask in UI. **`true`** for `file_upload`.|
 | `description` | ❌ | Secondary text. |
 | `help_text` | ❌ | Info-icon tooltip (Markdown). |
 | `placeholder` | ❌ | Ghost text. |
@@ -728,6 +728,50 @@ A `type: 9` credential renders as two leaves — an identifier (`<id>.identifier
 **Do NOT use `connection.yaml general_configurations`.** Every connection parameter — auth secrets, server URL/domain, `proxy`, `engine`/`engine_group`, `insecure` — is declared in `profiles[].configurations[].fields[]`, **once per profile**.
 
 **`metadata.event.publish: true` is MANDATORY on every profile field** except (1) `engine_mode` and (2) any `metadata.auth` secret (§2.17).
+
+#### Connection params with NO credentials (url/proxy only, no secrets)
+
+Some integrations need a connection profile to collect **non-secret** connection params — a server URL/domain, `proxy`, `insecure`, and/or the engine fields — but have **no actual credential** (no username/password, no API key, no `type: 9` credentials). The connection screen is still required (to collect the URL/proxy), but the profile carries **zero auth fields**. Model it as follows:
+
+1. **Profile type: `passthrough`.** With no secret to manage, neither `plain` nor `api_key` fits. Use `passthrough` (§2.6.1) — here it stores only non-secret connection params and the platform performs no token exchange.
+2. **No `metadata.auth` fields.** Every field is a non-secret connection param (`url`/`domain`, `proxy`, `insecure`, engine fields). None carry `metadata.auth.parameter`. Consequently the `getCredentials` `parameters` object (§2.6.1) is **empty**.
+3. **`metadata.event.publish: true` on every field** (except `engine_mode`, per §2.17). Since there are no secrets, **all** profile fields are published.
+4. **`interpolation_mapping` is empty / omitted.** Per §2.6.2 the mapping covers **only** auth fields — `proxy`/`insecure`/`engine`/`engine_group` are never mapped, and a server URL is resolved from the profile field directly. With no auth fields, there is nothing to map, so emit no `metadata.xsoar.interpolation_mapping` (or an empty one). The legacy code reads `url`/`proxy` from `demisto.params()` as published profile values.
+5. **`test_connection` is still required** (§2.8 — only `auth_options[].id: "none"` waives it, which mass migration does not emit). For a `passthrough` profile the handler implements the test connection itself (§2.6.1), verifying connectivity using just the URL/proxy.
+
+> **FLAG IT.** This "connection params but no credentials" shape is **not** a first-class, separately-documented pattern — it is assembled from the `passthrough` + `event.publish` building blocks above. It is also distinct from the §6 open item *"skip the connection screen for integrations that have no auth/connection"* (that covers integrations with **no** connection at all; here a connection screen is still needed). Surface it in **Gap Analysis / Decisions Needed** (§5.2) so the reviewer confirms the chosen modeling.
+
+```yaml
+# connection.yaml — a no-credentials profile (url + proxy only)
+profiles:
+  - id: "passthrough.acme"
+    type: "passthrough"
+    title: "Connection"
+    description: "Connection settings (no credentials required)"
+    view_group: "acme"                # Grouped connectors only
+    # no metadata.xsoar.interpolation_mapping — there are no auth fields to map
+    configurations:
+      - fields:                       # one field per fields block (§3.7 item 2)
+          - id: "url"
+            title: "Server URL"
+            field_type: "input"
+            metadata: { event: { publish: true } }   # non-secret → published
+            options:
+              mask: false
+              placeholder: "https://<host>"
+              create_modifiers: { required: true, hidden: false }
+              edit_modifiers: { required: true, hidden: false }
+      - fields:
+          - id: "proxy"
+            field_type: "checkbox"
+            title: "Use system proxy settings"
+            metadata: { event: { publish: true } }
+            options:
+              mask: false
+              default_value: false
+              help_text: "Use system proxy settings is enabled only when an engine or engine group are chosen."
+      # engine_mode / engine / engine_group emitted per §3.7 (unless Appendix G/H applies)
+```
 
 #### view_groups (Grouped connectors)
 
@@ -1621,7 +1665,7 @@ Also see [`plans/integration-parameter-and-types-overrides.md`](plans/integratio
 | 9 | Credentials / Authentication | `input` (per leaf) | `true` (password leaf) | **IN SCOPE.** Mapped into the **connection profile** (`connection.yaml profiles[].configurations[].fields[]`), same as type 4 — **not** into `configurations.yaml`. A `type: 9` credential renders as two leaves: an identifier (`<id>.identifier`) and a password (`<id>.password`); each becomes a profile auth field carrying `metadata.auth.parameter`, wired back to `demisto.params()` via the profile's `interpolation_mapping` (§2.6.2). Honor `hiddenusername`/`hiddenpassword`/`displaypassword` leaf semantics (§3.6). |
 | 12 | Long Text / TextArea | `text_area` | `false` | Multi-line text. |
 | 13 | Incident Type | `select` + `metadata.dynamic_values` | `false` | Option list fetched at runtime via the XSOAR provider (`dynamicField: "incident-type"`). **User-visible field** |
-| 14 | Encrypted Text Area | `text_area` | `true` | Masked textarea. Example: SSHKey. |
+| 14 | Encrypted Text Area | `text_area` | `true` | Masked input. Example: SSHKey. |
 | 15 | Single Select / Dropdown | `select` | `false` | Options from YML `options` array as `{key, label}` pairs. |
 | 16 | Multi Select | `multi_select` | `false` | Native UCP field type. Items in `values` use `{key, label}`; `default_value` is an array of keys. See README [Multi-Select Example](README.md:1681). |
 | 17 | Feed Expiration Policy | `select` | `false` | Hardcoded display labels: `Indicator Type` / `Time Interval` / `Never Expire` / `When removed from the feed`. Only added when `script.Feed: true`. |
