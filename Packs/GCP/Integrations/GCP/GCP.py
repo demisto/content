@@ -33,10 +33,16 @@ def build_http_client() -> "httplib2.Http | None":
             if not https_proxy.startswith(("http://", "https://")):
                 https_proxy = f"https://{https_proxy}"
             parsed = urllib.parse.urlparse(https_proxy)
+            # PROXY_TYPE_HTTP comes from the optional PySocks module exposed as httplib2.socks.
+            # Fall back to its well-known value (3) if socks is unavailable in the environment.
+            proxy_type = getattr(httplib2.socks, "PROXY_TYPE_HTTP", 3) if httplib2.socks else 3
+            # When the proxy URL omits an explicit port, urlparse returns None; fall back to the
+            # default port for the scheme so httplib2.ProxyInfo gets a valid integer.
+            proxy_port = parsed.port if parsed.port is not None else (443 if parsed.scheme == "https" else 80)
             proxy_info = httplib2.ProxyInfo(
-                proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
+                proxy_type=proxy_type,  # disable-secrets-detection
                 proxy_host=parsed.hostname,
-                proxy_port=parsed.port,
+                proxy_port=proxy_port,
                 proxy_user=parsed.username,
                 proxy_pass=parsed.password,
             )
@@ -2462,7 +2468,7 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         DemistoException: If credentials cannot be retrieved or are invalid.
     """
     creds_param = params.get("credentials") or {}
-    password = creds_param.get("password", "").strip()
+    password = (creds_param.get("password") or "").strip()
 
     if password:
         # --- Cortex XSOAR/Cortex XSIAM path: service account JSON key ---
@@ -2851,12 +2857,14 @@ def main():  # pragma: no cover
     args = demisto.args()
     params = demisto.params()
 
-    # Apply connection settings from the integration params so every Google API
-    # client (built via GCPServices.build) honors proxy and SSL configuration.
-    global USE_PROXY, VERIFY_SSL
-    USE_PROXY = params.get("proxy", False)
-    VERIFY_SSL = not argToBoolean(params.get("insecure", False))
-    handle_proxy()  # populates HTTPS_PROXY env vars when the proxy param is enabled
+    # Proxy and SSL settings only apply to the marketplace path (Cortex XSOAR /
+    # Cortex XSIAM < 3.0). On Cortex Cloud (COOC/platform) connectivity is handled
+    # by the platform (ProxyDome), so these params are not set and must not be applied.
+    if not get_connector_id():
+        global USE_PROXY, VERIFY_SSL
+        USE_PROXY = params.get("proxy", False)
+        VERIFY_SSL = not argToBoolean(params.get("insecure", False))
+        handle_proxy()  # populates HTTPS_PROXY env vars when the proxy param is enabled
 
     try:
         command_map: dict[str, Callable[[Any, dict], Any]] = {

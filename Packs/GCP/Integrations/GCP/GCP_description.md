@@ -1,9 +1,3 @@
-## Google Cloud Platform Integration
-
-This integration manages and secures Google Cloud Platform (GCP) resources including Compute Engine, Cloud Storage, GKE, BigQuery, and IAM.
-
----
-
 ### Supported Platforms
 
 | Platform                                          | Authentication | Setup |

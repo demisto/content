@@ -6,12 +6,17 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2023-01-01T00:00:00Z",
     "categories": [
         "Cloud Services"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Google",
+        "GCP",
+        "Google Cloud Platform"
+    ],
     "supportedModules": [
         "cloud_posture",
         "cloud",

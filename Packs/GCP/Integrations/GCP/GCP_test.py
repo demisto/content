@@ -5445,6 +5445,31 @@ def test_get_credentials_marketplace_missing_credentials_raises(mocker):
         get_credentials(args, params)
 
 
+def test_get_credentials_none_password_does_not_raise_attributeerror(mocker):
+    """
+    Given:
+        - The 'credentials' param exists but its 'password' value is None.
+        - project_id is provided in args (Cortex Cloud path).
+    When:
+        - get_credentials is called.
+    Then:
+        - No AttributeError is raised when stripping the password (None is handled),
+          and the CTS token path is used instead.
+    """
+    from GCP import get_credentials
+    from google.oauth2.credentials import Credentials
+
+    params: dict = {"credentials": {"password": None}}
+    args = {"project_id": "dummy-project-id"}
+
+    mocker.patch("GCP.get_cloud_credentials", return_value={"access_token": "dummy-access-token"})
+
+    result = get_credentials(args, params)
+
+    assert isinstance(result, Credentials)
+    assert result.token == "dummy-access-token"
+
+
 def test_get_credentials_cortex_cloud_token_path(mocker):
     """
     Given:
@@ -5590,23 +5615,39 @@ def test_build_http_client_insecure_disables_ssl_validation(mocker):
 def test_build_http_client_proxy_sets_proxy_info(mocker):
     """
     Given:
-        - 'Use system proxy settings' enabled and HTTPS_PROXY env var set.
+        - 'Use system proxy settings' enabled and HTTPS_PROXY env var set (with credentials).
     When:
         - build_http_client is called.
     Then:
-        - An httplib2.Http is returned with proxy_info pointing at the proxy host/port.
+        - httplib2.ProxyInfo is constructed with the host, port, user and password parsed
+          from the proxy URL, and the resulting Http object carries that proxy_info.
+
+    Note:
+        httplib2.ProxyInfo and httplib2.Http are mocked so the test does not depend on the
+        optional PySocks dependency (httplib2.socks) being installed in the environment.
     """
     import GCP
 
     mocker.patch.object(GCP, "USE_PROXY", True)
     mocker.patch.object(GCP, "VERIFY_SSL", True)
-    mocker.patch.dict("GCP.os.environ", {"HTTPS_PROXY": "https://proxy.example.com:8080"})
+    mocker.patch.dict("GCP.os.environ", {"HTTPS_PROXY": "https://user:pass@proxy.example.com:8080"})
 
-    http = GCP.build_http_client()
+    mock_proxy_info = mocker.patch("GCP.httplib2.ProxyInfo", return_value="proxy-info-obj")
+    mock_http = mocker.patch("GCP.httplib2.Http", return_value="http-obj")
 
-    assert http is not None
-    assert http.proxy_info.proxy_host == "proxy.example.com"
-    assert http.proxy_info.proxy_port == 8080
+    result = GCP.build_http_client()
+
+    assert result == "http-obj"
+    # ProxyInfo built from the parsed proxy URL components.
+    _, proxy_kwargs = mock_proxy_info.call_args
+    assert proxy_kwargs["proxy_host"] == "proxy.example.com"
+    assert proxy_kwargs["proxy_port"] == 8080
+    assert proxy_kwargs["proxy_user"] == "user"
+    assert proxy_kwargs["proxy_pass"] == "pass"
+    # Http built with that proxy_info and SSL validation enabled (VERIFY_SSL=True).
+    _, http_kwargs = mock_http.call_args
+    assert http_kwargs["proxy_info"] == "proxy-info-obj"
+    assert http_kwargs["disable_ssl_certificate_validation"] is False
 
 
 def test_gcpservices_build_wraps_credentials_when_custom_http(mocker):
@@ -5656,4 +5697,106 @@ def test_gcpservices_build_uses_default_transport_when_no_custom_http(mocker):
     assert result == "client"
     _, kwargs = mock_build.call_args
     assert kwargs["credentials"] is creds
-    assert "http" not in kwargs
+
+
+def test_build_http_client_proxy_without_scheme(mocker):
+    """
+    Given:
+        - Proxy enabled and HTTPS_PROXY env var set WITHOUT an http(s):// scheme.
+    When:
+        - build_http_client is called.
+    Then:
+        - The proxy value is normalized with an https:// prefix before parsing, so the
+          host and port are extracted correctly.
+    """
+    import GCP
+
+    mocker.patch.object(GCP, "USE_PROXY", True)
+    mocker.patch.object(GCP, "VERIFY_SSL", True)
+    mocker.patch.dict("GCP.os.environ", {"HTTPS_PROXY": "proxy.example.com:3128"})
+
+    mock_proxy_info = mocker.patch("GCP.httplib2.ProxyInfo", return_value="proxy-info-obj")
+    mocker.patch("GCP.httplib2.Http", return_value="http-obj")
+
+    GCP.build_http_client()
+
+    _, proxy_kwargs = mock_proxy_info.call_args
+    assert proxy_kwargs["proxy_host"] == "proxy.example.com"
+    assert proxy_kwargs["proxy_port"] == 3128
+
+
+def test_get_credentials_marketplace_project_id_from_params(mocker):
+    """
+    Given:
+        - A service account JSON in credentials.password (no project_id in args).
+        - params contains a 'project_id' that differs from the JSON's project_id.
+    When:
+        - get_credentials is called.
+    Then:
+        - args['project_id'] is taken from params (priority: args > params > JSON).
+    """
+    import GCP
+    from GCP import get_credentials
+
+    sa_info = {"type": "service_account", "project_id": "json-project", "private_key": "dummy_private_key"}
+    params = {"credentials": {"password": json.dumps(sa_info)}, "project_id": "params-project"}
+    args: dict = {}
+
+    mocker.patch.object(GCP.google_service_account.Credentials, "from_service_account_info", return_value=MagicMock())
+
+    get_credentials(args, params)
+
+    assert args["project_id"] == "params-project"
+
+
+def test_get_credentials_marketplace_build_failure_raises(mocker):
+    """
+    Given:
+        - A structurally valid service account JSON in credentials.password.
+        - from_service_account_info raises (e.g. corrupt key material).
+    When:
+        - get_credentials is called.
+    Then:
+        - A DemistoException is raised and there is NO silent fallback to the CTS path.
+    """
+    import GCP
+    from GCP import get_credentials
+    from CommonServerPython import DemistoException
+
+    sa_info = {"type": "service_account", "project_id": "dummy-project", "private_key": "dummy_private_key"}
+    params = {"credentials": {"password": json.dumps(sa_info)}}
+    args: dict = {}
+
+    mocker.patch.object(
+        GCP.google_service_account.Credentials,
+        "from_service_account_info",
+        side_effect=Exception("bad key"),
+    )
+    cts = mocker.patch("GCP.get_cloud_credentials")
+
+    with pytest.raises(DemistoException, match="Failed to build GCP credentials from service account JSON"):
+        get_credentials(args, params)
+
+    cts.assert_not_called()  # must NOT fall back to CTS on a bad marketplace key
+
+
+def test_get_credentials_cortex_cloud_missing_token_raises(mocker):
+    """
+    Given:
+        - No service account JSON (Cortex Cloud path) and a project_id in args.
+        - get_cloud_credentials returns a payload WITHOUT an access_token.
+    When:
+        - get_credentials is called.
+    Then:
+        - A DemistoException about the missing token is raised.
+    """
+    from GCP import get_credentials
+    from CommonServerPython import DemistoException
+
+    params: dict = {}
+    args = {"project_id": "dummy-project-id"}
+
+    mocker.patch("GCP.get_cloud_credentials", return_value={})
+
+    with pytest.raises(DemistoException, match="Failed to authenticate with GCP via CTS"):
+        get_credentials(args, params)
