@@ -19,12 +19,6 @@ configuration:
   name: client_secret
   type: 4
   required: false
-- display: Staging
-  name: is_staging
-  defaultvalue: 'false'
-  type: 8
-  required: false
-  additionalinfo: Select if connecting to a staging/QA or non production environment
 - section: Connect
   advanced: true
   display: Trust any certificate (not secure)

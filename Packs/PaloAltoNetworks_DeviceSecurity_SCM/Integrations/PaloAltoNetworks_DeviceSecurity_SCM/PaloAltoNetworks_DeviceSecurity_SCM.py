@@ -266,39 +266,28 @@ def get_scm_access_token(token_base_url, tsg_id, client_id, client_secret, verif
         raise Exception(f"Failed to generate or validate SCM access token: {str(e)}")
 
 
-def get_scm_ui_base_url(is_staging):
-    """Return SCM UI base URL based on staging mode.
-
-    Args:
-        is_staging (bool): Whether to use staging URLs.
-
-    Returns:
-        str: SCM UI base URL.
-    """
-    if is_staging:
-        return "https://stratacloudmanager.qa.appsvc.paloaltonetworks.com"
+def get_scm_ui_base_url():
+    """Return SCM UI base URL."""
     return "https://stratacloudmanager.paloaltonetworks.com"
 
 
-def get_scm_alert_url(alert_id, is_staging):
+def get_scm_alert_url(alert_id):
     """Build the SCM alert details URL.
 
     Args:
         alert_id (str): Alert identifier.
-        is_staging (bool): Whether to use staging URLs.
 
     Returns:
         str: Full alert details URL.
     """
-    return f"{get_scm_ui_base_url(is_staging)}/insights/iot-security/alerts/security-alerts/alert-detail?id={alert_id}"
+    return f"{get_scm_ui_base_url()}/insights/iot-security/alerts/security-alerts/alert-detail?id={alert_id}"
 
 
-def get_scm_vuln_url(vuln, is_staging):
+def get_scm_vuln_url(vuln):
     """Build the SCM vulnerability details URL.
 
     Args:
         vuln (dict): Vulnerability object.
-        is_staging (bool): Whether to use staging URLs.
 
     Returns:
         str: Full vulnerability details URL.
@@ -306,7 +295,7 @@ def get_scm_vuln_url(vuln, is_staging):
     vulnerability_name = vuln.get("vulnerability_name", "").replace(" ", "%20")
     device_id = vuln.get("deviceid", "")
     return (
-        f"{get_scm_ui_base_url(is_staging)}"
+        f"{get_scm_ui_base_url()}"
         f"/insights/iot-security/assets/assets/overview/{device_id}"
         f"?vulnerabilityname={vulnerability_name}"
     )
@@ -502,7 +491,6 @@ def fetch_incidents(client, last_run, is_test=False):
     last_alerts_fetch = last_run.get("last_alerts_fetch")
     last_vulns_fetch = last_run.get("last_vulns_fetch")
     max_fetch = client.max_fetch
-    is_staging = demisto.params().get("is_staging", False)
 
     incidents = []
 
@@ -536,7 +524,7 @@ def fetch_incidents(client, last_run, is_test=False):
         for alert in alerts:
             alert_date_epoch = datetime.strptime(alert["date"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).timestamp()
             alert_id = alert["zb_ticketid"].replace("alert-", "")
-            device_security_incident_url = get_scm_alert_url(alert_id, is_staging)
+            device_security_incident_url = get_scm_alert_url(alert_id)
 
             incident = {
                 "name": alert["name"],
@@ -591,7 +579,7 @@ def fetch_incidents(client, last_run, is_test=False):
                 detected_date = detected_date[0]
 
             vuln_date_epoch = datetime.strptime(detected_date, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=UTC).timestamp()
-            device_security_incident_url = get_scm_vuln_url(vuln, is_staging)
+            device_security_incident_url = get_scm_vuln_url(vuln)
 
             incident = {
                 "name": vuln["name"],
@@ -622,7 +610,6 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    is_staging = demisto.params().get("is_staging", False)
     tsg_id = demisto.params().get("tsg_id")
     client_id = demisto.params().get("client_id")
     client_secret = demisto.params().get("client_secret")
@@ -651,12 +638,8 @@ def main():
 
     proxy = demisto.params().get("proxy", False)
 
-    token_base_url = "https://auth.qa.appsvc.paloaltonetworks.com" if is_staging else "https://auth.apps.paloaltonetworks.com"
-    base_url = (
-        "https://qa.api.sase.paloaltonetworks.com/iot/pub/v1"
-        if is_staging
-        else "https://api.strata.paloaltonetworks.com/iot/pub/v1"
-    )
+    token_base_url = "https://auth.apps.paloaltonetworks.com"
+    base_url = "https://api.strata.paloaltonetworks.com/iot/pub/v1"
     access_token = get_scm_access_token(token_base_url, tsg_id, client_id, client_secret, verify_certificate, proxy)
     headers = {"Authorization": f"Bearer {access_token}"}
 
