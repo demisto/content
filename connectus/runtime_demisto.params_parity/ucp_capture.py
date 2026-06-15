@@ -56,6 +56,12 @@ import session_env  # noqa: E402  (single session/env authority; owns the port-f
 # Load the canonical root .env via the single unified loader.
 load_env()
 
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%H:%M:%S",
+)
 log = logging.getLogger("ucp_capture")
 
 # ============================================================================
@@ -841,7 +847,7 @@ def capture_ucp_params(
         instance_values = {}
 
     if instance_name is None:
-        instance_name = f"{(connector_id or 'connector').title()} Parity {uuid.uuid4().hex[:8]}"
+        instance_name = f"Connector_instance_for_{(connector_id).title()}_runtime_parity_{uuid.uuid4().hex[:8]}"
 
     # Snapshot existing XSOAR instances so we can identify only the NEW mirror.
     try:
@@ -907,10 +913,11 @@ def capture_ucp_params(
         if result.get("id"):
             ucp_instance_id = result["id"]
         log.info(
-            "UCP instance created: id=%s name=%r status=%s",
+            "UCP instance created: id=%s name=%r status=%s instance_name=%r",
             result.get("id"),
             result.get("name"),
             result.get("status"),
+            instance_name,
         )
 
         # 4b. VERIFY the instance actually exists (a 201 alone has been observed
@@ -975,7 +982,7 @@ def capture_ucp_params(
         # NOT torn down here. session_teardown.py stops it at the end of the batch.
         if ucp_instance_id and not keep_instance:
             log.info("Cleaning up UCP instance %s...", ucp_instance_id)
-            delete_ucp_instance(ucp_instance_id, tenant_id, port=ucp_port)
+            # delete_ucp_instance(ucp_instance_id, tenant_id, port=ucp_port)
         elif keep_instance:
             log.info("keep_instance=True — leaving UCP instance %s alive for inspection", ucp_instance_id)
 
