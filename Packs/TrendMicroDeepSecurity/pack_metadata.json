@@ -2,7 +2,7 @@
     "name": "TrendAI™ Deep Security™",
     "description": "TrendAI™ Deep Security™ provides runtime security for workloads (physical, virtual, cloud, and containers).",
     "support": "xsoar",
-    "currentVersion": "1.1.7",
+    "currentVersion": "1.1.8",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",

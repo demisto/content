@@ -2,7 +2,7 @@
     "name": "TrendAI™ Apex One",
     "description": "TrendAI™ Apex One central automation to manage agents and User-Defined Suspicious Objects",
     "support": "xsoar",
-    "currentVersion": "2.0.18",
+    "currentVersion": "2.0.19",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
