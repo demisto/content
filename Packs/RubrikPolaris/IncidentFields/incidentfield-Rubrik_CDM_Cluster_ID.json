@@ -2,7 +2,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Rubrik Radar",
-        "Rubrik Threat Monitoring Object"
+        "Rubrik Threat Monitoring Object",
+        "Rubrik DSPM Violation"
     ],
     "caseInsensitive": true,
     "cliName": "rubrikcdmclusterid",

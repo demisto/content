@@ -14877,8 +14877,6 @@ def test_update_function_configuration_command_error(mocker):
 
     mocker.patch("AWS.AWSErrorHandler.handle_response_error", side_effect=Exception("Bad Request"))
 
-    import pytest
-
     with pytest.raises(Exception, match="Bad Request"):
         Lambda.update_function_configuration_command(mock_client, args)
 
@@ -17431,6 +17429,157 @@ def test_create_firewall_command_invalid_subnet_mappings(mocker):
         NetworkFirewall.create_firewall_command(client, args)
 
 
+def test_create_firewall_command_vpc_and_transit_gateway_mutually_exclusive(mocker):
+    """
+    Given:
+        - Both vpc_id and transit_gateway_id are provided.
+    When:
+        - Calling create_firewall_command.
+    Then:
+        - Ensure a ValueError is raised indicating they are mutually exclusive and the client is not called.
+    """
+    from AWS import NetworkFirewall
+
+    client = mocker.MagicMock()
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "vpc_id": "vpc-12345678",
+        "subnet_mappings": '[{"SubnetId": "subnet-12345678"}]',
+        "transit_gateway_id": "tgw-12345678",
+        "availability_zone_mappings": "us-east-1a",
+    }
+
+    with pytest.raises(
+        ValueError,
+        match="You must provide exactly one of the following pairs 'vpc_id' and 'subnet_mappings' or 'transit_gateway_id' "
+        "and 'availability_zone_mappings'.",
+    ):
+        NetworkFirewall.create_firewall_command(client, args)
+    client.create_firewall.assert_not_called()
+
+
+def test_create_firewall_command_no_vpc_or_transit_gateway(mocker):
+    """
+    Given:
+        - Neither vpc_id nor transit_gateway_id is provided.
+    When:
+        - Calling create_firewall_command.
+    Then:
+        - Ensure a ValueError is raised and the client is not called.
+    """
+    from AWS import NetworkFirewall
+
+    client = mocker.MagicMock()
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+    }
+
+    with pytest.raises(
+        ValueError,
+        match="You must provide exactly one of the following pairs 'vpc_id' and 'subnet_mappings' or 'transit_gateway_id' "
+        "and 'availability_zone_mappings'.",
+    ):
+        NetworkFirewall.create_firewall_command(client, args)
+    client.create_firewall.assert_not_called()
+
+
+def test_create_firewall_command_vpc_without_subnet_mappings(mocker):
+    """
+    Given:
+        - vpc_id is provided but subnet_mappings is missing.
+    When:
+        - Calling create_firewall_command.
+    Then:
+        - Ensure a ValueError is raised and the client is not called.
+    """
+    from AWS import NetworkFirewall
+
+    client = mocker.MagicMock()
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "vpc_id": "vpc-12345678",
+    }
+
+    with pytest.raises(ValueError, match="The argument 'subnet_mappings' is required when 'vpc_id' is provided."):
+        NetworkFirewall.create_firewall_command(client, args)
+    client.create_firewall.assert_not_called()
+
+
+def test_create_firewall_command_transit_gateway_without_az_mappings(mocker):
+    """
+    Given:
+        - transit_gateway_id is provided but availability_zone_mappings is missing.
+    When:
+        - Calling create_firewall_command.
+    Then:
+        - Ensure a ValueError is raised and the client is not called.
+    """
+    from AWS import NetworkFirewall
+
+    client = mocker.MagicMock()
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "transit_gateway_id": "tgw-12345678",
+    }
+
+    with pytest.raises(
+        ValueError, match="The argument 'availability_zone_mappings' is required when 'transit_gateway_id' is provided."
+    ):
+        NetworkFirewall.create_firewall_command(client, args)
+    client.create_firewall.assert_not_called()
+
+
+def test_create_firewall_command_transit_gateway_success(mocker):
+    """
+    Given:
+        - Valid transit_gateway_id and availability_zone_mappings arguments.
+    When:
+        - Calling create_firewall_command.
+    Then:
+        - Ensure the command calls the client with TransitGatewayId and AvailabilityZoneMappings.
+    """
+    from AWS import NetworkFirewall
+    from http import HTTPStatus
+
+    client = mocker.MagicMock()
+    client.create_firewall.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Firewall": {
+            "FirewallName": "test-firewall",
+            "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+            "FirewallPolicyArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+            "TransitGatewayId": "tgw-12345678",
+        },
+        "FirewallStatus": {"Status": "PROVISIONING", "ConfigurationSyncStateSummary": "PENDING"},
+    }
+
+    args = {
+        "firewall_name": "test-firewall",
+        "firewall_policy_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "transit_gateway_id": "tgw-12345678",
+        "availability_zone_mappings": "us-east-1a,us-east-1b",
+    }
+
+    result = NetworkFirewall.create_firewall_command(client, args)
+
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs["FirewallName"] == "test-firewall"
+
+    client.create_firewall.assert_called_once_with(
+        FirewallName="test-firewall",
+        FirewallPolicyArn="arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        TransitGatewayId="tgw-12345678",
+        AvailabilityZoneMappings=[
+            {"AvailabilityZone": "us-east-1a"},
+            {"AvailabilityZone": "us-east-1b"},
+        ],
+    )
+
+
 def test_create_firewall_command_minimal_args(mocker):
     """
     Given:
@@ -17505,11 +17654,7 @@ def test_delete_firewall_command_success_with_name(mocker):
     result = NetworkFirewall.delete_firewall_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "The AWS Network Firewall was deleted successfully." in result.readable_output
-    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
-    assert result.outputs_key_field == "FirewallArn"
-    assert result.outputs["FirewallName"] == "test-firewall"
-    assert result.outputs["FirewallStatus"]["Status"] == "DELETING"
+    assert "The command was executed successfully. The current firewall status is DELETING." in result.readable_output
     mock_client.delete_firewall.assert_called_once_with(FirewallName="test-firewall")
 
 
@@ -17541,7 +17686,7 @@ def test_delete_firewall_command_success_with_arn(mocker):
     result = NetworkFirewall.delete_firewall_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert "The AWS Network Firewall was deleted successfully." in result.readable_output
+    assert "The command was executed successfully. The current firewall status is DELETING." in result.readable_output
     mock_client.delete_firewall.assert_called_once_with(
         FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall"
     )
@@ -17612,10 +17757,6 @@ def test_update_firewall_delete_protection_command_success_with_name(mocker):
 
     assert isinstance(result, CommandResults)
     assert "The delete protection flag of the firewall was updated successfully." in result.readable_output
-    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
-    assert result.outputs_key_field == "FirewallArn"
-    assert result.outputs["FirewallName"] == "test-firewall"
-    assert result.outputs["DeleteProtection"] is True
     mock_client.update_firewall_delete_protection.assert_called_once_with(FirewallName="test-firewall", DeleteProtection=True)
 
 
@@ -17745,10 +17886,6 @@ def test_update_firewall_description_command_success_with_name(mocker):
 
     assert isinstance(result, CommandResults)
     assert "The firewall description was updated successfully." in result.readable_output
-    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
-    assert result.outputs_key_field == "FirewallArn"
-    assert result.outputs["FirewallName"] == "test-firewall"
-    assert result.outputs["Description"] == "New description"
     mock_client.update_firewall_description.assert_called_once_with(FirewallName="test-firewall", Description="New description")
 
 
