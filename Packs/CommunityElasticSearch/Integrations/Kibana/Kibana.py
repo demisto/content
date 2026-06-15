@@ -18,7 +18,6 @@ AUTH = (USERNAME, PASSWORD)
 API_KEY_ID: str = PARAMS.get("api_key_auth_credentials", {}).get("identifier")
 API_KEY_SECRET: str = PARAMS.get("api_key_auth_credentials", {}).get("password")
 API_KEY = None
-ES_DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSSSS"
 PYTHON_DEFAULT_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
 PROXY = PARAMS.get("proxy")
 ELASTIC_SERVER = PARAMS.get("url", "").rstrip("/") + ":" + PARAMS.get("elastic_port")  ### change test func to use kibana_server
