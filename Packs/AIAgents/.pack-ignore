@@ -36,3 +36,6 @@ ignore=GR103
 
 [file:ThreatIntelAgent.yml]
 ignore=GR103
+
+[file:pack_metadata.json]
+ignore=PA134
