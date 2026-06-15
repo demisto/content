@@ -2322,3 +2322,6 @@ Different workflow steps are best handled in different modes:
 | Full migration lifecycle coordination | Orchestrator |
 
 When switching modes, the skill will be re-loaded automatically if the user's request matches the skill trigger.
+
+
+latest_skill_version: 2.0.0

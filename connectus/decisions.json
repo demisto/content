@@ -103,18 +103,23 @@
         ]
       },
       "params_to_capabilities": {
+        "Automation": [],
+        "Fetch Issues": [],
+        "Log Collection": [
+          "longRunning",
+          "page_size",
+          "beta_page_size",
+          "max_concurrent_tasks",
+          "should_skip_decode_events",
+          "eventFetchInterval"
+        ],
         "general_configurations": [
           "fetchTime",
           "fetchLimit"
-        ],
-        "Log Collection": [
-          "longRunning"
-        ],
-        "Fetch Issues": [],
-        "Automation": []
+        ]
       },
       "flags": [
-        "mapper emitted longRunning under Log Collection though it is in default_ignore_params; persisted verbatim as mapper is authoritative for step 7 - review if undesired"
+        "RE-RUN per updated hidden rule: params hidden:[xsoar] (page_size, beta_page_size, max_concurrent_tasks, should_skip_decode_events, eventFetchInterval) are NOT platform-hidden so now carried through into Params to Commands + Params to Capabilities (Log Collection). isFetchEvents/longRunning stay framework."
       ]
     },
     "G Suite Security Alert Center": {
@@ -297,6 +302,7 @@
           "adminEmail.password": "credentials_file"
         },
         "other_connection": [
+          "gappsID",
           "insecure",
           "proxy"
         ],
@@ -330,7 +336,9 @@
           "legacy_name"
         ]
       },
-      "flags": []
+      "flags": [
+        "RE-RUN: gappsID (Immutable Google Apps ID, account-level identifier) added to other_connection (resolves step-9 coverage), mirroring GSuiteAdmin customer_id placement."
+      ]
     },
     "Gmail Single User": {
       "connector_id": "Google Workspace Automation and Collection",
@@ -608,11 +616,15 @@
         "code_modified": false
       },
       "params_to_capabilities": {
-        "general_configurations": [],
-        "Threat Intelligence & Enrichment": []
+        "Threat Intelligence & Enrichment": [
+          "ip_ranges",
+          "feed",
+          "enrichmentExcluded"
+        ],
+        "general_configurations": []
       },
       "flags": [
-        "Feed framework (JSONFeedApiModule); ip_ranges/feed* params are framework-managed."
+        "RE-RUN: enrichmentExcluded (hidden:[xsoar_on_prem], not platform) now carried through per updated rule. ip_ranges (required feed selector) and feed added to Threat Intel capability (resolves step-9 coverage)."
       ]
     },
     "Google Key Management Service": {
@@ -708,6 +720,7 @@
         "other_connection": [
           "client_version",
           "insecure",
+          "integrationReliability",
           "proxy",
           "url"
         ],
@@ -731,7 +744,7 @@
         "Automation": []
       },
       "flags": [
-        "client_id treated as auth-adjacent and kept in profile; alternatively could be other_connection. Review."
+        "RE-RUN: integrationReliability (required visible source-reliability select, not in ignore list) added to other_connection (resolves step-9 coverage)."
       ]
     },
     "Google Vision AI": {
@@ -1145,7 +1158,9 @@
         "general_configurations": [],
         "Automation": []
       },
-      "flags": []
+      "flags": [
+        "RE-RUN from step 2: gsuite_credentials.identifier mapped (admin email/subject); .password leaf unused. Re-derived to retest handler coverage with updated scripts."
+      ]
     },
     "GuardiCore v2": {
       "connector_id": "Akamai",
@@ -1226,6 +1241,7 @@
           "credentials_api3_client.password": "client_secret"
         },
         "other_connection": [
+          "client_id",
           "proxy",
           "unsecure",
           "url"
@@ -1250,8 +1266,1349 @@
         "Automation": []
       },
       "flags": [
-        "flat visible 'client_id' param (type0, required) left unmapped - covered by credentials_api3_client.identifier. Review if it should be in other_connection.",
-        "connector_id='Google Cloud' for Looker in CSV - unexpected (Looker is not GCP); flagged for review."
+        "RE-RUN: flat visible required client_id added to other_connection (resolves step-9 handler coverage gap). credentials_api3_client widget still carries the auth secret."
+      ]
+    },
+    "CipherTrust": {
+      "connector_id": "CipherTrust",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Plain",
+        "name": "Basic Auth",
+        "reason": "username+password posted to /auth/tokens login endpoint (grant_type=password) to mint a JWT used as Bearer (ThalesCipherTrustManager.py:121-126, read at :1325-1326). Canonical 2-field username/password -> Plain. interpolated forced by set-auth.",
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "server_url"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "params_to_commands_note": "27 ciphertrust-* commands all use command ARGS only; no config behavioral params. Single-capability (Automation) -> analyzer run with --single-capability-test-module-only returned {test-module:[]}.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "Clarizen IAM": {
+      "connector_id": "Plainview",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Plain",
+        "name": "Basic Auth",
+        "reason": "username+password posted to /authentication/login (ClarizenIAM.py:31-35) returning a session id used in Authorization: Session header. credentials type9, no hidden leaf flags -> both leaves. -> Plain.",
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "url"
+        ],
+        "notes": "mapper_out is hidden:[...platform] -> excluded. IAM CRUD toggles are per-command behavioral -> Params to Commands, not other_connection.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "iam-create-user": [
+          "create_user_enabled",
+          "create_if_not_exists",
+          "mapper_in"
+        ],
+        "iam-update-user": [
+          "update_user_enabled",
+          "create_if_not_exists",
+          "enable_user_enabled",
+          "mapper_in"
+        ],
+        "iam-get-user": [
+          "mapper_in"
+        ],
+        "iam-disable-user": [
+          "disable_user_enabled",
+          "mapper_in"
+        ],
+        "get-mapping-fields": []
+      },
+      "params_to_commands_note": "IAMApiModule integration; static analyzer returned empty per-command lists (params consumed inside IAMCommand). IAM dispatch config params (create/update/enable/disable toggles, create_if_not_exists, mapper_in) attributed to the relevant iam-* commands per err-on-inclusion. mapper_out excluded (platform-hidden).",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "7 uncertain params (create/update/enable/disable toggles, create_if_not_exists, mapper_in/out) read via params.get() (None-safe) and passed to IAMCommand as truthy flags / mapper names; cross-function flow only, no strict converter -> safe (ClarizenIAM.py:310-333)"
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "create_user_enabled",
+          "create_if_not_exists",
+          "mapper_in",
+          "update_user_enabled",
+          "enable_user_enabled",
+          "disable_user_enabled"
+        ]
+      },
+      "flags": [
+        "IAMApiModule integration; connector_id=Plainview per CSV (Clarizen is a Planview/Plainview product)."
+      ]
+    },
+    "Cryptocurrency": {
+      "connector_id": "CryptoCurrency",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "NoneRequired",
+        "name": null,
+        "reason": "Pure local classifier - config has only reliability+reputation (type15 score params), no credentials, no HTTP client (Cryptocurrency.py main reads only those two). auth_types=[] (NoneRequired).",
+        "xsoar_param_map": {},
+        "other_connection": [],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "crypto": [
+          "reliability",
+          "reputation"
+        ]
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass-after-fix",
+        "fixes": [
+          "Cryptocurrency.py:74-75 reliability=params.get(\"reliability\") or \"B - Usually reliable\"; reputation=params.get(\"reputation\") or \"Suspicious\" (were bare params[\"x\"] subscripts -> KeyError under UCP). Defaults taken from YML defaultvalue."
+        ],
+        "code_modified": true
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "reliability",
+          "reputation"
+        ]
+      },
+      "flags": []
+    },
+    "DeHashed": {
+      "connector_id": "DeHashed",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "APIKey",
+        "name": "API Key",
+        "reason": "Single static API key via credentials type9 hiddenusername:true (displaypassword=API Key). Sent as Dehashed-Api-Key custom header (DeHashed.py:187-188). Single key -> APIKey, role key. .identifier suppressed.",
+        "xsoar_param_map": {
+          "credentials.password": "key"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy"
+        ],
+        "notes": "UCP ContentClientApiModule integration (Pydantic models). BASE_URL hardcoded -> no url param.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "dehashed-search": [],
+        "email": [
+          "email_dbot_score",
+          "integration_reliability"
+        ]
+      },
+      "params_to_commands_note": "email reputation command uses config email_dbot_score + integration_reliability (DBot scoring); dehashed-search uses args only.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "Pydantic param models with explicit Field defaults; verify/proxy via BaseParams framework. No bare strict-converter on config params."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "email_dbot_score",
+          "integration_reliability"
+        ]
+      },
+      "flags": []
+    },
+    "Email Hippo": {
+      "connector_id": "Email Hippo",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "API Keys",
+        "reason": "Two co-equal API keys (MORE + WHOIS) built into ONE Client together (EmailHippo.py:362-369) and embedded in their respective service URL paths. Used together (additive), not XOR -> single Passthrough per 1.2.2a. Both type9 hiddenusername:true -> only .password leaves.",
+        "xsoar_param_map": {
+          "more_credentials.password": "more_api_key",
+          "whois_credentials.password": "whois_api_key"
+        },
+        "other_connection": [
+          "insecure",
+          "more_server_url",
+          "proxy",
+          "whois_server_url"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "email-hippo-email-quota-get": [],
+        "email": [
+          "integrationReliability"
+        ],
+        "domain": [
+          "integrationReliability"
+        ]
+      },
+      "params_to_commands_note": "email/domain reputation commands use config integrationReliability for DBotScore. create_relationships config exists but is not passed by main() (effectively unused).",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "all config reads use .get(...,default) or dict-fallback; server URLs have YML+code defaults; no strict converter on config params."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "integrationReliability"
+        ]
+      },
+      "flags": []
+    },
+    "FortiGate": {
+      "connector_id": "Fortinet FortiGate",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "XOR (2 profiles)",
+        "name": "API Key | Basic Auth",
+        "reason": "Two mutually-exclusive auth methods enforced in code (FortiGate.py:5785: raise if api_key mixed with username/password). XOR -> 2 entries. API Key (api_key.password, type9 hiddenusername:true) used as Bearer (:142); credentials username/password posted to login endpoint (:221-222). Sorted (type,name): APIKey before Plain.",
+        "xsoar_param_map": {
+          "profile_APIKey": {
+            "api_key.password": "key"
+          },
+          "profile_Plain": {
+            "credentials.identifier": "username",
+            "credentials.password": "password"
+          }
+        },
+        "other_connection": [
+          "proxy",
+          "server",
+          "unsecure"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "params_to_commands_note": "All fortigate-* commands use command args only; no config behavioral params. Single-cap tm-only analyzer -> {test-module:[]}.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "argToBoolean(params.get(unsecure,False)) and proxy reads have defaults (FortiGate.py:5791-5792); arg_to_number calls operate on args."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "GitGuardianEventCollector": {
+      "connector_id": "GitGuardian",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "APIKey",
+        "name": "API Key",
+        "reason": "Single api_key (type9 hiddenusername:true) sent as Authorization: Token <key> header (GitGuardianEventCollector.py:381). Single static token -> APIKey, role key.",
+        "xsoar_param_map": {
+          "api_key.password": "key"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "url"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation",
+        "Log Collection"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "fetch-events": [
+          "max_events_per_fetch"
+        ],
+        "gitguardian-get-events": []
+      },
+      "params_to_commands_note": "static analyzer returned empty; max_events_per_fetch (config) consumed by fetch-events added per source review. gitguardian-get-events uses args only.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "int(params.get(max_events_per_fetch,5000)) has default; insecure/proxy truthy reads."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Log Collection": [
+          "max_events_per_fetch"
+        ]
+      },
+      "flags": []
+    },
+    "Ipstack": {
+      "connector_id": "IPstack",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "APIKey",
+        "name": "API Key",
+        "reason": "Single API key (credentials type9 hiddenusername:true) sent as ?access_key= query param (Ipstack.py:55). Legacy flat apikey (type4 hidden:true) excluded. -> APIKey, role key.",
+        "xsoar_param_map": {
+          "credentials.password": "key"
+        },
+        "other_connection": [
+          "proxy"
+        ],
+        "notes": "BASE_URL hardcoded. integrationReliability is per-command DBot config -> Params to Commands. apikey hidden:true excluded.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "ip": [
+          "integrationReliability"
+        ]
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass-after-fix",
+        "fixes": [
+          "Ipstack.py:14 if not demisto.params().get(\"proxy\", False): (was bare demisto.params()[\"proxy\"] subscript -> KeyError under UCP when proxy absent). Behavior-preserving."
+        ],
+        "code_modified": true,
+        "note": "static analyzer did not flag the bare subscript (truthy-context, not a strict converter) but it is a real KeyError risk; fixed proactively per skill proxy guidance."
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "integrationReliability"
+        ]
+      },
+      "flags": []
+    },
+    "LOLBAS Feed": {
+      "connector_id": "LOLBAS",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "NoneRequired",
+        "name": null,
+        "reason": "Public LOLBAS feed (base_url default https://lolbas-project.github.io/api), no credentials, no auth headers (FeedLOLBAS.py:25,37). auth_types=[] (NoneRequired). Manual indicator build (NO FeedApiModule import).",
+        "xsoar_param_map": {},
+        "other_connection": [
+          "base_url",
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation",
+        "Threat Intelligence & Enrichment"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "lolbas-get-indicators": [
+          "create_relationships"
+        ],
+        "fetch-indicators": [
+          "create_relationships"
+        ]
+      },
+      "params_to_commands_note": "static analyzer empty; create_relationships (per-command behavioral) added by source review. feedTags/tlp_color excluded (in default_ignore_params framework noise).",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "all config reads have defaults (FeedLOLBAS.py:242-247); base_url has YML default."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Threat Intelligence & Enrichment": [
+          "create_relationships"
+        ]
+      },
+      "flags": [
+        "feed:true but NO FeedApiModule import (manual indicator build)."
+      ]
+    },
+    "McAfee Active Response": {
+      "connector_id": "Trellix SIEM",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Certificate (mTLS)",
+        "reason": "Trellix/McAfee DXL mTLS: 3 co-equal cert/key secrets (broker_ca_bundle+cert_file+private_key) built into one DxlClientConfig together (McAfee-MAR.py:177-183). Certificate auth, multi-secret -> Passthrough. broker_urls is the broker endpoint -> other_connection.",
+        "xsoar_param_map": {
+          "broker_ca_bundle": "broker_ca_bundle",
+          "cert_file": "cert_file",
+          "private_key": "private_key"
+        },
+        "other_connection": [
+          "broker_urls"
+        ],
+        "notes": "broker_urls is required for the handshake but is the connection endpoint (host list) -> placed in other_connection rather than the secrets map.",
+        "confidence": "medium",
+        "confidence_reason": "broker_urls placement (other_connection vs secrets bag) is a judgment call; it is the connection endpoint so other_connection chosen."
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "params_to_commands_note": "all mar-* commands use command args only; no config behavioral params. tm-only.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "the 4 required params are read via bare params()[\"x\"] but only as string reads/.split (not strict converters); required:true. analyzer pass."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": [
+        "connector_id=Trellix SIEM per CSV (McAfee/Trellix). broker_urls placement flagged for review."
+      ]
+    },
+    "NetQuestOMX": {
+      "connector_id": "NetQuest",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Plain",
+        "name": "Basic Auth",
+        "reason": "username+password posted to /api/SessionService/Sessions login (NetQuestOMX.py:62), token returned in X-Auth-Token. credentials type9 both leaves -> Plain.",
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "url"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation",
+        "Log Collection"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "netquest-address-list-upload": [],
+        "netquest-address-list-optimize": [],
+        "netquest-address-list-create": [],
+        "netquest-address-list-rename": [],
+        "netquest-address-list-delete": [],
+        "get-events": [
+          "port",
+          "slot",
+          "statistic_types_to_fetch"
+        ],
+        "fetch-events": [
+          "port",
+          "slot",
+          "statistic_types_to_fetch"
+        ]
+      },
+      "params_to_commands_note": "analyzer captured slot/port/statistic_types_to_fetch for get-events; mirrored to fetch-events (same params) per err-on-inclusion.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "bare params[url|credentials|slot|port] subscripts are string reads (slot/port used only for URLs), not strict converters; required:true; statistic_types_to_fetch read via argToList(...,[]). Analyzer pass."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Log Collection": [
+          "port",
+          "slot",
+          "statistic_types_to_fetch"
+        ],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "OpenAi ChatGPT v3": {
+      "connector_id": "OpenAI",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "API Keys",
+        "reason": "Three API keys used together additively (apikey for chat, admin_api_key for audit logs, compliance_api_key for compliance logs) all built into one client / can run concurrently (OpenAiChatGPTV3.py:937-939). Multi-secret additive -> single Passthrough. apikey type9 hiddenusername:true -> .password leaf.",
+        "xsoar_param_map": {
+          "apikey.password": "api_key",
+          "admin_api_key": "admin_api_key",
+          "compliance_api_key": "compliance_api_key"
+        },
+        "other_connection": [
+          "chatgpt_api_url",
+          "insecure",
+          "proxy",
+          "url",
+          "workspace_id"
+        ],
+        "notes": "admin_api_key/compliance_api_key/chatgpt_api_url/workspace_id are hidden:[xsoar] (NOT platform) -> carried through per skill 1.3. workspace_id is a routing identifier (compliance API path) -> other_connection, not a secret.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation",
+        "Log Collection"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "gpt-send-message": [
+          "model-select",
+          "model-freetext",
+          "max_tokens",
+          "temperature",
+          "top_p"
+        ],
+        "gpt-check-email-header": [
+          "model-select",
+          "model-freetext",
+          "max_tokens",
+          "temperature",
+          "top_p"
+        ],
+        "gpt-check-email-body": [
+          "model-select",
+          "model-freetext",
+          "max_tokens",
+          "temperature",
+          "top_p"
+        ],
+        "gpt-create-soc-email-template": [
+          "model-select",
+          "model-freetext",
+          "max_tokens",
+          "temperature",
+          "top_p"
+        ],
+        "openai-get-events": [
+          "event_types_to_fetch",
+          "audit_max_fetch",
+          "compliance_max_fetch"
+        ],
+        "fetch-events": [
+          "event_types_to_fetch",
+          "audit_max_fetch",
+          "compliance_max_fetch"
+        ]
+      },
+      "params_to_commands_note": "IMPORTANT: analyzer auto-excluded the hidden:[xsoar] params (event_types_to_fetch,audit_max_fetch,compliance_max_fetch) but per skill 1.3 hidden:[xsoar] (no platform) params MUST be carried through. Added them by source review. Chat completion behavioral params (model/max_tokens/temperature/top_p) added to the 4 gpt-* commands.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass-with-justified-ignores",
+        "code_modified": false,
+        "ignored": [
+          "audit_max_fetch",
+          "compliance_max_fetch"
+        ],
+        "justified": [
+          "analyzer flags arg_to_number(params.get(x)) at OpenAiChatGPTV3.py:1184-1185 as unsafe, but arg_to_number(None) returns None (does not raise) and the trailing `or Config.DEFAULT_*` supplies a fallback -> genuinely safe; suppressed with recorded reason."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "model-select",
+          "model-freetext",
+          "max_tokens",
+          "temperature",
+          "top_p"
+        ],
+        "Log Collection": [
+          "event_types_to_fetch",
+          "audit_max_fetch",
+          "compliance_max_fetch"
+        ]
+      },
+      "flags": [
+        "analyzer hidden-exclusion over-excluded hidden:[xsoar] params; corrected per skill 1.3 (carry-through for platform target)."
+      ]
+    },
+    "PacketMail": {
+      "connector_id": "PacketMail.net",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "APIKey",
+        "name": "API Key",
+        "reason": "Single API key (apikey_creds type9 hiddenusername:true) sent as ?apikey= query param (PacketMail.js:41,47). Legacy flat apikey type4 hidden:true excluded. -> APIKey, role key.",
+        "xsoar_param_map": {
+          "apikey_creds.password": "key"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "url"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "packetmail-ip": [
+          "maliciousList"
+        ]
+      },
+      "params_to_commands_note": "JavaScript integration (no static analyzer). packetmail-ip uses config maliciousList (classification list) by source review.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "note": "non-Python (javascript) - UCP param-default analysis N/A."
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "maliciousList"
+        ]
+      },
+      "flags": [
+        "javascript integration"
+      ]
+    },
+    "Perch": {
+      "connector_id": "Razor Group",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "API Key + Basic Auth",
+        "reason": "API key (x-api-key header) AND username/password posted together to /auth/access_token to mint a Bearer token (Perch.py:238-244). Secrets used together (additive) -> single Passthrough. Flat api-key type4 hidden:true excluded; api-key_creds type9 hiddenusername:true -> .password.",
+        "xsoar_param_map": {
+          "api-key_creds.password": "api_key",
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "url"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation",
+        "Fetch Issues"
+      ],
+      "params_to_commands": {
+        "test-module": [
+          "soc_status"
+        ],
+        "perch-search-alerts": [],
+        "perch-get-community": [],
+        "perch-list-communities": [],
+        "perch-create-indicator": [],
+        "fetch-incidents": [
+          "soc_status",
+          "fetch_time"
+        ]
+      },
+      "params_to_commands_note": "analyzer captured soc_status for fetch-incidents+test-module; fetch_time added to fetch-incidents by source review.",
+      "param_defaults": {},
+      "param_defaults_note": "soc_status is the only test-module param but required:false -> excluded from param_defaults.",
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "module-level PARAMS.get(credentials).get(...) chain (Perch.py:18-19) and PARAMS[url] subscript (:22) target connection-managed params injected by the connectus connection layer; int(PARAMS.get(fetch_time,7)) has default; analyzer pass."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Fetch Issues": [
+          "soc_status",
+          "fetch_time"
+        ],
+        "Automation": []
+      },
+      "flags": [
+        "connector_id=Razor Group per CSV (unexpected for Perch); flagged for review."
+      ]
+    },
+    "Redmine": {
+      "connector_id": "Redmine",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "APIKey",
+        "name": "API Key",
+        "reason": "Single API key (credentials type9 hiddenusername:true, displaypassword=API Key) sent as X-Redmine-API-Key header (Redmine.py:46-48). -> APIKey, role key.",
+        "xsoar_param_map": {
+          "credentials.password": "key"
+        },
+        "other_connection": [
+          "insecure",
+          "url"
+        ],
+        "notes": "No proxy YML param. project_id is a per-command default (issue create/update/list) -> Params to Commands.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "redmine-issue-create": [
+          "project_id"
+        ],
+        "redmine-issue-update": [
+          "project_id"
+        ],
+        "redmine-issue-list": [
+          "project_id"
+        ],
+        "redmine-issue-get": [],
+        "redmine-issue-delete": [],
+        "redmine-issue-watcher-add": [],
+        "redmine-issue-watcher-remove": [],
+        "redmine-project-list": [],
+        "redmine-custom-field-list": [],
+        "redmine-user-id-list": [],
+        "redmine-status-id-list": [],
+        "redmine-priority-id-list": [],
+        "redmine-tracker-id-list": []
+      },
+      "params_to_commands_note": "analyzer empty for project_id (client._project_id fallback); attributed to issue create/update/list per source review.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "arg_to_number used on args with or-fallbacks; no strict converter on config params."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "project_id"
+        ]
+      },
+      "flags": []
+    },
+    "SailPointIdentityNowEventCollector": {
+      "connector_id": "SailPoint",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "OAuth",
+        "reason": "OAuth2 client-credentials grant: client_id+client_secret (credentials type9, both leaves) posted to oauth/token via HTTP Basic to get a Bearer token (SailPointIdentityNowEventCollector.py:47-56). OAuth flow -> Passthrough.",
+        "xsoar_param_map": {
+          "credentials.identifier": "client_id",
+          "credentials.password": "client_secret"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "url"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation",
+        "Log Collection"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "fetch-events": [
+          "limit",
+          "look_back"
+        ],
+        "identitynow-get-events": []
+      },
+      "params_to_commands_note": "analyzer empty; limit+look_back (fetch config) added by source review. identitynow-get-events uses args.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass-with-justified-ignores",
+        "code_modified": false,
+        "ignored": [
+          "limit",
+          "look_back"
+        ],
+        "justified": [
+          "analyzer flags arg_to_number(params.get(x)) at :487-488 as unsafe, but arg_to_number(None) returns None and trailing `or 50000`/`or 0` supplies default -> safe."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Log Collection": [
+          "limit",
+          "look_back"
+        ]
+      },
+      "flags": []
+    },
+    "Snowflake": {
+      "connector_id": "Snowflake",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "Account Credentials",
+        "reason": "Snowflake supports password auth and/or key-pair (private key) auth additively in one connection plus an authenticator selector (Snowflake.py:217-235). Multi-secret/additive -> Passthrough. credentials type9 (both leaves used as user/password).",
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "account",
+          "authenticator",
+          "insecure",
+          "proxy",
+          "region"
+        ],
+        "notes": "The credentials widget can also carry a vault-attached SSH private key (CREDENTIALS.get(credentials).get(sshkey), :22-23) for key-pair auth; the two standard leaves are mapped, key-pair rides inside the same Passthrough secret bag (vault-sourced). warehouse/database/schema/role are per-command behavioral defaults (also command args) -> Params to Commands.",
+        "confidence": "medium",
+        "confidence_reason": "vault-attached SSH key-pair sub-object not separately mappable as a flat YML leaf; covered by the Passthrough secret bag. account/authenticator/region placed in other_connection."
+      },
+      "capabilities": [
+        "Automation",
+        "Fetch Issues"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "snowflake-query": [
+          "warehouse",
+          "database",
+          "schema",
+          "role",
+          "limit"
+        ],
+        "snowflake-update": [
+          "warehouse",
+          "database",
+          "schema",
+          "role"
+        ],
+        "fetch-incidents": [
+          "fetch_query",
+          "datetime_column",
+          "incident_name_column",
+          "fetch_time",
+          "limit"
+        ]
+      },
+      "params_to_commands_note": "analyzer empty (module-level config reads); attributed by source review per err-on-inclusion.",
+      "param_defaults": {},
+      "param_defaults_note": "test-module list empty -> {}. warehouse/database required:true but not in test-module command list -> excluded.",
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "3 <dynamic> **params splat sites (Snowflake.py:295,347,382) build the connection dict via set_provided() which only adds truthy values -> missing params silently omitted, not crashed. int(PARAMS.get(limit)) guarded by truthiness with YML default 10000."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [
+          "limit"
+        ],
+        "Automation": [
+          "warehouse",
+          "database",
+          "schema",
+          "role"
+        ],
+        "Fetch Issues": [
+          "fetch_query",
+          "datetime_column",
+          "incident_name_column",
+          "fetch_time"
+        ]
+      },
+      "flags": [
+        "key-pair/SSH auth covered inside the Passthrough secret bag (vault-attached)."
+      ]
+    },
+    "TOPdesk": {
+      "connector_id": "TOPdesk",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Plain",
+        "name": "Basic Auth",
+        "reason": "credentials type9 (both leaves) used as HTTP Basic auth tuple (TOPdesk.py:1778 auth=(identifier,password)). -> Plain.",
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "url"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation",
+        "Fetch Issues"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "topdesk-incident-create": [
+          "defaultCallerId"
+        ],
+        "topdesk-incident-update": [
+          "defaultCallerId"
+        ],
+        "get-modified-remote-data": [
+          "max_fetch"
+        ],
+        "fetch-incidents": [
+          "first_fetch",
+          "max_fetch",
+          "fetch_query"
+        ],
+        "_other_commands": "all remaining topdesk-* list/asset/escalate/mirroring commands -> [] (args only)"
+      },
+      "params_to_commands_note": "defaultCallerId for incident create/update; fetch-incidents visible fetch params (first_fetch,max_fetch,fetch_query). mirror_direction/comment_tag/work_notes_tag/file_tag/close_incident/close_ticket are hidden:[marketplacev2,platform] -> EXCLUDED.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "int(max_fetch,10)/dateparser(first_fetch,3 days) have defaults; bare credentials.get attribute access targets connection-managed param."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "defaultCallerId"
+        ],
+        "Fetch Issues": [
+          "first_fetch",
+          "max_fetch",
+          "fetch_query"
+        ]
+      },
+      "flags": [
+        "6 mirroring/close config params excluded (platform-hidden)."
+      ]
+    },
+    "ThreatQ v2": {
+      "connector_id": "Securonix",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Passthrough",
+        "name": "OAuth",
+        "reason": "OAuth2 password grant with 3 co-equal secrets used together: client_id + email (credentials.identifier) + password posted to /token (ThreatQ_v2.py:217-218) -> Bearer. OAuth + multi-secret -> Passthrough.",
+        "xsoar_param_map": {
+          "client_id": "client_id",
+          "credentials.identifier": "email",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "serverUrl"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [
+          "threshold"
+        ],
+        "ip": [
+          "threshold",
+          "integrationReliability"
+        ],
+        "url": [
+          "threshold",
+          "integrationReliability"
+        ],
+        "domain": [
+          "threshold",
+          "integrationReliability"
+        ],
+        "email": [
+          "threshold",
+          "integrationReliability"
+        ],
+        "file": [
+          "threshold",
+          "integrationReliability"
+        ],
+        "threatq-search-by-id": [
+          "threshold",
+          "integrationReliability"
+        ],
+        "_other_threatq_commands": "[] (args only)"
+      },
+      "params_to_commands_note": "threshold (test-module + reputation) and integrationReliability (reputation/DBot) attributed to the 5 reputation commands + search-by-id per source review; all other threatq-* CRUD commands use args only.",
+      "param_defaults": {},
+      "param_defaults_note": "threshold is the only test-module param but required:false (default 8) -> excluded.",
+      "ucp_param_default_review": {
+        "result": "pass-after-fix",
+        "fixes": [
+          "ThreatQ_v2.py:674 threshold = demisto.params().get(\"threshold\") or \"8\" (was defaultless .get then int(threshold); guarded by isinstance check but analyzer flagged int() -> added YML default 8 to be UCP-safe)."
+        ],
+        "code_modified": true,
+        "justified": [
+          "module-level bare params()[serverUrl]/[client_id] subscripts target connection-managed params injected by connectus; not strict converters."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "threshold",
+          "integrationReliability"
+        ]
+      },
+      "flags": [
+        "connector_id=Securonix per CSV (unexpected for ThreatQ); flagged for review."
+      ]
+    },
+    "VectraAIEventCollector": {
+      "connector_id": "Vectra",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "APIKey",
+        "name": "API Key",
+        "reason": "Single API token (credentials type9 hiddenusername:true, displaypassword=API Token) sent as Authorization: Token <key> (VectraAIEventCollector.py:68). -> APIKey, role key.",
+        "xsoar_param_map": {
+          "credentials.password": "key"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "url"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation",
+        "Log Collection"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "fetch-events": [
+          "first_fetch",
+          "fetch_limit"
+        ],
+        "vectra-get-events": [
+          "first_fetch"
+        ]
+      },
+      "params_to_commands_note": "analyzer empty; first_fetch+fetch_limit (fetch config) added by source review.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "arg_to_number(config.get(fetch_limit,1000)) has default; url has YML default; first_fetch defaulted to 3 days."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Log Collection": [
+          "first_fetch",
+          "fetch_limit"
+        ]
+      },
+      "flags": []
+    },
+    "WhatsMyBrowser": {
+      "connector_id": "WhatsMyBrowser.org",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "APIKey",
+        "name": "API Key",
+        "reason": "Single API key (credentials_api_key type9 hiddenusername:true) sent as X-API-KEY header (WhatIsMyBrowser.py:29). Legacy flat api_key type4 hidden:true excluded. -> APIKey, role key.",
+        "xsoar_param_map": {
+          "credentials_api_key.password": "key"
+        },
+        "other_connection": [
+          "insecure",
+          "proxy",
+          "url"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "ua-parse": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass-after-fix",
+        "fixes": [
+          "WhatIsMyBrowser.py:18 PROXY = demisto.params().get(\"proxy\", False) (was bare .get without default; checkbox silent-behavior-change flag). Behavior-preserving; PROXY var is actually unused (handle_proxy handles proxy)."
+        ],
+        "code_modified": true
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "dnstwist": {
+      "connector_id": "dnstwist",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "NoneRequired",
+        "name": null,
+        "reason": "configuration:[] - no params at all. Shells out to local dnstwist binary, no credentials/remote auth. auth_types=[] (NoneRequired).",
+        "xsoar_param_map": {},
+        "other_connection": [],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "dnstwist-domain-variations": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "no configuration params; test-module runs a local subprocess (dnstwist -h). limit int() is on a command arg with YML default."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": []
+    },
+    "trustwave secure email gateway": {
+      "connector_id": "LevelBlue",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Plain",
+        "name": "Basic Auth",
+        "reason": "credentials type9 (both leaves) posted as grant_type=password username/password to mint a token (TrustwaveSEG.py:64-69). Username/password login -> Plain.",
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "api_port",
+          "config_port",
+          "host",
+          "insecure",
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "params_to_commands_note": "all 14 trustwave-seg-* commands use command args only; tm-only.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "host/config_port/api_port uncertain are connection params (in other_connection, YML defaults localhost/19007/19006) used as strings in URLs/ports - not strict converters at read site; injected by connectus connection layer."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": [
+        "connector_id=LevelBlue per CSV (Trustwave is now LevelBlue/AT&T Cybersecurity)."
+      ]
+    },
+    "PowerShell Remoting": {
+      "connector_id": "Microsoft Windows Tools",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Plain",
+        "name": "WinRM Credentials",
+        "reason": "credentials type9 (both leaves) -> PSCredential for WinRM remote session with selectable Authentication method (PowerShellRemoting.ps1:20-21,842). user+password WinRM login -> Plain.",
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "auth_method",
+          "dns",
+          "domain",
+          "host",
+          "insecure",
+          "ssl"
+        ],
+        "notes": "auth_method is the auth-scheme selector (Negotiate default) -> connection-adjacent.",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": []
+      },
+      "params_to_commands_note": "PowerShell integration; 7 ps-remote-* commands use command args only.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "note": "non-Python (powershell) - UCP param-default analysis N/A."
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": [
+        "powershell beta integration"
+      ]
+    },
+    "Telegram_Beta": {
+      "connector_id": "Telegram",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "APIKey",
+        "name": "Bot Token",
+        "reason": "Single bot token (credentials_api_token type9 hiddenusername:true) embedded in URL path https://api.telegram.org/bot<TOKEN>/ (Telegram.py:16-17). Legacy flat token type4 hidden:true excluded. Single static token -> APIKey, role key.",
+        "xsoar_param_map": {
+          "credentials_api_token.password": "key"
+        },
+        "other_connection": [
+          "proxy"
+        ],
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "telegram-send-message": [],
+        "telegram-list-users": []
+      },
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "token reads use .get chains; no strict converter on config params; main() raises explicit DemistoException if token missing."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": []
+      },
+      "flags": [
+        "beta integration"
+      ]
+    },
+    "Windows Remote Management": {
+      "connector_id": "Microsoft Windows Tools",
+      "completed_through_step": 7,
+      "auth": {
+        "type": "Plain",
+        "name": "WinRM Credentials",
+        "reason": "credentials type9 (both leaves) used as winrm.Session auth=(username,password) with NTLM transport (WindowsRemoteManagement.py:28,31). user+password WinRM login -> Plain.",
+        "xsoar_param_map": {
+          "credentials.identifier": "username",
+          "credentials.password": "password"
+        },
+        "other_connection": [
+          "auth_type",
+          "default_host",
+          "realm"
+        ],
+        "notes": "auth_type (type15 select, only ntlm) is the auth-scheme selector -> connection-adjacent. decode is a per-command-overridable behavioral config -> Params to Commands (excluded from other_connection).",
+        "confidence": "high"
+      },
+      "capabilities": [
+        "Automation"
+      ],
+      "params_to_commands": {
+        "test-module": [],
+        "winrm-run-process": [
+          "decode"
+        ],
+        "winrm-run-powershell": [
+          "decode"
+        ]
+      },
+      "params_to_commands_note": "analyzer empty; instance decode is the per-command fallback (args.get(decode, client.decode)) for both run commands -> attributed by source review.",
+      "param_defaults": {},
+      "ucp_param_default_review": {
+        "result": "pass",
+        "code_modified": false,
+        "justified": [
+          "auth_type/default_host/realm uncertain are connection params (other_connection) read with .get / string-compared (auth_type==ntlm) / None-guarded; auth_type has YML default ntlm; not strict converters."
+        ]
+      },
+      "params_to_capabilities": {
+        "general_configurations": [],
+        "Automation": [
+          "decode"
+        ]
+      },
+      "flags": [
+        "beta integration"
       ]
     }
   }

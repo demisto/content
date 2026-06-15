@@ -108,21 +108,7 @@ Akamai WAF,Packs/Akamai_WAF/Integrations/Akamai_WAF/Akamai_WAF.yml,Akamai,connec
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-Akamai WAF SIEM,Packs/Akamai_SIEM/Integrations/Akamai_SIEM/Akamai_SIEM.yml,Akamai,connectors/akamai,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""EdgeGrid"",""interpolated"":true,""xsoar_param_map"":{""clienttoken_creds.password"":""client_token"",""accesstoken_creds.password"":""access_token"",""clientsecret_creds.password"":""client_secret""}}],""other_connection"":[""configIds"",""host"",""insecure"",""proxy""]}","[
-  ""Log Collection"",
-  ""Fetch Issues"",
-  ""Automation""
-]","{""integration"":""Akamai WAF SIEM"",""commands"":{""test-module"":[],""fetch-events"":[""fetchTime"",""fetchLimit""],""fetch-incidents"":[""fetchTime"",""fetchLimit""],""long-running-execution"":[""fetchTime"",""fetchLimit""],""akamai-siem-get-events"":[],""akamai-siem-reset-offset"":[]}}",{},✅,"{
-  ""general_configurations"": [
-    ""fetchTime"",
-    ""fetchLimit""
-  ],
-  ""Log Collection"": [
-    ""longRunning""
-  ],
-  ""Fetch Issues"": [],
-  ""Automation"": []
-}",,,,,,,,
+Akamai WAF SIEM,Packs/Akamai_SIEM/Integrations/Akamai_SIEM/Akamai_SIEM.yml,Akamai,connectors/akamai,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""EdgeGrid"",""interpolated"":true,""xsoar_param_map"":{""clienttoken_creds.password"":""client_token"",""accesstoken_creds.password"":""access_token"",""clientsecret_creds.password"":""client_secret""}}],""other_connection"":[""configIds"",""host"",""insecure"",""proxy""]}","[""Log Collection"", ""Fetch Issues"", ""Automation""]","{""integration"":""Akamai WAF SIEM"",""commands"":{""test-module"":[],""fetch-events"":[""fetchTime"",""fetchLimit"",""page_size"",""beta_page_size"",""max_concurrent_tasks"",""should_skip_decode_events"",""eventFetchInterval""],""fetch-incidents"":[""fetchTime"",""fetchLimit""],""long-running-execution"":[""fetchTime"",""fetchLimit"",""page_size"",""beta_page_size"",""max_concurrent_tasks"",""should_skip_decode_events"",""eventFetchInterval""],""akamai-siem-get-events"":[""page_size""],""akamai-siem-reset-offset"":[]}}",{},✅,"{""Automation"": [], ""Fetch Issues"": [], ""Log Collection"": [""longRunning"", ""page_size"", ""beta_page_size"", ""max_concurrent_tasks"", ""should_skip_decode_events"", ""eventFetchInterval""], ""general_configurations"": [""fetchTime"", ""fetchLimit""]}",,,,,,,,
 AlgoSec,Packs/Algosec/Integrations/AlgoSec/AlgoSec.yml,AlgoSec,,juschwartz,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""server""]}","[""Automation""]","{""integration"":""AlgoSec"",""commands"":{""algosec-get-ticket"":[],""algosec-create-ticket"":[],""algosec-get-applications"":[],""algosec-get-network-object"":[],""algosec-query"":[],""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",,,,,,,,
 Alibaba Action Trail Event Collector,Packs/AlibabaActionTrail/Integrations/AlibabaActionTrailEventCollector/AlibabaActionTrailEventCollector.yml,Alibaba Cloud,,juschwartz,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""access_key"", ""xsoar_param_map"": {""access_key.identifier"": ""access_key_id"", ""access_key.password"": ""access_key_secret""}, ""interpolated"": true}], ""other_connection"": [""endpoint"", ""logstore_name"", ""project_name"", ""proxy"", ""query"", ""verify""]}","[""Log Collection""]","{""integration"":""Alibaba Action Trail Event Collector"",""commands"":{""fetch-events"":[""from"",""limit"",""query""],""alibaba-get-events"":[""from"",""limit"",""query""],""test-module"":[""from"",""limit"",""query""]}}","{""from"":""3 days""}",✅,"{""general_configurations"":[],""Log Collection"":[""from"",""limit""]}",,,,,,,,
 AlienVault OTX TAXII Feed,Packs/FeedAlienVault/Integrations/FeedAlienVaultOTXTaxii/FeedAlienVaultOTXTaxii.yml,AlienVault,,juschwartz,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy""]}","[""Threat Intelligence & Enrichment""]","{""integration"":""AlienVault OTX TAXII Feed"",""commands"":{""fetch-indicators"":[""all_collections"",""collections"",""initial_interval""],""alienvaultotx-get-indicators"":[""all_collections"",""collections""],""test-module"":[""all_collections"",""collections"",""initial_interval""]}}",{},✅,"{""general_configurations"":[],""Threat Intelligence & Enrichment"":[""all_collections"",""collections"",""initial_interval""]}",,,,,,,,
@@ -573,7 +559,7 @@ EasyVista,Packs/EasyVista/Integrations/EasyVista/EasyVista.yml,EasyVista,,joeymi
 Elasticsearch v2,Packs/Elasticsearch/Integrations/Elasticsearch_v2/Elasticsearch_v2.yml,ElasticSearch,,jlevypaloalto,,,,,,,,,,,,,,
 ElasticsearchEventCollector,Packs/Elasticsearch/Integrations/ElasticsearchEventCollector/ElasticsearchEventCollector.yml,ElasticSearch,,jlevypaloalto,,,,,,,,,,,,,,
 ElasticsearchFeed,Packs/FeedElasticsearch/Integrations/FeedElasticsearch/FeedElasticsearch.yml,ElasticSearch,,jlevypaloalto,,,,,,,,,,,,,,
-Email Hippo,Packs/EmailHippo/Integrations/EmailHippo/EmailHippo.yml,Email Hippo,,YuvHayun,,,,,,,,,,,,,,
+Email Hippo,Packs/EmailHippo/Integrations/EmailHippo/EmailHippo.yml,Email Hippo,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""API Keys"",""interpolated"":true,""xsoar_param_map"":{""more_credentials.password"":""more_api_key"",""whois_credentials.password"":""whois_api_key""}}],""other_connection"":[""insecure"",""more_server_url"",""proxy"",""whois_server_url""]}","[""Automation""]","{""integration"":""Email Hippo"",""commands"":{""test-module"":[],""email-hippo-email-quota-get"":[],""email"":[""integrationReliability""],""domain"":[""integrationReliability""]}}",{},✅,"{""general_configurations"":[],""Automation"":[""integrationReliability""]}",,,,,,,,
 EmailRepIO,Packs/EmailRepIO/Integrations/EmailRepIO/EmailRepIO.yml,Sublime Security,,juschwartz,,,,,,,,,,,,,,
 Endgame,Packs/Endgame/Integrations/Endgame/Endgame.yml,Endgame,,jlevypaloalto,,,,,,,,,,,,,,
 Envoy IAM,Packs/Envoy/Integrations/EnvoyIAM/EnvoyIAM.yml,Envoy,,noydavidi,,,,,,,,,,,,,,
@@ -606,7 +592,7 @@ Forcepoint,Packs/Forcepoint/Integrations/Forcepoint/Forcepoint.yml,Forcepoint,,j
 Forcepoint Security Management Center,Packs/ForcepointSecurityManagementCenter/Integrations/ForcepointSecurityManagementCenter/ForcepointSecurityManagementCenter.yml,Forcepoint,,jlevypaloalto,,,,,,,,,,,,,,
 Forescout,Packs/Forescout/Integrations/Forescout/Forescout.yml,ForeScout,,noydavidi,,,,,,,,,,,,,,
 ForescoutEyeInspect,Packs/ForescoutEyeInspect/Integrations/ForescoutEyeInspect/ForescoutEyeInspect.yml,ForeScout,,noydavidi,,,,,,,,,,,,,,
-FortiGate,Packs/FortiGate/Integrations/FortiGate/FortiGate.yml,Fortinet FortiGate,,YuvHayun,,,,,,,,,,,,,,
+FortiGate,Packs/FortiGate/Integrations/FortiGate/FortiGate.yml,Fortinet FortiGate,,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""api_key.password"":""key""}},{""type"":""Plain"",""name"":""Basic Auth"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""proxy"",""server"",""unsecure""]}","[""Automation""]","{""integration"":""FortiGate"",""commands"":{""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",,,,,,,,
 FortiManager,Packs/FortiManager/Integrations/FortiManager/FortiManager.yml,Fortinet,,hyaffe839,,,,,,,,,,,,,,
 FortiSIEM,Packs/FortiSIEM/Integrations/FortiSIEM/FortiSIEM.yml,Fortinet,,hyaffe839,,,,,,,,,,,,,,
 FortiSIEMV2,Packs/FortiSIEM/Integrations/FortiSIEMV2/FortiSIEMV2.yml,Fortinet,,hyaffe839,,,,,,,,,,,,,,
@@ -614,7 +600,7 @@ FortiSandboxv2,Packs/FortiSandbox/Integrations/FortiSandboxv2/FortiSandboxv2.yml
 FraudWatch,Packs/FraudWatch/Integrations/FraudWatch/FraudWatch.yml,FraudWatch,,joeymizrahi,,,,,,,,,,,,,,
 Freshdesk,Packs/FreshDesk/Integrations/FreshDesk/FreshDesk.yml,Freshworks,,noydavidi,,,,,,,,,,,,,,
 FreshworksFreshservice,Packs/FreshworksFreshservice/Integrations/FreshworksFreshservice/FreshworksFreshservice.yml,Freshworks,,noydavidi,,,,,,,,,,,,,,
-G Suite Security Alert Center,Packs/GSuiteSecurityAlertCenter/Integrations/GSuiteSecurityAlertCenter/GSuiteSecurityAlertCenter.yml,Google Workspace Automation and Collection,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""admin_email_creds.identifier"":""subject_email"",""admin_email_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
+G Suite Security Alert Center,Packs/GSuiteSecurityAlertCenter/Integrations/GSuiteSecurityAlertCenter/GSuiteSecurityAlertCenter.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""admin_email_creds.identifier"":""subject_email"",""admin_email_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{""integration"":""G Suite Security Alert Center"",""commands"":{""test-module"":[""alert_type"",""fetch_feedback"",""filter"",""first_fetch"",""max_fetch""],""fetch-incidents"":[""alert_type"",""fetch_feedback"",""filter"",""first_fetch"",""max_fetch""],""gsac-alert-delete"":[],""gsac-alert-feedback-create"":[],""gsac-alert-feedback-list"":[],""gsac-alert-get"":[],""gsac-alert-list"":[],""gsac-alert-recover"":[]}}","{""max_fetch"": 15}",✅,"{
@@ -628,20 +614,20 @@ G Suite Security Alert Center,Packs/GSuiteSecurityAlertCenter/Integrations/GSuit
   ],
   ""Automation"": []
 }",,,,,,,,
-GCP-IAM,Packs/GCP-IAM/Integrations/GCPIAM/GCPIAM.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
+GCP-IAM,Packs/GCP-IAM/Integrations/GCPIAM/GCPIAM.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""GCP-IAM"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
 GRR,Packs/GRR/Integrations/GRR/GRR.yml,GRR,,juschwartz,,,,,,,,,,,,,,
-GSuiteAdmin,Packs/GSuiteAdmin/Integrations/GSuiteAdmin/GSuiteAdmin.yml,Google Workspace Automation and Collection,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""admin_email_creds.identifier"":""subject_email"",""admin_email_creds.password"":""credentials_file""}}],""other_connection"":[""customer_id"",""insecure"",""proxy""]}","[
+GSuiteAdmin,Packs/GSuiteAdmin/Integrations/GSuiteAdmin/GSuiteAdmin.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""admin_email_creds.identifier"":""subject_email"",""admin_email_creds.password"":""credentials_file""}}],""other_connection"":[""customer_id"",""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""Google Workspace Admin"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-GSuiteAuditor,Packs/GsuiteAuditor/Integrations/GsuiteAuditor/GsuiteAuditor.yml,Google Workspace Automation and Collection,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""subject_email"",""credentials.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
+GSuiteAuditor,Packs/GsuiteAuditor/Integrations/GsuiteAuditor/GsuiteAuditor.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""subject_email"",""credentials.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""G Suite Auditor"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
@@ -653,7 +639,7 @@ Generic SQL,Packs/GenericSQL/Integrations/GenericSQL/GenericSQL.yml,Generic SQL,
 GenesysCloud,Packs/GenesysCloud/Integrations/GenesysCloud/GenesysCloud.yml,Genesys,,hyaffe839,,,,,,,,,,,,,,
 Genetec Security Center Event Collector,Packs/GenetecSecurityCenter/Integrations/GenetecSecurityCenterEventCollector/GenetecSecurityCenterEventCollector.yml,Genetec Security Center,,joeymizrahi,,,,,,,,,,,,,,
 Giphy,Packs/Giphy/Integrations/Giphy/Giphy.yml,Giphy,,joeymizrahi,,,,,,,,,,,,,,
-GitGuardianEventCollector,Packs/GitGuardian/Integrations/GitGuardianEventCollector/GitGuardianEventCollector.yml,GitGuardian,,YuvHayun,,,,,,,,,,,,,,
+GitGuardianEventCollector,Packs/GitGuardian/Integrations/GitGuardianEventCollector/GitGuardianEventCollector.yml,GitGuardian,,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""api_key.password"":""key""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[""Automation"",""Log Collection""]","{""integration"":""GitGuardian Event Collector"",""commands"":{""test-module"":[],""fetch-events"":[""max_events_per_fetch""],""gitguardian-get-events"":[]}}",{},✅,"{""general_configurations"":[],""Log Collection"":[""max_events_per_fetch""]}",,,,,,,,
 GitHub,Packs/GitHub/Integrations/GitHub/GitHub.yml,GitHub,,hyaffe839,,,,,,,,,,,,,,
 GitHub IAM,Packs/GitHub/Integrations/GitHub_IAM/GitHub_IAM.yml,GitHub,,hyaffe839,,,,,,,,,,,,,,
 GitHub MCP,Packs/GitHubMCP/Integrations/GitHubMCP/GitHubMCP.yml,GitHub,,hyaffe839,,,,,,,,,,,,,,
@@ -661,22 +647,8 @@ GitLab Event Collector,Packs/GitLab/Integrations/GitLabEventCollector/GitLabEven
 GitLabv2,Packs/GitLab/Integrations/GitLabv2/GitLabv2.yml,GitLab Automation and Collection,,noydavidi,,,,,,,,,,,,,,
 Github Event Collector,Packs/GitHub/Integrations/GitHubEventCollector/GitHubEventCollector.yml,GitHub,,hyaffe839,,,,,,,,,,,,,,
 Github Feed,Packs/FeedGitHub/Integrations/FeedGitHub/FeedGitHub.yml,GitHub,,hyaffe839,,,,,,,,,,,,,,
-Gmail,Packs/Gmail/Integrations/Gmail/Gmail.yml,Google Workspace Automation and Collection,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""adminEmail.identifier"":""subject_email"",""adminEmail.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
-  ""Fetch Issues"",
-  ""Automation""
-]","{""integration"":""Gmail"",""commands"":{""test-module"":[],""fetch-incidents"":[""fetch_limit"",""fetch_time"",""query"",""queryUserKey""],""gmail-add-delete-filter"":[],""gmail-add-filter"":[],""gmail-create-user"":[],""gmail-delegate-user-mailbox"":[],""gmail-delete-mail"":[],""gmail-delete-user"":[],""gmail-forwarding-address-add"":[],""gmail-forwarding-address-get"":[],""gmail-forwarding-address-list"":[],""gmail-forwarding-address-remove"":[],""gmail-forwarding-address-update"":[],""gmail-get-attachments"":[""legacy_name""],""gmail-get-autoreply"":[],""gmail-get-mail"":[""legacy_name""],""gmail-get-role"":[],""gmail-get-thread"":[""legacy_name""],""gmail-get-tokens-for-user"":[],""gmail-get-user"":[],""gmail-get-user-roles"":[],""gmail-hide-user-in-directory"":[],""gmail-list-filters"":[],""gmail-list-labels"":[],""gmail-list-users"":[],""gmail-move-mail"":[],""gmail-move-mail-to-mailbox"":[],""gmail-remove-delegated-mailbox"":[],""gmail-remove-filter"":[],""gmail-revoke-user-role"":[],""gmail-search"":[""legacy_name""],""gmail-search-all-mailboxes"":[""legacy_name""],""gmail-send-as-add"":[],""gmail-set-autoreply"":[],""gmail-set-password"":[],""reply-mail"":[],""send-mail"":[],""gmail-get-thread"":[""legacy_name""]}}",{},✅,"{
-  ""general_configurations"": [],
-  ""Fetch Issues"": [
-    ""fetch_limit"",
-    ""fetch_time"",
-    ""query"",
-    ""queryUserKey""
-  ],
-  ""Automation"": [
-    ""legacy_name""
-  ]
-}",,,,,,,,
-Gmail Single User,Packs/GmailSingleUser/Integrations/GmailSingleUser/GmailSingleUser.yml,Google Workspace Automation and Collection,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""OAuth"",""interpolated"":true,""verify_connection_skip"":true,""xsoar_param_map"":{""credentials.identifier"":""client_id"",""credentials.password"":""client_secret"",""auth_code_creds.password"":""auth_code""}}],""other_connection"":[""email"",""insecure"",""proxy"",""redirect_uri"",""send_as""]}","[
+Gmail,Packs/Gmail/Integrations/Gmail/Gmail.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""adminEmail.identifier"":""subject_email"",""adminEmail.password"":""credentials_file""}}],""other_connection"":[""gappsID"",""insecure"",""proxy""]}","[""Fetch Issues"",""Automation""]","{""integration"":""Gmail"",""commands"":{""test-module"":[],""fetch-incidents"":[""fetch_limit"",""fetch_time"",""query"",""queryUserKey""],""gmail-get-attachments"":[""legacy_name""],""gmail-get-mail"":[""legacy_name""],""gmail-get-thread"":[""legacy_name""],""gmail-search"":[""legacy_name""],""gmail-search-all-mailboxes"":[""legacy_name""]}}",{},✅,"{""Automation"": [""legacy_name""], ""Fetch Issues"": [""fetch_limit"", ""fetch_time"", ""query"", ""queryUserKey""], ""general_configurations"": []}",,,,,,,,
+Gmail Single User,Packs/GmailSingleUser/Integrations/GmailSingleUser/GmailSingleUser.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""OAuth"",""interpolated"":true,""verify_connection_skip"":true,""xsoar_param_map"":{""credentials.identifier"":""client_id"",""credentials.password"":""client_secret"",""auth_code_creds.password"":""auth_code""}}],""other_connection"":[""email"",""insecure"",""proxy"",""redirect_uri"",""send_as""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{""integration"":""Gmail Single User"",""commands"":{""test-module"":[],""fetch-incidents"":[""fetch_time"",""fetch_limit"",""query""],""gmail-auth-link"":[],""gmail-auth-test"":[],""gmail-get-attachments"":[""legacy_name""],""gmail-get-incidents"":[""query""],""reply-mail"":[],""send-mail"":[]}}",{},✅,"{
@@ -691,7 +663,7 @@ Gmail Single User,Packs/GmailSingleUser/Integrations/GmailSingleUser/GmailSingle
     ""legacy_name""
   ]
 }",,,,,,,,
-Google Apigee,Packs/GoogleApigee/Integrations/GoogleApigeeEventCollector/GoogleApigeeEventCollector.yml,Google Services,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""OAuth"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""insecure"",""org_name"",""proxy"",""url"",""zone""]}","[
+Google Apigee,Packs/GoogleApigee/Integrations/GoogleApigeeEventCollector/GoogleApigeeEventCollector.yml,Google Services,connectors/google-services,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""OAuth"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""insecure"",""org_name"",""proxy"",""url"",""zone""]}","[
   ""Log Collection""
 ]","{""integration"":""Google Apigee"",""commands"":{""test-module"":[],""fetch-events"":[""max_fetch""],""google-apigee-get-events"":[""max_fetch""]}}",{},✅,"{
   ""general_configurations"": [],
@@ -699,7 +671,7 @@ Google Apigee,Packs/GoogleApigee/Integrations/GoogleApigeeEventCollector/GoogleA
     ""max_fetch""
   ]
 }",,,,,,,,
-Google BigQuery,Packs/GoogleBigQuery/Integrations/GoogleBigQuery/GoogleBigQuery.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials_google_service.password"":""credentials_file""}}],""other_connection"":[""region""]}","[
+Google BigQuery,Packs/GoogleBigQuery/Integrations/GoogleBigQuery/GoogleBigQuery.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials_google_service.password"":""credentials_file""}}],""other_connection"":[""region""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{""integration"":""Google BigQuery"",""commands"":{""test-module"":[],""fetch-incidents"":[""fetch_query"",""fetch_time_field"",""first_fetch"",""max_fetch""],""bigquery-query"":[]}}",{},✅,"{
@@ -712,79 +684,69 @@ Google BigQuery,Packs/GoogleBigQuery/Integrations/GoogleBigQuery/GoogleBigQuery.
   ],
   ""Automation"": []
 }",,,,,,,,
-Google Cloud Compute,Packs/GoogleCloudCompute/Integrations/GoogleCloudCompute/GoogleCloudCompute.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials_service_account_json.password"":""credentials_file""}}],""other_connection"":[""default_search_scope"",""proxy""]}","[
+Google Cloud Compute,Packs/GoogleCloudCompute/Integrations/GoogleCloudCompute/GoogleCloudCompute.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials_service_account_json.password"":""credentials_file""}}],""other_connection"":[""default_search_scope"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""Google Cloud Compute"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-Google Cloud Functions,Packs/GoogleCloudFunctions/Integrations/GoogleCloudFunctions/GoogleCloudFunctions.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""project_id_creds.identifier"":""project_id"",""project_id_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy"",""region""]}","[
+Google Cloud Functions,Packs/GoogleCloudFunctions/Integrations/GoogleCloudFunctions/GoogleCloudFunctions.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""project_id_creds.identifier"":""project_id"",""project_id_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy"",""region""]}","[
   ""Automation""
 ]","{""integration"":""Google Cloud Functions"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-Google Cloud Storage,Packs/GoogleCloudStorage/Integrations/GoogleCloudStorage/GoogleCloudStorage.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials_service_account_json.password"":""credentials_file""}}],""other_connection"":[""default_bucket"",""insecure"",""proxy""]}","[
+Google Cloud Storage,Packs/GoogleCloudStorage/Integrations/GoogleCloudStorage/GoogleCloudStorage.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials_service_account_json.password"":""credentials_file""}}],""other_connection"":[""default_bucket"",""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""Google Cloud Storage"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-Google IP Ranges Feed,Packs/FeedGCPWhitelist/Integrations/FeedGoogleIPRanges/FeedGoogleIPRanges.yml,Google Services,,YuvHayun,"{""auth_types"":[],""other_connection"":[""insecure"",""proxy""]}","[
-  ""Threat Intelligence & Enrichment""
-]","{""integration"":""Google IP Ranges Feed"",""commands"":{""test-module"":[]}}",{},✅,"{
-  ""general_configurations"": [],
-  ""Threat Intelligence & Enrichment"": []
-}",,,,,,,,
-Google Key Management Service,Packs/GoogleKeyManagementService/Integrations/GoogleKeyManagementService/GoogleKeyManagementService.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials_service_account.password"":""credentials_file""}}],""other_connection"":[""key_ring"",""location"",""project"",""proxy""]}","[
+Google IP Ranges Feed,Packs/FeedGCPWhitelist/Integrations/FeedGoogleIPRanges/FeedGoogleIPRanges.yml,Google Services,connectors/google-services,YuvHayun,"{""auth_types"":[],""other_connection"":[""insecure"",""proxy""]}","[""Threat Intelligence & Enrichment""]","{""integration"":""Google IP Ranges Feed"",""commands"":{""test-module"":[],""fetch-indicators"":[""ip_ranges"",""feed"",""enrichmentExcluded""],""google-ip-ranges-get-indicators"":[""ip_ranges""]}}",{},✅,"{""Threat Intelligence & Enrichment"": [""ip_ranges"", ""feed"", ""enrichmentExcluded""], ""general_configurations"": []}",,,,,,,,
+Google Key Management Service,Packs/GoogleKeyManagementService/Integrations/GoogleKeyManagementService/GoogleKeyManagementService.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials_service_account.password"":""credentials_file""}}],""other_connection"":[""key_ring"",""location"",""project"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""Google Key Management Service"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-Google Resource Manager,Packs/GoogleResourceManager/Integrations/GoogleResourceManager/GoogleResourceManager.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""private_key_id_creds.password"":""private_key_id"",""private_key_creds.password"":""private_key"",""client_email_creds.identifier"":""client_email"",""client_email_creds.password"":""client_id""}}],""other_connection"":[""client_x509_cert_url"",""insecure"",""project_id"",""proxy""]}","[
+Google Resource Manager,Packs/GoogleResourceManager/Integrations/GoogleResourceManager/GoogleResourceManager.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""private_key_id_creds.password"":""private_key_id"",""private_key_creds.password"":""private_key"",""client_email_creds.identifier"":""client_email"",""client_email_creds.password"":""client_id""}}],""other_connection"":[""client_x509_cert_url"",""insecure"",""project_id"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""Google Resource Manager"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-Google Safe Browsing v2,Packs/GoogleSafeBrowsing/Integrations/GoogleSafeBrowsingV2/GoogleSafeBrowsingV2.yml,Google Services,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""api_creds.password"":""api_key"",""api_creds.identifier"":""client_id""}}],""other_connection"":[""client_version"",""insecure"",""proxy"",""url""]}","[
-  ""Automation""
-]","{""integration"":""Google Safe Browsing v2"",""commands"":{""test-module"":[]}}",{},✅,"{
-  ""general_configurations"": [],
-  ""Automation"": []
-}",,,,,,,,
-Google Vision AI,Packs/GoogleVisionAPI/Integrations/GoogleVisionAPI/GoogleVisionAPI.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""auth_json_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
+Google Safe Browsing v2,Packs/GoogleSafeBrowsing/Integrations/GoogleSafeBrowsingV2/GoogleSafeBrowsingV2.yml,Google Services,connectors/google-services,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""api_creds.password"":""api_key"",""api_creds.identifier"":""client_id""}}],""other_connection"":[""client_version"",""insecure"",""integrationReliability"",""proxy"",""url""]}","[""Automation""]","{""integration"":""Google Safe Browsing v2"",""commands"":{""test-module"":[]}}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
+Google Vision AI,Packs/GoogleVisionAPI/Integrations/GoogleVisionAPI/GoogleVisionAPI.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""auth_json_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""Google Vision AI"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-GoogleCalendar,Packs/GoogleCalendar/Integrations/GoogleCalendar/GoogleCalendar.yml,Google Workspace Automation and Collection,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""user_service_account_json_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
+GoogleCalendar,Packs/GoogleCalendar/Integrations/GoogleCalendar/GoogleCalendar.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""user_service_account_json_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""GoogleCalendar"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-GoogleCloudLogging,Packs/GoogleCloudLogging/Integrations/GoogleCloudLogging/GoogleCloudLogging.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
+GoogleCloudLogging,Packs/GoogleCloudLogging/Integrations/GoogleCloudLogging/GoogleCloudLogging.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""GoogleCloudLogging"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-GoogleCloudTranslate,Packs/GoogleCloudTranslate/Integrations/GoogleCloudTranslate/GoogleCloudTranslate.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""project_creds.identifier"":""project_id"",""project_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
+GoogleCloudTranslate,Packs/GoogleCloudTranslate/Integrations/GoogleCloudTranslate/GoogleCloudTranslate.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""project_creds.identifier"":""project_id"",""project_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""GoogleCloudTranslate"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-GoogleDocs,Packs/GoogleDocs/Integrations/GoogleDocs/GoogleDocs.yml,Google Workspace Automation and Collection,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials_service_account.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
+GoogleDocs,Packs/GoogleDocs/Integrations/GoogleDocs/GoogleDocs.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials_service_account.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""GoogleDocs"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-GoogleGemini,Packs/GoogleGemini/Integrations/GoogleGemini/GoogleGemini.yml,Google AI,,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""api_key.password"":""key""}},{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""service_account_key.password"":""credentials_file""}}],""other_connection"":[""auth_type"",""insecure"",""location"",""project_id"",""proxy"",""url""]}","[
+GoogleGemini,Packs/GoogleGemini/Integrations/GoogleGemini/GoogleGemini.yml,Google AI,connectors/google-ai,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""api_key.password"":""key""}},{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""service_account_key.password"":""credentials_file""}}],""other_connection"":[""auth_type"",""insecure"",""location"",""project_id"",""proxy"",""url""]}","[
   ""Automation""
 ]","{""integration"":""Google Gemini"",""commands"":{""test-module"":[],""google-gemini-send-message"":[""model"",""max_tokens"",""temperature"",""top_p"",""top_k""]}}",{},✅,"{
   ""general_configurations"": [],
@@ -796,13 +758,13 @@ GoogleGemini,Packs/GoogleGemini/Integrations/GoogleGemini/GoogleGemini.yml,Googl
     ""top_k""
   ]
 }",,,,,,,,
-GoogleKubernetesEngine,Packs/GoogleKubernetesEngine/Integrations/GoogleKubernetesEngine/GoogleKubernetesEngine.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""credentials_file""}}],""other_connection"":[""default_project"",""default_zone""]}","[
+GoogleKubernetesEngine,Packs/GoogleKubernetesEngine/Integrations/GoogleKubernetesEngine/GoogleKubernetesEngine.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""credentials_file""}}],""other_connection"":[""default_project"",""default_zone""]}","[
   ""Automation""
 ]","{""integration"":""GoogleKubernetesEngine"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-GoogleMaps,Packs/GoogleMaps/Integrations/GoogleMaps/GoogleMaps.yml,Google Services,,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""api_key.password"":""key""}}],""other_connection"":[""base_url"",""insecure"",""proxy""]}","[
+GoogleMaps,Packs/GoogleMaps/Integrations/GoogleMaps/GoogleMaps.yml,Google Services,connectors/google-services,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""api_key.password"":""key""}}],""other_connection"":[""base_url"",""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""Google Maps"",""commands"":{""test-module"":[],""google-maps-geocode"":[""error_on_no_results""]}}",{},✅,"{
   ""general_configurations"": [],
@@ -810,7 +772,7 @@ GoogleMaps,Packs/GoogleMaps/Integrations/GoogleMaps/GoogleMaps.yml,Google Servic
     ""error_on_no_results""
   ]
 }",,,,,,,,
-GooglePubSub,Packs/GooglePubSub/Integrations/GooglePubSub/GooglePubSub.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""credentials_file""}}],""other_connection"":[""default_project"",""insecure"",""proxy""]}","[
+GooglePubSub,Packs/GooglePubSub/Integrations/GooglePubSub/GooglePubSub.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""credentials_file""}}],""other_connection"":[""default_project"",""insecure"",""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{""integration"":""Google Cloud Pub/Sub"",""commands"":{""test-module"":[],""fetch-incidents"":[""default_subscription"",""default_max_msgs"",""first_fetch_time"",""ack_incidents""],""gcp-pubsub-topic-ack-messages"":[],""gcp-pubsub-topic-create"":[],""gcp-pubsub-topic-delete"":[],""gcp-pubsub-topic-messages-pull"":[],""gcp-pubsub-topic-messages-seek"":[],""gcp-pubsub-topic-publish-message"":[],""gcp-pubsub-topic-snapshot-create"":[],""gcp-pubsub-topic-snapshot-delete"":[],""gcp-pubsub-topic-snapshot-update"":[],""gcp-pubsub-topic-snapshots-list"":[],""gcp-pubsub-topic-subscription-create"":[],""gcp-pubsub-topic-subscription-get-by-name"":[],""gcp-pubsub-topic-subscription-update"":[],""gcp-pubsub-topic-subscriptions-list"":[],""gcp-pubsub-topic-update"":[],""gcp-pubsub-topics-list"":[]}}",{},✅,"{
@@ -823,7 +785,7 @@ GooglePubSub,Packs/GooglePubSub/Integrations/GooglePubSub/GooglePubSub.yml,Googl
   ],
   ""Automation"": []
 }",,,,,,,,
-GoogleSheets,Packs/GoogleSheets/Integrations/GoogleSheets/GoogleSheets.yml,Google Workspace Automation and Collection,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""service_account_credentials.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy"",""user_id""]}","[
+GoogleSheets,Packs/GoogleSheets/Integrations/GoogleSheets/GoogleSheets.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""service_account_credentials.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy"",""user_id""]}","[
   ""Automation""
 ]","{""integration"":""GoogleSheets"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
@@ -865,7 +827,7 @@ Imperva WAF,Packs/Imperva_WAF/Integrations/ImpervaWAF/ImpervaWAF.yml,Imperva,,jl
 Incapsula,Packs/Incapsula/Integrations/Incapsula/Incapsula.yml,Imperva,,jlevypaloalto,,,,,,,,,,,,,,
 InfoArmor VigilanteATI,Packs/InfoArmor_VigilanteATI/Integrations/InfoArmorVigilanteATI/InfoArmorVigilanteATI.yml,InfoArmor,,joeymizrahi,,,,,,,,,,,,,,
 Infoblox BloxOne Threat Defense Event Collector,Packs/InfobloxBloxOne/Integrations/InfobloxBloxOneThreatDefenseEventCollector/InfobloxBloxOneThreatDefenseEventCollector.yml,Infoblox,,joeymizrahi,,,,,,,,,,,,,,
-Ipstack,Packs/Ipstack/Integrations/Ipstack/Ipstack.yml,IPstack,,YuvHayun,,,,,,,,,,,,,,
+Ipstack,Packs/Ipstack/Integrations/Ipstack/Ipstack.yml,IPstack,,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""key""}}],""other_connection"":[""proxy""]}","[""Automation""]","{""integration"":""ipstack"",""commands"":{""test-module"":[],""ip"":[""integrationReliability""]}}",{},✅,"{""general_configurations"":[],""Automation"":[""integrationReliability""]}",,,,,,,,
 Ironscales Event Collector,Packs/IronscalesEventCollector/Integrations/IronscalesEventCollector/IronscalesEventCollector.yml,Ironscales,,joeymizrahi,,,,,,,,,,,,,,
 IsItPhishing,Packs/IsItPhishing/Integrations/IsItPhishing/IsItPhishing.yml,Proofpoint,,hyaffe839,,,,,,,,,,,,,,
 Ivanti Heat,Packs/IvantiHeat/Integrations/IvantiHeat/IvantiHeat.yml,Ivanti,,jlevypaloalto,,,,,,,,,,,,,,
@@ -881,17 +843,12 @@ KeeperSecurity,Packs/KeeperSecurity/Integrations/KeeperSecurity/KeeperSecurity.y
 Kennav2,Packs/Kenna/Integrations/KennaV2/KennaV2.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
 KnowBe4 KMSAT Event Collector,Packs/KnowBe4_KMSAT/Integrations/KnowBe4KMSATEventCollector/KnowBe4KMSATEventCollector.yml,KnowB4,,joeymizrahi,,,,,,,,,,,,,,
 Koodous,Packs/Koodous/Integrations/Koodous/Koodous.yml,Koodous,,joeymizrahi,,,,,,,,,,,,,,
-LOLBAS Feed,Packs/FeedLOLBAS/Integrations/FeedLOLBAS/FeedLOLBAS.yml,LOLBAS,,YuvHayun,,,,,,,,,,,,,,
+LOLBAS Feed,Packs/FeedLOLBAS/Integrations/FeedLOLBAS/FeedLOLBAS.yml,LOLBAS,,YuvHayun,"{""auth_types"":[],""other_connection"":[""base_url"",""insecure"",""proxy""]}","[""Automation"",""Threat Intelligence & Enrichment""]","{""integration"":""LOLBAS Feed"",""commands"":{""test-module"":[],""lolbas-get-indicators"":[""create_relationships""],""fetch-indicators"":[""create_relationships""]}}",{},✅,"{""general_configurations"":[],""Threat Intelligence & Enrichment"":[""create_relationships""]}",,,,,,,,
 Lastline v2,Packs/Lastline/Integrations/Lastline_v2/Lastline_v2.yml,Lastline,,joeymizrahi,,,,,,,,,,,,,,
 Lockpath KeyLight v2,Packs/Lokpath_Keylight/Integrations/Lockpath_KeyLight_v2/Lockpath_KeyLight_v2.yml,NAVEX,,juschwartz,,,,,,,,,,,,,,
 LogRhythmRest,Packs/LogRhythmRest/Integrations/LogRhythmRest/LogRhythmRest.yml,LogRhythm,,noydavidi,,,,,,,,,,,,,,
 LogRhythmRest V2,Packs/LogRhythmRest/Integrations/LogRhythmRestV2/LogRhythmRestV2.yml,LogRhythm,,noydavidi,,,,,,,,,,,,,,
-Looker,Packs/Looker/Integrations/Looker/Looker.yml,Google Cloud,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Client Credentials"",""interpolated"":true,""xsoar_param_map"":{""credentials_api3_client.identifier"":""client_id"",""credentials_api3_client.password"":""client_secret""}}],""other_connection"":[""proxy"",""unsecure"",""url""]}","[
-  ""Automation""
-]","{""integration"":""Looker"",""commands"":{""test-module"":[]}}",{},✅,"{
-  ""general_configurations"": [],
-  ""Automation"": []
-}",,,,,,,,
+Looker,Packs/Looker/Integrations/Looker/Looker.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Client Credentials"",""interpolated"":true,""xsoar_param_map"":{""credentials_api3_client.identifier"":""client_id"",""credentials_api3_client.password"":""client_secret""}}],""other_connection"":[""client_id"",""proxy"",""unsecure"",""url""]}","[""Automation""]","{""integration"":""Looker"",""commands"":{""test-module"":[]}}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
 LookoutMobileEndpointSecurity,Packs/LookoutMobileEndpointSecurity/Integrations/LookoutMobileEndpointSecurity/LookoutMobileEndpointSecurity.yml,Lookout,,jlevypaloalto,,,,,,,,,,,,,,
 MISP Feed,Packs/FeedMISP/Integrations/FeedMISP/FeedMISP.yml,MISP,,jlevypaloalto,,,,,,,,,,,,,,
 MISP V3,Packs/MISP/Integrations/MISPV3/MISPV3.yml,MISP,,jlevypaloalto,,,,,,,,,,,,,,
@@ -906,7 +863,7 @@ MalwareBazaar Feed,Packs/FeedMalwareBazaar/Integrations/MalwareBazaarFeed/Malwar
 ManageEngine,Packs/ManageEngine/Integrations/ManageEngineEventCollector/ManageEngineEventCollector.yml,ManageEngine,,noydavidi,,,,,,,,,,,,,,
 MattermostV2,Packs/Mattermost/Integrations/MattermostV2/MattermostV2.yml,Mattermost,,joeymizrahi,,,,,,,,,,,,,,
 MaxMind GeoIP2,Packs/MaxMind_GeoIP2/Integrations/MaxMind_GeoIP2/MaxMind_GeoIP2.yml,MaxMind,,joeymizrahi,,,,,,,,,,,,,,
-McAfee Active Response,Packs/McAfee-MAR/Integrations/McAfee-MAR/McAfee-MAR.yml,Trellix SIEM,,YuvHayun,,,,,,,,,,,,,,
+McAfee Active Response,Packs/McAfee-MAR/Integrations/McAfee-MAR/McAfee-MAR.yml,Trellix SIEM,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Certificate (mTLS)"",""interpolated"":true,""xsoar_param_map"":{""broker_ca_bundle"":""broker_ca_bundle"",""cert_file"":""cert_file"",""private_key"":""private_key""}}],""other_connection"":[""broker_urls""]}","[""Automation""]","{""integration"":""McAfee Active Response"",""commands"":{""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",,,,,,,,
 McAfee Advanced Threat Defense,Packs/McAfee_Advanced_Threat_Defense/Integrations/McAfee_Advanced_Threat_Defense/McAfee_Advanced_Threat_Defense.yml,Trellix ePO,,jlevypaloalto,,,,,,,,,,,,,,
 McAfee DXL,Packs/McAfee_DXL/Integrations/McAfee_DXL/McAfee_DXL.yml,Trellix Sandbox,,juschwartz,,,,,,,,,,,,,,
 McAfee ESM v2,Packs/McAfee_ESM/Integrations/McAfee_ESM_v2/McAfee_ESM_v2.yml,Trellix ePO,,jlevypaloalto,,,,,,,,,,,,,,
@@ -1008,7 +965,7 @@ MongoDBAtlasEventCollector,Packs/MongoDBAtlas/Integrations/MongoDBAtlasEventColl
 MxToolBox,Packs/MxToolBox/Integrations/MxToolBox/MxToolBox.yml,MxToolBox,,hyaffe839,,,,,,,,,,,,,,
 Nessus,Packs/nessus/Integrations/Nessus/Nessus.yml,Tenable,,jlevypaloalto,,,,,,,,,,,,,,
 NetBox Event Collector,Packs/NetBox/Integrations/NetBoxEventCollector/NetBoxEventCollector.yml,NetBox,,joeymizrahi,,,,,,,,,,,,,,
-NetQuestOMX,Packs/NetQuestOMX/Integrations/NetQuestOMX/NetQuestOMX.yml,NetQuest,,YuvHayun,,,,,,,,,,,,,,
+NetQuestOMX,Packs/NetQuestOMX/Integrations/NetQuestOMX/NetQuestOMX.yml,NetQuest,,YuvHayun,"{""auth_types"":[{""type"":""Plain"",""name"":""Basic Auth"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[""Automation"",""Log Collection""]","{""integration"":""NetQuest OMX"",""commands"":{""test-module"":[],""netquest-address-list-upload"":[],""netquest-address-list-optimize"":[],""netquest-address-list-create"":[],""netquest-address-list-rename"":[],""netquest-address-list-delete"":[],""get-events"":[""port"",""slot"",""statistic_types_to_fetch""],""fetch-events"":[""port"",""slot"",""statistic_types_to_fetch""]}}",{},✅,"{""general_configurations"":[],""Log Collection"":[""port"",""slot"",""statistic_types_to_fetch""],""Automation"":[]}",,,,,,,,
 Netcraft V2,Packs/Netcraft_V2/Integrations/Netcraft/Netcraft.yml,Netcraft,,juschwartz,,,,,,,,,,,,,,
 Netmiko,Packs/Netmiko/Integrations/Netmiko/Netmiko.yml,Netmiko,,jlevypaloalto,,,,,,,,,,,,,,
 NetskopeAPIv1,Packs/Netskope/Integrations/NetskopeAPIv1/NetskopeAPIv1.yml,Netskope,,jlevypaloalto,,,,,,,,,,,,,,
@@ -1025,7 +982,7 @@ OktaAuth0EventCollector,Packs/OktaAuth0/Integrations/OktaAuth0EventCollector/Okt
 OnboardingIntegration,Packs/OnboardingIntegration/Integrations/OnboardingIntegration/OnboardingIntegration.yml,Cortex Automation Developer Tools,,jlevypaloalto,,,,,,,,,,,,,,
 OneLogin Event Collector,Packs/OneLogin/Integrations/OneLoginEventCollector/OneLoginEventCollector.yml,OneLogin,,joeymizrahi,,,,,,,,,,,,,,
 OnePassword,Packs/OnePassword/Integrations/OnePassword/OnePassword.yml,1Password,,juschwartz,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[""Log Collection""]","{""integration"":""OnePassword"",""commands"":{""test-module"":[],""one-password-get-events"":[],""fetch-events"":[]}}",{},✅,"{""Log Collection"":[],""general_configurations"":[]}",,,,,,,,
-OpenAi ChatGPT v3,Packs/OpenAI/Integrations/OpenAiChatGPTV3/OpenAiChatGPTV3.yml,OpenAI,,YuvHayun,,,,,,,,,,,,,,
+OpenAi ChatGPT v3,Packs/OpenAI/Integrations/OpenAiChatGPTV3/OpenAiChatGPTV3.yml,OpenAI,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""API Keys"",""interpolated"":true,""xsoar_param_map"":{""apikey.password"":""api_key"",""admin_api_key"":""admin_api_key"",""compliance_api_key"":""compliance_api_key""}}],""other_connection"":[""chatgpt_api_url"",""insecure"",""proxy"",""url"",""workspace_id""]}","[""Automation"",""Log Collection""]","{""integration"":""OpenAI GPT"",""commands"":{""test-module"":[],""gpt-send-message"":[""model-select"",""model-freetext"",""max_tokens"",""temperature"",""top_p""],""gpt-check-email-header"":[""model-select"",""model-freetext"",""max_tokens"",""temperature"",""top_p""],""gpt-check-email-body"":[""model-select"",""model-freetext"",""max_tokens"",""temperature"",""top_p""],""gpt-create-soc-email-template"":[""model-select"",""model-freetext"",""max_tokens"",""temperature"",""top_p""],""openai-get-events"":[""event_types_to_fetch"",""audit_max_fetch"",""compliance_max_fetch""],""fetch-events"":[""event_types_to_fetch"",""audit_max_fetch"",""compliance_max_fetch""]}}",{},✅,"{""general_configurations"":[],""Automation"":[""model-select"",""model-freetext"",""max_tokens"",""temperature"",""top_p""],""Log Collection"":[""event_types_to_fetch"",""audit_max_fetch"",""compliance_max_fetch""]}",,,,,,,,
 OpenCTI,Packs/OpenCTI/Integrations/OpenCTI/OpenCTI.yml,Filigran OpenCTI,,noydavidi,,,,,,,,,,,,,,
 OpenCTI Feed 4.X,Packs/FeedOpenCTI/Integrations/FeedOpenCTI_v4/FeedOpenCTI_v4.yml,Filigran OpenCTI,,noydavidi,,,,,,,,,,,,,,
 OpenCVE,Packs/OpenCVE/Integrations/OpenCVE/OpenCVE.yml,OpenCVE,,juschwartz,,,,,,,,,,,,,,
@@ -1036,7 +993,7 @@ OracleCloudInfrastructureEventCollector,Packs/OracleCloudInfrastructure/Integrat
 OracleIAM,Packs/Oracle_IAM/Integrations/OracleIAM/OracleIAM.yml,Oracle,,noydavidi,,,,,,,,,,,,,,
 Orca Event Collector,Packs/Orca/Integrations/OrcaEventCollector/OrcaEventCollector.yml,Orca Security,,hyaffe839,,,,,,,,,,,,,,
 PATHelpdeskAdvanced,Packs/PATHelpdeskAdvanced/Integrations/PATHelpdeskAdvanced/PATHelpdeskAdvanced.yml,PAT Helpdesk Advanced,,joeymizrahi,,,,,,,,,,,,,,
-PacketMail,Packs/PacketMail/Integrations/PacketMail/PacketMail.yml,PacketMail.net,,YuvHayun,,,,,,,,,,,,,,
+PacketMail,Packs/PacketMail/Integrations/PacketMail/PacketMail.yml,PacketMail.net,,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""apikey_creds.password"":""key""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[""Automation""]","{""integration"":""PacketMail"",""commands"":{""test-module"":[],""packetmail-ip"":[""maliciousList""]}}",{},✅,"{""general_configurations"":[],""Automation"":[""maliciousList""]}",,,,,,,,
 Packetsled,Packs/Packetsled/Integrations/Packetsled/Packetsled.yml,PacketSled,,juschwartz,,,,,,,,,,,,,,
 PagerDuty v2,Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.yml,PagerDuty,,noydavidi,,,,,,,,,,,,,,
 Palo Alto Networks - Prisma SASE,Packs/PrismaAccess/Integrations/PrismaSASE/PrismaSASE.yml,Prisma SASE,,jlevypaloalto,,,,,,,,,,,,,,
@@ -1050,7 +1007,7 @@ Palo Alto Networks Threat Vault v2,Packs/PaloAltoNetworks_Threat_Vault/Integrati
 Palo Alto Networks Threat Vault v2 Feed,Packs/FeedThreatVault/Integrations/FeedThreatVault/FeedThreatVault.yml,Threat Vault,,noydavidi,,,,,,,,,,,,,,
 PaloAltoNetworks_PrismaCloudCompute,Packs/PrismaCloudCompute/Integrations/PaloAltoNetworks_PrismaCloudCompute/PaloAltoNetworks_PrismaCloudCompute.yml,Prisma Cloud Compute,,joeymizrahi,,,,,,,,,,,,,,
 Panorama,Packs/PAN-OS/Integrations/Panorama/Panorama.yml,Panorama,,noydavidi,,,,,,,,,,,,,,
-Perch,Packs/Perch/Integrations/Perch/Perch.yml,Razor Group,,YuvHayun,,,,,,,,,,,,,,
+Perch,Packs/Perch/Integrations/Perch/Perch.yml,Razor Group,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""API Key + Basic Auth"",""interpolated"":true,""xsoar_param_map"":{""api-key_creds.password"":""api_key"",""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[""Automation"",""Fetch Issues""]","{""integration"":""Perch"",""commands"":{""test-module"":[""soc_status""],""perch-search-alerts"":[],""perch-get-community"":[],""perch-list-communities"":[],""perch-create-indicator"":[],""fetch-incidents"":[""soc_status"",""fetch_time""]}}",{},✅,"{""general_configurations"":[],""Fetch Issues"":[""soc_status"",""fetch_time""],""Automation"":[]}",,,,,,,,
 PhishLabs IOC,Packs/PhishLabs/Integrations/PhishLabsIOC/PhishLabsIOC.yml,PhishLabs,,jlevypaloalto,,,,,,,,,,,,,,
 PhishLabs IOC DRP,Packs/PhishLabs/Integrations/PhishLabsIOC_DRP/PhishLabsIOC_DRP.yml,PhishLabs,,jlevypaloalto,,,,,,,,,,,,,,
 PhishLabs IOC EIR,Packs/PhishLabs/Integrations/PhishLabsIOC_EIR/PhishLabsIOC_EIR.yml,PhishLabs,,jlevypaloalto,,,,,,,,,,,,,,
@@ -1083,7 +1040,7 @@ Rapid7 Nexpose,Packs/Rapid7_Nexpose/Integrations/Rapid7_Nexpose/Rapid7_Nexpose.y
 Recorded Future Feed,Packs/FeedRecordedFuture/Integrations/FeedRecordedFuture/FeedRecordedFuture.yml,Recorded Future,,noydavidi,,,,,,,,,,,,,,
 RecordedFutureEventCollector,Packs/RecordedFuture/Integrations/RecordedFutureEventCollector/RecordedFutureEventCollector.yml,Recorded Future,,noydavidi,,,,,,,,,,,,,,
 RedCanary,Packs/RedCanary/Integrations/RedCanary/RedCanary.yml,Zscaler,,jlevypaloalto,,,,,,,,,,,,,,
-Redmine,Packs/Redmine/Integrations/Redmine/Redmine.yml,Redmine,,YuvHayun,,,,,,,,,,,,,,
+Redmine,Packs/Redmine/Integrations/Redmine/Redmine.yml,Redmine,,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""key""}}],""other_connection"":[""insecure"",""url""]}","[""Automation""]","{""integration"":""Redmine"",""commands"":{""test-module"":[],""redmine-issue-create"":[""project_id""],""redmine-issue-update"":[""project_id""],""redmine-issue-list"":[""project_id""],""redmine-issue-get"":[],""redmine-issue-delete"":[],""redmine-issue-watcher-add"":[],""redmine-issue-watcher-remove"":[],""redmine-project-list"":[],""redmine-custom-field-list"":[],""redmine-user-id-list"":[],""redmine-status-id-list"":[],""redmine-priority-id-list"":[],""redmine-tracker-id-list"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[""project_id""]}",,,,,,,,
 ReliaQuest GreyMatter DRP Event Collector,Packs/DigitalShadows/Integrations/ReliaQuestGreyMatterDRPEventCollector/ReliaQuestGreyMatterDRPEventCollector.yml,ReliaQuest,,noydavidi,,,,,,,,,,,,,,
 ReliaQuest GreyMatter DRP Incidents,Packs/DigitalShadows/Integrations/ReliaQuestGreyMatterDRPIncidents/ReliaQuestGreyMatterDRPIncidents.yml,ReliaQuest,,noydavidi,,,,,,,,,,,,,,
 Remedy AR,Packs/Remedy_AR/Integrations/RemedyAR/RemedyAR.yml,BMC,,jlevypaloalto,,,,,,,,,,,,,,
@@ -1098,7 +1055,7 @@ SMIME Messaging,Packs/SMIME_Messaging/Integrations/SMIME_Messaging/SMIME_Messagi
 SaaS Security Event Collector,Packs/PrismaSaasSecurity/Integrations/SaasSecurityEventCollector/SaasSecurityEventCollector.yml,SaaS Security (Aperture),,noydavidi,,,,,,,,,,,,,,
 SaasSecurity,Packs/PrismaSaasSecurity/Integrations/SaasSecurity/SaasSecurity.yml,SaaS Security (Aperture),,noydavidi,,,,,,,,,,,,,,
 SafeNetTrustedAccessEventCollector,Packs/SafeNet_Trusted_Access/Integrations/SafeNetTrustedAccessEventCollector/SafeNetTrustedAccessEventCollector.yml,Thales,,joeymizrahi,,,,,,,,,,,,,,
-SailPointIdentityNowEventCollector,Packs/SailPointIdentityNow/Integrations/SailPointIdentityNowEventCollector/SailPointIdentityNowEventCollector.yml,SailPoint,,YuvHayun,,,,,,,,,,,,,,
+SailPointIdentityNowEventCollector,Packs/SailPointIdentityNow/Integrations/SailPointIdentityNowEventCollector/SailPointIdentityNowEventCollector.yml,SailPoint,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""OAuth"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""client_id"",""credentials.password"":""client_secret""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[""Automation"",""Log Collection""]","{""integration"":""SailPoint IdentityNow Event Collector"",""commands"":{""test-module"":[],""fetch-events"":[""limit"",""look_back""],""identitynow-get-events"":[]}}",{},✅,"{""general_configurations"":[],""Log Collection"":[""limit"",""look_back""]}",,,,,,,,
 Sample Incident Generator,Packs/sampleSiem/Integrations/SampleIncidentGenerator/SampleIncidentGenerator.yml,Cortex Automation Developer Tools,,jlevypaloalto,,,,,,,,,,,,,,
 SaviyntEICEventCollector,Packs/SaviyntEIC/Integrations/SaviyntEICEventCollector/SaviyntEICEventCollector.yml,Saviynt,,juschwartz,,,,,,,,,,,,,,
 SentinelOneEventCollector,Packs/SentinelOne/Integrations/SentinelOneEventCollector/SentinelOneEventCollector.yml,SentinelOne,,jlevypaloalto,,,,,,,,,,,,,,
@@ -1116,7 +1073,7 @@ Skyhigh Security,Packs/SkyhighSecurity/Integrations/SkyhighSecurity/SkyhighSecur
 Slack Event Collector,Packs/Slack/Integrations/SlackEventCollector/SlackEventCollector.yml,Slack Automation and Collection,,hyaffe839,,,,,,,,,,,,,,
 Slack IAM,Packs/Slack/Integrations/Slack_IAM/Slack_IAM.yml,Slack Automation and Collection,,hyaffe839,,,,,,,,,,,,,,
 SlackV3,Packs/Slack/Integrations/SlackV3/SlackV3.yml,Slack Automation and Collection,,hyaffe839,,,,,,,,,,,,,,
-Snowflake,Packs/Snowflake/Integrations/Snowflake/Snowflake.yml,Snowflake,,YuvHayun,,,,,,,,,,,,,,
+Snowflake,Packs/Snowflake/Integrations/Snowflake/Snowflake.yml,Snowflake,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Account Credentials"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""account"",""authenticator"",""insecure"",""proxy"",""region""]}","[""Automation"",""Fetch Issues""]","{""integration"":""Snowflake"",""commands"":{""test-module"":[],""snowflake-query"":[""warehouse"",""database"",""schema"",""role"",""limit""],""snowflake-update"":[""warehouse"",""database"",""schema"",""role""],""fetch-incidents"":[""fetch_query"",""datetime_column"",""incident_name_column"",""fetch_time"",""limit""]}}",{},✅,"{""general_configurations"":[""limit""],""Automation"":[""warehouse"",""database"",""schema"",""role""],""Fetch Issues"":[""fetch_query"",""datetime_column"",""incident_name_column"",""fetch_time""]}",,,,,,,,
 SolarWinds,Packs/SolarWinds/Integrations/SolarWinds/SolarWinds.yml,SolarWinds,,juschwartz,,,,,,,,,,,,,,
 Sophos Central,Packs/SophosCentral/Integrations/SophosCentral/SophosCentral.yml,Sophos,,noydavidi,,,,,,,,,,,,,,
 SpamhausFeed,Packs/FeedSpamhaus/Integrations/FeedSpamhaus/FeedSpamhaus.yml,Samhaus,,jlevypaloalto,,,,,,,,,,,,,,
@@ -1140,7 +1097,7 @@ TAXII 2 Feed,Packs/FeedTAXII/Integrations/FeedTAXII2/FeedTAXII2.yml,TAXII,,jlevy
 TAXII Server,Packs/TAXIIServer/Integrations/TAXIIServer/TAXIIServer.yml,TAXII,,jlevypaloalto,,,,,,,,,,,,,,
 TAXII2 Server,Packs/TAXIIServer/Integrations/TAXII2Server/TAXII2Server.yml,TAXII,,jlevypaloalto,,,,,,,,,,,,,,
 TAXIIFeed,Packs/FeedTAXII/Integrations/FeedTAXII/FeedTAXII.yml,TAXII,,jlevypaloalto,,,,,,,,,,,,,,
-TOPdesk,Packs/TOPdesk/Integrations/TOPdesk/TOPdesk.yml,TOPdesk,,YuvHayun,,,,,,,,,,,,,,
+TOPdesk,Packs/TOPdesk/Integrations/TOPdesk/TOPdesk.yml,TOPdesk,,YuvHayun,"{""auth_types"":[{""type"":""Plain"",""name"":""Basic Auth"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[""Automation"",""Fetch Issues""]","{""integration"":""TOPdesk"",""commands"":{""test-module"":[],""topdesk-subcategories-list"":[],""topdesk-categories-list"":[],""topdesk-entry-types-list"":[],""topdesk-call-types-list"":[],""topdesk-deescalation-reasons-list"":[],""topdesk-escalation-reasons-list"":[],""topdesk-archiving-reasons-list"":[],""topdesk-incident-attachments-list"":[],""topdesk-persons-list"":[],""topdesk-operators-list"":[],""topdesk-branches-list"":[],""topdesk-incidents-list"":[],""topdesk-assets-list"":[],""topdesk-asset-update"":[],""topdesk-incident-create"":[""defaultCallerId""],""topdesk-incident-update"":[""defaultCallerId""],""topdesk-incident-escalate"":[],""topdesk-incident-deescalate"":[],""topdesk-incident-archive"":[],""topdesk-incident-unarchive"":[],""topdesk-incident-attachment-upload"":[],""topdesk-incident-actions-list"":[],""get-mapping-fields"":[],""get-remote-data"":[],""get-modified-remote-data"":[""max_fetch""],""update-remote-system"":[],""fetch-incidents"":[""first_fetch"",""max_fetch"",""fetch_query""]}}",{},✅,"{""general_configurations"":[],""Automation"":[""defaultCallerId""],""Fetch Issues"":[""first_fetch"",""max_fetch"",""fetch_query""]}",,,,,,,,
 Tanium Threat Response,Packs/TaniumThreatResponse/Integrations/TaniumThreatResponse/TaniumThreatResponse.yml,Tanium,,jlevypaloalto,,,,,,,,,,,,,,
 Tanium Threat Response v2,Packs/TaniumThreatResponse/Integrations/TaniumThreatResponseV2/TaniumThreatResponseV2.yml,Tanium,,jlevypaloalto,,,,,,,,,,,,,,
 Tanium v2,Packs/Tanium/Integrations/Tanium_v2/Tanium_v2.yml,Tanium,,jlevypaloalto,,,,,,,,,,,,,,
@@ -1155,7 +1112,7 @@ ThreatExchange v2,Packs/ThreatExchange/Integrations/ThreatExchangeV2/ThreatExcha
 ThreatFox Feed,Packs/FeedThreatFox/Integrations/FeedThreatFox/FeedThreatFox.yml,abuse.ch,,hyaffe839,,,,,,,,,,,,,,
 ThreatGridv2,Packs/ThreatGrid/Integrations/ThreatGridv2/ThreatGridv2.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
 ThreatMiner,Packs/ThreatMiner/Integrations/ThreatMiner/ThreatMiner.yml,ThreatMiner.org,,joeymizrahi,,,,,,,,,,,,,,
-ThreatQ v2,Packs/ThreatQ/Integrations/ThreatQ_v2/ThreatQ_v2.yml,Securonix,,YuvHayun,,,,,,,,,,,,,,
+ThreatQ v2,Packs/ThreatQ/Integrations/ThreatQ_v2/ThreatQ_v2.yml,Securonix,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""OAuth"",""interpolated"":true,""xsoar_param_map"":{""client_id"":""client_id"",""credentials.identifier"":""email"",""credentials.password"":""password""}}],""other_connection"":[""insecure"",""proxy"",""serverUrl""]}","[""Automation""]","{""integration"": ""ThreatQ_v2"", ""commands"": {""test-module"": [""threshold""], ""domain"": [""threshold"", ""integrationReliability""], ""email"": [""threshold"", ""integrationReliability""], ""file"": [""threshold"", ""integrationReliability""], ""ip"": [""threshold"", ""integrationReliability""], ""url"": [""threshold"", ""integrationReliability""], ""threatq-add-attribute"": [], ""threatq-add-source"": [], ""threatq-advanced-search"": [], ""threatq-create-adversary"": [], ""threatq-create-event"": [], ""threatq-create-indicator"": [], ""threatq-delete-attribute"": [], ""threatq-delete-object"": [], ""threatq-delete-source"": [], ""threatq-download-file"": [], ""threatq-edit-adversary"": [], ""threatq-edit-event"": [], ""threatq-edit-indicator"": [], ""threatq-get-all-adversaries"": [], ""threatq-get-all-events"": [], ""threatq-get-all-indicators"": [], ""threatq-get-related-adversaries"": [], ""threatq-get-related-events"": [], ""threatq-get-related-indicators"": [], ""threatq-link-objects"": [], ""threatq-modify-attribute"": [], ""threatq-search-by-id"": [""threshold"", ""integrationReliability""], ""threatq-search-by-name"": [], ""threatq-unlink-objects"": [], ""threatq-update-score"": [], ""threatq-update-status"": [], ""threatq-upload-file"": []}}",{},✅,"{""general_configurations"":[],""Automation"":[""threshold"",""integrationReliability""]}",,,,,,,,
 ThreatX,Packs/ThreatX/Integrations/ThreatX/ThreatX.yml,ThreatX,,juschwartz,,,,,,,,,,,,,,
 Tidy,Packs/Tidy/Integrations/Tidy/Tidy.yml,Tidy,,jlevypaloalto,,,,,,,,,,,,,,
 Tor Exit Addresses Feed,Packs/FeedTorExitAddresses/Integrations/FeedTorExitAddresses/FeedTorExitAddresses.yml,Tor Exit Adress,,noydavidi,,,,,,,,,,,,,,
@@ -1174,14 +1131,14 @@ Unit 42 Intelligence,Packs/Unit42ThreatIntelligencebyPaloAltoNetworks/Integratio
 VMware,Packs/VMware/Integrations/VMware/VMware.yml,VMware Automation and Colection,,jlevypaloalto,,,,,,,,,,,,,,
 VMware Carbon Black EDR v2,Packs/Carbon_Black_Enterprise_Response/Integrations/CarbonBlackResponseV2/CarbonBlackResponseV2.yml,VMware Automation and Colection,,jlevypaloalto,,,,,,,,,,,,,,
 VMware Workspace ONE UEM (AirWatch MDM),Packs/VMwareWorkspaceONEUEM/Integrations/VMwareWorkspaceONEUEM/VMwareWorkspaceONEUEM.yml,VMware Automation and Colection,,jlevypaloalto,,,,,,,,,,,,,,
-VectraAIEventCollector,Packs/Vectra_AI/Integrations/VectraAIEventCollector/VectraAIEventCollector.yml,Vectra,,YuvHayun,,,,,,,,,,,,,,
+VectraAIEventCollector,Packs/Vectra_AI/Integrations/VectraAIEventCollector/VectraAIEventCollector.yml,Vectra,,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""key""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[""Automation"",""Log Collection""]","{""integration"":""Vectra AI Event Collector"",""commands"":{""test-module"":[],""fetch-events"":[""first_fetch"",""fetch_limit""],""vectra-get-events"":[""first_fetch""]}}",{},✅,"{""general_configurations"":[],""Log Collection"":[""first_fetch"",""fetch_limit""]}",,,,,,,,
 VenafiTLSProtect,Packs/Venafi/Integrations/VenafiV2/VenafiV2.yml,CyberArk,,hyaffe839,,,,,,,,,,,,,,
 VercaraUltraDNS,Packs/VercaraUltraDNS/Integrations/VercaraUltraDNS/VercaraUltraDNS.yml,digicert,,juschwartz,,,,,,,,,,,,,,
 Verodin,Packs/Verodin/Integrations/Verodin/Verodin.yml,Google SecOps,,jlevypaloalto,,,,,,,,,,,,,,
 VersaDirector,Packs/VersaDirector/Integrations/VersaDirector/VersaDirector.yml,Versa Networks,,noydavidi,,,,,,,,,,,,,,
 Vertica,Packs/Vertica/Integrations/Vertica/Vertica.yml,OpenText Vertica,,hyaffe839,,,,,,,,,,,,,,
 VulnDB,Packs/VulnDB/Integrations/VulnDB/VulnDB.yml,VulnDB,,joeymizrahi,,,,,,,,,,,,,,
-WhatsMyBrowser,Packs/WhatIsMyBrowser/Integrations/WhatIsMyBrowser/WhatIsMyBrowser.yml,WhatsMyBrowser.org,,YuvHayun,,,,,,,,,,,,,,
+WhatsMyBrowser,Packs/WhatIsMyBrowser/Integrations/WhatIsMyBrowser/WhatIsMyBrowser.yml,WhatsMyBrowser.org,,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""credentials_api_key.password"":""key""}}],""other_connection"":[""insecure"",""proxy"",""url""]}","[""Automation""]","{""integration"":""WhatIsMyBrowser"",""commands"":{""test-module"":[],""ua-parse"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",,,,,,,,
 Whois,Packs/Whois/Integrations/Whois/Whois.yml,Whois,,juschwartz,,,,,,,,,,,,,,
 WildFire-v2,Packs/Palo_Alto_Networks_WildFire/Integrations/Palo_Alto_Networks_WildFire_v2/Palo_Alto_Networks_WildFire_v2.yml,WildFire Cloud,,jlevypaloalto,,,,,,,,,,,,,,
 WithSecureEventCollector,Packs/WithSecure/Integrations/WithSecureEventCollector/WithSecureEventCollector.yml,WithSecure,,noydavidi,,,,,,,,,,,,,,
@@ -1204,16 +1161,11 @@ ZscalerZIdentity,Packs/Zscaler/Integrations/ZscalerZIdentity/ZscalerZIdentity.ym
 abuse.ch SSL Blacklist Feed,Packs/Feedsslabusech/Integrations/Feedsslabusech/Feedsslabusech.yml,abuse.ch,,hyaffe839,,,,,,,,,,,,,,
 carbonblackliveresponse,Packs/Carbon_Black_Enterprise_Live_Response/Integrations/Carbonblackliveresponse/Carbonblackliveresponse.yml,Carbon Black,,hyaffe839,,,,,,,,,,,,,,
 checkpointdome9,Packs/CheckPointDome9/Integrations/CheckPointDome9/CheckPointDome9.yml,Checkpoint Firewall,,hyaffe839,,,,,,,,,,,,,,
-dnstwist,Packs/dnstwist/Integrations/dnstwist/dnstwist.yml,dnstwist,,YuvHayun,,,,,,,,,,,,,,
+dnstwist,Packs/dnstwist/Integrations/dnstwist/dnstwist.yml,dnstwist,,YuvHayun,"{""auth_types"":[],""other_connection"":[]}","[""Automation""]","{""integration"":""dnstwist"",""commands"":{""test-module"":[],""dnstwist-domain-variations"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",,,,,,,,
 fireeye,Packs/fireeye/Integrations/Fireeye/Fireeye.yml,Trellix Network,,jlevypaloalto,,,,,,,,,,,,,,
 fortimail,Packs/Fortimail/Integrations/Fortimail/Fortimail.yml,Fortinet,,hyaffe839,,,,,,,,,,,,,,
 fortiweb_vm,Packs/FortinetFortiwebVM/Integrations/FortinetFortiwebVM/FortinetFortiwebVM.yml,Fortinet FortiWeb VM,,juschwartz,,,,,,,,,,,,,,
-google-vault,Packs/GoogleVault/Integrations/GoogleVault/GoogleVault.yml,Google Workspace Automation and Collection,,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""gsuite_credentials.identifier"":""subject_email"",""auth_json_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
-  ""Automation""
-]","{""integration"":""google-vault"",""commands"":{""test-module"":[]}}",{},✅,"{
-  ""general_configurations"": [],
-  ""Automation"": []
-}",,,,,,,,
+google-vault,Packs/GoogleVault/Integrations/GoogleVault/GoogleVault.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""gsuite_credentials.identifier"":""subject_email"",""auth_json_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[""Automation""]","{""integration"":""Google Vault"",""commands"":{""test-module"":[]}}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
 iManageThreatManager,Packs/iManageThreatManager/Integrations/iManageThreatManager/iManageThreatManager.yml,iManage,,jlevypaloalto,,,,,,,,,,,,,,
 icebrg,Packs/ICEBRG/Integrations/Icebrg/Icebrg.yml,Gigamon,,noydavidi,,,,,,,,,,,,,,
 ipinfo_v2,Packs/ipinfo/Integrations/ipinfo_v2/ipinfo_v2.yml,IPInfo.io,,hyaffe839,,,,,,,,,,,,,,
@@ -1223,18 +1175,18 @@ nmap,Packs/Nmap/Integrations/Nmap/Nmap.yml,nmap,,joeymizrahi,,,,,,,,,,,,,,
 qualys_fim,Packs/QualysFIM/Integrations/QualysFIM/QualysFIM.yml,Qualys,,noydavidi,,,,,,,,,,,,,,
 rapid7appsec,Packs/Rapid7AppSec/Integrations/Rapid7AppSec/Rapid7AppSec.yml,Rapid7,,jlevypaloalto,,,,,,,,,,,,,,
 sophos_firewall,Packs/SophosXGFirewall/Integrations/SophosXGFirewall/SophosXGFirewall.yml,Sophos,,noydavidi,,,,,,,,,,,,,,
-trustwave secure email gateway,Packs/TrustwaveSEG/Integrations/TrustwaveSEG/TrustwaveSEG.yml,LevelBlue,,YuvHayun,,,,,,,,,,,,,,
+trustwave secure email gateway,Packs/TrustwaveSEG/Integrations/TrustwaveSEG/TrustwaveSEG.yml,LevelBlue,,YuvHayun,"{""auth_types"":[{""type"":""Plain"",""name"":""Basic Auth"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""api_port"",""config_port"",""host"",""insecure"",""proxy""]}","[""Automation""]","{""integration"":""Trustwave SEG"",""commands"":{""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",,,,,,,,
 Forcepoint DLP Event Collector,Packs/ForcepointDLP/Integrations/ForcepointEventCollector/ForcepointEventCollector.yml,Forcepoint,,jlevypaloalto,,,,,,,,,,,,,,
 GenericAPIEventCollector,Packs/GenericAPIEventCollector/Integrations/GenericAPIEventCollector/GenericAPIEventCollector.yml,Generic API Event Collector,,juschwartz,,,,,,,,,,,,,,
 IBM Storage Scale,Packs/IBMStorageScale/Integrations/IBMStorageScale/IBMStorageScale.yml,IBM Storage Scale,,jlevypaloalto,,,,,,,,,,,,,,
 Kaspersky Security Center,Packs/KasperskySecurityCenter/Integrations/KasperskySecurityCenter/KasperskySecurityCenter.yml,Kaspersky,,noydavidi,,,,,,,,,,,,,,
 Palo Alto Networks Security Advisories,Packs/PaloAltoNetworks_SecurityAdvisories/Integrations/PaloAltoNetworksSecurityAdvisories/PaloAltoNetworksSecurityAdvisories.yml,PAN PSIRT Advisories,,hyaffe839,,,,,,,,,,,,,,
-PowerShell Remoting,Packs/PowershellRemoting/Integrations/PowerShellRemoting/PowerShellRemoting.yml,Microsoft Windows Tools,,YuvHayun,,,,,,,,,,,,,,
+PowerShell Remoting,Packs/PowershellRemoting/Integrations/PowerShellRemoting/PowerShellRemoting.yml,Microsoft Windows Tools,,YuvHayun,"{""auth_types"":[{""type"":""Plain"",""name"":""WinRM Credentials"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""auth_method"",""dns"",""domain"",""host"",""insecure"",""ssl""]}","[""Automation""]","{""integration"":""PowerShell Remoting"",""commands"":{""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",,,,,,,,
 QuestKace,Packs/QuestKace/Integrations/QuestKace/QuestKace.yml,Quest KACE,,joeymizrahi,,,,,,,,,,,,,,
 Symantec Blue Coat Content and Malware Analysis,Packs/SymantecBlueCoatMalwareAnalysis/Integrations/SymantecBlueCoatMalwareAnalysis/SymantecBlueCoatMalwareAnalysis.yml,Broadcom,,hyaffe839,,,,,,,,,,,,,,
-Telegram_Beta,Packs/Telegram/Integrations/Telegram/Telegram.yml,Telegram,,YuvHayun,,,,,,,,,,,,,,
+Telegram_Beta,Packs/Telegram/Integrations/Telegram/Telegram.yml,Telegram,,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""Bot Token"",""interpolated"":true,""xsoar_param_map"":{""credentials_api_token.password"":""key""}}],""other_connection"":[""proxy""]}","[""Automation""]","{""integration"":""Telegram"",""commands"":{""test-module"":[],""telegram-send-message"":[],""telegram-list-users"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",,,,,,,,
 Trend Micro Deep Discovery Analyzer,Packs/TrendMicroDDA/Integrations/TrendMicroDDA/TrendMicroDDA.yml,TrendAI,,hyaffe839,,,,,,,,,,,,,,
 UptycsEventCollector,Packs/Uptycs/Integrations/UptycsEventCollector/UptycsEventCollector.yml,Uptycs,,juschwartz,,,,,,,,,,,,,,
-Windows Remote Management,Packs/WinRM/Integrations/WindowsRemoteManagement/WindowsRemoteManagement.yml,Microsoft Windows Tools,,YuvHayun,,,,,,,,,,,,,,
+Windows Remote Management,Packs/WinRM/Integrations/WindowsRemoteManagement/WindowsRemoteManagement.yml,Microsoft Windows Tools,,YuvHayun,"{""auth_types"":[{""type"":""Plain"",""name"":""WinRM Credentials"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""auth_type"",""default_host"",""realm""]}","[""Automation""]","{""integration"":""Windows Remote Management (Beta)"",""commands"":{""test-module"":[],""winrm-run-process"":[""decode""],""winrm-run-powershell"":[""decode""]}}",{},✅,"{""general_configurations"":[],""Automation"":[""decode""]}",,,,,,,,
 Workday_IAM_Event_Generator,Packs/Workday/Integrations/WorkdayIAMEventsGenerator/WorkdayIAMEventsGenerator.yml,Workday,,hyaffe839,,,,,,,,,,,,,,
 WorkdaySignonEventGenerator,Packs/Workday/Integrations/WorkdaySignonEventGenerator/WorkdaySignonEventGenerator.yml,Workday,,hyaffe839,,,,,,,,,,,,,,
