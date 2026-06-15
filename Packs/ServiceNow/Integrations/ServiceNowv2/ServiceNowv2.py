@@ -1908,7 +1908,7 @@ def get_ticket_notes_command(
 
 def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
     entries = []
-    comment_format = params.get("comment_format")
+    comment_format = params.get("comment_format") or "source"
     for note in notes:
         if "Mirrored from Cortex XSOAR" not in note.get("value", ""):
             comments_context = {"comments_and_work_notes": note.get("value")}
@@ -2991,7 +2991,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     demisto.debug(f"Getting update for remote {ticket_id}")
     last_update = arg_to_timestamp(arg=args.get("lastUpdate"), arg_name="lastUpdate", required=True)
     demisto.debug(f"last_update is {last_update}")
-    mark_attachments_as_note = argToBoolean(params.get("mark_attachments_as_note"))
+    mark_attachments_as_note = argToBoolean(params.get("mark_attachments_as_note") or "false")
 
     ticket_type = client.ticket_type
     result = client.get(ticket_type, ticket_id, use_display_value=client.use_display_value)
