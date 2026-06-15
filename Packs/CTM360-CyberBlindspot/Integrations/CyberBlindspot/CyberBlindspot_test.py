@@ -14,6 +14,9 @@ from CyberBlindspot import (
     CBS_CRED_FIELDS,
     CBS_DOMAIN_INFRINGE_FIELDS,
     CBS_MALWARE_LOG_FIELDS,
+    CBS_SMF_FIELDS,
+    CBS_MM_FIELDS,
+    CBS_GS_FIELDS,
 )
 
 """CONSTANTS"""
@@ -66,6 +69,24 @@ MODULES = [
         "CyberBlindspot.IncidentList",
         "CyberBlindspot.RemoteIncident",
         CBS_MALWARE_LOG_FIELDS,
+    ),
+    (
+        "social_media_fraud",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_SMF_FIELDS,
+    ),
+    (
+        "money_mules",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_MM_FIELDS,
+    ),
+    (
+        "gambling_sites",
+        "CyberBlindspot.IncidentList",
+        "CyberBlindspot.RemoteIncident",
+        CBS_GS_FIELDS,
     ),
 ]
 
@@ -315,6 +336,23 @@ def test_convert_time_string(mock_input, mock_args, mock_asserts, capfd, caplog)
 
 
 @pytest.mark.parametrize(
+    "value,expected",
+    [
+        (1642607418000, 1642607418000),
+        ("1642607418000", 1642607418000),
+        ("2022-03-01T13:02:00", 1646139720000),
+        ("", ""),
+        (None, None),
+    ],
+)
+def test_normalize_timestamp(value, expected):
+    """ISO and numeric-string CBS timestamps must normalize to epoch milliseconds."""
+    from CyberBlindspot import normalize_timestamp
+
+    assert normalize_timestamp(value) == expected
+
+
+@pytest.mark.parametrize(
     "mock_input_file,mock_assert_file,mock_module",
     [
         ("fetch_incidents_response_valid.json", "incident_list_cmd_result_valid.json", MODULES[0][0]),
@@ -323,6 +361,9 @@ def test_convert_time_string(mock_input, mock_args, mock_asserts, capfd, caplog)
         ("fetch_domains_response_valid.json", "domain_list_cmd_result_valid.json", MODULES[3][0]),
         ("fetch_subdomains_response_valid.json", "subdomain_list_cmd_result_valid.json", MODULES[4][0]),
         ("fetch_malware_logs_response_valid.json", "malware_logs_list_cmd_result_valid.json", MODULES[5][0]),
+        ("fetch_social_media_fraud_response_valid.json", "social_media_fraud_list_cmd_result_valid.json", MODULES[6][0]),
+        ("fetch_money_mules_response_valid.json", "money_mules_list_cmd_result_valid.json", MODULES[7][0]),
+        ("fetch_gambling_sites_response_valid.json", "gambling_sites_list_cmd_result_valid.json", MODULES[8][0]),
     ],
 )
 def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module):
@@ -338,11 +379,11 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module)
 
     mock_fetched_incident = load_mock_response(mock_input_file)[0]
     mock_assert = load_mock_response(mock_assert_file)[0]
-    del mock_assert["rawJson"]
+    mock_assert.pop("rawJson", None)
 
     with patch("CyberBlindspot.INSTANCE.module", new=mock_module):
         result = map_and_create_incident(mock_fetched_incident)
-        del result["rawJson"]
+        result.pop("rawJson", None)
         logging.debug(result)
         logging.debug(mock_assert)
         assert result == mock_assert
@@ -369,6 +410,15 @@ def test_map_and_create_incident(mock_input_file, mock_assert_file, mock_module)
         ("", ([], []), ([], []), MODULES[5][0]),
         ("fetch_malware_logs_response_valid.json", 2, ([], []), MODULES[5][0]),
         ("fetch_malware_logs_response_valid.json", -2, ([], []), MODULES[5][0]),
+        ("", ([], []), ([], []), MODULES[6][0]),
+        ("fetch_social_media_fraud_response_valid.json", 2, ([], []), MODULES[6][0]),
+        ("fetch_social_media_fraud_response_valid.json", -2, ([], []), MODULES[6][0]),
+        ("", ([], []), ([], []), MODULES[7][0]),
+        ("fetch_money_mules_response_valid.json", 2, ([], []), MODULES[7][0]),
+        ("fetch_money_mules_response_valid.json", -2, ([], []), MODULES[7][0]),
+        ("", ([], []), ([], []), MODULES[8][0]),
+        ("fetch_gambling_sites_response_valid.json", 2, ([], []), MODULES[8][0]),
+        ("fetch_gambling_sites_response_valid.json", -2, ([], []), MODULES[8][0]),
     ],
 )
 def test_deduplicate_and_create_incidents(
@@ -537,6 +587,9 @@ def test_test_module_ok_when_module_to_use_missing(mock_client, mocker):
         ("", "incidents"),
         ("Incidents", "incidents"),
         ("Malware Logs", "malware_logs"),
+        ("Social Media Fraud", "social_media_fraud"),
+        ("Gambling Sites", "gambling_sites"),
+        ("Money Mules", "money_mules"),
         ("legacy-unknown", "incidents"),
     ],
 )
@@ -713,6 +766,86 @@ def test_map_and_create_incident_severity_by_platform(is_xsiam_platform, expecte
                     "operating_system": "The operating system of the computer that was compromised.",
                     "malware_path": "The path of the malware.",
                     "url_path": "The URL path of the malware.",
+                }
+            },
+        ),
+        (
+            MODULES[6][0],
+            {
+                "CyberBlindspot Incident": {
+                    "platform": "Social network platform (e.g. Twitter).",
+                    "subject": "Subject URL or profile link.",
+                    "risk_score": "Numeric risk score from CBS.",
+                    "risks": "Risk indicators associated with the finding.",
+                    "incident_status": "Platform-specific incident status.",
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
+                }
+            },
+        ),
+        (
+            MODULES[7][0],
+            {
+                "CyberBlindspot Incident": {
+                    "money_mule_id": "CBS money mule finding ID.",
+                    "account_identifier": "Account identifier tied to the mule.",
+                    "suspect_names": "Names associated with the money mule.",
+                    "suspect_emails": "Email addresses associated with the money mule.",
+                    "suspect_phones": "Phone numbers associated with the money mule.",
+                    "transfer_amount": "Transfer amount when present.",
+                    "transfer_currency": "Currency code for the transfer.",
+                    "bank_account_holder_name": "Name on the bank account.",
+                    "bank_name": "Bank name tied to the mule.",
+                    "bank_account_country": "Country of the bank account.",
+                    "bic": "Bank Identifier Code.",
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
+                }
+            },
+        ),
+        (
+            MODULES[8][0],
+            {
+                "CyberBlindspot Incident": {
+                    "finding_id": "CBS gambling-site finding ID.",
+                    "url": "Primary gambling site URL.",
+                    "submitted_url": "URL submitted to CBS for scanning.",
+                    "landing_url": "Landing page URL observed for the site.",
+                    "title": "Page title observed during scan.",
+                    "resolving_ip": "Resolved IP for the site.",
+                    "tags": "Tags applied to the finding.",
+                    "status_code": "HTTP status code from scan.",
+                    "url_status": "URL reachability status.",
+                    "scan_status": "Scan completion status.",
+                    "enrichment": "DNS enrichment payload.",
+                    "external_links": "External links discovered.",
+                    "internal_links": "Internal links discovered.",
+                    "first_seen": "The creation date of the incident",
+                    "last_seen": "The date the incident got last updated",
+                    "timestamp": "The timestamp of when the record was created",
+                    "brand": "The organization the incident belongs to",
+                    "status": "Incident's current state of affairs",
+                    "severity": "The severity of the incident",
+                    "remarks": "Remarks about the incident",
+                    "type": "Incident type",
+                    "id": "Unique ID for the incident record",
+                    "external_link": "External link to the remote platform",
                 }
             },
         ),
@@ -902,6 +1035,48 @@ def test_fetch_incidents_command(response_files_names, mock_params, mock_module,
             False,
             MODULES[5][0],
             MODULES[5][1],
+        ),
+        (
+            "fetch_social_media_fraud_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "social_media_fraud_list_cmd_result_valid.json",
+            MODULES[6][0],
+            MODULES[6][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[6][0],
+            MODULES[6][1],
+        ),
+        (
+            "fetch_money_mules_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "money_mules_list_cmd_result_valid.json",
+            MODULES[7][0],
+            MODULES[7][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[7][0],
+            MODULES[7][1],
+        ),
+        (
+            "fetch_gambling_sites_response_valid.json",
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            "gambling_sites_list_cmd_result_valid.json",
+            MODULES[8][0],
+            MODULES[8][1],
+        ),
+        (
+            False,
+            {"maxHits": "3", "order": "asc", "dateFrom": "23-10-2023 07:00", "dateTo": "23-10-2023 23:00"},
+            False,
+            MODULES[8][0],
+            MODULES[8][1],
         ),
     ],
 )
@@ -1131,6 +1306,42 @@ def test_ctm360_cbs_incident_list_command(
             {},
             MODULES[5],
         ),
+        (
+            "social_media_fraud_details_response_valid.json",
+            {"ticketId": "BI-A81ET1215"},
+            "social_media_fraud_details_response_valid.json",
+            MODULES[6],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[6],
+        ),
+        (
+            "money_mules_details_response_valid.json",
+            {"ticketId": "MM-C7FDB1092"},
+            "money_mules_details_response_valid.json",
+            MODULES[7],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[7],
+        ),
+        (
+            "gambling_sites_details_response_valid.json",
+            {"ticketId": "GS-162RTEE07"},
+            "gambling_sites_details_response_valid.json",
+            MODULES[8],
+        ),
+        (
+            False,
+            {"ticketId": "COMX165756654321"},
+            {},
+            MODULES[8],
+        ),
     ],
 )
 def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock_asserts, mock_module, mock_client, mocker):
@@ -1142,13 +1353,17 @@ def test_ctm360_cbs_incident_details_command(response_file_name, mock_args, mock
     Then:
         - Ensure result is as expected.
     """
-    from CyberBlindspot import ctm360_cbs_details_command, Instance
+    from CyberBlindspot import ctm360_cbs_details_command, Instance, normalize_timestamp
 
     mock_instance = Instance(module=mock_module)
 
     with patch("CyberBlindspot.INSTANCE", new=mock_instance):
         patched_response = load_mock_response(response_file_name) if response_file_name else {}
         mocker.patch.object(mock_client, "fetch_incident", return_value=patched_response)
+        if isinstance(mock_asserts, str):
+            mock_asserts = load_mock_response(mock_asserts)
+            if mock_asserts.get("timestamp", ""):
+                mock_asserts = {**mock_asserts, "timestamp": str(normalize_timestamp(mock_asserts["timestamp"]))}
         cmd_results = ctm360_cbs_details_command(mock_client, mock_args)
         assert cmd_results.to_context().get("Contents") == mock_asserts
 

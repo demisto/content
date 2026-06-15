@@ -44,6 +44,9 @@ CBS_MODULE_DISPLAY_TO_TYPE = {
     "Malware Logs": "malware_logs",
     "Domain Infringement": "domain_infringement",
     "Subdomain Infringement": "subdomain_infringement",
+    "Social Media Fraud": "social_media_fraud",
+    "Gambling Sites": "gambling_sites",
+    "Money Mules": "money_mules",
 }
 CBS_DEFAULT_MODULE_DISPLAY = "Incidents"
 CBS_DEFAULT_MODULE_TYPE = "incidents"
@@ -114,6 +117,47 @@ CBS_DOMAIN_INFRINGE_FIELDS = [
     *DEFAULT_FIELDS,
 ]
 
+CBS_SMF_FIELDS = [
+    {"name": "platform", "description": "Social network platform (e.g. Twitter)."},
+    {"name": "subject", "description": "Subject URL or profile link."},
+    {"name": "risk_score", "description": "Numeric risk score from CBS."},
+    {"name": "risks", "description": "Risk indicators associated with the finding."},
+    {"name": "incident_status", "description": "Platform-specific incident status."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_MM_FIELDS = [
+    {"name": "money_mule_id", "description": "CBS money mule finding ID."},
+    {"name": "account_identifier", "description": "Account identifier tied to the mule."},
+    {"name": "suspect_names", "description": "Names associated with the money mule."},
+    {"name": "suspect_emails", "description": "Email addresses associated with the money mule."},
+    {"name": "suspect_phones", "description": "Phone numbers associated with the money mule."},
+    {"name": "transfer_amount", "description": "Transfer amount when present."},
+    {"name": "transfer_currency", "description": "Currency code for the transfer."},
+    {"name": "bank_account_holder_name", "description": "Name on the bank account."},
+    {"name": "bank_name", "description": "Bank name tied to the mule."},
+    {"name": "bank_account_country", "description": "Country of the bank account."},
+    {"name": "bic", "description": "Bank Identifier Code."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_GS_FIELDS = [
+    {"name": "finding_id", "description": "CBS gambling-site finding ID."},
+    {"name": "url", "description": "Primary gambling site URL."},
+    {"name": "submitted_url", "description": "URL submitted to CBS for scanning."},
+    {"name": "landing_url", "description": "Landing page URL observed for the site."},
+    {"name": "title", "description": "Page title observed during scan."},
+    {"name": "resolving_ip", "description": "Resolved IP for the site."},
+    {"name": "tags", "description": "Tags applied to the finding."},
+    {"name": "status_code", "description": "HTTP status code from scan."},
+    {"name": "url_status", "description": "URL reachability status."},
+    {"name": "scan_status", "description": "Scan completion status."},
+    {"name": "enrichment", "description": "DNS enrichment payload."},
+    {"name": "external_links", "description": "External links discovered."},
+    {"name": "internal_links", "description": "Internal links discovered."},
+    *DEFAULT_FIELDS,
+]
+
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}.get(
     demisto.params().get("mirror_direction", "None"), None
@@ -148,6 +192,12 @@ class Instance:
                 self.mapping_fields = CBS_DOMAIN_INFRINGE_FIELDS
             case "subdomain_infringement":
                 self.mapping_fields = CBS_DOMAIN_INFRINGE_FIELDS
+            case "social_media_fraud":
+                self.mapping_fields = CBS_SMF_FIELDS
+            case "money_mules":
+                self.mapping_fields = CBS_MM_FIELDS
+            case "gambling_sites":
+                self.mapping_fields = CBS_GS_FIELDS
             case _:
                 self.mapping_fields = CBS_INCIDENT_FIELDS
 
@@ -388,6 +438,28 @@ def convert_time_string(
         return ""
 
 
+def normalize_timestamp(value: Any) -> Any:
+    """Normalize CBS record timestamp to epoch milliseconds.
+
+    CBS modules may return timestamp as millis (int), numeric string, or ISO datetime string.
+    Fetch cursor logic requires a consistent numeric value for sorting and date_from.
+    """
+    if value is None or value == "":
+        return value
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, int | float):
+        return int(value)
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.isdigit():
+            return int(stripped)
+        parsed = convert_time_string(stripped, "", timestamp=True, is_utc=True)
+        if isinstance(parsed, int):
+            return parsed
+    return value
+
+
 def deduplicate_and_create_incidents(fetched_incidents: List, last_run_incident_identifiers: List[str]) -> tuple[list, list]:
     """De-duplicates the fetched incidents and creates a list of actionable incidents.
 
@@ -450,6 +522,8 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
             **unmapped_incident,
         },
     }
+    if "timestamp" in mapped_incident["CustomFields"]:
+        mapped_incident["CustomFields"]["timestamp"] = normalize_timestamp(mapped_incident["CustomFields"]["timestamp"])
     if MIRROR_DIRECTION:
         mapped_incident["xsoar_mirroring"] = {
             "mirror_direction": MIRROR_DIRECTION,
@@ -578,7 +652,11 @@ def fetch_incidents(
     log(INFO, f"Received {len(incidents) - len(unique_incidents)} duplicates incidents to skip.")
     log(INFO, f"Calculated {len(incident_ids)} id(s).")
 
-    dates = sorted([d["CustomFields"]["timestamp"] for d in unique_incidents])
+    dates = sorted(
+        normalized
+        for incident in unique_incidents
+        if (normalized := normalize_timestamp(incident["CustomFields"].get("timestamp"))) not in (None, "")
+    )
     last_fetched_timestamp = dates[-1] if dates else last_run.get("last_fetched_timestamp")
 
     log(INFO, f"setting last fetched timestamp - {last_fetched_timestamp=}")
@@ -589,6 +667,8 @@ def fetch_incidents(
 def build_fetch_params(demisto_params: dict[str, Any], last_run: dict[str, Any]) -> dict[str, Any]:
     """Build API params for fetch-incidents."""
     last_fetched_timestamp = last_run.get("last_fetched_timestamp", "")
+    if last_fetched_timestamp not in ("", None):
+        last_fetched_timestamp = normalize_timestamp(last_fetched_timestamp)
     first_fetch = demisto_params.get("first_fetch", "7 days")
     try:
         dateparser.parse(f"{first_fetch} UTC")
@@ -796,7 +876,7 @@ def ctm360_cbs_details_command(client: Client, args: dict[str, Any]) -> CommandR
     result = client.fetch_incident(params)
     log(INFO, f"Received {result}")
     if result.get("timestamp", ""):
-        result["timestamp"] = str(result["timestamp"])
+        result["timestamp"] = str(normalize_timestamp(result["timestamp"]))
 
     return CommandResults(
         outputs_prefix=INSTANCE.details_prefix,

@@ -6,7 +6,7 @@ This integration was integrated and tested with version `1.0.0` of CTM360_CyberB
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from CyberBlindspot to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CyberBlindspot\), or Incoming and Outgoing \(from/to Cortex XSOAR and CyberBlindspot\). | False |
-| Module To Use | Choose the module you want to use: Incidents, Compromised Cards, Breached Credentials, and Domain/Subdomain Infringements. | False |
+| Module To Use | Choose the module you want to use: Incidents, Compromised Cards, Breached Credentials, Domain/Subdomain Infringements, Malware Logs, Social Media Fraud, Money Mules, or Gambling Sites. | False |
 | Retrieve Screenshots |  | False |
 | First fetch (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours. Default is `7 days`) | The time the incidents should be fetched starting from. | False |
 | API Key | The CTM360 CyberBlindspot API Key to use for fetching data. | True |
