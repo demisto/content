@@ -39,3 +39,6 @@ ignore=GR103
 
 [file:CaseInvestigationAgentJuly.yml]
 ignore=GR103
+
+[file:pack_metadata.json]
+ignore=PA134
