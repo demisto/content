@@ -198,6 +198,9 @@ script:
       name: roleSessionDuration
     description: Describes one or more of your instances.
     name: aws-ec2-describe-instances
+    supportedModules:
+    - xsiam
+    - agentix
     outputs:
     - contextPath: AWS.EC2.Instances.AmiLaunchIndex
       description: The AMI launch index, which can be used to find this instance in the launch group.
@@ -2322,6 +2325,8 @@ script:
     description: Creates a security group.
     execution: true
     name: aws-ec2-create-security-group
+    supportedModules:
+    - xsiam
     outputs:
     - contextPath: AWS.EC2.SecurityGroups.GroupName
       description: The name of the security group.
@@ -4183,6 +4188,8 @@ script:
 tests:
 - AWS - EC2 Test Playbook
 fromversion: 5.0.0
+supportedModules:
+- xsiam
 sectionorder:
 - Connect
 - Collect

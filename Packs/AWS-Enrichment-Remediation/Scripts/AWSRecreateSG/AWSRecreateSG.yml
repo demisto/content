@@ -69,3 +69,5 @@ outputs:
 - contextPath: awssgrecreated
   description: Sets the value to true or false if the security group is created.
   type: boolean
+supportedModules:
+- xsiam

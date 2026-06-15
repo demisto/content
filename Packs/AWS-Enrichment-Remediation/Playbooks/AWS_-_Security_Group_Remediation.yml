@@ -900,5 +900,8 @@ inputs:
   playbookInputQuery:
 outputs: []
 fromversion: 6.5.0
+supportedModules:
+- xsiam
+- edr
 tests:
 - No tests (auto formatted)
