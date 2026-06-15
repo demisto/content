@@ -2527,6 +2527,49 @@ function placeByPath(target, path, value) {
 
 
 /**
+ * Recursively merge `source` INTO `target` in place. Strict 1:1 behavioral
+ * twin of Python _deep_merge_dicts.
+ *
+ * For every key in `source`:
+ *   - If both the existing value in `target` and the incoming value in `source`
+ *     are plain objects (not null, typeof === 'object', not arrays), the two are
+ *     merged recursively (deep-merge).
+ *   - Otherwise the incoming value overwrites the existing one (this includes
+ *     the cases where types differ, e.g. an object overwrites a scalar or a
+ *     scalar overwrites an object, as well as arrays and null).
+ *
+ * Keys present only in `target` are preserved; keys present only in `source` are
+ * added. `target` is mutated in place (its object identity, and the identity of
+ * any nested objects that are recursed into, is preserved) and returned.
+ *
+ * @private
+ * @param {Object} target - The object to merge into (mutated in place).
+ * @param {Object} source - The object whose values take precedence on conflicts.
+ * @return {Object} The same `target` object, mutated in place.
+ */
+function deepMergeObjects(target, source) {
+    for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+            var sourceValue = source[key];
+            var targetValue = target[key];
+            var targetIsPlainObject = targetValue !== null
+                && typeof targetValue === 'object'
+                && Object.prototype.toString.call(targetValue) !== '[object Array]';
+            var sourceIsPlainObject = sourceValue !== null
+                && typeof sourceValue === 'object'
+                && Object.prototype.toString.call(sourceValue) !== '[object Array]';
+            if (targetIsPlainObject && sourceIsPlainObject) {
+                deepMergeObjects(targetValue, sourceValue);
+            } else {
+                target[key] = sourceValue;
+            }
+        }
+    }
+    return target;
+}
+
+
+/**
  * Parse a UCP param_map into a list of [field_id, destination] pairs.
  * Strict 1:1 behavioral twin of Python _parse_param_map.
  *
@@ -2806,16 +2849,13 @@ function interpolateUcpParams(connectorMetadata) {
         return false;
     }
 
-    // Merge into the module-global params object (last-wins), mirroring
-    // Python's `params.update(interpolated)` on callingContext['params'].
+    // Deep-merge into the module-global params object (last-wins on scalar
+    // conflicts, recursive on nested objects), mirroring Python's
+    // `_deep_merge_dicts(params, interpolated)` on callingContext['params'].
     if (typeof params !== 'object' || params === null) {
         params = {};
     }
-    for (var key in interpolated) {
-        if (Object.prototype.hasOwnProperty.call(interpolated, key)) {
-            params[key] = interpolated[key];
-        }
-    }
+    deepMergeObjects(params, interpolated);
     _UCP_AUTH_PARAMS_INJECTED = true;
     logDebug('[UCP][CommonServer.js] interpolateUcpParams: interpolated '
         + Object.keys(interpolated).length + ' top-level param(s) for capability=' + capability + '.');
