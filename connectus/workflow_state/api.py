@@ -721,6 +721,122 @@ def _force_interpolated_auth_details(auth_detail_json: str) -> tuple[str, bool]:
     return json.dumps(payload), True
 
 
+# ---------------------------------------------------------------------------
+# YML-aware Auth Details cross-check (consults the integration's own YML)
+# ---------------------------------------------------------------------------
+
+# XSOAR configuration param `type` codes that denote an AUTH SECRET, as
+# opposed to plain connection metadata. A param of one of these types is an
+# authentication secret and MUST be declared inside an ``auth_types[]``
+# profile's ``xsoar_param_map`` — it can never legitimately appear in
+# ``other_connection``. Mirrors the type table in
+# connectus/auth-examples.md / the SKILL §1.2:
+#   4  -> Encrypted text (flat single secret: API key / token / secret)
+#   9  -> Credentials (compound: <id>.identifier + <id>.password)
+#   14 -> Authentication Certificate (compound: cert + key)
+_AUTH_SECRET_YML_TYPES = {4, 9, 14}
+
+
+def _credential_param_names_from_yml(integration_id: str) -> tuple[set[str], Optional[str]]:
+    """Return the set of YML param names whose ``type`` is an auth-secret type.
+
+    Reads the integration's own YML ``configuration`` and collects every
+    param ``name`` whose ``type`` is in :data:`_AUTH_SECRET_YML_TYPES`
+    (type 4 Encrypted text, type 9 Credentials, type 14 Authentication
+    Certificate).
+
+    Returns ``(names, error)``. On any resolution/parse problem ``names``
+    is an empty set and ``error`` is a human-readable string (the caller
+    decides whether a missing YML should be fatal — here it is NON-fatal:
+    we simply cannot run the YML cross-check, so we don't block the write).
+    """
+    info = get_integration_files(integration_id)
+    if "error" in info:
+        return set(), info["error"]
+    yml_rel = info.get("yml")
+    if not yml_rel:
+        return set(), f"Integration '{integration_id}' has no YML on disk."
+    yml_abs = os.path.join(BASE_DIR, yml_rel)
+    try:
+        import yaml  # PyYAML; already a project dependency.
+
+        with open(yml_abs, encoding="utf-8") as fh:
+            doc = yaml.safe_load(fh) or {}
+    except (OSError, yaml.YAMLError) as e:  # type: ignore[name-defined]
+        return set(), f"Could not read/parse YML '{yml_rel}': {e}"
+
+    names: set[str] = set()
+    for param in doc.get("configuration", []) or []:
+        if not isinstance(param, dict):
+            continue
+        if param.get("type") in _AUTH_SECRET_YML_TYPES:
+            name = param.get("name")
+            if isinstance(name, str) and name:
+                names.add(name)
+    return names, None
+
+
+def _check_other_connection_no_yml_credentials(
+    integration_id: str,
+    auth_detail_json: str,
+) -> list[str]:
+    """Reject ``other_connection`` entries that are auth-secret YML params.
+
+    Cross-references each ``other_connection`` entry against the
+    integration's own YML: if an entry (or its dotted-leaf parent — e.g.
+    ``credentials`` for ``credentials.password``) names a type-4
+    (Encrypted text), type-9 (Credentials), or type-14 (Authentication
+    Certificate) param, it is an auth SECRET misclassified as connection
+    metadata and is rejected. Such a param belongs in an ``auth_types[]``
+    profile's ``xsoar_param_map``.
+
+    Returns a list of error strings ([] = no violation, or the YML could
+    not be consulted — a missing/unparseable YML is non-fatal and simply
+    skips this cross-check).
+    """
+    try:
+        payload = json.loads(auth_detail_json)
+    except json.JSONDecodeError:
+        return []  # schema validation upstream surfaces JSON errors.
+    if not isinstance(payload, dict):
+        return []
+    other_connection = payload.get("other_connection")
+    if not isinstance(other_connection, list) or not other_connection:
+        return []
+
+    cred_names, _err = _credential_param_names_from_yml(integration_id)
+    if not cred_names:
+        # YML unavailable, unparseable, or simply has no credential params —
+        # nothing to cross-check. Non-fatal: don't block the write.
+        return []
+
+    offenders: list[str] = []
+    for item in other_connection:
+        if not isinstance(item, str) or not item:
+            continue
+        # Match the bare id AND the dotted-leaf parent (credentials.password
+        # -> credentials), mirroring the auth-param projection rule.
+        parent = item.split(".", 1)[0]
+        if item in cred_names or parent in cred_names:
+            offenders.append(item)
+
+    if not offenders:
+        return []
+
+    matched = sorted({i.split(".", 1)[0] for i in offenders})
+    return [
+        f"'other_connection' entry/entries {sorted(offenders)} resolve to "
+        f"credential param(s) {matched} declared in the integration YML as "
+        f"a type-4 (Encrypted text) / type-9 (Credentials) / type-14 "
+        f"(Authentication Certificate) field — i.e. an auth SECRET, not "
+        f"connection metadata. Move it to an auth_types[] profile's "
+        f"xsoar_param_map (e.g. a type-4 secret → an 'APIKey' profile's "
+        f"'key'; a type-9 field's '.identifier'/'.password' leaves → a "
+        f"'Plain' profile's 'username'/'password'). See "
+        f"connectus/column-schemas.md §Auth Details."
+    ]
+
+
 def set_integration_auth(
     integration_id: str,
     auth_detail_json: str,
@@ -786,6 +902,21 @@ def set_integration_auth(
         return {"error": f"Integration '{integration_id}' not found."}
 
     row = rows[idx]
+
+    # ----- YML cross-check: no auth secrets in other_connection ------------
+    # Consults the integration's own YML and rejects any other_connection
+    # entry that names a type-9 (Credentials) / type-14 (Authentication
+    # Certificate) param — those are auth secrets, not connection metadata,
+    # and belong in an auth_types[] profile's xsoar_param_map. A missing or
+    # unparseable YML is non-fatal (the check is simply skipped).
+    yml_cred_errors = _check_other_connection_no_yml_credentials(
+        integration_id, auth_detail_json
+    )
+    if yml_cred_errors:
+        return {
+            "error": "Auth Details YML cross-check failed:\n"
+            + "\n".join(f"  - {e}" for e in yml_cred_errors)
+        }
 
     # ----- Seed-overrides ∩ Auth Details overlap check ---------------------
     # Computed off the CANDIDATE payload (not the persisted cell — we are

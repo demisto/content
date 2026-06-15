@@ -353,7 +353,7 @@ AnsibleOpenSSL,Packs/AnsibleLinux/Integrations/AnsibleOpenSSL/AnsibleOpenSSL.yml
 AnsibleTower,Packs/AnsibleTower/Integrations/AnsibleTower/AnsibleTower.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
 AnsibleVMware,Packs/AnsibleVMware/Integrations/AnsibleVMware/AnsibleVMware.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
 AppSentinels.ai,Packs/AppSentinelsAi/Integrations/AppSentinelsAi/AppSentinelsAi.yml,AppSentinels,,juschwartz,,,,,,,,,,,,,,
-ArcSight ESM v2,Packs/ArcSightESM/Integrations/ArcSightESMv2/ArcSightESMv2.yml,ArcSight,,juschwartz,,,,,,,,,,,,,,
+ArcSight ESM v2,Packs/ArcSightESM/Integrations/ArcSightESMv2/ArcSightESMv2.yml,ArcSight,,juschwartz,"{""auth_types"": [{""name"": ""credentials"", ""type"": ""Plain"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}}], ""other_connection"": [""insecure"", ""productVersion"", ""proxy"", ""server"", ""use_rest""]}",,,,,,,,,,,,,
 ArcSight Logger,Packs/ArcSightLogger/Integrations/ArcSightLogger/ArcSightLogger.yml,ArcSight,,juschwartz,,,,,,,,,,,,,,
 Arkime,Packs/Arkime/Integrations/Arkime/Arkime.yml,Arkime,,,,,,,,,,,,,,,,
 ArmisEventCollector,Packs/Armis/Integrations/ArmisEventCollector/ArmisEventCollector.yml,Armis,,,,,,,,,,,,,,,,

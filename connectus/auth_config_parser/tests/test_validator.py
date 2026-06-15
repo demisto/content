@@ -337,6 +337,56 @@ class TestValidateAuthDetails:
             for e in errors
         ), errors
 
+    def test_other_connection_credential_leaf_identifier_rejected(self) -> None:
+        """A '.identifier' leaf in other_connection is a type-9 auth secret
+        misclassified as connection metadata — rejected."""
+        detail = (
+            '{"auth_types":[],'
+            '"other_connection":["credentials.identifier","server"]}'
+        )
+        errors = validate_auth_details(detail)
+        assert any(
+            "credential leaf path" in e and "credentials.identifier" in e
+            for e in errors
+        ), errors
+
+    def test_other_connection_credential_leaf_password_rejected(self) -> None:
+        """A '.password' leaf in other_connection is likewise rejected."""
+        detail = (
+            '{"auth_types":[],'
+            '"other_connection":["credentials.password","server"]}'
+        )
+        errors = validate_auth_details(detail)
+        assert any(
+            "credential leaf path" in e and "credentials.password" in e
+            for e in errors
+        ), errors
+
+    def test_other_connection_both_credential_leaves_rejected(self) -> None:
+        """Both leaves reported together, sorted, in one error."""
+        detail = (
+            '{"auth_types":[],'
+            '"other_connection":["credentials.identifier",'
+            '"credentials.password"]}'
+        )
+        errors = validate_auth_details(detail)
+        assert any(
+            "credential leaf path" in e
+            and "'credentials.identifier'" in e
+            and "'credentials.password'" in e
+            for e in errors
+        ), errors
+
+    def test_other_connection_non_credential_leaf_allowed(self) -> None:
+        """A dotted path that is NOT a credential leaf is fine (the check
+        is specific to '.identifier'/'.password' suffixes)."""
+        detail = (
+            '{"auth_types":[{"type":"APIKey","name":"api_key",'
+            '"xsoar_param_map":{"api_key":"key"}}],'
+            '"other_connection":["region.endpoint","url"]}'
+        )
+        assert validate_auth_details(detail) == []
+
     def test_accepts_dict_input(self) -> None:
         """validate_auth_details() accepts pre-parsed dict."""
         data = {
