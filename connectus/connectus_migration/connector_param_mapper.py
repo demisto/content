@@ -113,6 +113,7 @@ PINNED_LONG_RUNNING_PARAMS: frozenset[str] = frozenset({LONG_RUNNING_FLAG_PARAM}
 IGNORED_PARAMS: frozenset[str] = frozenset(
     {
         "is_mirroring",
+        "mirroring",
         "mirror_options",
         "close_incident",
         "mirror_limit",

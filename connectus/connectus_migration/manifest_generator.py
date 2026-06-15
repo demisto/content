@@ -1705,6 +1705,7 @@ MIRROR_PARAMS: frozenset[str] = frozenset(
         "comment_tag",
         "work_notes_tag",
         "close_out",
+        "mirroring",
         "close_notes",
     }
 )
@@ -6542,7 +6543,19 @@ def build_connection_profile(
         if "." not in map_key:
             if yml_params_by_name.get(map_key, {}).get('type', 4) in [4, 9, 14] and not is_username:
                 mask = True
-            
+
+        # Derive requiredness from the originating XSOAR YML param's
+        # ``required:`` flag rather than hard-forcing True. The originating
+        # param name is the segment before the first ``.`` in the map key
+        # (e.g. ``bot_credentials.password`` -> ``bot_credentials``); a flat
+        # key maps to the bare id. This preserves the YML contract: account
+        # OAuth params marked ``required: true`` stay required, while optional
+        # add-ons (bot credentials, webhook tokens) marked ``required: false``
+        # remain optional in the connection profile. Absent ``required:`` is
+        # treated as False, matching XSOAR semantics.
+        origin_param = map_key.partition(".")[0]
+        field_required = bool(yml_params_by_name.get(origin_param, {}).get("required", False))
+
         fields.append(
             {
                 "id": field_id,
@@ -6551,8 +6564,8 @@ def build_connection_profile(
                 "metadata": {"auth": {"parameter": auth_parameter}},
                 "options": {
                     "mask": mask,
-                    "create_modifiers": {"required": True, "hidden": False},
-                    "edit_modifiers": {"required": True, "hidden": False},
+                    "create_modifiers": {"required": field_required, "hidden": False},
+                    "edit_modifiers": {"required": field_required, "hidden": False},
                 },
             }
         )

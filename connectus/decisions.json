@@ -3,7 +3,8 @@
     "assignee": "YuvHayun",
     "scope": "steps 0-7 (auth -> capabilities -> params-to-commands -> param-defaults -> ucp-review -> params-to-capabilities)",
     "mode": "full-auto, unattended",
-    "note": "All auth/param decisions made autonomously per connectus-migration-SKILL.md. Low-confidence calls flagged with 'confidence' and 'flags'. set-auth forces interpolated:true on every profile."
+    "note": "All auth/param decisions made autonomously per connectus-migration-SKILL.md. Low-confidence calls flagged with 'confidence' and 'flags'. set-auth forces interpolated:true on every profile.",
+    "last_audit": "2026-06-15: re-derived Auth Details for Looker, Google Resource Manager, Google Safe Browsing v2, Google Apigee; re-ran steps 5-7. Only these 4 entries' 'auth'/'completed_through_step' keys changed."
   },
   "integrations": {
     "Akamai WAF": {
@@ -392,7 +393,7 @@
       "auth": {
         "type": "Passthrough",
         "name": "OAuth",
-        "reason": "OAuth2 ROPC: username+password posted to /oauth/token with grant_type=password (GoogleApigeeEventCollector.py:133), returns Bearer access/refresh tokens. Passthrough per decision table (ROPC).",
+        "reason": "OAuth2 ROPC: grant_type=password to /oauth/token (GoogleApigeeEventCollector.py:112-133) -> access/refresh tokens. Passthrough per decision table. AUDIT (2026-06-15): re-applied; classification already correct.",
         "xsoar_param_map": {
           "credentials.identifier": "username",
           "credentials.password": "password"
@@ -404,7 +405,9 @@
           "url",
           "zone"
         ],
-        "confidence": "high"
+        "interpolated": true,
+        "confidence": "high",
+        "audit_change": "re-applied unchanged"
       },
       "capabilities": [
         "Log Collection"
@@ -434,7 +437,8 @@
       },
       "flags": [
         "FIXED: re-ran full analyzer + source review so max_fetch is now routed to Log Collection (previously dropped by single-cap tm-only shortcut)."
-      ]
+      ],
+      "last_audit": "2026-06-15 reverted to step 2 and re-ran through step 7"
     },
     "Google BigQuery": {
       "connector_id": "Google BigQuery",
@@ -671,7 +675,7 @@
       "auth": {
         "type": "Passthrough",
         "name": "Service Account",
-        "reason": "SA JSON assembled from individual fields (GoogleResourceManager.py:20-40): private_key_id_creds.password, private_key_creds.password, client_email_creds.identifier=client_email, client_email_creds.password=client_id. Multiple co-equal secret components -> Passthrough.",
+        "reason": "Service-account JSON assembled in code via from_json_keyfile_dict (GoogleResourceManager.py:21-35,79). Multi-leaf SA -> Passthrough. AUDIT (2026-06-15): re-applied; roles unchanged (descriptive).",
         "xsoar_param_map": {
           "private_key_id_creds.password": "private_key_id",
           "private_key_creds.password": "private_key",
@@ -684,8 +688,9 @@
           "project_id",
           "proxy"
         ],
-        "notes": "Flat private_key_id/private_key/client_email/client_id hidden:true excluded. project_id and client_x509_cert_url are non-secret SA-JSON components -> other_connection.",
-        "confidence": "high"
+        "interpolated": true,
+        "confidence": "high",
+        "audit_change": "re-applied unchanged"
       },
       "capabilities": [
         "Automation"
@@ -704,7 +709,8 @@
       },
       "flags": [
         "client_email_creds is a single type:9 widget whose identifier=client_email and password=client_id (unusual labeling per YML display)."
-      ]
+      ],
+      "last_audit": "2026-06-15 reverted to step 2 and re-ran through step 7"
     },
     "Google Safe Browsing v2": {
       "connector_id": "Google Safe Browsing",
@@ -712,21 +718,21 @@
       "auth": {
         "type": "Passthrough",
         "name": "API Key",
-        "reason": "API key sent as ?key=<api_key> query param (GoogleSafeBrowsingV2.py:217). api_creds.password=API key, api_creds.identifier=client_id (sent as clientId in request body). Two leaves (key + client_id); client_id is non-canonical role so classified Passthrough rather than APIKey (which only allows role 'key').",
+        "reason": "Single API key sent as ?key=<api_key> (GoogleSafeBrowsingV2.py:211,217). The type-9 api_creds widget carries BOTH leaves: .password=API key, .identifier=clientId (sent in request body, py:28). Per user decision (2026-06-15) both leaves are mapped, which requires Passthrough (APIKey role enum only permits 'key').",
         "xsoar_param_map": {
-          "api_creds.password": "api_key",
+          "api_creds.password": "key",
           "api_creds.identifier": "client_id"
         },
         "other_connection": [
           "client_version",
           "insecure",
-          "integrationReliability",
           "proxy",
           "url"
         ],
-        "notes": "Flat api_key/client_id hidden:true excluded.",
-        "confidence": "medium",
-        "confidence_reason": "client_id role placement (in profile vs other_connection) is a judgment call; kept in profile because it is part of the auth/client identity sent with each request."
+        "interpolated": true,
+        "confidence": "high",
+        "audit_change": "Reset to start of step 2 and re-derived WITH USER. Final: Passthrough; xsoar_param_map={api_creds.password:key, api_creds.identifier:client_id}; dropped hidden 'client_id' and framework param 'integrationReliability' from other_connection.",
+        "decided_with_user": true
       },
       "capabilities": [
         "Automation"
@@ -740,12 +746,15 @@
         "code_modified": false
       },
       "params_to_capabilities": {
-        "general_configurations": [],
-        "Automation": []
+        "Automation": [],
+        "general_configurations": [
+          "integrationReliability"
+        ]
       },
       "flags": [
         "RE-RUN: integrationReliability (required visible source-reliability select, not in ignore list) added to other_connection (resolves step-9 coverage)."
-      ]
+      ],
+      "last_audit": "2026-06-15 reset to step 2, re-derived auth jointly with user; integrationReliability placed in general_configurations (step 7); re-ran through step 7"
     },
     "Google Vision AI": {
       "connector_id": "Google Cloud",
@@ -1235,20 +1244,19 @@
       "auth": {
         "type": "Passthrough",
         "name": "Client Credentials",
-        "reason": "OAuth2 client-credentials style: API3 client_id+client_secret POSTed to /login returning access_token (Looker.py:95-101). No user code -> Passthrough. credentials_api3_client.identifier=client_id, .password=client_secret.",
+        "reason": "OAuth2 client-credentials: API3 client_id+client_secret POSTed to /login -> access_token (Looker.py:95-101). Passthrough. AUDIT FIX (2026-06-15): removed auth-secret 'client_id' from other_connection (it duplicated the credential already in xsoar_param_map; skill 1.2.5/pre-flight forbids it).",
         "xsoar_param_map": {
           "credentials_api3_client.identifier": "client_id",
           "credentials_api3_client.password": "client_secret"
         },
         "other_connection": [
-          "client_id",
           "proxy",
           "unsecure",
           "url"
         ],
-        "notes": "Flat client_secret type4 hidden:true excluded. Flat client_id type0 is VISIBLE+required (legacy alt path) but redundant with credentials_api3_client.identifier; mapped the widget leaves only to avoid double-mapping.",
-        "confidence": "medium",
-        "confidence_reason": "flat visible client_id not placed anywhere (widget identifier covers it); a reviewer may prefer adding flat client_id to other_connection."
+        "interpolated": true,
+        "confidence": "high",
+        "audit_change": "other_connection: dropped 'client_id'"
       },
       "capabilities": [
         "Automation"
@@ -1267,7 +1275,8 @@
       },
       "flags": [
         "RE-RUN: flat visible required client_id added to other_connection (resolves step-9 handler coverage gap). credentials_api3_client widget still carries the auth secret."
-      ]
+      ],
+      "last_audit": "2026-06-15 reverted to step 2 and re-ran through step 7"
     },
     "CipherTrust": {
       "connector_id": "CipherTrust",
