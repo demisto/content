@@ -982,7 +982,7 @@ def capture_ucp_params(
         # NOT torn down here. session_teardown.py stops it at the end of the batch.
         if ucp_instance_id and not keep_instance:
             log.info("Cleaning up UCP instance %s...", ucp_instance_id)
-            # delete_ucp_instance(ucp_instance_id, tenant_id, port=ucp_port)
+            delete_ucp_instance(ucp_instance_id, tenant_id, port=ucp_port)
         elif keep_instance:
             log.info("keep_instance=True — leaving UCP instance %s alive for inspection", ucp_instance_id)
 
