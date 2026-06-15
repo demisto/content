@@ -4244,7 +4244,7 @@ script:
       name: page_size
     - description: Page number for pagination.
       name: page
-    - description: When set to true, retrieves extra case data including the associated issues, file artifacts, and network artifacts for each case.
+    - description: Whether to retrieve extra case data including the associated issues, file artifacts, and network artifacts for each case.
       name: extra_data
       auto: PREDEFINED
       predefined:
@@ -4309,10 +4309,10 @@ script:
       description: Whether the case has been starred/flagged.
       type: Boolean
     - contextPath: PaloAltoNetworksXDR.Case.high_severity_issue_count
-      description: The number of high severity issues associated with the case. Returned when extra_data is set to true.
+      description: The number of high-severity issues associated with the case. Returned when extra_data is set to true.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Case.critical_severity_issue_count
-      description: The number of critical severity issues associated with the case. Returned when extra_data is set to true.
+      description: The number of critical-severity issues associated with the case. Returned when extra_data is set to true.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Case.resolved_timestamp
       description: The time the case was resolved. Returned when extra_data is set to true.

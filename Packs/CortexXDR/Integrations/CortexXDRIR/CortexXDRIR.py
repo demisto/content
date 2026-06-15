@@ -538,7 +538,7 @@ class Client(CoreClient):
             },
             "full_alert_fields": True,
         }
-        if search_from:
+        if search_from is not None:
             request_data["search_from"] = search_from
         filters: list[dict] = []
         if incident_id_list:

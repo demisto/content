@@ -4439,7 +4439,7 @@ Returns a list of cases based on the specified filters.
 | limit | Maximum number of cases to return. | Optional |
 | page_size | Page size for pagination. | Optional |
 | page | Page number for pagination. | Optional |
-| extra_data | When set to true, retrieves extra case data including the associated issues, file artifacts, and network artifacts for each case. Possible values are: true, false. Default is false. | Optional |
+| extra_data | Whether to retrieve extra case data including the associated issues, file artifacts, and network artifacts for each case. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -4463,8 +4463,8 @@ Returns a list of cases based on the specified filters.
 | PaloAltoNetworksXDR.Case.wildfire_hits | Number | The number of WildFire malware hits associated with the case. |
 | PaloAltoNetworksXDR.Case.tags | String | A list of tags associated with the case. |
 | PaloAltoNetworksXDR.Case.starred | Boolean | Whether the case has been starred/flagged. |
-| PaloAltoNetworksXDR.Case.high_severity_issue_count | Number | The number of high severity issues associated with the case. Returned when extra_data is set to true. |
-| PaloAltoNetworksXDR.Case.critical_severity_issue_count | Number | The number of critical severity issues associated with the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.high_severity_issue_count | Number | The number of high-severity issues associated with the case. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.critical_severity_issue_count | Number | The number of critical-severity issues associated with the case. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.resolved_timestamp | String | The time the case was resolved. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.assigned_user_mail | String | The email address of the user assigned to the case. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.assigned_user_pretty_name | String | The display name of the user assigned to the case. Returned when extra_data is set to true. |
