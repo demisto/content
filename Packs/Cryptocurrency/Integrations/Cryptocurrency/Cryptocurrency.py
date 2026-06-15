@@ -71,8 +71,8 @@ def crypto_reputation_command(args: dict[str, str], reliability: str, reputation
 
 def main():
     params = demisto.params()
-    reliability = params["reliability"]
-    reputation = params["reputation"]
+    reliability = params.get("reliability") or "B - Usually reliable"
+    reputation = params.get("reputation") or "Suspicious"
 
     demisto.info(f"Command being called is {demisto.command()}")
     try:
