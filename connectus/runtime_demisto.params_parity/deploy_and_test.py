@@ -157,6 +157,13 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
              "connector is ALREADY deployed to the tenant). For local iteration; "
              "default is to deploy.",
     )
+    p.add_argument(
+        "--skip-git",
+        action="store_true",
+        help="Pass --skip-git to deploy.py (skip git fetch/reset/force-push). Use "
+             "when the connector is already committed+pushed on CONNECTUS_BRANCH, "
+             "or in sandboxed shells that cannot read the SSH key.",
+    )
     return p.parse_args(argv)
 
 
@@ -184,6 +191,7 @@ def _run_deploy(
     commit_path: str | None = None,
     upload_packs: list[str] | None = None,
     upload_insecure: bool = False,
+    skip_git: bool = False,
 ) -> int:
     """Run deploy.py --tenant <t> from the package dir; return its exit code.
 
@@ -204,6 +212,13 @@ def _run_deploy(
         cmd += ["--upload-pack", pack]
     if upload_insecure:
         cmd.append("--upload-insecure")
+    if skip_git:
+        # Skip deploy.py's git fetch/reset/force-push. Use when the connector
+        # is ALREADY committed+pushed on CONNECTUS_BRANCH (so no git sync is
+        # needed) — also required in sandboxed shells that cannot read the SSH
+        # key. Mirrors the skill's documented "commit+push yourself, then deploy
+        # --skip-git" flow.
+        cmd.append("--skip-git")
     log.info("Running deploy: %s", " ".join(cmd))
     proc = subprocess.run(cmd, cwd=str(_SCRIPT_DIR))
     return proc.returncode
@@ -261,6 +276,7 @@ def run(
     force: bool,
     skip_preflight: bool = False,
     skip_deploy: bool = False,
+    skip_git: bool = False,
 ) -> int:
     """Session-gate → preflight → acquire → deploy → parity(per id) → release(finally)."""
     # ── Session gate (the environment is established ONCE by the human-run
@@ -338,7 +354,7 @@ def run(
                         "ALREADY-deployed connector on tenant %s.", tenant)
         else:
             # ── Deploy ONCE (upload packs + commit connector + ff-push + pipeline) ──
-            deploy_rc = _run_deploy(tenant, commit_path, upload_packs, upload_insecure)
+            deploy_rc = _run_deploy(tenant, commit_path, upload_packs, upload_insecure, skip_git)
             if deploy_rc == _DEPLOY_FAIL:
                 for integration_id in integration_ids:
                     _summary(integration_id, "DEPLOY_FAIL", EXIT_DEPLOY_FAIL)
@@ -375,6 +391,7 @@ def main(argv: list[str] | None = None) -> int:
         force=args.force_unlock,
         skip_preflight=args.skip_preflight,
         skip_deploy=args.skip_deploy,
+        skip_git=args.skip_git,
     )
 
 
