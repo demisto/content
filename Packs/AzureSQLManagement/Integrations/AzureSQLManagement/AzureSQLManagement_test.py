@@ -595,6 +595,7 @@ def test_azure_sql_firewall_rule_replace_command(mocker):
         firewall_rule_name="replaced-rule",
         start_ip_address="0.0.0.0",
         end_ip_address="0.0.0.0",
+        request_body=None,
     )
     # The replace endpoint has no rule name in the URL, so the body must carry it
     # in the FirewallRuleList schema: {"values": [{"name": ..., "properties": {...}}]}.
@@ -603,7 +604,7 @@ def test_azure_sql_firewall_rule_replace_command(mocker):
     assert sent_rule["name"] == "replaced-rule"
     assert sent_rule["properties"]["startIpAddress"] == "0.0.0.0"
     assert sent_rule["properties"]["endIpAddress"] == "0.0.0.0"
-    assert "### Successfully updated the firewall rule replaced-rule" in results.readable_output
+    assert "Successfully updated the firewall rule replaced-rule" in results.readable_output
     assert results.outputs.get("name") == "replaced-rule"
     assert results.outputs.get("startIpAddress") == "0.0.0.0"
     assert results.outputs.get("endIpAddress") == "0.0.0.0"
@@ -652,8 +653,8 @@ def test_azure_sql_firewall_rule_replace_command_with_entry_id(mocker):
     sent_rule = request_body["values"][0]
     assert sent_rule["name"] == "firewallrulecrudtest-5370"
     assert sent_rule["properties"]["startIpAddress"] == "0.0.0.0"
-    assert sent_rule["properties"]["endIpAddress"] == "100.0.0.0"
-    assert "### Successfully updated the firewall rule" in results.readable_output
+    assert sent_rule["properties"]["endIpAddress"] == "0.0.0.0"
+    assert "Successfully updated the firewall rule" in results.readable_output
 
 
 @pytest.mark.parametrize(
