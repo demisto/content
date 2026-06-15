@@ -76,6 +76,33 @@ def _normalize_last_ids_entry(value) -> set[str]:
     return set()
 
 
+def _build_finding_criterion(updated_at: Optional[datetime], severity: str, exclude_archived: bool) -> dict:
+    """Build the ``FindingCriteria.Criterion`` dict for ``list_findings``.
+
+    Args:
+        updated_at: Inclusive lower bound on ``updatedAt``.
+        severity: Minimum severity label (Low/Medium/High).
+        exclude_archived: When ``True``, adds ``service.archived = false`` so suppressed/archived
+            findings (XSUP-67097 / XSUP-71079 complaint #2) are not re-fetched.
+
+    Returns:
+        The criterion dict.
+    """
+    criterion: dict = {
+        "updatedAt": {"Gte": date_to_timestamp(updated_at)},
+        "severity": {"Gte": GD_SEVERITY_DICT.get(severity, 1)},
+    }
+    if exclude_archived:
+        # GuardDuty represents the archived flag as the string "false"/"true" in FindingCriteria.
+        criterion["service.archived"] = {"Eq": ["false"]}
+    return criterion
+
+
+def _event_updated_at(event: dict) -> Any:
+    """Return the timestamp used as the fetch cursor for a single finding."""
+    return event.get("UpdatedAt", event.get("CreatedAt"))
+
+
 def get_events(
     aws_client: "GuardDutyClient",
     collect_from: dict,
@@ -85,6 +112,7 @@ def get_events(
     limit: int = MAX_RESULTS,
     detectors_num: int = MAX_RESULTS,
     max_ids_per_req: int = MAX_IDS_PER_REQ,
+    exclude_archived: bool = False,
 ) -> tuple[list, dict, dict]:
     """Get events from AWSGuardDuty.
 
@@ -100,6 +128,7 @@ def get_events(
         limit: The maximum number of events to fetch.
         detectors_num: The maximum number of detectors to fetch.
         max_ids_per_req: The maximum number of findings to get per API request.
+        exclude_archived: When ``True``, archived/suppressed findings are excluded from the fetch.
 
     Returns:
         (events, new_last_ids, new_collect_from)
@@ -107,6 +136,12 @@ def get_events(
         new_last_ids (dict): The new last_ids dict, expected to receive as last_ids input in the next run.
             Each value is a ``list[str]`` (JSON-serializable for setLastRun).
         new_collect_from (dict): The new collect_from dict, expected to receive as collect_from input in the next run.
+
+    Note (XSUP-71079): The fetch cursor is second-resolution and the ``updatedAt`` filter is inclusive
+    (``Gte``). To avoid silently skipping findings, the cursor is NEVER advanced into a second that was
+    only partially consumed because ``limit`` was reached. When a fetch is truncated mid-second the cursor
+    is rolled back to the last fully-drained second (and its sibling ids are persisted) so the next run
+    re-queries the truncated second from its start. This guarantees forward progress without data loss.
     """
 
     events: list = []
@@ -145,12 +180,7 @@ def get_events(
             demisto.debug(f"AWSGuardDutyEventCollector - Getting more finding ids with {next_token=}, {updated_at=}")
             list_finding_args = {
                 "DetectorId": detector_id,
-                "FindingCriteria": {
-                    "Criterion": {
-                        "updatedAt": {"Gte": date_to_timestamp(updated_at)},
-                        "severity": {"Gte": GD_SEVERITY_DICT.get(severity, 1)},
-                    }
-                },
+                "FindingCriteria": {"Criterion": _build_finding_criterion(updated_at, severity, exclude_archived)},
                 "SortCriteria": {"AttributeName": "updatedAt", "OrderBy": "ASC"},
                 "MaxResults": min(limit - (len(events) + len(set(finding_ids))), MAX_RESULTS),
             }
@@ -190,20 +220,52 @@ def get_events(
         events += detector_events
         demisto.debug(f"AWSGuardDutyEventCollector - Number of events is {len(events)}")
 
-        # XSUP-67097: store every finding id whose UpdatedAt equals the new cursor.
-        # This is what the next run needs in order to correctly dedup same-second
-        # siblings that AWS may return in a different intra-second order.
+        # XSUP-71079: advance the cursor safely.
+        #
+        # The cursor is second-resolution and the updatedAt query is inclusive (Gte). Two failure modes
+        # are guarded here:
+        #   1. Same-second siblings (XSUP-67097): persist EVERY finding id whose UpdatedAt equals the
+        #      cursor second so the next run can dedup them all (not just one).
+        #   2. Mid-second truncation (XSUP-71079): if this fetch stopped because it hit `limit` while
+        #      there were still un-fetched findings (next_token is truthy) AND the last second is only
+        #      partially consumed, advancing the cursor to that last second would skip the remaining
+        #      siblings of that second (they fall on the same inclusive boundary but AWS may order them
+        #      after the truncation point). To guarantee no loss we roll the cursor back to the last
+        #      FULLY-drained second and persist its sibling ids, so the next run re-queries the
+        #      truncated second from its start and makes forward progress.
+        truncated_by_limit = bool(next_token)  # loop exited with a pending token => stopped due to limit
         if detector_events:
-            new_cursor_ts = detector_events[-1].get("UpdatedAt", detector_events[-1].get("CreatedAt"))
-            new_collect_from[detector_id] = new_cursor_ts
-            cursor_sibling_ids = {
-                ev.get("Id") for ev in detector_events if ev.get("UpdatedAt", ev.get("CreatedAt")) == new_cursor_ts
-            }
+            last_cursor_ts = _event_updated_at(detector_events[-1])
+            cursor_ts = last_cursor_ts
+            if truncated_by_limit:
+                # Find the latest second strictly older than the last (partial) second.
+                distinct_seconds = {_event_updated_at(ev) for ev in detector_events}
+                fully_drained = sorted(s for s in distinct_seconds if s != last_cursor_ts)
+                if fully_drained:
+                    cursor_ts = fully_drained[-1]
+                    demisto.debug(
+                        f"AWSGuardDutyEventCollector - Fetch truncated by limit for {detector_id=}. "
+                        f"Rolling cursor back from partial second {last_cursor_ts} to last fully-drained "
+                        f"second {cursor_ts} to avoid skipping same-second siblings."
+                    )
+                else:
+                    # The entire page is a single second that we could not fully drain. Keep the cursor
+                    # on that second and accumulate seen ids so progress happens via dedup next run.
+                    demisto.debug(
+                        f"AWSGuardDutyEventCollector - Fetch truncated by limit for {detector_id=} within a "
+                        f"single second {last_cursor_ts}; keeping cursor and accumulating seen ids."
+                    )
+            new_collect_from[detector_id] = cursor_ts
+            cursor_sibling_ids = {ev.get("Id") for ev in detector_events if _event_updated_at(ev) == cursor_ts}
             cursor_sibling_ids.discard(None)
-            # Carry forward any previously-seen ids whose cursor hasn't moved past them
-            # (defends against AWS returning a stale id with the same UpdatedAt later).
-            if seen_ids and parse_date_string(new_cursor_ts) == updated_at:
+            # Carry forward previously-seen ids when the cursor second did not advance past them,
+            # so we never forget same-second siblings across runs.
+            if seen_ids and parse_date_string(cursor_ts) == updated_at:
                 cursor_sibling_ids |= seen_ids
+            # When we kept the cursor on a single truncated second, also remember the ids we just
+            # processed so they are deduped (not re-ingested) on the next run.
+            if truncated_by_limit and cursor_ts == last_cursor_ts:
+                cursor_sibling_ids |= {ev.get("Id") for ev in detector_events if ev.get("Id")}
             # Stored as list so demisto.setLastRun can JSON-serialize it; round-trips via
             # _normalize_last_ids_entry on the next call.
             new_last_ids[detector_id] = sorted(cursor_sibling_ids)
@@ -234,6 +296,7 @@ def main():  # pragma: no cover
     limit = arg_to_number(params.get("limit"))
     sts_endpoint_url = params.get("sts_endpoint_url") or None
     endpoint_url = params.get("endpoint_url") or None
+    exclude_archived = argToBoolean(params.get("exclude_archived", False))
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key)
@@ -280,6 +343,7 @@ def main():  # pragma: no cover
                 last_ids={},
                 severity=severity,
                 limit=command_limit if command_limit else MAX_RESULTS,
+                exclude_archived=exclude_archived,
             )
 
             command_results = CommandResults(
@@ -303,6 +367,7 @@ def main():  # pragma: no cover
                 last_ids=last_ids,
                 severity=aws_gd_severity,
                 limit=limit if limit else MAX_RESULTS,
+                exclude_archived=exclude_archived,
             )
 
             send_events_to_xsiam(events, VENDOR, PRODUCT)

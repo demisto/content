@@ -774,3 +774,124 @@ def test_legacy_last_ids_str_shape_still_works(mocker):
     # State is migrated forward to the list shape. Both old and new share the
     # cursor second, so both are remembered for the NEXT run's dedup.
     assert new_last_ids == {"det1": ["finding_new", "finding_old"]}
+
+
+# ---------------------------------------------------------------------------
+# Regression test for XSUP-71079 — mid-second cursor truncation.
+#
+# Scenario: a fetch is truncated by `limit` in the MIDDLE of a second that has
+# more siblings than were fetched. The cursor must NOT advance into that
+# partially-consumed second, otherwise the un-fetched siblings (which fall on
+# the same inclusive `Gte` boundary) are skipped on the next run.
+# ---------------------------------------------------------------------------
+
+
+def test_mid_second_truncation_does_not_advance_cursor_xsup_71079(mocker):
+    """
+    Given:
+        Two seconds of findings on a single detector:
+          - second T1 = "...:08.000000" with finding_1 (fully drained)
+          - second T2 = "...:09.000000" with finding_2 (only one of several
+            siblings fetched before `limit` truncated the page; next_token is
+            still set, signalling more findings remain).
+
+    When:
+        get_events runs with limit=2 and AWS returns a pending NextToken,
+        indicating the fetch was truncated before T2 was fully drained.
+
+    Then:
+        The cursor (collect_from) is rolled back to T1 (the last fully-drained
+        second), and the persisted last_ids contains T1's id so the next run
+        re-queries from T1 (inclusive) and re-reads T2 in full without skipping
+        any of its siblings.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — truncated_by_limit rollback.
+    """
+    t1 = "2026-04-10T01:35:08.000000"
+    t2 = "2026-04-10T01:35:09.000000"
+    finding_1 = update_finding_id(FINDING.copy(), "finding_1", updated_at=t1)
+    finding_2 = update_finding_id(FINDING.copy(), "finding_2", updated_at=t2)
+
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        # NextToken is set => the loop exits due to `limit`, not exhaustion.
+        list_finding_ids_res=[{"FindingIds": ["finding_1", "finding_2"], "NextToken": "more"}],
+        get_findings_res=[{"Findings": [finding_1, finding_2]}],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={},
+        collect_from_default=datetime(2026, 4, 10, 1, 35, 0),
+        last_ids={},
+        severity="Low",
+        limit=2,
+    )
+
+    # Both fetched findings are still returned to XSIAM (no data dropped this run).
+    assert sorted(e["Id"] for e in events) == ["finding_1", "finding_2"]
+    # The cursor is rolled back to the last FULLY-drained second (T1), NOT T2,
+    # so T2's un-fetched siblings are re-queried next run.
+    assert new_collect_from == {"det1": t1}
+    # last_ids reflects T1's siblings so finding_1 is not re-ingested next run.
+    assert new_last_ids == {"det1": ["finding_1"]}
+
+
+def test_exclude_archived_adds_criterion_xsup_71079(mocker):
+    """
+    Given:
+        exclude_archived=True is passed to get_events.
+
+    When:
+        get_events builds the list_findings FindingCriteria.
+
+    Then:
+        The criterion includes service.archived == "false" so archived /
+        suppressed findings are not fetched. When exclude_archived is False
+        (default) the criterion does NOT include the archived filter.
+
+    Reference:
+        AWSGuardDutyEventCollector._build_finding_criterion — XSUP-71079 #2.
+    """
+    finding = update_finding_id(FINDING.copy(), "finding_1", updated_at="2026-04-10T01:35:09.000000")
+
+    # exclude_archived=True
+    client, _, list_findings_mock, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_1"]}],
+        get_findings_res=[{"Findings": [finding]}],
+    )
+    get_events(
+        aws_client=client,
+        collect_from={},
+        collect_from_default=datetime(2026, 4, 10, 1, 35, 0),
+        last_ids={},
+        severity="Low",
+        limit=10,
+        exclude_archived=True,
+    )
+    criterion = list_findings_mock.call_args.kwargs["FindingCriteria"]["Criterion"]
+    assert criterion.get("service.archived") == {"Eq": ["false"]}
+
+    # exclude_archived=False (default) — no archived filter.
+    mocker.resetall()
+    client2, _, list_findings_mock2, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_1"]}],
+        get_findings_res=[{"Findings": [finding]}],
+    )
+    get_events(
+        aws_client=client2,
+        collect_from={},
+        collect_from_default=datetime(2026, 4, 10, 1, 35, 0),
+        last_ids={},
+        severity="Low",
+        limit=10,
+        exclude_archived=False,
+    )
+    criterion2 = list_findings_mock2.call_args.kwargs["FindingCriteria"]["Criterion"]
+    assert "service.archived" not in criterion2
