@@ -363,11 +363,7 @@ def test_module(client: Client) -> str:
     try:
         end = datetime.now(UTC)
         start = end - timedelta(minutes=5)
-        client.get_message_traces_page(
-            start_date=format_datetime_for_filter(start),
-            end_date=format_datetime_for_filter(end),
-            page_size=1,
-        )
+        fetch_events_sequential(client, start, end, max_events=1)
         return "ok"
     except Exception as e:
         error_message = str(e)
