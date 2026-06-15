@@ -185,8 +185,7 @@ expected_alert_output = [
             "cybersixgillattributes": None,
         },
         "status": 1,
-        "details": 'A ransomware group posted on its leak site, rw_everest, focusing on "Walmart" '
-        "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        "details": 'A ransomware group posted on its leak site, rw_everest, focusing on "Walmart" ',
         "rawJSON": '{"additional_info": {"matched_domain_names": '
         '[], "matched_organization_aliases": ["Walmart"], '
         '"organization_name": "Cybersixgill", "site": "rw_everest", "template_id": '
