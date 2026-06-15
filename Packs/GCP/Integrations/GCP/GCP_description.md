@@ -40,7 +40,7 @@ In the [Google Cloud Console](https://console.cloud.google.com/apis/library), en
 
 #### Step 2 — Create a Service Account
 
-1. In the Google Cloud console, navigate to **IAM & Admin → Service Accounts**.
+1. In the Google Cloud Console, navigate to **IAM & Admin → Service Accounts**.
 2. Click **Create Service Account** and give it a descriptive name (e.g., `cortex-xsoar-gcp`).
 3. Grant the service account the IAM roles required for the commands you intend to use (see [Required Permissions](#required-permissions) below).
 4. Click **Done**.
@@ -87,9 +87,9 @@ For example, to allow the firewall, instance, and snapshot read commands, the pr
 You can verify which permissions a service account already has on a project with:
 
 ```bash
-gcloud projects test-iam-permissions PROJECT_ID \
+gcloud projects test-iam-permissions [PROJECT_ID] \
   --permissions=compute.firewalls.list,storage.buckets.list \
-  --impersonate-service-account=SA_EMAIL@PROJECT_ID.iam.gserviceaccount.com
+  --impersonate-service-account=[SA_EMAIL]@[PROJECT_ID].iam.gserviceaccount.com
 ```
 
 The command returns only the permissions the service account actually holds, so any requested permission missing from the output still needs to be granted.
