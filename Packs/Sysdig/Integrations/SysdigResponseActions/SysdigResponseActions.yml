@@ -3,414 +3,519 @@ display: Sysdig Response Actions
 category: Data Enrichment & Threat Intelligence
 provider: Sysdig
 sectionorder:
-- Connect
-- Collect
+-   Connect
+-   Collect
 commonfields:
   id: SysdigResponseActions
   version: -1
 configuration:
-- defaultvalue: https://us2.app.sysdig.com
-  display: Your server URL
-  name: url
-  required: true
-  type: 0
-  section: Connect
-- displaypassword: API Key
-  name: credentials
-  required: true
-  type: 9
-  hiddenusername: true
-  section: Connect
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-  section: Connect
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-  section: Connect
-- display: Classifier
-  name: classifier
-  type: 13
-  required: false
-  section: Collect
-- defaultvalue: Sysdig Mapper Runtime Event
-  display: Mapper (incoming)
-  name: mapper
-  required: false
-  type: 13
-  section: Collect
-- display: Fetch incidents
-  name: isFetch
-  type: 8
-  section: Collect
-- display: Incident type
-  name: incidentType
-  type: 13
-  section: Collect
-- defaultvalue: '50'
-  display: The maximum number of incidents per fetch
-  name: max_fetch
-  type: 0
-  section: Collect
-- defaultvalue: 7 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch
-  required: false
-  type: 0
-  section: Collect
-description: 'This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture.'
+-   name: url
+    type: 0
+    defaultvalue: https://us2.app.sysdig.com
+    required: true
+    display: Your server URL
+    section: Connect
+-   name: credentials
+    type: 9
+    required: true
+    section: Connect
+    displaypassword: API Key
+    hiddenusername: true
+-   name: insecure
+    type: 8
+    required: false
+    display: Trust any certificate (not secure)
+    section: Connect
+-   name: proxy
+    type: 8
+    required: false
+    display: Use system proxy settings
+    section: Connect
+-   name: classifier
+    type: 13
+    required: false
+    display: Classifier
+    section: Collect
+-   name: mapper
+    type: 13
+    defaultvalue: Sysdig Mapper Runtime Event
+    required: false
+    display: Mapper (incoming)
+    section: Collect
+-   name: isFetch
+    type: 8
+    display: Fetch incidents
+    section: Collect
+-   name: incidentType
+    type: 13
+    display: Incident type
+    section: Collect
+-   name: max_fetch
+    type: 0
+    defaultvalue: '50'
+    display: The maximum number of incidents per fetch
+    section: Collect
+-   name: first_fetch
+    type: 0
+    defaultvalue: 7 days
+    required: false
+    display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+    section: Collect
+description: This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture.
 script:
   commands:
-  - arguments:
-    - auto: PREDEFINED
-      description: |-
-        Action type to perform. Required parameters per action:
-        - KILL_PROCESS: host_id, process_id (startTime defaults to -1)
-        - KILL_CONTAINER: host_id, container_id
-        - STOP_CONTAINER: host_id, container_id
-        - PAUSE_CONTAINER: host_id, container_id
-        - UNPAUSE_CONTAINER: host_id, container_id
-        - START_CONTAINER: host_id, container_id
-        - FILE_QUARANTINE: host_id, path_absolute (optional: container_id)
-        - FILE_ACQUIRE: host_id, path_absolute (optional: container_id)
-        - FILE_UNQUARANTINE: host_id, path_absolute, quarantined_file_path (optional: container_id)
-        - DELETE_POD: k8s_cluster_name, k8s_namespace_name, k8s_pod_name
-        - ROLLOUT_RESTART: k8s_cluster_name, k8s_namespace_name, k8s_workload_type, k8s_workload_name
-        - ISOLATE_NETWORK: k8s_cluster_name, k8s_namespace_name, k8s_workload_type, k8s_workload_name (optional: network_protocol, network_port, network_cidr, network_direction)
-        - DELETE_NETWORK_POLICY: k8s_cluster_name, k8s_namespace_name, network_policy_name
-        - GET_LOGS: k8s_cluster_name, k8s_namespace_name (optional: k8s_workload_type, k8s_workload_name, k8s_pod_name, k8s_container_name, previous, all_containers)
-        - KUBERNETES_VOLUME_SNAPSHOT: k8s_cluster_name, k8s_namespace_name (optional: k8s_pvc_name, k8s_workload_type, k8s_workload_name)
-        - KUBERNETES_DELETE_VOLUME_SNAPSHOT: k8s_cluster_name, k8s_namespace_name, k8s_pvc_name, k8s_volume_snapshot_name
-        - CAPTURE: host_id, capture_storage_config_id, capture_duration_ns, capture_past_duration_ns (optional: capture_filters, capture_max_size, container_id, capture_token)
-        - IAM_QUARANTINE: cloud_provider, cloud_account_id (optional: ct_user_arn, ct_user_identity_type, ct_user)
-        - IAM_UNQUARANTINE: cloud_provider, cloud_account_id, iam_policy_name, ct_user_identity_type, ct_user
-        - MAKE_PRIVATE_CLOUD_RESOURCE: cloud_provider, cloud_account_id, cloud_resource_type, cloud_resource_name (optional: cloud_region)
-        - UNDO_MAKE_PRIVATE_CLOUD_RESOURCE: cloud_provider, cloud_account_id, cloud_resource_type, cloud_resource_name, previous_public_access_settings (optional: cloud_region)
-        - CLOUD_VOLUME_SNAPSHOT: cloud_provider, cloud_account_id, cloud_region, aws_instance_id
-        - UNDO_CLOUD_VOLUME_SNAPSHOT: cloud_provider, cloud_account_id, cloud_region, snapshot_ids, aws_instance_id
-        - FETCH_CLOUD_LOGS: cloud_provider, cloud_account_id, cloud_region, from_timestamp, to_timestamp (optional: ct_original_user, ct_name, ct_src)
-      name: actionType
-      required: true
-      predefined:
-      - KILL_PROCESS
-      - KILL_CONTAINER
-      - STOP_CONTAINER
-      - PAUSE_CONTAINER
-      - UNPAUSE_CONTAINER
-      - START_CONTAINER
-      - FILE_QUARANTINE
-      - FILE_ACQUIRE
-      - FILE_UNQUARANTINE
-      - DELETE_POD
-      - ROLLOUT_RESTART
-      - ISOLATE_NETWORK
-      - DELETE_NETWORK_POLICY
-      - GET_LOGS
-      - KUBERNETES_VOLUME_SNAPSHOT
-      - KUBERNETES_DELETE_VOLUME_SNAPSHOT
-      - CAPTURE
-      - IAM_QUARANTINE
-      - IAM_UNQUARANTINE
-      - MAKE_PRIVATE_CLOUD_RESOURCE
-      - UNDO_MAKE_PRIVATE_CLOUD_RESOURCE
-      - CLOUD_VOLUME_SNAPSHOT
-      - UNDO_CLOUD_VOLUME_SNAPSHOT
-      - FETCH_CLOUD_LOGS
-    - description: Unique caller identifier for audit trail.
-      name: callerId
-      required: true
-      type: String
-    - description: 'Host ID where the agent runs. Required for: KILL_PROCESS, KILL_CONTAINER, STOP_CONTAINER, PAUSE_CONTAINER, UNPAUSE_CONTAINER, START_CONTAINER, FILE_QUARANTINE, FILE_ACQUIRE, FILE_UNQUARANTINE, CAPTURE.'
-      name: host_id
-      type: String
-      required: false
-    - description: 'Container ID. Required for: KILL_CONTAINER, STOP_CONTAINER, PAUSE_CONTAINER, UNPAUSE_CONTAINER, START_CONTAINER. Optional for: FILE_QUARANTINE, FILE_ACQUIRE, FILE_UNQUARANTINE, CAPTURE.'
-      name: container_id
-      type: String
-      required: false
-    - description: 'Process ID to kill. Required for: KILL_PROCESS.'
-      name: process_id
-      type: Number
-      required: false
-    - description: 'Absolute file path. Required for: FILE_QUARANTINE, FILE_ACQUIRE, FILE_UNQUARANTINE.'
-      name: path_absolute
-      type: String
-      required: false
-    - description: 'Path of the quarantined file. Required for: FILE_UNQUARANTINE.'
-      name: quarantined_file_path
-      type: String
-      required: false
-    - description: 'Kubernetes cluster name. Required for: DELETE_POD, ROLLOUT_RESTART, ISOLATE_NETWORK, DELETE_NETWORK_POLICY, GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT, KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
-      name: k8s_cluster_name
-      type: String
-      required: false
-    - description: 'Kubernetes namespace. Required for: DELETE_POD, ROLLOUT_RESTART, ISOLATE_NETWORK, DELETE_NETWORK_POLICY, GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT, KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
-      name: k8s_namespace_name
-      type: String
-      required: false
-    - description: 'Kubernetes pod name. Required for: DELETE_POD. Optional for: GET_LOGS.'
-      name: k8s_pod_name
-      type: String
-      required: false
-    - description: 'Kubernetes workload type (e.g. Deployment, StatefulSet, DaemonSet). Required for: ROLLOUT_RESTART, ISOLATE_NETWORK. Optional for: GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT.'
-      name: k8s_workload_type
-      type: String
-      required: false
-    - description: 'Kubernetes workload name. Required for: ROLLOUT_RESTART, ISOLATE_NETWORK. Optional for: GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT.'
-      name: k8s_workload_name
-      type: String
-      required: false
-    - description: 'PVC name. Optional for: KUBERNETES_VOLUME_SNAPSHOT. Required for: KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
-      name: k8s_pvc_name
-      type: String
-      required: false
-    - description: 'Volume snapshot name. Required for: KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
-      name: k8s_volume_snapshot_name
-      type: String
-      required: false
-    - description: 'Container name for log retrieval. Optional for: GET_LOGS.'
-      name: k8s_container_name
-      type: String
-      required: false
-    - description: 'Network policy name. Required for: DELETE_NETWORK_POLICY.'
-      name: network_policy_name
-      type: String
-      required: false
-    - description: 'Network protocol (TCP, UDP). Optional for: ISOLATE_NETWORK.'
-      name: network_protocol
-      type: String
-      required: false
-    - description: 'Port number. Optional for: ISOLATE_NETWORK.'
-      name: network_port
-      type: String
-      required: false
-    - description: 'CIDR range. Optional for: ISOLATE_NETWORK.'
-      name: network_cidr
-      type: String
-      required: false
-    - description: 'Traffic direction (ingress, egress). Optional for: ISOLATE_NETWORK.'
-      name: network_direction
-      type: String
-      required: false
-    - description: 'Retrieve logs from previous container instance. Optional for: GET_LOGS.'
-      name: previous
-      type: Boolean
-      required: false
-    - description: 'Retrieve logs from all containers. Optional for: GET_LOGS.'
-      name: all_containers
-      type: Boolean
-      required: false
-    - description: 'Remote storage configuration ID. Required for: CAPTURE.'
-      name: capture_storage_config_id
-      type: String
-      required: false
-    - description: 'Capture duration in nanoseconds. Required for: CAPTURE.'
-      name: capture_duration_ns
-      type: Number
-      required: false
-    - description: 'How far back to capture in nanoseconds. Required for: CAPTURE.'
-      name: capture_past_duration_ns
-      type: Number
-      required: false
-    - description: 'Syscall filter expression. Optional for: CAPTURE.'
-      name: capture_filters
-      type: String
-      required: false
-    - description: 'Max capture file size in bytes (0 = no limit). Optional for: CAPTURE.'
-      name: capture_max_size
-      type: Number
-      required: false
-    - description: 'Base name of capture file. Optional for: CAPTURE.'
-      name: capture_token
-      type: String
-      required: false
-    - description: 'Cloud provider name (e.g. aws). Required for: IAM_QUARANTINE, IAM_UNQUARANTINE, MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE, CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT, FETCH_CLOUD_LOGS.'
-      name: cloud_provider
-      type: String
-      required: false
-    - description: 'Cloud account ID. Required for: IAM_QUARANTINE, IAM_UNQUARANTINE, MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE, CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT, FETCH_CLOUD_LOGS.'
-      name: cloud_account_id
-      type: String
-      required: false
-    - description: 'Cloud region. Required for: CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT, FETCH_CLOUD_LOGS. Optional for: MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
-      name: cloud_region
-      type: String
-      required: false
-    - description: 'AWS identity ARN. Optional for: IAM_QUARANTINE.'
-      name: ct_user_arn
-      type: String
-      required: false
-    - description: 'AWS identity type (IAMUser, Role, AssumedRole). Required for: IAM_UNQUARANTINE. Optional for: IAM_QUARANTINE.'
-      name: ct_user_identity_type
-      type: String
-      required: false
-    - description: 'AWS identity name. Required for: IAM_UNQUARANTINE. Optional for: IAM_QUARANTINE.'
-      name: ct_user
-      type: String
-      required: false
-    - description: 'CloudTrail original user. Optional for: FETCH_CLOUD_LOGS.'
-      name: ct_original_user
-      type: String
-      required: false
-    - description: 'CloudTrail event name. Optional for: FETCH_CLOUD_LOGS.'
-      name: ct_name
-      type: String
-      required: false
-    - description: 'CloudTrail source. Optional for: FETCH_CLOUD_LOGS.'
-      name: ct_src
-      type: String
-      required: false
-    - description: 'IAM policy name to remove. Required for: IAM_UNQUARANTINE.'
-      name: iam_policy_name
-      type: String
-      required: false
-    - description: 'Cloud resource type (rds, s3). Required for: MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
-      name: cloud_resource_type
-      type: String
-      required: false
-    - description: 'Cloud resource name. Required for: MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
-      name: cloud_resource_name
-      type: String
-      required: false
-    - description: 'Previous public access settings. Required for: UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
-      name: previous_public_access_settings
-      type: String
-      required: false
-    - description: 'AWS instance ID. Required for: CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT.'
-      name: aws_instance_id
-      type: String
-      required: false
-    - description: 'Comma-separated snapshot IDs. Required for: UNDO_CLOUD_VOLUME_SNAPSHOT.'
-      name: snapshot_ids
-      type: String
-      required: false
-    - description: 'Start timestamp for log search. Required for: FETCH_CLOUD_LOGS.'
-      name: from_timestamp
-      type: String
-      required: false
-    - description: 'End timestamp for log search. Required for: FETCH_CLOUD_LOGS.'
-      name: to_timestamp
-      type: String
-      required: false
-    description: |-
-      Execute response actions through the Sysdig API. Each action type requires a specific set of parameters.
-      Use the actionType description to see which parameters are required for each action.
-    name: execute-response-action
-    outputs:
-    - contextPath: execute_response_action.Output
-      description: Output of the response-actions API.
-      type: Dict
-  - arguments:
-    - description: 'The container ID to apply the action. Example "container.id": "123456789123".'
-      name: container_id
-      type: String
-      required: true
-    - description: 'The host name. Example "ip-1-1-1-1.us-west-1.compute.internal".'
-      name: host_name
-      type: String
-      required: true
-    - description: 'The capture name.'
-      name: capture_name
-      type: String
-      required: true
-    - description: 'The agent ID.'
-      name: agent_id
-      type: String
-      required: true
-    - description: 'The customer ID.'
-      name: customer_id
-      type: String
-      required: true
-    - description: 'The machine ID/MAC. Example "01:aa:02:bb:03:cc".'
-      name: machine_id
-      type: String
-      required: true
-    - description: 'Capture duration in seconds.'
-      name: scan_duration
-      type: Number
-      required: false
-    - description: 'Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi).'
-      name: scap_filter
-      type: String
-      required: false
-    description: Command to trigger a system capture, it will record all system calls at the host level.
-    name: create-system-capture
-    outputs:
-    - contextPath: create_system_capture.Output
-      description: Output of the system capture created.
-      type: Dict
-  - arguments:
-    - description: System Capture ID.
-      name: capture_id
-      type: Number
-      required: true
-    description: Command to get a system capture based on the capture ID.
-    name: get-capture-file
-    outputs:
-    - contextPath: get_capture_file.Output
-      description: Output of the system capture downloaded.
-      type: Dict
-  - arguments:
-    - description: The action exection ID.
-      name: action_execution_id
-      type: String
-      required: true
-    description: Get the status and information of a triggered action execution.
-    name: get-action-execution
-    outputs:
-    - contextPath: get_action_execution.Output
-      description: Output of the action execution info.
-      type: Dict
-  - arguments:
-    - description: The MAC address (machineId) of the host to look up.
-      name: machine_id
-      type: String
-      required: true
-    - description: Force refresh the cached agent info from the Sysdig API.
-      name: force_refresh
-      type: Boolean
-      required: false
-      defaultValue: 'false'
-    description: Resolve a host MAC address to its Sysdig agent details (agent ID, customer ID, hostname). Result is cached per MAC address.
-    name: sysdig-agent-info-get
-    outputs:
-    - contextPath: Sysdig.Agent.agentId
-      description: The Sysdig agent ID.
-      type: String
-    - contextPath: Sysdig.Agent.customerId
-      description: The Sysdig customer ID.
-      type: String
-    - contextPath: Sysdig.Agent.hostName
-      description: The agent hostname.
-      type: String
-    - contextPath: Sysdig.Agent.machineId
-      description: The host MAC address.
-      type: String
-    - contextPath: Sysdig.Agent.hostId
-      description: The opaque host identifier.
-      type: String
-    - contextPath: Sysdig.Agent.clusterName
-      description: The Kubernetes cluster name.
-      type: String
-  - arguments:
-    - description: Force refresh the cached customer info from the Sysdig API.
-      name: force_refresh
-      type: Boolean
-      required: false
-      defaultValue: 'false'
-    description: Get the Sysdig customer ID and name. Result is cached per integration instance.
-    name: sysdig-customer-info-get
-    outputs:
-    - contextPath: Sysdig.Customer.customerId
-      description: The Sysdig customer ID.
-      type: String
-    - contextPath: Sysdig.Customer.customerName
-      description: The Sysdig customer name.
-      type: String
-  dockerimage: demisto/python3:3.12.11.3982393
+  -   name: execute-response-action
+      deprecated: false
+      description: "Execute response actions through the Sysdig API. Each action type requires a specific set of parameters.\nUse the actionType description to see which parameters are required for each action."
+      arguments:
+      -   name: actionType
+          description: "Action type to perform. Required parameters per action:\n- KILL_PROCESS: host_id, process_id (startTime defaults to -1)\n- KILL_CONTAINER: host_id, container_id\n- STOP_CONTAINER: host_id, container_id\n- PAUSE_CONTAINER: host_id, container_id\n- UNPAUSE_CONTAINER: host_id, container_id\n- START_CONTAINER: host_id, container_id\n- FILE_QUARANTINE: host_id, path_absolute (optional: container_id)\n- FILE_ACQUIRE: host_id, path_absolute (optional: container_id)\n- FILE_UNQUARANTINE: host_id, path_absolute, quarantined_file_path (optional: container_id)\n- DELETE_POD: k8s_cluster_name, k8s_namespace_name, k8s_pod_name\n- ROLLOUT_RESTART: k8s_cluster_name, k8s_namespace_name, k8s_workload_type, k8s_workload_name\n- ISOLATE_NETWORK: k8s_cluster_name, k8s_namespace_name, k8s_workload_type, k8s_workload_name (optional: network_protocol, network_port, network_cidr, network_direction)\n- DELETE_NETWORK_POLICY: k8s_cluster_name, k8s_namespace_name, network_policy_name\n- GET_LOGS: k8s_cluster_name, k8s_namespace_name (optional: k8s_workload_type, k8s_workload_name, k8s_pod_name, k8s_container_name, previous, all_containers)\n- KUBERNETES_VOLUME_SNAPSHOT: k8s_cluster_name, k8s_namespace_name (optional: k8s_pvc_name, k8s_workload_type, k8s_workload_name)\n- KUBERNETES_DELETE_VOLUME_SNAPSHOT: k8s_cluster_name, k8s_namespace_name, k8s_pvc_name, k8s_volume_snapshot_name\n- CAPTURE: host_id, capture_storage_config_id, capture_duration_ns, capture_past_duration_ns (optional: capture_filters, capture_max_size, container_id, capture_token)\n- IAM_QUARANTINE: cloud_provider, cloud_account_id (optional: ct_user_arn, ct_user_identity_type, ct_user)\n- IAM_UNQUARANTINE: cloud_provider, cloud_account_id, iam_policy_name, ct_user_identity_type, ct_user\n- MAKE_PRIVATE_CLOUD_RESOURCE: cloud_provider, cloud_account_id, cloud_resource_type, cloud_resource_name (optional: cloud_region)\n- UNDO_MAKE_PRIVATE_CLOUD_RESOURCE: cloud_provider, cloud_account_id, cloud_resource_type, cloud_resource_name, previous_public_access_settings (optional: cloud_region)\n- CLOUD_VOLUME_SNAPSHOT: cloud_provider, cloud_account_id, cloud_region, aws_instance_id\n- UNDO_CLOUD_VOLUME_SNAPSHOT: cloud_provider, cloud_account_id, cloud_region, snapshot_ids, aws_instance_id\n- FETCH_CLOUD_LOGS: cloud_provider, cloud_account_id, cloud_region, from_timestamp, to_timestamp (optional: ct_original_user, ct_name, ct_src)"
+          required: true
+          predefined:
+          -   KILL_PROCESS
+          -   KILL_CONTAINER
+          -   STOP_CONTAINER
+          -   PAUSE_CONTAINER
+          -   UNPAUSE_CONTAINER
+          -   START_CONTAINER
+          -   FILE_QUARANTINE
+          -   FILE_ACQUIRE
+          -   FILE_UNQUARANTINE
+          -   DELETE_POD
+          -   ROLLOUT_RESTART
+          -   ISOLATE_NETWORK
+          -   DELETE_NETWORK_POLICY
+          -   GET_LOGS
+          -   KUBERNETES_VOLUME_SNAPSHOT
+          -   KUBERNETES_DELETE_VOLUME_SNAPSHOT
+          -   CAPTURE
+          -   IAM_QUARANTINE
+          -   IAM_UNQUARANTINE
+          -   MAKE_PRIVATE_CLOUD_RESOURCE
+          -   UNDO_MAKE_PRIVATE_CLOUD_RESOURCE
+          -   CLOUD_VOLUME_SNAPSHOT
+          -   UNDO_CLOUD_VOLUME_SNAPSHOT
+          -   FETCH_CLOUD_LOGS
+          deprecated: false
+          hidden: false
+          auto: PREDEFINED
+      -   name: callerId
+          description: Unique caller identifier for audit trail.
+          required: true
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: host_id
+          description: 'Host ID where the agent runs. Required for: KILL_PROCESS, KILL_CONTAINER, STOP_CONTAINER, PAUSE_CONTAINER, UNPAUSE_CONTAINER, START_CONTAINER, FILE_QUARANTINE, FILE_ACQUIRE, FILE_UNQUARANTINE, CAPTURE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: container_id
+          description: 'Container ID. Required for: KILL_CONTAINER, STOP_CONTAINER, PAUSE_CONTAINER, UNPAUSE_CONTAINER, START_CONTAINER. Optional for: FILE_QUARANTINE, FILE_ACQUIRE, FILE_UNQUARANTINE, CAPTURE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: process_id
+          description: 'Process ID to kill. Required for: KILL_PROCESS.'
+          required: false
+          deprecated: false
+          type: Number
+          hidden: false
+      -   name: path_absolute
+          description: 'Absolute file path. Required for: FILE_QUARANTINE, FILE_ACQUIRE, FILE_UNQUARANTINE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: quarantined_file_path
+          description: 'Path of the quarantined file. Required for: FILE_UNQUARANTINE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: k8s_cluster_name
+          description: 'Kubernetes cluster name. Required for: DELETE_POD, ROLLOUT_RESTART, ISOLATE_NETWORK, DELETE_NETWORK_POLICY, GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT, KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: k8s_namespace_name
+          description: 'Kubernetes namespace. Required for: DELETE_POD, ROLLOUT_RESTART, ISOLATE_NETWORK, DELETE_NETWORK_POLICY, GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT, KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: k8s_pod_name
+          description: 'Kubernetes pod name. Required for: DELETE_POD. Optional for: GET_LOGS.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: k8s_workload_type
+          description: 'Kubernetes workload type (e.g. Deployment, StatefulSet, DaemonSet). Required for: ROLLOUT_RESTART, ISOLATE_NETWORK. Optional for: GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: k8s_workload_name
+          description: 'Kubernetes workload name. Required for: ROLLOUT_RESTART, ISOLATE_NETWORK. Optional for: GET_LOGS, KUBERNETES_VOLUME_SNAPSHOT.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: k8s_pvc_name
+          description: 'PVC name. Optional for: KUBERNETES_VOLUME_SNAPSHOT. Required for: KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: k8s_volume_snapshot_name
+          description: 'Volume snapshot name. Required for: KUBERNETES_DELETE_VOLUME_SNAPSHOT.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: k8s_container_name
+          description: 'Container name for log retrieval. Optional for: GET_LOGS.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: network_policy_name
+          description: 'Network policy name. Required for: DELETE_NETWORK_POLICY.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: network_protocol
+          description: 'Network protocol (TCP, UDP). Optional for: ISOLATE_NETWORK.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: network_port
+          description: 'Port number. Optional for: ISOLATE_NETWORK.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: network_cidr
+          description: 'CIDR range. Optional for: ISOLATE_NETWORK.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: network_direction
+          description: 'Traffic direction (ingress, egress). Optional for: ISOLATE_NETWORK.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: previous
+          description: 'Retrieve logs from previous container instance. Optional for: GET_LOGS.'
+          required: false
+          deprecated: false
+          type: Boolean
+          hidden: false
+      -   name: all_containers
+          description: 'Retrieve logs from all containers. Optional for: GET_LOGS.'
+          required: false
+          deprecated: false
+          type: Boolean
+          hidden: false
+      -   name: capture_storage_config_id
+          description: 'Remote storage configuration ID. Required for: CAPTURE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: capture_duration_ns
+          description: 'Capture duration in nanoseconds. Required for: CAPTURE.'
+          required: false
+          deprecated: false
+          type: Number
+          hidden: false
+      -   name: capture_past_duration_ns
+          description: 'How far back to capture in nanoseconds. Required for: CAPTURE.'
+          required: false
+          deprecated: false
+          type: Number
+          hidden: false
+      -   name: capture_filters
+          description: 'Syscall filter expression. Optional for: CAPTURE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: capture_max_size
+          description: 'Max capture file size in bytes (0 = no limit). Optional for: CAPTURE.'
+          required: false
+          deprecated: false
+          type: Number
+          hidden: false
+      -   name: capture_token
+          description: 'Base name of capture file. Optional for: CAPTURE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: cloud_provider
+          description: 'Cloud provider name (e.g. aws). Required for: IAM_QUARANTINE, IAM_UNQUARANTINE, MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE, CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT, FETCH_CLOUD_LOGS.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: cloud_account_id
+          description: 'Cloud account ID. Required for: IAM_QUARANTINE, IAM_UNQUARANTINE, MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE, CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT, FETCH_CLOUD_LOGS.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: cloud_region
+          description: 'Cloud region. Required for: CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT, FETCH_CLOUD_LOGS. Optional for: MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: ct_user_arn
+          description: 'AWS identity ARN. Optional for: IAM_QUARANTINE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: ct_user_identity_type
+          description: 'AWS identity type (IAMUser, Role, AssumedRole). Required for: IAM_UNQUARANTINE. Optional for: IAM_QUARANTINE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: ct_user
+          description: 'AWS identity name. Required for: IAM_UNQUARANTINE. Optional for: IAM_QUARANTINE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: ct_original_user
+          description: 'CloudTrail original user. Optional for: FETCH_CLOUD_LOGS.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: ct_name
+          description: 'CloudTrail event name. Optional for: FETCH_CLOUD_LOGS.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: ct_src
+          description: 'CloudTrail source. Optional for: FETCH_CLOUD_LOGS.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: iam_policy_name
+          description: 'IAM policy name to remove. Required for: IAM_UNQUARANTINE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: cloud_resource_type
+          description: 'Cloud resource type (rds, s3). Required for: MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: cloud_resource_name
+          description: 'Cloud resource name. Required for: MAKE_PRIVATE_CLOUD_RESOURCE, UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: previous_public_access_settings
+          description: 'Previous public access settings. Required for: UNDO_MAKE_PRIVATE_CLOUD_RESOURCE.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: aws_instance_id
+          description: 'AWS instance ID. Required for: CLOUD_VOLUME_SNAPSHOT, UNDO_CLOUD_VOLUME_SNAPSHOT.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: snapshot_ids
+          description: 'Comma-separated snapshot IDs. Required for: UNDO_CLOUD_VOLUME_SNAPSHOT.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: from_timestamp
+          description: 'Start timestamp for log search. Required for: FETCH_CLOUD_LOGS.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: to_timestamp
+          description: 'End timestamp for log search. Required for: FETCH_CLOUD_LOGS.'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      outputs:
+      -   description: Output of the response-actions API.
+          contextPath: execute_response_action.Output
+          type: Dict
+          important: false
+  -   name: create-system-capture
+      deprecated: false
+      description: Command to trigger a system capture, it will record all system calls at the host level.
+      arguments:
+      -   name: container_id
+          description: 'The container ID to apply the action. Example "container.id": "123456789123".'
+          required: true
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: host_name
+          description: The host name. Example "ip-1-1-1-1.us-west-1.compute.internal".
+          required: true
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: capture_name
+          description: The capture name.
+          required: true
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: agent_id
+          description: The agent ID.
+          required: true
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: customer_id
+          description: The customer ID.
+          required: true
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: machine_id
+          description: The machine ID/MAC. Example "01:aa:02:bb:03:cc".
+          required: true
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: scan_duration
+          description: Capture duration in seconds.
+          required: false
+          deprecated: false
+          type: Number
+          hidden: false
+      -   name: scap_filter
+          description: 'Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi).'
+          required: false
+          deprecated: false
+          type: String
+          hidden: false
+      outputs:
+      -   description: Output of the system capture created.
+          contextPath: create_system_capture.Output
+          type: Dict
+          important: false
+  -   name: get-capture-file
+      deprecated: false
+      description: Command to get a system capture based on the capture ID.
+      arguments:
+      -   name: capture_id
+          description: System Capture ID.
+          required: true
+          deprecated: false
+          type: Number
+          hidden: false
+      outputs:
+      -   description: Output of the system capture downloaded.
+          contextPath: get_capture_file.Output
+          type: Dict
+          important: false
+  -   name: get-action-execution
+      deprecated: false
+      description: Get the status and information of a triggered action execution.
+      arguments:
+      -   name: action_execution_id
+          description: The action exection ID.
+          required: true
+          deprecated: false
+          type: String
+          hidden: false
+      outputs:
+      -   description: Output of the action execution info.
+          contextPath: get_action_execution.Output
+          type: Dict
+          important: false
+  -   name: sysdig-agent-info-get
+      deprecated: false
+      description: Resolve a host MAC address to its Sysdig agent details (agent ID, customer ID, hostname). Result is cached per MAC address.
+      arguments:
+      -   name: machine_id
+          description: The MAC address (machineId) of the host to look up.
+          required: true
+          deprecated: false
+          type: String
+          hidden: false
+      -   name: force_refresh
+          description: Force refresh the cached agent info from the Sysdig API.
+          required: false
+          deprecated: false
+          type: Boolean
+          hidden: false
+      outputs:
+      -   description: The Sysdig agent ID.
+          contextPath: Sysdig.Agent.agentId
+          type: String
+          important: false
+      -   description: The Sysdig customer ID.
+          contextPath: Sysdig.Agent.customerId
+          type: String
+          important: false
+      -   description: The agent hostname.
+          contextPath: Sysdig.Agent.hostName
+          type: String
+          important: false
+      -   description: The host MAC address.
+          contextPath: Sysdig.Agent.machineId
+          type: String
+          important: false
+      -   description: The opaque host identifier.
+          contextPath: Sysdig.Agent.hostId
+          type: String
+          important: false
+      -   description: The Kubernetes cluster name.
+          contextPath: Sysdig.Agent.clusterName
+          type: String
+          important: false
+  -   name: sysdig-customer-info-get
+      deprecated: false
+      description: Get the Sysdig customer ID and name. Result is cached per integration instance.
+      arguments:
+      -   name: force_refresh
+          description: Force refresh the cached customer info from the Sysdig API.
+          required: false
+          deprecated: false
+          type: Boolean
+          hidden: false
+      outputs:
+      -   description: The Sysdig customer ID.
+          contextPath: Sysdig.Customer.customerId
+          type: String
+          important: false
+      -   description: The Sysdig customer name.
+          contextPath: Sysdig.Customer.customerName
+          type: String
+          important: false
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   isFetchSamples: true
   runonce: false
@@ -418,10 +523,11 @@ script:
   subtype: python3
   type: python
 marketplaces:
-- xsoar
-- marketplacev2
-- xsoar_saas
-- platform
+-   xsoar
+-   marketplacev2
+-   xsoar_saas
+-   platform
 tests:
-- No tests (auto formatted)
+-   No tests (auto formatted)
 fromversion: 6.10.0
+toversion: 99.99.99
