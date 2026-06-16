@@ -456,6 +456,7 @@ def fetch_events(client: Client, max_events: int) -> None:
     # Fetch all events in the window sequentially
     events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
     add_unique_id_field(events)
+    add_time_field(events)
     demisto.debug(f"[Fetch] Fetched {len(events)} raw events before dedup")
 
     # Deduplicate against previous run's high-water-mark IDs
@@ -463,27 +464,27 @@ def fetch_events(client: Client, max_events: int) -> None:
     demisto.debug(f"[Fetch] {len(new_events)} new events after dedup")
 
     if new_events:
-        add_time_field(new_events)
         send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Fetch] Sent {len(new_events)} events to XSIAM")
 
-    # Compute the new high-water mark: latest receivedDateTime + IDs at that timestamp
+    # New high-water mark. With no events, advance to the window end and reset seen_ids.
     new_last_fetch = format_datetime_for_filter(window_end_dt)
-    new_seen_ids: list[str] = seen_ids
+    new_seen_ids: list[str] = []
 
-    if new_events:
-        latest_time: str | None = new_events[-1].get("_time")
+    # Use ALL fetched events (not just published ones): timestamps are second-granular, so
+    # seen_ids must keep every ID at the boundary - including deduped-out ones - or the next
+    # run (re-fetching at ``>= boundary``) would re-send already-sent events as duplicates.
+    timed_events = [event for event in events if event.get("_time")]
 
-        if latest_time:
-            new_last_fetch = latest_time
-            ids_at_latest = [
-                eid for event in new_events if event.get("_time") == latest_time and (eid := event.get("_unique_id"))
-            ]
-            # If the high-water mark hasn't moved, merge with the existing seen_ids
-            if latest_time == last_fetch_str:
-                new_seen_ids = list(set(seen_ids) | set(ids_at_latest))
-            else:
-                new_seen_ids = ids_at_latest
+    if timed_events:
+        latest_time: str = max(event["_time"] for event in timed_events)
+        new_last_fetch = latest_time
+        ids_at_latest = [eid for event in timed_events if event.get("_time") == latest_time and (eid := event.get("_unique_id"))]
+        # If the high-water mark hasn't moved, merge with the existing seen_ids
+        if latest_time == last_fetch_str:
+            new_seen_ids = list(set(seen_ids) | set(ids_at_latest))
+        else:
+            new_seen_ids = ids_at_latest
 
     new_last_run = {
         "last_fetch": new_last_fetch,

@@ -606,3 +606,94 @@ class TestFetchEvents:
             fetch_events(mock_client, max_events=100)
 
         set_last_run.assert_not_called()
+
+    def test_fetch_window_caps_end_at_window_minutes_when_behind(self, mock_client, mocker):
+        """When far behind, a single run should only scan a FETCH_WINDOW_MINUTES slice.
+
+        The window end must be ``last_fetch + FETCH_WINDOW_MINUTES`` (not ``now``),
+        keeping each run small even with a large backlog.
+        """
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": []}
+
+        fetch_events(mock_client, max_events=100)
+
+        first_call_params = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]
+        # Start at last_fetch, end exactly FETCH_WINDOW_MINUTES later.
+        assert "2025-01-01T09:00:00Z" in first_call_params["$filter"]
+        assert "2025-01-01T09:05:00Z" in first_call_params["$filter"]
+
+    def test_empty_window_advances_last_fetch_to_window_end(self, mock_client, mocker):
+        """An empty window must still move last_fetch forward to the window end.
+
+        Otherwise we keep re-scanning the same empty slice and never make progress.
+        """
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": ["evt-old|bob@contoso.com"]}
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": []}
+
+        fetch_events(mock_client, max_events=100)
+
+        new_state = set_last_run.call_args.args[0]
+        assert new_state["last_fetch"] == "2025-01-01T09:05:00Z"
+        # No events found, so seen_ids should be reset for the new high-water mark.
+        assert new_state["seen_ids"] == []
+
+    def test_window_end_capped_at_now_when_caught_up(self, mock_client, mocker):
+        """When last_fetch + window would overshoot ``now``, the window must stop at ``now``."""
+        now = datetime(2025, 1, 1, 9, 2, 0, tzinfo=UTC)
+
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": []}
+
+        fetch_events(mock_client, max_events=100)
+
+        first_call_params = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]
+        # Window would be 09:05 but now is 09:02, so end is capped at now.
+        assert "2025-01-01T09:02:00Z" in first_call_params["$filter"]
+        assert "2025-01-01T09:05:00Z" not in first_call_params["$filter"]
+
+    def test_seen_ids_keeps_all_ids_at_boundary_timestamp(self, mock_client, mocker):
+        """All events sharing the high-water-mark timestamp must be retained in seen_ids.
+
+        The Graph API timestamps have second-level granularity, so several events
+        can share the exact same ``receivedDateTime``. If such events are split
+        across two runs, the next run's ``$filter`` (``ge boundary``) re-fetches the
+        ones already sent. They must still be recognized as duplicates, which
+        requires ``seen_ids`` to hold the full set of IDs at the boundary timestamp
+        - including events that were deduped out of this run's published events.
+        """
+        # Previous run already published evt-1 at the boundary timestamp (10:01:00).
+        last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": ["evt-1|bob@contoso.com"]}
+        fetched = [
+            # evt-1 is a duplicate (already in seen_ids) sharing the boundary timestamp.
+            {"id": "evt-1", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T10:01:00Z"},
+            # evt-2 is new but shares the same boundary timestamp.
+            {"id": "evt-2", "recipientAddress": "dave@contoso.com", "receivedDateTime": "2025-01-01T10:01:00Z"},
+        ]
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": fetched}
+
+        fetch_events(mock_client, max_events=100)
+
+        new_state = set_last_run.call_args.args[0]
+        assert new_state["last_fetch"] == "2025-01-01T10:01:00Z"
+        # Both the newly-sent event AND the already-seen duplicate at the boundary
+        # timestamp must be present so the next run can dedup the re-fetched event.
+        assert set(new_state["seen_ids"]) == {"evt-1|bob@contoso.com", "evt-2|dave@contoso.com"}
