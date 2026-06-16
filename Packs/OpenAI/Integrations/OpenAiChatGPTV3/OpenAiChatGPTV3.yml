@@ -581,6 +581,54 @@ script:
     - contextPath: OpenAiChatGPTV3.Response.response_id
       description: The OpenAI response ID used for multi-turn conversation continuity.
       type: String
+  - name: gpt-list-models
+    description: List all models available to the configured API key. Lets users discover models per their actual API-key tier without redeploying the integration when OpenAI ships new ones.
+    arguments: []
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Model.Id
+      description: The model identifier (e.g. gpt-4, gpt-3.5-turbo).
+      type: String
+    - contextPath: OpenAiChatGPTV3.Model.Created
+      description: Unix timestamp of when the model was created.
+      type: Number
+    - contextPath: OpenAiChatGPTV3.Model.OwnedBy
+      description: The organization or entity that owns the model.
+      type: String
+  - name: gpt-create-moderation
+    description: Run text or an image through the OpenAI Moderations API and return per-category flagging results. Exactly one of text, entry_id, or image_url must be provided.
+    arguments:
+    - name: text
+      description: One or more text strings to moderate. Exactly one of text, entry_id, or image_url must be provided.
+      required: false
+      isArray: true
+      type: String
+    - name: entry_id
+      description: War-room entry ID of an uploaded image file. The file is base64-encoded internally and posted as a data URL. Exactly one of text, entry_id, or image_url must be provided.
+      required: false
+      type: String
+    - name: image_url
+      description: Publicly reachable HTTP(S) URL of an image (limited to 20 MB). Exactly one of text, entry_id, or image_url must be provided.
+      required: false
+      type: String
+    - name: model
+      description: The moderation model to use.
+      required: false
+      defaultValue: omni-moderation-latest
+      auto: PREDEFINED
+      predefined:
+      - 'omni-moderation-latest'
+      - 'omni-moderation-2024-09-26'
+      type: String
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Moderation.Flagged
+      description: Whether the content was flagged by the moderation model.
+      type: Boolean
+    - contextPath: OpenAiChatGPTV3.Moderation.Categories
+      description: Object of boolean values indicating which categories were flagged.
+      type: Unknown
+    - contextPath: OpenAiChatGPTV3.Moderation.CategoryScores
+      description: Object of float values indicating the confidence score for each category.
+      type: Unknown
   runonce: false
   script: ''
   type: python

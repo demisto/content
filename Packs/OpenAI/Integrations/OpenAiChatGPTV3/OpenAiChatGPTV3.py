@@ -1,4 +1,6 @@
+import base64
 import json
+import mimetypes
 
 import demistomock as demisto  # noqa: F401
 import parse_emails
@@ -85,6 +87,8 @@ class ApiPaths:
 
     CHAT_COMPLETIONS = "v1/chat/completions"
     RESPONSES = "v1/responses"
+    MODELS = "v1/models"
+    MODERATIONS = "v1/moderations"
     AUDIT_LOGS = "v1/organization/audit_logs"
 
     @classmethod
@@ -281,7 +285,7 @@ class OpenAiClient(BaseClient):
         self.chatgpt_base_url = chatgpt_base_url.rstrip("/") + "/"
         self.headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
 
-    def get_chat_completions(
+    def  get_chat_completions(
         self, chat_context: List[dict[str, str]], completion_params: dict[str, str | None]
     ) -> dict[str, Any]:
         """Gets the response to a chat_completions request using the OpenAI API."""
@@ -299,7 +303,7 @@ class OpenAiClient(BaseClient):
 
         temperature = completion_params.get(ArgAndParamNames.TEMPERATURE, None)
         if temperature:
-            options[ArgAndParamNames.TEMPERATURE] = float(temperature)
+            options[ArgAndParamNames.TEMPERATURE] = float(temperature) 
 
         top_p = completion_params.get(ArgAndParamNames.TOP_P, None)
         if top_p:
@@ -314,6 +318,42 @@ class OpenAiClient(BaseClient):
             f"top_p={options.get(ArgAndParamNames.TOP_P)}"
         )
         return self._http_request(method="POST", url_suffix=ApiPaths.CHAT_COMPLETIONS, json_data=options, headers=self.headers)
+
+    def list_models(self) -> dict[str, Any]:
+        """List all models available to the configured API key (GET /v1/models).
+
+        Returns:
+            The parsed JSON response dict from the API containing a ``data`` list.
+        """
+        if not self.api_key:
+            raise DemistoException(
+                "API Key is required for the gpt-list-models command. "
+                "Configure the 'API Key' integration parameter and try again."
+            )
+        demisto.debug("[API Models] Listing available models.")
+        return self._http_request(method="GET", url_suffix=ApiPaths.MODELS, headers=self.headers)
+
+    def create_moderation(self, body: dict[str, Any]) -> dict[str, Any]:
+        """Call the OpenAI Moderations API (POST /v1/moderations).
+
+        Args:
+            body: The full JSON body containing ``model`` and ``input``.
+
+        Returns:
+            The parsed JSON response dict from the API.
+        """
+        if not self.api_key:
+            raise DemistoException(
+                "API Key is required for the gpt-create-moderation command. "
+                "Configure the 'API Key' integration parameter and try again."
+            )
+        demisto.debug(f"[API Moderations] Calling | model={body.get('model')}")
+        return self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.MODERATIONS,
+            json_data=body,
+            headers=self.headers,
+        )
 
     # region Responses API
     def create_response(self, body: dict[str, Any]) -> dict[str, Any]:
@@ -2294,6 +2334,160 @@ def get_events_command(client: OpenAiClient, args: dict[str, Any], params: dict[
     )
 
 
+def validate_create_moderation_args(args: dict[str, Any]) -> None:
+    """Validate that exactly one of text, entry_id, or image_url is provided.
+
+    Raises:
+        DemistoException: When zero or more than one input source is supplied.
+    """
+    text = argToList(args.get("text"))
+    entry_id = args.get("entry_id")
+    image_url = args.get("image_url")
+
+    provided = sum(bool(v) for v in (text, entry_id, image_url))
+    if provided == 0:
+        raise DemistoException("Exactly one of 'text', 'entry_id', or 'image_url' must be provided.")
+    if provided > 1:
+        raise DemistoException("Only one of 'text', 'entry_id', or 'image_url' may be provided at a time.")
+
+
+def _entry_id_to_data_url(entry_id: str) -> str:
+    """Read a war-room image file and return a base64 data-URL string.
+
+    Args:
+        entry_id: The war-room entry ID referencing an uploaded image file.
+
+    Returns:
+        A ``data:<mime>;base64,<payload>`` string suitable for the Moderations API.
+
+    Raises:
+        DemistoException: When the file cannot be found or is not an image type.
+    """
+    file_result = demisto.getFilePath(entry_id)
+    if not file_result:
+        raise DemistoException(f"Could not find file for entry_id '{entry_id}'.")
+
+    file_path: str = file_result.get("path", "")
+    file_name: str = file_result.get("name", "")
+
+    if not file_path:
+        raise DemistoException(f"File path is empty for entry_id '{entry_id}'.")
+
+    mime_type, _ = mimetypes.guess_type(file_name)
+    if mime_type is None or not mime_type.startswith("image/"):
+        raise DemistoException(
+            f"Unsupported or unknown image type for file '{file_name}' "
+            f"(detected MIME: {mime_type}). Only image files are supported."
+        )
+
+    with open(file_path, "rb") as f:
+        image_b64 = base64.b64encode(f.read()).decode("utf-8")
+
+    demisto.debug(
+        f"[Moderation] Encoded image from entry_id '{entry_id}' | "
+        f"file={file_name} | mime={mime_type} | b64_len={len(image_b64)}"
+    )
+    return f"data:{mime_type};base64,{image_b64}"
+
+
+def create_moderation_command(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
+    """Run content through the OpenAI Moderations API and return per-category results.
+
+    Supports text (array), a war-room image entry, or a public image URL.
+    """
+    validate_create_moderation_args(args)
+
+    model = args.get("model", "omni-moderation-latest")
+    text = argToList(args.get("text"))
+    entry_id = args.get("entry_id")
+    image_url = args.get("image_url")
+
+    # Build the ``input`` field based on which argument was supplied.
+    if text:
+        moderation_input: list[Any] = text
+    elif entry_id:
+        data_url = _entry_id_to_data_url(entry_id)
+        moderation_input = [{"type": "image_url", "image_url": {"url": data_url}}]
+    else:
+        # image_url
+        moderation_input = [{"type": "image_url", "image_url": {"url": image_url}}]
+
+    body: dict[str, Any] = {"model": model, "input": moderation_input}
+    response = client.create_moderation(body)
+
+    results_list: list[dict[str, Any]] = response.get("results", [])
+    if not results_list:
+        return CommandResults(
+            readable_output="No moderation results returned.",
+            outputs_prefix="OpenAiChatGPTV3.Moderation",
+            outputs={"Flagged": False, "Categories": {}, "CategoryScores": {}},
+        )
+
+    first_result = results_list[0]
+    flagged: bool = first_result.get("flagged", False)
+    categories: dict[str, bool] = first_result.get("categories", {})
+    category_scores: dict[str, float] = first_result.get("category_scores", {})
+
+    # Build human-readable table: one row per category.
+    table_rows = [
+        {
+            "Category": cat,
+            "Flagged": "✅" if categories.get(cat, False) else "❌",
+            "Score": f"{category_scores.get(cat, 0.0):.4f}",
+        }
+        for cat in categories
+    ]
+
+    readable_output = tableToMarkdown(
+        f"Moderation Results (Flagged: {'Yes' if flagged else 'No'})",
+        table_rows,
+        headers=["Category", "Flagged", "Score"],
+    )
+
+    outputs: dict[str, Any] = {
+        "Flagged": flagged,
+        "Categories": categories,
+        "CategoryScores": category_scores,
+    }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="OpenAiChatGPTV3.Moderation",
+        outputs=outputs,
+    )
+
+
+def list_models_command(client: OpenAiClient) -> CommandResults:
+    """List all models visible to the configured API key.
+
+    Calls ``GET /v1/models`` and returns a table of Id / Created / OwnedBy.
+    """
+    response = client.list_models()
+    models_data: list[dict[str, Any]] = response.get("data", [])
+
+    outputs = [
+        {
+            "Id": m.get("id", ""),
+            "Created": m.get("created", ""),
+            "OwnedBy": m.get("owned_by", ""),
+        }
+        for m in models_data
+    ]
+
+    readable_output = tableToMarkdown(
+        "OpenAI Models",
+        outputs,
+        headers=["Id", "Created", "OwnedBy"],
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="OpenAiChatGPTV3.Model",
+        outputs_key_field="Id",
+        outputs=outputs,
+    )
+
+
 # endregion
 
 
@@ -2315,6 +2509,8 @@ COMMAND_MAP: dict[str, Callable[["OpenAiClient", dict[str, Any], dict[str, Any]]
     ),
     "gpt-analyze-email-body": lambda client, args, params: analyze_email_body_command(client=client, args=args, params=params),
     "gpt-create-response": lambda client, args, params: create_response_command(args=args, client=client, params=params),
+    "gpt-list-models": lambda client, args, params: list_models_command(client=client),
+    "gpt-create-moderation": lambda client, args, params: create_moderation_command(client=client, args=args),
     "fetch-events": lambda client, args, params: fetch_events_command(client=client, params=params),
     "openai-get-events": lambda client, args, params: get_events_command(client=client, args=args, params=params),
 }

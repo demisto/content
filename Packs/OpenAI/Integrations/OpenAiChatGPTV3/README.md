@@ -309,3 +309,50 @@ Send a message to the OpenAI Responses API and receive the generated response. T
 | OpenAiChatGPTV3.Response.user         | String   | The user message sent.                                             |
 | OpenAiChatGPTV3.Response.assistant    | String   | The assistant response text.                                       |
 | OpenAiChatGPTV3.Response.response_id  | String   | The OpenAI response ID used for multi-turn conversation continuity.|
+
+### gpt-list-models
+
+***
+List all models available to the configured API key. Lets users discover models per their actual API-key tier without redeploying the integration when OpenAI ships new ones.
+
+`!gpt-list-models`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path**                       | **Type** | **Description**                                          |
+|--------------------------------|----------|----------------------------------------------------------|
+| OpenAiChatGPTV3.Model.Id       | String   | The model identifier (e.g. gpt-4, gpt-3.5-turbo).       |
+| OpenAiChatGPTV3.Model.Created  | Number   | Unix timestamp of when the model was created.            |
+| OpenAiChatGPTV3.Model.OwnedBy  | String   | The organization or entity that owns the model.          |
+
+### gpt-create-moderation
+
+***
+Run text or an image through the OpenAI Moderations API and return per-category flagging results. Exactly one of `text`, `entry_id`, or `image_url` must be provided.
+
+`!gpt-create-moderation text="I am going to hurt that person."`
+
+`!gpt-create-moderation image_url="https://example.com/image.png"`
+
+`!gpt-create-moderation entry_id="3@123"`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                          | **Required** |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| text               | One or more text strings to moderate. Exactly one of `text`, `entry_id`, or `image_url` must be provided.                                                | No           |
+| entry_id           | War-room entry ID of an uploaded image file. The file is base64-encoded internally and posted as a data URL. Exactly one of `text`, `entry_id`, or `image_url` must be provided. | No           |
+| image_url          | Publicly reachable HTTP(S) URL of an image (limited to 20 MB). Exactly one of `text`, `entry_id`, or `image_url` must be provided.                      | No           |
+| model              | The moderation model to use. Possible values: `omni-moderation-latest`, `omni-moderation-2024-09-26`. Default: `omni-moderation-latest`.                 | No           |
+
+#### Context Output
+
+| **Path**                                  | **Type** | **Description**                                                        |
+|-------------------------------------------|----------|------------------------------------------------------------------------|
+| OpenAiChatGPTV3.Moderation.Flagged        | Boolean  | Whether the content was flagged by the moderation model.               |
+| OpenAiChatGPTV3.Moderation.Categories     | Unknown  | Object of boolean values indicating which categories were flagged.     |
+| OpenAiChatGPTV3.Moderation.CategoryScores | Unknown  | Object of float values indicating the confidence score for each category. |

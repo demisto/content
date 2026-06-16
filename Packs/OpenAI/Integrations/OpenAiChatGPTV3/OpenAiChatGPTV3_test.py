@@ -28,6 +28,10 @@ from OpenAiChatGPTV3 import (
     fetch_audit_logs,
     fetch_compliance_logs,
     get_email_parts,
+    list_models_command,
+    create_moderation_command,
+    validate_create_moderation_args,
+    _entry_id_to_data_url,
     parse_collector_params,
     parse_concatenated_json,
     parse_event_types_to_fetch,
@@ -1935,6 +1939,259 @@ def test_parse_concatenated_json_handles_audit_log_jsonl_payload_with_trailing_n
     # Nested objects preserved through the parse.
     assert records[0]["principal"]["id"] == "FAKE_WORKSPACE_ID"
     assert records[1]["actor"]["type"] == "API_KEY"
+
+
+# endregion
+
+
+# region List Models tests
+def test_list_models_command(mocker):
+    """list_models_command returns a CommandResults with Id/Created/OwnedBy outputs."""
+    mock_response = {
+        "object": "list",
+        "data": [
+            {"id": "gpt-4", "created": 1687882410, "owned_by": "openai", "object": "model"},
+            {"id": "gpt-3.5-turbo", "created": 1677610602, "owned_by": "openai", "object": "model"},
+        ],
+    }
+    client = _make_client()
+    mocker.patch.object(client, "list_models", return_value=mock_response)
+
+    result = list_models_command(client=client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Model"
+    assert result.outputs_key_field == "Id"
+    assert len(result.outputs) == 2
+    assert result.outputs[0] == {"Id": "gpt-4", "Created": 1687882410, "OwnedBy": "openai"}
+    assert result.outputs[1] == {"Id": "gpt-3.5-turbo", "Created": 1677610602, "OwnedBy": "openai"}
+    assert "OpenAI Models" in result.readable_output
+
+
+def test_list_models_command_empty_response(mocker):
+    """list_models_command handles an empty data list gracefully."""
+    mock_response = {"object": "list", "data": []}
+    client = _make_client()
+    mocker.patch.object(client, "list_models", return_value=mock_response)
+
+    result = list_models_command(client=client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+    assert "OpenAI Models" in result.readable_output
+
+
+def test_list_models_requires_api_key():
+    """list_models raises DemistoException when no API key is configured."""
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException, match="API Key is required"):
+        client.list_models()
+
+
+# endregion
+
+
+# region Moderation tests
+MOCK_MODERATION_RESPONSE: dict = {
+    "id": "modr-abc123",
+    "model": "omni-moderation-latest",
+    "results": [
+        {
+            "flagged": True,
+            "categories": {
+                "violence": True,
+                "harassment/threatening": False,
+                "self-harm": False,
+            },
+            "category_scores": {
+                "violence": 0.9430,
+                "harassment/threatening": 0.2842,
+                "self-harm": 0.0001,
+            },
+        }
+    ],
+}
+
+
+def test_validate_create_moderation_args_no_input():
+    """validate_create_moderation_args raises when no input is provided."""
+    with pytest.raises(DemistoException, match="Exactly one of"):
+        validate_create_moderation_args({})
+
+
+def test_validate_create_moderation_args_multiple_inputs():
+    """validate_create_moderation_args raises when more than one input is provided."""
+    with pytest.raises(DemistoException, match="Only one of"):
+        validate_create_moderation_args({"text": "hello", "image_url": "https://example.com/img.png"})
+
+
+def test_validate_create_moderation_args_text_only():
+    """validate_create_moderation_args passes with text only."""
+    validate_create_moderation_args({"text": "hello"})
+
+
+def test_validate_create_moderation_args_entry_id_only():
+    """validate_create_moderation_args passes with entry_id only."""
+    validate_create_moderation_args({"entry_id": "3@123"})
+
+
+def test_validate_create_moderation_args_image_url_only():
+    """validate_create_moderation_args passes with image_url only."""
+    validate_create_moderation_args({"image_url": "https://example.com/img.png"})
+
+
+def test_create_moderation_command_text(mocker):
+    """create_moderation_command with text input returns correct outputs."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+
+    result = create_moderation_command(client=client, args={"text": "I will hurt someone"})
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Moderation"
+    assert result.outputs["Flagged"] is True
+    assert result.outputs["Categories"]["violence"] is True
+    assert result.outputs["Categories"]["harassment/threatening"] is False
+    assert result.outputs["CategoryScores"]["violence"] == pytest.approx(0.9430)
+    assert "✅" in result.readable_output
+    assert "❌" in result.readable_output
+
+    # Verify the API was called with text input
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["model"] == "omni-moderation-latest"
+    assert call_body["input"] == ["I will hurt someone"]
+
+
+def test_create_moderation_command_text_array(mocker):
+    """create_moderation_command with comma-separated text sends array."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+
+    result = create_moderation_command(
+        client=client,
+        args={"text": "hello,goodbye"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["input"] == ["hello", "goodbye"]
+    assert isinstance(result, CommandResults)
+
+
+def test_create_moderation_command_image_url(mocker):
+    """create_moderation_command with image_url sends correct body."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+
+    result = create_moderation_command(
+        client=client,
+        args={"image_url": "https://example.com/image.png"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["input"] == [{"type": "image_url", "image_url": {"url": "https://example.com/image.png"}}]
+    assert isinstance(result, CommandResults)
+
+
+def test_create_moderation_command_entry_id(mocker):
+    """create_moderation_command with entry_id base64-encodes the image."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+    mocker.patch(
+        "OpenAiChatGPTV3._entry_id_to_data_url",
+        return_value="data:image/png;base64,AAAA",
+    )
+
+    result = create_moderation_command(
+        client=client,
+        args={"entry_id": "3@123"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["input"] == [{"type": "image_url", "image_url": {"url": "data:image/png;base64,AAAA"}}]
+    assert isinstance(result, CommandResults)
+
+
+def test_create_moderation_command_empty_results(mocker):
+    """create_moderation_command handles empty results gracefully."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value={"results": []})
+
+    result = create_moderation_command(client=client, args={"text": "hello"})
+
+    assert result.outputs["Flagged"] is False
+    assert result.outputs["Categories"] == {}
+    assert "No moderation results" in result.readable_output
+
+
+def test_create_moderation_command_custom_model(mocker):
+    """create_moderation_command passes the model argument through."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+
+    create_moderation_command(
+        client=client,
+        args={"text": "test", "model": "omni-moderation-2024-09-26"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["model"] == "omni-moderation-2024-09-26"
+
+
+def test_create_moderation_requires_api_key():
+    """create_moderation raises DemistoException when no API key is configured."""
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException, match="API Key is required"):
+        client.create_moderation({"model": "omni-moderation-latest", "input": ["test"]})
+
+
+def test_entry_id_to_data_url(mocker, tmp_path):
+    """_entry_id_to_data_url encodes an image file to a data URL."""
+    # Create a fake PNG file (just needs the right extension for MIME detection)
+    fake_image = tmp_path / "test.png"
+    fake_image.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 10)
+
+    mocker.patch(
+        "OpenAiChatGPTV3.demisto.getFilePath",
+        return_value={"path": str(fake_image), "name": "test.png"},
+    )
+
+    result = _entry_id_to_data_url("3@123")
+
+    assert result.startswith("data:image/png;base64,")
+    # Verify the base64 payload is valid
+    import base64
+
+    payload = result.split(",", 1)[1]
+    decoded = base64.b64decode(payload)
+    assert decoded[:4] == b"\x89PNG"
+
+
+def test_entry_id_to_data_url_non_image(mocker, tmp_path):
+    """_entry_id_to_data_url raises for non-image files."""
+    fake_file = tmp_path / "doc.pdf"
+    fake_file.write_bytes(b"%PDF-1.4")
+
+    mocker.patch(
+        "OpenAiChatGPTV3.demisto.getFilePath",
+        return_value={"path": str(fake_file), "name": "doc.pdf"},
+    )
+
+    with pytest.raises(DemistoException, match="Unsupported or unknown image type"):
+        _entry_id_to_data_url("3@456")
+
+
+def test_entry_id_to_data_url_file_not_found(mocker):
+    """_entry_id_to_data_url raises when file is not found."""
+    mocker.patch(
+        "OpenAiChatGPTV3.demisto.getFilePath",
+        return_value=None,
+    )
+
+    with pytest.raises(DemistoException, match="Could not find file"):
+        _entry_id_to_data_url("3@999")
+
+
+# endregion
 
 
 # endregion
