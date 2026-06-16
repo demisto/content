@@ -56,8 +56,7 @@ class GSuiteClient:
         demisto.debug("calling access token from ucp service")
         method_id = get_ucp_method_unique_id(resolve_ucp_capability())
 
-        body = {"extra": {"subject": subject}} if subject else None
-        credentials = get_ucp_credentials(method_id, body=body)
+        credentials = get_ucp_credentials(method_id)
 
         cred_type = credentials.get("type")
         token_data = credentials.get(cred_type, credentials) if cred_type else credentials
@@ -65,7 +64,7 @@ class GSuiteClient:
         if not access_token:
             demisto.error("[UCP][GSuiteApiModule.py] access token is empty.")
             raise UcpException()
-        demisto.debug("Recieved access token from UCP Service")
+        demisto.debug("Received access token from UCP Service")
         return method_id, access_token
 
     def __init__(
@@ -85,7 +84,7 @@ class GSuiteClient:
         self.user_id = user_id
 
         # The method id is kept so the cached credentials can be invalidated and refreshed
-        # after an auth error. TODO fix this later
+        # after an auth error.
         self._ucp_method_id: str | None = None
         # ``_ucp_token`` is set only in UCP mode; its presence flags that the
         # credentials are token-based (no scopes/subject impersonation needed).
