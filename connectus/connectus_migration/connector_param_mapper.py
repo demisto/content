@@ -114,6 +114,8 @@ IGNORED_PARAMS: frozenset[str] = frozenset(
     {
         "is_mirroring",
         "mirroring",
+        "close_ticket",
+        "file_tag",
         "mirror_options",
         "close_incident",
         "mirror_limit",
