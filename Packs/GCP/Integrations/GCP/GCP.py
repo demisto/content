@@ -42,7 +42,14 @@ def build_http_client() -> httplib2.Http:
             proxy_pass=parsed_proxy.password,
         )
 
-    return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=not VERIFY_SSL)
+    return httplib2.Http(
+        proxy_info=proxy_info,
+        disable_ssl_certificate_validation=not VERIFY_SSL,
+        # Verify against the container's system CA bundle (where a user-uploaded
+        # certificate is placed) instead of httplib2's own bundled certs, so SSL
+        # verification reflects the environment's trust store - matching boto3/AWS behavior.
+        ca_certs=os.getenv("REQUESTS_CA_BUNDLE") or os.getenv("SSL_CERT_FILE"),
+    )
 
 
 class GCPServices(Enum):
@@ -103,13 +110,12 @@ class GCPServices(Enum):
         """
         Build a Google API client for this service.
 
-        On the marketplace path (Cortex XSOAR / Cortex XSIAM < 3.0) the integration's
-        proxy and SSL settings are honored: when a proxy is configured or SSL
-        verification is disabled, the credentials are wrapped in an ``AuthorizedHttp``
-        over a custom ``httplib2.Http`` transport. On the Cortex Platform path both
-        settings stay at their defaults (no proxy, SSL on), so the standard transport
-        is used and no custom HTTP client is built.
-
+        On the marketplace path (Cortex XSOAR / Cortex XSIAM < 3.0) the credentials are
+        always wrapped in an ``AuthorizedHttp`` over a custom ``httplib2.Http`` transport
+        so the user's *Use system proxy settings* and *Trust any certificate (not secure)*
+        options are actually enforced (e.g. SSL verification fails when no CA is configured
+        and the box is left unchecked). On the Cortex Platform path connectivity is handled
+        by the platform, so the Google client's standard transport is used.
 
         Args:
             credentials: Google Cloud credentials object.
@@ -118,10 +124,9 @@ class GCPServices(Enum):
         Returns:
             Google API client instance for this service.
         """
-        # Only build a custom HTTP transport when a proxy is requested or SSL
-        # verification is disabled (marketplace path). Otherwise (Cortex Platform /
-        # defaults) use the Google client's standard transport.
-        if (USE_PROXY or not VERIFY_SSL) and "http" not in kwargs:
+        # Marketplace path (no connector ID): manage our own transport so the proxy/SSL
+        # params are honored. Platform path: use the Google client's standard transport.
+        if not get_connector_id() and "http" not in kwargs:
             http = build_http_client()
             kwargs["http"] = AuthorizedHttp(credentials, http=http)
             return build(self.api_name, self.version, **kwargs)

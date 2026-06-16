@@ -5622,6 +5622,54 @@ def test_build_http_client_insecure_disables_ssl_validation(mocker):
     assert http_kwargs["disable_ssl_certificate_validation"] is True
 
 
+def test_build_http_client_ssl_verification_simulated_handshake(mocker):
+    """
+    Given:
+        - A simulated transport that fails the TLS handshake (SSLCertVerificationError)
+          when certificate validation is ON, and succeeds when it is OFF.
+    When:
+        - build_http_client builds an httplib2.Http and a request is made through it,
+          first with 'Trust any certificate' UNCHECKED (VERIFY_SSL=True) then CHECKED
+          (VERIFY_SSL=False).
+    Then:
+        - Unchecked (verify on) -> the request raises an SSL error.
+        - Checked (insecure on) -> the request succeeds.
+      This proves the checkbox genuinely controls SSL certificate verification end to end.
+    """
+    import ssl
+
+    import GCP
+
+    mocker.patch("GCP.handle_proxy", return_value={})
+
+    class FakeHttp:
+        """Stand-in for httplib2.Http that honors disable_ssl_certificate_validation."""
+
+        def __init__(self, proxy_info=None, disable_ssl_certificate_validation=False, ca_certs=None):
+            self.disable_ssl_certificate_validation = disable_ssl_certificate_validation
+
+        def request(self, uri, *args, **kwargs):
+            if not self.disable_ssl_certificate_validation:
+                # Verification is ON -> an untrusted/self-signed cert would fail the handshake.
+                raise ssl.SSLCertVerificationError("certificate verify failed: self-signed certificate")
+            return ({"status": 200}, b"{}")
+
+    mocker.patch("GCP.httplib2.Http", side_effect=FakeHttp)
+
+    # Unchecked -> VERIFY_SSL True -> verification enforced -> request fails.
+    mocker.patch.object(GCP, "USE_PROXY", False)
+    mocker.patch.object(GCP, "VERIFY_SSL", True)
+    http_verify_on = GCP.build_http_client()
+    with pytest.raises(ssl.SSLCertVerificationError):
+        http_verify_on.request("https://self-signed.example.com")
+
+    # Checked -> VERIFY_SSL False -> verification skipped -> request succeeds.
+    mocker.patch.object(GCP, "VERIFY_SSL", False)
+    http_verify_off = GCP.build_http_client()
+    status, _ = http_verify_off.request("https://self-signed.example.com")
+    assert status["status"] == 200
+
+
 def test_build_http_client_proxy_sets_proxy_info(mocker):
     """
     Given:
@@ -5659,23 +5707,24 @@ def test_build_http_client_proxy_sets_proxy_info(mocker):
     _, http_kwargs = mock_http.call_args
     assert http_kwargs["proxy_info"] == "proxy-info-obj"
     assert http_kwargs["disable_ssl_certificate_validation"] is False
+    # ca_certs must be passed so verification uses the system/container CA bundle.
+    assert "ca_certs" in http_kwargs
 
 
-def test_gcpservices_build_wraps_credentials_when_custom_http(mocker):
+def test_gcpservices_build_wraps_credentials_on_marketplace_path(mocker):
     """
     Given:
-        - The marketplace path with a custom http transport required (insecure enabled:
-          VERIFY_SSL is False).
+        - The marketplace path (no connector ID).
     When:
         - GCPServices.COMPUTE.build is called with credentials.
     Then:
-        - build() is invoked with an AuthorizedHttp http transport and WITHOUT
-          passing credentials directly (AuthorizedHttp carries them).
+        - The credentials are wrapped in an AuthorizedHttp custom transport so the
+          proxy/SSL settings are enforced, and build() is invoked WITHOUT passing
+          credentials directly (AuthorizedHttp carries them).
     """
     import GCP
 
-    mocker.patch.object(GCP, "USE_PROXY", False)
-    mocker.patch.object(GCP, "VERIFY_SSL", False)  # insecure -> marketplace custom transport
+    mocker.patch("GCP.get_connector_id", return_value=None)  # marketplace path
     fake_http = MagicMock()
     mocker.patch.object(GCP, "build_http_client", return_value=fake_http)
     mock_authorized = mocker.patch("GCP.AuthorizedHttp", return_value="authorized-http")
@@ -5691,20 +5740,19 @@ def test_gcpservices_build_wraps_credentials_when_custom_http(mocker):
     assert "credentials" not in kwargs
 
 
-def test_gcpservices_build_uses_default_transport_when_no_custom_http(mocker):
+def test_gcpservices_build_uses_default_transport_on_platform_path(mocker):
     """
     Given:
-        - The Cortex Platform path with default settings (proxy off, SSL on).
+        - The Cortex Platform path (a connector ID is present).
     When:
         - GCPServices.COMPUTE.build is called with credentials.
     Then:
         - build() is invoked with credentials directly and no http override.
-        - build_http_client is NOT called at all (no custom transport is constructed).
+        - build_http_client is NOT called (no custom transport is constructed).
     """
     import GCP
 
-    mocker.patch.object(GCP, "USE_PROXY", False)
-    mocker.patch.object(GCP, "VERIFY_SSL", True)
+    mocker.patch("GCP.get_connector_id", return_value="connector-123")  # platform path
     mock_http_client = mocker.patch.object(GCP, "build_http_client", return_value=None)
     mock_build = mocker.patch("GCP.build", return_value="client")
 
