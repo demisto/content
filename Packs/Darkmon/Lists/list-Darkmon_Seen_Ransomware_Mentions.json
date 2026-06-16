@@ -1,0 +1,13 @@
+{
+    "id": "Darkmon - Seen Ransomware Mentions",
+    "version": -1,
+    "name": "Darkmon - Seen Ransomware Mentions",
+    "description": "State store: ransomware mention IDs already actioned.",
+    "type": "plain_text",
+    "fromVersion": "6.8.0",
+    "itemVersion": "",
+    "locked": false,
+    "nameLocked": false,
+    "packID": "Darkmon",
+    "system": false
+}

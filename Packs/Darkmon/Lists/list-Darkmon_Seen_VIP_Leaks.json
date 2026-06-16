@@ -1,0 +1,13 @@
+{
+    "id": "Darkmon - Seen VIP Leaks",
+    "version": -1,
+    "name": "Darkmon - Seen VIP Leaks",
+    "description": "State store: composite '\u003cemail\u003e::\u003cleak_type\u003e::\u003cleak_id\u003e' entries already actioned.",
+    "type": "plain_text",
+    "fromVersion": "6.8.0",
+    "itemVersion": "",
+    "locked": false,
+    "nameLocked": false,
+    "packID": "Darkmon",
+    "system": false
+}

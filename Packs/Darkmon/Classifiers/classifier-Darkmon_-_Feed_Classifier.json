@@ -1,0 +1,28 @@
+{
+    "id": "Darkmon - Feed Classifier",
+    "version": -1,
+    "modified": "2026-06-11T00:00:00Z",
+    "fromVersion": "6.8.0",
+    "name": "Darkmon - Feed Classifier",
+    "description": "Routes raw Darkmon indicator records to the matching indicator type based on the type field returned by the Darkmon API.",
+    "type": "classification",
+    "feed": true,
+    "defaultIncidentType": "IP",
+    "keyTypeMap": {
+        "IP": "IP",
+        "Domain": "Domain",
+        "URL": "URL",
+        "Email": "Email",
+        "File": "File",
+        "Account": "Account"
+    },
+    "transformer": {
+        "complex": {
+            "root": "type"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "platform"
+    ]
+}

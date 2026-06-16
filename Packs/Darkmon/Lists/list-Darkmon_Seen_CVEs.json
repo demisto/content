@@ -1,0 +1,13 @@
+{
+    "id": "Darkmon - Seen CVEs",
+    "version": -1,
+    "name": "Darkmon - Seen CVEs",
+    "description": "State store: CVE IDs already actioned.",
+    "type": "plain_text",
+    "fromVersion": "6.8.0",
+    "itemVersion": "",
+    "locked": false,
+    "nameLocked": false,
+    "packID": "Darkmon",
+    "system": false
+}
