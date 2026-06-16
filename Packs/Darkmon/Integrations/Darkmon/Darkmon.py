@@ -1692,13 +1692,10 @@ def _fetch_kind(client: Client, kind: str, since: str, size: int) -> list[dict]:
         raw = client.get_ransomware(mentions=True, size=size, sort="-timestamp")
     elif kind == "Typosquatting Threat":
         raw = client.get_nrd(size=size, sort="-timestamp")
-    elif kind == "VIP Email Leak":
-        raw = (
-            client.get_board_leaks(size=size)
-            if hasattr(client, "get_board_leaks")
-            else {}
-        )
     else:
+        # VIP Email Leak is not fetched directly. The Darkmon API requires a
+        # per-email query (leak_type + email), which the Darkmon - VIP Email
+        # Monitor playbook handles by iterating over board-protected emails.
         return []
 
     records: list[dict] = []

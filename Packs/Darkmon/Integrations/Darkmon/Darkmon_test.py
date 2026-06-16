@@ -30,7 +30,10 @@ src = importlib.import_module("Darkmon")
 
 
 def make_client():
-    return src.Client(base_url="https://api.dev.darkmon.com/tip/2025.1", headers={"X-API-KEY": "testkey"})
+    return src.Client(
+        base_url="https://api.dev.darkmon.com/tip/2025.1",
+        headers={"X-API-KEY": "testkey"},
+    )
 
 
 def md_tokens(md: str) -> set:
@@ -62,7 +65,11 @@ def patch_http(monkeypatch, response):
 
 
 def page_obj(number=0, total_pages=1, total_elements=1):
-    return {"number": number, "totalPages": total_pages, "totalElements": total_elements}
+    return {
+        "number": number,
+        "totalPages": total_pages,
+        "totalElements": total_elements,
+    }
 
 
 # ===========================================================================
@@ -190,7 +197,14 @@ def test_extract_features_to_dict_vulnerability():
 
 
 def test_extract_features_to_dict_strips_none_values():
-    item = {"id": 1, "type": "ip", "value": "8.8.8.8", "ip": "8.8.8.8", "eventInfo": None, "expired": None}
+    item = {
+        "id": 1,
+        "type": "ip",
+        "value": "8.8.8.8",
+        "ip": "8.8.8.8",
+        "eventInfo": None,
+        "expired": None,
+    }
     out = src.extract_features_to_dict(item)
     assert "eventInfo" not in out
     assert "expired" not in out
@@ -237,12 +251,6 @@ INDICATORS_API_RESPONSE = {
 }
 
 
-
-
-
-
-
-
 # ===========================================================================
 # dmontip-global-search (and the per-type shortcuts: ip/url/domain/email/file)
 # ===========================================================================
@@ -253,15 +261,30 @@ SEARCH_API_RESPONSE = {
             "type": "Domains",
             "feature": [
                 {"accessorKey": "id", "displayName": "ID", "type": "long", "value": 42},
-                {"accessorKey": "name", "displayName": "Name", "type": "string", "value": "evil.com"},
+                {
+                    "accessorKey": "name",
+                    "displayName": "Name",
+                    "type": "string",
+                    "value": "evil.com",
+                },
                 {
                     "accessorKey": "classification",
                     "displayName": "Classification",
                     "type": "string",
                     "value": "malicious",
                 },
-                {"accessorKey": "ips", "displayName": "IPs", "type": "list", "value": ["203.0.113.1", "203.0.113.2"]},
-                {"accessorKey": "eventInfo", "displayName": "Event Info", "type": "string", "value": "Phishing"},
+                {
+                    "accessorKey": "ips",
+                    "displayName": "IPs",
+                    "type": "list",
+                    "value": ["203.0.113.1", "203.0.113.2"],
+                },
+                {
+                    "accessorKey": "eventInfo",
+                    "displayName": "Event Info",
+                    "type": "string",
+                    "value": "Phishing",
+                },
             ],
         },
     ],
@@ -277,12 +300,17 @@ def test_dmontip_global_search_validates_query():
 def test_dmontip_global_search_rejects_invalid_type(monkeypatch):
     patch_http(monkeypatch, SEARCH_API_RESPONSE)
     with pytest.raises(ValueError, match="Invalid indicator type"):
-        src.dmontip_global_search_command(make_client(), {"query": "evil.com", "type": "BogusType"})
+        src.dmontip_global_search_command(
+            make_client(), {"query": "evil.com", "type": "BogusType"}
+        )
 
 
 def test_dmontip_global_search_formats_query_and_endpoint(monkeypatch):
     calls = patch_http(monkeypatch, SEARCH_API_RESPONSE)
-    src.dmontip_global_search_command(make_client(), {"query": "evil.com", "type": "Domain", "page": "1", "size": "20"})
+    src.dmontip_global_search_command(
+        make_client(),
+        {"query": "evil.com", "type": "Domain", "page": "1", "size": "20"},
+    )
     assert calls["url_suffix"] == "search"
     assert calls["params"]["query"] == 'Domain: "evil.com"'
     assert calls["params"]["page"] == 0
@@ -291,7 +319,9 @@ def test_dmontip_global_search_formats_query_and_endpoint(monkeypatch):
 
 def test_dmontip_global_search_renders_with_pagination(monkeypatch):
     patch_http(monkeypatch, SEARCH_API_RESPONSE)
-    result = src.dmontip_global_search_command(make_client(), {"query": "evil.com", "type": "Domain"})
+    result = src.dmontip_global_search_command(
+        make_client(), {"query": "evil.com", "type": "Domain"}
+    )
     md = result.readable_output
     assert "Domains Information" in md  # uses TipFeature enum value
     assert "malicious" in md
@@ -305,7 +335,9 @@ def test_dmontip_global_search_renders_with_pagination(monkeypatch):
 def test_dmontip_global_search_outputs_are_dynamic_from_cells(monkeypatch):
     """SearchResult context items contain whatever cells the backend sent - no hardcoding."""
     patch_http(monkeypatch, SEARCH_API_RESPONSE)
-    result = src.dmontip_global_search_command(make_client(), {"query": "evil.com", "type": "Domain"})
+    result = src.dmontip_global_search_command(
+        make_client(), {"query": "evil.com", "type": "Domain"}
+    )
     sr = result.outputs["Darkmon.SearchResult"]
     assert len(sr) == 1
     item = sr[0]
@@ -324,24 +356,56 @@ def test_global_search_handles_unknown_tipfeature_types_dynamically(monkeypatch)
             {
                 "type": "ThreatActor",  # Python has never hardcoded this type
                 "feature": [
-                    {"accessorKey": "name", "displayName": "Name", "type": "string", "value": "LockBit"},
-                    {"accessorKey": "origin", "displayName": "Origin", "type": "string", "value": "RU"},
-                    {"accessorKey": "aliases", "displayName": "Aliases", "type": "list", "value": ["LB", "Bitwise"]},
-                    {"accessorKey": "firstSeen", "displayName": "First Seen", "type": "date", "value": "2024-01-01"},
+                    {
+                        "accessorKey": "name",
+                        "displayName": "Name",
+                        "type": "string",
+                        "value": "LockBit",
+                    },
+                    {
+                        "accessorKey": "origin",
+                        "displayName": "Origin",
+                        "type": "string",
+                        "value": "RU",
+                    },
+                    {
+                        "accessorKey": "aliases",
+                        "displayName": "Aliases",
+                        "type": "list",
+                        "value": ["LB", "Bitwise"],
+                    },
+                    {
+                        "accessorKey": "firstSeen",
+                        "displayName": "First Seen",
+                        "type": "date",
+                        "value": "2024-01-01",
+                    },
                 ],
             },
             {
                 "type": "Telegram",  # also not hardcoded anywhere
                 "feature": [
-                    {"accessorKey": "channel", "displayName": "Channel", "type": "string", "value": "@bad_actor_chat"},
-                    {"accessorKey": "subscribers", "displayName": "Subscribers", "type": "long", "value": 1500},
+                    {
+                        "accessorKey": "channel",
+                        "displayName": "Channel",
+                        "type": "string",
+                        "value": "@bad_actor_chat",
+                    },
+                    {
+                        "accessorKey": "subscribers",
+                        "displayName": "Subscribers",
+                        "type": "long",
+                        "value": 1500,
+                    },
                 ],
             },
         ],
         "page": page_obj(0, 1, 2),
     }
     patch_http(monkeypatch, response)
-    result = src.dmontip_global_search_command(make_client(), {"query": "lockbit", "type": "Source"})
+    result = src.dmontip_global_search_command(
+        make_client(), {"query": "lockbit", "type": "Source"}
+    )
     md = result.readable_output
     assert "ThreatActor Information" in md
     assert "Telegram Information" in md
@@ -368,7 +432,12 @@ def test_global_search_handles_brand_new_columns_without_code_changes(monkeypatc
             {
                 "type": "Domains",
                 "feature": [
-                    {"accessorKey": "name", "displayName": "Name", "type": "string", "value": "a.example"},
+                    {
+                        "accessorKey": "name",
+                        "displayName": "Name",
+                        "type": "string",
+                        "value": "a.example",
+                    },
                     {
                         "accessorKey": "reputation",
                         "displayName": "Reputation Score",
@@ -387,7 +456,9 @@ def test_global_search_handles_brand_new_columns_without_code_changes(monkeypatc
         "page": {},
     }
     patch_http(monkeypatch, response)
-    result = src.dmontip_global_search_command(make_client(), {"query": "a.example", "type": "Domain"})
+    result = src.dmontip_global_search_command(
+        make_client(), {"query": "a.example", "type": "Domain"}
+    )
     sr = result.outputs["Darkmon.SearchResult"][0]
     assert sr["reputation"] == 87
     assert sr["whoisRegistrar"] == "Namecheap"
@@ -402,16 +473,33 @@ def test_global_search_preserves_backend_column_order(monkeypatch):
             {
                 "type": "Domains",
                 "feature": [
-                    {"accessorKey": "zeta", "displayName": "Zeta", "type": "string", "value": "z"},
-                    {"accessorKey": "alpha", "displayName": "Alpha", "type": "string", "value": "a"},
-                    {"accessorKey": "middle", "displayName": "Middle", "type": "string", "value": "m"},
+                    {
+                        "accessorKey": "zeta",
+                        "displayName": "Zeta",
+                        "type": "string",
+                        "value": "z",
+                    },
+                    {
+                        "accessorKey": "alpha",
+                        "displayName": "Alpha",
+                        "type": "string",
+                        "value": "a",
+                    },
+                    {
+                        "accessorKey": "middle",
+                        "displayName": "Middle",
+                        "type": "string",
+                        "value": "m",
+                    },
                 ],
             },
         ],
         "page": {},
     }
     patch_http(monkeypatch, response)
-    result = src.dmontip_global_search_command(make_client(), {"query": "x", "type": "Domain"})
+    result = src.dmontip_global_search_command(
+        make_client(), {"query": "x", "type": "Domain"}
+    )
     md = result.readable_output
     # The header row must list Zeta before Alpha before Middle (backend order),
     # not alphabetical (which would be Alpha, Middle, Zeta).
@@ -430,14 +518,21 @@ def test_global_search_handles_missing_or_empty_feature_array(monkeypatch):
             {
                 "type": "Urls",
                 "feature": [
-                    {"accessorKey": "url", "displayName": "URL", "type": "string", "value": "https://x.example"},
+                    {
+                        "accessorKey": "url",
+                        "displayName": "URL",
+                        "type": "string",
+                        "value": "https://x.example",
+                    },
                 ],
             },
         ],
         "page": {},
     }
     patch_http(monkeypatch, response)
-    result = src.dmontip_global_search_command(make_client(), {"query": "x", "type": "Domain"})
+    result = src.dmontip_global_search_command(
+        make_client(), {"query": "x", "type": "Domain"}
+    )
     sr = result.outputs["Darkmon.SearchResult"]
     assert len(sr) == 3
     # First two contain only the type field
@@ -458,7 +553,12 @@ def test_global_search_handles_dict_value_in_cell(monkeypatch):
             {
                 "type": "IPs",
                 "feature": [
-                    {"accessorKey": "address", "displayName": "Address", "type": "string", "value": "1.2.3.4"},
+                    {
+                        "accessorKey": "address",
+                        "displayName": "Address",
+                        "type": "string",
+                        "value": "1.2.3.4",
+                    },
                     {
                         "accessorKey": "geo",
                         "displayName": "Geo",
@@ -471,7 +571,9 @@ def test_global_search_handles_dict_value_in_cell(monkeypatch):
         "page": {},
     }
     patch_http(monkeypatch, response)
-    result = src.dmontip_global_search_command(make_client(), {"query": "1.2.3.4", "type": "IP"})
+    result = src.dmontip_global_search_command(
+        make_client(), {"query": "1.2.3.4", "type": "IP"}
+    )
     sr = result.outputs["Darkmon.SearchResult"][0]
     # Context: dict preserved as-is
     assert sr["geo"] == {"country": "IT", "lat": 41.9, "lon": 12.5}
@@ -507,14 +609,18 @@ def test_extract_search_result_skips_cells_without_accessor_key():
 
 def test_extract_search_result_handles_malformed_feature_field():
     """Defensive: feature being a string/dict instead of list shouldn't crash."""
-    assert src.extract_search_result({"type": "X", "feature": "not a list"}) == {"type": "X"}
+    assert src.extract_search_result({"type": "X", "feature": "not a list"}) == {
+        "type": "X"
+    }
     assert src.extract_search_result({"type": "X", "feature": None}) == {"type": "X"}
     assert src.extract_search_result({}) == {}
 
 
 def test_dmontip_global_search_empty(monkeypatch):
     patch_http(monkeypatch, {"content": [], "page": page_obj(0, 1, 0)})
-    result = src.dmontip_global_search_command(make_client(), {"query": "nothing", "type": "Domain"})
+    result = src.dmontip_global_search_command(
+        make_client(), {"query": "nothing", "type": "Domain"}
+    )
     assert "No data found" in result.readable_output
 
 
@@ -528,7 +634,9 @@ def test_dmontip_global_search_empty(monkeypatch):
         (src.dmontip_search_file_command, "file", "Hash"),
     ],
 )
-def test_search_shortcut_commands_route_to_global_search(monkeypatch, cmd, arg_key, type_label):
+def test_search_shortcut_commands_route_to_global_search(
+    monkeypatch, cmd, arg_key, type_label
+):
     calls = patch_http(monkeypatch, {"content": [], "page": {}})
     cmd(make_client(), {arg_key: "value-x"})
     assert calls["url_suffix"] == "search"
@@ -583,19 +691,25 @@ def test_compromised_requires_type():
 
 def test_compromised_rejects_invalid_size():
     with pytest.raises(ValueError, match="size must be between 1 and 500"):
-        src.dmontip_get_compromised_command(make_client(), {"type": "accounts", "size": "600"})
+        src.dmontip_get_compromised_command(
+            make_client(), {"type": "accounts", "size": "600"}
+        )
 
 
 def test_compromised_rejects_invalid_page():
     with pytest.raises(ValueError, match="page must be >= 1"):
-        src.dmontip_get_compromised_command(make_client(), {"type": "accounts", "page": "-2"})
+        src.dmontip_get_compromised_command(
+            make_client(), {"type": "accounts", "page": "-2"}
+        )
 
 
 def test_compromised_accounts_endpoint_and_output(monkeypatch):
     # redaction off so we can assert raw password presence in markdown
     monkeypatch.setattr(src.demisto, "params", lambda: {"redact_secrets": False})
     calls = patch_http(monkeypatch, COMPROMISED_ACCOUNTS_RESPONSE)
-    result = src.dmontip_get_compromised_command(make_client(), {"type": "accounts", "page": "1", "size": "20"})
+    result = src.dmontip_get_compromised_command(
+        make_client(), {"type": "accounts", "page": "1", "size": "20"}
+    )
     assert calls["url_suffix"] == "leaks/accounts"
     assert calls["params"] == {"page": 0, "size": 20}
 
@@ -616,11 +730,17 @@ def test_compromised_accounts_endpoint_and_output(monkeypatch):
     [
         ("bank-cards", "leaks/bank-cards", "Darkmon.Compromised.BankCard"),
         ("combo-lists", "leaks/combo-lists", "Darkmon.Compromised.ComboList"),
-        ("public-breaches", "leaks/public-breaches", "Darkmon.Compromised.PublicBreach"),
+        (
+            "public-breaches",
+            "leaks/public-breaches",
+            "Darkmon.Compromised.PublicBreach",
+        ),
         ("employees", "leaks/accounts/employees", "Darkmon.Compromised.Employee"),
     ],
 )
-def test_compromised_other_types_route_correctly(monkeypatch, data_type, suffix, prefix):
+def test_compromised_other_types_route_correctly(
+    monkeypatch, data_type, suffix, prefix
+):
     calls = patch_http(monkeypatch, {"content": [{"id": 1}], "page": {}})
     result = src.dmontip_get_compromised_command(make_client(), {"type": data_type})
     assert calls["url_suffix"] == suffix
@@ -791,7 +911,10 @@ def test_nrd_endpoint_and_filter(monkeypatch):
     calls = patch_http(monkeypatch, NRD_RESPONSE)
     src.dmontip_get_nrd_command(make_client(), {})
     assert calls["url_suffix"] == "ioc"
-    assert calls["params"]["filter"] == '{"iocClassifications": ["NEWLY_REGISTERED_DOMAIN"]}'
+    assert (
+        calls["params"]["filter"]
+        == '{"iocClassifications": ["NEWLY_REGISTERED_DOMAIN"]}'
+    )
 
 
 def test_nrd_rendering(monkeypatch):
@@ -1020,10 +1143,15 @@ def test_boardprotection_rendering(monkeypatch):
     assert "cto@victim.example" in md_tokens(md)
     assert "APPROVED" in md
     assert "PENDING" in md
-    assert "ceo@victim.example, jdoe@victim.example" in md_tokens(md)  # tokens flattened
+    assert "ceo@victim.example, jdoe@victim.example" in md_tokens(
+        md
+    )  # tokens flattened
 
     out = result.outputs["Darkmon.BoardProtection"]
-    assert {item["value"] for item in out} == {"ceo@victim.example", "cto@victim.example"}
+    assert {item["value"] for item in out} == {
+        "ceo@victim.example",
+        "cto@victim.example",
+    }
 
 
 def test_boardprotection_empty(monkeypatch):
@@ -1123,7 +1251,9 @@ BOARDLEAK_BREACHES_RESPONSE = {
         ),
     ],
 )
-def test_boardemails_routes_renders_and_outputs(monkeypatch, leak_type, suffix, response, prefix, key_field, key_value):
+def test_boardemails_routes_renders_and_outputs(
+    monkeypatch, leak_type, suffix, response, prefix, key_field, key_value
+):
     calls = patch_http(monkeypatch, response)
     result = src.dmontip_get_boardemails_command(
         make_client(),
@@ -1161,12 +1291,16 @@ def test_boardemails_requires_email():
 
 def test_boardemails_size_bounds():
     with pytest.raises(ValueError, match="size must be between 1 and 100"):
-        src.dmontip_get_boardemails_command(make_client(), {"type": "accounts", "email": "a@b.com", "size": "500"})
+        src.dmontip_get_boardemails_command(
+            make_client(), {"type": "accounts", "email": "a@b.com", "size": "500"}
+        )
 
 
 def test_boardemails_empty(monkeypatch):
     patch_http(monkeypatch, {"content": [], "page": {}})
-    result = src.dmontip_get_boardemails_command(make_client(), {"type": "accounts", "email": "nobody@example.com"})
+    result = src.dmontip_get_boardemails_command(
+        make_client(), {"type": "accounts", "email": "nobody@example.com"}
+    )
     assert "No board leak accounts found" in result.readable_output
 
 
@@ -1229,12 +1363,6 @@ FEED_RESPONSE = {
 }
 
 
-
-
-
-
-
-
 # ===========================================================================
 # regression: dead methods + landscape rename
 # ===========================================================================
@@ -1269,11 +1397,23 @@ def test_get_compromised_data_rejects_unknown_type(monkeypatch):
         (src.dmontip_get_proxy_command, {}, "firstSeen,desc", "proxy"),
         (src.dmontip_get_nrd_command, {}, "timestamp,desc", "ioc"),
         (src.dmontip_get_tbf_command, {}, "timestamp,desc", "ioc"),
-        (src.dmontip_get_ransomware_command, {}, "publishedAt,desc", "/articles/ransomware"),
-        (src.dmontip_get_ransomware_command, {"type": "mentions"}, "publishedAt,desc", "/mentions/ransomware"),
+        (
+            src.dmontip_get_ransomware_command,
+            {},
+            "publishedAt,desc",
+            "/articles/ransomware",
+        ),
+        (
+            src.dmontip_get_ransomware_command,
+            {"type": "mentions"},
+            "publishedAt,desc",
+            "/mentions/ransomware",
+        ),
     ],
 )
-def test_default_sort_is_applied_when_user_omits(monkeypatch, cmd_func, args, expected_sort, expected_url):
+def test_default_sort_is_applied_when_user_omits(
+    monkeypatch, cmd_func, args, expected_sort, expected_url
+):
     calls = patch_http(monkeypatch, {"content": [], "page": {}})
     cmd_func(make_client(), args)
     assert calls["url_suffix"] == expected_url
@@ -1323,14 +1463,18 @@ def test_compromised_other_types_have_no_default_sort(monkeypatch, data_type, su
 
 def test_compromised_user_sort_overrides_combo_lists_default(monkeypatch):
     calls = patch_http(monkeypatch, {"content": [], "page": {}})
-    src.dmontip_get_compromised_command(make_client(), {"type": "combo-lists", "sort": "messageTime,asc"})
+    src.dmontip_get_compromised_command(
+        make_client(), {"type": "combo-lists", "sort": "messageTime,asc"}
+    )
     assert calls["params"]["sort"] == "messageTime,asc"
 
 
 def test_compromised_user_sort_works_on_types_without_default(monkeypatch):
     """User can opt into sorting for types that don't have a default."""
     calls = patch_http(monkeypatch, {"content": [], "page": {}})
-    src.dmontip_get_compromised_command(make_client(), {"type": "accounts", "sort": "lastCompromiseDate,desc"})
+    src.dmontip_get_compromised_command(
+        make_client(), {"type": "accounts", "sort": "lastCompromiseDate,desc"}
+    )
     assert calls["params"]["sort"] == "lastCompromiseDate,desc"
 
 
@@ -1348,13 +1492,15 @@ def test_yaml_advertises_sort_arg_with_correct_default(yml, cmd_name, expected_d
     cmd = next(c for c in yml["script"]["commands"] if c["name"] == cmd_name)
     sort_arg = next((a for a in cmd["arguments"] if a["name"] == "sort"), None)
     assert sort_arg is not None, f"{cmd_name} YAML missing 'sort' argument"
-    assert (
-        sort_arg.get("defaultValue") == expected_default
-    ), f"{cmd_name}: YAML default sort {sort_arg.get('defaultValue')!r} != expected {expected_default!r}"
+    assert sort_arg.get("defaultValue") == expected_default, (
+        f"{cmd_name}: YAML default sort {sort_arg.get('defaultValue')!r} != expected {expected_default!r}"
+    )
 
 
 def test_yaml_compromised_advertises_sort_arg_without_default(yml):
-    cmd = next(c for c in yml["script"]["commands"] if c["name"] == "dmontip-get-compromised")
+    cmd = next(
+        c for c in yml["script"]["commands"] if c["name"] == "dmontip-get-compromised"
+    )
     sort_arg = next((a for a in cmd["arguments"] if a["name"] == "sort"), None)
     assert sort_arg is not None
     # No defaultValue because the per-type default lives in Python
@@ -1377,7 +1523,9 @@ def test_yaml_compromised_advertises_sort_arg_without_default(yml):
         (src.dmontip_search_file_command, "file", "Hash"),
     ],
 )
-def test_reputation_shortcut_returns_list_for_single_value(monkeypatch, cmd, arg_key, type_label):
+def test_reputation_shortcut_returns_list_for_single_value(
+    monkeypatch, cmd, arg_key, type_label
+):
     patch_http(monkeypatch, {"content": [], "page": {}})
     out = cmd(make_client(), {arg_key: "one-value"})
     assert isinstance(out, list)
@@ -1466,10 +1614,16 @@ def test_yaml_commands_match_python_dispatcher(yml):
     # - 'fetch-indicators' is implicit when feed: true
     # - 'test-module' is implemented in Python only (it must NOT appear in
     #   the YAML per the contribution guidelines)
-    py_only = py_cmds - yaml_cmds - {"fetch-indicators", "test-module"}
+    py_only = (
+        py_cmds - yaml_cmds - {"fetch-indicators", "fetch-incidents", "test-module"}
+    )
     yaml_only = yaml_cmds - py_cmds
-    assert py_only == set(), f"Commands dispatched in main() but missing from YAML: {py_only}"
-    assert yaml_only == set(), f"Commands declared in YAML but not dispatched in main(): {yaml_only}"
+    assert py_only == set(), (
+        f"Commands dispatched in main() but missing from YAML: {py_only}"
+    )
+    assert yaml_only == set(), (
+        f"Commands declared in YAML but not dispatched in main(): {yaml_only}"
+    )
 
 
 def test_yaml_omits_test_module_command(yml):
@@ -1481,7 +1635,9 @@ def test_yaml_has_no_embedded_image_or_detaileddescription(yml):
     """The logo and detailed description live in Darkmon_image.png /
     Darkmon_description.md; the YAML must not embed them."""
     assert "image" not in yml, "Remove the base64 'image' key; use Darkmon_image.png"
-    assert "detaileddescription" not in yml, "Remove 'detaileddescription'; use Darkmon_description.md"
+    assert "detaileddescription" not in yml, (
+        "Remove 'detaileddescription'; use Darkmon_description.md"
+    )
 
 
 def test_integration_logo_meets_spec():
@@ -1516,37 +1672,64 @@ def test_description_file_present_and_nonempty():
 
 
 def test_yaml_compromised_predefined_matches_python(yml):
-    cmd = next(c for c in yml["script"]["commands"] if c["name"] == "dmontip-get-compromised")
-    yaml_types = {p for a in cmd["arguments"] if a["name"] == "type" for p in a["predefined"]}
+    cmd = next(
+        c for c in yml["script"]["commands"] if c["name"] == "dmontip-get-compromised"
+    )
+    yaml_types = {
+        p for a in cmd["arguments"] if a["name"] == "type" for p in a["predefined"]
+    }
     # Python endpoint_map keys
     expected = {"accounts", "bank-cards", "combo-lists", "public-breaches", "employees"}
     assert yaml_types == expected
 
 
 def test_yaml_boardemails_predefined_matches_python(yml):
-    cmd = next(c for c in yml["script"]["commands"] if c["name"] == "dmontip-get-boardemails")
-    yaml_types = {p for a in cmd["arguments"] if a["name"] == "type" for p in a["predefined"]}
+    cmd = next(
+        c for c in yml["script"]["commands"] if c["name"] == "dmontip-get-boardemails"
+    )
+    yaml_types = {
+        p for a in cmd["arguments"] if a["name"] == "type" for p in a["predefined"]
+    }
     expected = {"accounts", "combo-lists", "public-breaches"}
     assert yaml_types == expected
 
 
 def test_yaml_boardemails_requires_email_and_type(yml):
-    cmd = next(c for c in yml["script"]["commands"] if c["name"] == "dmontip-get-boardemails")
+    cmd = next(
+        c for c in yml["script"]["commands"] if c["name"] == "dmontip-get-boardemails"
+    )
     required = {a["name"] for a in cmd["arguments"] if a.get("required")}
     assert {"type", "email"} <= required
 
 
 def test_yaml_reputation_args_have_default_and_isarray(yml):
-    rep_commands = {"ip": "ip", "url": "url", "domain": "domain", "email": "email", "file": "file"}
+    rep_commands = {
+        "ip": "ip",
+        "url": "url",
+        "domain": "domain",
+        "email": "email",
+        "file": "file",
+    }
     for cmd_name, arg_name in rep_commands.items():
         cmd = next(c for c in yml["script"]["commands"] if c["name"] == cmd_name)
         arg = next(a for a in cmd["arguments"] if a["name"] == arg_name)
-        assert arg.get("default") is True, f"{cmd_name}: {arg_name} missing default: true"
-        assert arg.get("isArray") is True, f"{cmd_name}: {arg_name} missing isArray: true"
+        assert arg.get("default") is True, (
+            f"{cmd_name}: {arg_name} missing default: true"
+        )
+        assert arg.get("isArray") is True, (
+            f"{cmd_name}: {arg_name} missing isArray: true"
+        )
 
 
-def test_yaml_feed_config_has_required_params(yml):
-    config_names = {c["name"] for c in yml["configuration"]}
+def test_yaml_feed_config_has_required_params():
+    """Feed-required params live on DarkmonFeed.yml since v3 split the
+    feed integration out of Darkmon (which is now isfetch:true)."""
+    feed_yml_path = (
+        Path(__file__).resolve().parents[1] / "DarkmonFeed" / "DarkmonFeed.yml"
+    )
+    with open(feed_yml_path, encoding="utf-8") as f:
+        feed_yml = yaml.safe_load(f)
+    config_names = {c["name"] for c in feed_yml["configuration"]}
     required_for_feed = {
         "feed",
         "feedReputation",
@@ -1615,7 +1798,9 @@ def _search_response_with_classification(classification):
 
 
 def test_ip_reputation_emits_dbot_score_and_common_ip(monkeypatch):
-    monkeypatch.setattr(src.demisto, "params", lambda: {"feedReliability": "B - Usually reliable"})
+    monkeypatch.setattr(
+        src.demisto, "params", lambda: {"feedReliability": "B - Usually reliable"}
+    )
     patch_http(monkeypatch, _search_response_with_classification("malicious"))
 
     out = src.dmontip_search_ip_command(make_client(), {"ip": "203.0.113.5"})
@@ -1701,7 +1886,9 @@ def test_dbot_reliability_falls_back_to_F(monkeypatch):
     patch_http(monkeypatch, {"content": [], "page": {}})
 
     out = src.dmontip_search_ip_command(make_client(), {"ip": "1.1.1.1"})
-    assert out[0].outputs["DBotScore"]["Reliability"] == "F - Reliability cannot be judged"
+    assert (
+        out[0].outputs["DBotScore"]["Reliability"] == "F - Reliability cannot be judged"
+    )
 
 
 def test_reputation_array_input_produces_dbot_per_value(monkeypatch):
@@ -1742,7 +1929,9 @@ def test_redact_rows_skips_empty_secrets():
 def test_compromised_table_redacts_password_by_default(monkeypatch):
     monkeypatch.setattr(src.demisto, "params", dict)  # default True
     patch_http(monkeypatch, COMPROMISED_ACCOUNTS_RESPONSE)
-    out = src.dmontip_get_compromised_command(make_client(), {"type": "accounts", "page": "1", "size": "20"})
+    out = src.dmontip_get_compromised_command(
+        make_client(), {"type": "accounts", "page": "1", "size": "20"}
+    )
     assert "hunter2" not in out.readable_output
     assert "***" in out.readable_output
     # context retains the raw value for playbook automation
@@ -1759,17 +1948,15 @@ def test_compromised_table_keeps_password_when_redaction_off(monkeypatch):
 def test_boardemails_accounts_redacts_password_by_default(monkeypatch):
     monkeypatch.setattr(src.demisto, "params", dict)
     patch_http(monkeypatch, BOARDLEAK_ACCOUNTS_RESPONSE)
-    out = src.dmontip_get_boardemails_command(make_client(), {"type": "accounts", "email": "victim@example.com"})
+    out = src.dmontip_get_boardemails_command(
+        make_client(), {"type": "accounts", "email": "victim@example.com"}
+    )
     assert "hunter2" not in out.readable_output
     assert "***" in out.readable_output
 
 
 # ===========================================================================
 # ===========================================================================
-
-
-
-
 
 
 # ===========================================================================
@@ -1787,11 +1974,17 @@ def test_boardemails_accounts_redacts_password_by_default(monkeypatch):
         ("file", "File."),
     ],
 )
-def test_yaml_reputation_command_declares_dbot_and_common(yml, cmd_name, expected_common_prefix):
+def test_yaml_reputation_command_declares_dbot_and_common(
+    yml, cmd_name, expected_common_prefix
+):
     cmd = next(c for c in yml["script"]["commands"] if c["name"] == cmd_name)
     paths = {o["contextPath"] for o in cmd.get("outputs", [])}
-    assert any(p.startswith("DBotScore.") for p in paths), f"{cmd_name} missing DBotScore.* outputs"
-    assert any(p.startswith(expected_common_prefix) for p in paths), f"{cmd_name} missing {expected_common_prefix}* outputs"
+    assert any(p.startswith("DBotScore.") for p in paths), (
+        f"{cmd_name} missing DBotScore.* outputs"
+    )
+    assert any(p.startswith(expected_common_prefix) for p in paths), (
+        f"{cmd_name} missing {expected_common_prefix}* outputs"
+    )
 
 
 def test_yaml_has_redact_secrets_param(yml):
@@ -1805,9 +1998,9 @@ def test_yaml_has_base_url_with_prod_default(yml):
     """The Marketplace pack ships pointing at production. Dev team overrides per-instance."""
     base = next((c for c in yml["configuration"] if c["name"] == "base_url"), None)
     assert base is not None, "configuration must expose 'base_url'"
-    assert (
-        base.get("defaultvalue") == "https://api.darkmon.com/tip/2025.1"
-    ), "Production default expected; do not ship the marketplace pack with the .dev URL"
+    assert base.get("defaultvalue") == "https://api.darkmon.com/tip/2025.1", (
+        "Production default expected; do not ship the marketplace pack with the .dev URL"
+    )
     assert base.get("required") is False
 
 
@@ -1822,16 +2015,18 @@ def test_python_main_reads_base_url_from_params():
     import inspect
 
     src_text = inspect.getsource(src.main)
-    assert (
-        "params.get('base_url'" in src_text or 'params.get("base_url"' in src_text
-    ), "main() should read base_url from demisto.params() so the same code can target dev or prod via configuration."
+    assert "params.get('base_url'" in src_text or 'params.get("base_url"' in src_text, (
+        "main() should read base_url from demisto.params() so the same code can target dev or prod via configuration."
+    )
 
 
 def test_pack_version_bumped():
     pack_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     with open(os.path.join(pack_root, "pack_metadata.json"), encoding="utf-8") as fh:
         pack_metadata = json.load(fh)
-    assert pack_metadata["currentVersion"] != "0.0.1", "Bump pack_metadata.currentVersion before release."
+    assert pack_metadata["currentVersion"] != "0.0.1", (
+        "Bump pack_metadata.currentVersion before release."
+    )
 
 
 def test_yaml_credential_field_matches_python(yml):
@@ -1858,7 +2053,9 @@ def _list_yaml(subdir):
     d = os.path.join(_PACK_ROOT, subdir)
     if not os.path.isdir(d):
         return []
-    return sorted(os.path.join(d, f) for f in os.listdir(d) if f.endswith((".yml", ".yaml")))
+    return sorted(
+        os.path.join(d, f) for f in os.listdir(d) if f.endswith((".yml", ".yaml"))
+    )
 
 
 # ---- Indicator fields ----
@@ -1874,9 +2071,9 @@ EXPECTED_INDICATOR_FIELD_CLINAMES = {
 
 def test_indicator_fields_files_present():
     paths = _list_json("IndicatorFields")
-    assert len(paths) == len(
-        EXPECTED_INDICATOR_FIELD_CLINAMES
-    ), f"Expected {len(EXPECTED_INDICATOR_FIELD_CLINAMES)} indicator field files, got {len(paths)}"
+    assert len(paths) == len(EXPECTED_INDICATOR_FIELD_CLINAMES), (
+        f"Expected {len(EXPECTED_INDICATOR_FIELD_CLINAMES)} indicator field files, got {len(paths)}"
+    )
 
 
 @pytest.mark.parametrize("path", _list_json("IndicatorFields"))
@@ -1885,7 +2082,16 @@ def test_indicator_field_schema(path):
         data = json.load(f)
 
     # Core required fields
-    for k in ("id", "cliName", "name", "type", "description", "fromVersion", "marketplaces", "associatedTypes"):
+    for k in (
+        "id",
+        "cliName",
+        "name",
+        "type",
+        "description",
+        "fromVersion",
+        "marketplaces",
+        "associatedTypes",
+    ):
         assert k in data, f"{os.path.basename(path)}: missing '{k}'"
 
     assert data["cliName"] in EXPECTED_INDICATOR_FIELD_CLINAMES
@@ -1916,6 +2122,7 @@ EXPECTED_LAYOUT_NAMES = {
     "Darkmon URL",
     "Darkmon File",
     "Darkmon Email",
+    "Darkmon Account",
 }
 
 
@@ -1956,7 +2163,9 @@ def _all_incident_field_ids():
 
 
 def test_indicator_layouts_present():
-    names = {json.load(open(p, encoding="utf-8"))["name"] for p in _indicator_layout_paths()}
+    names = {
+        json.load(open(p, encoding="utf-8"))["name"] for p in _indicator_layout_paths()
+    }
     assert names == EXPECTED_LAYOUT_NAMES
 
 
@@ -1965,7 +2174,14 @@ def test_indicator_layout_schema_and_field_references(path):
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
 
-    for k in ("id", "name", "group", "fromVersion", "marketplaces", "indicatorsDetails"):
+    for k in (
+        "id",
+        "name",
+        "group",
+        "fromVersion",
+        "marketplaces",
+        "indicatorsDetails",
+    ):
         assert k in data, f"{os.path.basename(path)}: missing '{k}'"
     assert data["group"] == "indicator"
     assert data["fromVersion"] == "6.8.0"
@@ -1979,7 +2195,9 @@ def test_indicator_layout_schema_and_field_references(path):
                     referenced.add(item["fieldId"])
 
     unknown = referenced - _all_indicator_field_ids()
-    assert not unknown, f"{os.path.basename(path)} references unknown indicator fieldIds: {unknown}"
+    assert not unknown, (
+        f"{os.path.basename(path)} references unknown indicator fieldIds: {unknown}"
+    )
 
 
 EXPECTED_INCIDENT_LAYOUT_NAMES = {
@@ -1993,7 +2211,9 @@ EXPECTED_INCIDENT_LAYOUT_NAMES = {
 
 
 def test_incident_layouts_present():
-    names = {json.load(open(p, encoding="utf-8"))["name"] for p in _incident_layout_paths()}
+    names = {
+        json.load(open(p, encoding="utf-8"))["name"] for p in _incident_layout_paths()
+    }
     assert names == EXPECTED_INCIDENT_LAYOUT_NAMES
 
 
@@ -2015,8 +2235,14 @@ def test_incident_layout_schema_and_field_references(path):
                 if item.get("sectionItemType") == "field":
                     referenced.add(item["fieldId"])
 
-    unknown = referenced - _all_incident_field_ids()
-    assert not unknown, f"{os.path.basename(path)} references unknown incident fieldIds: {unknown}"
+    # OOTB incident fields reused from CommonScripts (not redefined in
+    # this pack per the v3 reviewer feedback on duplicate Darkmon Country /
+    # CVE / CVSS fields).
+    ootb_incident_field_ids = {"incident_country", "incident_cve", "incident_cvss"}
+    unknown = referenced - _all_incident_field_ids() - ootb_incident_field_ids
+    assert not unknown, (
+        f"{os.path.basename(path)} references unknown incident fieldIds: {unknown}"
+    )
 
 
 # ---- Enrichment sub-playbooks ----
@@ -2053,7 +2279,17 @@ def test_enrichment_playbook_schema(path):
     with open(path, encoding="utf-8") as f:
         data = yaml.safe_load(f)
 
-    for k in ("id", "name", "description", "fromversion", "marketplaces", "starttaskid", "tasks", "inputs", "outputs"):
+    for k in (
+        "id",
+        "name",
+        "description",
+        "fromversion",
+        "marketplaces",
+        "starttaskid",
+        "tasks",
+        "inputs",
+        "outputs",
+    ):
         assert k in data, f"{os.path.basename(path)}: missing '{k}'"
 
     assert data["fromversion"] == "6.8.0"
@@ -2165,7 +2401,9 @@ def test_pack_metadata_present_and_valid():
     ):
         assert k in data, f"pack_metadata.json missing '{k}'"
     assert data["support"] == "developer"
-    assert "certification" not in data, "'certification' is reserved for Cortex XSOAR; developer-supported packs must omit it"
+    assert "certification" not in data, (
+        "'certification' is reserved for Cortex XSOAR; developer-supported packs must omit it"
+    )
     assert data["currentVersion"] == "1.0.0"
 
 
@@ -2182,16 +2420,26 @@ def test_yaml_script_body_is_empty(yml):
 
 
 def test_yaml_has_fromversion(yml):
-    assert yml.get("fromversion"), "fromversion missing - XSOAR feed integrations should set 6.8.0+"
+    assert yml.get("fromversion"), (
+        "fromversion missing - XSOAR feed integrations should set 6.8.0+"
+    )
 
 
 def test_yaml_all_user_facing_commands_have_descriptions(yml):
-    missing = [c["name"] for c in yml["script"]["commands"] if c["name"] != "test-module" and not c.get("description")]
+    missing = [
+        c["name"]
+        for c in yml["script"]["commands"]
+        if c["name"] != "test-module" and not c.get("description")
+    ]
     assert not missing, f"Commands missing description: {missing}"
 
 
 def test_yaml_all_user_facing_commands_have_outputs(yml):
-    missing = [c["name"] for c in yml["script"]["commands"] if c["name"] != "test-module" and not c.get("outputs")]
+    missing = [
+        c["name"]
+        for c in yml["script"]["commands"]
+        if c["name"] != "test-module" and not c.get("outputs")
+    ]
     assert not missing, f"Commands missing outputs: {missing}"
 
 
@@ -2227,13 +2475,20 @@ def test_yaml_output_paths_appear_in_python(yml):
             if parts[0] in XSOAR_STANDARD_PREFIXES:
                 continue  # XSOAR-mandatory standard, validated by separate tests
             bad.append((cmd["name"], path))
-    assert not bad, "YAML outputs declare contextPaths not produced by Python: " + ", ".join(f"{c}: {p}" for c, p in bad)
+    assert not bad, (
+        "YAML outputs declare contextPaths not produced by Python: "
+        + ", ".join(f"{c}: {p}" for c, p in bad)
+    )
 
 
 def test_yaml_global_search_predefined_matches_python_allowed_types(yml):
     """The dropdown in YAML must be a subset of the types Python's global_search accepts."""
-    cmd = next(c for c in yml["script"]["commands"] if c["name"] == "dmontip-global-search")
-    yaml_types = {p for a in cmd["arguments"] if a["name"] == "type" for p in a["predefined"]}
+    cmd = next(
+        c for c in yml["script"]["commands"] if c["name"] == "dmontip-global-search"
+    )
+    yaml_types = {
+        p for a in cmd["arguments"] if a["name"] == "type" for p in a["predefined"]
+    }
 
     # Reflect Python's allowed_types from global_search
     import inspect

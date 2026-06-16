@@ -1,4 +1,5 @@
 """Tests for the Darkmon Feed integration (feed half of the Darkmon pack)."""
+
 import importlib
 import sys
 from pathlib import Path
@@ -23,12 +24,14 @@ def _client() -> "src.Client":
 
 # ---- Client construction ----
 
+
 def test_client_constructs():
     c = _client()
     assert c is not None
 
 
 # ---- Indicator field mapping ----
+
 
 def test_apply_indicator_fields_full():
     obj = {"fields": {}}
@@ -56,20 +59,30 @@ def test_apply_indicator_fields_partial():
 
 # ---- fetch_indicators_command ----
 
+
 def test_fetch_indicators_command_maps_types(monkeypatch):
     c = _client()
     monkeypatch.setattr(
-        c, "get_indicators",
-        lambda size=20: {"iocObjects": [
-            {"type": "IP",     "value": "8.8.8.8",          "classification": "scanner"},
-            {"type": "Domain", "value": "evil.test",        "classification": "phishing"},
-            {"type": "URL",    "value": "https://evil.test","classification": "phishing"},
-        ]},
+        c,
+        "get_indicators",
+        lambda size=20: {
+            "iocObjects": [
+                {"type": "IP", "value": "8.8.8.8", "classification": "scanner"},
+                {"type": "Domain", "value": "evil.test", "classification": "phishing"},
+                {
+                    "type": "URL",
+                    "value": "https://evil.test",
+                    "classification": "phishing",
+                },
+            ]
+        },
     )
     indicators = src.fetch_indicators_command(c, {"limit": 3, "feedTags": "darkmon"})
     assert len(indicators) == 3
     assert {i["type"] for i in indicators} == {
-        src.FeedIndicatorType.IP, src.FeedIndicatorType.Domain, src.FeedIndicatorType.URL,
+        src.FeedIndicatorType.IP,
+        src.FeedIndicatorType.Domain,
+        src.FeedIndicatorType.URL,
     }
     assert all(i["service"] == "Darkmon" for i in indicators)
     assert all("darkmon" in i["fields"].get("tags", []) for i in indicators)
@@ -78,11 +91,14 @@ def test_fetch_indicators_command_maps_types(monkeypatch):
 def test_fetch_indicators_command_skips_empty(monkeypatch):
     c = _client()
     monkeypatch.setattr(
-        c, "get_indicators",
-        lambda size=20: {"iocObjects": [
-            {"type": "IP", "value": ""},  # skipped
-            {"type": "IP", "value": "1.1.1.1"},
-        ]},
+        c,
+        "get_indicators",
+        lambda size=20: {
+            "iocObjects": [
+                {"type": "IP", "value": ""},  # skipped
+                {"type": "IP", "value": "1.1.1.1"},
+            ]
+        },
     )
     indicators = src.fetch_indicators_command(c, {"limit": 2})
     assert len(indicators) == 1
@@ -92,7 +108,8 @@ def test_fetch_indicators_command_skips_empty(monkeypatch):
 def test_fetch_indicators_command_tlp(monkeypatch):
     c = _client()
     monkeypatch.setattr(
-        c, "get_indicators",
+        c,
+        "get_indicators",
         lambda size=20: {"iocObjects": [{"type": "IP", "value": "1.1.1.1"}]},
     )
     indicators = src.fetch_indicators_command(c, {"limit": 1, "tlp_color": "AMBER"})
@@ -101,11 +118,17 @@ def test_fetch_indicators_command_tlp(monkeypatch):
 
 # ---- darkmon-get-indicators ----
 
+
 def test_darkmon_get_indicators_command(monkeypatch):
     c = _client()
     monkeypatch.setattr(
-        c, "get_indicators",
-        lambda size=20: {"iocObjects": [{"type": "IP", "value": "1.1.1.1", "classification": "scanner"}]},
+        c,
+        "get_indicators",
+        lambda size=20: {
+            "iocObjects": [
+                {"type": "IP", "value": "1.1.1.1", "classification": "scanner"}
+            ]
+        },
     )
     result = src.darkmon_get_indicators_command(c, {"limit": "1"})
     assert result.outputs_prefix == "Darkmon.Indicator"
