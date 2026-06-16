@@ -2141,8 +2141,9 @@ def test_get_remote_data_command_exclude_fields(mocker):
             "request_data": {
                 "search_to": 100,
                 "sort": {"field": "creation_time", "keyword": "asc"},
-                "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
                 "full_alert_fields": True,
+                "search_from": 0,
+                "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
             }
         },
         headers=client.headers,
@@ -2159,9 +2160,10 @@ def test_get_remote_data_command_exclude_fields(mocker):
             "request_data": {
                 "search_to": 100,
                 "sort": {"field": "creation_time", "keyword": "asc"},
+                "full_alert_fields": True,
+                "search_from": 0,
                 "alert_fields_to_exclude": ["fieldA", "fieldB"],
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
-                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -2177,9 +2179,10 @@ def test_get_remote_data_command_exclude_fields(mocker):
             "request_data": {
                 "search_to": 100,
                 "sort": {"field": "creation_time", "keyword": "asc"},
+                "full_alert_fields": True,
+                "search_from": 0,
                 "drop_nulls": True,
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
-                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -2195,10 +2198,11 @@ def test_get_remote_data_command_exclude_fields(mocker):
             "request_data": {
                 "search_to": 100,
                 "sort": {"field": "creation_time", "keyword": "asc"},
+                "full_alert_fields": True,
+                "search_from": 0,
                 "alert_fields_to_exclude": ["fieldA", "fieldB"],
                 "drop_nulls": True,
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
-                "full_alert_fields": True,
             }
         },
         headers=client.headers,
