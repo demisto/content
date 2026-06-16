@@ -12,6 +12,7 @@ This module owns:
 The main Darkmon integration owns everything else (reputation,
 dmontip-* automation, fetch-incidents).
 """
+
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -27,11 +28,11 @@ DEFAULT_SIZE = 20
 
 # Map Darkmon API indicator-type strings to XSOAR FeedIndicatorType values
 FEED_INDICATOR_TYPE_MAP = {
-    "IP":      FeedIndicatorType.IP,
-    "Domain":  FeedIndicatorType.Domain,
-    "URL":     FeedIndicatorType.URL,
-    "Email":   FeedIndicatorType.Email,
-    "File":    FeedIndicatorType.File,
+    "IP": FeedIndicatorType.IP,
+    "Domain": FeedIndicatorType.Domain,
+    "URL": FeedIndicatorType.URL,
+    "Email": FeedIndicatorType.Email,
+    "File": FeedIndicatorType.File,
     "Account": FeedIndicatorType.Account,
 }
 
@@ -45,7 +46,9 @@ class Client(BaseClient):
     against both integrations.
     """
 
-    def __init__(self, base_url: str, headers: dict, verify: bool = True, proxy: bool = False):
+    def __init__(
+        self, base_url: str, headers: dict, verify: bool = True, proxy: bool = False
+    ):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
     def validate_api_key(self) -> bool:
@@ -133,7 +136,8 @@ def darkmon_get_indicators_command(client: Client, args: dict) -> CommandResults
     raw = client.get_indicators(size=limit)
     iocs = raw.get("iocObjects", []) or []
     table = tableToMarkdown(
-        f"{VENDOR} Indicators (page)", iocs,
+        f"{VENDOR} Indicators (page)",
+        iocs,
         headers=["type", "value", "classification", "timestamp"],
         removeNull=True,
     )

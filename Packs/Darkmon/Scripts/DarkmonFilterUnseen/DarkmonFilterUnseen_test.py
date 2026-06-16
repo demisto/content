@@ -13,8 +13,14 @@ def test_main_no_items(mocker):
     Then:
         - return_results is called with an empty NewAccounts list
     """
-    mocker.patch.object(demisto, "args", return_value={"items": [], "id_field": "id", "seen_list": "test-list"})
-    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": "", "Type": 1}])
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"items": [], "id_field": "id", "seen_list": "test-list"},
+    )
+    mocker.patch.object(
+        demisto, "executeCommand", return_value=[{"Contents": "", "Type": 1}]
+    )
     mock_return = mocker.patch.object(DarkmonFilterUnseen, "return_results")
 
     DarkmonFilterUnseen.main()
@@ -36,12 +42,18 @@ def test_main_filters_seen_items(mocker):
         - Only the unseen item is returned in NewAccounts
     """
     items = [{"id": "abc123"}, {"id": "xyz789"}]
-    mocker.patch.object(demisto, "args", return_value={"items": items, "id_field": "id", "seen_list": "test-list"})
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"items": items, "id_field": "id", "seen_list": "test-list"},
+    )
     mocker.patch.object(
         demisto,
         "executeCommand",
         side_effect=[
-            [{"Contents": "abc123", "Type": 1}],  # getList returns abc123 as already seen
+            [
+                {"Contents": "abc123", "Type": 1}
+            ],  # getList returns abc123 as already seen
             [{"Contents": "", "Type": 1}],  # setList call
         ],
     )

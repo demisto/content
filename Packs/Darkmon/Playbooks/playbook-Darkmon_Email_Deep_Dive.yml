@@ -1,6 +1,6 @@
-id: silent-Darkmon - Email Deep Dive
+id: Darkmon - Email Deep Dive
 version: -1
-name: silent-Darkmon - Email Deep Dive
+name: Darkmon - Email Deep Dive
 description: Analyst-driven full Darkmon profile for a single email address. Runs board-protection check, all three boardemails categories, and global search. Outputs a unified summary into the incident War Room.
 fromversion: 6.8.0
 marketplaces:
@@ -309,4 +309,3 @@ outputs:
   type: unknown
 tests:
 - No tests
-issilent: true

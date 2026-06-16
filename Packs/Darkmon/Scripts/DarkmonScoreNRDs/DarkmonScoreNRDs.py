@@ -23,8 +23,12 @@ def main():
             timestamp = d.get("timestamp")
         else:
             value, entry_id, timestamp = str(d), "", ""
-        out = demisto.executeCommand("DarkmonLevenshtein", {"domain": value, "brands": ",".join(brands)})
-        ctx = out[0].get("EntryContext", {}).get("Darkmon.Levenshtein", {}) if out else {}
+        out = demisto.executeCommand(
+            "DarkmonLevenshtein", {"domain": value, "brands": ",".join(brands)}
+        )
+        ctx = (
+            out[0].get("EntryContext", {}).get("Darkmon.Levenshtein", {}) if out else {}
+        )
         distance = int(ctx.get("distance", 999))
         if distance <= max_distance:
             typosquats.append(

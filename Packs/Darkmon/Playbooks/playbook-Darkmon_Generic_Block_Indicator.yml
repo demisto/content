@@ -1,6 +1,6 @@
-id: silent-Darkmon - Generic Block Indicator
+id: Darkmon - Generic Block Indicator
 version: -1
-name: silent-Darkmon - Generic Block Indicator
+name: Darkmon - Generic Block Indicator
 description: Provider-agnostic indicator-block dispatcher. Reads the 'Darkmon - Block Provider' List for the configured block target (panos | fortinet | umbrella | cloudflare) and routes to the matching command. Falls back to logging the block intent in the War Room when no provider is configured.
 fromversion: 6.8.0
 marketplaces:
@@ -300,4 +300,3 @@ inputs:
 outputs: []
 tests:
 - No tests
-issilent: true

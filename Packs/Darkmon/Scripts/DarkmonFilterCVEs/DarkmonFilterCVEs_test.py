@@ -37,7 +37,9 @@ def test_main_filters_below_min_cvss(mocker):
         {"id": "CVE-2024-0001", "cvssScore": 9.5, "tags": []},
         {"id": "CVE-2024-0002", "cvssScore": 5.0, "tags": []},
     ]
-    mocker.patch.object(demisto, "args", return_value={"items": items, "min_cvss": "9.0"})
+    mocker.patch.object(
+        demisto, "args", return_value={"items": items, "min_cvss": "9.0"}
+    )
     mocker.patch.object(demisto, "executeCommand", return_value=None)
     mock_return = mocker.patch.object(DarkmonFilterCVEs, "return_results")
 

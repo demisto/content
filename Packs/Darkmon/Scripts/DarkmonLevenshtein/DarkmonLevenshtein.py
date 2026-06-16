@@ -46,7 +46,11 @@ def main():
         {
             "Type": entryTypes["note"],
             "ContentsFormat": formats["json"],
-            "Contents": {"domain": domain, "brand": best_brand, "distance": best_distance},
+            "Contents": {
+                "domain": domain,
+                "brand": best_brand,
+                "distance": best_distance,
+            },
             "EntryContext": {
                 "Darkmon.Levenshtein": {
                     "domain": domain,

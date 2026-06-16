@@ -1,6 +1,6 @@
-id: silent-Darkmon - EDR Alert Enrichment
+id: Darkmon - EDR Alert Enrichment
 version: -1
-name: silent-Darkmon - EDR Alert Enrichment
+name: Darkmon - EDR Alert Enrichment
 description: Designed to be invoked from CrowdStrike / SentinelOne / Defender alert playbooks. Takes the alert's IOCs, enriches each via Darkmon, and if any are scored Bad, escalates incident severity and notifies the SOC. Endpoint containment is left to the EDR-specific playbook.
 fromversion: 6.8.0
 marketplaces:
@@ -184,4 +184,3 @@ outputs:
   type: unknown
 tests:
 - No tests
-issilent: true

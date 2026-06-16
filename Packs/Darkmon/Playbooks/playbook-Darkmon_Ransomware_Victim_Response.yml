@@ -1,6 +1,6 @@
-id: silent-Darkmon - Ransomware Victim Response
+id: Darkmon - Ransomware Victim Response
 version: -1
-name: silent-Darkmon - Ransomware Victim Response
+name: Darkmon - Ransomware Victim Response
 description: Triggered when our company surfaces in a Darkmon ransomware mention. Verifies the match, opens a war-room channel via Generic Notify, pages the CISO, and prints next-step guidance for the customer's IR runbook.
 fromversion: 6.8.0
 marketplaces:
@@ -192,4 +192,3 @@ inputs:
 outputs: []
 tests:
 - No tests
-issilent: true

@@ -18,7 +18,11 @@ def main():
         try:
             res = demisto.executeCommand("getList", {"listName": name})
             content = res[0].get("Contents", "") if res else ""
-            return {line.strip() for line in (content or "").replace(",", "\n").splitlines() if line.strip()}
+            return {
+                line.strip()
+                for line in (content or "").replace(",", "\n").splitlines()
+                if line.strip()
+            }
         except Exception:
             return set()
 
@@ -44,7 +48,9 @@ def main():
 
     if new_ids and seen_list_name:
         merged = "\n".join(sorted(seen | set(new_ids)))
-        demisto.executeCommand("setList", {"listName": seen_list_name, "listData": merged})
+        demisto.executeCommand(
+            "setList", {"listName": seen_list_name, "listData": merged}
+        )
 
     return_results({"NewAccounts": new_items})
 

@@ -8,9 +8,15 @@ def main():
     min_cvss = float(args.get("min_cvss", "9.0"))
     tech_list_name = args.get("tech_stack_list")
 
-    res = demisto.executeCommand("getList", {"listName": tech_list_name}) if tech_list_name else None
+    res = (
+        demisto.executeCommand("getList", {"listName": tech_list_name})
+        if tech_list_name
+        else None
+    )
     content = (res[0].get("Contents", "") if res else "") or ""
-    tech = [t.strip().lower() for t in content.replace(",", "\n").splitlines() if t.strip()]
+    tech = [
+        t.strip().lower() for t in content.replace(",", "\n").splitlines() if t.strip()
+    ]
 
     out = []
     for it in items:

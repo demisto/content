@@ -1,6 +1,6 @@
-id: silent-Darkmon - Compromised Employee Auto-Disable
+id: Darkmon - Compromised Employee Auto-Disable
 version: -1
-name: silent-Darkmon - Compromised Employee Auto-Disable
+name: Darkmon - Compromised Employee Auto-Disable
 description: "Hourly poll of compromised employees. For each new entry, looks up the user\nin the configured directory and acts per the DisableMode playbook input:\n  - notify-only       : creates incident and notifies; no AD action.   [DEFAULT]\n  - approval-required : creates incident, blocks on a manual approval task,\n                        then disables on approve.\n  - auto-disable      : disables the account immediately, then notifies.\nAccounts in the 'Darkmon - Auto-Disable Allowlist' list are NEVER auto-disabled."
 fromversion: 6.8.0
 marketplaces:
@@ -363,4 +363,3 @@ outputs:
   type: unknown
 tests:
 - No tests
-issilent: true

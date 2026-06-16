@@ -18,7 +18,9 @@ def test_main_no_items(mocker):
         "args",
         return_value={"items": [], "brands_list": "test-brands", "max_distance": "2"},
     )
-    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": "", "Type": 1}])
+    mocker.patch.object(
+        demisto, "executeCommand", return_value=[{"Contents": "", "Type": 1}]
+    )
     mock_return = mocker.patch.object(DarkmonScoreNRDs, "return_results")
 
     DarkmonScoreNRDs.main()

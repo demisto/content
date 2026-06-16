@@ -12,7 +12,9 @@ def _get_seen(seen_list_name):
 
 
 def _put_seen(seen_list_name, seen):
-    demisto.executeCommand("setList", {"listName": seen_list_name, "listData": "\n".join(sorted(seen))})
+    demisto.executeCommand(
+        "setList", {"listName": seen_list_name, "listData": "\n".join(sorted(seen))}
+    )
 
 
 def main():
@@ -28,9 +30,16 @@ def main():
     for email in emails:
         for leak_type in ("accounts", "combo-lists", "public-breaches"):
             try:
-                res = demisto.executeCommand("dmontip-get-boardemails", {"type": leak_type, "email": email, "size": "100"})
+                res = demisto.executeCommand(
+                    "dmontip-get-boardemails",
+                    {"type": leak_type, "email": email, "size": "100"},
+                )
                 ctx = res[0].get("EntryContext", {}) if res else {}
-                singular = {"accounts": "Account", "combo-lists": "ComboList", "public-breaches": "PublicBreach"}[leak_type]
+                singular = {
+                    "accounts": "Account",
+                    "combo-lists": "ComboList",
+                    "public-breaches": "PublicBreach",
+                }[leak_type]
                 items = ctx.get(f"Darkmon.BoardLeak.{singular}") or []
             except Exception as e:
                 demisto.error(f"VIP fetch failed for {email}/{leak_type}: {e}")
