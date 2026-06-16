@@ -739,6 +739,29 @@ def is_single_capability(results):
     return len(results) == 2
 
 
+def check_param_in_results(fp, results):
+    for v in results.values():
+        if fp in v:
+            return True
+    return False
+
+
+def update_feed_mapping(results, integration_yml):
+    found_params = []
+    if not FETCH_INDICATORS_CAPABILITIES in results:
+        for p in ["feedExpirationPolicy", "feedExpirationInterval", "integration_reliability"]:
+            for param in integration_yml.get("configuration", []) or []:
+                if p == param.get("name", ""):
+                    found_params.append(p)
+                    break
+
+    if found_params:
+        for fp in found_params:
+            if not check_param_in_results(fp, results):
+                results["general_configurations"].append(fp)
+    return results
+
+
 def map_params_to_capabilities(
     capabilities: dict[str, list[str]],
     command_params: dict,
@@ -996,7 +1019,8 @@ def generate_param_mapping(
         integration_yml=integration_yml,  # enables Phase 2.1 elevation + Phase 2.6
         elevated_out=elevated,
     )
-
+    result = update_feed_mapping(result, integration_yml)
+    output_path.write_text(json.dumps(result, indent=2, sort_keys=True))
     logger.info(f"Param mapping written to {output_path}")
 
     # Surface the required test-module params that must be elevated to the

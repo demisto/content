@@ -1286,6 +1286,11 @@ def build_handler_yaml(
             "service": "xsoar",
             "endpoint": "/settings/integration/connector/verification",
         },
+        "test_connection_metro": {
+            "type": "service",
+            "service": "xsoar",
+            "endpoint": "/settings/integration/connector/verification",
+        }
     }
 
 
@@ -7217,20 +7222,25 @@ def attach_per_profile_connection_fields(
     all_triggers: list[dict] = []
 
     for profile in profiles:
-        # Dedup prefix is the PROFILE's own id verbatim (auth-type agnostic),
-        # NOT a single integration-wide slug. Every non-auth field is duplicated
-        # into every profile; the first profile to claim a bare id keeps it, and
-        # each subsequent profile prefixes its duplicate with that profile's id
-        # — e.g. ``passthrough.github_passthrough_secondary_url``. Using one
+        # Dedup prefix is the PROFILE's own id (auth-type agnostic), NOT a
+        # single integration-wide slug. Every non-auth field is duplicated into
+        # every profile; the first profile to claim a bare id keeps it, and each
+        # subsequent profile prefixes its duplicate with that profile's id —
+        # e.g. ``passthrough_github_passthrough_secondary_url``. Using one
         # integration slug for all profiles would make the 3rd+ profile's
         # prefixed id collide with the 2nd profile's, silently producing
         # duplicate ids across profiles. Per-profile ids are globally unique by
         # construction, so the prefixed ids never collide regardless of how many
-        # profiles share a type. The profile id is used verbatim (it already
-        # contains the ``<type>.<slug>`` shape, e.g. ``passthrough.github``);
-        # do NOT run it through ``_slug_word`` or the leading ``.`` segment is
+        # profiles share a type.
+        #
+        # The profile id carries the ``<type>.<slug>`` shape (e.g.
+        # ``passthrough.github``); the ``.`` is replaced with ``_`` here so the
+        # resulting field ids (and the serializer ``field_mappings`` + engine
+        # ``triggers`` that reference them, all derived from this prefix via
+        # ``_maybe_prefixed_id``) are dot-free and stay mutually consistent.
+        # Do NOT run the id through ``_slug_word`` or the ``<type>`` segment is
         # lost. Falls back to the integration slug only for an unnamed profile.
-        prefix = profile.get("id", "") or _slug_word(integration_id)
+        prefix = (profile.get("id", "") or _slug_word(integration_id)).replace(".", "_")
 
         cfgs = profile.setdefault("configurations", [{"fields": []}])
         if not cfgs:
