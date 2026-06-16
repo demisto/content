@@ -13,6 +13,7 @@ from __future__ import annotations
 from normalizers import (
     HARD_IGNORE_PARAM_NAMES,
     KNOWN_GAP_IGNORE_REASONS,
+    SERVER_BUG_IGNORE_REASONS,
     normalize_for_diff,
 )
 
@@ -223,24 +224,21 @@ def test_credentials_non_dict_value_left_untouched():
     assert kept == {"credentials": "not-a-dict"}
 
 
-def test_isfetch_is_ignored_until_connector_support():
-    """KNOWN GAP: the connector does not currently emit `isFetch`, so parity drops
-    it on both sides and records it as an explicit ignore (surfaced as OK_IGNORED),
-    rather than flagging MISSING_IN_CONNECTOR. To be removed once the connector
-    emits isFetch."""
+def test_isfetch_is_compared_not_ignored():
+    """RESOLVED GAP: the connector now emits `isFetch` at runtime, so it must be
+    KEPT and compared (NOT dropped as a known-gap ignore). Regression guard
+    against re-adding `isFetch` to KNOWN_GAP_IGNORE_REASONS."""
     raw = {"url": "x", "isFetch": True}
     kept, dropped = normalize_for_diff(raw, _YML, side="integration")
-    assert "isFetch" not in kept
-    reasons = {d["name"]: d["reason"] for d in dropped}
-    assert reasons["isFetch"] == "isfetch_not_emitted_by_connector"
+    assert kept.get("isFetch") is True
+    assert all(d["name"] != "isFetch" for d in dropped)
 
 
-def test_isfetch_ignored_on_connector_side_too():
+def test_isfetch_compared_on_connector_side_too():
     raw = {"url": "x", "isFetch": True}
     kept, dropped = normalize_for_diff(raw, _YML, side="connector")
-    assert "isFetch" not in kept
-    reasons = {d["name"]: d["reason"] for d in dropped}
-    assert reasons["isFetch"] == "isfetch_not_emitted_by_connector"
+    assert kept.get("isFetch") is True
+    assert all(d["name"] != "isFetch" for d in dropped)
 
 
 # ---------------------------------------------------------------------------
@@ -303,3 +301,69 @@ def test_type9_credentials_with_real_identifier_still_compared():
     assert kept_b == {"credentials": {"identifier": "bob", "password": "pw"}}
     # Differing identifiers → differing reduced dicts → NOT a false-OK.
     assert kept_a != kept_b
+
+
+# ---------------------------------------------------------------------------
+# Category 3 — alertType is a SERVER BUG (explicit named ignore)
+# ---------------------------------------------------------------------------
+def test_alerttype_is_explicitly_ignored_as_server_bug():
+    """The XSOAR server wrongly injects `alertType` into the integration
+    demisto.params(); the connector never carries it. It must be dropped with a
+    dedicated server-bug reason (surfaced as OK_IGNORED, never EXTRA_IN_INTEGRATION
+    / MISSING / fail)."""
+    raw = {"url": "x", "alertType": "Some Alert Type"}
+    kept, dropped = normalize_for_diff(raw, _YML, side="integration")
+    assert "alertType" not in kept
+    reasons = {d["name"]: d["reason"] for d in dropped}
+    assert reasons["alertType"] == "server_injected_alerttype_xsoar_bug"
+
+
+def test_alerttype_ignored_on_connector_side_too():
+    """alertType is dropped on the connector side as well (defensive — the
+    connector should never carry it, but if it ever did it is still ignored)."""
+    raw = {"url": "x", "alertType": "Some Alert Type"}
+    kept, dropped = normalize_for_diff(raw, _YML, side="connector")
+    assert "alertType" not in kept
+    reasons = {d["name"]: d["reason"] for d in dropped}
+    assert reasons["alertType"] == "server_injected_alerttype_xsoar_bug"
+
+
+def test_server_bug_ignore_reasons_membership():
+    assert SERVER_BUG_IGNORE_REASONS["alertType"] == "server_injected_alerttype_xsoar_bug"
+
+
+# ---------------------------------------------------------------------------
+# Category 2 — connector-only framework fields (never EXTRA_IN_CONNECTOR)
+# ---------------------------------------------------------------------------
+_CONNECTOR_ONLY_FRAMEWORK_FIELDS = [
+    "mappingId",
+    "incomingMapperId",
+    "outgoingMapperId",
+    "engine",
+    "engineGroup",
+    "defaultIgnore",
+    "integrationLogLevel",
+]
+
+
+def test_connector_only_framework_fields_all_hard_ignored():
+    """All seven connector-only framework fields are covered by the connector-side
+    ignore policy (HARD_IGNORE_PARAM_NAMES), so they can never surface as
+    EXTRA_IN_CONNECTOR."""
+    for name in _CONNECTOR_ONLY_FRAMEWORK_FIELDS:
+        assert name in HARD_IGNORE_PARAM_NAMES, name
+
+
+def test_connector_only_framework_fields_dropped_on_connector_side():
+    """When a connector-only framework field appears ONLY on the connector side it
+    is dropped (kept out of the MUST-COMPARE bucket) so the diff never flags it
+    EXTRA_IN_CONNECTOR."""
+    raw = {"url": "x"}
+    for name in _CONNECTOR_ONLY_FRAMEWORK_FIELDS:
+        raw[name] = "framework-value"
+    kept, dropped = normalize_for_diff(raw, _YML, side="connector")
+    for name in _CONNECTOR_ONLY_FRAMEWORK_FIELDS:
+        assert name not in kept, name
+    dropped_names = {d["name"] for d in dropped}
+    for name in _CONNECTOR_ONLY_FRAMEWORK_FIELDS:
+        assert name in dropped_names, name

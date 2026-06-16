@@ -903,3 +903,90 @@ def test_capabilities_include_general_config_for_view_group():
     assert "fetchLimit" in fields
     # log-collection-only field must NOT leak into the fetch-issues capability.
     assert "isFetchEvents" not in fields
+
+
+# ===========================================================================
+# field_specs collection (field_type / default_value / enum_values).
+# ===========================================================================
+
+from resolver import _collect_field_specs  # noqa: E402
+
+
+def test_collect_field_specs_from_configurations_and_connection():
+    configurations_doc = {
+        "general_configurations": {
+            "configurations": [
+                {
+                    "fields": [
+                        {
+                            "id": "integrationLogLevel",
+                            "field_type": "select",
+                            "options": {
+                                "default_value": "Off",
+                                "values": [{"key": "Off"}, {"key": "Debug"}],
+                            },
+                        }
+                    ]
+                }
+            ]
+        },
+        "configurations": [
+            {
+                "id": "log-collection_x",
+                "configurations": [
+                    {"fields": [{"id": "alertFetchInterval", "field_type": "duration"}]},
+                    {"fields": [{"id": "defaultIgnore", "field_type": "checkbox"}]},
+                    {
+                        "fields": [
+                            {
+                                "id": "incidentType",
+                                "field_type": "select",
+                                # Real manifest nesting: metadata.xsoar.config_type.
+                                "metadata": {"xsoar": {"config_type": "backend"}},
+                            }
+                        ]
+                    },
+                ],
+            }
+        ],
+    }
+    connection_doc = {
+        "profiles": [
+            {
+                "id": "plain.x",
+                "configurations": [
+                    {
+                        "fields": [
+                            {
+                                "id": "plain.x_engine",
+                                "field_type": "input",
+                                "xsoar": {"config_type": "backend"},
+                            }
+                        ]
+                    },
+                ],
+            }
+        ]
+    }
+
+    specs = _collect_field_specs(configurations_doc, connection_doc)
+
+    # select carries enum keys + default.
+    assert specs["integrationLogLevel"]["field_type"] == "select"
+    assert specs["integrationLogLevel"]["default_value"] == "Off"
+    assert specs["integrationLogLevel"]["enum_values"] == ["Off", "Debug"]
+    # plain (non-backend) field has no config_type.
+    assert specs["integrationLogLevel"]["config_type"] is None
+    # per-capability fields captured with their types.
+    assert specs["alertFetchInterval"]["field_type"] == "duration"
+    assert specs["defaultIgnore"]["field_type"] == "checkbox"
+    # config_type: backend captured from xsoar.config_type (entity-reference field).
+    assert specs["incidentType"]["config_type"] == "backend"
+    # connection.yaml profile fields captured too, including config_type: backend.
+    assert specs["plain.x_engine"]["field_type"] == "input"
+    assert specs["plain.x_engine"]["config_type"] == "backend"
+
+
+def test_collect_field_specs_tolerates_missing_docs():
+    assert _collect_field_specs(None, None) == {}
+    assert _collect_field_specs({}, {}) == {}

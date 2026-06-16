@@ -369,6 +369,14 @@ class ParityInputs:
     #: serializer maps (same shape as diff._load_serializer_mappings()).
     serializer_by_xsoar: dict[str, str] = field(default_factory=dict)
     serializer_by_connector: dict[str, str] = field(default_factory=dict)
+    #: connector field id -> declared TYPE metadata from the connector manifest
+    #: (configurations.yaml + connection.yaml profile fields). Each value is a
+    #: ``{"field_type": str, "default_value": Any, "enum_values": list[str]}`` dict.
+    #: Drives TYPE-CORRECT dummy values in the UCP creation payload so the backend
+    #: doesn't reject creation (e.g. a checkbox needs a bool, a duration needs an
+    #: int, a select needs a valid enum key). Missing/unknown fields are absent →
+    #: the caller falls back to a string dummy.
+    field_specs: dict[str, dict] = field(default_factory=dict)
 
 
 # ============================================================================
@@ -501,6 +509,78 @@ def _general_config_fields_for_view_groups(doc: Any, view_groups: set[str]) -> l
             if isinstance(fld, dict) and fld.get("id"):
                 out.append(fld["id"])
     return out
+
+
+def _field_spec_from_field(fld: dict) -> dict:
+    """Extract the type metadata of one manifest field dict.
+
+    Returns ``{"field_type", "default_value", "enum_values", "config_type"}``.
+    ``enum_values`` is the list of valid ``key``s for select/multi_select fields
+    (from ``options.values[].key``); ``default_value`` is ``options.default_value``
+    when present; ``config_type`` is ``xsoar.config_type`` when present (e.g.
+    ``"backend"`` for entity-reference fields the XSOAR backend resolves against
+    REAL tenant entities — engines, classifiers, mappers, incident types — which
+    therefore CANNOT carry an arbitrary dummy string). Used to build TYPE-CORRECT
+    dummy values for the creation payload.
+    """
+    opts = fld.get("options") if isinstance(fld.get("options"), dict) else {}
+    enum_values: list[str] = []
+    for v in opts.get("values") or []:
+        if isinstance(v, dict) and v.get("key") is not None:
+            enum_values.append(v["key"])
+    # ``config_type`` lives at ``metadata.xsoar.config_type`` in the manifest
+    # (e.g. ``field.metadata.xsoar.config_type: backend`` for entity-reference
+    # fields). Fall back to a top-level ``xsoar`` block defensively, in case a
+    # connector/older manifest places it there.
+    metadata = fld.get("metadata") if isinstance(fld.get("metadata"), dict) else {}
+    xsoar = metadata.get("xsoar") if isinstance(metadata.get("xsoar"), dict) else {}
+    if not xsoar and isinstance(fld.get("xsoar"), dict):
+        xsoar = fld["xsoar"]
+    return {
+        "field_type": fld.get("field_type"),
+        "default_value": opts.get("default_value"),
+        "enum_values": enum_values,
+        "config_type": xsoar.get("config_type"),
+    }
+
+
+def _collect_field_specs(configurations_doc: Any, connection_doc: Any) -> dict[str, dict]:
+    """Map every connector field id → its type metadata (:func:`_field_spec_from_field`).
+
+    Scans ALL fields in ``configurations.yaml`` (``general_configurations`` +
+    per-capability ``configurations``) and every profile field in
+    ``connection.yaml``. Last-writer-wins on duplicate ids is fine — duplicate
+    declarations of the same id carry the same type.
+    """
+    specs: dict[str, dict] = {}
+
+    def _scan_configurations(node: Any) -> None:
+        if not isinstance(node, dict):
+            return
+        for conf in node.get("configurations") or []:
+            if not isinstance(conf, dict):
+                continue
+            for fld in conf.get("fields") or []:
+                if isinstance(fld, dict) and fld.get("id"):
+                    specs[fld["id"]] = _field_spec_from_field(fld)
+
+    if isinstance(configurations_doc, dict):
+        _scan_configurations(configurations_doc.get("general_configurations"))
+        for cap_block in configurations_doc.get("configurations") or []:
+            _scan_configurations(cap_block)
+
+    if isinstance(connection_doc, dict):
+        for profile in connection_doc.get("profiles") or []:
+            if not isinstance(profile, dict):
+                continue
+            for conf in profile.get("configurations") or []:
+                if not isinstance(conf, dict):
+                    continue
+                for fld in conf.get("fields") or []:
+                    if isinstance(fld, dict) and fld.get("id"):
+                        specs[fld["id"]] = _field_spec_from_field(fld)
+
+    return specs
 
 
 def _parse_interpolation_mapping(profile: dict) -> dict[str, str]:
@@ -888,6 +968,10 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
     # Serializer maps (this handler).
     by_xsoar, by_connector = _load_serializer_maps(handler_dir)
 
+    # Connector field id → declared type metadata (for type-correct dummy values
+    # in the UCP creation payload). Covers configurations.yaml + connection.yaml.
+    field_specs = _collect_field_specs(configurations_doc, connection_doc)
+
     # ── Build the result shell ──
     inputs = ParityInputs(
         integration_id=integration_id,
@@ -905,6 +989,7 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
         profiles=profiles,
         serializer_by_xsoar=by_xsoar,
         serializer_by_connector=by_connector,
+        field_specs=field_specs,
     )
 
     # ── Param discovery: enumerate EVERY integration-YML config param ──

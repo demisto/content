@@ -432,6 +432,29 @@ def get_instances_by_brand(client, brand_name: str) -> list[dict]:
     return [inst for inst in res["instances"] if inst.get("brand") == brand_name]
 
 
+def list_all_instance_brands(client) -> list[str]:
+    """Return the brand of EVERY integration instance on the tenant (diagnostic).
+
+    Used when an expected XSOAR mirror never appears, to reveal whether the
+    connector mirrored under a different brand (or not at all). Best-effort:
+    returns an empty list on any API error.
+    """
+    try:
+        res, status, _ = demisto_client.generic_request_func(
+            self=client,
+            method="POST",
+            path="/settings/integration/search",
+            body={"size": 1000},
+            _request_timeout=REQUEST_TIMEOUT,
+            response_type="object",
+        )
+    except Exception:
+        return []
+    if int(status) != 200 or "instances" not in res:
+        return []
+    return [inst.get("brand") for inst in res["instances"] if inst.get("brand")]
+
+
 # ============================================================================
 # Instance Creation
 # ============================================================================
@@ -556,20 +579,6 @@ def create_integration_instance(
             "required": False,
         })
         log.debug("Injected BE-synthesized field %r into module_instance.data", field_name)
-
-    # [DEBUG-DIAGNOSTIC] Dump the FULL create-instance payload as pretty JSON
-    # immediately before the PUT /settings/integration call. This surfaces the
-    # fetch-related flags so we can confirm whether both fetch-incidents and
-    # fetch-events are being armed on a single instance (XSOAR "error 52").
-    # Inspect the top-level `configuration` object for `isFetch` / `isFetchEvents`
-    # and the per-marketplace `isfetch` / `isfetchevents` flags. Remove when done.
-    try:
-        log.info(
-            "XSOAR_CREATE_PAYLOAD=%s",
-            json.dumps(module_instance, indent=2, default=str, sort_keys=True),
-        )
-    except Exception as _dbg_exc:  # noqa: BLE001 - diagnostic logging must never break the flow
-        log.warning("XSOAR_CREATE_PAYLOAD serialization failed: %s", _dbg_exc)
 
     try:
         res = demisto_client.generic_request_func(
@@ -760,12 +769,12 @@ def delete_integration_instance(client, instance_id: str) -> bool:
             _request_timeout=REQUEST_TIMEOUT,
         )
         if int(res[1]) == 200:
-            log.info("Instance deleted successfully")
+            log.info("XSOAR integration instance deleted successfully")
             return True
-        log.error("Delete instance failed with status %s", res[1])
+        log.error("XSOAR integration delete instance failed with status %s", res[1])
         return False
     except ApiException as e:
-        log.error("Failed to delete instance: %s", e)
+        log.error("Failed to delete XSOAR integration instance: %s", e)
         return False
 
 

@@ -10,6 +10,7 @@ These tests are hermetic (no network / docker / tenant). They pin:
 from __future__ import annotations
 
 import diff
+from normalizers import normalize_for_diff
 
 
 def test_describe_ignore_reason_known_codes():
@@ -262,3 +263,140 @@ def test_prefixed_credentials_ok_entry_annotated():
     # excluding identifier/password.
     assert entry["ignored_keys"] == ["credential", "credentials", "passwordChanged"]
     assert isinstance(entry.get("partial_ignore_note"), str) and entry["partial_ignore_note"]
+
+
+# ---------------------------------------------------------------------------
+# Category 3 (alertType server bug) — end-to-end: integration-only → OK_IGNORED
+# ---------------------------------------------------------------------------
+def test_alerttype_integration_only_produces_ok_ignored_pass():
+    """The server-injected `alertType` (integration-only) is normalized into a
+    drop and surfaces as a passing OK_IGNORED entry — NOT dropped/MISSING/fail."""
+    integration_raw = {"url": "x", "alertType": "Phishing"}
+    connector_raw = {"url": "x"}
+    integration_norm, integration_dropped = normalize_for_diff(
+        integration_raw, [{"name": "url", "type": 0}], side="integration"
+    )
+    connector_norm, connector_dropped = normalize_for_diff(
+        connector_raw, [{"name": "url", "type": 0}], side="connector"
+    )
+    result = diff.diff_params(
+        integration_norm, connector_norm,
+        yml_param_names={"url"},
+        integration_raw=integration_raw, connector_raw=connector_raw,
+        integration_dropped=integration_dropped, connector_dropped=connector_dropped,
+    )
+    # alertType is NOT a failure, NOT in dropped (it is an explicit named ignore).
+    assert result["status"] == "pass"
+    assert result["summary"]["n_fail"] == 0
+    assert all(d["name"] != "alertType" for d in result["dropped"])
+    entry = _ok_ignored(result, "alertType")
+    assert entry["verdict"] == "ok"
+    assert "server-injected `alertType`" in entry["reason"]
+    assert "XSOAR BE bug" in entry["reason"]
+    assert entry["integration_value"] == "Phishing"
+
+
+# ---------------------------------------------------------------------------
+# Category 2 — connector-only framework fields → OK_IGNORED, never EXTRA_IN_CONNECTOR
+# ---------------------------------------------------------------------------
+def _no_extra_in_connector(result: dict, name: str) -> None:
+    for p in result["per_param"]:
+        assert not (
+            p["name"] == name and p["state"] == diff.STATE_EXTRA_IN_CONNECTOR
+        ), f"{name} surfaced as EXTRA_IN_CONNECTOR"
+
+
+def test_connector_only_framework_fields_ok_ignored_not_extra():
+    """Each of the seven connector-only framework fields, present ONLY on the
+    connector side, surfaces as a passing OK_IGNORED entry and never as
+    EXTRA_IN_CONNECTOR."""
+    fields = [
+        "mappingId", "incomingMapperId", "outgoingMapperId", "engine",
+        "engineGroup", "defaultIgnore", "integrationLogLevel",
+    ]
+    yml = [{"name": "url", "type": 0}]
+    integration_raw = {"url": "x"}
+    connector_raw = {"url": "x"}
+    for name in fields:
+        connector_raw[name] = "framework-value"
+    integration_norm, integration_dropped = normalize_for_diff(
+        integration_raw, yml, side="integration"
+    )
+    connector_norm, connector_dropped = normalize_for_diff(
+        connector_raw, yml, side="connector"
+    )
+    result = diff.diff_params(
+        integration_norm, connector_norm,
+        yml_param_names={"url"},
+        integration_raw=integration_raw, connector_raw=connector_raw,
+        integration_dropped=integration_dropped, connector_dropped=connector_dropped,
+    )
+    assert result["status"] == "pass"
+    assert result["summary"]["n_extra_in_connector"] == 0
+    for name in fields:
+        _no_extra_in_connector(result, name)
+        entry = _ok_ignored(result, name)
+        assert entry["verdict"] == "ok"
+        assert entry["connector_value"] == "framework-value"
+
+
+# ---------------------------------------------------------------------------
+# BE-synthesized fetch params: integration-only → MISSING_IN_CONNECTOR (fail),
+# NOT dropped as extra_in_integration. The XSOAR BE injects these at runtime;
+# the connector platform never synthesizes anything, so an absent equivalent on
+# the connector side is a genuine parity gap (the GuardiCore v2 case: the XSOAR
+# integration reads `incidentFetchInterval`, the connector declared
+# `alertFetchInterval` instead → no parity → fail).
+# ---------------------------------------------------------------------------
+def _per_param(result: dict, name: str) -> dict:
+    for p in result["per_param"]:
+        if p["name"] == name:
+            return p
+    raise AssertionError(f"No per_param entry for {name!r}")
+
+
+def test_be_synth_integration_only_param_is_missing_in_connector_not_dropped():
+    """`incidentFetchInterval` present on XSOAR, absent on connector, NOT in the
+    integration YML → must be MISSING_IN_CONNECTOR (fail), not dropped."""
+    result = diff.diff_params(
+        {"incidentFetchInterval": "1"},
+        {},
+        yml_param_names=set(),  # NOT declared in the integration YML
+    )
+    # It must NOT be silently dropped as framework noise.
+    assert all(d["name"] != "incidentFetchInterval" for d in result["dropped"])
+    entry = _per_param(result, "incidentFetchInterval")
+    assert entry["state"] == diff.STATE_MISSING_IN_CONNECTOR
+    assert entry["verdict"] == "fail"
+    assert result["status"] == "fail"
+    assert result["summary"]["n_missing_in_connector"] == 1
+
+
+def test_non_be_synth_integration_only_param_still_dropped_as_extra():
+    """A genuinely-unknown integration-only key (not in YML, not BE-synthesized)
+    is still dropped as extra_in_integration framework noise — the BE-synth fix
+    must not over-broaden to ALL integration-only keys."""
+    result = diff.diff_params(
+        {"some_framework_noise_key": "x"},
+        {},
+        yml_param_names=set(),
+    )
+    assert any(
+        d["name"] == "some_framework_noise_key"
+        and d["reason"] == "extra_in_integration"
+        for d in result["dropped"]
+    )
+    assert result["summary"]["n_missing_in_connector"] == 0
+
+
+def test_be_synth_param_present_on_both_sides_compares_normally():
+    """When the connector DOES declare the equivalent (so both sides carry it),
+    the BE-synth name compares like any other param (OK on equal values)."""
+    result = diff.diff_params(
+        {"incidentFetchInterval": "1"},
+        {"incidentFetchInterval": "1"},
+        yml_param_names=set(),
+    )
+    entry = _per_param(result, "incidentFetchInterval")
+    assert entry["state"] == diff.STATE_OK
+    assert result["status"] == "pass"

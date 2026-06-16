@@ -16,10 +16,27 @@ import logging
 log = logging.getLogger(__name__)
 
 # script.<flag> -> config param names the BE auto-adds.
-# Note: the isfetch fields (alertFetchInterval + the conditionally-skipped
-# incidentType) are appended inline in compute_be_synthesized_params because
-# incidentType is special-cased (skipped when feed or isfetchevents is also on).
+#
+# These mirror the XSOAR backend (ValidateConfiguration) auto-add spec exactly:
+#
+#   IsFetch:        isFetch, incidentFetchInterval, incidentType*
+#   Feed:           feed, feedReputation, feedReliability, feedExpirationPolicy,
+#                   feedExpirationInterval, feedFetchInterval,
+#                   feedBypassExclusionList
+#   IsFetchEvents:  isFetchEvents, eventFetchInterval
+#   IsFetchAssets:  isFetchAssets, assetsFetchInterval
+#   LongRunning:    longRunning, incidentType* (XSIAM also injects alertType, but
+#                   the connector does NOT carry it — see Category 3 — so we never
+#                   auto-add alertType here)
+#   LongRunningPort: longRunningPort
+#   IsFetchCredentials: isFetchCredentials
+#
+# * incidentType is appended inline in compute_be_synthesized_params because it is
+#   special-cased: added when EITHER IsFetch OR LongRunning is active, but ONLY
+#   when neither Feed nor IsFetchEvents is active.
+_ISFETCH_FIELDS = ["isFetch", "incidentFetchInterval"]
 _FEED_FIELDS = [
+    "feed",
     "feedReputation",
     "feedReliability",
     "feedExpirationPolicy",
@@ -27,18 +44,22 @@ _FEED_FIELDS = [
     "feedFetchInterval",
     "feedBypassExclusionList",
 ]
-_ISFETCHEVENTS_FIELDS = ["eventFetchInterval"]
-_ISFETCHASSETS_FIELDS = ["assetsFetchInterval"]
+_ISFETCHEVENTS_FIELDS = ["isFetchEvents", "eventFetchInterval"]
+_ISFETCHASSETS_FIELDS = ["isFetchAssets", "assetsFetchInterval"]
 _LONGRUNNING_FIELDS = ["longRunning"]
 _LONGRUNNINGPORT_FIELDS = ["longRunningPort"]
+_ISFETCHCREDENTIALS_FIELDS = ["isFetchCredentials"]
 
-# Params the BE STRIPS when NO fetch flag is enabled.
+# Params the BE STRIPS when NO fetch flag (IsFetch/LongRunning/Feed/IsFetchEvents/
+# IsFetchAssets) is enabled.
 _STRIP_WHEN_NO_FETCH = [
     "isFetch",
     "isFetchEvents",
+    "incidentFetchInterval",
     "alertFetchInterval",
     "eventFetchInterval",
     "incidentType",
+    "alertType",
     "longRunning",
     "longRunningPort",
 ]
@@ -50,6 +71,7 @@ _STRIP_WHEN_NO_FETCH = [
 # value to both instead.
 _INTERVAL_FIELDS = frozenset(
     {
+        "incidentFetchInterval",
         "alertFetchInterval",
         "eventFetchInterval",
         "assetsFetchInterval",
@@ -58,6 +80,29 @@ _INTERVAL_FIELDS = frozenset(
     }
 )
 _INTERVAL_DUMMY = "1"  # valid minutes count; matches both sides' default_value
+
+#: The COMPLETE set of XSOAR BE-synthesized CONFIG param NAMES — every param the
+#: backend (ValidateConfiguration) can auto-add for a fetch/feed/long-running
+#: integration. These are NOT declared in the integration YML ``configuration``
+#: list, yet they DO appear in the integration's runtime ``demisto.params()``.
+#:
+#: The connector platform never synthesizes anything: a connector only emits the
+#: params explicitly declared in its manifest. Therefore, when one of these
+#: BE-synthesized params is present on the XSOAR side but ABSENT on the connector
+#: side, that is a REAL parity failure (``MISSING_IN_CONNECTOR``) — the connector
+#: author must declare an equivalent field. The diff engine consumes this set to
+#: classify such an integration-only key as a real param (``in_yml``-equivalent)
+#: rather than dropping it as ``extra_in_integration`` framework noise.
+BE_SYNTHESIZED_PARAM_NAMES: frozenset[str] = frozenset(
+    _ISFETCH_FIELDS
+    + _FEED_FIELDS
+    + _ISFETCHEVENTS_FIELDS
+    + _ISFETCHASSETS_FIELDS
+    + _LONGRUNNING_FIELDS
+    + _LONGRUNNINGPORT_FIELDS
+    + _ISFETCHCREDENTIALS_FIELDS
+    + ["incidentType"]
+)
 
 
 def default_dummy_for(name: str) -> str:
@@ -162,9 +207,10 @@ def compute_be_synthesized_params(
         is_feed = _flag_is_true(script, "feed", "Feed")
         is_fetch_events = _flag_is_true(script, "isfetchevents", "isFetchEvents", "isfetchEvents")
         is_fetch_assets = _flag_is_true(script, "isfetchassets", "isFetchAssets", "isfetchAssets")
-    # fetch-credentials (fetch-secrets capability). The BE synthesizes no extra
-    # config params for it today, but it DOES count as a fetch (so the no-fetch
-    # strip set must not apply when it is the variant under test).
+    # fetch-credentials (fetch-secrets capability). The BE auto-adds the
+    # `isFetchCredentials` toggle itself (see _ISFETCHCREDENTIALS_FIELDS) but no
+    # other config params; it DOES count as a fetch, so the no-fetch strip set
+    # must not apply when it is the variant under test.
     if fetch_flags is not None:
         is_fetch_credentials = bool(fetch_flags.get("isFetchCredentials", False))
     else:
@@ -176,26 +222,40 @@ def compute_be_synthesized_params(
         script, "longRunningPort", "longrunningport", "longRunningport"
     )
 
+    # The BE strips the fetch-only params ONLY when NONE of IsFetch / LongRunning /
+    # Feed / IsFetchEvents / IsFetchAssets is true (per the authoritative spec).
+    # isFetchCredentials additionally counts as a fetch here so the strip set never
+    # applies when it is the variant under test.
     any_fetch = (
-        is_fetch or is_feed or is_fetch_events or is_fetch_assets or is_fetch_credentials
+        is_fetch
+        or is_feed
+        or is_fetch_events
+        or is_fetch_assets
+        or is_fetch_credentials
+        or is_long_running
     )
 
     added: list[str] = []
     if is_fetch:
-        added.append("alertFetchInterval")
-        # incidentType is skipped when feed or isfetchevents is also on.
-        if not (is_feed or is_fetch_events):
-            added.append("incidentType")
+        added.extend(_ISFETCH_FIELDS)
     if is_feed:
         added.extend(_FEED_FIELDS)
     if is_fetch_events:
         added.extend(_ISFETCHEVENTS_FIELDS)
     if is_fetch_assets:
         added.extend(_ISFETCHASSETS_FIELDS)
+    if is_fetch_credentials:
+        added.extend(_ISFETCHCREDENTIALS_FIELDS)
     if is_long_running:
         added.extend(_LONGRUNNING_FIELDS)
     if is_long_running_port:
         added.extend(_LONGRUNNINGPORT_FIELDS)
+    # incidentType is auto-added by EITHER IsFetch OR LongRunning (XSIAM also
+    # injects alertType under LongRunning, but the connector never carries it —
+    # see Category 3 — so alertType is intentionally NOT auto-added here). It is
+    # SKIPPED when Feed or IsFetchEvents is also active.
+    if (is_fetch or is_long_running) and not (is_feed or is_fetch_events):
+        added.append("incidentType")
 
     # De-dup while preserving order.
     seen: set[str] = set()

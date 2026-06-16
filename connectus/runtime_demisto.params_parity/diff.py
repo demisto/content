@@ -42,6 +42,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from be_config_params import BE_SYNTHESIZED_PARAM_NAMES
+
 try:
     from ruamel.yaml import YAML
     _YAML = YAML(typ="safe")
@@ -82,6 +84,7 @@ _IGNORE_REASON_DESCRIPTIONS: dict[str, str] = {
     "hidden": "hidden in the integration YML (hidden: true or hidden:<platform>), so it is not migrated to the connector and not compared",
     "credentials_type9_interpolated": "type-9 credentials param reconstructed by the integration at runtime from the connector's interpolated credentials.identifier/.password; the full vault object is not value-compared",
     "isfetch_not_emitted_by_connector": "KNOWN GAP (temporary): the connector does not currently emit the `isFetch` fetch flag at runtime, so it is dropped from both sides and ignored until connector support is added — tracked in the migration guide Open Items",
+    "server_injected_alerttype_xsoar_bug": "server-injected `alertType` (XSOAR BE bug) — not delivered by the connector, ignored",
     "hard_ignore_list": "on the hard ignore-list (never appears comparably in runtime demisto.params(), e.g. brand/engine/instance_name/log-level)",
     "name_ignored": "a framework/mirroring/probe field that is not user-configurable (e.g. outgoingMapperId, apiproxy, the parity-probe key)",
     # legacy / safety fallbacks:
@@ -437,7 +440,15 @@ def diff_params(
     for key in sorted(union_keys):
         in_integration = key in integration
         in_connector = key in connector
-        in_yml = key in yml_param_names
+        # A key counts as a "real param the integration reads" when it is either
+        # declared in the integration YML ``configuration`` OR is a known
+        # XSOAR-BE-synthesized config param (isFetch/incidentFetchInterval/feed*/
+        # eventFetchInterval/…). The BE auto-adds the latter at runtime — they are
+        # NOT in the YML, but they ARE real params. The connector platform never
+        # synthesizes anything, so a BE-synthesized param present on XSOAR but
+        # absent on the connector is a genuine MISSING_IN_CONNECTOR failure (the
+        # connector must declare an equivalent field), NOT framework noise.
+        in_yml = key in yml_param_names or key in BE_SYNTHESIZED_PARAM_NAMES
 
         if in_integration and in_connector:
             if integration[key] == connector[key]:

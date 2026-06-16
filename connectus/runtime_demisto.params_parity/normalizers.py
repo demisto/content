@@ -99,8 +99,22 @@ HARD_IGNORE_PARAM_NAMES: set[str] = {
 #: reason below) rather than flagged MISSING_IN_CONNECTOR. Remove an entry here
 #: once the connector emits it. See connectus_migration/connectus_connector_migration_guide.md
 #: Section 6 "Open Items".
-KNOWN_GAP_IGNORE_REASONS: dict[str, str] = {
-    "isFetch": "isfetch_not_emitted_by_connector",
+#:
+#: ``isFetch`` was here while the connector did not emit it; that gap is now
+#: RESOLVED — the connector emits ``isFetch`` at runtime, so it is compared
+#: normally (no longer ignored). This dict is intentionally empty until a new
+#: temporary gap appears.
+KNOWN_GAP_IGNORE_REASONS: dict[str, str] = {}
+
+#: SERVER-BUG ignore: params the XSOAR server wrongly injects into the integration
+#: ``demisto.params()`` that the connector legitimately does NOT carry. These are
+#: dropped (with the specific reason below) so the diff surfaces them as OK_IGNORED
+#: (a documented server-bug pass) rather than EXTRA_IN_INTEGRATION/dropped noise or
+#: a MISSING/fail. ``alertType`` is the canonical example: the XSOAR BE injects it
+#: even when it shouldn't, and it is intentionally never auto-added to the
+#: connector side (see be_config_params — Category 3).
+SERVER_BUG_IGNORE_REASONS: dict[str, str] = {
+    "alertType": "server_injected_alerttype_xsoar_bug",
 }
 
 
@@ -267,6 +281,17 @@ def normalize_for_diff(
             )
             continue
 
+        # Rule 1c: SERVER-BUG ignore — params the XSOAR server wrongly injects
+        # into the integration demisto.params() that the connector legitimately
+        # does not carry (e.g. alertType). Drop with a specific reason so the diff
+        # surfaces them as OK_IGNORED (a documented server-bug pass) rather than
+        # EXTRA_IN_INTEGRATION noise or a MISSING/fail.
+        if key in SERVER_BUG_IGNORE_REASONS:
+            dropped.append(
+                {"name": key, "reason": SERVER_BUG_IGNORE_REASONS[key], "side": side}
+            )
+            continue
+
         # Rule 2: keep this key verbatim (it's MUST-COMPARE). Type-4/9 auth
         # params land here too — they are compared, not blanket-dropped. The
         # resolver removes the ones that should not be compared via force_drop
@@ -310,5 +335,6 @@ __all__ = [
     "IGNORED_PARAM_NAMES",
     "HARD_IGNORE_PARAM_NAMES",
     "KNOWN_GAP_IGNORE_REASONS",
+    "SERVER_BUG_IGNORE_REASONS",
     "normalize_for_diff",
 ]
