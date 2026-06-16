@@ -122,8 +122,6 @@ class GCPServices(Enum):
         # verification is disabled (marketplace path). Otherwise (Cortex Platform /
         # defaults) use the Google client's standard transport.
         if (USE_PROXY or not VERIFY_SSL) and "http" not in kwargs:
-            # When passing a custom http transport, credentials must NOT also be
-            # passed to build() - AuthorizedHttp carries them instead.
             http = build_http_client()
             kwargs["http"] = AuthorizedHttp(credentials, http=http)
             return build(self.api_name, self.version, **kwargs)
@@ -2854,9 +2852,6 @@ def main():  # pragma: no cover
     args = demisto.args()
     params = demisto.params()
 
-    # Proxy and SSL settings only apply to the marketplace path (Cortex XSOAR /
-    # Cortex XSIAM < 3.0). On Cortex Platform connectivity is handled by the
-    # platform (ProxyDome), so these params are not set and must not be applied.
     if not get_connector_id():
         global USE_PROXY, VERIFY_SSL
         USE_PROXY = params.get("proxy", False)
@@ -2933,7 +2928,6 @@ def main():  # pragma: no cover
         }
 
         if command == "test-module" and (connector_id := get_connector_id()):
-            # Cortex Platform path: delegate to COOC health check
             demisto.debug(f"[GCP main] Running health check for connector ID: {connector_id}")
             return_results(run_health_check_for_accounts(connector_id, CloudTypes.GCP.value, health_check))
 
