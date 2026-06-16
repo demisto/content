@@ -33,11 +33,7 @@ def build_http_client() -> "httplib2.Http | None":
             if not https_proxy.startswith(("http://", "https://")):
                 https_proxy = f"https://{https_proxy}"
             parsed = urllib.parse.urlparse(https_proxy)
-            # PROXY_TYPE_HTTP comes from the optional PySocks module exposed as httplib2.socks.
-            # Fall back to its well-known value (3) if socks is unavailable in the environment.
             proxy_type = getattr(httplib2.socks, "PROXY_TYPE_HTTP", 3) if httplib2.socks else 3
-            # When the proxy URL omits an explicit port, urlparse returns None; fall back to the
-            # default port for the scheme so httplib2.ProxyInfo gets a valid integer.
             proxy_port = parsed.port if parsed.port is not None else (443 if parsed.scheme == "https" else 80)
             proxy_info = httplib2.ProxyInfo(
                 proxy_type=proxy_type,  # disable-secrets-detection
@@ -113,9 +109,12 @@ class GCPServices(Enum):
         """
         Build a Google API client for this service.
 
-        Honors the integration's proxy and SSL settings: when a proxy is
-        configured or SSL verification is disabled, the credentials are wrapped
-        in an ``AuthorizedHttp`` over a custom ``httplib2.Http`` transport.
+        On the marketplace path (Cortex XSOAR / Cortex XSIAM < 3.0) the integration's
+        proxy and SSL settings are honored: when a proxy is configured or SSL
+        verification is disabled, the credentials are wrapped in an ``AuthorizedHttp``
+        over a custom ``httplib2.Http`` transport. On the Cortex Platform path both
+        settings stay at their defaults (no proxy, SSL on), so the standard transport
+        is used and no custom HTTP client is built.
 
         Args:
             credentials: Google Cloud credentials object.
@@ -124,10 +123,13 @@ class GCPServices(Enum):
         Returns:
             Google API client instance for this service.
         """
-        http = build_http_client()
-        if http is not None and "http" not in kwargs:
+        # Only build a custom HTTP transport when a proxy is requested or SSL
+        # verification is disabled (marketplace path). Otherwise (Cortex Platform /
+        # defaults) use the Google client's standard transport.
+        if (USE_PROXY or not VERIFY_SSL) and "http" not in kwargs:
             # When passing a custom http transport, credentials must NOT also be
             # passed to build() - AuthorizedHttp carries them instead.
+            http = build_http_client()
             kwargs["http"] = AuthorizedHttp(credentials, http=http)
             return build(self.api_name, self.version, **kwargs)
         return build(self.api_name, self.version, credentials=credentials, **kwargs)
@@ -2431,7 +2433,7 @@ def test_module(creds: Credentials, params: dict[str, Any]) -> str:
     Raises:
         DemistoException: If credentials are invalid or the API call fails.
     """
-    project_id = params.get("project_id", "").strip()
+    project_id = (params.get("project_id") or "").strip()
     if not project_id:
         raise DemistoException(
             "Missing required parameter 'project_id'. " "Please set the 'GCP Project ID' field in the integration configuration."

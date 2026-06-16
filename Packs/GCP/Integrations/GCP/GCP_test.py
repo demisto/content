@@ -5653,7 +5653,8 @@ def test_build_http_client_proxy_sets_proxy_info(mocker):
 def test_gcpservices_build_wraps_credentials_when_custom_http(mocker):
     """
     Given:
-        - A custom http transport is required (insecure enabled).
+        - The marketplace path with a custom http transport required (insecure enabled:
+          VERIFY_SSL is False).
     When:
         - GCPServices.COMPUTE.build is called with credentials.
     Then:
@@ -5662,6 +5663,8 @@ def test_gcpservices_build_wraps_credentials_when_custom_http(mocker):
     """
     import GCP
 
+    mocker.patch.object(GCP, "USE_PROXY", False)
+    mocker.patch.object(GCP, "VERIFY_SSL", False)  # insecure -> marketplace custom transport
     fake_http = MagicMock()
     mocker.patch.object(GCP, "build_http_client", return_value=fake_http)
     mock_authorized = mocker.patch("GCP.AuthorizedHttp", return_value="authorized-http")
@@ -5680,23 +5683,28 @@ def test_gcpservices_build_wraps_credentials_when_custom_http(mocker):
 def test_gcpservices_build_uses_default_transport_when_no_custom_http(mocker):
     """
     Given:
-        - No custom http transport is required (defaults apply).
+        - The Cortex Platform path with default settings (proxy off, SSL on).
     When:
         - GCPServices.COMPUTE.build is called with credentials.
     Then:
         - build() is invoked with credentials directly and no http override.
+        - build_http_client is NOT called at all (no custom transport is constructed).
     """
     import GCP
 
-    mocker.patch.object(GCP, "build_http_client", return_value=None)
+    mocker.patch.object(GCP, "USE_PROXY", False)
+    mocker.patch.object(GCP, "VERIFY_SSL", True)
+    mock_http_client = mocker.patch.object(GCP, "build_http_client", return_value=None)
     mock_build = mocker.patch("GCP.build", return_value="client")
 
     creds = MagicMock()
     result = GCP.GCPServices.COMPUTE.build(creds)
 
     assert result == "client"
+    mock_http_client.assert_not_called()
     _, kwargs = mock_build.call_args
     assert kwargs["credentials"] is creds
+    assert "http" not in kwargs
 
 
 def test_build_http_client_proxy_without_scheme(mocker):
