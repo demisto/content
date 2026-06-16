@@ -13724,8 +13724,8 @@ def _place_by_path(target, path, value):
     The destination string is split on ``.``; each segment except the last
     becomes (or reuses) a nested dict, and the final segment receives the
     value. Two paths that share a parent therefore merge into a single nested
-    dict — this is how multiple connector fields fold into one structured param
-    (e.g. ``credentials.identifier`` + ``credentials.password`` →
+    dict - this is how multiple connector fields fold into one structured param
+    (e.g. ``credentials.identifier`` + ``credentials.password`` ->
     ``{"credentials": {"identifier": ..., "password": ...}}``).
 
     A single-segment path (e.g. ``"url"``) places a flat scalar.
@@ -13836,9 +13836,9 @@ def build_ucp_params(connector_metadata, capability=None):
     Pure, side-effect-free core of UCP param interpolation. It is
     **metadata-first**: it scans ``connectionProfiles`` to find every profile in
     scope for the current capability/sub_capability, then for each such profile
-    reads its ``param_map`` (a mapping of connector field id → dotted destination
+    reads its ``param_map`` (a mapping of connector field id -> dotted destination
     path) together with the platform-supplied field values, and *interpolates*
-    them into the nested shape integrations expect — most importantly folding
+    them into the nested shape integrations expect - most importantly folding
     flat fields (e.g. ``username`` / ``password``) into a single structured param
     (e.g. a ``credentials`` dict, the classic XSOAR ``type 9`` shape).
 
@@ -14333,7 +14333,7 @@ try:
     interpolate_ucp_params()
 except Exception:
     # Import-time safety net: never let interpolation break module import.
-    # Intentionally does NOT call demisto.debug() here — in bare-mock contexts
+    # Intentionally does NOT call demisto.debug() here - in bare-mock contexts
     # (e.g. test collection) demisto.debug itself may be unavailable.
     pass
 
@@ -14365,7 +14365,7 @@ except Exception:
 #     ``SystemExit``, so the integration's main() never starts when the probe fires.
 #   * Credentials are NEVER read or echoed here beyond what ``demisto.params()`` itself
 #     already contains; integrations that mask credentials before reading params (or
-#     that callers seed with dummy creds — which the parity-test orchestrator does)
+#     that callers seed with dummy creds - which the parity-test orchestrator does)
 #     remain safe.
 # try:
 #     if demisto.command() == 'test-module':
@@ -14375,14 +14375,14 @@ except Exception:
 #         # ('key', 'private', 'password', 'secret', 'token', 'credentials', 'service_account').
 #         # That over-matches: values of params like ``emailencodingkey``, ``languagelocalekey``,
 #         # ``localesidkey`` (all contain the substring 'key') get auto-masked to ``<XX_REPLACED>``
-#         # in any string that subsequently passes through ``LOG.encode()`` — INCLUDING the
+#         # in any string that subsequently passes through ``LOG.encode()`` - INCLUDING the
 #         # ``return_error`` message we emit below. To get a clean params-parity capture we must
 #         # neutralize that replace-list BEFORE emitting our payload. ``LOG`` was created at the
 #         # bottom of the IntegrationLogger section earlier in this file, so it exists here.
 #         try:
 #             LOG.replace_strs = []  # type: ignore[name-defined]
 #         except Exception:
-#             # If LOG doesn't exist for some unexpected reason, proceed anyway — the dump just
+#             # If LOG doesn't exist for some unexpected reason, proceed anyway - the dump just
 #             # carries the masked values, which is acceptable degraded behavior.
 #             pass
 #         _pp_payload = {
