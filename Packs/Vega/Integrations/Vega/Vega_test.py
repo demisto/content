@@ -1168,6 +1168,22 @@ def test_format_raw_entity_for_xsoar_builds_vega_comments_html():
     assert "[{}]" not in incident["vegaComments"]
 
 
+def test_format_raw_entity_for_xsoar_builds_vega_alert_comments_html():
+    alert = {
+        "id": "alert-1",
+        "vegaEntityType": "Vega Alert",
+        "comments": [
+            {"text": "[{}]", "addedBy": "machine-user", "addedAt": "2026-06-12T05:01:20.379Z"},
+            {"text": "Escalated for review", "addedBy": "Analyst Two", "addedAt": "2026-06-12T12:00:00Z"},
+        ],
+    }
+    _format_raw_entity_for_xsoar(alert)
+
+    assert "vegaComments" in alert
+    assert "Escalated for review" in alert["vegaComments"]
+    assert "[{}]" not in alert["vegaComments"]
+
+
 def test_format_timeline_events_html_dark_theme_layout():
     timeline = [
         {

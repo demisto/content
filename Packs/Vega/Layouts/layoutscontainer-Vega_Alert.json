@@ -506,6 +506,31 @@
 						"y": 2
 					},
 					{
+						"displayType": "CARD",
+						"h": 4,
+						"hideName": true,
+						"i": "kmppymlq3f-f9e9e215-7864-4007-a6e5-e88126b82ac9",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "vegacomments",
+								"height": 106,
+								"id": "vega-alert-comments-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Comment",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 5
+					},
+					{
 						"h": 6,
 						"hideName": true,
 						"i": "kmppymlq3f-alert-events-section",
@@ -520,7 +545,7 @@
 						"type": "dynamic",
 						"w": 3,
 						"x": 0,
-						"y": 6
+						"y": 9
 					}
 				],
 				"type": "custom"

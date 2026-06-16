@@ -62,6 +62,9 @@
                 },
                 "Vega Alert Severity": {
                     "simple": "severity"
+                },
+                "Vega Comments": {
+                    "simple": "vegaComments"
                 }
             }
         },

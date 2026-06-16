@@ -32,7 +32,8 @@ GET_ALERTS_QUERY = (
     "   dataSources createdAt updatedAt "
     "   mitre { mitreTactics mitreTechniques } "
     "   relatedIncidents { incidentId name } "
-    "   detectionSource detectionDescription detectionQuery eventCount isTestMode verdict verdictReasoning dedupCount } "
+    "   detectionSource detectionDescription detectionQuery eventCount isTestMode verdict verdictReasoning dedupCount "
+    "   comments { text addedBy addedAt } } "
     "  total limit offset "
     "  error { code message } } }"
 )
@@ -1985,7 +1986,7 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
     findings_source = raw.get("keyFindings") or raw.get("incidentFindings")
     if findings_source is not None:
         raw["vegaIncidentFindings"] = _format_key_findings_html(findings_source, assets, observables)
-    if entity_type == "Vega Incident" and "comments" in raw:
+    if entity_type in ("Vega Incident", "Vega Alert") and "comments" in raw:
         raw["vegaComments"] = _format_vega_comments_html(raw.get("comments"))
     _apply_vega_mitre_attack_format(raw)
 
