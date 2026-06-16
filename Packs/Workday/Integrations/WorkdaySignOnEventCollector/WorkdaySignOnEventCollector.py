@@ -1,4 +1,3 @@
-# THIS IS A CUSTOM INTEGRATION TO FIX THE TIMEOUT ISSUE
 from xml.sax.saxutils import escape
 
 import demistomock as demisto
@@ -539,7 +538,6 @@ def main() -> None:  # pragma: no cover
                 # saves next_run for the time fetch-events is invoked
                 demisto.info(f"Setting new last_run to {new_last_run}")
                 demisto.setLastRun(new_last_run)
-                demisto.info(f'last_run value set to {new_last_run}"')
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
