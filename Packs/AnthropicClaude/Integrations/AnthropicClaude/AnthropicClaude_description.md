@@ -22,5 +22,17 @@ This integration allows you to:
 - Send messages to Claude models and receive AI-generated responses
 - Analyze email headers and bodies for security threats
 - Generate SOC email templates
+- Collect Anthropic Compliance API Activity Feed events into Cortex XSIAM
+- Enumerate the directory (organizations, users, roles, groups) and retrieve content metadata (chats, files, projects)
+
+### Event Collection (Compliance API)
+Event collection and the read-only `claude-list-*` / `claude-get-*` commands use a separate **Compliance Access Key** (`sk-ant-api01-...`), configured in the **Compliance Access Key** parameter.
+
+#### Prerequisites
+The Compliance API is enabled on request (Claude Enterprise plan for the full API). An org owner creates a Compliance Access Key in claude.ai with scopes `read:compliance_activities`, `read:compliance_org_data`, and `read:compliance_user_data`.
+
+See [how to create a Compliance API Key](https://platform.claude.com/docs/en/manage-claude/compliance-api-access).
+
+To enable event collection, set the Compliance Access Key and select **Fetch events**.
 
 ---

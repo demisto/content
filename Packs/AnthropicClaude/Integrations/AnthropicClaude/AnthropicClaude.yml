@@ -4,8 +4,8 @@ commonfields:
   id: Anthropic Claude
   version: -1
 sectionorder:
- - Connect
- - Collect
+- Connect
+- Collect
 configuration:
 - defaultvalue: https://api.anthropic.com/
   display: Server URL
@@ -56,6 +56,42 @@ configuration:
   advanced: true
   display: Top P
   name: top_p
+  required: false
+  section: Collect
+  type: 0
+- display: ''
+  name: compliance_apikey
+  required: false
+  type: 9
+  section: Connect
+  additionalinfo: Anthropic Compliance Access Key (sk-ant-api01-...) used for event collection and the read-only compliance commands. Required to fetch events.
+  displaypassword: Compliance Access Key
+  hiddenusername: true
+- display: Fetch events
+  name: isFetchEvents
+  required: false
+  type: 8
+  section: Collect
+- additionalinfo: Activity Feed types to narrow the feed. Leave empty to fetch all activity types.
+  advanced: true
+  display: Activity types
+  name: activity_types
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: The maximum number of events to fetch per cycle. Defaults to 50000 (5000 x 10 calls).
+  advanced: true
+  defaultvalue: '50000'
+  display: Maximum number of events per fetch
+  name: max_events_per_fetch
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: The first fetch time for events (e.g., "1 day", "12 hours").
+  advanced: true
+  defaultvalue: 1 day
+  display: First fetch time
+  name: first_fetch
   required: false
   section: Collect
   type: 0
@@ -147,11 +183,346 @@ script:
     - contextPath: AnthropicClaude.Conversation
       description: Entire conversation (if not reset) between the user and the Claude model.
       type: Dictionary
+  - arguments:
+    - defaultValue: '50'
+      description: Maximum number of events to retrieve.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the events are pushed to XSIAM.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A comma-separated list of Activity Feed types to narrow the feed.
+      isArray: true
+      name: activity_types
+    description: Manually retrieve Activity Feed events from the Anthropic Compliance API for testing and troubleshooting.
+    name: claude-get-events
+  - arguments:
+    - defaultValue: '50'
+      description: 'Client-side cap on the number of organizations returned. Maximum: 1000.'
+      name: limit
+    description: List the organizations under the parent organization (Compliance API).
+    name: claude-list-organizations
+    outputs:
+    - contextPath: AnthropicClaude.Organization.uuid
+      description: The organization UUID.
+      type: String
+    - contextPath: AnthropicClaude.Organization.name
+      description: The organization name.
+      type: String
+    - contextPath: AnthropicClaude.Organization.created_at
+      description: The organization creation time.
+      type: Date
+  - arguments:
+    - description: Organization UUID.
+      name: org_uuid
+      required: true
+    - defaultValue: '50'
+      description: 'Maximum number of users to return. Maximum: 1000.'
+      name: limit
+    - description: Page token from a previous response's next_page.
+      name: next_token
+    description: List the users of an organization (Compliance API).
+    name: claude-list-organization-users
+    outputs:
+    - contextPath: AnthropicClaude.Organization.User.id
+      description: The user ID.
+      type: String
+    - contextPath: AnthropicClaude.Organization.User.full_name
+      description: The user full name.
+      type: String
+    - contextPath: AnthropicClaude.Organization.User.email
+      description: The user email.
+      type: String
+    - contextPath: AnthropicClaude.Organization.User.organization_role
+      description: The user's role in the organization.
+      type: String
+    - contextPath: AnthropicClaude.Organization.User.created_at
+      description: The user creation time.
+      type: Date
+  - arguments:
+    - description: Organization UUID.
+      name: org_uuid
+      required: true
+    - description: When provided, returns that single role instead of the list.
+      name: role_id
+    - defaultValue: '50'
+      description: 'Maximum number of roles to return. Maximum: 1000.'
+      name: limit
+    - description: Page token (list mode only).
+      name: next_token
+    description: List roles of an organization, or retrieve a single role when role_id is provided (Compliance API).
+    name: claude-list-roles
+    outputs:
+    - contextPath: AnthropicClaude.Organization.Role.id
+      description: The role ID.
+      type: String
+    - contextPath: AnthropicClaude.Organization.Role.name
+      description: The role name.
+      type: String
+    - contextPath: AnthropicClaude.Organization.Role.description
+      description: The role description.
+      type: String
+    - contextPath: AnthropicClaude.Organization.Role.created_at
+      description: The role creation time.
+      type: Date
+    - contextPath: AnthropicClaude.Organization.Role.updated_at
+      description: The role update time.
+      type: Date
+  - arguments:
+    - description: Organization UUID.
+      name: org_uuid
+      required: true
+    - description: Role ID.
+      name: role_id
+      required: true
+    - defaultValue: '50'
+      description: 'Maximum number of permissions to return. Maximum: 1000.'
+      name: limit
+    - description: Page token.
+      name: next_token
+    description: List the permissions of a role (Compliance API).
+    name: claude-list-role-permissions
+    outputs:
+    - contextPath: AnthropicClaude.Organization.Role.Permission.resource_type
+      description: The permission resource type.
+      type: String
+    - contextPath: AnthropicClaude.Organization.Role.Permission.resource_id
+      description: The permission resource ID.
+      type: String
+    - contextPath: AnthropicClaude.Organization.Role.Permission.action
+      description: The permission action.
+      type: String
+  - arguments:
+    - description: When provided, returns that single group instead of the list.
+      name: group_id
+    - description: Page size (list mode only).
+      name: limit
+    - description: Page token (list mode only).
+      name: next_token
+    description: List groups, or retrieve a single group when group_id is provided (Compliance API).
+    name: claude-list-groups
+    outputs:
+    - contextPath: AnthropicClaude.Group.id
+      description: The group ID.
+      type: String
+    - contextPath: AnthropicClaude.Group.name
+      description: The group name.
+      type: String
+    - contextPath: AnthropicClaude.Group.description
+      description: The group description.
+      type: String
+    - contextPath: AnthropicClaude.Group.source_type
+      description: The group source type (direct or scim).
+      type: String
+    - contextPath: AnthropicClaude.Group.roles
+      description: Array of role IDs assigned to the group.
+      type: Unknown
+    - contextPath: AnthropicClaude.Group.created_at
+      description: The group creation time.
+      type: Date
+    - contextPath: AnthropicClaude.Group.updated_at
+      description: The group update time.
+      type: Date
+  - arguments:
+    - description: Group ID.
+      name: group_id
+      required: true
+    - defaultValue: '50'
+      description: 'Maximum number of members to return. Maximum: 1000.'
+      name: limit
+    - description: Page token.
+      name: next_token
+    description: List the members of a group (Compliance API).
+    name: claude-list-group-members
+    outputs:
+    - contextPath: AnthropicClaude.Group.Member.user_id
+      description: The member user ID.
+      type: String
+    - contextPath: AnthropicClaude.Group.Member.email
+      description: The member email.
+      type: String
+    - contextPath: AnthropicClaude.Group.Member.created_at
+      description: The membership creation time.
+      type: Date
+    - contextPath: AnthropicClaude.Group.Member.updated_at
+      description: The membership update time.
+      type: Date
+  - arguments:
+    - description: Up to 10 user IDs. Run claude-list-organization-users first to obtain them.
+      isArray: true
+      name: user_ids
+      required: true
+    - description: Filter by organization UUID(s).
+      isArray: true
+      name: organization_ids
+    - description: Filter by project ID(s).
+      isArray: true
+      name: project_ids
+    - description: 'RFC 3339 lower bound on creation time (example: 2025-06-07T08:09:10Z).'
+      name: created_at_gte
+    - description: RFC 3339 upper bound on creation time.
+      name: created_at_lte
+    - description: RFC 3339 lower bound on update time.
+      name: updated_at_gte
+    - description: RFC 3339 upper bound on update time.
+      name: updated_at_lte
+    - description: Page size.
+      name: limit
+    - description: Cursor - walk toward newer chats.
+      name: after_id
+    - description: Cursor - walk toward older chats.
+      name: before_id
+    description: List chats metadata (Compliance API).
+    name: claude-list-chats
+    outputs:
+    - contextPath: AnthropicClaude.Chat.id
+      description: The chat ID.
+      type: String
+    - contextPath: AnthropicClaude.Chat.name
+      description: The chat name.
+      type: String
+    - contextPath: AnthropicClaude.Chat.created_at
+      description: The chat creation time.
+      type: Date
+    - contextPath: AnthropicClaude.Chat.updated_at
+      description: The chat update time.
+      type: Date
+    - contextPath: AnthropicClaude.Chat.model
+      description: The model used in the chat.
+      type: String
+    - contextPath: AnthropicClaude.Chat.organization_uuid
+      description: The organization UUID.
+      type: String
+    - contextPath: AnthropicClaude.Chat.project_id
+      description: The project ID.
+      type: String
+  - arguments:
+    - description: Chat ID.
+      name: chat_id
+      required: true
+    - defaultValue: '50'
+      description: 'Maximum number of messages to return. Maximum: 1000.'
+      name: limit
+    - description: Cursor.
+      name: after_id
+    - description: Cursor.
+      name: before_id
+    - auto: PREDEFINED
+      description: Sort direction.
+      name: order
+      predefined:
+      - asc
+      - desc
+    - description: RFC 3339 lower bound on creation time.
+      name: created_at_gte
+    - description: RFC 3339 upper bound on creation time.
+      name: created_at_lte
+    - description: RFC 3339 lower bound on update time.
+      name: updated_at_gte
+    - description: RFC 3339 upper bound on update time.
+      name: updated_at_lte
+    description: List the messages of a chat (Compliance API).
+    name: claude-list-chat-messages
+    outputs:
+    - contextPath: AnthropicClaude.Chat.Message.id
+      description: The message ID.
+      type: String
+    - contextPath: AnthropicClaude.Chat.Message.role
+      description: The message role (user or assistant).
+      type: String
+    - contextPath: AnthropicClaude.Chat.Message.created_at
+      description: The message creation time.
+      type: Date
+  - arguments:
+    - description: When provided, returns that single project instead of the list.
+      name: project_id
+    - defaultValue: '50'
+      description: 'Maximum number of projects to return. Maximum: 100.'
+      name: limit
+    - description: Page token (list mode only).
+      name: next_token
+    description: List projects, or retrieve a single project when project_id is provided (Compliance API).
+    name: claude-list-projects
+    outputs:
+    - contextPath: AnthropicClaude.Project.id
+      description: The project ID.
+      type: String
+    - contextPath: AnthropicClaude.Project.name
+      description: The project name.
+      type: String
+    - contextPath: AnthropicClaude.Project.is_private
+      description: Whether the project is private.
+      type: Boolean
+    - contextPath: AnthropicClaude.Project.organization_uuid
+      description: The organization UUID.
+      type: String
+    - contextPath: AnthropicClaude.Project.created_at
+      description: The project creation time.
+      type: Date
+    - contextPath: AnthropicClaude.Project.updated_at
+      description: The project update time.
+      type: Date
+  - arguments:
+    - description: Project ID.
+      name: project_id
+      required: true
+    - description: Page token.
+      name: next_token
+    description: List the attachments of a project (Compliance API).
+    name: claude-list-project-attachments
+    outputs:
+    - contextPath: AnthropicClaude.Project.Attachment.id
+      description: The attachment ID.
+      type: String
+    - contextPath: AnthropicClaude.Project.Attachment.filename
+      description: The attachment filename.
+      type: String
+    - contextPath: AnthropicClaude.Project.Attachment.mime_type
+      description: The attachment MIME type.
+      type: String
+    - contextPath: AnthropicClaude.Project.Attachment.type
+      description: The attachment type (project_file or project_doc).
+      type: String
+    - contextPath: AnthropicClaude.Project.Attachment.created_at
+      description: The attachment creation time.
+      type: Date
+  - arguments:
+    - description: Project ID.
+      name: project_id
+      required: true
+    - description: Project document ID.
+      name: document_id
+      required: true
+    description: Retrieve a project document including its text content (Compliance API).
+    name: claude-get-project-document
+    outputs:
+    - contextPath: AnthropicClaude.Project.Document.id
+      description: The document ID.
+      type: String
+    - contextPath: AnthropicClaude.Project.Document.filename
+      description: The document filename.
+      type: String
+    - contextPath: AnthropicClaude.Project.Document.mime_type
+      description: The document MIME type.
+      type: String
+    - contextPath: AnthropicClaude.Project.Document.created_at
+      description: The document creation time.
+      type: Date
+    - contextPath: AnthropicClaude.Project.Document.content
+      description: The document text content.
+      type: String
   dockerimage: demisto/parse-emails:1.0.0.3555598
   runonce: false
   script: ''
   subtype: python3
   type: python
+  isfetchevents: true
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- platform

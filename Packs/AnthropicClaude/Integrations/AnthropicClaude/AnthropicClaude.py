@@ -13,6 +13,16 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 ANTHROPIC_VERSION = "2023-06-01"
 EML_FILE_SUFFIX = ".eml"
 
+# Event Collector (Compliance API) constants
+VENDOR = "anthropic"
+PRODUCT = "claude"
+ACTIVITIES_ENDPOINT = "v1/compliance/activities"
+ACTIVITIES_PAGE_SIZE = 5000  # API max page size for the Activity Feed.
+MAX_FETCH_CALLS = 10  # API call budget per fetch cycle (5000 x 10 = 50,000 events).
+DEFAULT_MAX_EVENTS_PER_FETCH = 50000
+DEFAULT_FIRST_FETCH = "1 day"
+DEFAULT_LIST_LIMIT = 50
+
 CHECK_EMAIL_HEADERS_PROMPT = """
 I have a set of email headers.
 Analyze these headers for any potential security issues such as spoofing, phishing attempts, or other malicious activity.
@@ -126,6 +136,47 @@ class AnthropicClient(BaseClient):
         return self._http_request(
             method="POST", url_suffix=AnthropicClient.MESSAGES_ENDPOINT, json_data=options, headers=self.headers
         )
+
+
+class ComplianceClient(BaseClient):
+    """Client for the Anthropic Compliance API (Activity Feed + read-only directory/content endpoints).
+
+    Authenticates with the Compliance Access Key (``sk-ant-api01-...``) via the ``x-api-key`` header.
+    """
+
+    def __init__(self, url: str, api_key: str, proxy: bool, verify: bool):
+        super().__init__(base_url=url, proxy=proxy, verify=verify)
+        self.api_key = api_key
+        self.headers = {"accept": "application/json", "x-api-key": self.api_key}
+
+    def http_get(self, url_suffix: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Performs an authenticated GET request against a Compliance API endpoint."""
+        return self._http_request(method="GET", url_suffix=url_suffix, params=params, headers=self.headers)
+
+    def get_activities(
+        self,
+        limit: int,
+        created_at_gte: str | None = None,
+        created_at_gt: str | None = None,
+        created_at_lt: str | None = None,
+        after_id: str | None = None,
+        activity_types: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Fetches a single page of the Activity Feed (``GET /v1/compliance/activities``)."""
+        params: dict[str, Any] = {"limit": limit}
+        if after_id:
+            params["after_id"] = after_id
+        else:
+            # Time-window bounds only apply to the first call of a cycle (cursor takes over afterwards).
+            if created_at_gte:
+                params["created_at.gte"] = created_at_gte
+            if created_at_gt:
+                params["created_at.gt"] = created_at_gt
+            if created_at_lt:
+                params["created_at.lt"] = created_at_lt
+        if activity_types:
+            params["activity_types[]"] = activity_types
+        return self.http_get(ACTIVITIES_ENDPOINT, params=params)
 
 
 """ HELPER FUNCTIONS """
@@ -417,6 +468,373 @@ def create_soc_email_template_command(client: AnthropicClient, args: dict[str, A
     return send_message_command_results
 
 
+""" EVENT COLLECTOR FUNCTIONS """
+
+
+def add_time_to_events(events: list[dict[str, Any]]) -> None:
+    """Sets the ``_time`` field on each event from the documented ``created_at`` timestamp."""
+    for event in events:
+        created_at = event.get("created_at")
+        if created_at:
+            event["_time"] = created_at
+
+
+def fetch_activities(
+    client: ComplianceClient,
+    last_run: dict[str, Any],
+    max_events: int,
+    activity_types: list[str] | None,
+    first_fetch: str,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Fetches Activity Feed events incrementally using cursor pagination.
+
+    The first call of a cycle uses ``created_at.gt`` against the newest timestamp seen in the
+    previous run (or the first-fetch lower bound on the very first run). Subsequent pages within
+    the same cycle advance using the opaque ``after_id`` cursor, until ``has_more`` is ``False``,
+    the per-fetch event cap is reached, or the API-call budget is exhausted.
+
+    Returns the collected events and the next ``last_run`` state.
+    """
+    previous_newest = last_run.get("newest_created_at")
+    if previous_newest:
+        created_at_gt: str | None = previous_newest
+        created_at_gte: str | None = None
+    else:
+        first_fetch_dt = arg_to_datetime(first_fetch or DEFAULT_FIRST_FETCH)
+        created_at_gte = first_fetch_dt.strftime(DATE_FORMAT) if first_fetch_dt else None
+        created_at_gt = None
+
+    collected: list[dict[str, Any]] = []
+    seen_ids: set[str] = set(last_run.get("last_fetched_ids", []))
+    after_id: str | None = None
+    newest_created_at = previous_newest
+
+    for call_num in range(MAX_FETCH_CALLS):
+        if len(collected) >= max_events:
+            break
+        page_limit = min(ACTIVITIES_PAGE_SIZE, max_events - len(collected))
+        response = client.get_activities(
+            limit=page_limit,
+            created_at_gte=created_at_gte,
+            created_at_gt=created_at_gt if call_num == 0 else None,
+            after_id=after_id,
+            activity_types=activity_types,
+        )
+        activities = response.get("data", []) or []
+        demisto.debug(f"anthropic-claude fetch_activities call={call_num} fetched {len(activities)} activities.")
+
+        for activity in activities:
+            activity_id = activity.get("id")
+            if activity_id and activity_id in seen_ids:
+                continue  # Dedup against events already pushed in a prior run.
+            collected.append(activity)
+            if activity_id:
+                seen_ids.add(activity_id)
+            created_at = activity.get("created_at")
+            if created_at and (not newest_created_at or created_at > newest_created_at):
+                newest_created_at = created_at
+
+        after_id = response.get("last_id")
+        if not response.get("has_more") or not after_id:
+            break
+
+    # Track the IDs that share the newest timestamp so the next run can dedup boundary events.
+    boundary_ids = [e["id"] for e in collected if e.get("id") and e.get("created_at") == newest_created_at]
+    next_run = {"newest_created_at": newest_created_at, "last_fetched_ids": boundary_ids}
+    return collected, next_run
+
+
+def fetch_events(client: ComplianceClient, params: dict[str, Any]) -> None:
+    """Fetch-events entry point: pulls Activity Feed events and pushes them to XSIAM."""
+    last_run = demisto.getLastRun() or {}
+    max_events = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_MAX_EVENTS_PER_FETCH
+    activity_types = argToList(params.get("activity_types")) or None
+    first_fetch = params.get("first_fetch") or DEFAULT_FIRST_FETCH
+
+    events, next_run = fetch_activities(client, last_run, max_events, activity_types, first_fetch)
+    add_time_to_events(events)
+
+    demisto.debug(f"anthropic-claude fetch_events sending {len(events)} events to XSIAM. {next_run=}")
+    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+    demisto.setLastRun(next_run)
+
+
+def get_events_command(client: ComplianceClient, args: dict[str, Any]) -> tuple[list[dict[str, Any]], CommandResults]:
+    """Manually retrieves Activity Feed events for testing/troubleshooting."""
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIST_LIMIT
+    activity_types = argToList(args.get("activity_types")) or None
+
+    response = client.get_activities(limit=min(limit, ACTIVITIES_PAGE_SIZE), activity_types=activity_types)
+    events = (response.get("data", []) or [])[:limit]
+    add_time_to_events(events)
+
+    readable = tableToMarkdown(
+        name="Anthropic Claude Activity Feed events",
+        t=events,
+        headers=["id", "created_at", "activity_type"],
+        removeNull=True,
+    )
+    return events, CommandResults(readable_output=readable, raw_response=response)
+
+
+""" COMPLIANCE COMMAND FUNCTIONS """
+
+
+def _paginate_args(args: dict[str, Any]) -> dict[str, Any]:
+    """Builds common list query params (limit + XSOAR page-token convention)."""
+    params: dict[str, Any] = {}
+    if limit := arg_to_number(args.get("limit")):
+        params["limit"] = limit
+    if next_token := args.get("next_token"):
+        params["page"] = next_token
+    return params
+
+
+def _list_command(
+    client: ComplianceClient,
+    url_suffix: str,
+    outputs_prefix: str,
+    args: dict[str, Any],
+    headers: list[str],
+    table_name: str,
+    use_pagination: bool = True,
+) -> CommandResults:
+    """Generic GET-and-tabulate helper for the read-only compliance list endpoints."""
+    params = _paginate_args(args) if use_pagination else {}
+    response = client.http_get(url_suffix, params=params or None)
+    data = response.get("data", response)
+    readable = tableToMarkdown(name=table_name, t=data, headers=headers, removeNull=True)
+    if next_page := response.get("next_page"):
+        readable += f"\n**Next page token:** `{next_page}`"
+    return CommandResults(
+        outputs_prefix=outputs_prefix,
+        outputs_key_field="id",
+        outputs=data,
+        readable_output=readable,
+        raw_response=response,
+    )
+
+
+def list_organizations_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIST_LIMIT
+    response = client.http_get("v1/compliance/organizations", params={"limit": limit})
+    data = (response.get("data", []) or [])[:limit]
+    readable = tableToMarkdown("Organizations", data, headers=["uuid", "name", "created_at"], removeNull=True)
+    return CommandResults(
+        outputs_prefix="AnthropicClaude.Organization",
+        outputs_key_field="uuid",
+        outputs=data,
+        readable_output=readable,
+        raw_response=response,
+    )
+
+
+def list_organization_users_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+    org_uuid = args["org_uuid"]
+    return _list_command(
+        client,
+        f"v1/compliance/organizations/{org_uuid}/users",
+        "AnthropicClaude.Organization.User",
+        args,
+        headers=["id", "full_name", "email", "organization_role", "created_at"],
+        table_name="Organization Users",
+    )
+
+
+def list_roles_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+    org_uuid = args["org_uuid"]
+    role_id = args.get("role_id")
+    headers = ["id", "name", "description", "created_at", "updated_at"]
+    if role_id:
+        response = client.http_get(f"v1/compliance/organizations/{org_uuid}/roles/{role_id}")
+        readable = tableToMarkdown("Role", response, headers=headers, removeNull=True)
+        return CommandResults(
+            outputs_prefix="AnthropicClaude.Organization.Role",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=readable,
+            raw_response=response,
+        )
+    return _list_command(
+        client,
+        f"v1/compliance/organizations/{org_uuid}/roles",
+        "AnthropicClaude.Organization.Role",
+        args,
+        headers=headers,
+        table_name="Roles",
+    )
+
+
+def list_role_permissions_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+    org_uuid = args["org_uuid"]
+    role_id = args["role_id"]
+    return _list_command(
+        client,
+        f"v1/compliance/organizations/{org_uuid}/roles/{role_id}/permissions",
+        "AnthropicClaude.Organization.Role.Permission",
+        args,
+        headers=["resource_type", "resource_id", "action"],
+        table_name="Role Permissions",
+    )
+
+
+def list_groups_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+    group_id = args.get("group_id")
+    headers = ["id", "name", "description", "source_type", "roles", "created_at", "updated_at"]
+    if group_id:
+        response = client.http_get(f"v1/compliance/groups/{group_id}")
+        readable = tableToMarkdown("Group", response, headers=headers, removeNull=True)
+        return CommandResults(
+            outputs_prefix="AnthropicClaude.Group",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=readable,
+            raw_response=response,
+        )
+    return _list_command(
+        client,
+        "v1/compliance/groups",
+        "AnthropicClaude.Group",
+        args,
+        headers=headers,
+        table_name="Groups",
+    )
+
+
+def list_group_members_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+    group_id = args["group_id"]
+    return _list_command(
+        client,
+        f"v1/compliance/groups/{group_id}/members",
+        "AnthropicClaude.Group.Member",
+        args,
+        headers=["user_id", "email", "created_at", "updated_at"],
+        table_name="Group Members",
+    )
+
+
+def list_chats_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+    params: dict[str, Any] = {}
+    if user_ids := argToList(args.get("user_ids")):
+        params["user_ids[]"] = user_ids
+    if organization_ids := argToList(args.get("organization_ids")):
+        params["organization_ids[]"] = organization_ids
+    if project_ids := argToList(args.get("project_ids")):
+        params["project_ids[]"] = project_ids
+    for arg_name in ("created_at_gte", "created_at_lte", "updated_at_gte", "updated_at_lte", "after_id", "before_id"):
+        if value := args.get(arg_name):
+            params[arg_name.replace("_gte", ".gte").replace("_lte", ".lte") if "_at_" in arg_name else arg_name] = value
+    if limit := arg_to_number(args.get("limit")):
+        params["limit"] = limit
+    response = client.http_get("v1/compliance/apps/chats", params=params)
+    data = response.get("data", [])
+    headers = ["id", "name", "created_at", "updated_at", "deleted_at", "href", "model", "organization_uuid", "project_id"]
+    readable = tableToMarkdown("Chats", data, headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix="AnthropicClaude.Chat",
+        outputs_key_field="id",
+        outputs=data,
+        readable_output=readable,
+        raw_response=response,
+    )
+
+
+def list_chat_messages_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+    chat_id = args["chat_id"]
+    params: dict[str, Any] = {}
+    if limit := arg_to_number(args.get("limit")):
+        params["limit"] = limit
+    for arg_name in ("after_id", "before_id", "order"):
+        if value := args.get(arg_name):
+            params[arg_name] = value
+    for arg_name in ("created_at_gte", "created_at_lte", "updated_at_gte", "updated_at_lte"):
+        if value := args.get(arg_name):
+            params[arg_name.replace("_gte", ".gte").replace("_lte", ".lte")] = value
+    response = client.http_get(f"v1/compliance/apps/chats/{chat_id}/messages", params=params or None)
+    data = response.get("chat_messages", [])
+    readable = tableToMarkdown("Chat Messages", data, headers=["id", "role", "created_at"], removeNull=True)
+    return CommandResults(
+        outputs_prefix="AnthropicClaude.Chat.Message",
+        outputs_key_field="id",
+        outputs=data,
+        readable_output=readable,
+        raw_response=response,
+    )
+
+
+def list_projects_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+    project_id = args.get("project_id")
+    headers = [
+        "id",
+        "name",
+        "is_private",
+        "organization_uuid",
+        "created_at",
+        "updated_at",
+        "deleted_at",
+    ]
+    if project_id:
+        response = client.http_get(f"v1/compliance/apps/projects/{project_id}")
+        readable = tableToMarkdown("Project", response, headers=headers, removeNull=True)
+        return CommandResults(
+            outputs_prefix="AnthropicClaude.Project",
+            outputs_key_field="id",
+            outputs=response,
+            readable_output=readable,
+            raw_response=response,
+        )
+    return _list_command(
+        client,
+        "v1/compliance/apps/projects",
+        "AnthropicClaude.Project",
+        args,
+        headers=headers,
+        table_name="Projects",
+    )
+
+
+def list_project_attachments_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+    project_id = args["project_id"]
+    return _list_command(
+        client,
+        f"v1/compliance/apps/projects/{project_id}/attachments",
+        "AnthropicClaude.Project.Attachment",
+        args,
+        headers=["id", "filename", "mime_type", "type", "created_at"],
+        table_name="Project Attachments",
+    )
+
+
+def get_project_document_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+    project_id = args["project_id"]
+    document_id = args["document_id"]
+    response = client.http_get(f"v1/compliance/apps/projects/{project_id}/documents/{document_id}")
+    readable = tableToMarkdown(
+        "Project Document",
+        response,
+        headers=["id", "filename", "mime_type", "created_at"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="AnthropicClaude.Project.Document",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=readable,
+        raw_response=response,
+    )
+
+
+def test_module_compliance(client: ComplianceClient) -> str:
+    """Validates the Compliance Access Key by hitting the Activity Feed with a minimal request."""
+    try:
+        client.get_activities(limit=1)
+    except DemistoException as e:
+        if "401" in str(e) or "403" in str(e) or "Forbidden" in str(e) or "Authorization" in str(e):
+            return "Authorization Error: make sure the Compliance Access Key is correct and has the required scopes."
+        raise
+    return "ok"
+
+
 """ MAIN FUNCTION """
 
 
@@ -435,28 +853,71 @@ def main() -> None:  # pragma: no cover
     # If a model name was provided within the free text box, it will override the selected one from the model selection box.
     # The provided model will be tested for compatability within the test module.
     model = params.get("model-freetext") if params.get("model-freetext") else params.get("model-select")
+    compliance_api_key = params.get("compliance_apikey", {}).get("password")
 
-    args.update({key: value for key, value in params.items() if key not in args and value is not None})
-
+    url = params.get("url")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+
+    # Commands that use the Compliance API (Activity Feed + read-only directory/content endpoints).
+    compliance_commands = {
+        "claude-list-organizations": list_organizations_command,
+        "claude-list-organization-users": list_organization_users_command,
+        "claude-list-roles": list_roles_command,
+        "claude-list-role-permissions": list_role_permissions_command,
+        "claude-list-groups": list_groups_command,
+        "claude-list-group-members": list_group_members_command,
+        "claude-list-chats": list_chats_command,
+        "claude-list-chat-messages": list_chat_messages_command,
+        "claude-list-projects": list_projects_command,
+        "claude-list-project-attachments": list_project_attachments_command,
+        "claude-get-project-document": get_project_document_command,
+    }
+
+    demisto.debug(f"anthropic-claude Command being called is {command}")
     try:
-        client = AnthropicClient(url=params.get("url"), api_key=api_key, model=model, verify=verify, proxy=proxy)
-
         if command == "test-module":
-            return_results(test_module(client=client, params=params))
+            results: list[str] = []
+            if api_key:
+                llm_client = AnthropicClient(url=url, api_key=api_key, model=model, verify=verify, proxy=proxy)
+                results.append(test_module(client=llm_client, params=params))
+            if compliance_api_key:
+                compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
+                results.append(test_module_compliance(client=compliance_client))
+            return_results("ok" if results and all(r == "ok" for r in results) else (results[-1] if results else "ok"))
 
-        elif command == "claude-send-message":
-            return_results(send_message_command(client=client, args=args)[0])
+        elif command == "fetch-events":
+            compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
+            fetch_events(client=compliance_client, params=params)
 
-        elif command == "claude-check-email-header":
-            return_results(check_email_headers_command(client=client, args=args))
+        elif command == "claude-get-events":
+            compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
+            events, results_obj = get_events_command(client=compliance_client, args=args)
+            if argToBoolean(args.get("should_push_events", "false")):
+                add_time_to_events(events)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            return_results(results_obj)
 
-        elif command == "claude-check-email-body":
-            return_results(check_email_body_command(client=client, args=args))
+        elif command in compliance_commands:
+            compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
+            return_results(compliance_commands[command](compliance_client, args))
 
-        elif command == "claude-create-soc-email-template":
-            return_results(create_soc_email_template_command(client=client, args=args))
+        else:
+            # LLM-based commands use the existing Messages-API client.
+            llm_args = dict(args)
+            llm_args.update({key: value for key, value in params.items() if key not in llm_args and value is not None})
+            llm_client = AnthropicClient(url=url, api_key=api_key, model=model, verify=verify, proxy=proxy)
+
+            if command == "claude-send-message":
+                return_results(send_message_command(client=llm_client, args=llm_args)[0])
+            elif command == "claude-check-email-header":
+                return_results(check_email_headers_command(client=llm_client, args=llm_args))
+            elif command == "claude-check-email-body":
+                return_results(check_email_body_command(client=llm_client, args=llm_args))
+            elif command == "claude-create-soc-email-template":
+                return_results(create_soc_email_template_command(client=llm_client, args=llm_args))
+            else:
+                raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
