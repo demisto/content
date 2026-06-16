@@ -192,15 +192,21 @@ def generate_dummy_value_for_param(param: dict) -> object:
         return True
 
     if param_type == PARAM_TYPE_AUTH:
-        # Auth (credentials) is IGNORE'd by the normalizer, so the actual
-        # value doesn't reach the diff. We still emit a structured dict so
-        # the XSOAR API accepts the instance creation request.
-        return {
+        # Auth (credentials) is reduced to identifier/password by the normalizer
+        # before the diff. We still emit a structured dict so the XSOAR API
+        # accepts the instance creation request.
+        auth_value: dict[str, Any] = {
             "credential": "",
-            "identifier": "<override_user_{}>".format(raw_name or "unknown"),
             "password": "<override_pass_{}>".format(raw_name or "unknown"),
             "passwordChanged": False,
         }
+        # For hiddenusername:true type-9 fields (e.g. Akamai's credentials_*),
+        # the connector delivers no username, so injecting a dummy identifier
+        # would re-introduce a spurious mismatch after the normalizer reduction
+        # (which keeps identifier only when non-empty). Omit it in that case.
+        if not param.get("hiddenusername"):
+            auth_value["identifier"] = "<override_user_{}>".format(raw_name or "unknown")
+        return auth_value
 
     if param_type == PARAM_TYPE_SINGLE_SELECT:
         # Pick any option that is NOT the YML default.
@@ -550,6 +556,20 @@ def create_integration_instance(
             "required": False,
         })
         log.debug("Injected BE-synthesized field %r into module_instance.data", field_name)
+
+    # [DEBUG-DIAGNOSTIC] Dump the FULL create-instance payload as pretty JSON
+    # immediately before the PUT /settings/integration call. This surfaces the
+    # fetch-related flags so we can confirm whether both fetch-incidents and
+    # fetch-events are being armed on a single instance (XSOAR "error 52").
+    # Inspect the top-level `configuration` object for `isFetch` / `isFetchEvents`
+    # and the per-marketplace `isfetch` / `isfetchevents` flags. Remove when done.
+    try:
+        log.info(
+            "XSOAR_CREATE_PAYLOAD=%s",
+            json.dumps(module_instance, indent=2, default=str, sort_keys=True),
+        )
+    except Exception as _dbg_exc:  # noqa: BLE001 - diagnostic logging must never break the flow
+        log.warning("XSOAR_CREATE_PAYLOAD serialization failed: %s", _dbg_exc)
 
     try:
         res = demisto_client.generic_request_func(

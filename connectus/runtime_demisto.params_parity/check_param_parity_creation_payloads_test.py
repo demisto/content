@@ -19,6 +19,19 @@ import types
 import check_param_parity
 
 
+def _fake_variant() -> types.SimpleNamespace:
+    """A single legal variant (no fetch caps → all fetch flags False)."""
+    return types.SimpleNamespace(
+        id="automation-and-remediation",
+        capabilities=[],
+        enabled_capability_ids=["automation-and-remediation"],
+        fetch_flags={
+            "isFetch": False, "isFetchEvents": False, "isFetchAssets": False,
+            "isFetchSamples": False, "isFetchCredentials": False, "feed": False,
+        },
+    )
+
+
 def _fake_parity_inputs(integration_yml_path: str) -> types.SimpleNamespace:
     return types.SimpleNamespace(
         integration_yml_path=integration_yml_path,
@@ -28,6 +41,7 @@ def _fake_parity_inputs(integration_yml_path: str) -> types.SimpleNamespace:
         compare_params=set(),
         ignored_params={},
         capabilities=[],
+        variants=[_fake_variant()],
         profiles=[],
         param_to_connector_field={},
     )
@@ -108,10 +122,13 @@ def test_envelope_has_creation_payloads(monkeypatch, tmp_path):
     )
 
     assert rc == 0
-    assert "creation_payloads" in envelope
-    assert set(envelope["creation_payloads"].keys()) == {"integration", "connector"}
-    assert envelope["creation_payloads"]["integration"] == integration_payload
-    assert envelope["creation_payloads"]["connector"] == connector_payload
+    # creation_payloads now live INSIDE each variant entry of the aggregate.
+    assert envelope["variants"], "aggregate must carry at least one variant"
+    variant = envelope["variants"][0]
+    assert "creation_payloads" in variant
+    assert set(variant["creation_payloads"].keys()) == {"integration", "connector"}
+    assert variant["creation_payloads"]["integration"] == integration_payload
+    assert variant["creation_payloads"]["connector"] == connector_payload
     # Must survive JSON round-trip (the envelope is dumped to stdout + disk).
     json.dumps(envelope, default=str)
 
@@ -171,4 +188,5 @@ def test_envelope_creation_payloads_none_when_loading_from_file(monkeypatch, tmp
 
     assert rc == 0
     envelope = written["envelope"]
-    assert envelope["creation_payloads"] == {"integration": None, "connector": None}
+    variant = envelope["variants"][0]
+    assert variant["creation_payloads"] == {"integration": None, "connector": None}

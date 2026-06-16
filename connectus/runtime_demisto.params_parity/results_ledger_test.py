@@ -34,7 +34,11 @@ def results_dir(tmp_path, monkeypatch):
 
 
 def _envelope(status="fail", n_fail=2):
-    """A minimal envelope shaped like check_param_parity's output."""
+    """A LEGACY single-diff envelope (no ``variants``) — back-compat path.
+
+    ``append_ledger`` emits a single row with an EMPTY ``variant_id`` for this
+    shape; ``write_result`` persists it verbatim.
+    """
     return {
         "status": status,
         "summary": {"n_total": 5, "n_ok": 3, "n_fail": n_fail, "n_warn": 0},
@@ -44,6 +48,32 @@ def _envelope(status="fail", n_fail=2):
             "connector": {"domain": "test.salesforce.com", "api_key": "abc123"},
         },
         "inputs": {"integration_id": "Salesforce IAM", "connector_id": "salesforce"},
+    }
+
+
+def _aggregate_envelope(variants):
+    """An AGGREGATE envelope (multi-capability variant matrix) — the new shape.
+
+    ``variants`` is a list of ``(variant_id, status, n_fail)`` tuples.
+    """
+    n_fail_total = sum(1 for _, st, _ in variants if st != "pass")
+    return {
+        "status": "pass" if n_fail_total == 0 else "fail",
+        "integration_id": "Akamai WAF SIEM",
+        "connector_id": "akamai",
+        "summary": {
+            "n_variants": len(variants),
+            "n_variants_pass": len(variants) - n_fail_total,
+            "n_variants_fail": n_fail_total,
+        },
+        "variants": [
+            {
+                "variant_id": vid,
+                "status": st,
+                "summary": {"n_fail": nf},
+            }
+            for vid, st, nf in variants
+        ],
     }
 
 
@@ -144,11 +174,12 @@ def test_append_ledger_creates_header_once_then_appends(results_dir):
     ledger_path = results_dir / "ledger.csv"
     rows = list(csv.reader(ledger_path.read_text().splitlines()))
 
-    # exact header columns
+    # exact header columns (now includes variant_id)
     assert rows[0] == [
         "timestamp",
         "integration_id",
         "connector_slug",
+        "variant_id",
         "status",
         "n_fail",
         "result_file",
@@ -156,11 +187,12 @@ def test_append_ledger_creates_header_once_then_appends(results_dir):
     # header appears exactly once
     assert sum(1 for r in rows if r[0] == "timestamp") == 1
 
-    # first data row
+    # first data row (legacy envelope → empty variant_id)
     assert rows[1] == [
         "20260607T170006Z",
         "Salesforce IAM",
         "salesforce",
+        "",
         "fail",
         "2",
         "salesforce__salesforce-iam__20260607T170006Z.json",
@@ -170,10 +202,42 @@ def test_append_ledger_creates_header_once_then_appends(results_dir):
         "20260607T183000Z",
         "Other Integration",
         "other-connector",
+        "",
         "pass",
         "0",
         "other-connector__other-integration__20260607T183000Z.json",
     ]
+
+
+def test_append_ledger_one_row_per_variant(results_dir):
+    """An aggregate envelope yields ONE ledger row per variant (with variant_id)."""
+    when = datetime(2026, 6, 7, 17, 0, 6, tzinfo=timezone.utc)
+    env = _aggregate_envelope(
+        [
+            ("automation-and-remediation+fetch-issues", "fail", 1),
+            ("automation-and-remediation+log-collection", "pass", 0),
+        ]
+    )
+    results_ledger.append_ledger(
+        env,
+        integration_id="Akamai WAF SIEM",
+        connector_id="akamai",
+        result_file="akamai__akamai-waf-siem__20260607T170006Z.json",
+        when=when,
+    )
+    ledger_path = results_dir / "ledger.csv"
+    with ledger_path.open() as fh:
+        rows = list(csv.DictReader(fh))
+    assert len(rows) == 2
+    assert rows[0]["variant_id"] == "automation-and-remediation+fetch-issues"
+    assert rows[0]["status"] == "fail"
+    assert rows[0]["n_fail"] == "1"
+    assert rows[1]["variant_id"] == "automation-and-remediation+log-collection"
+    assert rows[1]["status"] == "pass"
+    assert rows[1]["n_fail"] == "0"
+    # both rows share the SAME timestamp + result_file (one run).
+    assert rows[0]["timestamp"] == rows[1]["timestamp"] == "20260607T170006Z"
+    assert rows[0]["result_file"] == rows[1]["result_file"]
 
 
 def test_append_ledger_uses_dictreader_columns(results_dir):

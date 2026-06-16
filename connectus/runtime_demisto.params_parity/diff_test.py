@@ -231,3 +231,34 @@ def test_no_combined_ok_ignored_when_nothing_ignored():
     names = [p["name"] for p in result["per_param"]]
     assert "credentials (ignored sub-keys)" not in names
     assert result["summary"]["n_ok_ignored"] == 0
+
+
+def test_prefixed_credentials_ok_entry_annotated():
+    """The partial-ignore annotation is emitted for a PREFIXED type-9 field
+    (e.g. Akamai's credentials_access_token), not just the literal "credentials".
+    The OK entry is annotated and the dropped skeleton sub-keys are surfaced."""
+    integration_norm = {"credentials_access_token": {"password": "s3cret"}}
+    connector_norm = {"credentials_access_token": {"password": "s3cret"}}
+    integration_raw = {
+        "credentials_access_token": {
+            "password": "s3cret",
+            "credential": "",
+            "passwordChanged": False,
+            "credentials": {"id": "", "user": "", "password": ""},
+        }
+    }
+    connector_raw = {"credentials_access_token": {"password": "s3cret"}}
+    result = diff.diff_params(
+        integration_norm, connector_norm,
+        yml_param_names={"credentials_access_token"},
+        integration_raw=integration_raw, connector_raw=connector_raw,
+    )
+    entry = _ok_entry(result, "credentials_access_token")
+    assert entry["state"] == diff.STATE_OK
+    assert entry["verdict"] == "ok"
+    assert entry["partially_ignored"] is True
+    assert entry["compared_keys"] == ["identifier", "password"]
+    # The skeleton sub-keys dropped from the integration side, sorted,
+    # excluding identifier/password.
+    assert entry["ignored_keys"] == ["credential", "credentials", "passwordChanged"]
+    assert isinstance(entry.get("partial_ignore_note"), str) and entry["partial_ignore_note"]

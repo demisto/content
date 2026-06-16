@@ -16,8 +16,9 @@ import logging
 log = logging.getLogger(__name__)
 
 # script.<flag> -> config param names the BE auto-adds.
+# Note: the isfetch fields (alertFetchInterval + the conditionally-skipped
+# incidentType) are appended inline in compute_be_synthesized_params because
 # incidentType is special-cased (skipped when feed or isfetchevents is also on).
-_ISFETCH_FIELDS = ["alertFetchInterval", "incidentType"]
 _FEED_FIELDS = [
     "feedReputation",
     "feedReliability",
@@ -71,6 +72,45 @@ def default_dummy_for(name: str) -> str:
     return f"dummy_config_{name}"
 
 
+#: The COMPLETE set of XSOAR instance-creation fetch toggle param NAMES. When the
+#: param-parity test creates the INTEGRATION-side instance for a capability
+#: VARIANT it sets ALL of these explicitly: the variant's active toggle ``True``,
+#: every other toggle ``False`` — so the instance models exactly one legal fetch
+#: type (the platform forbids enabling two). ``isFetchSamples`` has no connector
+#: capability mapping, so it is always ``False`` in the variant matrix; the rest
+#: ARE the values of ``resolver.CAPABILITY_FETCH_FLAG`` (same naming → no map).
+XSOAR_FETCH_TOGGLES: tuple[str, ...] = (
+    "isFetch",
+    "isFetchEvents",
+    "isFetchAssets",
+    "isFetchSamples",
+    "isFetchCredentials",
+    "feed",
+)
+
+
+def variant_toggle_overrides(fetch_flags: dict[str, bool] | None) -> dict[str, bool]:
+    """Build the FULL XSOAR toggle override set for a variant's ``fetch_flags``.
+
+    Returns a ``{xsoar_param_name: bool}`` dict covering EVERY toggle in
+    :data:`XSOAR_FETCH_TOGGLES`: each toggle defaults ``False`` and is set ``True``
+    iff the variant's ``fetch_flags`` mark it active. Because a variant's
+    ``fetch_flags`` keys ARE the XSOAR toggle names
+    (``resolver.CAPABILITY_FETCH_FLAG`` values), no translation is needed.
+
+    The orchestrator merges this into the INTEGRATION-side overrides so the type-8
+    fetch toggles are set EXACTLY as the variant requires (never the
+    guaranteed-different dummy the generator would otherwise produce), guaranteeing
+    the legacy instance models the same single legal fetch type the connector
+    enabled.
+    """
+    out: dict[str, bool] = {name: False for name in XSOAR_FETCH_TOGGLES}
+    for flag, active in (fetch_flags or {}).items():
+        if flag in out and active:
+            out[flag] = True
+    return out
+
+
 def _flag_is_true(script: dict, *keys: str) -> bool:
     """Return True if any of the given keys in `script` is truthy.
 
@@ -86,11 +126,22 @@ def _flag_is_true(script: dict, *keys: str) -> bool:
     return False
 
 
-def compute_be_synthesized_params(script: dict | None) -> tuple[list[str], list[str]]:
+def compute_be_synthesized_params(
+    script: dict | None,
+    fetch_flags: dict[str, bool] | None = None,
+) -> tuple[list[str], list[str]]:
     """Compute the (added, stripped) config-param-name lists for a YML script block.
 
     Args:
-        script: The integration YML's `script` dict (may be None/empty).
+        script: The integration YML's `script` dict (may be None/empty). Used for
+            ``longRunning``/``longRunningPort`` always, and for the fetch flags
+            ONLY when ``fetch_flags`` is not supplied.
+        fetch_flags: Optional variant-driven override of the FETCH flags (keyed by
+            the resolver flag names — ``isfetch``/``isfetchevents``/
+            ``isfetchassets``/``feed``/``isFetchCredentials``). When provided, the
+            BE add/strip decision uses THESE booleans instead of the YML script's
+            fetch flags, so the integration side models the exact capability
+            variant under test. ``longRunning``/``longRunningPort`` are unaffected.
 
     Returns:
         (added, stripped) — `added` is the list of config param names the BE
@@ -99,16 +150,35 @@ def compute_be_synthesized_params(script: dict | None) -> tuple[list[str], list[
     """
     script = script or {}
 
-    is_fetch = _flag_is_true(script, "isfetch", "isFetch")
-    is_feed = _flag_is_true(script, "feed", "Feed")
-    is_fetch_events = _flag_is_true(script, "isfetchevents", "isFetchEvents", "isfetchEvents")
-    is_fetch_assets = _flag_is_true(script, "isfetchassets", "isFetchAssets", "isfetchAssets")
+    if fetch_flags is not None:
+        # Variant-driven: the fetch decision comes ENTIRELY from the variant.
+        # Keys are the XSOAR toggle names (resolver.CAPABILITY_FETCH_FLAG values).
+        is_fetch = bool(fetch_flags.get("isFetch", False))
+        is_feed = bool(fetch_flags.get("feed", False))
+        is_fetch_events = bool(fetch_flags.get("isFetchEvents", False))
+        is_fetch_assets = bool(fetch_flags.get("isFetchAssets", False))
+    else:
+        is_fetch = _flag_is_true(script, "isfetch", "isFetch")
+        is_feed = _flag_is_true(script, "feed", "Feed")
+        is_fetch_events = _flag_is_true(script, "isfetchevents", "isFetchEvents", "isfetchEvents")
+        is_fetch_assets = _flag_is_true(script, "isfetchassets", "isFetchAssets", "isfetchAssets")
+    # fetch-credentials (fetch-secrets capability). The BE synthesizes no extra
+    # config params for it today, but it DOES count as a fetch (so the no-fetch
+    # strip set must not apply when it is the variant under test).
+    if fetch_flags is not None:
+        is_fetch_credentials = bool(fetch_flags.get("isFetchCredentials", False))
+    else:
+        is_fetch_credentials = _flag_is_true(
+            script, "isFetchCredentials", "isfetchcredentials"
+        )
     is_long_running = _flag_is_true(script, "longRunning", "longrunning", "islongrunning", "isLongRunning")
     is_long_running_port = _flag_is_true(
         script, "longRunningPort", "longrunningport", "longRunningport"
     )
 
-    any_fetch = is_fetch or is_feed or is_fetch_events or is_fetch_assets
+    any_fetch = (
+        is_fetch or is_feed or is_fetch_events or is_fetch_assets or is_fetch_credentials
+    )
 
     added: list[str] = []
     if is_fetch:
@@ -142,9 +212,14 @@ def apply_be_config_transform(
     shared_dummies: dict,
     script: dict | None,
     dummy_value_factory=None,
+    fetch_flags: dict[str, bool] | None = None,
 ) -> dict:
     """Return a copy of `shared_dummies` with BE auto-added params injected and
-    BE-stripped params removed, based on the YML `script` flags.
+    BE-stripped params removed.
+
+    The fetch decision is driven by ``fetch_flags`` (the capability VARIANT under
+    test) when supplied, otherwise by the integration YML's static `script` flags.
+    ``longRunning``/``longRunningPort`` always come from `script`.
 
     Args:
         shared_dummies: The pre-computed name->dummy-value dict (keyed by xsoar
@@ -154,6 +229,8 @@ def apply_be_config_transform(
             dummy value for a synthesized field. Defaults to
             ``f"dummy_config_{name}"`` to match the harness's existing
             generic-string dummy convention.
+        fetch_flags: Optional variant-driven fetch-flag override (see
+            :func:`compute_be_synthesized_params`).
 
     Returns:
         A new dict (the input is not mutated).
@@ -162,7 +239,7 @@ def apply_be_config_transform(
         dummy_value_factory = default_dummy_for
 
     result = dict(shared_dummies)
-    added, stripped = compute_be_synthesized_params(script)
+    added, stripped = compute_be_synthesized_params(script, fetch_flags=fetch_flags)
 
     for name in added:
         if name not in result:
