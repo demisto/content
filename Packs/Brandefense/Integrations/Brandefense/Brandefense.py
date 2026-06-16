@@ -1,4 +1,4 @@
-import demistomock as demisto  # noqa: F401
+?import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
 
