@@ -3187,13 +3187,13 @@ script:
         description: Enables display device for the instance.
         type: Object
       - contextPath: GCP.Compute.Instances.shieldedInstanceConfig
-        description: ''
+        description: Shielded VM configuration for the instance.
         type: Object
       - contextPath: GCP.Compute.Instances.sourceMachineImageEncryptionKey
         description: The source machine image encryption key used when creating an instance from a machine image.
         type: Object
       - contextPath: GCP.Compute.Instances.confidentialInstanceConfig
-        description: ''
+        description: Confidential computing configuration for the instance.
         type: Object
       - contextPath: GCP.Compute.Instances.fingerprint
         description: Specifies a fingerprint for this resource, which is essentially a hash of the instance's contents and used for optimistic locking.
@@ -3214,10 +3214,10 @@ script:
         description: Last suspended timestamp in RFC3339 text format.
         type: String
       - contextPath: GCP.Compute.Instances.satisfiesPzs
-        description: ''
+        description: Indicates whether the instance satisfies physical zone separation requirements.
         type: String
       - contextPath: GCP.Compute.Instances.satisfiesPzi
-        description: ''
+        description: Indicates whether the instance satisfies physical zone isolation requirements.
         type: String
       - contextPath: GCP.Compute.Instances.resourceStatus
         description: The resource status.
