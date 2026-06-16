@@ -1681,6 +1681,7 @@ def test_test_module_chat_only_returns_ok(mocker):
 
     client = _make_client(admin_api_key="", compliance_api_key="")
     mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
     fetch_mock = mocker.patch.object(module, "fetch_stream")
 
     result = module.test_module(client=client, params={})
@@ -1720,6 +1721,7 @@ def test_test_module_probes_collector_streams_with_max_one(mocker):
 
     client = _make_client(admin_api_key="ADMIN_KEY", compliance_api_key="")
     mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
     fetch_mock = mocker.patch.object(module, "fetch_stream")
 
     params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
@@ -1739,6 +1741,7 @@ def test_test_module_skips_compliance_when_workspace_id_missing(mocker):
 
     client = _make_client(admin_api_key="", compliance_api_key="COMPLIANCE_KEY")
     mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
     fetch_mock = mocker.patch.object(module, "fetch_stream")
 
     params = {"event_types_to_fetch": ["Compliance Audit"], "workspace_id": ""}
@@ -1753,6 +1756,7 @@ def test_test_module_propagates_collector_probe_failure(mocker, capfd):
 
     client = _make_client(admin_api_key="ADMIN_KEY", compliance_api_key="")
     mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
     mocker.patch.object(module, "fetch_stream", side_effect=DemistoException("simulated audit probe failure"))
 
     params = {"event_types_to_fetch": ["OpenAI Audit logs"]}

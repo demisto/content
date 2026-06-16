@@ -285,7 +285,7 @@ class OpenAiClient(BaseClient):
         self.chatgpt_base_url = chatgpt_base_url.rstrip("/") + "/"
         self.headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
 
-    def  get_chat_completions(
+    def get_chat_completions(
         self, chat_context: List[dict[str, str]], completion_params: dict[str, str | None]
     ) -> dict[str, Any]:
         """Gets the response to a chat_completions request using the OpenAI API."""
@@ -303,7 +303,7 @@ class OpenAiClient(BaseClient):
 
         temperature = completion_params.get(ArgAndParamNames.TEMPERATURE, None)
         if temperature:
-            options[ArgAndParamNames.TEMPERATURE] = float(temperature) 
+            options[ArgAndParamNames.TEMPERATURE] = float(temperature)
 
         top_p = completion_params.get(ArgAndParamNames.TOP_P, None)
         if top_p:
@@ -319,6 +319,7 @@ class OpenAiClient(BaseClient):
         )
         return self._http_request(method="POST", url_suffix=ApiPaths.CHAT_COMPLETIONS, json_data=options, headers=self.headers)
 
+    # region commands using api.openai.com and ApiKey
     def list_models(self) -> dict[str, Any]:
         """List all models available to the configured API key (GET /v1/models).
 
@@ -355,7 +356,6 @@ class OpenAiClient(BaseClient):
             headers=self.headers,
         )
 
-    # region Responses API
     def create_response(self, body: dict[str, Any]) -> dict[str, Any]:
         """Call the OpenAI Responses API (POST /v1/responses).
 
@@ -781,8 +781,32 @@ def test_module(client: OpenAiClient, params: dict) -> str:
             demisto.error(f"[Test Module] Chat-completions probe raised non-auth error: {e}")
             raise
         demisto.debug("[Test Module] Chat-completions probe passed.")
+
+        demisto.debug("[Test Module] Probing Responses API endpoint...")
+        try:
+            response_body: dict[str, Any] = {
+                "model": client.model,
+                "input": "Present random english sentence",
+            }
+            max_tokens = params.get(ArgAndParamNames.MAX_TOKENS)
+            if max_tokens:
+                response_body["max_output_tokens"] = int(max_tokens)
+            temperature = params.get(ArgAndParamNames.TEMPERATURE)
+            if temperature:
+                response_body["temperature"] = float(temperature)
+            top_p = params.get(ArgAndParamNames.TOP_P)
+            if top_p:
+                response_body["top_p"] = float(top_p)
+            client.create_response(body=response_body)
+        except DemistoException as e:
+            if "Forbidden" in str(e) or "Authorization" in str(e):
+                demisto.error(f"[Test Module] Responses API probe failed with auth error: {e}")
+                return "Authorization Error: make sure API Key is correctly set"
+            demisto.error(f"[Test Module] Responses API probe raised non-auth error: {e}")
+            raise
+        demisto.debug("[Test Module] Responses API probe passed.")
     else:
-        demisto.debug("[Test Module] Chat-completions probe skipped (no API Key configured).")
+        demisto.debug("[Test Module] Chat-completions and Responses API probes skipped (no API Key configured).")
 
     collector_params = parse_collector_params(params)
     streams_to_probe = [
