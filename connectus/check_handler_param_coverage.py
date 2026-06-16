@@ -141,6 +141,8 @@ ALERT_FETCH_INTERVAL_SUFFIX = "alertFetchInterval"
 IGNORED_PARAMS = {
     "is_mirroring",
     "mirroring",
+    "close_ticket",
+    "file_tag",
     "mirror_options",
     "close_incident",
     "mirror_limit",
@@ -257,17 +259,20 @@ def collect_yml_params(integration_yml: dict) -> set[str]:
     return params
 
 
-def collect_type9_params(integration_yml: dict) -> dict[str, bool]:
-    """Map each non-hidden ``type: 9`` credentials param to its hiddenusername.
+def collect_type9_params(integration_yml: dict) -> dict[str, tuple[bool, bool]]:
+    """Map each non-hidden ``type: 9`` credentials param to its leaf-suppression
+    flags ``(hiddenusername, hiddenpassword)``.
 
     A credentials widget is special on the connector side: it splits into a
-    ``<name>_username`` + ``<name>_password`` pair (or a password-only field
-    when ``hiddenusername: true``). The returned ``{name: hiddenusername}``
-    map lets :func:`_type9_leaf_covered` recognise that the leaves cover the
+    ``<name>_username`` + ``<name>_password`` pair. A per-leaf suppression flag
+    drops one half: ``hiddenusername: true`` emits a password-only field, while
+    ``hiddenpassword: true`` emits a username-only field. The returned
+    ``{name: (hiddenusername, hiddenpassword)}`` map lets
+    :func:`_type9_leaf_covered` recognise that the surviving leaf(es) cover the
     original compound param. Only non-hidden params are included, matching
     :func:`collect_yml_params`.
     """
-    creds: dict[str, bool] = {}
+    creds: dict[str, tuple[bool, bool]] = {}
     for param in integration_yml.get("configuration", []) or []:
         if not isinstance(param, dict):
             continue
@@ -277,7 +282,10 @@ def collect_type9_params(integration_yml: dict) -> dict[str, bool]:
             continue
         name = param.get("name")
         if name:
-            creds[name] = bool(param.get("hiddenusername"))
+            creds[name] = (
+                bool(param.get("hiddenusername")),
+                bool(param.get("hiddenpassword")),
+            )
     return creds
 
 
@@ -660,20 +668,22 @@ def _type9_leaf_covered(
     missing: set[str],
     raw_field_ids: list[str],
     connector_params: set[str],
-    type9_params: dict[str, bool],
+    type9_params: dict[str, tuple[bool, bool]],
 ) -> set[str]:
     """Drop ``type: 9`` credentials params from ``missing`` when their split
     connector leaves cover them.
 
     A credentials widget never appears as its bare ``<name>`` on the connector
     config side — the manifest generator splits it into ``<name>_username`` +
-    ``<name>_password`` (or a password-only field when ``hiddenusername:
-    true``). So an integration credentials param is considered covered when:
+    ``<name>_password``. A per-leaf suppression flag drops one half. So an
+    integration credentials param is considered covered when:
 
       * the serializer already bridged a connector field back to ``<name>``
         (``<name>`` is in the resolved ``connector_params`` set); OR
-      * ``hiddenusername: true`` and the connector exposes the bare ``<name>``
-        OR the ``<name>_password`` half; OR
+      * ``hiddenusername: true`` (password-only) and the connector exposes the
+        bare ``<name>`` OR the ``<name>_password`` half; OR
+      * ``hiddenpassword: true`` (username-only) and the connector exposes the
+        bare ``<name>`` OR the ``<name>_username`` half; OR
       * (default) the connector exposes BOTH the ``<name>_username`` AND the
         ``<name>_password`` halves.
 
@@ -682,7 +692,7 @@ def _type9_leaf_covered(
     sub-capability-prefixed ids are recognised.
     """
     resolved = set(missing)
-    for name, hidden_username in type9_params.items():
+    for name, (hidden_username, hidden_password) in type9_params.items():
         if name not in resolved:
             continue
         # Serializer already bridged a connector field back to the bare name.
@@ -692,15 +702,20 @@ def _type9_leaf_covered(
         password_present = _raw_id_matches_leaf(
             f"{name}{PASSWORD_LEAF_SUFFIX}", raw_field_ids
         )
-        if hidden_username:
-            # Only the password half is emitted; its id is the bare name.
-            if _raw_id_matches_leaf(name, raw_field_ids) or password_present:
-                resolved.discard(name)
-            continue
-        # Default: require BOTH the username and password halves.
         username_present = _raw_id_matches_leaf(
             f"{name}{USERNAME_LEAF_SUFFIX}", raw_field_ids
         )
+        if hidden_username:
+            # Only the password half is emitted; its id may be the bare name.
+            if _raw_id_matches_leaf(name, raw_field_ids) or password_present:
+                resolved.discard(name)
+            continue
+        if hidden_password:
+            # Only the username half is emitted; its id may be the bare name.
+            if _raw_id_matches_leaf(name, raw_field_ids) or username_present:
+                resolved.discard(name)
+            continue
+        # Default: require BOTH the username and password halves.
         if username_present and password_present:
             resolved.discard(name)
     return resolved
