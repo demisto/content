@@ -48,7 +48,7 @@ AWS-WAF,Packs/AWS_WAF/Integrations/AWSWAF/AWSWAF.yml,AWS,,joeymizrahi,,,,,,,,,,,
 Abnormal Security Event Collector,Packs/AbnormalSecurity/Integrations/AbnormalSecurityEventCollector/AbnormalSecurityEventCollector.yml,Abnormal Security,,juschwartz,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""token"", ""xsoar_param_map"": {""token.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""proxy"", ""verify""]}","[""Log Collection""]","{""integration"":""Abnormal Security Event Collector"",""commands"":{""abnormal-security-event-collector-get-events"":[],""fetch-events"":[],""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Log Collection"":[]}",,,,,,,,
 Absolute,Packs/Absolute/Integrations/Absolute/Absolute.yml,Absolute,,juschwartz,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[""Log Collection"",""Automation""]","{""integration"":""Absolute"",""commands"":{""absolute-custom-device-field-list"":[],""absolute-custom-device-field-update"":[],""absolute-device-application-list"":[],""absolute-device-freeze-message-create"":[],""absolute-device-freeze-message-delete"":[],""absolute-device-freeze-message-list"":[],""absolute-device-freeze-message-update"":[],""absolute-device-freeze-request"":[],""absolute-device-freeze-request-get"":[],""absolute-device-get"":[],""absolute-device-get-events"":[],""absolute-device-list"":[],""absolute-device-location-get"":[],""absolute-device-remove-freeze-request"":[],""absolute-device-unenroll"":[],""fetch-events"":[],""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Log Collection"":[],""Automation"":[]}",,,,,,,,
 AbuseIPDB,Packs/AbuseDB/Integrations/AbuseDB/AbuseDB.yml,AbuseIPDB,,juschwartz,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.password"": ""api_key"", ""hunting_credentials.password"": ""hunting_api_key""}, ""interpolated"": true}], ""other_connection"": [""abusech_hunting_url"", ""insecure"", ""proxy"", ""server""]}","[""Automation""]","{""integration"":""AbuseIPDB"",""commands"":{""ip"":[""days"",""disable_private_ip_lookup"",""disregard_quota"",""integrationReliability"",""threshold""],""abuseipdb-check-cidr-block"":[""days"",""disregard_quota"",""integrationReliability"",""threshold""],""abuseipdb-report-ip"":[""disregard_quota""],""abuseipdb-get-blacklist"":[""disregard_quota""],""abuseipdb-get-fplist"":[],""abuseipdb-get-categories"":[],""test-module"":[""integrationReliability""]}}","{""threshold"":""80"",""days"":""30"",""integrationReliability"":""C - Fairly reliable"",""disable_private_ip_lookup"":false,""disregard_quota"":false}",✅,"{""general_configurations"":[],""Automation"":[""days"",""disable_private_ip_lookup"",""disregard_quota"",""integrationReliability"",""threshold""]}",,,,,,,,
-Active Directory Query v2,Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml,Microsoft Active Directory,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""ntlm"", ""port"", ""secure_connection"", ""server_ip"", ""ssl_version"", ""unsecure""]}","[
+Active Directory Query v2,Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml,Microsoft Active Directory,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""ntlm"", ""port"", ""secure_connection"", ""server_ip"", ""ssl_version"", ""unsecure"", ""verify_base_dn""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Active Directory Query v2"",
@@ -83,24 +83,7 @@ Active Directory Query v2,Packs/Active_Directory_Query/Integrations/Active_Direc
     ""iam-disable-user"": [""base_dn"", ""group-cn"", ""mapper-out"", ""verify_base_dn""],
     ""get-mapping-fields"": [""base_dn"", ""verify_base_dn""]
   }
-}","{
-  ""base_dn"": """",
-  ""mapper-in"": ""User Profile - Active Directory (Incoming)"",
-  ""mapper-out"": ""User Profile - Active Directory (Outgoing)""
-}",✅,"{
-  ""general_configurations"": [
-    ""verify_base_dn""
-  ],
-  ""Automation"": [
-    ""base_dn"",
-    ""page_size"",
-    ""default_base_query"",
-    ""mapper-in"",
-    ""mapper-out"",
-    ""group-cn"",
-    ""create-if-not-exists""
-  ]
-}",,,,,,,,
+}","{""base_dn"": """", ""mapper-in"": ""User Profile - Active Directory (Incoming)"", ""mapper-out"": ""User Profile - Active Directory (Outgoing)""}",,,,,,,,,,
 ActiveMQ,Packs/ActiveMQ/Integrations/ActiveMQ/ActiveMQ.yml,Apache,,juschwartz,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""Certificate Authentication"", ""xsoar_param_map"": {""client_cert"": ""client_certificate"", ""client_key"": ""client_key"", ""root_ca"": ""root_ca""}, ""interpolated"": true}, {""type"": ""Plain"", ""name"": ""Basic Authentication"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""client-id"", ""hostname"", ""port""]}","[""Fetch Issues"",""Automation""]","{""integration"":""ActiveMQ"",""commands"":{""activemq-send"":[],""activemq-subscribe"":[],""fetch-incidents"":[""queue_name"",""subscription-id"",""topic-name""],""test-module"":[""isFetch"",""queue_name"",""topic-name""]}}","{""subscription-id"":""1""}",✅,"{""general_configurations"":[],""Fetch Issues"":[""subscription-id"",""topic-name"",""queue_name""],""Automation"":[]}",,,,,,,,
 AdminByRequest,Packs/AdminByRequest/Integrations/AdminByRequestEventCollector/AdminByRequestEventCollector.yml,AdminByRequest,,juschwartz,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[""Log Collection"",""Automation""]","{""integration"":""AdminByRequest"",""commands"":{""fetch-events"":[""event_types_to_fetch"",""max_auditlog_per_fetch"",""max_events_per_fetch"",""max_requests_per_fetch""],""adminbyrequest-get-events"":[],""adminbyrequest-list-requests"":[],""adminbyrequest-request-approve"":[],""adminbyrequest-request-deny"":[],""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Log Collection"":[""event_types_to_fetch"",""max_auditlog_per_fetch"",""max_events_per_fetch"",""max_requests_per_fetch""],""Automation"":[]}",,,,,,,,
 Aha,Packs/AHA/Integrations/AHA/AHA.yml,Aha,,juschwartz,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""xsoar_param_map"": {""api_key.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""project_name"", ""proxy"", ""url""]}","[""Automation""]","{""integration"":""Aha"",""commands"":{""aha-edit-feature"":[],""aha-edit-idea"":[],""aha-get-features"":[],""aha-get-ideas"":[],""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",,,,,,,,
@@ -383,32 +366,7 @@ Azure AD Connect Health Feed,Packs/FeedAzureADConnectHealth/Integrations/AzureAD
     ""tlp_color""
   ]
 }",,,,,,,,
-Azure Compute v2,Packs/AzureCompute/Integrations/AzureCompute_v2/AzureCompute_v2.yml,Azure Services,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""cert"",
-      ""xsoar_param_map"": {
-        ""cred_token.password"": ""tenant_id"",
-        ""cred_auth_id.password"": ""client_id"",
-        ""cred_certificate_thumbprint.password"": ""certificate_thumbprint"",
-        ""private_key"": ""private_key""
-      },
-      ""interpolated"": true
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""secret"",
-      ""xsoar_param_map"": {
-        ""cred_token.password"": ""tenant_id"",
-        ""cred_auth_id.password"": ""client_id"",
-        ""cred_enc_key.password"": ""client_secret""
-      },
-      ""interpolated"": true
-    }
-  ],
-  ""other_connection"": [""host"", ""proxy"", ""resource_group"", ""unsecure""]
-}","[
+Azure Compute v2,Packs/AzureCompute/Integrations/AzureCompute_v2/AzureCompute_v2.yml,Azure Services,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""xsoar_param_map"": {""cred_token.password"": ""tenant_id"", ""cred_auth_id.password"": ""client_id"", ""cred_certificate_thumbprint.password"": ""certificate_thumbprint"", ""private_key"": ""private_key"", ""self_deployed"": ""self_deployed""}, ""interpolated"": true}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""xsoar_param_map"": {""cred_token.password"": ""tenant_id"", ""cred_auth_id.password"": ""client_id"", ""cred_enc_key.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}, ""interpolated"": true}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""cred_token.password"": ""tenant_id"", ""cred_auth_id.password"": ""client_id"", ""cred_enc_key.password"": ""client_secret""}}], ""other_connection"": [""host"", ""proxy"", ""resource_group"", ""unsecure""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Azure Compute v2"",
@@ -428,56 +386,8 @@ Azure Compute v2,Packs/AzureCompute/Integrations/AzureCompute_v2/AzureCompute_v2
     ""azure-vm-get-all-public-ip-details"": [""cred_subscription_id"", ""subscription_id""],
     ""azure-vm-auth-reset"": []
   }
-}",{},✅,"{
-  ""general_configurations"": [
-    ""cred_subscription_id""
-  ],
-  ""Automation"": []
-}",,,,,,,,
-Azure Firewall,Packs/AzureFirewall/Integrations/AzureFirewall/AzureFirewall.yml,Azure Firewall,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""tenant_id"": ""tenant_id"",
-        ""client_id"": ""client_id"",
-        ""certificate_thumbprint"": ""certificate_thumbprint"",
-        ""private_key"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""client_creds"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""tenant_id"": ""tenant_id"",
-        ""client_id"": ""client_id"",
-        ""client_secret"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""device_code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""client_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""managed_identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+Azure Firewall,Packs/AzureFirewall/Integrations/AzureFirewall/AzureFirewall.yml,Azure Firewall,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""tenant_id"": ""tenant_id"", ""client_id"": ""client_id"", ""certificate_thumbprint"": ""certificate_thumbprint"", ""private_key"": ""private_key""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""tenant_id"": ""tenant_id"", ""client_id"": ""client_id"", ""client_secret"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""device_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""client_id"": ""client_id"", ""tenant_id"": ""tenant_id""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""insecure"", ""proxy""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Azure Firewall"",
@@ -514,13 +424,7 @@ Azure Firewall,Packs/AzureFirewall/Integrations/AzureFirewall/AzureFirewall.yml,
     ""azure-firewall-subscriptions-list"": [""subscription_id""],
     ""azure-firewall-resource-group-list"": [""subscription_id""]
   }
-}",{},✅,"{
-  ""general_configurations"": [],
-  ""Automation"": [
-    ""resource_group"",
-    ""subscription_id""
-  ]
-}",,,,,,,,
+}",,,,,,,,,,,
 Azure Kubernetes Services,Packs/AzureKubernetesServices/Integrations/AzureKubernetesServices/AzureKubernetesServices.yml,Azure Services,,noydavidi,"{
   ""auth_types"": [
     {
@@ -589,63 +493,7 @@ Azure Kubernetes Services,Packs/AzureKubernetesServices/Integrations/AzureKubern
     ""resource_group_name""
   ]
 }",,,,,,,,
-Azure Log Analytics,Packs/AzureLogAnalytics/Integrations/AzureLogAnalytics/AzureLogAnalytics.yml,Azure Log Analytics,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""authorization_code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""creds_client_id.password"": ""client_id"",
-        ""credentials_refresh_token.password"": ""tenant_id"",
-        ""credentials.password"": ""client_secret"",
-        ""credentials_auth_code.password"": ""auth_code"",
-        ""redirect_uri"": ""redirect_uri""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_client_id.password"": ""client_id"",
-        ""credentials_refresh_token.password"": ""tenant_id"",
-        ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"",
-        ""private_key"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""client_credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_client_id.password"": ""client_id"",
-        ""credentials_refresh_token.password"": ""tenant_id"",
-        ""credentials.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""device_code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""creds_client_id.password"": ""client_id"",
-        ""credentials_refresh_token.password"": ""tenant_id""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""managed_identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""azure_cloud"", ""insecure"", ""proxy"", ""server_url""]
-}","[
+Azure Log Analytics,Packs/AzureLogAnalytics/Integrations/AzureLogAnalytics/AzureLogAnalytics.yml,Azure Log Analytics,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""creds_client_id.password"": ""client_id"", ""credentials_refresh_token.password"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""credentials_auth_code.password"": ""auth_code"", ""redirect_uri"": ""redirect_uri"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""creds_client_id.password"": ""client_id"", ""credentials_refresh_token.password"": ""tenant_id"", ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"", ""private_key"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""creds_client_id.password"": ""client_id"", ""credentials_refresh_token.password"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""creds_client_id.password"": ""client_id"", ""credentials_refresh_token.password"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""device_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""creds_client_id.password"": ""client_id"", ""credentials_refresh_token.password"": ""tenant_id"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_cloud"", ""insecure"", ""proxy"", ""server_url""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Azure Log Analytics"",
@@ -666,15 +514,7 @@ Azure Log Analytics,Packs/AzureLogAnalytics/Integrations/AzureLogAnalytics/Azure
     ""azure-log-analytics-workspace-list"": [""resourceGroupName"", ""subscriptionID""],
     ""azure-log-analytics-resource-group-list"": [""subscriptionID""]
   }
-}",{},✅,"{
-  ""general_configurations"": [],
-  ""Automation"": [
-    ""workspaceID"",
-    ""resourceGroupName"",
-    ""subscriptionID"",
-    ""workspaceName""
-  ]
-}",,,,,,,,
+}",,,,,,,,,,,
 Azure Network Security Groups,Packs/AzureNetworkSecurityGroups/Integrations/AzureNetworkSecurityGroups/AzureNetworkSecurityGroups.yml,Azure Services,,noydavidi,"{
   ""auth_types"": [
     {
@@ -752,31 +592,7 @@ Azure Network Security Groups,Packs/AzureNetworkSecurityGroups/Integrations/Azur
     ""resource_group_name""
   ]
 }",,,,,,,,
-Azure Resource Graph,Packs/AzureResourceGraph/Integrations/AzureResourceGraph/AzureResourceGraph.yml,Azure Services,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""cred_token.password"": ""tenant_id"",
-        ""cred_auth_id.password"": ""client_id"",
-        ""cred_certificate_thumbprint.password"": ""certificate_thumbprint""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""secret"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""cred_token.password"": ""tenant_id"",
-        ""cred_auth_id.password"": ""client_id"",
-        ""cred_enc_key.password"": ""client_secret""
-      }
-    }
-  ],
-  ""other_connection"": [""gov_account"", ""host"", ""proxy"", ""unsecure""]
-}","[
+Azure Resource Graph,Packs/AzureResourceGraph/Integrations/AzureResourceGraph/AzureResourceGraph.yml,Azure Services,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""cred_token.password"": ""tenant_id"", ""cred_auth_id.password"": ""client_id"", ""cred_certificate_thumbprint.password"": ""certificate_thumbprint""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""cred_token.password"": ""tenant_id"", ""cred_auth_id.password"": ""client_id"", ""cred_enc_key.password"": ""client_secret""}}], ""other_connection"": [""gov_account"", ""host"", ""proxy"", ""unsecure""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Azure Resource Graph"",
@@ -786,10 +602,7 @@ Azure Resource Graph,Packs/AzureResourceGraph/Integrations/AzureResourceGraph/Az
     ""azure-rg-list-operations"": [],
     ""azure-rg-query"": []
   }
-}",{},✅,"{
-  ""general_configurations"": [],
-  ""Automation"": []
-}",,,,,,,,
+}",,,,,,,,,,,
 Azure SQL Management,Packs/AzureSQLManagement/Integrations/AzureSQLManagement/AzureSQLManagement.yml,Azure Services,,noydavidi,"{
   ""auth_types"": [
     {
@@ -862,40 +675,7 @@ Azure SQL Management,Packs/AzureSQLManagement/Integrations/AzureSQLManagement/Az
     ""subscription_id""
   ]
 }",,,,,,,,
-Azure Security Center v2,Packs/AzureSecurityCenter/Integrations/AzureSecurityCenter_v2/AzureSecurityCenter_v2.yml,Microsoft Security,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials_tenant_id.password"": ""tenant_id"",
-        ""credentials_auth_id.password"": ""client_id"",
-        ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"",
-        ""private_key"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""managed_identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""secret"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials_tenant_id.password"": ""tenant_id"",
-        ""credentials_auth_id.password"": ""client_id"",
-        ""credentials_enc_key.password"": ""client_secret""
-      }
-    }
-  ],
-  ""other_connection"": [""proxy"", ""server_url"", ""unsecure""]
-}","[
+Azure Security Center v2,Packs/AzureSecurityCenter/Integrations/AzureSecurityCenter_v2/AzureSecurityCenter_v2.yml,Microsoft Security,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_tenant_id.password"": ""tenant_id"", ""credentials_auth_id.password"": ""client_id"", ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"", ""private_key"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_tenant_id.password"": ""tenant_id"", ""credentials_auth_id.password"": ""client_id"", ""credentials_enc_key.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_tenant_id.password"": ""tenant_id"", ""credentials_auth_id.password"": ""client_id"", ""credentials_enc_key.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""proxy"", ""server_url"", ""unsecure""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Azure Security Center v2"",
@@ -917,47 +697,8 @@ Azure Security Center v2,Packs/AzureSecurityCenter/Integrations/AzureSecurityCen
     ""azure-sc-update-atp"": [""credentials_default_sub_id"", ""resource_group_name""],
     ""azure-sc-get-atp"": [""credentials_default_sub_id"", ""resource_group_name""]
   }
-}",{},✅,"{
-  ""general_configurations"": [],
-  ""Automation"": [
-    ""credentials_default_sub_id"",
-    ""resource_group_name""
-  ]
-}",,,,,,,,
-Azure Sentinel,Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml,Microsoft Security,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""creds_client_id.password"": ""client_id"",
-        ""creds_certificate.identifier"": ""certificate_thumbprint"",
-        ""creds_certificate.password"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""managed_identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""secret"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""creds_client_id.password"": ""client_id"",
-        ""credentials.password"": ""client_secret""
-      }
-    }
-  ],
-  ""other_connection"": [""azure_cloud"", ""insecure"", ""proxy"", ""server_url""]
-}","[
+}",,,,,,,,,,,
+Azure Sentinel,Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml,Microsoft Security,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""creds_tenant_id.password"": ""tenant_id"", ""creds_client_id.password"": ""client_id"", ""creds_certificate.identifier"": ""certificate_thumbprint"", ""creds_certificate.password"": ""private_key""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""creds_tenant_id.password"": ""tenant_id"", ""creds_client_id.password"": ""client_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_cloud"", ""insecure"", ""proxy"", ""server_url""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -1002,22 +743,7 @@ Azure Sentinel,Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml,
     ""update-remote-system"": [""resourceGroupName"", ""subscriptionID"", ""workspaceName""],
     ""get-mapping-fields"": []
   }
-}",{},✅,"{
-  ""Automation"": [],
-  ""Fetch Issues"": [
-    ""fetch_additional_info"",
-    ""fetch_time"",
-    ""limit"",
-    ""look_back"",
-    ""min_severity"",
-    ""statuses_to_fetch""
-  ],
-  ""general_configurations"": [
-    ""resourceGroupName"",
-    ""workspaceName"",
-    ""subscriptionID""
-  ]
-}",,,,,,,,
+}",,,,,,,,,,,
 Azure Storage,Packs/AzureStorage/Integrations/AzureStorage/AzureStorage.yml,Azure Services,,noydavidi,"{
   ""auth_types"": [
     {
@@ -1426,40 +1152,7 @@ AzureFeed,Packs/FeedAzure/Integrations/FeedAzure/FeedAzure.yml,Microsoft Identit
   ""Threat Intelligence & Enrichment"": [""polling_timeout"", ""feedTags"", ""tlp_color""],
   ""general_configurations"": []
 }",,,,,,,,
-AzureKeyVault,Packs/AzureKeyVault/Integrations/AzureKeyVault/AzureKeyVault.yml,Azure Services,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""tenant_id"": ""tenant_id"",
-        ""client_id"": ""client_id"",
-        ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"",
-        ""private_key"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""managed_identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""secret"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""tenant_id"": ""tenant_id"",
-        ""client_id"": ""client_id"",
-        ""credentials.password"": ""client_secret""
-      }
-    }
-  ],
-  ""other_connection"": [""azure_cloud"", ""insecure"", ""proxy""]
-}","[
+AzureKeyVault,Packs/AzureKeyVault/Integrations/AzureKeyVault/AzureKeyVault.yml,Azure Services,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""tenant_id"": ""tenant_id"", ""client_id"": ""client_id"", ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"", ""private_key"": ""private_key""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""tenant_id"": ""tenant_id"", ""client_id"": ""client_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_cloud"", ""insecure"", ""proxy""]}","[
   ""Fetch Secrets"",
   ""Automation""
 ]","{
@@ -1485,11 +1178,7 @@ AzureKeyVault,Packs/AzureKeyVault/Integrations/AzureKeyVault/AzureKeyVault.yml,A
     ""azure-key-vault-certificate-list"": [],
     ""azure-key-vault-certificate-policy-get"": []
   }
-}",{},✅,"{
-  ""Automation"": [""subscription_id"", ""resource_group_name""],
-  ""Fetch Secrets"": [""key_vaults"", ""secrets""],
-  ""general_configurations"": []
-}",,,,,,,,
+}",,,,,,,,,,,
 AzureRiskyUsers,Packs/AzureRiskyUsers/Integrations/AzureRiskyUsers/AzureRiskyUsers.yml,Microsoft Identity,,noydavidi,"{
   ""auth_types"": [
     {
@@ -2402,15 +2091,7 @@ EWS v2,Packs/MicrosoftExchangeOnPremise/Integrations/EWSv2/EWSv2.yml,M365 Automa
   ""Fetch Issues"": [""fetch_time"", ""folder"", ""legacy_name"", ""markAsRead"", ""maxFetch"", ""skip_unparsable_emails""],
   ""general_configurations"": []
 }",,,,,,,,
-EWSO365,Packs/MicrosoftExchangeOnline/Integrations/EWSO365/EWSO365.yml,M365 Automation and Collection,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""Passthrough"",
-    ""name"": ""client_credentials"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""_client_id"": ""client_id"", ""_tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret""}
-  }],
-  ""other_connection"": [""azure_cloud"", ""insecure"", ""proxy""]
-}","[
+EWSO365,Packs/MicrosoftExchangeOnline/Integrations/EWSO365/EWSO365.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""_client_id"": ""client_id"", ""_tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""_client_id"": ""client_id"", ""_tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret""}}], ""other_connection"": [""azure_cloud"", ""insecure"", ""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -2543,7 +2224,7 @@ EWSO365,Packs/MicrosoftExchangeOnline/Integrations/EWSO365/EWSO365.yml,M365 Auto
       ""upn_mailbox""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""fetch_time"", ""folder"", ""incidentFilter"", ""is_public_folder"", ""legacy_name"", ""mark_as_read"", ""max_fetch"", ""skip_unparsable_emails""], ""general_configurations"": [""default_target_mailbox"", ""access_type"", ""upn_mailbox""]}",,,,,,,,
+}",,,,,,,,,,,
 EasyVista,Packs/EasyVista/Integrations/EasyVista/EasyVista.yml,EasyVista,,joeymizrahi,,,,,,,,,,,,,,
 Elasticsearch v2,Packs/Elasticsearch/Integrations/Elasticsearch_v2/Elasticsearch_v2.yml,ElasticSearch,,jlevypaloalto,,,,,,,,,,,,,,
 ElasticsearchEventCollector,Packs/Elasticsearch/Integrations/ElasticsearchEventCollector/ElasticsearchEventCollector.yml,ElasticSearch,,jlevypaloalto,,,,,,,,,,,,,,
@@ -3790,53 +3471,7 @@ Microsoft 365 Defender,Packs/Microsoft365Defender/Integrations/Microsoft365Defen
     ]
   }
 }",{},✅,"{""Automation"": [], ""Fetch Issues"": [""fetch_timeout"", ""first_fetch"", ""max_fetch""], ""general_configurations"": []}",,,,,,,,
-Microsoft Defender Advanced Threat Protection,Packs/MicrosoftDefenderAdvancedThreatProtection/Integrations/MicrosoftDefenderAdvancedThreatProtection/MicrosoftDefenderAdvancedThreatProtection.yml,Microsoft Security,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""authorization_code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""_auth_id_encrypted.password"": ""client_id"",
-        ""_tenant_id_encrypted.password"": ""tenant_id"",
-        ""credentials.password"": ""client_secret"",
-        ""auth_code.password"": ""auth_code"",
-        ""redirect_uri"": ""redirect_uri""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""_auth_id_encrypted.password"": ""client_id"",
-        ""_tenant_id_encrypted.password"": ""tenant_id"",
-        ""creds_certificate.identifier"": ""certificate_thumbprint"",
-        ""creds_certificate.password"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""client_credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""_auth_id_encrypted.password"": ""client_id"",
-        ""_tenant_id_encrypted.password"": ""tenant_id"",
-        ""credentials.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""managed_identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""endpoint_type"", ""insecure"", ""is_gcc"", ""proxy"", ""url""]
-}","[
+Microsoft Defender Advanced Threat Protection,Packs/MicrosoftDefenderAdvancedThreatProtection/Integrations/MicrosoftDefenderAdvancedThreatProtection/MicrosoftDefenderAdvancedThreatProtection.yml,Microsoft Security,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""_auth_id_encrypted.password"": ""client_id"", ""_tenant_id_encrypted.password"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""auth_code.password"": ""auth_code"", ""redirect_uri"": ""redirect_uri"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""_auth_id_encrypted.password"": ""client_id"", ""_tenant_id_encrypted.password"": ""tenant_id"", ""creds_certificate.identifier"": ""certificate_thumbprint"", ""creds_certificate.password"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""_auth_id_encrypted.password"": ""client_id"", ""_tenant_id_encrypted.password"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""_auth_id_encrypted.password"": ""client_id"", ""_tenant_id_encrypted.password"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""endpoint_type"", ""insecure"", ""is_gcc"", ""proxy"", ""url""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -3933,7 +3568,7 @@ Microsoft Defender Advanced Threat Protection,Packs/MicrosoftDefenderAdvancedThr
       ""max_fetch""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""fetch_detectionsource"", ""fetch_evidence"", ""fetch_severity"", ""fetch_status"", ""first_fetch_timestamp"", ""max_fetch""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Microsoft Defender for Cloud Apps Event Collector,Packs/MicrosoftCloudAppSecurity/Integrations/MicrosoftDefenderEventCollector/MicrosoftDefenderEventCollector.yml,Microsoft Security,,noydavidi,"{
   ""auth_types"": [{
     ""type"": ""Passthrough"",
@@ -3957,32 +3592,7 @@ Microsoft Defender for Cloud Apps Event Collector,Packs/MicrosoftCloudAppSecurit
   ""Log Collection"": [""event_types_to_fetch"", ""after"", ""limit""],
   ""general_configurations"": []
 }",,,,,,,,
-Microsoft Defender for Cloud Event Collector,Packs/AzureSecurityCenter/Integrations/MicrosoftDefenderForCloudEventCollector/MicrosoftDefenderForCloudEventCollector.yml,Microsoft Security,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""client_id.password"": ""client_id"",
-        ""tenant_id.password"": ""tenant_id"",
-        ""certificate_thumbprint.password"": ""certificate_thumbprint"",
-        ""private_key"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""client_id.password"": ""client_id"",
-        ""tenant_id.password"": ""tenant_id"",
-        ""enc_key.password"": ""client_secret""
-      }
-    }
-  ],
-  ""other_connection"": [""proxy"", ""server_url"", ""sub_id"", ""unsecure""]
-}","[
+Microsoft Defender for Cloud Event Collector,Packs/AzureSecurityCenter/Integrations/MicrosoftDefenderForCloudEventCollector/MicrosoftDefenderForCloudEventCollector.yml,Microsoft Security,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""client_id.password"": ""client_id"", ""tenant_id.password"": ""tenant_id"", ""certificate_thumbprint.password"": ""certificate_thumbprint"", ""private_key"": ""private_key""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""client_id.password"": ""client_id"", ""tenant_id.password"": ""tenant_id"", ""enc_key.password"": ""client_secret""}}], ""other_connection"": [""proxy"", ""server_url"", ""sub_id"", ""unsecure""]}","[
   ""Log Collection"",
   ""Automation""
 ]","{
@@ -3993,7 +3603,7 @@ Microsoft Defender for Cloud Event Collector,Packs/AzureSecurityCenter/Integrati
     ""ms-defender-for-cloud-get-events"": [""first_fetch""],
     ""ms-defender-for-cloud-auth-reset"": []
   }
-}",{},✅,"{""Log Collection"": [""first_fetch""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Microsoft Endpoint Configuration Manager,Packs/MicrosoftECM/Integrations/MicrosoftECM/MicrosoftECM.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""ComputerName"", ""SiteCode""]}","[
   ""Automation""
 ]","{
@@ -4021,53 +3631,7 @@ Microsoft Endpoint Configuration Manager,Packs/MicrosoftECM/Integrations/Microso
     ""test-module"": []
   }
 }",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
-Microsoft Graph,Packs/MicrosoftGraphSecurity/Integrations/MicrosoftGraphSecurity/MicrosoftGraphSecurity.yml,Microsoft Security,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Authorization Code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""creds_enc_key.password"": ""client_secret"",
-        ""auth_code.password"": ""auth_code"",
-        ""redirect_uri"": ""redirect_uri""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""creds_certificate.identifier"": ""certificate_thumbprint"",
-        ""creds_certificate.password"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""creds_enc_key.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""azure_cloud"", ""host"", ""insecure"", ""proxy""]
-}","[
+Microsoft Graph,Packs/MicrosoftGraphSecurity/Integrations/MicrosoftGraphSecurity/MicrosoftGraphSecurity.yml,Microsoft Security,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""creds_enc_key.password"": ""client_secret"", ""auth_code.password"": ""auth_code"", ""redirect_uri"": ""redirect_uri"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""creds_certificate.identifier"": ""certificate_thumbprint"", ""creds_certificate.password"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""creds_enc_key.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""creds_enc_key.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_cloud"", ""host"", ""insecure"", ""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -4130,103 +3694,11 @@ Microsoft Graph,Packs/MicrosoftGraphSecurity/Integrations/MicrosoftGraphSecurity
       ""fetch_time""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""fetch_filter"", ""fetch_limit"", ""fetch_service_sources"", ""fetch_time""], ""general_configurations"": []}",,,,,,,,
-Microsoft Graph API,Packs/MicrosoftGraphAPI/Integrations/MicrosoftGraphAPI/MicrosoftGraphAPI.yml,Microsoft Graph,connectors/microsoft-graph,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""auth_code"",
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id"",
-        ""credentials.password"": ""client_secret"",
-        ""auth_code.password"": ""authorization_code"",
-        ""redirect_uri"": ""redirect_uri""
-      },
-      ""interpolated"": true,
-      ""verify_connection_skip"": true
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""certificate"",
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id"",
-        ""creds_certificate.identifier"": ""certificate_thumbprint"",
-        ""creds_certificate.password"": ""private_key""
-      },
-      ""interpolated"": true
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""client_credentials"",
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id"",
-        ""credentials.password"": ""client_secret""
-      },
-      ""interpolated"": true
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""device_code"",
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""scope"": ""scope""
-      },
-      ""interpolated"": true,
-      ""verify_connection_skip"": true
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""managed_identity"",
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""client_id""
-      },
-      ""interpolated"": true
-    }
-  ],
-  ""other_connection"": [""azure_ad_endpoint"", ""azure_cloud"", ""insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+Microsoft Graph API,Packs/MicrosoftGraphAPI/Integrations/MicrosoftGraphAPI/MicrosoftGraphAPI.yml,Microsoft Graph,connectors/microsoft-graph,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""auth_code.password"": ""authorization_code"", ""redirect_uri"": ""redirect_uri"", ""self_deployed"": ""self_deployed""}, ""interpolated"": true, ""verify_connection_skip"": true}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""creds_certificate.identifier"": ""certificate_thumbprint"", ""creds_certificate.password"": ""private_key"", ""self_deployed"": ""self_deployed""}, ""interpolated"": true}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}, ""interpolated"": true}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""device_code"", ""xsoar_param_map"": {""app_id"": ""client_id"", ""scope"": ""scope"", ""self_deployed"": ""self_deployed""}, ""interpolated"": true, ""verify_connection_skip"": true}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""xsoar_param_map"": {""managed_identities_client_id.password"": ""client_id""}, ""interpolated"": true}], ""other_connection"": [""azure_ad_endpoint"", ""azure_cloud"", ""insecure"", ""proxy""]}","[
   ""Automation""
-]","{""integration"": ""Microsoft Graph API"", ""commands"": {""msgraph-api-request"": [], ""msgraph-api-auth-start"": [], ""msgraph-api-auth-complete"": [], ""msgraph-api-test"": [], ""msgraph-api-auth-reset"": [], ""msgraph-api-generate-login-url"": [], ""test-module"": []}}",{},✅,"{
-  ""general_configurations"": [],
-  ""Automation"": []
-}",✅,✅,✅,"{""required"": true, ""path"": ""Packs/MicrosoftGraphAPI/ReleaseNotes/1_1_67.md"", ""verified"": true}",,,,
-Microsoft Graph Calendar,Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGraphCalendar/MicrosoftGraphCalendar.yml,M365 Automation and Collection,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials_auth_id.password"": ""client_id"",
-        ""credentials_tenant_id.password"": ""tenant_id"",
-        ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"",
-        ""private_key"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials_auth_id.password"": ""client_id"",
-        ""credentials_tenant_id.password"": ""tenant_id"",
-        ""credentials_enc_key.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""insecure"", ""proxy"", ""url""]
-}","[
+]","{""integration"": ""Microsoft Graph API"", ""commands"": {""msgraph-api-request"": [], ""msgraph-api-auth-start"": [], ""msgraph-api-auth-complete"": [], ""msgraph-api-test"": [], ""msgraph-api-auth-reset"": [], ""msgraph-api-generate-login-url"": [], ""test-module"": []}}",,,,,,,,,,,
+Microsoft Graph Calendar,Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGraphCalendar/MicrosoftGraphCalendar.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_tenant_id.password"": ""tenant_id"", ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"", ""private_key"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_tenant_id.password"": ""tenant_id"", ""credentials_enc_key.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_tenant_id.password"": ""tenant_id"", ""credentials_enc_key.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Microsoft Graph Calendar"",
@@ -4255,41 +3727,8 @@ Microsoft Graph Calendar,Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGrap
     ""msgraph-calendar-auth-reset"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [""default_user""], ""general_configurations"": []}",,,,,,,,
-Microsoft Graph Device Management,Packs/MicrosoftGraphDeviceManagement/Integrations/MicrosoftGraphDeviceManagement/MicrosoftGraphDeviceManagement.yml,Microsoft Graph,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials_auth_id.password"": ""client_id"",
-        ""credentials_tenant_id.password"": ""tenant_id"",
-        ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"",
-        ""private_key"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials_auth_id.password"": ""client_id"",
-        ""credentials_tenant_id.password"": ""tenant_id"",
-        ""credentials_enc_key.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""azure_cloud"", ""insecure"", ""proxy"", ""url""]
-}","[
+}",,,,,,,,,,,
+Microsoft Graph Device Management,Packs/MicrosoftGraphDeviceManagement/Integrations/MicrosoftGraphDeviceManagement/MicrosoftGraphDeviceManagement.yml,Microsoft Graph,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_tenant_id.password"": ""tenant_id"", ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"", ""private_key"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_tenant_id.password"": ""tenant_id"", ""credentials_enc_key.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_tenant_id.password"": ""tenant_id"", ""credentials_enc_key.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_cloud"", ""insecure"", ""proxy"", ""url""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Microsoft Graph Device Management"",
@@ -4319,54 +3758,8 @@ Microsoft Graph Device Management,Packs/MicrosoftGraphDeviceManagement/Integrati
     ""msgraph-device-auth-reset"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
-Microsoft Graph Groups,Packs/MicrosoftGraphGroups/Integrations/MicrosoftGraphGroups/MicrosoftGraphGroups.yml,Microsoft Identity,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Authorization Code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""credentials.password"": ""client_secret"",
-        ""creds_auth_code.password"": ""auth_code"",
-        ""redirect_uri"": ""redirect_uri""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"",
-        ""private_key"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""credentials.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""handle_error"", ""insecure"", ""proxy"", ""url""]
-}","[
+}",,,,,,,,,,,
+Microsoft Graph Groups,Packs/MicrosoftGraphGroups/Integrations/MicrosoftGraphGroups/MicrosoftGraphGroups.yml,Microsoft Identity,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""creds_auth_code.password"": ""auth_code"", ""redirect_uri"": ""redirect_uri"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"", ""private_key"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""handle_error"", ""insecure"", ""proxy"", ""url""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Microsoft Graph Groups"",
@@ -4382,54 +3775,8 @@ Microsoft Graph Groups,Packs/MicrosoftGraphGroups/Integrations/MicrosoftGraphGro
     ""msgraph-groups-auth-reset"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
-Microsoft Graph Mail Single User,Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphListener/MicrosoftGraphListener.yml,M365 Automation and Collection,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Authorization Code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_refresh_token.password"": ""tenant_id"",
-        ""creds_enc_key.password"": ""client_secret"",
-        ""creds_auth_code.password"": ""auth_code"",
-        ""redirect_uri"": ""redirect_uri""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_refresh_token.password"": ""tenant_id"",
-        ""creds_certificate.identifier"": ""certificate_thumbprint"",
-        ""creds_certificate.password"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_refresh_token.password"": ""tenant_id"",
-        ""creds_enc_key.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+Microsoft Graph Mail Single User,Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphListener/MicrosoftGraphListener.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_refresh_token.password"": ""tenant_id"", ""creds_enc_key.password"": ""client_secret"", ""creds_auth_code.password"": ""auth_code"", ""redirect_uri"": ""redirect_uri"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_refresh_token.password"": ""tenant_id"", ""creds_certificate.identifier"": ""certificate_thumbprint"", ""creds_certificate.password"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_refresh_token.password"": ""tenant_id"", ""creds_enc_key.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_refresh_token.password"": ""tenant_id"", ""creds_enc_key.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""insecure"", ""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -4484,54 +3831,8 @@ Microsoft Graph Mail Single User,Packs/MicrosoftGraphMail/Integrations/Microsoft
       ""mark_fetched_read""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""fetch_limit"", ""first_fetch"", ""folder_to_fetch"", ""mailbox_to_fetch"", ""mark_fetched_read""], ""general_configurations"": [""fetch_html_formatting"", ""legacy_name"", ""display_full_email_body""]}",,,,,,,,
-Microsoft Graph User,Packs/MicrosoftGraphUser/Integrations/MicrosoftGraphUser/MicrosoftGraphUser.yml,Microsoft Identity,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Authorization Code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""creds_enc_key.password"": ""client_secret"",
-        ""creds_auth_code.password"": ""auth_code"",
-        ""redirect_uri"": ""redirect_uri""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""creds_certificate.identifier"": ""certificate_thumbprint"",
-        ""creds_certificate.password"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""creds_enc_key.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""azure_cloud"", ""handle_error"", ""host"", ""insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+Microsoft Graph User,Packs/MicrosoftGraphUser/Integrations/MicrosoftGraphUser/MicrosoftGraphUser.yml,Microsoft Identity,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""creds_enc_key.password"": ""client_secret"", ""creds_auth_code.password"": ""auth_code"", ""redirect_uri"": ""redirect_uri"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""creds_certificate.identifier"": ""certificate_thumbprint"", ""creds_certificate.password"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""creds_enc_key.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""creds_enc_key.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_cloud"", ""handle_error"", ""host"", ""insecure"", ""proxy""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Microsoft Graph User"",
@@ -4585,7 +3886,7 @@ Microsoft Graph User,Packs/MicrosoftGraphUser/Integrations/MicrosoftGraphUser/Mi
     ],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [""allow_secret_generators""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Microsoft Intune Feed,Packs/FeedMicrosoftIntune/Integrations/FeedMicrosoftIntune/FeedMicrosoftIntune.yml,Microsoft Intune,,noydavidi,"{
   ""auth_types"": [],
   ""other_connection"": [""insecure"", ""proxy"", ""url""]
@@ -4598,53 +3899,7 @@ Microsoft Intune Feed,Packs/FeedMicrosoftIntune/Integrations/FeedMicrosoftIntune
     ""intune-get-indicators"": [""feedTags"", ""tlp_color""]
   }
 }",{},✅,"{""Threat Intelligence & Enrichment"": [""feedTags"", ""tlp_color""], ""general_configurations"": []}",,,,,,,,
-Microsoft Management Activity API (O365 Azure Events),Packs/MicrosoftManagementActivity/Integrations/MicrosoftManagementActivity/MicrosoftManagementActivity.yml,M365 Automation and Collection,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Authorization Code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""credentials_auth_id.password"": ""client_id"",
-        ""credentials_refresh_token.password"": ""tenant_id"",
-        ""credentials_enc_key.password"": ""client_secret"",
-        ""credentials_auth_code.password"": ""auth_code"",
-        ""redirect_uri"": ""redirect_uri""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials_auth_id.password"": ""client_id"",
-        ""credentials_refresh_token.password"": ""tenant_id"",
-        ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"",
-        ""private_key"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials_auth_id.password"": ""client_id"",
-        ""credentials_refresh_token.password"": ""tenant_id"",
-        ""credentials_enc_key.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""base_url"", ""insecure"", ""proxy""]
-}","[
+Microsoft Management Activity API (O365 Azure Events),Packs/MicrosoftManagementActivity/Integrations/MicrosoftManagementActivity/MicrosoftManagementActivity.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_refresh_token.password"": ""tenant_id"", ""credentials_enc_key.password"": ""client_secret"", ""credentials_auth_code.password"": ""auth_code"", ""redirect_uri"": ""redirect_uri"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_refresh_token.password"": ""tenant_id"", ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"", ""private_key"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_refresh_token.password"": ""tenant_id"", ""credentials_enc_key.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_refresh_token.password"": ""tenant_id"", ""credentials_enc_key.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""base_url"", ""insecure"", ""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -4666,43 +3921,8 @@ Microsoft Management Activity API (O365 Azure Events),Packs/MicrosoftManagementA
       ""workloads_filter""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""content_types_to_fetch"", ""first_fetch_delta"", ""operations_filter"", ""record_types_filter"", ""timeout"", ""workloads_filter""], ""general_configurations"": []}",,,,,,,,
-Microsoft Teams,Packs/MicrosoftTeams/Integrations/MicrosoftTeams/MicrosoftTeams.yml,M365 Automation and Collection,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Authorization Code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""credentials.identifier"": ""client_id"",
-        ""credentials.password"": ""client_secret"",
-        ""auth_code_creds.password"": ""auth_code"",
-        ""redirect_uri"": ""redirect_uri""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials.identifier"": ""client_id"",
-        ""creds_certificate.identifier"": ""certificate"",
-        ""creds_certificate.password"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials.identifier"": ""client_id"",
-        ""credentials.password"": ""client_secret""
-      }
-    }
-  ],
-  ""other_connection"": [""insecure"", ""is_single_tenant_bot_type"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+Microsoft Teams,Packs/MicrosoftTeams/Integrations/MicrosoftTeams/MicrosoftTeams.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret"", ""auth_code_creds.password"": ""auth_code"", ""redirect_uri"": ""redirect_uri""}}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""creds_certificate.identifier"": ""certificate"", ""creds_certificate.password"": ""private_key""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}}], ""other_connection"": [""insecure"", ""is_single_tenant_bot_type"", ""proxy""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Microsoft Teams"",
@@ -4769,40 +3989,8 @@ Microsoft Teams,Packs/MicrosoftTeams/Integrations/MicrosoftTeams/MicrosoftTeams.
     ],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [""longRunning"", ""longRunningPort"", ""allow_external_incidents_creation"", ""auto_notifications"", ""external_form_url_header"", ""incident_notifications_channel"", ""min_incident_severity"", ""new_incident_welcome_message"", ""team""], ""general_configurations"": []}",,,,,,,,
-Microsoft Teams Management,Packs/MicrosoftTeams/Integrations/MicrosoftTeamsManagement/MicrosoftTeamsManagement.yml,M365 Automation and Collection,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id"",
-        ""credentials.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Device Code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""azure_ad_endpoint"", ""insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+Microsoft Teams Management,Packs/MicrosoftTeams/Integrations/MicrosoftTeamsManagement/MicrosoftTeamsManagement.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""device_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_ad_endpoint"", ""insecure"", ""proxy""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Microsoft Teams Management"",
@@ -4828,7 +4016,7 @@ Microsoft Teams Management,Packs/MicrosoftTeams/Integrations/MicrosoftTeamsManag
     ""microsoft-teams-teams-list-joined"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Microsoft Teams via Webhook,Packs/MicrosoftTeams/Integrations/MicrosoftTeamsWebhook/MicrosoftTeamsWebhook.yml,M365 Automation and Collection,,noydavidi,"{
   ""auth_types"": [],
   ""other_connection"": [""insecure"", ""proxy"", ""webhookurl""]
@@ -4841,29 +4029,7 @@ Microsoft Teams via Webhook,Packs/MicrosoftTeams/Integrations/MicrosoftTeamsWebh
     ""ms-teams-message"": []
   }
 }",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
-MicrosoftCloudAppSecurity,Packs/MicrosoftCloudAppSecurity/Integrations/MicrosoftCloudAppSecurity/MicrosoftCloudAppSecurity.yml,Microsoft Security,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""API Token"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_token.password"": ""token""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id"",
-        ""client_id.password"": ""client_secret""
-      }
-    }
-  ],
-  ""other_connection"": [""auth_mode"", ""endpoint_type"", ""insecure"", ""proxy"", ""url""]
-}","[
+MicrosoftCloudAppSecurity,Packs/MicrosoftCloudAppSecurity/Integrations/MicrosoftCloudAppSecurity/MicrosoftCloudAppSecurity.yml,Microsoft Security,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""API Token"", ""interpolated"": true, ""xsoar_param_map"": {""creds_token.password"": ""token""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""client_id.password"": ""client_secret""}}], ""other_connection"": [""auth_mode"", ""endpoint_type"", ""insecure"", ""proxy"", ""url""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -4894,51 +4060,8 @@ MicrosoftCloudAppSecurity,Packs/MicrosoftCloudAppSecurity/Integrations/Microsoft
       ""severity""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""custom_filter"", ""first_fetch"", ""look_back"", ""max_fetch"", ""resolution_status"", ""severity""], ""general_configurations"": []}",,,,,,,,
-MicrosoftDefenderThreatIntelligence,Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/MicrosoftDefenderThreatIntelligence.yml,Microsoft Security,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id"",
-        ""creds_certificate.identifier"": ""certificate_thumbprint"",
-        ""creds_certificate.password"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id"",
-        ""credentials.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Device Code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""azure_ad_endpoint"", ""insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+MicrosoftDefenderThreatIntelligence,Packs/MicrosoftDefenderThreatIntelligence/Integrations/MicrosoftDefenderThreatIntelligence/MicrosoftDefenderThreatIntelligence.yml,Microsoft Security,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""creds_certificate.identifier"": ""certificate_thumbprint"", ""creds_certificate.password"": ""private_key""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""device_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_ad_endpoint"", ""insecure"", ""proxy""]}","[
   ""Automation""
 ]","{
   ""integration"": ""MicrosoftDefenderThreatIntelligence"",
@@ -4957,40 +4080,8 @@ MicrosoftDefenderThreatIntelligence,Packs/MicrosoftDefenderThreatIntelligence/In
     ""msg-defender-threat-intel-host-reputation"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
-MicrosoftGraphApplications,Packs/MicrosoftGraphApplications/Integrations/MicrosoftGraphApplications/MicrosoftGraphApplications.yml,Microsoft Identity,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id"",
-        ""credentials.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Device Code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""azure_ad_endpoint"", ""insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+MicrosoftGraphApplications,Packs/MicrosoftGraphApplications/Integrations/MicrosoftGraphApplications/MicrosoftGraphApplications.yml,Microsoft Identity,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""device_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_ad_endpoint"", ""insecure"", ""proxy""]}","[
   ""Automation""
 ]","{
   ""integration"": ""MicrosoftGraphApplications"",
@@ -5009,51 +4100,8 @@ MicrosoftGraphApplications,Packs/MicrosoftGraphApplications/Integrations/Microso
     ""msgraph-apps-service-principal-lock-configuration"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
-MicrosoftGraphIdentityandAccess,Packs/MicrosoftGraphIdentityandAccess/Integrations/MicrosoftGraphIdentityandAccess/MicrosoftGraphIdentityandAccess.yml,Microsoft Identity,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id"",
-        ""creds_certificate.identifier"": ""certificate_thumbprint"",
-        ""creds_certificate.password"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id"",
-        ""credentials.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Device Code"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""app_id"": ""client_id"",
-        ""tenant_id"": ""tenant_id""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""azure_ad_endpoint"", ""insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+MicrosoftGraphIdentityandAccess,Packs/MicrosoftGraphIdentityandAccess/Integrations/MicrosoftGraphIdentityandAccess/MicrosoftGraphIdentityandAccess.yml,Microsoft Identity,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""creds_certificate.identifier"": ""certificate_thumbprint"", ""creds_certificate.password"": ""private_key""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""device_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_ad_endpoint"", ""insecure"", ""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -5093,41 +4141,8 @@ MicrosoftGraphIdentityandAccess,Packs/MicrosoftGraphIdentityandAccess/Integratio
       ""override_issue_severity""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""alerts_to_fetch"", ""fetch_filter_expression"", ""first_fetch"", ""issue_severity"", ""max_fetch"", ""override_issue_severity""], ""general_configurations"": []}",,,,,,,,
-MicrosoftGraphMail,Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphMail/MicrosoftGraphMail.yml,M365 Automation and Collection,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Certificate"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""creds_certificate.identifier"": ""certificate_thumbprint"",
-        ""creds_certificate.password"": ""private_key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""creds_auth_id.password"": ""client_id"",
-        ""creds_tenant_id.password"": ""tenant_id"",
-        ""credentials.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Managed Identity"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""managed_identities_client_id.password"": ""managed_identities_client_id""
-      }
-    }
-  ],
-  ""other_connection"": [""insecure"", ""proxy"", ""url""]
-}","[
+}",,,,,,,,,,,
+MicrosoftGraphMail,Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphMail/MicrosoftGraphMail.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""creds_certificate.identifier"": ""certificate_thumbprint"", ""creds_certificate.password"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""creds_auth_id.password"": ""client_id"", ""creds_tenant_id.password"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -5187,16 +4202,8 @@ MicrosoftGraphMail,Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphMail/Micr
       ""timeout""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""fetch_limit"", ""first_fetch"", ""folder_to_fetch"", ""look_back"", ""mailbox_to_fetch"", ""mark_fetched_read"", ""timeout""], ""general_configurations"": [""legacy_name"", ""display_full_email_body""]}",,,,,,,,
-MicrosoftPolicyAndComplianceAuditLog,Packs/Office365AndAzureAuditLog/Integrations/MicrosoftPolicyAndComplianceAuditLog/MicrosoftPolicyAndComplianceAuditLog.yml,M365 Automation and Collection,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""Passthrough"",
-    ""name"": ""Certificate"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""app_id"": ""client_id"", ""organization"": ""organization"", ""certificate.identifier"": ""certificate"", ""certificate.password"": ""certificate_password""}
-  }],
-  ""other_connection"": [""insecure""]
-}","[
+}",,,,,,,,,,,
+MicrosoftPolicyAndComplianceAuditLog,Packs/Office365AndAzureAuditLog/Integrations/MicrosoftPolicyAndComplianceAuditLog/MicrosoftPolicyAndComplianceAuditLog.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""organization"": ""organization"", ""certificate.identifier"": ""certificate"", ""certificate.password"": ""certificate_password""}}], ""other_connection"": [""insecure""]}","[
   ""Automation""
 ]","{
   ""integration"": ""MicrosoftPolicyAndComplianceAuditLog"",
@@ -5204,16 +4211,8 @@ MicrosoftPolicyAndComplianceAuditLog,Packs/Office365AndAzureAuditLog/Integration
     ""test-module"": [],
     ""o365-auditlog-search"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
-Mimecast Event Collector v2,Packs/Mimecast/Integrations/MimecastEventCollectorV2/MimecastEventCollectorV2.yml,Mimecast,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""Passthrough"",
-    ""name"": ""Client Credentials"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""client_credentials.identifier"": ""client_id"", ""client_credentials.password"": ""client_secret""}
-  }],
-  ""other_connection"": [""base_url"", ""insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+Mimecast Event Collector v2,Packs/Mimecast/Integrations/MimecastEventCollectorV2/MimecastEventCollectorV2.yml,Mimecast,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""client_credentials.identifier"": ""client_id"", ""client_credentials.password"": ""client_secret""}}], ""other_connection"": [""base_url"", ""insecure"", ""proxy""]}","[
   ""Log Collection""
 ]","{
   ""integration"": ""Mimecast Event Collector v2"",
@@ -5222,34 +4221,8 @@ Mimecast Event Collector v2,Packs/Mimecast/Integrations/MimecastEventCollectorV2
     ""fetch-events"": [""after"", ""event_types"", ""max_fetch""],
     ""mimecast-get-events"": [""after"", ""event_types"", ""max_fetch""]
   }
-}",{},✅,"{""Log Collection"": [""after"", ""event_types"", ""max_fetch""], ""general_configurations"": []}",,,,,,,,
-MimecastV2,Packs/Mimecast/Integrations/MimecastV2/MimecastV2.yml,Mimecast,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""Client Credentials"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""client_id"": ""client_id"",
-        ""client_secret.password"": ""client_secret""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""HMAC Signature"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""accessKey"": ""access_key"",
-        ""secretKey_creds.password"": ""secret_key"",
-        ""appId"": ""app_id"",
-        ""appKey_creds.password"": ""app_key"",
-        ""credentials.identifier"": ""email"",
-        ""credentials.password"": ""password""
-      }
-    }
-  ],
-  ""other_connection"": [""baseUrl"", ""new_insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+MimecastV2,Packs/Mimecast/Integrations/MimecastV2/MimecastV2.yml,Mimecast,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""client_id"": ""client_id"", ""client_secret.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""hmac_signature"", ""interpolated"": true, ""xsoar_param_map"": {""accessKey"": ""access_key"", ""secretKey_creds.password"": ""secret_key"", ""appId"": ""app_id"", ""appKey_creds.password"": ""app_key"", ""credentials.identifier"": ""email"", ""credentials.password"": ""password""}}], ""other_connection"": [""baseUrl"", ""new_insecure"", ""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -5309,24 +4282,8 @@ MimecastV2,Packs/Mimecast/Integrations/MimecastV2/MimecastV2.yml,Mimecast,,noyda
       ""max_fetch""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""fetchDelta"", ""incidentsToFetch"", ""max_fetch""], ""general_configurations"": []}",,,,,,,,
-MondayEventCollector,Packs/Monday/Integrations/MondayEventCollector/MondayEventCollector.yml,Monday,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""OAuth"",
-      ""interpolated"": true,
-      ""verify_connection_skip"": true,
-      ""xsoar_param_map"": {
-        ""credentials.identifier"": ""client_id"",
-        ""credentials.password"": ""client_secret"",
-        ""auth_code.password"": ""auth_code"",
-        ""audit_token.password"": ""audit_token""
-      }
-    }
-  ],
-  ""other_connection"": [""activity_logs_url"", ""audit_logs_url"", ""insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+MondayEventCollector,Packs/Monday/Integrations/MondayEventCollector/MondayEventCollector.yml,Monday,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""oauth"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret"", ""auth_code.password"": ""auth_code"", ""audit_token.password"": ""audit_token""}}], ""other_connection"": [""activity_logs_url"", ""audit_logs_url"", ""insecure"", ""proxy""]}","[
   ""Log Collection"",
   ""Automation""
 ]","{
@@ -5337,7 +4294,7 @@ MondayEventCollector,Packs/Monday/Integrations/MondayEventCollector/MondayEventC
     ""monday-generate-login-url"": [],
     ""monday-auth-test"": []
   }
-}",{},✅,"{""Log Collection"": [""board_ids"", ""max_activity_logs_per_fetch"", ""max_audit_logs_per_fetch"", ""selected_event_types""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 MongoDB,Packs/MongoDB/Integrations/MongoDB/MongoDB.yml,MongoDB,,jlevypaloalto,,,,,,,,,,,,,,
 MongoDB Key Value Store,Packs/MongoDB/Integrations/MongoDBKeyValueStore/MongoDBKeyValueStore.yml,MongoDB,,jlevypaloalto,,,,,,,,,,,,,,
 MongoDB Log,Packs/MongoDB/Integrations/MongoDBLog/MongoDBLog.yml,MongoDB,,jlevypaloalto,,,,,,,,,,,,,,
@@ -5375,15 +4332,7 @@ Nutanix Hypervisor,Packs/NutanixHypervisor/Integrations/NutanixHypervisor/Nutani
     ]
   }
 }",{},✅,"{""Automation"": [], ""Fetch Issues"": [""alert_status_filters"", ""alert_type_ids"", ""first_fetch"", ""impact_types"", ""max_fetch""], ""general_configurations"": []}",,,,,,,,
-O365 Defender SafeLinks,Packs/Microsoft365Defender/Integrations/O365DefenderSafeLinks/O365DefenderSafeLinks.yml,Microsoft Security,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""Passthrough"",
-    ""name"": ""Certificate"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""app_id"": ""client_id"", ""organization"": ""organization"", ""certificate.identifier"": ""certificate"", ""certificate.password"": ""certificate_password""}
-  }],
-  ""other_connection"": []
-}","[
+O365 Defender SafeLinks,Packs/Microsoft365Defender/Integrations/O365DefenderSafeLinks/O365DefenderSafeLinks.yml,Microsoft Security,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""organization"": ""organization"", ""certificate.identifier"": ""certificate"", ""certificate.password"": ""certificate_password""}}], ""other_connection"": []}","[
   ""Automation""
 ]","{
   ""integration"": ""O365 Defender SafeLinks"",
@@ -5401,7 +4350,7 @@ O365 Defender SafeLinks,Packs/Microsoft365Defender/Integrations/O365DefenderSafe
     ""o365-defender-safelinks-atp-policy-set"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 OPSWAT-Metadefender V2,Packs/opswat-metadefender/Integrations/OPSWATMetadefenderV2/OPSWATMetadefenderV2.yml,OPSWAT MetaDefender,,hyaffe839,,,,,,,,,,,,,,
 Office 365 Feed,Packs/FeedOffice365/Integrations/FeedOffice365/FeedOffice365.yml,M365 Automation and Collection,,noydavidi,"{
   ""auth_types"": [],
@@ -5415,15 +4364,7 @@ Office 365 Feed,Packs/FeedOffice365/Integrations/FeedOffice365/FeedOffice365.yml
     ""office365-get-indicators"": [""allow_germany"", ""category"", ""feedTags"", ""tlp_color""]
   }
 }",{},✅,"{""Threat Intelligence & Enrichment"": [""allow_germany"", ""category"", ""feedTags"", ""tlp_color""], ""general_configurations"": []}",,,,,,,,
-Okta Event Collector,Packs/Okta/Integrations/OktaEventCollector/OktaEventCollector.yml,Okta Automation and Collection,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""APIKey"",
-    ""name"": ""API Key"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""api_key.password"": ""key""}
-  }],
-  ""other_connection"": [""after"", ""proxy"", ""url"", ""verify""]
-}","[
+Okta Event Collector,Packs/Okta/Integrations/OktaEventCollector/OktaEventCollector.yml,Okta Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""api_key.password"": ""key""}}], ""other_connection"": [""after"", ""proxy"", ""url"", ""verify""]}","[
   ""Log Collection""
 ]","{
   ""integration"": ""Okta Event Collector"",
@@ -5432,16 +4373,8 @@ Okta Event Collector,Packs/Okta/Integrations/OktaEventCollector/OktaEventCollect
     ""fetch-events"": [""limit""],
     ""okta-get-events"": [""limit""]
   }
-}",{},✅,"{""Log Collection"": [""limit""], ""general_configurations"": []}",,,,,,,,
-Okta IAM,Packs/Okta/Integrations/Okta_IAM/Okta_IAM.yml,Okta Automation and Collection,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""APIKey"",
-    ""name"": ""API Key"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials.password"": ""key""}
-  }],
-  ""other_connection"": [""insecure"", ""proxy"", ""url""]
-}","[
+}",,,,,,,,,,,
+Okta IAM,Packs/Okta/Integrations/Okta_IAM/Okta_IAM.yml,Okta Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.password"": ""key""}}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -5462,31 +4395,8 @@ Okta IAM,Packs/Okta/Integrations/Okta_IAM/Okta_IAM.yml,Okta Automation and Colle
     ""iam-get-group"": [],
     ""okta-get-logs"": []
   }
-}",{},✅,"{""Automation"": [""create-user-enabled"", ""mapper-out"", ""create-if-not-exists"", ""update-user-enabled"", ""mapper-in"", ""disable-user-enabled""], ""Fetch Issues"": [""auto_generate_query_filter"", ""fetch_query_filter"", ""first_fetch"", ""max_fetch""], ""general_configurations"": []}",,,,,,,,
-Okta v2,Packs/Okta/Integrations/Okta_v2/Okta_v2.yml,Okta Automation and Collection,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""APIKey"",
-      ""name"": ""API Key"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials.password"": ""key""
-      }
-    },
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""OAuth JWT"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""client_id"": ""client_id"",
-        ""private_key"": ""private_key"",
-        ""jwt_algorithm"": ""jwt_algorithm"",
-        ""key_id"": ""key_id""
-      }
-    }
-  ],
-  ""other_connection"": [""insecure"", ""proxy"", ""url"", ""use_oauth""]
-}","[
+}",,,,,,,,,,,
+Okta v2,Packs/Okta/Integrations/Okta_v2/Okta_v2.yml,Okta Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.password"": ""key""}}, {""type"": ""Passthrough"", ""name"": ""oauth_jwt"", ""interpolated"": true, ""xsoar_param_map"": {""client_id"": ""client_id"", ""private_key"": ""private_key"", ""jwt_algorithm"": ""jwt_algorithm"", ""key_id"": ""key_id""}}], ""other_connection"": [""insecure"", ""proxy"", ""url"", ""use_oauth""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Okta v2"",
@@ -5528,16 +4438,8 @@ Okta v2,Packs/Okta/Integrations/Okta_v2/Okta_v2.yml,Okta Automation and Collecti
     ""okta-auth-reset"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
-OktaASA,Packs/OktaASA/Integrations/OktaASA/OktaASA.yml,Okta Automation and Collection,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""Passthrough"",
-    ""name"": ""API Key"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials.identifier"": ""api_key_id"", ""credentials.password"": ""api_key_secret""}
-  }],
-  ""other_connection"": [""insecure"", ""proxy"", ""team_name"", ""url""]
-}","[
+}",,,,,,,,,,,
+OktaASA,Packs/OktaASA/Integrations/OktaASA/OktaASA.yml,Okta Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""api_key_id"", ""credentials.password"": ""api_key_secret""}}], ""other_connection"": [""insecure"", ""proxy"", ""team_name"", ""url""]}","[
   ""Log Collection""
 ]","{
   ""integration"": ""OktaASA"",
@@ -5546,16 +4448,8 @@ OktaASA,Packs/OktaASA/Integrations/OktaASA/OktaASA.yml,Okta Automation and Colle
     ""fetch-events"": [""max_audit_events_per_fetch""],
     ""okta-asa-get-events"": [""max_audit_events_per_fetch""]
   }
-}",{},✅,"{""Log Collection"": [""max_audit_events_per_fetch""], ""general_configurations"": []}",,,,,,,,
-OktaAuth0EventCollector,Packs/OktaAuth0/Integrations/OktaAuth0EventCollector/OktaAuth0EventCollector.yml,Okta Automation and Collection,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""Passthrough"",
-    ""name"": ""Client Credentials"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}
-  }],
-  ""other_connection"": [""insecure"", ""proxy"", ""url""]
-}","[
+}",,,,,,,,,,,
+OktaAuth0EventCollector,Packs/OktaAuth0/Integrations/OktaAuth0EventCollector/OktaAuth0EventCollector.yml,Okta Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Log Collection""
 ]","{
   ""integration"": ""OktaAuth0EventCollector"",
@@ -5564,20 +4458,12 @@ OktaAuth0EventCollector,Packs/OktaAuth0/Integrations/OktaAuth0EventCollector/Okt
     ""fetch-events"": [""limit"", ""since""],
     ""okta-auth0-get-events"": [""limit"", ""since""]
   }
-}",{},✅,"{""Log Collection"": [""since"", ""limit""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 OnboardingIntegration,Packs/OnboardingIntegration/Integrations/OnboardingIntegration/OnboardingIntegration.yml,Cortex Automation Developer Tools,,jlevypaloalto,,,,,,,,,,,,,,
 OneLogin Event Collector,Packs/OneLogin/Integrations/OneLoginEventCollector/OneLoginEventCollector.yml,OneLogin,,joeymizrahi,,,,,,,,,,,,,,
 OnePassword,Packs/OnePassword/Integrations/OnePassword/OnePassword.yml,1Password,,juschwartz,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[""Log Collection""]","{""integration"":""OnePassword"",""commands"":{""test-module"":[],""one-password-get-events"":[],""fetch-events"":[]}}",{},✅,"{""Log Collection"":[],""general_configurations"":[]}",,,,,,,,
 OpenAi ChatGPT v3,Packs/OpenAI/Integrations/OpenAiChatGPTV3/OpenAiChatGPTV3.yml,OpenAI,,YuvHayun,,,,,,,,,,,,,,
-OpenCTI,Packs/OpenCTI/Integrations/OpenCTI/OpenCTI.yml,Filigran OpenCTI,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""APIKey"",
-    ""name"": ""API Key"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials.password"": ""key""}
-  }],
-  ""other_connection"": [""base_url"", ""insecure"", ""proxy"", ""redirect_std_out""]
-}","[
+OpenCTI,Packs/OpenCTI/Integrations/OpenCTI/OpenCTI.yml,Filigran OpenCTI,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.password"": ""key""}}], ""other_connection"": [""base_url"", ""insecure"", ""proxy"", ""redirect_std_out""]}","[
   ""Automation""
 ]","{
   ""integration"": ""OpenCTI"",
@@ -5609,16 +4495,8 @@ OpenCTI,Packs/OpenCTI/Integrations/OpenCTI/OpenCTI.yml,Filigran OpenCTI,,noydavi
     ""opencti-indicator-types-list"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
-OpenCTI Feed 4.X,Packs/FeedOpenCTI/Integrations/FeedOpenCTI_v4/FeedOpenCTI_v4.yml,Filigran OpenCTI,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""APIKey"",
-    ""name"": ""API Key"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials.password"": ""key""}
-  }],
-  ""other_connection"": [""base_url"", ""insecure"", ""proxy""]
-}","[
+}",,,,,,,,,,,
+OpenCTI Feed 4.X,Packs/FeedOpenCTI/Integrations/FeedOpenCTI_v4/FeedOpenCTI_v4.yml,Filigran OpenCTI,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.password"": ""key""}}], ""other_connection"": [""base_url"", ""insecure"", ""proxy""]}","[
   ""Threat Intelligence & Enrichment""
 ]","{
   ""integration"": ""OpenCTI Feed 4.X"",
@@ -5627,7 +4505,7 @@ OpenCTI Feed 4.X,Packs/FeedOpenCTI/Integrations/FeedOpenCTI_v4/FeedOpenCTI_v4.ym
     ""opencti-reset-fetch-indicators"": [],
     ""opencti-get-indicators"": [""feedTags"", ""indicator_types"", ""max_indicator_to_fetch"", ""score_end"", ""score_start"", ""tlp_color""]
   }
-}",{},✅,"{""Threat Intelligence & Enrichment"": [""feedTags"", ""indicator_types"", ""max_indicator_to_fetch"", ""score_end"", ""score_start"", ""tlp_color""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 OpenCVE,Packs/OpenCVE/Integrations/OpenCVE/OpenCVE.yml,OpenCVE,,juschwartz,,,,,,,,,,,,,,
 OpenLDAP,Packs/OpenLDAP/Integrations/OpenLDAP/OpenLDAP.yml,OpenLDAP,,jlevypaloalto,,,,,,,,,,,,,,
 OpenPhish_v2,Packs/OpenPhish/Integrations/OpenPhish_v2/OpenPhish_v2.yml,OpenPhish,,noydavidi,"{
@@ -5645,23 +4523,7 @@ OpenPhish_v2,Packs/OpenPhish/Integrations/OpenPhish_v2/OpenPhish_v2.yml,OpenPhis
   }
 }",{},✅,"{""Automation"": [""integrationReliability"", ""fetchIntervalHours""], ""general_configurations"": []}",,,,,,,,
 OpsGenieV3,Packs/OpsGenie/Integrations/OpsGenieV3/OpsGenieV3.yml,Atlassian Automation and Collection,,hyaffe839,,,,,,,,,,,,,,
-OracleCloudInfrastructureEventCollector,Packs/OracleCloudInfrastructure/Integrations/OracleCloudInfrastructureEventCollector/OracleCloudInfrastructureEventCollector.yml,Oracle,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""Passthrough"",
-      ""name"": ""API Key Signature"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""tenancy_ocid"": ""tenancy_ocid"",
-        ""user_ocid"": ""user_ocid"",
-        ""credentials.identifier"": ""key_fingerprint"",
-        ""credentials.password"": ""private_key"",
-        ""private_key_type"": ""private_key_type""
-      }
-    }
-  ],
-  ""other_connection"": [""compartment_id"", ""insecure"", ""proxy"", ""region""]
-}","[
+OracleCloudInfrastructureEventCollector,Packs/OracleCloudInfrastructure/Integrations/OracleCloudInfrastructureEventCollector/OracleCloudInfrastructureEventCollector.yml,Oracle,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""api_key_signature"", ""interpolated"": true, ""xsoar_param_map"": {""tenancy_ocid"": ""tenancy_ocid"", ""user_ocid"": ""user_ocid"", ""credentials.identifier"": ""key_fingerprint"", ""credentials.password"": ""private_key"", ""private_key_type"": ""private_key_type""}}], ""other_connection"": [""compartment_id"", ""insecure"", ""proxy"", ""region""]}","[
   ""Log Collection""
 ]","{
   ""integration"": ""OracleCloudInfrastructureEventCollector"",
@@ -5670,16 +4532,8 @@ OracleCloudInfrastructureEventCollector,Packs/OracleCloudInfrastructure/Integrat
     ""fetch-events"": [""event_types_to_fetch"", ""first_fetch"", ""max_fetch"", ""search_log_query""],
     ""oracle-cloud-infrastructure-get-events"": [""event_types_to_fetch"", ""first_fetch"", ""max_fetch"", ""search_log_query""]
   }
-}",{},✅,"{""Log Collection"": [""event_types_to_fetch"", ""first_fetch"", ""max_fetch"", ""search_log_query""], ""general_configurations"": []}",,,,,,,,
-OracleIAM,Packs/Oracle_IAM/Integrations/OracleIAM/OracleIAM.yml,Oracle,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""Passthrough"",
-    ""name"": ""Client Credentials"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}
-  }],
-  ""other_connection"": [""insecure"", ""proxy"", ""url""]
-}","[
+}",,,,,,,,,,,
+OracleIAM,Packs/Oracle_IAM/Integrations/OracleIAM/OracleIAM.yml,Oracle,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Automation""
 ]","{
   ""integration"": ""OracleIAM"",
@@ -5695,20 +4549,12 @@ OracleIAM,Packs/Oracle_IAM/Integrations/OracleIAM/OracleIAM.yml,Oracle,,noydavid
     ""iam-update-group"": [],
     ""get-mapping-fields"": []
   }
-}",{},✅,"{""Automation"": [""create_user_enabled"", ""mapper_out"", ""create_if_not_exists"", ""update_user_enabled"", ""mapper_in"", ""disable_user_enabled""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Orca Event Collector,Packs/Orca/Integrations/OrcaEventCollector/OrcaEventCollector.yml,Orca Security,,hyaffe839,,,,,,,,,,,,,,
 PATHelpdeskAdvanced,Packs/PATHelpdeskAdvanced/Integrations/PATHelpdeskAdvanced/PATHelpdeskAdvanced.yml,PAT Helpdesk Advanced,,joeymizrahi,,,,,,,,,,,,,,
 PacketMail,Packs/PacketMail/Integrations/PacketMail/PacketMail.yml,PacketMail.net,,YuvHayun,,,,,,,,,,,,,,
 Packetsled,Packs/Packetsled/Integrations/Packetsled/Packetsled.yml,PacketSled,,juschwartz,,,,,,,,,,,,,,
-PagerDuty v2,Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.yml,PagerDuty,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""Passthrough"",
-    ""name"": ""API Key"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials_api_key.password"": ""api_key"", ""ServiceKey"": ""service_key""}
-  }],
-  ""other_connection"": [""insecure"", ""proxy""]
-}","[
+PagerDuty v2,Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.yml,PagerDuty,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_api_key.password"": ""api_key"", ""ServiceKey"": ""service_key""}}], ""other_connection"": [""insecure"", ""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -5734,21 +4580,13 @@ PagerDuty v2,Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.yml,PagerDuty,,noy
       ""FetchInterval""
     ]
   }
-}",{},✅,"{""Automation"": [""DefaultRequestor""], ""Fetch Issues"": [""FetchInterval""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Palo Alto Networks - Prisma SASE,Packs/PrismaAccess/Integrations/PrismaSASE/PrismaSASE.yml,Prisma SASE,,jlevypaloalto,,,,,,,,,,,,,,
 Palo Alto Networks AIOps,Packs/PaloAltoNetworksAIOps/Integrations/PaloAltoNetworksAIOps/PaloAltoNetworksAIOps.yml,AIOps,,juschwartz,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""Pan-OS API Key & AIOps Client Credentials"", ""xsoar_param_map"": {""credentials.password"": ""api_key"", ""credentials-aiops.identifier"": ""client_id"", ""credentials-aiops.password"": ""client_secret"", ""tsg_id"": ""tsg_id""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""url""]}","[""Automation""]","{""commands"": {""aiops-bpa-report-generate"": [], ""aiops-polling-upload-report"": [], ""test-module"": []}, ""integration"": ""Palo Alto Networks AIOps""}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",,,,,,,,
-Palo Alto Networks Enterprise DLP,Packs/Palo_Alto_Networks_Enterprise_DLP/Integrations/Palo_Alto_Networks_Enterprise_DLP/Palo_Alto_Networks_Enterprise_DLP.yml,Enterprise DLP,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""Passthrough"",
-    ""name"": ""Client Credentials"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}
-  }],
-  ""other_connection"": [""auth_url"", ""base_url"", ""insecure"", ""proxy""]
-}","[
+Palo Alto Networks Enterprise DLP,Packs/Palo_Alto_Networks_Enterprise_DLP/Integrations/Palo_Alto_Networks_Enterprise_DLP/Palo_Alto_Networks_Enterprise_DLP.yml,Enterprise DLP,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}}], ""other_connection"": [""auth_url"", ""base_url"", ""insecure"", ""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -5769,17 +4607,9 @@ Palo Alto Networks Enterprise DLP,Packs/Palo_Alto_Networks_Enterprise_DLP/Integr
       ""max_fetch""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""dlp_exemptible_list"", ""dlp_regions"", ""dlp_slack_message"", ""first_fetch"", ""look_back"", ""max_fetch""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Palo Alto Networks IoT,Packs/PaloAltoNetworks_IoT/Integrations/PaloAltoNetworks_IoT/PaloAltoNetworks_IoT.yml,IoT Security,,hyaffe839,,,,,,,,,,,,,,
-Palo Alto Networks Threat Vault v2,Packs/PaloAltoNetworks_Threat_Vault/Integrations/ThreatVaultv2/ThreatVaultv2.yml,Threat Vault,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""APIKey"",
-    ""name"": ""API Key"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials.password"": ""key""}
-  }],
-  ""other_connection"": [""insecure"", ""proxy"", ""url""]
-}","[
+Palo Alto Networks Threat Vault v2,Packs/PaloAltoNetworks_Threat_Vault/Integrations/ThreatVaultv2/ThreatVaultv2.yml,Threat Vault,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.password"": ""key""}}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -5797,16 +4627,8 @@ Palo Alto Networks Threat Vault v2,Packs/PaloAltoNetworks_Threat_Vault/Integrati
     ""threatvault-atp-batch-report-get"": [],
     ""threatvault-atp-report-pcap-get"": []
   }
-}",{},✅,"{""Automation"": [""integrationReliability""], ""Fetch Issues"": [], ""general_configurations"": []}",,,,,,,,
-Palo Alto Networks Threat Vault v2 Feed,Packs/FeedThreatVault/Integrations/FeedThreatVault/FeedThreatVault.yml,Threat Vault,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""APIKey"",
-    ""name"": ""API Key"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials.password"": ""key""}
-  }],
-  ""other_connection"": [""insecure"", ""proxy"", ""url""]
-}","[
+}",,,,,,,,,,,
+Palo Alto Networks Threat Vault v2 Feed,Packs/FeedThreatVault/Integrations/FeedThreatVault/FeedThreatVault.yml,Threat Vault,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.password"": ""key""}}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Threat Intelligence & Enrichment""
 ]","{
   ""integration"": ""Palo Alto Networks Threat Vault v2 Feed"",
@@ -5814,17 +4636,9 @@ Palo Alto Networks Threat Vault v2 Feed,Packs/FeedThreatVault/Integrations/FeedT
     ""test-module"": [],
     ""threatvault-get-indicators"": [""feedTags"", ""limit"", ""list_format"", ""name"", ""tlp_color""]
   }
-}",{},✅,"{""Threat Intelligence & Enrichment"": [""feedTags"", ""limit"", ""list_format"", ""name"", ""tlp_color""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 PaloAltoNetworks_PrismaCloudCompute,Packs/PrismaCloudCompute/Integrations/PaloAltoNetworks_PrismaCloudCompute/PaloAltoNetworks_PrismaCloudCompute.yml,Prisma Cloud Compute,,joeymizrahi,,,,,,,,,,,,,,
-Panorama,Packs/PAN-OS/Integrations/Panorama/Panorama.yml,Panorama,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""APIKey"",
-    ""name"": ""API Key"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials.password"": ""key""}
-  }],
-  ""other_connection"": [""device_group"", ""insecure"", ""port"", ""proxy"", ""server"", ""template"", ""vsys""]
-}","[
+Panorama,Packs/PAN-OS/Integrations/Panorama/Panorama.yml,Panorama,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.password"": ""key""}}], ""other_connection"": [""device_group"", ""insecure"", ""port"", ""proxy"", ""server"", ""template"", ""vsys""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -6140,7 +4954,7 @@ Panorama,Packs/PAN-OS/Integrations/Panorama/Panorama.yml,Panorama,,noydavidi,"{
       ""wildfire_query""
     ]
   }
-}",{},✅,"{""Automation"": [""additional_malicious"", ""additional_suspicious"", ""integrationReliability"", ""use_url_filtering""], ""Fetch Issues"": [""correlation_query"", ""data_query"", ""decryption_query"", ""fetch_job_polling_max_num_attempts"", ""first_fetch"", ""log_types"", ""max_fetch"", ""system_query"", ""threat_query"", ""traffic_query"", ""url_query"", ""wildfire_query""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Perch,Packs/Perch/Integrations/Perch/Perch.yml,Razor Group,,YuvHayun,,,,,,,,,,,,,,
 PhishLabs IOC,Packs/PhishLabs/Integrations/PhishLabsIOC/PhishLabsIOC.yml,PhishLabs,,jlevypaloalto,,,,,,,,,,,,,,
 PhishLabs IOC DRP,Packs/PhishLabs/Integrations/PhishLabsIOC_DRP/PhishLabsIOC_DRP.yml,PhishLabs,,jlevypaloalto,,,,,,,,,,,,,,
@@ -6148,15 +4962,7 @@ PhishLabs IOC EIR,Packs/PhishLabs/Integrations/PhishLabsIOC_EIR/PhishLabsIOC_EIR
 PhishTank V2,Packs/PhishTank/Integrations/PhishTankV2/PhishTankV2.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
 Pipl,Packs/Pipl/Integrations/Pipl/Pipl.yml,Pipl,,juschwartz,,,,,,,,,,,,,,
 Plain Text Feed,Packs/FeedPlainText/Integrations/FeedPlainText/FeedPlainText.yml,Generic Intel Feed,,hyaffe839,,,,,,,,,,,,,,
-Prisma Access,Packs/PrismaAccess/Integrations/PrismaAccess/PrismaAccess.yml,Panorama,,noydavidi,"{
-  ""auth_types"": [{
-    ""type"": ""Passthrough"",
-    ""name"": ""API Key"",
-    ""interpolated"": true,
-    ""xsoar_param_map"": {""credentials_key.password"": ""api_key"", ""Username.identifier"": ""ssh_username"", ""Username.password"": ""ssh_password""}
-  }],
-  ""other_connection"": [""device_group"", ""insecure"", ""port"", ""proxy"", ""server"", ""sshport"", ""vsys""]
-}","[
+Prisma Access,Packs/PrismaAccess/Integrations/PrismaAccess/PrismaAccess.yml,Panorama,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_key.password"": ""api_key"", ""Username.identifier"": ""ssh_username"", ""Username.password"": ""ssh_password""}}], ""other_connection"": [""device_group"", ""insecure"", ""port"", ""proxy"", ""server"", ""sshport"", ""vsys""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Prisma Access"",
@@ -6167,7 +4973,7 @@ Prisma Access,Packs/PrismaAccess/Integrations/PrismaAccess/PrismaAccess.yml,Pano
     ""prisma-access-active-users"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Prisma Access Egress IP feed,Packs/PrismaAccess/Integrations/PrismaAccessEgressIPFeed/PrismaAccessEgressIPFeed.yml,Prisma Access GP Cloud,,jlevypaloalto,,,,,,,,,,,,,,
 PrismaCloud IAM,Packs/PrismaCloud/Integrations/PrismaCloudIAM/PrismaCloudIAM.yml,Prisma Cloud CSPM,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""customer_name"", ""insecure"", ""proxy"", ""url""]}","[
   ""Automation""
@@ -6264,28 +5070,7 @@ Proofpoint Threat Protection,Packs/ProofpointThreatProtection/Integrations/Proof
 Proofpoint Threat Response,Packs/ProofpointThreatResponse/Integrations/ProofpointThreatResponse/ProofpointThreatResponse.yml,Proofpoint,,hyaffe839,,,,,,,,,,,,,,
 ProofpointIsolationEventCollector,Packs/ProofpointIsolation/Integrations/ProofpointIsolationEventCollector/ProofpointIsolationEventCollector.yml,Proofpoint,,hyaffe839,,,,,,,,,,,,,,
 ProofpointThreatResponseEventCollector,Packs/ProofpointThreatResponse/Integrations/ProofpointThreatResponseEventCollector/ProofpointThreatResponseEventCollector.yml,Proofpoint,,hyaffe839,,,,,,,,,,,,,,
-ProtectWise,Packs/ProtectWise/Integrations/ProtectWise/ProtectWise.yml,ProtectWise,,noydavidi,"{
-  ""auth_types"": [
-    {
-      ""type"": ""APIKey"",
-      ""name"": ""API Key"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials_api_token.password"": ""key""
-      }
-    },
-    {
-      ""type"": ""Plain"",
-      ""name"": ""Basic Auth"",
-      ""interpolated"": true,
-      ""xsoar_param_map"": {
-        ""credentials_login.identifier"": ""username"",
-        ""credentials_login.password"": ""password""
-      }
-    }
-  ],
-  ""other_connection"": [""insecure"", ""proxy"", ""url""]
-}","[
+ProtectWise,Packs/ProtectWise/Integrations/ProtectWise/ProtectWise.yml,ProtectWise,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_api_token.password"": ""key""}}, {""type"": ""Plain"", ""name"": ""Basic Auth"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_login.identifier"": ""username"", ""credentials_login.password"": ""password""}}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -6319,7 +5104,7 @@ ProtectWise,Packs/ProtectWise/Integrations/ProtectWise/ProtectWise.yml,ProtectWi
       ""threatLevel""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""killChainStage"", ""maxFetch"", ""messageFilter"", ""threatCategory"", ""threatLevel""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Public DNS Feed,Packs/FeedPublicDNS/Integrations/FeedPublicDNS/FeedPublicDNS.yml,Generic Intel Feed,,hyaffe839,,,,,,,,,,,,,,
 QRadar v3,Packs/QRadar/Integrations/QRadar_v3/QRadar_v3.yml,IBM QRadar,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""api_version"", ""insecure"", ""proxy"", ""server""]}","[
   ""Fetch Issues"",
@@ -6507,7 +5292,7 @@ RTIR,Packs/RTIR/Integrations/RTIR/RTIR.yml,RTIR,,hyaffe839,,,,,,,,,,,,,,
 Radware Cloud DDoS Protection Services,Packs/RadwareCloudDDoSProtectionServices/Integrations/RadwareCloudDDoSProtectionServices/RadwareCloudDDoSProtectionServices.yml,Radware,,joeymizrahi,,,,,,,,,,,,,,
 Rapid7 InsightIDR,Packs/Rapid7_InsightIDR/Integrations/Rapid7_InsightIDR/Rapid7_InsightIDR.yml,Rapid7,,jlevypaloalto,,,,,,,,,,,,,,
 Rapid7 Nexpose,Packs/Rapid7_Nexpose/Integrations/Rapid7_Nexpose/Rapid7_Nexpose.yml,Rapid7,,jlevypaloalto,,,,,,,,,,,,,,
-Recorded Future Feed,Packs/FeedRecordedFuture/Integrations/FeedRecordedFuture/FeedRecordedFuture.yml,Recorded Future,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""API Key"", ""xsoar_param_map"": {""credentials_api_token.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""indicator_type"", ""insecure"", ""polling_timeout"", ""proxy"", ""services""]}","[
+Recorded Future Feed,Packs/FeedRecordedFuture/Integrations/FeedRecordedFuture/FeedRecordedFuture.yml,Recorded Future,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""xsoar_param_map"": {""credentials_api_token.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""indicator_type"", ""insecure"", ""polling_timeout"", ""proxy"", ""services""]}","[
   ""Threat Intelligence & Enrichment"",
   ""Automation""
 ]","{
@@ -6532,26 +5317,26 @@ Recorded Future Feed,Packs/FeedRecordedFuture/Integrations/FeedRecordedFuture/Fe
     ""rf-feed-get-risk-rules"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""Threat Intelligence & Enrichment"": [""feedBypassExclusionList"", ""feedExpirationInterval"", ""feedExpirationPolicy"", ""feedFetchInterval"", ""feedReliability"", ""feedReputation"", ""feedTags"", ""fusion_file_path"", ""performance"", ""risk_rule"", ""risk_score_threshold"", ""suspicious_threshold"", ""threshold"", ""tlp_color""], ""general_configurations"": []}",,,,,,,,
-RecordedFutureEventCollector,Packs/RecordedFuture/Integrations/RecordedFutureEventCollector/RecordedFutureEventCollector.yml,Recorded Future,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""API Key"", ""xsoar_param_map"": {""credentials.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy""]}","[
+}",,,,,,,,,,,
+RecordedFutureEventCollector,Packs/RecordedFuture/Integrations/RecordedFutureEventCollector/RecordedFutureEventCollector.yml,Recorded Future,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""xsoar_param_map"": {""credentials.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy""]}","[
   ""Log Collection""
-]","{""integration"":""RecordedFutureEventCollector"",""commands"":{""test-module"":[],""recorded-future-get-events"":[],""fetch-events"":[""first_fetch"",""max_fetch""]}}",{},✅,"{""Log Collection"": [""first_fetch"", ""max_fetch""], ""general_configurations"": []}",,,,,,,,
+]","{""integration"":""RecordedFutureEventCollector"",""commands"":{""test-module"":[],""recorded-future-get-events"":[],""fetch-events"":[""first_fetch"",""max_fetch""]}}",,,,,,,,,,,
 RedCanary,Packs/RedCanary/Integrations/RedCanary/RedCanary.yml,Zscaler,,jlevypaloalto,,,,,,,,,,,,,,
 Redmine,Packs/Redmine/Integrations/Redmine/Redmine.yml,Redmine,,YuvHayun,,,,,,,,,,,,,,
 ReliaQuest GreyMatter DRP Event Collector,Packs/DigitalShadows/Integrations/ReliaQuestGreyMatterDRPEventCollector/ReliaQuestGreyMatterDRPEventCollector.yml,ReliaQuest,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""account_id"", ""insecure"", ""proxy"", ""url""]}","[
   ""Log Collection""
 ]","{""integration"":""ReliaQuest GreyMatter DRP Event Collector"",""commands"":{""test-module"":[],""relia-quest-get-events"":[],""fetch-events"":[""max_fetch_events""]}}",{},✅,"{""Log Collection"": [""max_fetch_events""], ""general_configurations"": []}",,,,,,,,
-ReliaQuest GreyMatter DRP Incidents,Packs/DigitalShadows/Integrations/ReliaQuestGreyMatterDRPIncidents/ReliaQuestGreyMatterDRPIncidents.yml,ReliaQuest,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""API Key"", ""xsoar_param_map"": {""apiKey.password"": ""access_key"", ""apiSecret.password"": ""secret_key""}, ""interpolated"": true}], ""other_connection"": [""accountId"", ""insecure"", ""searchLightUrl""]}","[
+ReliaQuest GreyMatter DRP Incidents,Packs/DigitalShadows/Integrations/ReliaQuestGreyMatterDRPIncidents/ReliaQuestGreyMatterDRPIncidents.yml,ReliaQuest,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""api_key"", ""xsoar_param_map"": {""apiKey.password"": ""access_key"", ""apiSecret.password"": ""secret_key""}, ""interpolated"": true}], ""other_connection"": [""accountId"", ""insecure"", ""searchLightUrl""]}","[
   ""Fetch Issues"",
   ""Automation""
-]","{""integration"":""ReliaQuest GreyMatter DRP Incidents"",""commands"":{""test-module"":[],""ds-search"":[],""fetch-incidents"":[""first_fetch"",""incidentFetchInterval"",""ingestClosedIncidents"",""max_fetch"",""riskLevel"",""riskTypes""]}}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""first_fetch"", ""incidentFetchInterval"", ""ingestClosedIncidents"", ""max_fetch"", ""riskLevel"", ""riskTypes""], ""general_configurations"": []}",,,,,,,,
+]","{""integration"":""ReliaQuest GreyMatter DRP Incidents"",""commands"":{""test-module"":[],""ds-search"":[],""fetch-incidents"":[""first_fetch"",""incidentFetchInterval"",""ingestClosedIncidents"",""max_fetch"",""riskLevel"",""riskTypes""]}}",,,,,,,,,,,
 Remedy AR,Packs/Remedy_AR/Integrations/RemedyAR/RemedyAR.yml,BMC,,jlevypaloalto,,,,,,,,,,,,,,
 RemoteAccess v2,Packs/RemoteAccess/Integrations/RemoteAccessv2/RemoteAccessv2.yml,RemoteAccess,,juschwartz,,,,,,,,,,,,,,
 Retarus Secure Email Gateway,Packs/RetarusSecureEmailGateway/Integrations/RetarusSecureEmailGateway/RetarusSecureEmailGateway.yml,Retarus,,jlevypaloalto,,,,,,,,,,,,,,
-RunZero Event Collector,Packs/RunZero/Integrations/RunZeroEventCollector/RunZeroEventCollector.yml,runZero,,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""Client Credentials"", ""xsoar_param_map"": {""client_id"": ""client_id"", ""client_secret.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
+RunZero Event Collector,Packs/RunZero/Integrations/RunZeroEventCollector/RunZeroEventCollector.yml,runZero,,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""client_credentials"", ""xsoar_param_map"": {""client_id"": ""client_id"", ""client_secret.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Log Collection""
-]","{""integration"":""RunZero Event Collector"",""commands"":{""test-module"":[],""runzero-get-events"":[],""fetch-events"":[""first_fetch"",""max_fetch""]}}",{},✅,"{""Log Collection"": [""first_fetch"", ""max_fetch""], ""general_configurations"": []}",,,,,,,,
-Rundeck,Packs/Rundeck/Integrations/Rundeck/Rundeck.yml,PagerDuty,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""API Key"", ""xsoar_param_map"": {""token_creds.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
+]","{""integration"":""RunZero Event Collector"",""commands"":{""test-module"":[],""runzero-get-events"":[],""fetch-events"":[""first_fetch"",""max_fetch""]}}",,,,,,,,,,,
+Rundeck,Packs/Rundeck/Integrations/Rundeck/Rundeck.yml,PagerDuty,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""xsoar_param_map"": {""token_creds.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Rundeck"",
@@ -6578,15 +5363,15 @@ Rundeck,Packs/Rundeck/Integrations/Rundeck/Rundeck.yml,PagerDuty,,noydavidi,"{""
     ""rundeck-webhook-event-send"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [""project_name""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 SAP-IAM,Packs/SAP_IAM/Integrations/SAPIAM/SAPIAM.yml,SAP,,jlevypaloalto,,,,,,,,,,,,,,
 SAPBTP,Packs/SAP_BTP/Integrations/SAPBTP/SAPBTP.yml,SAP,,jlevypaloalto,,,,,,,,,,,,,,
 SAPCloudForCustomerC4C,Packs/SAPCloudForCustomerC4C/Integrations/SAPCloudForCustomerC4C/SAPCloudForCustomerC4C.yml,SAP,,jlevypaloalto,,,,,,,,,,,,,,
 SMIME Messaging,Packs/SMIME_Messaging/Integrations/SMIME_Messaging/SMIME_Messaging.yml,SMIME Messaging,,hyaffe839,,,,,,,,,,,,,,
-SaaS Security Event Collector,Packs/PrismaSaasSecurity/Integrations/SaasSecurityEventCollector/SaasSecurityEventCollector.yml,SaaS Security (Aperture),,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""Client Credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
+SaaS Security Event Collector,Packs/PrismaSaasSecurity/Integrations/SaasSecurityEventCollector/SaasSecurityEventCollector.yml,SaaS Security (Aperture),,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""client_credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Log Collection""
-]","{""integration"":""SaaS Security Event Collector"",""commands"":{""test-module"":[],""saas-security-get-events"":[],""fetch-events"":[""max_fetch"",""max_iterations""]}}",{},✅,"{""Log Collection"": [""max_fetch"", ""max_iterations""], ""general_configurations"": []}",,,,,,,,
-SaasSecurity,Packs/PrismaSaasSecurity/Integrations/SaasSecurity/SaasSecurity.yml,SaaS Security (Aperture),,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""Client Credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
+]","{""integration"":""SaaS Security Event Collector"",""commands"":{""test-module"":[],""saas-security-get-events"":[],""fetch-events"":[""max_fetch"",""max_iterations""]}}",,,,,,,,,,,
+SaasSecurity,Packs/PrismaSaasSecurity/Integrations/SaasSecurity/SaasSecurity.yml,SaaS Security (Aperture),,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""client_credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -6622,7 +5407,7 @@ SaasSecurity,Packs/PrismaSaasSecurity/Integrations/SaasSecurity/SaasSecurity.yml
       ""status""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""app_ids"", ""first_fetch"", ""incidentFetchInterval"", ""max_fetch"", ""severity"", ""state"", ""status""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 SafeNetTrustedAccessEventCollector,Packs/SafeNet_Trusted_Access/Integrations/SafeNetTrustedAccessEventCollector/SafeNetTrustedAccessEventCollector.yml,Thales,,joeymizrahi,,,,,,,,,,,,,,
 SailPointIdentityNowEventCollector,Packs/SailPointIdentityNow/Integrations/SailPointIdentityNowEventCollector/SailPointIdentityNowEventCollector.yml,SailPoint,,YuvHayun,,,,,,,,,,,,,,
 Sample Incident Generator,Packs/sampleSiem/Integrations/SampleIncidentGenerator/SampleIncidentGenerator.yml,Cortex Automation Developer Tools,,jlevypaloalto,,,,,,,,,,,,,,
@@ -6643,7 +5428,7 @@ Server Message Block (SMB) v2,Packs/SMB/Integrations/SMB_v2/SMB_v2.yml,SMB,,noyd
   }
 }",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
 Service Manager,Packs/HPE_Service_Manager/Integrations/ServiceManager/ServiceManager.yml,OpenText Service Manager,,hyaffe839,,,,,,,,,,,,,,
-ServiceDeskPlus,Packs/ServiceDeskPlus/Integrations/ServiceDeskPlus/ServiceDeskPlus.yml,ManageEngine,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""API Token"", ""xsoar_param_map"": {""credentials_technician_key.password"": ""key""}, ""interpolated"": true}, {""type"": ""Passthrough"", ""name"": ""OAuth"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_client.identifier"": ""client_id"", ""credentials_client.password"": ""client_secret"", ""credentials_refresh_token.password"": ""refresh_token""}}], ""other_connection"": [""insecure"", ""proxy"", ""server_url"", ""server_url_on_premise""]}","[
+ServiceDeskPlus,Packs/ServiceDeskPlus/Integrations/ServiceDeskPlus/ServiceDeskPlus.yml,ManageEngine,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""API Token"", ""xsoar_param_map"": {""credentials_technician_key.password"": ""key""}, ""interpolated"": true}, {""type"": ""Passthrough"", ""name"": ""oauth"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_client.identifier"": ""client_id"", ""credentials_client.password"": ""client_secret"", ""credentials_refresh_token.password"": ""refresh_token""}}], ""other_connection"": [""insecure"", ""proxy"", ""server_url"", ""server_url_on_premise""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -6673,13 +5458,13 @@ ServiceDeskPlus,Packs/ServiceDeskPlus/Integrations/ServiceDeskPlus/ServiceDeskPl
       ""fetch_time""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""fetch_filter"", ""fetch_limit"", ""fetch_status"", ""fetch_time""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 ServiceNow CMDB,Packs/ServiceNow/Integrations/ServiceNow_CMDB/ServiceNow_CMDB.yml,ServiceNow Automation and Collection,,hyaffe839,,,,,,,,,,,,,,
 ServiceNow Event Collector,Packs/ServiceNow/Integrations/ServiceNowEventCollector/ServiceNowEventCollector.yml,ServiceNow Automation and Collection,,hyaffe839,,,,,,,,,,,,,,
 ServiceNow IAM,Packs/ServiceNow/Integrations/ServiceNow_IAM/ServiceNow_IAM.yml,ServiceNow Automation and Collection,,hyaffe839,,,,,,,,,,,,,,
 ServiceNow v2,Packs/ServiceNow/Integrations/ServiceNowv2/ServiceNowv2.yml,ServiceNow Automation and Collection,,hyaffe839,,,,,,,,,,,,,,
 Shodan_v2,Packs/Shodan/Integrations/Shodan_v2/Shodan_v2.yml,Shodan,,joeymizrahi,,,,,,,,,,,,,,
-Signal Sciences WAF,Packs/SignalSciences/Integrations/SignalSciences/SignalSciences.yml,Fastly,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""API Key"", ""xsoar_param_map"": {""Email"": ""email"", ""cred_token.password"": ""token""}, ""interpolated"": true}], ""other_connection"": [""corpName"", ""insecure"", ""proxy""]}","[
+Signal Sciences WAF,Packs/SignalSciences/Integrations/SignalSciences/SignalSciences.yml,Fastly,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""api_key"", ""xsoar_param_map"": {""Email"": ""email"", ""cred_token.password"": ""token""}, ""interpolated"": true}], ""other_connection"": [""corpName"", ""insecure"", ""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -6718,7 +5503,7 @@ Signal Sciences WAF,Packs/SignalSciences/Integrations/SignalSciences/SignalScien
       ""sites_to_fetch""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""fetch_interval"", ""sites_to_fetch""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Skyhigh Secure Web Gateway (On Prem),Packs/McAfeeWebGateway/Integrations/SkyhighSecureWebGatewayOnPrem/SkyhighSecureWebGatewayOnPrem.yml,Skyhigh Security,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Automation""
 ]","{
@@ -6758,7 +5543,7 @@ Slack IAM,Packs/Slack/Integrations/Slack_IAM/Slack_IAM.yml,Slack Automation and 
 SlackV3,Packs/Slack/Integrations/SlackV3/SlackV3.yml,Slack Automation and Collection,,hyaffe839,,,,,,,,,,,,,,
 Snowflake,Packs/Snowflake/Integrations/Snowflake/Snowflake.yml,Snowflake,,YuvHayun,,,,,,,,,,,,,,
 SolarWinds,Packs/SolarWinds/Integrations/SolarWinds/SolarWinds.yml,SolarWinds,,juschwartz,,,,,,,,,,,,,,
-Sophos Central,Packs/SophosCentral/Integrations/SophosCentral/SophosCentral.yml,Sophos,,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""Client Credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""proxy"", ""tenant_id""]}","[
+Sophos Central,Packs/SophosCentral/Integrations/SophosCentral/SophosCentral.yml,Sophos,,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""client_credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""proxy"", ""tenant_id""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -6830,7 +5615,7 @@ Sophos Central,Packs/SophosCentral/Integrations/SophosCentral/SophosCentral.yml,
       ""max_fetch""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""fetch_category"", ""fetch_severity"", ""first_fetch"", ""max_fetch""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 SpamhausFeed,Packs/FeedSpamhaus/Integrations/FeedSpamhaus/FeedSpamhaus.yml,Samhaus,,jlevypaloalto,,,,,,,,,,,,,,
 SplunkPy,Packs/SplunkPy/Integrations/SplunkPy/SplunkPy.yml,Splunk,,jlevypaloalto,,,,,,,,,,,,,,
 SplunkPy v2,Packs/SplunkPy/Integrations/SplunkPyV2/SplunkPyV2.yml,Splunk,,jlevypaloalto,,,,,,,,,,,,,,
@@ -6863,7 +5648,7 @@ TeamViewer Event Collector,Packs/TeamViewer/Integrations/TeamViewerEventCollecto
 Tenable.io,Packs/Tenable_io/Integrations/Tenable_io/Tenable_io.yml,Tenable,,jlevypaloalto,,,,,,,,,,,,,,
 Tenable.sc,Packs/Tenable_sc/Integrations/Tenable_sc/Tenable_sc.yml,Tenable,,jlevypaloalto,,,,,,,,,,,,,,
 TheHive Project,Packs/TheHiveProject/Integrations/TheHiveProject/TheHiveProject.yml,TheHive,,jlevypaloalto,,,,,,,,,,,,,,
-Thinkst Canary,Packs/ThinkstCanary/Integrations/ThinkstCanary/ThinkstCanary.yml,Thinkst Canary,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""API Key"", ""xsoar_param_map"": {""authentication_token.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""server""]}","[
+Thinkst Canary,Packs/ThinkstCanary/Integrations/ThinkstCanary/ThinkstCanary.yml,Thinkst Canary,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""xsoar_param_map"": {""authentication_token.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""server""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -6880,8 +5665,8 @@ Thinkst Canary,Packs/ThinkstCanary/Integrations/ThinkstCanary/ThinkstCanary.yml,
       ""fetchDelta""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""fetchDelta""], ""general_configurations"": []}",,,,,,,,
-ThreatConnect Feed,Packs/FeedThreatConnect/Integrations/FeedThreatConnect/FeedThreatConnect.yml,ThreatConnect,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""API Key"", ""xsoar_param_map"": {""api_credentials.identifier"": ""access_id"", ""api_credentials.password"": ""secret_key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""tc_api_path""]}","[
+}",,,,,,,,,,,
+ThreatConnect Feed,Packs/FeedThreatConnect/Integrations/FeedThreatConnect/FeedThreatConnect.yml,ThreatConnect,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""api_key"", ""xsoar_param_map"": {""api_credentials.identifier"": ""access_id"", ""api_credentials.password"": ""secret_key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""tc_api_path""]}","[
   ""Threat Intelligence & Enrichment"",
   ""Automation""
 ]","{
@@ -6913,8 +5698,8 @@ ThreatConnect Feed,Packs/FeedThreatConnect/Integrations/FeedThreatConnect/FeedTh
     ""tc-get-owners"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""Threat Intelligence & Enrichment"": [""confidence"", ""createRelationships"", ""feed"", ""feedBypassExclusionList"", ""feedExpirationInterval"", ""feedExpirationPolicy"", ""feedFetchInterval"", ""feedIncremental"", ""feedReputation"", ""fetch_limit"", ""group_query"", ""group_type"", ""indicator_active"", ""indicator_query"", ""indicator_type"", ""owners"", ""tags"", ""threat_assess_score"", ""tlp_color"", ""use_indicator_query_for_group""], ""general_configurations"": []}",,,,,,,,
-ThreatConnect v3,Packs/ThreatConnect/Integrations/ThreatConnectV3/ThreatConnectV3.yml,ThreatConnect,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""API Key"", ""xsoar_param_map"": {""api_secret_key.identifier"": ""access_id"", ""api_secret_key.password"": ""secret_key""}, ""interpolated"": true}], ""other_connection"": [""baseUrl"", ""defaultOrg"", ""insecure"", ""proxy""]}","[
+}",,,,,,,,,,,
+ThreatConnect v3,Packs/ThreatConnect/Integrations/ThreatConnectV3/ThreatConnectV3.yml,ThreatConnect,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""api_key"", ""xsoar_param_map"": {""api_secret_key.identifier"": ""access_id"", ""api_secret_key.password"": ""secret_key""}, ""interpolated"": true}], ""other_connection"": [""baseUrl"", ""defaultOrg"", ""insecure"", ""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -6989,7 +5774,7 @@ ThreatConnect v3,Packs/ThreatConnect/Integrations/ThreatConnectV3/ThreatConnectV
       ""tql_filter""
     ]
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [""confidence"", ""fields"", ""first_fetch"", ""freshness"", ""group_type"", ""max_fetch"", ""rating"", ""status"", ""tags"", ""tql_filter""], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 ThreatExchange v2,Packs/ThreatExchange/Integrations/ThreatExchangeV2/ThreatExchangeV2.yml,Meta,,hyaffe839,,,,,,,,,,,,,,
 ThreatFox Feed,Packs/FeedThreatFox/Integrations/FeedThreatFox/FeedThreatFox.yml,abuse.ch,,hyaffe839,,,,,,,,,,,,,,
 ThreatGridv2,Packs/ThreatGrid/Integrations/ThreatGridv2/ThreatGridv2.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
@@ -7022,7 +5807,7 @@ VectraAIEventCollector,Packs/Vectra_AI/Integrations/VectraAIEventCollector/Vectr
 VenafiTLSProtect,Packs/Venafi/Integrations/VenafiV2/VenafiV2.yml,CyberArk,,hyaffe839,,,,,,,,,,,,,,
 VercaraUltraDNS,Packs/VercaraUltraDNS/Integrations/VercaraUltraDNS/VercaraUltraDNS.yml,digicert,,juschwartz,,,,,,,,,,,,,,
 Verodin,Packs/Verodin/Integrations/Verodin/Verodin.yml,Google SecOps,,jlevypaloalto,,,,,,,,,,,,,,
-VersaDirector,Packs/VersaDirector/Integrations/VersaDirector/VersaDirector.yml,Versa Networks,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""OAuth"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_client.identifier"": ""client_id"", ""credentials_client.password"": ""client_secret"", ""credentials_access_token.password"": ""access_token""}}, {""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""organization"", ""proxy"", ""url"", ""use_basic_auth""]}","[
+VersaDirector,Packs/VersaDirector/Integrations/VersaDirector/VersaDirector.yml,Versa Networks,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""oauth"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_client.identifier"": ""client_id"", ""credentials_client.password"": ""client_secret"", ""credentials_access_token.password"": ""access_token""}}, {""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""organization"", ""proxy"", ""url"", ""use_basic_auth""]}","[
   ""Automation""
 ]","{
   ""integration"": ""VersaDirector"",
@@ -7081,15 +5866,15 @@ VersaDirector,Packs/VersaDirector/Integrations/VersaDirector/VersaDirector.yml,V
     ""vd-auth-test"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 Vertica,Packs/Vertica/Integrations/Vertica/Vertica.yml,OpenText Vertica,,hyaffe839,,,,,,,,,,,,,,
 VulnDB,Packs/VulnDB/Integrations/VulnDB/VulnDB.yml,VulnDB,,joeymizrahi,,,,,,,,,,,,,,
 WhatsMyBrowser,Packs/WhatIsMyBrowser/Integrations/WhatIsMyBrowser/WhatIsMyBrowser.yml,WhatsMyBrowser.org,,YuvHayun,,,,,,,,,,,,,,
 Whois,Packs/Whois/Integrations/Whois/Whois.yml,Whois,,juschwartz,,,,,,,,,,,,,,
 WildFire-v2,Packs/Palo_Alto_Networks_WildFire/Integrations/Palo_Alto_Networks_WildFire_v2/Palo_Alto_Networks_WildFire_v2.yml,WildFire Cloud,,jlevypaloalto,,,,,,,,,,,,,,
-WithSecureEventCollector,Packs/WithSecure/Integrations/WithSecureEventCollector/WithSecureEventCollector.yml,WithSecure,,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""Client Credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
+WithSecureEventCollector,Packs/WithSecure/Integrations/WithSecureEventCollector/WithSecureEventCollector.yml,WithSecure,,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""client_credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Log Collection""
-]","{""integration"":""WithSecureEventCollector"",""commands"":{""test-module"":[],""with-secure-get-events"":[],""fetch-events"":[""first_fetch_time"",""limit""]}}",{},✅,"{""Log Collection"": [""first_fetch_time"", ""limit""], ""general_configurations"": []}",,,,,,,,
+]","{""integration"":""WithSecureEventCollector"",""commands"":{""test-module"":[],""with-secure-get-events"":[],""fetch-events"":[""first_fetch_time"",""limit""]}}",,,,,,,,,,,
 Workday,Packs/Workday/Integrations/Workday/Workday.yml,Workday,,hyaffe839,,,,,,,,,,,,,,
 Workday Event Collector,Packs/Workday/Integrations/WorkdayEventCollector/WorkdayEventCollector.yml,Workday,,hyaffe839,,,,,,,,,,,,,,
 Workday IAM,Packs/Workday/Integrations/Workday_IAM/Workday_IAM.yml,Workday,,hyaffe839,,,,,,,,,,,,,,
@@ -7115,7 +5900,7 @@ fortimail,Packs/Fortimail/Integrations/Fortimail/Fortimail.yml,Fortinet,,hyaffe8
 fortiweb_vm,Packs/FortinetFortiwebVM/Integrations/FortinetFortiwebVM/FortinetFortiwebVM.yml,Fortinet FortiWeb VM,,juschwartz,,,,,,,,,,,,,,
 google-vault,Packs/GoogleVault/Integrations/GoogleVault/GoogleVault.yml,Google Workspace Automation and Collection,,YuvHayun,,,,,,,,,,,,,,
 iManageThreatManager,Packs/iManageThreatManager/Integrations/iManageThreatManager/iManageThreatManager.yml,iManage,,jlevypaloalto,,,,,,,,,,,,,,
-icebrg,Packs/ICEBRG/Integrations/Icebrg/Icebrg.yml,Gigamon,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""API Key"", ""xsoar_param_map"": {""token"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url_reports"", ""url_search""]}","[
+icebrg,Packs/ICEBRG/Integrations/Icebrg/Icebrg.yml,Gigamon,,noydavidi,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""xsoar_param_map"": {""token"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url_reports"", ""url_search""]}","[
   ""Fetch Issues"",
   ""Automation""
 ]","{
@@ -7130,9 +5915,9 @@ icebrg,Packs/ICEBRG/Integrations/Icebrg/Icebrg.yml,Gigamon,,noydavidi,"{""auth_t
     ""test-module"": [],
     ""fetch-incidents"": []
   }
-}",{},✅,"{""Automation"": [], ""Fetch Issues"": [], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 ipinfo_v2,Packs/ipinfo/Integrations/ipinfo_v2/ipinfo_v2.yml,IPInfo.io,,hyaffe839,,,,,,,,,,,,,,
-jamf v2,Packs/jamf/Integrations/jamfV2/jamfV2.yml,Jamf,,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""Client Credentials"", ""xsoar_param_map"": {""client_credentials.identifier"": ""client_id"", ""client_credentials.password"": ""client_secret""}, ""interpolated"": true}, {""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
+jamf v2,Packs/jamf/Integrations/jamfV2/jamfV2.yml,Jamf,,noydavidi,"{""auth_types"": [{""type"": ""OAuth2ClientCreds"", ""name"": ""client_credentials"", ""xsoar_param_map"": {""client_credentials.identifier"": ""client_id"", ""client_credentials.password"": ""client_secret""}, ""interpolated"": true}, {""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Automation""
 ]","{
   ""integration"": ""jamf v2"",
@@ -7182,7 +5967,7 @@ jamf v2,Packs/jamf/Integrations/jamfV2/jamfV2.yml,Jamf,,noydavidi,"{""auth_types
     ""jamf-get-computer-configuration-profiles-by-id"": [],
     ""test-module"": []
   }
-}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
+}",,,,,,,,,,,
 netskope_api_v2,Packs/Netskope/Integrations/NetskopeAPIv2/NetskopeAPIv2.yml,Netskope,,jlevypaloalto,,,,,,,,,,,,,,
 nmap,Packs/Nmap/Integrations/Nmap/Nmap.yml,nmap,,joeymizrahi,,,,,,,,,,,,,,
 qualys_fim,Packs/QualysFIM/Integrations/QualysFIM/QualysFIM.yml,Qualys,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""platform"", ""proxy""]}","[
