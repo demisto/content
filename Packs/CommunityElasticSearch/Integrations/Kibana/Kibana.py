@@ -177,7 +177,7 @@ def get_elastic_token():
         demisto.debug("get_elastic_token - Attempting to get token using grant_type:password")
 
         payload = {"grant_type": "password", "username": USERNAME, "password": PASSWORD}
-        response = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), json=payload, verify=INSECURE)
+        response = requests.post(url, headers=headers, auth=(USERNAME, PASSWORD), json=payload, verify=INSECURE, proxies=proxies)
         if response.status_code == 200:
             now = datetime.now(UTC)
             token_data = response.json()
@@ -353,17 +353,17 @@ def test_connectivity_auth(proxies) -> tuple[bool, str]:
     try:
         if AUTH_TYPE == BASIC_AUTH:
             demisto.debug("test_connectivity_auth - Basic auth setting authorization header and sending request")
-            res = requests.get(ELASTIC_SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE, headers=headers)
+            res = requests.get(ELASTIC_SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE, headers=headers, proxies=proxies)
 
         elif AUTH_TYPE == API_KEY_AUTH:
             demisto.debug("test_connectivity_auth - API key auth setting authorization header and sending request")
             headers["authorization"] = get_api_key_header_val(API_KEY)
-            res = requests.get(ELASTIC_SERVER, verify=INSECURE, headers=headers)
+            res = requests.get(ELASTIC_SERVER, verify=INSECURE, headers=headers, proxies=proxies)
 
         elif AUTH_TYPE == BEARER_AUTH:
             demisto.debug("test_connectivity_auth - Bearer auth setting authorization header and sending request")
             headers["Authorization"] = f"Bearer {get_elastic_token()}"
-            res = requests.get(ELASTIC_SERVER, verify=INSECURE, headers=headers)
+            res = requests.get(ELASTIC_SERVER, verify=INSECURE, headers=headers, proxies=proxies)
 
         if res is not None:
             if res.status_code >= 400:
@@ -496,7 +496,7 @@ def kibana_update_case_status(args, proxies):
 
     data = {"cases": [{"id": case_id, "status": status, "version": version}]}
 
-    response = http_request(method="PATCH", url_suffix="/api/cases", data=data, headers=headers)
+    response = http_request(method="PATCH", url_suffix="/api/cases", data=data, headers=headers, proxies=proxies)
 
     # output results to markdown table
     md = tableToMarkdown("Kibana Updated Case Status", response, headers=[])
@@ -579,7 +579,7 @@ def kibana_delete_rule(args, proxies):
 
     rule_id = args.get("rule_id")
 
-    http_request(method="DELETE", url_suffix=f"/api/alerting/rule/{rule_id}", headers=headers)
+    http_request(method="DELETE", url_suffix=f"/api/alerting/rule/{rule_id}", headers=headers, proxies=proxies)
 
     return f"Successfully deleted rule with ID of {rule_id}"
 
@@ -627,7 +627,7 @@ def kibana_add_case_comment(args, proxies):
         "comment": comment,
     }
 
-    response = http_request(method="POST", url_suffix=f"/api/cases/{case_id}/comments", data=json_data, headers=headers)
+    response = http_request(method="POST", url_suffix=f"/api/cases/{case_id}/comments", data=json_data, headers=headers, proxies=proxies)
     updated_at = response["updated_at"]
 
     return f"Case comment updated at {updated_at}"
@@ -652,8 +652,7 @@ def kibana_get_user_list(args, proxies):
         return result
 
     except Exception as e:
-        return f"Error querying all users: {e}"
-
+        raise DemistoException(f"Error querying all users: {e}")
 
 def kibana_assign_alert_user(args, proxies):
     """
@@ -717,7 +716,7 @@ def kibana_list_detection_alerts(args, proxies):
         "runtime_mappings": {},
     }
 
-    response = http_request(method="POST", url_suffix="/api/detection_engine/signals/search", data=json_data, headers=headers)
+    response = http_request(method="POST", url_suffix="/api/detection_engine/signals/search", data=json_data, headers=headers, proxies=proxies)
 
     result_json = response["hits"]
     result_list = result_json.get("hits")
@@ -1016,7 +1015,7 @@ def kibana_get_task_manager_health(args, proxies):
         "kbn-xsrf": "true",  # Required for Kibana API requests
     }
 
-    response = http_request(method="GET", url_suffix="/api/task_manager/_health", headers=headers)
+    response = http_request(method="GET", url_suffix="/api/task_manager/_health", headers=headers, proxies=proxies)
     response = response["stats"]
 
     # output results to markdown table
@@ -1110,8 +1109,7 @@ def kibana_get_user_by_email(args, proxies):
         return result
 
     except Exception as e:
-        return f"Error querying all users: {e}"
-
+        raise DemistoException(f"Error querying users by email: {e}")
 
 def kibana_get_case_information(args, proxies):
     """
@@ -1124,7 +1122,7 @@ def kibana_get_case_information(args, proxies):
 
     case_id = args.get("case_id")
 
-    response = http_request(method="GET", url_suffix=f"/api/cases/{case_id}", headers=headers)
+    response = http_request(method="GET", url_suffix=f"/api/cases/{case_id}", headers=headers, proxies=proxies)
 
     # output results to markdown table
     md = tableToMarkdown("Kibana Case Info", response, headers=[])
