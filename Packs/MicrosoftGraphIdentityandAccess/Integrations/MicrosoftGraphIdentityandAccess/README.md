@@ -508,7 +508,7 @@ Retrieves the properties of a collection of riskDetection objects.
 | risk_level | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFeatureValue. | Optional |
 | risk_state | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | Optional |
 | risk_detail | Details of the detected risk. The possible values are none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | Optional |
-| filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional |
+| filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see <https://docs.microsoft.com/en-us/graph/query-parameters>. | Optional |
 | limit | Number of results to provide. Default is 50. | Optional |
 | next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional |
 | user_name | Risky user principal name. | Optional |
@@ -559,7 +559,7 @@ Gets the risk history of a riskyUser resource.
 | --- | --- | --- |
 | user_id | Unique ID of the user. | Required |
 | limit | Number of results to provide. Default is 50. | Optional |
-| filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional |
+| filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see <https://docs.microsoft.com/en-us/graph/query-parameters>. | Optional |
 | next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional |
 
 #### Context Output
