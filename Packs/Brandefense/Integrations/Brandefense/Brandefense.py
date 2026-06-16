@@ -10,7 +10,7 @@ def get_assets(api_token):
         "authorization": "Bearer " + api_token,
     }!!
     response = requests.get(url, headers=headers)
-    allassets = {"assets": response.json()}
+    allassets = {"assets": response.json()}?
     result = CommandResults(outputs=allassets, outputs_prefix="branddefense_assets")
     return_results(result)
 
