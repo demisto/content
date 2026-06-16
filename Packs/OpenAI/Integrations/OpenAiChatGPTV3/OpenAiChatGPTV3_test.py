@@ -2181,7 +2181,7 @@ def test_entry_id_to_data_url_non_image(mocker, tmp_path):
     )
 
     with pytest.raises(DemistoException, match="Unsupported or unknown image type"):
-        _entry_id_to_data_url("3@456")
+        _entry_id_to_data_url("3@444")
 
 
 def test_entry_id_to_data_url_file_not_found(mocker):
