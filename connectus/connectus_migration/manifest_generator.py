@@ -1734,6 +1734,8 @@ MIRROR_PARAMS: frozenset[str] = frozenset(
     {
         "mirror_options",
         "close_incident",
+        "close_ticket",
+        "file_tag",
         "mirror_limit",
         # Common siblings of the mirroring trio (suggested additions):
         "mirror_direction",
