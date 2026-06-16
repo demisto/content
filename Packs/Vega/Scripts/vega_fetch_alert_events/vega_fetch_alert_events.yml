@@ -3,11 +3,11 @@ comment: >-
   for the Alert Events layout section. Results are returned as a widget entry so they render
   in the layout without posting to the War Room.
 commonfields:
-  id: vega-get-alert-events
+  id: vega-fetch-alert-events
   version: -1
 dockerimage: demisto/python3:3.12.8.3296088
 enabled: true
-name: vega-get-alert-events
+name: vega-fetch-alert-events
 runas: DBotWeakRole
 script: ""
 scripttarget: 0

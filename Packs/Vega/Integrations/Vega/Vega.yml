@@ -172,7 +172,7 @@ display: Vega
 name: Vega
 script:
   commands:
-  - name: vega-fetch-alert-events
+  - name: vega-get-alert-events
     arguments:
     - name: alert_id
       description: Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident.
@@ -202,6 +202,9 @@ script:
     - contextPath: Vega.AlertEvents.Count
       description: Number of alert events returned in the current page.
       type: Number
+    - contextPath: Vega.AlertEvents.HasAlertEvents
+      description: Whether the alert returned real alert events instead of aggregated parse-field summary rows.
+      type: Boolean
     - contextPath: Vega.AlertEvents.Cached
       description: Whether the response was served from cached incident data.
       type: Boolean

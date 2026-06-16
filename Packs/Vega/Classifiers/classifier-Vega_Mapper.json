@@ -9,6 +9,9 @@
                 "Vega Alert ID": {
                     "simple": "vegaAlertId"
                 },
+                "Alert ID": {
+                    "simple": "id"
+                },
                 "Vega Detection ID": {
                     "simple": "detectionId"
                 },

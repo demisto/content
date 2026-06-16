@@ -392,7 +392,7 @@
 					},
 					{
 						"displayType": "CARD",
-						"h": 3,
+						"h": 4,
 						"hideName": false,
 						"i": "js3vpk9qph-fab95442-5b26-47f3-970d-4b89dbfd88b8",
 						"items": [
@@ -426,11 +426,22 @@
 								"startCol": 0
 							},
 							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "vegaverdictreasoning",
+								"height": 53,
+								"id": "d9e5f6a7-b8c9-4012-d3e4-f5a6b7c8d9e0",
+								"index": 4,
+								"listId": "js3vpk9qph-fab95442-5b26-47f3-970d-4b89dbfd88b8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
 								"endCol": 2,
 								"fieldId": "vegaincidentstatus",
 								"height": 53,
 								"id": "19a38271-38da-4261-bd27-947a28a0a2ed",
-								"index": 4,
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -439,7 +450,7 @@
 								"fieldId": "externallink",
 								"height": 53,
 								"id": "0aaefba2-9893-4edc-bcda-562d402d2b90",
-								"index": 5,
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							}

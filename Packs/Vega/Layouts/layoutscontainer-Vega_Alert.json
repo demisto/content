@@ -335,7 +335,7 @@
 				"sections": [
 					{
 						"displayType": "CARD",
-						"h": 2,
+						"h": 3,
 						"hideName": true,
 						"i": "kmppymlq3f-0aa82e68-9bb3-4b07-89a7-cdc083bf6679",
 						"items": [
@@ -433,6 +433,17 @@
 								"listId": "kmppymlq3f-0aa82e68-9bb3-4b07-89a7-cdc083bf6679",
 								"sectionItemType": "field",
 								"startCol": 4
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 5,
+								"fieldId": "vegaverdictreasoning",
+								"height": 53,
+								"id": "c8f4a2b1-6d3e-4f5a-9b7c-1e2d3f4a5b6c",
+								"index": 1,
+								"listId": "kmppymlq3f-0aa82e68-9bb3-4b07-89a7-cdc083bf6679",
+								"sectionItemType": "field",
+								"startCol": 4
 							}
 						],
 						"maxW": 3,
@@ -503,7 +514,7 @@
 						"minH": 4,
 						"moved": false,
 						"name": "Alert Events",
-						"query": "vega-get-alert-events",
+						"query": "vega-fetch-alert-events",
 						"queryType": "script",
 						"static": false,
 						"type": "dynamic",

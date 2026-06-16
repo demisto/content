@@ -5,7 +5,7 @@ from CommonServerPython import *
 
 
 VEGA_INTEGRATION_BRAND = "Vega"
-VEGA_FETCH_ALERT_EVENTS_COMMAND = "vega-fetch-alert-events"
+VEGA_GET_ALERT_EVENTS_COMMAND = "vega-get-alert-events"
 DEFAULT_ALERT_EVENTS_PAGE_SIZE = 200
 VEGA_ALERT_INCIDENT_TYPE = "Vega Alert"
 
@@ -27,6 +27,7 @@ def _collect_custom_fields(incident: dict) -> dict[str, Any]:
     """Merge incident CustomFields with flattened custom-field keys."""
     custom_fields: dict[str, Any] = dict(incident.get("CustomFields") or incident.get("customFields") or {})
     for field_name in (
+        "alertid",
         "vegaalertid",
         "vegaalerteventsloadedfor",
         "vegaalertevents",
@@ -47,7 +48,7 @@ def _load_current_incident() -> dict:
             if incidents:
                 incident = incidents[0] or {}
         except Exception as exc:
-            demisto.debug(f"vega-get-alert-events: demisto.incidents() failed: {exc}")
+            demisto.debug(f"vega-fetch-alert-events: demisto.incidents() failed: {exc}")
 
     incident_id = incident.get("id")
     if not incident_id:
@@ -56,7 +57,7 @@ def _load_current_incident() -> dict:
     try:
         response = demisto.executeCommand("getIncidents", {"id": str(incident_id)})
         if is_error(response):
-            demisto.debug(f"vega-get-alert-events: getIncidents failed: {get_error(response)}")
+            demisto.debug(f"vega-fetch-alert-events: getIncidents failed: {get_error(response)}")
             return incident
 
         contents = response[0].get("Contents", {})
@@ -66,7 +67,7 @@ def _load_current_incident() -> dict:
         if isinstance(data, list) and data:
             return data[0]
     except Exception as exc:
-        demisto.debug(f"vega-get-alert-events: failed to load incident {incident_id}: {exc}")
+        demisto.debug(f"vega-fetch-alert-events: failed to load incident {incident_id}: {exc}")
 
     return incident
 
@@ -142,6 +143,10 @@ def _resolve_alert_id(args: dict, incident: dict, custom_fields: dict) -> str | 
     if alert_id is not None and str(alert_id).strip():
         return str(alert_id).strip()
 
+    mapped_alert_id = custom_fields.get("alertid")
+    if mapped_alert_id is not None and str(mapped_alert_id).strip():
+        return str(mapped_alert_id).strip()
+
     loaded_for = custom_fields.get("vegaalerteventsloadedfor")
     if loaded_for is not None and str(loaded_for).strip():
         return str(loaded_for).strip()
@@ -201,14 +206,14 @@ def main() -> None:
             "using-brand": VEGA_INTEGRATION_BRAND,
         }
 
-        command_result = demisto.executeCommand(VEGA_FETCH_ALERT_EVENTS_COMMAND, command_args)
+        command_result = demisto.executeCommand(VEGA_GET_ALERT_EVENTS_COMMAND, command_args)
         if is_error(command_result):
             return_error(get_error(command_result))
 
         command_entry = command_result[0]
         if command_entry.get("Brand") == "Scripts":
             return_error(
-                f"{VEGA_FETCH_ALERT_EVENTS_COMMAND} resolved to the automation script instead of the Vega integration. "
+                f"{VEGA_GET_ALERT_EVENTS_COMMAND} resolved to the automation script instead of the Vega integration. "
                 "Ensure a Vega integration instance is configured."
             )
 
@@ -234,7 +239,7 @@ def main() -> None:
             alert_events_context or {"AlertId": alert_id, "Cached": False},
         )
     except Exception as exc:
-        return_error(f"Failed to execute vega-get-alert-events. Error: {str(exc)}")
+        return_error(f"Failed to execute vega-fetch-alert-events. Error: {str(exc)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

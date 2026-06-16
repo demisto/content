@@ -9,7 +9,10 @@ from CommonServerUserPython import *
 import pytest
 
 from Vega import (
+    ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN,
     _alert_events_command_results,
+    _event_has_bad_alert_events_shape,
+    _events_have_bad_alert_events_shape,
     _format_alert_events_markdown,
     _format_mitre_attack,
     Client,
@@ -32,6 +35,7 @@ from Vega import (
     VEGA_INCIDENT_STATUS_FIELD,
     _normalize_vega_status_for_display,
     _normalize_entity_id,
+    _normalize_verdict_reasoning_for_display,
     _parse_alert_events_results,
     _resolve_fetch_from_time,
     _resolve_next_fetch_state,
@@ -47,6 +51,7 @@ from Vega import (
     incident_to_xsoar_incident,
     parse_backfill_days,
     load_current_incident,
+    resolve_alert_api_id,
     resolve_alert_id_from_incident,
     resolve_incident_id_from_incident,
     update_alert_command,
@@ -950,6 +955,7 @@ def test_format_raw_entity_for_xsoar_alert():
     assert alert["dataSources"] == "• CloudTrail\n• GuardDuty"
     assert alert["detectionDescription"] == "N/A"
     assert alert["detectionQuery"] == "N/A"
+    assert alert["verdictReasoning"] == "N/A"
     assert "vegaAlertId" not in alert
     assert set(alert.keys()) == {
         "id",
@@ -958,6 +964,7 @@ def test_format_raw_entity_for_xsoar_alert():
         "dataSources",
         "detectionDescription",
         "detectionQuery",
+        "verdictReasoning",
     }
 
 
@@ -1078,6 +1085,7 @@ def test_alert_to_incident_formats_raw_json(mocker):
     assert raw["link"] == "https://app.vega.io/incidents/alerts/investigation/alert-1"
     assert raw["detectionDescription"] == "N/A"
     assert raw["detectionQuery"] == "N/A"
+    assert raw["verdictReasoning"] == "N/A"
     assert "vegaAlertId" not in raw
     assert set(raw.keys()) == {
         "id",
@@ -1089,6 +1097,7 @@ def test_alert_to_incident_formats_raw_json(mocker):
         "link",
         "detectionDescription",
         "detectionQuery",
+        "verdictReasoning",
     }
 
 
@@ -1314,6 +1323,36 @@ def test_incident_to_xsoar_incident_normalizes_api_link():
     assert raw["link"] == f"https://app.vega.io/incidents/list/{incident_id}"
 
 
+def test_normalize_verdict_reasoning_null_to_na():
+    assert _normalize_verdict_reasoning_for_display({"verdictReasoning": None}) == "N/A"
+    assert _normalize_verdict_reasoning_for_display({}) == "N/A"
+    assert _normalize_verdict_reasoning_for_display({"verdictReasoning": "   "}) == "N/A"
+
+
+def test_normalize_verdict_reasoning_displays_string():
+    assert _normalize_verdict_reasoning_for_display({"verdictReasoning": "Confirmed malicious activity"}) == (
+        "Confirmed malicious activity"
+    )
+
+
+def test_normalize_verdict_reasoning_from_nested_verdict_dict():
+    raw = {"verdict": {"value": "SUSPICIOUS", "reasoning": "Multiple failed logins observed"}}
+    assert _normalize_verdict_reasoning_for_display(raw) == "Multiple failed logins observed"
+
+
+def test_resolve_alert_api_id_uses_get_alerts_id(mocker):
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_by_id.return_value = {
+        "id": "019e1b27-513c-7dd0-a9ca-db2105bdddc4",
+        "vegaAlertId": "VEGA-3409",
+    }
+
+    resolved_id = resolve_alert_api_id(mock_client, "019e1b27-513c-7dd0-a9ca-db2105bdddc4")
+
+    assert resolved_id == "019e1b27-513c-7dd0-a9ca-db2105bdddc4"
+    mock_client.get_alert_by_id.assert_called_once_with("019e1b27-513c-7dd0-a9ca-db2105bdddc4")
+
+
 def test_parse_alert_events_results_handles_json_string():
     payload = json.dumps(
         [
@@ -1329,16 +1368,47 @@ def test_parse_alert_events_results_handles_json_string():
     assert parsed[0]["event_count"] == 23
 
 
+def test_event_has_bad_alert_events_shape_detects_cid_or_eid():
+    assert _event_has_bad_alert_events_shape({"cid": "12345678901234567890123456789012", "eid": "118"}) is True
+    assert _event_has_bad_alert_events_shape({"cid": "12345678901234567890123456789012"}) is True
+    assert _event_has_bad_alert_events_shape({"eid": "118"}) is True
+
+
+def test_event_has_bad_alert_events_shape_allows_normal_rows():
+    summary_row = {
+        "actor.user.uid": "arn:aws:iam::890123456789:root",
+        "event_count": "23",
+        "unique_events_count": "6",
+        "timeframe": "2026-05-12 00:40:00.000",
+    }
+    parse_field_row = {
+        "catalog": "amazoneksaudit",
+        "timestamp": "2026-03-25 17:26:18.000",
+        "fields": json.dumps({"operation": "create"}),
+    }
+    assert _event_has_bad_alert_events_shape(summary_row) is False
+    assert _event_has_bad_alert_events_shape(parse_field_row) is False
+    assert _events_have_bad_alert_events_shape([summary_row, parse_field_row]) is False
+
+
+def test_events_have_bad_alert_events_shape_when_any_row_has_cid():
+    vendor_row = {"cid": "12345678901234567890123456789012", "EventType": "Event_ExternalApiEvent"}
+    good_row = {"event_count": "23", "unique_events_count": "6"}
+    assert _events_have_bad_alert_events_shape([vendor_row]) is True
+    assert _events_have_bad_alert_events_shape([good_row, vendor_row]) is True
+    assert _events_have_bad_alert_events_shape([good_row]) is False
+
+
 def test_format_alert_events_markdown_table_layout():
     actor_arn = "arn:aws:iam::890123456789:root"
     alert_events = [
         {
-            "actor": {"user": {"uid": actor_arn}},
+            "actor.user.uid": actor_arn,
+            "event_count": "23",
+            "regions_count": "6",
             "timeframe": "2026-05-12 00:40:00.000",
-            "event_count": 23,
-            "unique_events_count": 6,
-            "regions_count": 6,
-            "unique_events": ["DescribeInstances", "GetCallerIdentity"],
+            "unique_events": "[DescribeInstances DescribeVolumes]",
+            "unique_events_count": "6",
         }
     ]
     formatted = _format_alert_events_markdown(alert_events, total=16, offset=0, page_size=50)
@@ -1349,9 +1419,7 @@ def test_format_alert_events_markdown_table_layout():
     assert "event_count" in formatted
     assert "unique_events_count" in formatted
     assert "regions_count" in formatted
-    assert "unique_events" in formatted
     assert actor_arn in formatted
-    assert "DescribeInstances" in formatted
     assert "<div" not in formatted
 
 
@@ -1427,6 +1495,18 @@ def test_resolve_alert_id_from_incident_uses_raw_json():
     assert resolve_alert_id_from_incident({}, incident) == "alert-raw"
 
 
+def test_resolve_alert_id_from_incident_uses_alertid_custom_field():
+    incident = {
+        "type": "Vega Alert",
+        "CustomFields": {
+            "alertid": "019e1b27-513c-7dd0-a9ca-db2105bdddc4",
+            "vegaalertid": "VEGA-3409",
+        },
+        "rawJSON": json.dumps({"id": "fallback-id", "vegaEntityType": "Vega Alert"}),
+    }
+    assert resolve_alert_id_from_incident({}, incident) == "019e1b27-513c-7dd0-a9ca-db2105bdddc4"
+
+
 def test_resolve_alert_id_from_incident_ignores_display_vegaalertid():
     incident = {
         "type": "Vega Alert",
@@ -1442,8 +1522,9 @@ def test_resolve_alert_id_from_incident_ignores_display_vegaalertid():
     assert resolve_alert_id_from_incident({}, incident) == "019e1b27-513c-7dd0-a9ca-db2105bdddc4"
 
 
-def test_build_vega_alert_custom_fields_sets_mitre_attack():
+def test_build_vega_alert_custom_fields_sets_mitre_attack_and_alert_id():
     fields = _build_vega_alert_custom_fields({"id": "alert-1", "vegaMitreAttack": "T1059"})
+    assert fields["alertid"] == "alert-1"
     assert "vegaalertid" not in fields
     assert fields["vegamitreattack"] == "T1059"
 
@@ -1455,8 +1536,16 @@ def test_fetch_alert_events_page(mocker):
         "limit": 50,
         "offset": 0,
         "results": [
-            {"timeframe": "2026-05-12 00:40:00.000", "event_count": 23},
-            {"timeframe": "2026-05-12 00:50:00.000", "event_count": 26},
+            {
+                "timestamp": "2026-05-12 00:40:00.000",
+                "source": "AWS CloudTrail",
+                "catalog": "awscloudtrail",
+            },
+            {
+                "timestamp": "2026-05-12 00:50:00.000",
+                "source": "AWS CloudTrail",
+                "catalog": "awscloudtrail",
+            },
         ],
     }
 
@@ -1485,13 +1574,30 @@ def test_fetch_alert_events_command_fetches_all_and_slices_page(mocker):
         {
             "total": 3,
             "results": [
-                {"timeframe": "2026-05-12 00:40:00.000", "event_count": 1},
-                {"timeframe": "2026-05-12 00:50:00.000", "event_count": 2},
+                {
+                    "actor.user.uid": "arn:aws:iam::890123456789:root",
+                    "event_count": "1",
+                    "timeframe": "2026-05-12 00:40:00.000",
+                    "unique_events_count": "1",
+                },
+                {
+                    "actor.user.uid": "arn:aws:iam::890123456789:root",
+                    "event_count": "2",
+                    "timeframe": "2026-05-12 00:50:00.000",
+                    "unique_events_count": "2",
+                },
             ],
         },
         {
             "total": 3,
-            "results": [{"timeframe": "2026-05-12 01:00:00.000", "event_count": 3}],
+            "results": [
+                {
+                    "actor.user.uid": "arn:aws:iam::890123456789:root",
+                    "event_count": "3",
+                    "timeframe": "2026-05-12 01:00:00.000",
+                    "unique_events_count": "3",
+                }
+            ],
         },
     ]
     mock_client.get_alert_events.side_effect = alert_events_page_responses * 2
@@ -1508,9 +1614,44 @@ def test_fetch_alert_events_command_fetches_all_and_slices_page(mocker):
     assert first_page.outputs["Total"] == 3
     assert first_page.outputs["Count"] == 2
     assert first_page.outputs["Offset"] == 0
+    assert first_page.outputs["HasAlertEvents"] is True
     assert second_page.outputs["Count"] == 1
     assert second_page.outputs["Offset"] == 2
     assert mock_client.get_alert_events.call_count == 4
+
+
+def test_fetch_alert_events_command_returns_not_available_for_vendor_parse_fields(mocker):
+    mocker.patch(
+        "Vega.load_current_incident",
+        return_value={"CustomFields": {"vegaalertid": "alert-1"}},
+    )
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_events.return_value = {
+        "total": 1,
+        "results": [
+            {
+                "cid": "12345678901234567890123456789012",
+                "eid": "118",
+                "Name": "Access from IP with bad reputation",
+                "EventType": "Event_ExternalApiEvent",
+                "ExternalApiType": "Event_IdpDetectionSummaryEvent",
+                "MitreAttack": [{"Tactic": "Initial Access", "TechniqueID": "T1078"}],
+                "SourceVendors": "CrowdStrike",
+                "SourceProducts": "Falcon Identity Protection",
+                "timestamp": 1774165347000,
+            }
+        ],
+    }
+
+    result = fetch_alert_events_command(mock_client, {"alert_id": "alert-1"})
+
+    assert result.readable_output == ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN
+    assert result.outputs["Total"] == 0
+    assert result.outputs["Count"] == 0
+    assert result.outputs["HasAlertEvents"] is False
+    assert "does not have alert events" not in result.outputs["CustomFields"]["vegaalertevents"]
+    assert "No alert events found" in result.outputs["CustomFields"]["vegaalertevents"]
+    mock_client.get_alert_events.assert_called_once()
 
 
 def test_set_detections_state_command(mocker):

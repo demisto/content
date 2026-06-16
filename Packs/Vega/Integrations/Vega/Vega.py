@@ -170,6 +170,7 @@ RATE_LIMIT_WAIT_INCREMENT_SECONDS = 2
 DEFAULT_ALERT_EVENTS_PAGE_SIZE = 200
 ALERT_EVENT_JSON_MERGE_KEYS = frozenset({"fields"})
 ALERT_EVENT_JSON_TRUNCATE_KEYS = frozenset({"raw", "_raw"})
+ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN = "### Alert Events\n\nNo alert events found."
 ALERT_EVENT_MAX_FLATTEN_DEPTH = 3
 ALERT_EVENT_MAX_COLUMNS = 20
 ALERT_EVENT_MAX_CELL_LENGTH = 300
@@ -855,6 +856,18 @@ class Client(BaseClient):
         return result if isinstance(result, dict) else {}
 
 
+def _event_has_bad_alert_events_shape(event: dict) -> bool:
+    """Return True when a getAlertsEvents row is vendor raw data identified by cid/eid fields."""
+    if not event:
+        return False
+    return "cid" in event or "eid" in event
+
+
+def _events_have_bad_alert_events_shape(events: list[dict]) -> bool:
+    """Return True when getAlertsEvents results contain vendor raw rows instead of alert events."""
+    return any(_event_has_bad_alert_events_shape(event) for event in events)
+
+
 def _parse_alert_events_results(results: Any) -> list[dict]:
     """Normalize getAlertsEvents results into a list of event dicts."""
     if results is None:
@@ -1091,6 +1104,9 @@ def fetch_all_alert_events(
 
     while True:
         page_events, page_total = fetch_alert_events_page(client, alert_id, limit=page_limit, offset=offset)
+        if page_events and _events_have_bad_alert_events_shape(page_events):
+            demisto.debug("getAlertsEvents returned rows with cid/eid fields; treating alert as having no alert events.")
+            return [], 0
         if page_total > 0:
             total = page_total
         if not page_events:
@@ -1132,6 +1148,7 @@ def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
     """Merge incident CustomFields with flattened custom-field keys."""
     custom_fields: dict[str, Any] = dict(incident.get("CustomFields") or incident.get("customFields") or {})
     for field_name in (
+        "alertid",
         "vegaalertid",
         "vegaincidentid",
         "vegaalerteventsloadedfor",
@@ -1170,6 +1187,10 @@ def resolve_alert_id_from_incident(args: dict[str, Any], incident: dict[str, Any
 
     custom_fields = _collect_incident_custom_fields(incident)
 
+    mapped_alert_id = custom_fields.get("alertid")
+    if mapped_alert_id is not None and str(mapped_alert_id).strip():
+        return str(mapped_alert_id).strip()
+
     loaded_for = custom_fields.get("vegaalerteventsloadedfor")
     if loaded_for is not None and str(loaded_for).strip():
         return str(loaded_for).strip()
@@ -1191,6 +1212,18 @@ def resolve_alert_id_from_incident(args: dict[str, Any], incident: dict[str, Any
             pass
 
     return None
+
+
+def resolve_alert_api_id(client: Client, alert_id: str) -> str:
+    """Resolve the Vega alert UUID from getAlerts before calling getAlertsEvents."""
+    alert = client.get_alert_by_id(alert_id)
+    resolved_id = alert.get("id") if isinstance(alert, dict) else None
+    if resolved_id is not None and str(resolved_id).strip():
+        return str(resolved_id).strip()
+    raise DemistoException(
+        f"Vega alert '{alert_id}' was not found via getAlerts. "
+        "Ensure the alert UUID id from getAlerts is used for alert events."
+    )
 
 
 def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1218,11 +1251,18 @@ def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandR
     page_limit = max(1, int(page_limit))
 
     all_events, total = fetch_all_alert_events(client, alert_id, page_limit=page_limit)
-    if offset >= total and total > 0:
-        offset = max(0, total - page_limit)
-        offset = (offset // page_limit) * page_limit
-    page_events = all_events[offset : offset + page_limit]
-    events_markdown = _format_alert_events_markdown(page_events, total, offset=offset, page_size=page_limit)
+    has_alert_events = bool(all_events) and not _events_have_bad_alert_events_shape(all_events)
+    if not has_alert_events:
+        events_markdown = ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN
+        offset = 0
+        page_events: list[dict] = []
+        total = 0
+    else:
+        if offset >= total and total > 0:
+            offset = max(0, total - page_limit)
+            offset = (offset // page_limit) * page_limit
+        page_events = all_events[offset : offset + page_limit]
+        events_markdown = _format_alert_events_markdown(page_events, total, offset=offset, page_size=page_limit)
 
     persisted_fields = build_alert_events_custom_fields(alert_id, events_markdown, total, offset)
     return _alert_events_command_results(
@@ -1233,6 +1273,7 @@ def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandR
             "Offset": offset,
             "Limit": page_limit,
             "Count": len(page_events),
+            "HasAlertEvents": has_alert_events,
             "Cached": False,
             "CustomFields": persisted_fields,
         },
@@ -1439,6 +1480,16 @@ def _empty_to_na(value: Any) -> str:
     return text if text else VEGA_EMPTY_FIELD_DISPLAY
 
 
+def _normalize_verdict_reasoning_for_display(raw: dict) -> str:
+    """Normalize Vega verdict reasoning for XSOAR display."""
+    reasoning = raw.get("verdictReasoning")
+    if reasoning is None:
+        verdict = raw.get("verdict")
+        if isinstance(verdict, dict):
+            reasoning = verdict.get("reasoning")
+    return _empty_to_na(reasoning)
+
+
 def _format_vega_detection_query_for_display(value: Any) -> str:
     """Format a detection SQL query for markdown display, or N/A when empty."""
     query = _empty_to_na(value)
@@ -1504,6 +1555,9 @@ def _apply_vega_mitre_attack_format(raw: dict) -> None:
 def _build_vega_alert_custom_fields(raw: dict) -> dict[str, str]:
     """Build CustomFields for Vega alerts (set directly on ingest, not via mapper)."""
     custom_fields: dict[str, str] = {}
+    alert_uuid = raw.get("id")
+    if alert_uuid is not None and str(alert_uuid).strip():
+        custom_fields["alertid"] = str(alert_uuid).strip()
     mitre_attack = raw.get("vegaMitreAttack")
     if mitre_attack:
         custom_fields["vegamitreattack"] = str(mitre_attack)
@@ -1905,6 +1959,8 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
 
     if raw.get("verdict") is not None:
         raw["verdict"] = _normalize_vega_verdict_for_display(raw.get("verdict"))
+
+    raw["verdictReasoning"] = _normalize_verdict_reasoning_for_display(raw)
 
     if raw.get("severity") is not None:
         raw["severity"] = _normalize_vega_severity_for_display(raw.get("severity"))
@@ -3083,7 +3139,7 @@ def main() -> None:
             result = test_module(client, backfill_days)
             return_results(result)
 
-        elif command == "vega-fetch-alert-events":
+        elif command == "vega-get-alert-events":
             return_results(fetch_alert_events_command(client, demisto.args()))
 
         elif command == "vega-set-detections-state":
