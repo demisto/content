@@ -2115,7 +2115,6 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
 
     try:
-
         params = demisto.params()
 
         account_json = params.get("user_creds", {}).get("password") or params.get("user_service_account_json")

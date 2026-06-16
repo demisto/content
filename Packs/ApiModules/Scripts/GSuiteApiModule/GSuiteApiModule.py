@@ -56,14 +56,15 @@ class GSuiteClient:
         demisto.debug("calling access token from ucp service")
         method_id = get_ucp_method_unique_id(resolve_ucp_capability())
 
-        credentials = get_ucp_credentials(method_id)
+        body = {"extra": {"subject": subject}} if subject else None
+        credentials = get_ucp_credentials(method_id, body=body)
 
         cred_type = credentials.get("type")
         token_data = credentials.get(cred_type, credentials) if cred_type else credentials
         access_token = token_data.get("access_token") if isinstance(token_data, dict) else None
         if not access_token:
             demisto.error("[UCP][GSuiteApiModule.py] access token is empty.")
-            raise UcpException()
+            raise UcpException
         demisto.debug("Received access token from UCP Service")
         return method_id, access_token
 
@@ -117,9 +118,9 @@ class GSuiteClient:
         # the configured subject, so scopes/subject must not be re-applied
         # (OAuth2 token credentials do not support ``with_subject``).
         if not self._ucp_token:
-            self.credentials = self.credentials.with_scopes(scopes)  # type: ignore[union-attr]
+            self.credentials = self.credentials.with_scopes(scopes)  # type: ignore[attr-defined]
             if subject:
-                self.credentials = self.credentials.with_subject(subject)  # type: ignore[union-attr]
+                self.credentials = self.credentials.with_subject(subject)  # type: ignore[attr-defined]
         authorized_http = AuthorizedHttp(
             credentials=self.credentials, http=GSuiteClient.get_http_client(self.proxy, self.verify, timeout=timeout)
         )

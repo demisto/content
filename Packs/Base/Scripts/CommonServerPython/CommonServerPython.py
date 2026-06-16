@@ -14550,37 +14550,6 @@ def safe_pickle_loads(data, allowed_classes, safe_module_prefixes):
     return unpickler_cls(_io.BytesIO(data)).load()
 
 
-    # type: () -> Optional[dict]
-    """Return result params and UCP info when the current instance name contains "judah".
-
-    Simple diagnostic helper: inspects the current integration instance name and,
-    if it contains the substring ``"judah"`` (case-insensitive), returns a dict
-    containing the integration ``params`` and the UCP / unified connector metadata.
-    Returns ``None`` otherwise.
-
-    :return: A dict with ``params`` and ``ucp_info`` keys, or ``None`` when the
-        instance name does not contain "judah".
-    :rtype: ``Optional[dict]``
-    """
-    try:
-        instance_name = demisto.integrationInstance() or ''
-    except Exception:
-        instance_name = ''
-    if 'judah' not in instance_name.lower():
-        return None
-    try:
-        params = demisto.params()
-    except Exception:
-        params = {}
-    try:
-        ucp_info = demisto.unifiedConnectorMetadata()
-    except Exception:
-        ucp_info = {}
-    return {
-        'params': params,
-        'ucp_info': ucp_info,
-    }
-
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################
