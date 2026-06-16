@@ -36,21 +36,25 @@ THREAT_CHECK = "https://api.threatcheck.silentpush.com/v1/"
 V1 = "api/v1/"
 V2 = "api/v2/"
 MERGE_API = V1 + "merge-api/explore/"
+MERGE_API_BULK = MERGE_API + "bulk/"
+LOOKUP = MERGE_API + "padns/lookup/"
+IP_REPUTATION_HISTORY = MERGE_API + "ipreputation/history/"
 ENRICHMENT = V1 + "enrich"
-BULK_INFO = MERGE_API + "bulk/summary"
-BULK_DOMAIN_INFO = BULK_INFO + "/domain"
-BULK_IP4_INFO = BULK_INFO + "/ipv4"
-BULK_IP6_INFO = MERGE_API + "bulk/ip2asn/ipv6"
-FORWARD_PADNS = MERGE_API + "padns/lookup/query"
-REVERSE_PADNS = MERGE_API + "padns/lookup/answer"
-MULTI_CONDITIONAL_PADNS_LOOKUP = MERGE_API + "padns/lookup/both"
-DENSITY = MERGE_API + "padns/lookup/density"
-ASNS_DOMAIN = MERGE_API + "padns/lookup/domain/asns"
-IP_DIVERSITY = MERGE_API + "padns/lookup/ipdiversity"
+DOMAIN_RISK_SCORE = MERGE_API_BULK + "domain/riskscore"
+IP4_RISK_SCORE = MERGE_API_BULK + "ipv4/riskscore"
+IP6_RISK_SCORE = MERGE_API_BULK + "ipv6/riskscore"
+FORWARD_PADNS = LOOKUP + "query"
+REVERSE_PADNS = LOOKUP + "answer"
+MULTI_CONDITIONAL_PADNS_LOOKUP = LOOKUP + "both"
+DENSITY = LOOKUP + "density"
+ASNS_DOMAIN = LOOKUP + "domain/asns"
+IP_DIVERSITY = LOOKUP + "ipdiversity"
 IP_DIVERSITY_PATTERNS = MERGE_API + "padns/search/ipdiversity"
 NAMESERVER_REPUTATION = MERGE_API + "nsreputation/history/nameserver"
-SUBNET_REPUTATION = MERGE_API + "ipreputation/history/subnet"
-IPV4_REPUTATION = MERGE_API + "ipreputation/history/ipv4"
+ASN_REPUTATION = IP_REPUTATION_HISTORY + "asn"
+ASN_TAKEDOWN_REPUTATION = MERGE_API + "takedownreputation/asn"
+SUBNET_REPUTATION = IP_REPUTATION_HISTORY + "subnet"
+IPV4_REPUTATION = IP_REPUTATION_HISTORY + "ipv4"
 SEARCH_DOMAIN = MERGE_API + "domain/search"
 SEARCH_SCAN = V1 + "spql-search/"
 LIVE_SCAN_URL = V1 + "live-scan/"
@@ -58,37 +62,66 @@ WHOIS = MERGE_API + "domain/whois"
 DOMAIN_CERTIFICATE = MERGE_API + "domain/certificates"
 ADD_FEED = V1 + "feeds/"
 EXPORT_DATA = V1 + "export/"
+TLP_REPORTS = V1 + "tlp-reports/"
 JOB_STATUS = MERGE_API + "job/"
 
 """ COMMANDS INPUTS """
 
 FIRST_SEEN_INPUTS = [
-    InputArgument(name="first_seen_after", description="The filter results to include only records first seen after this date."),
     InputArgument(
-        name="first_seen_before", description="The filter results to include only records first seen before this date."
+        name="first_seen_after",
+        description="The filter results to include only records first seen after this date.",
+    ),
+    InputArgument(
+        name="first_seen_before",
+        description="The filter results to include only records first seen before this date.",
     ),
 ]
 LAST_SEEN_INPUTS = [
-    InputArgument(name="last_seen_after", description="The filter results to include only records last seen after this date."),
-    InputArgument(name="last_seen_before", description="The filter results to include only records last seen before this date."),
+    InputArgument(
+        name="last_seen_after",
+        description="The filter results to include only records last seen after this date.",
+    ),
+    InputArgument(
+        name="last_seen_before",
+        description="The filter results to include only records last seen before this date.",
+    ),
 ]
 SEEN_INPUTS = FIRST_SEEN_INPUTS + LAST_SEEN_INPUTS
 COMMON_INPUTS = [
-    InputArgument(name="prefer", description="The preference for specific DNS servers or sources."),
-    InputArgument(name="skip", description="The number of results to skip for pagination purposes."),
+    InputArgument(
+        name="prefer", description="The preference for specific DNS servers or sources."
+    ),
+    InputArgument(
+        name="skip",
+        description="The number of results to skip for pagination purposes.",
+    ),
     InputArgument(name="limit", description="The maximum number of results to return."),
-    InputArgument(name="with_metadata", description="The flag to include metadata in the DNS records."),
-    InputArgument(name="max_wait", description="The maximum number of seconds to wait for results before timing out."),
+    InputArgument(
+        name="with_metadata",
+        description="The flag to include metadata in the DNS records.",
+    ),
+    InputArgument(
+        name="max_wait",
+        description="The maximum number of seconds to wait for results before timing out.",
+    ),
 ]
 COMMON_SEARCH_INPUTS = (
     FIRST_SEEN_INPUTS
     + COMMON_INPUTS
     + [
-        InputArgument(name="domain", description="The name or wildcard pattern of domain names to search for."),
         InputArgument(
-            name="domain_regex", description="The valid RE2 regex pattern to match domains. Overrides the domain argument."
+            name="domain",
+            description="The name or wildcard pattern of domain names to search for.",
         ),
-        InputArgument(name="nsname", description="The server name or wildcard pattern of the name server used by domains."),
+        InputArgument(
+            name="domain_regex",
+            description="The valid RE2 regex pattern to match domains. Overrides the domain argument.",
+        ),
+        InputArgument(
+            name="nsname",
+            description="The server name or wildcard pattern of the name server used by domains.",
+        ),
         InputArgument(
             name="mxname",
             description="The mx server name or wildcard pattern of mx server used by domains, use mxname=self to find domains "
@@ -115,10 +148,12 @@ COMMON_SEARCH_INPUTS = (
             "any - select A records that have at least one timestamp before first_seen_max.",
         ),
         InputArgument(
-            name="last_seen_min", description="The only domains that have A records last seen more recently than the given date."
+            name="last_seen_min",
+            description="The only domains that have A records last seen more recently than the given date.",
         ),
         InputArgument(
-            name="last_seen_max", description="The only domains that have A records last seen earlier than the given date."
+            name="last_seen_max",
+            description="The only domains that have A records last seen earlier than the given date.",
         ),
         InputArgument(
             name="last_seen_min_mode",
@@ -132,9 +167,13 @@ COMMON_SEARCH_INPUTS = (
             "timestamps after last_seen_max, "
             "any - select A records that have at least one timestamp before last_seen_max.",
         ),
-        InputArgument(name="asnum", description="The Autonomous System (AS) number to filter domains."),
         InputArgument(
-            name="asname", description="The search for all AS numbers where the AS Name begins with the specified value."
+            name="asnum",
+            description="The Autonomous System (AS) number to filter domains.",
+        ),
+        InputArgument(
+            name="asname",
+            description="The search for all AS numbers where the AS Name begins with the specified value.",
         ),
         InputArgument(
             name="network",
@@ -146,8 +185,14 @@ COMMON_SEARCH_INPUTS = (
             description="Whether to include details of IPs, ASNs, first_seen and last_seen for each domain, 0 (default) = do not"
             " include, 1 = include timeline",
         ),
-        InputArgument(name="ip_diversity_all_min", description="The Minimum IP diversity limit to filter domains."),
-        InputArgument(name="registrar", description="The name or partial name of the registrar used to register domains."),
+        InputArgument(
+            name="ip_diversity_all_min",
+            description="The Minimum IP diversity limit to filter domains.",
+        ),
+        InputArgument(
+            name="registrar",
+            description="The name or partial name of the registrar used to register domains.",
+        ),
         InputArgument(
             name="email",
             description="The email used to register domains - no wildcards, the given string is used in exact match - this is a "
@@ -172,7 +217,8 @@ COMMON_SEARCH_INPUTS = (
             description="The only domains with name server changes that occurred before the given date.",
         ),
         InputArgument(
-            name="cert_date_min", description="The only domains that have had ssl certificates issued on or after the given date."
+            name="cert_date_min",
+            description="The only domains that have had ssl certificates issued on or after the given date.",
         ),
         InputArgument(
             name="cert_date_max",
@@ -189,20 +235,37 @@ COMMON_SEARCH_INPUTS = (
             "overrides mxname, nsname and registrar parameters, if infratag contains these parts, can be combined"
             " with all other parameters.",
         ),
-        InputArgument(name="asn_diversity_min", description="The minimum ASN diversity limit to filter domains."),
-        InputArgument(name="ip_diversity_all_min", description="The minimum diversity limit, default = 1."),
-        InputArgument(name="ip_diversity_groups_min", description="The minimum diversity limit."),
         InputArgument(
-            name="whois_date_after", description="The filter domains with a WHOIS creation date after this date (YYYY-MM-DD)."
+            name="asn_diversity_min",
+            description="The minimum ASN diversity limit to filter domains.",
+        ),
+        InputArgument(
+            name="ip_diversity_all_min",
+            description="The minimum diversity limit, default = 1.",
+        ),
+        InputArgument(
+            name="ip_diversity_groups_min", description="The minimum diversity limit."
+        ),
+        InputArgument(
+            name="whois_date_after",
+            description="The filter domains with a WHOIS creation date after this date (YYYY-MM-DD).",
         ),
     ]
 )
 NAMESERVER_REPUTATION_INPUTS = [
     InputArgument(
-        name="nameserver", description="The Nameserver name for which information needs to be retrieved.", required=True
+        name="nameserver",
+        description="The Nameserver name for which information needs to be retrieved.",
+        required=True,
     ),
-    InputArgument(name="explain", description="Whether to show the information used to calculate the reputation score."),
-    InputArgument(name="limit", description="The maximum number of reputation history to retrieve."),
+    InputArgument(
+        name="explain",
+        description="Whether to show the information used to calculate the reputation score.",
+    ),
+    InputArgument(
+        name="limit",
+        description="The maximum number of reputation history to retrieve.",
+    ),
 ]
 SUBNET_REPUTATION_INPUTS = [
     InputArgument(
@@ -212,9 +275,14 @@ SUBNET_REPUTATION_INPUTS = [
         required=True,
     ),
     InputArgument(
-        name="explain", description="Whether to show the detailed information used to calculate the " "reputation score."
+        name="explain",
+        description="Whether to show the detailed information used to calculate the "
+        "reputation score.",
     ),
-    InputArgument(name="limit", description="The maximum number of reputation history entries to retrieve."),
+    InputArgument(
+        name="limit",
+        description="The maximum number of reputation history entries to retrieve.",
+    ),
 ]
 DOMAIN_INPUT = [
     InputArgument(
@@ -239,9 +307,13 @@ DENSITY_LOOKUP_INPUTS = [
 IP_DIVERSITY_LOOKUP_INPUTS = [
     InputArgument(name="qtype", description="The query type.", required=True),
     InputArgument(name="query", description="The value to query.", required=True),
-    InputArgument(name="window", description="The use records with a last_seen more recently than days ago, default = 30"),
     InputArgument(
-        name="asn", description="Whether to include asn diversity, 0 = do not include, 1 (default) = include asn diversity"
+        name="window",
+        description="The use records with a last_seen more recently than days ago, default = 30",
+    ),
+    InputArgument(
+        name="asn",
+        description="Whether to include asn diversity, 0 = do not include, 1 (default) = include asn diversity",
     ),
     InputArgument(
         name="timeline",
@@ -264,17 +336,48 @@ IP_DIVERSITY_LOOKUP_INPUTS = [
 ]
 SEARCH_DOMAIN_INPUTS = IP_DIVERSITY_PATTERNS_INPUTS = COMMON_SEARCH_INPUTS
 LIST_DOMAIN_INPUTS = [
-    InputArgument(name="domains", description="A comma-separated list of domains to query.", required=True),
+    InputArgument(
+        name="domains",
+        description="A comma-separated list of domains to query.",
+        required=True,
+    ),
 ]
 LIST_IP_INPUTS = [
-    InputArgument(name="ips", description="A comma-separated list of IPs to query.", required=True),
+    InputArgument(
+        name="ips", description="A comma-separated list of IPs to query.", required=True
+    ),
+]
+ASN_REPUTATION_INPUTS = ASN_TAKEDOWN_REPUTATION_INPUTS = [
+    InputArgument(name="asn", description="The ASN to lookup.", required=True),
+    InputArgument(
+        name="explain",
+        description="Show the information used to calculate the reputation score.",
+    ),
+    InputArgument(
+        name="limit",
+        description="The maximum number of reputation history records to retrieve.",
+    ),
 ]
 DOMAIN_CERTIFICATE_INPUTS = COMMON_INPUTS + [
-    InputArgument(name="domain", description="The domain to query certificates for.", required=True),
-    InputArgument(name="domain_regex", description="The regular expression to match domains."),
-    InputArgument(name="certificate_issuer", description="The filter by certificate issuer."),
-    InputArgument(name="date_min", description="The filter certificates issued on or after this date."),
-    InputArgument(name="date_max", description="The filter certificates issued on or before this date."),
+    InputArgument(
+        name="domain",
+        description="The domain to query certificates for.",
+        required=True,
+    ),
+    InputArgument(
+        name="domain_regex", description="The regular expression to match domains."
+    ),
+    InputArgument(
+        name="certificate_issuer", description="The filter by certificate issuer."
+    ),
+    InputArgument(
+        name="date_min",
+        description="The filter certificates issued on or after this date.",
+    ),
+    InputArgument(
+        name="date_max",
+        description="The filter certificates issued on or before this date.",
+    ),
 ]
 ENRICHMENT_INPUTS = [
     InputArgument(
@@ -288,8 +391,12 @@ ENRICHMENT_INPUTS = [
         "{e.g. silentpush.com}.",
         required=True,
     ),
-    InputArgument(name="explain", description="Whether include explanation of data calculations."),
-    InputArgument(name="scan_data", description="Whether include scan data (IPv4 only)."),
+    InputArgument(
+        name="explain", description="Whether include explanation of data calculations."
+    ),
+    InputArgument(
+        name="scan_data", description="Whether include scan data (IPv4 only)."
+    ),
 ]
 IPV4_REPUTATION_INPUTS = [
     InputArgument(
@@ -297,51 +404,95 @@ IPV4_REPUTATION_INPUTS = [
         description="The IPv4 address for which information needs to be retrieved.",
         required=True,
     ),
-    InputArgument(name="explain", description="Whether show the information used to calculate the reputation score."),
-    InputArgument(name="limit", description="The maximum number of reputation history to retrieve."),
+    InputArgument(
+        name="explain",
+        description="Whether show the information used to calculate the reputation score.",
+    ),
+    InputArgument(
+        name="limit",
+        description="The maximum number of reputation history to retrieve.",
+    ),
 ]
 PADNS_INPUTS = (
     SEEN_INPUTS
     + COMMON_INPUTS
     + [
         InputArgument(name="qtype", description="The DNS record type.", required=True),
-        InputArgument(name="query", description="The DNS record name to lookup.", required=True),
-        InputArgument(name="netmask", description="The netmask to filter the lookup results."),
-        InputArgument(name="match", description="The type of match for the query (e.g., exact, partial)."),
-        InputArgument(name="as_of", description="The date or time to get the DNS records as of a specific point in time."),
-        InputArgument(name="sort", description="The sort the results by the specified field (e.g., date, score)."),
-        InputArgument(name="output_format", description="The format in which the results should be returned (e.g., JSON, XML)."),
+        InputArgument(
+            name="query", description="The DNS record name to lookup.", required=True
+        ),
+        InputArgument(
+            name="netmask", description="The netmask to filter the lookup results."
+        ),
+        InputArgument(
+            name="match",
+            description="The type of match for the query (e.g., exact, partial).",
+        ),
+        InputArgument(
+            name="as_of",
+            description="The date or time to get the DNS records as of a specific point in time.",
+        ),
+        InputArgument(
+            name="sort",
+            description="The sort the results by the specified field (e.g., date, score).",
+        ),
+        InputArgument(
+            name="output_format",
+            description="The format in which the results should be returned (e.g., JSON, XML).",
+        ),
     ]
 )
 FORWARD_REVERSE_PADNS_INPUTS = [
-    InputArgument(name="subdomains", description="The flag to include subdomains in the lookup results."),
-    InputArgument(name="regex", description="The regular expression to filter the DNS records."),
+    InputArgument(
+        name="subdomains",
+        description="The flag to include subdomains in the lookup results.",
+    ),
+    InputArgument(
+        name="regex", description="The regular expression to filter the DNS records."
+    ),
 ]
 FORWARD_PADNS_INPUTS = REVERSE_PADNS_INPUTS = PADNS_INPUTS
 FORWARD_PADNS_INPUTS += FORWARD_REVERSE_PADNS_INPUTS
 REVERSE_PADNS_INPUTS += FORWARD_REVERSE_PADNS_INPUTS
 MULTI_CONDITIONAL_PADNS_LOOKUP_INPUTS = PADNS_INPUTS + [
-    InputArgument(name="answer", description="The DNS record answer to lookup.", required=True),
-    InputArgument(name="name", description="The additional name to match qanswer, up to 5."),
+    InputArgument(
+        name="answer", description="The DNS record answer to lookup.", required=True
+    ),
+    InputArgument(
+        name="name", description="The additional name to match qanswer, up to 5."
+    ),
     InputArgument(
         name="net",
         description="The find ptr4 or a records where ipv4 in or not in subnet defined by netmask. in (default) - find records "
         "in subnet, notin - find records not in subnet",
     ),
-    InputArgument(name="network", description="The additional network and net mask in the format 1.1.1.1/24, up to 5."),
-    InputArgument(name="asnum", description="The Autonomous System (AS) number to filter domains."),
     InputArgument(
-        name="asn", description="Whether include asn diversity, 0 = do not include, 1 (default) = include asn diversity"
+        name="network",
+        description="The additional network and net mask in the format 1.1.1.1/24, up to 5.",
     ),
-    InputArgument(name="asname", description="The search for all AS numbers where the AS Name begins with the specified value."),
+    InputArgument(
+        name="asnum", description="The Autonomous System (AS) number to filter domains."
+    ),
+    InputArgument(
+        name="asn",
+        description="Whether include asn diversity, 0 = do not include, 1 (default) = include asn diversity",
+    ),
+    InputArgument(
+        name="asname",
+        description="The search for all AS numbers where the AS Name begins with the specified value.",
+    ),
 ]
 SEARCH_SCAN_INPUTS = [
     InputArgument(name="query", description="The SPQL query string.", required=True),
     InputArgument(name="fields", description="The dields to return in the response."),
     InputArgument(name="sort", description="The aorting criteria for results."),
-    InputArgument(name="skip", description="The number of records to skip in the response."),
+    InputArgument(
+        name="skip", description="The number of records to skip in the response."
+    ),
     InputArgument(name="limit", description="The maximum number of results to return."),
-    InputArgument(name="with_metadata", description="Whether to include metadata in the response."),
+    InputArgument(
+        name="with_metadata", description="Whether to include metadata in the response."
+    ),
 ]
 LIVE_SCAN_URL_INPUTS = [
     InputArgument(name="url", description="The URL to scan.", required=True),
@@ -355,8 +506,16 @@ ADD_FEED_INPUTS = [
     InputArgument(name="type", description="The Feed Type.", required=True),
     InputArgument(name="category", description="The Feed Category.", required=False),
     InputArgument(name="vendor", description="The Vendor.", required=False),
-    InputArgument(name="feed_description", description="The detailed info about the feed.", required=False),
-    InputArgument(name="tags", description="The Tags that should be attached with the feed.", required=False),
+    InputArgument(
+        name="feed_description",
+        description="The detailed info about the feed.",
+        required=False,
+    ),
+    InputArgument(
+        name="tags",
+        description="The Tags that should be attached with the feed.",
+        required=False,
+    ),
 ]
 ADD_FEED_TAGS_INPUTS = [
     InputArgument(
@@ -369,25 +528,82 @@ ADD_FEED_TAGS_INPUTS = [
     ),
 ]
 ADD_INDICATORS_INPUTS = [
-    InputArgument(name="feed_uuid", description="The feed uuid that is returned when creating it.", required=True),
-    InputArgument(name="indicators", description="The Indicators for the feed.", required=True),
+    InputArgument(
+        name="feed_uuid",
+        description="The feed uuid that is returned when creating it.",
+        required=True,
+    ),
+    InputArgument(
+        name="indicators", description="The Indicators for the feed.", required=True
+    ),
 ]
 ADD_INDICATOR_TAGS_INPUTS = [
-    InputArgument(name="feed_uuid", description="The feed uuid that is returned when creating it.", required=True),
-    InputArgument(name="indicator_name", description="The name of the indicator to tag.", required=True),
-    InputArgument(name="tags", description="The Tags to be added to the indicator.", required=True),
+    InputArgument(
+        name="feed_uuid",
+        description="The feed uuid that is returned when creating it.",
+        required=True,
+    ),
+    InputArgument(
+        name="indicator_name",
+        description="The name of the indicator to tag.",
+        required=True,
+    ),
+    InputArgument(
+        name="tags", description="The Tags to be added to the indicator.", required=True
+    ),
 ]
 RUN_THREAT_CHECK_INPUTS = [
-    InputArgument(name="data", description="The name of the data source to query.", required=True),
-    InputArgument(name="query", description="The value to check for threats (e.g., IP or domain).", required=True),
-    InputArgument(name="type", description="The type of the value being queried (e.g., ip, domain).", required=True),
+    InputArgument(
+        name="data", description="The name of the data source to query.", required=True
+    ),
+    InputArgument(
+        name="query",
+        description="The value to check for threats (e.g., IP or domain).",
+        required=True,
+    ),
+    InputArgument(
+        name="type",
+        description="The type of the value being queried (e.g., ip, domain).",
+        required=True,
+    ),
 ]
 GET_DATA_EXPORTS_INPUTS = [
-    InputArgument(name="export_type", description="The export type (iofa, organisation, etc)", required=True),
-    InputArgument(name="file_name", description="The name of the file to be exported.", required=True),
-    InputArgument(name="file_type", description="The file type (csv, json, txt, etc).", required=True),
+    InputArgument(
+        name="export_type",
+        description="The export type (iofa, organisation, etc)",
+        required=True,
+    ),
+    InputArgument(
+        name="file_name",
+        description="The name of the file to be exported.",
+        required=True,
+    ),
+    InputArgument(
+        name="file_type",
+        description="The file type (csv, json, txt, etc).",
+        required=True,
+    ),
 ]
-JOB_STATUS_IMPUT = [InputArgument(name="job_id", description="The Job ID to retry", required=True)]
+TLP_REPORTS_INPUTS = [
+    InputArgument(
+        name="order",
+        description="Which field to use when ordering the results.",
+        required=False,
+    ),
+    InputArgument(
+        name="page",
+        description="A page number within the paginated result set.",
+        required=False,
+    ),
+    InputArgument(
+        name="search",
+        description="A search term.",
+        required=False,
+    ),
+]
+JOB_STATUS_IMPUT = [
+    InputArgument(name="job_id", description="The Job ID to retry", required=True)
+]
 
 """ COMMANDS OUTPUTS """
 
@@ -425,16 +641,24 @@ NAMESERVER_REPUTATION_OUTPUTS = [
 ]
 SUBNET_REPUTATION_OUTPUTS = [
     OutputArgument(
-        name="SilentPush.Reputation.subnet", output_type=str, description="The subnet associated with the reputation history."
+        name="SilentPush.Reputation.subnet",
+        output_type=str,
+        description="The subnet associated with the reputation history.",
     ),
-    OutputArgument(name="SilentPush.Reputation.date", output_type=int, description="The date of the subnet reputation record."),
+    OutputArgument(
+        name="SilentPush.Reputation.date",
+        output_type=int,
+        description="The date of the subnet reputation record.",
+    ),
     OutputArgument(
         name="SilentPush.Reputation.subnet",
         output_type=str,
         description="The subnet associated with the reputation record.",
     ),
     OutputArgument(
-        name="SilentPush.Reputation.subnet_reputation", output_type=int, description="The reputation score of the subnet."
+        name="SilentPush.Reputation.subnet_reputation",
+        output_type=int,
+        description="The reputation score of the subnet.",
     ),
     OutputArgument(
         name="SilentPush.Reputation.ips_in_subnet",
@@ -453,7 +677,11 @@ SUBNET_REPUTATION_OUTPUTS = [
     ),
 ]
 ASNS_DOMAIN_OUTPUTS = [
-    OutputArgument(name="SilentPush.ASN.domain", output_type=str, description="The domain name for which ASNs are retrieved."),
+    OutputArgument(
+        name="SilentPush.ASN.domain",
+        output_type=str,
+        description="The domain name for which ASNs are retrieved.",
+    ),
     OutputArgument(
         name="SilentPush.ASN.asns",
         output_type=dict,
@@ -462,7 +690,9 @@ ASNS_DOMAIN_OUTPUTS = [
 ]
 DENSITY_LOOKUP_OUTPUTS = [
     OutputArgument(
-        name="SilentPush.Lookup.qtype", output_type=str, description="The following qtypes are supported: nssrv, mxsrv."
+        name="SilentPush.Lookup.qtype",
+        output_type=str,
+        description="The following qtypes are supported: nssrv, mxsrv.",
     ),
     OutputArgument(
         name="SilentPush.Lookup.query",
@@ -470,9 +700,15 @@ DENSITY_LOOKUP_OUTPUTS = [
         description="The query value to lookup, which can be the name of an NS or MX server.",
     ),
     OutputArgument(
-        name="SilentPush.Lookup.density", output_type=int, description="The density value associated with the query result."
+        name="SilentPush.Lookup.density",
+        output_type=int,
+        description="The density value associated with the query result.",
     ),
-    OutputArgument(name="SilentPush.Lookup.nssrv", output_type=str, description="The name server (NS) for the query result."),
+    OutputArgument(
+        name="SilentPush.Lookup.nssrv",
+        output_type=str,
+        description="The name server (NS) for the query result.",
+    ),
 ]
 SEARCH_DOMAIN_OUTPUTS = IP_DIVERSITY_LOOKUP_OUTPUTS = IP_DIVERSITY_PATTERNS_OUTPUTS = [
     OutputArgument(
@@ -481,7 +717,9 @@ SEARCH_DOMAIN_OUTPUTS = IP_DIVERSITY_LOOKUP_OUTPUTS = IP_DIVERSITY_PATTERNS_OUTP
         description="The diversity of Autonomous System Numbers (ASNs) associated with the domain.",
     ),
     OutputArgument(
-        name="SilentPush.Diversity.host", output_type=str, description="The domain name (host) associated with the record."
+        name="SilentPush.Diversity.host",
+        output_type=str,
+        description="The domain name (host) associated with the record.",
     ),
     OutputArgument(
         name="SilentPush.Diversity.ip_diversity_all",
@@ -499,14 +737,47 @@ SEARCH_DOMAIN_OUTPUTS = IP_DIVERSITY_LOOKUP_OUTPUTS = IP_DIVERSITY_PATTERNS_OUTP
         description="timeline of {ip, first_seen, last_seen}.",
     ),
 ]
+RISK_SCORE_OUTPUTS = [
+    OutputArgument(
+        name="SilentPush.Enrichment.sp_risk_score",
+        output_type=int,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.sp_risk_score_explain",
+        output_type=dict,
+        description="The age of the domain in days.",
+    ),
+]
+IP_RISK_SCORE_OUTPUTS = [
+    OutputArgument(
+        name="SilentPush.Enrichment.ip", output_type=str, description="The IP queried."
+    ),
+] + RISK_SCORE_OUTPUTS
+
+DOMAIN_RISK_SCORE_OUTPUTS = [
+    OutputArgument(
+        name="SilentPush.Enrichment.domain",
+        output_type=str,
+        description="The domain name queried.",
+    ),
+] + RISK_SCORE_OUTPUTS
 LIST_DOMAIN_OUTPUTS = [
-    OutputArgument(name="SilentPush.Enrichment.host_flags", output_type=list, description="The domain name queried."),
+    OutputArgument(
+        name="SilentPush.Enrichment.host_flags",
+        output_type=list,
+        description="The domain name queried.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.domain_urls",
         output_type=dict,
         description="The last seen date of the domain in YYYYMMDD format.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.domaininfo", output_type=dict, description="The domain name used for the query."),
+    OutputArgument(
+        name="SilentPush.Enrichment.domaininfo",
+        output_type=dict,
+        description="The domain name used for the query.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.ns_reputation",
         output_type=dict,
@@ -533,7 +804,9 @@ LIST_DOMAIN_OUTPUTS = [
         description="The registrar responsible for the domain registration.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.ip_diversity", output_type=dict, description="A risk score based on the domain's age."
+        name="SilentPush.Enrichment.ip_diversity",
+        output_type=dict,
+        description="A risk score based on the domain's age.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.listing_score",
@@ -546,19 +819,25 @@ LIST_DOMAIN_OUTPUTS = [
         description="A risk score indicating how new the domain is.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.listing_score_feeds_explain", output_type=list, description="The age of the domain in days."
+        name="SilentPush.Enrichment.listing_score_feeds_explain",
+        output_type=list,
+        description="The age of the domain in days.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.sp_risk_score", output_type=int, description="The age of the domain in days."),
-    OutputArgument(
-        name="SilentPush.Enrichment.sp_risk_score_explain", output_type=dict, description="The age of the domain in days."
-    ),
-]
+] + RISK_SCORE_OUTPUTS
 LIST_IP_OUTPUTS = [
-    OutputArgument(name="SilentPush.Enrichment.ip", output_type=str, description="The domain name queried."),
     OutputArgument(
-        name="SilentPush.Enrichment.asn", output_type=int, description="The last seen date of the domain in YYYYMMDD format."
+        name="SilentPush.Enrichment.ip", output_type=str, description="The IP queried."
     ),
-    OutputArgument(name="SilentPush.Enrichment.asname", output_type=str, description="The domain name used for the query."),
+    OutputArgument(
+        name="SilentPush.Enrichment.asn",
+        output_type=int,
+        description="The last seen date of the domain in YYYYMMDD format.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.asname",
+        output_type=str,
+        description="The domain name used for the query.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.asn_allocation_date",
         output_type=int,
@@ -570,7 +849,9 @@ LIST_IP_OUTPUTS = [
         description="The first seen date of the domain in YYYYMMDD format.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.asn_rank", output_type=int, description="Indicates whether the domain is newly observed."
+        name="SilentPush.Enrichment.asn_rank",
+        output_type=int,
+        description="Indicates whether the domain is newly observed.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.asn_rank_score",
@@ -603,74 +884,166 @@ LIST_IP_OUTPUTS = [
         description="The age of the domain in days.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.asn_takedown_reputation_score", output_type=int, description="The age of the domain in days."
-    ),
-    OutputArgument(name="SilentPush.Enrichment.date", output_type=int, description="The age of the domain in days."),
-    OutputArgument(name="SilentPush.Enrichment.subnet", output_type=str, description="The age of the domain in days."),
-    OutputArgument(
-        name="SilentPush.Enrichment.subnet_allocation_date", output_type=int, description="The age of the domain in days."
+        name="SilentPush.Enrichment.asn_takedown_reputation_score",
+        output_type=int,
+        description="The age of the domain in days.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.subnet_allocation_age", output_type=int, description="The age of the domain in days."
-    ),
-    OutputArgument(name="SilentPush.Enrichment.subnet_reputation", output_type=int, description="The age of the domain in days."),
-    OutputArgument(
-        name="SilentPush.Enrichment.subnet_reputation_explain", output_type=dict, description="The age of the domain in days."
+        name="SilentPush.Enrichment.date",
+        output_type=int,
+        description="The age of the domain in days.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.subnet_reputation_score", output_type=int, description="The age of the domain in days."
-    ),
-    OutputArgument(name="SilentPush.Enrichment.ip_reputation", output_type=int, description="The age of the domain in days."),
-    OutputArgument(
-        name="SilentPush.Enrichment.ip_reputation_explain", output_type=dict, description="The age of the domain in days."
+        name="SilentPush.Enrichment.subnet",
+        output_type=str,
+        description="The age of the domain in days.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.ip_reputation_score", output_type=int, description="The age of the domain in days."
-    ),
-    OutputArgument(name="SilentPush.Enrichment.ip_location", output_type=dict, description="The age of the domain in days."),
-    OutputArgument(
-        name="SilentPush.Enrichment.ip_is_dsl_dynamic", output_type=bool, description="The age of the domain in days."
+        name="SilentPush.Enrichment.subnet_allocation_date",
+        output_type=int,
+        description="The age of the domain in days.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.ip_is_dsl_dynamic_score", output_type=int, description="The age of the domain in days."
-    ),
-    OutputArgument(name="SilentPush.Enrichment.ip_ptr", output_type=str, description="The age of the domain in days."),
-    OutputArgument(name="SilentPush.Enrichment.benign_info", output_type=dict, description="The age of the domain in days."),
-    OutputArgument(name="SilentPush.Enrichment.sinkhole_info", output_type=dict, description="The age of the domain in days."),
-    OutputArgument(
-        name="SilentPush.Enrichment.ip_is_tor_exit_node", output_type=bool, description="The age of the domain in days."
-    ),
-    OutputArgument(name="SilentPush.Enrichment.ip_is_ipfs_node", output_type=bool, description="The age of the domain in days."),
-    OutputArgument(
-        name="SilentPush.Enrichment.ip_has_open_directory", output_type=bool, description="The age of the domain in days."
+        name="SilentPush.Enrichment.subnet_allocation_age",
+        output_type=int,
+        description="The age of the domain in days.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.ip_has_expired_certificate", output_type=bool, description="The age of the domain in days."
-    ),
-    OutputArgument(name="SilentPush.Enrichment.ip_flags", output_type=dict, description="The age of the domain in days."),
-    OutputArgument(name="SilentPush.Enrichment.density", output_type=int, description="The age of the domain in days."),
-    OutputArgument(name="SilentPush.Enrichment.listing_score", output_type=int, description="The age of the domain in days."),
-    OutputArgument(
-        name="SilentPush.Enrichment.listing_score_explain", output_type=dict, description="The age of the domain in days."
+        name="SilentPush.Enrichment.subnet_reputation",
+        output_type=int,
+        description="The age of the domain in days.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.listing_score_feeds_explain", output_type=list, description="The age of the domain in days."
+        name="SilentPush.Enrichment.subnet_reputation_explain",
+        output_type=dict,
+        description="The age of the domain in days.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.sp_risk_score", output_type=int, description="The age of the domain in days."),
     OutputArgument(
-        name="SilentPush.Enrichment.sp_risk_score_explain", output_type=dict, description="The age of the domain in days."
+        name="SilentPush.Enrichment.subnet_reputation_score",
+        output_type=int,
+        description="The age of the domain in days.",
     ),
-]
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_reputation",
+        output_type=int,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_reputation_explain",
+        output_type=dict,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_reputation_score",
+        output_type=int,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_location",
+        output_type=dict,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_is_dsl_dynamic",
+        output_type=bool,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_is_dsl_dynamic_score",
+        output_type=int,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_ptr",
+        output_type=str,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.benign_info",
+        output_type=dict,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.sinkhole_info",
+        output_type=dict,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_is_tor_exit_node",
+        output_type=bool,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_is_ipfs_node",
+        output_type=bool,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_has_open_directory",
+        output_type=bool,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_has_expired_certificate",
+        output_type=bool,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_flags",
+        output_type=dict,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.density",
+        output_type=int,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.listing_score",
+        output_type=int,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.listing_score_explain",
+        output_type=dict,
+        description="The age of the domain in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.listing_score_feeds_explain",
+        output_type=list,
+        description="The age of the domain in days.",
+    ),
+] + RISK_SCORE_OUTPUTS
 DOMAIN_CERTIFICATE_OUTPUTS = [
-    OutputArgument(name="SilentPush.Enrichment.domain", output_type=str, description="Queried domain."),
-    OutputArgument(name="SilentPush.Enrichment.metadata", output_type=str, description="Metadata of the response."),
     OutputArgument(
-        name="SilentPush.Enrichment.certificates_cert_index", output_type=int, description="Index of the certificate."
+        name="SilentPush.Enrichment.domain",
+        output_type=str,
+        description="Queried domain.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.certificates_chain", output_type=list, description="Certificate chain."),
-    OutputArgument(name="SilentPush.Enrichment.certificates_date", output_type=int, description="Certificate issue date."),
     OutputArgument(
-        name="SilentPush.Enrichment.certificates_domain", output_type=str, description="Primary domain of the certificate."
+        name="SilentPush.Enrichment.metadata",
+        output_type=str,
+        description="Metadata of the response.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.certificates_cert_index",
+        output_type=int,
+        description="Index of the certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.certificates_chain",
+        output_type=list,
+        description="Certificate chain.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.certificates_date",
+        output_type=int,
+        description="Certificate issue date.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.certificates_domain",
+        output_type=str,
+        description="Primary domain of the certificate.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.certificates_domains",
@@ -698,11 +1071,19 @@ DOMAIN_CERTIFICATE_OUTPUTS = [
         description="SHA-256 fingerprint of the certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.certificates_host", output_type=str, description="Host associated with the certificate."
+        name="SilentPush.Enrichment.certificates_host",
+        output_type=str,
+        description="Host associated with the certificate.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.certificates_issuer", output_type=str, description="Issuer of the certificate."),
     OutputArgument(
-        name="SilentPush.Enrichment.certificates_not_after", output_type=str, description="Expiration date of the certificate."
+        name="SilentPush.Enrichment.certificates_issuer",
+        output_type=str,
+        description="Issuer of the certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.certificates_not_after",
+        output_type=str,
+        description="Expiration date of the certificate.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.certificates_not_before",
@@ -720,16 +1101,24 @@ DOMAIN_CERTIFICATE_OUTPUTS = [
         description="Hexadecimal representation of the serial number.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.certificates_serial_number", output_type=str, description="Serial number of the certificate."
+        name="SilentPush.Enrichment.certificates_serial_number",
+        output_type=str,
+        description="Serial number of the certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.certificates_source_name", output_type=str, description="Source log name of the certificate."
+        name="SilentPush.Enrichment.certificates_source_name",
+        output_type=str,
+        description="Source log name of the certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.certificates_source_url", output_type=str, description="URL of the certificate log source."
+        name="SilentPush.Enrichment.certificates_source_url",
+        output_type=str,
+        description="URL of the certificate log source.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.certificates_subject", output_type=str, description="Subject details of the certificate."
+        name="SilentPush.Enrichment.certificates_subject",
+        output_type=str,
+        description="Subject details of the certificate.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.certificates_wildcard",
@@ -737,13 +1126,27 @@ DOMAIN_CERTIFICATE_OUTPUTS = [
         description="Indicates if the certificate is a wildcard certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.job_url", output_type=str, description="URL to get the data of the job or its status."
+        name="SilentPush.Enrichment.job_url",
+        output_type=str,
+        description="URL to get the data of the job or its status.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.job_id", output_type=str, description="ID of the job."),
-    OutputArgument(name="SilentPush.Enrichment.job_status", output_type=str, description="Status of the job."),
+    OutputArgument(
+        name="SilentPush.Enrichment.job_id",
+        output_type=str,
+        description="ID of the job.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.job_status",
+        output_type=str,
+        description="Status of the job.",
+    ),
 ]
 ENRICHMENT_OUTPUTS = [
-    OutputArgument(name="SilentPush.Enrichment.value", output_type=str, description="Queried value."),
+    OutputArgument(
+        name="SilentPush.Enrichment.value",
+        output_type=str,
+        description="Queried value.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.avg_probability",
         output_type=float,
@@ -754,14 +1157,26 @@ ENRICHMENT_OUTPUTS = [
         output_type=int,
         description="Probability score indicating likelihood of being a DGA domain.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.domain", output_type=str, description="Domain name analyzed."),
+    OutputArgument(
+        name="SilentPush.Enrichment.domain",
+        output_type=str,
+        description="Domain name analyzed.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.domain_string_freq_probabilities",
         output_type=list,
         description="List of frequency probabilities for different domain string components.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.query", output_type=str, description="Domain name queried."),
-    OutputArgument(name="SilentPush.Enrichment.alexa_rank", output_type=int, description="Alexa rank of the domain."),
+    OutputArgument(
+        name="SilentPush.Enrichment.query",
+        output_type=str,
+        description="Domain name queried.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.alexa_rank",
+        output_type=int,
+        description="Alexa rank of the domain.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.alexa_top10k",
         output_type=bool,
@@ -792,21 +1207,40 @@ ENRICHMENT_OUTPUTS = [
         output_type=int,
         description="Number of results found for the domain.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.url_shortner_score", output_type=int, description="Score of the shortened URL."),
-    OutputArgument(name="SilentPush.Enrichment.domain", output_type=str, description="Domain name analyzed."),
     OutputArgument(
-        name="SilentPush.Enrichment.error", output_type=str, description="Error message if no data is available for the domain."
-    ),
-    OutputArgument(name="SilentPush.Enrichment.zone", output_type=str, description="TLD zone of the domain."),
-    OutputArgument(name="SilentPush.Enrichment.registrar", output_type=str, description="registrar of the domain."),
-    OutputArgument(
-        name="SilentPush.Enrichment.whois_age", output_type=str, description="The age of the domain based on WHOIS records."
+        name="SilentPush.Enrichment.url_shortner_score",
+        output_type=int,
+        description="Score of the shortened URL.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.whois_created_date", output_type=str, description="The created date on WHOIS records."
+        name="SilentPush.Enrichment.error",
+        output_type=str,
+        description="Error message if no data is available for the domain.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.query", output_type=str, description="The domain name that was queried in the system."
+        name="SilentPush.Enrichment.zone",
+        output_type=str,
+        description="TLD zone of the domain.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.registrar",
+        output_type=str,
+        description="registrar of the domain.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.whois_age",
+        output_type=str,
+        description="The age of the domain based on WHOIS records.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.whois_created_date",
+        output_type=str,
+        description="The created date on WHOIS records.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.query",
+        output_type=str,
+        description="The domain name that was queried in the system.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.last_seen",
@@ -819,14 +1253,20 @@ ENRICHMENT_OUTPUTS = [
         description="The last recorded observation of the domain in the database.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.is_new", output_type=bool, description='Indicates whether the domain is considered "new.".'
+        name="SilentPush.Enrichment.is_new",
+        output_type=bool,
+        description='Indicates whether the domain is considered "new.".',
     ),
     OutputArgument(
         name="SilentPush.Enrichment.is_new_score",
         output_type=int,
         description='A scoring metric indicating how "new" the domain is.',
     ),
-    OutputArgument(name="SilentPush.Enrichment.age", output_type=int, description="Represents the age of the domain in days."),
+    OutputArgument(
+        name="SilentPush.Enrichment.age",
+        output_type=int,
+        description="Represents the age of the domain in days.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.age_score",
         output_type=int,
@@ -842,7 +1282,11 @@ ENRICHMENT_OUTPUTS = [
         output_type=str,
         description="Total number of unique IPs observed for the domain.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.host", output_type=str, description="The hostname being analyzed."),
+    OutputArgument(
+        name="SilentPush.Enrichment.host",
+        output_type=str,
+        description="The hostname being analyzed.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.ip_diversity_groups",
         output_type=str,
@@ -864,15 +1308,25 @@ ENRICHMENT_OUTPUTS = [
         description="Whether the domain is not sinkholed (not forcibly redirected to a security researcher`s trap).",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.ns_reputation_max", output_type=int, description="Maximum reputation score for nameservers."
+        name="SilentPush.Enrichment.ns_reputation_max",
+        output_type=int,
+        description="Maximum reputation score for nameservers.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.ns_reputation_score",
         output_type=int,
         description="Reputation score of the domain`s nameservers.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.domain", output_type=str, description="The nameservers of domain."),
-    OutputArgument(name="SilentPush.Enrichment.ns_server", output_type=str, description="Provided nameserver."),
+    OutputArgument(
+        name="SilentPush.Enrichment.domain",
+        output_type=str,
+        description="The nameservers of domain.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ns_server",
+        output_type=str,
+        description="Provided nameserver.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.ns_server_domain_density",
         output_type=int,
@@ -928,36 +1382,76 @@ ENRICHMENT_OUTPUTS = [
         output_type=str,
         description="The Common Name (CN) of the Certificate Authority (CA) that issued this certificate.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.not_after", output_type=str, description="Expiry date of the certificate."),
     OutputArgument(
-        name="SilentPush.Enrichment.not_before", output_type=str, description="Start date of the certificate validity."
+        name="SilentPush.Enrichment.not_after",
+        output_type=str,
+        description="Expiry date of the certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.not_before",
+        output_type=str,
+        description="Start date of the certificate validity.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.scan_date",
         output_type=str,
         description="The date when this certificate data was last scanned.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.response", output_type=str, description="HTTP response code for the domain scan."),
-    OutputArgument(name="SilentPush.Enrichment.hostname", output_type=str, description="The hostname that sent this response."),
-    OutputArgument(name="SilentPush.Enrichment.ip", output_type=str, description="The IP address responding to the request."),
     OutputArgument(
-        name="SilentPush.Enrichment.scan_date", output_type=str, description="The date when the headers were scanned."
+        name="SilentPush.Enrichment.response",
+        output_type=str,
+        description="HTTP response code for the domain scan.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.cache-control", output_type=str, description="HTTP cache-control."),
+    OutputArgument(
+        name="SilentPush.Enrichment.hostname",
+        output_type=str,
+        description="The hostname that sent this response.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip",
+        output_type=str,
+        description="The IP address responding to the request.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.scan_date",
+        output_type=str,
+        description="The date when the headers were scanned.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.cache-control",
+        output_type=str,
+        description="HTTP cache-control.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.content-length",
         output_type=str,
         description="Content length of the HTTP response.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.date", output_type=str, description="The date/time of the response."),
-    OutputArgument(name="SilentPush.Enrichment.expires", output_type=str, description="Indicates an already expired response."),
+    OutputArgument(
+        name="SilentPush.Enrichment.date",
+        output_type=str,
+        description="The date/time of the response.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.expires",
+        output_type=str,
+        description="Indicates an already expired response.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.server",
         output_type=str,
         description="The web server handling the request (Cloudflare proxy).",
     ),
-    OutputArgument(name="SilentPush.Enrichment.hostname", output_type=str, description="HTTP response code for the domain scan."),
-    OutputArgument(name="SilentPush.Enrichment.html_body_murmur3", output_type=str, description="hash of the page content."),
+    OutputArgument(
+        name="SilentPush.Enrichment.hostname",
+        output_type=str,
+        description="HTTP response code for the domain scan.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.html_body_murmur3",
+        output_type=str,
+        description="hash of the page content.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.html_body_ssdeep",
         output_type=str,
@@ -968,27 +1462,55 @@ ENRICHMENT_OUTPUTS = [
         output_type=str,
         description="The page title (suggests a Cloudflare challenge page, likely due to bot protection).",
     ),
-    OutputArgument(name="SilentPush.Enrichment.ip", output_type=str, description="The IP address responding to the request."),
     OutputArgument(
-        name="SilentPush.Enrichment.scan_date", output_type=str, description="The date when the headers were scanned."
-    ),
-    OutputArgument(name="SilentPush.Enrichment.favicon2_md5", output_type=str, description="MD5 hash of a secondary favicon."),
-    OutputArgument(
-        name="SilentPush.Enrichment.favicon2_mmh3", output_type=str, description="Murmur3 hash of a secondary favicon."
+        name="SilentPush.Enrichment.ip",
+        output_type=str,
+        description="The IP address responding to the request.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.favicon2_path", output_type=str, description="The file path of the secondary favicon."
-    ),
-    OutputArgument(name="SilentPush.Enrichment.favicon_md5", output_type=str, description="MD5 hash of the primary favicon."),
-    OutputArgument(
-        name="SilentPush.Enrichment.favicon_mmh3", output_type=str, description="Murmur3 hash of the primary favicon."
+        name="SilentPush.Enrichment.scan_date",
+        output_type=str,
+        description="The date when the headers were scanned.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.hostname", output_type=str, description="The hostname where this favicon was found."
+        name="SilentPush.Enrichment.favicon2_md5",
+        output_type=str,
+        description="MD5 hash of a secondary favicon.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.ip", output_type=str, description="The IP address associated with the favicon."),
     OutputArgument(
-        name="SilentPush.Enrichment.scan_date", output_type=str, description="Date when this favicon was last scanned."
+        name="SilentPush.Enrichment.favicon2_mmh3",
+        output_type=str,
+        description="Murmur3 hash of a secondary favicon.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.favicon2_path",
+        output_type=str,
+        description="The file path of the secondary favicon.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.favicon_md5",
+        output_type=str,
+        description="MD5 hash of the primary favicon.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.favicon_mmh3",
+        output_type=str,
+        description="Murmur3 hash of the primary favicon.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.hostname",
+        output_type=str,
+        description="The hostname where this favicon was found.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip",
+        output_type=str,
+        description="The IP address associated with the favicon.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.scan_date",
+        output_type=str,
+        description="Date when this favicon was last scanned.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.scan_data_jarm_hostname",
@@ -996,7 +1518,9 @@ ENRICHMENT_OUTPUTS = [
         description="The hostname where this jarm was found.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.scan_data_jarm_ip", output_type=str, description="The IP address responding to the request."
+        name="SilentPush.Enrichment.scan_data_jarm_ip",
+        output_type=str,
+        description="The IP address responding to the request.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.scan_data_jarm_jarm_hash",
@@ -1008,23 +1532,41 @@ ENRICHMENT_OUTPUTS = [
         output_type=str,
         description="Date when this jarm was last scanned.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.sp_risk_score", output_type=int, description="Overall risk score for the domain."),
     OutputArgument(
-        name="SilentPush.Enrichment.sp_risk_score_decider",
-        output_type=str,
-        description="Factor that determined the final risk score.",
+        name="SilentPush.Enrichment.asn",
+        output_type=int,
+        description="Autonomous System Number (ASN) associated with the IP.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.asn", output_type=int, description="Autonomous System Number (ASN) associated with the IP."
+        name="SilentPush.Enrichment.asn_allocation_age",
+        output_type=int,
+        description="Age of ASN allocation in days.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.asn_allocation_age", output_type=int, description="Age of ASN allocation in days."
+        name="SilentPush.Enrichment.asn_allocation_date",
+        output_type=int,
+        description="Date of ASN allocation.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.asn_allocation_date", output_type=int, description="Date of ASN allocation."),
-    OutputArgument(name="SilentPush.Enrichment.asn_rank", output_type=int, description="Rank of the ASN."),
-    OutputArgument(name="SilentPush.Enrichment.asn_rank_score", output_type=int, description="Rank score of the ASN."),
-    OutputArgument(name="SilentPush.Enrichment.asn_reputation", output_type=int, description="Reputation score of the ASN."),
-    OutputArgument(name="SilentPush.Enrichment.ips_in_asn", output_type=int, description="Total number of IPs in the ASN."),
+    OutputArgument(
+        name="SilentPush.Enrichment.asn_rank",
+        output_type=int,
+        description="Rank of the ASN.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.asn_rank_score",
+        output_type=int,
+        description="Rank score of the ASN.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.asn_reputation",
+        output_type=int,
+        description="Reputation score of the ASN.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ips_in_asn",
+        output_type=int,
+        description="Total number of IPs in the ASN.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.ips_num_active",
         output_type=int,
@@ -1036,10 +1578,14 @@ ENRICHMENT_OUTPUTS = [
         description="Number of listed IPs in the ASN.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.asn_reputation_score", output_type=int, description="Reputation score of the ASN."
+        name="SilentPush.Enrichment.asn_reputation_score",
+        output_type=int,
+        description="Reputation score of the ASN.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.asn_takedown_reputation", output_type=int, description="Takedown reputation score the ASN."
+        name="SilentPush.Enrichment.asn_takedown_reputation",
+        output_type=int,
+        description="Takedown reputation score the ASN.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.ips_in_asn",
@@ -1066,7 +1612,11 @@ ENRICHMENT_OUTPUTS = [
         output_type=int,
         description="Takedown reputation score of the ASN.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.asname", output_type=str, description="Name of the Autonomous System (AS)."),
+    OutputArgument(
+        name="SilentPush.Enrichment.asname",
+        output_type=str,
+        description="Name of the Autonomous System (AS).",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.actor",
         output_type=str,
@@ -1083,11 +1633,21 @@ ENRICHMENT_OUTPUTS = [
         output_type=list,
         description='Contains descriptive tags if the IP/ASN has a known role (e.g., "Google Bot", "Cloudflare Proxy").',
     ),
-    OutputArgument(name="SilentPush.Enrichment.date", output_type=int, description="Date of the scan data (YYYYMMDD format)."),
     OutputArgument(
-        name="SilentPush.Enrichment.density", output_type=int, description="The density value associated with the IP."
+        name="SilentPush.Enrichment.date",
+        output_type=int,
+        description="Date of the scan data (YYYYMMDD format).",
     ),
-    OutputArgument(name="SilentPush.Enrichment.ip", output_type=str, description="IP address associated with the ASN."),
+    OutputArgument(
+        name="SilentPush.Enrichment.density",
+        output_type=int,
+        description="The density value associated with the IP.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip",
+        output_type=str,
+        description="IP address associated with the ASN.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.ip_has_expired_certificate",
         output_type=bool,
@@ -1099,7 +1659,9 @@ ENRICHMENT_OUTPUTS = [
         description="Indicates whether the IP hosts an open directory listing.",
     ),
     OutputArgument(
-        name="SilentPush.Enrichment.ip_is_dsl_dynamic", output_type=bool, description="Whether the IP is from dynamic DSL pool."
+        name="SilentPush.Enrichment.ip_is_dsl_dynamic",
+        output_type=bool,
+        description="Whether the IP is from dynamic DSL pool.",
     ),
     OutputArgument(
         name="SilentPush.Enrichment.ip_is_dsl_dynamic_score",
@@ -1121,7 +1683,11 @@ ENRICHMENT_OUTPUTS = [
         output_type=str,
         description="abbreviation for the continent where the IP is located.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.continent_name", output_type=str, description="The full name of the continent."),
+    OutputArgument(
+        name="SilentPush.Enrichment.continent_name",
+        output_type=str,
+        description="The full name of the continent.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.country_code",
         output_type=str,
@@ -1137,7 +1703,11 @@ ENRICHMENT_OUTPUTS = [
         output_type=str,
         description="The full name of the country where the IP is registered.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.ip_ptr", output_type=str, description="The reverse DNS (PTR) record for the IP."),
+    OutputArgument(
+        name="SilentPush.Enrichment.ip_ptr",
+        output_type=str,
+        description="The reverse DNS (PTR) record for the IP.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.listing_score",
         output_type=int,
@@ -1148,7 +1718,11 @@ ENRICHMENT_OUTPUTS = [
         output_type=dict,
         description="A breakdown of why the listing score is assigned.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.malscore", output_type=int, description="Malicious activity score for the IP."),
+    OutputArgument(
+        name="SilentPush.Enrichment.malscore",
+        output_type=int,
+        description="Malicious activity score for the IP.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.hostname",
         output_type=str,
@@ -1189,19 +1763,51 @@ ENRICHMENT_OUTPUTS = [
         output_type=list,
         description="Other domains for which the SSL certificate was issued.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.is_expired", output_type=bool, description="Is certificate expired."),
-    OutputArgument(name="SilentPush.Enrichment.scan_date", output_type=str, description="Scan date of the certificate."),
-    OutputArgument(name="SilentPush.Enrichment.favicon2_md5", output_type=str, description="MD5 hash of the second favicon."),
+    OutputArgument(
+        name="SilentPush.Enrichment.is_expired",
+        output_type=bool,
+        description="Is certificate expired.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.scan_date",
+        output_type=str,
+        description="Scan date of the certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.favicon2_md5",
+        output_type=str,
+        description="MD5 hash of the second favicon.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.favicon2_mmh3",
         output_type=int,
         description="MurmurHash3 value of the second favicon.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.favicon_md5", output_type=str, description="MD5 hash of the favicon."),
-    OutputArgument(name="SilentPush.Enrichment.favicon_mmh3", output_type=int, description="MurmurHash3 value of the favicon."),
-    OutputArgument(name="SilentPush.Enrichment.favicon2_path", output_type=str, description="Path to the second favicon file."),
-    OutputArgument(name="SilentPush.Enrichment.scan_date", output_type=str, description="Scan date of favicon file."),
-    OutputArgument(name="SilentPush.Enrichment.response", output_type=str, description="HTTP response code from the scan."),
+    OutputArgument(
+        name="SilentPush.Enrichment.favicon_md5",
+        output_type=str,
+        description="MD5 hash of the favicon.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.favicon_mmh3",
+        output_type=int,
+        description="MurmurHash3 value of the favicon.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.favicon2_path",
+        output_type=str,
+        description="Path to the second favicon file.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.scan_date",
+        output_type=str,
+        description="Scan date of favicon file.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.response",
+        output_type=str,
+        description="HTTP response code from the scan.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.scan_date",
         output_type=str,
@@ -1227,8 +1833,16 @@ ENRICHMENT_OUTPUTS = [
         output_type=str,
         description="Cache-control header from the HTTP response.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.headers_date", output_type=str, description="Date header from HTTP response."),
-    OutputArgument(name="SilentPush.Enrichment.html_title", output_type=str, description="Title of the scanned HTML page."),
+    OutputArgument(
+        name="SilentPush.Enrichment.headers_date",
+        output_type=str,
+        description="Date header from HTTP response.",
+    ),
+    OutputArgument(
+        name="SilentPush.Enrichment.html_title",
+        output_type=str,
+        description="Title of the scanned HTML page.",
+    ),
     OutputArgument(
         name="SilentPush.Enrichment.html_body_murmur3",
         output_type=str,
@@ -1254,13 +1868,11 @@ ENRICHMENT_OUTPUTS = [
         output_type=str,
         description="JARM fingerprint hash for TLS analysis.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.sp_risk_score", output_type=int, description="Security risk score for the IP."),
     OutputArgument(
-        name="SilentPush.Enrichment.sp_risk_score_decider",
+        name="SilentPush.Enrichment.subnet",
         output_type=str,
-        description="Factor that determined the final risk score.",
+        description="Subnet associated with the IP.",
     ),
-    OutputArgument(name="SilentPush.Enrichment.subnet", output_type=str, description="Subnet associated with the IP."),
     OutputArgument(
         name="SilentPush.Enrichment.known_sinkhole_ip",
         output_type=bool,
@@ -1296,16 +1908,22 @@ ENRICHMENT_OUTPUTS = [
         output_type=int,
         description="A numerical risk score (typically 0-100, with higher values indicating higher risk).",
     ),
-]
+] + RISK_SCORE_OUTPUTS
 IPV4_REPUTATION_OUTPUTS = [
     OutputArgument(
-        name="SilentPush.Reputation.date", output_type=int, description="Date when the reputation information was retrieved."
+        name="SilentPush.Reputation.date",
+        output_type=int,
+        description="Date when the reputation information was retrieved.",
     ),
     OutputArgument(
-        name="SilentPush.Reputation.ip", output_type=str, description="IPv4 address for which the reputation is calculated."
+        name="SilentPush.Reputation.ip",
+        output_type=str,
+        description="IPv4 address for which the reputation is calculated.",
     ),
     OutputArgument(
-        name="SilentPush.Reputation.reputation_score", output_type=int, description="Reputation score for the given IP address."
+        name="SilentPush.Reputation.reputation_score",
+        output_type=int,
+        description="Reputation score for the given IP address.",
     ),
     OutputArgument(
         name="SilentPush.Reputation.ip_density",
@@ -1320,24 +1938,56 @@ IPV4_REPUTATION_OUTPUTS = [
     ),
 ]
 PADNS_OUTPUTS = [
-    OutputArgument(name="SilentPush.PADNS.qname", output_type=str, description="The DNS record name that was looked up."),
-    OutputArgument(name="SilentPush.PADNS.qtype", output_type=str, description="The DNS record type queried (e.g., NS)."),
     OutputArgument(
-        name="SilentPush.PADNS.answer", output_type=str, description="The answer (e.g., name server) for the DNS record."
-    ),
-    OutputArgument(name="SilentPush.PADNS.count", output_type=int, description="The number of occurrences for this DNS record."),
-    OutputArgument(
-        name="SilentPush.PADNS.first_seen", output_type=str, description="The timestamp when this DNS record was first seen."
+        name="SilentPush.PADNS.qname",
+        output_type=str,
+        description="The DNS record name that was looked up.",
     ),
     OutputArgument(
-        name="SilentPush.PADNS.last_seen", output_type=str, description="The timestamp when this DNS record was last seen."
+        name="SilentPush.PADNS.qtype",
+        output_type=str,
+        description="The DNS record type queried (e.g., NS).",
     ),
-    OutputArgument(name="SilentPush.PADNS.nshash", output_type=str, description="Unique hash for the DNS record."),
     OutputArgument(
-        name="SilentPush.PADNS.query", output_type=str, description="The DNS record query name (e.g., silentpush.com)."
+        name="SilentPush.PADNS.answer",
+        output_type=str,
+        description="The answer (e.g., name server) for the DNS record.",
     ),
-    OutputArgument(name="SilentPush.PADNS.ttl", output_type=int, description="Time to live (TTL) value for the DNS record."),
-    OutputArgument(name="SilentPush.PADNS.type", output_type=str, description="The type of the DNS record (e.g., NS)."),
+    OutputArgument(
+        name="SilentPush.PADNS.count",
+        output_type=int,
+        description="The number of occurrences for this DNS record.",
+    ),
+    OutputArgument(
+        name="SilentPush.PADNS.first_seen",
+        output_type=str,
+        description="The timestamp when this DNS record was first seen.",
+    ),
+    OutputArgument(
+        name="SilentPush.PADNS.last_seen",
+        output_type=str,
+        description="The timestamp when this DNS record was last seen.",
+    ),
+    OutputArgument(
+        name="SilentPush.PADNS.nshash",
+        output_type=str,
+        description="Unique hash for the DNS record.",
+    ),
+    OutputArgument(
+        name="SilentPush.PADNS.query",
+        output_type=str,
+        description="The DNS record query name (e.g., silentpush.com).",
+    ),
+    OutputArgument(
+        name="SilentPush.PADNS.ttl",
+        output_type=int,
+        description="Time to live (TTL) value for the DNS record.",
+    ),
+    OutputArgument(
+        name="SilentPush.PADNS.type",
+        output_type=str,
+        description="The type of the DNS record (e.g., NS).",
+    ),
 ]
 WHOIS_OUTPUTS = [
     OutputArgument(
@@ -1345,43 +1995,131 @@ WHOIS_OUTPUTS = [
         output_type=str,
         description="Name or partial name of the registrar used to register domains.",
     ),
-    OutputArgument(name="SilentPush.Whois.name", output_type=str, description="The registrant name"),
-    OutputArgument(name="SilentPush.Whois.whois_server", output_type=str, description="The server queried"),
-    OutputArgument(name="SilentPush.Whois.org", output_type=str, description="Organization"),
-    OutputArgument(name="SilentPush.Whois.address", output_type=str, description="Address"),
+    OutputArgument(
+        name="SilentPush.Whois.name", output_type=str, description="The registrant name"
+    ),
+    OutputArgument(
+        name="SilentPush.Whois.whois_server",
+        output_type=str,
+        description="The server queried",
+    ),
+    OutputArgument(
+        name="SilentPush.Whois.org", output_type=str, description="Organization"
+    ),
+    OutputArgument(
+        name="SilentPush.Whois.address", output_type=str, description="Address"
+    ),
     OutputArgument(name="SilentPush.Whois.city", output_type=int, description="City"),
-    OutputArgument(name="SilentPush.Whois.country", output_type=str, description="Country"),
-    OutputArgument(name="SilentPush.Whois.created", output_type=str, description="Date created"),
+    OutputArgument(
+        name="SilentPush.Whois.country", output_type=str, description="Country"
+    ),
+    OutputArgument(
+        name="SilentPush.Whois.created", output_type=str, description="Date created"
+    ),
     OutputArgument(name="SilentPush.Whois.date", output_type=str, description="Date"),
-    OutputArgument(name="SilentPush.Whois.domain", output_type=str, description="Domain"),
-    OutputArgument(name="SilentPush.Whois.emails", output_type=int, description="Emails"),
-    OutputArgument(name="SilentPush.Whois.expires", output_type=str, description="Expires"),
-    OutputArgument(name="SilentPush.Whois.nameservers", output_type=str, description="Nameservers"),
+    OutputArgument(
+        name="SilentPush.Whois.domain", output_type=str, description="Domain"
+    ),
+    OutputArgument(
+        name="SilentPush.Whois.emails", output_type=int, description="Emails"
+    ),
+    OutputArgument(
+        name="SilentPush.Whois.expires", output_type=str, description="Expires"
+    ),
+    OutputArgument(
+        name="SilentPush.Whois.nameservers", output_type=str, description="Nameservers"
+    ),
     OutputArgument(name="SilentPush.Whois.state", output_type=str, description="State"),
-    OutputArgument(name="SilentPush.Whois.updated", output_type=str, description="Date updated"),
-    OutputArgument(name="SilentPush.Whois.zipcode", output_type=str, description="Zip code"),
+    OutputArgument(
+        name="SilentPush.Whois.updated", output_type=str, description="Date updated"
+    ),
+    OutputArgument(
+        name="SilentPush.Whois.zipcode", output_type=str, description="Zip code"
+    ),
 ]
 FORWARD_PADNS_OUTPUTS = PADNS_OUTPUTS
 REVERSE_PADNS_OUTPUTS = PADNS_OUTPUTS
 SEARCH_SCAN_OUTPUTS = [
-    OutputArgument(name="SilentPush.Web.HHV", output_type=str, description="Unique identifier for the scan data entry."),
-    OutputArgument(name="SilentPush.Web.adtech", output_type=dict, description="Adtech information for the scan data entry."),
-    OutputArgument(name="SilentPush.Web.adtech_ads_txt", output_type=bool, description="Indicates if ads.txt is used."),
-    OutputArgument(name="SilentPush.Web.adtech_app_ads_txt", output_type=bool, description="Indicates if app_ads.txt is used."),
-    OutputArgument(name="SilentPush.Web.adtech_sellers_json", output_type=bool, description="Indicates if sellers.json used."),
-    OutputArgument(name="SilentPush.Web.body_analysis", output_type=dict, description="Body analysis for the scan data entry."),
-    OutputArgument(name="SilentPush.Web.body_sha256", output_type=str, description="SHA256 hash of the body."),
-    OutputArgument(name="SilentPush.Web.language", output_type=list, description="Languages detected in the body."),
-    OutputArgument(name="SilentPush.Web.ICP_license", output_type=str, description="ICP License information."),
-    OutputArgument(name="SilentPush.Web.SHV", output_type=str, description="Server Hash Verification value."),
-    OutputArgument(name="SilentPush.Web.adsense", output_type=list, description="List of AdSense data."),
-    OutputArgument(name="SilentPush.Web.footer_sha256", output_type=str, description="SHA-256 hash of the footer content."),
-    OutputArgument(name="SilentPush.Web.google-GA4", output_type=list, description="List of Google GA4 identifiers."),
     OutputArgument(
-        name="SilentPush.Web.google-UA", output_type=list, description="List of Google Universal Analytics identifiers."
+        name="SilentPush.Web.HHV",
+        output_type=str,
+        description="Unique identifier for the scan data entry.",
     ),
-    OutputArgument(name="SilentPush.Web.google-adstag", output_type=list, description="List of Google adstag identifiers."),
-    OutputArgument(name="SilentPush.Web.header_sha256", output_type=list, description="SHA-256 hash of the header content."),
+    OutputArgument(
+        name="SilentPush.Web.adtech",
+        output_type=dict,
+        description="Adtech information for the scan data entry.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.adtech_ads_txt",
+        output_type=bool,
+        description="Indicates if ads.txt is used.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.adtech_app_ads_txt",
+        output_type=bool,
+        description="Indicates if app_ads.txt is used.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.adtech_sellers_json",
+        output_type=bool,
+        description="Indicates if sellers.json used.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.body_analysis",
+        output_type=dict,
+        description="Body analysis for the scan data entry.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.body_sha256",
+        output_type=str,
+        description="SHA256 hash of the body.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.language",
+        output_type=list,
+        description="Languages detected in the body.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ICP_license",
+        output_type=str,
+        description="ICP License information.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.SHV",
+        output_type=str,
+        description="Server Hash Verification value.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.adsense",
+        output_type=list,
+        description="List of AdSense data.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.footer_sha256",
+        output_type=str,
+        description="SHA-256 hash of the footer content.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.google-GA4",
+        output_type=list,
+        description="List of Google GA4 identifiers.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.google-UA",
+        output_type=list,
+        description="List of Google Universal Analytics identifiers.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.google-adstag",
+        output_type=list,
+        description="List of Google adstag identifiers.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.header_sha256",
+        output_type=list,
+        description="SHA-256 hash of the header content.",
+    ),
     OutputArgument(
         name="SilentPush.Web.js_sha256",
         output_type=list,
@@ -1392,133 +2130,523 @@ SEARCH_SCAN_OUTPUTS = [
         output_type=list,
         description="List of JavaScript files with SSDEEP hash values.",
     ),
-    OutputArgument(name="SilentPush.Web.onion", output_type=list, description="List of Onion URLs detected."),
-    OutputArgument(name="SilentPush.Web.telegram", output_type=list, description="List of Telegram-related information."),
-    OutputArgument(name="SilentPush.Web.datahash", output_type=str, description="Hash of the data."),
-    OutputArgument(name="SilentPush.Web.datasource", output_type=str, description="Source of the scan data."),
-    OutputArgument(name="SilentPush.Web.domain", output_type=str, description="Domain associated with the scan data."),
-    OutputArgument(name="SilentPush.Web.geoip", output_type=dict, description="GeoIP information related to the scan."),
-    OutputArgument(name="SilentPush.Web.city_name", output_type=str, description="City where the scan data was retrieved."),
-    OutputArgument(name="SilentPush.Web.country_name", output_type=str, description="Country name from GeoIP information."),
-    OutputArgument(name="SilentPush.Web.location", output_type=dict, description="Geo-location coordinates."),
-    OutputArgument(name="SilentPush.Web.location.lat", output_type=float, description="Latitude from GeoIP location."),
-    OutputArgument(name="SilentPush.Web.location.lon", output_type=float, description="Longitude from GeoIP location."),
-    OutputArgument(name="SilentPush.Web.header", output_type=dict, description="HTTP header information for the scan."),
     OutputArgument(
-        name="SilentPush.Web.header_content-length", output_type=str, description="Content length from HTTP response header."
+        name="SilentPush.Web.onion",
+        output_type=list,
+        description="List of Onion URLs detected.",
     ),
-    OutputArgument(name="SilentPush.Web.header_location", output_type=str, description="Location from HTTP response header."),
     OutputArgument(
-        name="SilentPush.Web.header_connection", output_type=str, description="Connection type used, e.g., keep-alive."
+        name="SilentPush.Web.telegram",
+        output_type=list,
+        description="List of Telegram-related information.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.datahash", output_type=str, description="Hash of the data."
+    ),
+    OutputArgument(
+        name="SilentPush.Web.datasource",
+        output_type=str,
+        description="Source of the scan data.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.domain",
+        output_type=str,
+        description="Domain associated with the scan data.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.geoip",
+        output_type=dict,
+        description="GeoIP information related to the scan.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.city_name",
+        output_type=str,
+        description="City where the scan data was retrieved.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.country_name",
+        output_type=str,
+        description="Country name from GeoIP information.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.location",
+        output_type=dict,
+        description="Geo-location coordinates.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.location.lat",
+        output_type=float,
+        description="Latitude from GeoIP location.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.location.lon",
+        output_type=float,
+        description="Longitude from GeoIP location.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.header",
+        output_type=dict,
+        description="HTTP header information for the scan.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.header_content-length",
+        output_type=str,
+        description="Content length from HTTP response header.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.header_location",
+        output_type=str,
+        description="Location from HTTP response header.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.header_connection",
+        output_type=str,
+        description="Connection type used, e.g., keep-alive.",
     ),
     OutputArgument(
         name="SilentPush.Web.header.server",
         output_type=str,
         description="Server software used to serve the content, e.g., openresty.",
     ),
-    OutputArgument(name="SilentPush.Web.hostname", output_type=str, description="Hostname associated with the scan data."),
-    OutputArgument(name="SilentPush.Web.html_body_sha256", output_type=str, description="SHA256 hash of the HTML body."),
-    OutputArgument(name="SilentPush.Web.htmltitle", output_type=str, description="Title of the HTML page scanned."),
-    OutputArgument(name="SilentPush.Web.ip", output_type=str, description="IP address associated with the scan."),
-    OutputArgument(name="SilentPush.Web.jarm", output_type=str, description="JARM hash value."),
     OutputArgument(
-        name="SilentPush.Web.mobile_enabled", output_type=bool, description="Indicates if the page is mobile-enabled."
-    ),
-    OutputArgument(name="SilentPush.Web.origin_domain", output_type=str, description="Origin domain associated with the scan."),
-    OutputArgument(name="SilentPush.Web.origin_geoip", output_type=dict, description="GeoIP information of the origin domain."),
-    OutputArgument(
-        name="SilentPush.Web.city_name", output_type=str, description="City of the origin domain from GeoIP information."
+        name="SilentPush.Web.hostname",
+        output_type=str,
+        description="Hostname associated with the scan data.",
     ),
     OutputArgument(
-        name="SilentPush.Web.origin_hostname", output_type=str, description="Origin hostname associated with the scan data."
+        name="SilentPush.Web.html_body_sha256",
+        output_type=str,
+        description="SHA256 hash of the HTML body.",
     ),
-    OutputArgument(name="SilentPush.Web.origin_ip", output_type=str, description="Origin IP address of the scan."),
-    OutputArgument(name="SilentPush.Web.origin_jarm", output_type=str, description="JARM hash value of the origin domain."),
     OutputArgument(
-        name="SilentPush.Web.origin_ssl", output_type=dict, description="SSL certificate information for the origin domain."
+        name="SilentPush.Web.htmltitle",
+        output_type=str,
+        description="Title of the HTML page scanned.",
     ),
-    OutputArgument(name="SilentPush.Web.origin_ssl_SHA256", output_type=str, description="SHA256 of the SSL certificate."),
-    OutputArgument(name="SilentPush.Web.origin_ssl_subject", output_type=dict, description="Subject of the SSL certificate."),
     OutputArgument(
-        name="SilentPush.Web.origin_ssl_subject_common_name", output_type=str, description="Common name in the SSL certificate."
+        name="SilentPush.Web.ip",
+        output_type=str,
+        description="IP address associated with the scan.",
     ),
-    OutputArgument(name="SilentPush.Web.port", output_type=int, description="Port used during the scan."),
     OutputArgument(
-        name="SilentPush.Web.redirect", output_type=bool, description="Indicates if a redirect occurred during the scan."
+        name="SilentPush.Web.jarm", output_type=str, description="JARM hash value."
     ),
-    OutputArgument(name="SilentPush.Web.redirect_count", output_type=int, description="Count of redirects encountered."),
     OutputArgument(
-        name="SilentPush.Web.redirect_list", output_type=list, description="List of redirect URLs encountered during the scan."
+        name="SilentPush.Web.mobile_enabled",
+        output_type=bool,
+        description="Indicates if the page is mobile-enabled.",
     ),
-    OutputArgument(name="SilentPush.Web.response", output_type=int, description="HTTP response code received during the scan."),
-    OutputArgument(name="SilentPush.Web.scan_date", output_type=str, description="Timestamp of the scan date."),
-    OutputArgument(name="SilentPush.Web.scheme", output_type=str, description="URL scheme used in the scan."),
-    OutputArgument(name="SilentPush.Web.ssl", output_type=dict, description="SSL certificate details for the scan."),
-    OutputArgument(name="SilentPush.Web.ssl_SHA256", output_type=str, description="SHA256 of the SSL certificate."),
-    OutputArgument(name="SilentPush.Web.ssl_subject", output_type=dict, description="Subject of the SSL certificate."),
     OutputArgument(
-        name="SilentPush.Web.ssl_subject_common_name", output_type=str, description="Common name in the SSL certificate."
+        name="SilentPush.Web.origin_domain",
+        output_type=str,
+        description="Origin domain associated with the scan.",
     ),
-    OutputArgument(name="SilentPush.Web.subdomain", output_type=str, description="Subdomain associated with the scan data."),
-    OutputArgument(name="SilentPush.Web.tld", output_type=str, description="Top-level domain (TLD) of the scanned URL."),
-    OutputArgument(name="SilentPush.Web.url", output_type=str, description="The URL scanned."),
+    OutputArgument(
+        name="SilentPush.Web.origin_geoip",
+        output_type=dict,
+        description="GeoIP information of the origin domain.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.city_name",
+        output_type=str,
+        description="City of the origin domain from GeoIP information.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_hostname",
+        output_type=str,
+        description="Origin hostname associated with the scan data.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_ip",
+        output_type=str,
+        description="Origin IP address of the scan.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_jarm",
+        output_type=str,
+        description="JARM hash value of the origin domain.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_ssl",
+        output_type=dict,
+        description="SSL certificate information for the origin domain.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_ssl_SHA256",
+        output_type=str,
+        description="SHA256 of the SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_ssl_subject",
+        output_type=dict,
+        description="Subject of the SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_ssl_subject_common_name",
+        output_type=str,
+        description="Common name in the SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.port",
+        output_type=int,
+        description="Port used during the scan.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.redirect",
+        output_type=bool,
+        description="Indicates if a redirect occurred during the scan.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.redirect_count",
+        output_type=int,
+        description="Count of redirects encountered.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.redirect_list",
+        output_type=list,
+        description="List of redirect URLs encountered during the scan.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.response",
+        output_type=int,
+        description="HTTP response code received during the scan.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.scan_date",
+        output_type=str,
+        description="Timestamp of the scan date.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.scheme",
+        output_type=str,
+        description="URL scheme used in the scan.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl",
+        output_type=dict,
+        description="SSL certificate details for the scan.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_SHA256",
+        output_type=str,
+        description="SHA256 of the SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_subject",
+        output_type=dict,
+        description="Subject of the SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_subject_common_name",
+        output_type=str,
+        description="Common name in the SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.subdomain",
+        output_type=str,
+        description="Subdomain associated with the scan data.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.tld",
+        output_type=str,
+        description="Top-level domain (TLD) of the scanned URL.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.url", output_type=str, description="The URL scanned."
+    ),
+]
+ASN_REPUTATION_OUTPUTS = [
+    OutputArgument(
+        name="SilentPush.ASN.asn",
+        output_type=int,
+        description="Autonomous System Number (ASN) associated with the reputation history.",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.asn_reputation",
+        output_type=int,
+        description="Reputation score of the ASN at a given point in time.",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.ips_in_asn",
+        output_type=int,
+        description="Total number of IPs within the ASN.",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.ips_num_active",
+        output_type=int,
+        description="Number of actively used IPs in the ASN.",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN..ips_num_listed",
+        output_type=int,
+        description="Number of IPs in the ASN that are listed as malicious.",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.asname",
+        output_type=str,
+        description="Name of the ASN provider or organization.",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.date",
+        output_type=int,
+        description="Date of the recorded reputation history in YYYYMMDD format.",
+    ),
+]
+ASN_TAKEDOWN_REPUTATION_OUTPUTS = [
+    OutputArgument(
+        name="SilentPush.ASN.asname",
+        output_type=str,
+        description="The name of the Autonomous System (AS).",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.asn",
+        output_type=str,
+        description="The Autonomous System Number (ASN).",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.allocation_age",
+        output_type=int,
+        description="The age of the ASN allocation in days.",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.allocation_date",
+        output_type=int,
+        description="The date when the ASN was allocated (YYYYMMDD).",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.asn_takedown_reputation",
+        output_type=int,
+        description="The takedown reputation score for the ASN.",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.ips_in_asn",
+        output_type=int,
+        description="The total number of IP addresses associated with the ASN.",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.ips_num_listed",
+        output_type=int,
+        description="The number of IP addresses within the ASN that are flagged or listed in security threat databases.",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.items_num_listed",
+        output_type=int,
+        description="The total number of security-related listings associated with the ASN, including IP addresses and domains.",
+    ),
+    OutputArgument(
+        name="SilentPush.ASN.listings_max_age",
+        output_type=int,
+        description="The maximum age (in hours) of the listings, indicating how recent the flagged IPs/domains are.",
+    ),
 ]
 LIVE_SCAN_URL_OUTPUTS = [
-    OutputArgument(name="SilentPush.Web.HHV", output_type=str, description="Unique identifier for HHV."),
-    OutputArgument(name="SilentPush.Web.adtech_ads_txt", output_type=bool, description="Indicates if ads_txt is present."),
     OutputArgument(
-        name="SilentPush.Web.adtech_app_ads_txt", output_type=bool, description="Indicates if app_ads_txt is present."
+        name="SilentPush.Web.HHV",
+        output_type=str,
+        description="Unique identifier for HHV.",
     ),
     OutputArgument(
-        name="SilentPush.Web.adtech_sellers_json", output_type=bool, description="Indicates if sellers_json is present."
+        name="SilentPush.Web.adtech_ads_txt",
+        output_type=bool,
+        description="Indicates if ads_txt is present.",
     ),
-    OutputArgument(name="SilentPush.Web.datahash", output_type=str, description="Hash value of the data."),
-    OutputArgument(name="SilentPush.Web.domain", output_type=str, description="The domain name."),
-    OutputArgument(name="SilentPush.Web.favicon2_avg", output_type=str, description="Hash value for favicon2 average."),
-    OutputArgument(name="SilentPush.Web.favicon2_md5", output_type=str, description="MD5 hash for favicon2."),
-    OutputArgument(name="SilentPush.Web.favicon2_murmur3", output_type=int, description="Murmur3 hash for favicon2."),
-    OutputArgument(name="SilentPush.Web.favicon2_path", output_type=str, description="Path to favicon2 image."),
-    OutputArgument(name="SilentPush.Web.favicon_avg", output_type=str, description="Hash value for favicon average."),
-    OutputArgument(name="SilentPush.Web.favicon_md5", output_type=str, description="MD5 hash for favicon."),
-    OutputArgument(name="SilentPush.Web.favicon_murmur3", output_type=str, description="Murmur3 hash for favicon."),
-    OutputArgument(name="SilentPush.Web.favicon_path", output_type=str, description="Path to favicon image."),
-    OutputArgument(name="SilentPush.Web.favicon_urls", output_type=list, description="List of favicon URLs."),
-    OutputArgument(name="SilentPush.Web.header_cache-control", output_type=str, description="Cache control header value."),
-    OutputArgument(name="SilentPush.Web.header_content-encoding", output_type=str, description="Content encoding header value."),
-    OutputArgument(name="SilentPush.Web.header_content-type", output_type=str, description="Content type header value."),
-    OutputArgument(name="SilentPush.Web.header_server", output_type=str, description="Server header value."),
-    OutputArgument(name="SilentPush.Web.header_x-powered-by", output_type=str, description="X-Powered-By header value."),
-    OutputArgument(name="SilentPush.Web.hostname", output_type=str, description="The hostname of the server."),
-    OutputArgument(name="SilentPush.Web.html_body_length", output_type=int, description="Length of the HTML body."),
-    OutputArgument(name="SilentPush.Web.html_body_murmur3", output_type=int, description="Murmur3 hash for the HTML body."),
-    OutputArgument(name="SilentPush.Web.html_body_sha256", output_type=str, description="SHA256 hash for the HTML body."),
-    OutputArgument(name="SilentPush.Web.html_body_similarity", output_type=int, description="Similarity score of HTML body."),
-    OutputArgument(name="SilentPush.Web.html_body_ssdeep", output_type=str, description="ssdeep hash for the HTML body."),
-    OutputArgument(name="SilentPush.Web.htmltitle", output_type=str, description="The HTML title of the page."),
-    OutputArgument(name="SilentPush.Web.ip", output_type=str, description="IP address associated with the domain."),
-    OutputArgument(name="SilentPush.Web.jarm", output_type=str, description="JARM (TLS fingerprint) value."),
     OutputArgument(
-        name="SilentPush.Web.mobile_enabled", output_type=bool, description="Indicates if the mobile version is enabled."
+        name="SilentPush.Web.adtech_app_ads_txt",
+        output_type=bool,
+        description="Indicates if app_ads_txt is present.",
     ),
-    OutputArgument(name="SilentPush.Web.opendirectory", output_type=bool, description="Indicates if open directory is enabled."),
-    OutputArgument(name="SilentPush.Web.origin_domain", output_type=str, description="Origin domain of the server."),
-    OutputArgument(name="SilentPush.Web.origin_hostname", output_type=str, description="Origin hostname of the server."),
-    OutputArgument(name="SilentPush.Web.origin_ip", output_type=str, description="Origin IP address of the server."),
     OutputArgument(
-        name="SilentPush.Web.origin_jarm", output_type=str, description="JARM (TLS fingerprint) value for the origin."
+        name="SilentPush.Web.adtech_sellers_json",
+        output_type=bool,
+        description="Indicates if sellers_json is present.",
     ),
-    OutputArgument(name="SilentPush.Web.origin_path", output_type=str, description="Origin path for the URL."),
-    OutputArgument(name="SilentPush.Web.origin_port", output_type=int, description="Port used for the origin server."),
-    OutputArgument(name="SilentPush.Web.origin_ssl.CHV", output_type=str, description="SSL Certificate Chain Value (CHV)."),
-    OutputArgument(name="SilentPush.Web.origin_ssl.SHA1", output_type=str, description="SHA1 hash of the SSL certificate."),
-    OutputArgument(name="SilentPush.Web.origin_ssl.SHA256", output_type=str, description="SHA256 hash of the SSL certificate."),
+    OutputArgument(
+        name="SilentPush.Web.datahash",
+        output_type=str,
+        description="Hash value of the data.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.domain", output_type=str, description="The domain name."
+    ),
+    OutputArgument(
+        name="SilentPush.Web.favicon2_avg",
+        output_type=str,
+        description="Hash value for favicon2 average.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.favicon2_md5",
+        output_type=str,
+        description="MD5 hash for favicon2.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.favicon2_murmur3",
+        output_type=int,
+        description="Murmur3 hash for favicon2.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.favicon2_path",
+        output_type=str,
+        description="Path to favicon2 image.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.favicon_avg",
+        output_type=str,
+        description="Hash value for favicon average.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.favicon_md5",
+        output_type=str,
+        description="MD5 hash for favicon.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.favicon_murmur3",
+        output_type=str,
+        description="Murmur3 hash for favicon.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.favicon_path",
+        output_type=str,
+        description="Path to favicon image.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.favicon_urls",
+        output_type=list,
+        description="List of favicon URLs.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.header_cache-control",
+        output_type=str,
+        description="Cache control header value.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.header_content-encoding",
+        output_type=str,
+        description="Content encoding header value.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.header_content-type",
+        output_type=str,
+        description="Content type header value.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.header_server",
+        output_type=str,
+        description="Server header value.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.header_x-powered-by",
+        output_type=str,
+        description="X-Powered-By header value.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.hostname",
+        output_type=str,
+        description="The hostname of the server.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.html_body_length",
+        output_type=int,
+        description="Length of the HTML body.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.html_body_murmur3",
+        output_type=int,
+        description="Murmur3 hash for the HTML body.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.html_body_sha256",
+        output_type=str,
+        description="SHA256 hash for the HTML body.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.html_body_similarity",
+        output_type=int,
+        description="Similarity score of HTML body.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.html_body_ssdeep",
+        output_type=str,
+        description="ssdeep hash for the HTML body.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.htmltitle",
+        output_type=str,
+        description="The HTML title of the page.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ip",
+        output_type=str,
+        description="IP address associated with the domain.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.jarm",
+        output_type=str,
+        description="JARM (TLS fingerprint) value.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.mobile_enabled",
+        output_type=bool,
+        description="Indicates if the mobile version is enabled.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.opendirectory",
+        output_type=bool,
+        description="Indicates if open directory is enabled.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_domain",
+        output_type=str,
+        description="Origin domain of the server.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_hostname",
+        output_type=str,
+        description="Origin hostname of the server.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_ip",
+        output_type=str,
+        description="Origin IP address of the server.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_jarm",
+        output_type=str,
+        description="JARM (TLS fingerprint) value for the origin.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_path",
+        output_type=str,
+        description="Origin path for the URL.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_port",
+        output_type=int,
+        description="Port used for the origin server.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_ssl.CHV",
+        output_type=str,
+        description="SSL Certificate Chain Value (CHV).",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_ssl.SHA1",
+        output_type=str,
+        description="SHA1 hash of the SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.origin_ssl.SHA256",
+        output_type=str,
+        description="SHA256 hash of the SSL certificate.",
+    ),
     OutputArgument(
         name="SilentPush.Web.origin_ssl_authority_key_id",
         output_type=str,
         description="Authority Key Identifier for SSL certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Web.origin_ssl_expired", output_type=bool, description="Indicates if the SSL certificate is expired."
+        name="SilentPush.Web.origin_ssl_expired",
+        output_type=bool,
+        description="Indicates if the SSL certificate is expired.",
     ),
     OutputArgument(
         name="SilentPush.Web.origin_ssl_issuer_common_name",
@@ -1526,7 +2654,9 @@ LIVE_SCAN_URL_OUTPUTS = [
         description="Issuer common name for SSL certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Web.origin_ssl_issuer_country", output_type=str, description="Issuer country for SSL certificate."
+        name="SilentPush.Web.origin_ssl_issuer_country",
+        output_type=str,
+        description="Issuer country for SSL certificate.",
     ),
     OutputArgument(
         name="SilentPush.Web.origin_ssl_issuer_organization",
@@ -1534,10 +2664,14 @@ LIVE_SCAN_URL_OUTPUTS = [
         description="Issuer organization for SSL certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Web.origin_ssl_not_after", output_type=str, description="Expiration date of the SSL certificate."
+        name="SilentPush.Web.origin_ssl_not_after",
+        output_type=str,
+        description="Expiration date of the SSL certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Web.origin_ssl_not_before", output_type=str, description="Start date of the SSL certificate validity."
+        name="SilentPush.Web.origin_ssl_not_before",
+        output_type=str,
+        description="Start date of the SSL certificate validity.",
     ),
     OutputArgument(
         name="SilentPush.Web.origin_ssl.sans",
@@ -1545,13 +2679,19 @@ LIVE_SCAN_URL_OUTPUTS = [
         description="List of Subject Alternative Names (SANs) for the SSL certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Web.origin_ssl_sans_count", output_type=int, description="Count of SANs for the SSL certificate."
+        name="SilentPush.Web.origin_ssl_sans_count",
+        output_type=int,
+        description="Count of SANs for the SSL certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Web.origin_ssl_serial_number", output_type=str, description="Serial number of the SSL certificate."
+        name="SilentPush.Web.origin_ssl_serial_number",
+        output_type=str,
+        description="Serial number of the SSL certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Web.origin_ssl_sigalg", output_type=str, description="Signature algorithm used for the SSL certificate."
+        name="SilentPush.Web.origin_ssl_sigalg",
+        output_type=str,
+        description="Signature algorithm used for the SSL certificate.",
     ),
     OutputArgument(
         name="SilentPush.Web.origin_ssl_subject_common_name",
@@ -1564,87 +2704,238 @@ LIVE_SCAN_URL_OUTPUTS = [
         description="Subject Key Identifier for SSL certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Web.origin_ssl_valid", output_type=bool, description="Indicates if the SSL certificate is valid."
+        name="SilentPush.Web.origin_ssl_valid",
+        output_type=bool,
+        description="Indicates if the SSL certificate is valid.",
     ),
     OutputArgument(
-        name="SilentPush.Web.origin_ssl_wildcard", output_type=bool, description="Indicates if the SSL certificate is wildcard."
-    ),
-    OutputArgument(name="SilentPush.Web.origin_subdomain", output_type=str, description="Subdomain of the origin."),
-    OutputArgument(name="SilentPush.Web.origin_tld", output_type=str, description="Top-level domain of the origin."),
-    OutputArgument(name="SilentPush.Web.origin_url", output_type=str, description="Complete URL of the origin."),
-    OutputArgument(name="SilentPush.Web.path", output_type=str, description="Path for the URL."),
-    OutputArgument(name="SilentPush.Web.port", output_type=int, description="Port for the URL."),
-    OutputArgument(name="SilentPush.Web.proxy_enabled", output_type=bool, description="Indicates if the proxy is enabled."),
-    OutputArgument(name="SilentPush.Web.redirect", output_type=bool, description="Indicates if a redirect occurs."),
-    OutputArgument(name="SilentPush.Web.redirect_count", output_type=int, description="Count of redirects."),
-    OutputArgument(name="SilentPush.Web.redirect_list", output_type=list, description="List of redirect URLs."),
-    OutputArgument(name="SilentPush.Web.resolves_to", output_type=list, description="List of IPs the domain resolves to."),
-    OutputArgument(name="SilentPush.Web.response", output_type=int, description="HTTP response code."),
-    OutputArgument(name="SilentPush.Web.scheme", output_type=str, description="URL scheme (e.g., https)."),
-    OutputArgument(name="SilentPush.Web.screenshot", output_type=str, description="URL for the domain screenshot."),
-    OutputArgument(name="SilentPush.Web.ssl_CHV", output_type=str, description="SSL Certificate Chain Value (CHV)."),
-    OutputArgument(name="SilentPush.Web.ssl_SHA1", output_type=str, description="SHA1 hash of the SSL certificate."),
-    OutputArgument(name="SilentPush.Web.ssl_SHA256", output_type=str, description="SHA256 hash of the SSL certificate."),
-    OutputArgument(
-        name="SilentPush.Web.ssl_authority_key_id", output_type=str, description="Authority Key Identifier for SSL certificate."
+        name="SilentPush.Web.origin_ssl_wildcard",
+        output_type=bool,
+        description="Indicates if the SSL certificate is wildcard.",
     ),
     OutputArgument(
-        name="SilentPush.Web.ssl_expired", output_type=bool, description="Indicates if the SSL certificate is expired."
+        name="SilentPush.Web.origin_subdomain",
+        output_type=str,
+        description="Subdomain of the origin.",
     ),
     OutputArgument(
-        name="SilentPush.Web.ssl_issuer_common_name", output_type=str, description="Issuer common name for SSL certificate."
+        name="SilentPush.Web.origin_tld",
+        output_type=str,
+        description="Top-level domain of the origin.",
     ),
-    OutputArgument(name="SilentPush.Web.ssl_issuer_country", output_type=str, description="Issuer country for SSL certificate."),
     OutputArgument(
-        name="SilentPush.Web.ssl_issuer_organization", output_type=str, description="Issuer organization for SSL certificate."
+        name="SilentPush.Web.origin_url",
+        output_type=str,
+        description="Complete URL of the origin.",
     ),
-    OutputArgument(name="SilentPush.Web.ssl_not_after", output_type=str, description="Expiration date of the SSL certificate."),
     OutputArgument(
-        name="SilentPush.Web.ssl_not_before", output_type=str, description="Start date of the SSL certificate validity."
+        name="SilentPush.Web.path", output_type=str, description="Path for the URL."
+    ),
+    OutputArgument(
+        name="SilentPush.Web.port", output_type=int, description="Port for the URL."
+    ),
+    OutputArgument(
+        name="SilentPush.Web.proxy_enabled",
+        output_type=bool,
+        description="Indicates if the proxy is enabled.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.redirect",
+        output_type=bool,
+        description="Indicates if a redirect occurs.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.redirect_count",
+        output_type=int,
+        description="Count of redirects.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.redirect_list",
+        output_type=list,
+        description="List of redirect URLs.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.resolves_to",
+        output_type=list,
+        description="List of IPs the domain resolves to.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.response",
+        output_type=int,
+        description="HTTP response code.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.scheme",
+        output_type=str,
+        description="URL scheme (e.g., https).",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.screenshot",
+        output_type=str,
+        description="URL for the domain screenshot.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_CHV",
+        output_type=str,
+        description="SSL Certificate Chain Value (CHV).",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_SHA1",
+        output_type=str,
+        description="SHA1 hash of the SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_SHA256",
+        output_type=str,
+        description="SHA256 hash of the SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_authority_key_id",
+        output_type=str,
+        description="Authority Key Identifier for SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_expired",
+        output_type=bool,
+        description="Indicates if the SSL certificate is expired.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_issuer_common_name",
+        output_type=str,
+        description="Issuer common name for SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_issuer_country",
+        output_type=str,
+        description="Issuer country for SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_issuer_organization",
+        output_type=str,
+        description="Issuer organization for SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_not_after",
+        output_type=str,
+        description="Expiration date of the SSL certificate.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_not_before",
+        output_type=str,
+        description="Start date of the SSL certificate validity.",
     ),
     OutputArgument(
         name="SilentPush.Web.ssl_sans",
         output_type=list,
         description="List of Subject Alternative Names (SANs) for the SSL certificate.",
     ),
-    OutputArgument(name="SilentPush.Web.ssl_sans_count", output_type=int, description="Count of SANs for the SSL certificate."),
-    OutputArgument(name="SilentPush.Web.ssl_serial_number", output_type=str, description="Serial number of SSL certificate."),
     OutputArgument(
-        name="SilentPush.Web.ssl_sigalg", output_type=str, description="Signature algorithm used for the SSL certificate."
+        name="SilentPush.Web.ssl_sans_count",
+        output_type=int,
+        description="Count of SANs for the SSL certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Web.ssl_subject_common_name", output_type=str, description="Subject common name for SSL certificate."
+        name="SilentPush.Web.ssl_serial_number",
+        output_type=str,
+        description="Serial number of SSL certificate.",
     ),
     OutputArgument(
-        name="SilentPush.Web.ssl_subject_key_id", output_type=str, description="Subject Key Identifier for SSL certificate."
+        name="SilentPush.Web.ssl_sigalg",
+        output_type=str,
+        description="Signature algorithm used for the SSL certificate.",
     ),
-    OutputArgument(name="SilentPush.Web.ssl_valid", output_type=bool, description="Indicates if the SSL certificate is valid."),
     OutputArgument(
-        name="SilentPush.Web.ssl_wildcard", output_type=bool, description="Indicates if the SSL certificate is a wildcard."
+        name="SilentPush.Web.ssl_subject_common_name",
+        output_type=str,
+        description="Subject common name for SSL certificate.",
     ),
-    OutputArgument(name="SilentPush.Web.SHV", output_type=str, description="Unique identifier for body analysis."),
-    OutputArgument(name="SilentPush.Web.body_sha256", output_type=str, description="SHA-256 hash of the body content."),
-    OutputArgument(name="SilentPush.Web.google-GA4", output_type=list, description="List of Google GA4 tracking IDs."),
     OutputArgument(
-        name="SilentPush.Web.google-UA", output_type=list, description="List of Google Universal Analytics tracking IDs."
+        name="SilentPush.Web.ssl_subject_key_id",
+        output_type=str,
+        description="Subject Key Identifier for SSL certificate.",
     ),
-    OutputArgument(name="SilentPush.Web.google-adstag", output_type=list, description="List of Google Adstag tracking IDs."),
-    OutputArgument(name="SilentPush.Web.js_sha256", output_type=list, description="List of SHA-256 hashes of JavaScript files."),
     OutputArgument(
-        name="SilentPush.Web.js_ssdeep", output_type=list, description="List of ssdeep fuzzy hashes of JavaScript files."
+        name="SilentPush.Web.ssl_valid",
+        output_type=bool,
+        description="Indicates if the SSL certificate is valid.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.ssl_wildcard",
+        output_type=bool,
+        description="Indicates if the SSL certificate is a wildcard.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.SHV",
+        output_type=str,
+        description="Unique identifier for body analysis.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.body_sha256",
+        output_type=str,
+        description="SHA-256 hash of the body content.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.google-GA4",
+        output_type=list,
+        description="List of Google GA4 tracking IDs.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.google-UA",
+        output_type=list,
+        description="List of Google Universal Analytics tracking IDs.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.google-adstag",
+        output_type=list,
+        description="List of Google Adstag tracking IDs.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.js_sha256",
+        output_type=list,
+        description="List of SHA-256 hashes of JavaScript files.",
+    ),
+    OutputArgument(
+        name="SilentPush.Web.js_ssdeep",
+        output_type=list,
+        description="List of ssdeep fuzzy hashes of JavaScript files.",
     ),
 ]
 ADD_FEED_OUTPUTS = [
-    OutputArgument(name="SilentPush.Feed.name", output_type=str, description="The name of the feed."),
-    OutputArgument(name="SilentPush.Feed.type", output_type=str, description="The type of the feed."),
-    OutputArgument(name="SilentPush.Feed.vendor", output_type=str, description="The vendor of the feed."),
-    OutputArgument(name="SilentPush.Feed.feed_description", output_type=str, description="A description of the feed."),
-    OutputArgument(name="SilentPush.Feed.category", output_type=str, description="The category of the feed."),
-    OutputArgument(name="SilentPush.Feed.tags", output_type=list, description="Tags associated with the feed."),
+    OutputArgument(
+        name="SilentPush.Feed.name",
+        output_type=str,
+        description="The name of the feed.",
+    ),
+    OutputArgument(
+        name="SilentPush.Feed.type",
+        output_type=str,
+        description="The type of the feed.",
+    ),
+    OutputArgument(
+        name="SilentPush.Feed.vendor",
+        output_type=str,
+        description="The vendor of the feed.",
+    ),
+    OutputArgument(
+        name="SilentPush.Feed.feed_description",
+        output_type=str,
+        description="A description of the feed.",
+    ),
+    OutputArgument(
+        name="SilentPush.Feed.category",
+        output_type=str,
+        description="The category of the feed.",
+    ),
+    OutputArgument(
+        name="SilentPush.Feed.tags",
+        output_type=list,
+        description="Tags associated with the feed.",
+    ),
 ]
 ADD_FEED_TAGS_OUTPUTS = [
     OutputArgument(
-        name="SilentPush.Feed.created_or_updated", description="List of tags that have been created or updated to the feed."
+        name="SilentPush.Feed.created_or_updated",
+        description="List of tags that have been created or updated to the feed.",
     )
 ]
 ADD_INDICATORS_OUTPUTS = [
@@ -1660,9 +2951,21 @@ ADD_INDICATORS_OUTPUTS = [
     ),
 ]
 ADD_INDICATOR_TAGS_OUTPUTS = [
-    OutputArgument(name="SilentPush.Feed.uuid", output_type=str, description="The UUID of the indicator."),
-    OutputArgument(name="SilentPush.Feed.name", output_type=str, description="The name of the indicator."),
-    OutputArgument(name="SilentPush.Feed.tags", output_type=str, description="The tags assigned to the indicator."),
+    OutputArgument(
+        name="SilentPush.Feed.uuid",
+        output_type=str,
+        description="The UUID of the indicator.",
+    ),
+    OutputArgument(
+        name="SilentPush.Feed.name",
+        output_type=str,
+        description="The name of the indicator.",
+    ),
+    OutputArgument(
+        name="SilentPush.Feed.tags",
+        output_type=str,
+        description="The tags assigned to the indicator.",
+    ),
 ]
 RUN_THREAT_CHECK_OUTPUTS = [
     OutputArgument(
@@ -1670,8 +2973,16 @@ RUN_THREAT_CHECK_OUTPUTS = [
         output_type=bool,
         description="Indicates whether the queried value is listed as a threat.",
     ),
-    OutputArgument(name="SilentPush.Feed.listed_txt", output_type=str, description="Textual description of the listing status."),
-    OutputArgument(name="SilentPush.Feed.query", output_type=str, description="The original value that was checked."),
+    OutputArgument(
+        name="SilentPush.Feed.listed_txt",
+        output_type=str,
+        description="Textual description of the listing status.",
+    ),
+    OutputArgument(
+        name="SilentPush.Feed.query",
+        output_type=str,
+        description="The original value that was checked.",
+    ),
 ]
 
 metadata_collector = YMLMetadataCollector(
@@ -1695,7 +3006,12 @@ metadata_collector = YMLMetadataCollector(
     integration_type="python",
     fromversion="5.0.0",
     conf=[
-        ConfKey(name="url", display="Base URL", required=True, default_value="https://api.silentpush.com"),
+        ConfKey(
+            name="url",
+            display="Base URL",
+            required=True,
+            default_value="https://api.silentpush.com",
+        ),
         ConfKey(
             name="credentials",
             display="API Key",
@@ -1708,7 +3024,12 @@ metadata_collector = YMLMetadataCollector(
             required=False,
             key_type=ParameterTypes.AUTH,
         ),
-        ConfKey(name="proxy", display="Use system proxy settings", required=False, key_type=ParameterTypes.BOOLEAN),
+        ConfKey(
+            name="proxy",
+            display="Use system proxy settings",
+            required=False,
+            key_type=ParameterTypes.BOOLEAN,
+        ),
         ConfKey(
             name="insecure",
             display="Trust any certificate (not secure)",
@@ -1729,7 +3050,9 @@ class Client(BaseClient):
 
     threat_check_key: str = ""
 
-    def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False):
+    def __init__(
+        self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False
+    ):
         """
         Initializes the client with the necessary parameters.
 
@@ -1788,7 +3111,11 @@ class Client(BaseClient):
 
         :raises DemistoException: If the response is not JSON or if the request fails.
         """
-        full_url = full_url if full_url else f"{self.base_url.rstrip('/')}/{url_suffix.lstrip('/')}"
+        full_url = (
+            full_url
+            if full_url
+            else f"{self.base_url.rstrip('/')}/{url_suffix.lstrip('/')}"
+        )
         try:
             response = requests.request(
                 method=method,
@@ -1802,13 +3129,17 @@ class Client(BaseClient):
         except requests.exceptions.RequestException as e:
             raise DemistoException(f"Connection error: {str(e)}")
         if not response.ok:
-            raise DemistoException(f"HTTP {response.status_code} Error: {response.text}", res=response)
+            raise DemistoException(
+                f"HTTP {response.status_code} Error: {response.text}", res=response
+            )
         try:
             return response.json() if resp_type == "json" else response
         except ValueError:
             raise DemistoException("Failed to parse JSON response.", res=response)
 
-    def lookup(self, url_path: str, args: dict, both: bool = False) -> tuple[dict, str] | str:
+    def lookup(
+        self, url_path: str, args: dict, both: bool = False
+    ) -> tuple[dict, str] | str:
         """
         Command function to perform a PADNS lookup on the SilentPush API.
 
@@ -1824,34 +3155,46 @@ class Client(BaseClient):
             raise DemistoException("Both 'qtype' and 'query' are required parameters.")
         url_suffix = f"{url_path}/{qtype}/{query}"
         url_suffix += ("/" + args.get("answer")) if both else ""  # type: ignore
-        raw_response = self._http_request(method="GET", url_suffix=url_suffix, params=args)
+        raw_response = self._http_request(
+            method="GET", url_suffix=url_suffix, params=args
+        )
         if raw_response.get("error"):
             raise DemistoException(f"API Error: {raw_response.get('error')}")
         records = raw_response.get("response", {}).get("records", [])
         readable_output = (
             f"No records found for {qtype} {query}"
             if not records
-            else tableToMarkdown(f"Lookup Results for {qtype} {query}", records, removeNull=True)
+            else tableToMarkdown(
+                f"Lookup Results for {qtype} {query}", records, removeNull=True
+            )
         )
         return raw_response, readable_output
 
     def get_bulk_info(self, payload, url_suffix):
         if len(list(payload.values())[0]) > 100:
-            raise ValueError("Maximum of 100 values can be submitted in a single request.")
-        raw_response = self._http_request(method="POST", url_suffix=url_suffix, data=payload)
+            raise ValueError(
+                "Maximum of 100 values can be submitted in a single request."
+            )
+        raw_response = self._http_request(
+            method="POST", url_suffix=url_suffix, data=payload
+        )
         response = raw_response.get("response", []) or []
         markdown = "# Information Results\n"
         markdown += self.get_markdown(response)
         return response, markdown
 
-    def get_reputation(self, url_suffix: str, args: dict, request_field: str, response_field: str):
+    def get_reputation(
+        self, url_suffix: str, args: dict, request_field: str, response_field: str
+    ):
         reputation_query = args.get(request_field)
         if not reputation_query:
             raise ValueError("a query for reputation is required.")
         url_suffix = f"{url_suffix}/{reputation_query}"
         params = {"explain": args.get("explain"), "limit": args.get("limit")}
         remove_nulls_from_dictionary(params)
-        response = self._http_request(method="GET", url_suffix=url_suffix, params=params)
+        response = self._http_request(
+            method="GET", url_suffix=url_suffix, params=params
+        )
         reputation_data = response.get("response", {}).get(response_field, [])
         if reputation_data and all(isinstance(item, dict) for item in reputation_data):
             all_headers = set()
@@ -1884,7 +3227,9 @@ class Client(BaseClient):
             "dict_list_dict": {  # {"w": [{"x": "x", "y": "y"}, {"z": "z", "w": "w"}]}
                 "$schema": "https://json-schema.org",
                 "type": "object",
-                "patternProperties": {"^[a-z].*$": {"type": "array", "items": {"type": "object"}}},
+                "patternProperties": {
+                    "^[a-z].*$": {"type": "array", "items": {"type": "object"}}
+                },
                 "additionalProperties": False,  # Forces strict rejection of unmapped patterns
             },
             "dict_dict": {  # {'x': {'y':'y'}, 'y': {'z': 'z'}}
@@ -1913,10 +3258,14 @@ class Client(BaseClient):
         try:
             if schema == "dict_dict":
                 for k, v in response.items():
-                    markdown += tableToMarkdown(k, v, headers=v.keys(), is_auto_json_transform=True)
+                    markdown += tableToMarkdown(
+                        k, v, headers=v.keys(), is_auto_json_transform=True
+                    )
             elif schema == "dict_list_dict":
                 for k, v in response.items():
-                    markdown += tableToMarkdown(k, v, headers=v[0].keys(), is_auto_json_transform=True)
+                    markdown += tableToMarkdown(
+                        k, v, headers=v[0].keys(), is_auto_json_transform=True
+                    )
             else:
                 for v in response:
                     markdown += tableToMarkdown("", v, headers=v.keys())
@@ -1946,7 +3295,9 @@ class Client(BaseClient):
 
     def format_job_command_response(self, job_details, response):
         readable_output = tableToMarkdown(
-            "# This task is taking longer, please try again later or use the 'retry job' command\n", job_details, removeNull=True
+            "# This task is taking longer, please try again later or use the 'retry job' command\n",
+            job_details,
+            removeNull=True,
         )
         return CommandResults(
             outputs_prefix="SilentPush.Job",
@@ -1991,7 +3342,9 @@ class Client(BaseClient):
         if not is_valid_ip:
             raise DemistoException(f"Invalid {resource.upper()} address: {value}")
 
-    def validate_url_scan_parameters(self, platform: str, os: str, browser: str, region: str) -> str:
+    def validate_url_scan_parameters(
+        self, platform: str, os: str, browser: str, region: str
+    ) -> str:
         """Validate the platform, os, browser, and region values."""
         valid_platforms = ["Desktop", "Mobile", "Crawler"]
         valid_os = ["Windows", "Linux", "MacOS", "iOS", "Android"]
@@ -1999,16 +3352,22 @@ class Client(BaseClient):
         valid_regions = ["US", "EU", "AS", "TOR"]
         errors = []
         if platform and platform not in valid_platforms:
-            errors.append(f"Invalid platform. Must be one of: {', '.join(valid_platforms)}")
+            errors.append(
+                f"Invalid platform. Must be one of: {', '.join(valid_platforms)}"
+            )
         if os and os not in valid_os:
             errors.append(f"Invalid OS. Must be one of: {', '.join(valid_os)}")
         if browser and browser not in valid_browsers:
-            errors.append(f"Invalid browser. Must be one of: {', '.join(valid_browsers)}")
+            errors.append(
+                f"Invalid browser. Must be one of: {', '.join(valid_browsers)}"
+            )
         if region and region not in valid_regions:
             errors.append(f"Invalid region. Must be one of: {', '.join(valid_regions)}")
         return "\n".join(errors)
 
-    def fetch_bulk_info(self, values: list[str], resource: ResourceType = ResourceType.DOMAIN) -> dict[str, Any]:
+    def fetch_bulk_info(
+        self, values: list[str], resource: ResourceType = ResourceType.DOMAIN
+    ) -> dict[str, Any]:
         """
         Fetch basic domain information for a list of domains, IP4 or IP6.
 
@@ -2017,12 +3376,20 @@ class Client(BaseClient):
         :param values (list[str]): List of domains to fetch.
         :param resource (ResourceType): Resource type to fetch.
         """
-        payload = {"domains": values} if resource == ResourceType.DOMAIN else {"ips": values}
-        url = BULK_INFO + f"/{resource.value}"
-        if resource.value == "ipv6":
-            url = BULK_IP6_INFO
+        if resource == ResourceType.DOMAIN:
+            payload = {"domains": values}
+        elif resource == ResourceType.IP4:
+            payload = {"ipv4s": values}
+        elif resource == ResourceType.IP6:
+            payload = {"ipv6s": values}
+        url = ENRICHMENT + f"/{resource.value}/bulk/"
         response = self._http_request(method="POST", url_suffix=url, data=payload)
-        return response.get("response", [])
+        try:
+            if resource in [ResourceType.IP4, ResourceType.IP6]:
+                return response.get("response", {}).get("ip2asn")
+        except AttributeError:
+            pass
+        return response.get("response")
 
     def validate_ip_address(self, ip: str, allow_ipv6: bool = True) -> bool:
         """
@@ -2059,8 +3426,13 @@ class Client(BaseClient):
         :return: dict: Enrichment data for the specified resource.
         """
         endpoint = f"{ENRICHMENT}/{resource.value}/{value}/"
-        query_params = {"explain": explain if explain else 0, "scan_data": scan_data if scan_data else 0}
-        response = self._http_request(method="GET", url_suffix=endpoint, params=query_params)
+        query_params = {
+            "explain": explain if explain else 0,
+            "scan_data": scan_data if scan_data else 0,
+        }
+        response = self._http_request(
+            method="GET", url_suffix=endpoint, params=query_params
+        )
         return response
 
     def search_scan_data(self, query: str, args: dict) -> dict[str, Any]:
@@ -2088,7 +3460,9 @@ class Client(BaseClient):
             "fields": argToList(args.get("fields")),
             "sort": argToList(args.get("sort")),
         }
-        return self._http_request(method="POST", url_suffix=SEARCH_SCAN, data=payload, params=params)
+        return self._http_request(
+            method="POST", url_suffix=SEARCH_SCAN, data=payload, params=params
+        )
 
     def live_url_scan(
         self,
@@ -2109,7 +3483,13 @@ class Client(BaseClient):
 
         :return: Dict[str, Any]: The scan results including hosting metadata.
         """
-        params = {"url": url, "platform": platform, "os": os, "browser": browser, "region": region}
+        params = {
+            "url": url,
+            "platform": platform,
+            "os": os,
+            "browser": browser,
+            "region": region,
+        }
         remove_nulls_from_dictionary(params)
         return self._http_request(method="GET", url_suffix=LIVE_SCAN_URL, params=params)
 
@@ -2208,14 +3588,23 @@ class Client(BaseClient):
 
         :return: Dict[str, Any]: Response containing threat check information.
         """
-        params = {"t": args.get("type"), "d": args.get("data"), "u": self.threat_check_key, "q": args.get("query")}
+        params = {
+            "t": args.get("type"),
+            "d": args.get("data"),
+            "u": self.threat_check_key,
+            "q": args.get("query"),
+        }
         remove_nulls_from_dictionary(params)
-        response = self._http_request(method="GET", full_url=THREAT_CHECK, params=params)
+        response = self._http_request(
+            method="GET", full_url=THREAT_CHECK, params=params
+        )
         if isinstance(response, dict) and response.get("errors"):
             return {"error": f"Failed to run threat check: {response['errors']}"}
         return response
 
-    def get_data_exports(self, file_name: str, export_type: str = "iofa", file_type: str = "json") -> requests.Response:
+    def get_data_exports(
+        self, file_name: str, export_type: str = "iofa", file_type: str = "json"
+    ) -> requests.Response:
         """
         Exports data on SilentPush.
 
@@ -2226,7 +3615,9 @@ class Client(BaseClient):
         :return: Dict[str, Any]: Response containing feed information.
         """
         url_suffix = f"{EXPORT_DATA}{export_type}-exports/{file_name}.{file_type}"
-        response = self._http_request(method="GET", url_suffix=url_suffix, resp_type="response")
+        response = self._http_request(
+            method="GET", url_suffix=url_suffix, resp_type="response"
+        )
         return response
 
 
@@ -2261,7 +3652,9 @@ def jobify(command):
         command_result = command(client, args)
         has_job = client.response_has_job(command_result.raw_response)
         if has_job is not False:
-            return client.format_job_command_response(has_job, command_result.raw_response)
+            return client.format_job_command_response(
+                has_job, command_result.raw_response
+            )
         return command_result
 
     return wrapper
@@ -2294,7 +3687,10 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
     return CommandResults(
         outputs_prefix="SilentPush.NameserverReputation",
         outputs_key_field="ns_server",
-        outputs={"nameserver": args.get("nameserver"), "reputation_data": reputation_data},
+        outputs={
+            "nameserver": args.get("nameserver"),
+            "reputation_data": reputation_data,
+        },
         readable_output=readable_output,
         raw_response=reputation_data,
     )
@@ -2370,6 +3766,91 @@ def get_ipv4_reputation_command(client: Client, args: dict[str, Any]) -> Command
 
 
 @metadata_collector.command(
+    command_name="silentpush-get-asn-reputation",
+    inputs_list=ASN_REPUTATION_INPUTS,
+    outputs_prefix="SilentPush.ASNReputation",
+    outputs_list=ASN_REPUTATION_OUTPUTS,
+    description="This command retrieve the reputation information for an IPv4.",
+)
+def get_asn_reputation_command(client: Client, args: dict) -> CommandResults:
+    """
+    Command handler for retrieving ASN reputation data.
+
+    Args:
+        client (Client): The API client instance
+        args (dict): Command arguments containing:
+            - asn: ASN number
+            - limit (optional): Maximum results to return
+            - explain (optional): Whether to include explanation
+
+    Returns:
+        CommandResults: Formatted command results for XSOAR
+    """
+    if not args.get("asn"):
+        raise ValueError("ASN is required.")
+    limit = arg_to_number(args.get("limit"))
+    explain = args.get("explain", "0")
+    params = {"explain": int(bool(explain)), "limit": limit}
+    raw_response = client._http_request(
+        method="GET", url_suffix=f"{ASN_REPUTATION}/{args.get('asn')}", params=params
+    )
+    markdown = client.get_markdown(raw_response.get("response"))
+    return CommandResults(
+        outputs_prefix="SilentPush.ASNReputation",
+        outputs_key_field="asn",
+        outputs=raw_response,
+        readable_output=markdown,
+        raw_response=raw_response,
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-get-asn-takedown-reputation",
+    inputs_list=ASN_TAKEDOWN_REPUTATION_INPUTS,
+    outputs_prefix="SilentPush.ASNTakedownReputation",
+    outputs_list=ASN_TAKEDOWN_REPUTATION_OUTPUTS,
+    description="This command retrieve the takedown reputation information for an Autonomous System Number (ASN).",
+)
+def get_asn_takedown_reputation_command(client, args):
+    """
+    Command handler for retrieving ASN takedown reputation.
+
+    Args:
+        client (Client): The API client instance to interact with the external service.
+        args (dict): Command arguments, containing:
+            - 'asn' (str): The ASN (Autonomous System Number).
+            - 'limit' (int, optional): Limit for the number of results.
+            - 'explain' (bool, optional): Flag to request explanation of the reputation.
+
+    Returns:
+        CommandResults: Command results formatted for XSOAR, containing the ASN takedown reputation data.
+
+    Raises:
+        ValueError: If 'asn' is not provided or 'limit' is not a valid integer.
+        DemistoException: If an error occurs while retrieving the data from the API.
+    """
+
+    if not args.get("asn"):
+        raise ValueError("ASN is required.")
+    limit = arg_to_number(args.get("limit"))
+    explain = args.get("explain", "0")
+    params = {"explain": int(bool(explain)), "limit": limit}
+    raw_response = client._http_request(
+        method="GET",
+        url_suffix=f"{ASN_TAKEDOWN_REPUTATION}/{args.get('asn')}",
+        params=params,
+    )
+    markdown = client.get_markdown(raw_response.get("response"))
+    return CommandResults(
+        outputs_prefix="SilentPush.ASNReputation",
+        outputs_key_field="asn",
+        outputs=raw_response,
+        readable_output=markdown,
+        raw_response=raw_response,
+    )
+
+
+@metadata_collector.command(
     command_name="silentpush-get-asns-for-domain",
     inputs_list=ASNS_DOMAIN_INPUTS,
     outputs_prefix="SilentPush.DomainASNs",
@@ -2397,8 +3878,13 @@ def get_asns_for_domain_command(client: Client, args: dict) -> CommandResults:
         asns = []
     else:
         domain_asns = records[0]["domain_asns"]
-        asns = [{"ASN": asn, "Description": description} for asn, description in domain_asns.items()]
-        readable_output = tableToMarkdown(f"ASNs for Domain: {domain}", asns, headers=["ASN", "Description"])
+        asns = [
+            {"ASN": asn, "Description": description}
+            for asn, description in domain_asns.items()
+        ]
+        readable_output = tableToMarkdown(
+            f"ASNs for Domain: {domain}", asns, headers=["ASN", "Description"]
+        )
     return CommandResults(
         outputs_prefix="SilentPush.DomainASNs",
         outputs_key_field="domain",
@@ -2483,7 +3969,9 @@ def reverse_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     description="searches passive DNS data for records matching both query and answer.",
 )
 @jobify
-def multi_conditional_padns_lookup_command(client: Client, args: dict) -> CommandResults:
+def multi_conditional_padns_lookup_command(
+    client: Client, args: dict
+) -> CommandResults:
     """
     Command function to perform reverse PADNS lookup.
 
@@ -2495,7 +3983,9 @@ def multi_conditional_padns_lookup_command(client: Client, args: dict) -> Comman
     :return: CommandResults: Formatted results of the reverse PADNS lookup.
     """
 
-    raw_response, readable_output = client.lookup(url_path=MULTI_CONDITIONAL_PADNS_LOOKUP, args=args, both=True)  # type: ignore
+    raw_response, readable_output = client.lookup(
+        url_path=MULTI_CONDITIONAL_PADNS_LOOKUP, args=args, both=True
+    )  # type: ignore
     return CommandResults(
         outputs_prefix="SilentPush.MultiConditionalPADNSLookup",
         outputs_key_field="qname",
@@ -2602,7 +4092,9 @@ def ip_diversity_patterns_command(client: Client, args: dict) -> CommandResults:
     ]
     minimum_parameters = [args.get(key) for key in minimum_parameters_keys]
     if not any(minimum_parameters):
-        raise DemistoException(f"At least one of {minimum_parameters_keys} is required.")
+        raise DemistoException(
+            f"At least one of {minimum_parameters_keys} is required."
+        )
     remove_nulls_from_dictionary(args)
     raw_response = client._http_request("GET", IP_DIVERSITY_PATTERNS, params=args)
     records = raw_response.get("response", {}).get("records", [])
@@ -2653,6 +4145,100 @@ def search_domains_command(client: Client, args: dict) -> CommandResults:
 
 
 @metadata_collector.command(
+    command_name="silentpush-ipv4-risk-score",
+    inputs_list=LIST_IP_INPUTS,
+    outputs_prefix="SilentPush.Score",
+    outputs_list=IP_RISK_SCORE_OUTPUTS,
+    description="Scores a list of IPv4 addresses",
+)
+@jobify
+def ipv4_score_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Scores IPv4 list.
+
+    :ref: https://help.silentpush.com/docs/bulk-silent-push-risk-score-for-a-list-of-ipv4-addresses
+
+    :param client (Client): The client object for making API calls
+    :param args (Dict[str, Any]): Command arguments
+
+    :return: CommandResults: Results for XSOAR
+    """
+    response, markdown = client.get_bulk_info(
+        payload={"ips": argToList(args.get("ips"))}, url_suffix=IP4_RISK_SCORE
+    )
+    return CommandResults(
+        outputs_prefix="SilentPush.Score",
+        outputs_key_field="ip",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-ipv6-risk-score",
+    inputs_list=LIST_IP_INPUTS,
+    outputs_prefix="SilentPush.Score",
+    outputs_list=IP_RISK_SCORE_OUTPUTS,
+    description="Scores a list of IPv6 addresses",
+)
+@jobify
+def ipv6_score_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Scores IPv6 list.
+
+    :ref: https://help.silentpush.com/docs/bulk-silent-push-risk-score-for-a-list-of-ipv6-addresses
+
+    :param client (Client): The client object for making API calls
+    :param args (Dict[str, Any]): Command arguments
+
+    :return: CommandResults: Results for XSOAR
+    """
+    response, markdown = client.get_bulk_info(
+        payload={"ips": argToList(args.get("ips"))}, url_suffix=IP6_RISK_SCORE
+    )
+    return CommandResults(
+        outputs_prefix="SilentPush.Score",
+        outputs_key_field="ip",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-domain-risk-score",
+    inputs_list=LIST_DOMAIN_INPUTS,
+    outputs_prefix="SilentPush.Score",
+    outputs_list=DOMAIN_RISK_SCORE_OUTPUTS,
+    description="Scores a list of Domain addresses",
+)
+@jobify
+def domain_score_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Scores Domain list.
+
+    :ref: https://help.silentpush.com/docs/bulk-silent-push-risk-score-for-a-list-of-domains
+
+    :param client (Client): The client object for making API calls
+    :param args (Dict[str, Any]): Command arguments
+
+    :return: CommandResults: Results for XSOAR
+    """
+    response, markdown = client.get_bulk_info(
+        payload={"domains": argToList(args.get("domains"))},
+        url_suffix=DOMAIN_RISK_SCORE,
+    )
+    return CommandResults(
+        outputs_prefix="SilentPush.Score",
+        outputs_key_field="domain",
+        outputs=response,
+        readable_output=markdown,
+        raw_response=response,
+    )
+
+
+@metadata_collector.command(
     command_name="silentpush-bulk-enrich",
     inputs_list=ENRICHMENT_INPUTS,
     outputs_prefix="SilentPush.Bulk.Enrich",
@@ -2691,93 +4277,6 @@ def bulk_enrich_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 @metadata_collector.command(
-    command_name="silentpush-list-domain-information",
-    inputs_list=LIST_DOMAIN_INPUTS,
-    outputs_prefix="SilentPush.Domain",
-    outputs_list=LIST_DOMAIN_OUTPUTS,
-    description="get domain information along with Silent Push risk score " "and live whois information for multiple domains.",
-)
-@jobify
-def list_domain_information_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """
-    Handle the list-domain-information command execution.
-
-    :ref: https://help.silentpush.com/docs/bulk-enrich-indicatora
-
-    :param client (Client): The client object for making API calls
-    :param args (Dict[str, Any]): Command arguments
-
-    :return: CommandResults: Results for XSOAR
-    """
-    response, markdown = client.get_bulk_info(payload={"domains": argToList(args.get("domains"))}, url_suffix=BULK_DOMAIN_INFO)
-    return CommandResults(
-        outputs_prefix="SilentPush.Domain",
-        outputs_key_field="domain",
-        outputs=response,
-        readable_output=markdown,
-        raw_response=response,
-    )
-
-
-@metadata_collector.command(
-    command_name="silentpush-list-ip4-information",
-    inputs_list=LIST_IP_INPUTS,
-    outputs_prefix="SilentPush.IP4",
-    outputs_list=LIST_IP_OUTPUTS,
-    description="get IP4 information along with Silent Push risk score ",
-)
-@jobify
-def list_ip4_information_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """
-    Handle the list-ip4-information command execution.
-
-    :ref: https://help.silentpush.com/docs/bulk-enrich-indicatora
-
-    :param client (Client): The client object for making API calls
-    :param args (Dict[str, Any]): Command arguments
-
-    :return: CommandResults: Results for XSOAR
-    """
-    response, markdown = client.get_bulk_info(payload={"ips": argToList(args.get("ips"))}, url_suffix=BULK_IP4_INFO)
-    return CommandResults(
-        outputs_prefix="SilentPush.IP4",
-        outputs_key_field="ip",
-        outputs=response,
-        readable_output=markdown,
-        raw_response=response,
-    )
-
-
-@metadata_collector.command(
-    command_name="silentpush-list-ip6-information",
-    inputs_list=LIST_IP_INPUTS,
-    outputs_prefix="SilentPush.IP6",
-    outputs_list=LIST_IP_OUTPUTS,
-    description="get IP6 information along with Silent Push risk score ",
-)
-@jobify
-def list_ip6_information_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """
-    Handle the list-ip6-information command execution.
-
-    :ref: https://help.silentpush.com/docs/bulk-enrich-indicatora
-
-    :param client (Client): The client object for making API calls
-    :param args (Dict[str, Any]): Command arguments
-
-    :return: CommandResults: Results for XSOAR
-    """
-    response, markdown = client.get_bulk_info(payload={"ips": argToList(args.get("ips"))}, url_suffix=BULK_IP6_INFO)
-    return CommandResults(
-        outputs_prefix="SilentPush.IP6",
-        outputs_key_field="ip",
-        outputs=response,
-        readable_output=markdown,
-        raw_response=response,
-    )
-
-
-@metadata_collector.command(
     command_name="silentpush-whois",
     inputs_list=DOMAIN_INPUT,
     outputs_prefix="SilentPush.whois",
@@ -2796,10 +4295,17 @@ def whois_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     :return: CommandResults: Results for XSOAR
     """
-    raw_response = client._http_request(method="GET", url_suffix=f"{WHOIS}/{args.get('domain')}")
+    raw_response = client._http_request(
+        method="GET", url_suffix=f"{WHOIS}/{args.get('domain')}"
+    )
     response = raw_response.get("response", {}).get("whois", [{}])[0]
     headers = list(response.keys())
-    readable_output = tableToMarkdown(f"Whois Results for {args.get('domain')}", [response], headers=headers, removeNull=True)
+    readable_output = tableToMarkdown(
+        f"Whois Results for {args.get('domain')}",
+        [response],
+        headers=headers,
+        removeNull=True,
+    )
     return CommandResults(
         outputs_prefix="SilentPush.Whois",
         outputs_key_field="whois",
@@ -2817,7 +4323,9 @@ def whois_command(client: Client, args: dict[str, Any]) -> CommandResults:
     description="get certificate data collected from domain scanning.",
 )
 @jobify
-def get_domain_certificates_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_domain_certificates_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults:
     """
     Retrieves SSL/TLS certificates for a given domain.
 
@@ -2848,12 +4356,18 @@ def get_domain_certificates_command(client: Client, args: dict[str, Any]) -> Com
         "date_max": args.get("date_max"),
         "prefer": args.get("prefer"),
         "max_wait": arg_to_number(args.get("max_wait")),
-        "with_metadata": argToBoolean(str(args.get("with_metadata"))) if "with_metadata" in args else None,
+        "with_metadata": argToBoolean(str(args.get("with_metadata")))
+        if "with_metadata" in args
+        else None,
         "skip": arg_to_number(args.get("skip")),
         "limit": arg_to_number(args.get("limit")),
     }
     remove_nulls_from_dictionary(params)
-    raw_response = client._http_request(method="GET", url_suffix=f"{DOMAIN_CERTIFICATE}/{domain}/?max_wait=2", params=params)
+    raw_response = client._http_request(
+        method="GET",
+        url_suffix=f"{DOMAIN_CERTIFICATE}/{domain}/?max_wait=2",
+        params=params,
+    )
     certificates = raw_response.get("response", {}).get("domain_certificates", [])
     metadata = raw_response.get("response", {}).get("metadata", {})
     markdown = [f"# SSL/TLS Certificate Information for Domain: {domain}\n"]
@@ -2893,14 +4407,25 @@ def get_enrichment_data_command(client: Client, args: dict) -> CommandResults:
     if not resource or not value:
         raise ValueError("Both 'resource' and 'value' arguments are required.")
     if resource not in ResourceType.get_choices():
-        raise ValueError(f"Invalid input: {resource}. Allowed values are {ResourceType.get_choices()}")
+        raise ValueError(
+            f"Invalid input: {resource}. Allowed values are {ResourceType.get_choices()}"
+        )
     if resource in ["ipv4", "ipv6"]:
         client.validate_ip(resource, value)
     enrichment_data = client.get_enrichment_data(
-        resource=ResourceType(resource), value=value, explain=explain, scan_data=scan_data
+        resource=ResourceType(resource),
+        value=value,
+        explain=explain,
+        scan_data=scan_data,
     )
+    output = enrichment_data.get("response") or enrichment_data
+    if resource in ["ipv4", "ipv6"]:
+        output = output.get("ip2asn", [])
     readable_output = tableToMarkdown(
-        f"Enrichment Data for {value}", enrichment_data, removeNull=True, is_auto_json_transform=True
+        f"Enrichment Data for {value}",
+        output,
+        removeNull=True,
+        is_auto_json_transform=True,
     )
     return CommandResults(
         outputs_prefix="SilentPush.Enrichment",
@@ -2935,8 +4460,14 @@ def search_scan_data_command(client: Client, args: dict) -> CommandResults:
     raw_response = client.search_scan_data(query, args)
     scan_data = raw_response.get("data", [])
     if not scan_data:
-        return CommandResults(readable_output="No scan data records found", outputs_prefix="SilentPush.ScanData", outputs=None)
-    readable_output = tableToMarkdown("Raw Scan Data Results", scan_data, removeNull=True)
+        return CommandResults(
+            readable_output="No scan data records found",
+            outputs_prefix="SilentPush.ScanData",
+            outputs=None,
+        )
+    readable_output = tableToMarkdown(
+        "Raw Scan Data Results", scan_data, removeNull=True
+    )
     outputs = {"records": scan_data, "query": query}
     remove_nulls_from_dictionary(outputs)
     return CommandResults(
@@ -2972,7 +4503,9 @@ def live_url_scan_command(client: Client, args: dict) -> CommandResults:
     os = args.get("os", "")
     browser = args.get("browser", "")
     region = args.get("region", "")
-    validation_errors = client.validate_url_scan_parameters(platform, os, browser, region)
+    validation_errors = client.validate_url_scan_parameters(
+        platform, os, browser, region
+    )
     if validation_errors:
         raise DemistoException(validation_errors)
     raw_response = client.live_url_scan(url, platform, os, browser, region)
@@ -3021,7 +4554,9 @@ def add_feed_command(client: Client, args: dict[str, Any]) -> CommandResults | d
     outputs_list=ADD_INDICATORS_OUTPUTS,
     description="add indicators to the feed",
 )
-def add_feed_tags_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+def add_feed_tags_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults | dict:
     """
     Command handler for adding new feed tags.
 
@@ -3049,7 +4584,9 @@ def add_feed_tags_command(client: Client, args: dict[str, Any]) -> CommandResult
     outputs_list=ADD_INDICATORS_OUTPUTS,
     description="add indicators to the feed",
 )
-def add_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+def add_indicators_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults | dict:
     """
     Command handler for add new indicators.
 
@@ -3077,7 +4614,9 @@ def add_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
     outputs_list=ADD_INDICATOR_TAGS_OUTPUTS,
     description="updates tags to the indicators",
 )
-def add_indicators_tags_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+def add_indicators_tags_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults | dict:
     """
     Command handler for add new indicator tags.
 
@@ -3105,7 +4644,9 @@ def add_indicators_tags_command(client: Client, args: dict[str, Any]) -> Command
     outputs_list=RUN_THREAT_CHECK_OUTPUTS,
     description="runs the threat check on the specified ",
 )
-def run_threat_check_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+def run_threat_check_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults | dict:
     """
     Command handler to fetch threat checks.
 
@@ -3120,7 +4661,9 @@ def run_threat_check_command(client: Client, args: dict[str, Any]) -> CommandRes
         outputs_prefix="SilentPush.RunThreatCheck",
         outputs_key_field="query",
         outputs=result,
-        readable_output=tableToMarkdown(f"Threat check for query '{ip}' completed successfully", result),
+        readable_output=tableToMarkdown(
+            f"Threat check for query '{ip}' completed successfully", result
+        ),
         raw_response=result,
     )
 
@@ -3147,9 +4690,38 @@ def get_data_exports_command(client: Client, args: dict[str, str]) -> dict[str, 
     file_type = args.get("file_type", "")
     response = client.get_data_exports(file_name, export_type, file_type)
     if response.status_code != 200:
-        raise Exception(f"Failed to download file: {response.status_code} {response.text}")
-    file_entry = fileResult(file_name, response.content, file_type=EntryType.ENTRY_INFO_FILE)
+        raise Exception(
+            f"Failed to download file: {response.status_code} {response.text}"
+        )
+    file_entry = fileResult(
+        file_name, response.content, file_type=EntryType.ENTRY_INFO_FILE
+    )
     return file_entry
+
+
+@metadata_collector.command(
+    command_name="silentpush-tlp-reports",
+    inputs_list=TLP_REPORTS_INPUTS,
+    outputs_prefix="SilentPush.TLPreports",
+    outputs_list=[],
+    description="List all the TLP Reports",
+)
+def tlp_reports_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+    url = f"{TLP_REPORTS}?"
+    url += f"order={args.get('order')}&" if args.get("order") else ""
+    url += f"page={args.get('page')}&" if args.get("page") else ""
+    url += f"search={args.get('search')}" if args.get("search") else ""
+    raw_response = client._http_request(method="GET", url_suffix=url)
+    markdown = "# TLP Reports\n"
+    markdown += f"## Count: {raw_response.get('count')}\n"
+    markdown += client.get_markdown(raw_response.get("results"))
+    return CommandResults(
+        outputs_prefix="SilentPush.TLPreports",
+        outputs_key_field="title",
+        outputs=raw_response,
+        readable_output=markdown,
+        raw_response=raw_response,
+    )
 
 
 @metadata_collector.command(
@@ -3160,7 +4732,9 @@ def get_data_exports_command(client: Client, args: dict[str, str]) -> dict[str, 
     description="retry another command which returned a Job ID",
 )
 def retry_job_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
-    raw_response = client._http_request(method="GET", url_suffix=f"{JOB_STATUS}/{args.get('job_id')}")
+    raw_response = client._http_request(
+        method="GET", url_suffix=f"{JOB_STATUS}/{args.get('job_id')}"
+    )
     response = raw_response.get("response")
     markdown = f"# Job Results for {args.get('job_id')}\n"
     markdown += client.get_markdown(response)
@@ -3178,6 +4752,8 @@ commands_map = {  # maps demisto commands to their specific functions
     "silentpush-get-nameserver-reputation": get_nameserver_reputation_command,
     "silentpush-get-subnet-reputation": get_subnet_reputation_command,
     "silentpush-get-ipv4-reputation": get_ipv4_reputation_command,
+    "silentpush-get-asn-reputation": get_asn_reputation_command,
+    "silentpush-get-asn-takedown-reputation": get_asn_takedown_reputation_command,
     "silentpush-forward-padns-lookup": forward_padns_lookup_command,
     "silentpush-reverse-padns-lookup": reverse_padns_lookup_command,
     "silentpush-multi-conditional-padns-lookup": multi_conditional_padns_lookup_command,
@@ -3185,9 +4761,9 @@ commands_map = {  # maps demisto commands to their specific functions
     "silentpush-ip-diversity-lookup": ip_diversity_lookup_command,
     "silentpush-get-enrichment-data": get_enrichment_data_command,
     "silentpush-bulk-enrich": bulk_enrich_command,
-    "silentpush-list-domain-information": list_domain_information_command,
-    "silentpush-list-ip4-information": list_ip4_information_command,
-    "silentpush-list-ip6-information": list_ip6_information_command,
+    "silentpush-ipv4-risk-score": ipv4_score_command,
+    "silentpush-ipv6-risk-score": ipv6_score_command,
+    "silentpush-domain-risk-score": domain_score_command,
     "silentpush-search-domains": search_domains_command,
     "silentpush-get-asns-for-domain": get_asns_for_domain_command,
     "silentpush-get-domain-certificates": get_domain_certificates_command,
@@ -3199,6 +4775,7 @@ commands_map = {  # maps demisto commands to their specific functions
     "silentpush-add-indicator-tags": add_indicators_tags_command,
     "silentpush-run-threat-check": run_threat_check_command,
     "silentpush-get-data-exports": get_data_exports_command,
+    "silentpush-tlp-reports": tlp_reports_command,
     "silentpush-whois": whois_command,
     "silentpush-retry-job": retry_job_command,
     "silentpush-ip-diversity-patterns": ip_diversity_patterns_command,
@@ -3216,7 +4793,9 @@ def main() -> None:
         base_url = params.get("url", "https://api.silentpush.com")
         verify_ssl = not params.get("insecure", False)
         proxy = params.get("proxy", False)
-        client = Client(base_url=base_url, api_key=api_key, verify=verify_ssl, proxy=proxy)
+        client = Client(
+            base_url=base_url, api_key=api_key, verify=verify_ssl, proxy=proxy
+        )
         client.threat_check_key = threat_check_key
         command = commands_map[demisto.command()]
         results = command(client, demisto.args())
@@ -3228,7 +4807,9 @@ def main() -> None:
         return_error(f"command '{demisto.command()}' failed: {e}")
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+        return_error(
+            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
+        )
 
 
 """ ENTRY POINT """

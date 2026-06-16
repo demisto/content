@@ -237,9 +237,6 @@ script:
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.url_shortner_score
       description: Score of the shortened URL.
       type: Number
-    - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain
-      description: Domain name analyzed.
-      type: String
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.error
       description: Error message if no data is available for the domain.
       type: String
@@ -431,12 +428,6 @@ script:
       type: String
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_scan_date
       description: Date when this jarm was last scanned.
-      type: String
-    - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score
-      description: Overall risk score for the domain.
-      type: Number
-    - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score_decider
-      description: Factor that determined the final risk score.
       type: String
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn
       description: Autonomous System Number (ASN) associated with the IP.
@@ -639,12 +630,6 @@ script:
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_jarm_hash
       description: JARM fingerprint hash for TLS analysis.
       type: String
-    - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score
-      description: Security risk score for the IP.
-      type: Number
-    - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score_decider
-      description: Factor that determined the final risk score.
-      type: String
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet
       description: Subnet associated with the IP.
       type: String
@@ -669,6 +654,12 @@ script:
     - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_reputation_score
       description: A numerical risk score (typically 0-100, with higher values indicating higher risk).
       type: Number
+    - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score
+      description: The age of the domain in days.
+      type: Number
+    - contextPath: SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score_explain
+      description: The age of the domain in days.
+      type: Unknown
   - deprecated: false
     description: queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information.
     name: silentpush-density-lookup
@@ -704,6 +695,26 @@ script:
     - contextPath: SilentPush.DensityLookup.SilentPush.Lookup.nssrv
       description: The name server (NS) for the query result.
       type: String
+  - deprecated: false
+    description: Scores a list of Domain addresses
+    name: silentpush-domain-risk-score
+    arguments:
+    - name: domains
+      isArray: false
+      description: A comma-separated list of domains to query.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.Score.SilentPush.Enrichment.domain
+      description: The domain name queried.
+      type: String
+    - contextPath: SilentPush.Score.SilentPush.Enrichment.sp_risk_score
+      description: The age of the domain in days.
+      type: Number
+    - contextPath: SilentPush.Score.SilentPush.Enrichment.sp_risk_score_explain
+      description: The age of the domain in days.
+      type: Unknown
   - deprecated: false
     description: performs a forward PADNS lookup using various filtering parameters.
     name: silentpush-forward-padns-lookup
@@ -859,6 +870,100 @@ script:
     - contextPath: SilentPush.PADNSLookup.SilentPush.PADNS.type
       description: The type of the DNS record (e.g., NS).
       type: String
+  - deprecated: false
+    description: This command retrieve the reputation information for an IPv4.
+    name: silentpush-get-asn-reputation
+    arguments:
+    - name: asn
+      isArray: false
+      description: The ASN to lookup.
+      required: true
+      secret: false
+      default: false
+    - name: explain
+      isArray: false
+      description: Show the information used to calculate the reputation score.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The maximum number of reputation history records to retrieve.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.ASNReputation.SilentPush.ASN.asn
+      description: Autonomous System Number (ASN) associated with the reputation history.
+      type: Number
+    - contextPath: SilentPush.ASNReputation.SilentPush.ASN.asn_reputation
+      description: Reputation score of the ASN at a given point in time.
+      type: Number
+    - contextPath: SilentPush.ASNReputation.SilentPush.ASN.ips_in_asn
+      description: Total number of IPs within the ASN.
+      type: Number
+    - contextPath: SilentPush.ASNReputation.SilentPush.ASN.ips_num_active
+      description: Number of actively used IPs in the ASN.
+      type: Number
+    - contextPath: SilentPush.ASNReputation.SilentPush.ASN..ips_num_listed
+      description: Number of IPs in the ASN that are listed as malicious.
+      type: Number
+    - contextPath: SilentPush.ASNReputation.SilentPush.ASN.asname
+      description: Name of the ASN provider or organization.
+      type: String
+    - contextPath: SilentPush.ASNReputation.SilentPush.ASN.date
+      description: Date of the recorded reputation history in YYYYMMDD format.
+      type: Number
+  - deprecated: false
+    description: This command retrieve the takedown reputation information for an Autonomous System Number (ASN).
+    name: silentpush-get-asn-takedown-reputation
+    arguments:
+    - name: asn
+      isArray: false
+      description: The ASN to lookup.
+      required: true
+      secret: false
+      default: false
+    - name: explain
+      isArray: false
+      description: Show the information used to calculate the reputation score.
+      required: false
+      secret: false
+      default: false
+    - name: limit
+      isArray: false
+      description: The maximum number of reputation history records to retrieve.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.ASNTakedownReputation.SilentPush.ASN.asname
+      description: The name of the Autonomous System (AS).
+      type: String
+    - contextPath: SilentPush.ASNTakedownReputation.SilentPush.ASN.asn
+      description: The Autonomous System Number (ASN).
+      type: String
+    - contextPath: SilentPush.ASNTakedownReputation.SilentPush.ASN.allocation_age
+      description: The age of the ASN allocation in days.
+      type: Number
+    - contextPath: SilentPush.ASNTakedownReputation.SilentPush.ASN.allocation_date
+      description: The date when the ASN was allocated (YYYYMMDD).
+      type: Number
+    - contextPath: SilentPush.ASNTakedownReputation.SilentPush.ASN.asn_takedown_reputation
+      description: The takedown reputation score for the ASN.
+      type: Number
+    - contextPath: SilentPush.ASNTakedownReputation.SilentPush.ASN.ips_in_asn
+      description: The total number of IP addresses associated with the ASN.
+      type: Number
+    - contextPath: SilentPush.ASNTakedownReputation.SilentPush.ASN.ips_num_listed
+      description: The number of IP addresses within the ASN that are flagged or listed in security threat databases.
+      type: Number
+    - contextPath: SilentPush.ASNTakedownReputation.SilentPush.ASN.items_num_listed
+      description: The total number of security-related listings associated with the ASN, including IP addresses and domains.
+      type: Number
+    - contextPath: SilentPush.ASNTakedownReputation.SilentPush.ASN.listings_max_age
+      description: The maximum age (in hours) of the listings, indicating how recent the flagged IPs/domains are.
+      type: Number
   - deprecated: false
     description: retrieves Autonomous System Numbers (ASNs) associated with a domain.
     name: silentpush-get-asns-for-domain
@@ -1134,9 +1239,6 @@ script:
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.url_shortner_score
       description: Score of the shortened URL.
       type: Number
-    - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.domain
-      description: Domain name analyzed.
-      type: String
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.error
       description: Error message if no data is available for the domain.
       type: String
@@ -1328,12 +1430,6 @@ script:
       type: String
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_scan_date
       description: Date when this jarm was last scanned.
-      type: String
-    - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score
-      description: Overall risk score for the domain.
-      type: Number
-    - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score_decider
-      description: Factor that determined the final risk score.
       type: String
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.asn
       description: Autonomous System Number (ASN) associated with the IP.
@@ -1536,12 +1632,6 @@ script:
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_jarm_hash
       description: JARM fingerprint hash for TLS analysis.
       type: String
-    - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score
-      description: Security risk score for the IP.
-      type: Number
-    - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score_decider
-      description: Factor that determined the final risk score.
-      type: String
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.subnet
       description: Subnet associated with the IP.
       type: String
@@ -1566,6 +1656,12 @@ script:
     - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.subnet_reputation_score
       description: A numerical risk score (typically 0-100, with higher values indicating higher risk).
       type: Number
+    - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score
+      description: The age of the domain in days.
+      type: Number
+    - contextPath: SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score_explain
+      description: The age of the domain in days.
+      type: Unknown
   - deprecated: false
     description: retrieves the reputation information for an IPv4.
     name: silentpush-get-ipv4-reputation
@@ -2000,61 +2096,8 @@ script:
       description: timeline of {ip, first_seen, last_seen}.
       type: Unknown
   - deprecated: false
-    description: get domain information along with Silent Push risk score and live whois information for multiple domains.
-    name: silentpush-list-domain-information
-    arguments:
-    - name: domains
-      isArray: false
-      description: A comma-separated list of domains to query.
-      required: true
-      secret: false
-      default: false
-    outputs:
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.host_flags
-      description: The domain name queried.
-      type: Unknown
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.domain_urls
-      description: The last seen date of the domain in YYYYMMDD format.
-      type: Unknown
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.domaininfo
-      description: The domain name used for the query.
-      type: Unknown
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.ns_reputation
-      description: The age of the domain in days based on WHOIS creation date.
-      type: Unknown
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.nschanges
-      description: The first seen date of the domain in YYYYMMDD format.
-      type: Unknown
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.domain_string_frequency_probability
-      description: Indicates whether the domain is newly observed.
-      type: Unknown
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.is_private_suffix
-      description: The top-level domain (TLD) or zone of the queried domain.
-      type: Boolean
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.private_suffix_info
-      description: The registrar responsible for the domain registration.
-      type: Unknown
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.ip_diversity
-      description: A risk score based on the domain's age.
-      type: Unknown
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.listing_score
-      description: The WHOIS creation date of the domain in YYYY-MM-DD HH:MM:SS format.
-      type: Number
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.listing_score_explain
-      description: A risk score indicating how new the domain is.
-      type: Unknown
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.listing_score_feeds_explain
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.sp_risk_score
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.Domain.SilentPush.Enrichment.sp_risk_score_explain
-      description: The age of the domain in days.
-      type: Unknown
-  - deprecated: false
-    description: 'get IP4 information along with Silent Push risk score '
-    name: silentpush-list-ip4-information
+    description: Scores a list of IPv4 addresses
+    name: silentpush-ipv4-risk-score
     arguments:
     - name: ips
       isArray: false
@@ -2063,129 +2106,18 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip
-      description: The domain name queried.
+    - contextPath: SilentPush.Score.SilentPush.Enrichment.ip
+      description: The IP queried.
       type: String
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.asn
-      description: The last seen date of the domain in YYYYMMDD format.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.asname
-      description: The domain name used for the query.
-      type: String
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.asn_allocation_date
-      description: The age of the domain in days based on WHOIS creation date.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.asn_allocation_age
-      description: The first seen date of the domain in YYYYMMDD format.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.asn_rank
-      description: Indicates whether the domain is newly observed.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.asn_rank_score
-      description: The top-level domain (TLD) or zone of the queried domain.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.asn_reputation
-      description: The registrar responsible for the domain registration.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.asn_reputation_explain
-      description: A risk score based on the domain's age.
-      type: Unknown
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.malscore
-      description: The WHOIS creation date of the domain in YYYY-MM-DD HH:MM:SS format.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.asn_takedown_reputation
-      description: A risk score indicating how new the domain is.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.asn_takedown_reputation_explain
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.asn_takedown_reputation_score
+    - contextPath: SilentPush.Score.SilentPush.Enrichment.sp_risk_score
       description: The age of the domain in days.
       type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.date
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.subnet
-      description: The age of the domain in days.
-      type: String
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.subnet_allocation_date
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.subnet_allocation_age
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.subnet_reputation
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.subnet_reputation_explain
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.subnet_reputation_score
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_reputation
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_reputation_explain
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_reputation_score
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_location
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_is_dsl_dynamic
-      description: The age of the domain in days.
-      type: Boolean
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_is_dsl_dynamic_score
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_ptr
-      description: The age of the domain in days.
-      type: String
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.benign_info
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.sinkhole_info
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_is_tor_exit_node
-      description: The age of the domain in days.
-      type: Boolean
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_is_ipfs_node
-      description: The age of the domain in days.
-      type: Boolean
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_has_open_directory
-      description: The age of the domain in days.
-      type: Boolean
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_has_expired_certificate
-      description: The age of the domain in days.
-      type: Boolean
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.ip_flags
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.density
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.listing_score
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.listing_score_explain
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.listing_score_feeds_explain
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.sp_risk_score
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP4.SilentPush.Enrichment.sp_risk_score_explain
+    - contextPath: SilentPush.Score.SilentPush.Enrichment.sp_risk_score_explain
       description: The age of the domain in days.
       type: Unknown
   - deprecated: false
-    description: 'get IP6 information along with Silent Push risk score '
-    name: silentpush-list-ip6-information
+    description: Scores a list of IPv6 addresses
+    name: silentpush-ipv6-risk-score
     arguments:
     - name: ips
       isArray: false
@@ -2194,124 +2126,13 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip
-      description: The domain name queried.
+    - contextPath: SilentPush.Score.SilentPush.Enrichment.ip
+      description: The IP queried.
       type: String
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.asn
-      description: The last seen date of the domain in YYYYMMDD format.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.asname
-      description: The domain name used for the query.
-      type: String
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.asn_allocation_date
-      description: The age of the domain in days based on WHOIS creation date.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.asn_allocation_age
-      description: The first seen date of the domain in YYYYMMDD format.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.asn_rank
-      description: Indicates whether the domain is newly observed.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.asn_rank_score
-      description: The top-level domain (TLD) or zone of the queried domain.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.asn_reputation
-      description: The registrar responsible for the domain registration.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.asn_reputation_explain
-      description: A risk score based on the domain's age.
-      type: Unknown
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.malscore
-      description: The WHOIS creation date of the domain in YYYY-MM-DD HH:MM:SS format.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.asn_takedown_reputation
-      description: A risk score indicating how new the domain is.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.asn_takedown_reputation_explain
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.asn_takedown_reputation_score
+    - contextPath: SilentPush.Score.SilentPush.Enrichment.sp_risk_score
       description: The age of the domain in days.
       type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.date
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.subnet
-      description: The age of the domain in days.
-      type: String
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.subnet_allocation_date
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.subnet_allocation_age
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.subnet_reputation
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.subnet_reputation_explain
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.subnet_reputation_score
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_reputation
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_reputation_explain
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_reputation_score
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_location
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_is_dsl_dynamic
-      description: The age of the domain in days.
-      type: Boolean
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_is_dsl_dynamic_score
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_ptr
-      description: The age of the domain in days.
-      type: String
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.benign_info
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.sinkhole_info
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_is_tor_exit_node
-      description: The age of the domain in days.
-      type: Boolean
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_is_ipfs_node
-      description: The age of the domain in days.
-      type: Boolean
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_has_open_directory
-      description: The age of the domain in days.
-      type: Boolean
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_has_expired_certificate
-      description: The age of the domain in days.
-      type: Boolean
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.ip_flags
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.density
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.listing_score
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.listing_score_explain
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.listing_score_feeds_explain
-      description: The age of the domain in days.
-      type: Unknown
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.sp_risk_score
-      description: The age of the domain in days.
-      type: Number
-    - contextPath: SilentPush.IP6.SilentPush.Enrichment.sp_risk_score_explain
+    - contextPath: SilentPush.Score.SilentPush.Enrichment.sp_risk_score_explain
       description: The age of the domain in days.
       type: Unknown
   - deprecated: false
@@ -3504,6 +3325,29 @@ script:
     - contextPath: SilentPush.ScanData.SilentPush.Web.url
       description: The URL scanned.
       type: String
+  - deprecated: false
+    description: List all the TLP Reports
+    name: silentpush-tlp-reports
+    arguments:
+    - name: order
+      isArray: false
+      description: Which field to use when ordering the results.
+      required: false
+      secret: false
+      default: false
+    - name: page
+      isArray: false
+      description: A page number within the paginated result set.
+      required: false
+      secret: false
+      default: false
+    - name: search
+      isArray: false
+      description: A search term.
+      required: false
+      secret: false
+      default: false
+    outputs: []
   - deprecated: false
     description: get Whois information
     name: silentpush-whois

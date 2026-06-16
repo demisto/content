@@ -157,179 +157,176 @@ enriches IPs or Domains in a bulk
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource | The type of resource for which information needs to be retrieved {e.g. domain}. | Required |
-| value | The value corresponding to the selected "resource" for which information needs to be retrieved {e.g. silentpush.com}. | Required |
-| explain | Whether include explanation of data calculations. | Optional |
-| scan_data | Whether include scan data (IPv4 only). | Optional |
+| resource | The type of resource for which information needs to be retrieved {e.g. domain}. | Required | 
+| value | The value corresponding to the selected "resource" for which information needs to be retrieved {e.g. silentpush.com}. | Required | 
+| explain | Whether include explanation of data calculations. | Optional | 
+| scan_data | Whether include scan data (IPv4 only). | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.value | String | Queried value. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.avg_probability | Number | Average probability score of the domain string. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.dga_probability_score | Number | Probability score indicating likelihood of being a DGA domain. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain | String | Domain name analyzed. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain_string_freq_probabilities | Unknown | List of frequency probabilities for different domain string components. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.query | String | Domain name queried. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.alexa_rank | Number | Alexa rank of the domain. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.alexa_top10k | Boolean | Indicates if the domain is in the Alexa top 10k. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.alexa_top10k_score | Number | Score indicating domain's Alexa top 10k ranking. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.dynamic_domain_score | Number | Score indicating likelihood of domain being dynamically generated. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_dynamic_domain | Boolean | Indicates if the domain is dynamic. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_url_shortener | Boolean | Indicates if the domain is a known URL shortener. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.results | Number | Number of results found for the domain. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.url_shortner_score | Number | Score of the shortened URL. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain | String | Domain name analyzed. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.error | String | Error message if no data is available for the domain. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.zone | String | TLD zone of the domain. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.registrar | String | registrar of the domain. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.whois_age | String | The age of the domain based on WHOIS records. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.whois_created_date | String | The created date on WHOIS records. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.query | String | The domain name that was queried in the system. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.last_seen | Number | The first recorded observation of the domain in the database. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.first_seen | Number | The last recorded observation of the domain in the database. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_new | Boolean | Indicates whether the domain is considered "new.". |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_new_score | Number | A scoring metric indicating how "new" the domain is. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.age | Number | Represents the age of the domain in days. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.age_score | Number | A scoring metric indicating the trustworthiness of the domain based on its age. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_diversity | String | Number of different ASNs associated with the domain. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_diversity_all | String | Total number of unique IPs observed for the domain. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.host | String | The hostname being analyzed. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_diversity_groups | String | The number of distinct IP groups \(e.g., IPs belonging to different ranges or providers\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_expired | Boolean | Indicates if the domain\`s nameserver is expired. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_parked | Boolean | Whether the domain is not parked \(a parked domain is one without active content\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_sinkholed | Boolean | Whether the domain is not sinkholed \(not forcibly redirected to a security researcher\`s trap\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_reputation_max | Number | Maximum reputation score for nameservers. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_reputation_score | Number | Reputation score of the domain\`s nameservers. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain | String | The nameservers of domain. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_server | String | Provided nameserver. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_server_domain_density | Number | Number of domains sharing this NS. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_server_domains_listed | Number | Number of listed domains using this NS. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_server_reputation | Number | Reputation score for this NS. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain | String | Domain for which the SSL certificate was issued. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domains | Unknown | Other Domains for which the SSL certificate was issued. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.issuer_organization | String | Issuer organization of the SSL certificate. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.fingerprint_sha1 | String | A unique identifier for the certificate. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.hostname | String | The hostname associated with the certificate. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip | String | The IP address of the server using this certificate. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_expired | String | Indicates whether the certificate has expired. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.issuer_common_name | String | The Common Name \(CN\) of the Certificate Authority \(CA\) that issued this certificate. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.not_after | String | Expiry date of the certificate. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.not_before | String | Start date of the certificate validity. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | The date when this certificate data was last scanned. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.response | String | HTTP response code for the domain scan. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.hostname | String | The hostname that sent this response. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip | String | The IP address responding to the request. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | The date when the headers were scanned. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.cache-control | String | HTTP cache-control. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.content-length | String | Content length of the HTTP response. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.date | String | The date/time of the response. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.expires | String | Indicates an already expired response. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.server | String | The web server handling the request \(Cloudflare proxy\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.hostname | String | HTTP response code for the domain scan. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_body_murmur3 | String | hash of the page content. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_body_ssdeep | String | SSDEEP hash \(used for fuzzy matching similar HTML content\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_title | String | The page title \(suggests a Cloudflare challenge page, likely due to bot protection\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip | String | The IP address responding to the request. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | The date when the headers were scanned. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_md5 | String | MD5 hash of a secondary favicon. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_mmh3 | String | Murmur3 hash of a secondary favicon. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_path | String | The file path of the secondary favicon. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon_md5 | String | MD5 hash of the primary favicon. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon_mmh3 | String | Murmur3 hash of the primary favicon. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.hostname | String | The hostname where this favicon was found. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip | String | The IP address associated with the favicon. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | Date when this favicon was last scanned. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_hostname | String | The hostname where this jarm was found. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_ip | String | The IP address responding to the request. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_jarm_hash | String | Unique identifier for the TLS configuration of the server. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_scan_date | String | Date when this jarm was last scanned. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score | Number | Overall risk score for the domain. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score_decider | String | Factor that determined the final risk score. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn | Number | Autonomous System Number \(ASN\) associated with the IP. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_allocation_age | Number | Age of ASN allocation in days. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_allocation_date | Number | Date of ASN allocation. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_rank | Number | Rank of the ASN. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_rank_score | Number | Rank score of the ASN. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_reputation | Number | Reputation score of the ASN. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ips_in_asn | Number | Total number of IPs in the ASN. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ips_num_active | Number | Number of active IPs in the ASN. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ips_num_listed | Number | Number of listed IPs in the ASN. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_reputation_score | Number | Reputation score of the ASN. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_takedown_reputation | Number | Takedown reputation score the ASN. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ips_in_asn | Number | Total number of IPs in the ASN with takedown reputation. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ips_num_listed | Number | Number of listed IPs in the ASN with takedown reputation. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.items_num_listed | Number | Number of flagged items in the ASN with takedown reputation. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.listings_max_age | Number | Maximum age of listings for the ASN with takedown reputation. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_takedown_reputation_score | Number | Takedown reputation score of the ASN. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asname | String | Name of the Autonomous System \(AS\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.actor | String | This field is usually used to indicate a known organization or individual associated with the IP. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.known_benign | Boolean | Indicates whether this IP/ASN is explicitly known to be safe \(e.g., a reputable cloud provider or public service\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.tags | Unknown | Contains descriptive tags if the IP/ASN has a known role \(e.g., "Google Bot", "Cloudflare Proxy"\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.date | Number | Date of the scan data \(YYYYMMDD format\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.density | Number | The density value associated with the IP. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip | String | IP address associated with the ASN. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_has_expired_certificate | Boolean | Indicates whether the IP has an expired SSL/TLS certificate. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_has_open_directory | Boolean | Indicates whether the IP hosts an open directory listing. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_dsl_dynamic | Boolean | Whether the IP is from dynamic DSL pool. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_dsl_dynamic_score | Number | A score indicating how likely this IP is dynamic. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_ipfs_node | Boolean | the InterPlanetary File System \(IPFS\), a decentralized file storage system. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_tor_exit_node | Boolean | Tor exit node \(used for anonymous internet browsing\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.continent_code | String | abbreviation for the continent where the IP is located. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.continent_name | String | The full name of the continent. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.country_code | String | The ISO 3166-1 alpha-2 country code representing the country. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.country_is_in_european_union | Boolean | A Boolean value \(true/false\) indicating if the country is part of the European Union \(EU\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.country_name | String | The full name of the country where the IP is registered. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_ptr | String | The reverse DNS \(PTR\) record for the IP. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.listing_score | Number | Measures how frequently the IP appears in threat intelligence or blacklist databases. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.listing_score_explain | Unknown | A breakdown of why the listing score is assigned. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.malscore | Number | Malicious activity score for the IP. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.hostname | String | Hostname associated with the SSL certificate. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain | String | Domain for which the SSL certificate was issued. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.fingerprint_sha1 | String | SHA-1 fingerprint of the SSL certificate. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.issuer_common_name | String | Common name of the certificate issuer. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.issuer_organization | String | Organization that issued the SSL certificate. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.not_before | String | Start date of SSL certificate validity. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.not_after | String | Expiration date of SSL certificate validity. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domains | Unknown | Other domains for which the SSL certificate was issued. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_expired | Boolean | Is certificate expired. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | Scan date of the certificate. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_md5 | String | MD5 hash of the second favicon. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_mmh3 | Number | MurmurHash3 value of the second favicon. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon_md5 | String | MD5 hash of the favicon. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon_mmh3 | Number | MurmurHash3 value of the favicon. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_path | String | Path to the second favicon file. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | Scan date of favicon file. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.response | String | HTTP response code from the scan. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | The date and time when the scan was performed. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.headers_server | String | Server header from the HTTP response. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.headers_content-type | String | Content-Type header from the HTTP response. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.headers_content-length | String | Content-Length header from the HTTP response. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.headers_cache-control | String | Cache-control header from the HTTP response. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.headers_date | String | Date header from HTTP response. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_title | String | Title of the scanned HTML page. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_body_murmur3 | String | MurmurHash3 of the HTML body content. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_body_ssdeep | String | SSDEEP fuzzy hash of the HTML body content. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | The date and time when the scan was performed. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_scan_date | String | The date and time when the scan was performed. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_jarm_hash | String | JARM fingerprint hash for TLS analysis. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score | Number | Security risk score for the IP. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score_decider | String | Factor that determined the final risk score. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet | String | Subnet associated with the IP. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.known_sinkhole_ip | Boolean | Indicates whether the IP is part of a sinkhole \(a controlled system that captures malicious traffic\). |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.tags | Unknown | If the IP were a known sinkhole, this field would contain tags describing its purpose. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_allocation_age | Number | Represents the age \(in days\) since the subnet was allocated. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_allocation_date | Number | The date when the subnet was assigned to an organization or ISP. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_reputation | Number | A measure of how frequently IPs from this subnet appear in threat intelligence databases. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_reputation_explain | Unknown | A breakdown of why the subnet received its reputation score. |
-| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_reputation_score | Number | A numerical risk score \(typically 0-100, with higher values indicating higher risk\). |
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.value | String | Queried value. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.avg_probability | Number | Average probability score of the domain string. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.dga_probability_score | Number | Probability score indicating likelihood of being a DGA domain. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain | String | Domain name analyzed. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain_string_freq_probabilities | Unknown | List of frequency probabilities for different domain string components. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.query | String | Domain name queried. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.alexa_rank | Number | Alexa rank of the domain. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.alexa_top10k | Boolean | Indicates if the domain is in the Alexa top 10k. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.alexa_top10k_score | Number | Score indicating domain's Alexa top 10k ranking. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.dynamic_domain_score | Number | Score indicating likelihood of domain being dynamically generated. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_dynamic_domain | Boolean | Indicates if the domain is dynamic. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_url_shortener | Boolean | Indicates if the domain is a known URL shortener. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.results | Number | Number of results found for the domain. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.url_shortner_score | Number | Score of the shortened URL. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.error | String | Error message if no data is available for the domain. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.zone | String | TLD zone of the domain. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.registrar | String | registrar of the domain. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.whois_age | String | The age of the domain based on WHOIS records. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.whois_created_date | String | The created date on WHOIS records. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.query | String | The domain name that was queried in the system. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.last_seen | Number | The first recorded observation of the domain in the database. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.first_seen | Number | The last recorded observation of the domain in the database. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_new | Boolean | Indicates whether the domain is considered "new.". | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_new_score | Number | A scoring metric indicating how "new" the domain is. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.age | Number | Represents the age of the domain in days. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.age_score | Number | A scoring metric indicating the trustworthiness of the domain based on its age. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_diversity | String | Number of different ASNs associated with the domain. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_diversity_all | String | Total number of unique IPs observed for the domain. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.host | String | The hostname being analyzed. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_diversity_groups | String | The number of distinct IP groups \(e.g., IPs belonging to different ranges or providers\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_expired | Boolean | Indicates if the domain\`s nameserver is expired. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_parked | Boolean | Whether the domain is not parked \(a parked domain is one without active content\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_sinkholed | Boolean | Whether the domain is not sinkholed \(not forcibly redirected to a security researcher\`s trap\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_reputation_max | Number | Maximum reputation score for nameservers. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_reputation_score | Number | Reputation score of the domain\`s nameservers. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain | String | The nameservers of domain. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_server | String | Provided nameserver. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_server_domain_density | Number | Number of domains sharing this NS. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_server_domains_listed | Number | Number of listed domains using this NS. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ns_server_reputation | Number | Reputation score for this NS. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain | String | Domain for which the SSL certificate was issued. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domains | Unknown | Other Domains for which the SSL certificate was issued. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.issuer_organization | String | Issuer organization of the SSL certificate. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.fingerprint_sha1 | String | A unique identifier for the certificate. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.hostname | String | The hostname associated with the certificate. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip | String | The IP address of the server using this certificate. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_expired | String | Indicates whether the certificate has expired. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.issuer_common_name | String | The Common Name \(CN\) of the Certificate Authority \(CA\) that issued this certificate. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.not_after | String | Expiry date of the certificate. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.not_before | String | Start date of the certificate validity. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | The date when this certificate data was last scanned. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.response | String | HTTP response code for the domain scan. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.hostname | String | The hostname that sent this response. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip | String | The IP address responding to the request. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | The date when the headers were scanned. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.cache-control | String | HTTP cache-control. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.content-length | String | Content length of the HTTP response. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.date | String | The date/time of the response. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.expires | String | Indicates an already expired response. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.server | String | The web server handling the request \(Cloudflare proxy\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.hostname | String | HTTP response code for the domain scan. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_body_murmur3 | String | hash of the page content. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_body_ssdeep | String | SSDEEP hash \(used for fuzzy matching similar HTML content\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_title | String | The page title \(suggests a Cloudflare challenge page, likely due to bot protection\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip | String | The IP address responding to the request. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | The date when the headers were scanned. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_md5 | String | MD5 hash of a secondary favicon. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_mmh3 | String | Murmur3 hash of a secondary favicon. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_path | String | The file path of the secondary favicon. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon_md5 | String | MD5 hash of the primary favicon. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon_mmh3 | String | Murmur3 hash of the primary favicon. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.hostname | String | The hostname where this favicon was found. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip | String | The IP address associated with the favicon. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | Date when this favicon was last scanned. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_hostname | String | The hostname where this jarm was found. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_ip | String | The IP address responding to the request. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_jarm_hash | String | Unique identifier for the TLS configuration of the server. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_scan_date | String | Date when this jarm was last scanned. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn | Number | Autonomous System Number \(ASN\) associated with the IP. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_allocation_age | Number | Age of ASN allocation in days. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_allocation_date | Number | Date of ASN allocation. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_rank | Number | Rank of the ASN. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_rank_score | Number | Rank score of the ASN. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_reputation | Number | Reputation score of the ASN. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ips_in_asn | Number | Total number of IPs in the ASN. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ips_num_active | Number | Number of active IPs in the ASN. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ips_num_listed | Number | Number of listed IPs in the ASN. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_reputation_score | Number | Reputation score of the ASN. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_takedown_reputation | Number | Takedown reputation score the ASN. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ips_in_asn | Number | Total number of IPs in the ASN with takedown reputation. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ips_num_listed | Number | Number of listed IPs in the ASN with takedown reputation. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.items_num_listed | Number | Number of flagged items in the ASN with takedown reputation. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.listings_max_age | Number | Maximum age of listings for the ASN with takedown reputation. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asn_takedown_reputation_score | Number | Takedown reputation score of the ASN. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.asname | String | Name of the Autonomous System \(AS\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.actor | String | This field is usually used to indicate a known organization or individual associated with the IP. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.known_benign | Boolean | Indicates whether this IP/ASN is explicitly known to be safe \(e.g., a reputable cloud provider or public service\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.tags | Unknown | Contains descriptive tags if the IP/ASN has a known role \(e.g., "Google Bot", "Cloudflare Proxy"\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.date | Number | Date of the scan data \(YYYYMMDD format\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.density | Number | The density value associated with the IP. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip | String | IP address associated with the ASN. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_has_expired_certificate | Boolean | Indicates whether the IP has an expired SSL/TLS certificate. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_has_open_directory | Boolean | Indicates whether the IP hosts an open directory listing. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_dsl_dynamic | Boolean | Whether the IP is from dynamic DSL pool. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_dsl_dynamic_score | Number | A score indicating how likely this IP is dynamic. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_ipfs_node | Boolean | the InterPlanetary File System \(IPFS\), a decentralized file storage system. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_is_tor_exit_node | Boolean | Tor exit node \(used for anonymous internet browsing\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.continent_code | String | abbreviation for the continent where the IP is located. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.continent_name | String | The full name of the continent. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.country_code | String | The ISO 3166-1 alpha-2 country code representing the country. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.country_is_in_european_union | Boolean | A Boolean value \(true/false\) indicating if the country is part of the European Union \(EU\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.country_name | String | The full name of the country where the IP is registered. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.ip_ptr | String | The reverse DNS \(PTR\) record for the IP. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.listing_score | Number | Measures how frequently the IP appears in threat intelligence or blacklist databases. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.listing_score_explain | Unknown | A breakdown of why the listing score is assigned. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.malscore | Number | Malicious activity score for the IP. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.hostname | String | Hostname associated with the SSL certificate. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domain | String | Domain for which the SSL certificate was issued. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.fingerprint_sha1 | String | SHA-1 fingerprint of the SSL certificate. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.issuer_common_name | String | Common name of the certificate issuer. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.issuer_organization | String | Organization that issued the SSL certificate. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.not_before | String | Start date of SSL certificate validity. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.not_after | String | Expiration date of SSL certificate validity. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.domains | Unknown | Other domains for which the SSL certificate was issued. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.is_expired | Boolean | Is certificate expired. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | Scan date of the certificate. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_md5 | String | MD5 hash of the second favicon. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_mmh3 | Number | MurmurHash3 value of the second favicon. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon_md5 | String | MD5 hash of the favicon. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon_mmh3 | Number | MurmurHash3 value of the favicon. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.favicon2_path | String | Path to the second favicon file. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | Scan date of favicon file. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.response | String | HTTP response code from the scan. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | The date and time when the scan was performed. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.headers_server | String | Server header from the HTTP response. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.headers_content-type | String | Content-Type header from the HTTP response. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.headers_content-length | String | Content-Length header from the HTTP response. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.headers_cache-control | String | Cache-control header from the HTTP response. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.headers_date | String | Date header from HTTP response. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_title | String | Title of the scanned HTML page. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_body_murmur3 | String | MurmurHash3 of the HTML body content. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.html_body_ssdeep | String | SSDEEP fuzzy hash of the HTML body content. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_date | String | The date and time when the scan was performed. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_scan_date | String | The date and time when the scan was performed. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.scan_data_jarm_jarm_hash | String | JARM fingerprint hash for TLS analysis. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet | String | Subnet associated with the IP. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.known_sinkhole_ip | Boolean | Indicates whether the IP is part of a sinkhole \(a controlled system that captures malicious traffic\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.tags | Unknown | If the IP were a known sinkhole, this field would contain tags describing its purpose. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_allocation_age | Number | Represents the age \(in days\) since the subnet was allocated. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_allocation_date | Number | The date when the subnet was assigned to an organization or ISP. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_reputation | Number | A measure of how frequently IPs from this subnet appear in threat intelligence databases. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_reputation_explain | Unknown | A breakdown of why the subnet received its reputation score. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.subnet_reputation_score | Number | A numerical risk score \(typically 0-100, with higher values indicating higher risk\). | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score | Number | The age of the domain in days. | 
+| SilentPush.Bulk.Enrich.SilentPush.Enrichment.sp_risk_score_explain | Unknown | The age of the domain in days. | 
 
 #### Command example
-
 ```!silentpush-bulk-enrich resource=ipv4 value=198.51.100.1 explain=1 scan_data=1```
-
 #### Human Readable Output
+
+
 
 ### silentpush-density-lookup
 
@@ -544,6 +541,9 @@ get certificate data collected from domain scanning.
 ### silentpush-get-enrichment-data
 
 ***
+### silentpush-get-enrichment-data
+
+***
 retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6).
 
 #### Base Command
@@ -554,183 +554,177 @@ retrieves comprehensive enrichment information for a given resource (domain, IPv
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource | The type of resource for which information needs to be retrieved {e.g. domain}. | Required |
-| value | The value corresponding to the selected "resource" for which information needs to be retrieved {e.g. silentpush.com}. | Required |
-| explain | Whether include explanation of data calculations. | Optional |
-| scan_data | Whether include scan data (IPv4 only). | Optional |
+| resource | The type of resource for which information needs to be retrieved {e.g. domain}. | Required | 
+| value | The value corresponding to the selected "resource" for which information needs to be retrieved {e.g. silentpush.com}. | Required | 
+| explain | Whether include explanation of data calculations. | Optional | 
+| scan_data | Whether include scan data (IPv4 only). | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SilentPush.Enrichment.SilentPush.Enrichment.value | String | Queried value. |
-| SilentPush.Enrichment.SilentPush.Enrichment.avg_probability | Number | Average probability score of the domain string. |
-| SilentPush.Enrichment.SilentPush.Enrichment.dga_probability_score | Number | Probability score indicating likelihood of being a DGA domain. |
-| SilentPush.Enrichment.SilentPush.Enrichment.domain | String | Domain name analyzed. |
-| SilentPush.Enrichment.SilentPush.Enrichment.domain_string_freq_probabilities | Unknown | List of frequency probabilities for different domain string components. |
-| SilentPush.Enrichment.SilentPush.Enrichment.query | String | Domain name queried. |
-| SilentPush.Enrichment.SilentPush.Enrichment.alexa_rank | Number | Alexa rank of the domain. |
-| SilentPush.Enrichment.SilentPush.Enrichment.alexa_top10k | Boolean | Indicates if the domain is in the Alexa top 10k. |
-| SilentPush.Enrichment.SilentPush.Enrichment.alexa_top10k_score | Number | Score indicating domain's Alexa top 10k ranking. |
-| SilentPush.Enrichment.SilentPush.Enrichment.dynamic_domain_score | Number | Score indicating likelihood of domain being dynamically generated. |
-| SilentPush.Enrichment.SilentPush.Enrichment.is_dynamic_domain | Boolean | Indicates if the domain is dynamic. |
-| SilentPush.Enrichment.SilentPush.Enrichment.is_url_shortener | Boolean | Indicates if the domain is a known URL shortener. |
-| SilentPush.Enrichment.SilentPush.Enrichment.results | Number | Number of results found for the domain. |
-| SilentPush.Enrichment.SilentPush.Enrichment.url_shortner_score | Number | Score of the shortened URL. |
-| SilentPush.Enrichment.SilentPush.Enrichment.domain | String | Domain name analyzed. |
-| SilentPush.Enrichment.SilentPush.Enrichment.error | String | Error message if no data is available for the domain. |
-| SilentPush.Enrichment.SilentPush.Enrichment.zone | String | TLD zone of the domain. |
-| SilentPush.Enrichment.SilentPush.Enrichment.registrar | String | registrar of the domain. |
-| SilentPush.Enrichment.SilentPush.Enrichment.whois_age | String | The age of the domain based on WHOIS records. |
-| SilentPush.Enrichment.SilentPush.Enrichment.whois_created_date | String | The created date on WHOIS records. |
-| SilentPush.Enrichment.SilentPush.Enrichment.query | String | The domain name that was queried in the system. |
-| SilentPush.Enrichment.SilentPush.Enrichment.last_seen | Number | The first recorded observation of the domain in the database. |
-| SilentPush.Enrichment.SilentPush.Enrichment.first_seen | Number | The last recorded observation of the domain in the database. |
-| SilentPush.Enrichment.SilentPush.Enrichment.is_new | Boolean | Indicates whether the domain is considered "new.". |
-| SilentPush.Enrichment.SilentPush.Enrichment.is_new_score | Number | A scoring metric indicating how "new" the domain is. |
-| SilentPush.Enrichment.SilentPush.Enrichment.age | Number | Represents the age of the domain in days. |
-| SilentPush.Enrichment.SilentPush.Enrichment.age_score | Number | A scoring metric indicating the trustworthiness of the domain based on its age. |
-| SilentPush.Enrichment.SilentPush.Enrichment.asn_diversity | String | Number of different ASNs associated with the domain. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip_diversity_all | String | Total number of unique IPs observed for the domain. |
-| SilentPush.Enrichment.SilentPush.Enrichment.host | String | The hostname being analyzed. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip_diversity_groups | String | The number of distinct IP groups \(e.g., IPs belonging to different ranges or providers\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.is_expired | Boolean | Indicates if the domain\`s nameserver is expired. |
-| SilentPush.Enrichment.SilentPush.Enrichment.is_parked | Boolean | Whether the domain is not parked \(a parked domain is one without active content\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.is_sinkholed | Boolean | Whether the domain is not sinkholed \(not forcibly redirected to a security researcher\`s trap\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.ns_reputation_max | Number | Maximum reputation score for nameservers. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ns_reputation_score | Number | Reputation score of the domain\`s nameservers. |
-| SilentPush.Enrichment.SilentPush.Enrichment.domain | String | The nameservers of domain. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ns_server | String | Provided nameserver. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ns_server_domain_density | Number | Number of domains sharing this NS. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ns_server_domains_listed | Number | Number of listed domains using this NS. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ns_server_reputation | Number | Reputation score for this NS. |
-| SilentPush.Enrichment.SilentPush.Enrichment.domain | String | Domain for which the SSL certificate was issued. |
-| SilentPush.Enrichment.SilentPush.Enrichment.domains | Unknown | Other Domains for which the SSL certificate was issued. |
-| SilentPush.Enrichment.SilentPush.Enrichment.issuer_organization | String | Issuer organization of the SSL certificate. |
-| SilentPush.Enrichment.SilentPush.Enrichment.fingerprint_sha1 | String | A unique identifier for the certificate. |
-| SilentPush.Enrichment.SilentPush.Enrichment.hostname | String | The hostname associated with the certificate. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip | String | The IP address of the server using this certificate. |
-| SilentPush.Enrichment.SilentPush.Enrichment.is_expired | String | Indicates whether the certificate has expired. |
-| SilentPush.Enrichment.SilentPush.Enrichment.issuer_common_name | String | The Common Name \(CN\) of the Certificate Authority \(CA\) that issued this certificate. |
-| SilentPush.Enrichment.SilentPush.Enrichment.not_after | String | Expiry date of the certificate. |
-| SilentPush.Enrichment.SilentPush.Enrichment.not_before | String | Start date of the certificate validity. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | The date when this certificate data was last scanned. |
-| SilentPush.Enrichment.SilentPush.Enrichment.response | String | HTTP response code for the domain scan. |
-| SilentPush.Enrichment.SilentPush.Enrichment.hostname | String | The hostname that sent this response. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip | String | The IP address responding to the request. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | The date when the headers were scanned. |
-| SilentPush.Enrichment.SilentPush.Enrichment.cache-control | String | HTTP cache-control. |
-| SilentPush.Enrichment.SilentPush.Enrichment.content-length | String | Content length of the HTTP response. |
-| SilentPush.Enrichment.SilentPush.Enrichment.date | String | The date/time of the response. |
-| SilentPush.Enrichment.SilentPush.Enrichment.expires | String | Indicates an already expired response. |
-| SilentPush.Enrichment.SilentPush.Enrichment.server | String | The web server handling the request \(Cloudflare proxy\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.hostname | String | HTTP response code for the domain scan. |
-| SilentPush.Enrichment.SilentPush.Enrichment.html_body_murmur3 | String | hash of the page content. |
-| SilentPush.Enrichment.SilentPush.Enrichment.html_body_ssdeep | String | SSDEEP hash \(used for fuzzy matching similar HTML content\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.html_title | String | The page title \(suggests a Cloudflare challenge page, likely due to bot protection\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip | String | The IP address responding to the request. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | The date when the headers were scanned. |
-| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_md5 | String | MD5 hash of a secondary favicon. |
-| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_mmh3 | String | Murmur3 hash of a secondary favicon. |
-| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_path | String | The file path of the secondary favicon. |
-| SilentPush.Enrichment.SilentPush.Enrichment.favicon_md5 | String | MD5 hash of the primary favicon. |
-| SilentPush.Enrichment.SilentPush.Enrichment.favicon_mmh3 | String | Murmur3 hash of the primary favicon. |
-| SilentPush.Enrichment.SilentPush.Enrichment.hostname | String | The hostname where this favicon was found. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip | String | The IP address associated with the favicon. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | Date when this favicon was last scanned. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_hostname | String | The hostname where this jarm was found. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_ip | String | The IP address responding to the request. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_jarm_hash | String | Unique identifier for the TLS configuration of the server. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_scan_date | String | Date when this jarm was last scanned. |
-| SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score | Number | Overall risk score for the domain. |
-| SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score_decider | String | Factor that determined the final risk score. |
-| SilentPush.Enrichment.SilentPush.Enrichment.asn | Number | Autonomous System Number \(ASN\) associated with the IP. |
-| SilentPush.Enrichment.SilentPush.Enrichment.asn_allocation_age | Number | Age of ASN allocation in days. |
-| SilentPush.Enrichment.SilentPush.Enrichment.asn_allocation_date | Number | Date of ASN allocation. |
-| SilentPush.Enrichment.SilentPush.Enrichment.asn_rank | Number | Rank of the ASN. |
-| SilentPush.Enrichment.SilentPush.Enrichment.asn_rank_score | Number | Rank score of the ASN. |
-| SilentPush.Enrichment.SilentPush.Enrichment.asn_reputation | Number | Reputation score of the ASN. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ips_in_asn | Number | Total number of IPs in the ASN. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ips_num_active | Number | Number of active IPs in the ASN. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ips_num_listed | Number | Number of listed IPs in the ASN. |
-| SilentPush.Enrichment.SilentPush.Enrichment.asn_reputation_score | Number | Reputation score of the ASN. |
-| SilentPush.Enrichment.SilentPush.Enrichment.asn_takedown_reputation | Number | Takedown reputation score the ASN. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ips_in_asn | Number | Total number of IPs in the ASN with takedown reputation. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ips_num_listed | Number | Number of listed IPs in the ASN with takedown reputation. |
-| SilentPush.Enrichment.SilentPush.Enrichment.items_num_listed | Number | Number of flagged items in the ASN with takedown reputation. |
-| SilentPush.Enrichment.SilentPush.Enrichment.listings_max_age | Number | Maximum age of listings for the ASN with takedown reputation. |
-| SilentPush.Enrichment.SilentPush.Enrichment.asn_takedown_reputation_score | Number | Takedown reputation score of the ASN. |
-| SilentPush.Enrichment.SilentPush.Enrichment.asname | String | Name of the Autonomous System \(AS\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.actor | String | This field is usually used to indicate a known organization or individual associated with the IP. |
-| SilentPush.Enrichment.SilentPush.Enrichment.known_benign | Boolean | Indicates whether this IP/ASN is explicitly known to be safe \(e.g., a reputable cloud provider or public service\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.tags | Unknown | Contains descriptive tags if the IP/ASN has a known role \(e.g., "Google Bot", "Cloudflare Proxy"\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.date | Number | Date of the scan data \(YYYYMMDD format\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.density | Number | The density value associated with the IP. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip | String | IP address associated with the ASN. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip_has_expired_certificate | Boolean | Indicates whether the IP has an expired SSL/TLS certificate. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip_has_open_directory | Boolean | Indicates whether the IP hosts an open directory listing. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip_is_dsl_dynamic | Boolean | Whether the IP is from dynamic DSL pool. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip_is_dsl_dynamic_score | Number | A score indicating how likely this IP is dynamic. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip_is_ipfs_node | Boolean | the InterPlanetary File System \(IPFS\), a decentralized file storage system. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip_is_tor_exit_node | Boolean | Tor exit node \(used for anonymous internet browsing\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.continent_code | String | abbreviation for the continent where the IP is located. |
-| SilentPush.Enrichment.SilentPush.Enrichment.continent_name | String | The full name of the continent. |
-| SilentPush.Enrichment.SilentPush.Enrichment.country_code | String | The ISO 3166-1 alpha-2 country code representing the country. |
-| SilentPush.Enrichment.SilentPush.Enrichment.country_is_in_european_union | Boolean | A Boolean value \(true/false\) indicating if the country is part of the European Union \(EU\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.country_name | String | The full name of the country where the IP is registered. |
-| SilentPush.Enrichment.SilentPush.Enrichment.ip_ptr | String | The reverse DNS \(PTR\) record for the IP. |
-| SilentPush.Enrichment.SilentPush.Enrichment.listing_score | Number | Measures how frequently the IP appears in threat intelligence or blacklist databases. |
-| SilentPush.Enrichment.SilentPush.Enrichment.listing_score_explain | Unknown | A breakdown of why the listing score is assigned. |
-| SilentPush.Enrichment.SilentPush.Enrichment.malscore | Number | Malicious activity score for the IP. |
-| SilentPush.Enrichment.SilentPush.Enrichment.hostname | String | Hostname associated with the SSL certificate. |
-| SilentPush.Enrichment.SilentPush.Enrichment.domain | String | Domain for which the SSL certificate was issued. |
-| SilentPush.Enrichment.SilentPush.Enrichment.fingerprint_sha1 | String | SHA-1 fingerprint of the SSL certificate. |
-| SilentPush.Enrichment.SilentPush.Enrichment.issuer_common_name | String | Common name of the certificate issuer. |
-| SilentPush.Enrichment.SilentPush.Enrichment.issuer_organization | String | Organization that issued the SSL certificate. |
-| SilentPush.Enrichment.SilentPush.Enrichment.not_before | String | Start date of SSL certificate validity. |
-| SilentPush.Enrichment.SilentPush.Enrichment.not_after | String | Expiration date of SSL certificate validity. |
-| SilentPush.Enrichment.SilentPush.Enrichment.domains | Unknown | Other domains for which the SSL certificate was issued. |
-| SilentPush.Enrichment.SilentPush.Enrichment.is_expired | Boolean | Is certificate expired. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | Scan date of the certificate. |
-| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_md5 | String | MD5 hash of the second favicon. |
-| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_mmh3 | Number | MurmurHash3 value of the second favicon. |
-| SilentPush.Enrichment.SilentPush.Enrichment.favicon_md5 | String | MD5 hash of the favicon. |
-| SilentPush.Enrichment.SilentPush.Enrichment.favicon_mmh3 | Number | MurmurHash3 value of the favicon. |
-| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_path | String | Path to the second favicon file. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | Scan date of favicon file. |
-| SilentPush.Enrichment.SilentPush.Enrichment.response | String | HTTP response code from the scan. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | The date and time when the scan was performed. |
-| SilentPush.Enrichment.SilentPush.Enrichment.headers_server | String | Server header from the HTTP response. |
-| SilentPush.Enrichment.SilentPush.Enrichment.headers_content-type | String | Content-Type header from the HTTP response. |
-| SilentPush.Enrichment.SilentPush.Enrichment.headers_content-length | String | Content-Length header from the HTTP response. |
-| SilentPush.Enrichment.SilentPush.Enrichment.headers_cache-control | String | Cache-control header from the HTTP response. |
-| SilentPush.Enrichment.SilentPush.Enrichment.headers_date | String | Date header from HTTP response. |
-| SilentPush.Enrichment.SilentPush.Enrichment.html_title | String | Title of the scanned HTML page. |
-| SilentPush.Enrichment.SilentPush.Enrichment.html_body_murmur3 | String | MurmurHash3 of the HTML body content. |
-| SilentPush.Enrichment.SilentPush.Enrichment.html_body_ssdeep | String | SSDEEP fuzzy hash of the HTML body content. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | The date and time when the scan was performed. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_scan_date | String | The date and time when the scan was performed. |
-| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_jarm_hash | String | JARM fingerprint hash for TLS analysis. |
-| SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score | Number | Security risk score for the IP. |
-| SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score_decider | String | Factor that determined the final risk score. |
-| SilentPush.Enrichment.SilentPush.Enrichment.subnet | String | Subnet associated with the IP. |
-| SilentPush.Enrichment.SilentPush.Enrichment.known_sinkhole_ip | Boolean | Indicates whether the IP is part of a sinkhole \(a controlled system that captures malicious traffic\). |
-| SilentPush.Enrichment.SilentPush.Enrichment.tags | Unknown | If the IP were a known sinkhole, this field would contain tags describing its purpose. |
-| SilentPush.Enrichment.SilentPush.Enrichment.subnet_allocation_age | Number | Represents the age \(in days\) since the subnet was allocated. |
-| SilentPush.Enrichment.SilentPush.Enrichment.subnet_allocation_date | Number | The date when the subnet was assigned to an organization or ISP. |
-| SilentPush.Enrichment.SilentPush.Enrichment.subnet_reputation | Number | A measure of how frequently IPs from this subnet appear in threat intelligence databases. |
-| SilentPush.Enrichment.SilentPush.Enrichment.subnet_reputation_explain | Unknown | A breakdown of why the subnet received its reputation score. |
-| SilentPush.Enrichment.SilentPush.Enrichment.subnet_reputation_score | Number | A numerical risk score \(typically 0-100, with higher values indicating higher risk\). |
+| SilentPush.Enrichment.SilentPush.Enrichment.value | String | Queried value. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.avg_probability | Number | Average probability score of the domain string. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.dga_probability_score | Number | Probability score indicating likelihood of being a DGA domain. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.domain | String | Domain name analyzed. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.domain_string_freq_probabilities | Unknown | List of frequency probabilities for different domain string components. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.query | String | Domain name queried. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.alexa_rank | Number | Alexa rank of the domain. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.alexa_top10k | Boolean | Indicates if the domain is in the Alexa top 10k. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.alexa_top10k_score | Number | Score indicating domain's Alexa top 10k ranking. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.dynamic_domain_score | Number | Score indicating likelihood of domain being dynamically generated. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.is_dynamic_domain | Boolean | Indicates if the domain is dynamic. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.is_url_shortener | Boolean | Indicates if the domain is a known URL shortener. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.results | Number | Number of results found for the domain. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.url_shortner_score | Number | Score of the shortened URL. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.error | String | Error message if no data is available for the domain. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.zone | String | TLD zone of the domain. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.registrar | String | registrar of the domain. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.whois_age | String | The age of the domain based on WHOIS records. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.whois_created_date | String | The created date on WHOIS records. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.query | String | The domain name that was queried in the system. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.last_seen | Number | The first recorded observation of the domain in the database. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.first_seen | Number | The last recorded observation of the domain in the database. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.is_new | Boolean | Indicates whether the domain is considered "new.". | 
+| SilentPush.Enrichment.SilentPush.Enrichment.is_new_score | Number | A scoring metric indicating how "new" the domain is. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.age | Number | Represents the age of the domain in days. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.age_score | Number | A scoring metric indicating the trustworthiness of the domain based on its age. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.asn_diversity | String | Number of different ASNs associated with the domain. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip_diversity_all | String | Total number of unique IPs observed for the domain. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.host | String | The hostname being analyzed. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip_diversity_groups | String | The number of distinct IP groups \(e.g., IPs belonging to different ranges or providers\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.is_expired | Boolean | Indicates if the domain\`s nameserver is expired. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.is_parked | Boolean | Whether the domain is not parked \(a parked domain is one without active content\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.is_sinkholed | Boolean | Whether the domain is not sinkholed \(not forcibly redirected to a security researcher\`s trap\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ns_reputation_max | Number | Maximum reputation score for nameservers. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ns_reputation_score | Number | Reputation score of the domain\`s nameservers. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.domain | String | The nameservers of domain. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ns_server | String | Provided nameserver. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ns_server_domain_density | Number | Number of domains sharing this NS. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ns_server_domains_listed | Number | Number of listed domains using this NS. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ns_server_reputation | Number | Reputation score for this NS. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.domain | String | Domain for which the SSL certificate was issued. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.domains | Unknown | Other Domains for which the SSL certificate was issued. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.issuer_organization | String | Issuer organization of the SSL certificate. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.fingerprint_sha1 | String | A unique identifier for the certificate. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.hostname | String | The hostname associated with the certificate. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip | String | The IP address of the server using this certificate. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.is_expired | String | Indicates whether the certificate has expired. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.issuer_common_name | String | The Common Name \(CN\) of the Certificate Authority \(CA\) that issued this certificate. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.not_after | String | Expiry date of the certificate. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.not_before | String | Start date of the certificate validity. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | The date when this certificate data was last scanned. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.response | String | HTTP response code for the domain scan. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.hostname | String | The hostname that sent this response. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip | String | The IP address responding to the request. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | The date when the headers were scanned. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.cache-control | String | HTTP cache-control. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.content-length | String | Content length of the HTTP response. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.date | String | The date/time of the response. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.expires | String | Indicates an already expired response. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.server | String | The web server handling the request \(Cloudflare proxy\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.hostname | String | HTTP response code for the domain scan. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.html_body_murmur3 | String | hash of the page content. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.html_body_ssdeep | String | SSDEEP hash \(used for fuzzy matching similar HTML content\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.html_title | String | The page title \(suggests a Cloudflare challenge page, likely due to bot protection\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip | String | The IP address responding to the request. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | The date when the headers were scanned. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_md5 | String | MD5 hash of a secondary favicon. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_mmh3 | String | Murmur3 hash of a secondary favicon. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_path | String | The file path of the secondary favicon. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.favicon_md5 | String | MD5 hash of the primary favicon. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.favicon_mmh3 | String | Murmur3 hash of the primary favicon. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.hostname | String | The hostname where this favicon was found. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip | String | The IP address associated with the favicon. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | Date when this favicon was last scanned. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_hostname | String | The hostname where this jarm was found. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_ip | String | The IP address responding to the request. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_jarm_hash | String | Unique identifier for the TLS configuration of the server. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_scan_date | String | Date when this jarm was last scanned. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.asn | Number | Autonomous System Number \(ASN\) associated with the IP. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.asn_allocation_age | Number | Age of ASN allocation in days. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.asn_allocation_date | Number | Date of ASN allocation. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.asn_rank | Number | Rank of the ASN. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.asn_rank_score | Number | Rank score of the ASN. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.asn_reputation | Number | Reputation score of the ASN. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ips_in_asn | Number | Total number of IPs in the ASN. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ips_num_active | Number | Number of active IPs in the ASN. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ips_num_listed | Number | Number of listed IPs in the ASN. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.asn_reputation_score | Number | Reputation score of the ASN. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.asn_takedown_reputation | Number | Takedown reputation score the ASN. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ips_in_asn | Number | Total number of IPs in the ASN with takedown reputation. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ips_num_listed | Number | Number of listed IPs in the ASN with takedown reputation. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.items_num_listed | Number | Number of flagged items in the ASN with takedown reputation. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.listings_max_age | Number | Maximum age of listings for the ASN with takedown reputation. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.asn_takedown_reputation_score | Number | Takedown reputation score of the ASN. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.asname | String | Name of the Autonomous System \(AS\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.actor | String | This field is usually used to indicate a known organization or individual associated with the IP. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.known_benign | Boolean | Indicates whether this IP/ASN is explicitly known to be safe \(e.g., a reputable cloud provider or public service\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.tags | Unknown | Contains descriptive tags if the IP/ASN has a known role \(e.g., "Google Bot", "Cloudflare Proxy"\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.date | Number | Date of the scan data \(YYYYMMDD format\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.density | Number | The density value associated with the IP. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip | String | IP address associated with the ASN. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip_has_expired_certificate | Boolean | Indicates whether the IP has an expired SSL/TLS certificate. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip_has_open_directory | Boolean | Indicates whether the IP hosts an open directory listing. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip_is_dsl_dynamic | Boolean | Whether the IP is from dynamic DSL pool. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip_is_dsl_dynamic_score | Number | A score indicating how likely this IP is dynamic. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip_is_ipfs_node | Boolean | the InterPlanetary File System \(IPFS\), a decentralized file storage system. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip_is_tor_exit_node | Boolean | Tor exit node \(used for anonymous internet browsing\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.continent_code | String | abbreviation for the continent where the IP is located. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.continent_name | String | The full name of the continent. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.country_code | String | The ISO 3166-1 alpha-2 country code representing the country. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.country_is_in_european_union | Boolean | A Boolean value \(true/false\) indicating if the country is part of the European Union \(EU\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.country_name | String | The full name of the country where the IP is registered. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.ip_ptr | String | The reverse DNS \(PTR\) record for the IP. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.listing_score | Number | Measures how frequently the IP appears in threat intelligence or blacklist databases. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.listing_score_explain | Unknown | A breakdown of why the listing score is assigned. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.malscore | Number | Malicious activity score for the IP. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.hostname | String | Hostname associated with the SSL certificate. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.domain | String | Domain for which the SSL certificate was issued. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.fingerprint_sha1 | String | SHA-1 fingerprint of the SSL certificate. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.issuer_common_name | String | Common name of the certificate issuer. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.issuer_organization | String | Organization that issued the SSL certificate. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.not_before | String | Start date of SSL certificate validity. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.not_after | String | Expiration date of SSL certificate validity. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.domains | Unknown | Other domains for which the SSL certificate was issued. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.is_expired | Boolean | Is certificate expired. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | Scan date of the certificate. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_md5 | String | MD5 hash of the second favicon. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_mmh3 | Number | MurmurHash3 value of the second favicon. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.favicon_md5 | String | MD5 hash of the favicon. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.favicon_mmh3 | Number | MurmurHash3 value of the favicon. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.favicon2_path | String | Path to the second favicon file. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | Scan date of favicon file. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.response | String | HTTP response code from the scan. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | The date and time when the scan was performed. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.headers_server | String | Server header from the HTTP response. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.headers_content-type | String | Content-Type header from the HTTP response. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.headers_content-length | String | Content-Length header from the HTTP response. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.headers_cache-control | String | Cache-control header from the HTTP response. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.headers_date | String | Date header from HTTP response. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.html_title | String | Title of the scanned HTML page. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.html_body_murmur3 | String | MurmurHash3 of the HTML body content. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.html_body_ssdeep | String | SSDEEP fuzzy hash of the HTML body content. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_date | String | The date and time when the scan was performed. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_scan_date | String | The date and time when the scan was performed. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.scan_data_jarm_jarm_hash | String | JARM fingerprint hash for TLS analysis. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.subnet | String | Subnet associated with the IP. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.known_sinkhole_ip | Boolean | Indicates whether the IP is part of a sinkhole \(a controlled system that captures malicious traffic\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.tags | Unknown | If the IP were a known sinkhole, this field would contain tags describing its purpose. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.subnet_allocation_age | Number | Represents the age \(in days\) since the subnet was allocated. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.subnet_allocation_date | Number | The date when the subnet was assigned to an organization or ISP. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.subnet_reputation | Number | A measure of how frequently IPs from this subnet appear in threat intelligence databases. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.subnet_reputation_explain | Unknown | A breakdown of why the subnet received its reputation score. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.subnet_reputation_score | Number | A numerical risk score \(typically 0-100, with higher values indicating higher risk\). | 
+| SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score | Number | The age of the domain in days. | 
+| SilentPush.Enrichment.SilentPush.Enrichment.sp_risk_score_explain | Unknown | The age of the domain in days. | 
 
 #### Command example
-
 ```!silentpush-get-enrichment-data resource=ipv6 value=2a02:4780:37:b262:f807:71a8:e3ee:9b64```
-
 #### Human Readable Output
 
-### silentpush-get-ipv4-reputation
 
-***
+
 retrieves the reputation information for an IPv4.
 
 #### Base Command
@@ -1607,3 +1601,188 @@ get Whois information
 ```!silentpush-whois domain=example.com```
 
 #### Human Readable Output
+### silentpush-ipv6-risk-score
+
+***
+Scores a list of IPv6 addresses
+
+#### Base Command
+
+`silentpush-ipv6-risk-score`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ips | A comma-separated list of IPs to query. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.Score.SilentPush.Enrichment.ip | String | The IP queried. | 
+| SilentPush.Score.SilentPush.Enrichment.sp_risk_score | Number | The age of the domain in days. | 
+| SilentPush.Score.SilentPush.Enrichment.sp_risk_score_explain | Unknown | The age of the domain in days. | 
+
+#### Command example
+```!silentpush-ipv6-risk-score ips=2606:4700:4700::1111,2a02:4780:37:b262:f807:71a8:e3ee:9b64```
+#### Human Readable Output
+
+
+
+### silentpush-get-asn-takedown-reputation
+
+***
+This command retrieve the takedown reputation information for an Autonomous System Number (ASN).
+
+#### Base Command
+
+`silentpush-get-asn-takedown-reputation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asn | The ASN to lookup. | Required | 
+| explain | Show the information used to calculate the reputation score. | Optional | 
+| limit | The maximum number of reputation history records to retrieve. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.ASNTakedownReputation.SilentPush.ASN.asname | String | The name of the Autonomous System \(AS\). | 
+| SilentPush.ASNTakedownReputation.SilentPush.ASN.asn | String | The Autonomous System Number \(ASN\). | 
+| SilentPush.ASNTakedownReputation.SilentPush.ASN.allocation_age | Number | The age of the ASN allocation in days. | 
+| SilentPush.ASNTakedownReputation.SilentPush.ASN.allocation_date | Number | The date when the ASN was allocated \(YYYYMMDD\). | 
+| SilentPush.ASNTakedownReputation.SilentPush.ASN.asn_takedown_reputation | Number | The takedown reputation score for the ASN. | 
+| SilentPush.ASNTakedownReputation.SilentPush.ASN.ips_in_asn | Number | The total number of IP addresses associated with the ASN. | 
+| SilentPush.ASNTakedownReputation.SilentPush.ASN.ips_num_listed | Number | The number of IP addresses within the ASN that are flagged or listed in security threat databases. | 
+| SilentPush.ASNTakedownReputation.SilentPush.ASN.items_num_listed | Number | The total number of security-related listings associated with the ASN, including IP addresses and domains. | 
+| SilentPush.ASNTakedownReputation.SilentPush.ASN.listings_max_age | Number | The maximum age \(in hours\) of the listings, indicating how recent the flagged IPs/domains are. | 
+
+#### Command example
+```!silentpush-get-asn-takedown-reputation asn=8890```
+#### Human Readable Output
+
+
+
+### silentpush-tlp-reports
+
+***
+List all the TLP Reports
+
+#### Base Command
+
+`silentpush-tlp-reports`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| order | Which field to use when ordering the results. | Optional | 
+| page | A page number within the paginated result set. | Optional | 
+| search | A search term. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!silentpush-tlp-reports page=2 search=malware order=date/desc```
+#### Human Readable Output
+
+
+
+### silentpush-domain-risk-score
+
+***
+Scores a list of Domain addresses
+
+#### Base Command
+
+`silentpush-domain-risk-score`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domains | A comma-separated list of domains to query. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.Score.SilentPush.Enrichment.domain | String | The domain name queried. | 
+| SilentPush.Score.SilentPush.Enrichment.sp_risk_score | Number | The age of the domain in days. | 
+| SilentPush.Score.SilentPush.Enrichment.sp_risk_score_explain | Unknown | The age of the domain in days. | 
+
+#### Command example
+```!silentpush-domain-risk-score domains=example.com,example2.com```
+#### Human Readable Output
+
+
+
+### silentpush-get-asn-reputation
+
+***
+This command retrieve the reputation information for an IPv4.
+
+#### Base Command
+
+`silentpush-get-asn-reputation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asn | The ASN to lookup. | Required | 
+| explain | Show the information used to calculate the reputation score. | Optional | 
+| limit | The maximum number of reputation history records to retrieve. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.ASNReputation.SilentPush.ASN.asn | Number | Autonomous System Number \(ASN\) associated with the reputation history. | 
+| SilentPush.ASNReputation.SilentPush.ASN.asn_reputation | Number | Reputation score of the ASN at a given point in time. | 
+| SilentPush.ASNReputation.SilentPush.ASN.ips_in_asn | Number | Total number of IPs within the ASN. | 
+| SilentPush.ASNReputation.SilentPush.ASN.ips_num_active | Number | Number of actively used IPs in the ASN. | 
+| SilentPush.ASNReputation.SilentPush.ASN..ips_num_listed | Number | Number of IPs in the ASN that are listed as malicious. | 
+| SilentPush.ASNReputation.SilentPush.ASN.asname | String | Name of the ASN provider or organization. | 
+| SilentPush.ASNReputation.SilentPush.ASN.date | Number | Date of the recorded reputation history in YYYYMMDD format. | 
+
+#### Command example
+```!silentpush-get-asn-reputation asn=8890```
+#### Human Readable Output
+
+
+
+### silentpush-ipv4-risk-score
+
+***
+Scores a list of IPv4 addresses
+
+#### Base Command
+
+`silentpush-ipv4-risk-score`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ips | A comma-separated list of IPs to query. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.Score.SilentPush.Enrichment.ip | String | The IP queried. | 
+| SilentPush.Score.SilentPush.Enrichment.sp_risk_score | Number | The age of the domain in days. | 
+| SilentPush.Score.SilentPush.Enrichment.sp_risk_score_explain | Unknown | The age of the domain in days. | 
+
+#### Command example
+```!silentpush-ipv4-risk-score ips=198.51.100.1,198.51.100.2```
+#### Human Readable Output
+
+
+
