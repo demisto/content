@@ -721,3 +721,185 @@ def test_missing_repo_dir_raises(env, monkeypatch):
     monkeypatch.delenv("CONNECTUS_REPO_DIR", raising=False)
     with pytest.raises(ResolverError, match="CONNECTUS_REPO_DIR"):
         resolve(_INTEGRATION_ID, csv_path=csv_path)
+
+
+# ===========================================================================
+# Variant expansion (_expand_variants) — the per-capability matrix logic.
+#
+# These are PURE-LOGIC tests (no I/O): they build CapabilitySpec lists directly
+# and assert the legal variant matrix, per multi_capability_variant_design.md.
+# ===========================================================================
+
+from resolver import (  # noqa: E402
+    CAPABILITY_FETCH_FLAG,
+    FETCH_FLAG_NAMES,
+    CapabilityVariant,
+    _expand_variants,
+    fetch_flag_for_capability,
+)
+
+
+def _cap(parent_id: str) -> CapabilitySpec:
+    return CapabilitySpec(id=parent_id)
+
+
+def _active_flags(variant: CapabilityVariant) -> list[str]:
+    return [name for name, on in variant.fetch_flags.items() if on]
+
+
+def test_fetch_flag_classifier():
+    # VALUES are the EXACT XSOAR instance-creation toggle param names.
+    assert fetch_flag_for_capability("fetch-issues") == "isFetch"
+    assert fetch_flag_for_capability("log-collection") == "isFetchEvents"
+    assert fetch_flag_for_capability("fetch-assets-and-vulnerabilities") == "isFetchAssets"
+    assert fetch_flag_for_capability("threat-intelligence-and-enrichment") == "feed"
+    assert fetch_flag_for_capability("fetch-secrets") == "isFetchCredentials"
+    # Always-on caps map to None.
+    assert fetch_flag_for_capability("automation-and-remediation") is None
+    assert fetch_flag_for_capability("unknown-capability") is None
+
+
+def test_capabilityspec_fetch_flag_property():
+    assert _cap("fetch-issues").fetch_flag == "isFetch"
+    assert _cap("automation-and-remediation").fetch_flag is None
+
+
+def test_expand_variants_akamai_siem_two_fetch_plus_automation():
+    """Automation + fetch-issues + log-collection → exactly 2 LEGAL variants."""
+    caps = [
+        _cap("automation-and-remediation"),
+        _cap("fetch-issues"),
+        _cap("log-collection"),
+    ]
+    variants = _expand_variants(caps)
+    assert len(variants) == 2
+
+    by_id = {v.id: v for v in variants}
+    fi = by_id["automation-and-remediation+fetch-issues"]
+    lc = by_id["automation-and-remediation+log-collection"]
+
+    # Each variant bundles automation + EXACTLY ONE fetch capability.
+    assert fi.enabled_capability_ids == [
+        "automation-and-remediation",
+        "fetch-issues",
+    ]
+    assert lc.enabled_capability_ids == [
+        "automation-and-remediation",
+        "log-collection",
+    ]
+
+    # Exactly one fetch flag true per variant; the illegal pair never co-occurs.
+    assert _active_flags(fi) == ["isFetch"]
+    assert _active_flags(lc) == ["isFetchEvents"]
+    assert fi.fetch_flags["isFetchEvents"] is False
+    assert lc.fetch_flags["isFetch"] is False
+
+    # Every variant carries the COMPLETE flag set (all keys present).
+    for v in variants:
+        assert set(v.fetch_flags) == set(FETCH_FLAG_NAMES)
+
+
+def test_expand_variants_automation_only_single_variant():
+    variants = _expand_variants([_cap("automation-and-remediation")])
+    assert len(variants) == 1
+    v = variants[0]
+    assert v.enabled_capability_ids == ["automation-and-remediation"]
+    # No fetch flag enabled.
+    assert _active_flags(v) == []
+    assert all(val is False for val in v.fetch_flags.values())
+
+
+def test_expand_variants_single_fetch_no_automation():
+    """A pure event collector (log-collection only, no automation) → 1 variant."""
+    variants = _expand_variants([_cap("log-collection")])
+    assert len(variants) == 1
+    v = variants[0]
+    assert v.enabled_capability_ids == ["log-collection"]
+    assert _active_flags(v) == ["isFetchEvents"]
+
+
+def test_expand_variants_multi_fetch_no_automation():
+    """Multiple fetch caps, no always-on → one SINGLE-cap variant each."""
+    variants = _expand_variants(
+        [_cap("fetch-issues"), _cap("log-collection"), _cap("fetch-secrets")]
+    )
+    assert len(variants) == 3
+    for v in variants:
+        # Each variant has exactly ONE capability and ONE active fetch flag.
+        assert len(v.capabilities) == 1
+        assert len(_active_flags(v)) == 1
+    active = sorted(_active_flags(v)[0] for v in variants)
+    assert active == sorted(["isFetch", "isFetchEvents", "isFetchCredentials"])
+
+
+def test_expand_variants_empty_raises():
+    with pytest.raises(ResolverError, match="no capabilities"):
+        _expand_variants([])
+
+
+# ===========================================================================
+# general_configurations field collection (view_group-scoped).
+# ===========================================================================
+
+from resolver import (  # noqa: E402
+    _capabilities_from_handler,
+    _general_config_fields_for_view_groups,
+    _view_groups_for_capability,
+)
+
+
+_CONFIG_DOC = {
+    "general_configurations": {
+        "configurations": [
+            {"view_group": "siem", "fields": [{"id": "fetchTime"}, {"id": "fetchLimit"}]},
+            {"view_group": "other", "fields": [{"id": "other_field"}]},
+        ]
+    },
+    "configurations": [
+        {
+            "id": "fetch-issues_x",
+            "view_group": "siem",
+            "configurations": [{"fields": [{"id": "incidentType"}]}],
+        },
+        {
+            "id": "log-collection_x",
+            "view_group": "siem",
+            "configurations": [{"fields": [{"id": "isFetchEvents"}]}],
+        },
+    ],
+}
+
+
+def test_view_groups_for_capability():
+    assert _view_groups_for_capability(_CONFIG_DOC, "fetch-issues_x") == {"siem"}
+    assert _view_groups_for_capability(_CONFIG_DOC, "missing") == set()
+
+
+def test_general_config_fields_for_view_groups():
+    got = _general_config_fields_for_view_groups(_CONFIG_DOC, {"siem"})
+    assert set(got) == {"fetchTime", "fetchLimit"}
+    # A different view_group's general fields are NOT included.
+    assert "other_field" not in got
+    # No view groups → nothing.
+    assert _general_config_fields_for_view_groups(_CONFIG_DOC, set()) == []
+
+
+def test_capabilities_include_general_config_for_view_group():
+    """A fetch-issues capability must pick up the SIEM general-config fields
+    (fetchTime/fetchLimit) via its shared view_group — not just its own
+    capability-scoped fields."""
+    handler_doc = {"capabilities": [{"id": "fetch-issues_x"}]}
+    capabilities_doc = {
+        "capabilities": [
+            {"id": "fetch-issues", "sub_capabilities": [{"id": "fetch-issues_x"}]}
+        ]
+    }
+    caps = _capabilities_from_handler(handler_doc, capabilities_doc, _CONFIG_DOC)
+    assert len(caps) == 1
+    fields = caps[0].config_field_ids
+    # capability-scoped field + the view_group-scoped general-config fields.
+    assert "incidentType" in fields
+    assert "fetchTime" in fields
+    assert "fetchLimit" in fields
+    # log-collection-only field must NOT leak into the fetch-issues capability.
+    assert "isFetchEvents" not in fields

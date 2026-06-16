@@ -140,6 +140,7 @@ INCIDENT_FETCH_INTERVAL_PARAM = "incidentFetchInterval"
 ALERT_FETCH_INTERVAL_SUFFIX = "alertFetchInterval"
 IGNORED_PARAMS = {
     "is_mirroring",
+    "mirroring",
     "mirror_options",
     "close_incident",
     "mirror_limit",

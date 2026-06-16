@@ -1,0 +1,23 @@
+{
+  "description": "An integration whose commonfields.id contains an underscore (Zoom_IAM) must produce a CONSISTENT view_group id across configurations.yaml view_groups[] (the registry) and the configurations[]/general_configurations[] entries that reference it. Regression guard for the slug mismatch where derive_handler_id kept the underscore (xsoar-zoom_iam -> view_group 'zoom_iam') while slugify_view_group_id normalized it to a dash ('zoom-iam'), leaving the referenced view_group unregistered (OPA cross-file violation).",
+  "connector_title": "Zoom",
+  "mapped_params": {
+    "general_configurations": [],
+    "Automation": ["disable-user-enabled", "enable-user-enabled", "mapper_in"]
+  },
+  "auth_methods": {
+    "auth_types": [
+      {
+        "type": "Passthrough",
+        "name": "OAuth (Server-to-Server)",
+        "interpolated": true,
+        "xsoar_param_map": {
+          "account_id": "account_id",
+          "credentials.identifier": "client_id",
+          "credentials.password": "client_secret"
+        }
+      }
+    ],
+    "other_connection": ["insecure", "proxy", "url"]
+  }
+}

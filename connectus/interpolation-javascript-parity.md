@@ -49,7 +49,7 @@ The implementation depends on these host-provided seams (named per language):
 | Connector metadata | `demisto.unifiedConnectorMetadata()` | `unifiedConnectorMetadata()` | `{connectionProfiles: [...]}` or empty/None when not in UCP mode |
 | Credentials fetch | `get_ucp_credentials(method_unique_id)` | `getUCPCredentials(methodId, false)` | the **envelope** (§A.4) |
 | Current command | `demisto.command()` (via `resolve_ucp_capability`) | global `command` | drives capability resolution |
-| Merge target | `demisto.callingContext['params']` (`:14032`) | module-global `params` object (`:2811`) | where interpolated values are written so later param reads observe them |
+| Merge target | `demisto.callingContext['params']` (`:14032`) | module-global `params` object (`:2811`) | where interpolated values are **deep-merged** (§A.9) so later param reads observe them while pre-existing sibling keys are preserved |
 | Injected flag | `_UCP_AUTH_PARAMS_INJECTED` (`:14034`) | `_UCP_AUTH_PARAMS_INJECTED` (`:2819`) | set `true` on success so `should_use_ucp_auth()`/`shouldUseUcpAuth()` stop per-request injection |
 
 ### A.2 Capability resolution
@@ -192,9 +192,51 @@ Source: Python `:13975`, JS `:2778`.
 1. If no metadata passed, fetch it; if absent/None ⇒ return `false` (not in UCP).
 2. Resolve capability (best-effort; swallow errors).
 3. `interpolated = buildUcpParams(metadata, capability)`; if empty ⇒ `false`.
-4. **Merge into the host merge target** (§A.1), last-wins.
+4. **Recursively deep-merge `interpolated` into the host merge target** (§A.1)
+   via the shared helper (Python `_deep_merge_dicts(params, interpolated)`, JS
+   `deepMergeObjects(params, interpolated)`). See the deep-merge semantics below.
 5. Set `_UCP_AUTH_PARAMS_INJECTED = true`; return `true`.
 6. The whole applier is wrapped so it **never throws**.
+
+**Deep-merge semantics (`_deep_merge_dicts` / `deepMergeObjects`).** The apply
+step is a recursive deep-merge into the host target, **not** a shallow,
+top-level, last-wins replacement. Both runtimes implement identical rules:
+
+- If **both** the existing value and the incoming (interpolated) value for a key
+  are objects/dicts (not `null`, not arrays), **recurse** and merge them
+  key-by-key.
+- Otherwise the incoming value **overwrites** the existing value — this covers
+  dict-over-scalar, scalar-over-dict, arrays, and `null`. Incoming still **wins
+  on scalar conflicts**; only nested objects are merged rather than wholesale
+  replaced.
+- Keys present **only** in the existing target are **preserved**; keys present
+  only in incoming are added.
+- The host target object is **mutated in place** (object identity preserved).
+
+> **Why this changed:** the previous applier did a shallow top-level update
+> (Python `params.update(interpolated)`, JS a `for…in` loop doing
+> `params[key] = interpolated[key]`). That replaced an entire top-level key
+> (e.g. `credentials`) and dropped pre-existing nested **sibling** keys. The
+> deep-merge preserves those siblings.
+
+**Canonical example.** Pre-existing `params`:
+
+```
+{ "credentials": {"identifier": "original", "password": "some value", "field3": "value"} }
+```
+
+Interpolated (from `buildUcpParams`):
+
+```
+{ "credentials": {"identifier": "somevalue", "password": "somthing"} }
+```
+
+Result (deep-merge — note `field3` is **preserved**, `identifier`/`password`
+are overwritten incoming-wins):
+
+```
+{ "credentials": {"identifier": "somevalue", "password": "somthing", "field3": "value"} }
+```
 
 ### A.10 Bootstrap
 
@@ -280,7 +322,7 @@ flowchart TD
     H --> I[placeByPath each field into result]
     I --> J{result empty}
     J -- yes --> Z
-    J -- no --> K[merge into global params last-wins]
+    J -- no --> K[deep-merge into global params incoming-wins on scalars, nested objects merged]
     K --> L[set _UCP_AUTH_PARAMS_INJECTED true]
 ```
 
@@ -329,9 +371,12 @@ flowchart TD
 
 - **Task 7: `interpolateUcpParams(connectorMetadata)` (applier).**
   - Fetch `unifiedConnectorMetadata()` if not passed; guard for absence;
-    resolve capability; call `buildUcpParams`; if non-empty, merge into the
-    global `params` (last-wins) and set `_UCP_AUTH_PARAMS_INJECTED = true`;
-    return boolean. Wrap in try/catch — never throw. Mirror `interpolate_ucp_params`.
+    resolve capability; call `buildUcpParams`; if non-empty, **deep-merge** into
+    the global `params` via `deepMergeObjects(params, interpolated)` (§A.9 —
+    recursive, incoming-wins on scalars, nested objects merged, sibling keys
+    preserved) and set `_UCP_AUTH_PARAMS_INJECTED = true`; return boolean. Wrap
+    in try/catch — never throw. Mirror `interpolate_ucp_params` /
+    `_deep_merge_dicts`.
 
 - **Task 8: Bottom-of-module bootstrap.**
   - Add a guarded `try { interpolateUcpParams(); } catch (e) {}` at the end of
@@ -416,8 +461,10 @@ flowchart TD
 6. `Build-UcpParams -ConnectorMetadata <obj> [-Capability <string>]` ⇒ §A.7
    (pure; last-wins; skip only `$null`).
 7. `Invoke-UcpParamInterpolation [-ConnectorMetadata <obj>]` ⇒ §A.9 (applier;
-   merge into the host target; set `$script:UcpAuthParamsInjected = $true`;
-   never throw).
+   **deep-merge** `interpolated` into the host target — recursive, incoming-wins
+   on scalars, nested objects merged, pre-existing sibling keys preserved (the PS
+   analog of `_deep_merge_dicts` / `deepMergeObjects`); set
+   `$script:UcpAuthParamsInjected = $true`; never throw).
 8. `Resolve-UcpCapability [-Command <string>]` + the two capability constants
    ⇒ §A.2.
 9. Module-tail bootstrap ⇒ §A.10, wrapped in `try {} catch {}`.

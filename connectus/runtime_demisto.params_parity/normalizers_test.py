@@ -241,3 +241,65 @@ def test_isfetch_ignored_on_connector_side_too():
     assert "isFetch" not in kept
     reasons = {d["name"]: d["reason"] for d in dropped}
     assert reasons["isFetch"] == "isfetch_not_emitted_by_connector"
+
+
+# ---------------------------------------------------------------------------
+# Prefixed type-9 credentials (Akamai credentials_* with hiddenusername:true)
+# ---------------------------------------------------------------------------
+def test_prefixed_type9_credentials_reduced_to_password():
+    """A PREFIXED type-9 field (e.g. Akamai's credentials_access_token) is detected
+    by SHAPE — not by the literal name "credentials" — and reduced to {password}
+    on BOTH sides. The integration side carries the full XSOAR vault skeleton with
+    NO identifier (hiddenusername:true, per Change 3); the connector side already
+    delivers a flat {password}. Both canonicalize to {password} → password-only
+    parity → would diff OK (no spurious VALUE_MISMATCH)."""
+    yml = [{"name": "credentials_access_token", "type": 9}]
+    integration_raw = {
+        "credentials_access_token": {
+            "credential": "",
+            "credentials": {"id": "", "user": "", "password": ""},
+            "password": "s3cret",
+            "passwordChanged": False,
+        }
+    }
+    connector_raw = {"credentials_access_token": {"password": "s3cret"}}
+
+    integration_kept, _ = normalize_for_diff(integration_raw, yml, side="integration")
+    connector_kept, _ = normalize_for_diff(connector_raw, yml, side="connector")
+
+    assert integration_kept == {"credentials_access_token": {"password": "s3cret"}}
+    assert connector_kept == {"credentials_access_token": {"password": "s3cret"}}
+    # Both sides equal → parity holds with no identifier injected.
+    assert integration_kept == connector_kept
+
+
+def test_type9_credentials_with_real_identifier_still_compared():
+    """A NON-hiddenusername type-9 field that carries a REAL non-empty identifier
+    RETAINS the identifier in the reduction — guarding against a false-OK. Two
+    DIFFERING identifiers must produce two DIFFERENT reduced dicts so a genuine
+    username mismatch still surfaces."""
+    yml = [{"name": "credentials", "type": 9}]
+    side_a = {
+        "credentials": {
+            "identifier": "alice",
+            "password": "pw",
+            "credential": "",
+            "passwordChanged": False,
+        }
+    }
+    side_b = {
+        "credentials": {
+            "identifier": "bob",  # DIFFERENT username
+            "password": "pw",
+            "credential": "",
+            "passwordChanged": False,
+        }
+    }
+    kept_a, _ = normalize_for_diff(side_a, yml, side="integration")
+    kept_b, _ = normalize_for_diff(side_b, yml, side="connector")
+
+    # identifier is RETAINED (non-empty) on both sides.
+    assert kept_a == {"credentials": {"identifier": "alice", "password": "pw"}}
+    assert kept_b == {"credentials": {"identifier": "bob", "password": "pw"}}
+    # Differing identifiers → differing reduced dicts → NOT a false-OK.
+    assert kept_a != kept_b

@@ -133,6 +133,55 @@ HARD_IGNORE_PARAMS: frozenset[str] = frozenset(
 
 
 # ============================================================================
+# Capability → XSOAR fetch-flag mapping (SINGLE SOURCE OF TRUTH)
+# ============================================================================
+#
+# Which fetch an integration supports is determined ENTIRELY from the connector
+# side: the handler (located by its ``xsoar-integration-id``) declares the
+# sub-capabilities it subscribes to; each sub-capability resolves to a PARENT
+# capability via ``capabilities.yaml``; and each PARENT capability maps to exactly
+# ONE XSOAR ``script`` fetch flag (fetch-exclusive) or to nothing (always-on, e.g.
+# automation). We do NOT read the integration YML's script flags to decide this.
+#
+# Platform rule: AT MOST ONE fetch flag may be true on a single integration
+# instance, and a single instance must NOT enable two sub-capabilities for
+# different fetch types. The param-parity test therefore expands a handler's
+# resolved parent capabilities into one VARIANT per fetch-exclusive capability
+# (each bundled with the — possibly empty — always-on set). See
+# ``multi_capability_variant_design.md``.
+#
+# Keyed by PARENT capability id (as it appears in capabilities.yaml
+# ``capabilities[].id``). The VALUES are the EXACT XSOAR instance-creation toggle
+# param names — so a variant's ``fetch_flags`` keys are usable verbatim both to
+# create the XSOAR instance AND to drive ``be_config_params`` (one naming
+# convention, no translation map). ``be_config_params`` imports the VALUE set
+# (:data:`FETCH_FLAG_NAMES`) so the BE-synthesized add/strip logic and the variant
+# expansion never drift apart.
+CAPABILITY_FETCH_FLAG: dict[str, str] = {
+    "fetch-issues": "isFetch",
+    "log-collection": "isFetchEvents",
+    "fetch-assets-and-vulnerabilities": "isFetchAssets",
+    "threat-intelligence-and-enrichment": "feed",
+    "fetch-secrets": "isFetchCredentials",
+}
+
+#: The full set of fetch-flag names the variant matrix knows about (== the XSOAR
+#: toggle param names). Every variant carries ALL of these in its ``fetch_flags``
+#: dict (exactly one ``True`` for a fetch variant, all ``False`` for an
+#: always-on-only variant).
+FETCH_FLAG_NAMES: frozenset[str] = frozenset(CAPABILITY_FETCH_FLAG.values())
+
+
+def fetch_flag_for_capability(parent_capability_id: str) -> Optional[str]:
+    """Return the XSOAR fetch flag a PARENT capability maps to, or ``None``.
+
+    ``None`` means the capability is *always-on* (e.g. automation) and carries no
+    fetch flag, so it can be combined with any single fetch capability.
+    """
+    return CAPABILITY_FETCH_FLAG.get(parent_capability_id)
+
+
+# ============================================================================
 # Exceptions
 # ============================================================================
 
@@ -172,6 +221,44 @@ class CapabilitySpec:
     #: profile ids advertised by this capability's handler auth_options[]
     #: (MAY be several).
     profile_ids: list[str] = field(default_factory=list)
+
+    @property
+    def fetch_flag(self) -> Optional[str]:
+        """The XSOAR fetch flag this PARENT capability maps to, or ``None``.
+
+        ``None`` ⇒ always-on (e.g. automation), combinable with any single fetch
+        capability. See :data:`CAPABILITY_FETCH_FLAG`.
+        """
+        return fetch_flag_for_capability(self.id)
+
+
+@dataclass
+class CapabilityVariant:
+    """One LEGAL per-integration capability combination to test as a single instance.
+
+    The platform forbids enabling two fetch-exclusive capabilities (``isfetch``,
+    ``isfetchevents``, …) on the same integration instance. A handler that
+    subscribes to several capabilities is therefore expanded into one variant per
+    fetch-exclusive capability, each bundled with the (possibly empty) always-on
+    set (e.g. automation). See :func:`_expand_variants` and
+    ``multi_capability_variant_design.md``.
+    """
+
+    #: Stable id derived from the sorted enabled PARENT capability ids
+    #: (e.g. ``"automation-and-remediation+fetch-issues"``).
+    id: str
+    #: The subset of :class:`CapabilitySpec` to ENABLE for this variant. The
+    #: always-on capabilities plus AT MOST ONE fetch-exclusive capability.
+    capabilities: list[CapabilitySpec] = field(default_factory=list)
+    #: ALL known fetch flags (:data:`FETCH_FLAG_NAMES`), with exactly one ``True``
+    #: for a fetch variant and all ``False`` for an always-on-only variant. Drives
+    #: the XSOAR instance toggles + the BE-synthesized config-param transform.
+    fetch_flags: dict[str, bool] = field(default_factory=dict)
+
+    @property
+    def enabled_capability_ids(self) -> list[str]:
+        """The PARENT capability ids enabled by this variant (sorted)."""
+        return sorted(c.id for c in self.capabilities)
 
 
 @dataclass
@@ -253,7 +340,15 @@ class ParityInputs:
 
     # -- MULTI-CAPABILITY (replaces capability: str / profile_id: str) --
     #: EVERY (sub-)capability the handler subscribes to, normalized to PARENT ids.
+    #: Retained for attribution / config-scope union; the per-instance driver is
+    #: :attr:`variants` (each variant enables a LEGAL subset of these).
     capabilities: list[CapabilitySpec] = field(default_factory=list)
+    #: The LEGAL per-integration capability combinations to test — one
+    #: :class:`CapabilityVariant` per fetch-exclusive capability (each bundled with
+    #: the always-on set), or a single always-on variant when the handler
+    #: subscribes to no fetch capability. The orchestrator loops over these,
+    #: creating ONE instance per variant. See :func:`_expand_variants`.
+    variants: list[CapabilityVariant] = field(default_factory=list)
     #: de-duped, ordered union of every profile id any subscribed capability
     #: advertises.
     profiles: list[ProfileSpec] = field(default_factory=list)
@@ -366,6 +461,48 @@ def _fields_from_capability_configurations(doc: Any, capability: str) -> list[st
     return out
 
 
+def _view_groups_for_capability(doc: Any, capability: str) -> set[str]:
+    """Return the ``view_group``(s) the capability block declares in configurations.yaml.
+
+    A capability's ``configurations[]`` block carries a ``view_group`` that ties it
+    to the general-configuration fields sharing that view group.
+    """
+    groups: set[str] = set()
+    if not isinstance(doc, dict):
+        return groups
+    for cap_block in doc.get("configurations") or []:
+        if isinstance(cap_block, dict) and cap_block.get("id") == capability:
+            vg = cap_block.get("view_group")
+            if vg:
+                groups.add(vg)
+    return groups
+
+
+def _general_config_fields_for_view_groups(doc: Any, view_groups: set[str]) -> list[str]:
+    """Collect ``general_configurations`` field ids whose ``view_group`` is enabled.
+
+    ``general_configurations`` fields are scoped by ``view_group`` (NOT by
+    capability). A field is delivered to an instance when its ``view_group`` is
+    shared by an enabled capability — so we collect every general-config field
+    whose ``view_group`` is in ``view_groups``.
+    """
+    out: list[str] = []
+    if not isinstance(doc, dict) or not view_groups:
+        return out
+    general = doc.get("general_configurations")
+    if not isinstance(general, dict):
+        return out
+    for conf in general.get("configurations") or []:
+        if not isinstance(conf, dict):
+            continue
+        if conf.get("view_group") not in view_groups:
+            continue
+        for fld in conf.get("fields") or []:
+            if isinstance(fld, dict) and fld.get("id"):
+                out.append(fld["id"])
+    return out
+
+
 def _parse_interpolation_mapping(profile: dict) -> dict[str, str]:
     """Parse a profile's ``metadata.xsoar.interpolation_mapping`` string.
 
@@ -469,6 +606,17 @@ def _capabilities_from_handler(
             spec.config_field_ids.update(
                 _fields_from_capability_configurations(configurations_doc, parent_id)
             )
+            # general_configurations fields are scoped by view_group, not by
+            # capability — include those whose view_group matches this parent
+            # capability's block so a fetch-issues-only instance still receives
+            # shared SIEM config (e.g. fetchTime/fetchLimit), matching what the
+            # integration reads at runtime regardless of fetch mode.
+            spec.config_field_ids.update(
+                _general_config_fields_for_view_groups(
+                    configurations_doc,
+                    _view_groups_for_capability(configurations_doc, parent_id),
+                )
+            )
 
         if sub_id is not None:
             if not any(sc.id == sub_id for sc in spec.sub_capabilities):
@@ -478,6 +626,13 @@ def _capabilities_from_handler(
             spec.config_field_ids.update(
                 _fields_from_capability_configurations(configurations_doc, sub_id)
             )
+            # general_configurations fields for the sub-capability's view_group.
+            spec.config_field_ids.update(
+                _general_config_fields_for_view_groups(
+                    configurations_doc,
+                    _view_groups_for_capability(configurations_doc, sub_id),
+                )
+            )
 
         # Profile ids advertised by this handler entry.
         for opt in entry.get("auth_options") or []:
@@ -486,6 +641,73 @@ def _capabilities_from_handler(
                     spec.profile_ids.append(opt["id"])
 
     return [by_parent[pid] for pid in order]
+
+
+def _expand_variants(capabilities: list[CapabilitySpec]) -> list[CapabilityVariant]:
+    """Expand a handler's resolved capabilities into LEGAL per-instance variants.
+
+    The platform forbids enabling two fetch-exclusive capabilities on the same
+    integration instance. We therefore partition ``capabilities`` into:
+
+      * the **always-on set** — capabilities with no fetch flag (e.g. automation);
+        this set MAY be empty (automation is not guaranteed to exist), and
+      * the **fetch-exclusive set** — capabilities that map to a fetch flag
+        (:data:`CAPABILITY_FETCH_FLAG`).
+
+    Then:
+
+      * if there is ≥1 fetch-exclusive capability → emit ONE variant per
+        fetch-exclusive capability, each = always-on set + that single fetch cap,
+        with exactly that cap's fetch flag ``True``;
+      * if there are 0 fetch-exclusive capabilities → emit a SINGLE variant = the
+        always-on set, with all fetch flags ``False``.
+
+    Every variant carries the COMPLETE :data:`FETCH_FLAG_NAMES` set in
+    ``fetch_flags`` (exactly one ``True`` for a fetch variant), so downstream code
+    can rely on all keys being present.
+
+    Raises:
+        ResolverError: if ``capabilities`` is empty (no instance is testable).
+    """
+    if not capabilities:
+        raise ResolverError(
+            "Cannot expand variants: the handler subscribes to no capabilities."
+        )
+
+    always_on = [c for c in capabilities if c.fetch_flag is None]
+    fetch_caps = [c for c in capabilities if c.fetch_flag is not None]
+
+    def _flags(active: Optional[str]) -> dict[str, bool]:
+        # ALL known flags present; exactly the active one True (if any).
+        return {name: (name == active) for name in sorted(FETCH_FLAG_NAMES)}
+
+    def _variant_id(caps: list[CapabilitySpec]) -> str:
+        return "+".join(sorted(c.id for c in caps)) or "no-capability"
+
+    variants: list[CapabilityVariant] = []
+
+    if not fetch_caps:
+        # Always-on only (e.g. automation alone, or any non-fetch combination).
+        variants.append(
+            CapabilityVariant(
+                id=_variant_id(always_on),
+                capabilities=list(always_on),
+                fetch_flags=_flags(None),
+            )
+        )
+        return variants
+
+    # One variant per fetch-exclusive capability, bundled with the always-on set.
+    for fc in fetch_caps:
+        variant_caps = list(always_on) + [fc]
+        variants.append(
+            CapabilityVariant(
+                id=_variant_id(variant_caps),
+                capabilities=variant_caps,
+                fetch_flags=_flags(fc.fetch_flag),
+            )
+        )
+    return variants
 
 
 # ============================================================================
@@ -649,6 +871,11 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
             f"handler.yaml has no capabilities[] entry: {handler_yaml_path}"
         )
 
+    # ── Expand into LEGAL per-instance variants (one per fetch-exclusive cap) ──
+    # The platform forbids two fetch flags on one instance; _expand_variants
+    # guarantees each variant carries at most one fetch capability.
+    variants = _expand_variants(capabilities)
+
     # Ordered, de-duped union of every profile id any subscribed capability uses.
     profile_ids: list[str] = []
     for cap in capabilities:
@@ -674,6 +901,7 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
         if (handler_dir / "serializer.yaml").exists()
         else None,
         capabilities=capabilities,
+        variants=variants,
         profiles=profiles,
         serializer_by_xsoar=by_xsoar,
         serializer_by_connector=by_connector,
@@ -716,13 +944,17 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
         inputs.compare_params.add(param)
 
     log.info(
-        "Resolved %s: connector=%s capabilities=%s profiles=%s "
+        "Resolved %s: connector=%s capabilities=%s variants=%s profiles=%s "
         "(%d compare, %d ignored)",
         integration_id,
         connector_dir.name,
         [
             (cap.id, [sc.id for sc in cap.sub_capabilities])
             for cap in capabilities
+        ],
+        [
+            (v.id, [f for f, on in v.fetch_flags.items() if on] or ["<none>"])
+            for v in variants
         ],
         [(p.id, p.interpolated) for p in profiles],
         len(inputs.compare_params),
@@ -736,3 +968,4 @@ def _abs_integration_yml(integration_yml_path: str) -> str:
     if os.path.isabs(integration_yml_path):
         return integration_yml_path
     return str((_WORKSPACE_ROOT / integration_yml_path).resolve())
+
