@@ -117,9 +117,9 @@ class GSuiteClient:
         # the configured subject, so scopes/subject must not be re-applied
         # (OAuth2 token credentials do not support ``with_subject``).
         if not self._ucp_token:
-            self.credentials = self.credentials.with_scopes(scopes)
+            self.credentials = self.credentials.with_scopes(scopes)  # type: ignore[union-attr]
             if subject:
-                self.credentials = self.credentials.with_subject(subject)
+                self.credentials = self.credentials.with_subject(subject)  # type: ignore[union-attr]
         authorized_http = AuthorizedHttp(
             credentials=self.credentials, http=GSuiteClient.get_http_client(self.proxy, self.verify, timeout=timeout)
         )

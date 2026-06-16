@@ -712,8 +712,10 @@ def test_module(gsuite_client: "GSuiteClient", last_run: dict, params: dict[str,
     :raises DemistoException: If there is any other issues while making the http call.
     """
     if params.get("isFetch"):
+        return("I am using the fetch test")
         fetch_incidents(gsuite_client, last_run, params, is_test=True)
     else:
+        return("I am not using the fetch test")
         with GSuiteClient.http_exception_handler():
             body = prepare_body_for_drive_activity(params)
             user_id = params.get("user_id", "")
