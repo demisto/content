@@ -42,12 +42,8 @@ class GSuiteClient:
     """
 
     @staticmethod
-    def get_ucp_access_token(subject: str | None = None) -> tuple[str, str]:
+    def get_ucp_access_token() -> tuple[str, str]:
         """Fetch the OAuth2 access token for the active UCP connection profile.
-
-        :param subject: The user to impersonate. When provided, it is sent to the
-            UCP service as ``{"extra": {"subject": subject}}`` so the issued token
-            impersonates that user (Google Workspace domain-wide delegation).
 
         :return: Tuple of ``(method_unique_id, access_token)``.
         :rtype: ``tuple``
@@ -56,8 +52,7 @@ class GSuiteClient:
         demisto.debug("calling access token from ucp service")
         method_id = get_ucp_method_unique_id(resolve_ucp_capability())
 
-        body = {"extra": {"subject": subject}} if subject else None
-        credentials = get_ucp_credentials(method_id, body=body)
+        credentials = get_ucp_credentials(method_id)
 
         cred_type = credentials.get("type")
         token_data = credentials.get(cred_type, credentials) if cred_type else credentials
@@ -91,11 +86,10 @@ class GSuiteClient:
         # credentials are token-based (no scopes/subject impersonation needed).
         self._ucp_token: str | None = None
         if not service_account_dict and should_use_ucp_auth():
-            # The subject (user to impersonate) is resolved once by the caller
-            # (args override falling back to the instance param) and passed in as
-            # ``user_id``. It is forwarded to UCP so the issued token impersonates
-            # that user.
-            self._ucp_method_id, self._ucp_token = self.get_ucp_access_token(subject=user_id or None)
+            # In UCP (ConnectUs) mode the access token is provided by the
+            # connection profile via the platform; fetch it instead of building
+            # service-account credentials.
+            self._ucp_method_id, self._ucp_token = self.get_ucp_access_token()
             self.credentials = oauth2_credentials.Credentials(token=self._ucp_token)
             return
 

@@ -14258,7 +14258,7 @@ def get_ucp_method_unique_id(capability=None, sub_capability=None):
 # -- Credential fetching with in-process TTL cache --
 
 
-def get_ucp_credentials(method_unique_id=None, body=None):
+def get_ucp_credentials(method_unique_id=None):
     # type: (Optional[str]) -> dict
     """Fetch UCP credentials for a connection profile, with in-process TTL caching.
 
@@ -14300,7 +14300,7 @@ def get_ucp_credentials(method_unique_id=None, body=None):
             return entry.get('result')
         # Stale -- fall through to re-fetch
 
-    creds = demisto.getUCPCredentials(method_unique_id, from_cache=False, body=body)
+    creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
     demisto.debug("[UCP][CommonServerPython.py] Fetched fresh credentials for method_unique_id={}".format(method_unique_id))
 
     expiry = _extract_ucp_expiry(creds)
