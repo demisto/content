@@ -10503,6 +10503,12 @@ script:
       - 'false'
     - description: Shows rules that have had hits, but not after the date provided (in the format YYYY/MM/DD HH:MM:SS).
       name: no_new_hits_since
+    - description: The pre-rule or post-rule (Panorama instances only). When set, only rules pushed from Panorama at the specified position are returned.
+      name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
     description: Gets rule hit counts from the firewall.  When connected to Panorama this command can be run on any firewall managed by it.
     name: pan-os-get-rule-hitcounts
     outputs:
