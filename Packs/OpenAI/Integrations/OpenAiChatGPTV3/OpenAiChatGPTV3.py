@@ -367,6 +367,12 @@ class OpenAiClient(BaseClient):
         Returns:
             The parsed JSON response dict from the API.
         """
+        if not self.api_key:
+            raise DemistoException(
+                "API Key is required for the Responses API commands "
+                "(gpt-create-response, gpt-analyze-email-header, gpt-analyze-email-body, gpt-draft-soc-email). "
+                "Configure the 'API Key' integration parameter and try again."
+            )
         demisto.debug(
             f"[API Responses] Calling | model={body.get('model')} | "
             f"max_output_tokens={body.get('max_output_tokens')} | "
@@ -393,6 +399,11 @@ class OpenAiClient(BaseClient):
         Returns:
             The parsed JSON response dict from the API.
         """
+        if not self.api_key:
+            raise DemistoException(
+                "API Key is required for polling Responses API results. "
+                "Configure the 'API Key' integration parameter and try again."
+            )
         demisto.debug(f"[API Responses] Polling | response_id={response_id}")
         return self._http_request(
             method="GET",
@@ -622,24 +633,30 @@ def _build_responses_api_body(
     if store is not None:
         body["store"] = store
 
-    # max_output_tokens: command arg > instance param
-    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS) or params.get(ArgAndParamNames.MAX_TOKENS)
-    if max_output_tokens:
+    # max_output_tokens: command arg takes precedence, then instance param
+    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS)
+    if max_output_tokens is None:
+        max_output_tokens = params.get(ArgAndParamNames.MAX_TOKENS)
+    if max_output_tokens is not None:
         body["max_output_tokens"] = int(max_output_tokens)
 
-    # temperature: command arg > instance param
-    temperature = args.get(ArgAndParamNames.TEMPERATURE) or params.get(ArgAndParamNames.TEMPERATURE)
-    if temperature:
+    # temperature: command arg takes precedence, then instance param
+    temperature = args.get(ArgAndParamNames.TEMPERATURE)
+    if temperature is None:
+        temperature = params.get(ArgAndParamNames.TEMPERATURE)
+    if temperature is not None:
         body["temperature"] = float(temperature)
 
-    # top_p: command arg > instance param
-    top_p = args.get(ArgAndParamNames.TOP_P) or params.get(ArgAndParamNames.TOP_P)
-    if top_p:
+    # top_p: command arg takes precedence, then instance param
+    top_p = args.get(ArgAndParamNames.TOP_P)
+    if top_p is None:
+        top_p = params.get(ArgAndParamNames.TOP_P)
+    if top_p is not None:
         body["top_p"] = float(top_p)
 
     # reasoning_effort (only for reasoning model families)
     reasoning_effort = args.get("reasoning_effort")
-    if reasoning_effort:
+    if reasoning_effort is not None:
         body["reasoning"] = {"effort": reasoning_effort}
 
     return body
@@ -843,12 +860,12 @@ def test_module(client: OpenAiClient, params: dict) -> str:
         demisto.debug("[Test Module] Probing chat-completions endpoint...")
         try:
             chat_message = {"role": "user", "content": ""}
-            params_for_cal = {
+            completion_params = {
                 ArgAndParamNames.MAX_TOKENS: params.get(ArgAndParamNames.MAX_TOKENS, None),
                 ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
                 ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None),
             }
-            client.get_chat_completions(chat_context=[chat_message], completion_params=params_for_cal)
+            client.get_chat_completions(chat_context=[chat_message], completion_params=completion_params)
         except DemistoException as e:
             if "Forbidden" in str(e) or "Authorization" in str(e):
                 demisto.error(f"[Test Module] Chat-completions probe failed with auth error: {e}")
@@ -859,9 +876,14 @@ def test_module(client: OpenAiClient, params: dict) -> str:
 
         demisto.debug("[Test Module] Probing Responses API endpoint...")
         try:
-            params_for_cal[ArgAndParamNames.MODEL] = client.model
-            params_for_cal["input"] = "Present random english sentence"
-            client.create_response(body=params_for_cal)
+            response_params = {
+                ArgAndParamNames.MODEL: client.model or "gpt-3.5-turbo",
+                ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
+                ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None),
+                "max_output_tokens": params.get(ArgAndParamNames.MAX_TOKENS, None),
+                "input": "Present random english sentence",
+            }
+            client.create_response(body=response_params)
         except DemistoException as e:
             if "Forbidden" in str(e) or "Authorization" in str(e):
                 demisto.error(f"[Test Module] Responses API probe failed with auth error: {e}")
@@ -1463,8 +1485,8 @@ def _build_completed_response_result(response: dict[str, Any], args: dict[str, A
     Returns:
         A ``CommandResults`` with context, HR, and raw response.
     """
-    message: str = args.get(ArgAndParamNames.MESSAGE, "")
-    model: str = args.get(ArgAndParamNames.MODEL, "") or response.get("model", "")
+    message: str = args.get(ArgAndParamNames.MESSAGE) or ""
+    model: str = args.get(ArgAndParamNames.MODEL) or response.get("model") or ""
 
     assistant_message = extract_response_output_text(response)
     response_id = response.get("id", "")
@@ -2445,7 +2467,7 @@ def list_models_command(client: OpenAiClient) -> CommandResults:
     outputs = [
         {
             "Id": m.get("id", ""),
-            "Created": m.get("created", ""),
+            "Created": timestamp_to_datestring(m.get("created", 0) * 1000) if m.get("created") else "",
             "OwnedBy": m.get("owned_by", ""),
         }
         for m in models_data

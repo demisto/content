@@ -1,10 +1,10 @@
+name: OpenAi ChatGPT v3
+display: OpenAI GPT
 category: Messaging and Conferencing
 provider: OpenAI
 sectionorder:
 - Connect
 - Collect
-name: OpenAi ChatGPT v3
-display: OpenAI GPT
 description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities.
 commonfields:
   id: OpenAi ChatGPT v3
@@ -254,15 +254,15 @@ script:
       type: Dictionary
 
   - name: gpt-analyze-email-header
-    description: Analyze email headers for potential security issues using the OpenAI Responses API. This is the Responses-API counterpart of gpt-check-email-header (which uses the Chat Completions API).
+    description: Analyzes email headers for potential security issues using the OpenAI Responses API. This is the Responses-API counterpart of gpt-check-email-header (which uses the Chat Completions API).
     arguments:
     - name: entry_id
-      description: Entry ID of an uploaded '.eml' file.
+      description: The entry ID of an uploaded .eml file.
       required: true
       type: String
 
     - name: additional_instructions
-      description: Additional instructions or security issue to focus on. Substituted into the prompt template.
+      description: The additional instructions or security issue to focus on. Substituted into the prompt template.
       required: false
       type: String
 
@@ -273,17 +273,17 @@ script:
 
     - name: temperature
       required: false
-      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+      description: The randomness level in responses. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2) increase variety. It is generally recommended to alter this or top_p but not both.
       type: Number
 
     - name: top_p
       required: false
-      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended altering this or temperature but not both.
+      description: The nucleus sampling threshold where only the top p percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended to alter this or temperature but not both.
       type: Number
 
     - name: reasoning_effort
       required: false
-      description: Reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
+      description: The reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
       auto: PREDEFINED
       predefined:
       - 'low'
@@ -292,7 +292,7 @@ script:
       type: String
     outputs:
     - contextPath: OpenAiChatGPTV3.Response
-      description: Conversation state including the response_id.
+      description: The conversation state including the response_id.
       type: Unknown
     - contextPath: OpenAiChatGPTV3.Response.user
       description: The prompt sent to the model.
@@ -305,15 +305,15 @@ script:
       type: String
 
   - name: gpt-analyze-email-body
-    description: Analyze email body for potential security risks using the OpenAI Responses API. This is the Responses-API counterpart of gpt-check-email-body (which uses the Chat Completions API).
+    description: Analyzes email body for potential security risks using the OpenAI Responses API. This is the Responses-API counterpart of gpt-check-email-body (which uses the Chat Completions API).
     arguments:
     - name: entry_id
-      description: Entry ID of an uploaded '.eml' file.
+      description: The entry ID of an uploaded .eml file.
       required: true
       type: String
 
     - name: additional_instructions
-      description: Additional instructions or security issue to focus on. Substituted into the prompt template.
+      description: The additional instructions or security issue to focus on. Substituted into the prompt template.
       required: false
       type: String
 
@@ -324,17 +324,17 @@ script:
 
     - name: temperature
       required: false
-      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+      description: The randomness level in responses. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2) increase variety. It is generally recommended to alter this or top_p but not both.
       type: Number
 
     - name: top_p
       required: false
-      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended altering this or temperature but not both.
+      description: The nucleus sampling threshold where only the top p percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended to alter this or temperature but not both.
       type: Number
 
     - name: reasoning_effort
       required: false
-      description: Reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
+      description: The reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
       auto: PREDEFINED
       predefined:
       - 'low'
@@ -343,7 +343,7 @@ script:
       type: String
     outputs:
     - contextPath: OpenAiChatGPTV3.Response
-      description: Conversation state including the response_id.
+      description: The conversation state including the response_id.
       type: Unknown
     - contextPath: OpenAiChatGPTV3.Response.user
       description: The prompt sent to the model.
@@ -448,10 +448,10 @@ script:
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
   - name: gpt-draft-soc-email
-    description: Draft a SOC email template using the OpenAI Responses API. This command uses the Responses API which is recommended for all new projects (instead of gpt-create-soc-email-template which uses the Chat Completions API). Consumes prior conversation context by design (e.g. from a preceding gpt-analyze-email-body call).
+    description: Drafts a SOC email template using the OpenAI Responses API. This command uses the Responses API which is recommended for all new projects (instead of gpt-create-soc-email-template which uses the Chat Completions API). Consumes prior conversation context by design (e.g. from a preceding gpt-analyze-email-body call).
     arguments:
     - name: additional_instructions
-      description: Specific issue or focus area to weave into the template. Substituted into the prompt template.
+      description: The specific issue or focus area to weave into the template. Substituted into the prompt template.
       required: false
       type: String
 
@@ -462,17 +462,17 @@ script:
 
     - name: temperature
       required: false
-      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+      description: The randomness level in responses. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2) increase variety. It is generally recommended to alter this or top_p but not both.
       type: Number
 
     - name: top_p
       required: false
-      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended altering this or temperature but not both.
+      description: The nucleus sampling threshold where only the top p percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. Range 0-1. It is generally recommended to alter this or temperature but not both.
       type: Number
 
     - name: reasoning_effort
       required: false
-      description: Reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
+      description: The reasoning effort level for reasoning models (o1, o3, o4, gpt-5). Controls how much thinking the model does before responding.
       auto: PREDEFINED
       predefined:
       - 'low'
@@ -481,7 +481,7 @@ script:
       type: String
     outputs:
     - contextPath: OpenAiChatGPTV3.Response
-      description: Conversation state including the response_id.
+      description: The conversation state including the response_id.
       type: Unknown
     - contextPath: OpenAiChatGPTV3.Response.user
       description: The prompt sent to the model.
@@ -493,20 +493,22 @@ script:
       description: The OpenAI response ID.
       type: String
   - name: gpt-create-response
-    description: Send a message to the OpenAI Responses API and receive the generated response. This command uses the Responses API which is recommended for all new projects (instead of gpt-send-message which uses the Chat Completions API). Supports multi-turn conversations via previous_response_id, reasoning effort control for o-series and gpt-5 models, and background execution.
+    description: Sends a message to the OpenAI Responses API and receives the generated response. This command uses the Responses API which is recommended for all new projects (instead of gpt-send-message which uses the Chat Completions API). Supports multi-turn conversations via previous_response_id, reasoning effort control for o-series and gpt-5 models, and background execution.
     arguments:
     - name: message
       required: true
       description: The user message to send.
+      type: String
 
     - name: reset_conversation_history
       required: false
-      description: Discard the existing OpenAiChatGPTV3.ResponsesConversation and start fresh.
+      description: Whether to discard the existing conversation context and start fresh.
       defaultValue: 'no'
       auto: PREDEFINED
       predefined:
       - 'yes'
       - 'no'
+      type: String
 
     - name: max_tokens
       required: false
@@ -515,17 +517,17 @@ script:
 
     - name: temperature
       required: false
-      description: Falls back to instance config. Range 0-2. Sets the randomness in responses.
+      description: The randomness level in responses. Falls back to instance config. Range 0-2. Lower values produce more deterministic outputs, while higher values increase variety.
       type: Number
 
     - name: top_p
       required: false
-      description: Falls back to instance config. Range 0-1. Enables nucleus sampling.
+      description: The nucleus sampling threshold. Falls back to instance config. Range 0-1. Lower values result in more focused outputs, while higher values increase diversity.
       type: Number
 
     - name: reasoning_effort
       required: false
-      description: Reasoning effort level. Honored only for reasoning families (o1, o3, o4, gpt-5*); silently dropped on others. Maps to body reasoning.effort. gpt-5 and o-series models only. Default medium. xhigh is supported for all models after gpt-5.1-codex-max.
+      description: The reasoning effort level. Honored only for reasoning families (o1, o3, o4, gpt-5); silently dropped on others. Default medium.
       auto: PREDEFINED
       predefined:
       - 'none'
@@ -534,6 +536,7 @@ script:
       - 'medium'
       - 'high'
       - 'xhigh'
+      type: String
 
     - name: background
       required: false
@@ -542,35 +545,40 @@ script:
       predefined:
       - 'true'
       - 'false'
+      type: String
 
     - name: compact_threshold
       required: false
-      description: Token threshold at which compaction should be triggered for this entry. Minimum 1000.
+      description: The token threshold at which compaction should be triggered for this entry. Minimum 1000.
       type: Number
 
     - name: model
       required: false
-      description: The model to use. Use the get-list-models command to see available models. Falls back to instance config.
+      description: The model to use. Use the gpt-list-models command to see available models. Falls back to instance config.
+      type: String
 
     - name: interval_in_seconds
-      description: Interval in seconds between each poll.
+      description: The interval in seconds between each poll.
       defaultValue: "10"
       hidden: true
+      type: Number
 
     - name: timeout_in_seconds
-      description: Timeout in seconds until polling stops.
+      description: The timeout in seconds until polling stops.
       defaultValue: "600"
       hidden: true
+      type: Number
 
     - name: _polling_response_id
       description: The response ID to poll for completion. Used internally by the scheduled command for polling and should not be provided manually.
       hidden: true
+      type: String
 
     polling: true
 
     outputs:
     - contextPath: OpenAiChatGPTV3.Response
-      description: Conversation state including the response_id for multi-turn continuity.
+      description: The conversation state including the response_id for multi-turn continuity.
       type: Unknown
     - contextPath: OpenAiChatGPTV3.Response.user
       description: The user message sent.
@@ -582,32 +590,32 @@ script:
       description: The OpenAI response ID used for multi-turn conversation continuity.
       type: String
   - name: gpt-list-models
-    description: List all models available to the configured API key. Lets users discover models per their actual API-key tier without redeploying the integration when OpenAI ships new ones.
+    description: Lists all models available to the configured API key. Lets users discover models per their actual API-key tier without redeploying the integration when OpenAI ships new ones.
     arguments: []
     outputs:
     - contextPath: OpenAiChatGPTV3.Model.Id
-      description: The model identifier (e.g. gpt-4, gpt-3.5-turbo).
+      description: The model identifier (e.g., gpt-4, gpt-3.5-turbo).
       type: String
     - contextPath: OpenAiChatGPTV3.Model.Created
-      description: Unix timestamp of when the model was created.
+      description: The Unix timestamp of when the model was created.
       type: Number
     - contextPath: OpenAiChatGPTV3.Model.OwnedBy
       description: The organization or entity that owns the model.
       type: String
   - name: gpt-create-moderation
-    description: Run text or an image through the OpenAI Moderations API and return per-category flagging results. Exactly one of text, entry_id, or image_url must be provided.
+    description: Runs text or an image through the OpenAI Moderations API and returns per-category flagging results. Exactly one of text, entry_id, or image_url must be provided.
     arguments:
     - name: text
-      description: One or more text strings to moderate. Exactly one of text, entry_id, or image_url must be provided.
+      description: A comma-separated list of text strings to moderate. Exactly one of text, entry_id, or image_url must be provided.
       required: false
       isArray: true
       type: String
     - name: entry_id
-      description: War-room entry ID of an uploaded image file. The file is base64-encoded internally and posted as a data URL. Exactly one of text, entry_id, or image_url must be provided.
+      description: The war-room entry ID of an uploaded image file. The file is base64-encoded internally and posted as a data URL. Exactly one of text, entry_id, or image_url must be provided.
       required: false
       type: String
     - name: image_url
-      description: Publicly reachable HTTP(S) URL of an image (limited to 20 MB). Exactly one of text, entry_id, or image_url must be provided.
+      description: The publicly reachable HTTP(S) URL of an image (limited to 20 MB). Exactly one of text, entry_id, or image_url must be provided.
       required: false
       type: String
     - name: model
@@ -624,10 +632,10 @@ script:
       description: Whether the content was flagged by the moderation model.
       type: Boolean
     - contextPath: OpenAiChatGPTV3.Moderation.Categories
-      description: Object of boolean values indicating which categories were flagged.
+      description: The object of boolean values indicating which categories were flagged.
       type: Unknown
     - contextPath: OpenAiChatGPTV3.Moderation.CategoryScores
-      description: Object of float values indicating the confidence score for each category.
+      description: The object of float values indicating the confidence score for each category.
       type: Unknown
   runonce: false
   script: ''
