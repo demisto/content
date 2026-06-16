@@ -450,7 +450,7 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
         from_date = last_run.get("last_fetch_time")
     # Checksums in this context is used as an ID since none is provided directly from Workday.
     # This is to prevent duplicates.
-    previous_run_pseudo_ids = last_run.get("previous_run_pseudo_ids") or []
+    previous_run_pseudo_ids = set(last_run.get("previous_run_pseudo_ids") or [])
     to_date = datetime.now(tz=timezone.utc).strftime(REQUEST_DATE_FORMAT)
     demisto.debug(f"Getting Sign On Events {from_date=}, {to_date=}.")
     sign_on_events = fetch_sign_on_logs(client=client, limit_to_fetch=max_fetch, from_date=from_date, to_date=to_date)
