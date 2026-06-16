@@ -570,6 +570,81 @@ def setup_args(args: Dict[str, Any], params: Dict[str, Any]):
             args[key] = params.get(key)
 
 
+def _resolve_model(args: dict[str, Any], client: OpenAiClient) -> str:
+    """Resolve the model name from command args, falling back to the instance-level default.
+
+    Args:
+        args: Command arguments from ``demisto.args()``.
+        client: The configured ``OpenAiClient`` instance (carries the instance-level model).
+
+    Returns:
+        The resolved model name.
+
+    Raises:
+        DemistoException: If no model is specified anywhere.
+    """
+    model: str = args.get(ArgAndParamNames.MODEL, "") or client.model
+    if not model:
+        raise DemistoException("No model specified. Provide it as a command argument or configure it in the instance settings.")
+    return model
+
+
+def _build_responses_api_body(
+    args: dict[str, Any],
+    params: dict[str, Any],
+    model: str,
+    prompt: str,
+    *,
+    store: bool | None = False,
+) -> dict[str, Any]:
+    """Build a Responses API request body from command args and instance params.
+
+    Centralises the repeated pattern of resolving ``max_output_tokens``,
+    ``temperature``, ``top_p``, and ``reasoning_effort`` from *args* (with
+    *params* as fallback) and assembling them into the ``POST /v1/responses``
+    request body.
+
+    Args:
+        args: Command arguments from ``demisto.args()``.
+        params: Instance parameters from ``demisto.params()``.
+        model: The resolved model name (use ``_resolve_model`` first).
+        prompt: The input text / prompt to send.
+        store: Whether the API should persist the response.  ``False`` by default;
+            pass ``None`` to omit the key entirely (lets the API use its own default).
+
+    Returns:
+        A dict ready to be passed to ``client.create_response(body)``.
+    """
+    body: dict[str, Any] = {
+        "model": model,
+        "input": prompt,
+    }
+    if store is not None:
+        body["store"] = store
+
+    # max_output_tokens: command arg > instance param
+    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS) or params.get(ArgAndParamNames.MAX_TOKENS)
+    if max_output_tokens:
+        body["max_output_tokens"] = int(max_output_tokens)
+
+    # temperature: command arg > instance param
+    temperature = args.get(ArgAndParamNames.TEMPERATURE) or params.get(ArgAndParamNames.TEMPERATURE)
+    if temperature:
+        body["temperature"] = float(temperature)
+
+    # top_p: command arg > instance param
+    top_p = args.get(ArgAndParamNames.TOP_P) or params.get(ArgAndParamNames.TOP_P)
+    if top_p:
+        body["top_p"] = float(top_p)
+
+    # reasoning_effort (only for reasoning model families)
+    reasoning_effort = args.get("reasoning_effort")
+    if reasoning_effort:
+        body["reasoning"] = {"effort": reasoning_effort}
+
+    return body
+
+
 def conversation_to_chat_context(conversation: List[dict[str, str]]) -> List[dict[str, str]]:
     """A 'Conversation' list that was retrieved from 'demisto.context()' is formatted to be more intuitive for XSOAR users
     and is formatted as: [
@@ -768,12 +843,12 @@ def test_module(client: OpenAiClient, params: dict) -> str:
         demisto.debug("[Test Module] Probing chat-completions endpoint...")
         try:
             chat_message = {"role": "user", "content": ""}
-            completion_params = {
+            params_for_cal = {
                 ArgAndParamNames.MAX_TOKENS: params.get(ArgAndParamNames.MAX_TOKENS, None),
                 ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
                 ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None),
             }
-            client.get_chat_completions(chat_context=[chat_message], completion_params=completion_params)
+            client.get_chat_completions(chat_context=[chat_message], completion_params=params_for_cal)
         except DemistoException as e:
             if "Forbidden" in str(e) or "Authorization" in str(e):
                 demisto.error(f"[Test Module] Chat-completions probe failed with auth error: {e}")
@@ -784,20 +859,9 @@ def test_module(client: OpenAiClient, params: dict) -> str:
 
         demisto.debug("[Test Module] Probing Responses API endpoint...")
         try:
-            response_body: dict[str, Any] = {
-                "model": client.model,
-                "input": "Present random english sentence",
-            }
-            max_tokens = params.get(ArgAndParamNames.MAX_TOKENS)
-            if max_tokens:
-                response_body["max_output_tokens"] = int(max_tokens)
-            temperature = params.get(ArgAndParamNames.TEMPERATURE)
-            if temperature:
-                response_body["temperature"] = float(temperature)
-            top_p = params.get(ArgAndParamNames.TOP_P)
-            if top_p:
-                response_body["top_p"] = float(top_p)
-            client.create_response(body=response_body)
+            params_for_cal[ArgAndParamNames.MODEL] = client.model
+            params_for_cal["input"] = "Present random english sentence"
+            client.create_response(body=params_for_cal)
         except DemistoException as e:
             if "Forbidden" in str(e) or "Authorization" in str(e):
                 demisto.error(f"[Test Module] Responses API probe failed with auth error: {e}")
@@ -951,37 +1015,9 @@ def analyze_email_header_command(client: OpenAiClient, args: dict[str, Any], par
 
     demisto.debug(f"[Analyze Email Header] Built prompt | length={len(prompt)} chars")
 
-    # --- Resolve model: command arg > instance param ---
-    model: str = args.get(ArgAndParamNames.MODEL, "") or client.model
-    if not model:
-        raise DemistoException("No model specified. Provide it as a command argument or configure it in the instance settings.")
-
-    # --- Build the Responses API request body ---
-    body: dict[str, Any] = {
-        "model": model,
-        "input": prompt,
-        "store": False,
-    }
-
-    # max_output_tokens: command arg > instance param
-    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS) or params.get(ArgAndParamNames.MAX_TOKENS)
-    if max_output_tokens:
-        body["max_output_tokens"] = int(max_output_tokens)
-
-    # temperature: command arg > instance param
-    temperature = args.get(ArgAndParamNames.TEMPERATURE) or params.get(ArgAndParamNames.TEMPERATURE)
-    if temperature:
-        body["temperature"] = float(temperature)
-
-    # top_p: command arg > instance param
-    top_p = args.get(ArgAndParamNames.TOP_P) or params.get(ArgAndParamNames.TOP_P)
-    if top_p:
-        body["top_p"] = float(top_p)
-
-    # reasoning_effort (only for reasoning model families)
-    reasoning_effort = args.get("reasoning_effort")
-    if reasoning_effort:
-        body["reasoning"] = {"effort": reasoning_effort}
+    # --- Resolve model & build the Responses API request body ---
+    model = _resolve_model(args, client)
+    body = _build_responses_api_body(args, params, model, prompt)
 
     # --- Call the Responses API ---
     response = client.create_response(body)
@@ -1055,37 +1091,9 @@ def analyze_email_body_command(client: OpenAiClient, args: dict[str, Any], param
 
     demisto.debug(f"[Analyze Email Body] Built prompt | length={len(prompt)} chars")
 
-    # --- Resolve model: command arg > instance param ---
-    model: str = args.get(ArgAndParamNames.MODEL, "") or client.model
-    if not model:
-        raise DemistoException("No model specified. Provide it as a command argument or configure it in the instance settings.")
-
-    # --- Build the Responses API request body ---
-    body: dict[str, Any] = {
-        "model": model,
-        "input": prompt,
-        "store": False,
-    }
-
-    # max_output_tokens: command arg > instance param
-    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS) or params.get(ArgAndParamNames.MAX_TOKENS)
-    if max_output_tokens:
-        body["max_output_tokens"] = int(max_output_tokens)
-
-    # temperature: command arg > instance param
-    temperature = args.get(ArgAndParamNames.TEMPERATURE) or params.get(ArgAndParamNames.TEMPERATURE)
-    if temperature:
-        body["temperature"] = float(temperature)
-
-    # top_p: command arg > instance param
-    top_p = args.get(ArgAndParamNames.TOP_P) or params.get(ArgAndParamNames.TOP_P)
-    if top_p:
-        body["top_p"] = float(top_p)
-
-    # reasoning_effort (only for reasoning model families)
-    reasoning_effort = args.get("reasoning_effort")
-    if reasoning_effort:
-        body["reasoning"] = {"effort": reasoning_effort}
+    # --- Resolve model & build the Responses API request body ---
+    model = _resolve_model(args, client)
+    body = _build_responses_api_body(args, params, model, prompt)
 
     # --- Call the Responses API ---
     response = client.create_response(body)
@@ -1171,37 +1179,9 @@ def draft_soc_email_command(client: OpenAiClient, args: dict[str, Any], params: 
 
     demisto.debug(f"[Draft SOC Email] Built prompt | length={len(prompt)} chars")
 
-    # --- Resolve model: command arg > instance param ---
-    model: str = args.get(ArgAndParamNames.MODEL, "") or client.model
-    if not model:
-        raise DemistoException("No model specified. Provide it as a command argument or configure it in the instance settings.")
-
-    # --- Build the Responses API request body ---
-    body: dict[str, Any] = {
-        "model": model,
-        "input": prompt,
-        "store": False,
-    }
-
-    # max_output_tokens: command arg > instance param
-    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS) or params.get(ArgAndParamNames.MAX_TOKENS)
-    if max_output_tokens:
-        body["max_output_tokens"] = int(max_output_tokens)
-
-    # temperature: command arg > instance param
-    temperature = args.get(ArgAndParamNames.TEMPERATURE) or params.get(ArgAndParamNames.TEMPERATURE)
-    if temperature:
-        body["temperature"] = float(temperature)
-
-    # top_p: command arg > instance param
-    top_p = args.get(ArgAndParamNames.TOP_P) or params.get(ArgAndParamNames.TOP_P)
-    if top_p:
-        body["top_p"] = float(top_p)
-
-    # reasoning_effort (only for reasoning model families)
-    reasoning_effort = args.get("reasoning_effort")
-    if reasoning_effort:
-        body["reasoning"] = {"effort": reasoning_effort}
+    # --- Resolve model & build the Responses API request body ---
+    model = _resolve_model(args, client)
+    body = _build_responses_api_body(args, params, model, prompt)
 
     # --- Call the Responses API ---
     response = client.create_response(body)
@@ -1410,16 +1390,9 @@ def create_response_command(args: dict[str, Any], client: OpenAiClient, params: 
 
     reset_conversation_history: bool = argToBoolean(args.get(ArgAndParamNames.RESET_CONVERSATION_HISTORY, "no"))
 
-    # Resolve model: command arg > instance param
-    model: str = args.get(ArgAndParamNames.MODEL, "") or client.model
-    if not model:
-        raise DemistoException("No model specified. Provide it as a command argument or configure it in the instance settings.")
-
-    # Build the API request body
-    body: dict[str, Any] = {
-        "model": model,
-        "input": message,
-    }
+    # Resolve model & build the base Responses API request body
+    model = _resolve_model(args, client)
+    body = _build_responses_api_body(args, params, model, message, store=None)
 
     # Conversation continuity via previous_response_id.
     # The Responses API keeps the full conversation server-side; we only need to
@@ -1441,26 +1414,6 @@ def create_response_command(args: dict[str, Any], client: OpenAiClient, params: 
             demisto.debug("[Responses] No previous response ID found - starting new conversation.")
     else:
         demisto.debug("[Responses] Conversation history reset requested - starting fresh.")
-
-    # max_output_tokens: command arg > instance param (maps from max_tokens param)
-    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS) or params.get(ArgAndParamNames.MAX_TOKENS)
-    if max_output_tokens:
-        body["max_output_tokens"] = int(max_output_tokens)
-
-    # temperature: command arg > instance param
-    temperature = args.get(ArgAndParamNames.TEMPERATURE) or params.get(ArgAndParamNames.TEMPERATURE)
-    if temperature:
-        body["temperature"] = float(temperature)
-
-    # top_p: command arg > instance param
-    top_p = args.get(ArgAndParamNames.TOP_P) or params.get(ArgAndParamNames.TOP_P)
-    if top_p:
-        body["top_p"] = float(top_p)
-
-    # reasoning_effort (only for reasoning model families: o1, o3, o4, gpt-5*)
-    reasoning_effort = args.get("reasoning_effort")
-    if reasoning_effort:
-        body["reasoning"] = {"effort": reasoning_effort}
 
     # background
     background = args.get("background")
