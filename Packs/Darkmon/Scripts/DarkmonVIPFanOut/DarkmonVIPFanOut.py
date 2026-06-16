@@ -12,9 +12,7 @@ def _get_seen(seen_list_name):
 
 
 def _put_seen(seen_list_name, seen):
-    demisto.executeCommand(
-        "setList", {"listName": seen_list_name, "listData": "\n".join(sorted(seen))}
-    )
+    demisto.executeCommand("setList", {"listName": seen_list_name, "listData": "\n".join(sorted(seen))})
 
 
 def main():

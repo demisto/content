@@ -39,9 +39,7 @@ SENSITIVE_FIELDS_FOR_REDACTION = {"password", "cardNumber", "cvv", "cvvs"}
 def classification_to_dbot_score(classification: str | None) -> int:
     if not classification:
         return DBOT_SCORE_NONE
-    return DBOT_SCORE_BY_CLASSIFICATION.get(
-        classification.lower().strip(), DBOT_SCORE_NONE
-    )
+    return DBOT_SCORE_BY_CLASSIFICATION.get(classification.lower().strip(), DBOT_SCORE_NONE)
 
 
 def _resolve_reliability() -> str:
@@ -64,13 +62,7 @@ def _redact_rows(
 ) -> list[dict[str, Any]]:
     if not redact:
         return rows
-    return [
-        {
-            k: ("***" if (k in sensitive and v not in (None, "", [])) else v)
-            for k, v in row.items()
-        }
-        for row in rows
-    ]
+    return [{k: ("***" if (k in sensitive and v not in (None, "", [])) else v) for k, v in row.items()} for row in rows]
 
 
 def _detect_file_hash_field(value: str) -> str:
@@ -84,9 +76,7 @@ def _detect_file_hash_field(value: str) -> str:
     return "MD5"
 
 
-def build_dbot_outputs(
-    value: str, indicator_type: str, search_results: list[dict[str, Any]]
-) -> dict[str, Any]:
+def build_dbot_outputs(value: str, indicator_type: str, search_results: list[dict[str, Any]]) -> dict[str, Any]:
     """Build DBotScore + Common.<Type> outputs for a reputation enrichment.
 
     `indicator_type` is the lowercase XSOAR DBotScore type: 'ip', 'url',
@@ -95,11 +85,7 @@ def build_dbot_outputs(
     'classification' key drives the score.
     """
     classification = next(
-        (
-            item.get("classification")
-            for item in (search_results or [])
-            if item.get("classification")
-        ),
+        (item.get("classification") for item in (search_results or []) if item.get("classification")),
         None,
     )
     score = classification_to_dbot_score(classification)
@@ -260,16 +246,12 @@ class Client(BaseClient):
 
     def validate_api_key(self) -> bool:
         try:
-            response = self._http_request(
-                method="GET", url_suffix="/test-api-key", resp_type="text"
-            )
+            response = self._http_request(method="GET", url_suffix="/test-api-key", resp_type="text")
             return response == "The API key is valid!"
         except Exception:
             return False
 
-    def global_search(
-        self, query: str, indicator_type: str, page: int = 0, size: int = DEFAULT_SIZE
-    ) -> dict:
+    def global_search(self, query: str, indicator_type: str, page: int = 0, size: int = DEFAULT_SIZE) -> dict:
         allowed_types = [
             "Domain",
             "IP",
@@ -287,16 +269,12 @@ class Client(BaseClient):
         ]
 
         if indicator_type not in allowed_types:
-            raise ValueError(
-                f"Invalid indicator type: {indicator_type}. Allowed types: {', '.join(allowed_types)}"
-            )
+            raise ValueError(f"Invalid indicator type: {indicator_type}. Allowed types: {', '.join(allowed_types)}")
         formatted_query = f'{indicator_type}: "{query}"'
 
         params = {"page": page, "size": size, "query": formatted_query}
 
-        return self._http_request(
-            method="GET", url_suffix="search", params=params, resp_type="json"
-        )
+        return self._http_request(method="GET", url_suffix="search", params=params, resp_type="json")
 
     def get_compromised_data(
         self,
@@ -314,25 +292,19 @@ class Client(BaseClient):
         }
 
         if data_type not in endpoint_map:
-            raise ValueError(
-                f"Unsupported compromised data type: {data_type}. Supported types: {', '.join(endpoint_map.keys())}"
-            )
+            raise ValueError(f"Unsupported compromised data type: {data_type}. Supported types: {', '.join(endpoint_map.keys())}")
 
         params: dict[str, Any] = {"page": page, "size": size}
         if sort:
             params["sort"] = sort
 
-        return self._http_request(
-            method="GET", url_suffix=endpoint_map[data_type], params=params
-        )
+        return self._http_request(method="GET", url_suffix=endpoint_map[data_type], params=params)
 
     def get_indicators(self, size: int = DEFAULT_SIZE) -> dict:
         params = {"size": size}
         return self._http_request(method="GET", url_suffix="ioc-feed", params=params)
 
-    def get_vpn(
-        self, page: int = 0, size: int = DEFAULT_SIZE, sort: str | None = None
-    ) -> dict:
+    def get_vpn(self, page: int = 0, size: int = DEFAULT_SIZE, sort: str | None = None) -> dict:
         params: dict[str, Any] = {"page": page, "size": size}
         if sort:
             params["sort"] = sort
@@ -342,9 +314,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def get_proxy(
-        self, page: int = 0, size: int = DEFAULT_SIZE, sort: str | None = None
-    ) -> dict:
+    def get_proxy(self, page: int = 0, size: int = DEFAULT_SIZE, sort: str | None = None) -> dict:
         params: dict[str, Any] = {"page": page, "size": size}
         if sort:
             params["sort"] = sort
@@ -356,13 +326,9 @@ class Client(BaseClient):
 
     def get_cve(self, page: int = 0, size: int = DEFAULT_SIZE) -> dict:
         params = {"page": page, "size": size}
-        return self._http_request(
-            method="GET", url_suffix="vulnerabilities", params=params
-        )
+        return self._http_request(method="GET", url_suffix="vulnerabilities", params=params)
 
-    def get_nrd(
-        self, page: int = 0, size: int = DEFAULT_SIZE, sort: str | None = None
-    ) -> dict:
+    def get_nrd(self, page: int = 0, size: int = DEFAULT_SIZE, sort: str | None = None) -> dict:
         params: dict[str, Any] = {
             "page": page,
             "size": size,
@@ -376,9 +342,7 @@ class Client(BaseClient):
             params=params,
         )
 
-    def get_tbf(
-        self, page: int = 0, size: int = DEFAULT_SIZE, sort: str | None = None
-    ) -> dict:
+    def get_tbf(self, page: int = 0, size: int = DEFAULT_SIZE, sort: str | None = None) -> dict:
         params: dict[str, Any] = {
             "page": page,
             "size": size,
@@ -409,19 +373,11 @@ class Client(BaseClient):
             params=params,
         )
 
-    def get_landscape(
-        self, mentions: bool = False, page: int = 0, size: int = DEFAULT_SIZE
-    ) -> dict:
-        url_suffix = (
-            "/mentions/landscape-news" if mentions else "/articles/landscape-news"
-        )
-        return self._http_request(
-            method="GET", url_suffix=url_suffix, params={"page": page, "size": size}
-        )
+    def get_landscape(self, mentions: bool = False, page: int = 0, size: int = DEFAULT_SIZE) -> dict:
+        url_suffix = "/mentions/landscape-news" if mentions else "/articles/landscape-news"
+        return self._http_request(method="GET", url_suffix=url_suffix, params={"page": page, "size": size})
 
-    def get_board_protection_requests(
-        self, page: int = 0, size: int = DEFAULT_SIZE, term: str | None = None
-    ) -> dict:
+    def get_board_protection_requests(self, page: int = 0, size: int = DEFAULT_SIZE, term: str | None = None) -> dict:
         params: dict[str, Any] = {"page": page, "size": size}
         if term:
             params["term"] = term
@@ -445,9 +401,7 @@ class Client(BaseClient):
             "public-breaches": "board-leak/leaks/publicBreaches",
         }
         if leak_type not in endpoint_map:
-            raise ValueError(
-                f"Unsupported board leak type: {leak_type}. Supported types: {', '.join(endpoint_map.keys())}"
-            )
+            raise ValueError(f"Unsupported board leak type: {leak_type}. Supported types: {', '.join(endpoint_map.keys())}")
 
         params: dict[str, Any] = {"page": page, "size": size, "email": email}
         if term:
@@ -602,9 +556,7 @@ def generate_ioc_tables(ioc_objects: list) -> str:
 
         headers = sorted(all_headers)
 
-        table_md = tableToMarkdown(
-            f"{ioc_type.upper()} Indicators", rows, headers=headers, removeNull=True
-        )
+        table_md = tableToMarkdown(f"{ioc_type.upper()} Indicators", rows, headers=headers, removeNull=True)
         tables_md.append(table_md)
 
     return "\n\n".join(tables_md) if tables_md else "No indicators found"
@@ -620,9 +572,7 @@ def dmontip_global_search_command(client: Client, args: dict) -> CommandResults:
     page = max(0, user_page - 1)
     size = arg_to_number(args.get("size", DEFAULT_SIZE)) or DEFAULT_SIZE
 
-    result = client.global_search(
-        query=query, indicator_type=indicator_type, page=page, size=size
-    )
+    result = client.global_search(query=query, indicator_type=indicator_type, page=page, size=size)
 
     search_results = result.get("content", [])
     pagination = result.get("page", {})
@@ -646,9 +596,13 @@ def dmontip_global_search_command(client: Client, args: dict) -> CommandResults:
         if total_pages > 1:
             pagination_info += "\n\nTo navigate pages, use the 'page' argument:"
             if current_page > 1:
-                pagination_info += f'\n- Previous page: `!dmontip-global-search query="{query}" type="{indicator_type}" page={page}`'
+                pagination_info += (
+                    f'\n- Previous page: `!dmontip-global-search query="{query}" type="{indicator_type}" page={page}`'
+                )
             if current_page < total_pages:
-                pagination_info += f'\n- Next page: `!dmontip-global-search query="{query}" type="{indicator_type}" page={page + 2}`'
+                pagination_info += (
+                    f'\n- Next page: `!dmontip-global-search query="{query}" type="{indicator_type}" page={page + 2}`'
+                )
             pagination_info += (
                 f"\n\nTo change page size: "
                 f'`!dmontip-global-search query="{query}" type="{indicator_type}" page={page} size=<number>`'
@@ -656,17 +610,13 @@ def dmontip_global_search_command(client: Client, args: dict) -> CommandResults:
 
         readable_output += pagination_info
 
-    return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
-    )
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=result)
 
 
 def dmontip_get_compromised_command(client: Client, args: dict) -> CommandResults:
     data_type = (args.get("type") or "").strip()
     if not data_type:
-        raise ValueError(
-            "type argument is required (accounts, bank-cards, combo-lists, public-breaches, employees)"
-        )
+        raise ValueError("type argument is required (accounts, bank-cards, combo-lists, public-breaches, employees)")
 
     size = arg_to_number(args.get("size", DEFAULT_SIZE)) or DEFAULT_SIZE
     if size < 1 or size > 500:
@@ -680,9 +630,7 @@ def dmontip_get_compromised_command(client: Client, args: dict) -> CommandResult
     default_sort_by_type = {"combo-lists": "firstSeen,desc"}
     sort = (args.get("sort") or "").strip() or default_sort_by_type.get(data_type)
 
-    result = client.get_compromised_data(
-        data_type=data_type, page=api_page, size=size, sort=sort
-    )
+    result = client.get_compromised_data(data_type=data_type, page=api_page, size=size, sort=sort)
 
     content_items = result.get("content", []) or []
     page_obj = result.get("page") or {}
@@ -830,9 +778,7 @@ def dmontip_get_compromised_command(client: Client, args: dict) -> CommandResult
     else:
         readable_output = f"No compromised data found for type {data_type}"
 
-    return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
-    )
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=result)
 
 
 def dmontip_get_vpn_command(client: Client, args: dict) -> CommandResults:
@@ -898,9 +844,7 @@ def dmontip_get_vpn_command(client: Client, args: dict) -> CommandResults:
     if page_obj:
         outputs["Darkmon.VPN.Page"] = page_obj
 
-    return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
-    )
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=result)
 
 
 def dmontip_get_proxy_command(client: Client, args: dict) -> CommandResults:
@@ -966,9 +910,7 @@ def dmontip_get_proxy_command(client: Client, args: dict) -> CommandResults:
     if page_obj:
         outputs["Darkmon.Proxy.Page"] = page_obj
 
-    return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
-    )
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=result)
 
 
 def dmontip_get_cve_command(client: Client, args: dict) -> CommandResults:
@@ -1040,9 +982,7 @@ def dmontip_get_cve_command(client: Client, args: dict) -> CommandResults:
     if page_obj:
         outputs["Darkmon.CVE.Page"] = page_obj
 
-    return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
-    )
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=result)
 
 
 def dmontip_get_nrd_command(client: Client, args: dict) -> CommandResults:
@@ -1108,9 +1048,7 @@ def dmontip_get_nrd_command(client: Client, args: dict) -> CommandResults:
     if page_obj:
         outputs["Darkmon.NRD.Page"] = page_obj
 
-    return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
-    )
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=result)
 
 
 def dmontip_get_tbf_command(client: Client, args: dict) -> CommandResults:
@@ -1176,9 +1114,7 @@ def dmontip_get_tbf_command(client: Client, args: dict) -> CommandResults:
     if page_obj:
         outputs["Darkmon.TBF.Page"] = page_obj
 
-    return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
-    )
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=result)
 
 
 def dmontip_get_ransomware_command(client: Client, args: dict) -> CommandResults:
@@ -1193,9 +1129,7 @@ def dmontip_get_ransomware_command(client: Client, args: dict) -> CommandResults
 
     sort = (args.get("sort") or "").strip() or "publishedAt,desc"
 
-    result = client.get_ransomware(
-        mentions=mentions, page=api_page, size=size, sort=sort
-    )
+    result = client.get_ransomware(mentions=mentions, page=api_page, size=size, sort=sort)
     content = result.get("content", []) or []
     page_obj = result.get("page") or {}
 
@@ -1263,9 +1197,7 @@ def dmontip_get_ransomware_command(client: Client, args: dict) -> CommandResults
     if page_obj:
         outputs["Darkmon.Ransomware.Page"] = page_obj
 
-    return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
-    )
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=result)
 
 
 def dmontip_get_landscape_command(client: Client, args: dict) -> CommandResults:
@@ -1348,9 +1280,7 @@ def dmontip_get_landscape_command(client: Client, args: dict) -> CommandResults:
     if page_obj:
         outputs["Darkmon.Landscape.Page"] = page_obj
 
-    return CommandResults(
-        readable_output=readable_output, outputs=outputs, raw_response=result
-    )
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=result)
 
 
 def dmontip_get_boardprotection_command(client: Client, args: dict) -> CommandResults:
@@ -1439,9 +1369,7 @@ def dmontip_get_boardprotection_command(client: Client, args: dict) -> CommandRe
 def dmontip_get_boardemails_command(client: Client, args: dict) -> CommandResults:
     leak_type = (args.get("type") or "").strip()
     if not leak_type:
-        raise ValueError(
-            "type argument is required (accounts, combo-lists, public-breaches)"
-        )
+        raise ValueError("type argument is required (accounts, combo-lists, public-breaches)")
 
     email = (args.get("email") or "").strip()
     if not email:
@@ -1457,9 +1385,7 @@ def dmontip_get_boardemails_command(client: Client, args: dict) -> CommandResult
 
     term = (args.get("term") or "").strip() or None
 
-    result = client.get_board_leaks(
-        leak_type=leak_type, email=email, page=api_page, size=size, term=term
-    )
+    result = client.get_board_leaks(leak_type=leak_type, email=email, page=api_page, size=size, term=term)
     content = result.get("content", []) or []
     page_obj = result.get("page") or {}
 
@@ -1579,9 +1505,7 @@ _DBOT_TYPE_BY_LABEL = {
 }
 
 
-def _search_each(
-    client: Client, args: dict, arg_key: str, type_label: str, missing_msg: str
-) -> list[CommandResults]:
+def _search_each(client: Client, args: dict, arg_key: str, type_label: str, missing_msg: str) -> list[CommandResults]:
     values = argToList(args.get(arg_key))
     if not values:
         raise ValueError(missing_msg)
@@ -1598,9 +1522,7 @@ def _search_each(
                 "size": args.get("size", DEFAULT_SIZE),
             },
         )
-        outputs_dict: dict[str, Any] = (
-            cr.outputs if isinstance(cr.outputs, dict) else {}
-        )
+        outputs_dict: dict[str, Any] = cr.outputs if isinstance(cr.outputs, dict) else {}
         search_items = outputs_dict.get("Darkmon.SearchResult", [])
         cr.outputs = {
             **outputs_dict,
@@ -1619,9 +1541,7 @@ def dmontip_search_url_command(client: Client, args: dict) -> list[CommandResult
 
 
 def dmontip_search_domain_command(client: Client, args: dict) -> list[CommandResults]:
-    return _search_each(
-        client, args, "domain", "Domain", "Domain parameter is required"
-    )
+    return _search_each(client, args, "domain", "Domain", "Domain parameter is required")
 
 
 def dmontip_search_email_command(client: Client, args: dict) -> list[CommandResults]:
@@ -1679,13 +1599,9 @@ def _fetch_kind(client: Client, kind: str, since: str, size: int) -> list[dict]:
     """
     raw: dict = {}
     if kind == "Compromised Credential":
-        raw = client.get_compromised_data(
-            "compromised-accounts", size=size, sort="-timestamp"
-        )
+        raw = client.get_compromised_data("compromised-accounts", size=size, sort="-timestamp")
     elif kind == "Compromised Employee":
-        raw = client.get_compromised_data(
-            "compromised-employees", size=size, sort="-timestamp"
-        )
+        raw = client.get_compromised_data("compromised-employees", size=size, sort="-timestamp")
     elif kind == "Critical CVE":
         raw = client.get_cve(size=size)
     elif kind == "Ransomware Mention":
@@ -1699,13 +1615,7 @@ def _fetch_kind(client: Client, kind: str, since: str, size: int) -> list[dict]:
         return []
 
     records: list[dict] = []
-    payload = (
-        raw.get("content")
-        or raw.get("items")
-        or raw.get("results")
-        or raw.get("data")
-        or []
-    )
+    payload = raw.get("content") or raw.get("items") or raw.get("results") or raw.get("data") or []
     items_iter = payload if isinstance(payload, list) else []
     for item in items_iter:
         item = dict(item)
@@ -1754,9 +1664,7 @@ def fetch_incidents_command(client: Client, params: dict) -> tuple[list[dict], d
             incidents.append(
                 {
                     "name": f"Darkmon {kind}: {record.get('value') or record.get('id') or record.get('cve_id') or 'record'}",
-                    "type": INCIDENT_TYPE_MAP.get(
-                        kind, "Darkmon Compromised Credential"
-                    ),
+                    "type": INCIDENT_TYPE_MAP.get(kind, "Darkmon Compromised Credential"),
                     "occurred": occurred,
                     "severity": _severity_from_record(record),
                     "rawJSON": json.dumps(record),

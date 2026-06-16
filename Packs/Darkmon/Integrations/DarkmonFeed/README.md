@@ -6,7 +6,6 @@ This integration was integrated and tested with version xx of Darkmon Feed.
 
 ## Configure Darkmon Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Base URL | Override the Darkmon TIP API base URL only if your tenant points at a non-default endpoint. The default value already targets the production Darkmon TIP service. Leave blank to use the default. | False |
@@ -42,7 +41,7 @@ Fetch a page of Darkmon indicators on demand without waiting for the next schedu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of indicators to return. Default is 20. | Optional | 
+| limit | Maximum number of indicators to return. Default is 20. | Optional |
 
 #### Context Output
 

@@ -41,9 +41,7 @@ def test_main_returns_closest_brand(mocker):
     Then:
         - return_results is called with the closest brand and its distance
     """
-    mocker.patch.object(
-        demisto, "args", return_value={"domain": "acmee.com", "brands": "acme,google"}
-    )
+    mocker.patch.object(demisto, "args", return_value={"domain": "acmee.com", "brands": "acme,google"})
     mock_return = mocker.patch.object(DarkmonLevenshtein, "return_results")
 
     DarkmonLevenshtein.main()

@@ -46,9 +46,7 @@ class Client(BaseClient):
     against both integrations.
     """
 
-    def __init__(
-        self, base_url: str, headers: dict, verify: bool = True, proxy: bool = False
-    ):
+    def __init__(self, base_url: str, headers: dict, verify: bool = True, proxy: bool = False):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
     def validate_api_key(self) -> bool:

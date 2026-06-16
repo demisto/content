@@ -23,9 +23,7 @@ def test_main_no_items(mocker):
             "severity": "2",
         },
     )
-    mocker.patch.object(
-        demisto, "executeCommand", return_value=[{"Contents": "", "Type": 1}]
-    )
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": "", "Type": 1}])
     mock_return = mocker.patch.object(DarkmonCreateIncidents, "return_results")
 
     DarkmonCreateIncidents.main()

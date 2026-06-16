@@ -5,9 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def _render(template, item):
-    return re.sub(
-        r"\$\{(\w+)\}", lambda m: str(item.get(m.group(1), "")), template or ""
-    )
+    return re.sub(r"\$\{(\w+)\}", lambda m: str(item.get(m.group(1), "")), template or "")
 
 
 def main():

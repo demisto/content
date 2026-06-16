@@ -4,7 +4,6 @@ import importlib
 import sys
 from pathlib import Path
 
-import pytest
 
 THIS_DIR = Path(__file__).resolve().parent
 if str(THIS_DIR) not in sys.path:
@@ -124,11 +123,7 @@ def test_darkmon_get_indicators_command(monkeypatch):
     monkeypatch.setattr(
         c,
         "get_indicators",
-        lambda size=20: {
-            "iocObjects": [
-                {"type": "IP", "value": "1.1.1.1", "classification": "scanner"}
-            ]
-        },
+        lambda size=20: {"iocObjects": [{"type": "IP", "value": "1.1.1.1", "classification": "scanner"}]},
     )
     result = src.darkmon_get_indicators_command(c, {"limit": "1"})
     assert result.outputs_prefix == "Darkmon.Indicator"
