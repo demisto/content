@@ -113,6 +113,9 @@ PINNED_LONG_RUNNING_PARAMS: frozenset[str] = frozenset({LONG_RUNNING_FLAG_PARAM}
 IGNORED_PARAMS: frozenset[str] = frozenset(
     {
         "is_mirroring",
+        "mirroring",
+        "close_ticket",
+        "file_tag",
         "mirror_options",
         "close_incident",
         "mirror_limit",
@@ -190,9 +193,9 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
     commands: list[dict] = script.get("commands") or []
     command_names: list[str] = [c.get("name", "") for c in commands]
     is_event_collector = ("event collector" in integration_name or "eventcollector" in integration_name)
-
+    integration_params = [p.get("name", "") for p in configuration]
     # Rule 1 - Fetch Secrets
-    if any(p.get("name") == "isFetchCredentials" for p in configuration):
+    if "isFetchCredentials" in integration_params:
         result[FETCH_SECRETS_CAPABILITIES] = []
 
     # Rule 2 - Log Collection (with possible early exit)
@@ -210,7 +213,11 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
 
     # Rule 4 - Threat Intelligence & Enrichment (with possible early exit)
     if script.get("feed") is True:
-        result[FETCH_INDICATORS_CAPABILITIES] = []
+        fetch_indicators_ls = []
+        for p in ["feedTags", "tlp_color"]:
+            if p in integration_params:
+                fetch_indicators_ls.append(p)
+        result[FETCH_INDICATORS_CAPABILITIES] = fetch_indicators_ls
         get_indicators_cmd_count = sum(
             1 for n in command_names if "get-indicators" in n
         )
@@ -219,7 +226,7 @@ def decide_capabilities(integration_yml: dict) -> dict[str, list[str]]:
         ):
             return {
                 "general_configurations": [],
-                FETCH_INDICATORS_CAPABILITIES: [],
+                FETCH_INDICATORS_CAPABILITIES: fetch_indicators_ls,
             }
 
     # Rule 5 - Fetch Assets and Vulnerabilities

@@ -42,7 +42,7 @@ def _stub_happy_path(monkeypatch, *, captured_sentinel):
         xsoar_capture, "get_integration_config", lambda client, name: {"some": "config"}
     )
 
-    def _fake_create(client, name, server_config, filled):
+    def _fake_create(client, name, server_config, filled, extra_fields=None):
         sent["filled"] = filled
         return {"id": "instance-123"}, None
 
@@ -138,7 +138,7 @@ def test_instance_creation_failure_returns_none_filled(monkeypatch):
     monkeypatch.setattr(
         xsoar_capture,
         "create_integration_instance",
-        lambda client, name, server_config, filled: (None, "boom"),
+        lambda client, name, server_config, filled, extra_fields=None: (None, "boom"),
     )
 
     captured, payload = capture_xsoar_params(
@@ -226,3 +226,81 @@ def test_create_client_nulls_configuration_proxy(monkeypatch):
     )
 
     assert client.api_client.configuration.proxy is None
+
+
+# ---------------------------------------------------------------------------
+# generate_dummy_value_for_param — param-type → dummy-value contract.
+#
+# Regression guard for the type-code collision that made a type-14 ENCRYPTED
+# TEXT AREA secret (e.g. Zoom's `key` / an SSHKey) get emitted as a LIST
+# ``["<override_key>"]`` via the multi-select branch. XSOAR cannot store a list
+# into a scalar secret field, so the captured value came back "" on BOTH parity
+# sides — a false "OK" verdict. Type 14 must be a SCALAR sentinel; multi-select
+# is type 16.
+# ---------------------------------------------------------------------------
+def test_type_14_encrypted_textarea_is_scalar_not_list():
+    """type 14 (encrypted text area, e.g. private key) → scalar sentinel."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "key", "type": 14}
+    )
+    assert value == "<override_key>"
+    assert not isinstance(value, list)
+
+
+def test_type_16_multi_select_is_a_list():
+    """type 16 (multi select) → a LIST, not a scalar."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "tags", "type": 16, "options": ["a", "b"]}
+    )
+    assert value == ["a"]
+
+
+def test_type_16_multi_select_non_empty_default_returns_empty_list():
+    """type 16 with a non-empty default → [] (the opposite of the default)."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "tags", "type": 16, "options": ["a", "b"], "defaultvalue": ["a"]}
+    )
+    assert value == []
+
+
+def test_type_15_single_select_picks_non_default_scalar():
+    """type 15 (single select) → a scalar option that is NOT the YML default."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "region", "type": 15, "options": ["us", "eu"], "defaultvalue": "us"}
+    )
+    assert value == "eu"
+    assert not isinstance(value, list)
+
+
+def test_multi_select_and_encrypted_textarea_constants_match_xsoar():
+    """Pin the canonical XSOAR type codes so the collision can't recur."""
+    assert xsoar_capture.PARAM_TYPE_ENCRYPTED_TEXTAREA == 14
+    assert xsoar_capture.PARAM_TYPE_SINGLE_SELECT == 15
+    assert xsoar_capture.PARAM_TYPE_MULTI_SELECT == 16
+
+
+# ---------------------------------------------------------------------------
+# type-9 auth dummy: hiddenusername suppression (Akamai credentials_*)
+# ---------------------------------------------------------------------------
+def test_type9_hiddenusername_param_yields_no_identifier():
+    """For a hiddenusername:true type-9 field (e.g. Akamai's credentials_access_token)
+    the dummy MUST carry a password but MUST NOT inject a populated identifier —
+    otherwise it re-introduces a spurious mismatch after the normalizer reduction."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "credentials_access_token", "type": 9, "hiddenusername": True}
+    )
+    assert isinstance(value, dict)
+    assert value.get("password")  # password is always present and non-empty
+    # identifier absent or empty (never a populated dummy username).
+    assert not value.get("identifier")
+
+
+def test_type9_without_hiddenusername_still_yields_identifier():
+    """Contrast: a NORMAL type-9 field (no hiddenusername) still injects a
+    populated dummy identifier so a real username participates in the comparison."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "credentials", "type": 9}
+    )
+    assert isinstance(value, dict)
+    assert value.get("password")
+    assert value.get("identifier")  # populated dummy username retained

@@ -1,9 +1,9 @@
 Integration ID,Integration File Path,Connector ID,Connector Folder Path,assignee,Auth Details,Collect Capabilities,Params to Commands,Params for test with default in code,UCP param-default review,Params to Capabilities,generated manifest,handler param coverage,run manifest make validate,param parity test passes,code reviewed,code merged,precommit/validate/unit tests passed,Release Notes
-AMP,Packs/AMP/Integrations/AMP/AMP.yml,Cisco Security,connectors/cisco-security,joeymizrahi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""server""]}","[""Automation""]","{""commands"":{""amp_delete_computers_isolation"":[],""amp_delete_file_list_files_by_sha"":[],""amp_get_application_blocking"":[],""amp_get_computer_activity"":[],""amp_get_computer_actvity"":[],""amp_get_computer_by_connector"":[],""amp_get_computer_trajctory"":[],""amp_get_computer_trajectory"":[],""amp_get_computers"":[],""amp_get_computers_isolation"":[],""amp_get_event_types"":[],""amp_get_events"":[],""amp_get_file_list_by_guid"":[],""amp_get_file_list_files"":[],""amp_get_file_list_files_by_sha"":[],""amp_get_group"":[],""amp_get_groups"":[],""amp_get_policies"":[],""amp_get_policy"":[],""amp_get_simple_custom_detections"":[],""amp_get_version"":[],""amp_move_computer"":[],""amp_put_computers_isolation"":[],""amp_set_file_list_files_by_sha"":[],""amp_set_group_policy"":[],""test-module"":[]},""integration"":""AMP""}",{},✅,"{
+AMP,Packs/AMP/Integrations/AMP/AMP.yml,Cisco Security,connectors/cisco-security,YuvHayun,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""server""]}","[""Automation""]","{""commands"":{""amp_delete_computers_isolation"":[],""amp_delete_file_list_files_by_sha"":[],""amp_get_application_blocking"":[],""amp_get_computer_activity"":[],""amp_get_computer_actvity"":[],""amp_get_computer_by_connector"":[],""amp_get_computer_trajctory"":[],""amp_get_computer_trajectory"":[],""amp_get_computers"":[],""amp_get_computers_isolation"":[],""amp_get_event_types"":[],""amp_get_events"":[],""amp_get_file_list_by_guid"":[],""amp_get_file_list_files"":[],""amp_get_file_list_files_by_sha"":[],""amp_get_group"":[],""amp_get_groups"":[],""amp_get_policies"":[],""amp_get_policy"":[],""amp_get_simple_custom_detections"":[],""amp_get_version"":[],""amp_move_computer"":[],""amp_put_computers_isolation"":[],""amp_set_file_list_files_by_sha"":[],""amp_set_group_policy"":[],""test-module"":[]},""integration"":""AMP""}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
 }",✅,✅,,,,,,
-AMPv2,Packs/AMP/Integrations/AMPv2/AMPv2.yml,Cisco Security,connectors/cisco-security,joeymizrahi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""server_url""]}","[""Fetch Issues"", ""Automation""]","{""commands"":{""cisco-amp-app-trajectory-query-list"":[],""cisco-amp-computer-activity-list"":[],""cisco-amp-computer-delete"":[],""cisco-amp-computer-isolation-create"":[],""cisco-amp-computer-isolation-delete"":[],""cisco-amp-computer-isolation-feature-availability-get"":[],""cisco-amp-computer-isolation-get"":[],""cisco-amp-computer-list"":[],""cisco-amp-computer-move"":[],""cisco-amp-computer-trajectory-list"":[],""cisco-amp-computer-user-activity-list"":[],""cisco-amp-computer-user-trajectory-list"":[],""cisco-amp-computer-vulnerabilities-list"":[],""cisco-amp-event-list"":[""create_relationships"",""integrationReliability""],""cisco-amp-event-type-list"":[],""cisco-amp-file-list-item-create"":[],""cisco-amp-file-list-item-delete"":[],""cisco-amp-file-list-item-list"":[],""cisco-amp-file-list-list"":[],""cisco-amp-group-create"":[],""cisco-amp-group-delete"":[],""cisco-amp-group-list"":[],""cisco-amp-group-parent-update"":[],""cisco-amp-group-policy-update"":[],""cisco-amp-indicator-list"":[],""cisco-amp-license-get"":[],""cisco-amp-policy-list"":[],""cisco-amp-version-get"":[],""cisco-amp-vulnerability-list"":[],""endpoint"":[],""fetch-incidents"":[""event_types"",""first_fetch"",""incident_severities"",""include_null_severities"",""max_fetch""],""file"":[""integrationReliability""],""test-module"":[]},""integration"":""AMPv2""}",{},✅,"{
+AMPv2,Packs/AMP/Integrations/AMPv2/AMPv2.yml,Cisco Security,connectors/cisco-security,YuvHayun,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""server_url""]}","[""Fetch Issues"", ""Automation""]","{""commands"":{""cisco-amp-app-trajectory-query-list"":[],""cisco-amp-computer-activity-list"":[],""cisco-amp-computer-delete"":[],""cisco-amp-computer-isolation-create"":[],""cisco-amp-computer-isolation-delete"":[],""cisco-amp-computer-isolation-feature-availability-get"":[],""cisco-amp-computer-isolation-get"":[],""cisco-amp-computer-list"":[],""cisco-amp-computer-move"":[],""cisco-amp-computer-trajectory-list"":[],""cisco-amp-computer-user-activity-list"":[],""cisco-amp-computer-user-trajectory-list"":[],""cisco-amp-computer-vulnerabilities-list"":[],""cisco-amp-event-list"":[""create_relationships"",""integrationReliability""],""cisco-amp-event-type-list"":[],""cisco-amp-file-list-item-create"":[],""cisco-amp-file-list-item-delete"":[],""cisco-amp-file-list-item-list"":[],""cisco-amp-file-list-list"":[],""cisco-amp-group-create"":[],""cisco-amp-group-delete"":[],""cisco-amp-group-list"":[],""cisco-amp-group-parent-update"":[],""cisco-amp-group-policy-update"":[],""cisco-amp-indicator-list"":[],""cisco-amp-license-get"":[],""cisco-amp-policy-list"":[],""cisco-amp-version-get"":[],""cisco-amp-vulnerability-list"":[],""endpoint"":[],""fetch-incidents"":[""event_types"",""first_fetch"",""incident_severities"",""include_null_severities"",""max_fetch""],""file"":[""integrationReliability""],""test-module"":[]},""integration"":""AMPv2""}",{},✅,"{
   ""general_configurations"": [],
   ""Fetch Issues"": [
     ""event_types"",
@@ -48,7 +48,7 @@ AWS-WAF,Packs/AWS_WAF/Integrations/AWSWAF/AWSWAF.yml,AWS,,joeymizrahi,,,,,,,,,,,
 Abnormal Security Event Collector,Packs/AbnormalSecurity/Integrations/AbnormalSecurityEventCollector/AbnormalSecurityEventCollector.yml,Abnormal Security,,juschwartz,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""token"", ""xsoar_param_map"": {""token.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""proxy"", ""verify""]}","[""Log Collection""]","{""integration"":""Abnormal Security Event Collector"",""commands"":{""abnormal-security-event-collector-get-events"":[],""fetch-events"":[],""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Log Collection"":[]}",,,,,,,,
 Absolute,Packs/Absolute/Integrations/Absolute/Absolute.yml,Absolute,,juschwartz,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[""Log Collection"",""Automation""]","{""integration"":""Absolute"",""commands"":{""absolute-custom-device-field-list"":[],""absolute-custom-device-field-update"":[],""absolute-device-application-list"":[],""absolute-device-freeze-message-create"":[],""absolute-device-freeze-message-delete"":[],""absolute-device-freeze-message-list"":[],""absolute-device-freeze-message-update"":[],""absolute-device-freeze-request"":[],""absolute-device-freeze-request-get"":[],""absolute-device-get"":[],""absolute-device-get-events"":[],""absolute-device-list"":[],""absolute-device-location-get"":[],""absolute-device-remove-freeze-request"":[],""absolute-device-unenroll"":[],""fetch-events"":[],""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Log Collection"":[],""Automation"":[]}",,,,,,,,
 AbuseIPDB,Packs/AbuseDB/Integrations/AbuseDB/AbuseDB.yml,AbuseIPDB,,juschwartz,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.password"": ""api_key"", ""hunting_credentials.password"": ""hunting_api_key""}, ""interpolated"": true}], ""other_connection"": [""abusech_hunting_url"", ""insecure"", ""proxy"", ""server""]}","[""Automation""]","{""integration"":""AbuseIPDB"",""commands"":{""ip"":[""days"",""disable_private_ip_lookup"",""disregard_quota"",""integrationReliability"",""threshold""],""abuseipdb-check-cidr-block"":[""days"",""disregard_quota"",""integrationReliability"",""threshold""],""abuseipdb-report-ip"":[""disregard_quota""],""abuseipdb-get-blacklist"":[""disregard_quota""],""abuseipdb-get-fplist"":[],""abuseipdb-get-categories"":[],""test-module"":[""integrationReliability""]}}","{""threshold"":""80"",""days"":""30"",""integrationReliability"":""C - Fairly reliable"",""disable_private_ip_lookup"":false,""disregard_quota"":false}",✅,"{""general_configurations"":[],""Automation"":[""days"",""disable_private_ip_lookup"",""disregard_quota"",""integrationReliability"",""threshold""]}",,,,,,,,
-Active Directory Query v2,Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml,Microsoft Active Directory,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""ntlm"", ""port"", ""secure_connection"", ""server_ip"", ""ssl_version"", ""unsecure"", ""verify_base_dn""]}","[
+Active Directory Query v2,Packs/Active_Directory_Query/Integrations/Active_Directory_Query/Active_Directory_Query.yml,Microsoft Active Directory,connectors/microsoft-active-directory,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""ntlm"", ""port"", ""secure_connection"", ""server_ip"", ""ssl_version"", ""unsecure"", ""verify_base_dn""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Active Directory Query v2"",
@@ -83,7 +83,20 @@ Active Directory Query v2,Packs/Active_Directory_Query/Integrations/Active_Direc
     ""iam-disable-user"": [""base_dn"", ""group-cn"", ""mapper-out"", ""verify_base_dn""],
     ""get-mapping-fields"": [""base_dn"", ""verify_base_dn""]
   }
-}","{""base_dn"": """", ""mapper-in"": ""User Profile - Active Directory (Incoming)"", ""mapper-out"": ""User Profile - Active Directory (Outgoing)""}",,,,,,,,,,
+}","{""base_dn"": """", ""mapper-in"": ""User Profile - Active Directory (Incoming)"", ""mapper-out"": ""User Profile - Active Directory (Outgoing)""}",✅,"{
+  ""general_configurations"": [
+    ""verify_base_dn""
+  ],
+  ""Automation"": [
+    ""base_dn"",
+    ""page_size"",
+    ""default_base_query"",
+    ""mapper-in"",
+    ""mapper-out"",
+    ""group-cn"",
+    ""create-if-not-exists""
+  ]
+}",✅,,,,,,,
 ActiveMQ,Packs/ActiveMQ/Integrations/ActiveMQ/ActiveMQ.yml,Apache,,juschwartz,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""Certificate Authentication"", ""xsoar_param_map"": {""client_cert"": ""client_certificate"", ""client_key"": ""client_key"", ""root_ca"": ""root_ca""}, ""interpolated"": true}, {""type"": ""Plain"", ""name"": ""Basic Authentication"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""client-id"", ""hostname"", ""port""]}","[""Fetch Issues"",""Automation""]","{""integration"":""ActiveMQ"",""commands"":{""activemq-send"":[],""activemq-subscribe"":[],""fetch-incidents"":[""queue_name"",""subscription-id"",""topic-name""],""test-module"":[""isFetch"",""queue_name"",""topic-name""]}}","{""subscription-id"":""1""}",✅,"{""general_configurations"":[],""Fetch Issues"":[""subscription-id"",""topic-name"",""queue_name""],""Automation"":[]}",,,,,,,,
 AdminByRequest,Packs/AdminByRequest/Integrations/AdminByRequestEventCollector/AdminByRequestEventCollector.yml,AdminByRequest,,juschwartz,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[""Log Collection"",""Automation""]","{""integration"":""AdminByRequest"",""commands"":{""fetch-events"":[""event_types_to_fetch"",""max_auditlog_per_fetch"",""max_events_per_fetch"",""max_requests_per_fetch""],""adminbyrequest-get-events"":[],""adminbyrequest-list-requests"":[],""adminbyrequest-request-approve"":[],""adminbyrequest-request-deny"":[],""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Log Collection"":[""event_types_to_fetch"",""max_auditlog_per_fetch"",""max_events_per_fetch"",""max_requests_per_fetch""],""Automation"":[]}",,,,,,,,
 Aha,Packs/AHA/Integrations/AHA/AHA.yml,Aha,,juschwartz,"{""auth_types"": [{""type"": ""APIKey"", ""name"": ""api_key"", ""xsoar_param_map"": {""api_key.password"": ""key""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""project_name"", ""proxy"", ""url""]}","[""Automation""]","{""integration"":""Aha"",""commands"":{""aha-edit-feature"":[],""aha-edit-idea"":[],""aha-get-features"":[],""aha-get-ideas"":[],""test-module"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",,,,,,,,
@@ -327,20 +340,20 @@ AnsibleCiscoNXOS,Packs/AnsibleCiscoNXOS/Integrations/AnsibleCiscoNXOS/AnsibleCis
   },
   ""integration"": ""Ansible Cisco NXOS""
 }",{},✅,{},,,,,,,,
-AnsibleDNS,Packs/AnsibleLinux/Integrations/AnsibleDNS/AnsibleDNS.yml,Red Hat Ansible,,juschwartz,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""creds"", ""interpolated"": true, ""xsoar_param_map"": {""creds.identifier"": ""username"", ""creds.password"": ""password""}}], ""other_connection"": [""port"", ""server""]}","[""Automation""]","{""commands"": {""test-module"": []}, ""integration"": ""Ansible DNS""}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
-AnsibleHCloud,Packs/AnsibleHetznerCloud/Integrations/AnsibleHCloud/AnsibleHCloud.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
-AnsibleKubernetes,Packs/AnsibleKubernetes/Integrations/AnsibleKubernetes/AnsibleKubernetes.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
-AnsibleLinux,Packs/AnsibleLinux/Integrations/AnsibleLinux/AnsibleLinux.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
+AnsibleDNS,Packs/AnsibleLinux/Integrations/AnsibleDNS/AnsibleDNS.yml,Red Hat Ansible,connectors/red-hat-ansible,juschwartz,"{""auth_types"":[{""type"":""Plain"",""name"":""TSIG Key"",""xsoar_param_map"":{""creds.identifier"":""username"",""creds.password"":""password""},""interpolated"":true,""verify_connection_skip"":true}],""other_connection"":[""key_algorithm"",""port"",""protocol"",""server""]}","[""Automation""]","{""commands"": {""test-module"": []}, ""integration"": ""Ansible DNS""}",{},✅,"{""Automation"": [], ""general_configurations"": []}",✅,✅,✅,,,,,
+AnsibleHCloud,Packs/AnsibleHetznerCloud/Integrations/AnsibleHCloud/AnsibleHCloud.yml,Red Hat Ansible,,juschwartz,"{""auth_types"":[{""type"":""APIKey"",""name"":""creds"",""xsoar_param_map"":{""creds.password"":""key""},""interpolated"":true}],""other_connection"":[""endpoint""]}","[""Automation""]","{""integration"":""AnsibleHCloud"",""commands"":{""test-module"":[],""hcloud-datacenter-info"":[],""hcloud-floating-ip-info"":[],""hcloud-image-info"":[],""hcloud-location-info"":[],""hcloud-network"":[],""hcloud-network-info"":[],""hcloud-rdns"":[],""hcloud-route"":[],""hcloud-server"":[],""hcloud-server-info"":[],""hcloud-server-network"":[],""hcloud-server-type-info"":[],""hcloud-ssh-key"":[],""hcloud-ssh-key-info"":[],""hcloud-subnetwork"":[],""hcloud-volume"":[],""hcloud-volume-info"":[]}}",{},✅,"{""Automation"":[],""general_configurations"":[]}",,,,,,,,
+AnsibleKubernetes,Packs/AnsibleKubernetes/Integrations/AnsibleKubernetes/AnsibleKubernetes.yml,Red Hat Ansible,,juschwartz,"{""auth_types"":[{""type"":""Passthrough"",""name"":""kubernetes_auth"",""xsoar_param_map"":{""creds.identifier"":""username"",""creds.password"":""password"",""api_key"":""api_key""},""interpolated"":true,""verify_connection_skip"":true}],""other_connection"":[""host"",""validate_certs""]}","[""Automation""]","{""integration"":""AnsibleKubernetes"",""commands"":{""test-module"":[],""k8s-k8s"":[],""k8s-info"":[],""k8s-scale"":[],""k8s-service"":[]}}",{},✅,"{""Automation"":[],""general_configurations"":[]}",,,,,,,,
+AnsibleLinux,Packs/AnsibleLinux/Integrations/AnsibleLinux/AnsibleLinux.yml,Red Hat Ansible,,juschwartz,"{""auth_types"":[{""type"":""Passthrough"",""name"":""ssh_auth"",""xsoar_param_map"":{""creds.identifier"":""username"",""creds.password"":""password"",""become_password"":""become_password""},""interpolated"":true,""verify_connection_skip"":true}],""other_connection"":[""become"",""become_method"",""become_user"",""concurrency"",""port""]}","[""Automation""]",,,,,,,,,,,,
 AnsibleMicrosoftWindows,Packs/AnsibleMicrosoftWindows/Integrations/AnsibleMicrosoftWindows/AnsibleMicrosoftWindows.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
 AnsibleOpenSSL,Packs/AnsibleLinux/Integrations/AnsibleOpenSSL/AnsibleOpenSSL.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
 AnsibleTower,Packs/AnsibleTower/Integrations/AnsibleTower/AnsibleTower.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
 AnsibleVMware,Packs/AnsibleVMware/Integrations/AnsibleVMware/AnsibleVMware.yml,Red Hat Ansible,,juschwartz,,,,,,,,,,,,,,
 AppSentinels.ai,Packs/AppSentinelsAi/Integrations/AppSentinelsAi/AppSentinelsAi.yml,AppSentinels,,juschwartz,,,,,,,,,,,,,,
-ArcSight ESM v2,Packs/ArcSightESM/Integrations/ArcSightESMv2/ArcSightESMv2.yml,ArcSight,,juschwartz,,,,,,,,,,,,,,
+ArcSight ESM v2,Packs/ArcSightESM/Integrations/ArcSightESMv2/ArcSightESMv2.yml,ArcSight,,juschwartz,"{""auth_types"": [{""name"": ""credentials"", ""type"": ""Plain"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}}], ""other_connection"": [""insecure"", ""productVersion"", ""proxy"", ""server"", ""use_rest""]}",,,,,,,,,,,,,
 ArcSight Logger,Packs/ArcSightLogger/Integrations/ArcSightLogger/ArcSightLogger.yml,ArcSight,,juschwartz,,,,,,,,,,,,,,
 Arkime,Packs/Arkime/Integrations/Arkime/Arkime.yml,Arkime,,,,,,,,,,,,,,,,
 ArmisEventCollector,Packs/Armis/Integrations/ArmisEventCollector/ArmisEventCollector.yml,Armis,,,,,,,,,,,,,,,,
-Atlassian Cloud MCP,Packs/AtlassianCloudMCP/Integrations/AtlassianCloudMCP/AtlassianCloudMCP.yml,Atlassian Automation and Collection,,juschwartz,,,,,,,,,,,,,,
+Atlassian Cloud MCP,Packs/AtlassianCloudMCP/Integrations/AtlassianCloudMCP/AtlassianCloudMCP.yml,Atlassian Automation and Collection,,juschwartz,"{""auth_types"":[{""type"":""Passthrough"",""name"":""auth_code"",""xsoar_param_map"":{""auth_code.password"":""authorization_code""},""interpolated"":true,""verify_connection_skip"":true}],""other_connection"":[]}","[""Automation""]","{""integration"":""Atlassian Cloud MCP"",""commands"":{""atlassian-cloud-mcp-auth-test"":[],""atlassian-cloud-mcp-generate-login-url"":[],""call-tool"":[],""list-tools"":[],""test-module"":[]}}",{},,,,,,,,,,
 Atlassian Confluence Cloud,Packs/AtlassianConfluenceCloud/Integrations/AtlassianConfluenceCloud/AtlassianConfluenceCloud.yml,Atlassian Automation and Collection,,juschwartz,,,,,,,,,,,,,,
 Atlassian Confluence Server,Packs/Confluence/Integrations/Confluence/Confluence.yml,Atlassian Automation and Collection,,juschwartz,,,,,,,,,,,,,,
 Atlassian IAM,Packs/Attlasian/Integrations/Attlasian_IAM/Attlasian_IAM.yml,Atlassian Automation and Collection,,juschwartz,,,,,,,,,,,,,,
@@ -1363,8 +1376,8 @@ Cherwell,Packs/Cherwell/Integrations/Cherwell/Cherwell.yml,Ivanti,,jlevypaloalto
 CipherTrust,Packs/ThalesCipherTrustManager/Integrations/ThalesCipherTrustManager/ThalesCipherTrustManager.yml,CipherTrust,,YuvHayun,,,,,,,,,,,,,,
 CircleCI,Packs/CircleCI/Integrations/CircleCI/CircleCI.yml,CircleCI,,juschwartz,,,,,,,,,,,,,,
 Cisco ASA,Packs/CiscoASA/Integrations/CiscoASA/CiscoASA.yml,Cisco ASA,,jlevypaloalto,,,,,,,,,,,,,,
-Cisco AppDynamics,Packs/CiscoAppDynamics/Integrations/CiscoAppDynamicsEventCollector/CiscoAppDynamicsEventCollector.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
-Cisco CloudLock,Packs/CloudLock/Integrations/CiscoCloudLock/CiscoCloudLock.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
+Cisco AppDynamics,Packs/CiscoAppDynamics/Integrations/CiscoAppDynamicsEventCollector/CiscoAppDynamicsEventCollector.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
+Cisco CloudLock,Packs/CloudLock/Integrations/CiscoCloudLock/CiscoCloudLock.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
 Cisco Firepower,Packs/CiscoFirepower/Integrations/CiscoFirepower/CiscoFirepower.yml,Cisco Firepower,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""credentials"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Automation""
 ]","{
@@ -1432,20 +1445,20 @@ Cisco Firepower,Packs/CiscoFirepower/Integrations/CiscoFirepower/CiscoFirepower.
 }",,,,,,,,
 Cisco ISE,Packs/cisco-ise/Integrations/cisco-ise/cisco-ise.yml,Cisco ISE,,hyaffe839,,,,,,,,,,,,,,
 Cisco Meraki v2,Packs/cisco-meraki/Integrations/CiscoMerakiv2/CiscoMerakiv2.yml,Cisco Meraki Automation and Remediation,,joeymizrahi,,,,,,,,,,,,,,
-Cisco Secure Malware Analytics,Packs/ThreatGrid/Integrations/FeedCiscoSecureMalwareAnalytics/FeedCiscoSecureMalwareAnalytics.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
-Cisco Spark,Packs/CiscoSpark/Integrations/CiscoSpark/CiscoSpark.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
-Cisco Stealthwatch,Packs/CiscoStealthwatch/Integrations/CiscoStealthwatch/CiscoStealthwatch.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
+Cisco Secure Malware Analytics,Packs/ThreatGrid/Integrations/FeedCiscoSecureMalwareAnalytics/FeedCiscoSecureMalwareAnalytics.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
+Cisco Spark,Packs/CiscoSpark/Integrations/CiscoSpark/CiscoSpark.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
+Cisco Stealthwatch,Packs/CiscoStealthwatch/Integrations/CiscoStealthwatch/CiscoStealthwatch.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
 Cisco Umbrella Cloud Security v2,Packs/Cisco-umbrella-cloud-security/Integrations/CiscoUmbrellaCloudSecurityv2/CiscoUmbrellaCloudSecurityv2.yml,Cisco Umbrella,,hyaffe839,,,,,,,,,,,,,,
 Cisco Umbrella Enforcement,Packs/Cisco-umbrella-enforcement/Integrations/CiscoUmbrellaEnforcement/CiscoUmbrellaEnforcement.yml,Cisco Umbrella,,hyaffe839,,,,,,,,,,,,,,
 Cisco Umbrella Investigate,Packs/Cisco-umbrella/Integrations/Cisco-umbrella-investigate/Cisco-umbrella-investigate.yml,Cisco Umbrella,,hyaffe839,,,,,,,,,,,,,,
 Cisco Umbrella Reporting,Packs/CiscoUmbrellaReporting/Integrations/CiscoUmbrellaReporting/CiscoUmbrellaReporting.yml,Cisco Umbrella,,hyaffe839,,,,,,,,,,,,,,
-Cisco WebEx Feed,Packs/CiscoWebExFeed/Integrations/CiscoWebExFeed/CiscoWebExFeed.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
-CiscoAMPEventCollector,Packs/AMP/Integrations/CiscoAMPEventCollector/CiscoAMPEventCollector.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
-CiscoESA,Packs/IronPort/Integrations/CiscoEmailSecurityApplianceIronPortV2/CiscoEmailSecurityApplianceIronPortV2.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
-CiscoSMA,Packs/CiscoSMA/Integrations/CiscoSMA/CiscoSMA.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
-CiscoThousandEyes,Packs/CiscoThousandEyes/Integrations/CiscoThousandEyes/CiscoThousandEyes.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
-CiscoWSAv2,Packs/CiscoWSA/Integrations/CiscoWSAV2/CiscoWSAV2.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
-CiscoWebexEventCollector,Packs/CiscoSpark/Integrations/CiscoWebexEventCollector/CiscoWebexEventCollector.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
+Cisco WebEx Feed,Packs/CiscoWebExFeed/Integrations/CiscoWebExFeed/CiscoWebExFeed.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
+CiscoAMPEventCollector,Packs/AMP/Integrations/CiscoAMPEventCollector/CiscoAMPEventCollector.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
+CiscoESA,Packs/IronPort/Integrations/CiscoEmailSecurityApplianceIronPortV2/CiscoEmailSecurityApplianceIronPortV2.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
+CiscoSMA,Packs/CiscoSMA/Integrations/CiscoSMA/CiscoSMA.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
+CiscoThousandEyes,Packs/CiscoThousandEyes/Integrations/CiscoThousandEyes/CiscoThousandEyes.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
+CiscoWSAv2,Packs/CiscoWSA/Integrations/CiscoWSAV2/CiscoWSAV2.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
+CiscoWebexEventCollector,Packs/CiscoSpark/Integrations/CiscoWebexEventCollector/CiscoWebexEventCollector.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
 CitrixCloud,Packs/Citrix/Integrations/CitrixCloudEventCollector/CitrixCloudEventCollector.yml,Citrix,,jlevypaloalto,,,,,,,,,,,,,,
 CitrixDaas,Packs/Citrix/Integrations/CitrixDaasEventCollector/CitrixDaasEventCollector.yml,Citrix,,jlevypaloalto,,,,,,,,,,,,,,
 Clarizen IAM,Packs/Clarizen/Integrations/ClarizenIAM/ClarizenIAM.yml,Plainview,,YuvHayun,,,,,,,,,,,,,,
@@ -3175,7 +3188,7 @@ Jira Event Collector,Packs/Jira/Integrations/JiraEventCollector/JiraEventCollect
 Jira V3,Packs/Jira/Integrations/JiraV3/JiraV3.yml,Atlassian Automation and Collection,,hyaffe839,,,,,,,,,,,,,,
 JoeSecurityV2,Packs/JoeSecurity/Integrations/JoeSecurityV2/JoeSecurityV2.yml,Joe Security,,juschwartz,,,,,,,,,,,,,,
 JsonWhoIs,Packs/JsonWhoIs/Integrations/JsonWhoIs/JsonWhoIs.yml,JSONWhoIs.com,,jlevypaloalto,,,,,,,,,,,,,,
-KOI,Packs/Koi/Integrations/Koi/Koi.yml,Koi,,joeymizrahi,,,,,,,,,,,,,,
+KOI,Packs/Koi/Integrations/Koi/Koi.yml,Koi,,YuvHayun,,,,,,,,,,,,,,
 KafkaV3,Packs/Kafka/Integrations/KafkaV3/KafkaV3.yml,Kafka,,noydavidi,"{
   ""auth_types"": [
     {
@@ -3210,7 +3223,7 @@ KafkaV3,Packs/Kafka/Integrations/KafkaV3/KafkaV3.yml,Kafka,,noydavidi,"{
   }
 }",{},✅,"{""Automation"": [""schema_registry_url"", ""group_id""], ""Fetch Issues"": [""first_fetch"", ""max_bytes_per_message"", ""max_fetch"", ""partition"", ""stop_consuming_upon_timeout"", ""topic""], ""general_configurations"": []}",,,,,,,,
 KeeperSecurity,Packs/KeeperSecurity/Integrations/KeeperSecurity/KeeperSecurity.yml,Keeper Security,,hyaffe839,,,,,,,,,,,,,,
-Kennav2,Packs/Kenna/Integrations/KennaV2/KennaV2.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
+Kennav2,Packs/Kenna/Integrations/KennaV2/KennaV2.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
 KnowBe4 KMSAT Event Collector,Packs/KnowBe4_KMSAT/Integrations/KnowBe4KMSATEventCollector/KnowBe4KMSATEventCollector.yml,KnowB4,,joeymizrahi,,,,,,,,,,,,,,
 Koodous,Packs/Koodous/Integrations/Koodous/Koodous.yml,Koodous,,joeymizrahi,,,,,,,,,,,,,,
 LOLBAS Feed,Packs/FeedLOLBAS/Integrations/FeedLOLBAS/FeedLOLBAS.yml,LOLBAS,,YuvHayun,,,,,,,,,,,,,,
@@ -3697,7 +3710,10 @@ Microsoft Graph,Packs/MicrosoftGraphSecurity/Integrations/MicrosoftGraphSecurity
 }",,,,,,,,,,,
 Microsoft Graph API,Packs/MicrosoftGraphAPI/Integrations/MicrosoftGraphAPI/MicrosoftGraphAPI.yml,Microsoft Graph,connectors/microsoft-graph,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""auth_code.password"": ""authorization_code"", ""redirect_uri"": ""redirect_uri"", ""self_deployed"": ""self_deployed""}, ""interpolated"": true, ""verify_connection_skip"": true}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""creds_certificate.identifier"": ""certificate_thumbprint"", ""creds_certificate.password"": ""private_key"", ""self_deployed"": ""self_deployed""}, ""interpolated"": true}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}, ""interpolated"": true}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""device_code"", ""xsoar_param_map"": {""app_id"": ""client_id"", ""scope"": ""scope"", ""self_deployed"": ""self_deployed""}, ""interpolated"": true, ""verify_connection_skip"": true}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""xsoar_param_map"": {""managed_identities_client_id.password"": ""client_id""}, ""interpolated"": true}], ""other_connection"": [""azure_ad_endpoint"", ""azure_cloud"", ""insecure"", ""proxy""]}","[
   ""Automation""
-]","{""integration"": ""Microsoft Graph API"", ""commands"": {""msgraph-api-request"": [], ""msgraph-api-auth-start"": [], ""msgraph-api-auth-complete"": [], ""msgraph-api-test"": [], ""msgraph-api-auth-reset"": [], ""msgraph-api-generate-login-url"": [], ""test-module"": []}}",,,,,,,,,,,
+]","{""integration"": ""Microsoft Graph API"", ""commands"": {""msgraph-api-request"": [], ""msgraph-api-auth-start"": [], ""msgraph-api-auth-complete"": [], ""msgraph-api-test"": [], ""msgraph-api-auth-reset"": [], ""msgraph-api-generate-login-url"": [], ""test-module"": []}}",{},✅,"{
+  ""general_configurations"": [],
+  ""Automation"": []
+}",✅,✅,✅,,,,,
 Microsoft Graph Calendar,Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGraphCalendar/MicrosoftGraphCalendar.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_tenant_id.password"": ""tenant_id"", ""credentials_certificate_thumbprint.password"": ""certificate_thumbprint"", ""private_key"": ""private_key"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_tenant_id.password"": ""tenant_id"", ""credentials_enc_key.password"": ""client_secret"", ""self_deployed"": ""self_deployed""}}, {""type"": ""Passthrough"", ""name"": ""cortex_application"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_auth_id.password"": ""client_id"", ""credentials_tenant_id.password"": ""tenant_id"", ""credentials_enc_key.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[
   ""Automation""
 ]","{
@@ -3922,7 +3938,7 @@ Microsoft Management Activity API (O365 Azure Events),Packs/MicrosoftManagementA
     ]
   }
 }",,,,,,,,,,,
-Microsoft Teams,Packs/MicrosoftTeams/Integrations/MicrosoftTeams/MicrosoftTeams.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret"", ""auth_code_creds.password"": ""auth_code"", ""redirect_uri"": ""redirect_uri""}}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""creds_certificate.identifier"": ""certificate"", ""creds_certificate.password"": ""private_key""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}}], ""other_connection"": [""insecure"", ""is_single_tenant_bot_type"", ""proxy""]}","[
+Microsoft Teams,Packs/MicrosoftTeams/Integrations/MicrosoftTeams/MicrosoftTeams.yml,M365 Automation and Collection,,hyaffe839,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""authorization_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret"", ""auth_code_creds.password"": ""auth_code"", ""redirect_uri"": ""redirect_uri""}}, {""type"": ""Passthrough"", ""name"": ""certificate"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""creds_certificate.identifier"": ""certificate"", ""creds_certificate.password"": ""private_key""}}, {""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}}], ""other_connection"": [""insecure"", ""is_single_tenant_bot_type"", ""proxy""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Microsoft Teams"",
@@ -3990,7 +4006,7 @@ Microsoft Teams,Packs/MicrosoftTeams/Integrations/MicrosoftTeams/MicrosoftTeams.
     ""test-module"": []
   }
 }",,,,,,,,,,,
-Microsoft Teams Management,Packs/MicrosoftTeams/Integrations/MicrosoftTeamsManagement/MicrosoftTeamsManagement.yml,M365 Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""device_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_ad_endpoint"", ""insecure"", ""proxy""]}","[
+Microsoft Teams Management,Packs/MicrosoftTeams/Integrations/MicrosoftTeamsManagement/MicrosoftTeamsManagement.yml,M365 Automation and Collection,,hyaffe839,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""client_credentials"", ""interpolated"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id"", ""credentials.password"": ""client_secret""}}, {""type"": ""Passthrough"", ""name"": ""device_code"", ""interpolated"": true, ""verify_connection_skip"": true, ""xsoar_param_map"": {""app_id"": ""client_id"", ""tenant_id"": ""tenant_id""}}, {""type"": ""Passthrough"", ""name"": ""managed_identity"", ""interpolated"": true, ""xsoar_param_map"": {""managed_identities_client_id.password"": ""managed_identities_client_id""}}], ""other_connection"": [""azure_ad_endpoint"", ""insecure"", ""proxy""]}","[
   ""Automation""
 ]","{
   ""integration"": ""Microsoft Teams Management"",
@@ -4017,7 +4033,7 @@ Microsoft Teams Management,Packs/MicrosoftTeams/Integrations/MicrosoftTeamsManag
     ""test-module"": []
   }
 }",,,,,,,,,,,
-Microsoft Teams via Webhook,Packs/MicrosoftTeams/Integrations/MicrosoftTeamsWebhook/MicrosoftTeamsWebhook.yml,M365 Automation and Collection,,noydavidi,"{
+Microsoft Teams via Webhook,Packs/MicrosoftTeams/Integrations/MicrosoftTeamsWebhook/MicrosoftTeamsWebhook.yml,M365 Automation and Collection,,hyaffe839,"{
   ""auth_types"": [],
   ""other_connection"": [""insecure"", ""proxy"", ""webhookurl""]
 }","[
@@ -4959,7 +4975,7 @@ Perch,Packs/Perch/Integrations/Perch/Perch.yml,Razor Group,,YuvHayun,,,,,,,,,,,,
 PhishLabs IOC,Packs/PhishLabs/Integrations/PhishLabsIOC/PhishLabsIOC.yml,PhishLabs,,jlevypaloalto,,,,,,,,,,,,,,
 PhishLabs IOC DRP,Packs/PhishLabs/Integrations/PhishLabsIOC_DRP/PhishLabsIOC_DRP.yml,PhishLabs,,jlevypaloalto,,,,,,,,,,,,,,
 PhishLabs IOC EIR,Packs/PhishLabs/Integrations/PhishLabsIOC_EIR/PhishLabsIOC_EIR.yml,PhishLabs,,jlevypaloalto,,,,,,,,,,,,,,
-PhishTank V2,Packs/PhishTank/Integrations/PhishTankV2/PhishTankV2.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
+PhishTank V2,Packs/PhishTank/Integrations/PhishTankV2/PhishTankV2.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
 Pipl,Packs/Pipl/Integrations/Pipl/Pipl.yml,Pipl,,juschwartz,,,,,,,,,,,,,,
 Plain Text Feed,Packs/FeedPlainText/Integrations/FeedPlainText/FeedPlainText.yml,Generic Intel Feed,,hyaffe839,,,,,,,,,,,,,,
 Prisma Access,Packs/PrismaAccess/Integrations/PrismaAccess/PrismaAccess.yml,Panorama,,noydavidi,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""api_key"", ""interpolated"": true, ""xsoar_param_map"": {""credentials_key.password"": ""api_key"", ""Username.identifier"": ""ssh_username"", ""Username.password"": ""ssh_password""}}], ""other_connection"": [""device_group"", ""insecure"", ""port"", ""proxy"", ""server"", ""sshport"", ""vsys""]}","[
@@ -5619,7 +5635,7 @@ Sophos Central,Packs/SophosCentral/Integrations/SophosCentral/SophosCentral.yml,
 SpamhausFeed,Packs/FeedSpamhaus/Integrations/FeedSpamhaus/FeedSpamhaus.yml,Samhaus,,jlevypaloalto,,,,,,,,,,,,,,
 SplunkPy,Packs/SplunkPy/Integrations/SplunkPy/SplunkPy.yml,Splunk,,jlevypaloalto,,,,,,,,,,,,,,
 SplunkPy v2,Packs/SplunkPy/Integrations/SplunkPyV2/SplunkPyV2.yml,Splunk,,jlevypaloalto,,,,,,,,,,,,,,
-Stealthwatch Cloud,Packs/Stealthwatch_Cloud/Integrations/Stealthwatch_Cloud/Stealthwatch_Cloud.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
+Stealthwatch Cloud,Packs/Stealthwatch_Cloud/Integrations/Stealthwatch_Cloud/Stealthwatch_Cloud.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
 SumoLogic,Packs/SumoLogic/Integrations/SumoLogic/SumoLogic.yml,Sumo Logic Automation and Collection,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentialsAccess.identifier"": ""username"", ""credentialsAccess.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""apiVersion"", ""insecure"", ""url"", ""useproxy""]}","[
   ""Fetch Issues"",
   ""Automation""
@@ -5777,7 +5793,7 @@ ThreatConnect v3,Packs/ThreatConnect/Integrations/ThreatConnectV3/ThreatConnectV
 }",,,,,,,,,,,
 ThreatExchange v2,Packs/ThreatExchange/Integrations/ThreatExchangeV2/ThreatExchangeV2.yml,Meta,,hyaffe839,,,,,,,,,,,,,,
 ThreatFox Feed,Packs/FeedThreatFox/Integrations/FeedThreatFox/FeedThreatFox.yml,abuse.ch,,hyaffe839,,,,,,,,,,,,,,
-ThreatGridv2,Packs/ThreatGrid/Integrations/ThreatGridv2/ThreatGridv2.yml,Cisco Security,,joeymizrahi,,,,,,,,,,,,,,
+ThreatGridv2,Packs/ThreatGrid/Integrations/ThreatGridv2/ThreatGridv2.yml,Cisco Security,,YuvHayun,,,,,,,,,,,,,,
 ThreatMiner,Packs/ThreatMiner/Integrations/ThreatMiner/ThreatMiner.yml,ThreatMiner.org,,joeymizrahi,,,,,,,,,,,,,,
 ThreatQ v2,Packs/ThreatQ/Integrations/ThreatQ_v2/ThreatQ_v2.yml,Securonix,,YuvHayun,,,,,,,,,,,,,,
 ThreatX,Packs/ThreatX/Integrations/ThreatX/ThreatX.yml,ThreatX,,juschwartz,,,,,,,,,,,,,,
@@ -5868,7 +5884,7 @@ VersaDirector,Packs/VersaDirector/Integrations/VersaDirector/VersaDirector.yml,V
   }
 }",,,,,,,,,,,
 Vertica,Packs/Vertica/Integrations/Vertica/Vertica.yml,OpenText Vertica,,hyaffe839,,,,,,,,,,,,,,
-VulnDB,Packs/VulnDB/Integrations/VulnDB/VulnDB.yml,VulnDB,,joeymizrahi,,,,,,,,,,,,,,
+VulnDB,Packs/VulnDB/Integrations/VulnDB/VulnDB.yml,VulnDB,,YuvHayun,,,,,,,,,,,,,,
 WhatsMyBrowser,Packs/WhatIsMyBrowser/Integrations/WhatIsMyBrowser/WhatIsMyBrowser.yml,WhatsMyBrowser.org,,YuvHayun,,,,,,,,,,,,,,
 Whois,Packs/Whois/Integrations/Whois/Whois.yml,Whois,,juschwartz,,,,,,,,,,,,,,
 WildFire-v2,Packs/Palo_Alto_Networks_WildFire/Integrations/Palo_Alto_Networks_WildFire_v2/Palo_Alto_Networks_WildFire_v2.yml,WildFire Cloud,,jlevypaloalto,,,,,,,,,,,,,,
@@ -5881,9 +5897,9 @@ Workday IAM,Packs/Workday/Integrations/Workday_IAM/Workday_IAM.yml,Workday,,hyaf
 Workday Sign On Event Collector,Packs/Workday/Integrations/WorkdaySignOnEventCollector/WorkdaySignOnEventCollector.yml,Workday,,hyaffe839,,,,,,,,,,,,,,
 XFE_v2,Packs/XForceExchange/Integrations/XFE_v2/XFE_v2.yml,IBM Security,,jlevypaloalto,,,,,,,,,,,,,,
 Zendesk v2,Packs/Zendesk/Integrations/Zendeskv2/Zendeskv2.yml,Zendesk,,hyaffe839,,,,,,,,,,,,,,
-ZeroNetworksSegmentEventCollector,Packs/ZeroNetworksSegment/Integrations/ZeroNetworksSegmentEventCollector/ZeroNetworksSegmentEventCollector.yml,Zero Networks,,joeymizrahi,,,,,,,,,,,,,,
-Zimperium,Packs/Zimperium/Integrations/Zimperium/Zimperium.yml,Zimperium,,joeymizrahi,,,,,,,,,,,,,,
-Zimperium v2,Packs/Zimperium/Integrations/ZimperiumV2/ZimperiumV2.yml,Zimperium,,joeymizrahi,,,,,,,,,,,,,,
+ZeroNetworksSegmentEventCollector,Packs/ZeroNetworksSegment/Integrations/ZeroNetworksSegmentEventCollector/ZeroNetworksSegmentEventCollector.yml,Zero Networks,,YuvHayun,,,,,,,,,,,,,,
+Zimperium,Packs/Zimperium/Integrations/Zimperium/Zimperium.yml,Zimperium,,YuvHayun,,,,,,,,,,,,,,
+Zimperium v2,Packs/Zimperium/Integrations/ZimperiumV2/ZimperiumV2.yml,Zimperium,,YuvHayun,,,,,,,,,,,,,,
 Zoom,Packs/Zoom/Integrations/Zoom/Zoom.yml,Zoom,connectors/zoom,juschwartz,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""OAuth (Server-to-Server)"", ""xsoar_param_map"": {""account_id"": ""account_id"", ""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret"", ""bot_credentials.identifier"": ""bot_client_id"", ""bot_credentials.password"": ""bot_client_secret""}, ""interpolated"": true}], ""other_connection"": [""botJID"", ""certificate"", ""insecure"", ""key"", ""mirroring"", ""proxy"", ""secret_token"", ""url"", ""verification_token""]}","[""Automation""]","{""integration"": ""Zoom"", ""commands"": {""close-channel"": [], ""long-running-execution"": [], ""mirror-investigation"": [], ""send-notification"": [], ""test-module"": [], ""zoom-create-channel"": [], ""zoom-create-meeting"": [], ""zoom-create-user"": [], ""zoom-delete-channel"": [], ""zoom-delete-message"": [], ""zoom-delete-user"": [], ""zoom-delete-user-token"": [], ""zoom-fetch-recording"": [], ""zoom-invite-to-channel"": [], ""zoom-list-account-public-channels"": [], ""zoom-list-messages"": [], ""zoom-list-user-channels"": [], ""zoom-list-users"": [], ""zoom-meeting-get"": [], ""zoom-meeting-list"": [], ""zoom-remove-from-channel"": [], ""zoom-send-file"": [], ""zoom-send-message"": [], ""zoom-update-channel"": [], ""zoom-update-message"": []}}",{},✅,"{""general_configurations"": [], ""Automation"": []}",✅,✅,✅,,,,,
 Zoom Feed,Packs/FeedZoom/Integrations/FeedZoom/FeedZoom.yml,Zoom,connectors/zoom,juschwartz,"{""auth_types"": [{""type"": ""NoneRequired"", ""name"": ""No authentication"", ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy""]}","[""Threat Intelligence & Enrichment""]","{""integration"": ""Zoom Feed"", ""commands"": {""fetch-indicators"": [""feedTags"", ""tlp_color""], ""zoom-get-indicators"": [""feedTags"", ""tlp_color""], ""test-module"": []}}",{},✅,"{""general_configurations"":[],""Threat Intelligence & Enrichment"":[""feedTags"",""tlp_color"",""zoom_clients_certificate_validation"",""zoom_clients_user_browser""]}",✅,✅,,,,,,
 Zoom Mail,Packs/ZoomMail/Integrations/ZoomMail/ZoomMail.yml,Zoom,connectors/zoom,juschwartz,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""OAuth (Server-to-Server)"", ""xsoar_param_map"": {""account_id"": ""account_id"", ""credentials.identifier"": ""client_id"", ""credentials.password"": ""client_secret""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""proxy"", ""url""]}","[""Fetch Issues"", ""Automation""]","{""integration"": ""Zoom Mail"", ""commands"": {""fetch-incidents"": [""fetch_from"", ""fetch_labels"", ""fetch_query"", ""fetch_threads"", ""first_fetch"", ""max_fetch""], ""test-module"": [], ""zoom-mail-email-attachment-get"": [], ""zoom-mail-email-list"": [], ""zoom-mail-email-move-trash"": [], ""zoom-mail-mailbox-profile-get"": [], ""zoom-mail-send-email"": [], ""zoom-mail-thread-list"": [], ""zoom-mail-user-list"": []}}",{},✅,"{""general_configurations"": [], ""Fetch Issues"": [""fetch_from"", ""fetch_labels"", ""fetch_query"", ""fetch_threads"", ""first_fetch"", ""max_fetch""], ""Automation"": []}",✅,✅,,,,,,
@@ -5969,7 +5985,7 @@ jamf v2,Packs/jamf/Integrations/jamfV2/jamfV2.yml,Jamf,,noydavidi,"{""auth_types
   }
 }",,,,,,,,,,,
 netskope_api_v2,Packs/Netskope/Integrations/NetskopeAPIv2/NetskopeAPIv2.yml,Netskope,,jlevypaloalto,,,,,,,,,,,,,,
-nmap,Packs/Nmap/Integrations/Nmap/Nmap.yml,nmap,,joeymizrahi,,,,,,,,,,,,,,
+nmap,Packs/Nmap/Integrations/Nmap/Nmap.yml,nmap,,YuvHayun,,,,,,,,,,,,,,
 qualys_fim,Packs/QualysFIM/Integrations/QualysFIM/QualysFIM.yml,Qualys,,noydavidi,"{""auth_types"": [{""type"": ""Plain"", ""name"": ""Basic Auth"", ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}, ""interpolated"": true}], ""other_connection"": [""insecure"", ""platform"", ""proxy""]}","[
   ""Fetch Issues"",
   ""Automation""
@@ -6073,7 +6089,7 @@ Kaspersky Security Center,Packs/KasperskySecurityCenter/Integrations/KasperskySe
 }",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
 Palo Alto Networks Security Advisories,Packs/PaloAltoNetworks_SecurityAdvisories/Integrations/PaloAltoNetworksSecurityAdvisories/PaloAltoNetworksSecurityAdvisories.yml,PAN PSIRT Advisories,,hyaffe839,,,,,,,,,,,,,,
 PowerShell Remoting,Packs/PowershellRemoting/Integrations/PowerShellRemoting/PowerShellRemoting.yml,Microsoft Windows Tools,,YuvHayun,,,,,,,,,,,,,,
-QuestKace,Packs/QuestKace/Integrations/QuestKace/QuestKace.yml,Quest KACE,,joeymizrahi,,,,,,,,,,,,,,
+QuestKace,Packs/QuestKace/Integrations/QuestKace/QuestKace.yml,Quest KACE,,YuvHayun,,,,,,,,,,,,,,
 Symantec Blue Coat Content and Malware Analysis,Packs/SymantecBlueCoatMalwareAnalysis/Integrations/SymantecBlueCoatMalwareAnalysis/SymantecBlueCoatMalwareAnalysis.yml,Broadcom,,hyaffe839,,,,,,,,,,,,,,
 Telegram_Beta,Packs/Telegram/Integrations/Telegram/Telegram.yml,Telegram,,YuvHayun,,,,,,,,,,,,,,
 Trend Micro Deep Discovery Analyzer,Packs/TrendMicroDDA/Integrations/TrendMicroDDA/TrendMicroDDA.yml,TrendAI,,hyaffe839,,,,,,,,,,,,,,
