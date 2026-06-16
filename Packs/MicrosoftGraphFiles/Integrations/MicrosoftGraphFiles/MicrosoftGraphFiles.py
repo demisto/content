@@ -748,7 +748,13 @@ def test_function(client: MsGraphClient) -> str:
             "once all relevant parameters have been entered."
         )
 
-    client.ms_client.http_request(url_suffix="sites", timeout=7, method="GET")
+    # client.ms_client.http_request(url_suffix="sites", timeout=7, method="GET")
+    # client.ms_client.http_request(
+    #     method="GET",
+    #     url_suffix="sites",
+    #     params={"search": "*"},
+    # )
+    # list_sharepoint_sites_command(client, {})
     return response
 
 
