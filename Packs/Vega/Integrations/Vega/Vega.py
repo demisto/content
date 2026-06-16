@@ -1163,16 +1163,12 @@ def load_current_incident() -> dict[str, Any]:
 
 
 def resolve_alert_id_from_incident(args: dict[str, Any], incident: dict[str, Any]) -> str | None:
-    """Resolve Vega alert ID from command args or the current Vega Alert incident."""
+    """Resolve the Vega alert API id (UUID) used for API calls such as getAlertsEvents."""
     alert_id = args.get("alert_id")
     if alert_id is not None and str(alert_id).strip():
         return str(alert_id).strip()
 
     custom_fields = _collect_incident_custom_fields(incident)
-
-    vega_alert_id = custom_fields.get("vegaalertid")
-    if vega_alert_id is not None and str(vega_alert_id).strip():
-        return str(vega_alert_id).strip()
 
     loaded_for = custom_fields.get("vegaalerteventsloadedfor")
     if loaded_for is not None and str(loaded_for).strip():
@@ -1188,7 +1184,7 @@ def resolve_alert_id_from_incident(args: dict[str, Any], incident: dict[str, Any
                     return None
                 if not incident_type and raw.get("vegaEntityType") not in (None, "Vega Alert"):
                     return None
-                raw_id = raw.get("vegaAlertId") or raw.get("id")
+                raw_id = raw.get("id")
                 if raw_id is not None and str(raw_id).strip():
                     return str(raw_id).strip()
         except (json.JSONDecodeError, TypeError, ValueError):
@@ -1543,6 +1539,94 @@ def _format_timeline_display_timestamp(timestamp: Any) -> str:
     return text
 
 
+def _format_comment_display_timestamp(timestamp: Any) -> str:
+    """Convert an ISO timestamp to the comment display format (YYYY-MM-DDTHH:MM:SSZ)."""
+    text = str(timestamp or "").strip()
+    if not text:
+        return "—"
+    if "." in text:
+        text = text.split(".", maxsplit=1)[0]
+    if "T" not in text and " " in text:
+        text = text.replace(" ", "T", 1)
+    if not text.endswith("Z") and "+" not in text:
+        text = f"{text}Z"
+    return text
+
+
+def _is_empty_vega_comment_text(text: Any) -> bool:
+    """Return True when a Vega comment body is empty or a placeholder such as '[{}]'."""
+    if text is None:
+        return True
+    normalized = str(text).strip()
+    if not normalized:
+        return True
+    if normalized in ("[{}]", "[]", "{}"):
+        return True
+    if normalized.startswith("[") and normalized.endswith("]"):
+        try:
+            parsed = json.loads(normalized)
+            if isinstance(parsed, list) and all(not item or item == {} for item in parsed):
+                return True
+        except (json.JSONDecodeError, TypeError, ValueError):
+            pass
+    return False
+
+
+def _format_comment_author(added_by: Any) -> str:
+    """Return a display name for a Vega comment author."""
+    author = str(added_by or "").strip()
+    if not author:
+        return "Unknown"
+    if len(author) > 24 and " " not in author:
+        return "Unknown"
+    return _escape_html(author)
+
+
+def _format_vega_comment_item_html(comment: dict[str, Any]) -> str:
+    """Render one Vega incident comment in the dark UI card layout."""
+    comment_text = str(comment.get("text") or "").strip()
+    author = _format_comment_author(comment.get("addedBy"))
+    timestamp = _escape_html(_format_comment_display_timestamp(comment.get("addedAt")))
+    body = _escape_html(comment_text)
+    return (
+        "<div style='margin-bottom:20px;'>"
+        "<div style='display:flex;align-items:center;gap:8px;margin-bottom:10px;color:#ffffff;'>"
+        f"<span style='font-size:14px;line-height:1.4;'>"
+        f"<span style='font-weight:600;color:#ffffff;'>{author}</span> "
+        f"<span style='color:#d1d5db;'>added a comment</span></span></div>"
+        f"<div style='border:1px solid #404040;border-radius:10px;padding:12px 14px;"
+        f"background:#141414;color:#e5e5e5;font-size:13px;line-height:1.6;'>{body}</div>"
+        f"<div style='color:#9ca3af;font-size:12px;margin-top:8px;'>{timestamp}</div>"
+        "</div>"
+    )
+
+
+def _format_vega_comments_html(comments: Any) -> str:
+    """Render Vega incident comments as HTML, skipping empty placeholder entries."""
+    container_style = f"background:#000000;color:#ffffff;padding:16px;font-family:{_VEGA_DARK_UI_FONT};"
+    if not isinstance(comments, list):
+        return (
+            f"<div style='{container_style}'>"
+            "<p style='margin:0;color:#9ca3af;font-size:13px;'>No comments are available for this incident.</p>"
+            "</div>"
+        )
+
+    visible_comments = [
+        comment for comment in comments if isinstance(comment, dict) and not _is_empty_vega_comment_text(comment.get("text"))
+    ]
+    visible_comments.sort(key=lambda item: str(item.get("addedAt") or ""), reverse=True)
+
+    if not visible_comments:
+        return (
+            f"<div style='{container_style}'>"
+            "<p style='margin:0;color:#9ca3af;font-size:13px;'>No comments are available for this incident.</p>"
+            "</div>"
+        )
+
+    rows = "".join(_format_vega_comment_item_html(comment) for comment in visible_comments)
+    return f"<div style='{container_style}'>{rows}</div>"
+
+
 def _timeline_severity_bars_html(severity: Any) -> str:
     """Render alert severity as vertical bars (Vega UI style)."""
     try:
@@ -1826,9 +1910,9 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
         raw["severity"] = _normalize_vega_severity_for_display(raw.get("severity"))
 
     if entity_type == "Vega Alert":
-        alert_id = raw.get("vegaAlertId") or raw.get("id")
-        if alert_id is not None and str(alert_id).strip():
-            raw["vegaAlertId"] = str(alert_id).strip()
+        vega_display_id = raw.get("vegaAlertId")
+        if vega_display_id is not None and str(vega_display_id).strip():
+            raw["vegaAlertId"] = str(vega_display_id).strip()
         raw["detectionDescription"] = _empty_to_na(raw.get("detectionDescription"))
         raw["detectionQuery"] = _format_vega_detection_query_for_display(raw.get("detectionQuery"))
 
@@ -1845,6 +1929,8 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
     findings_source = raw.get("keyFindings") or raw.get("incidentFindings")
     if findings_source is not None:
         raw["vegaIncidentFindings"] = _format_key_findings_html(findings_source, assets, observables)
+    if entity_type == "Vega Incident" and "comments" in raw:
+        raw["vegaComments"] = _format_vega_comments_html(raw.get("comments"))
     _apply_vega_mitre_attack_format(raw)
 
 
@@ -1917,6 +2003,19 @@ def _build_close_reopen_sync_entries(status: str, entity_type_suffix: str) -> li
             }
         )
     return entries
+
+
+def _build_comment_war_room_entry(comment_text: str, tags: list[str] | None = None) -> dict[str, Any]:
+    """Build a plain-text War Room comment entry matching native XSOAR comment styling."""
+    entry: dict[str, Any] = {
+        "Type": EntryType.NOTE,
+        "Contents": comment_text,
+        "ContentsFormat": EntryFormat.TEXT,
+        "Note": True,
+    }
+    if tags:
+        entry["Tags"] = tags
+    return entry
 
 
 def _collect_alert_ids_from_args(args: dict[str, Any]) -> list[str]:
@@ -2360,6 +2459,15 @@ def _build_xsoar_incident_sync_entries(args: dict[str, Any], incident: dict[str,
     elif api_status in VEGA_INCIDENT_OPEN_STATUSES and _xsoar_incident_is_closed(incident):
         entries.extend(_build_close_reopen_sync_entries(status, MIRROR_ENTITY_SUFFIX_INCIDENT))
 
+    comment = _resolve_comment_for_update(args)
+    if (
+        comment is not None
+        and not field_change
+        and _args_explicitly_set(args, "comment")
+        and set(_build_direct_incident_update_payload(args).keys()) != {"comment"}
+    ):
+        entries.append(_build_comment_war_room_entry(comment))
+
     return entries
 
 
@@ -2429,18 +2537,31 @@ def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResu
     updated_incidents = result.get("incidents") or []
 
     outputs = [_format_push_incident_output(incident_item) for incident_item in updated_incidents]
-    readable = tableToMarkdown(
-        "Updated Vega Incidents",
-        outputs,
-        headers=["id", "status", "verdict", "severity"],
-        removeNull=True,
-    )
-    command_result = CommandResults(
-        readable_output=readable,
-        outputs_prefix="Vega.Incident",
-        outputs_key_field="id",
-        outputs=outputs[0] if len(outputs) == 1 else outputs,
-    )
+    comment_text = _resolve_comment_for_update(effective_args)
+    comment_only_update = set(update_fields.keys()) == {"comment"} and bool(comment_text)
+
+    if comment_only_update:
+        command_result: CommandResults | list[Any] = CommandResults(
+            readable_output=comment_text,
+            entry_type=EntryType.NOTE,
+            mark_as_note=True,
+            outputs_prefix="Vega.Incident",
+            outputs_key_field="id",
+            outputs={"id": incident_ids[0], "comment": comment_text},
+        )
+    else:
+        readable = tableToMarkdown(
+            "Updated Vega Incidents",
+            outputs,
+            headers=["id", "status", "verdict", "severity"],
+            removeNull=True,
+        )
+        command_result = CommandResults(
+            readable_output=readable,
+            outputs_prefix="Vega.Incident",
+            outputs_key_field="id",
+            outputs=outputs[0] if len(outputs) == 1 else outputs,
+        )
     if not _should_sync_xsoar_incident(args, incident, incident_ids):
         return command_result
 
@@ -2482,7 +2603,10 @@ def alert_to_incident(alert: dict, integration_url: str | None = None) -> dict:
     return xsoar_incident
 
 
-def incident_to_xsoar_incident(incident: dict, timeline_events: list[dict] | None = None) -> dict:
+def incident_to_xsoar_incident(
+    incident: dict,
+    timeline_events: list[dict] | None = None,
+) -> dict:
     """Convert a Vega incident to an XSOAR incident.
 
     Args:

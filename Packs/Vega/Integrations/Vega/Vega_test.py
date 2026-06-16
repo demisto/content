@@ -20,6 +20,8 @@ from Vega import (
     _format_key_findings_html,
     _format_raw_entity_for_xsoar,
     _format_timeline_events_html,
+    _format_vega_comments_html,
+    _is_empty_vega_comment_text,
     _build_effective_alert_update_args,
     _build_effective_incident_update_args,
     _get_status_from_fields,
@@ -49,6 +51,7 @@ from Vega import (
     resolve_incident_id_from_incident,
     update_alert_command,
     update_incident_command,
+    _build_comment_war_room_entry,
     RATE_LIMIT_INITIAL_WAIT_SECONDS,
     validate_backfill_days,
     filter_alert_severities,
@@ -947,7 +950,7 @@ def test_format_raw_entity_for_xsoar_alert():
     assert alert["dataSources"] == "• CloudTrail\n• GuardDuty"
     assert alert["detectionDescription"] == "N/A"
     assert alert["detectionQuery"] == "N/A"
-    assert alert["vegaAlertId"] == "alert-1"
+    assert "vegaAlertId" not in alert
     assert set(alert.keys()) == {
         "id",
         "name",
@@ -955,8 +958,19 @@ def test_format_raw_entity_for_xsoar_alert():
         "dataSources",
         "detectionDescription",
         "detectionQuery",
-        "vegaAlertId",
     }
+
+
+def test_format_raw_entity_for_xsoar_alert_preserves_vega_alert_id():
+    alert = {
+        "id": "019e1b27-513c-7dd0-a9ca-db2105bdddc4",
+        "vegaAlertId": "VEGA-3409",
+        "vegaEntityType": "Vega Alert",
+    }
+    _format_raw_entity_for_xsoar(alert)
+
+    assert alert["id"] == "019e1b27-513c-7dd0-a9ca-db2105bdddc4"
+    assert alert["vegaAlertId"] == "VEGA-3409"
 
 
 def test_format_raw_entity_for_xsoar_alert_detection_fields():
@@ -1064,7 +1078,7 @@ def test_alert_to_incident_formats_raw_json(mocker):
     assert raw["link"] == "https://app.vega.io/incidents/alerts/investigation/alert-1"
     assert raw["detectionDescription"] == "N/A"
     assert raw["detectionQuery"] == "N/A"
-    assert raw["vegaAlertId"] == "alert-1"
+    assert "vegaAlertId" not in raw
     assert set(raw.keys()) == {
         "id",
         "name",
@@ -1075,7 +1089,6 @@ def test_alert_to_incident_formats_raw_json(mocker):
         "link",
         "detectionDescription",
         "detectionQuery",
-        "vegaAlertId",
     }
 
 
@@ -1100,6 +1113,50 @@ def test_incident_to_xsoar_incident_formats_raw_json():
     assert xsoar_incident["CustomFields"]["vegaincidentfindings"]
     assert xsoar_incident["CustomFields"]["vegacreatedat"] == TIMESTAMP_T1
     assert "link" not in raw
+
+
+def test_is_empty_vega_comment_text():
+    assert _is_empty_vega_comment_text(None) is True
+    assert _is_empty_vega_comment_text("") is True
+    assert _is_empty_vega_comment_text("[{}]") is True
+    assert _is_empty_vega_comment_text("[]") is True
+    assert _is_empty_vega_comment_text("status to investigation and verdict to benign") is False
+
+
+def test_format_vega_comments_html_filters_empty_comments():
+    comments = [
+        {"text": "[{}]", "addedBy": "K3E1sZgbbNR2v3DpC3QCStodL1ay", "addedAt": "2026-06-12T05:01:20.379Z"},
+        {
+            "text": "status to investigation and verdict to benign",
+            "addedBy": "K3E1sZgbbNR2v3DpC3QCStodL1ay",
+            "addedAt": "2026-06-12T11:27:06Z",
+        },
+        {"text": "[{}]", "addedBy": "K3E1sZgbbNR2v3DpC3QCStodL1ay", "addedAt": "2026-06-12T05:00:43.95Z"},
+    ]
+    html = _format_vega_comments_html(comments)
+
+    assert "status to investigation and verdict to benign" in html
+    assert "[{}]" not in html
+    assert "background:#000000" in html
+    assert "added a comment" in html
+    assert "Unknown" in html
+    assert "2026-06-12T11:27:06Z" in html
+
+
+def test_format_raw_entity_for_xsoar_builds_vega_comments_html():
+    incident = {
+        "id": "inc-1",
+        "vegaEntityType": "Vega Incident",
+        "comments": [
+            {"text": "[{}]", "addedBy": "machine-user", "addedAt": "2026-06-12T05:01:20.379Z"},
+            {"text": "Reviewed in XSOAR", "addedBy": "Analyst One", "addedAt": "2026-06-12T11:27:06Z"},
+        ],
+    }
+    _format_raw_entity_for_xsoar(incident)
+
+    assert "vegaComments" in incident
+    assert "Reviewed in XSOAR" in incident["vegaComments"]
+    assert "[{}]" not in incident["vegaComments"]
 
 
 def test_format_timeline_events_html_dark_theme_layout():
@@ -1368,6 +1425,21 @@ def test_resolve_alert_id_from_incident_uses_raw_json():
         "rawJSON": json.dumps({"id": "alert-raw", "vegaEntityType": "Vega Alert"}),
     }
     assert resolve_alert_id_from_incident({}, incident) == "alert-raw"
+
+
+def test_resolve_alert_id_from_incident_ignores_display_vegaalertid():
+    incident = {
+        "type": "Vega Alert",
+        "CustomFields": {"vegaalertid": "VEGA-3409"},
+        "rawJSON": json.dumps(
+            {
+                "id": "019e1b27-513c-7dd0-a9ca-db2105bdddc4",
+                "vegaAlertId": "VEGA-3409",
+                "vegaEntityType": "Vega Alert",
+            }
+        ),
+    }
+    assert resolve_alert_id_from_incident({}, incident) == "019e1b27-513c-7dd0-a9ca-db2105bdddc4"
 
 
 def test_build_vega_alert_custom_fields_sets_mitre_attack():
@@ -1791,6 +1863,29 @@ def test_update_incident_command_updates_with_comment(mocker):
     )
     assert result.outputs["id"] == "inc-1"
     assert "Updated Vega Incidents" in result.readable_output
+
+
+def test_update_incident_command_comment_only_returns_note(mocker):
+    mocker.patch("Vega.load_current_incident", return_value={})
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.update_incidents.return_value = {"incidents": [{"incidentId": "inc-1"}]}
+
+    result = update_incident_command(mock_client, {"incident_id": "inc-1", "comment": "test comment 1"})
+
+    mock_client.update_incidents.assert_called_once_with({"incidentIds": ["inc-1"], "comment": "test comment 1"})
+    assert result.readable_output == "test comment 1"
+    assert result.entry_type == EntryType.NOTE
+    assert result.mark_as_note is True
+
+
+def test_build_comment_war_room_entry_uses_plain_text_note():
+    entry = _build_comment_war_room_entry("test comment 2", tags=["From Vega"])
+
+    assert entry["Type"] == EntryType.NOTE
+    assert entry["Contents"] == "test comment 2"
+    assert entry["ContentsFormat"] == EntryFormat.TEXT
+    assert entry["Note"] is True
+    assert entry["Tags"] == ["From Vega"]
 
 
 def test_resolve_incident_id_from_incident_uses_explicit_incident_id():

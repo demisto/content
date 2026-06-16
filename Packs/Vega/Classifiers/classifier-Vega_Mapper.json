@@ -4,7 +4,7 @@
     "id": "Vega Mapper",
     "mapping": {
         "Vega Alert": {
-            "dontMapEventToLabels": false,
+            "dontMapEventToLabels": true,
             "internalMapping": {
                 "Vega Alert ID": {
                     "simple": "vegaAlertId"
@@ -57,25 +57,13 @@
                 "External Link": {
                     "simple": "link"
                 },
-                "dbotMirrorDirection": {
-                    "simple": "mirror_direction"
-                },
-                "dbotMirrorId": {
-                    "simple": "mirror_id"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "mirror_instance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "mirror_tags"
-                },
                 "Vega Alert Severity": {
                     "simple": "severity"
                 }
             }
         },
         "Vega Incident": {
-            "dontMapEventToLabels": false,
+            "dontMapEventToLabels": true,
             "internalMapping": {
                 "Vega Incident ID": {
                     "simple": "id"
@@ -129,22 +117,10 @@
                     "simple": "vegaTimelineEvents"
                 },
                 "Vega Comments": {
-                    "simple": "comments"
+                    "simple": "vegaComments"
                 },
                 "External Link": {
                     "simple": "link"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "mirror_direction"
-                },
-                "dbotMirrorId": {
-                    "simple": "mirror_id"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "mirror_instance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "mirror_tags"
                 },
                 "Vega Severity": {
                     "simple": "severity"

@@ -175,7 +175,7 @@ script:
   - name: vega-fetch-alert-events
     arguments:
     - name: alert_id
-      description: Vega alert ID. When omitted, uses vegaalertid from the current incident.
+      description: Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident.
       required: false
     - name: limit
       description: Number of alert events to display per page. Also used as the Vega API batch size when fetching all events.

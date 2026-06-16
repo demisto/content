@@ -11,30 +11,30 @@ def test_resolve_offset_uses_args_and_custom_fields():
     assert vega_get_alert_events._resolve_offset({}, custom_fields) == 50
 
 
-def test_resolve_alert_id_from_mirror_id_and_raw_json():
+def test_resolve_alert_id_from_raw_json():
     incident = {
         "type": "Vega Alert",
-        "CustomFields": {"dbotmirrorid": "alert-99-alert"},
-        "rawJSON": json.dumps({"id": "alert-raw", "vegaEntityType": "Vega Alert"}),
-    }
-    assert vega_get_alert_events._resolve_alert_id({}, incident, incident["CustomFields"]) == "alert-99"
-
-    incident_without_mirror = {
         "CustomFields": {},
         "rawJSON": json.dumps({"id": "alert-raw", "vegaEntityType": "Vega Alert"}),
     }
-    assert vega_get_alert_events._resolve_alert_id({}, incident_without_mirror, {}) == "alert-raw"
-
-
-def test_resolve_alert_id_from_mirror_id_without_incident_type():
-    incident = {"CustomFields": {"dbotmirrorid": "alert-99-alert"}}
-    assert vega_get_alert_events._resolve_alert_id({}, incident, incident["CustomFields"]) == "alert-99"
+    assert vega_get_alert_events._resolve_alert_id({}, incident, {}) == "alert-raw"
 
 
 def test_resolve_alert_id_from_flattened_custom_field():
-    incident = {"vegaalertid": "alert-flat", "CustomFields": {}}
+    incident = {
+        "type": "Vega Alert",
+        "vegaalertid": "VEGA-3409",
+        "CustomFields": {},
+        "rawJSON": json.dumps(
+            {
+                "id": "019e1b27-513c-7dd0-a9ca-db2105bdddc4",
+                "vegaAlertId": "VEGA-3409",
+                "vegaEntityType": "Vega Alert",
+            }
+        ),
+    }
     custom_fields = vega_get_alert_events._collect_custom_fields(incident)
-    assert vega_get_alert_events._resolve_alert_id({}, incident, custom_fields) == "alert-flat"
+    assert vega_get_alert_events._resolve_alert_id({}, incident, custom_fields) == "019e1b27-513c-7dd0-a9ca-db2105bdddc4"
 
 
 def test_load_current_incident_fetches_full_incident(mocker):
@@ -66,7 +66,18 @@ def test_main_calls_integration_with_using_brand(mocker):
     mocker.patch.object(
         vega_get_alert_events,
         "_load_current_incident",
-        return_value={"id": "1", "CustomFields": {"vegaalertid": "alert-1"}},
+        return_value={
+            "id": "1",
+            "type": "Vega Alert",
+            "CustomFields": {"vegaalertid": "VEGA-3409"},
+            "rawJSON": json.dumps(
+                {
+                    "id": "019e1b27-513c-7dd0-a9ca-db2105bdddc4",
+                    "vegaAlertId": "VEGA-3409",
+                    "vegaEntityType": "Vega Alert",
+                }
+            ),
+        },
     )
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(vega_get_alert_events, "_persist_custom_fields_on_incident")
@@ -77,11 +88,11 @@ def test_main_calls_integration_with_using_brand(mocker):
         "EntryContext": {
             "Vega": {
                 "AlertEvents": {
-                    "AlertId": "alert-1",
+                    "AlertId": "019e1b27-513c-7dd0-a9ca-db2105bdddc4",
                     "Total": 1,
                     "Offset": 0,
                     "CustomFields": {
-                        "vegaalerteventsloadedfor": "alert-1",
+                        "vegaalerteventsloadedfor": "019e1b27-513c-7dd0-a9ca-db2105bdddc4",
                         "vegaalerteventstotal": 1,
                         "vegaalertevents": "### Alert Events (1)\n| actor.user.uid | timeframe |",
                         "vegaalerteventsoffset": 0,
@@ -102,5 +113,8 @@ def test_main_calls_integration_with_using_brand(mocker):
     execute_mock.assert_called_once()
     command_name, command_args = execute_mock.call_args[0]
     assert command_name == "vega-fetch-alert-events"
+    assert command_args["alert_id"] == "019e1b27-513c-7dd0-a9ca-db2105bdddc4"
     assert command_args["using-brand"] == "Vega"
     return_results_mock.assert_called_once()
+    command_results = return_results_mock.call_args[0][0]
+    assert command_results.entry_type == EntryType.WIDGET

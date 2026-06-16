@@ -1,4 +1,7 @@
-comment: Fetches Vega alert events and persists the rendered markdown table on Vega Alert incidents for the Alert Events layout section.
+comment: >-
+  Fetches Vega alert events and persists the rendered markdown table on Vega Alert incidents
+  for the Alert Events layout section. Results are returned as a widget entry so they render
+  in the layout without posting to the War Room.
 commonfields:
   id: vega-get-alert-events
   version: -1
@@ -10,6 +13,7 @@ script: ""
 scripttarget: 0
 subtype: python3
 tags:
+- dynamic-section
 - widget
 type: python
 fromversion: 6.10.0
@@ -17,7 +21,7 @@ tests:
 - No tests (auto formatted)
 args:
 - name: alert_id
-  description: Vega alert ID. When omitted, uses vegaalertid from the current incident.
+  description: Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident.
 - name: limit
   description: Number of alert events to display per page. All events are fetched from Vega automatically.
   defaultValue: "200"

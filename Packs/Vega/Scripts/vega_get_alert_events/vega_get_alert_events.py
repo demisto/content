@@ -8,17 +8,17 @@ VEGA_INTEGRATION_BRAND = "Vega"
 VEGA_FETCH_ALERT_EVENTS_COMMAND = "vega-fetch-alert-events"
 DEFAULT_ALERT_EVENTS_PAGE_SIZE = 200
 VEGA_ALERT_INCIDENT_TYPE = "Vega Alert"
-MIRROR_ENTITY_SUFFIX_ALERT = "alert"
 
 
 def _return_alert_events_table(markdown_table: str, outputs: dict[str, Any]) -> None:
-    """Return alert events as a rendered markdown table in the war room and layout widget."""
+    """Return alert events as a rendered markdown table for the layout widget only."""
     return_results(
         CommandResults(
             readable_output=markdown_table,
             outputs_prefix="Vega.AlertEvents",
             outputs_key_field="AlertId",
             outputs=outputs,
+            entry_type=EntryType.WIDGET,
         )
     )
 
@@ -28,7 +28,6 @@ def _collect_custom_fields(incident: dict) -> dict[str, Any]:
     custom_fields: dict[str, Any] = dict(incident.get("CustomFields") or incident.get("customFields") or {})
     for field_name in (
         "vegaalertid",
-        "dbotmirrorid",
         "vegaalerteventsloadedfor",
         "vegaalertevents",
         "vegaalerteventsoffset",
@@ -137,33 +136,15 @@ def _persist_custom_fields_on_incident(incident_id: str, custom_fields: dict[str
         return_error(f"Failed to save alert events on the incident: {get_error(set_result)}")
 
 
-def _parse_alert_id_from_mirror_id(mirror_id: str) -> str | None:
-    """Extract a Vega alert ID from a mirrored alert entity ID."""
-    suffix = f"-{MIRROR_ENTITY_SUFFIX_ALERT}"
-    if mirror_id.endswith(suffix):
-        return mirror_id[: -len(suffix)]
-    return None
-
-
 def _resolve_alert_id(args: dict, incident: dict, custom_fields: dict) -> str | None:
-    """Resolve Vega alert ID from args or the current Vega Alert incident."""
+    """Resolve the Vega alert API id (UUID) used for API calls such as getAlertsEvents."""
     alert_id = args.get("alert_id")
     if alert_id is not None and str(alert_id).strip():
         return str(alert_id).strip()
 
-    vega_alert_id = custom_fields.get("vegaalertid")
-    if vega_alert_id is not None and str(vega_alert_id).strip():
-        return str(vega_alert_id).strip()
-
     loaded_for = custom_fields.get("vegaalerteventsloadedfor")
     if loaded_for is not None and str(loaded_for).strip():
         return str(loaded_for).strip()
-
-    mirror_id = custom_fields.get("dbotmirrorid") or custom_fields.get("dbotMirrorId")
-    if mirror_id is not None and str(mirror_id).strip():
-        parsed_alert_id = _parse_alert_id_from_mirror_id(str(mirror_id).strip())
-        if parsed_alert_id:
-            return parsed_alert_id
 
     incident_type = str(incident.get("type") or incident.get("Type") or "").strip()
     raw_json = incident.get("rawJSON") or incident.get("rawJson")
@@ -175,7 +156,7 @@ def _resolve_alert_id(args: dict, incident: dict, custom_fields: dict) -> str | 
                     return None
                 if not incident_type and raw.get("vegaEntityType") not in (None, VEGA_ALERT_INCIDENT_TYPE):
                     return None
-                raw_id = raw.get("vegaAlertId") or raw.get("id")
+                raw_id = raw.get("id")
                 if raw_id is not None and str(raw_id).strip():
                     return str(raw_id).strip()
         except (json.JSONDecodeError, TypeError, ValueError):

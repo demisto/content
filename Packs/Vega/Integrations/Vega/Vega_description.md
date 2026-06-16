@@ -22,8 +22,4 @@ You can configure the integration to fetch alerts, incidents, or both using the 
 - **Incidents**: Fetches Vega incidents. You can filter the fetched incidents by specific severities (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), statuses (`New`, `Investigating`, `On Hold`, `External Escalation`, `Resolved`, `Reopened`, `Review Recommended`, `Response Required`, `Under Review`), and verdicts (`Malicious`, `Suspicious`, `Benign`, `Inconclusive`, `N/A`).
 - **Backfill Days**: Select how many days before today to retrieve alerts and incidents on the very first run (0–365). Use `0` for today only; the default is `30`.
 
-### Mirroring
-
-- **Vega to XSOAR** mirroring is enabled by default for both alerts and incidents. Changes on the Vega side (status, severity, verdict, assignee, comments, close, and reopen) are synchronized into Cortex XSOAR.
-- **Autoclosure** controls **XSOAR to Vega** mirroring. It is enabled by default. Uncheck **Mirror XSOAR changes to Vega (Autoclosure)** to opt out of outgoing synchronization.
-- When Autoclosure is enabled, Cortex XSOAR changes to status, verdict, assignee, close actions, and tagged War Room comments are pushed to Vega using the `updateAlerts` and `updateIncidents` GraphQL mutations.
+Use `vega-update-alert` and `vega-update-incident` to push status, verdict, severity, and comment changes from Cortex XSOAR to Vega.
