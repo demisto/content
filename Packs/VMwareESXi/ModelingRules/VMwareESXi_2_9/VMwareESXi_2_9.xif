@@ -190,6 +190,11 @@ call esxi_event_classification
     user_name = arrayindex(regextract(msg, "USER\s+(\w+)"),0),
     pid = arrayindex(regextract(msg, "pid\s+(\d+)"),0),
     command_line = arrayindex(regextract(msg, "cmd\s+(.+)"),0)
+| alter // B8: first whitespace-delimited token of cmd = the executed program
+    exec_token = arrayindex(regextract(command_line, "^(\S+)"),0)
+| alter // B8: name = basename of the token; path = token verbatim only when it contains a path separator
+    exec_name = arrayindex(regextract(exec_token, "([^\/]+)$"),0),
+    exec_path = if(exec_token ~= "\/", exec_token, null)
 
 | alter // Map to XDM
     xdm.source.host.hostname = parsed_fields -> hostname,
@@ -198,6 +203,10 @@ call esxi_event_classification
     xdm.source.user.username = user_name,
     xdm.target.process.pid = to_integer(pid),
     xdm.target.process.command_line = command_line,
+    xdm.target.process.name = exec_name,
+    xdm.target.process.executable.path = exec_path,
+    xdm.event.type = "process_start",
+    xdm.event.outcome = XDM_CONST.OUTCOME_UNKNOWN,
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_PROCESS_START,
     xdm.event.operation_sub_type = "crond process start";
 
