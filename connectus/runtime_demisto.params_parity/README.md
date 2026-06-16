@@ -144,6 +144,43 @@ That's it. The orchestrator:
   7. **Persists** the run to `results/` (JSON + `ledger.csv` — see below).
   8. Exits per the exit-code contract below.
 
+### Multi-capability variant matrix
+
+An integration may subscribe to several capabilities — including the
+**mutually-exclusive** fetch capabilities. The platform forbids enabling two
+fetch flags on one instance, so the orchestrator expands the handler's resolved
+capabilities into one **variant** per fetch-exclusive capability, each bundled
+with the always-on set (e.g. automation, which **may be absent**). It runs the
+full capture→diff **once per variant** and aggregates the verdicts. See
+[`multi_capability_variant_design.md`](multi_capability_variant_design.md).
+
+| Connector capability | XSOAR toggle | Fetch-exclusive? |
+|---|---|---|
+| `automation-and-remediation` | (none) | No (always-on) |
+| `fetch-issues` | `isFetch` | Yes |
+| `log-collection` | `isFetchEvents` | Yes |
+| `fetch-assets-and-vulnerabilities` | `isFetchAssets` | Yes |
+| `threat-intelligence-and-enrichment` | `feed` | Yes |
+| `fetch-secrets` | `isFetchCredentials` | Yes |
+
+Example — **Akamai WAF SIEM** (handler subscribes to automation + fetch-issues +
+log-collection) → exactly **2** variants, each its own UCP + XSOAR instance and
+its own leaf diff:
+
+| Variant | Enabled | `isFetch` | `isFetchEvents` |
+|---|---|---|---|
+| `automation-and-remediation+fetch-issues` | automation, fetch-issues | `true` | `false` |
+| `automation-and-remediation+log-collection` | automation, log-collection | `false` | `true` |
+
+The illegal `{fetch-issues, log-collection}` instance is **structurally
+unrepresentable**, and a guardrail in `_build_instance_payload` raises if any
+single payload ever carries two fetch capabilities. The diff is always
+**per-integration-instance** (Philosophy A — per-integration isolation; we never
+co-enable sibling integrations on one connector instance). A connector with
+multiple integrations is covered by the existing outer loop (one
+`--integration-id` run per integration). The top-level `status` is `pass` iff
+**every** variant passes.
+
 > **Prerequisite — `Connector Folder Path`.** The resolver looks up the
 > connector tree from the pipeline CSV's `Connector Folder Path` column. That
 > cell MUST be set (e.g. via
@@ -485,9 +522,7 @@ Use `--allow-mismatch` to downgrade the `url` finding once you've decided which 
 ## MVP scope and known limitations
 
 * **Python only.** The probe lives in `CommonServerPython.py`. JavaScript (`commonServer.js`) and PowerShell (`commonServerPowerShell.ps1`) probes are deferred. JS/PS integrations will fail with "test-module unexpectedly returned success".
-* **Single-variant capture.** Each side runs `test-module` once. No iteration over fetch/longrunning sub-cases.
 * **Hard-coded Salesforce-IAM payload builder.** [`ucp_capture._build_salesforce_iam_payload()`](ucp_capture.py) is specialized for the Salesforce connector. Adding new connectors will require a new builder (or generalizing the existing one).
-* **ONE capability at a time.** The MVP enables exactly one capability per UCP instance.
 * **No `workflow_state.py` integration.** The orchestrator is a standalone CLI — it does NOT call `markpass` / `fail` on the migration workflow.
 * **Strict exact-match values.** `True` vs `"true"`, `50` vs `"50"`, leading/trailing whitespace — all surface as `VALUE_MISMATCH`. Intentional for max signal in MVP.
 * **Dummy auth only.** Both sides use dummy credentials. Auth-related bugs (token refresh, etc.) are out of scope.

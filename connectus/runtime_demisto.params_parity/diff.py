@@ -96,6 +96,33 @@ _IGNORE_REASON_DESCRIPTIONS: dict[str, str] = {
 #: envelope shows the comparison was partial.
 _CREDENTIALS_COMPARED_LEAVES = ("identifier", "password")
 
+#: Marker keys that identify an XSOAR type-9 credentials vault value by SHAPE
+#: (mirrors normalizers._TYPE9_VAULT_MARKERS — kept as a local copy to avoid a
+#: cross-module import, matching the codebase's preference for decoupled modules).
+_TYPE9_VAULT_MARKERS = frozenset(
+    {"credential", "credentials", "passwordChanged", "identifier"}
+)
+
+
+def _is_type9_credentials_param(name: str, value: Any) -> bool:
+    """True if ``name``/``value`` is a type-9 credentials param.
+
+    Recognized by NAME (the literal ``"credentials"`` or any ``credentials_*``
+    prefixed field such as Akamai's ``credentials_access_token``) OR by SHAPE (a
+    dict carrying ``password`` plus a vault marker, or the flat
+    ``{identifier?, password}`` connector form). Name- and shape-based detection
+    are OR'd so the partial-ignore annotation is emitted for ANY type-9
+    credentials param, regardless of whether the connector reduced it to a flat
+    ``{password}`` (which on its own would not carry a vault marker).
+    """
+    if name == "credentials" or name.startswith("credentials_"):
+        return True
+    if not isinstance(value, dict) or "password" not in value:
+        return False
+    if _TYPE9_VAULT_MARKERS & value.keys():
+        return True
+    return value.keys() <= {"identifier", "password"}
+
 
 def _describe_ignore_reason(code: str) -> str:
     """Map a terse ignore reason code to a human-readable sentence (falls back to
@@ -107,14 +134,22 @@ def _annotate_credentials_partial_ignore(
     entry: dict[str, Any],
     integration_raw: dict[str, Any] | None,
     connector_raw: dict[str, Any] | None,
+    name: str = "credentials",
 ) -> list[str]:
-    """Annotate the `credentials` OK entry to show the comparison was partial.
+    """Annotate a type-9 credentials OK entry to show the comparison was partial.
 
-    The normalizer reduces a type-9 `credentials` param to identifier/password
+    The normalizer reduces a type-9 credentials param to identifier/password
     only before diffing, so the OK verdict covers ONLY those leaves. Surface the
     sub-keys that were dropped (present in the raw capture on either side but not
     among the compared leaves) so the envelope makes the partial comparison
     explicit. No-op when nothing beyond identifier/password was present.
+
+    ``name`` is the actual param key being annotated. It defaults to the literal
+    ``"credentials"`` (so existing direct callers/tests are unaffected) but also
+    supports PREFIXED type-9 fields such as Akamai's ``credentials_access_token``
+    / ``credentials_client_secret`` / ``credentials_client_token`` — the raw
+    skeleton is looked up under ``name`` rather than the hardcoded
+    ``"credentials"``.
 
     Returns the sorted list of ignored credentials sub-keys (empty list when
     nothing beyond identifier/password was present), while still mutating
@@ -123,7 +158,7 @@ def _annotate_credentials_partial_ignore(
     compared = set(_CREDENTIALS_COMPARED_LEAVES)
     ignored: set[str] = set()
     for raw in (integration_raw, connector_raw):
-        val = (raw or {}).get("credentials")
+        val = (raw or {}).get(name)
         if isinstance(val, dict):
             ignored |= set(val.keys()) - compared
     if not ignored:
@@ -415,9 +450,14 @@ def diff_params(
                     "connector_value": connector[key],
                     "verdict": "ok",
                 }
-                if key == "credentials":
+                # Annotate the OK entry for ANY type-9 credentials param —
+                # the literal "credentials" OR a prefixed credentials_* field
+                # (e.g. Akamai's credentials_access_token). Shape-based detection
+                # also catches the connector's reduced {password}. Pass name=key
+                # so the raw skeleton is looked up under the actual param key.
+                if _is_type9_credentials_param(key, integration.get(key)):
                     credentials_ignored_keys = _annotate_credentials_partial_ignore(
-                        entry, integration_raw, connector_raw
+                        entry, integration_raw, connector_raw, name=key
                     )
             else:
                 state = STATE_VALUE_MISMATCH

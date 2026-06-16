@@ -10,10 +10,12 @@ emits the params dump.
 The top-level entry point is :func:`capture_ucp_params`.
 
 The payload builder (:func:`_build_instance_payload`) is generic: it is driven
-by a resolved :class:`resolver.ParityInputs` and enables ALL (sub-)capabilities
-the handler subscribes to, sets auth per profile (same-value when the profile is
+by a resolved :class:`resolver.ParityInputs` and enables ONE capability VARIANT
+(the always-on set plus at most one fetch-exclusive capability — never two fetch
+types on one instance), sets auth per profile (same-value when the profile is
 interpolated, dummy otherwise), and pushes the SAME instance/dummy values to the
-connector side that the integration side uses (never connector defaults).
+connector side that the integration side uses (never connector defaults). The
+orchestrator calls it once per :class:`resolver.CapabilityVariant`.
 
 UCP Shell API access requires:
     * ``gcloud`` CLI authenticated.
@@ -51,6 +53,7 @@ from pathlib import Path as _Path  # noqa: E402
 
 sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
 from env_loader import load_env  # noqa: E402
+import resolver  # noqa: E402  (fetch-flag classifier for the per-variant guardrail)
 import session_env  # noqa: E402  (single session/env authority; owns the port-forward)
 
 # Load the canonical root .env via the single unified loader.
@@ -75,9 +78,6 @@ DEFAULT_TENANT_ID = os.getenv("TENANT_ID", "")
 # Legacy/ad-hoc only: resolver-driven runs derive the connector id. Kept for
 # create_ucp_instance.py standalone usage.
 DEFAULT_UCP_PORT = 8080
-
-DEFAULT_GKE_ZONE = "us-central1-f"
-DEFAULT_K8S_NAMESPACE = "xdr-st"
 
 
 def _ucp_base_url(port: int) -> str:
@@ -514,16 +514,21 @@ def _build_instance_payload(
     instance_values: dict[str, Any],
     connector_id: str,
 ) -> dict:
-    """Build the POST /instances payload for ANY connector from resolved inputs.
+    """Build the POST /instances payload for ONE capability VARIANT of a connector.
 
-    Generalizes the old Salesforce-only builder per the "REVISED MULTI-CAPABILITY
-    + AUTH-MAPPING DESIGN" in ``plans/param-parity-pipeline-integration.md``.
+    ``capabilities`` is the LEGAL subset to enable for a single variant — the
+    always-on set (e.g. automation, possibly empty) plus AT MOST ONE fetch-
+    exclusive capability. The param-parity orchestrator calls this once per
+    :class:`resolver.CapabilityVariant` (Philosophy A: per-integration isolation —
+    we never co-enable sibling integrations). See
+    ``multi_capability_variant_design.md``.
 
     Contract:
-        1. **Enable ALL (sub-)capabilities** the handler subscribes to — every
-           parent ``CapabilitySpec.id`` with its subscribed ``sub_capabilities``.
-           A handler may subscribe to several (e.g. automation AND fetch-secrets).
-        2. **Configuration scope = union over all enabled (sub-)capabilities.**
+        1. **Enable the VARIANT's capabilities** — each parent
+           ``CapabilitySpec.id`` with its subscribed ``sub_capabilities``. A
+           guardrail enforces AT MOST ONE fetch-exclusive capability so an instance
+           can never carry two fetch flags (the platform forbids that).
+        2. **Configuration scope = union over the variant's enabled (sub-)capabilities.**
         3. **Auth per profile, interpolation from ``ProfileSpec.interpolated``
            ONLY**: interpolated → each connector auth field whose role appears in
            the profile's ``interpolation_mapping`` is set to the SAME value the
@@ -538,7 +543,8 @@ def _build_instance_payload(
     Args:
         creation_view: dict from :func:`get_creation_view`.
         instance_name: display name for the new UCP instance.
-        capabilities: resolved ``CapabilitySpec`` list (parents + sub-capabilities).
+        capabilities: the VARIANT's ``CapabilitySpec`` subset to enable (parents +
+            sub-capabilities); at most one fetch-exclusive capability.
         profiles: resolved ``ProfileSpec`` list (carry the interpolation mapping
             from which the auth-field ↔ xsoar param mapping is derived).
         instance_values: the shared dummy/instance value dict (xsoar param ids →
@@ -550,11 +556,29 @@ def _build_instance_payload(
 
     Raises:
         RuntimeError: if the creation view doesn't expose a requested capability,
-            or no connection method supports an enabled (capability, profile) pair.
+            no connection method supports an enabled (capability, profile) pair, OR
+            the variant illegally carries more than one fetch-exclusive capability
+            (guardrail).
     """
     instance_id = creation_view["instance_id"]
 
-    # ── 1. Enable ALL (sub-)capabilities ──
+    # ── Guardrail: at most ONE fetch-exclusive capability per instance ──
+    # Defends against a mis-declared handler or a regression in _expand_variants.
+    # The platform forbids two fetch flags on a single integration instance.
+    fetch_caps_enabled = [
+        cap.id
+        for cap in capabilities
+        if resolver.fetch_flag_for_capability(cap.id) is not None
+    ]
+    if len(fetch_caps_enabled) > 1:
+        raise RuntimeError(
+            "ILLEGAL variant payload: more than one fetch-exclusive capability "
+            f"enabled on a single instance: {sorted(fetch_caps_enabled)}. The "
+            "platform forbids combining fetch types (e.g. isfetch + isfetchevents) "
+            "on one integration instance."
+        )
+
+    # ── 1. Enable the VARIANT's (sub-)capabilities ──
     capabilities_step = creation_view["steps"][0]
     available_caps = {c["id"] for c in capabilities_step.get("capabilities", [])}
     enabled_values: dict[str, list[str]] = {}
@@ -781,6 +805,7 @@ def capture_ucp_params(
     xsoar_client,
     xsoar_brand_name: str,
     parity_inputs,                       # resolver.ParityInputs
+    capabilities: list | None = None,    # the VARIANT's CapabilitySpec subset
     instance_values: dict | None = None,
     connector_id: str | None = None,
     tenant_id: str = DEFAULT_TENANT_ID,
@@ -788,7 +813,15 @@ def capture_ucp_params(
     ucp_port: int = DEFAULT_UCP_PORT,
     keep_instance: bool = False,
 ) -> tuple[dict | None, dict | None]:
-    """Run the full UCP-side capture flow end-to-end.
+    """Run the full UCP-side capture flow end-to-end for ONE capability variant.
+
+    Args:
+        capabilities: the VARIANT's ``CapabilitySpec`` subset to enable (the
+            always-on set plus at most one fetch-exclusive capability). When
+            ``None``, falls back to ``parity_inputs.capabilities`` (legacy
+            single-instance behavior). The orchestrator passes
+            ``variant.capabilities`` so each instance enables exactly one legal
+            capability combination.
 
     Workflow:
         1. Start a kubectl port-forward to the UCP shell pod.
@@ -796,7 +829,7 @@ def capture_ucp_params(
            later identify the *new* mirrored instance.
         3. GET the creation view from UCP.
         4. Build the POST payload via :func:`_build_instance_payload`
-           (enables ALL handler (sub-)capabilities; per-profile auth).
+           (enables the variant's (sub-)capabilities; per-profile auth).
         5. POST the payload to create the UCP instance.
         6. Poll XSOAR for the mirrored instance to appear.
         7. Inject the ``__params_parity_dump__`` magic key into the mirrored
@@ -843,6 +876,11 @@ def capture_ucp_params(
     if connector_id is None:
         connector_id = parity_inputs.connector_id
 
+    # The capabilities to enable for THIS instance = the variant's subset. Fall
+    # back to the full handler set for legacy single-instance callers.
+    if capabilities is None:
+        capabilities = parity_inputs.capabilities
+
     if instance_values is None:
         instance_values = {}
 
@@ -883,16 +921,17 @@ def capture_ucp_params(
         creation_view = get_creation_view(connector_id, tenant_id, port=ucp_port)
         ucp_instance_id = creation_view["instance_id"]
 
-        # 3. Build payload (generic, resolver-driven).
+        # 3. Build payload (generic, resolver-driven) for THIS variant.
         # The shared `instance_values` dict is pushed to the connector's
         # configuration + (interpolated) auth fields, ensuring the connector
         # delivers the SAME values the INTEGRATION side uses. This eliminates the
         # test-setup-asymmetry false positives in the diff and leaves only real
-        # connector bugs visible. ALL handler (sub-)capabilities are enabled.
+        # connector bugs visible. Only the VARIANT's (sub-)capabilities are
+        # enabled (at most one fetch-exclusive capability per instance).
         payload = _build_instance_payload(
             creation_view,
             instance_name=instance_name,
-            capabilities=parity_inputs.capabilities,
+            capabilities=capabilities,
             profiles=parity_inputs.profiles,
             instance_values=instance_values,
             connector_id=connector_id,
@@ -900,7 +939,7 @@ def capture_ucp_params(
         log.info(
             "UCP payload built: connector=%s capabilities=%s profiles=%s, configuration fields=%d",
             connector_id,
-            [c.id for c in parity_inputs.capabilities],
+            [c.id for c in capabilities],
             [p.id for p in parity_inputs.profiles],
             len(payload["configuration"]),
         )
@@ -982,7 +1021,7 @@ def capture_ucp_params(
         # NOT torn down here. session_teardown.py stops it at the end of the batch.
         if ucp_instance_id and not keep_instance:
             log.info("Cleaning up UCP instance %s...", ucp_instance_id)
-            delete_ucp_instance(ucp_instance_id, tenant_id, port=ucp_port)
+            # delete_ucp_instance(ucp_instance_id, tenant_id, port=ucp_port)
         elif keep_instance:
             log.info("keep_instance=True — leaving UCP instance %s alive for inspection", ucp_instance_id)
 

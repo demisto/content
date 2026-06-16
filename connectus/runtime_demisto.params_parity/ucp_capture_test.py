@@ -173,6 +173,54 @@ def test_enables_all_capabilities_and_subs():
     assert payload["capabilities"]["general_configurations"]["instance_name"] == "My Instance"
 
 
+def test_two_fetch_capabilities_raises_guardrail():
+    """The single-fetch guardrail: two fetch-exclusive caps on one instance is
+    ILLEGAL (e.g. fetch-issues + log-collection → isfetch + isfetchevents)."""
+    cv = _creation_view()
+    cv["steps"][0]["capabilities"] = [
+        {"id": "fetch-issues"},
+        {"id": "log-collection"},
+    ]
+    caps = [
+        CapabilitySpec(id="fetch-issues"),
+        CapabilitySpec(id="log-collection"),
+    ]
+    with pytest.raises(RuntimeError, match="more than one fetch-exclusive"):
+        _build_instance_payload(
+            cv,
+            instance_name="x",
+            capabilities=caps,
+            profiles=[],
+            instance_values={},
+            connector_id="akamai",
+        )
+
+
+def test_one_fetch_plus_automation_is_legal():
+    """A legal variant — automation + ONE fetch cap — passes the guardrail."""
+    cv = _creation_view()
+    cv["steps"][0]["capabilities"] = [
+        {"id": "automation-and-remediation"},
+        {"id": "fetch-issues"},
+    ]
+    caps = [
+        CapabilitySpec(id="automation-and-remediation"),
+        CapabilitySpec(id="fetch-issues"),
+    ]
+    payload = _build_instance_payload(
+        cv,
+        instance_name="x",
+        capabilities=caps,
+        profiles=[],
+        instance_values={},
+        connector_id="akamai",
+    )
+    assert set(payload["capabilities"]["values"].keys()) == {
+        "automation-and-remediation",
+        "fetch-issues",
+    }
+
+
 def test_unknown_capability_raises():
     caps = [CapabilitySpec(id="does-not-exist")]
     with pytest.raises(RuntimeError, match="not in creation view"):
