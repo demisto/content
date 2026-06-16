@@ -29,6 +29,12 @@ class Config:
     DEFAULT_PAGE_SIZE = 1000  # API default/maximum per page
     DEFAULT_FIRST_FETCH_MINUTES = 1
 
+    # Each fetch cycle only scans this many minutes starting from ``last_fetch``.
+    # This keeps every run small and bounded even when the
+    # integration is far behind, so a large backlog is drained oldest-first
+    # across many runs instead of re-downloading days of events on every run.
+    FETCH_WINDOW_MINUTES = 5
+
 
 # ============================================================================
 # Client
@@ -437,15 +443,18 @@ def fetch_events(client: Client, max_events: int) -> None:
     last_fetch_str: str | None = last_run.get("last_fetch")
     seen_ids: list[str] = last_run.get("seen_ids", []) or []
 
-    end_dt = datetime.now(UTC)
+    now = datetime.now(UTC)
     if last_fetch_str:
         start_dt = parse_datetime(last_fetch_str)
     else:
-        start_dt = end_dt - timedelta(minutes=Config.DEFAULT_FIRST_FETCH_MINUTES)
+        start_dt = now - timedelta(minutes=Config.DEFAULT_FIRST_FETCH_MINUTES)
         demisto.debug(f"[Fetch] First run - looking back {Config.DEFAULT_FIRST_FETCH_MINUTES} minutes from now")
 
+    window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
+    demisto.debug(f"[Fetch] Window {start_dt.isoformat()} -> {window_end_dt.isoformat()} (now={now.isoformat()})")
+
     # Fetch all events in the window sequentially
-    events = fetch_events_sequential(client, start_dt, end_dt, max_events=max_events)
+    events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
     add_unique_id_field(events)
     demisto.debug(f"[Fetch] Fetched {len(events)} raw events before dedup")
 
@@ -459,7 +468,7 @@ def fetch_events(client: Client, max_events: int) -> None:
         demisto.debug(f"[Fetch] Sent {len(new_events)} events to XSIAM")
 
     # Compute the new high-water mark: latest receivedDateTime + IDs at that timestamp
-    new_last_fetch = last_fetch_str or format_datetime_for_filter(end_dt)
+    new_last_fetch = format_datetime_for_filter(window_end_dt)
     new_seen_ids: list[str] = seen_ids
 
     if new_events:
