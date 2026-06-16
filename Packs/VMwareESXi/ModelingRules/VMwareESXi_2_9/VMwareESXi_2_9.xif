@@ -189,10 +189,8 @@ call esxi_event_classification
     src_pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
     user_name = arrayindex(regextract(msg, "USER\s+(\w+)"),0),
     pid = arrayindex(regextract(msg, "pid\s+(\d+)"),0),
-    command_line = arrayindex(regextract(msg, "cmd\s+(.+)"),0)
-| alter // B8: first whitespace-delimited token of cmd = the executed program
+    command_line = arrayindex(regextract(msg, "cmd\s+(.+)"),0),
     exec_token = arrayindex(regextract(command_line, "^(\S+)"),0)
-| alter // B8: name = basename of the token; path = token verbatim only when it contains a path separator
     exec_name = arrayindex(regextract(exec_token, "([^\/]+)$"),0),
     exec_path = if(exec_token ~= "\/", exec_token, null)
 
