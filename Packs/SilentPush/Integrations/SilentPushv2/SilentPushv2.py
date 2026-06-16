@@ -89,9 +89,7 @@ LAST_SEEN_INPUTS = [
 ]
 SEEN_INPUTS = FIRST_SEEN_INPUTS + LAST_SEEN_INPUTS
 COMMON_INPUTS = [
-    InputArgument(
-        name="prefer", description="The preference for specific DNS servers or sources."
-    ),
+    InputArgument(name="prefer", description="The preference for specific DNS servers or sources."),
     InputArgument(
         name="skip",
         description="The number of results to skip for pagination purposes.",
@@ -243,9 +241,7 @@ COMMON_SEARCH_INPUTS = (
             name="ip_diversity_all_min",
             description="The minimum diversity limit, default = 1.",
         ),
-        InputArgument(
-            name="ip_diversity_groups_min", description="The minimum diversity limit."
-        ),
+        InputArgument(name="ip_diversity_groups_min", description="The minimum diversity limit."),
         InputArgument(
             name="whois_date_after",
             description="The filter domains with a WHOIS creation date after this date (YYYY-MM-DD).",
@@ -276,8 +272,7 @@ SUBNET_REPUTATION_INPUTS = [
     ),
     InputArgument(
         name="explain",
-        description="Whether to show the detailed information used to calculate the "
-        "reputation score.",
+        description="Whether to show the detailed information used to calculate the " "reputation score.",
     ),
     InputArgument(
         name="limit",
@@ -343,9 +338,7 @@ LIST_DOMAIN_INPUTS = [
     ),
 ]
 LIST_IP_INPUTS = [
-    InputArgument(
-        name="ips", description="A comma-separated list of IPs to query.", required=True
-    ),
+    InputArgument(name="ips", description="A comma-separated list of IPs to query.", required=True),
 ]
 ASN_REPUTATION_INPUTS = ASN_TAKEDOWN_REPUTATION_INPUTS = [
     InputArgument(name="asn", description="The ASN to lookup.", required=True),
@@ -364,12 +357,8 @@ DOMAIN_CERTIFICATE_INPUTS = COMMON_INPUTS + [
         description="The domain to query certificates for.",
         required=True,
     ),
-    InputArgument(
-        name="domain_regex", description="The regular expression to match domains."
-    ),
-    InputArgument(
-        name="certificate_issuer", description="The filter by certificate issuer."
-    ),
+    InputArgument(name="domain_regex", description="The regular expression to match domains."),
+    InputArgument(name="certificate_issuer", description="The filter by certificate issuer."),
     InputArgument(
         name="date_min",
         description="The filter certificates issued on or after this date.",
@@ -391,12 +380,8 @@ ENRICHMENT_INPUTS = [
         "{e.g. silentpush.com}.",
         required=True,
     ),
-    InputArgument(
-        name="explain", description="Whether include explanation of data calculations."
-    ),
-    InputArgument(
-        name="scan_data", description="Whether include scan data (IPv4 only)."
-    ),
+    InputArgument(name="explain", description="Whether include explanation of data calculations."),
+    InputArgument(name="scan_data", description="Whether include scan data (IPv4 only)."),
 ]
 IPV4_REPUTATION_INPUTS = [
     InputArgument(
@@ -418,12 +403,8 @@ PADNS_INPUTS = (
     + COMMON_INPUTS
     + [
         InputArgument(name="qtype", description="The DNS record type.", required=True),
-        InputArgument(
-            name="query", description="The DNS record name to lookup.", required=True
-        ),
-        InputArgument(
-            name="netmask", description="The netmask to filter the lookup results."
-        ),
+        InputArgument(name="query", description="The DNS record name to lookup.", required=True),
+        InputArgument(name="netmask", description="The netmask to filter the lookup results."),
         InputArgument(
             name="match",
             description="The type of match for the query (e.g., exact, partial).",
@@ -447,20 +428,14 @@ FORWARD_REVERSE_PADNS_INPUTS = [
         name="subdomains",
         description="The flag to include subdomains in the lookup results.",
     ),
-    InputArgument(
-        name="regex", description="The regular expression to filter the DNS records."
-    ),
+    InputArgument(name="regex", description="The regular expression to filter the DNS records."),
 ]
 FORWARD_PADNS_INPUTS = REVERSE_PADNS_INPUTS = PADNS_INPUTS
 FORWARD_PADNS_INPUTS += FORWARD_REVERSE_PADNS_INPUTS
 REVERSE_PADNS_INPUTS += FORWARD_REVERSE_PADNS_INPUTS
 MULTI_CONDITIONAL_PADNS_LOOKUP_INPUTS = PADNS_INPUTS + [
-    InputArgument(
-        name="answer", description="The DNS record answer to lookup.", required=True
-    ),
-    InputArgument(
-        name="name", description="The additional name to match qanswer, up to 5."
-    ),
+    InputArgument(name="answer", description="The DNS record answer to lookup.", required=True),
+    InputArgument(name="name", description="The additional name to match qanswer, up to 5."),
     InputArgument(
         name="net",
         description="The find ptr4 or a records where ipv4 in or not in subnet defined by netmask. in (default) - find records "
@@ -470,9 +445,7 @@ MULTI_CONDITIONAL_PADNS_LOOKUP_INPUTS = PADNS_INPUTS + [
         name="network",
         description="The additional network and net mask in the format 1.1.1.1/24, up to 5.",
     ),
-    InputArgument(
-        name="asnum", description="The Autonomous System (AS) number to filter domains."
-    ),
+    InputArgument(name="asnum", description="The Autonomous System (AS) number to filter domains."),
     InputArgument(
         name="asn",
         description="Whether include asn diversity, 0 = do not include, 1 (default) = include asn diversity",
@@ -486,13 +459,9 @@ SEARCH_SCAN_INPUTS = [
     InputArgument(name="query", description="The SPQL query string.", required=True),
     InputArgument(name="fields", description="The dields to return in the response."),
     InputArgument(name="sort", description="The aorting criteria for results."),
-    InputArgument(
-        name="skip", description="The number of records to skip in the response."
-    ),
+    InputArgument(name="skip", description="The number of records to skip in the response."),
     InputArgument(name="limit", description="The maximum number of results to return."),
-    InputArgument(
-        name="with_metadata", description="Whether to include metadata in the response."
-    ),
+    InputArgument(name="with_metadata", description="Whether to include metadata in the response."),
 ]
 LIVE_SCAN_URL_INPUTS = [
     InputArgument(name="url", description="The URL to scan.", required=True),
@@ -533,9 +502,7 @@ ADD_INDICATORS_INPUTS = [
         description="The feed uuid that is returned when creating it.",
         required=True,
     ),
-    InputArgument(
-        name="indicators", description="The Indicators for the feed.", required=True
-    ),
+    InputArgument(name="indicators", description="The Indicators for the feed.", required=True),
 ]
 ADD_INDICATOR_TAGS_INPUTS = [
     InputArgument(
@@ -548,14 +515,10 @@ ADD_INDICATOR_TAGS_INPUTS = [
         description="The name of the indicator to tag.",
         required=True,
     ),
-    InputArgument(
-        name="tags", description="The Tags to be added to the indicator.", required=True
-    ),
+    InputArgument(name="tags", description="The Tags to be added to the indicator.", required=True),
 ]
 RUN_THREAT_CHECK_INPUTS = [
-    InputArgument(
-        name="data", description="The name of the data source to query.", required=True
-    ),
+    InputArgument(name="data", description="The name of the data source to query.", required=True),
     InputArgument(
         name="query",
         description="The value to check for threats (e.g., IP or domain).",
@@ -601,9 +564,7 @@ TLP_REPORTS_INPUTS = [
         required=False,
     ),
 ]
-JOB_STATUS_IMPUT = [
-    InputArgument(name="job_id", description="The Job ID to retry", required=True)
-]
+JOB_STATUS_IMPUT = [InputArgument(name="job_id", description="The Job ID to retry", required=True)]
 
 """ COMMANDS OUTPUTS """
 
@@ -750,9 +711,7 @@ RISK_SCORE_OUTPUTS = [
     ),
 ]
 IP_RISK_SCORE_OUTPUTS = [
-    OutputArgument(
-        name="SilentPush.Enrichment.ip", output_type=str, description="The IP queried."
-    ),
+    OutputArgument(name="SilentPush.Enrichment.ip", output_type=str, description="The IP queried."),
 ] + RISK_SCORE_OUTPUTS
 
 DOMAIN_RISK_SCORE_OUTPUTS = [
@@ -825,9 +784,7 @@ LIST_DOMAIN_OUTPUTS = [
     ),
 ] + RISK_SCORE_OUTPUTS
 LIST_IP_OUTPUTS = [
-    OutputArgument(
-        name="SilentPush.Enrichment.ip", output_type=str, description="The IP queried."
-    ),
+    OutputArgument(name="SilentPush.Enrichment.ip", output_type=str, description="The IP queried."),
     OutputArgument(
         name="SilentPush.Enrichment.asn",
         output_type=int,
@@ -1995,47 +1952,25 @@ WHOIS_OUTPUTS = [
         output_type=str,
         description="Name or partial name of the registrar used to register domains.",
     ),
-    OutputArgument(
-        name="SilentPush.Whois.name", output_type=str, description="The registrant name"
-    ),
+    OutputArgument(name="SilentPush.Whois.name", output_type=str, description="The registrant name"),
     OutputArgument(
         name="SilentPush.Whois.whois_server",
         output_type=str,
         description="The server queried",
     ),
-    OutputArgument(
-        name="SilentPush.Whois.org", output_type=str, description="Organization"
-    ),
-    OutputArgument(
-        name="SilentPush.Whois.address", output_type=str, description="Address"
-    ),
+    OutputArgument(name="SilentPush.Whois.org", output_type=str, description="Organization"),
+    OutputArgument(name="SilentPush.Whois.address", output_type=str, description="Address"),
     OutputArgument(name="SilentPush.Whois.city", output_type=int, description="City"),
-    OutputArgument(
-        name="SilentPush.Whois.country", output_type=str, description="Country"
-    ),
-    OutputArgument(
-        name="SilentPush.Whois.created", output_type=str, description="Date created"
-    ),
+    OutputArgument(name="SilentPush.Whois.country", output_type=str, description="Country"),
+    OutputArgument(name="SilentPush.Whois.created", output_type=str, description="Date created"),
     OutputArgument(name="SilentPush.Whois.date", output_type=str, description="Date"),
-    OutputArgument(
-        name="SilentPush.Whois.domain", output_type=str, description="Domain"
-    ),
-    OutputArgument(
-        name="SilentPush.Whois.emails", output_type=int, description="Emails"
-    ),
-    OutputArgument(
-        name="SilentPush.Whois.expires", output_type=str, description="Expires"
-    ),
-    OutputArgument(
-        name="SilentPush.Whois.nameservers", output_type=str, description="Nameservers"
-    ),
+    OutputArgument(name="SilentPush.Whois.domain", output_type=str, description="Domain"),
+    OutputArgument(name="SilentPush.Whois.emails", output_type=int, description="Emails"),
+    OutputArgument(name="SilentPush.Whois.expires", output_type=str, description="Expires"),
+    OutputArgument(name="SilentPush.Whois.nameservers", output_type=str, description="Nameservers"),
     OutputArgument(name="SilentPush.Whois.state", output_type=str, description="State"),
-    OutputArgument(
-        name="SilentPush.Whois.updated", output_type=str, description="Date updated"
-    ),
-    OutputArgument(
-        name="SilentPush.Whois.zipcode", output_type=str, description="Zip code"
-    ),
+    OutputArgument(name="SilentPush.Whois.updated", output_type=str, description="Date updated"),
+    OutputArgument(name="SilentPush.Whois.zipcode", output_type=str, description="Zip code"),
 ]
 FORWARD_PADNS_OUTPUTS = PADNS_OUTPUTS
 REVERSE_PADNS_OUTPUTS = PADNS_OUTPUTS
@@ -2140,9 +2075,7 @@ SEARCH_SCAN_OUTPUTS = [
         output_type=list,
         description="List of Telegram-related information.",
     ),
-    OutputArgument(
-        name="SilentPush.Web.datahash", output_type=str, description="Hash of the data."
-    ),
+    OutputArgument(name="SilentPush.Web.datahash", output_type=str, description="Hash of the data."),
     OutputArgument(
         name="SilentPush.Web.datasource",
         output_type=str,
@@ -2228,9 +2161,7 @@ SEARCH_SCAN_OUTPUTS = [
         output_type=str,
         description="IP address associated with the scan.",
     ),
-    OutputArgument(
-        name="SilentPush.Web.jarm", output_type=str, description="JARM hash value."
-    ),
+    OutputArgument(name="SilentPush.Web.jarm", output_type=str, description="JARM hash value."),
     OutputArgument(
         name="SilentPush.Web.mobile_enabled",
         output_type=bool,
@@ -2351,9 +2282,7 @@ SEARCH_SCAN_OUTPUTS = [
         output_type=str,
         description="Top-level domain (TLD) of the scanned URL.",
     ),
-    OutputArgument(
-        name="SilentPush.Web.url", output_type=str, description="The URL scanned."
-    ),
+    OutputArgument(name="SilentPush.Web.url", output_type=str, description="The URL scanned."),
 ]
 ASN_REPUTATION_OUTPUTS = [
     OutputArgument(
@@ -2465,9 +2394,7 @@ LIVE_SCAN_URL_OUTPUTS = [
         output_type=str,
         description="Hash value of the data.",
     ),
-    OutputArgument(
-        name="SilentPush.Web.domain", output_type=str, description="The domain name."
-    ),
+    OutputArgument(name="SilentPush.Web.domain", output_type=str, description="The domain name."),
     OutputArgument(
         name="SilentPush.Web.favicon2_avg",
         output_type=str,
@@ -2728,12 +2655,8 @@ LIVE_SCAN_URL_OUTPUTS = [
         output_type=str,
         description="Complete URL of the origin.",
     ),
-    OutputArgument(
-        name="SilentPush.Web.path", output_type=str, description="Path for the URL."
-    ),
-    OutputArgument(
-        name="SilentPush.Web.port", output_type=int, description="Port for the URL."
-    ),
+    OutputArgument(name="SilentPush.Web.path", output_type=str, description="Path for the URL."),
+    OutputArgument(name="SilentPush.Web.port", output_type=int, description="Port for the URL."),
     OutputArgument(
         name="SilentPush.Web.proxy_enabled",
         output_type=bool,
@@ -3050,9 +2973,7 @@ class Client(BaseClient):
 
     threat_check_key: str = ""
 
-    def __init__(
-        self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False
-    ):
+    def __init__(self, base_url: str, api_key: str, verify: bool = True, proxy: bool = False):
         """
         Initializes the client with the necessary parameters.
 
@@ -3111,11 +3032,7 @@ class Client(BaseClient):
 
         :raises DemistoException: If the response is not JSON or if the request fails.
         """
-        full_url = (
-            full_url
-            if full_url
-            else f"{self.base_url.rstrip('/')}/{url_suffix.lstrip('/')}"
-        )
+        full_url = full_url if full_url else f"{self.base_url.rstrip('/')}/{url_suffix.lstrip('/')}"
         try:
             response = requests.request(
                 method=method,
@@ -3129,17 +3046,13 @@ class Client(BaseClient):
         except requests.exceptions.RequestException as e:
             raise DemistoException(f"Connection error: {str(e)}")
         if not response.ok:
-            raise DemistoException(
-                f"HTTP {response.status_code} Error: {response.text}", res=response
-            )
+            raise DemistoException(f"HTTP {response.status_code} Error: {response.text}", res=response)
         try:
             return response.json() if resp_type == "json" else response
         except ValueError:
             raise DemistoException("Failed to parse JSON response.", res=response)
 
-    def lookup(
-        self, url_path: str, args: dict, both: bool = False
-    ) -> tuple[dict, str] | str:
+    def lookup(self, url_path: str, args: dict, both: bool = False) -> tuple[dict, str] | str:
         """
         Command function to perform a PADNS lookup on the SilentPush API.
 
@@ -3155,46 +3068,34 @@ class Client(BaseClient):
             raise DemistoException("Both 'qtype' and 'query' are required parameters.")
         url_suffix = f"{url_path}/{qtype}/{query}"
         url_suffix += ("/" + args.get("answer")) if both else ""  # type: ignore
-        raw_response = self._http_request(
-            method="GET", url_suffix=url_suffix, params=args
-        )
+        raw_response = self._http_request(method="GET", url_suffix=url_suffix, params=args)
         if raw_response.get("error"):
             raise DemistoException(f"API Error: {raw_response.get('error')}")
         records = raw_response.get("response", {}).get("records", [])
         readable_output = (
             f"No records found for {qtype} {query}"
             if not records
-            else tableToMarkdown(
-                f"Lookup Results for {qtype} {query}", records, removeNull=True
-            )
+            else tableToMarkdown(f"Lookup Results for {qtype} {query}", records, removeNull=True)
         )
         return raw_response, readable_output
 
     def get_bulk_info(self, payload, url_suffix):
         if len(list(payload.values())[0]) > 100:
-            raise ValueError(
-                "Maximum of 100 values can be submitted in a single request."
-            )
-        raw_response = self._http_request(
-            method="POST", url_suffix=url_suffix, data=payload
-        )
+            raise ValueError("Maximum of 100 values can be submitted in a single request.")
+        raw_response = self._http_request(method="POST", url_suffix=url_suffix, data=payload)
         response = raw_response.get("response", []) or []
         markdown = "# Information Results\n"
         markdown += self.get_markdown(response)
         return response, markdown
 
-    def get_reputation(
-        self, url_suffix: str, args: dict, request_field: str, response_field: str
-    ):
+    def get_reputation(self, url_suffix: str, args: dict, request_field: str, response_field: str):
         reputation_query = args.get(request_field)
         if not reputation_query:
             raise ValueError("a query for reputation is required.")
         url_suffix = f"{url_suffix}/{reputation_query}"
         params = {"explain": args.get("explain"), "limit": args.get("limit")}
         remove_nulls_from_dictionary(params)
-        response = self._http_request(
-            method="GET", url_suffix=url_suffix, params=params
-        )
+        response = self._http_request(method="GET", url_suffix=url_suffix, params=params)
         reputation_data = response.get("response", {}).get(response_field, [])
         if reputation_data and all(isinstance(item, dict) for item in reputation_data):
             all_headers = set()
@@ -3227,9 +3128,7 @@ class Client(BaseClient):
             "dict_list_dict": {  # {"w": [{"x": "x", "y": "y"}, {"z": "z", "w": "w"}]}
                 "$schema": "https://json-schema.org",
                 "type": "object",
-                "patternProperties": {
-                    "^[a-z].*$": {"type": "array", "items": {"type": "object"}}
-                },
+                "patternProperties": {"^[a-z].*$": {"type": "array", "items": {"type": "object"}}},
                 "additionalProperties": False,  # Forces strict rejection of unmapped patterns
             },
             "dict_dict": {  # {'x': {'y':'y'}, 'y': {'z': 'z'}}
@@ -3258,14 +3157,10 @@ class Client(BaseClient):
         try:
             if schema == "dict_dict":
                 for k, v in response.items():
-                    markdown += tableToMarkdown(
-                        k, v, headers=v.keys(), is_auto_json_transform=True
-                    )
+                    markdown += tableToMarkdown(k, v, headers=v.keys(), is_auto_json_transform=True)
             elif schema == "dict_list_dict":
                 for k, v in response.items():
-                    markdown += tableToMarkdown(
-                        k, v, headers=v[0].keys(), is_auto_json_transform=True
-                    )
+                    markdown += tableToMarkdown(k, v, headers=v[0].keys(), is_auto_json_transform=True)
             else:
                 for v in response:
                     markdown += tableToMarkdown("", v, headers=v.keys())
@@ -3342,9 +3237,7 @@ class Client(BaseClient):
         if not is_valid_ip:
             raise DemistoException(f"Invalid {resource.upper()} address: {value}")
 
-    def validate_url_scan_parameters(
-        self, platform: str, os: str, browser: str, region: str
-    ) -> str:
+    def validate_url_scan_parameters(self, platform: str, os: str, browser: str, region: str) -> str:
         """Validate the platform, os, browser, and region values."""
         valid_platforms = ["Desktop", "Mobile", "Crawler"]
         valid_os = ["Windows", "Linux", "MacOS", "iOS", "Android"]
@@ -3352,22 +3245,16 @@ class Client(BaseClient):
         valid_regions = ["US", "EU", "AS", "TOR"]
         errors = []
         if platform and platform not in valid_platforms:
-            errors.append(
-                f"Invalid platform. Must be one of: {', '.join(valid_platforms)}"
-            )
+            errors.append(f"Invalid platform. Must be one of: {', '.join(valid_platforms)}")
         if os and os not in valid_os:
             errors.append(f"Invalid OS. Must be one of: {', '.join(valid_os)}")
         if browser and browser not in valid_browsers:
-            errors.append(
-                f"Invalid browser. Must be one of: {', '.join(valid_browsers)}"
-            )
+            errors.append(f"Invalid browser. Must be one of: {', '.join(valid_browsers)}")
         if region and region not in valid_regions:
             errors.append(f"Invalid region. Must be one of: {', '.join(valid_regions)}")
         return "\n".join(errors)
 
-    def fetch_bulk_info(
-        self, values: list[str], resource: ResourceType = ResourceType.DOMAIN
-    ) -> dict[str, Any]:
+    def fetch_bulk_info(self, values: list[str], resource: ResourceType = ResourceType.DOMAIN) -> dict[str, Any]:
         """
         Fetch basic domain information for a list of domains, IP4 or IP6.
 
@@ -3376,9 +3263,8 @@ class Client(BaseClient):
         :param values (list[str]): List of domains to fetch.
         :param resource (ResourceType): Resource type to fetch.
         """
-        if resource == ResourceType.DOMAIN:
-            payload = {"domains": values}
-        elif resource == ResourceType.IP4:
+        payload = {"domains": values}
+        if resource == ResourceType.IP4:
             payload = {"ipv4s": values}
         elif resource == ResourceType.IP6:
             payload = {"ipv6s": values}
@@ -3430,9 +3316,7 @@ class Client(BaseClient):
             "explain": explain if explain else 0,
             "scan_data": scan_data if scan_data else 0,
         }
-        response = self._http_request(
-            method="GET", url_suffix=endpoint, params=query_params
-        )
+        response = self._http_request(method="GET", url_suffix=endpoint, params=query_params)
         return response
 
     def search_scan_data(self, query: str, args: dict) -> dict[str, Any]:
@@ -3460,9 +3344,7 @@ class Client(BaseClient):
             "fields": argToList(args.get("fields")),
             "sort": argToList(args.get("sort")),
         }
-        return self._http_request(
-            method="POST", url_suffix=SEARCH_SCAN, data=payload, params=params
-        )
+        return self._http_request(method="POST", url_suffix=SEARCH_SCAN, data=payload, params=params)
 
     def live_url_scan(
         self,
@@ -3595,16 +3477,12 @@ class Client(BaseClient):
             "q": args.get("query"),
         }
         remove_nulls_from_dictionary(params)
-        response = self._http_request(
-            method="GET", full_url=THREAT_CHECK, params=params
-        )
+        response = self._http_request(method="GET", full_url=THREAT_CHECK, params=params)
         if isinstance(response, dict) and response.get("errors"):
             return {"error": f"Failed to run threat check: {response['errors']}"}
         return response
 
-    def get_data_exports(
-        self, file_name: str, export_type: str = "iofa", file_type: str = "json"
-    ) -> requests.Response:
+    def get_data_exports(self, file_name: str, export_type: str = "iofa", file_type: str = "json") -> requests.Response:
         """
         Exports data on SilentPush.
 
@@ -3615,9 +3493,7 @@ class Client(BaseClient):
         :return: Dict[str, Any]: Response containing feed information.
         """
         url_suffix = f"{EXPORT_DATA}{export_type}-exports/{file_name}.{file_type}"
-        response = self._http_request(
-            method="GET", url_suffix=url_suffix, resp_type="response"
-        )
+        response = self._http_request(method="GET", url_suffix=url_suffix, resp_type="response")
         return response
 
 
@@ -3652,9 +3528,7 @@ def jobify(command):
         command_result = command(client, args)
         has_job = client.response_has_job(command_result.raw_response)
         if has_job is not False:
-            return client.format_job_command_response(
-                has_job, command_result.raw_response
-            )
+            return client.format_job_command_response(has_job, command_result.raw_response)
         return command_result
 
     return wrapper
@@ -3791,9 +3665,7 @@ def get_asn_reputation_command(client: Client, args: dict) -> CommandResults:
     limit = arg_to_number(args.get("limit"))
     explain = args.get("explain", "0")
     params = {"explain": int(bool(explain)), "limit": limit}
-    raw_response = client._http_request(
-        method="GET", url_suffix=f"{ASN_REPUTATION}/{args.get('asn')}", params=params
-    )
+    raw_response = client._http_request(method="GET", url_suffix=f"{ASN_REPUTATION}/{args.get('asn')}", params=params)
     markdown = client.get_markdown(raw_response.get("response"))
     return CommandResults(
         outputs_prefix="SilentPush.ASNReputation",
@@ -3878,13 +3750,8 @@ def get_asns_for_domain_command(client: Client, args: dict) -> CommandResults:
         asns = []
     else:
         domain_asns = records[0]["domain_asns"]
-        asns = [
-            {"ASN": asn, "Description": description}
-            for asn, description in domain_asns.items()
-        ]
-        readable_output = tableToMarkdown(
-            f"ASNs for Domain: {domain}", asns, headers=["ASN", "Description"]
-        )
+        asns = [{"ASN": asn, "Description": description} for asn, description in domain_asns.items()]
+        readable_output = tableToMarkdown(f"ASNs for Domain: {domain}", asns, headers=["ASN", "Description"])
     return CommandResults(
         outputs_prefix="SilentPush.DomainASNs",
         outputs_key_field="domain",
@@ -3969,9 +3836,7 @@ def reverse_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     description="searches passive DNS data for records matching both query and answer.",
 )
 @jobify
-def multi_conditional_padns_lookup_command(
-    client: Client, args: dict
-) -> CommandResults:
+def multi_conditional_padns_lookup_command(client: Client, args: dict) -> CommandResults:
     """
     Command function to perform reverse PADNS lookup.
 
@@ -3983,9 +3848,7 @@ def multi_conditional_padns_lookup_command(
     :return: CommandResults: Formatted results of the reverse PADNS lookup.
     """
 
-    raw_response, readable_output = client.lookup(
-        url_path=MULTI_CONDITIONAL_PADNS_LOOKUP, args=args, both=True
-    )  # type: ignore
+    raw_response, readable_output = client.lookup(url_path=MULTI_CONDITIONAL_PADNS_LOOKUP, args=args, both=True)  # type: ignore
     return CommandResults(
         outputs_prefix="SilentPush.MultiConditionalPADNSLookup",
         outputs_key_field="qname",
@@ -4092,9 +3955,7 @@ def ip_diversity_patterns_command(client: Client, args: dict) -> CommandResults:
     ]
     minimum_parameters = [args.get(key) for key in minimum_parameters_keys]
     if not any(minimum_parameters):
-        raise DemistoException(
-            f"At least one of {minimum_parameters_keys} is required."
-        )
+        raise DemistoException(f"At least one of {minimum_parameters_keys} is required.")
     remove_nulls_from_dictionary(args)
     raw_response = client._http_request("GET", IP_DIVERSITY_PATTERNS, params=args)
     records = raw_response.get("response", {}).get("records", [])
@@ -4163,9 +4024,7 @@ def ipv4_score_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     :return: CommandResults: Results for XSOAR
     """
-    response, markdown = client.get_bulk_info(
-        payload={"ips": argToList(args.get("ips"))}, url_suffix=IP4_RISK_SCORE
-    )
+    response, markdown = client.get_bulk_info(payload={"ips": argToList(args.get("ips"))}, url_suffix=IP4_RISK_SCORE)
     return CommandResults(
         outputs_prefix="SilentPush.Score",
         outputs_key_field="ip",
@@ -4194,9 +4053,7 @@ def ipv6_score_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     :return: CommandResults: Results for XSOAR
     """
-    response, markdown = client.get_bulk_info(
-        payload={"ips": argToList(args.get("ips"))}, url_suffix=IP6_RISK_SCORE
-    )
+    response, markdown = client.get_bulk_info(payload={"ips": argToList(args.get("ips"))}, url_suffix=IP6_RISK_SCORE)
     return CommandResults(
         outputs_prefix="SilentPush.Score",
         outputs_key_field="ip",
@@ -4295,9 +4152,7 @@ def whois_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     :return: CommandResults: Results for XSOAR
     """
-    raw_response = client._http_request(
-        method="GET", url_suffix=f"{WHOIS}/{args.get('domain')}"
-    )
+    raw_response = client._http_request(method="GET", url_suffix=f"{WHOIS}/{args.get('domain')}")
     response = raw_response.get("response", {}).get("whois", [{}])[0]
     headers = list(response.keys())
     readable_output = tableToMarkdown(
@@ -4323,9 +4178,7 @@ def whois_command(client: Client, args: dict[str, Any]) -> CommandResults:
     description="get certificate data collected from domain scanning.",
 )
 @jobify
-def get_domain_certificates_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def get_domain_certificates_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves SSL/TLS certificates for a given domain.
 
@@ -4356,9 +4209,7 @@ def get_domain_certificates_command(
         "date_max": args.get("date_max"),
         "prefer": args.get("prefer"),
         "max_wait": arg_to_number(args.get("max_wait")),
-        "with_metadata": argToBoolean(str(args.get("with_metadata")))
-        if "with_metadata" in args
-        else None,
+        "with_metadata": argToBoolean(str(args.get("with_metadata"))) if "with_metadata" in args else None,
         "skip": arg_to_number(args.get("skip")),
         "limit": arg_to_number(args.get("limit")),
     }
@@ -4407,9 +4258,7 @@ def get_enrichment_data_command(client: Client, args: dict) -> CommandResults:
     if not resource or not value:
         raise ValueError("Both 'resource' and 'value' arguments are required.")
     if resource not in ResourceType.get_choices():
-        raise ValueError(
-            f"Invalid input: {resource}. Allowed values are {ResourceType.get_choices()}"
-        )
+        raise ValueError(f"Invalid input: {resource}. Allowed values are {ResourceType.get_choices()}")
     if resource in ["ipv4", "ipv6"]:
         client.validate_ip(resource, value)
     enrichment_data = client.get_enrichment_data(
@@ -4465,9 +4314,7 @@ def search_scan_data_command(client: Client, args: dict) -> CommandResults:
             outputs_prefix="SilentPush.ScanData",
             outputs=None,
         )
-    readable_output = tableToMarkdown(
-        "Raw Scan Data Results", scan_data, removeNull=True
-    )
+    readable_output = tableToMarkdown("Raw Scan Data Results", scan_data, removeNull=True)
     outputs = {"records": scan_data, "query": query}
     remove_nulls_from_dictionary(outputs)
     return CommandResults(
@@ -4503,9 +4350,7 @@ def live_url_scan_command(client: Client, args: dict) -> CommandResults:
     os = args.get("os", "")
     browser = args.get("browser", "")
     region = args.get("region", "")
-    validation_errors = client.validate_url_scan_parameters(
-        platform, os, browser, region
-    )
+    validation_errors = client.validate_url_scan_parameters(platform, os, browser, region)
     if validation_errors:
         raise DemistoException(validation_errors)
     raw_response = client.live_url_scan(url, platform, os, browser, region)
@@ -4554,9 +4399,7 @@ def add_feed_command(client: Client, args: dict[str, Any]) -> CommandResults | d
     outputs_list=ADD_INDICATORS_OUTPUTS,
     description="add indicators to the feed",
 )
-def add_feed_tags_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults | dict:
+def add_feed_tags_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
     """
     Command handler for adding new feed tags.
 
@@ -4584,9 +4427,7 @@ def add_feed_tags_command(
     outputs_list=ADD_INDICATORS_OUTPUTS,
     description="add indicators to the feed",
 )
-def add_indicators_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults | dict:
+def add_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
     """
     Command handler for add new indicators.
 
@@ -4614,9 +4455,7 @@ def add_indicators_command(
     outputs_list=ADD_INDICATOR_TAGS_OUTPUTS,
     description="updates tags to the indicators",
 )
-def add_indicators_tags_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults | dict:
+def add_indicators_tags_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
     """
     Command handler for add new indicator tags.
 
@@ -4644,9 +4483,7 @@ def add_indicators_tags_command(
     outputs_list=RUN_THREAT_CHECK_OUTPUTS,
     description="runs the threat check on the specified ",
 )
-def run_threat_check_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults | dict:
+def run_threat_check_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
     """
     Command handler to fetch threat checks.
 
@@ -4661,9 +4498,7 @@ def run_threat_check_command(
         outputs_prefix="SilentPush.RunThreatCheck",
         outputs_key_field="query",
         outputs=result,
-        readable_output=tableToMarkdown(
-            f"Threat check for query '{ip}' completed successfully", result
-        ),
+        readable_output=tableToMarkdown(f"Threat check for query '{ip}' completed successfully", result),
         raw_response=result,
     )
 
@@ -4690,12 +4525,8 @@ def get_data_exports_command(client: Client, args: dict[str, str]) -> dict[str, 
     file_type = args.get("file_type", "")
     response = client.get_data_exports(file_name, export_type, file_type)
     if response.status_code != 200:
-        raise Exception(
-            f"Failed to download file: {response.status_code} {response.text}"
-        )
-    file_entry = fileResult(
-        file_name, response.content, file_type=EntryType.ENTRY_INFO_FILE
-    )
+        raise Exception(f"Failed to download file: {response.status_code} {response.text}")
+    file_entry = fileResult(file_name, response.content, file_type=EntryType.ENTRY_INFO_FILE)
     return file_entry
 
 
@@ -4732,9 +4563,7 @@ def tlp_reports_command(client: Client, args: dict[str, Any]) -> CommandResults 
     description="retry another command which returned a Job ID",
 )
 def retry_job_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
-    raw_response = client._http_request(
-        method="GET", url_suffix=f"{JOB_STATUS}/{args.get('job_id')}"
-    )
+    raw_response = client._http_request(method="GET", url_suffix=f"{JOB_STATUS}/{args.get('job_id')}")
     response = raw_response.get("response")
     markdown = f"# Job Results for {args.get('job_id')}\n"
     markdown += client.get_markdown(response)
@@ -4793,9 +4622,7 @@ def main() -> None:
         base_url = params.get("url", "https://api.silentpush.com")
         verify_ssl = not params.get("insecure", False)
         proxy = params.get("proxy", False)
-        client = Client(
-            base_url=base_url, api_key=api_key, verify=verify_ssl, proxy=proxy
-        )
+        client = Client(base_url=base_url, api_key=api_key, verify=verify_ssl, proxy=proxy)
         client.threat_check_key = threat_check_key
         command = commands_map[demisto.command()]
         results = command(client, demisto.args())
@@ -4807,9 +4634,7 @@ def main() -> None:
         return_error(f"command '{demisto.command()}' failed: {e}")
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
