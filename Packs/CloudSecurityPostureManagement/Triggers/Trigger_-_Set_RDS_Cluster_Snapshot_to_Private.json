@@ -1,4 +1,6 @@
 {
+  "id": "4f6812b5a7e0a3e43002a935b6acfaed",
+  "name": "Set RDS Cluster Snapshot to Private",
   "trigger_id": "4f6812b5a7e0a3e43002a935b6acfaed",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating AWS RDS Cluster snapshot accessible to public",

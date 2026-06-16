@@ -1,4 +1,6 @@
 {
+  "id": "c9e39d9c2c3b123c7c36782ea26cb4df",
+  "name": "Remove GCP Bucket AllUsers Access",
   "trigger_id": "c9e39d9c2c3b123c7c36782ea26cb4df",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating publicly accessible GCP buckets",

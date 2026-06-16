@@ -1,4 +1,6 @@
 {
+  "id": "5b26594e140e2d63816cd173510d73e3",
+  "name": "Set Snapshot to Private",
   "trigger_id": "5b26594e140e2d63816cd173510d73e3",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating AWS EBS snapshots accessible to public",

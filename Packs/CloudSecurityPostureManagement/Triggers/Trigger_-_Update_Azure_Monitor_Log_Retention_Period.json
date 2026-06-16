@@ -1,4 +1,6 @@
 {
+  "id": "a2cd59d579b10efd55ef70bacb21e989",
+  "name": "Update Azure Monitor Log Retention Period",
   "trigger_id": "a2cd59d579b10efd55ef70bacb21e989",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating misconfigurations with Azure Activity Log retention period set to less than 365 days",

@@ -1,4 +1,6 @@
 {
+  "id": "b19b550162f5fd0d91fc897d87184192",
+  "name": "Allow Access by Trusted Services",
   "trigger_id": "b19b550162f5fd0d91fc897d87184192",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure Storage Account without 'Trusted Microsoft Services' access",

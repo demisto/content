@@ -1,4 +1,6 @@
 {
+  "id": "3ceea3b41166ed841fca7e7cb7a56cf7",
+  "name": "Assign Managed Identity to Web App",
   "trigger_id": "3ceea3b41166ed841fca7e7cb7a56cf7",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure App Service Webapps without a Managed Service Identity",

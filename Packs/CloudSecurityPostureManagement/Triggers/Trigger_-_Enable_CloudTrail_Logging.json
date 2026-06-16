@@ -1,4 +1,6 @@
 {
+  "id": "a9bf980f05efa6bf07a78b9a1dfb33ca",
+  "name": "Enable CloudTrail Logging",
   "trigger_id": "a9bf980f05efa6bf07a78b9a1dfb33ca",
   "playbook_id": "",
   "suggestion_reason": "Recommended to enable CloudTrail logging",

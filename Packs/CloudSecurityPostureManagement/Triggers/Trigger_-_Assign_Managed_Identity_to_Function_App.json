@@ -1,4 +1,6 @@
 {
+  "id": "c2bcb9a98a7b66deb0358c6826ea839e",
+  "name": "Assign Managed Identity to Function App",
   "trigger_id": "c2bcb9a98a7b66deb0358c6826ea839e",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure Function App without a Managed Service Identity",

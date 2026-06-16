@@ -1,4 +1,6 @@
 {
+  "id": "43fd1f73d760da50a4ca7dc03c876e46",
+  "name": "Set Function App Min TLS Version",
   "trigger_id": "43fd1f73d760da50a4ca7dc03c876e46",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure Function App that doesn't use latest TLS version",

@@ -1,4 +1,6 @@
 {
+  "id": "6266b8ab51b690ec4faa45ed09ed32b7",
+  "name": "Set AMI to Private",
   "trigger_id": "6266b8ab51b690ec4faa45ed09ed32b7",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating a publicly accessible AWS Amazon Machine Image (AMI)",

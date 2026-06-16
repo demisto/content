@@ -1,4 +1,6 @@
 {
+  "id": "415d5b9adae33ed99bb5865473ee816b",
+  "name": "Set Secure Transport for MySQL",
   "trigger_id": "415d5b9adae33ed99bb5865473ee816b",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure MySQL database flexible server without SSL enforcement",

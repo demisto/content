@@ -1,4 +1,6 @@
 {
+  "id": "c0940853404ac6c4883ffb0904b6c9b1",
+  "name": "Disable Remote Debugging on Azure App",
   "trigger_id": "c0940853404ac6c4883ffb0904b6c9b1",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure App Services with remote debugging enabled",

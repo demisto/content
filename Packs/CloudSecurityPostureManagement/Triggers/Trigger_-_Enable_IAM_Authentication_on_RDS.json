@@ -1,4 +1,6 @@
 {
+  "id": "dbec91624e96808cd63df8a49922723d",
+  "name": "Enable IAM Authentication on RDS",
   "trigger_id": "dbec91624e96808cd63df8a49922723d",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating an AWS RDS instance not configured with IAM authentication",

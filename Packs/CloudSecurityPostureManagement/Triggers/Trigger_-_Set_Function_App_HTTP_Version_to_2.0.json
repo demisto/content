@@ -1,4 +1,6 @@
 {
+  "id": "d6c591601dee16540cf4df188b96d1d6",
+  "name": "Set Function App HTTP Version to 2.0",
   "trigger_id": "d6c591601dee16540cf4df188b96d1d6",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure Function App that doesn't use HTTP 2.0",

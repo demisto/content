@@ -1,4 +1,6 @@
 {
+  "id": "4b4867dd915da7aaf1d97e342dc69ee2",
+  "name": "Enable CloudTrail Log Validation",
   "trigger_id": "4b4867dd915da7aaf1d97e342dc69ee2",
   "playbook_id": "",
   "suggestion_reason": "Recommended for enabling CloudTrail log validation",

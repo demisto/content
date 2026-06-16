@@ -1,4 +1,6 @@
 {
+  "id": "18db3585e3cf2474f437fe6588be4e43",
+  "name": "Enable GCP Bucket Versioning",
   "trigger_id": "18db3585e3cf2474f437fe6588be4e43",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating GCP Storage log buckets with object versioning disabled",

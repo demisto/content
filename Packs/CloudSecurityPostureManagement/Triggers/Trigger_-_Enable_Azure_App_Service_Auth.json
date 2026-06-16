@@ -1,4 +1,6 @@
 {
+  "id": "2e9691746960799d9d6c2ee5695b6b84",
+  "name": "Enable Azure App Service Auth",
   "trigger_id": "2e9691746960799d9d6c2ee5695b6b84",
   "playbook_id": "",
   "suggestion_reason": "Recommended for remediating Azure App Service Web app without authentication",

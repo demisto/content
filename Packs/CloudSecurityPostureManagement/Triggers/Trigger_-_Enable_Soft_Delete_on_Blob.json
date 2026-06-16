@@ -1,4 +1,6 @@
 {
+  "id": "233f721003ba3699877089e93aa01232",
+  "name": "Enable Soft Delete on Blob",
   "trigger_id": "233f721003ba3699877089e93aa01232",
   "playbook_id": "",
   "suggestion_reason": "Recommended for Azure Storage account with soft delete disabled",
