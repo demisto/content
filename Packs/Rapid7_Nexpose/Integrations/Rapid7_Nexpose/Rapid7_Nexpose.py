@@ -28,6 +28,18 @@ VALID_TAG_COLORS = ["blue", "green", "orange", "red", "purple", "default"]
 urllib3.disable_warnings()  # Disable insecure warnings
 
 DEFAULT_BATCH_SIZE = 3000
+# Max number of concurrent send-to-XSIAM HTTP requests in flight at once (XSUP-69895).
+# Without this cap the integration fans out one asyncio task + one aiohttp.ClientSession per batch,
+# opening dozens of simultaneous connections to the ingestion endpoint on large reports, which causes
+# the server to truncate responses mid-stream (aiohttp TransferEncodingError) / time out new connections.
+MAX_CONCURRENT_XSIAM_SENDS = 5
+# Max number of batch-send tasks allowed to be in flight before the stream-reader applies backpressure.
+# Keeps memory bounded and surfaces send failures promptly instead of streaming an entire huge report ahead
+# of the senders. Kept >= MAX_CONCURRENT_XSIAM_SENDS so the semaphore (not this) is the active throttle.
+MAX_IN_FLIGHT_BATCH_TASKS = 10
+# Total timeout (seconds) for a single send-to-XSIAM HTTP request, so a stuck upload fails fast and is
+# retried instead of hanging until the engine's control-channel timeout trips.
+XSIAM_SEND_TIMEOUT_SECONDS = 60
 BASE_QUERY_FOR_ASSETS = """WITH asset_tags AS (
     SELECT
         dta.asset_id,
@@ -7176,6 +7188,17 @@ async def process_data_stream(
 
             log(event_type, f"Batch task created. Continuing stream. (Current line: {current_line_count})")
 
+            # Backpressure: don't let the producer race arbitrarily far ahead of the senders (XSUP-69895).
+            # Once too many batch tasks are in flight, wait for some to complete before reading more of the
+            # stream. This bounds memory and in-flight connections, and surfaces a failed send promptly.
+            while len(pending_tasks) >= MAX_IN_FLIGHT_BATCH_TASKS:
+                done, _ = await asyncio.wait(pending_tasks, return_when=asyncio.FIRST_COMPLETED)
+                for finished in done:
+                    # Re-raise the first task exception so the workflow aborts instead of continuing to
+                    # stream a report whose events are no longer being ingested.
+                    if exc := finished.exception():
+                        raise exc
+
         # Move processing to the next line:
         line_to_process = next_line
 
@@ -7699,6 +7722,19 @@ def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
         yield chunk
 
 
+# Lazily-initialized concurrency guard for send-to-XSIAM requests. It is created on first use inside the
+# running event loop (rather than at import time) so it binds to the correct loop across asyncio.run calls.
+_XSIAM_SEND_SEMAPHORE: "asyncio.Semaphore | None" = None
+
+
+def get_xsiam_send_semaphore() -> "asyncio.Semaphore":
+    """Return a process-wide semaphore that caps concurrent send-to-XSIAM requests (XSUP-69895)."""
+    global _XSIAM_SEND_SEMAPHORE
+    if _XSIAM_SEND_SEMAPHORE is None:
+        _XSIAM_SEND_SEMAPHORE = asyncio.Semaphore(MAX_CONCURRENT_XSIAM_SENDS)
+    return _XSIAM_SEND_SEMAPHORE
+
+
 async def xsiam_api_call_async_with_retries(
     xsiam_url,
     zipped_data,
@@ -7708,6 +7744,16 @@ async def xsiam_api_call_async_with_retries(
 ):  # pragma: no cover
     """
     Send the fetched events or assets into the XDR data-collector private api.
+
+    Concurrency is bounded by a shared semaphore (MAX_CONCURRENT_XSIAM_SENDS) so that, no matter how many
+    batch tasks the stream loop spawns, only a limited number of HTTP requests are in flight at once. This
+    prevents overloading the ingestion endpoint, which previously caused truncated responses
+    (aiohttp.TransferEncodingError) and connection timeouts (XSUP-69895).
+
+    Retries cover transient transport failures (connection errors/timeouts, truncated payloads,
+    asyncio timeouts) and retryable status codes (429 + 5xx) using exponential backoff. Non-retryable
+    HTTP errors (e.g. 4xx other than 429) fail immediately.
+
     :type xsiam_url: ``str``
     :param xsiam_url: The URL of XSIAM to send the api request.
     :type zipped_data: ``bytes``
@@ -7721,47 +7767,67 @@ async def xsiam_api_call_async_with_retries(
     :return: Response object or DemistoException
     :rtype: ``requests.Response`` or ``DemistoException``
     """
-    # retry mechanism in case there is a rate limit (429) from xsiam.
     status_code = None
     attempt_num = 1
     response = None
-    while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug(f"Sending {data_type} into xsiam, attempt number {attempt_num}")
-        # in the last try we should raise an exception if any error occurred, including 429
-        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
-        async with aiohttp.ClientSession() as session:  # noqa: SIM117
-            async with session.post(urljoin(xsiam_url, "/logs/v1/xsiam"), data=zipped_data, headers=headers) as response:
-                try:
-                    response.raise_for_status()  # This raises an exception for non-2xx status codes
-                    status_code = response.status
-                except aiohttp.ClientResponseError as e:
-                    if ok_codes and e.status in ok_codes:
-                        demisto.debug(f"Got retryable status code {e.status} on attempt {attempt_num}, will retry.")
-                        continue
-                    else:
-                        header_msg = f"Error sending new {data_type} into XSIAM.\n"
-                        demisto.debug(
-                            f"XSIAM API returned a non-retryable error. Status: {e.status}, "
-                            f"Message: {e.message}, Request URL: {e.request_info}"
-                        )
-                        # Convert CIMultiDictProxy headers to a plain dict for JSON serialization
-                        serializable_headers = dict(e.headers) if e.headers else {}
-                        api_call_info = (
-                            "Parameters used:\n"
-                            f"\tURL: {xsiam_url}\n"
-                            f"\tHeaders: {json.dumps(serializable_headers, indent=8)}\n\n"
-                            f"Response status code: {e.status}\n"
-                            f"Error received:\n\t{e.message}\n"
-                            f"additional request info: \n\t{e.request_info}"
-                        )
+    header_msg = f"Error sending new {data_type} into XSIAM.\n"
+    timeout = aiohttp.ClientTimeout(total=XSIAM_SEND_TIMEOUT_SECONDS)
+    # Bound the number of concurrent in-flight send requests across the whole run.
+    async with get_xsiam_send_semaphore():
+        while status_code != 200 and attempt_num < num_of_attempts + 1:
+            demisto.debug(f"Sending {data_type} into xsiam, attempt number {attempt_num}")
+            is_last_attempt = attempt_num >= num_of_attempts
+            # On the last attempt we want any error to propagate (raise) instead of being retried.
+            ok_codes = (200, 429) if not is_last_attempt else None
+            try:
+                async with aiohttp.ClientSession(timeout=timeout) as session:  # noqa: SIM117
+                    async with session.post(urljoin(xsiam_url, "/logs/v1/xsiam"), data=zipped_data, headers=headers) as response:
+                        try:
+                            response.raise_for_status()  # This raises an exception for non-2xx status codes
+                            status_code = response.status
+                        except aiohttp.ClientResponseError as e:
+                            # 429 (and, when not the last attempt, 5xx) are retryable; everything else is fatal.
+                            is_retryable_status = e.status == 429 or 500 <= e.status < 600
+                            if ok_codes and is_retryable_status:
+                                demisto.debug(f"Got retryable status code {e.status} on attempt {attempt_num}, will retry.")
+                                status_code = e.status
+                            else:
+                                demisto.debug(
+                                    f"XSIAM API returned a non-retryable error. Status: {e.status}, "
+                                    f"Message: {e.message}, Request URL: {e.request_info}"
+                                )
+                                serializable_headers = dict(e.headers) if e.headers else {}
+                                api_call_info = (
+                                    "Parameters used:\n"
+                                    f"\tURL: {xsiam_url}\n"
+                                    f"\tHeaders: {json.dumps(serializable_headers, indent=8)}\n\n"
+                                    f"Response status code: {e.status}\n"
+                                    f"Error received:\n\t{e.message}\n"
+                                    f"additional request info: \n\t{e.request_info}"
+                                )
+                                demisto.error(header_msg + api_call_info)
+                                demisto.updateModuleHealth(header_msg + e.message, is_error=True)
+                                raise
+            except (
+                aiohttp.ClientConnectionError,
+                aiohttp.ClientPayloadError,
+                asyncio.TimeoutError,
+            ) as e:
+                # Transient transport-level failures: truncated responses (TransferEncodingError is a
+                # ClientPayloadError), connection resets/timeouts, and request timeouts. These previously
+                # bypassed the retry loop entirely and aborted the whole fetch (XSUP-69895).
+                if is_last_attempt:
+                    demisto.error(f"{header_msg}Transport error after {attempt_num} attempts: {e!r}")
+                    demisto.updateModuleHealth(f"{header_msg}{e!r}", is_error=True)
+                    raise
+                demisto.debug(f"Got retryable transport error on attempt {attempt_num}: {e!r}. Will retry.")
+                status_code = None
 
-                        demisto.error(header_msg + api_call_info)
-                        demisto.updateModuleHealth(header_msg + e.message, is_error=True)
-
-        demisto.debug(f"received status code: {status_code}")
-        if status_code == 429:
-            await asyncio.sleep(1)
-        attempt_num += 1
+            demisto.debug(f"received status code: {status_code}")
+            if status_code != 200:
+                # Exponential backoff (1s, 2s, 4s, ... capped at 30s) to let the endpoint recover.
+                await asyncio.sleep(min(2 ** (attempt_num - 1), 30))
+            attempt_num += 1
     return response
 
 
