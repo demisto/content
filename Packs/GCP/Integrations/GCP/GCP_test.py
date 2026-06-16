@@ -5575,21 +5575,28 @@ def test_test_module_marketplace_api_failure_raises(mocker):
         test_module(creds, params)
 
 
-def test_build_http_client_defaults_returns_none(mocker):
+def test_build_http_client_no_proxy_ssl_on(mocker):
     """
     Given:
         - Default connection settings (proxy off, SSL verification on).
     When:
         - build_http_client is called.
     Then:
-        - None is returned so the Google client uses its standard transport.
+        - An httplib2.Http with an empty proxy_info and SSL validation enabled is returned.
     """
     import GCP
 
     mocker.patch.object(GCP, "USE_PROXY", False)
     mocker.patch.object(GCP, "VERIFY_SSL", True)
+    mocker.patch("GCP.handle_proxy", return_value={})
+    mock_http = mocker.patch("GCP.httplib2.Http", return_value="http-obj")
 
-    assert GCP.build_http_client() is None
+    result = GCP.build_http_client()
+
+    assert result == "http-obj"
+    _, http_kwargs = mock_http.call_args
+    assert http_kwargs["proxy_info"] == {}
+    assert http_kwargs["disable_ssl_certificate_validation"] is False
 
 
 def test_build_http_client_insecure_disables_ssl_validation(mocker):
@@ -5605,17 +5612,20 @@ def test_build_http_client_insecure_disables_ssl_validation(mocker):
 
     mocker.patch.object(GCP, "USE_PROXY", False)
     mocker.patch.object(GCP, "VERIFY_SSL", False)
+    mocker.patch("GCP.handle_proxy", return_value={})
+    mock_http = mocker.patch("GCP.httplib2.Http", return_value="http-obj")
 
-    http = GCP.build_http_client()
+    result = GCP.build_http_client()
 
-    assert http is not None
-    assert http.disable_ssl_certificate_validation is True
+    assert result == "http-obj"
+    _, http_kwargs = mock_http.call_args
+    assert http_kwargs["disable_ssl_certificate_validation"] is True
 
 
 def test_build_http_client_proxy_sets_proxy_info(mocker):
     """
     Given:
-        - 'Use system proxy settings' enabled and HTTPS_PROXY env var set (with credentials).
+        - 'Use system proxy settings' enabled and handle_proxy returns an https proxy with credentials.
     When:
         - build_http_client is called.
     Then:
@@ -5630,8 +5640,9 @@ def test_build_http_client_proxy_sets_proxy_info(mocker):
 
     mocker.patch.object(GCP, "USE_PROXY", True)
     mocker.patch.object(GCP, "VERIFY_SSL", True)
-    mocker.patch.dict("GCP.os.environ", {"HTTPS_PROXY": "https://user:pass@proxy.example.com:8080"})
+    mocker.patch("GCP.handle_proxy", return_value={"https": "https://user:pass@proxy.example.com:8080"})
 
+    mocker.patch("GCP.httplib2.socks")  # PySocks may be absent locally
     mock_proxy_info = mocker.patch("GCP.httplib2.ProxyInfo", return_value="proxy-info-obj")
     mock_http = mocker.patch("GCP.httplib2.Http", return_value="http-obj")
 
@@ -5721,8 +5732,9 @@ def test_build_http_client_proxy_without_scheme(mocker):
 
     mocker.patch.object(GCP, "USE_PROXY", True)
     mocker.patch.object(GCP, "VERIFY_SSL", True)
-    mocker.patch.dict("GCP.os.environ", {"HTTPS_PROXY": "proxy.example.com:3128"})
+    mocker.patch("GCP.handle_proxy", return_value={"https": "proxy.example.com:3128"})
 
+    mocker.patch("GCP.httplib2.socks")  # PySocks may be absent locally
     mock_proxy_info = mocker.patch("GCP.httplib2.ProxyInfo", return_value="proxy-info-obj")
     mocker.patch("GCP.httplib2.Http", return_value="http-obj")
 

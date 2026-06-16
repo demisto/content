@@ -17,35 +17,30 @@ USE_PROXY: bool = False
 VERIFY_SSL: bool = True
 
 
-def build_http_client() -> "httplib2.Http | None":
+def build_http_client() -> httplib2.Http:
     """Builds an httplib2.Http honoring the module-level proxy and SSL settings.
 
     Returns:
-        httplib2.Http | None: A configured HTTP client when a proxy is requested
-            or SSL verification is disabled; ``None`` when the defaults apply
-            (no proxy, SSL verification on) so the Google client uses its
-            standard transport.
+        httplib2.Http: A configured HTTP client. When the proxy parameter is enabled
+            the system proxy (from ``handle_proxy``) is applied; SSL certificate
+            validation is disabled when ``VERIFY_SSL`` is False.
     """
-    proxy_info = None
+    proxy_info = {}
+    proxies = handle_proxy()
     if USE_PROXY:
-        https_proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
-        if https_proxy:
-            if not https_proxy.startswith(("http://", "https://")):
-                https_proxy = f"https://{https_proxy}"
-            parsed = urllib.parse.urlparse(https_proxy)
-            proxy_type = getattr(httplib2.socks, "PROXY_TYPE_HTTP", 3) if httplib2.socks else 3
-            proxy_port = parsed.port if parsed.port is not None else (443 if parsed.scheme == "https" else 80)
-            proxy_info = httplib2.ProxyInfo(
-                proxy_type=proxy_type,  # disable-secrets-detection
-                proxy_host=parsed.hostname,
-                proxy_port=proxy_port,
-                proxy_user=parsed.username,
-                proxy_pass=parsed.password,
-            )
-
-    if proxy_info is None and VERIFY_SSL:
-        # Defaults apply - let the Google client use its standard transport.
-        return None
+        https_proxy = proxies.get("https")
+        if not https_proxy:
+            raise DemistoException("https proxy value is empty. Check the Cortex server configuration.")
+        if not https_proxy.startswith("https") and not https_proxy.startswith("http"):
+            https_proxy = "https://" + https_proxy
+        parsed_proxy = urllib.parse.urlparse(https_proxy)
+        proxy_info = httplib2.ProxyInfo(
+            proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
+            proxy_host=parsed_proxy.hostname,
+            proxy_port=parsed_proxy.port,
+            proxy_user=parsed_proxy.username,
+            proxy_pass=parsed_proxy.password,
+        )
 
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=not VERIFY_SSL)
 
@@ -2866,7 +2861,6 @@ def main():  # pragma: no cover
         global USE_PROXY, VERIFY_SSL
         USE_PROXY = params.get("proxy", False)
         VERIFY_SSL = not argToBoolean(params.get("insecure", False))
-        handle_proxy()  # populates HTTPS_PROXY env vars when the proxy param is enabled
 
     try:
         command_map: dict[str, Callable[[Any, dict], Any]] = {
