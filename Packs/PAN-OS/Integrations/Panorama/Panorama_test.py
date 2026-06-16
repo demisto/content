@@ -9496,6 +9496,112 @@ def test_get_hitcounts_filters_param(unused_only, no_new_hits_since, expected_co
             assert last_hit_dt <= no_new_hits_since
 
 
+@pytest.mark.parametrize(
+    "pre_post, expected_names",
+    [
+        # No filter -> every rule comes back: pre-pushed, post-pushed and local.
+        (None, {"PreRule", "PostRule", "LocalRule"}),
+        # pre_rulebase -> only the Panorama-pushed pre-rulebase rule.
+        ("pre_rulebase", {"PreRule"}),
+        # post_rulebase -> only the Panorama-pushed post-rulebase rule.
+        ("post_rulebase", {"PostRule"}),
+    ],
+)
+def test_get_hitcounts_pre_post_filter(pre_post, expected_names, mocker):
+    """Validate the new ``pre_post`` filter in ``FirewallCommand.get_hitcounts``.
+
+    Given:
+        - A topology with one firewall and one vsys.
+        - The Panorama-pushed policy enrichment returns one rule in ``pre-rulebase`` ("PreRule")
+          and one rule in ``post-rulebase`` ("PostRule"); these populate ``result.position``
+          with the underscore form ("pre_rulebase" / "post_rulebase").
+        - The ``show rule-hit-count`` response contains those two pushed rules plus a local
+          firewall rule ("LocalRule") that is NOT present in the pushed-policy map.
+
+    When:
+        - Calling ``get_hitcounts`` with the ``pre_post`` kwarg unset / "pre_rulebase" / "post_rulebase".
+
+    Then:
+        - With no filter, all three rules are returned.
+        - With a ``pre_post`` value set, only the matching Panorama-pushed rule is returned;
+          the rule from the other position AND the local rule are both excluded.
+    """
+    import xml.etree.ElementTree as ET
+    from Panorama import FirewallCommand, PushedSharedPolicy
+
+    # Topology with a single firewall and a single vsys.
+    mock_firewall = mocker.Mock()
+    mock_firewall.id = "FW1"
+    mock_firewall.serial = "111111111111111"
+    mock_firewall.hostname = None
+
+    mock_topology = mocker.Mock()
+    mock_topology.firewalls.return_value = [mock_firewall]
+    mock_topology.panorama_objects = []
+
+    mocker.patch.object(FirewallCommand, "get_vsys_list", return_value=["vsys1"])
+
+    # Stub the pushed-policy lookup directly with the underscore-position form that the real
+    # code stores on ``result.position``. This avoids re-asserting XML-parsing behavior and
+    # isolates the test to the pre_post filter logic.
+    pushed_map = {
+        "PreRule": PushedSharedPolicy(hostid="FW1", name="PreRule", policy_type="security", position="pre_rulebase", loc="DG-1"),
+        "PostRule": PushedSharedPolicy(
+            hostid="FW1", name="PostRule", policy_type="security", position="post_rulebase", loc="DG-1"
+        ),
+    }
+    mocker.patch.object(FirewallCommand, "get_pushed_shared_policy_rules", return_value=pushed_map)
+
+    # Fake ``show rule-hit-count`` response containing all three rules (pre, post, local).
+    def fake_run_op(firewall, cmd, cmd_xml=False):
+        xml_root = ET.Element("show")
+        rhc = ET.SubElement(xml_root, "rule-hit-count")
+        vsys_elem = ET.SubElement(rhc, "vsys")
+        vsys_name_elem = ET.SubElement(vsys_elem, "vsys-name")
+        entry = ET.SubElement(vsys_name_elem, "entry", name="vsys1")
+        rb = ET.SubElement(entry, "rule-base")
+        rb_entry = ET.SubElement(rb, "entry", name="security")
+        rules_elem = ET.SubElement(rb_entry, "rules")
+
+        for name in ("PreRule", "PostRule", "LocalRule"):
+            rule = ET.SubElement(rules_elem, "entry", name=name)
+            ET.SubElement(rule, "hit_count").text = "10"
+            ET.SubElement(rule, "last_hit_timestamp").text = "1742482324"
+            ET.SubElement(rule, "latest").text = "false"
+            ET.SubElement(rule, "last_reset_timestamp").text = "0"
+            ET.SubElement(rule, "first_hit_timestamp").text = "0"
+            ET.SubElement(rule, "rule_creation_timestamp").text = "0"
+            ET.SubElement(rule, "rule_modification_timestamp").text = "0"
+
+        return xml_root
+
+    mocker.patch("Panorama.run_op_command", side_effect=fake_run_op)
+    mocker.patch("Panorama.demisto.debug")
+    mocker.patch("Panorama.demisto.callingContext", new={"context": {"IntegrationInstance": "test_instance"}})
+
+    results = FirewallCommand.get_hitcounts(
+        mock_topology,
+        "security",
+        "vsys1",
+        "all",
+        no_new_hits_since=None,
+        device_filter_string=None,
+        target=None,
+        unused_only="false",
+        pre_post=pre_post,
+    )
+
+    returned_names = {r.name for r in results}
+    assert returned_names == expected_names
+
+    # When the filter is set, every returned row must come from Panorama at the requested position
+    # — local rules and rules from the other rulebase must be excluded.
+    if pre_post is not None:
+        for r in results:
+            assert r.is_from_panorama is True
+            assert r.position == pre_post
+
+
 def test_get_hitcounts_vsys_specific_enrichment(mocker):
     """
     Test that get_hitcounts performs per-vsys enrichment and uses the updated XPath logic.

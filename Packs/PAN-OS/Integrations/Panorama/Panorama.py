@@ -12227,6 +12227,7 @@ class FirewallCommand:
         device_filter_string: Optional[str] = None,
         target: Optional[str] = None,
         unused_only: str = "false",
+        pre_post: Optional[str] = None,
     ) -> List[ShowRuleHitCountResult]:
         """
         Runs the `show rule-hit-count` command with VSYS support.
@@ -12239,6 +12240,7 @@ class FirewallCommand:
         :param device_filter_string: The string by which to filter the results to only show specific hostnames or serial number.
         :param target: Single serial number to target with this command.
         :param unused_only: Whether only rules with hitcount of 0 should be returned ("true" or "false")
+        :param pre_post: If set ("pre_rulebase" or "post_rulebase"), only return rules pushed from Panorama at that position.
         """
         debug_prefix = "[get_hitcounts]"
         result_data = []
@@ -12246,7 +12248,8 @@ class FirewallCommand:
         instanceType = "panorama" if len(topology.panorama_objects) > 0 else "firewall"
 
         demisto.debug(
-            f"{debug_prefix} {rulebase_type=} {vsys_arg=} {rules_arg=} {no_new_hits_since=} {device_filter_string=} {target=} {unused_only=}"
+            f"{debug_prefix} {rulebase_type=} {vsys_arg=} {rules_arg=} {no_new_hits_since=} "
+            f"{device_filter_string=} {target=} {unused_only=} {pre_post=}"
         )
 
         # Run operational command on each firewall using the given XML command to get rule hitcounts
@@ -12318,6 +12321,11 @@ class FirewallCommand:
                             result.is_from_panorama = True
                             result.position = pushed_rule_entry.position
                             result.from_dg_name = pushed_rule_entry.loc
+
+                        # When pre_post is requested, only keep Panorama-pushed rules at the matching position.
+                        if pre_post and result.position != pre_post:
+                            demisto.debug(f"{debug_prefix} Skipping {result.name} (position={result.position!r} != {pre_post!r})")
+                            continue
 
                         result_data.append(result)
 
@@ -12568,6 +12576,7 @@ def get_rule_hitcounts(
     rules: str = "all",
     unused_only: str = "false",
     no_new_hits_since: Optional[str] = None,
+    pre_post: Optional[str] = None,
 ):
     """
     Retrieves hit counts for policy rules from the specified firewall or device.
@@ -12579,6 +12588,8 @@ def get_rule_hitcounts(
     :param rules: Comma-separated list of rule names to check, or "all" for all rules.
     :param unused_only: Whether only rules with hitcount of 0 should be returned ("true" or "false")
     :param no_new_hits_since: Date string in format "YYYY/MM/DD HH:MM:SS" to filter rules with no hits since that time
+    :param pre_post: Panorama-only filter. When set to "pre-rulebase" or "post-rulebase", only Panorama-pushed rules at
+        that position are returned. Local firewall rules (not pushed from Panorama) are excluded when this filter is set.
 
     """
     no_new_hits_since_dt = None
@@ -12590,9 +12601,19 @@ def get_rule_hitcounts(
             demisto.debug(f"[get_rule_hitcounts] {message}")
             raise DemistoException(message)
 
+    pre_post_normalized = pre_post.replace("-", "_") if pre_post else None
+
     # Execute command, passing raw arguments to allow per-device XML construction.
     return FirewallCommand.get_hitcounts(
-        topology, rulebase, vsys, rules, no_new_hits_since_dt, device_filter_string, target, unused_only
+        topology,
+        rulebase,
+        vsys,
+        rules,
+        no_new_hits_since_dt,
+        device_filter_string,
+        target,
+        unused_only,
+        pre_post_normalized,
     )
 
 
