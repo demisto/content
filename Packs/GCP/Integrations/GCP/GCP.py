@@ -64,7 +64,6 @@ class GCPServices(Enum):
     STORAGE = ("storage", "v1", "storage.googleapis.com")
     CONTAINER = ("container", "v1", "container.googleapis.com")
     RESOURCE_MANAGER = ("cloudresourcemanager", "v3", "cloudresourcemanager.googleapis.com")
-    SERVICE_USAGE = ("serviceusage", "v1", "serviceusage.googleapis.com")
     BIGQUERY = ("bigquery", "v2", "bigquery.googleapis.com")
 
     # The following services are currently unsupported:
@@ -110,6 +109,7 @@ class GCPServices(Enum):
         over a custom ``httplib2.Http`` transport. On the Cortex Platform path both
         settings stay at their defaults (no proxy, SSL on), so the standard transport
         is used and no custom HTTP client is built.
+
 
         Args:
             credentials: Google Cloud credentials object.
@@ -2452,7 +2452,7 @@ def get_credentials(args: dict, params: dict) -> Credentials:
     - Marketplace (Cortex XSOAR/Cortex XSIAM): builds credentials from the service account JSON key
       in ``credentials.password``. If ``project_id`` is not already in ``args``, it is resolved using
       the priority: ``args`` > ``params`` > the ``project_id`` field of the service account JSON.
-    - Cortex Cloud (platform): fetches a short-lived token from CTS via ``get_cloud_credentials``.
+    - Cortex Platform: fetches a short-lived token from CTS via ``get_cloud_credentials``.
 
     Args:
         args (dict): Command arguments (may contain ``project_id``).
@@ -2494,7 +2494,7 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         demisto.debug("[GCP get_credentials] Using service account credentials (marketplace path)")
         return creds
 
-    # --- Cortex Cloud path: CTS token-based authentication ---
+    # --- Cortex Platform path: CTS token-based authentication ---
     project_id = args.get("project_id")
     if not project_id:
         raise DemistoException("Missing required parameter 'project_id'")
@@ -2504,7 +2504,7 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         if not token:
             raise DemistoException("Failed to retrieve GCP access token — token is missing from CTS credentials")
         creds = Credentials(token=token)
-        demisto.debug(f"[GCP get_credentials] {project_id}: Using CTS token-based credentials (Cortex Cloud path)")
+        demisto.debug(f"[GCP get_credentials] {project_id}: Using CTS token-based credentials (Cortex Platform path)")
         return creds
     except Exception as e:
         raise DemistoException(f"Failed to authenticate with GCP via CTS: {str(e)}")
@@ -2841,7 +2841,7 @@ def main():  # pragma: no cover
 
     Routing logic for ``test-module``:
 
-    - **Cortex Cloud (platform)**: ``get_connector_id()`` returns a connector ID
+    - **Cortex Platform**: ``get_connector_id()`` returns a connector ID
       → delegates to ``run_health_check_for_accounts`` (COOC health check).
     - **Cortex XSOAR / Cortex XSIAM (marketplace)**: no connector ID
       → calls ``test_module`` directly with the integration ``params`` so it
@@ -2855,8 +2855,8 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     # Proxy and SSL settings only apply to the marketplace path (Cortex XSOAR /
-    # Cortex XSIAM < 3.0). On Cortex Cloud (COOC/platform) connectivity is handled
-    # by the platform (ProxyDome), so these params are not set and must not be applied.
+    # Cortex XSIAM < 3.0). On Cortex Platform connectivity is handled by the
+    # platform (ProxyDome), so these params are not set and must not be applied.
     if not get_connector_id():
         global USE_PROXY, VERIFY_SSL
         USE_PROXY = params.get("proxy", False)
@@ -2933,7 +2933,7 @@ def main():  # pragma: no cover
         }
 
         if command == "test-module" and (connector_id := get_connector_id()):
-            # Cortex Cloud path: delegate to COOC health check
+            # Cortex Platform path: delegate to COOC health check
             demisto.debug(f"[GCP main] Running health check for connector ID: {connector_id}")
             return_results(run_health_check_for_accounts(connector_id, CloudTypes.GCP.value, health_check))
 

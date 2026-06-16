@@ -29,7 +29,6 @@ In the [Google Cloud Console](https://console.cloud.google.com/apis/library), en
 - **Cloud Storage API** (`storage.googleapis.com`)
 - **Kubernetes Engine API** (`container.googleapis.com`)
 - **Cloud Resource Manager API** (`cloudresourcemanager.googleapis.com`)
-- **Service Usage API** (`serviceusage.googleapis.com`)
 - **BigQuery API** (`bigquery.googleapis.com`)
 
 #### Step 2 — Create a Service Account
