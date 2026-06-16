@@ -528,7 +528,7 @@ Cortex XDR - XQL Query Engine,Packs/CortexXDR/Integrations/XQLQueryingEngine/XQL
 CounterTack,Packs/CounterTack/Integrations/CounterTack/CounterTack.yml,CounterTack,,joeymizrahi,,,,,,,,,,,,,,
 CrowdStrike Falcon Intel v2,Packs/CrowdStrikeIntel/Integrations/CrowdStrikeFalconIntel_v2/CrowdStrikeFalconIntel_v2.yml,CrowdStrike,,noydavidi,,,,,,,,,,,,,,
 CrowdstrikeFalcon,Packs/CrowdStrikeFalcon/Integrations/CrowdStrikeFalcon/CrowdStrikeFalcon.yml,CrowdStrike,,noydavidi,,,,,,,,,,,,,,
-Cryptocurrency,Packs/Cryptocurrency/Integrations/Cryptocurrency/Cryptocurrency.yml,CryptoCurrency,connectors/cryptocurrency,YuvHayun,"{""auth_types"":[],""other_connection"":[]}","[""Automation""]","{""integration"":""Cryptocurrency"",""commands"":{""test-module"":[],""crypto"":[""reliability"",""reputation""]}}",{},✅,"{""general_configurations"":[],""Automation"":[""reliability"",""reputation""]}",✅,✅,,,,,,
+Cryptocurrency,Packs/Cryptocurrency/Integrations/Cryptocurrency/Cryptocurrency.yml,CryptoCurrency,connectors/cryptocurrency,YuvHayun,"{""auth_types"":[],""other_connection"":[]}","[""Automation""]","{""integration"":""Cryptocurrency"",""commands"":{""test-module"":[],""crypto"":[""reliability"",""reputation""]}}",{},✅,"{""general_configurations"":[],""Automation"":[""reliability"",""reputation""]}",✅,✅,✅,,,,,
 Cuckoo Sandbox,Packs/CuckooSandbox/Integrations/CuckooSandbox/CuckooSandbox.yml,Cuckoo Sandbox,,juschwartz,,,,,,,,,,,,,,
 CybelAngel Event Collector,Packs/CybelAngel/Integrations/CybelAngelEventCollector/CybelAngelEventCollector.yml,CybelAngel,,jlevypaloalto,,,,,,,,,,,,,,
 Cyber Triage,Packs/CyberTriage/Integrations/CyberTriage/CyberTriage.yml,Cyber Triage,,noydavidi,,,,,,,,,,,,,,
@@ -613,7 +613,7 @@ G Suite Security Alert Center,Packs/GSuiteSecurityAlertCenter/Integrations/GSuit
     ""max_fetch""
   ],
   ""Automation"": []
-}",,,,,,,,
+}",✅,✅,✅,,,,,
 GCP-IAM,Packs/GCP-IAM/Integrations/GCPIAM/GCPIAM.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""GCP-IAM"",""commands"":{""test-module"":[]}}",{},✅,"{
@@ -626,13 +626,13 @@ GSuiteAdmin,Packs/GSuiteAdmin/Integrations/GSuiteAdmin/GSuiteAdmin.yml,Google Wo
 ]","{""integration"":""Google Workspace Admin"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
-}",,,,,,,,
+}",✅,✅,✅,,,,,
 GSuiteAuditor,Packs/GsuiteAuditor/Integrations/GsuiteAuditor/GsuiteAuditor.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""subject_email"",""credentials.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""G Suite Auditor"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
-}",,,,,,,,
+}",✅,✅,✅,,,,,
 Gamma,Packs/Gamma/Integrations/Gamma/Gamma.yml,Gamma.AI,,jlevypaloalto,,,,,,,,,,,,,,
 Generic MCP,Packs/GenericMCP/Integrations/GenericMCP/GenericMCP.yml,Generic MCP,,joeymizrahi,,,,,,,,,,,,,,
 Generic SQL,Packs/GenericSQL/Integrations/GenericSQL/GenericSQL.yml,Generic SQL,,noydavidi,,,,,,,,,,,,,,
@@ -647,7 +647,7 @@ GitLab Event Collector,Packs/GitLab/Integrations/GitLabEventCollector/GitLabEven
 GitLabv2,Packs/GitLab/Integrations/GitLabv2/GitLabv2.yml,GitLab Automation and Collection,,noydavidi,,,,,,,,,,,,,,
 Github Event Collector,Packs/GitHub/Integrations/GitHubEventCollector/GitHubEventCollector.yml,GitHub,,hyaffe839,,,,,,,,,,,,,,
 Github Feed,Packs/FeedGitHub/Integrations/FeedGitHub/FeedGitHub.yml,GitHub,,hyaffe839,,,,,,,,,,,,,,
-Gmail,Packs/Gmail/Integrations/Gmail/Gmail.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""adminEmail.identifier"":""subject_email"",""adminEmail.password"":""credentials_file""}}],""other_connection"":[""gappsID"",""insecure"",""proxy""]}","[""Fetch Issues"",""Automation""]","{""integration"":""Gmail"",""commands"":{""test-module"":[],""fetch-incidents"":[""fetch_limit"",""fetch_time"",""query"",""queryUserKey""],""gmail-get-attachments"":[""legacy_name""],""gmail-get-mail"":[""legacy_name""],""gmail-get-thread"":[""legacy_name""],""gmail-search"":[""legacy_name""],""gmail-search-all-mailboxes"":[""legacy_name""]}}",{},✅,"{""Automation"": [""legacy_name""], ""Fetch Issues"": [""fetch_limit"", ""fetch_time"", ""query"", ""queryUserKey""], ""general_configurations"": []}",,,,,,,,
+Gmail,Packs/Gmail/Integrations/Gmail/Gmail.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""adminEmail.identifier"":""subject_email"",""adminEmail.password"":""credentials_file""}}],""other_connection"":[""gappsID"",""insecure"",""proxy""]}","[""Fetch Issues"",""Automation""]","{""integration"":""Gmail"",""commands"":{""test-module"":[],""fetch-incidents"":[""fetch_limit"",""fetch_time"",""query"",""queryUserKey""],""gmail-get-attachments"":[""legacy_name""],""gmail-get-mail"":[""legacy_name""],""gmail-get-thread"":[""legacy_name""],""gmail-search"":[""legacy_name""],""gmail-search-all-mailboxes"":[""legacy_name""]}}",{},✅,"{""Automation"": [""legacy_name""], ""Fetch Issues"": [""fetch_limit"", ""fetch_time"", ""query"", ""queryUserKey""], ""general_configurations"": []}",✅,✅,✅,,,,,
 Gmail Single User,Packs/GmailSingleUser/Integrations/GmailSingleUser/GmailSingleUser.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""OAuth"",""interpolated"":true,""verify_connection_skip"":true,""xsoar_param_map"":{""credentials.identifier"":""client_id"",""credentials.password"":""client_secret"",""auth_code_creds.password"":""auth_code""}}],""other_connection"":[""email"",""insecure"",""proxy"",""redirect_uri"",""send_as""]}","[
   ""Fetch Issues"",
   ""Automation""
@@ -662,7 +662,7 @@ Gmail Single User,Packs/GmailSingleUser/Integrations/GmailSingleUser/GmailSingle
   ""Automation"": [
     ""legacy_name""
   ]
-}",,,,,,,,
+}",✅,✅,✅,,,,,
 Google Apigee,Packs/GoogleApigee/Integrations/GoogleApigeeEventCollector/GoogleApigeeEventCollector.yml,Google Services,connectors/google-services,YuvHayun,"{""auth_types"": [{""type"": ""Passthrough"", ""name"": ""OAuth"", ""interpolated"": true, ""xsoar_param_map"": {""credentials.identifier"": ""username"", ""credentials.password"": ""password""}}], ""other_connection"": [""insecure"", ""org_name"", ""proxy"", ""url"", ""zone""]}","[
   ""Log Collection""
 ]","{""integration"":""Google Apigee"",""commands"":{""test-module"":[],""fetch-events"":[""max_fetch""],""google-apigee-get-events"":[""max_fetch""]}}",{},✅,"{""Log Collection"": [""max_fetch""], ""general_configurations"": []}",✅,✅,✅,,,,,
@@ -719,7 +719,7 @@ GoogleCalendar,Packs/GoogleCalendar/Integrations/GoogleCalendar/GoogleCalendar.y
 ]","{""integration"":""GoogleCalendar"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
-}",,,,,,,,
+}",✅,✅,✅,,,,,
 GoogleCloudLogging,Packs/GoogleCloudLogging/Integrations/GoogleCloudLogging/GoogleCloudLogging.yml,Google Cloud,connectors/google-cloud,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""credentials.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[
   ""Automation""
 ]","{""integration"":""GoogleCloudLogging"",""commands"":{""test-module"":[]}}",{},✅,"{
@@ -737,7 +737,7 @@ GoogleDocs,Packs/GoogleDocs/Integrations/GoogleDocs/GoogleDocs.yml,Google Worksp
 ]","{""integration"":""GoogleDocs"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
-}",,,,,,,,
+}",✅,✅,✅,,,,,
 GoogleGemini,Packs/GoogleGemini/Integrations/GoogleGemini/GoogleGemini.yml,Google AI,connectors/google-ai,YuvHayun,"{""auth_types"":[{""type"":""APIKey"",""name"":""API Key"",""interpolated"":true,""xsoar_param_map"":{""api_key.password"":""key""}},{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""service_account_key.password"":""credentials_file""}}],""other_connection"":[""auth_type"",""insecure"",""location"",""project_id"",""proxy"",""url""]}","[
   ""Automation""
 ]","{""integration"":""Google Gemini"",""commands"":{""test-module"":[],""google-gemini-send-message"":[""model"",""max_tokens"",""temperature"",""top_p"",""top_k""]}}",{},✅,"{
@@ -782,7 +782,7 @@ GoogleSheets,Packs/GoogleSheets/Integrations/GoogleSheets/GoogleSheets.yml,Googl
 ]","{""integration"":""GoogleSheets"",""commands"":{""test-module"":[]}}",{},✅,"{
   ""general_configurations"": [],
   ""Automation"": []
-}",,,,,,,,
+}",✅,✅,✅,,,,,
 Grafana,Packs/Grafana/Integrations/Grafana/Grafana.yml,Grafana,,joeymizrahi,,,,,,,,,,,,,,
 GraphQL,Packs/GraphQL/Integrations/GraphQL/GraphQL.yml,GraphQL,,juschwartz,,,,,,,,,,,,,,
 GuardiCore v2,Packs/GuardiCore/Integrations/GuardiCoreV2/GuardiCoreV2.yml,Akamai,connectors/akamai,YuvHayun,"{""auth_types"":[{""type"":""Plain"",""name"":""Basic Auth"",""interpolated"":true,""xsoar_param_map"":{""credentials.identifier"":""username"",""credentials.password"":""password""}}],""other_connection"":[""base_url"",""insecure"",""proxy"",""timeout""]}","[
@@ -1153,11 +1153,11 @@ ZscalerZIdentity,Packs/Zscaler/Integrations/ZscalerZIdentity/ZscalerZIdentity.ym
 abuse.ch SSL Blacklist Feed,Packs/Feedsslabusech/Integrations/Feedsslabusech/Feedsslabusech.yml,abuse.ch,,hyaffe839,,,,,,,,,,,,,,
 carbonblackliveresponse,Packs/Carbon_Black_Enterprise_Live_Response/Integrations/Carbonblackliveresponse/Carbonblackliveresponse.yml,Carbon Black,,hyaffe839,,,,,,,,,,,,,,
 checkpointdome9,Packs/CheckPointDome9/Integrations/CheckPointDome9/CheckPointDome9.yml,Checkpoint Firewall,,hyaffe839,,,,,,,,,,,,,,
-dnstwist,Packs/dnstwist/Integrations/dnstwist/dnstwist.yml,dnstwist,connectors/dnstwist,YuvHayun,"{""auth_types"":[],""other_connection"":[]}","[""Automation""]","{""integration"":""dnstwist"",""commands"":{""test-module"":[],""dnstwist-domain-variations"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",✅,✅,,,,,,
+dnstwist,Packs/dnstwist/Integrations/dnstwist/dnstwist.yml,dnstwist,connectors/dnstwist,YuvHayun,"{""auth_types"":[],""other_connection"":[]}","[""Automation""]","{""integration"":""dnstwist"",""commands"":{""test-module"":[],""dnstwist-domain-variations"":[]}}",{},✅,"{""general_configurations"":[],""Automation"":[]}",✅,✅,✅,,,,,
 fireeye,Packs/fireeye/Integrations/Fireeye/Fireeye.yml,Trellix Network,,jlevypaloalto,,,,,,,,,,,,,,
 fortimail,Packs/Fortimail/Integrations/Fortimail/Fortimail.yml,Fortinet,,hyaffe839,,,,,,,,,,,,,,
 fortiweb_vm,Packs/FortinetFortiwebVM/Integrations/FortinetFortiwebVM/FortinetFortiwebVM.yml,Fortinet FortiWeb VM,,juschwartz,,,,,,,,,,,,,,
-google-vault,Packs/GoogleVault/Integrations/GoogleVault/GoogleVault.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""gsuite_credentials.identifier"":""subject_email"",""auth_json_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[""Automation""]","{""integration"":""Google Vault"",""commands"":{""test-module"":[]}}",{},✅,"{""Automation"": [], ""general_configurations"": []}",,,,,,,,
+google-vault,Packs/GoogleVault/Integrations/GoogleVault/GoogleVault.yml,Google Workspace Automation and Collection,connectors/google-workspace-automation-and-collection,YuvHayun,"{""auth_types"":[{""type"":""Passthrough"",""name"":""Service Account"",""interpolated"":true,""xsoar_param_map"":{""gsuite_credentials.identifier"":""subject_email"",""auth_json_creds.password"":""credentials_file""}}],""other_connection"":[""insecure"",""proxy""]}","[""Automation""]","{""integration"":""Google Vault"",""commands"":{""test-module"":[]}}",{},✅,"{""Automation"": [], ""general_configurations"": []}",✅,✅,✅,,,,,
 iManageThreatManager,Packs/iManageThreatManager/Integrations/iManageThreatManager/iManageThreatManager.yml,iManage,,jlevypaloalto,,,,,,,,,,,,,,
 icebrg,Packs/ICEBRG/Integrations/Icebrg/Icebrg.yml,Gigamon,,noydavidi,,,,,,,,,,,,,,
 ipinfo_v2,Packs/ipinfo/Integrations/ipinfo_v2/ipinfo_v2.yml,IPInfo.io,,hyaffe839,,,,,,,,,,,,,,

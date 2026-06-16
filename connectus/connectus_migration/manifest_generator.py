@@ -1078,7 +1078,9 @@ def _actions_for_capability(cap_name: str) -> list[dict]:
 _ANONYMOUS_CONNECTION_PROFILE_NAME = "Connection"
 
 
-def synthesize_anonymous_auth_methods(auth_methods: dict) -> dict:
+def synthesize_anonymous_auth_methods(
+    auth_methods: dict, integration_id: str = ""
+) -> dict:
     """Return ``auth_methods`` with a synthetic auth-less profile when needed.
 
     When ``auth_types`` is empty but ``other_connection`` is non-empty (e.g.
@@ -1090,15 +1092,36 @@ def synthesize_anonymous_auth_methods(auth_methods: dict) -> dict:
     params are materialized on the connection page instead of being dropped
     (which previously made handler param coverage fail for anonymous feeds).
 
+    **Engine-only edge case.** When BOTH ``auth_types`` AND ``other_connection``
+    are empty (a truly anonymous integration — no auth, no connection-adjacent
+    params, e.g. ``Cryptocurrency`` / ``dnstwist``), the same synthetic
+    ``Passthrough`` profile is injected **only when the integration is NOT
+    engine-excluded** (Appendix G, see :func:`engine_exclusion_class`). The
+    profile then carries no auth and no other_connection fields, so the
+    per-profile field attachment (:func:`attach_per_profile_connection_fields`)
+    materializes ONLY the engine 3-field pattern — a general-configuration
+    connection profile consisting purely of engine fields. When the integration
+    IS engine-excluded there is genuinely nothing to render, so it stays
+    anonymous (handler uses the ``auth: "none"`` shape and no connection.yaml is
+    written). ``integration_id`` is required for the engine-exclusion lookup in
+    this both-empty case; when it is omitted the legacy behavior (stay
+    anonymous) is preserved.
+
     Idempotent and non-mutating: returns the input unchanged when ``auth_types``
-    is already non-empty, or when ``other_connection`` is empty (a truly
-    anonymous connector stays anonymous — handler uses the ``auth: "none"``
-    shape and no connection.yaml is written).
+    is already non-empty, or when both are empty AND the integration is
+    engine-excluded (or no ``integration_id`` was supplied to check).
     """
     auth_types = auth_methods.get("auth_types") or []
     other_connection = auth_methods.get("other_connection") or []
-    if auth_types or not other_connection:
+    if auth_types:
         return auth_methods
+    if not other_connection:
+        # Both empty: only synthesize when engines apply (non-Appendix-G) so the
+        # connection profile is the engine-only general configuration. Without a
+        # known integration_id we cannot check the exclusion list — stay
+        # anonymous to preserve the legacy behavior.
+        if not integration_id or engine_exclusion_class(integration_id) == "excluded":
+            return auth_methods
     normalized = dict(auth_methods)
     normalized["auth_types"] = [
         {
@@ -7634,14 +7657,27 @@ def create_manifest_from_scratch(
 
     # Anonymous-with-other_connection: synthesize an auth-less Passthrough
     # profile so connection-adjacent params (url/proxy/insecure/base_url) are
-    # materialized on the connection page and the handler links to them.
+    # materialized on the connection page and the handler links to them. Also
+    # fires for the both-empty engine-only edge case (non-Appendix-G) so the
+    # connection profile is the engine-only general configuration.
+    _scratch_integration_id = integration_yml.get("commonfields", {}).get("id", "")
     _orig_auth_types = auth_methods.get("auth_types") or []
-    auth_methods = synthesize_anonymous_auth_methods(auth_methods)
+    _orig_other_connection = auth_methods.get("other_connection") or []
+    auth_methods = synthesize_anonymous_auth_methods(
+        auth_methods, _scratch_integration_id
+    )
     if not _orig_auth_types and auth_methods.get("auth_types"):
-        logger.info(
-            "[manifest_generator] Anonymous connector with other_connection "
-            "params — synthesized an auth-less Passthrough connection profile."
-        )
+        if _orig_other_connection:
+            logger.info(
+                "[manifest_generator] Anonymous connector with other_connection "
+                "params — synthesized an auth-less Passthrough connection profile."
+            )
+        else:
+            logger.info(
+                "[manifest_generator] Anonymous connector with no auth and no "
+                "other_connection (non-engine-excluded) — synthesized an "
+                "engine-only general-configuration connection profile."
+            )
 
     if manual_serializer_fields:
         logger.info(
@@ -8064,8 +8100,12 @@ def add_handler_to_existing_connector(
 
     # Anonymous-with-other_connection: synthesize an auth-less Passthrough
     # profile so connection-adjacent params are materialized + linked by the
-    # appended handler (mirrors the from-scratch path).
-    auth_methods = synthesize_anonymous_auth_methods(auth_methods)
+    # appended handler (mirrors the from-scratch path). Also fires for the
+    # both-empty engine-only edge case (non-Appendix-G).
+    _append_integration_id = integration_yml.get("commonfields", {}).get("id", "")
+    auth_methods = synthesize_anonymous_auth_methods(
+        auth_methods, _append_integration_id
+    )
 
     if manual_serializer_fields:
         logger.info(
