@@ -339,6 +339,15 @@ script:
     - contextPath: PsRemote.FQDN
       description: The Fully Qualified Domain Name of the host on which the command was invoked.
       type: string
+  - name: ps-remote-debug-ucp-metadata
+    description: Prints the Unified Connector Platform (UCP) metadata and the Demisto integration params without masking. For debugging purposes only.
+    outputs:
+    - contextPath: PsRemote.UcpDebug.UcpMetadata
+      description: The Unified Connector Platform (UCP) metadata for the integration instance.
+      type: Unknown
+    - contextPath: PsRemote.UcpDebug.DemistoParams
+      description: The Demisto integration params (unmasked).
+      type: Unknown
   dockerimage: demisto/powershell-ubuntu:7.5.0.4903976
   script: ''
   type: powershell

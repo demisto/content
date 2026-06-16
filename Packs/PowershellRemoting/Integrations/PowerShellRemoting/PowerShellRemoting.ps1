@@ -799,6 +799,59 @@ function ExportMFTCommand([RemotingClient]$client, [string]$volume, [string]$out
     return $human_readable, $entry_context, $raw_result
 }
 
+function GetUcpDebugCommand {
+    [CmdletBinding()]
+    param ()
+    # Collect the Unified Connector Platform (UCP) metadata. UnifiedConnectorMetadata()
+    # may not be available on every host (older servers / non-UCP runs), so guard it.
+    $ucp_metadata = @{}
+    try {
+        $ucp_metadata = $Demisto.UnifiedConnectorMetadata()
+    }
+    catch {
+        $ucp_metadata = @{ "error" = "UnifiedConnectorMetadata() unavailable: $($_.Exception.Message)" }
+    }
+
+    # Collect the raw Demisto integration params. These are returned WITHOUT masking
+    # so the full configuration (including secret/credentials fields) is printed for
+    # debugging purposes.
+    $demisto_params = $Demisto.Params()
+
+    $raw_response = @{
+        "UcpMetadata"  = $ucp_metadata
+        "DemistoParams" = $demisto_params
+    }
+
+    $ucp_metadata_json = $ucp_metadata | ConvertTo-Json -Depth 100
+    $demisto_params_json = $demisto_params | ConvertTo-Json -Depth 100
+
+    $human_readable = "## $script:INTEGRATION_NAME - UCP debug
+
+### UCP Metadata (unmasked)
+``````json
+$ucp_metadata_json
+``````
+
+### Demisto Params (unmasked)
+``````json
+$demisto_params_json
+``````"
+
+    $entry_context = @{
+        "$script:INTEGRATION_ENTRY_CONTEXT.UcpDebug" = $raw_response
+    }
+
+    return $human_readable, $entry_context, $raw_response
+    <#
+        .DESCRIPTION
+        Prints the UCP (Unified Connector Platform) metadata and the Demisto integration
+        params without masking. Intended for debugging only.
+
+        .EXAMPLE
+        GetUcpDebugCommand
+    #>
+}
+
 function Main
 {
     $command = $Demisto.GetCommand()
@@ -820,6 +873,14 @@ function Main
         catch {
             # Probe must never break unrelated integrations. Swallow and continue.
         }
+    }
+
+    # Debug command: print UCP metadata and Demisto params without masking. Handled
+    # before any remote session setup so it works without host connectivity.
+    if ($command -eq "$script:COMMAND_PREFIX-debug-ucp-metadata") {
+        ($human_readable, $entry_context, $raw_response) = GetUcpDebugCommand
+        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        return
     }
 
     $command_args = $Demisto.Args()
