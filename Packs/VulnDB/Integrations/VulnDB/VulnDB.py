@@ -429,7 +429,7 @@ def main():
         return_error("Please provide a Client ID and Secret")
     use_ssl = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    dbot_score_reliability = params["integration_reliability"]
+    dbot_score_reliability = params.get("integration_reliability") or DBotScoreReliability.C
     client = Client(proxy, use_ssl, api_url, client_id, client_secret)
     args = demisto.args()
     command = demisto.command()

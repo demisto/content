@@ -387,8 +387,10 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", True)
 
     proxy = params.get("proxy", False)
-    max_alerts_per_fetch = arg_to_number(params.get("max_alerts_per_fetch")) or DEFAULT_MAX_FETCH_ALERT
-    max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_MAX_FETCH_AUDIT_EVENTS
+    max_alerts_per_fetch = arg_to_number(params.get("max_alerts_per_fetch") or DEFAULT_MAX_FETCH_ALERT) or DEFAULT_MAX_FETCH_ALERT
+    max_events_per_fetch = (
+        arg_to_number(params.get("max_events_per_fetch") or DEFAULT_MAX_FETCH_AUDIT_EVENTS) or DEFAULT_MAX_FETCH_AUDIT_EVENTS
+    )
 
     demisto.debug(f"Command being called is {command}")
     try:
