@@ -3,10 +3,12 @@
 import pytest
 from CommonServerPython import CommandResults
 from AnthropicClaude import (
+    Config,
     ComplianceClient,
     add_time_to_events,
-    fetch_activities,
-    fetch_events,
+    deduplicate_events,
+    fetch_events_with_pagination,
+    fetch_events_command,
     get_events_command,
     list_organizations_command,
     list_organization_users_command,
@@ -17,8 +19,6 @@ from AnthropicClaude import (
     list_projects_command,
     get_project_document_command,
     test_module_compliance,
-    VENDOR,
-    PRODUCT,
 )
 
 BASE_URL = "https://api.anthropic.com/"
@@ -50,13 +50,22 @@ def test_add_time_to_events():
     assert "_time" not in events[1]
 
 
-def test_fetch_activities_first_run(mocker):
+def test_deduplicate_events():
+    events = [{"id": "a"}, {"id": "b"}, {"id": "c"}]
+    assert deduplicate_events(events, ["b"]) == [{"id": "a"}, {"id": "c"}]
+    assert deduplicate_events(events, []) == events
+    assert deduplicate_events([], ["b"]) == []
+
+
+def test_fetch_events_first_run(mocker):
     """First run: uses first_fetch lower bound, single page, no has_more."""
     client = build_client()
     response = {"data": make_activities(0, 3), "has_more": False, "last_id": "activity_0002"}
     get_mock = mocker.patch.object(client, "get_activities", return_value=response)
 
-    events, next_run = fetch_activities(client, last_run={}, max_events=50000, activity_types=None, first_fetch="1 day")
+    events, next_run = fetch_events_with_pagination(
+        client, last_run={}, max_events=50000, activity_types=None, first_fetch="1 day"
+    )
 
     assert len(events) == 3
     # First call should use created_at.gte (first-fetch lower bound), not after_id.
@@ -66,14 +75,14 @@ def test_fetch_activities_first_run(mocker):
     assert next_run["newest_created_at"] == "2026-06-11T07:00:02Z"
 
 
-def test_fetch_activities_subsequent_run(mocker):
+def test_fetch_events_subsequent_run(mocker):
     """Subsequent run: uses created_at.gt against the previously stored newest timestamp."""
     client = build_client()
     response = {"data": make_activities(5, 2), "has_more": False, "last_id": "activity_0006"}
     get_mock = mocker.patch.object(client, "get_activities", return_value=response)
 
     last_run = {"newest_created_at": "2026-06-11T07:00:04Z", "last_fetched_ids": ["activity_0004"]}
-    events, next_run = fetch_activities(client, last_run, max_events=50000, activity_types=None, first_fetch="1 day")
+    events, next_run = fetch_events_with_pagination(client, last_run, max_events=50000, activity_types=None, first_fetch="1 day")
 
     assert len(events) == 2
     _, kwargs = get_mock.call_args
@@ -81,14 +90,14 @@ def test_fetch_activities_subsequent_run(mocker):
     assert kwargs["created_at_gte"] is None
 
 
-def test_fetch_activities_pagination(mocker):
+def test_fetch_events_pagination(mocker):
     """Cursor pagination: walks multiple pages until has_more is False."""
     client = build_client()
     page1 = {"data": make_activities(0, 2), "has_more": True, "last_id": "activity_0001"}
     page2 = {"data": make_activities(2, 2), "has_more": False, "last_id": "activity_0003"}
     get_mock = mocker.patch.object(client, "get_activities", side_effect=[page1, page2])
 
-    events, _ = fetch_activities(client, last_run={}, max_events=50000, activity_types=None, first_fetch="1 day")
+    events, _ = fetch_events_with_pagination(client, last_run={}, max_events=50000, activity_types=None, first_fetch="1 day")
 
     assert len(events) == 4
     assert get_mock.call_count == 2
@@ -97,7 +106,7 @@ def test_fetch_activities_pagination(mocker):
     assert second_kwargs["after_id"] == "activity_0001"
 
 
-def test_fetch_activities_dedup(mocker):
+def test_fetch_events_dedup(mocker):
     """Boundary events already seen in the previous run are not returned again."""
     client = build_client()
     response = {
@@ -111,20 +120,20 @@ def test_fetch_activities_dedup(mocker):
     mocker.patch.object(client, "get_activities", return_value=response)
 
     last_run = {"newest_created_at": "2026-06-11T07:00:04Z", "last_fetched_ids": ["activity_dup"]}
-    events, _ = fetch_activities(client, last_run, max_events=50000, activity_types=None, first_fetch="1 day")
+    events, _ = fetch_events_with_pagination(client, last_run, max_events=50000, activity_types=None, first_fetch="1 day")
 
     ids = [e["id"] for e in events]
     assert "activity_dup" not in ids
     assert "activity_new" in ids
 
 
-def test_fetch_activities_respects_max_events(mocker):
+def test_fetch_events_respects_max_events(mocker):
     """The collector stops once max_events is reached even if more pages exist."""
     client = build_client()
     page = {"data": make_activities(0, 3), "has_more": True, "last_id": "activity_0002"}
     mocker.patch.object(client, "get_activities", return_value=page)
 
-    events, _ = fetch_activities(client, last_run={}, max_events=3, activity_types=None, first_fetch="1 day")
+    events, _ = fetch_events_with_pagination(client, last_run={}, max_events=3, activity_types=None, first_fetch="1 day")
 
     assert len(events) == 3
 
@@ -138,12 +147,12 @@ def test_fetch_events_pushes_to_xsiam(mocker):
     set_last_run = mocker.patch("AnthropicClaude.demisto.setLastRun")
     send_mock = mocker.patch("AnthropicClaude.send_events_to_xsiam")
 
-    fetch_events(client, params={"max_events_per_fetch": "1000", "first_fetch": "1 day"})
+    fetch_events_command(client, params={"max_events_per_fetch": "1000", "first_fetch": "1 day"})
 
     send_mock.assert_called_once()
     sent_events = send_mock.call_args.args[0]
-    assert send_mock.call_args.kwargs["vendor"] == VENDOR
-    assert send_mock.call_args.kwargs["product"] == PRODUCT
+    assert send_mock.call_args.kwargs["vendor"] == Config.VENDOR
+    assert send_mock.call_args.kwargs["product"] == Config.PRODUCT
     assert all("_time" in e for e in sent_events)
     set_last_run.assert_called_once()
 

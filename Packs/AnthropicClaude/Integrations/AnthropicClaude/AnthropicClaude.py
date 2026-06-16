@@ -13,15 +13,73 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 ANTHROPIC_VERSION = "2023-06-01"
 EML_FILE_SUFFIX = ".eml"
 
-# Event Collector (Compliance API) constants
-VENDOR = "anthropic"
-PRODUCT = "claude"
-ACTIVITIES_ENDPOINT = "v1/compliance/activities"
-ACTIVITIES_PAGE_SIZE = 5000  # API max page size for the Activity Feed.
-MAX_FETCH_CALLS = 10  # API call budget per fetch cycle (5000 x 10 = 50,000 events).
-DEFAULT_MAX_EVENTS_PER_FETCH = 50000
-DEFAULT_FIRST_FETCH = "1 day"
-DEFAULT_LIST_LIMIT = 50
+
+class Config:
+    """Global static configuration for the Anthropic Compliance API event collector."""
+
+    # send_events_to_xsiam identifiers (dataset: anthropic_claude_raw).
+    VENDOR = "anthropic"
+    PRODUCT = "claude"
+
+    # Activity Feed pagination / fetch budget.
+    ACTIVITIES_PAGE_SIZE = 5000  # API max page size for the Activity Feed.
+    MAX_FETCH_CALLS = 10  # API call budget per fetch cycle (5000 x 10 = 50,000 events).
+    DEFAULT_MAX_EVENTS_PER_FETCH = 50000
+    DEFAULT_FIRST_FETCH = "1 day"
+
+    # Read-only compliance commands.
+    DEFAULT_LIST_LIMIT = 50
+
+
+class ApiPaths:
+    """Centralized Anthropic Compliance API endpoint paths (relative to the base URL)."""
+
+    ACTIVITIES = "v1/compliance/activities"
+    ORGANIZATIONS = "v1/compliance/organizations"
+    GROUPS = "v1/compliance/groups"
+    CHATS = "v1/compliance/apps/chats"
+    PROJECTS = "v1/compliance/apps/projects"
+
+    @classmethod
+    def organization_users(cls, org_uuid: str) -> str:
+        return f"{cls.ORGANIZATIONS}/{org_uuid}/users"
+
+    @classmethod
+    def roles(cls, org_uuid: str) -> str:
+        return f"{cls.ORGANIZATIONS}/{org_uuid}/roles"
+
+    @classmethod
+    def role(cls, org_uuid: str, role_id: str) -> str:
+        return f"{cls.ORGANIZATIONS}/{org_uuid}/roles/{role_id}"
+
+    @classmethod
+    def role_permissions(cls, org_uuid: str, role_id: str) -> str:
+        return f"{cls.ORGANIZATIONS}/{org_uuid}/roles/{role_id}/permissions"
+
+    @classmethod
+    def group(cls, group_id: str) -> str:
+        return f"{cls.GROUPS}/{group_id}"
+
+    @classmethod
+    def group_members(cls, group_id: str) -> str:
+        return f"{cls.GROUPS}/{group_id}/members"
+
+    @classmethod
+    def chat_messages(cls, chat_id: str) -> str:
+        return f"{cls.CHATS}/{chat_id}/messages"
+
+    @classmethod
+    def project(cls, project_id: str) -> str:
+        return f"{cls.PROJECTS}/{project_id}"
+
+    @classmethod
+    def project_attachments(cls, project_id: str) -> str:
+        return f"{cls.PROJECTS}/{project_id}/attachments"
+
+    @classmethod
+    def project_document(cls, project_id: str, document_id: str) -> str:
+        return f"{cls.PROJECTS}/{project_id}/documents/{document_id}"
+
 
 CHECK_EMAIL_HEADERS_PROMPT = """
 I have a set of email headers.
@@ -176,7 +234,7 @@ class ComplianceClient(BaseClient):
                 params["created_at.lt"] = created_at_lt
         if activity_types:
             params["activity_types[]"] = activity_types
-        return self.http_get(ACTIVITIES_ENDPOINT, params=params)
+        return self.http_get(ApiPaths.ACTIVITIES, params=params)
 
 
 """ HELPER FUNCTIONS """
@@ -479,14 +537,32 @@ def add_time_to_events(events: list[dict[str, Any]]) -> None:
             event["_time"] = created_at
 
 
-def fetch_activities(
+def deduplicate_events(events: list[dict[str, Any]], last_fetched_ids: list[str]) -> list[dict[str, Any]]:
+    """Remove already-processed events based on previously fetched IDs.
+
+    The Activity Feed is queried with a half-open time window (``created_at.gt``), but events that
+    share the exact boundary timestamp may reappear across consecutive runs. We dedup them using the
+    IDs persisted in the previous ``last_run``.
+    """
+    if not events or not last_fetched_ids:
+        return events
+
+    fetched_ids = set(last_fetched_ids)
+    new_events = [event for event in events if event.get("id") not in fetched_ids]
+    skipped = len(events) - len(new_events)
+    if skipped:
+        demisto.debug(f"[Dedup] Skipped {skipped} duplicate events; {len(new_events)} new events remain.")
+    return new_events
+
+
+def fetch_events_with_pagination(
     client: ComplianceClient,
     last_run: dict[str, Any],
     max_events: int,
     activity_types: list[str] | None,
     first_fetch: str,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Fetches Activity Feed events incrementally using cursor pagination.
+    """Fetch Activity Feed events incrementally using cursor pagination.
 
     The first call of a cycle uses ``created_at.gt`` against the newest timestamp seen in the
     previous run (or the first-fetch lower bound on the very first run). Subsequent pages within
@@ -500,19 +576,18 @@ def fetch_activities(
         created_at_gt: str | None = previous_newest
         created_at_gte: str | None = None
     else:
-        first_fetch_dt = arg_to_datetime(first_fetch or DEFAULT_FIRST_FETCH)
+        first_fetch_dt = arg_to_datetime(first_fetch or Config.DEFAULT_FIRST_FETCH)
         created_at_gte = first_fetch_dt.strftime(DATE_FORMAT) if first_fetch_dt else None
         created_at_gt = None
 
     collected: list[dict[str, Any]] = []
-    seen_ids: set[str] = set(last_run.get("last_fetched_ids", []))
     after_id: str | None = None
     newest_created_at = previous_newest
 
-    for call_num in range(MAX_FETCH_CALLS):
+    for call_num in range(Config.MAX_FETCH_CALLS):
         if len(collected) >= max_events:
             break
-        page_limit = min(ACTIVITIES_PAGE_SIZE, max_events - len(collected))
+        page_limit = min(Config.ACTIVITIES_PAGE_SIZE, max_events - len(collected))
         response = client.get_activities(
             limit=page_limit,
             created_at_gte=created_at_gte,
@@ -521,15 +596,10 @@ def fetch_activities(
             activity_types=activity_types,
         )
         activities = response.get("data", []) or []
-        demisto.debug(f"anthropic-claude fetch_activities call={call_num} fetched {len(activities)} activities.")
+        demisto.debug(f"[Fetch] Call {call_num}: fetched {len(activities)} activities.")
 
+        collected.extend(activities)
         for activity in activities:
-            activity_id = activity.get("id")
-            if activity_id and activity_id in seen_ids:
-                continue  # Dedup against events already pushed in a prior run.
-            collected.append(activity)
-            if activity_id:
-                seen_ids.add(activity_id)
             created_at = activity.get("created_at")
             if created_at and (not newest_created_at or created_at > newest_created_at):
                 newest_created_at = created_at
@@ -538,33 +608,36 @@ def fetch_activities(
         if not response.get("has_more") or not after_id:
             break
 
-    # Track the IDs that share the newest timestamp so the next run can dedup boundary events.
-    boundary_ids = [e["id"] for e in collected if e.get("id") and e.get("created_at") == newest_created_at]
+    # Drop events already pushed in a prior run (boundary-timestamp duplicates), then cap.
+    deduped = deduplicate_events(collected, last_run.get("last_fetched_ids", []))[:max_events]
+
+    # Persist the IDs sharing the newest timestamp so the next run can dedup boundary events.
+    boundary_ids = [e["id"] for e in deduped if e.get("id") and e.get("created_at") == newest_created_at]
     next_run = {"newest_created_at": newest_created_at, "last_fetched_ids": boundary_ids}
-    return collected, next_run
+    return deduped, next_run
 
 
-def fetch_events(client: ComplianceClient, params: dict[str, Any]) -> None:
-    """Fetch-events entry point: pulls Activity Feed events and pushes them to XSIAM."""
+def fetch_events_command(client: ComplianceClient, params: dict[str, Any]) -> None:
+    """Fetch-events entry point: pull Activity Feed events and push them to XSIAM."""
     last_run = demisto.getLastRun() or {}
-    max_events = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_MAX_EVENTS_PER_FETCH
+    max_events = arg_to_number(params.get("max_events_per_fetch")) or Config.DEFAULT_MAX_EVENTS_PER_FETCH
     activity_types = argToList(params.get("activity_types")) or None
-    first_fetch = params.get("first_fetch") or DEFAULT_FIRST_FETCH
+    first_fetch = params.get("first_fetch") or Config.DEFAULT_FIRST_FETCH
 
-    events, next_run = fetch_activities(client, last_run, max_events, activity_types, first_fetch)
+    events, next_run = fetch_events_with_pagination(client, last_run, max_events, activity_types, first_fetch)
     add_time_to_events(events)
 
-    demisto.debug(f"anthropic-claude fetch_events sending {len(events)} events to XSIAM. {next_run=}")
-    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+    demisto.debug(f"[Fetch] Sending {len(events)} events to XSIAM. {next_run=}")
+    send_events_to_xsiam(events, vendor=Config.VENDOR, product=Config.PRODUCT)
     demisto.setLastRun(next_run)
 
 
 def get_events_command(client: ComplianceClient, args: dict[str, Any]) -> tuple[list[dict[str, Any]], CommandResults]:
-    """Manually retrieves Activity Feed events for testing/troubleshooting."""
-    limit = arg_to_number(args.get("limit")) or DEFAULT_LIST_LIMIT
+    """Manually retrieve Activity Feed events for testing/troubleshooting."""
+    limit = arg_to_number(args.get("limit")) or Config.DEFAULT_LIST_LIMIT
     activity_types = argToList(args.get("activity_types")) or None
 
-    response = client.get_activities(limit=min(limit, ACTIVITIES_PAGE_SIZE), activity_types=activity_types)
+    response = client.get_activities(limit=min(limit, Config.ACTIVITIES_PAGE_SIZE), activity_types=activity_types)
     events = (response.get("data", []) or [])[:limit]
     add_time_to_events(events)
 
@@ -616,8 +689,8 @@ def _list_command(
 
 
 def list_organizations_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
-    limit = arg_to_number(args.get("limit")) or DEFAULT_LIST_LIMIT
-    response = client.http_get("v1/compliance/organizations", params={"limit": limit})
+    limit = arg_to_number(args.get("limit")) or Config.DEFAULT_LIST_LIMIT
+    response = client.http_get(ApiPaths.ORGANIZATIONS, params={"limit": limit})
     data = (response.get("data", []) or [])[:limit]
     readable = tableToMarkdown("Organizations", data, headers=["uuid", "name", "created_at"], removeNull=True)
     return CommandResults(
@@ -633,7 +706,7 @@ def list_organization_users_command(client: ComplianceClient, args: dict[str, An
     org_uuid = args["org_uuid"]
     return _list_command(
         client,
-        f"v1/compliance/organizations/{org_uuid}/users",
+        ApiPaths.organization_users(org_uuid),
         "AnthropicClaude.Organization.User",
         args,
         headers=["id", "full_name", "email", "organization_role", "created_at"],
@@ -646,7 +719,7 @@ def list_roles_command(client: ComplianceClient, args: dict[str, Any]) -> Comman
     role_id = args.get("role_id")
     headers = ["id", "name", "description", "created_at", "updated_at"]
     if role_id:
-        response = client.http_get(f"v1/compliance/organizations/{org_uuid}/roles/{role_id}")
+        response = client.http_get(ApiPaths.role(org_uuid, role_id))
         readable = tableToMarkdown("Role", response, headers=headers, removeNull=True)
         return CommandResults(
             outputs_prefix="AnthropicClaude.Organization.Role",
@@ -657,7 +730,7 @@ def list_roles_command(client: ComplianceClient, args: dict[str, Any]) -> Comman
         )
     return _list_command(
         client,
-        f"v1/compliance/organizations/{org_uuid}/roles",
+        ApiPaths.roles(org_uuid),
         "AnthropicClaude.Organization.Role",
         args,
         headers=headers,
@@ -670,7 +743,7 @@ def list_role_permissions_command(client: ComplianceClient, args: dict[str, Any]
     role_id = args["role_id"]
     return _list_command(
         client,
-        f"v1/compliance/organizations/{org_uuid}/roles/{role_id}/permissions",
+        ApiPaths.role_permissions(org_uuid, role_id),
         "AnthropicClaude.Organization.Role.Permission",
         args,
         headers=["resource_type", "resource_id", "action"],
@@ -682,7 +755,7 @@ def list_groups_command(client: ComplianceClient, args: dict[str, Any]) -> Comma
     group_id = args.get("group_id")
     headers = ["id", "name", "description", "source_type", "roles", "created_at", "updated_at"]
     if group_id:
-        response = client.http_get(f"v1/compliance/groups/{group_id}")
+        response = client.http_get(ApiPaths.group(group_id))
         readable = tableToMarkdown("Group", response, headers=headers, removeNull=True)
         return CommandResults(
             outputs_prefix="AnthropicClaude.Group",
@@ -693,7 +766,7 @@ def list_groups_command(client: ComplianceClient, args: dict[str, Any]) -> Comma
         )
     return _list_command(
         client,
-        "v1/compliance/groups",
+        ApiPaths.GROUPS,
         "AnthropicClaude.Group",
         args,
         headers=headers,
@@ -705,7 +778,7 @@ def list_group_members_command(client: ComplianceClient, args: dict[str, Any]) -
     group_id = args["group_id"]
     return _list_command(
         client,
-        f"v1/compliance/groups/{group_id}/members",
+        ApiPaths.group_members(group_id),
         "AnthropicClaude.Group.Member",
         args,
         headers=["user_id", "email", "created_at", "updated_at"],
@@ -726,7 +799,7 @@ def list_chats_command(client: ComplianceClient, args: dict[str, Any]) -> Comman
             params[arg_name.replace("_gte", ".gte").replace("_lte", ".lte") if "_at_" in arg_name else arg_name] = value
     if limit := arg_to_number(args.get("limit")):
         params["limit"] = limit
-    response = client.http_get("v1/compliance/apps/chats", params=params)
+    response = client.http_get(ApiPaths.CHATS, params=params)
     data = response.get("data", [])
     headers = ["id", "name", "created_at", "updated_at", "deleted_at", "href", "model", "organization_uuid", "project_id"]
     readable = tableToMarkdown("Chats", data, headers=headers, removeNull=True)
@@ -750,7 +823,7 @@ def list_chat_messages_command(client: ComplianceClient, args: dict[str, Any]) -
     for arg_name in ("created_at_gte", "created_at_lte", "updated_at_gte", "updated_at_lte"):
         if value := args.get(arg_name):
             params[arg_name.replace("_gte", ".gte").replace("_lte", ".lte")] = value
-    response = client.http_get(f"v1/compliance/apps/chats/{chat_id}/messages", params=params or None)
+    response = client.http_get(ApiPaths.chat_messages(chat_id), params=params or None)
     data = response.get("chat_messages", [])
     readable = tableToMarkdown("Chat Messages", data, headers=["id", "role", "created_at"], removeNull=True)
     return CommandResults(
@@ -774,7 +847,7 @@ def list_projects_command(client: ComplianceClient, args: dict[str, Any]) -> Com
         "deleted_at",
     ]
     if project_id:
-        response = client.http_get(f"v1/compliance/apps/projects/{project_id}")
+        response = client.http_get(ApiPaths.project(project_id))
         readable = tableToMarkdown("Project", response, headers=headers, removeNull=True)
         return CommandResults(
             outputs_prefix="AnthropicClaude.Project",
@@ -785,7 +858,7 @@ def list_projects_command(client: ComplianceClient, args: dict[str, Any]) -> Com
         )
     return _list_command(
         client,
-        "v1/compliance/apps/projects",
+        ApiPaths.PROJECTS,
         "AnthropicClaude.Project",
         args,
         headers=headers,
@@ -797,7 +870,7 @@ def list_project_attachments_command(client: ComplianceClient, args: dict[str, A
     project_id = args["project_id"]
     return _list_command(
         client,
-        f"v1/compliance/apps/projects/{project_id}/attachments",
+        ApiPaths.project_attachments(project_id),
         "AnthropicClaude.Project.Attachment",
         args,
         headers=["id", "filename", "mime_type", "type", "created_at"],
@@ -808,7 +881,7 @@ def list_project_attachments_command(client: ComplianceClient, args: dict[str, A
 def get_project_document_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
     project_id = args["project_id"]
     document_id = args["document_id"]
-    response = client.http_get(f"v1/compliance/apps/projects/{project_id}/documents/{document_id}")
+    response = client.http_get(ApiPaths.project_document(project_id, document_id))
     readable = tableToMarkdown(
         "Project Document",
         response,
@@ -888,14 +961,14 @@ def main() -> None:  # pragma: no cover
 
         elif command == "fetch-events":
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
-            fetch_events(client=compliance_client, params=params)
+            fetch_events_command(client=compliance_client, params=params)
 
         elif command == "claude-get-events":
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             events, results_obj = get_events_command(client=compliance_client, args=args)
             if argToBoolean(args.get("should_push_events", "false")):
                 add_time_to_events(events)
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                send_events_to_xsiam(events, vendor=Config.VENDOR, product=Config.PRODUCT)
             return_results(results_obj)
 
         elif command in compliance_commands:
