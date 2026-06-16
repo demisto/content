@@ -224,17 +224,19 @@ script:
       type: String
   - arguments:
     - description: The search string.
+      type: String
       name: query
-    - description: The maximum number of results to return. Default is 50 and maximum is 5000.
+    - description: The maximum number of results to return.
+      type: Number
       name: limit
       defaultValue: '50'
-    description: Gets the users and groups of an issue in Jira.
-    name: jira-issue-get-users-groups
+    description: Searches for users and groups in Jira that match the query string.
+    name: jira-user-group-search
     outputs:
-    - contextPath: Jira.GetUsersAndGroups.Users
+    - contextPath: Jira.UsersAndGroups.Users
       description: The Users that match the query string.
       type: Object
-    - contextPath: Jira.GetUsersAndGroups.Groups
+    - contextPath: Jira.UsersAndGroups.Groups
       description: The Groups that match the query string.
       type: Object
   - arguments:
