@@ -1,0 +1,29 @@
+{
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Dummy Sample Alert Name"
+            }
+          ]
+        },
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
+    }
+  },
+  "description": "This trigger is responsible for handling the 'Dummy Sample Alert Name' alerts",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "playbook_id": "silent-Dummy Sample Detection Playbook",
+  "suggestion_reason": "Recommended for 'Dummy Sample Alert Name' alerts",
+  "trigger_id": "00000000000000000000000000000001",
+  "trigger_name": "silent-Dummy Sample Detection Trigger"
+}
