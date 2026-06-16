@@ -1,0 +1,24 @@
+{
+    "name": "Cisco ETD Connector",
+    "description": "Cisco Email Threat Defense (ETD) integration for Cortex XSIAM providing ETD message event log ingestion, email threat analytics.",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "Nusummit",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Email",
+        "ETD"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "firstCreated": "2026-06-15T12:20:10Z",
+    "githubUser": []
+}
