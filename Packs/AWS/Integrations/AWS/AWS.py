@@ -839,7 +839,7 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
 
 def validate_network_firewall_identifier(args: dict, obj: str):
     """
-    Validates that at least one of the network firewall identifiers (FirewallName or FirewallArn) is provided and raises
+    Validates that at least one of the network firewall identifiers is provided and raises
     a DemistoException otherwise.
 
     Args:
@@ -892,7 +892,7 @@ def create_network_firewall_policy_obj(args: dict) -> dict:
         }
     )
     if not firewall_policy_object:
-        raise DemistoException("Please specify at least on of the characterize firewall policy arguments.")
+        raise DemistoException("Please specify at least one of the characterize firewall policy arguments.")
     return firewall_policy_object
 
 

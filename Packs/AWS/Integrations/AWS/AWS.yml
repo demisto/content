@@ -18858,7 +18858,7 @@ script:
       type: Boolean
 
   - name: aws-network-firewall-firewall-policy-create
-    description: "Creates the firewall policy for the firewall according to the specifications. You must specify at least on of the characterize firewall policy arguments. Required permissions: network-firewall:CreateFirewallPolicy."
+    description: "Creates the firewall policy for the firewall according to the specifications. You must specify at least one of the characterize firewall policy arguments. Required permissions: network-firewall:CreateFirewallPolicy."
     arguments:
     - name: account_id
       description: The AWS account ID.

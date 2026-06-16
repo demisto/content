@@ -19256,7 +19256,7 @@ def test_create_network_firewall_policy_obj_empty_args_raises():
     args: dict = {}
 
     # When / Then
-    with pytest.raises(DemistoException, match="Please specify at least on of the characterize firewall policy arguments."):
+    with pytest.raises(DemistoException, match="Please specify at least one of the characterize firewall policy arguments."):
         create_network_firewall_policy_obj(args)
 
 
