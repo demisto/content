@@ -19105,10 +19105,10 @@ def test_validate_network_firewall_identifier_with_name_only():
     from AWS import validate_network_firewall_identifier
 
     # Given
-    kwargs = {"FirewallName": "my-firewall"}
+    args = {"firewall_name": "my-firewall"}
 
     # When / Then (no exception expected)
-    validate_network_firewall_identifier(kwargs, "Firewall")
+    validate_network_firewall_identifier(args, "firewall")
 
 
 def test_validate_network_firewall_identifier_with_arn_only():
@@ -19123,10 +19123,10 @@ def test_validate_network_firewall_identifier_with_arn_only():
     from AWS import validate_network_firewall_identifier
 
     # Given
-    kwargs = {"FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/my-firewall"}
+    args = {"firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/my-firewall"}
 
     # When / Then (no exception expected)
-    validate_network_firewall_identifier(kwargs, "Firewall")
+    validate_network_firewall_identifier(args, "firewall")
 
 
 def test_validate_network_firewall_identifier_with_both_identifiers():
@@ -19141,13 +19141,13 @@ def test_validate_network_firewall_identifier_with_both_identifiers():
     from AWS import validate_network_firewall_identifier
 
     # Given
-    kwargs = {
-        "FirewallName": "my-firewall",
-        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/my-firewall",
+    args = {
+        "firewall_name": "my-firewall",
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/my-firewall",
     }
 
     # When / Then (no exception expected)
-    validate_network_firewall_identifier(kwargs, "Firewall")
+    validate_network_firewall_identifier(args, "firewall")
 
 
 def test_validate_network_firewall_identifier_custom_obj_prefix():
@@ -19164,10 +19164,10 @@ def test_validate_network_firewall_identifier_custom_obj_prefix():
     from AWS import validate_network_firewall_identifier
 
     # Given
-    kwargs = {"FirewallPolicyName": "my-policy"}
+    args = {"firewall_policy_name": "my-policy"}
 
     # When / Then (no exception expected)
-    validate_network_firewall_identifier(kwargs, "FirewallPolicy")
+    validate_network_firewall_identifier(args, "firewall_policy")
 
 
 def test_validate_network_firewall_identifier_missing_both_raises():
@@ -19184,14 +19184,14 @@ def test_validate_network_firewall_identifier_missing_both_raises():
     from AWS import validate_network_firewall_identifier
 
     # Given
-    kwargs = {"SomeOtherKey": "value"}
+    args = {"SomeOtherKey": "value"}
 
     # When / Then
     with pytest.raises(
         DemistoException,
         match="Please enter at least one of the network firewall identifier arguments.",
     ):
-        validate_network_firewall_identifier(kwargs, "Firewall")
+        validate_network_firewall_identifier(args, "firewall")
 
 
 def test_validate_network_firewall_identifier_empty_kwargs_raises():
@@ -19206,14 +19206,14 @@ def test_validate_network_firewall_identifier_empty_kwargs_raises():
     from AWS import validate_network_firewall_identifier
 
     # Given
-    kwargs: dict = {}
+    args: dict = {}
 
     # When / Then
     with pytest.raises(
         DemistoException,
         match="Please enter at least one of the network firewall identifier arguments.",
     ):
-        validate_network_firewall_identifier(kwargs, "Firewall")
+        validate_network_firewall_identifier(args, "firewall")
 
 
 def test_validate_network_firewall_identifier_wrong_obj_prefix_raises():
@@ -19230,36 +19230,34 @@ def test_validate_network_firewall_identifier_wrong_obj_prefix_raises():
     from AWS import validate_network_firewall_identifier
 
     # Given
-    kwargs = {"FirewallName": "my-firewall"}
+    args = {"firewall_name": "my-firewall"}
 
     # When / Then
     with pytest.raises(
         DemistoException,
         match="Please enter at least one of the network firewall identifier arguments.",
     ):
-        validate_network_firewall_identifier(kwargs, "FirewallPolicy")
+        validate_network_firewall_identifier(args, "firewall_policy")
 
 
-def test_create_network_firewall_policy_obj_empty_args_returns_empty_dict():
+def test_create_network_firewall_policy_obj_empty_args_raises():
     """
     Given:
         - An empty args dict (no policy fields supplied).
     When:
         - create_network_firewall_policy_obj is called.
     Then:
-        - It should return an empty dict because remove_empty_elements strips
-          all empty/None values.
+        - It should raise a DemistoException because remove_empty_elements strips
+          all empty/None values, leaving an empty policy object.
     """
     from AWS import create_network_firewall_policy_obj
 
     # Given
     args: dict = {}
 
-    # When
-    result = create_network_firewall_policy_obj(args)
-
-    # Then
-    assert result == {}
+    # When / Then
+    with pytest.raises(DemistoException, match="Please specify at least on of the characterize firewall policy arguments."):
+        create_network_firewall_policy_obj(args)
 
 
 def test_create_network_firewall_policy_obj_simple_list_fields():

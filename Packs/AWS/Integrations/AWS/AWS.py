@@ -837,20 +837,31 @@ def aws_ec2_fleet_create_args_builder(args: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def validate_network_firewall_identifier(kwargs: dict, obj: str):
+def validate_network_firewall_identifier(args: dict, obj: str):
     """
     Validates that at least one of the network firewall identifiers (FirewallName or FirewallArn) is provided and raises
     a DemistoException otherwise.
 
     Args:
-        kwargs (dict): The arguments dictionary containing the firewall identifiers.
+        args (dict): The command arguments dictionary containing the firewall identifiers.
         obj (str): The identifier object (firewall, firewall policy, etc.).
     """
-    if f"{obj}Name" not in kwargs and f"{obj}Arn" not in kwargs:
+    if f"{obj}_name" not in args and f"{obj}_arn" not in args:
         raise DemistoException("Please enter at least one of the network firewall identifier arguments.")
 
 
 def create_network_firewall_policy_obj(args: dict) -> dict:
+    """
+    Builds an AWS Network Firewall policy object from the provided command arguments. Parses the JSON-string
+    arguments (stateless custom actions, stateful rule group references, and policy rule variables), assembles
+    the firewall policy structure, and removes any empty elements before returning it.
+
+    Args:
+        args (dict): The command arguments containing the firewall policy configuration.
+
+    Returns:
+        dict: A dictionary representing the Network Firewall policy, with empty elements removed.
+    """
     stateless_custom_actions_raw = args.get("stateless_custom_actions")
     stateful_rule_group_references_raw = args.get("stateful_rule_group_references")
     rule_variables_raw = args.get("policy_rule_variables")
@@ -861,7 +872,7 @@ def create_network_firewall_policy_obj(args: dict) -> dict:
     )
     rule_variables = parse_json_string(rule_variables_raw) if rule_variables_raw else None
 
-    return remove_empty_elements(
+    firewall_policy_object = remove_empty_elements(
         {
             "StatelessRuleGroupReferences": parse_resource_arn_priority_field(args.get("stateless_rule_group_references")),
             "StatelessDefaultActions": argToList(args.get("stateless_default_actions")),
@@ -880,6 +891,9 @@ def create_network_firewall_policy_obj(args: dict) -> dict:
             "PolicyVariables": {"RuleVariables": rule_variables},
         }
     )
+    if not firewall_policy_object:
+        raise DemistoException("Please specify at least on of the characterize firewall policy arguments.")
+    return firewall_policy_object
 
 
 class AWSErrorHandler:
@@ -9809,9 +9823,9 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall information
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {"FirewallName": args.get("firewall_name"), "FirewallArn": args.get("firewall_arn")}
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs, "Firewall")
         print_debug_logs(client, f"Describing firewall with parameters: {kwargs.keys()}")
         response = client.describe_firewall(**kwargs)
 
@@ -9981,12 +9995,12 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall information
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {
             "FirewallName": args.get("firewall_name"),
             "FirewallArn": args.get("firewall_arn"),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs, "Firewall")
         print_debug_logs(client, f"Deleting firewall with parameters: {kwargs.keys()}")
         response = client.delete_firewall(**kwargs)
 
@@ -10011,6 +10025,7 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall information
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {
             "UpdateToken": args.get("update_token"),
             "FirewallName": args.get("firewall_name"),
@@ -10018,7 +10033,6 @@ class NetworkFirewall:
             "DeleteProtection": arg_to_bool_or_none(args.get("delete_protection")),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs, "Firewall")
 
         print_debug_logs(client, f"Updating firewall delete protection with parameters: {kwargs.keys()}")
         response = client.update_firewall_delete_protection(**kwargs)
@@ -10043,6 +10057,7 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall information
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {
             "UpdateToken": args.get("update_token"),
             "FirewallName": args.get("firewall_name"),
@@ -10050,7 +10065,6 @@ class NetworkFirewall:
             "Description": args.get("description"),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs, "Firewall")
 
         print_debug_logs(client, f"Updating firewall description with parameters: {kwargs.keys()}")
         response = client.update_firewall_description(**kwargs)
@@ -10089,8 +10103,9 @@ class NetworkFirewall:
 
         firewall_policies = response.get("FirewallPolicies", [])
 
-        key_map = {"Name": "FirewallPolicyName", "Arn": "FirewallPolicyArn"}
-        updated_firewall_policies = [{key_map.get(k, k): v for k, v in d.items()} for d in firewall_policies]
+        updated_firewall_policies = [
+            {"FirewallPolicyName": policy.get("Name"), "FirewallPolicyArn": policy.get("Arn")} for policy in firewall_policies
+        ]
 
         outputs = {
             "AWS.NetworkFirewall.FirewallPolicies(val.FirewallPolicyArn == obj.FirewallPolicyArn)": updated_firewall_policies,
@@ -10121,9 +10136,9 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall policy information
         """
+        validate_network_firewall_identifier(args, "firewall_policy")
         kwargs = {"FirewallPolicyName": args.get("firewall_policy_name"), "FirewallPolicyArn": args.get("firewall_policy_arn")}
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs, "FirewallPolicy")
         print_debug_logs(client, f"Describing firewall policy with parameters: {kwargs}")
         response = client.describe_firewall_policy(**kwargs)
         response = serialize_response_with_datetime_encoding(response)
@@ -10222,6 +10237,7 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall policy association information
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {
             "UpdateToken": args.get("update_token"),
             "FirewallName": args.get("firewall_name"),
@@ -10229,7 +10245,6 @@ class NetworkFirewall:
             "FirewallPolicyArn": args.get("firewall_policy_arn"),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs, "Firewall")
 
         print_debug_logs(client, f"Associating firewall policy with parameters: {kwargs}")
         response = client.associate_firewall_policy(**kwargs)
@@ -10260,12 +10275,12 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall policy information
         """
+        validate_network_firewall_identifier(args, "firewall_policy")
         kwargs = {
             "FirewallPolicyName": args.get("firewall_policy_name"),
             "FirewallPolicyArn": args.get("firewall_policy_arn"),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs, "FirewallPolicy")
         print_debug_logs(client, f"Deleting firewall policy with parameters: {kwargs}")
         response = client.delete_firewall_policy(**kwargs)
         response = serialize_response_with_datetime_encoding(response)
@@ -10293,8 +10308,8 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall policy information
         """
+        validate_network_firewall_identifier(args, "firewall_policy")
         firewall_policy = create_network_firewall_policy_obj(args)
-
         kwargs = remove_empty_elements(
             {
                 "UpdateToken": args.get("update_token"),
@@ -10308,7 +10323,6 @@ class NetworkFirewall:
                 },
             }
         )
-        validate_network_firewall_identifier(kwargs, "FirewallPolicy")
 
         print_debug_logs(client, f"Updating firewall policy with parameters: {kwargs}")
         response = client.update_firewall_policy(**kwargs)
@@ -10335,6 +10349,7 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with firewall policy information
         """
+        validate_network_firewall_identifier(args, "firewall")
         kwargs = {
             "UpdateToken": args.get("update_token"),
             "FirewallName": args.get("firewall_name"),
@@ -10342,7 +10357,6 @@ class NetworkFirewall:
             "FirewallPolicyChangeProtection": arg_to_bool_or_none(args.get("firewall_policy_change_protection")),
         }
         remove_nulls_from_dictionary(kwargs)
-        validate_network_firewall_identifier(kwargs, "Firewall")
 
         print_debug_logs(client, f"Updating firewall policy change protection with parameters: {kwargs}")
         response = client.update_firewall_policy_change_protection(**kwargs)
