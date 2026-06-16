@@ -15,7 +15,7 @@
 <li><strong>Client X509 Cert URL</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>?
-</li>
+</li>??
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
