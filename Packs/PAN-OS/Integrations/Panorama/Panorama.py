@@ -204,7 +204,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     "home-and-garden",
     "hunting-and-fishing",
     "insufficient-content",
-    "internet-Communications-and-telephony",
+    "internet-communications-and-telephony",
     "internet-portals",
     "job-search",
     "legal",
