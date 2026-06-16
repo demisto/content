@@ -494,14 +494,13 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.9999999
+  dockerimage: demisto/py42:1.0.0.6978288
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
-toversion: 6.10.0
 defaultclassifier: Code42 - Classifier
 defaultmapperin: Code42 - Mapping
 tests:

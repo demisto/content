@@ -1,0 +1,102 @@
+category: Email2
+provider: Microsoft
+SectiOnorder:
+- Connect
+- Collect
+- Configurations
+commonfields:
+  id: O365 Message Trace Event Collector
+  version: -1
+
+- name: base_url
+  display: Server URL
+  required: true
+  defaultvalue: 'https://reports.office365.com/ecp/reportingwebservice/reporting.svc'
+  type: 0
+  additionalinfo: The Office 365 Reporting Web Service endpoint used to query message trace records.
+  section: Connect
+- name: credentials
+  display: Username
+  required: true
+  type: 9
+  displaypassword: Password
+  hiddenusername: false
+  additionalinfo: Username and password of an account with access to the Office 365 Reporting Web Service.
+
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- name: max_fetch
+  display: Maximum number of events per fetch
+  required: false
+  defaultvalue: '5000'
+  type: 0
+  additionalinfo: The maximum number of message trace events to retrieve per fetch. Large values may impact performance.
+  section: Collect
+- name: first_fetch
+  display: First fetch time
+  required: false
+  defaultvalue: '3 days'
+  type: 0
+  additionalinfo: 'The time range to fetch events from on the first run (e.g., 12 hours, 3 days).'
+  section: Collect
+- name: eventFetchInterval
+  display: Events Fetch Interval
+  required: false
+  defaultvalue: '1'
+  type: 19
+  section: Collect
+  advanced: true
+description: Use the O365 Message Trace Event Collector to fetch message trace logs from the Office 365 Reporting Web Service into Cortex XSIAM.
+
+name: O365 Message Trace Event Collector
+script:
+  commands:
+  - name: o365-message-trace-get-events
+    description: Returns message trace events from the Office 365 Reporting Web Service. Used for development/debugging and should be used with caution, as setting should_push_events to true can create duplicate events and consume the API quota.
+    deprecated: false
+    arguments:
+    - name: should_push_events
+      auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set to True to create events in Cortex XSIAM; otherwise the command only displays them.
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+    - name: limit
+      description: The maximum number of events to return.
+      required: false
+      isArray: false
+      defaultValue: '50'
+    - name: start_date
+      description: 'The earliest event time. Time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z" (e.g., "2024-05-18T13:45:14Z").'
+      required: false
+      isArray: false
+    - name: end_date
+      description: 'The latest event time. Time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z" (e.g., "2024-05-18T13:45:14Z").'
+      required: false
+      isArray: false
+    outputs: []
+  runonce: false
+  isfetchevents: true
+  dockerimage: demisto/python3:3.12.8.3296088
+  feed: false
+fromversion: 6.0.0
+toversion: 5.0.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
