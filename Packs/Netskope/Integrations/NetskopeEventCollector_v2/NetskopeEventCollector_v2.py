@@ -2,6 +2,8 @@ from itertools import chain
 from aiohttp import ClientResponseError
 import asyncio
 import aiohttp
+import gzip
+import io
 import traceback
 
 import demistomock as demisto
@@ -24,7 +26,10 @@ RATE_LIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
 RATE_LIMIT_RESET = "ratelimit-reset"  # Rate limit RESET value is in seconds
 VENDOR = "netskope"
 PRODUCT = "netskope"
-XSIAM_SEM = asyncio.Semaphore(20)
+# Bounds how many page-sends run concurrently. Each in-flight send holds (at most) one page's
+# gzip buffer, so this directly caps the send-side memory footprint. Lowered from 20 -> 5 as part
+# of the CIAC-16981 memory fix (we are memory-bound, not time-bound: ~2000 ev/s, well within cycle window).
+XSIAM_SEM = asyncio.Semaphore(5)
 
 # Event type configuration mapping
 # Each event type can have specific endpoint, time parameters, and count field configurations
@@ -130,7 +135,9 @@ _MEM_T0: float = 0.0  # MEM DIAG (REMOVE — CIAC-16981): cycle start time, set 
 
 # Unique stamp printed at the start of every cycle so we can confirm in the engine logs that THIS
 # instrumented build is the one actually running on the tenant (not a cached/older upload).
-_MEM_BUILD_STAMP = "CIAC-16981-mem-probe-v1"  # MEM DIAG (REMOVE — CIAC-16981)
+# v2 = measurement probes + the memory FIX (send-and-flush + local streaming sender + XSIAM_SEM=5).
+# v1 was measurement-only. Bumping this lets us confirm in the engine logs that the FIXED build is live.
+_MEM_BUILD_STAMP = "CIAC-16981-fix-v3"  # MEM DIAG (REMOVE — CIAC-16981): v3 adds per-step sender probes
 
 
 def _mem_peak() -> float:  # MEM DIAG (REMOVE — CIAC-16981)
@@ -256,6 +263,80 @@ class Client:
 
 
 """ HELPER FUNCTIONS """
+
+
+def stream_send_events_to_xsiam(events: list[dict], vendor: str, product: str) -> int:
+    """Memory-safe replacement for ``send_events_to_xsiam`` (CIAC-16981, "Method F").
+
+    The shared ``send_events_to_xsiam`` builds 3-4 full in-memory copies of the batch
+    (``[json.dumps(x) for x]`` -> ``'\\n'.join`` -> gzip) which all exist at once at the peak.
+    This streams the page into a gzip buffer **one event at a time**, popping each event off the
+    source list as it is compressed, so the only uncompressed object alive is a single page plus
+    the (small) growing compressed buffer - never a second full copy of the page.
+
+    Note: this is a local integration copy. Once "Method F" lands in CommonServerPython, this can be
+    removed and the call switched back to ``send_events_to_xsiam``.
+
+    Args:
+        events (list[dict]): the page of events to send. **Consumed** (emptied) by this function.
+        vendor (str): the XSIAM vendor tag.
+        product (str): the XSIAM product tag.
+
+    Returns:
+        int: the number of events sent.
+    """
+    if not events:
+        return 0
+    n = len(events)
+    _mem_log("sender.0_received_page", _MEM_T0, _mem_peak(), extra=f"events={n}")  # MEM DIAG (REMOVE — CIAC-16981)
+    buf = io.BytesIO()
+    with gzip.GzipFile(fileobj=buf, mode="wb") as gz:
+        while events:  # drain the list so the source shrinks while the compressed output grows
+            event = events.pop()
+            gz.write((json.dumps(event) + "\n").encode("utf-8"))
+            # `event` is dropped here, before the next iteration
+    zipped = buf.getvalue()
+    # MEM DIAG (REMOVE — CIAC-16981): after gzip, BOTH buf and its copy `zipped` are alive (~2x zip size)
+    _mem_log("sender.1_after_gzip", _MEM_T0, _mem_peak(), extra=f"events_drained zip_bytes={len(zipped)}")
+    del buf
+    # MEM DIAG (REMOVE — CIAC-16981): after `del buf` - shows whether dropping the BytesIO frees the duplicate
+    _mem_log("sender.2_after_del_buf", _MEM_T0, _mem_peak(), extra=f"zip_bytes={len(zipped)}")
+    _post_gzipped_events(zipped, vendor=vendor, product=product)
+    _mem_log("sender.3_after_post", _MEM_T0, _mem_peak(), extra=f"zip_bytes={len(zipped)}")  # MEM DIAG (REMOVE — CIAC-16981)
+    del zipped
+    _mem_log("sender.4_after_del_zipped", _MEM_T0, _mem_peak(), extra="page_fully_freed")  # MEM DIAG (REMOVE — CIAC-16981)
+    return n
+
+
+def _post_gzipped_events(zipped: bytes, vendor: str, product: str) -> None:
+    """POST pre-gzipped events to the XSIAM HTTP collector (CIAC-16981, "Method F").
+
+    Reproduces the headers/auth of ``send_events_to_xsiam`` and delegates the actual request +
+    retry handling to the public ``xsiam_api_call_with_retries`` - no CommonServerPython edit needed.
+    """
+    calling_context = demisto.callingContext.get("context", {})
+    xsiam_url = "https://api-{}".format(demisto.getLicenseCustomField("Http_Connector.url"))
+    headers = {
+        "authorization": demisto.getLicenseCustomField("Http_Connector.token"),
+        "format": "json",
+        "product": product,
+        "vendor": vendor,
+        "content-encoding": "gzip",
+        "collector-name": calling_context.get("IntegrationBrand", ""),
+        "instance-name": calling_context.get("IntegrationInstance", ""),
+        "final-reporting-device": demisto.params().get("url", ""),
+        "collector-type": "events",
+    }
+    client = BaseClient(base_url=xsiam_url, proxy=False)
+    xsiam_api_call_with_retries(
+        client=client,
+        xsiam_url=xsiam_url,
+        zipped_data=zipped,
+        headers=headers,
+        num_of_attempts=MAX_RETRY,
+        is_json_response=True,
+        data_type="events",
+    )
 
 
 def next_trigger_time(num_of_events, max_fetch, new_last_run):
@@ -480,37 +561,62 @@ async def handle_event_type_async(
         demisto.error(msg)
         raise DemistoException(msg, exception=failures[0])
     failures_data = handle_errors(failures)
-    events = list(chain.from_iterable(success_res))
 
-    res_dict = {"events": events, "failures": failures_data}
-    demisto.debug(f"[{coord_id}] Fetched {len(events)} {event_type} events")
+    # success_res items are EITHER ints (per-page counts, send-and-flush fetch path) OR lists of
+    # event dicts (get-events/test path). Build the events list only when we actually have objects.
+    if success_res and isinstance(success_res[0], int):
+        # fetch-events path: pages were already sent & freed; we only have counts.
+        events = []  # nothing accumulated - this is the memory win (CIAC-16981)
+        events_count = sum(success_res)
+    else:
+        events = list(chain.from_iterable(success_res))
+        events_count = len(events)
+
+    # `events_count` is always the real number fetched (even on the send-and-flush path where
+    # `events` is empty); callers use it for next_trigger and "Fetched N" logging without holding data.
+    res_dict = {"events": events, "events_count": events_count, "failures": failures_data}
+    demisto.debug(f"[{coord_id}] Fetched {events_count} {event_type} events")
     if not is_re_fetch_failed_fetch:
         # if we are retrying a failed fetch (is_re_fetch_failed_fetch=True)
         # no additional info is needed, as we are only trying to fetch the same chunk again.
-        if len(events) == limit:
+        if events_count == limit:
             # meaning, there may be another events to fetch for the current time "window"
             # save the start_time and end_time and the next offset
 
             next_fetch_data = {
                 "next_fetch_start_time": start_time,
                 "next_fetch_end_time": end_time,
-                "next_fetch_offset": offset + len(events),
+                "next_fetch_offset": offset + events_count,
             }
             demisto.debug(
-                f"[{coord_id}] fetched {(len(events) == limit)=}, need to store the time window and offset "
+                f"[{coord_id}] fetched {(events_count == limit)=}, need to store the time window and offset "
                 f"for next fetch, {next_fetch_data=}"
             )
             res_dict |= next_fetch_data
         else:
             res_dict |= {"next_fetch_start_time": end_time}
 
-    demisto.debug(f"[{coord_id}] Completed event_type processing, returning {len(events)} events")
+    demisto.debug(f"[{coord_id}] Completed event_type processing, returning {events_count} events")
     return event_type, res_dict
 
 
 async def fetch_and_send_events_async(
     client: Client, type: str, request_params: dict, limit: int, send_to_xsiam: bool, is_re_fetch_failed_fetch: bool = False
 ) -> tuple[list, list]:
+    """Fetch all pages for a single event type.
+
+    Memory model (CIAC-16981 "send-and-flush"): when ``send_to_xsiam`` is True (the fetch-events
+    path), each page is streamed to XSIAM and **freed immediately** - ``_handle_page`` returns only
+    the page's event **count** (an int), never the event objects. This keeps peak memory bounded to
+    ~one page in flight regardless of total volume. When ``send_to_xsiam`` is False (the
+    netskope-get-events / test path), the actual events are returned so the command can display them.
+
+    Returns:
+        tuple(success, failures): ``success`` is a list whose items are either ints (per-page counts,
+        when sending to XSIAM) or lists of event dicts (when not sending); ``failures`` is a list of
+        exceptions raised while handling pages.
+    """
+
     async def _handle_page(params):
         async def _fetch_page():
             retry_count = 0
@@ -536,29 +642,33 @@ async def fetch_and_send_events_async(
             return {}
 
         async def _send_page_to_xsiam(events):
+            # Send-and-flush: stream this page to XSIAM (Method F) and free it. `events` is consumed.
             async with XSIAM_SEM:
                 demisto.debug(f"send {len(events)} events to xsiam")
-                _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM just before the (copy-heavy) CSP send
+                _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM just before the streaming send
                     f"send_page.BEFORE type={type}", _MEM_T0, _mem_peak(), extra=f"page_events={len(events)}"
                 )
-                await asyncio.to_thread(
-                    send_events_to_xsiam, events=events, vendor=VENDOR, product=PRODUCT, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT
-                )
+                await asyncio.to_thread(stream_send_events_to_xsiam, events, VENDOR, PRODUCT)
                 _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM right after the send returns
-                    f"send_page.AFTER type={type}", _MEM_T0, _mem_peak(), extra=f"page_events={len(events)}"
+                    f"send_page.AFTER type={type}", _MEM_T0, _mem_peak(), extra="page_freed"
                 )
 
         try:
             res = await _fetch_page()
             events = res.get("result", [])
             events = prepare_events(events, type)
+            page_count = len(events)
             _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM after a page is fetched+prepared (held in memory)
-                f"page_ready type={type}", _MEM_T0, _mem_peak(), extra=f"page_events={len(events)}"
+                f"page_ready type={type}", _MEM_T0, _mem_peak(), extra=f"page_events={page_count}"
             )
             if send_to_xsiam:
+                # stream-send then DROP the page: return only the count so nothing accumulates upstream
                 await _send_page_to_xsiam(events)
+                del events
+                return page_count
         except Exception as e:
             raise DemistoException(message=str(e), exception=e, res=params)
+        # get-events / test path: caller needs the actual events
         return events
 
     async def _handle_all_pages():
@@ -609,7 +719,7 @@ async def fetch_and_send_events_async(
 
 async def handle_fetch_and_send_all_events(
     client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_SIZE, send_to_xsiam=False
-) -> tuple[list[dict], dict]:
+) -> tuple[list[dict], int, dict]:
     """
     Iterates over all supported event types and call the handle event fetch logic and send the events to XSIAM.
 
@@ -626,7 +736,8 @@ async def handle_fetch_and_send_all_events(
         send_to_xsiam(bool): Whether to send the fetched events to XSIAM or not.
 
     Returns:
-        list: The accumulated list of all events.
+        list: The accumulated list of all events (empty on the send-and-flush fetch path - CIAC-16981).
+        int: The total number of events fetched (valid even when the events list is not held).
         dict: The updated last_run object.
     """
     start = time.time()
@@ -636,6 +747,7 @@ async def handle_fetch_and_send_all_events(
     remove_unsupported_event_types(last_run, client.event_types_to_fetch)
 
     all_events = []
+    total_events_count = 0  # real count fetched across all types (independent of whether we hold events)
     epoch_current_time = str(int(arg_to_datetime("now").timestamp()))  # type: ignore[union-attr]
     epoch_last_day = str(int(arg_to_datetime("1 day").timestamp()))  # type: ignore[union-attr]
     page_size = min(limit, MAX_EVENTS_PAGE_SIZE)
@@ -688,7 +800,8 @@ async def handle_fetch_and_send_all_events(
         if isinstance(task_result, tuple):
             event_type, event_type_res = task_result
             # event_type_res is in structure of:
-            # {'events':[...], ''failures':[...], additional data like next_run_start_time, next_run_offset}
+            # {'events':[...], 'events_count': N, 'failures':[...], additional data like next_run_start_time, next_run_offset}
+            total_events_count += int(event_type_res.pop("events_count", 0))
             all_events.extend(event_type_res.pop("events", []))
             existing_failures = demisto.get(new_last_run, f"{event_type}.failures", defaultParam=[])
             existing_failures.extend(event_type_res.pop("failures", []))
@@ -705,20 +818,22 @@ async def handle_fetch_and_send_all_events(
                 )
             new_last_run[event_type]["failures"] = existing_failures[:MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE]
 
-    demisto.debug(f"Handled {len(all_events)} total events in {time.time() - start:.2f} seconds")
-    _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM after the full accumulated all_events list is built
+    demisto.debug(f"Handled {total_events_count} total events in {time.time() - start:.2f} seconds")
+    _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM after accumulation step (events list is empty on fetch path)
         "all_types.AFTER_accumulate", _MEM_T0, _mem_peak(),
-        extra=f"all_events={len(all_events)} cycle_time={time.time() - start:.2f}s",
+        extra=f"events_held={len(all_events)} total_count={total_events_count} cycle_time={time.time() - start:.2f}s",
     )
 
-    return all_events, new_last_run
+    return all_events, total_events_count, new_last_run
 
 
 async def get_events_command_async(
     client: Client, args: dict[str, Any], last_run: dict, send_to_xsiam: bool = False
 ) -> CommandResults:
     limit = arg_to_number(args.get("limit")) or 10
-    events, _ = await handle_fetch_and_send_all_events(client=client, last_run=last_run, limit=limit, send_to_xsiam=send_to_xsiam)
+    events, _, _ = await handle_fetch_and_send_all_events(
+        client=client, last_run=last_run, limit=limit, send_to_xsiam=send_to_xsiam
+    )
 
     for event in events:
         event["timestamp"] = timestamp_to_datestring(event["timestamp"] * 1000)
@@ -795,16 +910,17 @@ async def main() -> None:  # pragma: no cover
                     extra=f"max_fetch={max_fetch} types={event_types_to_fetch}",
                 )
                 with _MEM_SAMPLER:
-                    all_events, new_last_run = await handle_fetch_and_send_all_events(
+                    # send-and-flush: events are sent per page and freed; we only get the total count back
+                    _all_events, total_events_count, new_last_run = await handle_fetch_and_send_all_events(
                         client=client, last_run=last_run, limit=max_fetch, send_to_xsiam=True
                     )
-                    demisto.debug(f"Fetched {len(all_events)} total events.")
-                    next_trigger_time(len(all_events), max_fetch, new_last_run)
+                    demisto.debug(f"Fetched {total_events_count} total events.")
+                    next_trigger_time(total_events_count, max_fetch, new_last_run)
                     demisto.debug(f"Setting the last_run to: {new_last_run}")
                     demisto.setLastRun(new_last_run)
                 _mem_log(  # end-of-cycle summary: this rss_peak is the headline number to compare before/after
                     f"CYCLE_END build={_MEM_BUILD_STAMP}", _MEM_T0, _mem_peak(),
-                    extra=f"total_events={len(all_events)}",
+                    extra=f"total_events={total_events_count}",
                 )
                 _MEM_SAMPLER = None
                 # ===== END MEM DIAG (CIAC-16981) =====
