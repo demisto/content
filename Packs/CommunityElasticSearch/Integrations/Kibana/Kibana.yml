@@ -1,3 +1,5 @@
+display: Kibana
+name: Kibana
 category: Analytics & SIEM
 commonfields:
   id: Kibana
@@ -74,8 +76,6 @@ configuration:
   section: Connect
   type: 0
 description: This integration enables using Elastic Security for SIEM for security operations management and searching Elastic logs. This pack is to be used in combination with the Elasticsearch v2 integration.
-display: Kibana
-name: Kibana
 script:
   commands:
   - arguments:
@@ -88,7 +88,7 @@ script:
       - in-progress
       - closed
     - auto: PREDEFINED
-      description: The status of the cases to retrieve.
+      description: The severity of the cases to retrieve.
       name: severity
       predefined:
       - critical

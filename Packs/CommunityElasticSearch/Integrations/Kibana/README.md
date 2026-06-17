@@ -7,7 +7,7 @@ This integration enables using Elastic Security for SIEM for security operations
 | Server URL | The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments. | True |
 | Elastic API Port | The default port for the Elastic API is 9200. | False |
 | Kibana API Port | The default port for the Kibana API is 443. | False |
-| Authorization type | Select the authentication type and enter the appropriate credentials:- Basic Auth: Enter Username and Password.- Bearer Auth: Enter Username and Password.- API Key Auth: Enter the API Key ID and API Key. | False |
+| Authorization type | Select the authentication type and enter the appropriate credentials: <br> - Basic Auth: Enter Username and Password. <br> - Bearer Auth: Enter Username and Password. <br> - API Key Auth: Enter the API Key ID and API Key. | False |
 | API key ID |  | False |
 | API Key |  | False |
 | Username | Provide Username + Password instead of API key + API ID | False |
@@ -36,16 +36,16 @@ List cases in Kibana
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | status | The status of the cases to retrieve. Possible values are: open, in-progress, closed. Default is open. | Optional | 
-| severity | The status of the cases to retrieve. Possible values are: critical, high, medium, low. | Optional | 
+| severity | The severity of the cases to retrieve. Possible values are: critical, high, medium, low. | Optional | 
 | from_time | Earliest time to search from (e.g. 2025-10-02T00:27:58.162Z). | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.Cases.Status | unknown | Status of the case in Kibana | 
-| Kibana.Cases.Version | unknown | Version number of the case in Kibana | 
-| Kibana.Cases.ID | unknown | ID number of the case in Kibana | 
+| Kibana.Cases.Status | string | Status of the case in Kibana | 
+| Kibana.Cases.Version | string | Version number of the case in Kibana | 
+| Kibana.Cases.ID | string | ID number of the case in Kibana | 
 
 ### kibana-case-alerts-find
 
@@ -66,7 +66,7 @@ Returns information on the alerts of input case in Kibana.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.CaseAlerts.ID | unknown | ID of alerts tied to case in Kibana | 
+| Kibana.CaseAlerts.ID | string | ID of alerts tied to case in Kibana | 
 
 ### kibana-alert-status-update
 
@@ -125,8 +125,8 @@ Get list of user spaces in Kibana
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.UserSpaces.description | unknown | Default user space description | 
-| Kibana.UserSpaces.disabledFeatures | unknown | List of disabled Kibana features | 
+| Kibana.UserSpaces.description | string | Default user space description | 
+| Kibana.UserSpaces.disabledFeatures | string | List of disabled Kibana features | 
 
 ### kibana-case-comments-find
 
@@ -147,8 +147,8 @@ Finds comments for an input case ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.CaseComments.version | unknown | Version number of the case comment in Kibana | 
-| Kibana.CaseComments.id | unknown | ID number of the case comment in Kibana | 
+| Kibana.CaseComments.version | string | Version number of the case comment in Kibana | 
+| Kibana.CaseComments.id | string | ID number of the case comment in Kibana | 
 
 ### kibana-case-delete
 
@@ -205,9 +205,9 @@ Retrieve details about detection rule in Kibana based on input KQL filter.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.RuleDetails.enabled | unknown | Whether the rule is enabled in Kibana | 
-| Kibana.RuleDetails.name | unknown | Name of the rule in Kibana | 
-| Kibana.RuleDetails.id | unknown | ID of the rule in Kibana | 
+| Kibana.RuleDetails.enabled | boolean | Whether the rule is enabled in Kibana | 
+| Kibana.RuleDetails.name | string | Name of the rule in Kibana | 
+| Kibana.RuleDetails.id | string | ID of the rule in Kibana | 
 
 ### kibana-case-comment-add
 
@@ -247,8 +247,8 @@ Search for list of users in Kibana and return user's UID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.UserList.username | unknown | Username of the user in Kibana | 
-| Kibana.UserList.roles | unknown | Associated roles of the user in Kibana | 
+| Kibana.UserList.username | string | Username of the user in Kibana | 
+| Kibana.UserList.roles | string | Associated roles of the user in Kibana | 
 
 ### kibana-alert-assign
 
@@ -288,11 +288,11 @@ Used to search for detection alerts in Kibana
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.DetectionAlerts.bhe.windows.security_id | unknown | Username associated with the detection alert | 
-| Kibana.DetectionAlerts.kibana.alert.original_data_stream.dataset | unknown | Dataset associated with the detection alert | 
-| Kibana.DetectionAlerts.message | unknown | Raw log message of the detection alert | 
-| Kibana.DetectionAlerts.kibana.alert.uuid | unknown | ID of the detection alert | 
-| Kibana.DetectionAlerts.kibana.alert.rule.name | unknown | Rule name associated with the detection alert | 
+| Kibana.DetectionAlerts.bhe.windows.security_id | string | Username associated with the detection alert | 
+| Kibana.DetectionAlerts.kibana.alert.original_data_stream.dataset | string | Dataset associated with the detection alert | 
+| Kibana.DetectionAlerts.message | string | Raw log message of the detection alert | 
+| Kibana.DetectionAlerts.kibana.alert.uuid | string | ID of the detection alert | 
+| Kibana.DetectionAlerts.kibana.alert.rule.name | string | Rule name associated with the detection alert | 
 
 ### kibana-alert-note-add
 
@@ -331,9 +331,9 @@ Get the health status of Kibana alerting framework
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.AlertingFrameworkHealth.alerting_framework_health.decryption_health.status | unknown | Whether Kibana can successfully decrypt encrypted alert data | 
-| Kibana.AlertingFrameworkHealth.alerting_framework_health.execution_health.status | unknown | Identify if rules are running on time or failing | 
-| Kibana.AlertingFrameworkHealth.alerting_framework_health.read_health.status | unknown | Ability to successfully retrieve rule configurations from internal Kibana indices | 
+| Kibana.AlertingFrameworkHealth.alerting_framework_health.decryption_health.status | string | Whether Kibana can successfully decrypt encrypted alert data | 
+| Kibana.AlertingFrameworkHealth.alerting_framework_health.execution_health.status | string | Identify if rules are running on time or failing | 
+| Kibana.AlertingFrameworkHealth.alerting_framework_health.read_health.status | string | Ability to successfully retrieve rule configurations from internal Kibana indices | 
 
 ### kibana-alert-rule-disable
 
@@ -389,9 +389,9 @@ Get a list of all exception list containers.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.ExceptionLists.name | unknown | The name of the exception list | 
-| Kibana.ExceptionLists.list_id | unknown | The list ID of the exception list | 
-| Kibana.ExceptionLists.description | unknown | The description of the exception list | 
+| Kibana.ExceptionLists.name | string | The name of the exception list | 
+| Kibana.ExceptionLists.list_id | string | The list ID of the exception list | 
+| Kibana.ExceptionLists.description | string | The description of the exception list | 
 
 ### kibana-value-list-create
 
@@ -432,9 +432,9 @@ Find all value lists in Kibana Detection Rules menu.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.ValueLists.name | unknown | The name of the Value List | 
-| Kibana.ValueLists.id | unknown | The ID of the Value List | 
-| Kibana.ValueLists.description | unknown | The description of the Value List | 
+| Kibana.ValueLists.name | string | The name of the Value List | 
+| Kibana.ValueLists.id | string | The ID of the Value List | 
+| Kibana.ValueLists.description | string | The description of the Value List | 
 
 ### kibana-value-list-items-import
 
@@ -494,9 +494,9 @@ Used to display entries in an input value list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.ValueListItems.value | unknown | The value of the value list item | 
-| Kibana.ValueListItems.id | unknown | The ID of the value list item | 
-| Kibana.ValueListItems.list_id | unknown | The list ID of the value list | 
+| Kibana.ValueListItems.value | string | The value of the value list item | 
+| Kibana.ValueListItems.id | string | The ID of the value list item | 
+| Kibana.ValueListItems.list_id | string | The list ID of the value list | 
 
 ### kibana-value-list-item-delete
 
@@ -553,9 +553,9 @@ Check Kibana's operational status
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.OperationalStatus.core.elasticsearch.level | unknown | Connection health between Kibana and Elasticsearch | 
-| Kibana.OperationalStatus.overall.level | unknown | Aggregated health status of the Kibana instance | 
-| Kibana.OperationalStatus.core.savedObjects.level | unknown | Health status of the Saved Objects repository | 
+| Kibana.OperationalStatus.core.elasticsearch.level | string | Connection health between Kibana and Elasticsearch | 
+| Kibana.OperationalStatus.overall.level | string | Aggregated health status of the Kibana instance | 
+| Kibana.OperationalStatus.core.savedObjects.level | string | Health status of the Saved Objects repository | 
 
 ### kibana-task-manager-health-get
 
@@ -575,10 +575,10 @@ Get the health status of the Kibana task manager.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.TaskManagerHealth.capacity_estimation.status | unknown | Kibana ability to handle scheduled tasks | 
-| Kibana.TaskManagerHealth.configuration.status | unknown | Tracks configuration status of Kibana task manager | 
-| Kibana.TaskManagerHealth.runtime.status | unknown | Tracks performance, drift, and load of Kibana task execution | 
-| Kibana.TaskManagerHealth.workload.status | unknown | Status of tasks running to identify potential overload | 
+| Kibana.TaskManagerHealth.capacity_estimation.status | string | Kibana ability to handle scheduled tasks | 
+| Kibana.TaskManagerHealth.configuration.status | string | Tracks configuration status of Kibana task manager | 
+| Kibana.TaskManagerHealth.runtime.status | string | Tracks performance, drift, and load of Kibana task execution | 
+| Kibana.TaskManagerHealth.workload.status | string | Status of tasks running to identify potential overload | 
 
 ### kibana-upgrade-readiness-status-get
 
@@ -598,8 +598,8 @@ Check the status of your cluster.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.UpgradeReadinessStatus.details | unknown | Details for what is needed prior to Kibana upgrades | 
-| Kibana.UpgradeReadinessStatus.readyForUpgrade | unknown | Whether Kibana is ready for upgrade or not | 
+| Kibana.UpgradeReadinessStatus.details | string | Details for what is needed prior to Kibana upgrades | 
+| Kibana.UpgradeReadinessStatus.readyForUpgrade | boolean | Whether Kibana is ready for upgrade or not | 
 
 ### kibana-case-comment-delete
 
@@ -658,8 +658,8 @@ Search for a single user's UID in Kibana by email address filter.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.UserData.profile_uid | unknown | User ID for tracking user activity and checking privileges | 
-| Kibana.UserData.roles | unknown | Roles tied to the user account | 
+| Kibana.UserData.profile_uid | string | User ID for tracking user activity and checking privileges | 
+| Kibana.UserData.roles | string | Roles tied to the user account | 
 
 ### kibana-case-information-get
 
@@ -680,7 +680,7 @@ Retrieve information for a specific case in Kibana.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Kibana.CaseInfo.status | unknown | Whether the case is open, in-progress, or closed | 
-| Kibana.CaseInfo.owner | unknown | The application that created the case | 
-| Kibana.CaseInfo.version | unknown | When updating case settings, version is required | 
-| Kibana.CaseInfo.id | unknown | Unique identifier for a case | 
+| Kibana.CaseInfo.status | string | Whether the case is open, in-progress, or closed | 
+| Kibana.CaseInfo.owner | string | The application that created the case | 
+| Kibana.CaseInfo.version | string | When updating case settings, version is required | 
+| Kibana.CaseInfo.id | string | Unique identifier for a case | 
