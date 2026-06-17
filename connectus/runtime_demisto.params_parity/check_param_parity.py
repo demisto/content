@@ -327,6 +327,14 @@ def _run_one_variant(
         connector_raw=connector_raw,
         integration_dropped=integration_dropped,
         connector_dropped=connector_dropped,
+        # Per-variant field SCOPING (Bucket C): tell the diff which fields THIS
+        # variant's enabled sub-capabilities legitimately expose, plus the global
+        # field→owning-sub-capability map and this variant's enabled ownership
+        # units, so a field belonging to a DISABLED sub-capability is treated as
+        # out-of-variant-scope (OK_IGNORED) rather than MISSING_IN_CONNECTOR.
+        in_scope_fields=variant.in_scope_fields,
+        field_owning_subcapabilities=parity_inputs.field_owning_subcapabilities,
+        enabled_ownership_units=variant.enabled_ownership_units,
         allow_missing=args.allow_missing,
         allow_extra=args.allow_extra,
         allow_mismatch=args.allow_mismatch,
