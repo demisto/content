@@ -10078,7 +10078,7 @@ class NetworkFirewall:
         )
 
     @staticmethod
-    def list_firewall_policies_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def list_firewall_policies_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Retrieves the metadata for the firewall policies that you have defined.
 
@@ -10099,7 +10099,7 @@ class NetworkFirewall:
         response = client.list_firewall_policies(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         firewall_policies = response.get("FirewallPolicies", [])
 
@@ -10125,7 +10125,7 @@ class NetworkFirewall:
         )
 
     @staticmethod
-    def describe_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Returns the data objects for the specified firewall policy.
 
@@ -10144,7 +10144,7 @@ class NetworkFirewall:
         response = serialize_response_with_datetime_encoding(response)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         raw_response = copy.deepcopy(response)
         firewall_policy_response = response.get("FirewallPolicyResponse", {})
@@ -10166,7 +10166,7 @@ class NetworkFirewall:
         )
 
     @staticmethod
-    def create_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates the firewall policy for the firewall according to the specifications.
 
@@ -10204,7 +10204,7 @@ class NetworkFirewall:
         response = serialize_response_with_datetime_encoding(response)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         raw_response = copy.deepcopy(response)
         firewall_policy_response = response.get("FirewallPolicyResponse", {})
@@ -10225,7 +10225,7 @@ class NetworkFirewall:
         )
 
     @staticmethod
-    def associate_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def associate_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Associates a FirewallPolicy to a Firewall.
 
@@ -10250,7 +10250,7 @@ class NetworkFirewall:
         response = client.associate_firewall_policy(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         outputs = copy.deepcopy(response)
         outputs.pop("ResponseMetadata", None)
@@ -10264,7 +10264,7 @@ class NetworkFirewall:
         )
 
     @staticmethod
-    def delete_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes the specified FirewallPolicy.
 
@@ -10286,7 +10286,7 @@ class NetworkFirewall:
         response = serialize_response_with_datetime_encoding(response)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
             readable_output="The AWS Network Firewall policy was deleted successfully.",
@@ -10294,7 +10294,7 @@ class NetworkFirewall:
         )
 
     @staticmethod
-    def update_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def update_firewall_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Updates the properties of the specified firewall policy.
 
@@ -10329,7 +10329,7 @@ class NetworkFirewall:
         response = serialize_response_with_datetime_encoding(response)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
             readable_output="The firewall policy was updated successfully.",
@@ -10337,7 +10337,7 @@ class NetworkFirewall:
         )
 
     @staticmethod
-    def update_firewall_policy_change_protection_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def update_firewall_policy_change_protection_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Modifies the flag, ChangeProtection, which indicates whether it is possible to change the firewall policy.
 
@@ -10362,7 +10362,7 @@ class NetworkFirewall:
         response = client.update_firewall_policy_change_protection(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
             readable_output="The change protection flag of the firewall was updated successfully.",
