@@ -34,5 +34,9 @@
     "marketplaces": [
         "xsoar",
         "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
     ]
 }

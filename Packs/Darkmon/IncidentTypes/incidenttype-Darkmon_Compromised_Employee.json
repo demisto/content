@@ -20,5 +20,9 @@
         "fieldCliNameToExtractSettings": {}
     },
     "layout": "Darkmon Compromised Employee",
-    "system": false
+    "system": false,
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

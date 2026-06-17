@@ -20,5 +20,9 @@
         "fieldCliNameToExtractSettings": {}
     },
     "layout": "Darkmon VIP Email Leak",
-    "system": false
+    "system": false,
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

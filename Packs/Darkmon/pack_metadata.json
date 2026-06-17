@@ -43,10 +43,6 @@
         "xsoar",
         "platform"
     ],
-    "supportedModules": [
-        "xsoar_saas",
-        "xsoar_on_prem"
-    ],
     "created": "2026-05-04T00:00:00Z",
     "dependencies": {
         "CommonScripts": {

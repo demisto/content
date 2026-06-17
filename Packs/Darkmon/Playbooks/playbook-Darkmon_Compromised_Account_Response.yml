@@ -303,3 +303,15 @@ inputs:
 outputs: []
 tests:
 - No tests
+supportedModules:
+- cloud_posture
+- cloud
+- cloud_runtime_security
+- edr
+- asm
+- tim
+- cloud_appsec
+- xsiam
+- exposure_management
+- agentix
+- email_security

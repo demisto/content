@@ -9,5 +9,9 @@
     "fromVersion": "6.8.0",
     "isFeed": false,
     "selectedFeeds": [],
-    "isAllFeeds": false
+    "isAllFeeds": false,
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

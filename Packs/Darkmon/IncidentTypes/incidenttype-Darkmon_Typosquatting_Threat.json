@@ -20,5 +20,9 @@
         "fieldCliNameToExtractSettings": {}
     },
     "layout": "Darkmon Typosquatting Threat",
-    "system": false
+    "system": false,
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }

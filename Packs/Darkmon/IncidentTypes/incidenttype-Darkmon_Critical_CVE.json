@@ -20,5 +20,9 @@
         "fieldCliNameToExtractSettings": {}
     },
     "layout": "Darkmon Critical CVE",
-    "system": false
+    "system": false,
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }
