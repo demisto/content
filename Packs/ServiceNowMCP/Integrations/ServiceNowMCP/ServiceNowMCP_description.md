@@ -15,7 +15,7 @@ This integration connects securely with a ServiceNow Model Context Protocol (MCP
 ## Configuration
 
 1. Enter your **ServiceNow Instance** URL (e.g., `https://dev12345.service-now.com`).
-2. Enter the **MCP Server Name** (defaults to `sn_mcp_server_default` for the Quickstart Server).
+2. Enter the **MCP Server Name** (Use `sn_mcp_server_default` for the Quickstart Server).
 3. Enter the **Client ID** and **Client Secret** from the OAuth Inbound Integration.
 4. Save the integration instance.
 5. Run the command `!servicenow-mcp-generate-login-url` from the Playground and follow the instructions to authenticate.
