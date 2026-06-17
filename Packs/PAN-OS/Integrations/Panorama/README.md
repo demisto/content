@@ -10240,6 +10240,7 @@ Gets rule hit counts from the firewall.  When connected to Panorama this command
 | rules | Comma-separated list of rule names to check.  Returns results for all rules if left blank. Default is all. | Optional |
 | unused_only | If set to true, only returns rules with a hit count of 0. Possible values are: true, false. Default is false. | Optional |
 | no_new_hits_since | Shows rules that have had hits, but not after the date provided (in the format YYYY/MM/DD HH:MM:SS). | Optional |
+| pre_post | The pre-rule or post-rule (Panorama instances only). When set, only rules pushed from Panorama at the specified position are returned. Possible values are: pre-rulebase, post-rulebase. | Optional |
 
 #### Context Output
 
