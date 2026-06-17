@@ -6,7 +6,7 @@ This integration was integrated and tested with version 1.0.0 of SpecterOps Bloo
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | BloodHound Enterprise Domain | BloodHound Enterprise Domain URL | True |
-| Token ID | BloodHound Enterprise API token ID | True |
+| Token ID / Token Key | BloodHound Enterprise API token ID and key | True |
 | Token Key | BloodHound Enterprise API token key | True |
 | Proxy URL | Proxy server url  | False |
 | Proxy URL Username | Proxy server url username | False |

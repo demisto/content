@@ -5,8 +5,7 @@ BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure envir
 
 Configure a SpecterOps BloodHound Enterprise integration instance by providing the following mandatory details:
 - **(Required)** BloodHound Enterprise Domain (for example, https://example.bloodhoundenterprise.io)
-- **(Required)** Token ID 
-- **(Required)** Token Key
+- **(Required)** Token ID and Token Key (credentials field)
 - Proxy URL
 - Proxy URL username
 - Proxy URL password
@@ -25,5 +24,5 @@ Configure a SpecterOps BloodHound Enterprise integration instance by providing t
 - Click **Create Token**.
 - Enter a descriptive name for the token and click **Save**.
 - Copy and securely store the displayed API Key/ID pair, then click **Close**.
-  - The **ID** corresponds to the **Token ID** parameter in the integration configuration.
-  - The **Key** corresponds to the **Token Key** parameter in the integration configuration.
+  - The **ID** corresponds to the **Token ID** in the integration credentials field.
+  - The **Key** corresponds to the **Token Key** in the integration credentials field.

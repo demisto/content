@@ -1030,8 +1030,7 @@ class TestMainFunction:
         """Test main function with test-module command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
-            "token_id": "test_id",
-            "token_key": "test_key",
+            "credentials": {"identifier": "test_id", "password": "test_key"},
             "finding_domain": "all",
             "finding_category": "all",
             "incidentFetchInterval": 10,
@@ -1050,8 +1049,7 @@ class TestMainFunction:
         """Test main function with bloodhound-object-id-get command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
-            "token_id": "test_id",
-            "token_key": "test_key",
+            "credentials": {"identifier": "test_id", "password": "test_key"},
             "finding_domain": "all",
             "finding_category": "all",
         }
@@ -1068,8 +1066,7 @@ class TestMainFunction:
         """Test main function with bloodhound-asset-info-get command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
-            "token_id": "test_id",
-            "token_key": "test_key",
+            "credentials": {"identifier": "test_id", "password": "test_key"},
             "finding_domain": "all",
             "finding_category": "all",
         }
@@ -1086,8 +1083,7 @@ class TestMainFunction:
         """Test main function with bloodhound-path-exist command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
-            "token_id": "test_id",
-            "token_key": "test_key",
+            "credentials": {"identifier": "test_id", "password": "test_key"},
             "finding_domain": "all",
             "finding_category": "all",
         }
@@ -1103,8 +1099,7 @@ class TestMainFunction:
         """Test main function with bloodhound-path-exist missing arguments"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
-            "token_id": "test_id",
-            "token_key": "test_key",
+            "credentials": {"identifier": "test_id", "password": "test_key"},
             "finding_domain": "all",
             "finding_category": "all",
         }
@@ -1120,8 +1115,7 @@ class TestMainFunction:
         """Test main function with fetch-incidents command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
-            "token_id": "test_id",
-            "token_key": "test_key",
+            "credentials": {"identifier": "test_id", "password": "test_key"},
             "finding_domain": "all",
             "finding_category": "all",
         }
@@ -1137,8 +1131,7 @@ class TestMainFunction:
         """Test main function with unknown command"""
         mock_demisto.params.return_value = {
             "url": "test.bhe.example.com",
-            "token_id": "test_id",
-            "token_key": "test_key",
+            "credentials": {"identifier": "test_id", "password": "test_key"},
             "finding_domain": "all",
             "finding_category": "all",
         }

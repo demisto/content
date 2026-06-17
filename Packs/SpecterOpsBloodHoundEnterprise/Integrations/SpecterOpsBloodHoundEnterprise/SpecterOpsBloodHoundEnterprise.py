@@ -1772,8 +1772,9 @@ def main():
     # This prevents lock expiry during long-running fetch operations
     LOCK_TIMEOUT = max((int(interval_minutes) * 60 * 3) if int(interval_minutes) else 600, 600)
     domain = params.get("url").rstrip("/")
-    bhe_token_id = params.get("token_id")
-    bhe_token_key = params.get("token_key")
+    credentials = params.get("credentials") or {}
+    bhe_token_id = credentials.get("identifier")
+    bhe_token_key = credentials.get("password")
     bhe_finding_domain = params.get("finding_domain")
     bhe_finding_category = params.get("finding_category")
     custom_proxy_url = params.get("proxy_url")

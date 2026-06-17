@@ -16,7 +16,27 @@
                     "simple": "CreatedAt"
                 },
                 "severity": {
-                    "simple": "Severity"
+                    "complex": {
+                        "filters": [],
+                        "root": "Severity",
+                        "transformers": [
+                            {
+                                "operator": "MapValuesTransformer",
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "low,medium,moderate,high,critical"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "1,2,2,3,4"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
                 }
             }
         }

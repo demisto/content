@@ -5,7 +5,7 @@ commonfields:
   version: -1
 name: SpecterOpsBloodHoundEnterprise
 display: SpecterOps BloodHound Enterprise
-category: Network Security
+category: Vulnerability Management
 provider: SpecterOps
 description: Use the SpecterOpsBloodHoundEnterprise integration to retrieve attack path findings from BloodHound Enterprise to streamline incident creation and investigation.
 detaileddescription: BloodHound Enterprise reduces risk in Active Directory and Microsoft Azure environments by continuously identifying and quantifying attack paths that attackers use to escalate privileges. The SpecterOpsBloodHoundEnterprise integration automatically ingests attack path findings from BloodHound Enterprise into Cortex XSOAR, streamlining incident creation and investigation. Configure the integration by providing your BloodHound Enterprise domain, API token ID and key, and optionally configure proxy settings and finding filters. Enable incident fetching to automatically retrieve attack paths at your specified interval.
@@ -18,15 +18,10 @@ configuration:
 - section: Connect
   display: Token ID
   displaypassword: Token Key
-  name: token_id
-  type: 0
+  name: credentials
+  type: 9
   required: true
   additionalinfo: BloodHound Enterprise API token ID
-- display: Token Key
-  name: token_key
-  type: 4
-  required: true
-  additionalinfo: BloodHound Enterprise API token key
 - display: Proxy URL
   name: proxy_url
   type: 0
