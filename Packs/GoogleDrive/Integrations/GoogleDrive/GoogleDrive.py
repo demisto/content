@@ -680,7 +680,10 @@ def validate_params_for_fetch_incidents(params: dict[str, Any]) -> None:
 
     :return: None
     """
-    if not params.get("user_id"):
+    # In UCP (ConnectUs) mode the subject (user to impersonate) is supplied by the
+    # connection profile rather than the integration parameter, so User ID is
+    # optional. It remains required for the legacy service-account flow.
+    if not params.get("user_id") and not should_use_ucp_auth():
         raise ValueError(MESSAGES["USER_ID_REQUIRED"])
 
     params["first_fetch_interval"], _ = parse_date_range(params.get("first_fetch", "10 minutes"), utc=True)
