@@ -16,6 +16,8 @@ RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
 RATE_LIMIT_PATTERN = r"query quota for .+ has been exceeded"
+WHOIS_SOCKET_TIMEOUT_TIME_SENSITIVE: int = 10  # Short timeout for War Room inline enrichment
+WHOIS_SOCKET_TIMEOUT_DEFAULT: int = 30  # Timeout for playbook context (prevents OS-level ~127s hang)
 
 # flake8: noqa
 
@@ -2038,16 +2040,28 @@ def whois_request_get_response(domain: str, server: str) -> str:
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         if is_time_sensitive():
-            # Default short timeout
-            sock.settimeout(10)
-        sock.connect((server, 43))
-        sock.send(("%s\r\n" % domain).encode("utf-8"))
-        buff = b""
-        while True:
-            data = sock.recv(1024)
-            if len(data) == 0:
-                break
-            buff += data
+            demisto.debug(
+                f"[whois_request_get_response] Time-sensitive context: setting socket timeout to {WHOIS_SOCKET_TIMEOUT_TIME_SENSITIVE}s."
+            )
+            sock.settimeout(WHOIS_SOCKET_TIMEOUT_TIME_SENSITIVE)
+        else:
+            demisto.debug(
+                f"[whois_request_get_response] Playbook context: setting socket timeout to {WHOIS_SOCKET_TIMEOUT_DEFAULT}s."
+            )
+            sock.settimeout(WHOIS_SOCKET_TIMEOUT_DEFAULT)
+        try:
+            sock.connect((server, 43))
+            sock.send(("%s\r\n" % domain).encode("utf-8"))
+            buff = b""
+            while True:
+                data = sock.recv(1024)
+                if len(data) == 0:
+                    break
+                buff += data
+        except socket.timeout as e:
+            raise socket.timeout(f"Timed out connecting to whois server '{server}' for domain '{domain}': {e}")
+        except OSError as e:
+            raise OSError(f"Socket error connecting to whois server '{server}' for domain '{domain}': {e}") from e
         sock.close()
         try:
             d = buff.decode("utf-8")
