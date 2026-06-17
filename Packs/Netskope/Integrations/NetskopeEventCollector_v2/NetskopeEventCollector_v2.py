@@ -26,10 +26,6 @@ RATE_LIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
 RATE_LIMIT_RESET = "ratelimit-reset"  # Rate limit RESET value is in seconds
 VENDOR = "netskope"
 PRODUCT = "netskope"
-# Bounds how many page-sends run concurrently. Each in-flight send holds (at most) one page's
-# gzip buffer, so this directly caps the send-side memory footprint. Lowered from 20 -> 5 as part
-# of the CIAC-16981 memory fix (we are memory-bound, not time-bound: ~2000 ev/s, well within cycle window).
-XSIAM_SEM = asyncio.Semaphore(5)
 
 # Event type configuration mapping
 # Each event type can have specific endpoint, time parameters, and count field configurations
@@ -137,7 +133,10 @@ _MEM_T0: float = 0.0  # MEM DIAG (REMOVE — CIAC-16981): cycle start time, set 
 # instrumented build is the one actually running on the tenant (not a cached/older upload).
 # v2 = measurement probes + the memory FIX (send-and-flush + local streaming sender + XSIAM_SEM=5).
 # v1 was measurement-only. Bumping this lets us confirm in the engine logs that the FIXED build is live.
-_MEM_BUILD_STAMP = "CIAC-16981-fix-v3"  # MEM DIAG (REMOVE — CIAC-16981): v3 adds per-step sender probes
+# v5: removed the now-redundant XSIAM_SEM (page_semaphore already bounds the whole fetch->send
+# lifecycle, so the send can never exceed NETSKOPE_SEMAPHORE_COUNT concurrent anyway).
+# v4: bound page lifecycle with client.page_semaphore; removed useless del buf/del zipped + sender probes.
+_MEM_BUILD_STAMP = "CIAC-16981-fix-v5"  # MEM DIAG (REMOVE — CIAC-16981)
 
 
 def _mem_peak() -> float:  # MEM DIAG (REMOVE — CIAC-16981)
@@ -179,7 +178,13 @@ class Client:
     def __init__(self, base_url: str, token: str, proxy: bool, verify: bool, event_types_to_fetch: list[str]):
         self.fetch_status: dict = {event_type: False for event_type in event_types_to_fetch}
         self.event_types_to_fetch: list[str] = event_types_to_fetch
+        # Bounds concurrent HTTP requests to Netskope (used inside get_events_data_async).
         self.netskope_semaphore = asyncio.Semaphore(NETSKOPE_SEMAPHORE_COUNT)
+        # Bounds the whole page lifecycle (fetch -> prepare -> send -> free). Separate object from
+        # netskope_semaphore (which get_events_data_async already takes) to avoid a re-entrant
+        # deadlock, but the SAME count: at most NETSKOPE_SEMAPHORE_COUNT pages are held in memory at
+        # once across all event types, so peak memory is bounded regardless of total volume (CIAC-16981).
+        self.page_semaphore = asyncio.Semaphore(NETSKOPE_SEMAPHORE_COUNT)
         self._headers = {"Netskope-Api-Token": f"{token}", "Accept": "application/json"}
         self._base_url = base_url
         self._verify = verify
@@ -288,23 +293,18 @@ def stream_send_events_to_xsiam(events: list[dict], vendor: str, product: str) -
     if not events:
         return 0
     n = len(events)
-    _mem_log("sender.0_received_page", _MEM_T0, _mem_peak(), extra=f"events={n}")  # MEM DIAG (REMOVE — CIAC-16981)
     buf = io.BytesIO()
     with gzip.GzipFile(fileobj=buf, mode="wb") as gz:
         while events:  # drain the list so the source shrinks while the compressed output grows
             event = events.pop()
             gz.write((json.dumps(event) + "\n").encode("utf-8"))
             # `event` is dropped here, before the next iteration
+    # NOTE: we intentionally do NOT `del buf` / `del zipped` here. Live runner measurements
+    # (CIAC-16981) showed explicit `del` of these had ~0 measurable effect on RSS — CPython frees
+    # them by refcount when the function returns anyway, and the allocator keeps the freed pages.
+    # See plans/oom-fix-agent-guide.md ("explicit del of local send buffers is useless").
     zipped = buf.getvalue()
-    # MEM DIAG (REMOVE — CIAC-16981): after gzip, BOTH buf and its copy `zipped` are alive (~2x zip size)
-    _mem_log("sender.1_after_gzip", _MEM_T0, _mem_peak(), extra=f"events_drained zip_bytes={len(zipped)}")
-    del buf
-    # MEM DIAG (REMOVE — CIAC-16981): after `del buf` - shows whether dropping the BytesIO frees the duplicate
-    _mem_log("sender.2_after_del_buf", _MEM_T0, _mem_peak(), extra=f"zip_bytes={len(zipped)}")
     _post_gzipped_events(zipped, vendor=vendor, product=product)
-    _mem_log("sender.3_after_post", _MEM_T0, _mem_peak(), extra=f"zip_bytes={len(zipped)}")  # MEM DIAG (REMOVE — CIAC-16981)
-    del zipped
-    _mem_log("sender.4_after_del_zipped", _MEM_T0, _mem_peak(), extra="page_fully_freed")  # MEM DIAG (REMOVE — CIAC-16981)
     return n
 
 
@@ -643,33 +643,40 @@ async def fetch_and_send_events_async(
 
         async def _send_page_to_xsiam(events):
             # Send-and-flush: stream this page to XSIAM (Method F) and free it. `events` is consumed.
-            async with XSIAM_SEM:
-                demisto.debug(f"send {len(events)} events to xsiam")
-                _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM just before the streaming send
-                    f"send_page.BEFORE type={type}", _MEM_T0, _mem_peak(), extra=f"page_events={len(events)}"
-                )
-                await asyncio.to_thread(stream_send_events_to_xsiam, events, VENDOR, PRODUCT)
-                _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM right after the send returns
-                    f"send_page.AFTER type={type}", _MEM_T0, _mem_peak(), extra="page_freed"
-                )
-
-        try:
-            res = await _fetch_page()
-            events = res.get("result", [])
-            events = prepare_events(events, type)
-            page_count = len(events)
-            _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM after a page is fetched+prepared (held in memory)
-                f"page_ready type={type}", _MEM_T0, _mem_peak(), extra=f"page_events={page_count}"
+            # No separate send semaphore needed: the whole page lifecycle is already gated by
+            # client.page_semaphore (see _handle_page), so at most NETSKOPE_SEMAPHORE_COUNT sends
+            # can ever be in flight at once. (CIAC-16981)
+            demisto.debug(f"send {len(events)} events to xsiam")
+            _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM just before the streaming send
+                f"send_page.BEFORE type={type}", _MEM_T0, _mem_peak(), extra=f"page_events={len(events)}"
             )
-            if send_to_xsiam:
-                # stream-send then DROP the page: return only the count so nothing accumulates upstream
-                await _send_page_to_xsiam(events)
-                del events
-                return page_count
-        except Exception as e:
-            raise DemistoException(message=str(e), exception=e, res=params)
-        # get-events / test path: caller needs the actual events
-        return events
+            await asyncio.to_thread(stream_send_events_to_xsiam, events, VENDOR, PRODUCT)
+            _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM right after the send returns
+                f"send_page.AFTER type={type}", _MEM_T0, _mem_peak(), extra="page_freed"
+            )
+
+        # Bound the WHOLE page lifecycle (fetch -> prepare -> send -> free) with the client's
+        # page semaphore (NETSKOPE_SEMAPHORE_COUNT). This caps how many fetched pages are alive in
+        # memory at once across ALL event types, making peak memory independent of total volume
+        # (true send-and-flush). Without this, every page task fetches its page up front and holds it
+        # in RAM while merely waiting for the send slot -> peak grew with volume (CIAC-16981).
+        async with client.page_semaphore:
+            try:
+                res = await _fetch_page()
+                events = res.get("result", [])
+                events = prepare_events(events, type)
+                page_count = len(events)
+                _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM after a page is fetched+prepared (held in memory)
+                    f"page_ready type={type}", _MEM_T0, _mem_peak(), extra=f"page_events={page_count}"
+                )
+                if send_to_xsiam:
+                    # stream-send then DROP the page: return only the count so nothing accumulates upstream
+                    await _send_page_to_xsiam(events)
+                    return page_count
+            except Exception as e:
+                raise DemistoException(message=str(e), exception=e, res=params)
+            # get-events / test path: caller needs the actual events
+            return events
 
     async def _handle_all_pages():
         try:
