@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 # script.<flag> -> config param names the BE auto-adds.
 # incidentType is special-cased (skipped when feed or isfetchevents is also on).
-_ISFETCH_FIELDS = ["alertFetchInterval", "incidentType"]
+_ISFETCH_FIELDS = ["incidentFetchInterval", "incidentType"]
 _FEED_FIELDS = [
     "feedReputation",
     "feedReliability",
@@ -35,7 +35,7 @@ _LONGRUNNINGPORT_FIELDS = ["longRunningPort"]
 _STRIP_WHEN_NO_FETCH = [
     "isFetch",
     "isFetchEvents",
-    "alertFetchInterval",
+    "incidentFetchInterval",
     "eventFetchInterval",
     "incidentType",
     "longRunning",
@@ -49,7 +49,7 @@ _STRIP_WHEN_NO_FETCH = [
 # value to both instead.
 _INTERVAL_FIELDS = frozenset(
     {
-        "alertFetchInterval",
+        "incidentFetchInterval",
         "eventFetchInterval",
         "assetsFetchInterval",
         "feedFetchInterval",
@@ -112,7 +112,7 @@ def compute_be_synthesized_params(script: dict | None) -> tuple[list[str], list[
 
     added: list[str] = []
     if is_fetch:
-        added.append("alertFetchInterval")
+        added.append("incidentFetchInterval")
         # incidentType is skipped when feed or isfetchevents is also on.
         if not (is_feed or is_fetch_events):
             added.append("incidentType")
