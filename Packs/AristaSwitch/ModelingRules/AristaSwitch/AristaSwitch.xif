@@ -61,6 +61,7 @@ call arista_switch_common_fields_modeling
     xdm.source.host.hostname = src_hostname,
     xdm.source.process.name = service, 
     xdm.source.user.username = username,
+    xdm.source.identity.username = username,
     xdm.event.outcome = if(mnemonic IN ("LOGIN", "LOGOUT"), XDM_CONST.OUTCOME_SUCCESS, mnemonic="AUTHN_FALLBACK", XDM_CONST.OUTCOME_PARTIAL, mnemonic="LOGIN_FAILED", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = reason, // relevant only for mnemonic="LOGIN_FAILED" 
     xdm.auth.auth_method = auth_method, // relevant only for mnemonic="AUTHN_FALLBACK" 
@@ -96,6 +97,7 @@ call arista_switch_common_fields_modeling
     xdm.source.ipv6 = src_ipv6,
     xdm.source.host.hostname = src_hostname,
     xdm.source.user.username = username, 
+    xdm.source.identity.username = username,
     xdm.source.process.name = login_process,
     xdm.target.ipv4 = dst_ipv4,
     xdm.target.ipv6 = dst_ipv6,
@@ -400,6 +402,7 @@ call arista_switch_common_fields_modeling
     reason =  arrayindex(regextract(message, "due to ([^\.]+)"), 0)
 | alter 
     xdm.source.user.username  = user,
+    xdm.source.identity.username  = user,
     xdm.source.process.name = session_service,
     xdm.event.outcome = outcome, 
     xdm.event.outcome_reason = reason,
@@ -436,6 +439,7 @@ call arista_switch_common_fields_modeling
 | alter 
     xdm.source.interface = interface,
     xdm.source.user.username = user,
+    xdm.source.identity.username = user,
     xdm.target.ipv4 = dst_ipv4,
     xdm.target.ipv6 = dst_ipv6;
 
@@ -457,7 +461,10 @@ call arista_switch_common_fields_modeling
 | alter 
     xdm.source.process.name = process_name,
     xdm.source.user.groups = roles,
+    xdm.source.identity.groups = roles,
     xdm.source.user.username = user,
-    xdm.source.user.identifier = uid; 
+    xdm.source.identity.username = user,
+    xdm.source.user.identifier = uid,
+    xdm.source.identity.identifier = uid;
 
 /*** End of Arista EOS Switch Modeling Rules ***/
