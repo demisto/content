@@ -2844,24 +2844,19 @@ def blocklist_files_command(client, args):
     comment = args.get("comment")
     incident_id = arg_to_number(args.get("incident_id"))
     detailed_response = argToBoolean(args.get("detailed_response", False))
-    
+
     brand = args.get("integration_context_brand", "CoreApiModule")
     prefix = args.get("prefix", "blocklist")
 
-    outputs = {
-        f"{brand}.{prefix}.added_hashes.fileHash(val.fileHash == obj.fileHash)": hash_list
-    }
-    
+    outputs = {f"{brand}.{prefix}.added_hashes.fileHash(val.fileHash == obj.fileHash)": hash_list}
+
     try:
         res = client.blocklist_files(
             hash_list=hash_list, comment=comment, incident_id=incident_id, detailed_response=detailed_response
         )
     except Exception as e:
         if "All hashes have already been added to the allow or block list" in str(e):
-            return CommandResults(
-                readable_output="All hashes have already been added to the block list.",
-                outputs=outputs
-                )
+            return CommandResults(readable_output="All hashes have already been added to the block list.", outputs=outputs)
         raise e
 
     if detailed_response:
