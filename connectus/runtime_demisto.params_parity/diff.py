@@ -42,7 +42,11 @@ import re
 from pathlib import Path
 from typing import Any
 
-from be_config_params import BE_SYNTHESIZED_PARAM_NAMES, XSOAR_FETCH_TOGGLES
+from be_config_params import (
+    BE_SYNTHESIZED_PARAM_NAMES,
+    XSOAR_FETCH_TOGGLES,
+    values_match,
+)
 
 try:
     from ruamel.yaml import YAML
@@ -566,7 +570,12 @@ def diff_params(
         in_yml = key in yml_param_names or key in BE_SYNTHESIZED_PARAM_NAMES
 
         if in_integration and in_connector:
-            if integration[key] == connector[key]:
+            # Equality is plain ``==`` EXCEPT for fields with the connector-int /
+            # integration-string type contract (e.g. incidentFetchInterval), where
+            # connector ``111`` and integration ``"111"`` are at parity. The
+            # registry lives in be_config_params so the SAME contract that shapes
+            # the creation payloads also governs the comparison.
+            if values_match(key, integration[key], connector[key]):
                 state = STATE_OK
                 n_ok += 1
                 entry: dict[str, Any] = {

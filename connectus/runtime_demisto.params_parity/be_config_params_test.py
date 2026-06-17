@@ -8,9 +8,13 @@ backward-compatible script-driven fallback.
 from __future__ import annotations
 
 from be_config_params import (
+    CONNECTOR_INT_INTEGRATION_STRING_FIELDS,
     XSOAR_FETCH_TOGGLES,
     apply_be_config_transform,
     compute_be_synthesized_params,
+    connector_value_for,
+    is_connector_int_integration_string_field,
+    values_match,
     variant_toggle_overrides,
 )
 
@@ -119,6 +123,132 @@ def test_apply_transform_threads_variant_flags():
 
 
 # ---------------------------------------------------------------------------
+# Per-flag generalization: EACH fetch flag injects its synthesized fields into
+# BOTH payloads (apply_be_config_transform = integration side; the connector
+# side coerces the same names via connector_value_for). Off-flags inject nothing.
+# ---------------------------------------------------------------------------
+def _multi_flags(*active: str) -> dict[str, bool]:
+    """fetch_flags with MORE THAN ONE flag True (combined-variant simulation)."""
+    names = ["isFetch", "isFetchEvents", "isFetchAssets", "feed", "isFetchCredentials"]
+    return {n: (n in active) for n in names}
+
+
+def test_isfetchevents_injects_interval_into_both_payloads_with_types():
+    """isFetchEvents=True → eventFetchInterval present on BOTH sides, non-default
+    "111" string on the integration side, int 111 on the connector side."""
+    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetchEvents"))
+    assert out["eventFetchInterval"] == "111"          # integration side: string
+    assert isinstance(out["eventFetchInterval"], str)
+    # connector side: same field coerced to int via the registry.
+    assert connector_value_for("eventFetchInterval", out["eventFetchInterval"]) == 111
+    assert isinstance(connector_value_for("eventFetchInterval", out["eventFetchInterval"]), int)
+    assert is_connector_int_integration_string_field("eventFetchInterval")
+    # off-flag fields must NOT leak.
+    assert "incidentFetchInterval" not in out
+    assert "assetsFetchInterval" not in out
+    assert "feedFetchInterval" not in out
+
+
+def test_isfetchevents_absent_when_flag_off():
+    """eventFetchInterval/isFetchEvents must NOT appear when the flag is off."""
+    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetch"))
+    assert "isFetchEvents" not in out
+    assert "eventFetchInterval" not in out
+
+
+def test_isfetchassets_injects_interval_into_both_payloads_with_types():
+    """isFetchAssets=True → assetsFetchInterval present on BOTH sides with the
+    correct string/int contract; off-flag fields absent."""
+    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetchAssets"))
+    assert out["assetsFetchInterval"] == "111"
+    assert isinstance(out["assetsFetchInterval"], str)
+    assert connector_value_for("assetsFetchInterval", out["assetsFetchInterval"]) == 111
+    assert is_connector_int_integration_string_field("assetsFetchInterval")
+    assert "incidentFetchInterval" not in out
+    assert "eventFetchInterval" not in out
+    assert "feedFetchInterval" not in out
+
+
+def test_isfetchassets_absent_when_flag_off():
+    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetch"))
+    assert "isFetchAssets" not in out
+    assert "assetsFetchInterval" not in out
+
+
+def test_feed_injects_full_field_set_into_both_payloads_with_types():
+    """feed=True → the whole feed framework field set on BOTH sides; the two feed
+    interval/duration fields carry the int/str contract; off-flag fields absent."""
+    out = apply_be_config_transform({}, {}, fetch_flags=_flags("feed"))
+    for fld in (
+        "feed",
+        "feedReputation",
+        "feedReliability",
+        "feedExpirationPolicy",
+        "feedExpirationInterval",
+        "feedFetchInterval",
+        "feedBypassExclusionList",
+    ):
+        assert fld in out, fld
+    # the two interval/duration feed fields use the minutes dummy + int/str contract.
+    for fld in ("feedFetchInterval", "feedExpirationInterval"):
+        assert out[fld] == "111", fld
+        assert isinstance(out[fld], str), fld
+        assert connector_value_for(fld, out[fld]) == 111, fld
+        assert is_connector_int_integration_string_field(fld), fld
+    # off-flag fields must NOT leak.
+    assert "incidentFetchInterval" not in out
+    assert "eventFetchInterval" not in out
+    assert "assetsFetchInterval" not in out
+
+
+def test_feed_absent_when_flag_off():
+    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetch"))
+    for fld in ("feed", "feedFetchInterval", "feedExpirationInterval"):
+        assert fld not in out, fld
+
+
+def test_combined_multi_flag_variant_injects_the_union():
+    """A combined variant with isFetch + isFetchEvents + isFetchAssets + feed all
+    True injects the UNION of every flag's fields (each interval at the non-default
+    minutes value), proving the table-driven loop is additive across flags."""
+    out = apply_be_config_transform(
+        {}, {}, fetch_flags=_multi_flags("isFetch", "isFetchEvents", "isFetchAssets", "feed")
+    )
+    for fld in (
+        "isFetch", "incidentFetchInterval",
+        "isFetchEvents", "eventFetchInterval",
+        "isFetchAssets", "assetsFetchInterval",
+        "feed", "feedFetchInterval", "feedExpirationInterval",
+    ):
+        assert fld in out, fld
+    for fld in (
+        "incidentFetchInterval", "eventFetchInterval",
+        "assetsFetchInterval", "feedFetchInterval", "feedExpirationInterval",
+    ):
+        assert out[fld] == "111", fld
+        assert connector_value_for(fld, out[fld]) == 111, fld
+
+
+def test_isfetch_only_variant_does_not_leak_event_assets_feed_fields():
+    """GUARD (CiscoSMA/CiscoESA shape): a variant with ONLY isFetch True must get
+    its own fetch fields but NONE of the event/assets/feed synthesized fields in
+    EITHER payload — this is the exact mismatch the generalization must not cause."""
+    out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetch"))
+    # isFetch fields ARE present.
+    assert out["isFetch"]
+    assert out["incidentFetchInterval"] == "111"
+    assert "incidentType" in out
+    # event / assets / feed fields are ALL absent.
+    for fld in (
+        "isFetchEvents", "eventFetchInterval",
+        "isFetchAssets", "assetsFetchInterval",
+        "feed", "feedReputation", "feedReliability", "feedExpirationPolicy",
+        "feedExpirationInterval", "feedFetchInterval", "feedBypassExclusionList",
+    ):
+        assert fld not in out, fld
+
+
+# ---------------------------------------------------------------------------
 # Authoritative BE add/strip matrix (one block per script flag).
 # ---------------------------------------------------------------------------
 def test_isfetch_adds_isfetch_incidentfetchinterval_incidenttype():
@@ -219,12 +349,76 @@ def test_alerttype_never_auto_added_for_any_variant():
 
 
 def test_interval_fields_get_minutes_dummy():
-    """The interval fields receive the valid-minutes dummy, not a generic string."""
+    """Interval fields receive the NON-DEFAULT valid-minutes dummy ("111").
+
+    "0"/"1" are at/near the YML default and cannot prove the connector actually
+    delivered the value, so the harness pushes the recognizable non-default
+    ``"111"`` to the INTEGRATION side (string). The CONNECTOR side coerces this
+    to int 111 — see test_connector_value_for_coerces_registry_field_to_int.
+    """
     out = apply_be_config_transform({}, {}, fetch_flags=_flags("isFetch"))
-    assert out["incidentFetchInterval"] == "1"
+    assert out["incidentFetchInterval"] == "111"
     out_feed = apply_be_config_transform({}, {}, fetch_flags=_flags("feed"))
-    assert out_feed["feedFetchInterval"] == "1"
-    assert out_feed["feedExpirationInterval"] == "1"
+    assert out_feed["feedFetchInterval"] == "111"
+    assert out_feed["feedExpirationInterval"] == "111"
+
+
+# ---------------------------------------------------------------------------
+# Connector-int / Integration-string field registry (parity type contract).
+# ---------------------------------------------------------------------------
+def test_registry_contains_known_interval_fields():
+    """incidentFetchInterval (the known case) is registered, plus the other
+    minutes intervals that share the same int/str contract."""
+    assert is_connector_int_integration_string_field("incidentFetchInterval")
+    assert "incidentFetchInterval" in CONNECTOR_INT_INTEGRATION_STRING_FIELDS
+    for fld in (
+        "eventFetchInterval",
+        "assetsFetchInterval",
+        "feedFetchInterval",
+        "feedExpirationInterval",
+    ):
+        assert is_connector_int_integration_string_field(fld), fld
+
+
+def test_registry_excludes_non_contract_fields():
+    """The contract is SCOPED — generic string fields are NOT in the registry."""
+    assert not is_connector_int_integration_string_field("isFetch")
+    assert not is_connector_int_integration_string_field("url")
+    assert not is_connector_int_integration_string_field("apikey")
+
+
+def test_connector_value_for_coerces_registry_field_to_int():
+    """A registry field's shared STRING dummy is coerced to INT for the connector."""
+    assert connector_value_for("incidentFetchInterval", "111") == 111
+    assert isinstance(connector_value_for("incidentFetchInterval", "111"), int)
+    # already-int passes through unchanged
+    assert connector_value_for("incidentFetchInterval", 111) == 111
+
+
+def test_connector_value_for_leaves_non_registry_fields_untouched():
+    """Non-registry fields keep their value/type exactly (no blanket coercion)."""
+    assert connector_value_for("url", "111") == "111"
+    assert connector_value_for("isFetch", True) is True
+    # uncoercible value on a registry field is left alone rather than mangled
+    assert connector_value_for("incidentFetchInterval", "not-a-number") == "not-a-number"
+
+
+def test_values_match_int_vs_str_for_registry_field():
+    """connector int 111 == integration str "111" for a registry field."""
+    assert values_match("incidentFetchInterval", "111", 111)
+    assert values_match("incidentFetchInterval", "111", "111")
+
+
+def test_values_match_genuine_mismatch_still_fails():
+    """A genuinely different value still fails (no false parity)."""
+    assert not values_match("incidentFetchInterval", "222", 111)
+    assert not values_match("incidentFetchInterval", "111", 222)
+
+
+def test_values_match_non_registry_field_is_plain_equality():
+    """Non-registry fields use plain == — int 111 != str "111"."""
+    assert values_match("someNumberField", 111, 111)
+    assert not values_match("someNumberField", "111", 111)
 
 
 def test_variant_toggle_overrides_full_set_one_active():
