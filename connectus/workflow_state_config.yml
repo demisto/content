@@ -136,7 +136,8 @@ steps:
     kind: checkpoint
     optional: false
     setter: null
-    description: "Run the parameter-parity test."
+    gate: param_parity
+    description: "Run the parameter-parity test. Self-executing gate: `markpass` RUNS connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id <id> (acquire tenant lock -> deploy -> check_param_parity -> release) and only passes the checkpoint if it exits 0. Any non-zero exit (10 parity fail, 11 blocked, 20/21 deploy, 30 lock busy, 40 preflight) rejects the markpass and surfaces the output tail. No bypass."
 
   - name: "code reviewed"
     kind: checkpoint
