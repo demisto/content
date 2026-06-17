@@ -400,3 +400,325 @@ def test_be_synth_param_present_on_both_sides_compares_normally():
     entry = _per_param(result, "incidentFetchInterval")
     assert entry["state"] == diff.STATE_OK
     assert result["status"] == "pass"
+
+
+# ---------------------------------------------------------------------------
+# Fetch-toggle "absent == False" parity: a falsy toggle present on one side and
+# absent on the other is at parity (the platform treats an absent toggle as
+# False), so it must PASS as OK with an explanatory note — NOT
+# MISSING_IN_CONNECTOR / EXTRA_IN_CONNECTOR.
+# ---------------------------------------------------------------------------
+def test_fetch_toggle_false_on_integration_absent_on_connector_is_ok():
+    result = diff.diff_params(
+        {"isFetch": False},
+        {},
+        yml_param_names=set(),
+    )
+    entry = _per_param(result, "isFetch")
+    assert entry["state"] == diff.STATE_OK
+    assert entry["verdict"] == "ok"
+    assert "treated as False" in entry["reason"]
+    assert result["status"] == "pass"
+    assert result["summary"]["n_missing_in_connector"] == 0
+    assert all(d["name"] != "isFetch" for d in result["dropped"])
+
+
+def test_fetch_toggle_false_on_connector_absent_on_integration_is_ok():
+    result = diff.diff_params(
+        {},
+        {"isFetchEvents": False},
+        yml_param_names=set(),
+    )
+    entry = _per_param(result, "isFetchEvents")
+    assert entry["state"] == diff.STATE_OK
+    assert entry["verdict"] == "ok"
+    assert "treated as False" in entry["reason"]
+    assert result["status"] == "pass"
+    assert result["summary"]["n_extra_in_connector"] == 0
+
+
+def test_fetch_toggle_falsy_string_absent_other_side_is_ok():
+    """The falsy form may be the string 'false' (XSOAR serializes booleans as
+    strings in some captures)."""
+    result = diff.diff_params(
+        {"feed": "false"},
+        {},
+        yml_param_names=set(),
+    )
+    entry = _per_param(result, "feed")
+    assert entry["state"] == diff.STATE_OK
+    assert result["status"] == "pass"
+
+
+def test_fetch_toggle_TRUE_on_integration_absent_on_connector_still_fails():
+    """A TRUE toggle present on XSOAR but absent on the connector is a REAL gap
+    (the connector should be emitting an active fetch flag) → MISSING_IN_CONNECTOR.
+    The absent==False rule must NOT mask a truthy toggle."""
+    result = diff.diff_params(
+        {"isFetch": True},
+        {},
+        yml_param_names=set(),
+    )
+    entry = _per_param(result, "isFetch")
+    assert entry["state"] == diff.STATE_MISSING_IN_CONNECTOR
+    assert entry["verdict"] == "fail"
+    assert result["status"] == "fail"
+
+
+def test_fetch_toggle_present_both_sides_compares_normally():
+    """Both sides carry the toggle → ordinary comparison (False==False → OK)."""
+    result = diff.diff_params(
+        {"isFetch": False},
+        {"isFetch": False},
+        yml_param_names=set(),
+    )
+    entry = _per_param(result, "isFetch")
+    assert entry["state"] == diff.STATE_OK
+    # The normal OK path has no "treated as False" note.
+    assert "reason" not in entry or "treated as False" not in entry.get("reason", "")
+    assert result["status"] == "pass"
+
+
+def test_non_toggle_falsy_integration_only_is_not_excused():
+    """The absent==False rule is scoped to fetch toggles ONLY. A non-toggle
+    BE-synth param that is falsy and absent on the connector is still a real
+    MISSING_IN_CONNECTOR (e.g. incidentType)."""
+    result = diff.diff_params(
+        {"incidentType": ""},
+        {},
+        yml_param_names=set(),
+    )
+    entry = _per_param(result, "incidentType")
+    assert entry["state"] == diff.STATE_MISSING_IN_CONNECTOR
+    assert result["status"] == "fail"
+
+
+# ---------------------------------------------------------------------------
+# Per-variant field SCOPING (Bucket C) — out_of_variant_scope reclassification.
+# ---------------------------------------------------------------------------
+def test_out_of_variant_scope_reclassifies_to_ok_ignored():
+    """An integration-only field NOT in the variant's in_scope_fields AND owned
+    by a sub-capability that is disabled in this variant → OK_IGNORED with the
+    out_of_variant_scope reason; it is NOT MISSING_IN_CONNECTOR and does NOT
+    fail the gate."""
+    result = diff.diff_params(
+        {"longRunning": True},  # integration sends it; connector (this variant) doesn't
+        {},
+        yml_param_names={"longRunning"},
+        # This variant enables fetch-issues; longRunning belongs to the DISABLED
+        # log-collection sub-capability, so it is out of scope here.
+        in_scope_fields={"incidentType"},
+        field_owning_subcapabilities={
+            "longRunning": frozenset({"log-collection_x"}),
+            "incidentType": frozenset({"fetch-issues_x"}),
+        },
+        enabled_ownership_units={"fetch-issues_x"},
+    )
+    entry = _per_param(result, "longRunning")
+    assert entry["state"] == diff.STATE_OK_IGNORED
+    assert entry["verdict"] == "ok"
+    assert "out_of_variant_scope" not in entry["reason"]  # rendered human text
+    assert "not enabled in this variant" in entry["reason"]
+    assert entry["out_of_scope_owners"] == ["log-collection_x"]
+    # No MISSING finding; gate passes.
+    assert result["summary"]["n_missing_in_connector"] == 0
+    assert result["summary"]["n_out_of_variant_scope"] == 1
+    assert result["summary"]["n_fail"] == 0
+    assert result["status"] == "pass"
+
+
+def test_in_scope_but_absent_still_missing_in_connector():
+    """A field that IS in the variant's in_scope_fields but is genuinely absent
+    on the connector MUST still fail as MISSING_IN_CONNECTOR (no loss of
+    coverage), even though it is owned by a (enabled) sub-capability."""
+    result = diff.diff_params(
+        {"incidentType": "Phishing"},
+        {},
+        yml_param_names={"incidentType"},
+        in_scope_fields={"incidentType"},
+        field_owning_subcapabilities={
+            "incidentType": frozenset({"fetch-issues_x"}),
+        },
+        enabled_ownership_units={"fetch-issues_x"},
+    )
+    entry = _per_param(result, "incidentType")
+    assert entry["state"] == diff.STATE_MISSING_IN_CONNECTOR
+    assert result["summary"]["n_missing_in_connector"] == 1
+    assert result["summary"]["n_out_of_variant_scope"] == 0
+    assert result["status"] == "fail"
+
+
+def test_out_of_scope_owned_only_by_enabled_unit_is_not_reclassified():
+    """A field owned ONLY by ENABLED units is in-scope-equivalent: even if it were
+    somehow absent from in_scope_fields, having no DISABLED owner means it is not
+    out-of-variant-scope and stays MISSING_IN_CONNECTOR."""
+    result = diff.diff_params(
+        {"incidentType": "Phishing"},
+        {},
+        yml_param_names={"incidentType"},
+        in_scope_fields=set(),  # deliberately empty
+        field_owning_subcapabilities={
+            "incidentType": frozenset({"fetch-issues_x"}),
+        },
+        enabled_ownership_units={"fetch-issues_x"},  # the sole owner IS enabled
+    )
+    entry = _per_param(result, "incidentType")
+    assert entry["state"] == diff.STATE_MISSING_IN_CONNECTOR
+    assert result["status"] == "fail"
+
+
+def test_scoping_off_when_in_scope_fields_none_unchanged_behaviour():
+    """When in_scope_fields is None (scoping OFF), an integration-only owned field
+    still becomes MISSING_IN_CONNECTOR — backward-compatible behaviour."""
+    result = diff.diff_params(
+        {"longRunning": True},
+        {},
+        yml_param_names={"longRunning"},
+        field_owning_subcapabilities={
+            "longRunning": frozenset({"log-collection_x"}),
+        },
+        enabled_ownership_units={"fetch-issues_x"},
+        # in_scope_fields omitted → scoping inactive.
+    )
+    entry = _per_param(result, "longRunning")
+    assert entry["state"] == diff.STATE_MISSING_IN_CONNECTOR
+    assert result["status"] == "fail"
+
+
+def test_out_of_variant_scope_summary_counters_consistent():
+    """n_total must NOT double-count out-of-scope keys (they are integration keys
+    already in union_keys), while n_ok_ignored reflects them."""
+    result = diff.diff_params(
+        {"longRunning": True, "incidentType": "Phishing"},
+        {"incidentType": "Phishing"},
+        yml_param_names={"longRunning", "incidentType"},
+        in_scope_fields={"incidentType"},
+        field_owning_subcapabilities={
+            "longRunning": frozenset({"log-collection_x"}),
+            "incidentType": frozenset({"fetch-issues_x"}),
+        },
+        enabled_ownership_units={"fetch-issues_x"},
+    )
+    summary = result["summary"]
+    # union_keys = {longRunning, incidentType} = 2; no normalizer drops here.
+    assert summary["n_total"] == 2
+    assert summary["n_out_of_variant_scope"] == 1
+    assert summary["n_ok_ignored"] == 1
+    assert summary["n_ok"] == 1            # incidentType matches on both sides
+    assert summary["n_missing_in_connector"] == 0
+    assert result["status"] == "pass"
+
+
+# ---------------------------------------------------------------------------
+# Bucket C DEFECT-2: the scope downgrade must apply to ALL THREE failing states
+# (MISSING_IN_CONNECTOR — covered above — plus VALUE_MISMATCH and
+# EXTRA_IN_CONNECTOR), via the single shared scope gate.
+# ---------------------------------------------------------------------------
+def test_out_of_variant_scope_value_mismatch_reclassified_to_ok_ignored():
+    """A VALUE_MISMATCH on a field owned SOLELY by a DISABLED sub-capability (the
+    platform injected a manifest default on the connector while the integration
+    sent its override) must be downgraded to OK_IGNORED out_of_variant_scope —
+    NOT counted as a value mismatch / failure."""
+    result = diff.diff_params(
+        {"page_size": "5"},          # integration override
+        {"page_size": "20000"},      # connector manifest default → would mismatch
+        yml_param_names={"page_size"},
+        # fetch-issues variant: page_size belongs to the DISABLED log-collection.
+        in_scope_fields={"incidentType"},
+        field_owning_subcapabilities={
+            "page_size": frozenset({"log-collection_x"}),
+            "incidentType": frozenset({"fetch-issues_x"}),
+        },
+        enabled_ownership_units={"fetch-issues_x"},
+    )
+    entry = _per_param(result, "page_size")
+    assert entry["state"] == diff.STATE_OK_IGNORED
+    assert entry["verdict"] == "ok"
+    assert "not enabled in this variant" in entry["reason"]
+    assert entry["out_of_scope_owners"] == ["log-collection_x"]
+    # Both value fields preserved for the operator.
+    assert entry["integration_value"] == "5"
+    assert entry["connector_value"] == "20000"
+    summary = result["summary"]
+    assert summary["n_value_mismatch"] == 0
+    assert summary["n_out_of_variant_scope"] == 1
+    assert summary["n_ok_ignored"] == 1
+    assert summary["n_fail"] == 0
+    assert result["status"] == "pass"
+
+
+def test_out_of_variant_scope_extra_in_connector_reclassified_to_ok_ignored():
+    """An EXTRA_IN_CONNECTOR field owned SOLELY by a DISABLED sub-capability (the
+    platform injected a connector-only field belonging to a disabled
+    sub-capability) must be downgraded to OK_IGNORED out_of_variant_scope —
+    NOT counted as an extra / failure."""
+    result = diff.diff_params(
+        {},                                    # integration doesn't read it
+        {"alertFetchInterval": "1"},           # connector injects it
+        yml_param_names=set(),
+        # log-collection variant: alertFetchInterval is gated on the DISABLED
+        # fetch-issues sub-capability.
+        in_scope_fields={"longRunning"},
+        field_owning_subcapabilities={
+            "alertFetchInterval": frozenset({"fetch-issues_x"}),
+            "longRunning": frozenset({"log-collection_x"}),
+        },
+        enabled_ownership_units={"log-collection_x"},
+    )
+    entry = _per_param(result, "alertFetchInterval")
+    assert entry["state"] == diff.STATE_OK_IGNORED
+    assert entry["verdict"] == "ok"
+    assert "not enabled in this variant" in entry["reason"]
+    assert entry["out_of_scope_owners"] == ["fetch-issues_x"]
+    assert entry["connector_value"] == "1"
+    assert "integration_value" not in entry  # connector-only field
+    summary = result["summary"]
+    assert summary["n_extra_in_connector"] == 0
+    assert summary["n_out_of_variant_scope"] == 1
+    assert summary["n_ok_ignored"] == 1
+    assert summary["n_fail"] == 0
+    assert result["status"] == "pass"
+
+
+def test_in_scope_value_mismatch_still_fails():
+    """GUARD: an IN-SCOPE field with a value mismatch MUST still FAIL as
+    VALUE_MISMATCH — the generalized scope gate must not swallow real drift for a
+    field whose owning sub-capability is enabled."""
+    result = diff.diff_params(
+        {"incidentType": "Phishing"},
+        {"incidentType": "Malware"},
+        yml_param_names={"incidentType"},
+        in_scope_fields={"incidentType"},
+        field_owning_subcapabilities={
+            "incidentType": frozenset({"fetch-issues_x"}),
+        },
+        enabled_ownership_units={"fetch-issues_x"},
+    )
+    entry = _per_param(result, "incidentType")
+    assert entry["state"] == diff.STATE_VALUE_MISMATCH
+    assert entry["verdict"] == "fail"
+    summary = result["summary"]
+    assert summary["n_value_mismatch"] == 1
+    assert summary["n_out_of_variant_scope"] == 0
+    assert result["status"] == "fail"
+
+
+def test_in_scope_extra_in_connector_still_fails():
+    """GUARD: an EXTRA_IN_CONNECTOR field owned by an ENABLED sub-capability MUST
+    still FAIL as EXTRA_IN_CONNECTOR (no coverage loss for in-scope extras)."""
+    result = diff.diff_params(
+        {},
+        {"incidentType": "Phishing"},
+        yml_param_names=set(),
+        in_scope_fields={"incidentType"},
+        field_owning_subcapabilities={
+            "incidentType": frozenset({"fetch-issues_x"}),
+        },
+        enabled_ownership_units={"fetch-issues_x"},
+    )
+    entry = _per_param(result, "incidentType")
+    assert entry["state"] == diff.STATE_EXTRA_IN_CONNECTOR
+    assert entry["verdict"] == "fail"
+    assert result["summary"]["n_extra_in_connector"] == 1
+    assert result["summary"]["n_out_of_variant_scope"] == 0
+    assert result["status"] == "fail"
