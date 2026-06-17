@@ -6,8 +6,12 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": ["Network Security"],
-    "tags": ["Palo Alto Networks Products"],
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

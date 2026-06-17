@@ -232,8 +232,7 @@ tasks:
       id: 30e7fed6-6d69-494f-bde3-e5dd04a7a309
       version: -1
       name: ServiceNow Table Exists?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -466,23 +465,21 @@ inputs:
   value:
     simple: DEVICE_SECURITY_CONFIG
   required: false
-  description: The list name defined in the XSOAR Lists for the RACI and ServiceNow
-    calculation.
-  playbookInputQuery: null
+  description: The list name defined in the XSOAR Lists for the RACI and ServiceNow calculation.
+  playbookInputQuery:
 - key: CreateServiceNowTicket
   value:
     simple: "false"
   required: false
   description: Determines if a ServiceNow ticket should be created based on the RACI calculation. Set to True to create an incident.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: PaloAltoNetworksDeviceSecurity
-  description: This path will have field "device" for the device details and "raci"
-    if the command "device-security-get-raci" has output.
+  description: This path will have field "device" for the device details and "raci" if the command "device-security-get-raci" has output.
   type: string
 - contextPath: ServiceNow.Record
   description: The ServiceNow record after creating the ServiceNow ticket.
   type: string
-fromversion: 5.0.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

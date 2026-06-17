@@ -1,7 +1,6 @@
 commonfields:
   id: Palo Alto Networks Device Security
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Palo Alto Networks Device Security
 display: Palo Alto Networks Device Security
 category: Network Security
@@ -383,6 +382,6 @@ script:
   runonce: false
   subtype: python3
   dockerimage: demisto/python3:3.12.8.3296088
-fromversion: 5.0.0
+fromversion: 6.10.0
 tests:
 - PaloAltoNetworks_DeviceSecurity-Test

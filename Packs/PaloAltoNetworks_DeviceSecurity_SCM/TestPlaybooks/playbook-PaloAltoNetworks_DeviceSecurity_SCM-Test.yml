@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e0aa06fa-6a9b-4b68-8f06-df3f745906a8
+    taskid: 176241b9-3a60-46dc-9fc9-92d6fca4b588
     type: start
     task:
-      id: e0aa06fa-6a9b-4b68-8f06-df3f745906a8
+      id: 176241b9-3a60-46dc-9fc9-92d6fca4b588
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -31,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 2a4114d4-a0c2-4696-81af-c82188ee4784
+    taskid: 9dec6827-679d-47f1-a618-cbba962da71e
     type: regular
     task:
-      id: 2a4114d4-a0c2-4696-81af-c82188ee4784
+      id: 9dec6827-679d-47f1-a618-cbba962da71e
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -62,10 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: e71a6f97-4359-48b3-8f35-3a9138010f87
+    taskid: 81a7c1a2-d168-4190-986a-1f0938627848
     type: regular
     task:
-      id: e71a6f97-4359-48b3-8f35-3a9138010f87
+      id: 81a7c1a2-d168-4190-986a-1f0938627848
       version: -1
       name: device-security-get-device
       script: '|||device-security-get-device'
@@ -93,10 +94,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 0470be71-9529-4cf8-813c-d4a490fb24d4
+    taskid: 2904131d-7e70-407a-b698-4946bd524423
     type: condition
     task:
-      id: 0470be71-9529-4cf8-813c-d4a490fb24d4
+      id: 2904131d-7e70-407a-b698-4946bd524423
       version: -1
       name: Verify Outputs
       type: condition
@@ -143,10 +144,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 7ec45a7e-6634-46ef-8a2d-d07b534cde33
+    taskid: cc9783d0-9553-434c-99c9-1fd0d98b188c
     type: regular
     task:
-      id: 7ec45a7e-6634-46ef-8a2d-d07b534cde33
+      id: cc9783d0-9553-434c-99c9-1fd0d98b188c
       version: -1
       name: device-security-list-devices
       script: '|||device-security-list-devices'
@@ -171,10 +172,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 2c603e98-eacc-4ff0-8a73-38522c09a9aa
+    taskid: 5c5a054e-bae4-4d00-b9ff-fc9fd2abcc71
     type: condition
     task:
-      id: 2c603e98-eacc-4ff0-8a73-38522c09a9aa
+      id: 5c5a054e-bae4-4d00-b9ff-fc9fd2abcc71
       version: -1
       name: Verify Outputs
       type: condition
@@ -206,10 +207,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: ca25add8-7f2b-4b13-81bc-ba0f270463ec
+    taskid: 9f910925-b89c-4abc-acdc-30bee5142111
     type: regular
     task:
-      id: ca25add8-7f2b-4b13-81bc-ba0f270463ec
+      id: 9f910925-b89c-4abc-acdc-30bee5142111
       version: -1
       name: device-security-list-alerts
       script: '|||device-security-list-alerts'
@@ -241,10 +242,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 7ace4af9-c522-4063-8164-1992f5fd2b18
+    taskid: 46b0b663-081b-4a3e-a317-222047c7df0d
     type: condition
     task:
-      id: 7ace4af9-c522-4063-8164-1992f5fd2b18
+      id: 46b0b663-081b-4a3e-a317-222047c7df0d
       version: -1
       name: Verify Outputs
       type: condition
@@ -279,10 +280,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: f176bd0b-baba-421a-8aac-43059501a246
+    taskid: eedc22d0-2050-4ad5-8439-dfa127db3ec8
     type: regular
     task:
-      id: f176bd0b-baba-421a-8aac-43059501a246
+      id: eedc22d0-2050-4ad5-8439-dfa127db3ec8
       version: -1
       name: device-security-list-vulns
       script: '|||device-security-list-vulns'
@@ -314,10 +315,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 0c47f087-a212-42e2-888f-ff45c0efdbdd
+    taskid: 1de44472-bdfd-4fa6-b0f4-1a0b98d81031
     type: regular
     task:
-      id: 0c47f087-a212-42e2-888f-ff45c0efdbdd
+      id: 1de44472-bdfd-4fa6-b0f4-1a0b98d81031
       version: -1
       name: device-security-resolve-alert
       script: '|||device-security-resolve-alert'
@@ -351,10 +352,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 841c8dd6-57e8-434f-8cc8-f893de069adc
+    taskid: a1cd7d3c-14cf-4d37-b681-f35f9adc7da2
     type: regular
     task:
-      id: 841c8dd6-57e8-434f-8cc8-f893de069adc
+      id: a1cd7d3c-14cf-4d37-b681-f35f9adc7da2
       version: -1
       name: device-security-resolve-vuln
       script: '|||device-security-resolve-vuln'
@@ -370,13 +371,13 @@ tasks:
           root: PaloAltoNetworksDeviceSecurity.Vulns
           accessor: vulnerability_name
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
       id:
         complex:
           root: PaloAltoNetworksDeviceSecurity.Vulns
           accessor: zb_ticketid
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
       reason:
         simple: XSOAR nightly integration test
     separatecontext: false
@@ -394,15 +395,16 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: d42d85fe-5e95-4796-837f-b4a56aa28343
+    taskid: a54719e6-b33b-45c0-b1b9-9be8e6fe70de
     type: title
     task:
-      id: d42d85fe-5e95-4796-837f-b4a56aa28343
+      id: a54719e6-b33b-45c0-b1b9-9be8e6fe70de
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -430,4 +432,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.10.0
+description: ''

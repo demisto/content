@@ -1,8 +1,7 @@
 id: PANW Device Security ServiceNow Tickets Check
 version: -1
 name: PANW Device Security ServiceNow Tickets Check
-description: This playbook should be used in a recurring Job to check the
-  ServiceNow ticket status for the Palo Alto Networks Device Security (previously Zingbox) alerts or vulnerabilties.
+description: This playbook should be used in a recurring Job to check the ServiceNow ticket status for the Palo Alto Networks Device Security (previously Zingbox) alerts or vulnerabilties.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,8 +39,7 @@ tasks:
       id: f90d3864-1b6a-48fa-bb18-9de93949a3d8
       version: -1
       name: device-security-check-servicenow
-      description: Closes the XSOAR incident if the Device Security ServiceNow ticket was closed.
-        This command should be run in a Job.
+      description: Closes the XSOAR incident if the Device Security ServiceNow ticket was closed. This command should be run in a Job.
       scriptName: device-security-check-servicenow
       type: regular
       iscommand: false
@@ -198,6 +196,6 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
