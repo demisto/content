@@ -1,5 +1,8 @@
 [file:README.md]
 ignore=RM113
 
-[file:SilentPush.py]
+[file:Integrations/SilentPushv2/SilentPushv2.yml]
+ignore=BA129
+
+[file:Integrations/SilentPushv2/SilentPushv2.py]
 ignore=BA119
