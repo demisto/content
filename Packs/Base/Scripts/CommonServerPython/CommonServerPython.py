@@ -13707,7 +13707,7 @@ _UCP_DEFAULT_CAPABILITY = 'automation-and-remediation'
 _UCP_COMMAND_CAPABILITIES = {
     'fetch-incidents': 'collection-and-ingestion',
     'fetch-assets': 'collection-and-ingestion',
-}
+} #TODO get full from JOey tomorrow and apply before merge. Also in JS
 
 # Canonical credential-envelope schema per profile type.
 #
@@ -13740,8 +13740,8 @@ def _place_by_path(target, path, value):
     The destination string is split on ``.``; each segment except the last
     becomes (or reuses) a nested dict, and the final segment receives the
     value. Two paths that share a parent therefore merge into a single nested
-    dict - this is how multiple connector fields fold into one structured param
-    (e.g. ``credentials.identifier`` + ``credentials.password`` ->
+    dict — this is how multiple connector fields fold into one structured param
+    (e.g. ``credentials.identifier`` + ``credentials.password`` →
     ``{"credentials": {"identifier": ..., "password": ...}}``).
 
     A single-segment path (e.g. ``"url"``) places a flat scalar.
@@ -13852,9 +13852,9 @@ def build_ucp_params(connector_metadata, capability=None):
     Pure, side-effect-free core of UCP param interpolation. It is
     **metadata-first**: it scans ``connectionProfiles`` to find every profile in
     scope for the current capability/sub_capability, then for each such profile
-    reads its ``param_map`` (a mapping of connector field id -> dotted destination
+    reads its ``param_map`` (a mapping of connector field id → dotted destination
     path) together with the platform-supplied field values, and *interpolates*
-    them into the nested shape integrations expect - most importantly folding
+    them into the nested shape integrations expect — most importantly folding
     flat fields (e.g. ``username`` / ``password``) into a single structured param
     (e.g. a ``credentials`` dict, the classic XSOAR ``type 9`` shape).
 
@@ -14330,7 +14330,7 @@ def get_ucp_method_unique_id(capability=None, sub_capability=None):
 
 
 def get_ucp_credentials(method_unique_id=None, body=None):
-    # type: (Optional[str], Optional[dict]) -> dict
+    # type: (Optional[str]) -> dict
     """Fetch UCP credentials for a connection profile, with in-process TTL caching.
 
     Results are cached keyed by ``method_unique_id``.  The TTL is derived from
@@ -14346,13 +14346,6 @@ def get_ucp_credentials(method_unique_id=None, body=None):
     :type method_unique_id: ``Optional[str]``
     :param method_unique_id: The profile's ``method_unique_id``. If ``None``,
         resolves automatically via ``get_ucp_method_unique_id()``.
-
-    :type body: ``Optional[dict]``
-    :param body: Optional extra payload forwarded to ``demisto.getUCPCredentials``
-        (e.g. ``{"extra": {"subject": "<user_id>"}}`` to request an impersonated
-        token). The ``body`` argument is only supported on newer platform
-        versions; on older platforms the call gracefully falls back to fetching
-        credentials without it.
 
     :return: Credential dict from the backend (may be served from cache).
         Example::
@@ -14378,23 +14371,7 @@ def get_ucp_credentials(method_unique_id=None, body=None):
             return entry.get('result')
         # Stale -- fall through to re-fetch
 
-    if body is None:
-        # No extra payload to forward; call with the classic signature so behavior
-        # is unchanged for every caller that does not pass a ``body``.
-        creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
-    else:
-        try:
-            # ``body`` (used to forward the impersonation subject / user id) is only
-            # accepted by ``getUCPCredentials`` on newer platform versions.
-            creds = demisto.getUCPCredentials(method_unique_id, from_cache=False, body=body)
-        except TypeError:
-            # Older platforms do not accept the ``body`` argument; retry without it
-            # so the integration keeps working (without subject impersonation).
-            demisto.debug(
-                "[UCP][CommonServerPython.py] getUCPCredentials does not support 'body'; "
-                "retrying without it for method_unique_id={}".format(method_unique_id)
-            )
-            creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
+    creds = demisto.getUCPCredentials(method_unique_id, from_cache=False, body=body)
     demisto.debug("[UCP][CommonServerPython.py] Fetched fresh credentials for method_unique_id={}".format(method_unique_id))
 
     expiry = _extract_ucp_expiry(creds)
@@ -14427,7 +14404,7 @@ try:
     interpolate_ucp_params()
 except Exception:
     # Import-time safety net: never let interpolation break module import.
-    # Intentionally does NOT call demisto.debug() here - in bare-mock contexts
+    # Intentionally does NOT call demisto.debug() here — in bare-mock contexts
     # (e.g. test collection) demisto.debug itself may be unavailable.
     pass
 
@@ -14435,7 +14412,6 @@ except Exception:
 ###########################################
 #     End of UCP Functions     #
 ###########################################
-
 
 ###########################################
 #   Safe Pickle Loading     #
