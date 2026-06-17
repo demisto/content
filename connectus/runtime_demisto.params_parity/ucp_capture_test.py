@@ -26,10 +26,14 @@ from resolver import (
     SubCapabilitySpec,
 )
 from ucp_capture import (
-    _ENGINE_FIELD_VALUES,
     _build_instance_payload,
     _dig,
+    _dummy_string,
+    _is_backend_field,
+    _typed_dummy_value,
+    wait_for_xsoar_mirror,
 )
+import ucp_capture
 
 
 # ---------------------------------------------------------------------------
@@ -173,6 +177,54 @@ def test_enables_all_capabilities_and_subs():
     assert payload["capabilities"]["general_configurations"]["instance_name"] == "My Instance"
 
 
+def test_two_fetch_capabilities_raises_guardrail():
+    """The single-fetch guardrail: two fetch-exclusive caps on one instance is
+    ILLEGAL (e.g. fetch-issues + log-collection → isfetch + isfetchevents)."""
+    cv = _creation_view()
+    cv["steps"][0]["capabilities"] = [
+        {"id": "fetch-issues"},
+        {"id": "log-collection"},
+    ]
+    caps = [
+        CapabilitySpec(id="fetch-issues"),
+        CapabilitySpec(id="log-collection"),
+    ]
+    with pytest.raises(RuntimeError, match="more than one fetch-exclusive"):
+        _build_instance_payload(
+            cv,
+            instance_name="x",
+            capabilities=caps,
+            profiles=[],
+            instance_values={},
+            connector_id="akamai",
+        )
+
+
+def test_one_fetch_plus_automation_is_legal():
+    """A legal variant — automation + ONE fetch cap — passes the guardrail."""
+    cv = _creation_view()
+    cv["steps"][0]["capabilities"] = [
+        {"id": "automation-and-remediation"},
+        {"id": "fetch-issues"},
+    ]
+    caps = [
+        CapabilitySpec(id="automation-and-remediation"),
+        CapabilitySpec(id="fetch-issues"),
+    ]
+    payload = _build_instance_payload(
+        cv,
+        instance_name="x",
+        capabilities=caps,
+        profiles=[],
+        instance_values={},
+        connector_id="akamai",
+    )
+    assert set(payload["capabilities"]["values"].keys()) == {
+        "automation-and-remediation",
+        "fetch-issues",
+    }
+
+
 def test_unknown_capability_raises():
     caps = [CapabilitySpec(id="does-not-exist")]
     with pytest.raises(RuntimeError, match="not in creation view"):
@@ -246,8 +298,8 @@ def test_orphan_config_field_gets_dummy_for_extra_detection():
     cfg = payload["configuration"]
     # Matched field -> shared value.
     assert cfg["fetch_secret_path"] == "/x"
-    # Orphan field -> set to a recognizable dummy, NOT omitted.
-    assert cfg["orphan_field"] == "dummy_config_orphan_field"
+    # Orphan field -> set to a recognizable per-field dummy STRING, NOT omitted.
+    assert cfg["orphan_field"] == "<dummy_value_for_orphan_field>"
 
 
 def test_configuration_is_manifest_authoritative_not_creation_view():
@@ -357,7 +409,7 @@ def test_interpolated_profile_uncovered_field_is_dummy():
     p = payload["connection"]["profiles"][0]
     assert p["values"]["sfdc_client_key"] == "REAL_KEY"
     # Uncovered field → dummy, never the real value.
-    assert p["values"]["sfdc_client_secret"] == "dummy_sfdc_client_secret"
+    assert p["values"]["sfdc_client_secret"] == "<dummy_value_for_sfdc_client_secret>"
 
 
 def test_non_interpolated_profile_is_dummy_filled():
@@ -379,8 +431,8 @@ def test_non_interpolated_profile_is_dummy_filled():
     )
     p = payload["connection"]["profiles"][0]
     # Non-interpolated → dummy, never the real value.
-    assert p["values"]["sfdc_client_key"] == "dummy_sfdc_client_key"
-    assert p["values"]["sfdc_client_secret"] == "dummy_sfdc_client_secret"
+    assert p["values"]["sfdc_client_key"] == "<dummy_value_for_sfdc_client_key>"
+    assert p["values"]["sfdc_client_secret"] == "<dummy_value_for_sfdc_client_secret>"
     assert p["values"]["sfdc_client_key"] != "REAL_KEY"
 
 
@@ -415,16 +467,15 @@ def test_connection_general_pushed():
 
 
 # ---------------------------------------------------------------------------
-# Engine fields are INCLUDED as the real UI sends them (no_engine / null / null)
+# Engine fields are dummy STRINGS (so non-default values are exercised)
 # ---------------------------------------------------------------------------
 #
 # For the AWS connector's passthrough.aws_acm profile the field_ids include
-# engine_mode / engine / engine_group. The non-interpolated fallback used to set
-# values["engine"] = "dummy_engine", and UCP rejected instance creation with
-# "engine with id [dummy_engine] does not exist (909)". The real UI payload does
-# NOT omit them either — it sends engine_mode:"no_engine", engine:null,
-# engine_group:null, keeping the instance on "No Engine". So they must be present
-# with those canonical values (never a dummy).
+# engine_mode / engine / engine_group. They are treated like any other
+# string-typed field: filled with the per-field dummy STRING
+# ``<dummy_value_for_<id>>``. (The earlier "no_engine/null/null" canonical
+# handling was dropped — engine fields are plain string dummies now, so the
+# connector's own default is never silently accepted.)
 
 _ENGINE_FIELDS = ("engine", "engine_group", "engine_mode", "engineGroup")
 
@@ -441,9 +492,9 @@ def _creation_view_with_profile(*profile_ids: str):
     return view
 
 
-def test_non_interpolated_profile_sets_canonical_engine_values():
-    """The non-interpolated branch must emit engine_mode/engine/engine_group with
-    the canonical no-engine values (never engine=dummy_engine)."""
+def test_non_interpolated_profile_engine_fields_are_dummy_strings():
+    """The non-interpolated branch fills engine fields with the per-field dummy
+    STRING (no spec → string dummy), and normal auth fields likewise."""
     profile = ProfileSpec(
         id="passthrough.aws_acm",
         type="passthrough",
@@ -466,17 +517,17 @@ def test_non_interpolated_profile_sets_canonical_engine_values():
     )
     p = payload["connection"]["profiles"][0]
     values = p["values"]
-    # Engine fields present with canonical values; never the literal dummy_engine.
-    assert values["engine_mode"] == "no_engine"
-    assert values["engine"] is None
-    assert values["engine_group"] is None
-    assert values.get("engine") != "dummy_engine"
-    # The normal auth field IS still dummy-filled.
-    assert values["aws_access_key_id"] == "dummy_aws_access_key_id"
+    # Engine fields are plain per-field dummy STRINGS.
+    assert values["engine_mode"] == "<dummy_value_for_engine_mode>"
+    assert values["engine"] == "<dummy_value_for_engine>"
+    assert values["engine_group"] == "<dummy_value_for_engine_group>"
+    # The normal auth field is dummy-filled with the SAME per-field dummy string.
+    assert values["aws_access_key_id"] == "<dummy_value_for_aws_access_key_id>"
 
 
-def test_interpolated_profile_sets_canonical_engine_values():
-    """An interpolated profile also sets the canonical no-engine engine values."""
+def test_interpolated_profile_engine_fields_are_dummy_strings():
+    """An interpolated profile still dummy-strings engine fields; the interpolated
+    auth field resolves to its real shared value."""
     profile = ProfileSpec(
         id="passthrough.aws_acm",
         type="passthrough",
@@ -499,17 +550,47 @@ def test_interpolated_profile_sets_canonical_engine_values():
     )
     p = payload["connection"]["profiles"][0]
     values = p["values"]
-    assert values["engine_mode"] == "no_engine"
-    assert values["engine"] is None
-    assert values["engine_group"] is None
+    assert values["engine_mode"] == "<dummy_value_for_engine_mode>"
+    assert values["engine"] == "<dummy_value_for_engine>"
+    assert values["engine_group"] == "<dummy_value_for_engine_group>"
     # The normal interpolated auth field still resolves to the real value.
     assert values["aws_access_key_id"] == "REAL_ACCESS_KEY"
 
 
-def test_engine_field_not_pushed_to_connection_general():
-    """An engine field declared as a connection-general field must not be pushed."""
+def test_prefixed_engine_field_is_dummy_string():
+    """A PROFILE-PREFIXED engine field id (plain.guardicore_v2_engine) is filled
+    with its own per-field dummy string (regression: prefixed engine ids must be
+    handled like any string field, not skipped)."""
+    profile = ProfileSpec(
+        id="plain.guardicore_v2",
+        type="plain",
+        interpolation_mapping={},
+        auth_field_to_role={},
+        field_ids=[
+            "plain.guardicore_v2_engine",
+            "plain.guardicore_v2_engine_group",
+        ],
+    )
+    payload = _build_instance_payload(
+        _creation_view_with_profile("plain.guardicore_v2"),
+        instance_name="x",
+        capabilities=_capabilities(),
+        profiles=[profile],
+        instance_values={},
+        connector_id="akamai",
+    )
+    values = payload["connection"]["profiles"][0]["values"]
+    assert values["plain.guardicore_v2_engine"] == "<dummy_value_for_plain.guardicore_v2_engine>"
+    assert (
+        values["plain.guardicore_v2_engine_group"]
+        == "<dummy_value_for_plain.guardicore_v2_engine_group>"
+    )
+
+
+def test_engine_field_is_pushed_to_connection_general():
+    """An engine field declared as a connection-general field IS pushed (no longer
+    filtered out) — it carries whatever shared value it was given."""
     view = _creation_view()
-    # Declare an engine field among the connection-general fields.
     view["steps"][1]["sections"] = [
         {"data": [{"fields": [{"id": "domain"}, {"id": "engine"}]}]},
     ]
@@ -518,12 +599,12 @@ def test_engine_field_not_pushed_to_connection_general():
         instance_name="x",
         capabilities=_capabilities(),
         profiles=[],
-        instance_values={"domain": "test.salesforce.com", "engine": "dummy_engine"},
+        instance_values={"domain": "test.salesforce.com", "engine": "some_engine"},
         connector_id="salesforce",
     )
     general = payload["connection"]["general_configurations"]
     assert general["domain"] == "test.salesforce.com"
-    assert "engine" not in general
+    assert general["engine"] == "some_engine"
 
 
 # ---------------------------------------------------------------------------
@@ -597,7 +678,7 @@ def test_non_auth_profile_config_field_absent_falls_back_to_dummy():
         connector_id="aws",
     )
     values = payload["connection"]["profiles"][0]["values"]
-    assert values["someField"] == "dummy_someField"
+    assert values["someField"] == "<dummy_value_for_someField>"
 
 
 def test_non_interpolated_profile_auth_field_still_dummy_with_shared_values_present():
@@ -622,7 +703,7 @@ def test_non_interpolated_profile_auth_field_still_dummy_with_shared_values_pres
         connector_id="aws",
     )
     values = payload["connection"]["profiles"][0]["values"]
-    assert values["aws_access_key_id"] == "dummy_aws_access_key_id"
+    assert values["aws_access_key_id"] == "<dummy_value_for_aws_access_key_id>"
 
 
 # ---------------------------------------------------------------------------
@@ -699,49 +780,272 @@ def test_auth_field_missing_leaf_falls_back_to_dummy():
     )
     values = payload["connection"]["profiles"][0]["values"]
     assert values["credentials_username"] == "AKIAEXAMPLE"
-    assert values["credentials_password"] == "dummy_credentials_password"
-    assert values["roleArn"] == "dummy_roleArn"
+    assert values["credentials_password"] == "<dummy_value_for_credentials_password>"
+    assert values["roleArn"] == "<dummy_value_for_roleArn>"
 
 
 # ---------------------------------------------------------------------------
-# Engine fields are INCLUDED with canonical "no engine" values (CHANGE C)
+# Type-aware dummy values (so the backend doesn't reject creation)
 # ---------------------------------------------------------------------------
 #
-# The real UI payload INCLUDES engine fields: engine_mode:"no_engine",
-# engine:null, engine_group:null. They must be present (not skipped, not dummied).
+# The backend strictly type-checks every field at instance creation: a string
+# dummy in a checkbox/duration field makes it REJECT creation (no XSOAR mirror).
+# _typed_dummy_value emits a TYPE-CORRECT dummy: checkbox→False, duration/number
+# →0, multi_select→[dummy str], everything else→a per-field dummy STRING.
 
 
-def test_engine_fields_present_with_canonical_no_engine_values():
+def test_typed_dummy_checkbox_is_false():
+    specs = {"defaultIgnore": {"field_type": "checkbox"}}
+    assert _typed_dummy_value("defaultIgnore", specs) is False
+
+
+def test_typed_dummy_duration_is_int_zero():
+    specs = {"incidentFetchInterval": {"field_type": "duration"}}
+    assert _typed_dummy_value("incidentFetchInterval", specs) == 0
+    assert isinstance(_typed_dummy_value("incidentFetchInterval", specs), int)
+
+
+def test_typed_dummy_number_is_int_zero():
+    specs = {"retries": {"field_type": "number"}}
+    assert _typed_dummy_value("retries", specs) == 0
+
+
+def test_typed_dummy_multi_select_is_list_of_dummy_string():
+    specs = {"severity": {"field_type": "multi_select"}}
+    assert _typed_dummy_value("severity", specs) == ["<dummy_value_for_severity>"]
+
+
+def test_typed_dummy_select_is_dummy_string_not_default():
+    # select stays a dummy STRING (NOT the manifest default), to test non-defaults.
+    specs = {"integrationLogLevel": {"field_type": "select", "default_value": "Off"}}
+    assert _typed_dummy_value("integrationLogLevel", specs) == "<dummy_value_for_integrationLogLevel>"
+
+
+def test_typed_dummy_input_is_dummy_string():
+    specs = {"host": {"field_type": "input"}}
+    assert _typed_dummy_value("host", specs) == "<dummy_value_for_host>"
+
+
+def test_typed_dummy_no_spec_falls_back_to_dummy_string():
+    # No spec at all (orphan / not in manifest) → string dummy.
+    assert _typed_dummy_value("mystery_field", None) == "<dummy_value_for_mystery_field>"
+    assert _typed_dummy_value("mystery_field", {}) == "<dummy_value_for_mystery_field>"
+
+
+def test_typed_dummy_backend_config_type_is_none():
+    """A ``config_type: backend`` ENTITY-REFERENCE field → ``None`` (NOT a dummy
+    string). The backend resolves these against REAL tenant entities (engines,
+    classifiers, mappers, incident types); a dummy id fails as "Item not found
+    (8)" and rejects creation, so the UI sends null and so do we."""
+    specs = {
+        "incomingMapperId": {"field_type": "select", "config_type": "backend"},
+    }
+    assert _typed_dummy_value("incomingMapperId", specs) is None
+
+
+def test_typed_dummy_backend_engine_is_none():
+    """Engine / engineGroup are ``config_type: backend`` (dynamic_values) — they
+    resolve to a real engine entity, so the dummy must be ``None``, not a string."""
+    specs = {
+        "engine": {"field_type": "input", "config_type": "backend"},
+        "engineGroup": {"field_type": "input", "config_type": "backend"},
+    }
+    assert _typed_dummy_value("engine", specs) is None
+    assert _typed_dummy_value("engineGroup", specs) is None
+
+
+def test_typed_dummy_backend_takes_priority_over_field_type():
+    """``config_type: backend`` wins even when field_type would otherwise yield a
+    non-string typed dummy (e.g. multi_select) — the backend still resolves it."""
+    specs = {
+        "incidentType": {"field_type": "multi_select", "config_type": "backend"},
+    }
+    assert _typed_dummy_value("incidentType", specs) is None
+
+
+def test_non_backend_select_still_dummy_string():
+    """A select WITHOUT config_type: backend (a plain enum select) is still a
+    dummy STRING — only backend-resolved fields become None."""
+    specs = {"verbosity": {"field_type": "select", "enum_values": ["a", "b"]}}
+    assert _typed_dummy_value("verbosity", specs) == "<dummy_value_for_verbosity>"
+
+
+def test_backend_field_flows_through_profile_fill_as_none():
+    """A ``config_type: backend`` profile field with no value lands as ``None`` in
+    the profile values (mirrors the UI), so the backend doesn't reject creation
+    with "Item not found (8)"."""
     profile = ProfileSpec(
-        id="passthrough.aws_acm",
-        type="passthrough",
-        interpolation_mapping={"access_key_role": "access_key"},
-        auth_field_to_role={"aws_access_key_id": "access_key_role"},
-        field_ids=["engine_mode", "engine", "engine_group", "aws_access_key_id"],
+        id="plain.guardicore_v2",
+        type="plain",
+        interpolation_mapping={},
+        auth_field_to_role={},
+        field_ids=[
+            "plain.guardicore_v2_engine",
+            "plain.guardicore_v2_engine_group",
+        ],
     )
     payload = _build_instance_payload(
-        _creation_view_with_profile("passthrough.aws_acm"),
+        _creation_view_with_profile("plain.guardicore_v2"),
         instance_name="x",
         capabilities=_capabilities(),
         profiles=[profile],
-        instance_values={"access_key": "REAL_ACCESS_KEY"},
-        connector_id="aws",
+        instance_values={},
+        connector_id="akamai",
+        field_specs={
+            "plain.guardicore_v2_engine": {
+                "field_type": "input",
+                "config_type": "backend",
+            },
+            "plain.guardicore_v2_engine_group": {
+                "field_type": "input",
+                "config_type": "backend",
+            },
+        },
     )
     values = payload["connection"]["profiles"][0]["values"]
-    # Engine fields PRESENT with canonical no-engine values.
-    assert values["engine_mode"] == "no_engine"
-    assert values["engine"] is None
-    assert values["engine_group"] is None
-    # The normal auth field still resolves to the real value.
-    assert values["aws_access_key_id"] == "REAL_ACCESS_KEY"
+    assert values["plain.guardicore_v2_engine"] is None
+    assert values["plain.guardicore_v2_engine_group"] is None
 
 
-def test_engine_field_values_map_constant():
-    assert _ENGINE_FIELD_VALUES == {
-        "engine_mode": "no_engine",
-        "engine": None,
-        "engine_group": None,
+def test_backend_orphan_config_field_is_none():
+    """An orphan CONFIG field declared config_type: backend lands as None (not a
+    dummy string), so the backend doesn't fail its entity lookup."""
+    view = _creation_view()
+    caps = _capabilities()
+    caps[0].config_field_ids = {"incidentType"}
+    payload = _build_instance_payload(
+        view,
+        instance_name="x",
+        capabilities=caps,
+        profiles=[],
+        instance_values={},  # no value → orphan → typed dummy
+        connector_id="akamai",
+        field_specs={
+            "incidentType": {"field_type": "select", "config_type": "backend"},
+        },
+    )
+    assert payload["configuration"]["incidentType"] is None
+
+
+def test_is_backend_field_helper():
+    specs = {
+        "engine": {"field_type": "input", "config_type": "backend"},
+        "host": {"field_type": "input"},
+        "lvl": {"field_type": "select", "config_type": "BACKEND"},  # case-insensitive
     }
+    assert _is_backend_field("engine", specs) is True
+    assert _is_backend_field("lvl", specs) is True
+    assert _is_backend_field("host", specs) is False
+    assert _is_backend_field("unknown", specs) is False
+    assert _is_backend_field("anything", None) is False
+
+
+def test_backend_config_field_with_override_value_is_still_none():
+    """REGRESSION: even when instance_values carries an <override_…> string for a
+    config_type: backend field, the payload must force None (not the override) —
+    otherwise the backend's entity lookup fails with "Item not found (8)" and no
+    mirror is produced. The matched branch must NOT win for backend fields."""
+    view = _creation_view()
+    caps = _capabilities()
+    caps[0].config_field_ids = {"incidentType"}
+    payload = _build_instance_payload(
+        view,
+        instance_name="x",
+        capabilities=caps,
+        profiles=[],
+        instance_values={"incidentType": "<override_incidentType>"},  # has a value!
+        connector_id="akamai",
+        field_specs={
+            "incidentType": {"field_type": "select", "config_type": "backend"},
+        },
+    )
+    assert payload["configuration"]["incidentType"] is None
+
+
+def test_backend_profile_field_with_override_value_is_still_none():
+    """REGRESSION: a config_type: backend PROFILE field (engine/engineGroup) is
+    forced to None even when instance_values carries an <override_…> string for
+    it — mirrors the UI and avoids "Item not found (8)"."""
+    profile = ProfileSpec(
+        id="plain.guardicore_v2",
+        type="plain",
+        interpolation_mapping={},
+        auth_field_to_role={},
+        field_ids=[
+            "plain.guardicore_v2_engine",
+            "plain.guardicore_v2_engine_group",
+        ],
+    )
+    payload = _build_instance_payload(
+        _creation_view_with_profile("plain.guardicore_v2"),
+        instance_name="x",
+        capabilities=_capabilities(),
+        profiles=[profile],
+        instance_values={
+            "plain.guardicore_v2_engine": "<override_engine>",
+            "plain.guardicore_v2_engine_group": "<override_engine_group>",
+        },
+        connector_id="akamai",
+        field_specs={
+            "plain.guardicore_v2_engine": {
+                "field_type": "input",
+                "config_type": "backend",
+            },
+            "plain.guardicore_v2_engine_group": {
+                "field_type": "input",
+                "config_type": "backend",
+            },
+        },
+    )
+    values = payload["connection"]["profiles"][0]["values"]
+    assert values["plain.guardicore_v2_engine"] is None
+    assert values["plain.guardicore_v2_engine_group"] is None
+
+
+def test_dummy_string_format_is_per_field_unique():
+    assert _dummy_string("foo") == "<dummy_value_for_foo>"
+    assert _dummy_string("bar") == "<dummy_value_for_bar>"
+
+
+def test_checkbox_dummy_flows_through_profile_fill():
+    """A checkbox profile field with no value gets a bool False (not a string),
+    so the backend can ParseBool it."""
+    profile = ProfileSpec(
+        id="plain.x",
+        type="plain",
+        interpolation_mapping={},
+        auth_field_to_role={},
+        field_ids=["insecure"],
+    )
+    payload = _build_instance_payload(
+        _creation_view_with_profile("plain.x"),
+        instance_name="x",
+        capabilities=_capabilities(),
+        profiles=[profile],
+        instance_values={},
+        connector_id="x",
+        field_specs={"insecure": {"field_type": "checkbox"}},
+    )
+    values = payload["connection"]["profiles"][0]["values"]
+    assert values["insecure"] is False
+
+
+def test_duration_orphan_config_dummy_is_int():
+    """An orphan CONFIG field of type duration gets an int 0 (not a string), so
+    the backend can cast it to int64."""
+    view = _creation_view()
+    caps = _capabilities()
+    caps[0].config_field_ids = {"incidentFetchInterval"}
+    payload = _build_instance_payload(
+        view,
+        instance_name="x",
+        capabilities=caps,
+        profiles=[],
+        instance_values={},  # no value → orphan → typed dummy
+        connector_id="akamai",
+        field_specs={"incidentFetchInterval": {"field_type": "duration"}},
+    )
+    assert payload["configuration"]["incidentFetchInterval"] == 0
 
 
 # ---------------------------------------------------------------------------
@@ -950,3 +1254,79 @@ def test_capture_ucp_params_failure_returns_none_and_payload(monkeypatch):
 
     assert captured is None
     assert payload is sentinel_payload
+
+
+# ---------------------------------------------------------------------------
+# wait_for_xsoar_mirror — name matching (prefix)
+# ---------------------------------------------------------------------------
+def test_wait_for_mirror_matches_suffixed_name_by_prefix(monkeypatch):
+    """The XSOAR mirror is named ``{instance_name}_{handler_id}_{ucp_id}`` — i.e.
+    the unique instance name is a PREFIX, not an exact match. The poller must
+    still find it."""
+    instance_name = "Connector_instance_for_Akamai_runtime_parity_75a1572c"
+    mirror_name = (
+        f"{instance_name}_xsoar-guardicore-v2"
+        "_a512e181-2e5c-4031-9504-a9e92dc07ca9"
+    )
+    monkeypatch.setattr(
+        ucp_capture,
+        "get_instances_by_brand",
+        lambda *a, **k: [{"id": "838c2c2d", "name": mirror_name}],
+    )
+
+    found = wait_for_xsoar_mirror(
+        object(),
+        "GuardiCore v2",
+        expected_name=instance_name,
+        max_retries=1,
+        poll_interval=0,
+    )
+
+    assert found is not None
+    assert found["id"] == "838c2c2d"
+    assert found["name"] == mirror_name
+
+
+def test_wait_for_mirror_matches_exact_name(monkeypatch):
+    """An exact name match still works (back-compat)."""
+    instance_name = "Connector_instance_for_Akamai_runtime_parity_75a1572c"
+    monkeypatch.setattr(
+        ucp_capture,
+        "get_instances_by_brand",
+        lambda *a, **k: [{"id": "id-1", "name": instance_name}],
+    )
+
+    found = wait_for_xsoar_mirror(
+        object(),
+        "GuardiCore v2",
+        expected_name=instance_name,
+        max_retries=1,
+        poll_interval=0,
+    )
+
+    assert found is not None
+    assert found["id"] == "id-1"
+
+
+def test_wait_for_mirror_ignores_unrelated_brand_instances(monkeypatch):
+    """An instance whose name does NOT start with the unique instance name (e.g.
+    a stale/manual instance of the same brand) is not matched."""
+    instance_name = "Connector_instance_for_Akamai_runtime_parity_75a1572c"
+    monkeypatch.setattr(
+        ucp_capture,
+        "get_instances_by_brand",
+        lambda *a, **k: [
+            {"id": "stale-1", "name": "some_other_instance_deadbeef"},
+            {"id": "stale-2", "name": "Connector_instance_for_Akamai_runtime_parity_OTHER"},
+        ],
+    )
+
+    found = wait_for_xsoar_mirror(
+        object(),
+        "GuardiCore v2",
+        expected_name=instance_name,
+        max_retries=1,
+        poll_interval=0,
+    )
+
+    assert found is None

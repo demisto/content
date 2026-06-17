@@ -35,11 +35,13 @@ from resolver import slugify
 RESULTS_DIR = Path(__file__).resolve().parent / "results"
 
 
-# Exact ledger columns (DECIDED in the design — do not reorder/rename).
+# Exact ledger columns. One row PER VARIANT (the multi-capability variant matrix
+# — see ``multi_capability_variant_design.md``), so ``variant_id`` is included.
 LEDGER_COLUMNS = [
     "timestamp",
     "integration_id",
     "connector_slug",
+    "variant_id",
     "status",
     "n_fail",
     "result_file",
@@ -102,6 +104,36 @@ def write_result(
     return out_path
 
 
+def _ledger_rows_for(envelope: dict) -> list[dict]:
+    """Build the per-VARIANT ledger rows from an aggregate envelope.
+
+    The aggregate envelope carries a ``variants[]`` list; we emit ONE row per
+    variant (with its own ``variant_id``/``status``/``n_fail``). For backward
+    compatibility, an envelope WITHOUT ``variants`` (a legacy single-diff shape)
+    yields a single row with an empty ``variant_id``.
+    """
+    variants = envelope.get("variants")
+    if isinstance(variants, list) and variants:
+        rows = []
+        for v in variants:
+            rows.append(
+                {
+                    "variant_id": v.get("variant_id", ""),
+                    "status": v.get("status"),
+                    "n_fail": (v.get("summary") or {}).get("n_fail"),
+                }
+            )
+        return rows
+    # Legacy / single-diff envelope.
+    return [
+        {
+            "variant_id": "",
+            "status": envelope.get("status"),
+            "n_fail": (envelope.get("summary") or {}).get("n_fail"),
+        }
+    ]
+
+
 def append_ledger(
     envelope: dict,
     *,
@@ -110,12 +142,14 @@ def append_ledger(
     result_file: str,
     when: datetime | None = None,
 ) -> None:
-    """Append one row to ``RESULTS_DIR/ledger.csv`` (create with header if new).
+    """Append one row PER VARIANT to ``RESULTS_DIR/ledger.csv`` (header if new).
 
-    Columns (exact): ``timestamp,integration_id,connector_slug,status,n_fail,result_file``.
+    Columns (exact):
+    ``timestamp,integration_id,connector_slug,variant_id,status,n_fail,result_file``.
 
-    * ``status`` = ``envelope["status"]``.
-    * ``n_fail`` = ``envelope["summary"]["n_fail"]``.
+    * one row per ``envelope["variants"][]`` (its ``variant_id``/``status``/
+      ``summary.n_fail``); a legacy envelope without ``variants`` yields one row
+      with an empty ``variant_id``.
     * ``result_file`` = the JSON filename (basename only — pass ``path.name``).
     * ``timestamp`` = the UTC stamp; pass the SAME ``when`` used for the filename.
     """
@@ -123,17 +157,24 @@ def append_ledger(
     ledger_path = RESULTS_DIR / LEDGER_FILENAME
     write_header = not ledger_path.exists()
 
-    row = {
-        "timestamp": _utc_stamp(when),
-        "integration_id": integration_id,
-        "connector_slug": slugify(connector_id),
-        "status": envelope.get("status"),
-        "n_fail": envelope.get("summary", {}).get("n_fail"),
-        "result_file": result_file,
-    }
+    stamp = _utc_stamp(when)
+    connector_slug = slugify(connector_id)
+    rows = [
+        {
+            "timestamp": stamp,
+            "integration_id": integration_id,
+            "connector_slug": connector_slug,
+            "variant_id": r["variant_id"],
+            "status": r["status"],
+            "n_fail": r["n_fail"],
+            "result_file": result_file,
+        }
+        for r in _ledger_rows_for(envelope)
+    ]
 
     with ledger_path.open("a", newline="") as fh:
         writer = csv.DictWriter(fh, fieldnames=LEDGER_COLUMNS, quoting=csv.QUOTE_MINIMAL)
         if write_header:
             writer.writeheader()
-        writer.writerow(row)
+        for row in rows:
+            writer.writerow(row)

@@ -277,3 +277,30 @@ def test_multi_select_and_encrypted_textarea_constants_match_xsoar():
     assert xsoar_capture.PARAM_TYPE_ENCRYPTED_TEXTAREA == 14
     assert xsoar_capture.PARAM_TYPE_SINGLE_SELECT == 15
     assert xsoar_capture.PARAM_TYPE_MULTI_SELECT == 16
+
+
+# ---------------------------------------------------------------------------
+# type-9 auth dummy: hiddenusername suppression (Akamai credentials_*)
+# ---------------------------------------------------------------------------
+def test_type9_hiddenusername_param_yields_no_identifier():
+    """For a hiddenusername:true type-9 field (e.g. Akamai's credentials_access_token)
+    the dummy MUST carry a password but MUST NOT inject a populated identifier —
+    otherwise it re-introduces a spurious mismatch after the normalizer reduction."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "credentials_access_token", "type": 9, "hiddenusername": True}
+    )
+    assert isinstance(value, dict)
+    assert value.get("password")  # password is always present and non-empty
+    # identifier absent or empty (never a populated dummy username).
+    assert not value.get("identifier")
+
+
+def test_type9_without_hiddenusername_still_yields_identifier():
+    """Contrast: a NORMAL type-9 field (no hiddenusername) still injects a
+    populated dummy identifier so a real username participates in the comparison."""
+    value = xsoar_capture.generate_dummy_value_for_param(
+        {"name": "credentials", "type": 9}
+    )
+    assert isinstance(value, dict)
+    assert value.get("password")
+    assert value.get("identifier")  # populated dummy username retained

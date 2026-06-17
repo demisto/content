@@ -53,6 +53,16 @@ _HANDLER_PARAM_COVERAGE_SCRIPT = str(
     Path(__file__).resolve().parent.parent / "check_handler_param_coverage.py"
 )
 
+# Path to the atomic deploy + param-parity wrapper (lives in the
+# ``runtime_demisto.params_parity`` dir at the connectus/ package root, a
+# sibling of this package's parent dir). Run as a subprocess by the
+# ``param_parity`` gate. The wrapper acquires a per-tenant lock, deploys
+# once, runs check_param_parity.py, and always releases the lock.
+_DEPLOY_AND_TEST_SCRIPT = str(
+    Path(__file__).resolve().parent.parent
+    / "runtime_demisto.params_parity" / "deploy_and_test.py"
+)
+
 # Env var to override the auto-resolved ConnectUs repo path (e.g. when the
 # sibling layout differs, or for tests). When set, it wins over the
 # sibling-of-content-repo default.
@@ -263,7 +273,11 @@ _OUTPUT_TAIL_BYTES = 4000
 # NOTE: there is deliberately NO bypass for checkpoint gates. Unlike the
 # auth-parity gate (which has CONNECTUS_SKIP_AUTH_PARITY), a gated
 # checkpoint MUST run its command and pass — there is no env var or flag
-# to skip it.
+# to skip it. This no-bypass policy explicitly covers ``param_parity`` too:
+# there is NO ``--no-gate`` flag and NO skip/force env var (e.g. no
+# CONNECTUS_SKIP_AUTH_PARITY analogue) for it — the parity wrapper MUST run
+# and exit 0. The only operator lever is the generic ``markpass --timeout=N``,
+# which never bypasses the pass/fail verdict.
 
 
 @dataclass(frozen=True)
@@ -291,10 +305,9 @@ class GateSpec:
 # Gate registry
 # ---------------------------------------------------------------------------
 #
-# ``precommit`` and ``make_validate`` are ACTIVE. ``param_parity`` is
-# deferred (see the design doc §6.3) and is intentionally NOT registered
-# yet — wiring it in later is purely additive (register a GateSpec here +
-# add ``gate:`` to the YAML step).
+# ``precommit``, ``make_validate``, ``handler_param_coverage``, and
+# ``param_parity`` are ACTIVE. Wiring a new gate is purely additive
+# (register a GateSpec here + add ``gate:`` to the YAML step).
 
 GATES: dict[str, GateSpec] = {
     "precommit": GateSpec(
@@ -362,6 +375,32 @@ GATES: dict[str, GateSpec] = {
         description=(
             "check_handler_param_coverage (handler covers every non-hidden "
             "integration-YML param)"
+        ),
+    ),
+    "param_parity": GateSpec(
+        name="param_parity",
+        # `python3 connectus/runtime_demisto.params_parity/deploy_and_test.py
+        # --integration-id <id>` performs the atomic live deploy + param-parity
+        # check: acquire the per-tenant lock, run deploy.py once, run
+        # check_param_parity.py, then always release the lock. It exits with a
+        # single code the gate runner branches on: 0 → pass; any non-zero
+        # (10 parity fail, 11 blocked, 20 deploy fail, 21 timeout, 30 lock busy,
+        # 40 preflight fail, or any other) → reject. There is NO bypass: no
+        # --no-gate flag and no skip/force env var.
+        build_argv=lambda abs_dir, iid: [
+            sys.executable,
+            _DEPLOY_AND_TEST_SCRIPT,
+            "--integration-id", iid,
+        ],
+        # The script path above is absolute and the wrapper re-roots its own
+        # children, so run from the content repo root (matches precommit/
+        # handler_param_coverage root cwd).
+        build_cwd=lambda abs_dir, iid: _repo_root(),
+        # Live deploy + parity over a tenant — be generous. Override per-call
+        # with the CLI --timeout= flag.
+        default_timeout=2400,
+        description=(
+            "deploy_and_test (live deploy + param-parity; exit 0 only, no bypass)"
         ),
     ),
 }

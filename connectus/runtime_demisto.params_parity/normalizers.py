@@ -99,9 +99,83 @@ HARD_IGNORE_PARAM_NAMES: set[str] = {
 #: reason below) rather than flagged MISSING_IN_CONNECTOR. Remove an entry here
 #: once the connector emits it. See connectus_migration/connectus_connector_migration_guide.md
 #: Section 6 "Open Items".
-KNOWN_GAP_IGNORE_REASONS: dict[str, str] = {
-    "isFetch": "isfetch_not_emitted_by_connector",
+#:
+#: ``isFetch`` was here while the connector did not emit it; that gap is now
+#: RESOLVED — the connector emits ``isFetch`` at runtime, so it is compared
+#: normally (no longer ignored). This dict is intentionally empty until a new
+#: temporary gap appears.
+KNOWN_GAP_IGNORE_REASONS: dict[str, str] = {}
+
+#: SERVER-BUG ignore: params the XSOAR server wrongly injects into the integration
+#: ``demisto.params()`` that the connector legitimately does NOT carry. These are
+#: dropped (with the specific reason below) so the diff surfaces them as OK_IGNORED
+#: (a documented server-bug pass) rather than EXTRA_IN_INTEGRATION/dropped noise or
+#: a MISSING/fail. ``alertType`` is the canonical example: the XSOAR BE injects it
+#: even when it shouldn't, and it is intentionally never auto-added to the
+#: connector side (see be_config_params — Category 3).
+SERVER_BUG_IGNORE_REASONS: dict[str, str] = {
+    "alertType": "server_injected_alerttype_xsoar_bug",
 }
+
+
+# ============================================================================
+# Type-9 credentials shape detection
+# ============================================================================
+
+#: The comparable leaves of an XSOAR type-9 credentials object. Everything else
+#: in the vault skeleton (credential / passwordChanged / the nested `credentials`
+#: object / id / version / …) is dropped before the diff — only the secret
+#: material is value-compared. See ``_reduce_type9_credentials`` and diff.py.
+_TYPE9_VAULT_MARKERS = frozenset(
+    {"credential", "credentials", "passwordChanged", "identifier"}
+)
+
+
+def _is_type9_credentials(value: Any) -> bool:
+    """Shape-based detector for an XSOAR type-9 credentials value.
+
+    The OLD implementation only fired for a param literally named
+    ``"credentials"``. Integrations with PREFIXED type-9 fields (Akamai's
+    ``credentials_access_token`` / ``credentials_client_secret`` /
+    ``credentials_client_token``, all ``type: 9`` with ``hiddenusername:
+    true``) were therefore missed: the integration side kept the full XSOAR
+    type-9 vault skeleton while the connector side delivered only
+    ``{"password": ...}``, producing a spurious VALUE_MISMATCH on every
+    credentials_* field.
+
+    This predicate fires for ANY type-9 credentials value regardless of the
+    param NAME, by recognizing its SHAPE: a dict that carries a ``password``
+    leaf AND either (a) at least one vault-wrapper marker
+    (``credential`` / nested ``credentials`` / ``passwordChanged`` /
+    ``identifier``), or (b) is already the flat connector form whose keys are a
+    subset of ``{"identifier", "password"}``. Case (b) ensures the connector's
+    reduced ``{"password": ...}`` / ``{"identifier", "password"}`` is detected
+    too, so BOTH sides canonicalize to the same shape.
+    """
+    if not isinstance(value, dict) or "password" not in value:
+        return False
+    if _TYPE9_VAULT_MARKERS & value.keys():
+        return True
+    return value.keys() <= {"identifier", "password"}
+
+
+def _reduce_type9_credentials(value: dict) -> dict:
+    """Reduce a type-9 credentials value to its comparable leaves.
+
+    Always keeps ``password``. Keeps ``identifier`` ONLY when it is non-empty
+    on this side — this is ``hiddenusername``-aware: for ``hiddenusername:
+    true`` fields (e.g. Akamai) the connector legitimately has no username, and
+    the harness (see xsoar_capture.generate_dummy_value_for_param) no longer
+    injects a dummy identifier, so both sides reduce to ``{"password": ...}``.
+    For NORMAL type-9 fields that DO carry a real username, the identifier is
+    retained on both sides and a genuinely differing/missing username still
+    surfaces as a mismatch (no false-OK).
+    """
+    reduced: dict[str, Any] = {"password": value.get("password", "")}
+    ident = value.get("identifier")
+    if ident:  # non-empty only; absent/"" for hiddenusername:true
+        reduced["identifier"] = ident
+    return reduced
 
 
 # ============================================================================
@@ -207,25 +281,42 @@ def normalize_for_diff(
             )
             continue
 
+        # Rule 1c: SERVER-BUG ignore — params the XSOAR server wrongly injects
+        # into the integration demisto.params() that the connector legitimately
+        # does not carry (e.g. alertType). Drop with a specific reason so the diff
+        # surfaces them as OK_IGNORED (a documented server-bug pass) rather than
+        # EXTRA_IN_INTEGRATION noise or a MISSING/fail.
+        if key in SERVER_BUG_IGNORE_REASONS:
+            dropped.append(
+                {"name": key, "reason": SERVER_BUG_IGNORE_REASONS[key], "side": side}
+            )
+            continue
+
         # Rule 2: keep this key verbatim (it's MUST-COMPARE). Type-4/9 auth
         # params land here too — they are compared, not blanket-dropped. The
         # resolver removes the ones that should not be compared via force_drop
         # (hidden / hard_ignore_list / credentials_type9_interpolated).
         #
         # TEMPORARY WORKAROUND (see connectus_migration/connectus_connector_migration_guide.md
-        # Section 6 "Open Items"): a type-9 `credentials` param arrives on the
+        # Section 6 "Open Items"): a type-9 credentials param arrives on the
         # XSOAR side as a full nested vault wrapper (credential, passwordChanged,
         # a nested `credentials` object, …) but on the connector side as a flat
-        # {identifier, password}. Until the credentials object is compared
-        # correctly end-to-end, reduce BOTH sides to only identifier/password so
-        # the meaningful secret values are compared and the wrapper shape drift
-        # does not produce a spurious VALUE_MISMATCH.
-        if key == "credentials" and isinstance(value, dict):
-            filtered[key] = {
-                leaf: value[leaf]
-                for leaf in ("identifier", "password")
-                if leaf in value
-            }
+        # {password} (only the .password leaf is interpolated per the connector
+        # profile). Until the credentials object is compared correctly
+        # end-to-end, reduce BOTH sides to only the comparable secret leaves so
+        # the wrapper shape drift does not produce a spurious VALUE_MISMATCH.
+        #
+        # NOTE: this is SHAPE-based, not name-based. The old guard keyed on the
+        # literal name "credentials" and so MISSED prefixed type-9 fields such as
+        # Akamai's credentials_access_token / credentials_client_secret /
+        # credentials_client_token (all type 9, hiddenusername: true). The
+        # shape detector subsumes the literal "credentials" case and also fires
+        # for any credentials_* (or otherwise-named) type-9 value. The reduction
+        # is hiddenusername-aware: identifier is kept only when non-empty, so a
+        # hiddenusername:true field (no username on either side) compares on
+        # password alone while a normal type-9 field still compares its username.
+        if _is_type9_credentials(value):
+            filtered[key] = _reduce_type9_credentials(value)
             continue
 
         filtered[key] = value
@@ -244,5 +335,6 @@ __all__ = [
     "IGNORED_PARAM_NAMES",
     "HARD_IGNORE_PARAM_NAMES",
     "KNOWN_GAP_IGNORE_REASONS",
+    "SERVER_BUG_IGNORE_REASONS",
     "normalize_for_diff",
 ]

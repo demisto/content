@@ -50,7 +50,7 @@ from pathlib import Path
 
 import resolver as resolver_mod
 import results_ledger
-from be_config_params import apply_be_config_transform
+from be_config_params import apply_be_config_transform, variant_toggle_overrides
 from diff import _load_serializer_mappings, diff_params
 from normalizers import normalize_for_diff
 from resolver import ResolverError
@@ -207,6 +207,158 @@ def _force_drop_from(ignored_params: dict) -> set[str]:
     }
 
 
+def _run_one_variant(
+    *,
+    variant,                       # resolver.CapabilityVariant
+    parity_inputs,
+    args,
+    xsoar_client,
+    yml_data: dict,
+    yml_configuration: list,
+    yml_param_names: set,
+    integration_yml: str,
+    integration_brand: str,
+    connector_id: str,
+    connector_dir: str,
+    force_keep: set,
+    force_drop: set,
+    force_drop_reasons: dict,
+) -> tuple[dict | None, int]:
+    """Run capture → normalize → diff for ONE capability variant.
+
+    Returns ``(variant_envelope, exit_hint)`` where ``exit_hint`` is:
+      * ``2`` — setup-blocked (a capture failed); ``variant_envelope`` is ``None``.
+      * ``0`` — variant produced a diff envelope (``status`` inside it tells pass/fail).
+
+    The variant's ``fetch_flags`` drive BOTH the BE-synthesized config transform
+    (via ``apply_be_config_transform(..., fetch_flags=...)``) AND the explicit
+    XSOAR fetch toggles (via ``variant_toggle_overrides``), so the INTEGRATION side
+    models the SAME single legal fetch type the CONNECTOR side enables.
+    """
+    log.info("=" * 70)
+    log.info(
+        "VARIANT %s — enabled=%s fetch_flags=%s",
+        variant.id,
+        variant.enabled_capability_ids,
+        [f for f, on in variant.fetch_flags.items() if on] or ["<none>"],
+    )
+    log.info("=" * 70)
+
+    # ── Bidirectional push: per-variant dummy dict pushed to BOTH sides ──
+    # Start from the YML dummies, then (a) apply the BE config transform scoped to
+    # THIS variant's fetch flags, and (b) force the exact XSOAR fetch toggles.
+    shared_dummies = fill_params_from_yml(yml_configuration, {})
+    shared_dummies = apply_be_config_transform(
+        shared_dummies, yml_data.get("script"), fetch_flags=variant.fetch_flags
+    )
+    # Explicit fetch toggles for this variant (active one True, rest False). These
+    # are type-8 YML params; setting them here overrides the guaranteed-different
+    # dummy so the legacy instance models exactly the variant's fetch type.
+    toggle_overrides = variant_toggle_overrides(variant.fetch_flags)
+    for toggle, value in toggle_overrides.items():
+        if toggle in yml_param_names:
+            shared_dummies[toggle] = value
+    log.info(
+        "Variant %s: %d shared dummy values (fetch toggles set: %s).",
+        variant.id,
+        len(shared_dummies),
+        {k: v for k, v in toggle_overrides.items() if k in yml_param_names} or "<none>",
+    )
+
+    # CONNECTOR side keys by connector FIELD id; build a connector-keyed copy so
+    # serializer-renamed + interpolated auth fields receive the SAME value.
+    connector_instance_values: dict = dict(shared_dummies)
+    for xsoar_param, connector_field in parity_inputs.param_to_connector_field.items():
+        if xsoar_param in shared_dummies and connector_field != xsoar_param:
+            connector_instance_values[connector_field] = shared_dummies[xsoar_param]
+
+    # ── INTEGRATION-side capture (legacy XSOAR flow) ──
+    try:
+        integration_raw, integration_payload = capture_xsoar_params(
+            integration_yml_path=integration_yml,
+            overrides=shared_dummies,
+            client=xsoar_client,
+        )
+    except Exception as e:  # noqa: BLE001 — a capture crash is setup-blocked, not a diff
+        log.error("INTEGRATION-side capture FAILED for variant %s: %s", variant.id, e)
+        return None, 2
+    if integration_raw is None:
+        log.error("INTEGRATION-side capture failed for variant %s.", variant.id)
+        return None, 2
+    log.info("Variant %s INTEGRATION-side captured %d keys.", variant.id, len(integration_raw))
+
+    # ── CONNECTOR-side capture (new UCP flow) — only this variant's caps ──
+    try:
+        connector_raw, connector_payload = capture_ucp_params(
+            xsoar_client=xsoar_client,
+            xsoar_brand_name=integration_brand,
+            parity_inputs=parity_inputs,
+            capabilities=variant.capabilities,
+            instance_values=connector_instance_values,
+            connector_id=connector_id,
+        )
+    except Exception as e:  # noqa: BLE001 — a capture crash is setup-blocked, not a diff
+        log.error("CONNECTOR-side capture FAILED for variant %s: %s", variant.id, e)
+        return None, 2
+    if connector_raw is None:
+        log.error("CONNECTOR-side capture failed for variant %s.", variant.id)
+        return None, 2
+    log.info("Variant %s CONNECTOR-side captured %d keys.", variant.id, len(connector_raw))
+
+    # ── Normalize both sides with the deterministic IGNORE policy ──
+    integration_norm, integration_dropped = normalize_for_diff(
+        integration_raw, yml_configuration, side="integration",
+        force_keep=force_keep, force_drop=force_drop,
+        force_drop_reasons=force_drop_reasons,
+    )
+    connector_norm, connector_dropped = normalize_for_diff(
+        connector_raw, yml_configuration, side="connector",
+        force_keep=force_keep, force_drop=force_drop,
+        force_drop_reasons=force_drop_reasons,
+    )
+
+    # ── Diff ──
+    variant_envelope = diff_params(
+        integration=integration_norm,
+        connector=connector_norm,
+        yml_param_names=yml_param_names,
+        connector_dir=connector_dir,
+        integration_raw=integration_raw,
+        connector_raw=connector_raw,
+        integration_dropped=integration_dropped,
+        connector_dropped=connector_dropped,
+        # Per-variant field SCOPING (Bucket C): tell the diff which fields THIS
+        # variant's enabled sub-capabilities legitimately expose, plus the global
+        # field→owning-sub-capability map and this variant's enabled ownership
+        # units, so a field belonging to a DISABLED sub-capability is treated as
+        # out-of-variant-scope (OK_IGNORED) rather than MISSING_IN_CONNECTOR.
+        in_scope_fields=variant.in_scope_fields,
+        field_owning_subcapabilities=parity_inputs.field_owning_subcapabilities,
+        enabled_ownership_units=variant.enabled_ownership_units,
+        allow_missing=args.allow_missing,
+        allow_extra=args.allow_extra,
+        allow_mismatch=args.allow_mismatch,
+    )
+
+    # Per-variant annotations + raw captures for triage.
+    variant_envelope["variant_id"] = variant.id
+    variant_envelope["enabled_capabilities"] = variant.enabled_capability_ids
+    variant_envelope["fetch_flags"] = dict(variant.fetch_flags)
+    variant_envelope["captures"] = {
+        "integration": integration_raw,
+        "connector": connector_raw,
+    }
+    variant_envelope["normalizer_dropped"] = {
+        "integration": integration_dropped,
+        "connector": connector_dropped,
+    }
+    variant_envelope["creation_payloads"] = {
+        "integration": integration_payload,
+        "connector": connector_payload,
+    }
+    return variant_envelope, 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
 
@@ -297,222 +449,201 @@ def main(argv: list[str] | None = None) -> int:
         log.error("Could not build XSOAR client: %s", e)
         return 2
 
-    # ── Bidirectional push: pre-compute the dummy dict ONCE and pass it to BOTH
-    #    sides ──
+    # ── Variant matrix: one LEGAL capability combination per instance ──
+    # The resolver expands the handler's capabilities into variants (one per
+    # fetch-exclusive capability + the always-on set). We run capture → diff once
+    # per variant (Philosophy A: per-integration isolation) and aggregate.
     #
-    # Both sides receive the SAME guaranteed-different dummy values (never the
-    # connector's configuration defaults). Any remaining diff finding is then a
-    # real connector bug (missing field, extra field, or genuine value
-    # transformation gone wrong) rather than test-setup drift.
-    #
-    # `fill_params_from_yml` walks the YML's configuration list and, for every
-    # param, produces a dummy value via `generate_dummy_value_for_param`.
-    shared_dummies = fill_params_from_yml(yml_configuration, {})
-    # Replicate the backend's ValidateConfiguration auto-add/strip of
-    # fetch/feed/long-running config params (these are injected by the BE based
-    # on the YML script flags and are NOT in the YML `configuration` list, so we
-    # must add them here so BOTH parity sides receive the same value).
-    shared_dummies = apply_be_config_transform(shared_dummies, yml_data.get("script"))
+    # NOTE: the --skip-xsoar/--skip-ucp dev shortcuts re-use a single pre-captured
+    # dump and therefore only support a SINGLE variant; they are diagnostic aids,
+    # not part of the migration gate.
+    variants = parity_inputs.variants
     log.info(
-        "Pre-computed %d shared dummy values to push to BOTH sides.",
-        len(shared_dummies),
+        "Resolved %d variant(s): %s",
+        len(variants),
+        [v.id for v in variants],
     )
 
-    # The CONNECTOR side keys configuration/auth by connector FIELD id, while
-    # shared_dummies is keyed by xsoar PARAM id. Build a connector-keyed copy so
-    # serializer-renamed fields (e.g. xsoar `url` → connector `domain`) and
-    # interpolated auth fields receive the SAME value the integration side uses.
-    connector_instance_values: dict = dict(shared_dummies)
-    for xsoar_param, connector_field in parity_inputs.param_to_connector_field.items():
-        if xsoar_param in shared_dummies and connector_field != xsoar_param:
-            connector_instance_values[connector_field] = shared_dummies[xsoar_param]
-
-    # ── INTEGRATION-side capture (legacy XSOAR flow) ──
-    if args.skip_xsoar:
-        if not args.integration_capture_file:
-            log.error("--skip-xsoar requires --integration-capture-file")
+    if args.skip_xsoar or args.skip_ucp:
+        if len(variants) > 1:
+            log.error(
+                "--skip-xsoar/--skip-ucp support only a single-variant integration "
+                "(this one has %d variants: %s). Re-run without the skip flags.",
+                len(variants), [v.id for v in variants],
+            )
             return 2
-        log.info("Loading INTEGRATION-side capture from %s", args.integration_capture_file)
-        integration_raw = _load_dict_from_json_file(args.integration_capture_file)
-        # No creation payload available when loading a pre-captured dump.
-        integration_payload = None
-    else:
-        log.info("=" * 70)
-        log.info("Capturing INTEGRATION-side demisto.params() via legacy XSOAR flow...")
-        log.info("=" * 70)
-        try:
+        # Single-variant dev path: load the pre-captured dump(s) and diff once.
+        variant = variants[0]
+        if args.skip_xsoar:
+            if not args.integration_capture_file:
+                log.error("--skip-xsoar requires --integration-capture-file")
+                return 2
+            integration_raw = _load_dict_from_json_file(args.integration_capture_file)
+            integration_payload = None
+        else:
+            integration_raw = None
+        if args.skip_ucp:
+            if not args.connector_capture_file:
+                log.error("--skip-ucp requires --connector-capture-file")
+                return 2
+            connector_raw = _load_dict_from_json_file(args.connector_capture_file)
+            connector_payload = None
+        else:
+            connector_raw = None
+        # If only one side is skipped, capture the other live.
+        shared_dummies = apply_be_config_transform(
+            fill_params_from_yml(yml_configuration, {}),
+            yml_data.get("script"),
+            fetch_flags=variant.fetch_flags,
+        )
+        for toggle, value in variant_toggle_overrides(variant.fetch_flags).items():
+            if toggle in yml_param_names:
+                shared_dummies[toggle] = value
+        if integration_raw is None:
             integration_raw, integration_payload = capture_xsoar_params(
                 integration_yml_path=integration_yml,
-                overrides=shared_dummies,  # full pre-computed dummy dict
-                client=xsoar_client,
+                overrides=shared_dummies, client=xsoar_client,
             )
-        except Exception as e:  # noqa: BLE001 — a capture crash is setup-blocked, not a diff
-            log.error(
-                "INTEGRATION-side capture FAILED with an exception (setup-blocked, "
-                "not a parity diff): %s", e,
-            )
-            return 2
-    if integration_raw is None:
-        # A capture FAILURE is a setup/runtime problem (tenant unreachable, flow
-        # error), NOT a real parity diff. The wrapper maps 2 → "setup-blocked"
-        # (exit 11), distinct from 1 → "parity-fail" (exit 10). See design §4.
-        log.error("INTEGRATION-side capture failed. See logs above.")
-        return 2
-    log.info("INTEGRATION-side captured %d keys.", len(integration_raw))
-
-    # ── CONNECTOR-side capture (new UCP flow) ──
-    if args.skip_ucp:
-        if not args.connector_capture_file:
-            log.error("--skip-ucp requires --connector-capture-file")
-            return 2
-        log.info("Loading CONNECTOR-side capture from %s", args.connector_capture_file)
-        connector_raw = _load_dict_from_json_file(args.connector_capture_file)
-        # No creation payload available when loading a pre-captured dump.
-        connector_payload = None
-    else:
-        log.info("=" * 70)
-        log.info("Capturing CONNECTOR-side demisto.params() via UCP flow...")
-        log.info("=" * 70)
-        try:
+        if connector_raw is None:
+            connector_instance_values = dict(shared_dummies)
+            for xp, cf in parity_inputs.param_to_connector_field.items():
+                if xp in shared_dummies and cf != xp:
+                    connector_instance_values[cf] = shared_dummies[xp]
             connector_raw, connector_payload = capture_ucp_params(
-                xsoar_client=xsoar_client,
-                xsoar_brand_name=integration_brand,
-                parity_inputs=parity_inputs,
-                # The bidirectional push: the SAME values that fed the INTEGRATION
-                # side, keyed by connector field id. The builder enables ALL handler
-                # (sub-)capabilities and pushes these into the configuration + the
-                # interpolated-profile auth fields (never connector defaults).
-                instance_values=connector_instance_values,
-                connector_id=connector_id,
+                xsoar_client=xsoar_client, xsoar_brand_name=integration_brand,
+                parity_inputs=parity_inputs, capabilities=variant.capabilities,
+                instance_values=connector_instance_values, connector_id=connector_id,
             )
-        except Exception as e:  # noqa: BLE001 — a capture crash is setup-blocked, not a diff
-            log.error(
-                "CONNECTOR-side capture FAILED with an exception (setup-blocked, "
-                "not a parity diff): %s", e,
-            )
+        if integration_raw is None or connector_raw is None:
+            log.error("Capture failed in skip-mode. See logs above.")
             return 2
-    if connector_raw is None:
-        # Capture FAILURE = setup-blocked (return 2), not a parity diff (1).
-        # See design §4 / the wrapper's exit-code mapping.
-        log.error("CONNECTOR-side capture failed. See logs above.")
-        return 2
-    log.info("CONNECTOR-side captured %d keys.", len(connector_raw))
+        i_norm, i_drop = normalize_for_diff(
+            integration_raw, yml_configuration, side="integration",
+            force_keep=force_keep, force_drop=force_drop,
+            force_drop_reasons=force_drop_reasons,
+        )
+        c_norm, c_drop = normalize_for_diff(
+            connector_raw, yml_configuration, side="connector",
+            force_keep=force_keep, force_drop=force_drop,
+            force_drop_reasons=force_drop_reasons,
+        )
+        venv = diff_params(
+            integration=i_norm, connector=c_norm, yml_param_names=yml_param_names,
+            connector_dir=connector_dir, integration_raw=integration_raw,
+            connector_raw=connector_raw, integration_dropped=i_drop,
+            connector_dropped=c_drop, allow_missing=args.allow_missing,
+            allow_extra=args.allow_extra, allow_mismatch=args.allow_mismatch,
+        )
+        venv["variant_id"] = variant.id
+        venv["enabled_capabilities"] = variant.enabled_capability_ids
+        venv["fetch_flags"] = dict(variant.fetch_flags)
+        venv["captures"] = {"integration": integration_raw, "connector": connector_raw}
+        venv["normalizer_dropped"] = {"integration": i_drop, "connector": c_drop}
+        venv["creation_payloads"] = {
+            "integration": integration_payload, "connector": connector_payload,
+        }
+        variant_envelopes = [venv]
+    else:
+        # Normal path: run every variant live.
+        variant_envelopes = []
+        for variant in variants:
+            venv, hint = _run_one_variant(
+                variant=variant,
+                parity_inputs=parity_inputs,
+                args=args,
+                xsoar_client=xsoar_client,
+                yml_data=yml_data,
+                yml_configuration=yml_configuration,
+                yml_param_names=yml_param_names,
+                integration_yml=integration_yml,
+                integration_brand=integration_brand,
+                connector_id=connector_id,
+                connector_dir=connector_dir,
+                force_keep=force_keep,
+                force_drop=force_drop,
+                force_drop_reasons=force_drop_reasons,
+            )
+            if hint == 2:
+                # A capture failure is setup-blocked for the WHOLE run.
+                log.error("Variant %s capture failed → setup-blocked.", variant.id)
+                return 2
+            variant_envelopes.append(venv)
 
-    # ── Normalize both sides with the deterministic IGNORE policy ──
-    # force_keep carries the resolver's compare set (incl. interpolated-profile
-    # auth fields); force_drop carries the hard ignore-list.
-    integration_norm, integration_dropped = normalize_for_diff(
-        integration_raw, yml_configuration, side="integration",
-        force_keep=force_keep, force_drop=force_drop,
-        force_drop_reasons=force_drop_reasons,
-    )
-    connector_norm, connector_dropped = normalize_for_diff(
-        connector_raw, yml_configuration, side="connector",
-        force_keep=force_keep, force_drop=force_drop,
-        force_drop_reasons=force_drop_reasons,
-    )
-    log.info(
-        "After normalization: INTEGRATION %d→%d (dropped %d), CONNECTOR %d→%d (dropped %d)",
-        len(integration_raw), len(integration_norm), len(integration_dropped),
-        len(connector_raw), len(connector_norm), len(connector_dropped),
-    )
-
-    # ── Diff ──
-    log.info("=" * 70)
-    log.info("Diffing normalized params...")
-    log.info("=" * 70)
-    envelope = diff_params(
-        integration=integration_norm,
-        connector=connector_norm,
-        yml_param_names=yml_param_names,
-        connector_dir=connector_dir,
-        # Pass the raw captures + dropped-logs so the diff can synthesize
-        # OK_IGNORED entries with the original raw values + drop reasons.
-        integration_raw=integration_raw,
-        connector_raw=connector_raw,
-        integration_dropped=integration_dropped,
-        connector_dropped=connector_dropped,
-        allow_missing=args.allow_missing,
-        allow_extra=args.allow_extra,
-        allow_mismatch=args.allow_mismatch,
-    )
-
-    # Attach the raw captures (before normalization) so the report is fully
-    # self-contained for triage. Operators can compare these against the
-    # filtered/diffed view without re-running the live capture.
-    envelope["captures"] = {
-        "integration": integration_raw,
-        "connector": connector_raw,
-    }
-
-    # Attach the normalizer drop-log so it's clear WHY any key didn't show up
-    # in per_param or dropped.
-    envelope["normalizer_dropped"] = {
-        "integration": integration_dropped,
-        "connector": connector_dropped,
-    }
-
-    # Attach the resolved inputs used so the report is reproducible.
-    envelope["inputs"] = {
+    # ── Aggregate envelope across variants ──
+    n_variants = len(variant_envelopes)
+    n_pass = sum(1 for v in variant_envelopes if v.get("status") == "pass")
+    n_fail = n_variants - n_pass
+    aggregate = {
+        "status": "pass" if n_fail == 0 else "fail",
         "integration_id": args.integration_id,
-        "integration_yml": integration_yml,
-        "integration_brand": integration_brand,
         "connector_id": connector_id,
-        "connector_dir": connector_dir,
-        "capabilities": [
-            {"id": c.id, "sub_capabilities": [sc.id for sc in c.sub_capabilities]}
-            for c in parity_inputs.capabilities
-        ],
-        "profiles": [
-            {"id": p.id, "interpolated": p.interpolated} for p in parity_inputs.profiles
-        ],
-        "allow_missing": args.allow_missing,
-        "allow_extra": args.allow_extra,
-        "allow_mismatch": args.allow_mismatch,
+        "summary": {
+            "n_variants": n_variants,
+            "n_variants_pass": n_pass,
+            "n_variants_fail": n_fail,
+        },
+        "variants": variant_envelopes,
+        "inputs": {
+            "integration_id": args.integration_id,
+            "integration_yml": integration_yml,
+            "integration_brand": integration_brand,
+            "connector_id": connector_id,
+            "connector_dir": connector_dir,
+            "capabilities": [
+                {"id": c.id, "sub_capabilities": [sc.id for sc in c.sub_capabilities]}
+                for c in parity_inputs.capabilities
+            ],
+            "variants": [
+                {
+                    "id": v.id,
+                    "enabled_capabilities": v.enabled_capability_ids,
+                    "fetch_flags": dict(v.fetch_flags),
+                }
+                for v in variants
+            ],
+            "profiles": [
+                {"id": p.id, "interpolated": p.interpolated} for p in parity_inputs.profiles
+            ],
+            "allow_missing": args.allow_missing,
+            "allow_extra": args.allow_extra,
+            "allow_mismatch": args.allow_mismatch,
+        },
     }
 
-    # Attach the instance-creation payloads (what we sent to CREATE each side's
-    # instance) so failures are reproducible/debuggable from the persisted JSON.
-    envelope["creation_payloads"] = {
-        "integration": integration_payload,
-        "connector": connector_payload,
-    }
-
-    # ── Emit the envelope to stdout ──
-    print(json.dumps(envelope, indent=2, sort_keys=False, default=str))
+    # ── Emit the aggregate envelope to stdout ──
+    print(json.dumps(aggregate, indent=2, sort_keys=False, default=str))
 
     # ── Persist the run (Phase 7) ──
-    # Write the envelope JSON + append a ledger row BEFORE returning the exit
-    # code. Guarded so a write failure logs a warning but NEVER changes the
-    # exit-code contract (0 pass / 1 parity-fail / 2 setup-blocked).
+    # Guarded so a write failure logs a warning but NEVER changes the exit-code
+    # contract (0 pass / 1 parity-fail / 2 setup-blocked).
     try:
         result_path = results_ledger.write_result(
-            envelope,
+            aggregate,
             connector_id=connector_id,
             integration_id=args.integration_id,
         )
         results_ledger.append_ledger(
-            envelope,
+            aggregate,
             integration_id=args.integration_id,
             connector_id=connector_id,
             result_file=result_path.name,
         )
-        # Logged at INFO so the deploy_and_test wrapper's captured output points
-        # the operator straight at the persisted artifact.
         log.info("Result written: %s", result_path)
     except Exception as e:  # noqa: BLE001 — persistence must never change exit code
         log.warning("Failed to persist result (exit code unchanged): %s", e)
 
     # ── Exit code ──
-    if envelope["status"] == "pass":
-        log.info("✅ PARITY PASS — %d/%d keys OK", envelope["summary"]["n_ok"], envelope["summary"]["n_total"])
+    if aggregate["status"] == "pass":
+        log.info(
+            "✅ PARITY PASS — all %d variant(s) passed.", n_variants,
+        )
         return 0
     else:
         log.error(
-            "❌ PARITY FAIL — %d failure(s), %d warning(s) across %d total keys",
-            envelope["summary"]["n_fail"],
-            envelope["summary"]["n_warn"],
-            envelope["summary"]["n_total"],
+            "❌ PARITY FAIL — %d/%d variant(s) failed: %s",
+            n_fail,
+            n_variants,
+            [v.get("variant_id") for v in variant_envelopes if v.get("status") != "pass"],
         )
         return 1
 

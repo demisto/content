@@ -721,3 +721,651 @@ def test_missing_repo_dir_raises(env, monkeypatch):
     monkeypatch.delenv("CONNECTUS_REPO_DIR", raising=False)
     with pytest.raises(ResolverError, match="CONNECTUS_REPO_DIR"):
         resolve(_INTEGRATION_ID, csv_path=csv_path)
+
+
+# ===========================================================================
+# Variant expansion (_expand_variants) — the per-capability matrix logic.
+#
+# These are PURE-LOGIC tests (no I/O): they build CapabilitySpec lists directly
+# and assert the legal variant matrix, per multi_capability_variant_design.md.
+# ===========================================================================
+
+from resolver import (  # noqa: E402
+    CAPABILITY_FETCH_FLAG,
+    FETCH_FLAG_NAMES,
+    CapabilityVariant,
+    _expand_variants,
+    fetch_flag_for_capability,
+)
+
+
+def _cap(parent_id: str) -> CapabilitySpec:
+    return CapabilitySpec(id=parent_id)
+
+
+def _active_flags(variant: CapabilityVariant) -> list[str]:
+    return [name for name, on in variant.fetch_flags.items() if on]
+
+
+def test_fetch_flag_classifier():
+    # VALUES are the EXACT XSOAR instance-creation toggle param names.
+    assert fetch_flag_for_capability("fetch-issues") == "isFetch"
+    assert fetch_flag_for_capability("log-collection") == "isFetchEvents"
+    assert fetch_flag_for_capability("fetch-assets-and-vulnerabilities") == "isFetchAssets"
+    assert fetch_flag_for_capability("threat-intelligence-and-enrichment") == "feed"
+    assert fetch_flag_for_capability("fetch-secrets") == "isFetchCredentials"
+    # Always-on caps map to None.
+    assert fetch_flag_for_capability("automation-and-remediation") is None
+    assert fetch_flag_for_capability("unknown-capability") is None
+
+
+def test_capabilityspec_fetch_flag_property():
+    assert _cap("fetch-issues").fetch_flag == "isFetch"
+    assert _cap("automation-and-remediation").fetch_flag is None
+
+
+def test_expand_variants_akamai_siem_two_fetch_plus_automation():
+    """Automation + fetch-issues + log-collection → exactly 2 LEGAL variants."""
+    caps = [
+        _cap("automation-and-remediation"),
+        _cap("fetch-issues"),
+        _cap("log-collection"),
+    ]
+    variants = _expand_variants(caps)
+    assert len(variants) == 2
+
+    by_id = {v.id: v for v in variants}
+    fi = by_id["automation-and-remediation+fetch-issues"]
+    lc = by_id["automation-and-remediation+log-collection"]
+
+    # Each variant bundles automation + EXACTLY ONE fetch capability.
+    assert fi.enabled_capability_ids == [
+        "automation-and-remediation",
+        "fetch-issues",
+    ]
+    assert lc.enabled_capability_ids == [
+        "automation-and-remediation",
+        "log-collection",
+    ]
+
+    # Exactly one fetch flag true per variant; the illegal pair never co-occurs.
+    assert _active_flags(fi) == ["isFetch"]
+    assert _active_flags(lc) == ["isFetchEvents"]
+    assert fi.fetch_flags["isFetchEvents"] is False
+    assert lc.fetch_flags["isFetch"] is False
+
+    # Every variant carries the COMPLETE flag set (all keys present).
+    for v in variants:
+        assert set(v.fetch_flags) == set(FETCH_FLAG_NAMES)
+
+
+def test_expand_variants_automation_only_single_variant():
+    variants = _expand_variants([_cap("automation-and-remediation")])
+    assert len(variants) == 1
+    v = variants[0]
+    assert v.enabled_capability_ids == ["automation-and-remediation"]
+    # No fetch flag enabled.
+    assert _active_flags(v) == []
+    assert all(val is False for val in v.fetch_flags.values())
+
+
+def test_expand_variants_single_fetch_no_automation():
+    """A pure event collector (log-collection only, no automation) → 1 variant."""
+    variants = _expand_variants([_cap("log-collection")])
+    assert len(variants) == 1
+    v = variants[0]
+    assert v.enabled_capability_ids == ["log-collection"]
+    assert _active_flags(v) == ["isFetchEvents"]
+
+
+def test_expand_variants_multi_fetch_no_automation():
+    """Multiple fetch caps, no always-on → one SINGLE-cap variant each."""
+    variants = _expand_variants(
+        [_cap("fetch-issues"), _cap("log-collection"), _cap("fetch-secrets")]
+    )
+    assert len(variants) == 3
+    for v in variants:
+        # Each variant has exactly ONE capability and ONE active fetch flag.
+        assert len(v.capabilities) == 1
+        assert len(_active_flags(v)) == 1
+    active = sorted(_active_flags(v)[0] for v in variants)
+    assert active == sorted(["isFetch", "isFetchEvents", "isFetchCredentials"])
+
+
+def test_expand_variants_empty_raises():
+    with pytest.raises(ResolverError, match="no capabilities"):
+        _expand_variants([])
+
+
+# ===========================================================================
+# general_configurations field collection (view_group-scoped).
+# ===========================================================================
+
+from resolver import (  # noqa: E402
+    _capabilities_from_handler,
+    _general_config_fields_for_view_groups,
+    _view_groups_for_capability,
+)
+
+
+_CONFIG_DOC = {
+    "general_configurations": {
+        "configurations": [
+            {"view_group": "siem", "fields": [{"id": "fetchTime"}, {"id": "fetchLimit"}]},
+            {"view_group": "other", "fields": [{"id": "other_field"}]},
+        ]
+    },
+    "configurations": [
+        {
+            "id": "fetch-issues_x",
+            "view_group": "siem",
+            "configurations": [{"fields": [{"id": "incidentType"}]}],
+        },
+        {
+            "id": "log-collection_x",
+            "view_group": "siem",
+            "configurations": [{"fields": [{"id": "isFetchEvents"}]}],
+        },
+    ],
+}
+
+
+def test_view_groups_for_capability():
+    assert _view_groups_for_capability(_CONFIG_DOC, "fetch-issues_x") == {"siem"}
+    assert _view_groups_for_capability(_CONFIG_DOC, "missing") == set()
+
+
+def test_general_config_fields_for_view_groups():
+    got = _general_config_fields_for_view_groups(_CONFIG_DOC, {"siem"})
+    assert set(got) == {"fetchTime", "fetchLimit"}
+    # A different view_group's general fields are NOT included.
+    assert "other_field" not in got
+    # No view groups → nothing.
+    assert _general_config_fields_for_view_groups(_CONFIG_DOC, set()) == []
+
+
+def test_capabilities_include_general_config_for_view_group():
+    """A fetch-issues capability must pick up the SIEM general-config fields
+    (fetchTime/fetchLimit) via its shared view_group — not just its own
+    capability-scoped fields."""
+    handler_doc = {"capabilities": [{"id": "fetch-issues_x"}]}
+    capabilities_doc = {
+        "capabilities": [
+            {"id": "fetch-issues", "sub_capabilities": [{"id": "fetch-issues_x"}]}
+        ]
+    }
+    caps = _capabilities_from_handler(handler_doc, capabilities_doc, _CONFIG_DOC)
+    assert len(caps) == 1
+    fields = caps[0].config_field_ids
+    # capability-scoped field + the view_group-scoped general-config fields.
+    assert "incidentType" in fields
+    assert "fetchTime" in fields
+    assert "fetchLimit" in fields
+    # log-collection-only field must NOT leak into the fetch-issues capability.
+    assert "isFetchEvents" not in fields
+
+
+# ===========================================================================
+# field_specs collection (field_type / default_value / enum_values).
+# ===========================================================================
+
+from resolver import _collect_field_specs  # noqa: E402
+
+
+def test_collect_field_specs_from_configurations_and_connection():
+    configurations_doc = {
+        "general_configurations": {
+            "configurations": [
+                {
+                    "fields": [
+                        {
+                            "id": "integrationLogLevel",
+                            "field_type": "select",
+                            "options": {
+                                "default_value": "Off",
+                                "values": [{"key": "Off"}, {"key": "Debug"}],
+                            },
+                        }
+                    ]
+                }
+            ]
+        },
+        "configurations": [
+            {
+                "id": "log-collection_x",
+                "configurations": [
+                    {"fields": [{"id": "incidentFetchInterval", "field_type": "duration"}]},
+                    {"fields": [{"id": "defaultIgnore", "field_type": "checkbox"}]},
+                    {
+                        "fields": [
+                            {
+                                "id": "incidentType",
+                                "field_type": "select",
+                                # Real manifest nesting: metadata.xsoar.config_type.
+                                "metadata": {"xsoar": {"config_type": "backend"}},
+                            }
+                        ]
+                    },
+                ],
+            }
+        ],
+    }
+    connection_doc = {
+        "profiles": [
+            {
+                "id": "plain.x",
+                "configurations": [
+                    {
+                        "fields": [
+                            {
+                                "id": "plain.x_engine",
+                                "field_type": "input",
+                                "xsoar": {"config_type": "backend"},
+                            }
+                        ]
+                    },
+                ],
+            }
+        ]
+    }
+
+    specs = _collect_field_specs(configurations_doc, connection_doc)
+
+    # select carries enum keys + default.
+    assert specs["integrationLogLevel"]["field_type"] == "select"
+    assert specs["integrationLogLevel"]["default_value"] == "Off"
+    assert specs["integrationLogLevel"]["enum_values"] == ["Off", "Debug"]
+    # plain (non-backend) field has no config_type.
+    assert specs["integrationLogLevel"]["config_type"] is None
+    # per-capability fields captured with their types.
+    assert specs["incidentFetchInterval"]["field_type"] == "duration"
+    assert specs["defaultIgnore"]["field_type"] == "checkbox"
+    # config_type: backend captured from xsoar.config_type (entity-reference field).
+    assert specs["incidentType"]["config_type"] == "backend"
+    # connection.yaml profile fields captured too, including config_type: backend.
+    assert specs["plain.x_engine"]["field_type"] == "input"
+    assert specs["plain.x_engine"]["config_type"] == "backend"
+
+
+def test_collect_field_specs_tolerates_missing_docs():
+    assert _collect_field_specs(None, None) == {}
+    assert _collect_field_specs({}, {}) == {}
+
+
+# ===========================================================================
+# Per-variant field SCOPING (Bucket C) — field ownership + in_scope_fields.
+#
+# PURE-LOGIC tests (no I/O): build a configurations.yaml-shaped doc directly and
+# assert (a) direct-field ownership, (b) general_configurations field assignment
+# via shared view_group, (c) a sub-capability with NO direct fields still owns
+# its view_group's general fields, (d) per-variant in_scope_fields excludes the
+# other variant's exclusive fields, and that serializer renames are applied to
+# the ownership-map keys.
+# ===========================================================================
+
+import pathlib  # noqa: E402
+
+from resolver import (  # noqa: E402
+    build_field_ownership,
+    in_scope_fields_for_variant,
+    merge_computed_field_ownership,
+)
+
+
+_SCOPE_DOC = {
+    "general_configurations": {
+        "configurations": [
+            {"view_group": "siem", "fields": [{"id": "fetchLimit"}]},
+            {"view_group": "logs", "fields": [{"id": "logHost"}]},
+        ]
+    },
+    "configurations": [
+        {
+            "id": "fetch-issues_x",
+            "view_group": "siem",
+            "configurations": [{"fields": [{"id": "incidentType"}]}],
+        },
+        {
+            "id": "log-collection_x",
+            "view_group": "logs",
+            "configurations": [
+                {"fields": [{"id": "longRunning"}]},
+                {"fields": [{"id": "should_skip_decode_events"}]},
+            ],
+        },
+        {
+            # A sub-capability with NO direct fields — still owns its view_group's
+            # general fields (it always carries id + view_group).
+            "id": "automation_x",
+            "view_group": "siem",
+        },
+    ],
+}
+
+_SCOPE_UNITS = {"fetch-issues_x", "log-collection_x", "automation_x"}
+
+
+def test_build_field_ownership_direct_fields():
+    """(a) Direct fields map to their declaring sub-capability."""
+    owners = build_field_ownership(_SCOPE_DOC, _SCOPE_UNITS)
+    assert owners["incidentType"] == frozenset({"fetch-issues_x"})
+    assert owners["longRunning"] == frozenset({"log-collection_x"})
+    assert owners["should_skip_decode_events"] == frozenset({"log-collection_x"})
+
+
+def test_build_field_ownership_general_via_shared_view_group():
+    """(b) A general_configurations field is owned by EVERY sub-capability
+    sharing its view_group (here both fetch_x and the no-field automation_x)."""
+    owners = build_field_ownership(_SCOPE_DOC, _SCOPE_UNITS)
+    assert owners["fetchLimit"] == frozenset({"fetch-issues_x", "automation_x"})
+    # The logs-view general field belongs only to the logs sub-capability.
+    assert owners["logHost"] == frozenset({"log-collection_x"})
+
+
+def test_build_field_ownership_no_direct_field_subcapability():
+    """(c) A sub-capability with NO direct fields still owns its view_group's
+    general fields (and owns nothing else)."""
+    owners = build_field_ownership(_SCOPE_DOC, {"automation_x"})
+    assert owners == {"fetchLimit": frozenset({"automation_x"})}
+
+
+def test_build_field_ownership_applies_serializer_rename():
+    """Ownership-map keys are translated to the XSOAR namespace via the
+    serializer by_connector map (connector field id -> xsoar param name)."""
+    owners = build_field_ownership(
+        _SCOPE_DOC,
+        _SCOPE_UNITS,
+        serializer_by_connector={"incidentType": "issueType"},
+    )
+    assert "issueType" in owners
+    assert "incidentType" not in owners
+    assert owners["issueType"] == frozenset({"fetch-issues_x"})
+
+
+def test_in_scope_fields_for_variant_excludes_other_variant_exclusive():
+    """(d) A variant enabling automation + fetch-issues exposes incidentType and
+    the shared general field, but NOT the log-collection-exclusive fields; the
+    log-collection variant is the mirror image."""
+    owners = build_field_ownership(_SCOPE_DOC, _SCOPE_UNITS)
+
+    fetch_variant_units = {"automation_x", "fetch-issues_x"}
+    fetch_scope = in_scope_fields_for_variant(owners, fetch_variant_units)
+    assert "incidentType" in fetch_scope
+    assert "fetchLimit" in fetch_scope
+    assert "longRunning" not in fetch_scope
+    assert "should_skip_decode_events" not in fetch_scope
+    assert "logHost" not in fetch_scope
+
+    logs_variant_units = {"automation_x", "log-collection_x"}
+    logs_scope = in_scope_fields_for_variant(owners, logs_variant_units)
+    assert "longRunning" in logs_scope
+    assert "should_skip_decode_events" in logs_scope
+    assert "logHost" in logs_scope
+    assert "incidentType" not in logs_scope
+    # The shared general field is in scope here too (automation_x owns it).
+    assert "fetchLimit" in logs_scope
+
+
+def test_capability_variant_enabled_ownership_units_falls_back_to_parent():
+    """A capability with sub-capabilities contributes its sub-cap ids; a
+    capability WITHOUT sub-capabilities contributes its own parent id."""
+    cap_with_sub = CapabilitySpec(
+        id="fetch-issues",
+        sub_capabilities=[SubCapabilitySpec(id="fetch-issues_x")],
+    )
+    cap_without_sub = CapabilitySpec(id="automation-and-remediation")
+    variant = CapabilityVariant(
+        id="v", capabilities=[cap_with_sub, cap_without_sub]
+    )
+    assert variant.enabled_ownership_units == {
+        "fetch-issues_x",
+        "automation-and-remediation",
+    }
+
+
+# ===========================================================================
+# Bucket C DEFECT-1 regression guard: build_field_ownership must map MULTIPLE
+# fields per sub-capability AND fields from BOTH sub-capabilities — the original
+# bug only mapped a single field (should_skip_decode_events). This fixture gives
+# each of two sub-capabilities several DIRECT fields in DIFFERENT view_groups.
+# ===========================================================================
+
+_MULTI_DOC = {
+    "general_configurations": {"configurations": []},
+    "configurations": [
+        {
+            "id": "log-collection_y",
+            "view_group": "logs",
+            "configurations": [
+                {"fields": [{"id": "longRunning"}]},
+                {"fields": [{"id": "page_size"}]},
+                {"fields": [{"id": "beta_page_size"}]},
+                {"fields": [{"id": "max_concurrent_tasks"}]},
+                {"fields": [{"id": "should_skip_decode_events"}]},
+                {"fields": [{"id": "eventFetchInterval"}]},
+            ],
+        },
+        {
+            "id": "fetch-issues_y",
+            "view_group": "siem",
+            "configurations": [
+                {"fields": [{"id": "incidentType"}]},
+                {"fields": [{"id": "incomingMapperId"}]},
+            ],
+        },
+    ],
+}
+_MULTI_UNITS = {"log-collection_y", "fetch-issues_y"}
+
+
+def test_build_field_ownership_maps_multiple_fields_per_subcapability():
+    """REGRESSION: every DIRECT field of a sub-capability is mapped (not just
+    one). Catches the original 'only should_skip_decode_events mapped' bug."""
+    owners = build_field_ownership(_MULTI_DOC, _MULTI_UNITS)
+    log_fields = {
+        "longRunning",
+        "page_size",
+        "beta_page_size",
+        "max_concurrent_tasks",
+        "should_skip_decode_events",
+        "eventFetchInterval",
+    }
+    for fid in log_fields:
+        assert owners.get(fid) == frozenset({"log-collection_y"}), fid
+
+
+def test_build_field_ownership_maps_fields_from_both_subcapabilities():
+    """REGRESSION: fields from BOTH sub-capabilities (in different view_groups)
+    are present in the map — not just one sub-capability's."""
+    owners = build_field_ownership(_MULTI_DOC, _MULTI_UNITS)
+    # log-collection-owned
+    assert owners["longRunning"] == frozenset({"log-collection_y"})
+    # fetch-issues-owned
+    assert owners["incidentType"] == frozenset({"fetch-issues_y"})
+    assert owners["incomingMapperId"] == frozenset({"fetch-issues_y"})
+    # Each sub-capability contributes more than one field.
+    log_owned = [f for f, u in owners.items() if u == frozenset({"log-collection_y"})]
+    fetch_owned = [f for f, u in owners.items() if u == frozenset({"fetch-issues_y"})]
+    assert len(log_owned) >= 2
+    assert len(fetch_owned) >= 2
+
+
+# ---------------------------------------------------------------------------
+# Bucket C DEFECT-3: serializer computed_fields → gating sub-capability owner.
+# ---------------------------------------------------------------------------
+
+_SERIALIZER_DOC = {
+    "computed_fields": [
+        {
+            "output": [{"id": "isFetch", "value": True}],
+            "any_of": [
+                {
+                    "conditions": [
+                        {
+                            "type": "capability",
+                            "options": {
+                                "capability_id": "fetch-issues_z",
+                                "value": "on",
+                            },
+                        }
+                    ]
+                }
+            ],
+        },
+        {
+            "output": [{"id": "incidentFetchInterval", "value": "1"}],
+            "any_of": [
+                {
+                    "conditions": [
+                        {
+                            "type": "capability",
+                            "options": {
+                                "capability_id": "fetch-issues_z",
+                                "value": "on",
+                            },
+                        }
+                    ]
+                }
+            ],
+        },
+    ]
+}
+
+
+def test_merge_computed_field_ownership_attributes_to_gating_subcapability():
+    """A computed field is attributed to the sub-capability that gates it, so it
+    becomes scopeable like a directly-declared field."""
+    merged = merge_computed_field_ownership({}, _SERIALIZER_DOC)
+    assert merged["incidentFetchInterval"] == frozenset({"fetch-issues_z"})
+    assert merged["isFetch"] == frozenset({"fetch-issues_z"})
+
+
+def test_merge_computed_field_ownership_unions_with_existing_owners():
+    """Computed ownership is UNIONed with any pre-existing manifest ownership."""
+    base = {"incidentFetchInterval": frozenset({"some-other-unit"})}
+    merged = merge_computed_field_ownership(base, _SERIALIZER_DOC)
+    assert merged["incidentFetchInterval"] == frozenset(
+        {"some-other-unit", "fetch-issues_z"}
+    )
+
+
+def test_merge_computed_field_ownership_restricts_to_known_units():
+    """When ``known_units`` is supplied, computed ownership gated on a unit this
+    handler does NOT subscribe to is ignored (not mis-scoped)."""
+    merged = merge_computed_field_ownership(
+        {}, _SERIALIZER_DOC, known_units={"some-unrelated-unit"}
+    )
+    assert "incidentFetchInterval" not in merged
+    assert "isFetch" not in merged
+
+
+def test_merge_computed_field_ownership_no_computed_fields_is_noop():
+    base = {"x": frozenset({"u"})}
+    assert merge_computed_field_ownership(base, {}) == base
+    assert merge_computed_field_ownership(base, None) == base
+
+
+# ---------------------------------------------------------------------------
+# Bucket C DEFECT-1: end-to-end ownership against the REAL Akamai connector.
+# Reads the actual unified-connectors-content manifest. Skipped if the connector
+# dir is not present in this checkout.
+# ---------------------------------------------------------------------------
+
+def _find_akamai_dir() -> pathlib.Path | None:
+    """Locate the real Akamai connector dir by walking up to the workspace root
+    (the parent that contains ``unified-connectors-content``)."""
+    here = pathlib.Path(__file__).resolve()
+    for parent in here.parents:
+        candidate = parent / "unified-connectors-content" / "connectors" / "akamai"
+        if candidate.exists():
+            return candidate
+    return None
+
+
+_AKAMAI_DIR = _find_akamai_dir()
+
+
+@pytest.mark.skipif(
+    _AKAMAI_DIR is None, reason="real Akamai connector not in this checkout"
+)
+def test_real_akamai_field_ownership_maps_all_capability_scoped_fields():
+    """REGRESSION against the real manifest: the 6 log-collection config fields
+    map to log-collection, incidentType maps to fetch-issues, and the
+    serializer computed field incidentFetchInterval is attributed to fetch-issues."""
+    from resolver import _load_yaml, _load_serializer_maps
+
+    configurations_doc = _load_yaml(_AKAMAI_DIR / "configurations.yaml")
+    handler_dir = (
+        _AKAMAI_DIR / "components" / "handlers" / "xsoar-akamai-waf-siem"
+    )
+    _by_xsoar, by_connector = _load_serializer_maps(handler_dir)
+    serializer_doc = _load_yaml(handler_dir / "serializer.yaml")
+
+    units = {
+        "automation-and-remediation_akamai-waf-siem",
+        "fetch-issues_akamai-waf-siem",
+        "log-collection_akamai-waf-siem",
+    }
+    owners = build_field_ownership(
+        configurations_doc, units, serializer_by_connector=by_connector
+    )
+    owners = merge_computed_field_ownership(
+        owners, serializer_doc, known_units=units
+    )
+
+    log_unit = "log-collection_akamai-waf-siem"
+    for fid in (
+        "longRunning",
+        "page_size",
+        "beta_page_size",
+        "max_concurrent_tasks",
+        "should_skip_decode_events",
+        "eventFetchInterval",
+    ):
+        assert log_unit in owners.get(fid, frozenset()), fid
+
+    assert "fetch-issues_akamai-waf-siem" in owners.get("incidentType", frozenset())
+    # Computed (serializer) field gated on fetch-issues.
+    assert "fetch-issues_akamai-waf-siem" in owners.get(
+        "incidentFetchInterval", frozenset()
+    )
+
+
+@pytest.mark.skipif(
+    _AKAMAI_DIR is None, reason="real Akamai connector not in this checkout"
+)
+def test_real_akamai_per_variant_scoping_via_resolve(monkeypatch):
+    """The fetch-issues variant scopes OUT the 6 log-collection fields +
+    incidentFetchInterval; the log-collection variant scopes OUT incidentType +
+    incidentFetchInterval. Uses the real resolve() against the live manifest."""
+    try:
+        inputs = resolve("Akamai WAF SIEM")
+    except ResolverError as exc:
+        pytest.skip(f"Akamai WAF SIEM not resolvable in this checkout: {exc}")
+    by_id = {v.id: v for v in inputs.variants}
+    fetch = next(v for k, v in by_id.items() if "fetch-issues" in k)
+    logs = next(v for k, v in by_id.items() if "log-collection" in k)
+
+    log_fields = {
+        "longRunning",
+        "page_size",
+        "beta_page_size",
+        "max_concurrent_tasks",
+        "should_skip_decode_events",
+        "eventFetchInterval",
+    }
+    # fetch-issues variant: the 6 log-collection fields are OUT of scope
+    # (log-collection disabled), while incidentFetchInterval (a serializer computed
+    # field GATED ON fetch-issues) and incidentType (fetch-issues-owned) are IN
+    # scope because fetch-issues is enabled here.
+    for fid in log_fields:
+        assert fid not in fetch.in_scope_fields, fid
+    assert "incidentType" in fetch.in_scope_fields
+    assert "incidentFetchInterval" in fetch.in_scope_fields
+
+    # log-collection variant (fetch-issues disabled): incidentType +
+    # incidentFetchInterval are OUT of scope, while the 6 log fields are IN scope.
+    assert "incidentType" not in logs.in_scope_fields
+    assert "incidentFetchInterval" not in logs.in_scope_fields
+    for fid in log_fields:
+        assert fid in logs.in_scope_fields, fid

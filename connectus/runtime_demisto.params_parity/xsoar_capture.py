@@ -192,15 +192,21 @@ def generate_dummy_value_for_param(param: dict) -> object:
         return True
 
     if param_type == PARAM_TYPE_AUTH:
-        # Auth (credentials) is IGNORE'd by the normalizer, so the actual
-        # value doesn't reach the diff. We still emit a structured dict so
-        # the XSOAR API accepts the instance creation request.
-        return {
+        # Auth (credentials) is reduced to identifier/password by the normalizer
+        # before the diff. We still emit a structured dict so the XSOAR API
+        # accepts the instance creation request.
+        auth_value: dict[str, Any] = {
             "credential": "",
-            "identifier": "<override_user_{}>".format(raw_name or "unknown"),
             "password": "<override_pass_{}>".format(raw_name or "unknown"),
             "passwordChanged": False,
         }
+        # For hiddenusername:true type-9 fields (e.g. Akamai's credentials_*),
+        # the connector delivers no username, so injecting a dummy identifier
+        # would re-introduce a spurious mismatch after the normalizer reduction
+        # (which keeps identifier only when non-empty). Omit it in that case.
+        if not param.get("hiddenusername"):
+            auth_value["identifier"] = "<override_user_{}>".format(raw_name or "unknown")
+        return auth_value
 
     if param_type == PARAM_TYPE_SINGLE_SELECT:
         # Pick any option that is NOT the YML default.
@@ -424,6 +430,29 @@ def get_instances_by_brand(client, brand_name: str) -> list[dict]:
         return []
 
     return [inst for inst in res["instances"] if inst.get("brand") == brand_name]
+
+
+def list_all_instance_brands(client) -> list[str]:
+    """Return the brand of EVERY integration instance on the tenant (diagnostic).
+
+    Used when an expected XSOAR mirror never appears, to reveal whether the
+    connector mirrored under a different brand (or not at all). Best-effort:
+    returns an empty list on any API error.
+    """
+    try:
+        res, status, _ = demisto_client.generic_request_func(
+            self=client,
+            method="POST",
+            path="/settings/integration/search",
+            body={"size": 1000},
+            _request_timeout=REQUEST_TIMEOUT,
+            response_type="object",
+        )
+    except Exception:
+        return []
+    if int(status) != 200 or "instances" not in res:
+        return []
+    return [inst.get("brand") for inst in res["instances"] if inst.get("brand")]
 
 
 # ============================================================================
@@ -740,12 +769,12 @@ def delete_integration_instance(client, instance_id: str) -> bool:
             _request_timeout=REQUEST_TIMEOUT,
         )
         if int(res[1]) == 200:
-            log.info("Instance deleted successfully")
+            log.info("XSOAR integration instance deleted successfully")
             return True
-        log.error("Delete instance failed with status %s", res[1])
+        log.error("XSOAR integration delete instance failed with status %s", res[1])
         return False
     except ApiException as e:
-        log.error("Failed to delete instance: %s", e)
+        log.error("Failed to delete XSOAR integration instance: %s", e)
         return False
 
 

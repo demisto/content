@@ -10,10 +10,12 @@ emits the params dump.
 The top-level entry point is :func:`capture_ucp_params`.
 
 The payload builder (:func:`_build_instance_payload`) is generic: it is driven
-by a resolved :class:`resolver.ParityInputs` and enables ALL (sub-)capabilities
-the handler subscribes to, sets auth per profile (same-value when the profile is
+by a resolved :class:`resolver.ParityInputs` and enables ONE capability VARIANT
+(the always-on set plus at most one fetch-exclusive capability — never two fetch
+types on one instance), sets auth per profile (same-value when the profile is
 interpolated, dummy otherwise), and pushes the SAME instance/dummy values to the
-connector side that the integration side uses (never connector defaults).
+connector side that the integration side uses (never connector defaults). The
+orchestrator calls it once per :class:`resolver.CapabilityVariant`.
 
 UCP Shell API access requires:
     * ``gcloud`` CLI authenticated.
@@ -30,6 +32,7 @@ import os
 import sys
 import time
 import uuid
+from collections import Counter
 from typing import Any
 
 import demisto_client
@@ -43,6 +46,7 @@ from xsoar_capture import (
     REQUEST_TIMEOUT,
     get_instances_by_brand,
     get_integration_config,
+    list_all_instance_brands,
     run_test_module_and_capture_params,
 )
 
@@ -51,6 +55,7 @@ from pathlib import Path as _Path  # noqa: E402
 
 sys.path.insert(0, str(_Path(__file__).resolve().parent.parent))
 from env_loader import load_env  # noqa: E402
+import resolver  # noqa: E402  (fetch-flag classifier for the per-variant guardrail)
 import session_env  # noqa: E402  (single session/env authority; owns the port-forward)
 
 # Load the canonical root .env via the single unified loader.
@@ -75,9 +80,6 @@ DEFAULT_TENANT_ID = os.getenv("TENANT_ID", "")
 # Legacy/ad-hoc only: resolver-driven runs derive the connector id. Kept for
 # create_ucp_instance.py standalone usage.
 DEFAULT_UCP_PORT = 8080
-
-DEFAULT_GKE_ZONE = "us-central1-f"
-DEFAULT_K8S_NAMESPACE = "xdr-st"
 
 
 def _ucp_base_url(port: int) -> str:
@@ -299,32 +301,52 @@ def wait_for_xsoar_mirror(
     xsoar_client,
     brand_name: str,
     *,
+    expected_name: str | None = None,
     max_retries: int = 15,
     poll_interval: int = 3,
     excluded_instance_ids: set[str] | None = None,
 ) -> dict | None:
-    """Poll the XSOAR API until an instance with the given brand appears.
+    """Poll the XSOAR API until the NEW mirrored instance appears.
 
     UCP creates an XSOAR-mirrored instance asynchronously after the
     ``POST /instances`` call returns. Polling time on the dev tenant is
     typically 5–15 seconds.
 
+    Matching strategy:
+        * **By unique name (PREFERRED).** When ``expected_name`` is given, we
+          match the instance whose ``name`` equals it OR starts with it. The
+          caller generates a per-run unique name
+          (``..._runtime_parity_<uuid8>``), and UCP names the XSOAR mirror
+          ``{instance_name}_{handler_id}_{ucp_instance_id}`` — i.e. the mirror
+          name has the unique instance name as a PREFIX, not an exact match. The
+          uuid8 suffix in ``expected_name`` keeps a prefix match unambiguous even
+          when the tenant already has other (stale/manual) instances of the same
+          brand, and even if UCP upserts a mirror onto an id we'd otherwise have
+          excluded.
+        * **By id-exclusion (FALLBACK).** When no ``expected_name`` is given,
+          fall back to "any instance of this brand whose id was not pre-existing."
+
     Args:
         xsoar_client: A configured ``demisto_client`` for the XSOAR tenant.
         brand_name: The brand string (matches the integration YML ``name``,
             e.g. ``"Salesforce IAM"``).
+        expected_name: The exact, per-run-unique display name of the instance we
+            created (preferred match key).
         max_retries: Number of polling attempts.
         poll_interval: Seconds between polls.
         excluded_instance_ids: Optional set of instance ids to ignore
-            (use when there are pre-existing instances of the same brand
-            from previous runs and we only want the *new* one).
+            (fallback only — used when ``expected_name`` is not provided).
 
     Returns:
         The first matching instance dict, or ``None`` if no match appeared
         within ``max_retries * poll_interval`` seconds.
     """
     excluded_instance_ids = excluded_instance_ids or set()
-    log.info("Polling XSOAR for mirrored instance of brand %r...", brand_name)
+    log.info(
+        "Polling XSOAR for mirrored instance of brand %r (expected_name=%r)...",
+        brand_name,
+        expected_name,
+    )
     for attempt in range(1, max_retries + 1):
         try:
             instances = get_instances_by_brand(xsoar_client, brand_name)
@@ -332,9 +354,36 @@ def wait_for_xsoar_mirror(
             log.warning("XSOAR poll attempt %d/%d raised: %s", attempt, max_retries, e)
             instances = []
 
-        new_instances = [i for i in instances if i.get("id") not in excluded_instance_ids]
-        if new_instances:
-            chosen = new_instances[0]
+        # DIAGNOSTIC: show every same-brand instance's id/name this poll sees, so
+        # a name mismatch or an upsert-onto-excluded-id is visible in the logs.
+        if instances:
+            log.info(
+                "Poll %d/%d — brand %r instances present: %s",
+                attempt,
+                max_retries,
+                brand_name,
+                [{"id": i.get("id"), "name": i.get("name")} for i in instances],
+            )
+
+        if expected_name is not None:
+            # PREFERRED: unique-name match (robust to stale/manual instances and
+            # to UCP upserting the mirror onto a pre-existing id). The XSOAR
+            # mirror is named ``{instance_name}_{handler_id}_{ucp_instance_id}``,
+            # so it has ``expected_name`` as a PREFIX rather than equalling it.
+            # Accept either an exact match or a prefix match; the uuid8 suffix in
+            # ``expected_name`` keeps the prefix match unambiguous.
+            matches = [
+                i
+                for i in instances
+                if (i.get("name") or "") == expected_name
+                or (i.get("name") or "").startswith(expected_name)
+            ]
+        else:
+            # FALLBACK: any same-brand instance not seen before this run.
+            matches = [i for i in instances if i.get("id") not in excluded_instance_ids]
+
+        if matches:
+            chosen = matches[0]
             log.info(
                 "Found XSOAR mirror after %d attempt(s): id=%s name=%r",
                 attempt,
@@ -350,6 +399,26 @@ def wait_for_xsoar_mirror(
         brand_name,
         max_retries,
     )
+    # DIAGNOSTIC: dump every brand actually present on the tenant so we can tell
+    # whether the connector mirrored under a DIFFERENT brand (or not at all). If
+    # the expected brand is absent here, the XSOAR handler never activated —
+    # typically because the connector deploy hasn't fully rolled out the handler
+    # on this tenant yet, or the enabled sub-capabilities didn't bind it.
+    try:
+        all_brands = list_all_instance_brands(xsoar_client)
+        brand_counts = Counter(all_brands)
+        log.error(
+            "DIAGNOSTIC all XSOAR instance brands on tenant (%d instances): %s",
+            len(all_brands),
+            json.dumps(dict(sorted(brand_counts.items())), default=str),
+        )
+        log.error(
+            "DIAGNOSTIC expected brand %r present on tenant? %s",
+            brand_name,
+            brand_name in brand_counts,
+        )
+    except Exception as e:  # pragma: no cover - diagnostic must never mask the real error
+        log.error("DIAGNOSTIC brand enumeration failed: %s", e)
     return None
 
 
@@ -447,20 +516,87 @@ def inject_magic_key_and_persist(
 # ============================================================================
 
 
-def _dummy_auth_value(field_id: str) -> str:
-    """A guaranteed-non-empty dummy for a non-interpolated auth field."""
-    return f"dummy_{field_id}"
+def _dummy_string(field_id: str) -> str:
+    """A guaranteed-non-empty, per-field-UNIQUE dummy STRING.
+
+    Format ``<dummy_value_for_<fieldId>>`` — distinct per field so a NON-DEFAULT
+    value is exercised (the connector's own default is never silently accepted)
+    and the value is recognizable in the persisted creation payload during
+    triage. Used for string-typed fields (input/select/engine/...), and as the
+    leaf for multi_select dummies.
+    """
+    return f"<dummy_value_for_{field_id}>"
 
 
 def _dummy_config_value(field_id: str) -> str:
-    """A guaranteed-non-empty dummy for a connector CONFIG field that has NO
-    matching integration-YML param (an orphan / undeclared-rename field).
+    """Backwards-compatible STRING dummy (delegates to :func:`_dummy_string`)."""
+    return _dummy_string(field_id)
 
-    Setting it (rather than omitting it) makes the orphan field present at
-    runtime on the CONNECTOR side only, so the diff correctly reports it as
-    EXTRA_IN_CONNECTOR instead of silently hiding it. The distinct prefix makes
-    the value recognizable in the persisted creation payload during triage."""
-    return f"dummy_config_{field_id}"
+
+def _is_backend_field(field_id: str, field_specs: dict | None) -> bool:
+    """True iff ``field_id`` is a ``config_type: backend`` ENTITY-REFERENCE field.
+
+    The XSOAR backend RESOLVES these (engine, engineGroup, incomingMapperId,
+    mappingId, incidentType, integrationLogLevel, …) against REAL tenant entities.
+    They CANNOT carry an arbitrary dummy/override string — the lookup fails with
+    ``Item not found (8)`` and creation is rejected (no mirror). They must be set
+    to ``None`` everywhere (the UI sends null too), INCLUDING the matched branch
+    where ``instance_values`` would otherwise inject an ``<override_…>`` /
+    ``<dummy_value_for_…>`` string.
+    """
+    spec = (field_specs or {}).get(field_id)
+    config_type = (spec.get("config_type") if isinstance(spec, dict) else "") or ""
+    return config_type.strip().lower() == "backend"
+
+
+def _typed_dummy_value(field_id: str, field_specs: dict | None) -> Any:
+    """A TYPE-CORRECT dummy for ``field_id``, using its connector-manifest spec.
+
+    The backend strictly type-checks every field at instance creation; a string
+    dummy in a non-string field makes it REJECT creation (e.g. duration →
+    ``unable to cast "dummy_..." to int64``; checkbox →
+    ``ParseBool: parsing "dummy_..."``), which means NO XSOAR mirror is produced.
+
+    ENTITY-REFERENCE fields (``config_type: backend`` — engine, engineGroup,
+    incomingMapperId, mappingId, incidentType, integrationLogLevel, …) are NOT
+    free-form: the backend RESOLVES their value against a REAL tenant entity
+    (an engine, classifier, mapper, incident type, …). A dummy string is not a
+    real id, so the lookup fails with ``Item not found (8)`` and creation is
+    rejected → no mirror. The UI avoids this by sending ``null`` (the field is
+    simply unset). We do the same: ``config_type: backend`` → ``None``.
+
+    We use a NON-DEFAULT dummy per field so non-default behavior is exercised:
+        * ``config_type: backend``      → ``None`` (entity-reference — the backend
+                                          resolves it; a dummy id would be "Item
+                                          not found". UI sends null too.)
+        * ``checkbox``                  → ``False`` (bool — only type that can't
+                                          carry a dummy string)
+        * ``duration`` / number-ish     → ``0`` (int)
+        * ``multi_select``              → ``["<dummy_value_for_<id>>"]`` (list of
+                                          one dummy string)
+        * ``select`` / ``input`` /
+          engine / unknown / no spec    → ``"<dummy_value_for_<id>>"`` (string —
+                                          a dummy, NOT the manifest default/enum,
+                                          so non-defaults are tested)
+    """
+    spec = (field_specs or {}).get(field_id)
+    config_type = (spec.get("config_type") if isinstance(spec, dict) else "") or ""
+    if config_type.strip().lower() == "backend":
+        # Entity-reference field — backend resolves it against a real tenant
+        # entity; a dummy id fails as "Item not found (8)". Mirror the UI: unset.
+        return None
+
+    ftype = (spec.get("field_type") if isinstance(spec, dict) else "") or ""
+    ftype = ftype.strip().lower()
+
+    if ftype == "checkbox":
+        return False
+    if ftype in ("duration", "number", "integer", "int"):
+        return 0
+    if ftype == "multi_select":
+        return [_dummy_string(field_id)]
+    # select / input / engine / unknown / no spec → a dummy STRING (non-default).
+    return _dummy_string(field_id)
 
 
 def _dig(source, dotted_path):
@@ -476,17 +612,6 @@ def _dig(source, dotted_path):
     return cur
 
 
-#: Engine-related connector field ids that get the canonical "no engine" values
-#: in the UCP payload (see _ENGINE_FIELD_VALUES). Pushing a dummy value
-#: (e.g. engine="dummy_engine") makes UCP reject instance creation ("engine with
-#: id [dummy_engine] does not exist"); the real UI payload INCLUDES these fields
-#: set to no_engine/null/null, keeping the instance on "No Engine".
-_ENGINE_FIELD_IDS: frozenset[str] = frozenset({"engine", "engine_group", "engineGroup", "engine_mode"})
-
-#: Canonical "no engine" values the platform sends for engine fields. Setting
-#: these (rather than omitting, or sending a dummy which UCP rejects) matches the
-#: real UI payload and keeps the instance on "No Engine".
-_ENGINE_FIELD_VALUES = {"engine_mode": "no_engine", "engine": None, "engine_group": None}
 
 
 def _applied_for_method_ids(
@@ -513,17 +638,23 @@ def _build_instance_payload(
     profiles: list,              # list[resolver.ProfileSpec]
     instance_values: dict[str, Any],
     connector_id: str,
+    field_specs: dict | None = None,  # connector field id → type metadata
 ) -> dict:
-    """Build the POST /instances payload for ANY connector from resolved inputs.
+    """Build the POST /instances payload for ONE capability VARIANT of a connector.
 
-    Generalizes the old Salesforce-only builder per the "REVISED MULTI-CAPABILITY
-    + AUTH-MAPPING DESIGN" in ``plans/param-parity-pipeline-integration.md``.
+    ``capabilities`` is the LEGAL subset to enable for a single variant — the
+    always-on set (e.g. automation, possibly empty) plus AT MOST ONE fetch-
+    exclusive capability. The param-parity orchestrator calls this once per
+    :class:`resolver.CapabilityVariant` (Philosophy A: per-integration isolation —
+    we never co-enable sibling integrations). See
+    ``multi_capability_variant_design.md``.
 
     Contract:
-        1. **Enable ALL (sub-)capabilities** the handler subscribes to — every
-           parent ``CapabilitySpec.id`` with its subscribed ``sub_capabilities``.
-           A handler may subscribe to several (e.g. automation AND fetch-secrets).
-        2. **Configuration scope = union over all enabled (sub-)capabilities.**
+        1. **Enable the VARIANT's capabilities** — each parent
+           ``CapabilitySpec.id`` with its subscribed ``sub_capabilities``. A
+           guardrail enforces AT MOST ONE fetch-exclusive capability so an instance
+           can never carry two fetch flags (the platform forbids that).
+        2. **Configuration scope = union over the variant's enabled (sub-)capabilities.**
         3. **Auth per profile, interpolation from ``ProfileSpec.interpolated``
            ONLY**: interpolated → each connector auth field whose role appears in
            the profile's ``interpolation_mapping`` is set to the SAME value the
@@ -538,7 +669,8 @@ def _build_instance_payload(
     Args:
         creation_view: dict from :func:`get_creation_view`.
         instance_name: display name for the new UCP instance.
-        capabilities: resolved ``CapabilitySpec`` list (parents + sub-capabilities).
+        capabilities: the VARIANT's ``CapabilitySpec`` subset to enable (parents +
+            sub-capabilities); at most one fetch-exclusive capability.
         profiles: resolved ``ProfileSpec`` list (carry the interpolation mapping
             from which the auth-field ↔ xsoar param mapping is derived).
         instance_values: the shared dummy/instance value dict (xsoar param ids →
@@ -550,11 +682,29 @@ def _build_instance_payload(
 
     Raises:
         RuntimeError: if the creation view doesn't expose a requested capability,
-            or no connection method supports an enabled (capability, profile) pair.
+            no connection method supports an enabled (capability, profile) pair, OR
+            the variant illegally carries more than one fetch-exclusive capability
+            (guardrail).
     """
     instance_id = creation_view["instance_id"]
 
-    # ── 1. Enable ALL (sub-)capabilities ──
+    # ── Guardrail: at most ONE fetch-exclusive capability per instance ──
+    # Defends against a mis-declared handler or a regression in _expand_variants.
+    # The platform forbids two fetch flags on a single integration instance.
+    fetch_caps_enabled = [
+        cap.id
+        for cap in capabilities
+        if resolver.fetch_flag_for_capability(cap.id) is not None
+    ]
+    if len(fetch_caps_enabled) > 1:
+        raise RuntimeError(
+            "ILLEGAL variant payload: more than one fetch-exclusive capability "
+            f"enabled on a single instance: {sorted(fetch_caps_enabled)}. The "
+            "platform forbids combining fetch types (e.g. isfetch + isfetchevents) "
+            "on one integration instance."
+        )
+
+    # ── 1. Enable the VARIANT's (sub-)capabilities ──
     capabilities_step = creation_view["steps"][0]
     available_caps = {c["id"] for c in capabilities_step.get("capabilities", [])}
     enabled_values: dict[str, list[str]] = {}
@@ -653,11 +803,17 @@ def _build_instance_payload(
     matched: list[str] = []
     orphan: list[str] = []
     for fid in sorted(accepted_field_ids):
-        if fid in (instance_values or {}):
+        if _is_backend_field(fid, field_specs):
+            # Entity-reference field — backend resolves it; a dummy/override id
+            # fails as "Item not found (8)". Force None EVEN IF instance_values
+            # carries an <override_…> string for it (mirrors the UI's null).
+            configuration[fid] = None
+            orphan.append(fid)
+        elif fid in (instance_values or {}):
             configuration[fid] = instance_values[fid]
             matched.append(fid)
         else:
-            configuration[fid] = _dummy_config_value(fid)
+            configuration[fid] = _typed_dummy_value(fid, field_specs)
             orphan.append(fid)
 
     # instance_values keys that are NOT connector config fields (e.g. auth/profile
@@ -701,11 +857,12 @@ def _build_instance_payload(
         # {}, so auth fields fall through to a dummy.
         field_to_path = prof.connector_field_to_xsoar_path() if prof.interpolated else {}
         for fid in prof.field_ids:
-            if fid in _ENGINE_FIELD_IDS:
-                # Engine fields: include with canonical "no engine" values as the
-                # UI does (no_engine / null / null), NOT skipped — a dummy here
-                # makes UCP reject creation.
-                values[fid] = _ENGINE_FIELD_VALUES.get(fid, None)
+            if _is_backend_field(fid, field_specs):
+                # Entity-reference field (engine/engineGroup/…) — backend resolves
+                # it; a dummy/override id fails as "Item not found (8)". Force None
+                # EVEN IF instance_values carries an <override_…> string for it
+                # (mirrors the UI, which sends null / omits engine).
+                values[fid] = None
                 continue
             is_auth_field = fid in prof.auth_field_to_role
             if is_auth_field:
@@ -717,17 +874,18 @@ def _build_instance_payload(
                     values[fid] = leaf
                 else:
                     # Field not covered by the mapping, missing leaf, or
-                    # non-interpolated → dummy.
-                    values[fid] = _dummy_auth_value(fid)
+                    # non-interpolated → TYPE-CORRECT dummy. A string dummy in a
+                    # bool/int field makes the backend REJECT creation (no mirror).
+                    values[fid] = _typed_dummy_value(fid, field_specs)
             else:
                 # Non-auth profile CONFIG field (e.g. defaultRegion, retries,
-                # insecure, proxy, timeout, sts_regional_endpoint). Push the SAME
-                # shared value the integration side received (keyed by field id ==
-                # xsoar param name for these); fall back to a dummy only if absent.
+                # insecure, proxy, timeout). Push the SAME shared value the
+                # integration side received (keyed by field id == xsoar param name
+                # for these); fall back to a TYPE-CORRECT dummy only if absent.
                 if fid in (instance_values or {}):
                     values[fid] = instance_values[fid]
                 else:
-                    values[fid] = _dummy_auth_value(fid)
+                    values[fid] = _typed_dummy_value(fid, field_specs)
 
         profile_payloads.append(
             {
@@ -751,7 +909,7 @@ def _build_instance_payload(
                 if fid:
                     conn_accepted.add(fid)
     for k, v in (instance_values or {}).items():
-        if k in conn_accepted and k not in _ENGINE_FIELD_IDS:
+        if k in conn_accepted:
             connection_general[k] = v
 
     return {
@@ -781,6 +939,7 @@ def capture_ucp_params(
     xsoar_client,
     xsoar_brand_name: str,
     parity_inputs,                       # resolver.ParityInputs
+    capabilities: list | None = None,    # the VARIANT's CapabilitySpec subset
     instance_values: dict | None = None,
     connector_id: str | None = None,
     tenant_id: str = DEFAULT_TENANT_ID,
@@ -788,7 +947,15 @@ def capture_ucp_params(
     ucp_port: int = DEFAULT_UCP_PORT,
     keep_instance: bool = False,
 ) -> tuple[dict | None, dict | None]:
-    """Run the full UCP-side capture flow end-to-end.
+    """Run the full UCP-side capture flow end-to-end for ONE capability variant.
+
+    Args:
+        capabilities: the VARIANT's ``CapabilitySpec`` subset to enable (the
+            always-on set plus at most one fetch-exclusive capability). When
+            ``None``, falls back to ``parity_inputs.capabilities`` (legacy
+            single-instance behavior). The orchestrator passes
+            ``variant.capabilities`` so each instance enables exactly one legal
+            capability combination.
 
     Workflow:
         1. Start a kubectl port-forward to the UCP shell pod.
@@ -796,7 +963,7 @@ def capture_ucp_params(
            later identify the *new* mirrored instance.
         3. GET the creation view from UCP.
         4. Build the POST payload via :func:`_build_instance_payload`
-           (enables ALL handler (sub-)capabilities; per-profile auth).
+           (enables the variant's (sub-)capabilities; per-profile auth).
         5. POST the payload to create the UCP instance.
         6. Poll XSOAR for the mirrored instance to appear.
         7. Inject the ``__params_parity_dump__`` magic key into the mirrored
@@ -843,6 +1010,11 @@ def capture_ucp_params(
     if connector_id is None:
         connector_id = parity_inputs.connector_id
 
+    # The capabilities to enable for THIS instance = the variant's subset. Fall
+    # back to the full handler set for legacy single-instance callers.
+    if capabilities is None:
+        capabilities = parity_inputs.capabilities
+
     if instance_values is None:
         instance_values = {}
 
@@ -883,27 +1055,46 @@ def capture_ucp_params(
         creation_view = get_creation_view(connector_id, tenant_id, port=ucp_port)
         ucp_instance_id = creation_view["instance_id"]
 
-        # 3. Build payload (generic, resolver-driven).
+        # 3. Build payload (generic, resolver-driven) for THIS variant.
         # The shared `instance_values` dict is pushed to the connector's
         # configuration + (interpolated) auth fields, ensuring the connector
         # delivers the SAME values the INTEGRATION side uses. This eliminates the
         # test-setup-asymmetry false positives in the diff and leaves only real
-        # connector bugs visible. ALL handler (sub-)capabilities are enabled.
+        # connector bugs visible. Only the VARIANT's (sub-)capabilities are
+        # enabled (at most one fetch-exclusive capability per instance).
         payload = _build_instance_payload(
             creation_view,
             instance_name=instance_name,
-            capabilities=parity_inputs.capabilities,
+            capabilities=capabilities,
             profiles=parity_inputs.profiles,
             instance_values=instance_values,
             connector_id=connector_id,
+            field_specs=getattr(parity_inputs, "field_specs", None),
         )
         log.info(
             "UCP payload built: connector=%s capabilities=%s profiles=%s, configuration fields=%d",
             connector_id,
-            [c.id for c in parity_inputs.capabilities],
+            [c.id for c in capabilities],
             [p.id for p in parity_inputs.profiles],
             len(payload["configuration"]),
         )
+        # DIAGNOSTIC: dump the EXACT capability→sub-capability enablement map this
+        # run is POSTing. The XSOAR handler binds on its subscribed SUB-capability
+        # ids (e.g. fetch-issues_akamai-waf-siem); if a parent is enabled with an
+        # EMPTY sub-list the handler never activates and no XSOAR mirror appears.
+        _cap_values = (payload.get("capabilities") or {}).get("values") or {}
+        log.info(
+            "DIAGNOSTIC capabilities.values actually sent this run: %s",
+            json.dumps(_cap_values, default=str),
+        )
+        for _parent, _subs in _cap_values.items():
+            if not _subs:
+                log.warning(
+                    "DIAGNOSTIC parent capability %r enabled with NO sub-capabilities "
+                    "— the handler subscribes on sub-cap ids, so it may NOT activate "
+                    "(this is a likely cause of a missing XSOAR mirror).",
+                    _parent,
+                )
         log.debug("Full payload: %s", json.dumps(payload, indent=2, default=str))
 
         # 4. Create UCP instance
@@ -945,10 +1136,14 @@ def capture_ucp_params(
             verify["via"],
         )
 
-        # 5. Wait for XSOAR mirror
+        # 5. Wait for XSOAR mirror — match by the per-run UNIQUE instance name
+        # (not id-exclusion), so stale/manual same-brand instances on the tenant
+        # never cause a false "mirror never appeared", and an upsert onto a
+        # pre-existing id is still detected. excluded_ids is kept as a fallback.
         mirror = wait_for_xsoar_mirror(
             xsoar_client,
             xsoar_brand_name,
+            expected_name=instance_name,
             excluded_instance_ids=excluded_ids,
         )
         if mirror is None:

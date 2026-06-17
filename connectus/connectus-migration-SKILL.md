@@ -24,7 +24,7 @@ One up-front read replaces several calls: `python3 content/connectus/workflow_st
 | 8 | Generated manifest | `manifest_generator.py <yml> <title=Connector ID> <Params-to-Capabilities raw> <Auth-Details raw>` → `set-connector-path "<id>" connectors/<slug Connector ID>` → `markpass "generated manifest"` (title comes from the `Connector ID` column so a connector's integrations share one folder) | §8 |
 | 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id> --json` → **fail-and-ask if `pass:false`** (resolve via IGNORED_PARAMS, fix-upstream, or `--force` override) → `markpass "handler param coverage"` | §9 |
 | 10 | Validate manifest | `demisto-sdk validate` → `markpass "run manifest make validate"` | §10 |
-| 11 | Param parity | `markpass "param parity test passes"` | §13 |
+| 11 | Param parity | `markpass "param parity test passes"` (self-executing gate — runs `deploy_and_test.py` under the hood) | §13 |
 | 12 | Code reviewed | `markpass "code reviewed"` | §14 |
 | 13 | Code merged | `markpass "code merged"` | §15 |
 | 14 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` (only if RN produced or .py/.yml changed; else `markpass` directly) | §12 |
@@ -290,7 +290,13 @@ For clarity, these run without prompting even though they mutate state:
 
 - `markpass`, `skip`, `fail`, `reset-to`, `reset` — workflow-checkpoint
   bookkeeping. (Rationale: these reflect verification work the skill has
-  already done; the JSON writes above are the substantive decisions.)
+  already done; the JSON writes above are the substantive decisions. Note
+  that some `markpass` calls are **self-executing gates** that run the
+  verification themselves — `run manifest make validate` (Step 10) runs
+  `make validate`, and `param parity test passes` (Step 11) runs the
+  param-parity deploy+test — and pass the checkpoint ONLY on a clean exit `0`;
+  they still run without a prompt, there is no manual/confidence markpass and
+  no bypass.)
 - `set-assignee`, `set-assignee-by-connector` — ownership writes.
   (Rationale: these are negotiated up front in the batch-flow ownership
   step, which has its own explicit prompts already.)
@@ -1874,6 +1880,12 @@ the checkpoint.
 
 ### Step 11: `param parity test passes`
 
+This is a self-executing gate (no bypass) — mirrors the Step 10 `make validate`
+gate and the auth-parity gate inside `set-auth`. The `markpass` for this
+checkpoint runs the real param-parity verification (`deploy_and_test.py`) itself
+and only records the ✅ on exit `0`; there is no manual, confidence-based, or
+forced markpass.
+
 #### Machine prerequisites (one-time per engineer)
 
 > **`gke-gcloud-auth-plugin` must be on PATH** before `session_setup.py` will
@@ -1903,7 +1915,10 @@ the checkpoint.
 The param-parity runtime needs a live GKE port-forward + gcloud credentials,
 established ONCE per work session by a **human** in a normal terminal on the
 **israel-gw VPN**. The agent does NOT set this up and does NOT rely on remembering
-whether it already asked. Instead, **every time you reach Step 13, first run this
+whether it already asked. Because the self-executing markpass gate runs the REAL
+deploy + parity test, a missing session makes the gate (markpass) **fail with
+exit `11`** — so establishing the session up front avoids a wasted gate run.
+Instead of relying on memory, **every time you reach Step 13, first run this
 deterministic check** (it is silent, needs no human, and does not establish
 anything):
 
@@ -1939,38 +1954,59 @@ Step 13 in the batch sees `--check` → exit `0` and continues unattended.
 > **Auto-Approve → Execute** toggle must be ON so the per-integration commands
 > run unattended.
 
-#### Step 13.1 — Run the atomic wrapper
+#### Step 13.1 — Run the self-executing markpass gate
+
+This is a **self-executing gate** (no bypass) — mirrors the Step 10
+`make validate` gate and the auth-parity gate inside `set-auth`. Calling
+`markpass` for this checkpoint RUNS the param-parity verification itself
+(`deploy_and_test.py` under the hood) and only writes the ✅ marker if it
+exits `0`. There is NO `--no-gate`, NO force/skip env var, and NO
+confidence-based or manual markpass: **the AI MUST NOT (and CANNOT) mark this
+step pass without the verification running and succeeding.** `markpass` IS the
+verification.
 
 > **Prerequisite — `Connector Folder Path` must be set.** The param-parity
 > resolver looks up the connector tree from the pipeline CSV's
-> `Connector Folder Path` column. Before this step can run, that cell MUST be
+> `Connector Folder Path` column. Before this gate can run, that cell MUST be
 > populated:
 >
 > ```bash
 > python3 content/connectus/workflow_state.py set-connector-path "<Integration ID>" connectors/<slug>
 > ```
 >
-> If it is unset, `deploy_and_test.py` returns exit `11` (parity setup-blocked).
+> If it is unset, the gate fails with exit `11` (parity setup-blocked).
 
-Run the **atomic deploy + test wrapper** — ONE command per integration (from the
-content-repo root; no `cd`). It assumes the live session (auto-reviving a dead
-port-forward), acquires the per-tenant lock, deploys the whole manifest to the
-`.env` tenant, runs the param-parity test, and releases the lock (always, via
-`try/finally`):
+Once the session gate (Step 13.0) confirms a live session, run the single
+self-executing markpass (from the content-repo root; no `cd`):
 
 ```bash
-python3 content/connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id "<Integration ID>"
+python3 content/connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
 ```
 
-Branch on the wrapper's exit code (do NOT re-interpret stdout):
+Under the hood this runs
+`python3 content/connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id "<Integration ID>"`
+— it assumes the live session (auto-reviving a dead port-forward), acquires the
+per-tenant lock, deploys the whole manifest to the `.env` tenant, runs the
+param-parity test, and releases the lock (always, via `try/finally`). The ✅
+marker is written ONLY on exit `0`; any non-zero exit REJECTS the markpass,
+surfaces the wrapper's output tail, and leaves the CSV cell empty.
 
-* **`0` — deployed + parity PASSED.** Apply the **markpass policy** in Step 13.2.
-* **`10` — parity FAILED (real diff).** Do NOT markpass. Read the persisted
-  envelope (`results/<connector>__<integration>__<ts>.json`, path echoed on the
-  `Result written:` line) and tell the user exactly which params are
-  `MISSING_IN_CONNECTOR` / `EXTRA_IN_CONNECTOR` / `VALUE_MISMATCH`, then fix the
-  connector YAMLs and re-run the wrapper.
-* **`11` — parity BLOCKED (setup).** Do NOT markpass. Most common causes:
+The ONLY operator lever is the generic `markpass --timeout=N` (it bounds how
+long the gate waits — it never bypasses the pass/fail verdict).
+
+#### Step 13.2 — Failure handling (read the exit code + triage)
+
+When the markpass is **rejected**, read the exit code and the output tail it
+prints (and the persisted results envelope under
+[`connectus/runtime_demisto.params_parity/results/<connector>__<integration>__<ts>.json`](runtime_demisto.params_parity/results)
+— path echoed on the `Result written:` line) to triage. This
+fix-then-re-run-`markpass` loop replaces the old "run the wrapper, then
+markpass" loop:
+
+* **`10` — parity FAILED (real diff).** Read the persisted envelope and tell the
+  user exactly which params are `MISSING_IN_CONNECTOR` / `EXTRA_IN_CONNECTOR` /
+  `VALUE_MISMATCH`, then fix the connector YAMLs and re-run the markpass.
+* **`11` — parity BLOCKED (session/setup).** Most common causes:
   (a) **session not ready** — go back to Step 13.0 (ask the user to run
   `session_setup.py`; if it says gcloud auth expired, `gcloud auth login` first).
   Note: a merely-dead port-forward is auto-revived, so a session exit `11` means
@@ -1978,37 +2014,35 @@ Branch on the wrapper's exit code (do NOT re-interpret stdout):
   `set-connector-path`. (c) handler not on disk / `REPO_DIR` unset. A GKE
   control-plane timeout (`Unable to connect to the server: dial tcp <ip>:443:
   i/o timeout` / `Failed to find UCP shell pod`) means the host is off the
-  `israel-gw` VPN — ask the user to connect and re-run `session_setup.py`.
-* **`20` — deploy FAILED.** Do NOT markpass. Report the failed GitLab jobs +
-  pipeline URL; the user fixes the cause and re-runs the wrapper.
-* **`21` — deploy TIMEOUT.** Do NOT markpass. Report the still-running pipeline
-  URL; re-run later.
-* **`30` — tenant lock BUSY (could not acquire).** Do NOT markpass and do NOT
-  auto-retry. Report the holder (shell id / integration / since-when) and the
-  options to the user: (a) wait and retry later, (b) use a different tenant,
+  `israel-gw` VPN — ask the user to connect and re-run `session_setup.py`. After
+  resolving, re-run the markpass.
+* **`20` — deploy FAILED.** Report the failed GitLab jobs + pipeline URL; the
+  user fixes the cause and re-runs the markpass.
+* **`21` — deploy TIMEOUT.** Report the still-running pipeline URL; re-run the
+  markpass later.
+* **`30` — tenant lock BUSY (could not acquire).** Do NOT auto-retry. Report the
+  holder (shell id / integration / since-when) and the options to the user:
+  (a) wait and retry later, (b) use a different tenant,
   (c) `python3 content/connectus/runtime_demisto.params_parity/tenant_lock.py force-unlock --tenant <X>` (run from the idex parent cwd as-written, no `cd`) if the holder is dead.
+* **`40` — preflight FAILED.** Read the output tail for the failed precondition,
+  fix it, and re-run the markpass.
+* **any other non-zero exit** — the markpass is rejected; read the output tail
+  and the persisted envelope to triage, then re-run.
 
-#### Step 13.2 — Markpass policy for exit 0 (confidence-gated)
+#### Step 13.3 — Fast iterative debugging (optional)
 
-On exit `0`, read the persisted results envelope and decide:
+For fast iteration you MAY run the wrapper directly (exactly as Step 10
+recommends running `make validate` directly first) to see the verdict without
+the state-machine ordering constraint:
 
-* **AUTO-markpass (no prompt) when ALL hold** — confident clean pass:
-  * `n_fail == 0`, AND
-  * no `credentials` `VALUE_MISMATCH`, AND
-  * no unexpected `OK_IGNORED` beyond the known hard-ignore set
-    (`__params_parity_dump__`, `instance_name`, `ucp_credentials`).
-  ```bash
-  python3 content/connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
-  ```
-  Then move straight to the next integration (no confirmation) — this is what
-  makes an unattended batch possible.
-* **PAUSE — present the results + `per_param` and ASK for ACK** when the
-  confidence conditions are NOT all met (e.g. a `credentials` `VALUE_MISMATCH`,
-  unexpected ignored params, or anything that makes you unsure). Only markpass
-  after the user's explicit ACK.
+```bash
+python3 content/connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id "<Integration ID>"
+```
 
-> Deliberate change from the old "exit 0 → always markpass" contract: confident
-> clean passes are auto-marked; failures and low-confidence results are escalated.
+But the **checkpoint is recorded ONLY through the self-executing `markpass`** —
+a direct wrapper run never writes the ✅ cell. Iterate with the direct command
+if you like, then record the pass by running the `markpass` above (which re-runs
+the verification and only passes on exit `0`).
 
 The wrapper persists every run under `results/` (per-run envelope JSON +
 `ledger.csv`); the `param parity test passes = ✅` cell in the pipeline CSV is the
