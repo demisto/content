@@ -1329,7 +1329,7 @@ def test_check_for_mirrors(mocker):
 
     new_user = {
         "name": "perikles",
-        "profile": {"email": "perikles@acropoli.com", "display_name": "Dingus", "real_name": "Lingus"},
+        "profile": {"email": "perikles@acropoli.com", "display_name": "Dingus", "real_name": "Lingus", "status_text": ""},
         "id": "U012B3CUI",
     }
 
@@ -3941,6 +3941,7 @@ def test_get_user(mocker):
             "Name": "Egon Spengler",
             "DisplayName": "spengler",
             "Email": "spengler@ghostbusters.example.com",
+            "StatusText": "Print is dead",
         }
     }
 
