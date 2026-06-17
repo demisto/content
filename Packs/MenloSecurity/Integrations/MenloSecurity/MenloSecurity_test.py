@@ -7,6 +7,9 @@ from MenloSecurity import (
     Client,
     DATE_FORMAT,
     MAX_EVENTS_PER_PAGE,
+    _drop_boundary_duplicates,
+    _enrich_events,
+    _normalize_page,
     fetch_events,
     fetch_events_command,
     get_boundary_hashes,
@@ -1157,3 +1160,53 @@ class TestFetchEventsCommand:
             )
 
         set_last_run.assert_not_called()  # state must NOT advance past a failed send
+
+
+class TestPageHelpers:
+    """Tests for the page-processing helpers: _normalize_page, _enrich_events, _drop_boundary_duplicates."""
+
+    def test_normalize_page_list_of_wrappers(self):
+        response = [
+            {"result": {"events": [{"event": {"a": 1}}], "pagingIdentifiers": {"next_time": "t1"}}},
+            {"result": {"events": [{"event": {"a": 2}}], "pagingIdentifiers": {"next_time": "t2"}}},
+        ]
+        events, next_paging = _normalize_page(response)
+        assert len(events) == 2
+        assert next_paging == {"next_time": "t2"}  # last non-empty cursor wins
+
+    def test_normalize_page_single_object(self):
+        response = {"result": {"events": [{"event": {"a": 1}}], "pagingIdentifiers": {"next_time": "t1"}}}
+        events, next_paging = _normalize_page(response)
+        assert len(events) == 1
+        assert next_paging == {"next_time": "t1"}
+
+    def test_normalize_page_empty_paging_returns_none(self):
+        response = {"result": {"events": [{"event": {"a": 1}}], "pagingIdentifiers": {}}}
+        _, next_paging = _normalize_page(response)
+        assert next_paging is None
+
+    def test_enrich_events_adds_time_and_source(self):
+        page = [{"event": {"event_time": "2026-05-26T17:20:28.090", "url": "x"}}]
+        out = _enrich_events(page, "web", enrich=True)
+        assert out[0]["_time"] == "2026-05-26T17:20:28Z"
+        assert out[0]["source_log_type"] == "web_logs"
+
+    def test_enrich_events_no_enrich_unwraps_only(self):
+        page = [{"event": {"event_time": "2026-05-26T17:20:28.090", "url": "x"}}]
+        out = _enrich_events(page, "web", enrich=False)
+        assert "_time" not in out[0]
+        assert "source_log_type" not in out[0]
+        assert out[0]["url"] == "x"  # still unwrapped from the {"event": {...}} envelope
+
+    def test_drop_boundary_duplicates_removes_leading_matches(self):
+        boundary_time = "2024-01-15T10:00:00"
+        dup = {"event_time": boundary_time, "id": "a"}
+        keep = {"event_time": "2024-01-15T10:00:01", "id": "b"}
+        out = _drop_boundary_duplicates([dup, keep], boundary_time, {hash_event(dup)})
+        assert out == [keep]
+
+    def test_drop_boundary_duplicates_keeps_non_matching(self):
+        boundary_time = "2024-01-15T10:00:00"
+        e1 = {"event_time": "2024-01-15T10:00:01", "id": "a"}
+        out = _drop_boundary_duplicates([e1], boundary_time, {"someotherhash"})
+        assert out == [e1]  # nothing dropped

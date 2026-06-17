@@ -17,7 +17,7 @@ This integration collects logs from the MSIP Logging API and sends them to Corte
 | Token type | Select `Admin Token` (default) for tokens generated from the Admin UI (uses the v2 API). Select `Token` for legacy tokens (uses the v1 API). | True |
 | Log types | The log types to collect. Select one or more from: `web`, `safemail`, `audit`, `auth_flows`, `smtp`, `attachment`, `bandwidth`, `heat`, `firewall`, `dlp`, `ms_client_logs`. All log types are selected by default. Note: `heat` replaces the deprecated `isoc` log type. | True |
 | Fetch events | Enable event fetching. | False |
-| Maximum number of events per fetch per log type | Maximum events to collect per log type per fetch cycle. Default: 10000. | False |
+| Maximum number of events per fetch per log type | The maximum number of events to fetch per log type per fetch cycle. | False |
 | Trust any certificate (not secure) | Disable SSL certificate verification. | False |
 | Use system proxy settings | Use the system proxy for API requests. | False |
 
@@ -50,4 +50,4 @@ There is no context output for this command.
 ## Notes
 
 - The API token must have the **Log Export API** permission.
-- For tenants with extremely large event volumes, it is recommended to configure a separate integration instance per log type. Splitting the load across instances lets each instance fetch its log type independently and in parallel, improving overall throughput.
+- For tenants with extremely large event volumes, configure a separate integration instance per log type. Splitting the load across instances allows each instance to fetch its log type independently and in parallel, improving overall throughput.

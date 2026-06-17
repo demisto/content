@@ -129,7 +129,7 @@ class Client(ContentClient):
         # a JSON object is expected... Content-Length: 0."
         response = self.post(url_suffix=self._api_path, params=params, json_data=body, resp_type="response")
 
-        demisto.debug(f"[{log_type}] HTTP {response.status_code}, body-bytes={len(response.content)}, requested limit={limit}")
+        demisto.debug(f"[HTTP Call][{log_type}] HTTP {response.status_code}, body-bytes={len(response.content)}, requested limit={limit}")
 
         # Empty body (Content-Length: 0) means "no data" — not an error.
         if not response.content:
@@ -324,7 +324,7 @@ def get_events_for_log_type(
             before = len(processed)
             processed = _drop_boundary_duplicates(processed, last_fetch_time, boundary_hashes)
             if removed := before - len(processed):
-                demisto.debug(f"[{thread_name}] removed {removed} duplicate(s) at {last_fetch_time!r}")
+                demisto.debug(f"[Dedup][{thread_name}] removed {removed} duplicate(s) at {last_fetch_time!r}")
         is_first_page = False
 
         # Cap to max_events (last page may overshoot).
@@ -531,7 +531,7 @@ def fetch_events(
     """
     end_epoch = int(datetime.now(UTC).timestamp())
 
-    demisto.debug(f"[fetch-events] Starting parallel fetch for: {log_types} (streaming={on_page is not None})")
+    demisto.debug(f"[Fetch] Starting parallel fetch for: {log_types} (streaming={on_page is not None})")
 
     fetch_results: list[FetchResult] = []
     with ThreadPoolExecutor(max_workers=len(log_types)) as executor:
@@ -553,7 +553,7 @@ def fetch_events(
             try:
                 fetch_results.append(future.result())
             except Exception as e:
-                demisto.error(f"[fetch-events] Thread for {log_type_ui} raised: {e}\n{traceback.format_exc()}")
+                demisto.error(f"[Fetch] Thread for {log_type_ui} raised: {e}\n{traceback.format_exc()}")
 
     # Merge: start from last_run so failed types keep their previous state.
     all_events: list[dict] = []
@@ -567,7 +567,7 @@ def fetch_events(
 
     for result in fetch_results:
         if result.error:
-            demisto.error(f"[fetch-events] {result.log_type_ui}: error — previous state preserved.")
+            demisto.error(f"[Fetch] {result.log_type_ui}: error — previous state preserved.")
             continue
         # Non-streaming: accumulate. Streaming: pages were already sent; result.events is only
         # the last page (for boundary computation) and must NOT be re-emitted.
@@ -586,12 +586,12 @@ def fetch_events(
 
     if any_more_work:
         next_run["nextTrigger"] = "0"
-        demisto.debug(f"[fetch-events] nextTrigger=0 (more work: saturated or behind) — {', '.join(progress_details)}")
+        demisto.debug(f"[Fetch] nextTrigger=0 (more work: saturated or behind) — {', '.join(progress_details)}")
     else:
         next_run.pop("nextTrigger", None)
-        demisto.debug(f"[fetch-events] no nextTrigger (caught up) — {', '.join(progress_details)}")
+        demisto.debug(f"[Fetch] no nextTrigger (caught up) — {', '.join(progress_details)}")
 
-    demisto.debug(f"[fetch-events] Total events emitted: {total_emitted} (returned in list: {len(all_events)})")
+    demisto.debug(f"[Fetch] Total events emitted: {total_emitted} (returned in list: {len(all_events)})")
     return next_run, all_events
 
 
@@ -692,7 +692,7 @@ def _xsiam_consumer_loop(
                 stats["events_sent"] = stats.get("events_sent", 0) + len(item)
             except Exception as e:
                 stats["error"] = e
-                demisto.error(f"[fetch-events][consumer] send_events_to_xsiam failed: {e}\n{traceback.format_exc()}")
+                demisto.error(f"[Fetch][consumer] send_events_to_xsiam failed: {e}\n{traceback.format_exc()}")
         finally:
             page_queue.task_done()
             del item  # release the ~17 MB page before the next blocking get()
@@ -714,7 +714,7 @@ def fetch_events_command(
     """
     state = demisto.getLastRun() or {}
     demisto.info(
-        f"[fetch-events] Starting collection (log_types={log_types}, "
+        f"[Fetch] Starting collection (log_types={log_types}, "
         f"max_events_per_fetch_per_type={max_events_per_fetch_per_type}, queue_maxsize={PAGE_QUEUE_MAXSIZE})"
     )
 
@@ -744,10 +744,14 @@ def fetch_events_command(
             if consumer.is_alive():
                 page_queue.put(_QUEUE_SENTINEL, timeout=60)
         except queue.Full:
-            demisto.error("[fetch-events] queue full and consumer not draining — aborting cycle.")
+            demisto.error("[Fetch] Queue full and consumer not draining — aborting cycle.")
         consumer.join(timeout=120)
-        if consumer.is_alive():
-            demisto.error("[fetch-events] consumer thread did not exit within 120s. Investigate XSIAM ingestion latency.")
+
+    # If the consumer is still alive, it's hung mid-send. Raise (outside finally so we don't mask a
+    # fetch_events exception) so we do NOT persist advanced timestamps for events that may not have
+    # been ingested — that would lose data. The next cycle re-fetches from the previous boundary.
+    if consumer.is_alive():
+        raise RuntimeError("[Fetch] Consumer thread did not exit within 120s — aborting to prevent data loss.")
 
     # If the consumer hit a send failure, propagate it WITHOUT persisting state so the next cycle
     # re-fetches from the previous boundary (dedup catches anything that already landed).
@@ -759,7 +763,7 @@ def fetch_events_command(
     # Persist next_run (including "nextTrigger"=0 when behind/saturated, so the engine re-dispatches).
     demisto.setLastRun(next_run)
     demisto.info(
-        f"[fetch-events] Done in {time.monotonic() - cycle_start:.1f}s — "
+        f"[Fetch] Done in {time.monotonic() - cycle_start:.1f}s — "
         f"events_sent={consumer_stats['events_sent']} pages_sent={consumer_stats['pages_sent']} "
         f"more_work={next_run.get('nextTrigger') == '0'}"
     )
