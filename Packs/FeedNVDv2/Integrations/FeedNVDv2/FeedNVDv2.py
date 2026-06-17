@@ -553,7 +553,7 @@ def _retrieve_cves_single_query(
 
             if total_results:
                 demisto.debug(
-                    f'Fetching {param["startIndex"]}-{int(param["startIndex"]) + results_per_page} '
+                    f'Fetching {param["startIndex"]}-{int(param["startIndex"]) + results_per_page} '  # noqa: ucp-param-default  (`param` is a local request-args dict, not demisto.params())
                     f'out of {total_results} results.'
                 )
                 raw_cves += res.get("vulnerabilities") or []
@@ -1038,7 +1038,7 @@ def main():  # pragma: no cover
     has_kev = argToBoolean(params.get("hasKev", False))
     first_fetch = params.get("first_fetch", "")
     feed_tags = params.get("feedTags", [])
-    max_indicators = arg_to_number(params.get("max_indicators"))
+    max_indicators = arg_to_number(params.get("max_indicators"))  # noqa: ucp-param-default  (guarded by `if max_indicators is None` below)
     if max_indicators is None or max_indicators <= 0:
         max_indicators = MAX_INDICATORS_WITH_API_KEY if api_key else MAX_INDICATORS_WITHOUT_API_KEY
     cvss_versions_raw = argToList(params.get("cvss_versions", ""))

@@ -142,6 +142,7 @@ IGNORED_PARAMS = {
     "is_mirroring",
     "mirroring",
     "close_ticket",
+    "resolve_finding",
     "file_tag",
     "mirror_options",
     "close_incident",

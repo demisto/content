@@ -152,11 +152,15 @@ def _derive_handler_id(integration_id: str) -> str:
 
     Mirrors ``connectus_migration.manifest_generator.derive_handler_id``
     (guide §3.8): ``"xsoar-" + integration_id`` lowercased with internal
-    whitespace runs collapsed to single dashes. Inlined here (3 lines) to
-    keep this dependency-light module free of a heavy manifest_generator
-    import.
+    whitespace runs collapsed to single dashes. Inlined here to keep this
+    dependency-light module free of a heavy manifest_generator import.
+
+    The trailing ``"---" -> "-"`` collapse keeps this in lockstep with
+    ``derive_handler_id`` for ids containing a spaced separator (e.g.
+    ``"AWS - ACM"`` -> ``xsoar-aws-acm``, not ``xsoar-aws---acm``).
     """
     slug = re.sub(r"\s+", "-", integration_id.strip().lower())
+    slug = slug.replace("---", "-")
     return f"xsoar-{slug}"
 
 

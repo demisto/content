@@ -1762,6 +1762,7 @@ MIRROR_PARAMS: frozenset[str] = frozenset(
     {
         "mirror_options",
         "close_incident",
+        "resolve_finding",
         "close_ticket",
         "file_tag",
         "mirror_limit",
