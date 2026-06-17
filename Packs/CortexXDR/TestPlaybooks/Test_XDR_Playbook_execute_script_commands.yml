@@ -368,7 +368,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "31"
     scriptarguments:
       endpoint_ids:
         simple: aeec6a2cc92e46fab3b6f621722e9916
@@ -1001,6 +1001,41 @@ tasks:
         "position": {
           "x": 870,
           "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 9c2f1b6a-3d4e-4f5a-8b6c-1a2b3c4d5e6f
+    type: regular
+    task:
+      id: 9c2f1b6a-3d4e-4f5a-8b6c-1a2b3c4d5e6f
+      version: -1
+      name: Removes requested files from the block list
+      description: Removes requested files from the block list.
+      script: '|||xdr-remove-blocklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      hash_list:
+        simple: 5bd86c8f753f3e1e35875201d74c75fdb9c60599c9fc250151a78e7464212fd4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2452
         }
       }
     note: false
