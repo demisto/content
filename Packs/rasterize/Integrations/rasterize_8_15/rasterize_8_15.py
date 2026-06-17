@@ -440,14 +440,6 @@ def wait_for_page_load_with_memory_guard(
         if available <= tolerance_bytes:
             _freeze_tab_for_screenshot(tab, tab_id, path)
             tab_ready_event.set()
-            for i in range(1, 4):
-                demisto.debug(
-                    f"wait_for_page_load_with_memory_guard: memory pressure detected — {path=} "
-                    f"{get_container_available_memory_bytes() / (1024 * 1024):.1f} MiB available ≤ "
-                    f"{tolerance_bytes / (1024 * 1024):.1f} MiB tolerance. "
-                    f"Freezing tab and capturing partial screenshot. {tab_id=}",
-                )
-                time.sleep(10)
             return False  # False signals that we aborted early due to memory pressure.
 
 
