@@ -1,6 +1,5 @@
 Stay ahead of cyber threats with Darkmon TIP - real-time threat intelligence from the Clear, Deep, and Dark Web tailored to your assets.
 Pack also helps with integration with Cortex XSOAR and provides pre-made playbooks/templates to ease integration use.
-This integration was integrated and tested with version xx of Darkmon.
 
 ## Configure Darkmon in Cortex
 

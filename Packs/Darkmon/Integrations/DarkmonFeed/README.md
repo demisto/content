@@ -1,8 +1,4 @@
-Darkmon TIP indicator feed for Cortex XSOAR. Pulls IPs, URLs, domains, file hashes,
-emails, and accounts from the Darkmon Threat Intel firehose into the XSOAR TIM
-module. Pair with the Darkmon integration for incident fetching and automation
-commands.
-This integration was integrated and tested with version xx of Darkmon Feed.
+Darkmon TIP indicator feed for Cortex XSOAR. Pulls IPs, URLs, domains, file hashes, emails, and accounts from the Darkmon Threat Intel firehose into the Cortex XSOAR Threat Intelligence Module (TIM). Pair with the Darkmon integration for incident fetching and automation commands.
 
 ## Configure Darkmon Feed in Cortex
 
@@ -15,8 +11,6 @@ This integration was integrated and tested with version xx of Darkmon Feed.
 | Fetch indicators |  | False |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
-|  |  | False |
-|  |  | False |
 | Feed Fetch Interval |  | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. | False |
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |

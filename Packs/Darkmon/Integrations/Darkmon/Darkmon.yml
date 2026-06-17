@@ -7,6 +7,7 @@ sectionorder:
 - Collect
 display: Darkmon
 category: Data Enrichment & Threat Intelligence
+provider: Darkmon
 description: "Stay ahead of cyber threats with Darkmon TIP - real-time threat intelligence from the Clear, Deep, and Dark Web tailored to your assets.\nPack also helps with integration with Cortex XSOAR and provides pre-made playbooks/templates to ease integration use."
 configuration:
 - display: API Base URL
