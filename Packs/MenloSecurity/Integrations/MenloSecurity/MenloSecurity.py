@@ -129,7 +129,9 @@ class Client(ContentClient):
         # a JSON object is expected... Content-Length: 0."
         response = self.post(url_suffix=self._api_path, params=params, json_data=body, resp_type="response")
 
-        demisto.debug(f"[HTTP Call][{log_type}] HTTP {response.status_code}, body-bytes={len(response.content)}, requested limit={limit}")
+        demisto.debug(
+            f"[HTTP Call][{log_type}] HTTP {response.status_code}, body-bytes={len(response.content)}, requested limit={limit}"
+        )
 
         # Empty body (Content-Length: 0) means "no data" — not an error.
         if not response.content:
