@@ -34,6 +34,21 @@ configuration:
   type: 8
   required: false
   section: Connect
+- name: integrationReliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
+  section: Collect
 - display: Redact secrets in War Room output
   name: redact_secrets
   defaultvalue: 'true'

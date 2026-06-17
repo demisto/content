@@ -33,3 +33,12 @@ ignore=BA129
 
 [file:Darkmon_test.py]
 ignore=BA101
+
+[file:classifier-mapper-incoming-Darkmon_-_Feed_Mapper.json]
+ignore=GR103
+
+[file:classifier-Darkmon_-_Feed_Classifier.json]
+ignore=GR103
+
+[file:classifier-mapper-incoming-Darkmon_-_Incoming_Mapper.json]
+ignore=GR103

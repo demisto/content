@@ -43,7 +43,7 @@ def classification_to_dbot_score(classification: str | None) -> int:
 
 
 def _resolve_reliability() -> str:
-    return demisto.params().get("feedReliability") or "F - Reliability cannot be judged"
+    return demisto.params().get("integrationReliability") or "F - Reliability cannot be judged"
 
 
 def _should_redact_secrets() -> bool:
