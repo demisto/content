@@ -445,14 +445,18 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| device-group | Panorama only. Limits the commit scope to the specified device group(s), so only pending changes for those device groups are committed. If omitted, all pending changes are committed. | Optional |
+| template | Panorama only. Limits the commit scope to the specified template(s), so only pending changes for those templates are committed. If omitted, all pending changes are committed. | Optional |
 | description | The commit description. | Optional |
 | admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
 | force_commit | Forces a commit. Possible values are: true, false. | Optional |
 | exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional |
 | exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional |
 | polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional |
+| commit_job_id | commit job ID to use in polling commands. (automatically filled by polling). | Optional |
 | timeout | The timeout (in seconds) when polling. Default is 120. | Optional |
 | interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional |
+| hide_polling_output | whether to hide the polling result (automatically filled by polling). | Optional |
 
 #### Context Output
 
@@ -461,6 +465,8 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 | Panorama.Commit.JobID | Number | The job ID to commit. |
 | Panorama.Commit.Status | String | The commit status. |
 | Panorama.Commit.Description | String | The commit description from the the command input. |
+| Panorama.Commit.Scope | String | Whether the commit is partial. |
+| Panorama.Commit.Details | String | The summary of the targeted device group and templates. |
 
 #### Command example with polling
 
@@ -484,7 +490,9 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
         "Commit": {
             "JobID": "12345",
             "Status": "Success",
-            "Description": "test"
+            "Description": "test",
+            "Scope": "Full",
+            "Details": "Full commit"
         }
     }
 }
@@ -510,7 +518,9 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
         "Commit": {
             "JobID": "12345",
             "Status": "Pending",
-            "Description": "test"
+            "Description": "test",
+            "Scope": "Full",
+            "Details": "Full commit"
         }
     }
 }
@@ -2693,45 +2703,6 @@ Returns a list of applications.
 >|Id|Name|Risk|Category|SubCategory|Technology|Description|
 >|---|---|---|---|---|---|---|
 >|  | demisto_fw_app3 | 1 |  | ip-protocol | peer-to-peer | lala |
-
-### pan-os-commit
-
-***
-Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwiese does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
-
-#### Base Command
-
-`pan-os-commit`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| description | The commit description. | Optional |
-| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
-| force_commit | Forces a commit. Possible values are: true, false. | Optional |
-| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional |
-| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional |
-| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional |
-| commit_job_id | commit job ID to use in polling commands. (automatically filled by polling). | Optional |
-| timeout | The timeout (in seconds) when polling. Default is 120. | Optional |
-| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Panorama.Commit.JobID | Number | The job ID to commit. |
-| Panorama.Commit.Status | String | The commit status. |
-| Panorama.Commit.Description | String | The commit description from the the command input. |
-
-#### Command example
-
-```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
-
-#### Human Readable Output
-
->Waiting for commit "test" with job ID 7304 to finish...
 
 ### pan-os-push-status
 
