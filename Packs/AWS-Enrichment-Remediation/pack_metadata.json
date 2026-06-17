@@ -48,12 +48,10 @@
         "AWS_SystemManager"
     ],
     "supportedModules": [
-        "asm",
-        "exposure_management",
+        "cloud",
+        "cloud_runtime_security",
         "agentix",
         "xsiam",
-        "edr",
-        "cloud",
-        "cloud_runtime_security"
+        "edr"
     ]
 }
