@@ -9910,25 +9910,9 @@ if 'requests' in sys.modules:
                 self._apply_ucp_api_key(credentials, ctx)
             elif cred_type == 'plain':
                 self._apply_ucp_plain(credentials, ctx)
-            elif cred_type == 'passthrough':
-                # Passthrough is interpolation-only by design (see build_ucp_params and the
-                # _UCP_CANONICAL_FIELD_KEYS note): its raw field values are folded into
-                # demisto.params() via interpolate_ucp_params(), and the integration consumes
-                # them itself. There is no platform-issued token/header to inject here, so this
-                # per-request path is a deliberate no-op for passthrough rather than an error.
-                # Reaching this branch means interpolation produced nothing (so
-                # _UCP_AUTH_PARAMS_INJECTED stayed False and should_use_ucp_auth() returned True),
-                # most commonly because the active profile's metadata.xsoar.interpolation_mapping
-                # is missing or empty. Log an actionable hint instead of raising a misleading
-                # "Unsupported credential type" error.
-                demisto.debug('[UCP][CommonServerPython.py] _apply_ucp_credentials: passthrough profile is '
-                              'interpolation-only; skipping per-request credential injection. If authentication '
-                              "is failing, verify the profile's metadata.xsoar.interpolation_mapping is present "
-                              'and non-empty so the credential fields are folded into demisto.params().')
-                return
             else:
                 demisto.error('[UCP][CommonServerPython.py] _apply_ucp_credentials: Unsupported credential type: "{}". '
-                             'Supported types: oauth2, api_key, plain, passthrough.'.format(cred_type))
+                             'Supported types: oauth2, api_key, plain.'.format(cred_type))
                 raise UcpException()
 
         def _apply_ucp_oauth2(self, credentials, ctx):
@@ -13707,7 +13691,7 @@ _UCP_DEFAULT_CAPABILITY = 'automation-and-remediation'
 _UCP_COMMAND_CAPABILITIES = {
     'fetch-incidents': 'collection-and-ingestion',
     'fetch-assets': 'collection-and-ingestion',
-} #TODO get full from JOey tomorrow and apply before merge. Also in JS
+}
 
 # Canonical credential-envelope schema per profile type.
 #
@@ -13740,8 +13724,8 @@ def _place_by_path(target, path, value):
     The destination string is split on ``.``; each segment except the last
     becomes (or reuses) a nested dict, and the final segment receives the
     value. Two paths that share a parent therefore merge into a single nested
-    dict — this is how multiple connector fields fold into one structured param
-    (e.g. ``credentials.identifier`` + ``credentials.password`` →
+    dict - this is how multiple connector fields fold into one structured param
+    (e.g. ``credentials.identifier`` + ``credentials.password`` ->
     ``{"credentials": {"identifier": ..., "password": ...}}``).
 
     A single-segment path (e.g. ``"url"``) places a flat scalar.
@@ -13852,9 +13836,9 @@ def build_ucp_params(connector_metadata, capability=None):
     Pure, side-effect-free core of UCP param interpolation. It is
     **metadata-first**: it scans ``connectionProfiles`` to find every profile in
     scope for the current capability/sub_capability, then for each such profile
-    reads its ``param_map`` (a mapping of connector field id → dotted destination
+    reads its ``param_map`` (a mapping of connector field id -> dotted destination
     path) together with the platform-supplied field values, and *interpolates*
-    them into the nested shape integrations expect — most importantly folding
+    them into the nested shape integrations expect - most importantly folding
     flat fields (e.g. ``username`` / ``password``) into a single structured param
     (e.g. a ``credentials`` dict, the classic XSOAR ``type 9`` shape).
 
@@ -14045,28 +14029,10 @@ def interpolate_ucp_params(connector_metadata=None):
         )
 
     interpolated = build_ucp_params(connector_metadata, capability=capability)
-
-    params = demisto.callingContext.setdefault('params', {})
-
     if not interpolated:
-        # Fallback for passthrough profiles when no interpolation_mapping is available at
-        # runtime (e.g. the platform does not deliver profile metadata in
-        # unifiedConnectorMetadata()). The platform still places the raw, user-entered
-        # passthrough fields under params['ucp_credentials'][<profile_id>], keyed by each
-        # field's metadata.auth.parameter. We lift those fields to the TOP LEVEL of params so
-        # integrations can read them via their normal flat parameter names - no per-connector
-        # mapping required. Connector authors opt in simply by naming each passthrough field's
-        # auth.parameter to match the integration's flat param name.
-        flattened = _flatten_ucp_passthrough_params(params)
-        if flattened:
-            _UCP_AUTH_PARAMS_INJECTED = True
-            demisto.debug(
-                "[UCP][CommonServerPython.py] interpolate_ucp_params: flattened {} passthrough "
-                "field(s) to top-level params.".format(flattened)
-            )
-            return True
         return False
 
+    params = demisto.callingContext.setdefault('params', {})
     _deep_merge_dicts(params, interpolated)
     _UCP_AUTH_PARAMS_INJECTED = True
     demisto.debug(
@@ -14074,43 +14040,6 @@ def interpolate_ucp_params(connector_metadata=None):
         "for capability={}.".format(len(interpolated), capability)
     )
     return True
-
-
-def _flatten_ucp_passthrough_params(params):
-    # type: (dict) -> int
-    """Lift raw UCP passthrough credential fields to the top level of ``params``.
-
-    The platform delivers passthrough credentials under
-    ``params['ucp_credentials'][<profile_id>]`` as a flat dict keyed by each field's
-    ``metadata.auth.parameter`` (plus a ``type`` discriminator). This helper copies those
-    fields to the top level of ``params`` (skipping the ``type`` key and any key that already
-    exists at the top level) so integrations can read them via their normal flat param names.
-
-    It is intentionally generic: it carries no per-connector knowledge and only moves data up
-    one level. It is a no-op when there is no ``ucp_credentials`` blob or no passthrough entry.
-
-    :type params: ``dict``
-    :param params: The params dict (mutated in place).
-
-    :return: The number of fields lifted to the top level.
-    :rtype: ``int``
-    """
-    ucp_credentials = params.get('ucp_credentials')
-    if not isinstance(ucp_credentials, dict) or not ucp_credentials:
-        return 0
-
-    count = 0
-    for _profile_id, creds in ucp_credentials.items():
-        if not isinstance(creds, dict) or creds.get('type') != 'passthrough':
-            continue
-        for key, value in creds.items():
-            if key == 'type':
-                continue
-            # Do not clobber values already present (e.g. user-set general fields).
-            if params.get(key) in (None, '', {}):
-                params[key] = value
-                count += 1
-    return count
 
 
 # -- UCP helper: extract expiry from credentials response --
@@ -14330,7 +14259,7 @@ def get_ucp_method_unique_id(capability=None, sub_capability=None):
 
 
 def get_ucp_credentials(method_unique_id=None, body=None):
-    # type: (Optional[str]) -> dict
+    # type: (Optional[str], Optional[dict]) -> dict
     """Fetch UCP credentials for a connection profile, with in-process TTL caching.
 
     Results are cached keyed by ``method_unique_id``.  The TTL is derived from
@@ -14346,6 +14275,13 @@ def get_ucp_credentials(method_unique_id=None, body=None):
     :type method_unique_id: ``Optional[str]``
     :param method_unique_id: The profile's ``method_unique_id``. If ``None``,
         resolves automatically via ``get_ucp_method_unique_id()``.
+
+    :type body: ``Optional[dict]``
+    :param body: Optional extra payload forwarded to ``demisto.getUCPCredentials``
+        (e.g. ``{"extra": {"subject": "<user_id>"}}`` to request an impersonated
+        token). The ``body`` argument is only supported on newer platform
+        versions; on older platforms the call gracefully falls back to fetching
+        credentials without it.
 
     :return: Credential dict from the backend (may be served from cache).
         Example::
@@ -14371,7 +14307,23 @@ def get_ucp_credentials(method_unique_id=None, body=None):
             return entry.get('result')
         # Stale -- fall through to re-fetch
 
-    creds = demisto.getUCPCredentials(method_unique_id, from_cache=False, body=body)
+    if body is None:
+        # No extra payload to forward; call with the classic signature so behavior
+        # is unchanged for every caller that does not pass a ``body``.
+        creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
+    else:
+        try:
+            # ``body`` (used to forward the impersonation subject / user id) is only
+            # accepted by ``getUCPCredentials`` on newer platform versions.
+            creds = demisto.getUCPCredentials(method_unique_id, from_cache=False, body=body)
+        except TypeError:
+            # Older platforms do not accept the ``body`` argument; retry without it
+            # so the integration keeps working (without subject impersonation).
+            demisto.debug(
+                "[UCP][CommonServerPython.py] getUCPCredentials does not support 'body'; "
+                "retrying without it for method_unique_id={}".format(method_unique_id)
+            )
+            creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
     demisto.debug("[UCP][CommonServerPython.py] Fetched fresh credentials for method_unique_id={}".format(method_unique_id))
 
     expiry = _extract_ucp_expiry(creds)
@@ -14404,7 +14356,7 @@ try:
     interpolate_ucp_params()
 except Exception:
     # Import-time safety net: never let interpolation break module import.
-    # Intentionally does NOT call demisto.debug() here — in bare-mock contexts
+    # Intentionally does NOT call demisto.debug() here - in bare-mock contexts
     # (e.g. test collection) demisto.debug itself may be unavailable.
     pass
 
@@ -14412,6 +14364,7 @@ except Exception:
 ###########################################
 #     End of UCP Functions     #
 ###########################################
+
 
 ###########################################
 #   Safe Pickle Loading     #

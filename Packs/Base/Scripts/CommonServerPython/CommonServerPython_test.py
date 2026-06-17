@@ -12079,21 +12079,6 @@ class TestUcpCredentialApplication:
         client._apply_ucp_credentials(ucp_creds_plain, ctx)
         assert ctx.auth == ('admin', 's3cret')
 
-    def test_dispatch_passthrough_is_noop(self, mocker):
-        """passthrough is interpolation-only: per-request injection should be a no-op,
-        not raise, and must not touch the request context."""
-        debug_mock = mocker.patch.object(demisto, 'debug')
-        client = self._make_client()
-        ctx = self._make_ctx()
-        creds = {'type': 'passthrough', 'passthrough': {'parameters': {'client_id': 'abc', 'client_secret': 'xyz'}}}
-        # Should not raise and should leave the context untouched.
-        client._apply_ucp_credentials(creds, ctx)
-        assert 'Authorization' not in ctx.headers
-        assert ctx.headers == {}
-        assert ctx.auth is None
-        # Should log an actionable hint pointing at interpolation_mapping.
-        assert any('interpolation_mapping' in str(call) for call in debug_mock.call_args_list)
-
     def test_dispatch_unsupported_type_raises(self, mocker):
         """Unsupported credential type should raise UcpException."""
         mocker.patch.object(demisto, 'error')
