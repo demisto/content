@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b49efade-d3b4-4113-8f8f-8bfa278956f6
+    taskid: cb9fc6d7-c44d-4fb0-b2f3-78102b8bbfc0
     type: start
     task:
-      id: b49efade-d3b4-4113-8f8f-8bfa278956f6
+      id: cb9fc6d7-c44d-4fb0-b2f3-78102b8bbfc0
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 82d2db59-0b8e-4e89-8c03-adbecf1eddd9
+    taskid: 069c7fa6-6ead-4718-8a64-f3f71648a60d
     type: title
     task:
-      id: 82d2db59-0b8e-4e89-8c03-adbecf1eddd9
+      id: 069c7fa6-6ead-4718-8a64-f3f71648a60d
       version: -1
       name: Incident Enrichment
       type: title
@@ -61,10 +61,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 4fb395f3-072b-4719-8cec-be1f6dc702c0
+    taskid: 201c5674-e376-41e7-8474-0a7b367c3e9a
     type: regular
     task:
-      id: 4fb395f3-072b-4719-8cec-be1f6dc702c0
+      id: 201c5674-e376-41e7-8474-0a7b367c3e9a
       version: -1
       name: Get Device Details from Device Security Server
       description: Device Security get device command - get a single device details.
@@ -93,10 +93,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: b12a7728-2e6d-40b0-8186-26dc0ed078b6
+    taskid: 04b501bb-e580-455d-838e-8a1e99b02946
     type: title
     task:
-      id: b12a7728-2e6d-40b0-8186-26dc0ed078b6
+      id: 04b501bb-e580-455d-838e-8a1e99b02946
       version: -1
       name: Applying RACI model
       type: title
@@ -121,10 +121,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 2185d265-79b6-4c3c-8072-e07af5df536b
+    taskid: 383b0063-1c7d-4e1e-94ea-a44213ed4a86
     type: regular
     task:
-      id: 2185d265-79b6-4c3c-8072-e07af5df536b
+      id: 383b0063-1c7d-4e1e-94ea-a44213ed4a86
       version: -1
       name: Calculate RACI
       description: Device Security RACI model script
@@ -163,10 +163,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 9b974236-9370-4e30-81a0-a3b860afe2a4
+    taskid: c5e5fa99-3675-4b15-b4e8-5dd7903a90da
     type: title
     task:
-      id: 9b974236-9370-4e30-81a0-a3b860afe2a4
+      id: c5e5fa99-3675-4b15-b4e8-5dd7903a90da
       version: -1
       name: Done
       type: title
@@ -188,10 +188,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: c8b4ea7e-efc0-410d-820b-e54f4b7e2bc3
+    taskid: 2ee3db95-8051-41e3-8be6-091c0a157dd7
     type: condition
     task:
-      id: c8b4ea7e-efc0-410d-820b-e54f4b7e2bc3
+      id: 2ee3db95-8051-41e3-8be6-091c0a157dd7
       version: -1
       name: DEVICE_SECURITY_CONFIG list configured?
       type: condition
@@ -226,10 +226,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: be71d420-9199-41ce-8cee-31f7db39a642
+    taskid: 30e7fed6-6d69-494f-bde3-e5dd04a7a309
     type: condition
     task:
-      id: be71d420-9199-41ce-8cee-31f7db39a642
+      id: 30e7fed6-6d69-494f-bde3-e5dd04a7a309
       version: -1
       name: ServiceNow Table Exists?
       description: Check if a given value exists in the context. Will return 'no'
@@ -261,10 +261,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: aca86a67-dc23-4563-833f-1307866b85e1
+    taskid: db7c893a-1807-483e-908a-a50def229dda
     type: regular
     task:
-      id: aca86a67-dc23-4563-833f-1307866b85e1
+      id: db7c893a-1807-483e-908a-a50def229dda
       version: -1
       name: servicenow-create-record
       description: Creates a new record in the specified ServiceNow table.
@@ -304,10 +304,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 849b6d99-d818-4697-8eef-f34dcf7068cc
+    taskid: 77e01ffd-5928-4e9f-a88a-248fe4be6493
     type: regular
     task:
-      id: 849b6d99-d818-4697-8eef-f34dcf7068cc
+      id: 77e01ffd-5928-4e9f-a88a-248fe4be6493
       version: -1
       name: Manual investigation
       description: Check the device and incident details.
@@ -332,10 +332,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 6009c81d-2e7e-40ed-855b-e2ae2602cfac
+    taskid: 2fa4d52b-dc44-4dc3-b1e8-f226abe7752e
     type: condition
     task:
-      id: 6009c81d-2e7e-40ed-855b-e2ae2602cfac
+      id: 2fa4d52b-dc44-4dc3-b1e8-f226abe7752e
       version: -1
       name: Is ServiceNow v2 enabled and create ServiceNow ticket?
       description: ''
@@ -394,10 +394,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 56eb6d5f-4d68-45c2-81a9-2bbad47d32eb
+    taskid: a00d7b3e-2a43-4a3f-b22d-868d2b9f7cb3
     type: condition
     task:
-      id: 56eb6d5f-4d68-45c2-81a9-2bbad47d32eb
+      id: a00d7b3e-2a43-4a3f-b22d-868d2b9f7cb3
       version: -1
       name: Is Palo Alto Networks Device Security Enabled?
       description: ''
