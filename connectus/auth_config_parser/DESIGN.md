@@ -77,17 +77,15 @@ All public types live here. Pure Python, no external dependencies.
 
 #### `AuthType` (enum, `str` subclass)
 
-The 6 valid auth-type enum values. Inherits from `str` so that
+The 4 valid auth-type enum values. Inherits from `str` so that
 `AuthType("APIKey") == "APIKey"` and direct JSON serialization round-
 trip naturally.
 
 | Value | UCP profile | Canonical roles (xsoar_param_map values) |
 |---|---|---|
-| `OAuth2ClientCreds` | `oauth2_client_credentials` | any non-empty string (free-form for now) |
-| `OAuth2JWT` | `oauth2_jwt_bearer` | any non-empty string |
 | `APIKey` | `api_key` (single-secret only) | `"key"` |
 | `Plain` | `plain` | `"username"`, `"password"` |
-| `Passthrough` | none — catch-all for browser-flow OAuth, Device Code, ROPC, Managed Identity, mTLS-only, multi-secret packages, custom signing | any non-empty string |
+| `Passthrough` | none — catch-all for **all OAuth2 flows** (client-credentials, JWT-bearer, browser-flow Authorization Code, Device Code, ROPC), Managed Identity, mTLS-only, multi-secret packages, custom signing | any non-empty string |
 | `NoneRequired` | none — used when the integration has no auth at all (no entry in `auth_types[]`) | n/a |
 
 #### `AuthEntry` (frozen dataclass)
@@ -149,12 +147,12 @@ collected `errors` list attached.
 
 #### Internal helpers
 
-- `_VALID_AUTH_TYPE_VALUES` ([`parser.py:28`](parser.py:28)) —
+- `_VALID_AUTH_TYPE_VALUES` ([`parser.py:27`](parser.py:27)) —
   `{t.value for t in AuthType}`; used for fast O(1) membership check.
-- `_CANONICAL_ROLES_BY_TYPE` ([`parser.py:46-49`](parser.py:46)) —
+- `_CANONICAL_ROLES_BY_TYPE` ([`parser.py:45-48`](parser.py:45)) —
   per-type allowed role-value set. Only present for the types that
-  have a fixed canonical role list (`APIKey`, `Plain`); for the
-  others (`OAuth2*`, `Passthrough`), any non-empty string is
+  have a fixed canonical role list (`APIKey`, `Plain`); for
+  `Passthrough`, any non-empty string is
   accepted. Aliased to `_ROLE_ENUM_BY_TYPE` for the validator.
 - `_parse_auth_entry(index, raw_dict)` ([`parser.py:106`](parser.py:106))
   — per-entry helper. Returns `(entry_or_none, errors)` and is reused
@@ -177,9 +175,9 @@ Performs ALL validation the package does on Auth Details, including:
 - `xsoar_param_map` role-value enum per `auth_types[].type`:
   - `APIKey` → values must be from `{"key"}`.
   - `Plain` → values must be from `{"username", "password"}`.
-  - `OAuth2ClientCreds` / `OAuth2JWT` / `Passthrough` → any non-
-    empty string (deliberately undefined for now; to be narrowed in
-    a future PR).
+  - `Passthrough` → any non-empty string (deliberately undefined
+    for now; to be narrowed in a future PR). All OAuth2 flows are
+    classified as `Passthrough`.
   - `NoneRequired` → never appears in `auth_types[]`; rule moot.
 - `auth_types[]` sort order by `(type, name)` ascending. Reports the
   first out-of-order adjacent pair.
@@ -316,8 +314,9 @@ Coverage areas:
 
 - Type/structure: missing keys, wrong types, empty/non-string
   values, dict vs. list mix-ups.
-- `auth_types[]` entry parsing: every per-entry shape rule, OAuth2
-  variants, `interpolated` defaulting, role values for `APIKey` and
+- `auth_types[]` entry parsing: every per-entry shape rule,
+  `Passthrough` variants (including all OAuth2 flows),
+  `interpolated` defaulting, role values for `APIKey` and
   `Plain`.
 - `other_connection` required list-of-strings handling.
 - Round-trip examples from real integration rows.

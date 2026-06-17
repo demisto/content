@@ -24,7 +24,7 @@ The four integrations were chosen to exercise distinct auth shapes:
 * **AbnormalSecurityEventCollector** -- single API token (APIKey).
 * **Akamai_WAF** -- EdgeGrid multi-secret + interpolated plaintext params
   (Plain with ``interpolated=true`` on the human-facing fields).
-* **Okta_v2** -- CHOICE between APIKey or OAuth2-JWT (private key).
+* **Okta_v2** -- CHOICE between APIKey or Passthrough JWT (private key).
 * **SAPBTP** -- CHOICE between Plain client-credentials or Plain
   certificate-based auth.
 
@@ -131,13 +131,13 @@ SAMPLES: list[dict] = [
         },
     },
     {
-        "label": "3. Okta v2  (CHOICE: APIKey OR OAuth2-JWT)",
+        "label": "3. Okta v2  (CHOICE: APIKey OR Passthrough JWT)",
         "yaml_path": "Packs/Okta/Integrations/Okta_v2/Okta_v2.yml",
         "notes": (
             "Two mutually-exclusive auth modes:\n"
             "  * `apitoken` (APIKey) -- single secret.\n"
-            "  * OAuth2 JWT mode requiring client_id + private_key + "
-            "key_id + jwt_algorithm.\n"
+            "  * JWT-bearer mode (Passthrough) requiring client_id + "
+            "private_key + key_id + jwt_algorithm.\n"
             "`use_oauth`, `url`, `insecure`, `proxy` are connection-"
             "adjacent, not auth secrets."
         ),
@@ -149,7 +149,7 @@ SAMPLES: list[dict] = [
                     "xsoar_param_map": {"apitoken": "key"},
                 },
                 {
-                    "type": "OAuth2JWT",
+                    "type": "Passthrough",
                     "name": "oauth_jwt",
                     "xsoar_param_map": {
                         "client_id": "client_id",

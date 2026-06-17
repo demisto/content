@@ -248,7 +248,7 @@ inside `test-module` before any HTTP request is issued → empty captures.
 python3 connectus/check_auth_parity.py \
     Packs/HPEArubaCentral/Integrations/HPEArubaCentralEventCollector \
     --integration-id HPEArubaCentralEventCollector \
-    --auth-details '{"auth_types":[{"type":"OAuth2ClientCreds","name":"credentials","xsoar_param_map":{"client_credentials.identifier":"client_id","client_credentials.password":"client_secret"}}],"other_connection":["base_url","insecure","proxy"]}'
+    --auth-details '{"auth_types":[{"type":"Passthrough","name":"credentials","xsoar_param_map":{"client_credentials.identifier":"client_id","client_credentials.password":"client_secret"},"interpolated":true}],"other_connection":["base_url","insecure","proxy"]}'
 ```
 
 **Expected:** `auth_parity.credentials.status == "inconclusive"` with
@@ -316,7 +316,7 @@ clears and the per-connection `skipped_mtls` skip is what surfaces.
 python3 connectus/check_auth_parity.py \
     Packs/SAP_BTP/Integrations/SAPBTP \
     --integration-id SAPBTP \
-    --auth-details '{"auth_types":[{"type":"OAuth2ClientCreds","name":"credentials","xsoar_param_map":{"credentials.identifier":"client_id","credentials.password":"client_secret"}}],"other_connection":["host","insecure"]}'
+    --auth-details '{"auth_types":[{"type":"Passthrough","name":"credentials","xsoar_param_map":{"credentials.identifier":"client_id","credentials.password":"client_secret"},"interpolated":true}],"other_connection":["host","insecure"]}'
 ```
 
 **Expected:** `auth_parity.credentials.status == "skipped_mtls"`.

@@ -560,7 +560,7 @@ Map "what you saw in the source" → "auth-type enum value" (the values are the 
 | OAuth2 with a signed JWT assertion (private key + claims, `grant_type=jwt-bearer`) | `Passthrough` |
 | OAuth2 ROPC (`grant_type=password`), Device Code, Managed Identity, mTLS-only, HMAC signing, custom challenge/response | `Passthrough` |
 | Two or more API keys / secrets used together (regardless of how they're issued — Datadog `api_key`+`application_key`, AWS access_key+secret_key, Akamai EdgeGrid's three tokens, etc.) | `Passthrough` |
-| Any auth flow that doesn't cleanly fit one of the five canonical profile types in §1.2.6 | `Passthrough` |
+| Any auth flow that doesn't cleanly fit the `plain` or `api_key` canonical profile shape in §1.2.6 | `Passthrough` |
 | No credentials at all (public API, or a feed that just hits a URL) | `NoneRequired` |
 
 > **`Passthrough` is the "doesn't fit a profile" catch-all — and now the home for ALL OAuth2 flows.** The classifier emits exactly four `Auth Details` types: `APIKey`, `Plain`, `Passthrough`, and `NoneRequired`. Every OAuth2 flow — client-credentials, JWT-bearer, Authorization Code's browser flow, ROPC, Device Code — is now classified as `Passthrough` (with `interpolated: true`), as are multi-key packages, Managed Identity, custom HMAC schemes, mTLS, and certificate-based flows. The OAuth2-specific UCP profile shapes (`oauth2_client_credentials`, `oauth2_jwt_bearer`) still exist in the manifest layer, but the skill no longer instructs you to OUTPUT `OAuth2ClientCreds` / `OAuth2JWT` as classification values. When in doubt, prefer `Passthrough` — it is the safe, explicit "we couldn't classify this into a known profile" signal.
@@ -982,8 +982,8 @@ Before invoking `set-auth`, walk this checklist mentally. The validator will cat
 - [ ] Every YML param the source code reads as an auth secret is keyed in some `auth_types[].xsoar_param_map`.
 - [ ] No NON-auth param (URL, proxy, fetch interval, feature toggle, verify-SSL boolean) is keyed in any `xsoar_param_map`.
 - [ ] Every credentials-typed (YML type `9`) auth param appears in `xsoar_param_map` as the appropriate leaves, with `<id>.identifier` suppressed if YML `hiddenusername: true` and `<id>.password` suppressed if YML `hiddenpassword: true`. (See §1.3.)
-- [ ] Every map value matches the role-enum for its entry's `type` (APIKey: `"key"`; Plain: `"username"`/`"password"`; OAuth/Passthrough: any non-empty string).
-- [ ] Any entry with 2+ map keys whose roles DON'T fit the canonical `plain` profile's `username`+`password` shape is classified as `Passthrough`, not as `APIKey` or `OAuth2*`. See §1.2.2a (multi-secret rule).
+- [ ] Every map value matches the role-enum for its entry's `type` (APIKey: `"key"`; Plain: `"username"`/`"password"`; Passthrough: any non-empty string).
+- [ ] Any entry with 2+ map keys whose roles DON'T fit the canonical `plain` profile's `username`+`password` shape is classified as `Passthrough`, not as `APIKey`. See §1.2.2a (multi-secret rule).
 - [ ] **XOR-vs-AND gate (run whenever `len(auth_types) >= 2`).** A multi-entry `auth_types[]` means **EXCLUSIVE-OR — the user picks exactly one profile**. Before keeping 2+ entries, prove from the source code that the credential sets are genuine *alternatives* (the code reads one OR the other; configuring both is meaningless/rejected). If instead the sets are used **together / additively** (the `Client(...)` is constructed with several of them at once; one code path mints tokens from set A *and* set B; one set is required and another is an optional add-on layered on top), they are **AND, not XOR** → collapse them into **ONE `Passthrough` profile** whose `xsoar_param_map` holds all the secrets (see §1.2.2a "Multi-flow → one `Passthrough`"). When unsure, default to one `Passthrough` — there is no `any`/concurrent relation, so multiple entries can only ever mean "pick one," which is wrong for additive credentials.
 - [ ] Any OAuth2 Authorization Code flow (browser redirect, `code` + `redirect_uri`, `oauth-start`/`oauth-complete` commands) is classified as `Passthrough` — there is no canonical `oauth2_authorization_code` profile shape; the user-facing config lives on the profile itself, not in `metadata.auth.parameter`.
 - [ ] Every non-`NoneRequired` entry has a non-empty `xsoar_param_map` (even if `interpolated: true`).
@@ -2328,7 +2328,7 @@ Each summary dict contains: `integration_id`, `connector_id`, `assignee`, `curre
 
 ## Auth Type Reference
 
-When analyzing an integration's authentication, use these classification values inside `Auth Details` `auth_types[].type`. Each maps to one of the five canonical UCP profile types (see §1.2.6 for the field shapes); `Passthrough` is the explicit "doesn't fit a canonical profile" catch-all.
+When analyzing an integration's authentication, use these classification values inside `Auth Details` `auth_types[].type`. There are exactly four valid values — `APIKey`, `Plain`, `Passthrough`, `NoneRequired` (see §1.2.6 for the underlying UCP profile field shapes); `Passthrough` is the explicit "doesn't fit a canonical profile" catch-all and is the home for **all OAuth2 flows**.
 
 | Auth Type | UCP Profile | Description |
 |---|---|---|

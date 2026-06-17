@@ -28,6 +28,16 @@
 >   would auto-`N/A` the checkpoint. To opt out, an operator must mark
 >   the checkpoint `N/A` explicitly.
 >
+ > **Auth-type enum change (post-2026):** the `AuthType` members
+> `OAuth2ClientCreds`, `OAuth2AuthCode`, and `OAuth2JWT` referenced
+> throughout this document have been **REMOVED**. The classifier now
+> emits exactly four types — `APIKey`, `Plain`, `Passthrough`,
+> `NoneRequired` — and **all OAuth2 flows are now classified as
+> `Passthrough`**. Wherever the match-case / role-slot discussion below
+> mentions an `OAuth2*` type, read it as `Passthrough` (the sentinel
+> shaping behaviour is unchanged; OAuth2 roles remain free-form, which
+> is exactly how `Passthrough` roles behave).
+>
 > The body of this document below is the **original design proposal**
 > and has not been rewritten line-by-line. Treat it as historical
 > context; the current sources of truth are:
@@ -1138,8 +1148,10 @@ should be read alongside it.
 > `Passthrough`), a per-row `requires auth parity test` flag column,
 > and a planned cell-lookup model where the analyzer read `Auth Details`
 > directly from the workflow CSV. All of those were removed. The
-> surviving `AuthType` enum members are `OAuth2ClientCreds`, `OAuth2JWT`,
-> `APIKey`, `Plain`, `Passthrough`, `NoneRequired` — see
+> surviving `AuthType` enum members are `APIKey`, `Plain`, `Passthrough`,
+> `NoneRequired` — the OAuth2-specific members (`OAuth2ClientCreds`,
+> `OAuth2JWT`) were also removed, and all OAuth2 flows are now classified
+> as `Passthrough` — see
 > [`auth_config_parser/types.py`](auth_config_parser/types.py:11). See
 > [Appendix A — Historical design notes](#appendix-a--historical-design-notes)
 > for the short version of what changed. The canonical Auth Details

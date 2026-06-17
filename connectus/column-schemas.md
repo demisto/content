@@ -112,7 +112,7 @@ an *identical* field set across entries is an error.
   |---|---|
   | `APIKey` | `"key"` |
   | `Plain` | `"username"`, `"password"` |
-  | `OAuth2ClientCreds`, `OAuth2JWT`, `Passthrough` | any non-empty string (enum **deliberately undefined for now** — will be narrowed in a future PR). Typical illustrative values: `"client_id"`, `"client_secret"`, `"access_token"`, `"credentials_file"`, `"subject_email"`. |
+  | `Passthrough` | any non-empty string (enum **deliberately undefined for now** — will be narrowed in a future PR). Typical illustrative values: `"client_id"`, `"client_secret"`, `"access_token"`, `"credentials_file"`, `"subject_email"`. |
   | `NoneRequired` | n/a (no entries in `auth_types[]` at all) |
 
   See [`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1)
@@ -284,13 +284,13 @@ ONLY `<id>.password`. See Example 1 below.
 }
 ```
 
-**Example 4 — OAuth2ClientCreds with credentials widget (enum-undefined regime, any non-empty string accepted; maps to the `oauth2_client_credentials` profile with `client_key`/`client_secret` fields):**
+**Example 4 — OAuth2 client-credentials flow, emitted as `Passthrough` (enum-undefined regime, any non-empty string accepted; the UCP `oauth2_client_credentials` profile shape with `client_key`/`client_secret` fields lives in the manifest layer, but the classifier emits `Passthrough` for all OAuth2 flows):**
 
 ```json
 {
   "auth_types": [
     {
-      "type": "OAuth2ClientCreds",
+      "type": "Passthrough",
       "name": "credentials",
       "xsoar_param_map": {
         "credentials.identifier": "client_id",
@@ -318,7 +318,7 @@ ONLY `<id>.password`. See Example 1 below.
 {
   "auth_types": [
     {
-      "type": "OAuth2ClientCreds",
+      "type": "Passthrough",
       "name": "client_creds",
       "xsoar_param_map": {
         "credentials.identifier": "client_id",
@@ -354,7 +354,7 @@ ONLY `<id>.password`. See Example 1 below.
 {
   "auth_types": [
     {
-      "type": "OAuth2ClientCreds",
+      "type": "Passthrough",
       "name": "client_creds",
       "xsoar_param_map": {
         "credentials.identifier": "client_id",
@@ -377,7 +377,7 @@ ONLY `<id>.password`. See Example 1 below.
 }
 ```
 
-Note that `(type, name)` sort order is unchanged (`OAuth2ClientCreds` < `Passthrough`) and the absence of `verify_connection_skip` on the first profile is equivalent to `"verify_connection_skip": false`.
+Note that `(type, name)` sort order is unchanged (both profiles are `Passthrough`, so they sort by `name`: `auth_code` < `client_creds`) and the absence of `verify_connection_skip` on a profile is equivalent to `"verify_connection_skip": false`.
 
 Schema validation is enforced by
 [`auth_config_parser.validate_auth_details()`](auth_config_parser/validator.py:47)
@@ -404,19 +404,22 @@ This section is the schema-side counterpart to
 [`connectus-migration-SKILL.md`](connectus-migration-SKILL.md:1) §1.2.6
 "Authentication Profile Types — Fields Reference". The classification
 written into `Auth Details` (above) maps onto these UCP profile types
-when the manifest is generated. The five canonical profiles each have
-a fixed field shape; anything that doesn't fit is `Passthrough` (the
-on-disk JSON value is `"Passthrough"`).
+when the manifest is generated. The classifier emits exactly four
+`Auth Details` types — `APIKey`, `Plain`, `Passthrough`, `NoneRequired`.
+The UCP `oauth2_*` profile shapes below still exist in the manifest
+layer, but **all OAuth2 flows are now classified as `Passthrough`**
+(the on-disk JSON value is `"Passthrough"`). Anything that doesn't fit
+`api_key` or `plain` is `Passthrough`.
 
 ### Quick reference — fields by connection type
 
 | Profile Type | Profile-Level Properties | User-Facing `metadata.auth.parameter` Fields | Maps from `Auth Details` classification |
 |---|---|---|---|
-| `oauth2_client_credentials` | `discovery_url` **OR** `token_endpoint` | `client_key`, `client_secret` | `OAuth2ClientCreds` |
-| `oauth2_jwt_bearer` | `discovery_url` **OR** `token_endpoint` | `subject_email`, `credentials_file` | `OAuth2JWT` |
+| `oauth2_client_credentials` | `discovery_url` **OR** `token_endpoint` | `client_key`, `client_secret` | `Passthrough` (all OAuth2 flows) |
+| `oauth2_jwt_bearer` | `discovery_url` **OR** `token_endpoint` | `subject_email`, `credentials_file` | `Passthrough` (all OAuth2 flows) |
 | `plain` | *(none beyond `id`/`type`/`title`/`description`)* | `username`, `password` | `Plain` |
 | `api_key` | *(none beyond `id`/`type`/`title`/`description`)* | `api_key` | `APIKey` (single key only) |
-| `Passthrough` (no canonical profile) | n/a | n/a — define fields ad-hoc in the manifest | `Passthrough` — includes browser-flow Authorization Code, Device Code, ROPC, Managed Identity, mTLS, dual-key API (Datadog 2-key, AWS SigV4, Akamai EdgeGrid, GitHub App), custom signing |
+| `Passthrough` (no canonical profile) | n/a | n/a — define fields ad-hoc in the manifest | `Passthrough` — includes **all OAuth2 flows** (Client Credentials, JWT-Bearer, browser-flow Authorization Code, Device Code, ROPC), Managed Identity, mTLS, dual-key API (Datadog 2-key, AWS SigV4, Akamai EdgeGrid, GitHub App), custom signing |
 
 > **Browser-flow OAuth2 Authorization Code** has a sibling profile (`oauth2_authorization_code`) whose **profile-level** keys include `client_id`, `client_secret` (both via the `{SAAS_REGISTRY.*}` pattern), `discovery_url` **OR** (`authorization_endpoint` + `token_endpoint`), and `refresh_token_scope`. It has **no user-facing `metadata.auth.parameter` fields** (the flow is browser-driven). Per the project-wide rule, classify it as `Passthrough` regardless — it has no canonical `auth.parameter` field-list to match against.
 
@@ -428,7 +431,7 @@ on-disk JSON value is `"Passthrough"`).
 - **`metadata.auth.parameter` fields:**
   - `client_key` — OAuth2 client ID / consumer key (`input`, unmasked).
   - `client_secret` — OAuth2 client secret (`input`, `mask: true`).
-- **Classification:** `OAuth2ClientCreds`. Any integration whose code does `grant_type=client_credentials` with exactly two secrets (`client_id` + `client_secret`) fed in directly — no JWT, no browser redirect.
+- **Classification:** `Passthrough`. Any integration whose code does `grant_type=client_credentials` with two secrets (`client_id` + `client_secret`) fed in directly — no JWT, no browser redirect. (This UCP profile shape still exists in the manifest layer, but the classifier emits `Passthrough` for all OAuth2 flows.)
 
 #### 2. `oauth2_jwt_bearer`
 
@@ -436,7 +439,7 @@ on-disk JSON value is `"Passthrough"`).
 - **`metadata.auth.parameter` fields:**
   - `subject_email` — impersonation subject (`input`, usually in `general_configurations`).
   - `credentials_file` — JSON key file (`file_upload`, `formats: ".json"`, `mask: true`).
-- **Classification:** `OAuth2JWT`. Typically Google service-account integrations: signed JWT assertion + `grant_type=jwt-bearer` token endpoint.
+- **Classification:** `Passthrough`. Typically Google service-account integrations: signed JWT assertion + `grant_type=jwt-bearer` token endpoint. (This UCP profile shape still exists in the manifest layer, but the classifier emits `Passthrough` for all OAuth2 flows.)
 
 #### 3. `plain`
 
@@ -480,7 +483,7 @@ on-disk JSON value is `"Passthrough"`).
 
 ### Decision rule (one-line summary)
 
-> **If — and only if — every secret the integration consumes maps cleanly into one of the four canonical profiles' field lists above, use that profile's classification (`OAuth2ClientCreds` / `OAuth2JWT` / `Plain` / `APIKey`). Otherwise, classify as `Passthrough`.** `oauth2_authorization_code` is always `Passthrough` — its user-facing config lives on the profile itself, not in `metadata.auth.parameter`, so there is no canonical field shape to match against from the classification side.
+> **If — and only if — every secret the integration consumes maps cleanly into the `plain` or `api_key` field list above, use that profile's classification (`Plain` / `APIKey`). Otherwise, classify as `Passthrough`.** **All OAuth2 flows — client-credentials, JWT-bearer, authorization-code, device-code — are classified as `Passthrough`.** `oauth2_authorization_code` is always `Passthrough` too — its user-facing config lives on the profile itself, not in `metadata.auth.parameter`, so there is no canonical field shape to match against from the classification side.
 
 ---
 

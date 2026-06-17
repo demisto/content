@@ -36,9 +36,8 @@ def validate_auth_details(data: str | dict) -> list[str]:
 
       * ``APIKey`` → values must be from ``{"key"}``.
       * ``Plain`` → values must be from ``{"username", "password"}``.
-      * ``OAuth2ClientCreds`` / ``OAuth2JWT`` / ``Passthrough`` →
-        any non-empty string (enum deliberately undefined for now;
-        to be narrowed in a future PR).
+      * ``Passthrough`` → any non-empty string (enum deliberately
+        undefined for now; to be narrowed in a future PR).
       * ``NoneRequired`` → no entries in ``auth_types[]``; rule moot.
     - ``auth_types[]`` sort order by ``(type, name)``
     - ``auth_types[]`` distinct XSOAR keysets: no two profiles may

@@ -69,6 +69,19 @@ class TestValidateAuthDetails:
         errors = validate_auth_details(bad)
         assert any("invalid type 'INVALID'" in e for e in errors)
 
+    def test_oauth2_types_now_rejected(self) -> None:
+        """OAuth2 types are no longer valid; they must be rejected as
+        invalid types (OAuth2 flows are now classified as Passthrough)."""
+        for oauth_type in ("OAuth2ClientCreds", "OAuth2JWT"):
+            bad = (
+                f'{{"auth_types":[{{"type":"{oauth_type}","name":"x",'
+                f'"xsoar_param_map":{{"p":"client_secret"}}}}]}}'
+            )
+            errors = validate_auth_details(bad)
+            assert any(
+                f"invalid type '{oauth_type}'" in e for e in errors
+            ), errors
+
     def test_all_valid_auth_types(self) -> None:
         # APIKey requires role "key"; Plain requires "username"/"password";
         # the rest accept any non-empty string. NoneRequired is handled
@@ -76,8 +89,6 @@ class TestValidateAuthDetails:
         per_type_map: dict[str, dict[str, str]] = {
             "APIKey": {"p": "key"},
             "Plain": {"u": "username", "p": "password"},
-            "OAuth2ClientCreds": {"p": "client_secret"},
-            "OAuth2JWT": {"p": "private_key"},
             "Passthrough": {"p": "anything"},
         }
         for at in VALID_AUTH_TYPES:
@@ -101,7 +112,7 @@ class TestValidateAuthDetails:
         """Two profiles → implicit exclusive-OR."""
         detail = (
             '{"auth_types":['
-            '{"type":"OAuth2ClientCreds","name":"credentials_consumer",'
+            '{"type":"Passthrough","name":"credentials_consumer",'
             '"xsoar_param_map":{"credentials_consumer.identifier":"client_id",'
             '"credentials_consumer.password":"client_secret"}},'
             '{"type":"Plain","name":"credentials",'
@@ -175,7 +186,7 @@ class TestValidateAuthDetails:
         indistinguishable at runtime and must be rejected."""
         detail = (
             '{"auth_types":['
-            '{"type":"OAuth2ClientCreds","name":"client_creds",'
+            '{"type":"Passthrough","name":"auth_a",'
             '"xsoar_param_map":{"creds.identifier":"client_id",'
             '"creds.password":"client_secret"},"interpolated":true},'
             '{"type":"Passthrough","name":"passthrough",'
@@ -485,13 +496,13 @@ class TestValidateAuthDetails:
         profile and leave it default on the other."""
         detail = (
             '{"auth_types":['
-            '{"type":"OAuth2ClientCreds","name":"client_creds",'
-            '"xsoar_param_map":{"credentials.identifier":"client_id",'
-            '"credentials.password":"client_secret"},'
-            '"interpolated":true},'
             '{"type":"Passthrough","name":"auth_code",'
             '"xsoar_param_map":{"auth_code":"authorization_code"},'
-            '"interpolated":true,"verify_connection_skip":true}'
+            '"interpolated":true,"verify_connection_skip":true},'
+            '{"type":"Passthrough","name":"client_creds",'
+            '"xsoar_param_map":{"credentials.identifier":"client_id",'
+            '"credentials.password":"client_secret"},'
+            '"interpolated":true}'
             '],"other_connection":[]}'
         )
         assert validate_auth_details(detail) == []
@@ -597,7 +608,7 @@ class TestXsoarParamMapStructural:
     def test_oauth_value_empty_string_rejected(self) -> None:
         """Empty role value rejected regardless of type (structural)."""
         detail = _wrap({
-            "type": "OAuth2ClientCreds", "name": "x",
+            "type": "Passthrough", "name": "x",
             "xsoar_param_map": {"p": ""},
         })
         errors = validate_auth_details(detail)
@@ -669,20 +680,6 @@ class TestXsoarParamMapRoleEnum:
         # Allowed-values list (sorted) is named.
         assert "['password', 'username']" in joined
         assert "'token'" in joined
-
-    def test_oauth_value_any_string_positive(self) -> None:
-        detail = _wrap({
-            "type": "OAuth2ClientCreds", "name": "x",
-            "xsoar_param_map": {"x": "client_id"},
-        })
-        assert validate_auth_details(detail) == []
-
-    def test_oauth_jwt_value_any_string_positive(self) -> None:
-        detail = _wrap({
-            "type": "OAuth2JWT", "name": "x",
-            "xsoar_param_map": {"x": "private_key"},
-        })
-        assert validate_auth_details(detail) == []
 
     def test_passthrough_value_any_string_positive(self) -> None:
         detail = _wrap({

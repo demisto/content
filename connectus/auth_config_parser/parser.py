@@ -39,9 +39,9 @@ _VALID_AUTH_TYPE_VALUES = {t.value for t in AuthType}
 # exhaustive — the validator privileges them (at least one canonical
 # role MUST appear in the map) but accepts ANY non-empty string for
 # additional "extras" keys (vendor-required certs, HMAC salts, etc.).
-# Types not present in this mapping (``OAuth2*``, ``Passthrough``)
-# accept any non-empty string for every key. ``NoneRequired`` never
-# appears in ``auth_types[]``.
+# Types not present in this mapping (``Passthrough``) accept any
+# non-empty string for every key. ``NoneRequired`` never appears in
+# ``auth_types[]``.
 _CANONICAL_ROLES_BY_TYPE: dict[AuthType, set[str]] = {
     AuthType.APIKey: {"key"},
     AuthType.Plain: {"username", "password"},

@@ -245,22 +245,22 @@ class TestParseAuthDetails:
         it at the default."""
         details = parse_auth_details({
             "auth_types": [
-                {"type": "OAuth2ClientCreds", "name": "client_creds",
-                 "xsoar_param_map": {"credentials.identifier": "client_id",
-                                     "credentials.password": "client_secret"},
-                 "interpolated": True},
                 {"type": "Passthrough", "name": "auth_code",
                  "xsoar_param_map": {"auth_code": "authorization_code"},
                  "interpolated": True,
                  "verify_connection_skip": True},
+                {"type": "Passthrough", "name": "client_creds",
+                 "xsoar_param_map": {"credentials.identifier": "client_id",
+                                     "credentials.password": "client_secret"},
+                 "interpolated": True},
             ],
             "other_connection": [],
         })
-        # Sorted by (type, name): OAuth2ClientCreds < Passthrough.
-        assert details.auth_types[0].name == "client_creds"
-        assert details.auth_types[0].verify_connection_skip is False
-        assert details.auth_types[1].name == "auth_code"
-        assert details.auth_types[1].verify_connection_skip is True
+        # Same type (Passthrough), so sorted by name: auth_code < client_creds.
+        assert details.auth_types[0].name == "auth_code"
+        assert details.auth_types[0].verify_connection_skip is True
+        assert details.auth_types[1].name == "client_creds"
+        assert details.auth_types[1].verify_connection_skip is False
 
     @pytest.mark.parametrize(
         "bad_value",

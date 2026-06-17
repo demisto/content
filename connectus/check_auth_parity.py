@@ -319,8 +319,6 @@ def map_auth_type_to_ucp_shape(
             return _ucp_shape_api_key(entry, sentinels)
         case AuthType.Plain:
             return _ucp_shape_plain(entry, sentinels)
-        case AuthType.OAuth2ClientCreds | AuthType.OAuth2JWT:
-            return _ucp_shape_oauth2(entry, sentinels)
         case AuthType.Passthrough:
             return None
         case AuthType.NoneRequired:
@@ -384,26 +382,6 @@ def _ucp_shape_plain(
     username = user_leaves[0].value if user_leaves else ""
     password = pw_leaves[0].value if pw_leaves else ""
     return {"type": "plain", "plain": {"username": username, "password": password}}
-
-
-def _ucp_shape_oauth2(
-    _: AuthEntry, sentinels: list[SentinelLeaf]
-) -> dict[str, Any]:
-    """OAuth2* UCP shape — fills ``oauth2.access_token`` with the first
-    sentinel by lex-sorted path.
-
-    TODO: Revisit slot selection once the OAuth2* role enum is locked
-    in ``connectus/column-schemas.md``. The role values for OAuth2*
-    entries are currently free-form (any non-empty string), so we can
-    not pick by a stable role name. Lex-sorting by path mimics the
-    pre-2026-05 behaviour of taking "any" sentinel and is deterministic.
-    """
-    chosen = sorted(sentinels, key=lambda leaf: leaf.path)
-    access_token = chosen[0].value if chosen else ""
-    return {
-        "type": "oauth2",
-        "oauth2": {"access_token": access_token, "token_type": "Bearer"},
-    }
 
 
 def build_ucp_mock(
@@ -965,6 +943,8 @@ def _msg_integration_rejects_http() -> str:
 # --------------------------------------------------------------------------
 
 
+# NOTE: dead code since OAuth2 was reclassified to Passthrough (enum members
+# removed). Retained intentionally; no live callers.
 def install_oauth_token_wrapper(
     proxy: CaptureProxy, connection_name: str
 ) -> str:
@@ -1967,7 +1947,7 @@ def _run_one_command(
     proxy = CaptureProxy(port=0)
     proxy.start()
     try:
-        oauth_extra = _install_oauth_if_relevant(proxy, entry)
+        oauth_extra: list[str] = []
         try:
             old = run_old(
                 integration_path, yml_data, command, sentinel_map,
@@ -1997,18 +1977,6 @@ def _run_one_command(
         return {"status": result["status"]}, result
     finally:
         proxy.stop()
-
-
-def _install_oauth_if_relevant(proxy: CaptureProxy, entry: AuthEntry) -> list[str]:
-    """When ``entry`` is OAuth2, install the canned token-exchange reply."""
-    oauth_types = (
-        AuthType.OAuth2ClientCreds,
-        AuthType.OAuth2JWT,
-    )
-    if entry.type not in oauth_types:
-        return []
-    sentinel = install_oauth_token_wrapper(proxy, entry.name)
-    return [sentinel]
 
 
 # --------------------------------------------------------------------------

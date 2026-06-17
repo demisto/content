@@ -57,13 +57,6 @@ def _plain_entry(name: str = "creds") -> AuthEntry:
     )
 
 
-def _oauth_entry(name: str = "oauth", subtype: AuthType = AuthType.OAuth2ClientCreds) -> AuthEntry:
-    return AuthEntry(
-        type=subtype, name=name,
-        xsoar_param_map={"client_secret": "client_secret"},
-    )
-
-
 def _leaves_by_path(
     leaves: list[cap.SentinelLeaf],
 ) -> dict[str, cap.SentinelLeaf]:
@@ -167,19 +160,6 @@ class TestMapAuthTypeToUcpShape:
         assert shape == {
             "type": "plain",
             "plain": {"username": "S_USER", "password": "S_PASS"},
-        }
-
-    @pytest.mark.parametrize(
-        "subtype",
-        [AuthType.OAuth2ClientCreds, AuthType.OAuth2JWT],
-    )
-    def test_oauth2_variants(self, subtype: AuthType) -> None:
-        entry = _oauth_entry(subtype=subtype)
-        sentinels = [_make_leaf("client_secret", "client_secret", "S_TOK")]
-        shape = cap.map_auth_type_to_ucp_shape(entry, sentinels)
-        assert shape == {
-            "type": "oauth2",
-            "oauth2": {"access_token": "S_TOK", "token_type": "Bearer"},
         }
 
     def test_passthrough_returns_none(self) -> None:

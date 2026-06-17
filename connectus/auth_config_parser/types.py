@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 
 class AuthType(str, enum.Enum):
-    """The 6 valid auth-type enum values for Auth Details entries.
+    """The 4 valid auth-type enum values for Auth Details entries.
 
     Inherits from ``str`` so that ``AuthType("APIKey")`` construction
     from JSON values works naturally and ``entry.type.value`` returns
@@ -21,18 +21,15 @@ class AuthType(str, enum.Enum):
     "Authentication Profile Types — Fields Reference" for the per-
     profile field shapes:
 
-    - ``OAuth2ClientCreds`` → ``oauth2_client_credentials`` profile
-      (fields: ``client_key``, ``client_secret``).
-    - ``OAuth2JWT`` → ``oauth2_jwt_bearer`` profile
-      (fields: ``subject_email``, ``credentials_file``).
     - ``APIKey`` → ``api_key`` profile
       (field: ``api_key``; single static secret only).
     - ``Plain`` → ``plain`` profile
       (fields: ``username``, ``password``).
     - ``Passthrough`` → no canonical UCP profile shape; catch-all for
-      Authorization Code (browser flow), Device Code, ROPC, Managed
-      Identity, mTLS, multi-secret packages (Datadog 2-key, AWS
-      SigV4, Akamai EdgeGrid, GitHub App, …), and custom signing.
+      OAuth2 client-credentials and JWT-bearer flows, Authorization
+      Code (browser flow), Device Code, ROPC, Managed Identity, mTLS,
+      multi-secret packages (Datadog 2-key, AWS SigV4, Akamai
+      EdgeGrid, GitHub App, …), and custom signing.
       When in doubt, prefer ``Passthrough``.
     - ``NoneRequired`` → no profile; used when the integration has
       no authentication at all.
@@ -48,8 +45,6 @@ class AuthType(str, enum.Enum):
         <AuthType.Passthrough: 'Passthrough'>
     """
 
-    OAuth2ClientCreds = "OAuth2ClientCreds"
-    OAuth2JWT = "OAuth2JWT"
     APIKey = "APIKey"
     Plain = "Plain"
     Passthrough = "Passthrough"
@@ -75,8 +70,7 @@ class AuthEntry:
 
             - ``APIKey`` → values must be ``"key"``.
             - ``Plain`` → values must be ``"username"`` or ``"password"``.
-            - ``OAuth2ClientCreds`` / ``OAuth2JWT`` /
-              ``Passthrough`` → any non-empty string
+            - ``Passthrough`` → any non-empty string
               (enum deliberately undefined for now).
             - ``NoneRequired`` → does not appear in ``auth_types[]``.
 

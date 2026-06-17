@@ -93,11 +93,9 @@ Each value maps onto one of the canonical UCP authentication profile types (see 
 
 | Value | UCP Profile Type | Description | Examples |
 |---|---|---|---|
-| `OAuth2ClientCreds` | `oauth2_client_credentials` | OAuth 2.0 Client Credentials flow (`client_id` + `client_secret`) | CrowdStrike Falcon, Wiz |
-| `OAuth2JWT` | `oauth2_jwt_bearer` | OAuth 2.0 JWT Bearer flow (service-account / signed assertion) | Google integrations |
 | `APIKey` | `api_key` | **Single** static secret (header / query param / single-secret HMAC). Two-or-more keys → `Passthrough`. | Abnormal Security, VirusTotal |
 | `Plain` | `plain` | Single username + password pair (basic auth, login form, bearer-token-as-password, single-cert pair) | ActiveMQ, AWS S3, CyberArk |
-| `Passthrough` | n/a (no canonical profile) | Catch-all: OAuth2 **Authorization Code** (browser flow), Device Code, ROPC, Managed Identity, mTLS, dual-key API (Datadog `api_key`+`application_key`, AWS access_key+secret_key, Akamai EdgeGrid's 3 tokens, GitHub App), custom HMAC schemes. **When in doubt, prefer `Passthrough`.** | Lansweeper (Authorization Code), Azure WAF (Managed Identity), Datadog (dual-key) |
+| `Passthrough` | n/a (no canonical profile) | Catch-all: **all OAuth2 flows** — Client Credentials (`client_id`+`client_secret`), JWT-Bearer (service-account / signed assertion), Authorization Code (browser flow), Device Code, ROPC — plus Managed Identity, mTLS, dual-key API (Datadog `api_key`+`application_key`, AWS access_key+secret_key, Akamai EdgeGrid's 3 tokens, GitHub App), custom HMAC schemes. **When in doubt, prefer `Passthrough`.** | CrowdStrike Falcon (Client Credentials), Lansweeper (Authorization Code), Azure WAF (Managed Identity), Datadog (dual-key) |
 | `NoneRequired` | n/a | No authentication needed | AlienVault Reputation Feed |
 
 #### Worked Examples
@@ -106,15 +104,15 @@ Each value maps onto one of the canonical UCP authentication profile types (see 
 |---|---|---|
 | Abnormal Security | `[APIKey(api_key)]` | Single required API key — one profile, exclusive-OR is vacuous |
 | AlienVault Reputation Feed | `[]` | No auth params; integration requires no authentication |
-| CrowdStrike Falcon | `[OAuth2ClientCreds(credentials)]` | OAuth client credentials — one profile fits `oauth2_client_credentials` |
+| CrowdStrike Falcon | `[Passthrough(credentials)]` | OAuth client credentials — all OAuth2 flows classify as `Passthrough` |
 | Darktrace Admin | `[Passthrough(darktrace)]` | Two co-equal API keys (`privateApiKey` + `publicApiKey`); doesn't fit single-`api_key` profile → one `Passthrough` profile with both leaves in `xsoar_param_map` |
 | Datadog | `[Passthrough(datadog)]` | `api_key` + `application_key` — two co-equal keys → `Passthrough`, same reason as Darktrace |
 | AbuseIPDB | `[APIKey(credentials), APIKey(hunting_credentials)]` | Two **separate** API-key auth flows; user picks one (implicit exclusive-OR via 2-entry list) |
 | Salesforce IAM | `[Plain(credentials), Passthrough(credentials_consumer)]` | Two alternative auth paths; user picks Plain or OAuth1 (consumer key/secret); implicit exclusive-OR |
-| Wiz | `[OAuth2ClientCreds(credentials)]` | OAuth client credentials — single profile |
+| Wiz | `[Passthrough(credentials)]` | OAuth client credentials — all OAuth2 flows classify as `Passthrough` |
 | Lansweeper / Gmail OAuth | `[Passthrough(oauth_code)]` | Browser-flow Authorization Code — no canonical `metadata.auth.parameter` shape → single `Passthrough` profile |
-| Azure WAF | `[OAuth2ClientCreds(client_creds), Passthrough(managed_identity)]` | Two alternative auth paths; user picks Client-Credentials or Managed-Identity (implicit exclusive-OR) |
-| Microsoft 4-flow | `[OAuth2ClientCreds(client_creds), Passthrough(auth_code), Passthrough(device_code), Passthrough(managed_identity)]` | Four alternative auth paths; user picks one (implicit exclusive-OR via 4-entry list) |
+| Azure WAF | `[Passthrough(client_creds), Passthrough(managed_identity)]` | Two alternative auth paths; user picks Client-Credentials (OAuth2 → `Passthrough`) or Managed-Identity (implicit exclusive-OR) |
+| Microsoft 4-flow | `[Passthrough(client_creds), Passthrough(auth_code), Passthrough(device_code), Passthrough(managed_identity)]` | Four alternative auth paths; user picks one (implicit exclusive-OR via 4-entry list) |
 
 > **Reading the table.** Each `auth_types[]` shape is the value of the `Auth Details` JSON's `auth_types` field. `T(name)` reads as "type=T, name=name". The implicit exclusive-OR fires automatically when there are 2+ entries; no `config` expression key is needed (and is hard-rejected if present).
 
