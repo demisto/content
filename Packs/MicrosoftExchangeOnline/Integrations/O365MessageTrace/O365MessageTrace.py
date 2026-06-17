@@ -301,6 +301,7 @@ def fetch_events_sequential(
 
     collected: list[dict] = []
     next_link: str | None = None
+    previous_link: str | None = None  # Track to detect a non-advancing cursor.
     page_events: list[dict] = [{}]  # Sentinel non-empty value to enter the loop.
 
     while page_events:
@@ -328,14 +329,24 @@ def fetch_events_sequential(
             f"[Fetch] Window {start_str} -> {end_str}: page returned {len(page_events)} events "
             f"(running total: {len(collected)})"
         )
-
-        # The API returns the latest events first, so we must follow every
-        # ``@odata.nextLink`` (even past ``max_events``) to be able to keep the
-        # earliest events after sorting below.
+        # Defensive stop #1: empty page means there is nothing more to read.
+        if not page_events:
+            demisto.debug(f"[Fetch] Window {start_str} -> {end_str}: empty page, stopping.")
+            break
         next_link = response.get("@odata.nextLink")
+        # Normal stop: no more pages.
         if not next_link:
             demisto.debug(f"[Fetch] Window {start_str} -> {end_str}: no more pages.")
             break
+        # Defensive stop #2: the cursor did not advance (non-advancing/self-referential
+        # @odata.nextLink). Without this, a misbehaving server could loop forever.
+        if next_link == previous_link:
+            demisto.error(
+                f"[Fetch] Window {start_str} -> {end_str}: @odata.nextLink did not advance "
+                f"({next_link}). Stopping to avoid an infinite loop."
+            )
+            break
+        previous_link = next_link
 
     # Sort all collected events ascending by receivedDateTime (parsed as datetime) so the
     # earliest event is first.
