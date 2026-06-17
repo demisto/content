@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - "900"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -849,6 +849,148 @@ tasks:
           "y": 2000
         }
       }
+  "900":
+    id: "900"
+    taskid: aaaaaaaa-0000-0000-0000-000000000900
+    type: regular
+    task:
+      id: aaaaaaaa-0000-0000-0000-000000000900
+      version: -1
+      name: GR109 EXPERIMENT - restricted core command (should fail)
+      description: Block malicious or suspicious IP addresses.
+      script: '|||core-block-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "901"
+    scriptarguments:
+      addresses:
+        simple: 1.1.1.1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "901":
+    id: "901"
+    taskid: aaaaaaaa-0000-0000-0000-000000000901
+    type: regular
+    task:
+      id: aaaaaaaa-0000-0000-0000-000000000901
+      version: -1
+      name: GR109 EXPERIMENT - Set (should NOT fail)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "902"
+    scriptarguments:
+      key:
+        simple: ExperimentKey
+      value:
+        simple: experiment
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "902":
+    id: "902"
+    taskid: aaaaaaaa-0000-0000-0000-000000000902
+    type: regular
+    task:
+      id: aaaaaaaa-0000-0000-0000-000000000902
+      version: -1
+      name: GR109 EXPERIMENT - Print (should NOT fail)
+      description: Prints text to war room.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "903"
+    scriptarguments:
+      value:
+        simple: experiment
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "903":
+    id: "903"
+    taskid: aaaaaaaa-0000-0000-0000-000000000903
+    type: regular
+    task:
+      id: aaaaaaaa-0000-0000-0000-000000000903
+      version: -1
+      name: GR109 EXPERIMENT - closeInvestigation (should NOT fail)
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
