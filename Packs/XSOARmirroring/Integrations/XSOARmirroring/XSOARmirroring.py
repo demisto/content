@@ -847,7 +847,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     if unsupported_date == today_utc:
         cached_error_msg = (
             "The remote XSOAR machine does not support the /public/v1/incidents/modified endpoint. "
-            "This endpoint is only available on XSOAR 8.14.0 and later. "
+            "This endpoint is only available on XSOAR 8.15.0 and later. "
             f"The endpoint was found unsupported on {unsupported_date} (UTC) and will be retried tomorrow."
         )
         demisto.error(f"get-modified-remote-data: {cached_error_msg}")
@@ -882,7 +882,7 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
         if e.res is not None and status_code in (303, 404):
             error_msg = (
                 f"The remote XSOAR machine does not support the /public/v1/incidents/modified endpoint "
-                f"(HTTP {status_code=}). This endpoint is only available on XSOAR 8.14.0 and later. Original error: {e}"
+                f"(HTTP {status_code=}). This endpoint is only available on XSOAR 8.15.0 and later. Original error: {e}"
             )
             demisto.error(f"get-modified-remote-data: {error_msg}")
             # Persist the flag so subsequent cycles skip this endpoint for the rest of today (UTC).
