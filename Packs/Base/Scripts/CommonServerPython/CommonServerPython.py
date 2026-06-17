@@ -9910,9 +9910,25 @@ if 'requests' in sys.modules:
                 self._apply_ucp_api_key(credentials, ctx)
             elif cred_type == 'plain':
                 self._apply_ucp_plain(credentials, ctx)
+            elif cred_type == 'passthrough':
+                # Passthrough is interpolation-only by design (see build_ucp_params and the
+                # _UCP_CANONICAL_FIELD_KEYS note): its raw field values are folded into
+                # demisto.params() via interpolate_ucp_params(), and the integration consumes
+                # them itself. There is no platform-issued token/header to inject here, so this
+                # per-request path is a deliberate no-op for passthrough rather than an error.
+                # Reaching this branch means interpolation produced nothing (so
+                # _UCP_AUTH_PARAMS_INJECTED stayed False and should_use_ucp_auth() returned True),
+                # most commonly because the active profile's metadata.xsoar.interpolation_mapping
+                # is missing or empty. Log an actionable hint instead of raising a misleading
+                # "Unsupported credential type" error.
+                demisto.debug('[UCP][CommonServerPython.py] _apply_ucp_credentials: passthrough profile is '
+                              'interpolation-only; skipping per-request credential injection. If authentication '
+                              "is failing, verify the profile's metadata.xsoar.interpolation_mapping is present "
+                              'and non-empty so the credential fields are folded into demisto.params().')
+                return
             else:
                 demisto.error('[UCP][CommonServerPython.py] _apply_ucp_credentials: Unsupported credential type: "{}". '
-                             'Supported types: oauth2, api_key, plain.'.format(cred_type))
+                             'Supported types: oauth2, api_key, plain, passthrough.'.format(cred_type))
                 raise UcpException()
 
         def _apply_ucp_oauth2(self, credentials, ctx):
@@ -14029,10 +14045,28 @@ def interpolate_ucp_params(connector_metadata=None):
         )
 
     interpolated = build_ucp_params(connector_metadata, capability=capability)
-    if not interpolated:
-        return False
 
     params = demisto.callingContext.setdefault('params', {})
+
+    if not interpolated:
+        # Fallback for passthrough profiles when no interpolation_mapping is available at
+        # runtime (e.g. the platform does not deliver profile metadata in
+        # unifiedConnectorMetadata()). The platform still places the raw, user-entered
+        # passthrough fields under params['ucp_credentials'][<profile_id>], keyed by each
+        # field's metadata.auth.parameter. We lift those fields to the TOP LEVEL of params so
+        # integrations can read them via their normal flat parameter names - no per-connector
+        # mapping required. Connector authors opt in simply by naming each passthrough field's
+        # auth.parameter to match the integration's flat param name.
+        flattened = _flatten_ucp_passthrough_params(params)
+        if flattened:
+            _UCP_AUTH_PARAMS_INJECTED = True
+            demisto.debug(
+                "[UCP][CommonServerPython.py] interpolate_ucp_params: flattened {} passthrough "
+                "field(s) to top-level params.".format(flattened)
+            )
+            return True
+        return False
+
     _deep_merge_dicts(params, interpolated)
     _UCP_AUTH_PARAMS_INJECTED = True
     demisto.debug(
@@ -14040,6 +14074,43 @@ def interpolate_ucp_params(connector_metadata=None):
         "for capability={}.".format(len(interpolated), capability)
     )
     return True
+
+
+def _flatten_ucp_passthrough_params(params):
+    # type: (dict) -> int
+    """Lift raw UCP passthrough credential fields to the top level of ``params``.
+
+    The platform delivers passthrough credentials under
+    ``params['ucp_credentials'][<profile_id>]`` as a flat dict keyed by each field's
+    ``metadata.auth.parameter`` (plus a ``type`` discriminator). This helper copies those
+    fields to the top level of ``params`` (skipping the ``type`` key and any key that already
+    exists at the top level) so integrations can read them via their normal flat param names.
+
+    It is intentionally generic: it carries no per-connector knowledge and only moves data up
+    one level. It is a no-op when there is no ``ucp_credentials`` blob or no passthrough entry.
+
+    :type params: ``dict``
+    :param params: The params dict (mutated in place).
+
+    :return: The number of fields lifted to the top level.
+    :rtype: ``int``
+    """
+    ucp_credentials = params.get('ucp_credentials')
+    if not isinstance(ucp_credentials, dict) or not ucp_credentials:
+        return 0
+
+    count = 0
+    for _profile_id, creds in ucp_credentials.items():
+        if not isinstance(creds, dict) or creds.get('type') != 'passthrough':
+            continue
+        for key, value in creds.items():
+            if key == 'type':
+                continue
+            # Do not clobber values already present (e.g. user-set general fields).
+            if params.get(key) in (None, '', {}):
+                params[key] = value
+                count += 1
+    return count
 
 
 # -- UCP helper: extract expiry from credentials response --
