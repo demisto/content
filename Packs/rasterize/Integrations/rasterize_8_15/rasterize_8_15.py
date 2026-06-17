@@ -144,9 +144,6 @@ if IS_LIGHTWEIGHT:  # In lightweight mode, we only allow one Chrome instance and
     MAX_RASTERIZATIONS_COUNT = 1
     # Apply the extra memory-saving launch flags only in lightweight mode.
     CHROME_OPTIONS = CHROME_OPTIONS + LIGHTWEIGHT_CHROME_OPTIONS
-    # Lightweight mode runs effectively a single rasterization worker, so a single glibc malloc
-    # arena is enough. 
-    os.environ.setdefault("MALLOC_ARENA_MAX", "1")
 
 # Polling for rasterization commands to complete
 DEFAULT_POLLING_INTERVAL = 0.1
@@ -173,6 +170,7 @@ class RasterizeType(Enum):
 # endregion
 
 ##### Memory Pressure Monitoring #####
+
 
 def get_container_working_set_bytes() -> int:
     """
@@ -231,7 +229,9 @@ def get_container_available_memory_bytes() -> int:
         demisto.debug(f"get_container_available_memory_bytes: Could not read cgroup v2 memory.max: {e}")
         return 0
 
+
 ##### CDP management #####
+
 
 def _safe_call_cdp_with_args(
     tab: Optional[pychrome.Tab],
@@ -271,7 +271,9 @@ def _safe_call_cdp_with_args(
             f"(tab may already be stopping/disconnected): {ex}, {tab_id=}, {path=}",
         )
 
+
 ##### Safe page loading management #####
+
 
 def _freeze_tab_for_screenshot(tab: Optional[pychrome.Tab], tab_id: str, path: str) -> None:
     """
@@ -447,6 +449,7 @@ def wait_for_page_load_with_memory_guard(
                 )
                 time.sleep(10)
             return False  # False signals that we aborted early due to memory pressure.
+
 
 # region utility classes
 
@@ -1312,7 +1315,9 @@ def chrome_manager_one_port() -> tuple[pychrome.Browser | None, str | None]:
         terminate_chrome(chrome_port=chrome_port_)
     return generate_new_chrome_instance(instance_id, chrome_options)
 
+
 ##### Chrome Instance Management #####
+
 
 def find_existing_chrome_port() -> str | None:
     """
@@ -1333,6 +1338,7 @@ def find_existing_chrome_port() -> str | None:
             demisto.debug(f"find_existing_chrome_port: found existing Chrome on port {chrome_port}")
             return str(chrome_port)
     return None
+
 
 def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
     chrome_port = generate_chrome_port()
@@ -1550,7 +1556,9 @@ def screenshot_image(
     try:
         if full_screen:
             viewport = css_content_size
-            viewport["scale"] = 1 if not IS_LIGHTWEIGHT else 0.75  # In lightweight mode, use a smaller scale to reduce memory usage.
+            viewport["scale"] = (
+                1 if not IS_LIGHTWEIGHT else 0.75
+            )  # In lightweight mode, use a smaller scale to reduce memory usage.
             screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True, _timeout=SCREENSHOT_TIMEOUT)[
                 "data"
             ]
@@ -1805,6 +1813,7 @@ def extract_hostname(url: str) -> str:
         return parsed.netloc.split(":")[0]  # Remove port if exists
     except Exception:
         return ""
+
 
 @lru_cache(maxsize=128 if IS_LIGHTWEIGHT else 1024)
 def is_private_network(url: str) -> bool:
