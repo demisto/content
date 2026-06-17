@@ -19352,6 +19352,143 @@ script:
       description: An optional token that you can use for optimistic locking.
       type: String
 
+  - name: aws-network-firewall-rule-group-create
+    description: "Creates the specified stateless or stateful rule group, which includes the rules for network traffic inspection, a capacity setting, and tags. You must provide either the rule_group argument or the rules argument. Required permissions: network-firewall:CreateRuleGroup, network-firewall:TagResource."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: rule_group_name
+      description: The descriptive name of the rule group. You can't change the name of a rule group after you create it.
+      required: true
+    - name: type
+      description: Indicates whether the rule group is stateless or stateful. If the rule group is stateless, it contains stateless rules. If it is stateful, it contains stateful rules.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - STATELESS
+        - STATEFUL
+    - name: capacity
+      description: The maximum operating resources that this rule group can use. Rule group capacity is fixed at creation. When you update a rule group, you are limited to this capacity. When you reference a rule group from a firewall policy, Network Firewall reserves this capacity for the rule group. You can't change or exceed this capacity when you reference the rule group from a firewall policy.
+      required: true
+    - name: ip_sets
+      description: 'A JSON string specifying an object of IP addresses and address ranges, in CIDR notation. This is part of a RuleVariables. For example: {\"string\": {\"Definition\": [\"string\"]}}.'
+    - name: port_sets
+      description: 'A JSON string specifying an object of port ranges. This is part of a RuleVariables. For example: {\"string\": {\"Definition\": [\"string\"]}}.'
+    - name: ip_sets_references
+      description: 'A JSON string specifying an object of IP set references. For example: {\"string\": {\"ReferenceArn\": \"string\"}}.'
+    - name: rules_source
+      description: 'A JSON string specifying the stateful rules or stateless rules for the rule group. For example: {\"RulesString\": \"RulesString\", \"RulesSourceList\": \"Targets\": [\"string\",]}.'
+    - name: stateful_rule_options_rule_order
+      description: Indicates how to manage the order of the rule evaluation for the rule group.
+      auto: PREDEFINED
+      predefined:
+        - DEFAULT_ACTION_ORDER
+        - STRICT_ORDER
+    - name: rules
+      description: A string containing stateful rule group rules specifications in Suricata flat format, with one rule per line. Use this to import your existing Suricata compatible rule groups. You must provide either this argument or the rule_group argument, but not both.
+    - name: description
+      description: A description of the rule group.
+    - name: tags
+      description: The key:value pairs to associate with the resource. Format is key=key1,value=value1;key=key2,value=value2.
+    - name: encryption_configuration_key_id
+      description: The ID of the Amazon Web Services Key Management Service (KMS) customer managed key.
+    - name: encryption_configuration_key_type
+      description: The type of Amazon Web Services KMS key to use for encryption of your Network Firewall resources.
+      auto: PREDEFINED
+      predefined:
+        - CUSTOMER_KMS
+        - AWS_OWNED_KMS_KEY
+    - name: source_metadata_arn
+      description: The Amazon Resource Name (ARN) of the rule group that your own rule group is copied from.
+    - name: source_metadata_update_token
+      description: The update token of the Amazon Web Services managed rule group that your own rule group is copied from.
+    - name: analyze_rule_group
+      description: Whether you want Network Firewall to analyze the stateless rules in the rule group for rule behavior such as asymmetric routing. If set to TRUE, Network Firewall runs the analysis and then creates the rule group for you.
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: summary_configuration_rule_options
+      description: A comma-separated list of the rule options to include in the rule group summary.
+    outputs:
+    - contextPath: AWS.NetworkFirewall.RuleGroups.UpdateToken
+      description: A token used for optimistic locking. Network Firewall returns a token to your requests that access the rule group. The token marks the state of the rule group resource at the time of the request.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RuleGroupName
+      description: The descriptive name of the rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RuleGroupArn
+      description: The Amazon Resource Name (ARN) of the rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RuleGroupId
+      description: The unique identifier for the rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.Description
+      description: A description of the rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.Type
+      description: Indicates whether the rule group is stateless or stateful.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.Capacity
+      description: The maximum operating resources that this rule group can use.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.RuleGroups.RuleGroupStatus
+      description: Detailed information about the current status of a rule group.
+      type: String
+    - contextPath: AWS.NetworkFirewall.RuleGroups.Tags
+      description: The key:value pairs to associate with the resource.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.RuleGroups.ConsumedCapacity
+      description: The number of capacity units currently consumed by the rule group rules.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.RuleGroups.NumberOfAssociations
+      description: The number of firewall policies that use this rule group.
+      type: Number
+    - contextPath: AWS.NetworkFirewall.RuleGroups.EncryptionConfiguration
+      description: The complex type that contains the Amazon Web Services KMS encryption configuration settings for your rule group.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.RuleGroups.LastModifiedTime
+      description: The last time that the rule group was changed.
+      type: String
+
   isfetch: false
   runonce: false
   script: '-'

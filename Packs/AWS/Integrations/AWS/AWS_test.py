@@ -19394,3 +19394,211 @@ def test_create_network_firewall_policy_obj_invalid_rule_group_reference_raises(
     # When / Then
     with pytest.raises(ValueError, match="Could not parse field"):
         create_network_firewall_policy_obj(args)
+
+
+def test_create_rule_group_command_success_with_rules_source(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a created rule group response.
+        - Arguments with a rule group name, type, capacity, a JSON rules_source object, description, tags,
+          and encryption configuration.
+    When:
+        - create_rule_group_command is called.
+    Then:
+        - The client is called once with the assembled kwargs, where the RuleGroup contains only the parsed
+          RulesSource (empty nested structures are removed).
+        - The outputs merge RuleGroupResponse and UpdateToken.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    rule_group_arn = "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-123",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": rule_group_arn,
+            "Type": "STATEFUL",
+            "Capacity": 100,
+            "Description": "my rule group",
+            "RuleGroupStatus": "ACTIVE",
+        },
+    }
+    client.create_rule_group.return_value = mock_response
+
+    rules_source_obj = {"RulesString": "pass tcp any any -> any any (sid:1;)"}
+    mocker.patch("AWS.parse_json_string", return_value=rules_source_obj)
+    mocker.patch("AWS.parse_tag_field", return_value=[{"Key": "Environment", "Value": "Production"}])
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "rule_group_name": "test-rg",
+        "type": "STATEFUL",
+        "capacity": "100",
+        "rules_source": '{"RulesString": "pass tcp any any -> any any (sid:1;)"}',
+        "description": "my rule group",
+        "tags": "key=Environment,value=Production",
+        "encryption_configuration_key_id": "key-123",
+        "encryption_configuration_key_type": "CUSTOMER_KMS",
+    }
+
+    # When
+    result = NetworkFirewall.create_rule_group_command(client, args)
+
+    # Then
+    assert result.outputs["RuleGroupName"] == "test-rg"
+    assert result.outputs["RuleGroupArn"] == rule_group_arn
+    assert result.outputs["UpdateToken"] == "update-token-123"
+    client.create_rule_group.assert_called_once_with(
+        RuleGroupName="test-rg",
+        Type="STATEFUL",
+        Capacity=100,
+        RuleGroup={"RulesSource": rules_source_obj},
+        Description="my rule group",
+        Tags=[{"Key": "Environment", "Value": "Production"}],
+        EncryptionConfiguration={"KeyId": "key-123", "Type": "CUSTOMER_KMS"},
+    )
+
+
+def test_create_rule_group_command_success_with_rules_string(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a created rule group response.
+        - Arguments with a rule group name, type, capacity, and a Suricata-compatible rules string only.
+    When:
+        - create_rule_group_command is called.
+    Then:
+        - The client is called once with the Rules string and without a RuleGroup key,
+          since all RuleGroup sub-structures are empty and removed.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-456",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg",
+            "Type": "STATEFUL",
+            "Capacity": 50,
+        },
+    }
+    client.create_rule_group.return_value = mock_response
+
+    mocker.patch("AWS.parse_tag_field", return_value=[])
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "rule_group_name": "test-rg",
+        "type": "STATEFUL",
+        "capacity": "50",
+        "rules": "pass tcp any any -> any any (sid:1;)",
+    }
+
+    # When
+    result = NetworkFirewall.create_rule_group_command(client, args)
+
+    # Then
+    assert result.outputs["UpdateToken"] == "update-token-456"
+    client.create_rule_group.assert_called_once_with(
+        RuleGroupName="test-rg",
+        Type="STATEFUL",
+        Capacity=50,
+        Rules="pass tcp any any -> any any (sid:1;)",
+    )
+
+
+def test_create_rule_group_command_with_rule_variables_and_options(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a created rule group response.
+        - Arguments with ip_sets, port_sets, and a stateful rule order option.
+    When:
+        - create_rule_group_command is called.
+    Then:
+        - The RuleGroup is assembled with RuleVariables (IPSets/PortSets) and StatefulRuleOptions only.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "UpdateToken": "update-token-789",
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg",
+        },
+    }
+    client.create_rule_group.return_value = mock_response
+
+    ip_sets = {"HOME_NET": {"Definition": ["10.0.0.0/16"]}}
+    port_sets = {"HTTP_PORTS": {"Definition": ["80", "443"]}}
+    mocker.patch("AWS.parse_json_string", side_effect=[ip_sets, port_sets])
+    mocker.patch("AWS.parse_tag_field", return_value=[])
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+
+    args = {
+        "rule_group_name": "test-rg",
+        "type": "STATEFUL",
+        "capacity": "50",
+        "ip_sets": '{"HOME_NET": {"Definition": ["10.0.0.0/16"]}}',
+        "port_sets": '{"HTTP_PORTS": {"Definition": ["80", "443"]}}',
+        "stateful_rule_options_rule_order": "STRICT_ORDER",
+    }
+
+    # When
+    NetworkFirewall.create_rule_group_command(client, args)
+
+    # Then
+    client.create_rule_group.assert_called_once_with(
+        RuleGroupName="test-rg",
+        Type="STATEFUL",
+        Capacity=50,
+        RuleGroup={
+            "RuleVariables": {"IPSets": ip_sets, "PortSets": port_sets},
+            "StatefulRuleOptions": {"RuleOrder": "STRICT_ORDER"},
+        },
+    )
+
+
+def test_create_rule_group_command_api_error(mocker):
+    """
+    Given:
+        - A mocked boto3 NetworkFirewall client returning a non-OK status code.
+    When:
+        - create_rule_group_command is called and the API returns an error.
+    Then:
+        - AWSErrorHandler.handle_response_error is called with the response and account_id.
+    """
+    from AWS import NetworkFirewall
+
+    # Given
+    client = mocker.MagicMock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    client.create_rule_group.return_value = mock_response
+
+    mocker.patch("AWS.parse_tag_field", return_value=[])
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", side_effect=lambda x: x)
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "rule_group_name": "test-rg",
+        "type": "STATEFUL",
+        "capacity": "50",
+        "rules": "pass tcp any any -> any any (sid:1;)",
+        "account_id": "123456789012",
+    }
+
+    # When
+    NetworkFirewall.create_rule_group_command(client, args)
+
+    # Then
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
