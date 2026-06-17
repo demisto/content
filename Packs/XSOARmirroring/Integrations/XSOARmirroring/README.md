@@ -466,7 +466,7 @@ There is no context output for this command.
 ### get-modified-remote-data
 
 ***
-Returns a list of incident IDs that were modified since the last sync. Used to enable incremental mirroring and avoid full blind syncs.
+Returns a list of incident IDs that were modified since the last sync. This command is used to enable incremental mirroring and avoid full blind syncs.
 
 > **Note:** This command is supported only for Cortex XSOAR version 8.15 and later.
 
