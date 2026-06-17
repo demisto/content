@@ -44,6 +44,19 @@
         "marketplacev2",
         "platform"
     ],
+    "supportedModules": [
+        "cloud_posture",
+        "cloud",
+        "cloud_runtime_security",
+        "edr",
+        "asm",
+        "tim",
+        "cloud_appsec",
+        "xsiam",
+        "exposure_management",
+        "agentix",
+        "email_security"
+    ],
     "created": "2026-05-04T00:00:00Z",
     "dependencies": {
         "CommonScripts": {
