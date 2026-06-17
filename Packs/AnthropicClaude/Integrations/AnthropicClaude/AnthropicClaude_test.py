@@ -1,7 +1,7 @@
 """Unit tests for the Anthropic Claude Compliance API event collection and read-only commands."""
 
 import pytest
-from CommonServerPython import CommandResults
+from CommonServerPython import CommandResults, DemistoException
 from AnthropicClaude import (
     Config,
     ComplianceClient,
@@ -14,11 +14,15 @@ from AnthropicClaude import (
     list_organization_users_command,
     list_roles_command,
     list_groups_command,
+    list_group_members_command,
     list_chats_command,
     list_chat_messages_command,
     list_projects_command,
     get_project_document_command,
     test_module_compliance,
+    resolve_org_uuid,
+    require_compliance_key,
+    require_api_key,
 )
 
 BASE_URL = "https://api.anthropic.com/"
@@ -58,14 +62,12 @@ def test_deduplicate_events():
 
 
 def test_fetch_events_first_run(mocker):
-    """First run: uses first_fetch lower bound, single page, no has_more."""
+    """First run: uses the one-minute lookback lower bound, single page, no has_more."""
     client = build_client()
     response = {"data": make_activities(0, 3), "has_more": False, "last_id": "activity_0002"}
     get_mock = mocker.patch.object(client, "get_activities", return_value=response)
 
-    events, next_run = fetch_events_with_pagination(
-        client, last_run={}, max_events=50000, activity_types=None, first_fetch="1 day"
-    )
+    events, next_run = fetch_events_with_pagination(client, last_run={}, max_events=50000, activity_types=None)
 
     assert len(events) == 3
     # First call should use created_at.gte (first-fetch lower bound), not after_id.
@@ -82,7 +84,7 @@ def test_fetch_events_subsequent_run(mocker):
     get_mock = mocker.patch.object(client, "get_activities", return_value=response)
 
     last_run = {"newest_created_at": "2026-06-11T07:00:04Z", "last_fetched_ids": ["activity_0004"]}
-    events, next_run = fetch_events_with_pagination(client, last_run, max_events=50000, activity_types=None, first_fetch="1 day")
+    events, next_run = fetch_events_with_pagination(client, last_run, max_events=50000, activity_types=None)
 
     assert len(events) == 2
     _, kwargs = get_mock.call_args
@@ -97,7 +99,7 @@ def test_fetch_events_pagination(mocker):
     page2 = {"data": make_activities(2, 2), "has_more": False, "last_id": "activity_0003"}
     get_mock = mocker.patch.object(client, "get_activities", side_effect=[page1, page2])
 
-    events, _ = fetch_events_with_pagination(client, last_run={}, max_events=50000, activity_types=None, first_fetch="1 day")
+    events, _ = fetch_events_with_pagination(client, last_run={}, max_events=50000, activity_types=None)
 
     assert len(events) == 4
     assert get_mock.call_count == 2
@@ -120,7 +122,7 @@ def test_fetch_events_dedup(mocker):
     mocker.patch.object(client, "get_activities", return_value=response)
 
     last_run = {"newest_created_at": "2026-06-11T07:00:04Z", "last_fetched_ids": ["activity_dup"]}
-    events, _ = fetch_events_with_pagination(client, last_run, max_events=50000, activity_types=None, first_fetch="1 day")
+    events, _ = fetch_events_with_pagination(client, last_run, max_events=50000, activity_types=None)
 
     ids = [e["id"] for e in events]
     assert "activity_dup" not in ids
@@ -133,7 +135,7 @@ def test_fetch_events_respects_max_events(mocker):
     page = {"data": make_activities(0, 3), "has_more": True, "last_id": "activity_0002"}
     mocker.patch.object(client, "get_activities", return_value=page)
 
-    events, _ = fetch_events_with_pagination(client, last_run={}, max_events=3, activity_types=None, first_fetch="1 day")
+    events, _ = fetch_events_with_pagination(client, last_run={}, max_events=3, activity_types=None)
 
     assert len(events) == 3
 
@@ -147,7 +149,7 @@ def test_fetch_events_pushes_to_xsiam(mocker):
     set_last_run = mocker.patch("AnthropicClaude.demisto.setLastRun")
     send_mock = mocker.patch("AnthropicClaude.send_events_to_xsiam")
 
-    fetch_events_command(client, params={"max_events_per_fetch": "1000", "first_fetch": "1 day"})
+    fetch_events_command(client, params={"max_events_per_fetch": "1000"})
 
     send_mock.assert_called_once()
     sent_events = send_mock.call_args.args[0]
@@ -185,10 +187,10 @@ def test_list_organizations_command(mocker):
 
 def test_list_organization_users_command(mocker):
     client = build_client()
-    response = {"data": [{"id": "u1", "email": "a@b.com", "organization_role": "admin"}]}
+    response = {"data": [{"id": "u1", "email": "user@example.com", "organization_role": "admin"}]}
     get_mock = mocker.patch.object(client, "http_get", return_value=response)
 
-    results = list_organization_users_command(client, args={"org_uuid": "org-1", "limit": "10"})
+    results = list_organization_users_command(client, args={"org_uuid": "org-1", "limit": "10"}, params={})
 
     assert results.outputs_prefix == "AnthropicClaude.Organization.User"
     get_mock.assert_called_once()
@@ -201,7 +203,7 @@ def test_list_roles_single_role(mocker):
     response = {"id": "role-1", "name": "Owner", "description": "desc"}
     get_mock = mocker.patch.object(client, "http_get", return_value=response)
 
-    results = list_roles_command(client, args={"org_uuid": "org-1", "role_id": "role-1"})
+    results = list_roles_command(client, args={"org_uuid": "org-1", "role_id": "role-1"}, params={})
 
     assert results.outputs["id"] == "role-1"
     assert "roles/role-1" in get_mock.call_args.args[0]
@@ -212,7 +214,7 @@ def test_list_roles_list_mode(mocker):
     response = {"data": [{"id": "role-1", "name": "Owner"}], "next_page": "tok123"}
     mocker.patch.object(client, "http_get", return_value=response)
 
-    results = list_roles_command(client, args={"org_uuid": "org-1"})
+    results = list_roles_command(client, args={"org_uuid": "org-1"}, params={})
 
     assert results.outputs[0]["id"] == "role-1"
     assert "tok123" in results.readable_output
@@ -248,7 +250,8 @@ def test_list_chat_messages_command(mocker):
 
     results = list_chat_messages_command(client, args={"chat_id": "chat-1"})
 
-    assert results.outputs_prefix == "AnthropicClaude.Chat.Message"
+    # Messages merge into the parent Chat entry via DT.
+    assert results.outputs_prefix == "AnthropicClaude.Chat(val.id == 'chat-1').Message"
     assert results.outputs[0]["id"] == "m1"
 
 
@@ -270,8 +273,44 @@ def test_get_project_document_command(mocker):
 
     results = get_project_document_command(client, args={"project_id": "proj-1", "document_id": "claude_proj_doc_1"})
 
+    assert results.outputs_prefix == "AnthropicClaude.ProjectDocument"
     assert results.outputs["content"] == "hello"
     assert "projects/proj-1/documents/claude_proj_doc_1" in get_mock.call_args.args[0]
+
+
+def test_list_group_members_dt_prefix(mocker):
+    """Group members merge into the parent Group entry via DT."""
+    client = build_client()
+    response = {"data": [{"user_id": "u1", "email": "user@example.com"}]}
+    mocker.patch.object(client, "http_get", return_value=response)
+
+    results = list_group_members_command(client, args={"group_id": "grp-1"})
+
+    assert results.outputs_prefix == "AnthropicClaude.Group(val.id == 'grp-1').Member"
+    assert results.outputs[0]["user_id"] == "u1"
+
+
+def test_resolve_org_uuid_falls_back_to_param():
+    assert resolve_org_uuid({"org_uuid": "arg-org"}, {"organization_uuid": "param-org"}) == "arg-org"
+    assert resolve_org_uuid({}, {"organization_uuid": "param-org"}) == "param-org"
+
+
+def test_resolve_org_uuid_missing_raises():
+    with pytest.raises(DemistoException, match="Organization UUID is required"):
+        resolve_org_uuid({}, {})
+
+
+def test_require_compliance_key_missing_raises():
+    with pytest.raises(DemistoException, match="Compliance Access Key"):
+        require_compliance_key(None)
+    # Present key does not raise.
+    require_compliance_key("sk-ant-api01-test")
+
+
+def test_require_api_key_missing_raises():
+    with pytest.raises(DemistoException, match="API Key"):
+        require_api_key(None)
+    require_api_key("some-key")
 
 
 """ TEST-MODULE TESTS """

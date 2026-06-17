@@ -25,10 +25,14 @@ class Config:
     ACTIVITIES_PAGE_SIZE = 5000  # API max page size for the Activity Feed.
     MAX_FETCH_CALLS = 10  # API call budget per fetch cycle (5000 x 10 = 50,000 events).
     DEFAULT_MAX_EVENTS_PER_FETCH = 50000
-    DEFAULT_FIRST_FETCH = "1 day"
+    DEFAULT_FETCH_LOOKBACK = "1 minute"  # On the first fetch (no last_run), look back this far.
 
     # Read-only compliance commands.
     DEFAULT_LIST_LIMIT = 50
+
+    # Documentation links surfaced in user-facing error messages.
+    COMPLIANCE_KEY_DOCS = "https://platform.claude.com/docs/en/manage-claude/compliance-api-access"
+    API_KEY_DOCS = "https://console.anthropic.com/keys"
 
 
 class ApiPaths:
@@ -560,14 +564,13 @@ def fetch_events_with_pagination(
     last_run: dict[str, Any],
     max_events: int,
     activity_types: list[str] | None,
-    first_fetch: str,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Fetch Activity Feed events incrementally using cursor pagination.
 
     The first call of a cycle uses ``created_at.gt`` against the newest timestamp seen in the
-    previous run (or the first-fetch lower bound on the very first run). Subsequent pages within
-    the same cycle advance using the opaque ``after_id`` cursor, until ``has_more`` is ``False``,
-    the per-fetch event cap is reached, or the API-call budget is exhausted.
+    previous run. On the very first run (no ``last_run``) it looks back a fixed one-minute window.
+    Subsequent pages within the same cycle advance using the opaque ``after_id`` cursor, until
+    ``has_more`` is ``False``, the per-fetch event cap is reached, or the API-call budget is exhausted.
 
     Returns the collected events and the next ``last_run`` state.
     """
@@ -576,8 +579,9 @@ def fetch_events_with_pagination(
         created_at_gt: str | None = previous_newest
         created_at_gte: str | None = None
     else:
-        first_fetch_dt = arg_to_datetime(first_fetch or Config.DEFAULT_FIRST_FETCH)
-        created_at_gte = first_fetch_dt.strftime(DATE_FORMAT) if first_fetch_dt else None
+        # No stored state: default to a one-minute lookback and let next_run advance the cursor.
+        lookback_dt = arg_to_datetime(Config.DEFAULT_FETCH_LOOKBACK)
+        created_at_gte = lookback_dt.strftime(DATE_FORMAT) if lookback_dt else None
         created_at_gt = None
 
     collected: list[dict[str, Any]] = []
@@ -622,9 +626,8 @@ def fetch_events_command(client: ComplianceClient, params: dict[str, Any]) -> No
     last_run = demisto.getLastRun() or {}
     max_events = arg_to_number(params.get("max_events_per_fetch")) or Config.DEFAULT_MAX_EVENTS_PER_FETCH
     activity_types = argToList(params.get("activity_types")) or None
-    first_fetch = params.get("first_fetch") or Config.DEFAULT_FIRST_FETCH
 
-    events, next_run = fetch_events_with_pagination(client, last_run, max_events, activity_types, first_fetch)
+    events, next_run = fetch_events_with_pagination(client, last_run, max_events, activity_types)
     add_time_to_events(events)
 
     demisto.debug(f"[Fetch] Sending {len(events)} events to XSIAM. {next_run=}")
@@ -661,6 +664,17 @@ def _paginate_args(args: dict[str, Any]) -> dict[str, Any]:
     if next_token := args.get("next_token"):
         params["page"] = next_token
     return params
+
+
+def resolve_org_uuid(args: dict[str, Any], params: dict[str, Any]) -> str:
+    """Resolve the organization UUID, preferring the command argument over the instance parameter."""
+    org_uuid = args.get("org_uuid") or params.get("organization_uuid")
+    if not org_uuid:
+        raise DemistoException(
+            "An Organization UUID is required for this command. Provide the 'org_uuid' argument or set the "
+            "'Organization UUID' integration parameter. Run 'claude-list-organizations' to find available UUIDs."
+        )
+    return org_uuid
 
 
 def _list_command(
@@ -702,8 +716,8 @@ def list_organizations_command(client: ComplianceClient, args: dict[str, Any]) -
     )
 
 
-def list_organization_users_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
-    org_uuid = args["org_uuid"]
+def list_organization_users_command(client: ComplianceClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+    org_uuid = resolve_org_uuid(args, params)
     return _list_command(
         client,
         ApiPaths.organization_users(org_uuid),
@@ -714,8 +728,8 @@ def list_organization_users_command(client: ComplianceClient, args: dict[str, An
     )
 
 
-def list_roles_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
-    org_uuid = args["org_uuid"]
+def list_roles_command(client: ComplianceClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+    org_uuid = resolve_org_uuid(args, params)
     role_id = args.get("role_id")
     headers = ["id", "name", "description", "created_at", "updated_at"]
     if role_id:
@@ -738,8 +752,8 @@ def list_roles_command(client: ComplianceClient, args: dict[str, Any]) -> Comman
     )
 
 
-def list_role_permissions_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
-    org_uuid = args["org_uuid"]
+def list_role_permissions_command(client: ComplianceClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+    org_uuid = resolve_org_uuid(args, params)
     role_id = args["role_id"]
     return _list_command(
         client,
@@ -776,13 +790,21 @@ def list_groups_command(client: ComplianceClient, args: dict[str, Any]) -> Comma
 
 def list_group_members_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
     group_id = args["group_id"]
-    return _list_command(
-        client,
-        ApiPaths.group_members(group_id),
-        "AnthropicClaude.Group.Member",
-        args,
-        headers=["user_id", "email", "created_at", "updated_at"],
-        table_name="Group Members",
+    params = _paginate_args(args)
+    response = client.http_get(ApiPaths.group_members(group_id), params=params or None)
+    members = response.get("data", [])
+    readable = tableToMarkdown(
+        f"Group {group_id} Members", members, headers=["user_id", "email", "created_at", "updated_at"], removeNull=True
+    )
+    if next_page := response.get("next_page"):
+        readable += f"\n**Next page token:** `{next_page}`"
+    # Merge the members into the matching Group context entry via DT, keyed on the group ID.
+    return CommandResults(
+        outputs_prefix=f"AnthropicClaude.Group(val.id == '{group_id}').Member",
+        outputs_key_field="user_id",
+        outputs=members,
+        readable_output=readable,
+        raw_response=response,
     )
 
 
@@ -825,9 +847,10 @@ def list_chat_messages_command(client: ComplianceClient, args: dict[str, Any]) -
             params[arg_name.replace("_gte", ".gte").replace("_lte", ".lte")] = value
     response = client.http_get(ApiPaths.chat_messages(chat_id), params=params or None)
     data = response.get("chat_messages", [])
-    readable = tableToMarkdown("Chat Messages", data, headers=["id", "role", "created_at"], removeNull=True)
+    readable = tableToMarkdown(f"Chat {chat_id} Messages", data, headers=["id", "role", "created_at"], removeNull=True)
+    # Merge the messages into the matching Chat context entry via DT, keyed on the chat ID.
     return CommandResults(
-        outputs_prefix="AnthropicClaude.Chat.Message",
+        outputs_prefix=f"AnthropicClaude.Chat(val.id == '{chat_id}').Message",
         outputs_key_field="id",
         outputs=data,
         readable_output=readable,
@@ -868,13 +891,24 @@ def list_projects_command(client: ComplianceClient, args: dict[str, Any]) -> Com
 
 def list_project_attachments_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
     project_id = args["project_id"]
-    return _list_command(
-        client,
-        ApiPaths.project_attachments(project_id),
-        "AnthropicClaude.Project.Attachment",
-        args,
+    params = _paginate_args(args)
+    response = client.http_get(ApiPaths.project_attachments(project_id), params=params or None)
+    attachments = response.get("data", [])
+    readable = tableToMarkdown(
+        f"Project {project_id} Attachments",
+        attachments,
         headers=["id", "filename", "mime_type", "type", "created_at"],
-        table_name="Project Attachments",
+        removeNull=True,
+    )
+    if next_page := response.get("next_page"):
+        readable += f"\n**Next page token:** `{next_page}`"
+    # Merge the attachments into the matching Project context entry via DT, keyed on the project ID.
+    return CommandResults(
+        outputs_prefix=f"AnthropicClaude.Project(val.id == '{project_id}').Attachment",
+        outputs_key_field="id",
+        outputs=attachments,
+        readable_output=readable,
+        raw_response=response,
     )
 
 
@@ -889,7 +923,7 @@ def get_project_document_command(client: ComplianceClient, args: dict[str, Any])
         removeNull=True,
     )
     return CommandResults(
-        outputs_prefix="AnthropicClaude.Project.Document",
+        outputs_prefix="AnthropicClaude.ProjectDocument",
         outputs_key_field="id",
         outputs=response,
         readable_output=readable,
@@ -906,6 +940,26 @@ def test_module_compliance(client: ComplianceClient) -> str:
             return "Authorization Error: make sure the Compliance Access Key is correct and has the required scopes."
         raise
     return "ok"
+
+
+def require_compliance_key(compliance_api_key: str | None) -> None:
+    """Fail fast with a helpful error if the Compliance Access Key is not configured."""
+    if not compliance_api_key:
+        raise DemistoException(
+            "This command requires the Anthropic Compliance Access Key (sk-ant-api01-...), which is not configured. "
+            "Set the 'Compliance Access Key' integration parameter. "
+            f"See how to obtain one here: {Config.COMPLIANCE_KEY_DOCS}"
+        )
+
+
+def require_api_key(api_key: str | None) -> None:
+    """Fail fast with a helpful error if the Anthropic API Key is not configured."""
+    if not api_key:
+        raise DemistoException(
+            "This command requires the Anthropic API Key, which is not configured. "
+            "Set the 'API Key' integration parameter. "
+            f"Generate one here: {Config.API_KEY_DOCS}"
+        )
 
 
 """ MAIN FUNCTION """
@@ -932,12 +986,15 @@ def main() -> None:  # pragma: no cover
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    # Commands that use the Compliance API (Activity Feed + read-only directory/content endpoints).
-    compliance_commands = {
-        "claude-list-organizations": list_organizations_command,
+    # Compliance commands whose org_uuid argument falls back to the instance Organization UUID parameter.
+    org_scoped_commands = {
         "claude-list-organization-users": list_organization_users_command,
         "claude-list-roles": list_roles_command,
         "claude-list-role-permissions": list_role_permissions_command,
+    }
+    # Remaining read-only Compliance API commands.
+    compliance_commands = {
+        "claude-list-organizations": list_organizations_command,
         "claude-list-groups": list_groups_command,
         "claude-list-group-members": list_group_members_command,
         "claude-list-chats": list_chats_command,
@@ -946,10 +1003,18 @@ def main() -> None:  # pragma: no cover
         "claude-list-project-attachments": list_project_attachments_command,
         "claude-get-project-document": get_project_document_command,
     }
+    # LLM (Messages API) commands that require the Anthropic API Key.
+    llm_commands: dict[str, Any] = {
+        "claude-send-message": lambda c, a: send_message_command(c, a)[0],
+        "claude-check-email-header": check_email_headers_command,
+        "claude-check-email-body": check_email_body_command,
+        "claude-create-soc-email-template": create_soc_email_template_command,
+    }
 
     demisto.debug(f"anthropic-claude Command being called is {command}")
     try:
         if command == "test-module":
+            # Validate whichever credentials are configured (a customer may configure either or both).
             results: list[str] = []
             if api_key:
                 llm_client = AnthropicClient(url=url, api_key=api_key, model=model, verify=verify, proxy=proxy)
@@ -957,13 +1022,20 @@ def main() -> None:  # pragma: no cover
             if compliance_api_key:
                 compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
                 results.append(test_module_compliance(client=compliance_client))
-            return_results("ok" if results and all(r == "ok" for r in results) else (results[-1] if results else "ok"))
+            if not results:
+                raise DemistoException(
+                    "No credentials configured. Set the 'API Key' for LLM commands and/or the "
+                    "'Compliance Access Key' for event collection and compliance commands."
+                )
+            return_results("ok" if all(r == "ok" for r in results) else results[-1])
 
         elif command == "fetch-events":
+            require_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             fetch_events_command(client=compliance_client, params=params)
 
         elif command == "claude-get-events":
+            require_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             events, results_obj = get_events_command(client=compliance_client, args=args)
             if argToBoolean(args.get("should_push_events", "false")):
@@ -971,26 +1043,25 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(events, vendor=Config.VENDOR, product=Config.PRODUCT)
             return_results(results_obj)
 
+        elif command in org_scoped_commands:
+            require_compliance_key(compliance_api_key)
+            compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
+            return_results(org_scoped_commands[command](compliance_client, args, params))
+
         elif command in compliance_commands:
+            require_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             return_results(compliance_commands[command](compliance_client, args))
 
-        else:
-            # LLM-based commands use the existing Messages-API client.
+        elif command in llm_commands:
+            require_api_key(api_key)
             llm_args = dict(args)
             llm_args.update({key: value for key, value in params.items() if key not in llm_args and value is not None})
             llm_client = AnthropicClient(url=url, api_key=api_key, model=model, verify=verify, proxy=proxy)
+            return_results(llm_commands[command](llm_client, llm_args))
 
-            if command == "claude-send-message":
-                return_results(send_message_command(client=llm_client, args=llm_args)[0])
-            elif command == "claude-check-email-header":
-                return_results(check_email_headers_command(client=llm_client, args=llm_args))
-            elif command == "claude-check-email-body":
-                return_results(check_email_body_command(client=llm_client, args=llm_args))
-            elif command == "claude-create-soc-email-template":
-                return_results(create_soc_email_template_command(client=llm_client, args=llm_args))
-            else:
-                raise NotImplementedError(f"Command {command} is not implemented.")
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")

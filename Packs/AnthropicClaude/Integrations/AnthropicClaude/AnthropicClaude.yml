@@ -17,9 +17,10 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   name: apikey
-  required: true
+  required: false
   section: Connect
   type: 9
+  additionalinfo: Anthropic API Key used for the LLM commands (claude-send-message, claude-check-email-*, claude-create-soc-email-template). Generate one at https://console.anthropic.com/keys.
 - additionalinfo: The model that will process the inputs and generate the response.
   defaultvalue: claude-3-haiku-20240307
   display: Model
@@ -64,16 +65,21 @@ configuration:
   required: false
   type: 9
   section: Connect
-  additionalinfo: Anthropic Compliance Access Key (sk-ant-api01-...) used for event collection and the read-only compliance commands. Required to fetch events.
+  additionalinfo: Anthropic Compliance Access Key (sk-ant-api01-...) used for event collection and the read-only compliance commands. Required to fetch events and to run the claude-list-* / claude-get-* commands.
   displaypassword: Compliance Access Key
   hiddenusername: true
+- display: Organization UUID
+  name: organization_uuid
+  required: false
+  type: 0
+  section: Collect
+  additionalinfo: The default Organization UUID to use for compliance commands that accept an org_uuid argument. The command argument overrides this value when provided.
 - display: Fetch events
   name: isFetchEvents
   required: false
   type: 8
   section: Collect
-- additionalinfo: Activity Feed types to narrow the feed. Leave empty to fetch all activity types.
-  advanced: true
+- additionalinfo: 'A comma-separated list of Activity Feed types to narrow the feed (e.g., user.login,chat.created). Leave empty to fetch all activity types. See the available activity types here: https://platform.claude.com/docs/en/api/compliance/activities/list.'
   display: Activity types
   name: activity_types
   required: false
@@ -84,14 +90,6 @@ configuration:
   defaultvalue: '50000'
   display: Maximum number of events per fetch
   name: max_events_per_fetch
-  required: false
-  section: Collect
-  type: 0
-- additionalinfo: The first fetch time for events (e.g., "1 day", "12 hours").
-  advanced: true
-  defaultvalue: 1 day
-  display: First fetch time
-  name: first_fetch
   required: false
   section: Collect
   type: 0
@@ -216,9 +214,8 @@ script:
       description: The organization creation time.
       type: Date
   - arguments:
-    - description: Organization UUID.
+    - description: Organization UUID. Overrides the instance Organization UUID parameter when provided.
       name: org_uuid
-      required: true
     - defaultValue: '50'
       description: 'Maximum number of users to return. Maximum: 1000.'
       name: limit
@@ -243,9 +240,8 @@ script:
       description: The user creation time.
       type: Date
   - arguments:
-    - description: Organization UUID.
+    - description: Organization UUID. Overrides the instance Organization UUID parameter when provided.
       name: org_uuid
-      required: true
     - description: When provided, returns that single role instead of the list.
       name: role_id
     - defaultValue: '50'
@@ -272,9 +268,8 @@ script:
       description: The role update time.
       type: Date
   - arguments:
-    - description: Organization UUID.
+    - description: Organization UUID. Overrides the instance Organization UUID parameter when provided.
       name: org_uuid
-      required: true
     - description: Role ID.
       name: role_id
       required: true
@@ -499,19 +494,19 @@ script:
     description: Retrieve a project document including its text content (Compliance API).
     name: claude-get-project-document
     outputs:
-    - contextPath: AnthropicClaude.Project.Document.id
+    - contextPath: AnthropicClaude.ProjectDocument.id
       description: The document ID.
       type: String
-    - contextPath: AnthropicClaude.Project.Document.filename
+    - contextPath: AnthropicClaude.ProjectDocument.filename
       description: The document filename.
       type: String
-    - contextPath: AnthropicClaude.Project.Document.mime_type
+    - contextPath: AnthropicClaude.ProjectDocument.mime_type
       description: The document MIME type.
       type: String
-    - contextPath: AnthropicClaude.Project.Document.created_at
+    - contextPath: AnthropicClaude.ProjectDocument.created_at
       description: The document creation time.
       type: Date
-    - contextPath: AnthropicClaude.Project.Document.content
+    - contextPath: AnthropicClaude.ProjectDocument.content
       description: The document text content.
       type: String
   dockerimage: demisto/parse-emails:1.0.0.3555598
