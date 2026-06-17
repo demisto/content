@@ -74,14 +74,6 @@ _CONNECTUS_REPO_ENV = "CONNECTUS_REPO_DIR"
 # explicit operator instruction — see the connectus-migration skill, Step 9.
 _HANDLER_COVERAGE_FORCE_ENV = "CONNECTUS_HANDLER_COVERAGE_FORCE"
 
-# Operator override for the make_validate gate. When truthy, the gate scopes
-# ``make validate`` to the integration's OWN connector
-# (``make validate connector=<Connector Folder Path>``) instead of validating
-# every connector in the repo. Used ONLY on explicit operator instruction when
-# unrelated, pre-existing connectors in the shared repo are broken and would
-# otherwise block a checkpoint for a connector that itself validates clean.
-_VALIDATE_CONNECTOR_ONLY_ENV = "CONNECTUS_VALIDATE_CONNECTOR_ONLY"
-
 
 def _coverage_force_enabled() -> bool:
     """Whether the handler-param-coverage gate should run with ``--force``."""
@@ -91,47 +83,6 @@ def _coverage_force_enabled() -> bool:
         "true",
         "yes",
     }
-
-
-def _validate_connector_only_enabled() -> bool:
-    """Whether the make_validate gate should scope to the connector only."""
-    load_env()
-    return os.environ.get(_VALIDATE_CONNECTOR_ONLY_ENV, "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-    }
-
-
-def _connector_folder_rel(integration_id: str) -> str:
-    """Resolve the connector folder (``connectors/<slug>``) for an integration.
-
-    Uses the ``Connector Folder Path`` CSV cell when set, else derives the
-    standard ``connectors/<slug>`` path. Returns ``""`` when the id is unknown.
-    """
-    from workflow_state.csv_io import find_row, load_csv
-
-    rows = load_csv()
-    idx = find_row(rows, integration_id)
-    if idx is None:
-        return ""
-    rel = rows[idx].get("Connector Folder Path", "").strip()
-    return rel or _derive_connector_folder_rel(integration_id)
-
-
-def _build_make_validate_argv(abs_dir: str, integration_id: str) -> list[str]:
-    """Build the ``make validate`` argv for the make_validate gate.
-
-    Full-repo by default (validates every connector). When
-    ``CONNECTUS_VALIDATE_CONNECTOR_ONLY`` is truthy, scope to this
-    integration's own connector via ``connector=<Connector Folder Path>`` so a
-    clean connector is not blocked by unrelated broken connectors in the repo.
-    """
-    if _validate_connector_only_enabled():
-        rel = _connector_folder_rel(integration_id)
-        if rel:
-            return ["make", "validate", f"connector={rel}"]
-    return ["make", "validate"]
 
 
 def _connectus_repo_root() -> str:
@@ -162,20 +113,11 @@ def _derive_handler_id(integration_id: str) -> str:
 
     Mirrors ``connectus_migration.manifest_generator.derive_handler_id``
     (guide §3.8): ``"xsoar-" + integration_id`` lowercased with internal
-    whitespace runs collapsed to single dashes. Inlined here to keep this
-    dependency-light module free of a heavy manifest_generator import.
-
-    The trailing ``"---" -> "-"`` collapse keeps this in lockstep with
-    ``derive_handler_id`` for ids containing a spaced separator (e.g.
-    ``"AWS - ACM"`` -> ``xsoar-aws-acm``, not ``xsoar-aws---acm``).
+    whitespace runs collapsed to single dashes. Inlined here (3 lines) to
+    keep this dependency-light module free of a heavy manifest_generator
+    import.
     """
     slug = re.sub(r"\s+", "-", integration_id.strip().lower())
-    # Strip punctuation other than word chars / dashes so this matches
-    # manifest_generator.derive_handler_id (e.g. ``MITRE ATT&CK v2`` ->
-    # ``xsoar-mitre-att-ck-v2``, not ``xsoar-mitre-att&ck-v2``). Underscores
-    # preserved for license-map / sub-capability lockstep.
-    slug = re.sub(r"[^a-z0-9_-]+", "-", slug)
-    slug = re.sub(r"-+", "-", slug).strip("-")
     return f"xsoar-{slug}"
 
 
@@ -330,14 +272,7 @@ GATES: dict[str, GateSpec] = {
         # the ConnectUs repo. The integration dir (`abs_dir`) is NOT used —
         # the connectors live in the sibling ConnectUs repo, not the
         # content repo, so this gate keys off that repo's Makefile instead.
-        #
-        # Operator override: set ``CONNECTUS_VALIDATE_CONNECTOR_ONLY=1`` to
-        # scope validation to the integration's OWN connector
-        # (``make validate connector=<Connector Folder Path>``) so a connector
-        # that validates clean is not blocked by unrelated, pre-existing broken
-        # connectors elsewhere in the shared repo. Used ONLY on explicit
-        # operator instruction.
-        build_argv=_build_make_validate_argv,
+        build_argv=lambda abs_dir, iid: ["make", "validate"],
         # Run from the ConnectUs repo root (the shared-workspace sibling),
         # where the Makefile with the `validate` target lives.
         build_cwd=lambda abs_dir, iid: _connectus_repo_root(),

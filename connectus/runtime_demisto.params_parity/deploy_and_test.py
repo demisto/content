@@ -157,13 +157,6 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
              "connector is ALREADY deployed to the tenant). For local iteration; "
              "default is to deploy.",
     )
-    p.add_argument(
-        "--skip-git",
-        action="store_true",
-        help="Pass --skip-git to deploy.py (skip git fetch/reset/force-push). Use "
-             "when the connector is already committed+pushed on CONNECTUS_BRANCH, "
-             "or in sandboxed shells that cannot read the SSH key.",
-    )
     return p.parse_args(argv)
 
 
@@ -191,7 +184,6 @@ def _run_deploy(
     commit_path: str | None = None,
     upload_packs: list[str] | None = None,
     upload_insecure: bool = False,
-    skip_git: bool = False,
 ) -> int:
     """Run deploy.py --tenant <t> from the package dir; return its exit code.
 
@@ -212,13 +204,6 @@ def _run_deploy(
         cmd += ["--upload-pack", pack]
     if upload_insecure:
         cmd.append("--upload-insecure")
-    if skip_git:
-        # Skip deploy.py's git fetch/reset/force-push. Use when the connector
-        # is ALREADY committed+pushed on CONNECTUS_BRANCH (so no git sync is
-        # needed) — also required in sandboxed shells that cannot read the SSH
-        # key. Mirrors the skill's documented "commit+push yourself, then deploy
-        # --skip-git" flow.
-        cmd.append("--skip-git")
     log.info("Running deploy: %s", " ".join(cmd))
     proc = subprocess.run(cmd, cwd=str(_SCRIPT_DIR))
     return proc.returncode
@@ -276,7 +261,6 @@ def run(
     force: bool,
     skip_preflight: bool = False,
     skip_deploy: bool = False,
-    skip_git: bool = False,
 ) -> int:
     """Session-gate → preflight → acquire → deploy → parity(per id) → release(finally)."""
     # ── Session gate (the environment is established ONCE by the human-run
@@ -333,21 +317,10 @@ def run(
         try:
             _pi = _resolver_mod.resolve(integration_ids[0])
             commit_path = _pi.connector_folder_path
-            # Patched Base pack FIRST (the probe must be present before any
-            # integration pack), then EVERY tested integration's own pack — not
-            # just the first. In batch mode the wrapper deploys once but tests
-            # all --integration-id values, so each integration's pack must be
-            # installed on the tenant or its parity capture fails with
-            # "Integration not found on the server" (SETUP_BLOCK).
-            upload_packs = [_BASE_PACK]
-            for _iid in integration_ids:
-                try:
-                    _pi_each = _resolver_mod.resolve(_iid)
-                    _pack = _integration_pack_dir(_pi_each.integration_yml_path)
-                    if _pack and _pack not in upload_packs:
-                        upload_packs.append(_pack)
-                except Exception:
-                    log.warning("Could not resolve pack for '%s'; skipping its upload.", _iid)
+            # Patched Base pack + the integration's own pack, derived from the
+            # resolver's integration YML path. Uploaded to the tenant by deploy.py
+            # before the connector deploy (removes the manual upload prerequisite).
+            upload_packs = _packs_to_upload(_pi.integration_yml_path)
         except Exception:
             commit_path = None
             # Fall back to at least the Base pack (probe) when resolution fails.
@@ -365,7 +338,7 @@ def run(
                         "ALREADY-deployed connector on tenant %s.", tenant)
         else:
             # ── Deploy ONCE (upload packs + commit connector + ff-push + pipeline) ──
-            deploy_rc = _run_deploy(tenant, commit_path, upload_packs, upload_insecure, skip_git)
+            deploy_rc = _run_deploy(tenant, commit_path, upload_packs, upload_insecure)
             if deploy_rc == _DEPLOY_FAIL:
                 for integration_id in integration_ids:
                     _summary(integration_id, "DEPLOY_FAIL", EXIT_DEPLOY_FAIL)
@@ -402,7 +375,6 @@ def main(argv: list[str] | None = None) -> int:
         force=args.force_unlock,
         skip_preflight=args.skip_preflight,
         skip_deploy=args.skip_deploy,
-        skip_git=args.skip_git,
     )
 
 
