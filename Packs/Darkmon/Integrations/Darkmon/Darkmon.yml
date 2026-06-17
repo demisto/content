@@ -72,9 +72,11 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
 script:
   script: ''
   type: python
@@ -592,6 +594,10 @@ defaultmapperin: Darkmon - Incoming Mapper
 tests:
 - Darkmon - Test
 fromversion: 6.8.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
 supportedModules:
 - cloud_posture
 - cloud

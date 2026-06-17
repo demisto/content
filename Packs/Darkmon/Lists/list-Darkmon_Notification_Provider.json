@@ -9,5 +9,14 @@
     "locked": false,
     "nameLocked": false,
     "packID": "Darkmon",
-    "system": false
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
 }
