@@ -1,3 +1,5 @@
+## Google Cloud Platform
+
 ### Supported Platforms
 
 | Platform                                          | Authentication | Setup |
@@ -40,7 +42,7 @@ In the [Google Cloud Console](https://console.cloud.google.com/apis/library), en
 
 #### Step 3 — Create and Download a Private Key
 
-1. Click on the service account you just created.
+1. In the **Google Cloud Console**, navigate to **IAM & Admin → Service Accounts**.
 2. Go to the **Keys** tab and click **Add Key → Create new key**.
 3. Select **JSON** format and click **Create**.
 4. Save the downloaded `.json` file — you will paste its contents into the integration configuration.
