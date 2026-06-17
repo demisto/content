@@ -560,15 +560,40 @@ def create_integration_instance(
             })
             log.debug("Injected magic key %r into module_instance.data", PARITY_DUMP_PARAM_KEY)
 
-    # Inject backend-synthesized config params (e.g. fetch/feed fields the BE
-    # auto-adds from the YML script flags) that are NOT in the server's
-    # configuration schema, so they are persisted on the instance and surface in
-    # demisto.params() at runtime. Mirrors the magic-key injection above.
+    # Apply backend-synthesized config params (e.g. fetch/feed fields the BE
+    # auto-adds from the YML script flags — isFetch/incidentFetchInterval,
+    # isFetchEvents/eventFetchInterval, isFetchAssets/assetsFetchInterval, feed*).
+    # These are AUTHORITATIVE for the variant under test and must win over the
+    # server schema's default:
+    #
+    #   * When the field is ALREADY in ``data`` (the server config schema declares
+    #     it — true for any integration whose YML statically sets a fetch flag,
+    #     e.g. an event collector's ``script.isfetchevents: true``, which makes the
+    #     server auto-expose ``isFetchEvents``/``eventFetchInterval``), the schema
+    #     loop above filled it from ``filled`` — but ``filled`` only carries
+    #     YML-declared params, so a SYNTHESIZED field fell back to the schema
+    #     DEFAULT (``isFetchEvents=false`` / ``eventFetchInterval="1"``). OVERRIDE
+    #     that entry with the synthesized value so the toggle is actually enabled
+    #     and the interval is the non-default ``"111"`` — matching the connector.
+    #   * When the field is ABSENT from the schema, INJECT it into ``data`` (mirrors
+    #     the magic-key injection) so it still persists and surfaces at runtime.
+    #
+    # This is table-driven via ``compute_be_synthesized_params`` (no per-flag
+    # special-casing) so it fires identically for the active fetch flag of EVERY
+    # variant (isFetch / isFetchEvents / isFetchAssets / feed).
     for field_name, field_value in (extra_fields or {}).items():
-        already_present = any(
-            entry.get("name") == field_name for entry in module_instance["data"]
+        existing = next(
+            (e for e in module_instance["data"] if e.get("name") == field_name),
+            None,
         )
-        if already_present:
+        if existing is not None:
+            existing["value"] = field_value
+            existing["hasvalue"] = bool(field_value)
+            log.debug(
+                "Overrode schema-declared BE-synthesized field %r in module_instance.data "
+                "with the variant value %r",
+                field_name, field_value,
+            )
             continue
         module_instance["data"].append({
             "name": field_name,
@@ -727,8 +752,13 @@ def parse_params_dump_payload(message: str | None) -> dict | None:
         json_str = cleaned[sentinel_idx + len(PARITY_DUMP_SENTINEL):]
         # Defensive: trailing "(N)" may now be a different shape; re-strip.
         json_str = _SUFFIX_RE.sub("", json_str).strip()
+        # The XSOAR server may append non-JSON content AFTER the sentinel JSON
+        # (e.g. when the probe's SystemExit is surfaced as a "runtime error",
+        # the message becomes ``PARAMS_PARITY_DUMP::{...}\nStack trace:\n (N)``).
+        # ``json.loads`` rejects that with "Extra data"; ``raw_decode`` instead
+        # parses the first complete JSON value and ignores any trailing text.
         try:
-            envelope = json.loads(json_str)
+            envelope, _ = json.JSONDecoder().raw_decode(json_str)
         except json.JSONDecodeError as e:
             log.error("Failed to parse PARAMS_PARITY_DUMP payload as JSON: %s", e)
             log.debug("Payload was: %s", json_str)
@@ -837,6 +867,7 @@ def capture_xsoar_params(
     overrides: dict | None = None,
     client=None,
     keep_instance: bool = False,
+    fetch_flags: dict | None = None,
 ) -> tuple[dict | None, dict | None]:
     """Run the full legacy XSOAR-side capture flow end-to-end.
 
@@ -893,17 +924,37 @@ def capture_xsoar_params(
 
     # Backend-synthesized fetch/feed config params (incidentFetchInterval, etc.)
     # are NOT in the YML `configuration`, so fill_params_from_yml() drops them.
-    # Compute them from the YML script flags and pull their values from the
-    # caller overrides (the shared dummies) so BOTH parity sides use the same
-    # value. These get injected into the instance data list by
-    # create_integration_instance(extra_fields=...).
-    be_added, be_stripped = compute_be_synthesized_params(yml_data.get("script"))
+    # Compute them from the capability VARIANT's fetch flags when supplied
+    # (otherwise the YML script flags as a fallback) and pull their values from
+    # the caller overrides (the shared dummies) so BOTH parity sides use the same
+    # value. Driving this off ``fetch_flags`` is WHAT makes the harness KNOW that,
+    # e.g., a ``fetch-issues``/``isFetch`` variant MUST populate
+    # ``incidentFetchInterval`` on the INTEGRATION side too — previously this only
+    # consulted the static YML script, so a variant-driven fetch (where the YML
+    # itself does not statically declare ``isfetch``) silently omitted the field
+    # from the integration payload, letting it fall back to the YML default and
+    # mismatch the connector side.
+    be_added, be_stripped = compute_be_synthesized_params(
+        yml_data.get("script"), fetch_flags=fetch_flags
+    )
     extra_fields: dict = {}
     for name in be_added:
         if name in overrides:
             extra_fields[name] = overrides[name]
         else:
             extra_fields[name] = default_dummy_for(name)
+    # Fold the synthesized values into ``filled`` too so they are the SURFACED
+    # creation payload (``creation_payloads.integration``) for this variant — i.e.
+    # an isFetchEvents variant's payload now carries ``isFetchEvents`` and
+    # ``eventFetchInterval="111"`` explicitly, mirroring what works for isFetch.
+    # This also lets the server-schema loop in ``create_integration_instance``
+    # read the variant value for any fetch field the server already declares
+    # (e.g. an event collector's auto-exposed ``isFetchEvents``/
+    # ``eventFetchInterval``), instead of falling back to the schema default.
+    # ``extra_fields`` is still passed so fields ABSENT from the schema are
+    # injected; both paths now agree on the same value.
+    for name, value in extra_fields.items():
+        filled[name] = value
     # BE strips these when no fetch flag is on — ensure they are not sent.
     for name in be_stripped:
         filled.pop(name, None)

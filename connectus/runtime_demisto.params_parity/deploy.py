@@ -88,6 +88,7 @@ Environment variables (set in .env or shell):
     parser.add_argument("--branch", default=None, help="Personal branch IN THE CONNECTUS REPO to commit+push (must be xsoar-migration-<name>; overrides CONNECTUS_BRANCH)")
     parser.add_argument("--tenant", default=None, help="Comma-separated tenant IDs for dev override")
     parser.add_argument("--skip-git", action="store_true", help="Skip git operations")
+    parser.add_argument("--skip-pipeline", action="store_true", help="Skip triggering/polling the GitLab pipeline (upload packs only).")
     parser.add_argument("--poll-interval", type=int, default=None, help="Seconds between status polls")
     parser.add_argument("--max-wait", type=int, default=None, help="Max seconds to wait for pipeline")
     parser.add_argument("--diagnose", action="store_true", help="Run connectivity diagnostics and exit")
@@ -161,6 +162,7 @@ def get_config(args):
         "poll_interval": args.poll_interval if args.poll_interval is not None else DEFAULT_POLL_INTERVAL,
         "max_wait": args.max_wait if args.max_wait is not None else DEFAULT_MAX_WAIT,
         "skip_git": args.skip_git,
+        "skip_pipeline": args.skip_pipeline,
         "diagnose": args.diagnose,
         # SSH key git should use, so auth does NOT depend on a pre-loaded
         # ssh-agent. Empty = use default resolution (~/.ssh/id_ed25519, id_rsa).
@@ -683,6 +685,15 @@ def main():
     # Honored unless --skip-git is passed (re-trigger only).
     if not config["skip_git"]:
         git_operations(config)
+
+    # Pipeline can be skipped for an upload-only run (--skip-pipeline). The pack
+    # upload above (Step 0) still ran; we just do NOT trigger/poll the GitLab
+    # skinny pipeline. Return success so an upload-only run exits 0.
+    if config["skip_pipeline"]:
+        warn("--skip-pipeline set: skipping GitLab pipeline trigger/poll "
+             "(packs uploaded only).")
+        success("Upload-only run complete (no pipeline triggered).")
+        sys.exit(0)
 
     # Step 2: Trigger pipeline
     pipeline_id, pipeline_url = trigger_pipeline(config)
