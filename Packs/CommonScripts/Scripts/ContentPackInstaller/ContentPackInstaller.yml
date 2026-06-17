@@ -43,6 +43,13 @@ marketplaces:
 - xsoar
 - marketplacev2
 - platform
+supportedModules:
+- agentix
+- cloud
+- cloud_runtime_security
+- cloud_posture
+- xsiam
+- edr
 tests:
 - ContentPackInstaller_Test
 fromversion: 6.0.0
