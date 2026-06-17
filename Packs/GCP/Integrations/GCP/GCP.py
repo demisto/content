@@ -25,19 +25,19 @@ def build_http_client() -> httplib2.Http:
             the system proxy (from ``handle_proxy``) is applied; SSL certificate
             validation is disabled when ``VERIFY_SSL`` is False.
     """
-    proxy_info = {}
+    proxy_info = None
     proxies = handle_proxy()
     if USE_PROXY:
         https_proxy = proxies.get("https")
         if not https_proxy:
             raise DemistoException("https proxy value is empty. Check the Cortex server configuration.")
-        if not https_proxy.startswith("https") and not https_proxy.startswith("http"):
+        if not https_proxy.startswith(("http://", "https://")):
             https_proxy = "https://" + https_proxy
         parsed_proxy = urllib.parse.urlparse(https_proxy)
         proxy_info = httplib2.ProxyInfo(
             proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
             proxy_host=parsed_proxy.hostname,
-            proxy_port=parsed_proxy.port,
+            proxy_port=parsed_proxy.port or (443 if https_proxy.startswith("https://") else 80),
             proxy_user=parsed_proxy.username,
             proxy_pass=parsed_proxy.password,
         )

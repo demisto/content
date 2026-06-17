@@ -5582,7 +5582,7 @@ def test_build_http_client_no_proxy_ssl_on(mocker):
     When:
         - build_http_client is called.
     Then:
-        - An httplib2.Http with an empty proxy_info and SSL validation enabled is returned.
+        - An httplib2.Http with proxy_info set to None and SSL validation enabled is returned.
     """
     import GCP
 
@@ -5595,7 +5595,7 @@ def test_build_http_client_no_proxy_ssl_on(mocker):
 
     assert result == "http-obj"
     _, http_kwargs = mock_http.call_args
-    assert http_kwargs["proxy_info"] == {}
+    assert http_kwargs["proxy_info"] is None
     assert http_kwargs["disable_ssl_certificate_validation"] is False
 
 
@@ -5791,6 +5791,32 @@ def test_build_http_client_proxy_without_scheme(mocker):
     _, proxy_kwargs = mock_proxy_info.call_args
     assert proxy_kwargs["proxy_host"] == "proxy.example.com"
     assert proxy_kwargs["proxy_port"] == 3128
+
+
+def test_build_http_client_proxy_without_port_defaults(mocker):
+    """
+    Given:
+        - Proxy enabled and the proxy URL has a scheme but no explicit port.
+    When:
+        - build_http_client is called.
+    Then:
+        - proxy_port falls back to 443 for an https:// proxy (avoiding a None port).
+    """
+    import GCP
+
+    mocker.patch.object(GCP, "USE_PROXY", True)
+    mocker.patch.object(GCP, "VERIFY_SSL", True)
+    mocker.patch("GCP.handle_proxy", return_value={"https": "https://proxy.example.com"})
+
+    mocker.patch("GCP.httplib2.socks")  # PySocks may be absent locally
+    mock_proxy_info = mocker.patch("GCP.httplib2.ProxyInfo", return_value="proxy-info-obj")
+    mocker.patch("GCP.httplib2.Http", return_value="http-obj")
+
+    GCP.build_http_client()
+
+    _, proxy_kwargs = mock_proxy_info.call_args
+    assert proxy_kwargs["proxy_host"] == "proxy.example.com"
+    assert proxy_kwargs["proxy_port"] == 443
 
 
 def test_get_credentials_marketplace_project_id_from_params(mocker):
