@@ -507,6 +507,17 @@ class TestGetEventsCommand:
 # ============================================================================
 class TestFetchEvents:
     def test_first_run_uses_default_lookback(self, mock_client, sample_events, mocker):
+        # Freeze ``now`` and shrink the first-fetch lookback to exactly one window
+        # so the in-run loop walks a single window for this single-window assertion.
+        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
+
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
+        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
+        mocker.patch.object(O365MessageTrace.Config, "DEFAULT_FIRST_FETCH_MINUTES", Config.FETCH_WINDOW_MINUTES)
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
         set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
@@ -536,8 +547,17 @@ class TestFetchEvents:
 
     def test_deduplicates_against_seen_ids(self, mock_client, sample_events, mocker):
         # ``fetch_events`` deduplicates and tracks ``seen_ids`` using the derived
-        # ``_unique_id`` field (``<id>|<recipientAddress>``).
+        # ``_unique_id`` field (``<id>|<recipientAddress>``). ``now`` is frozen one
+        # window past ``last_fetch`` so a single window is walked for this assertion.
+        now = datetime(2025, 1, 1, 9, 5, 0, tzinfo=UTC)
+
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
         last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": ["evt-1|bob@contoso.com"]}
+        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
@@ -630,8 +650,18 @@ class TestFetchEvents:
         """An empty window must still move last_fetch forward to the window end.
 
         Otherwise we keep re-scanning the same empty slice and never make progress.
+        ``now`` is frozen one window ahead of ``last_fetch`` so the in-run loop walks
+        exactly one (empty) window and stops, leaving last_fetch at the window end.
         """
+        now = datetime(2025, 1, 1, 9, 5, 0, tzinfo=UTC)
+
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
         last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": ["evt-old|bob@contoso.com"]}
+        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
@@ -697,3 +727,152 @@ class TestFetchEvents:
         # Both the newly-sent event AND the already-seen duplicate at the boundary
         # timestamp must be present so the next run can dedup the re-fetched event.
         assert set(new_state["seen_ids"]) == {"evt-1|bob@contoso.com", "evt-2|dave@contoso.com"}
+
+
+# ============================================================================
+# fetch_events in-run window loop tests
+# ============================================================================
+class TestFetchEventsInRunLoop:
+    """The in-run loop must walk consecutive windows oldest->newest within a
+    single run instead of advancing only one ``FETCH_WINDOW_MINUTES`` slice per
+    scheduler tick. After each window it decides:
+
+    * ``max_events`` reached -> break (resume at the high-water mark next run),
+    * caught up to ``now`` -> break,
+    * otherwise advance ``start_dt`` to the next window and continue.
+
+    ``last_run`` is persisted exactly once at the end of the run.
+    """
+
+    @staticmethod
+    def _frozen_now(now: datetime):
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
+        return FrozenDatetime
+
+    def test_walks_multiple_windows_until_caught_up_in_single_run(self, mock_client, mocker):
+        """A backlog of several windows must be drained within one run, advancing
+        ``last_fetch`` all the way to ``now`` (not just one window)."""
+        # last_fetch=09:00, now=09:15 -> 3 windows: [09:00,09:05], [09:05,09:10], [09:10,09:15].
+        now = datetime(2025, 1, 1, 9, 15, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": []}
+
+        fetch_events(mock_client, max_events=100)
+
+        # One first-page request per window (all empty).
+        assert mock_client.ms_client.http_request.call_count == 3
+        # last_run persisted exactly once at the end of the run.
+        set_last_run.assert_called_once()
+        assert set_last_run.call_args.args[0]["last_fetch"] == "2025-01-01T09:15:00Z"
+
+    def test_first_call_starts_at_oldest_window(self, mock_client, mocker):
+        """The loop must walk oldest->newest: the first request is the oldest window."""
+        now = datetime(2025, 1, 1, 9, 15, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": []}
+
+        fetch_events(mock_client, max_events=100)
+
+        first_filter = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]["$filter"]
+        assert "receivedDateTime ge 2025-01-01T09:00:00Z" in first_filter
+        assert "receivedDateTime le 2025-01-01T09:05:00Z" in first_filter
+        last_filter = mock_client.ms_client.http_request.call_args_list[-1].kwargs["params"]["$filter"]
+        assert "receivedDateTime ge 2025-01-01T09:10:00Z" in last_filter
+        assert "receivedDateTime le 2025-01-01T09:15:00Z" in last_filter
+
+    def test_stops_advancing_when_max_events_reached(self, mock_client, mocker):
+        """When a window fills up to ``max_events`` the loop breaks and resumes at the
+        high-water mark next run - it must NOT advance to later windows in this run."""
+        now = datetime(2025, 1, 1, 9, 15, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        # First window already returns >= max_events events.
+        full_window = {
+            "value": [
+                {"id": "a", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:01:00Z"},
+                {"id": "b", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:02:00Z"},
+            ]
+        }
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = full_window
+
+        fetch_events(mock_client, max_events=2)
+
+        # Only the first window should have been requested - the loop broke on max_events.
+        assert mock_client.ms_client.http_request.call_count == 1
+        set_last_run.assert_called_once()
+        # High-water mark set to the latest event timestamp so the next run resumes there.
+        assert set_last_run.call_args.args[0]["last_fetch"] == "2025-01-01T09:02:00Z"
+
+    def test_publishes_events_from_every_window_in_run(self, mock_client, mocker):
+        """Events from each window walked in a single run must all be published."""
+        now = datetime(2025, 1, 1, 9, 10, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        window1 = {"value": [{"id": "w1", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:01:00Z"}]}
+        window2 = {"value": [{"id": "w2", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:06:00Z"}]}
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.side_effect = [window1, window2]
+
+        fetch_events(mock_client, max_events=100)
+
+        sent_ids = {e["id"] for call in send_mock.call_args_list for e in call.kwargs["events"]}
+        assert sent_ids == {"w1", "w2"}
+
+    def test_window_loop_cannot_spin_when_high_water_mark_stalls(self, mock_client, mocker):
+        """Guard: if a non-empty window's high-water mark fails to advance past the
+        window start, the loop must still advance to the next window (using the
+        window end) instead of spinning forever on the same slice.
+
+        Every event here sits exactly at the window start timestamp, so a naive
+        ``last_fetch = latest_event_time`` would never move ``start_dt`` forward.
+        """
+        now = datetime(2025, 1, 1, 9, 10, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        # Both windows return an event stamped at the window's own start time.
+        stalled_event = {
+            "value": [{"id": "s", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:00:00Z"}]
+        }
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = stalled_event
+
+        fetch_events(mock_client, max_events=100)
+
+        # The loop must terminate (caught up to now) rather than spin, and persist once.
+        set_last_run.assert_called_once()
+        # Two windows walked: [09:00,09:05] and [09:05,09:10]; the guard advanced via window end.
+        assert mock_client.ms_client.http_request.call_count == 2
+
+    def test_persists_last_run_once_per_run(self, mock_client, mocker):
+        """``demisto.setLastRun`` must be called exactly once regardless of how many
+        windows are walked in a single run."""
+        now = datetime(2025, 1, 1, 9, 20, 0, tzinfo=UTC)  # 4 windows
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": []}
+
+        fetch_events(mock_client, max_events=100)
+
+        set_last_run.assert_called_once()

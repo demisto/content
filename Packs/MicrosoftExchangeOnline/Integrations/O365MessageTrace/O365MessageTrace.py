@@ -35,6 +35,10 @@ class Config:
     # across many runs instead of re-downloading days of events on every run.
     FETCH_WINDOW_MINUTES = 5
 
+    # Upper bound on how many times ``fetch_events_sequential`` is called within a
+    # single fetch cycle, so a far-behind integration cannot loop indefinitely.
+    MAX_FETCH_ITERATIONS = 100
+
 
 # ============================================================================
 # Client
@@ -461,11 +465,36 @@ def fetch_events(client: Client, max_events: int) -> None:
         start_dt = now - timedelta(minutes=Config.DEFAULT_FIRST_FETCH_MINUTES)
         demisto.debug(f"[Fetch] First run - looking back {Config.DEFAULT_FIRST_FETCH_MINUTES} minutes from now")
 
-    window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
-    demisto.debug(f"[Fetch] Window {start_dt.isoformat()} -> {window_end_dt.isoformat()} (now={now.isoformat()})")
+    if now < start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES):
+        window_end_dt = now
+        demisto.debug(f"[Fetch] Window {start_dt.isoformat()} -> {window_end_dt.isoformat()} (now={now.isoformat()})")
+        # Fetch all events in the window sequentially
+        events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
 
-    # Fetch all events in the window sequentially
-    events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
+    else:
+        window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
+        all_events: list[dict] = []
+        iterations = 0
+
+        # Walk fixed-size windows until we either catch up to ``now``, collect enough
+        # events, or hit the safety cap on how many times ``fetch_events_sequential``
+        # may be called in a single run.
+        while start_dt < now and len(all_events) < max_events and iterations < Config.MAX_FETCH_ITERATIONS:
+            iterations += 1
+
+            demisto.debug(f"[Fetch] Window {start_dt.isoformat()} -> {window_end_dt.isoformat()} (now={now.isoformat()})")
+
+            # Fetch all events in the window sequentially
+            events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
+            all_events.extend(events)
+
+            start_dt = window_end_dt
+            window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
+
+        events = all_events
+        if len(events) > max_events:
+            events = events[:max_events]
+
     add_unique_id_field(events)
     add_time_field(events)
     demisto.debug(f"[Fetch] Fetched {len(events)} raw events before dedup")
