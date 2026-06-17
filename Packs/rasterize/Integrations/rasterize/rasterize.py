@@ -25,6 +25,7 @@ from PyPDF2 import PdfReader
 from functools import lru_cache
 from urllib.parse import urlparse
 import ipaddress
+import gc
 # region constants and configurations
 
 pypdf_logger = logging.getLogger("PyPDF2")
@@ -1547,32 +1548,9 @@ def screenshot_image(
     demisto.debug(f"{page_layout_metrics=} {tab.id=} {path=}.")
     css_content_size = page_layout_metrics["cssContentSize"]
     try:
-        if IS_LIGHTWEIGHT:
-            demisto.debug(f"screenshot_image: lightweight viewport-only capture, {tab.id=}, {path=}")
-            visual_viewport = page_layout_metrics.get("visualViewport", {})
-            # CDP Page.Viewport defining the rectangle to capture, limited to the visible viewport.
-            clip = {
-                "x": 0,
-                "y": 0,
-                "width": int(visual_viewport.get("clientWidth") or DEFAULT_WIDTH),
-                "height": int(visual_viewport.get("clientHeight") or DEFAULT_HEIGHT),
-                "scale": 1,
-            }
-            demisto.debug(
-                f"screenshot_image: lightweight=True, using JPEG/viewport-clip capture, "
-                f"{clip=}, {tab.id=}, {path=}"
-            )
-            screenshot_data = tab.Page.captureScreenshot(
-                format="jpeg",  # JPEG produces a much smaller file than the default PNG, so the encode fits in the little memory left.
-                quality=70,  # JPEG compression quality (0-100, JPEG-only); balances quality vs. size, ignored for PNG.
-                clip=clip,  # Capture only the rectangle above; restricting to the viewport avoids rendering the full page.
-                captureBeyondViewport=False,
-                optimizeForSpeed=True,  # Prioritize fast/low-overhead encoding over compression ratio, cutting time/memory.
-                _timeout=SCREENSHOT_TIMEOUT,
-            )["data"]
-        elif full_screen:
+        if full_screen:
             viewport = css_content_size
-            viewport["scale"] = 1
+            viewport["scale"] = 1 if not IS_LIGHTWEIGHT else 0.75  # In lightweight mode, use a smaller scale to reduce memory usage.
             screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True, _timeout=SCREENSHOT_TIMEOUT)[
                 "data"
             ]
@@ -1597,8 +1575,9 @@ def screenshot_image(
     # Release the (potentially large) base64 string immediately so we do not hold the encoded and
     # decoded copies of the image in memory at the same time.
     del screenshot_data
+    gc.collect()
     if not captured_image:
-        demisto.info(f"Empty snapshot, {screenshot_data=}, {tab.id=}, {path=}")
+        demisto.info(f"Empty snapshot, {tab.id=}, {path=}")
     else:
         demisto.info(f"Captured snapshot, {len(captured_image)=}, {tab.id=}, {path=}")
 
@@ -1625,8 +1604,11 @@ def screenshot_image(
         image_with_url.close()
         img_byte_arr.close()
         del captured_image_object, image_with_url, img_byte_arr, captured_image
+        gc.collect()
     else:
         ret_value = captured_image
+        del captured_image
+        gc.collect()
 
     # Page source, if needed
     response_body = ""
