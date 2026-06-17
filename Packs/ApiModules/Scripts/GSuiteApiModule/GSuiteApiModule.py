@@ -42,8 +42,12 @@ class GSuiteClient:
     """
 
     @staticmethod
-    def get_ucp_access_token() -> tuple[str, str]:
+    def get_ucp_access_token(subject: str | None = None) -> tuple[str, str]:
         """Fetch the OAuth2 access token for the active UCP connection profile.
+
+        :param subject: The user to impersonate. When provided, it is sent to the
+            UCP service as ``{"extra": {"subject": subject}}`` so the issued token
+            impersonates that user (Google Workspace domain-wide delegation).
 
         :return: Tuple of ``(method_unique_id, access_token)``.
         :rtype: ``tuple``
@@ -52,7 +56,8 @@ class GSuiteClient:
         demisto.debug("calling access token from ucp service")
         method_id = get_ucp_method_unique_id(resolve_ucp_capability())
 
-        credentials = get_ucp_credentials(method_id)
+        body = {"extra": {"subject": subject}} if subject else None
+        credentials = get_ucp_credentials(method_id, body=body)
 
         cred_type = credentials.get("type")
         token_data = credentials.get(cred_type, credentials) if cred_type else credentials
@@ -89,7 +94,9 @@ class GSuiteClient:
             # In UCP (ConnectUs) mode the access token is provided by the
             # connection profile via the platform; fetch it instead of building
             # service-account credentials.
-            self._ucp_method_id, self._ucp_token = self.get_ucp_access_token()
+            # The subject (user to impersonate) is the instance ``user_id``; it is
+            # forwarded to UCP so the issued token impersonates that user.
+            self._ucp_method_id, self._ucp_token = self.get_ucp_access_token(subject=user_id or None)
             self.credentials = oauth2_credentials.Credentials(token=self._ucp_token)
             return
 
@@ -153,10 +160,10 @@ class GSuiteClient:
 
         with GSuiteClient.http_exception_handler():
             response = self.authorized_http.request(headers=self.headers, method=method, uri=url, body=body)
-            self._maybe_invalidate_ucp_credentials(response)
+            self._invalidate_ucp_credentials_on_auth_error(response)
             return GSuiteClient.validate_and_extract_response(response)
 
-    def _maybe_invalidate_ucp_credentials(self, response: tuple) -> None:
+    def _invalidate_ucp_credentials_on_auth_error(self, response: tuple) -> None:
         """Invalidate cached UCP credentials when the response is an auth error.
 
         In UCP mode an expired/rotated credential is signalled by a 401/403.

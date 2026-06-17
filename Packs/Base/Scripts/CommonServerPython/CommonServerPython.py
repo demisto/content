@@ -14258,8 +14258,8 @@ def get_ucp_method_unique_id(capability=None, sub_capability=None):
 # -- Credential fetching with in-process TTL cache --
 
 
-def get_ucp_credentials(method_unique_id=None):
-    # type: (Optional[str]) -> dict
+def get_ucp_credentials(method_unique_id=None, body=None):
+    # type: (Optional[str], Optional[dict]) -> dict
     """Fetch UCP credentials for a connection profile, with in-process TTL caching.
 
     Results are cached keyed by ``method_unique_id``.  The TTL is derived from
@@ -14275,6 +14275,13 @@ def get_ucp_credentials(method_unique_id=None):
     :type method_unique_id: ``Optional[str]``
     :param method_unique_id: The profile's ``method_unique_id``. If ``None``,
         resolves automatically via ``get_ucp_method_unique_id()``.
+
+    :type body: ``Optional[dict]``
+    :param body: Optional extra payload forwarded to ``demisto.getUCPCredentials``
+        (e.g. ``{"extra": {"subject": "<user_id>"}}`` to request an impersonated
+        token). The ``body`` argument is only supported on newer platform
+        versions; on older platforms the call gracefully falls back to fetching
+        credentials without it.
 
     :return: Credential dict from the backend (may be served from cache).
         Example::
@@ -14300,7 +14307,23 @@ def get_ucp_credentials(method_unique_id=None):
             return entry.get('result')
         # Stale -- fall through to re-fetch
 
-    creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
+    if body is None:
+        # No extra payload to forward; call with the classic signature so behavior
+        # is unchanged for every caller that does not pass a ``body``.
+        creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
+    else:
+        try:
+            # ``body`` (used to forward the impersonation subject / user id) is only
+            # accepted by ``getUCPCredentials`` on newer platform versions.
+            creds = demisto.getUCPCredentials(method_unique_id, from_cache=False, body=body)
+        except TypeError:
+            # Older platforms do not accept the ``body`` argument; retry without it
+            # so the integration keeps working (without subject impersonation).
+            demisto.debug(
+                "[UCP][CommonServerPython.py] getUCPCredentials does not support 'body'; "
+                "retrying without it for method_unique_id={}".format(method_unique_id)
+            )
+            creds = demisto.getUCPCredentials(method_unique_id, from_cache=False)
     demisto.debug("[UCP][CommonServerPython.py] Fetched fresh credentials for method_unique_id={}".format(method_unique_id))
 
     expiry = _extract_ucp_expiry(creds)
@@ -14342,63 +14365,6 @@ except Exception:
 #     End of UCP Functions     #
 ###########################################
 
-
-###########################################
-#     Params Parity Test Probe (BEGIN)    #
-###########################################
-# Purpose:
-#   Support the connectus param-parity test (see connectus/runtime_demisto.params_parity/).
-#   When an instance is configured with the magic key ``__params_parity_dump__: "1"``
-#   AND the framework invokes ``test-module``, this probe short-circuits the
-#   integration's own ``main()`` and emits the full ``demisto.params()`` dict as the
-#   ``return_error`` payload. The parity-test orchestrator parses that payload to
-#   compare what the integration actually receives at runtime via the legacy XSOAR
-#   instance-creation path vs the new ConnectUs UCP-driven path.
-#
-# Safety:
-#   * Hard-wrapped in try/except: any failure here MUST NOT break unrelated integrations.
-#     On any exception we silently fall through and let the integration's own main() run.
-#   * Gated on BOTH ``demisto.command() == "test-module"`` AND the magic param key.
-#     Normal traffic pays only one dict lookup + one string compare.
-#   * The probe runs at CommonServerPython import-time, which happens once per command
-#     dispatch BEFORE the integration's main() is reached. ``return_error`` raises
-#     ``SystemExit``, so the integration's main() never starts when the probe fires.
-#   * Credentials are NEVER read or echoed here beyond what ``demisto.params()`` itself
-#     already contains; integrations that mask credentials before reading params (or
-#     that callers seed with dummy creds - which the parity-test orchestrator does)
-#     remain safe.
-# try:
-#     if demisto.command() == 'test-module':
-#         import json as _pp_json  # local alias to avoid colliding with any user-defined ``json``
-#         # CRITICAL: ``IntegrationLogger.__init__`` auto-populates ``LOG.replace_strs`` from
-#         # ``demisto.params()`` using a SUBSTRING match against the sensitive-name list
-#         # ('key', 'private', 'password', 'secret', 'token', 'credentials', 'service_account').
-#         # That over-matches: values of params like ``emailencodingkey``, ``languagelocalekey``,
-#         # ``localesidkey`` (all contain the substring 'key') get auto-masked to ``<XX_REPLACED>``
-#         # in any string that subsequently passes through ``LOG.encode()`` - INCLUDING the
-#         # ``return_error`` message we emit below. To get a clean params-parity capture we must
-#         # neutralize that replace-list BEFORE emitting our payload. ``LOG`` was created at the
-#         # bottom of the IntegrationLogger section earlier in this file, so it exists here.
-#         try:
-#             LOG.replace_strs = []  # type: ignore[name-defined]
-#         except Exception:
-#             # If LOG doesn't exist for some unexpected reason, proceed anyway - the dump just
-#             # carries the masked values, which is acceptable degraded behavior.
-#             pass
-#         _pp_payload = {
-#             '__params_parity_dump__': True,
-#             'params': demisto.params(),
-#         }
-#         return_error('PARAMS_PARITY_DUMP::' + _pp_json.dumps(_pp_payload, default=str, sort_keys=True))
-# except SystemExit:
-#     # ``return_error`` raises SystemExit; let it propagate so the test-module call ends here.
-#     raise
-# except Exception:
-#     # Probe must never break unrelated integrations. Swallow and continue.
-#     pass
-###########################################
-#     Params Parity Test Probe (END)      #
-###########################################
 
 ###########################################
 #   Safe Pickle Loading     #

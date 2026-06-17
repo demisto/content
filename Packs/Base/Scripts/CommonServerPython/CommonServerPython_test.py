@@ -12999,6 +12999,37 @@ class TestUcpNonBaseClientUsage:
         demisto.getUCPCredentials.assert_called_once_with('test-method-1', from_cache=False)
         assert result == ucp_creds_oauth2
 
+    def test_get_ucp_credentials_forwards_body(self, mocker, ucp_clean_cache, ucp_creds_oauth2):
+        """get_ucp_credentials() should forward the ``body`` argument to getUCPCredentials()."""
+        mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
+        mocker.patch.object(demisto, 'debug')
+
+        body = {'extra': {'subject': 'user@org.com'}}
+        result = CommonServerPython.get_ucp_credentials(method_unique_id='test-method-body', body=body)
+
+        demisto.getUCPCredentials.assert_called_once_with('test-method-body', from_cache=False, body=body)
+        assert result == ucp_creds_oauth2
+
+    def test_get_ucp_credentials_body_unsupported_fallback(self, mocker, ucp_clean_cache, ucp_creds_oauth2):
+        """On older platforms (no ``body`` kwarg) get_ucp_credentials() retries without it."""
+        mocker.patch.object(demisto, 'debug')
+
+        def _get_ucp_credentials(method_unique_id, from_cache=False, **kwargs):
+            if 'body' in kwargs:
+                raise TypeError("getUCPCredentials() got an unexpected keyword argument 'body'")
+            return ucp_creds_oauth2
+
+        get_creds = mocker.patch.object(demisto, 'getUCPCredentials', side_effect=_get_ucp_credentials)
+
+        body = {'extra': {'subject': 'user@org.com'}}
+        result = CommonServerPython.get_ucp_credentials(method_unique_id='test-method-fallback', body=body)
+
+        assert result == ucp_creds_oauth2
+        # First attempt with body raises TypeError, second attempt omits body.
+        assert get_creds.call_count == 2
+        get_creds.assert_any_call('test-method-fallback', from_cache=False, body=body)
+        get_creds.assert_any_call('test-method-fallback', from_cache=False)
+
     def test_invalidate_ucp_credentials_standalone(self, mocker, ucp_clean_cache, ucp_creds_oauth2):
         """invalidate_ucp_credentials() should remove cache entry without BaseClient."""
         mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)

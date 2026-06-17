@@ -422,13 +422,21 @@ class TestGetUcpAccessToken:
         _patch_ucp_fetch(mocker, TEST_ACCESS_TOKEN)
         assert GSuiteClient.get_ucp_access_token() == ("method-1", TEST_ACCESS_TOKEN)
 
-    def test_fetches_credentials_for_resolved_method_id(self, mocker):
-        """get_ucp_access_token should fetch credentials for the resolved method id."""
+    def test_subject_forwarded_as_extra_body(self, mocker):
+        """A subject should be forwarded to UCP as ``{"extra": {"subject": ...}}``."""
+        get_creds = _patch_ucp_fetch(mocker, TEST_ACCESS_TOKEN)
+
+        GSuiteClient.get_ucp_access_token(subject=CREDENTIAL_SUBJECT)
+
+        get_creds.assert_called_once_with("method-1", body={"extra": {"subject": CREDENTIAL_SUBJECT}})
+
+    def test_no_subject_sends_no_body(self, mocker):
+        """When no subject is given, no body is sent to UCP."""
         get_creds = _patch_ucp_fetch(mocker, TEST_ACCESS_TOKEN)
 
         GSuiteClient.get_ucp_access_token()
 
-        get_creds.assert_called_once_with("method-1")
+        get_creds.assert_called_once_with("method-1", body=None)
 
     def test_top_level_fallback(self, mocker):
         """When there is no typed sub-dict, the access token is read from the top level."""
@@ -457,15 +465,25 @@ class TestGSuiteClientUcp:
         assert client._ucp_method_id == "method-1"
         assert client._ucp_token == TEST_ACCESS_TOKEN
 
-    def test_init_fetches_credentials_via_ucp(self, mocker):
-        """In UCP mode, the client fetches credentials for the resolved method id."""
+    def test_init_forwards_user_id_as_subject(self, mocker):
+        """The client ``user_id`` is forwarded to UCP as the impersonation subject."""
+        mocker.patch("GSuiteApiModule.should_use_ucp_auth", return_value=True)
+        get_creds = _patch_ucp_fetch(mocker)
+        mocker.patch("GSuiteApiModule.oauth2_credentials.Credentials")
+
+        GSuiteClient(None, proxy=False, verify=False, user_id=CREDENTIAL_SUBJECT)
+
+        get_creds.assert_called_once_with("method-1", body={"extra": {"subject": CREDENTIAL_SUBJECT}})
+
+    def test_init_without_user_id_sends_no_subject(self, mocker):
+        """When no ``user_id`` is set, no subject body is sent to UCP."""
         mocker.patch("GSuiteApiModule.should_use_ucp_auth", return_value=True)
         get_creds = _patch_ucp_fetch(mocker)
         mocker.patch("GSuiteApiModule.oauth2_credentials.Credentials")
 
         GSuiteClient(None, proxy=False, verify=False)
 
-        get_creds.assert_called_once_with("method-1")
+        get_creds.assert_called_once_with("method-1", body=None)
 
     def test_init_uses_params_when_not_ucp(self, mocker):
         """When a service_account_dict is provided, UCP is not consulted."""
@@ -501,7 +519,7 @@ class TestGSuiteClientUcp:
         invalidate = mocker.patch("GSuiteApiModule.invalidate_ucp_credentials")
         client = GSuiteClient(None, proxy=False, verify=False)
 
-        client._maybe_invalidate_ucp_credentials((mocker.MagicMock(status=401), b"{}"))
+        client._invalidate_ucp_credentials_on_auth_error((mocker.MagicMock(status=401), b"{}"))
 
         invalidate.assert_called_once_with("method-1")
 
@@ -513,7 +531,7 @@ class TestGSuiteClientUcp:
         invalidate = mocker.patch("GSuiteApiModule.invalidate_ucp_credentials")
         client = GSuiteClient(None, proxy=False, verify=False)
 
-        client._maybe_invalidate_ucp_credentials((mocker.MagicMock(status=200), b"{}"))
+        client._invalidate_ucp_credentials_on_auth_error((mocker.MagicMock(status=200), b"{}"))
 
         invalidate.assert_not_called()
 
@@ -525,6 +543,6 @@ class TestGSuiteClientUcp:
         invalidate = mocker.patch("GSuiteApiModule.invalidate_ucp_credentials")
         client = GSuiteClient(sa, proxy=False, verify=False)
 
-        client._maybe_invalidate_ucp_credentials((mocker.MagicMock(status=401), b"{}"))
+        client._invalidate_ucp_credentials_on_auth_error((mocker.MagicMock(status=401), b"{}"))
 
         invalidate.assert_not_called()
