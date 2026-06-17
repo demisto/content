@@ -8,6 +8,8 @@ This integration connects securely with a ServiceNow Model Context Protocol (MCP
 2. Create an **OAuth Inbound Integration** in **Machine Identity Console** with the **OAuth - Authorization code grant** type.
    - Set the **Redirect URL** to `https://oproxy.demisto.ninja/authcode` (or your custom redirect URI).
    - Set the **Token Format** to **JWT**.
+   - Set the token to **Broadly Scoped** by disabling **Allow access only to APIs in selected scope**
+     - See [ServiceNow docs](https://www.servicenow.com/docs/r/intelligent-experiences/enable-ai-experiences/connect-mcp-server-client.html?section=create-oauth-inbound-integration-mcp-client) regarding this requirement.
    - Save the integration and note the **Client ID** and **Client Secret**.
 
 ## Configuration
