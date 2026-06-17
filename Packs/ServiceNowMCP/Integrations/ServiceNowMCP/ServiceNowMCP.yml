@@ -20,6 +20,7 @@ configuration:
     section: Connect
     display: MCP Server Name
     type: 0
+    defaultvalue: sn_mcp_server_default
     required: true
     additionalinfo: |
       The name of the MCP server on the ServiceNow instance. Use `sn_mcp_server_default` for the preconfigured Quickstart Server.
