@@ -5035,7 +5035,7 @@ def _make_integration_yml(
     return yml
 
 
-# Issue #8: the alert fields (incidentType / alertFetchInterval) are emitted ONLY
+# Issue #8: the alert fields (incidentType / incidentFetchInterval) are emitted ONLY
 # when their source XSOAR params (incidentType / incidentFetchInterval) exist in
 # the integration yml config params. This shared lookup declares both so the
 # fetch-issues tests that expect the alert fields keep exercising the full
@@ -5060,12 +5060,12 @@ def test_add_fetch_issues_capability_top_level_emits_4_fields_standard():
     When:  add_fetch_issues_capability runs.
     Then:  4 fields are emitted. isFetch is the lone fetch checkbox → it is
            NOT emitted as a manifest field (moved to serializer
-           computed_fields); the remaining 4 are incidentType, alertFetchInterval,
+           computed_fields); the remaining 4 are incidentType, incidentFetchInterval,
            incomingMapperId, mappingId. No longRunning field.
     """
     mapped: dict[str, list[str]] = {"general_configurations": []}
     integration_yml = _make_integration_yml()
-    # Issue #8: incidentType / alertFetchInterval are emitted ONLY when the source
+    # Issue #8: incidentType / incidentFetchInterval are emitted ONLY when the source
     # XSOAR params exist in the integration yml. Supply them so all 4 fields
     # are emitted (the realistic fetch-issues migration case).
     template = add_fetch_issues_capability(
@@ -5100,9 +5100,9 @@ def test_add_fetch_issues_capability_top_level_emits_4_fields_standard():
     assert inctype["options"]["help_text"] == "select if classifier doesn't exist"
     assert inctype["options"]["placeholder"] == "Select an issue type"
 
-    # 3. alertFetchInterval (XSOAR incidentFetchInterval) — duration,
-    # fallback 1 min. Connector-side id is the Platform "alertFetchInterval".
-    incfi = by_id["alertFetchInterval"]
+    # 3. incidentFetchInterval (XSOAR incidentFetchInterval) — duration,
+    # fallback 1 min. Connector-side id is the Platform "incidentFetchInterval".
+    incfi = by_id["incidentFetchInterval"]
     assert incfi["field_type"] == "duration"
     assert incfi["options"]["default_value"] == {"minutes": 1}
     assert incfi["options"]["units"] == DURATION_UNITS
@@ -5312,7 +5312,7 @@ def test_add_fetch_issues_capability_strips_params_from_mapped_params():
     """
     Given: mapped_params has fetch-issues param names in multiple buckets.
     When:  add_fetch_issues_capability runs (standard, not long-running).
-    Then:  isFetch, incidentType, incidentFetchInterval, alertFetchInterval
+    Then:  isFetch, incidentType, incidentFetchInterval, incidentFetchInterval
            are removed. Other params are preserved.
     """
     mapped = {
@@ -5320,7 +5320,7 @@ def test_add_fetch_issues_capability_strips_params_from_mapped_params():
         "Fetch Issues": [
             "incidentType",
             "incidentFetchInterval",
-            "alertFetchInterval",
+            "incidentFetchInterval",
             "custom_param",
         ],
     }
@@ -5596,7 +5596,7 @@ def test_fetch_issues_preserves_unrelated_params_and_strips_only_owned():
     Regression (Task 4): a param that is neither owned by the builder nor a
     capability-gate toggle must NOT be emitted as a synthetic field and must be
     LEFT untouched in its bucket. Only the builder-owned params (isFetch /
-    incidentType / incidentFetchInterval / alertFetchInterval) are stripped.
+    incidentType / incidentFetchInterval / incidentFetchInterval) are stripped.
     """
     mapped: dict[str, list[str]] = {
         "general_configurations": ["unrelated_global"],
@@ -5604,7 +5604,7 @@ def test_fetch_issues_preserves_unrelated_params_and_strips_only_owned():
             "isFetch",
             "incidentType",
             "incidentFetchInterval",
-            "alertFetchInterval",
+            "incidentFetchInterval",
             "some_vendor_param",
         ],
     }
@@ -5742,7 +5742,7 @@ def test_add_fetch_issues_capability_incidentfetchinterval_yml_driven():
         integration_yml=integration_yml,
         yml_params_by_name=yml_lookup,
     )
-    incfi = {f["id"]: f for f in template["fields"]}["alertFetchInterval"]
+    incfi = {f["id"]: f for f in template["fields"]}["incidentFetchInterval"]
     assert incfi["field_type"] == "duration"
     assert incfi["options"]["default_value"] == {"hours": 1}
 
@@ -5769,7 +5769,7 @@ def test_add_fetch_issues_capability_sub_capability_renames_field_ids():
     assert f"{cap_id}_isFetch" not in field_ids
     # Platform "alert" ids (guide §line 889-890), still sub-cap prefixed.
     assert f"{cap_id}_incidentType" in field_ids
-    assert f"{cap_id}_alertFetchInterval" in field_ids
+    assert f"{cap_id}_incidentFetchInterval" in field_ids
     assert f"{cap_id}_incomingMapperId" in field_ids
     assert f"{cap_id}_mappingId" in field_ids
 
@@ -5780,7 +5780,7 @@ def test_add_fetch_issues_capability_sub_cap_writes_serializer_bridges(tmp_path:
     When:  add_fetch_issues_capability runs.
     Then:  serializer.yaml at handler_dir contains field_mappings entries for
            the sub-cap-prefixed fields. Per Issue #8 the alert fields
-           (incidentType / alertFetchInterval) are NOT bridged. isFetch is the
+           (incidentType / incidentFetchInterval) are NOT bridged. isFetch is the
            lone fetch checkbox → dropped to computed_fields (NOT a
            field_mappings bridge) — so only incomingMapperId / mappingId get
            bridges, plus the isFetch computed_fields rule.
@@ -5811,7 +5811,7 @@ def test_add_fetch_issues_capability_sub_cap_writes_serializer_bridges(tmp_path:
     assert f"{cap_id}_isFetch" not in mapping_dict
     # Issue #8: alert fields are NOT bridged (no incident* mapping).
     assert f"{cap_id}_incidentType" not in mapping_dict
-    assert f"{cap_id}_alertFetchInterval" not in mapping_dict
+    assert f"{cap_id}_incidentFetchInterval" not in mapping_dict
     # isFetch value flows via computed_fields gated on the sub-capability.
     assert data["computed_fields"][0]["output"] == [
         {"id": "isFetch", "value": True}
@@ -5854,7 +5854,7 @@ def test_add_fetch_issues_capability_long_running_sub_cap_writes_4_bridges(tmp_p
     assert mapping_dict[f"{cap_id}_longRunning"] == "longRunning"
     # Issue #8: alert fields are NOT bridged.
     assert f"{cap_id}_incidentType" not in mapping_dict
-    assert f"{cap_id}_alertFetchInterval" not in mapping_dict
+    assert f"{cap_id}_incidentFetchInterval" not in mapping_dict
 
 
 def test_add_fetch_issues_capability_top_level_writes_no_serializer_bridges(
@@ -7090,13 +7090,13 @@ def test_guard_allows_feedexpirationinterval_exception():
     assert_no_hidden_defaults_in_configurations(configurations_data)
 
 
-def test_sweep_builder_renamed_incidentfetchinterval_to_alertfetchinterval(
+def test_sweep_builder_renamed_incidentfetchinterval_to_incidentFetchInterval(
     tmp_path,
 ):
     """incidentFetchInterval (XSOAR) is rendered by the fetch-issues builder as
-    ``alertFetchInterval`` with NO field_mappings bridge (platform consumes it
-    directly). The sweep must remove the ``alertFetchInterval`` field AND emit
-    the computed_fields output id as ``alertFetchInterval`` (not the XSOAR name).
+    ``incidentFetchInterval`` with NO field_mappings bridge (platform consumes it
+    directly). The sweep must remove the ``incidentFetchInterval`` field AND emit
+    the computed_fields output id as ``incidentFetchInterval`` (not the XSOAR name).
     """
     handler_dir = tmp_path / "handler"
     handler_dir.mkdir()
@@ -7108,7 +7108,7 @@ def test_sweep_builder_renamed_incidentfetchinterval_to_alertfetchinterval(
         ],
     }
     afi_field = {
-        "id": "alertFetchInterval",
+        "id": "incidentFetchInterval",
         "field_type": "duration",
         "options": {
             "default_value": {"minutes": 1},
@@ -7117,7 +7117,7 @@ def test_sweep_builder_renamed_incidentfetchinterval_to_alertfetchinterval(
         },
     }
     configurations_data = _make_configurations_with_field(
-        "alertFetchInterval", afi_field
+        "incidentFetchInterval", afi_field
     )
     swept = sweep_hidden_defaults_to_serializer(
         configurations_data,
@@ -7129,28 +7129,28 @@ def test_sweep_builder_renamed_incidentfetchinterval_to_alertfetchinterval(
     )
     # Swept under the XSOAR param name (collect step reads the yml).
     assert "incidentFetchInterval" in swept
-    # alertFetchInterval field removed from configurations.
+    # incidentFetchInterval field removed from configurations.
     remaining_ids = [
         f["id"]
         for entry in configurations_data["configurations"]
         for grp in entry["configurations"]
         for f in grp.get("fields", [])
     ]
-    assert "alertFetchInterval" not in remaining_ids
-    # computed_fields output id is the RENAMED id (alertFetchInterval).
+    assert "incidentFetchInterval" not in remaining_ids
+    # computed_fields output id is the RENAMED id (incidentFetchInterval).
     serializer = yaml.safe_load(
         (handler_dir / "serializer.yaml").read_text().split("\n", 1)[1]
     )
     outputs = [
         o["id"] for r in serializer["computed_fields"] for o in r["output"]
     ]
-    assert "alertFetchInterval" in outputs
+    assert "incidentFetchInterval" in outputs
     assert "incidentFetchInterval" not in outputs
-    # alertFetchInterval (incidentFetchInterval) is owned by Fetch Issues — it
+    # incidentFetchInterval (incidentFetchInterval) is owned by Fetch Issues — it
     # must gate on EXACTLY that single sub-capability.
     afi_rule = next(
         r for r in serializer["computed_fields"]
-        if r["output"][0]["id"] == "alertFetchInterval"
+        if r["output"][0]["id"] == "incidentFetchInterval"
     )
     afi_cap_ids = [
         c["options"]["capability_id"]
@@ -7176,7 +7176,7 @@ def test_sweep_per_param_gating_builder_vs_orphan_multi_capability(tmp_path):
             # builder param owned by Log Collection
             {"name": "eventFetchInterval", "type": 19,
              "hidden": ["platform"], "defaultvalue": "1"},
-            # builder param owned by Fetch Issues (renamed -> alertFetchInterval)
+            # builder param owned by Fetch Issues (renamed -> incidentFetchInterval)
             {"name": "incidentFetchInterval", "type": 19,
              "hidden": ["platform"], "defaultvalue": "1"},
             # unattached orphan (config-only, not routed anywhere)
@@ -7220,6 +7220,6 @@ def test_sweep_per_param_gating_builder_vs_orphan_multi_capability(tmp_path):
 
     # Builder params → single owning capability.
     assert _cap_ids_for("eventFetchInterval") == [lc_id]
-    assert _cap_ids_for("alertFetchInterval") == [fi_id]
+    assert _cap_ids_for("incidentFetchInterval") == [fi_id]
     # Orphan → OR-gated across ALL sub-capabilities.
     assert set(_cap_ids_for("max_concurrent_tasks")) == {lc_id, fi_id, auto_id}
