@@ -346,7 +346,7 @@ def test_connector_only_framework_fields_ok_ignored_not_extra():
 # the connector platform never synthesizes anything, so an absent equivalent on
 # the connector side is a genuine parity gap (the GuardiCore v2 case: the XSOAR
 # integration reads `incidentFetchInterval`, the connector declared
-# `alertFetchInterval` instead → no parity → fail).
+# `incidentFetchInterval` instead → no parity → fail).
 # ---------------------------------------------------------------------------
 def _per_param(result: dict, name: str) -> dict:
     for p in result["per_param"]:
@@ -654,18 +654,18 @@ def test_out_of_variant_scope_extra_in_connector_reclassified_to_ok_ignored():
     NOT counted as an extra / failure."""
     result = diff.diff_params(
         {},                                    # integration doesn't read it
-        {"alertFetchInterval": "1"},           # connector injects it
+        {"incidentFetchInterval": "1"},           # connector injects it
         yml_param_names=set(),
-        # log-collection variant: alertFetchInterval is gated on the DISABLED
+        # log-collection variant: incidentFetchInterval is gated on the DISABLED
         # fetch-issues sub-capability.
         in_scope_fields={"longRunning"},
         field_owning_subcapabilities={
-            "alertFetchInterval": frozenset({"fetch-issues_x"}),
+            "incidentFetchInterval": frozenset({"fetch-issues_x"}),
             "longRunning": frozenset({"log-collection_x"}),
         },
         enabled_ownership_units={"log-collection_x"},
     )
-    entry = _per_param(result, "alertFetchInterval")
+    entry = _per_param(result, "incidentFetchInterval")
     assert entry["state"] == diff.STATE_OK_IGNORED
     assert entry["verdict"] == "ok"
     assert "not enabled in this variant" in entry["reason"]

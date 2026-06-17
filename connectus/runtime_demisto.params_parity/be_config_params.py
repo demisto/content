@@ -56,7 +56,7 @@ _STRIP_WHEN_NO_FETCH = [
     "isFetch",
     "isFetchEvents",
     "incidentFetchInterval",
-    "alertFetchInterval",
+    "incidentFetchInterval",
     "eventFetchInterval",
     "incidentType",
     "alertType",
@@ -72,7 +72,7 @@ _STRIP_WHEN_NO_FETCH = [
 _INTERVAL_FIELDS = frozenset(
     {
         "incidentFetchInterval",
-        "alertFetchInterval",
+        "incidentFetchInterval",
         "eventFetchInterval",
         "assetsFetchInterval",
         "feedFetchInterval",

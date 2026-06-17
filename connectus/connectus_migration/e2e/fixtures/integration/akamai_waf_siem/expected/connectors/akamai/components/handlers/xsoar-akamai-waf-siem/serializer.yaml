@@ -10,7 +10,7 @@ computed_fields:
         capability_id: fetch-issues_akamai-waf-siem
         value: 'on'
 - output:
-  - id: alertFetchInterval
+  - id: incidentFetchInterval
     value: '1'
   any_of:
   - conditions:

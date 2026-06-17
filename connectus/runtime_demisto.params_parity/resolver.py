@@ -609,7 +609,7 @@ def _computed_field_owner_units(serializer_doc: Any) -> dict[str, set[str]]:
     (``output[].id``, already in the XSOAR-facing param namespace) only when its
     gating condition is satisfied. We treat a ``type: capability`` condition's
     ``options.capability_id`` as the OWNING sub-capability of every output field
-    that entry produces — so a computed field (e.g. ``alertFetchInterval`` gated
+    that entry produces — so a computed field (e.g. ``incidentFetchInterval`` gated
     on ``fetch-issues_<sub>``) can be scoped out of variants where that
     sub-capability is disabled, exactly like a directly-declared config field.
 
@@ -1172,7 +1172,7 @@ def resolve(integration_id: str, *, csv_path: Optional[Path] = None) -> ParityIn
         serializer_by_connector=by_connector,
     )
     # Fold serializer COMPUTED-field ownership in: a computed field (e.g.
-    # ``alertFetchInterval``) is injected by the serializer only when its gating
+    # ``incidentFetchInterval``) is injected by the serializer only when its gating
     # sub-capability is enabled, so attribute it to that gating sub-capability id
     # (restricted to units this handler actually subscribes to) so it is scoped
     # out of variants where the gating sub-capability is disabled — exactly like a

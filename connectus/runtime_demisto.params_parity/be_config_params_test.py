@@ -198,7 +198,7 @@ def test_strip_when_no_fetch_full_set():
         "isFetch",
         "isFetchEvents",
         "incidentFetchInterval",
-        "alertFetchInterval",
+        "incidentFetchInterval",
         "eventFetchInterval",
         "incidentType",
         "alertType",

@@ -406,7 +406,7 @@ Schema: [`field-options.schema.json`](schema/definitions/field-options.schema.js
 A `duration` field renders one numeric box per unit and serializes to one value.
 
 ```yaml
-- id: "alertFetchInterval"
+- id: "incidentFetchInterval"
   title: "Incidents Fetch Interval"
   field_type: "duration"
   options:
@@ -1036,7 +1036,7 @@ The `insecure` field (a `checkbox`) also lives in the same connection profile. I
 When a `script` flag is true, the BE used to auto-add params. Define them explicitly. **Omit** the implied checkbox (`isFetch`, `feed`, `isFetchEvents`, `isFetchAssets`, `isFetchCredentials`) — enabling the capability implies it.
 
 **`script.IsFetch: true`** → `fetch-issues` sub-capability:
-- `alertFetchInterval` — `duration` default to 1 minute or whats given in integration YML.
+- `incidentFetchInterval` — `duration` default to 1 minute or whats given in integration YML.
 - `incidentType` — `select` + `dynamic_values` (`dynamicField: "incident-type"`). **User-visible** (do NOT mark backend). Title "Issue Type", tooltip "select if classifier doesn't exist".
   - Placed under **each** `fetch-issues` sub-capability's `configurations[]` (pinned to that integration's `view_group`) — never in `general_configurations` or on the parent capability.
   - **Always emit** for every `fetch-issues` sub-capability, regardless of whether the YML has a type-13 param.

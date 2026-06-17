@@ -482,7 +482,7 @@ def create_integration_instance(
         extra_fields: Optional mapping of field name -> value for params that
             are NOT declared in the server configuration schema but must still
             be sent in the instance ``data`` list (e.g. backend-synthesized
-            fetch/feed config params like ``alertFetchInterval`` / ``incidentType``
+            fetch/feed config params like ``incidentFetchInterval`` / ``incidentType``
             that the BE auto-adds based on the YML script flags). Each is
             injected into ``data`` (mirroring the magic-key injection) unless a
             param of the same name is already present from the server schema.
@@ -891,7 +891,7 @@ def capture_xsoar_params(
 
     filled = fill_params_from_yml(yml_params, overrides)
 
-    # Backend-synthesized fetch/feed config params (alertFetchInterval, etc.)
+    # Backend-synthesized fetch/feed config params (incidentFetchInterval, etc.)
     # are NOT in the YML `configuration`, so fill_params_from_yml() drops them.
     # Compute them from the YML script flags and pull their values from the
     # caller overrides (the shared dummies) so BOTH parity sides use the same

@@ -934,7 +934,7 @@ def test_collect_field_specs_from_configurations_and_connection():
             {
                 "id": "log-collection_x",
                 "configurations": [
-                    {"fields": [{"id": "alertFetchInterval", "field_type": "duration"}]},
+                    {"fields": [{"id": "incidentFetchInterval", "field_type": "duration"}]},
                     {"fields": [{"id": "defaultIgnore", "field_type": "checkbox"}]},
                     {
                         "fields": [
@@ -978,7 +978,7 @@ def test_collect_field_specs_from_configurations_and_connection():
     # plain (non-backend) field has no config_type.
     assert specs["integrationLogLevel"]["config_type"] is None
     # per-capability fields captured with their types.
-    assert specs["alertFetchInterval"]["field_type"] == "duration"
+    assert specs["incidentFetchInterval"]["field_type"] == "duration"
     assert specs["defaultIgnore"]["field_type"] == "checkbox"
     # config_type: backend captured from xsoar.config_type (entity-reference field).
     assert specs["incidentType"]["config_type"] == "backend"
@@ -1213,7 +1213,7 @@ _SERIALIZER_DOC = {
             ],
         },
         {
-            "output": [{"id": "alertFetchInterval", "value": "1"}],
+            "output": [{"id": "incidentFetchInterval", "value": "1"}],
             "any_of": [
                 {
                     "conditions": [
@@ -1236,15 +1236,15 @@ def test_merge_computed_field_ownership_attributes_to_gating_subcapability():
     """A computed field is attributed to the sub-capability that gates it, so it
     becomes scopeable like a directly-declared field."""
     merged = merge_computed_field_ownership({}, _SERIALIZER_DOC)
-    assert merged["alertFetchInterval"] == frozenset({"fetch-issues_z"})
+    assert merged["incidentFetchInterval"] == frozenset({"fetch-issues_z"})
     assert merged["isFetch"] == frozenset({"fetch-issues_z"})
 
 
 def test_merge_computed_field_ownership_unions_with_existing_owners():
     """Computed ownership is UNIONed with any pre-existing manifest ownership."""
-    base = {"alertFetchInterval": frozenset({"some-other-unit"})}
+    base = {"incidentFetchInterval": frozenset({"some-other-unit"})}
     merged = merge_computed_field_ownership(base, _SERIALIZER_DOC)
-    assert merged["alertFetchInterval"] == frozenset(
+    assert merged["incidentFetchInterval"] == frozenset(
         {"some-other-unit", "fetch-issues_z"}
     )
 
@@ -1255,7 +1255,7 @@ def test_merge_computed_field_ownership_restricts_to_known_units():
     merged = merge_computed_field_ownership(
         {}, _SERIALIZER_DOC, known_units={"some-unrelated-unit"}
     )
-    assert "alertFetchInterval" not in merged
+    assert "incidentFetchInterval" not in merged
     assert "isFetch" not in merged
 
 
@@ -1291,7 +1291,7 @@ _AKAMAI_DIR = _find_akamai_dir()
 def test_real_akamai_field_ownership_maps_all_capability_scoped_fields():
     """REGRESSION against the real manifest: the 6 log-collection config fields
     map to log-collection, incidentType maps to fetch-issues, and the
-    serializer computed field alertFetchInterval is attributed to fetch-issues."""
+    serializer computed field incidentFetchInterval is attributed to fetch-issues."""
     from resolver import _load_yaml, _load_serializer_maps
 
     configurations_doc = _load_yaml(_AKAMAI_DIR / "configurations.yaml")
@@ -1327,7 +1327,7 @@ def test_real_akamai_field_ownership_maps_all_capability_scoped_fields():
     assert "fetch-issues_akamai-waf-siem" in owners.get("incidentType", frozenset())
     # Computed (serializer) field gated on fetch-issues.
     assert "fetch-issues_akamai-waf-siem" in owners.get(
-        "alertFetchInterval", frozenset()
+        "incidentFetchInterval", frozenset()
     )
 
 
@@ -1336,8 +1336,8 @@ def test_real_akamai_field_ownership_maps_all_capability_scoped_fields():
 )
 def test_real_akamai_per_variant_scoping_via_resolve(monkeypatch):
     """The fetch-issues variant scopes OUT the 6 log-collection fields +
-    alertFetchInterval; the log-collection variant scopes OUT incidentType +
-    alertFetchInterval. Uses the real resolve() against the live manifest."""
+    incidentFetchInterval; the log-collection variant scopes OUT incidentType +
+    incidentFetchInterval. Uses the real resolve() against the live manifest."""
     try:
         inputs = resolve("Akamai WAF SIEM")
     except ResolverError as exc:
@@ -1355,17 +1355,17 @@ def test_real_akamai_per_variant_scoping_via_resolve(monkeypatch):
         "eventFetchInterval",
     }
     # fetch-issues variant: the 6 log-collection fields are OUT of scope
-    # (log-collection disabled), while alertFetchInterval (a serializer computed
+    # (log-collection disabled), while incidentFetchInterval (a serializer computed
     # field GATED ON fetch-issues) and incidentType (fetch-issues-owned) are IN
     # scope because fetch-issues is enabled here.
     for fid in log_fields:
         assert fid not in fetch.in_scope_fields, fid
     assert "incidentType" in fetch.in_scope_fields
-    assert "alertFetchInterval" in fetch.in_scope_fields
+    assert "incidentFetchInterval" in fetch.in_scope_fields
 
     # log-collection variant (fetch-issues disabled): incidentType +
-    # alertFetchInterval are OUT of scope, while the 6 log fields are IN scope.
+    # incidentFetchInterval are OUT of scope, while the 6 log fields are IN scope.
     assert "incidentType" not in logs.in_scope_fields
-    assert "alertFetchInterval" not in logs.in_scope_fields
+    assert "incidentFetchInterval" not in logs.in_scope_fields
     for fid in log_fields:
         assert fid in logs.in_scope_fields, fid

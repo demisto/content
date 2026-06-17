@@ -800,9 +800,9 @@ def test_typed_dummy_checkbox_is_false():
 
 
 def test_typed_dummy_duration_is_int_zero():
-    specs = {"alertFetchInterval": {"field_type": "duration"}}
-    assert _typed_dummy_value("alertFetchInterval", specs) == 0
-    assert isinstance(_typed_dummy_value("alertFetchInterval", specs), int)
+    specs = {"incidentFetchInterval": {"field_type": "duration"}}
+    assert _typed_dummy_value("incidentFetchInterval", specs) == 0
+    assert isinstance(_typed_dummy_value("incidentFetchInterval", specs), int)
 
 
 def test_typed_dummy_number_is_int_zero():
@@ -1035,7 +1035,7 @@ def test_duration_orphan_config_dummy_is_int():
     the backend can cast it to int64."""
     view = _creation_view()
     caps = _capabilities()
-    caps[0].config_field_ids = {"alertFetchInterval"}
+    caps[0].config_field_ids = {"incidentFetchInterval"}
     payload = _build_instance_payload(
         view,
         instance_name="x",
@@ -1043,9 +1043,9 @@ def test_duration_orphan_config_dummy_is_int():
         profiles=[],
         instance_values={},  # no value → orphan → typed dummy
         connector_id="akamai",
-        field_specs={"alertFetchInterval": {"field_type": "duration"}},
+        field_specs={"incidentFetchInterval": {"field_type": "duration"}},
     )
-    assert payload["configuration"]["alertFetchInterval"] == 0
+    assert payload["configuration"]["incidentFetchInterval"] == 0
 
 
 # ---------------------------------------------------------------------------
