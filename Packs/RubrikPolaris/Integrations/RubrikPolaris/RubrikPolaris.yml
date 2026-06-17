@@ -1,3 +1,5 @@
+display: Rubrik Security Cloud
+name: RubrikPolaris
 category: Data Enrichment & Threat Intelligence
 provider: Rubrik
 commonfields:
@@ -329,8 +331,6 @@ configuration:
   required: false
   section: Connect
 description: The Rubrik Security Cloud integration will fetch the Rubrik Anomaly Event and is rich with commands to perform the on-demand scans, backups, recoveries and many more features to manage and protect the organizational data.
-display: Rubrik Security Cloud
-name: RubrikPolaris
 script:
   commands:
   - arguments:
@@ -5765,7 +5765,7 @@ script:
       description: Basic information of the file.
       type: string
   - name: rubrik-identity-resilience-violation-list
-    description: Retrieve the list of Identity Resilience (IR) violations.
+    description: Retrieves the list of Identity Resilience (IR) violations.
     arguments:
     - name: policy_type
       description: Filter the violations by policy type. Supports comma separated values.
@@ -6024,10 +6024,10 @@ script:
       description: The time at which the identity event occurred.
       type: Date
     - contextPath: RubrikPolaris.PageToken.IRViolation.next_page_token
-      description: Next page token.
+      description: The next page token.
       type: String
     - contextPath: RubrikPolaris.PageToken.IRViolation.name
-      description: Name of the command.
+      description: The name of the command.
       type: String
     - contextPath: RubrikPolaris.PageToken.IRViolation.has_next_page
       description: Whether the result has the next page or not.
@@ -6046,7 +6046,7 @@ script:
       - IDENTITY_EVENT
       - CROWDSTRIKE
       - MICROSOFT_DEFENDER
-    description: Retrieve the details of the Identity Resilience (IR) violation based on the provided violation ID.
+    description: Retrieves the details of the Identity Resilience (IR) violation based on the provided violation ID.
     name: rubrik-identity-resilience-violation-get
     outputs:
     - contextPath: RubrikPolaris.IRViolation.policyViolationId
@@ -6233,7 +6233,7 @@ script:
       description: "The ID of the IR violation.\n\nNote: Users can get the violation ID by executing the \"rubrik-identity-resilience-violation-list\" command."
       required: true
     - name: status
-      description: The status to update for violation.
+      description: The status to update for the violation.
       required: true
       auto: PREDEFINED
       predefined:

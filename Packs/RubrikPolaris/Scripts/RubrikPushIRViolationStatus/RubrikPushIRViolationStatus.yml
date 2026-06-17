@@ -6,13 +6,13 @@ script: ''
 type: python
 tags:
 - field-change-triggered
-comment: Syncs the IR violation status from XSOAR to RSC.
+comment: Syncs the IR violation status from Cortex XSOAR to RSC.
 enabled: true
 args:
 - name: violation_id
   description: "The ID of the IR Violation.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
 - name: violation_status
-  description: "The status to update for violation.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+  description: "The status to update for the violation.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
   auto: PREDEFINED
   predefined:
   - OPEN

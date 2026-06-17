@@ -5,7 +5,7 @@ name: RubrikPullIRViolationInformation
 script: ''
 type: python
 tags: []
-comment: Syncs the IR violation information from RSC to XSOAR.
+comment: Syncs the IR violation information from RSC to Cortex XSOAR.
 enabled: true
 args:
 - name: violation_id

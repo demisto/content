@@ -351,7 +351,7 @@ tasks:
       id: a8db1237-bb5c-4bbf-8780-90a8366bc099
       version: -1
       name: Retrieve IR violation data
-      description: Syncs the IR violation information from RSC to XSOAR.
+      description: Syncs the IR violation information from RSC to Cortex XSOAR.
       scriptName: RubrikPullIRViolationInformation
       type: regular
       iscommand: false
@@ -415,6 +415,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "11"
       "No":
       - "11"
       "Yes":

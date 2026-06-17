@@ -5491,7 +5491,7 @@ Download remediation logs as CSV file for the specified data security violation.
 ### rubrik-identity-resilience-violation-list
 
 ***
-Retrieve the list of Identity Resilience (IR) violations.
+Retrieves the list of Identity Resilience (IR) violations.
 
 #### Base Command
 
@@ -5571,8 +5571,8 @@ Retrieve the list of Identity Resilience (IR) violations.
 | RubrikPolaris.IRViolation.resourceMetadata.metadata.targetIdpType | String | The identity provider type of the target identity involved in the alert. |
 | RubrikPolaris.IRViolation.resourceMetadata.metadata.targetPrivilegeType | String | The privilege type of the target identity involved in the alert. |
 | RubrikPolaris.IRViolation.resourceMetadata.metadata.eventTime | Date | The time at which the identity event occurred. |
-| RubrikPolaris.PageToken.IRViolation.next_page_token | String | Next page token. |
-| RubrikPolaris.PageToken.IRViolation.name | String | Name of the command. |
+| RubrikPolaris.PageToken.IRViolation.next_page_token | String | The next page token. |
+| RubrikPolaris.PageToken.IRViolation.name | String | The name of the command. |
 | RubrikPolaris.PageToken.IRViolation.has_next_page | Boolean | Whether the result has the next page or not. |
 
 #### Command example
@@ -5703,7 +5703,7 @@ Retrieve the list of Identity Resilience (IR) violations.
 ### rubrik-identity-resilience-violation-get
 
 ***
-Retrieve the details of the Identity Resilience (IR) violation based on the provided violation ID.
+Retrieves the details of the Identity Resilience (IR) violation based on the provided violation ID.
 
 #### Base Command
 
@@ -5881,7 +5881,7 @@ Retrieve the details of the Identity Resilience (IR) violation based on the prov
 >
 >|ID|Violation Name|Severity|Violation Status|Detection Time|Last Updated|Policy ID|Policy Name|Policy Type|Policy Description|Policy Category|Policy Severity|Frameworks|Manual Remediation Process|Identity Status|Resource ID|Resource Type|Title|Display Name|Domain Name|Source|Identity Provider|Principal Type|Privilege Type|User Principal Name|Identity Tags|Native Type|Domain Unique ID|MITRE Tactic|Total Risk Hits|High Risk Hits|Medium Risk Hits|Low Risk Hits|No Risk Hits|Data Categories|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 00000000-0000-0000-0000-000000000001 | Excessive admin privileges | High | Open | 2026-03-25T09:29:55.000Z | 2026-03-25T13:29:54.000Z | 00000000-0000-0000-0000-000000000201 | Excessive admin privileges | Identity | Users with excessive admin privileges pose a risk of privilege escalation. | IDENTITY_HYGIENE | High | NIST,<br>CIS | Review and revoke excess admin roles. | ACTIVE | 00000000-0000-0000-0000-000000000101 | Identity | Engineer | John Doe | rubrikdemo.com | ON_PREM_AD | ENTRA_ID | USER | PRIVILEGED | demo@rubrik.com | PRIVILEGED | User | 00000000-0000-0000-0000-000000000301 | Privilege Escalation | 20 | 5 | 3 | 2 | 10 | **-** ***id***: 00000000-0000-0000-0000-000000000601<br> ***name***: Financial<br> ***totalViolatedHits***: 8 |
+>| 00000000-0000-0000-0000-000000000001 | Excessive admin privileges | High | Open | 2026-03-25T09:29:55.000Z | 2026-03-25T13:29:54.000Z | 00000000-0000-0000-0000-000000000201 | Excessive admin privileges | Identity | Users with excessive admin privileges pose a risk of privilege escalation. | IDENTITY_HYGIENE | High | NIST,<br/>CIS | Review and revoke excess admin roles. | ACTIVE | 00000000-0000-0000-0000-000000000101 | Identity | Engineer | John Doe | rubrikdemo.com | ON_PREM_AD | ENTRA_ID | USER | PRIVILEGED | demo@rubrik.com | PRIVILEGED | User | 00000000-0000-0000-0000-000000000301 | Privilege Escalation | 20 | 5 | 3 | 2 | 10 | **-** ***id***: 00000000-0000-0000-0000-000000000601<br/> ***name***: Financial<br/> ***totalViolatedHits***: 8 |
 
 ### rubrik-identity-resilience-violation-status-update
 
@@ -5897,7 +5897,7 @@ Updates the status of the Identity Resilience (IR) violation.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | violation_id | The ID of the IR violation.<br/><br/>Note: Users can get the violation ID by executing the "rubrik-identity-resilience-violation-list" command. | Required |
-| status | The status to update for violation. Possible values are: OPEN, IN_PROGRESS, REMEDIATED, DISMISSED, CLOSED. | Required |
+| status | The status to update for the violation. Possible values are: OPEN, IN_PROGRESS, REMEDIATED, DISMISSED, CLOSED. | Required |
 
 #### Context Output
 

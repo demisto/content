@@ -1,4 +1,4 @@
-Syncs the IR violation information from RSC to XSOAR.
+Syncs the IR violation information from RSC to Cortex XSOAR.
 
 ## Script Data
 
