@@ -5425,6 +5425,15 @@ def get_azure_client(params: dict, args: dict, command: str):
     resource = get_command_resource(command)
     demisto.debug(f"Got {resource=}")
     if not params.get("credentials", {}).get("password"):
+        # No Client Secret was provided. The CTS (Cortex Platform / COOC) flow below relies on
+        # demisto._platformAPICall, which only exists on the Cortex Platform. On XSOAR / XSIAM
+        # (marketplace) there is no connector, so fail fast with a clear, actionable message.
+        if not get_connector_id():
+            raise DemistoException(
+                "Missing Client Secret. When running on Cortex XSOAR or Cortex XSIAM, configure the "
+                "Client Secret (along with Application ID, Tenant ID, and Subscription ID) in the "
+                "integration instance."
+            )
         credentials = get_cloud_credentials(
             CloudTypes.AZURE.value,
             get_from_args_or_params(params=params, args=args, key="subscription_id"),
@@ -5624,15 +5633,20 @@ def main():  # pragma: no cover
             "azure-postgres-config-set-statement-logging-quick-action": set_postgres_config_command,
             "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
         }
-        if command == "test-module" and connector_id:
-            if is_gov_account(connector_id):  # type: ignore
-                switch_to_gov_account()
-            demisto.debug(f"Running health check for connector ID: {connector_id}")
-            return return_results(run_health_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
+        # Platform (COOC) path: a connector ID is present. Only here may we call the
+        # platform-only COOC APIs (is_gov_account / run_health_check_for_accounts), which
+        # rely on demisto._platformAPICall and are NOT available on XSOAR / XSIAM marketplace.
+        if connector_id:
+            if command == "test-module":
+                if is_gov_account(connector_id):  # type: ignore
+                    switch_to_gov_account()
+                demisto.debug(f"Running health check for connector ID: {connector_id}")
+                return return_results(run_health_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
 
-        account_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-        if is_gov_account(connector_id, account_id):  # type: ignore
-            switch_to_gov_account()
+            account_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+            if is_gov_account(connector_id, account_id):  # type: ignore
+                switch_to_gov_account()
+
         client = get_azure_client(params, args, command)
         if command == "test-module":
             return_results(test_module(client))
