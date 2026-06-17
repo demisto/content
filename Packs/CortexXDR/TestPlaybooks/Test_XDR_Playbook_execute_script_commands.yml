@@ -1097,5 +1097,3 @@ marketplaces:
 - xsoar
 - xpanse
 - platform
-supportedModules:
-- agentix
