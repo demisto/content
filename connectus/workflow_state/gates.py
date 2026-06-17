@@ -160,7 +160,12 @@ def _derive_handler_id(integration_id: str) -> str:
     ``"AWS - ACM"`` -> ``xsoar-aws-acm``, not ``xsoar-aws---acm``).
     """
     slug = re.sub(r"\s+", "-", integration_id.strip().lower())
-    slug = slug.replace("---", "-")
+    # Strip punctuation other than word chars / dashes so this matches
+    # manifest_generator.derive_handler_id (e.g. ``MITRE ATT&CK v2`` ->
+    # ``xsoar-mitre-att-ck-v2``, not ``xsoar-mitre-att&ck-v2``). Underscores
+    # preserved for license-map / sub-capability lockstep.
+    slug = re.sub(r"[^a-z0-9_-]+", "-", slug)
+    slug = re.sub(r"-+", "-", slug).strip("-")
     return f"xsoar-{slug}"
 
 

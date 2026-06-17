@@ -684,7 +684,15 @@ def derive_handler_id(integration_id: str) -> str:
     # kept in lockstep (it also preserves ``_``) so the view_group registry
     # and references agree.
     slug = re.sub(r"\s+", "-", integration_id.strip().lower())
-    slug = slug.replace("---", "-")
+    # Strip punctuation other than word chars / dashes so the slug stays in
+    # lockstep with ``slugify_view_group_id`` (which does the same). Without
+    # this, an id like ``MITRE ATT&CK v2`` keeps the ``&`` here
+    # (``mitre-att&ck-v2``) while the view_group registry sanitizes it
+    # (``mitre-att-ck-v2``), desyncing the reference from its registration and
+    # tripping the OPA "view_group not registered" cross-file check. ``_`` is
+    # preserved (license-map / sub-capability id lockstep).
+    slug = re.sub(r"[^a-z0-9_-]+", "-", slug)
+    slug = re.sub(r"-+", "-", slug).strip("-")
     return f"xsoar-{slug}"
 
 
@@ -3413,8 +3421,12 @@ FEED_BYPASS_EXCLUSION_ADDITIONAL_INFO = (
     "exclusion list, the indicator might still be added to the system."
 )
 
-# feedReputation default (module.go: ReputationNotSet = "").
-FEED_REPUTATION_DEFAULT = ""
+# feedReputation default. module.go's ReputationNotSet is "", but the connectus
+# ``select`` field's ``default_value`` MUST match one of ``values[].key``
+# (Unknown/Benign/Suspicious/Malicious) or OPA rejects it with
+# "default_value '' does not match any values[].key". "Unknown" is the canonical
+# equivalent of "reputation not set" (it's the remap target of the legacy "None").
+FEED_REPUTATION_DEFAULT = "Unknown"
 
 # feedReputation additionalinfo (module.go line 692).
 FEED_REPUTATION_ADDITIONAL_INFO = (
