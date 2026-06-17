@@ -189,11 +189,12 @@ call esxi_event_classification
     src_pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
     user_name = arrayindex(regextract(msg, "USER\s+(\w+)"),0),
     pid = arrayindex(regextract(msg, "pid\s+(\d+)"),0),
-    command_line = arrayindex(regextract(msg, "cmd\s+(.+)"),0),
-    exec_token = arrayindex(regextract(command_line, "^(\S+)"),0),
+    command_line = arrayindex(regextract(msg, "cmd\s+(.+)"),0)
+| alter
+    exec_token = arrayindex(regextract(command_line, "^(\S+)"),0)
+| alter    
     exec_name = arrayindex(regextract(exec_token, "([^\/]+)$"),0),
-    exec_path = if(exec_token ~= "\/", exec_token, null)
-
+    exec_path = if(exec_token ~= "\/", exec_token, null)    
 | alter // Map to XDM
     xdm.source.host.hostname = parsed_fields -> hostname,
     xdm.source.process.name = process_name,
