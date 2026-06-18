@@ -4069,7 +4069,7 @@ script:
     prettyname: Terminate CGO (deprecated)
     quickaction: true
     hidden: true
-    description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above. This quick action is deprecated. Use the new Terminate CGO quick action instead.
+    description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4 and above. This quick action is deprecated. Use the new Terminate CGO quick action instead.
     polling: true
     outputs:
     - contextPath: Core.TerminateCausality.action_id
