@@ -102,7 +102,7 @@ configurations:
         help_text: select if classifier doesn't exist
         placeholder: Select an issue type
   - fields:
-    - id: alertFetchInterval
+    - id: incidentFetchInterval
       field_type: duration
       title: Issues Fetch Interval
       options:

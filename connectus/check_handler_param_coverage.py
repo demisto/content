@@ -52,7 +52,7 @@ two Platform-rename special cases:
     connector exposes an ``incidentType`` field (bare or sub-capability
     prefixed, e.g. ``fetch-issues_<int>_incidentType``);
   * an integration ``incidentFetchInterval`` param is considered covered
-    when the connector exposes an ``alertFetchInterval`` field (bare or
+    when the connector exposes an ``incidentFetchInterval`` field (bare or
     sub-capability prefixed).
 
 One more special case covers XSOAR ``type: 9`` credentials widgets. A
@@ -131,17 +131,18 @@ COMPUTED_FIELDS_KEY = "computed_fields"
 
 # Platform "alert" renames. The Platform migrates the legacy XSOAR
 # ``incidentType`` / ``incidentFetchInterval`` params to ``incidentType`` /
-# ``alertFetchInterval`` on the connector side with NO serializer bridge back
+# ``incidentFetchInterval`` on the connector side with NO serializer bridge back
 # to the original names. The connector id may also be sub-capability prefixed
 # (e.g. ``fetch-issues_<int>_incidentType``), so coverage uses a suffix match.
 INCIDENT_TYPE_PARAM = "incidentType"
 ALERT_TYPE_SUFFIX = "incidentType"
 INCIDENT_FETCH_INTERVAL_PARAM = "incidentFetchInterval"
-ALERT_FETCH_INTERVAL_SUFFIX = "alertFetchInterval"
+ALERT_FETCH_INTERVAL_SUFFIX = "incidentFetchInterval"
 IGNORED_PARAMS = {
     "is_mirroring",
     "mirroring",
     "close_ticket",
+    "resolve_finding",
     "file_tag",
     "mirror_options",
     "close_incident",
@@ -157,6 +158,28 @@ IGNORED_PARAMS = {
     "longRunning",
     "longRunningPort",
 }
+
+ENGINE_PROXY_EXCLUDED: frozenset[str] = frozenset(
+    s.lower()
+    for s in {
+        "EDL",
+        "ExportIndicators",
+        "PingCastle",
+        "Publish List",
+        "Simple API Proxy",
+        "Syslog v2",
+        "TAXII Server",
+        "TAXII2 Server",
+        "Web File Repository",
+        "Workday_IAM_Event_Generator",
+        "XSOAR-Web-Server",
+        "Microsoft Teams",
+        "AWS-SNS-Listener",
+        "AWS",
+        "Azure",
+        "GCP",
+    }
+)
 
 # XSOAR ``type: 9`` — the credentials widget. A single integration YML param
 # of this type is a *compound* field: the integration reads it as
@@ -569,7 +592,7 @@ def collect_connector_raw_field_ids(
     Unions field ids from capability configs, view-group general configs, auth
     profiles, and serializer ``computed_fields[].output[].id`` — WITHOUT
     resolving them through the serializer ``field_mappings``. Raw ids are what
-    the alert-rename suffix match (``incidentType`` / ``alertFetchInterval``)
+    the alert-rename suffix match (``incidentType`` / ``incidentFetchInterval``)
     needs, since those fields are migrated with no serializer bridge and may be
     sub-capability prefixed.
     """
@@ -627,29 +650,6 @@ def collect_connector_params(
     return {resolve_param_name(fid, serializer_mappings) for fid in raw_field_ids}
 
 
-def _alert_rename_covered(missing: set[str], raw_field_ids: list[str]) -> set[str]:
-    """Drop Platform-renamed alert params from ``missing`` when covered.
-
-    The Platform migrates ``incidentType`` -> ``incidentType`` and
-    ``incidentFetchInterval`` -> ``alertFetchInterval`` on the connector side
-    with no serializer bridge, and the connector id may be sub-capability
-    prefixed (e.g. ``fetch-issues_<int>_incidentType``). So an integration
-    ``incidentType`` / ``incidentFetchInterval`` is considered covered when any
-    raw connector field id equals or ends with the matching alert suffix.
-    """
-    resolved = set(missing)
-    rename_pairs = (
-        (INCIDENT_TYPE_PARAM, ALERT_TYPE_SUFFIX),
-        (INCIDENT_FETCH_INTERVAL_PARAM, ALERT_FETCH_INTERVAL_SUFFIX),
-    )
-    for incident_param, alert_suffix in rename_pairs:
-        if incident_param not in resolved:
-            continue
-        if any(fid == alert_suffix or fid.endswith(alert_suffix) for fid in raw_field_ids):
-            resolved.discard(incident_param)
-    return resolved
-
-
 def _raw_id_matches_leaf(leaf_id: str, raw_field_ids: list[str]) -> bool:
     """Return True when a connector leaf id is present in the raw field ids.
 
@@ -662,6 +662,21 @@ def _raw_id_matches_leaf(leaf_id: str, raw_field_ids: list[str]) -> bool:
     return any(
         fid == leaf_id or fid.endswith(underscore_suffix) for fid in raw_field_ids
     )
+
+
+def resolve_proxy(missing, id):
+    """Waive the ``proxy`` coverage requirement for engine/proxy-excluded
+    integrations (Appendix G).
+
+    The manifest generator intentionally does NOT emit a ``proxy`` connection
+    field for integrations in ``ENGINE_PROXY_EXCLUDED`` (see
+    ``manifest_generator.engine_exclusion_class`` -> ``"excluded"``), so
+    requiring it here would be a false-positive coverage gap. The excluded set
+    is stored lowercased, so the integration id is lowercased before lookup.
+    """
+    if id.strip().lower() in ENGINE_PROXY_EXCLUDED:
+        missing.discard("proxy")
+    return missing
 
 
 def _type9_leaf_covered(
@@ -759,7 +774,7 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
     connection_doc = load_yaml(connector_root / CONNECTION_FILE)
     handler_yaml = load_yaml(handler_yaml_path)
     integration_yml = load_yaml(integration_yml_path)
-
+    integration_id = (integration_yml.get("commonfields") or {}).get("id", "")
     yml_params = collect_yml_params(integration_yml)
     type9_params = collect_type9_params(integration_yml)
     raw_field_ids = collect_connector_raw_field_ids(
@@ -776,14 +791,12 @@ def check_coverage(handler_path: Path, integration_yml_path: Path) -> tuple[bool
     print(f"Got the following integration params: {yml_params=}")
     print(f"Got the following handler params: {connector_params=}")
     missing = yml_params - connector_params
-    # Platform "alert" renames: incidentType -> incidentType,
-    # incidentFetchInterval -> alertFetchInterval (no serializer bridge).
-    missing = _alert_rename_covered(missing, raw_field_ids)
     # type:9 credentials widgets split into <name>_username / <name>_password
     # leaves on the connector (or a password-only field when hiddenusername).
     missing = _type9_leaf_covered(
         missing, raw_field_ids, connector_params, type9_params
     )
+    resolve_proxy(missing, integration_id)
     missing = missing - IGNORED_PARAMS
     return (len(missing) == 0), missing
 

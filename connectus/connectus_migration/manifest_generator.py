@@ -684,7 +684,15 @@ def derive_handler_id(integration_id: str) -> str:
     # kept in lockstep (it also preserves ``_``) so the view_group registry
     # and references agree.
     slug = re.sub(r"\s+", "-", integration_id.strip().lower())
-    slug = slug.replace("---", "-")
+    # Strip punctuation other than word chars / dashes so the slug stays in
+    # lockstep with ``slugify_view_group_id`` (which does the same). Without
+    # this, an id like ``MITRE ATT&CK v2`` keeps the ``&`` here
+    # (``mitre-att&ck-v2``) while the view_group registry sanitizes it
+    # (``mitre-att-ck-v2``), desyncing the reference from its registration and
+    # tripping the OPA "view_group not registered" cross-file check. ``_`` is
+    # preserved (license-map / sub-capability id lockstep).
+    slug = re.sub(r"[^a-z0-9_-]+", "-", slug)
+    slug = re.sub(r"-+", "-", slug).strip("-")
     return f"xsoar-{slug}"
 
 
@@ -1723,7 +1731,7 @@ def register_computed_field_entry(
 # The per-field path (:func:`emit_field_for_param`) already implements this for
 # params that flow through it, but two classes of param escape that path:
 #   1. Params emitted by dedicated capability builders (e.g.
-#      ``eventFetchInterval`` / ``alertFetchInterval`` via ``_map_type_19``),
+#      ``eventFetchInterval`` / ``incidentFetchInterval`` via ``_map_type_19``),
 #      which honour ``hidden`` but do NOT reroute to the serializer.
 #   2. "Orphan" config-only params the param-mapper never routes into any
 #      capability bucket (e.g. ``max_concurrent_tasks``), so they never reach
@@ -1762,6 +1770,7 @@ MIRROR_PARAMS: frozenset[str] = frozenset(
     {
         "mirror_options",
         "close_incident",
+        "resolve_finding",
         "close_ticket",
         "file_tag",
         "mirror_limit",
@@ -1782,15 +1791,15 @@ MIRROR_PARAMS: frozenset[str] = frozenset(
 # that the platform consumes DIRECTLY (no serializer ``field_mappings`` bridge
 # back to the XSOAR name). The fetch-issues builder migrates the legacy
 # "incident" names to the Platform "alert" names (guide §line 889-890):
-#   incidentFetchInterval -> alertFetchInterval
+#   incidentFetchInterval -> incidentFetchInterval
 #   incidentType          -> incidentType
 # When the sweep moves one of these hidden+default params to the serializer it
 # must (a) remove the RENAMED field id from configurations.yaml and (b) emit the
 # computed_fields output using the RENAMED id (what the platform reads).
-# Literals kept in lockstep with ``ALERTFETCHINTERVAL_FIELD_ID`` /
+# Literals kept in lockstep with ``incidentFetchInterval_FIELD_ID`` /
 # ``incidentType_FIELD_ID`` (defined later in the module).
 _KNOWN_BUILDER_FIELD_RENAMES: dict[str, str] = {
-    "incidentFetchInterval": "alertFetchInterval",
+    "incidentFetchInterval": "incidentFetchInterval",
     "incidentType": "incidentType",
 }
 
@@ -1986,7 +1995,7 @@ def _remove_field_from_configurations(
 
     # Per-capability configuration entries. Scope to the new handler's entries
     # (matched by ``view_group``) when a filter is supplied so a builder-renamed
-    # field shared with an EXISTING handler (e.g. ``alertFetchInterval`` in that
+    # field shared with an EXISTING handler (e.g. ``incidentFetchInterval`` in that
     # handler's fetch-issues entry) is not wrongly removed.
     for entry in configurations_data.get("configurations", []) or []:
         if not (isinstance(entry, dict) and isinstance(entry.get("configurations"), list)):
@@ -2102,7 +2111,7 @@ def sweep_hidden_defaults_to_serializer(
         # Some capability builders rename the XSOAR param to a Platform
         # "alert" id that the platform consumes DIRECTLY (no field_mappings
         # bridge back to the XSOAR name) — e.g. fetch-issues maps
-        # ``incidentFetchInterval`` -> ``alertFetchInterval`` (see
+        # ``incidentFetchInterval`` -> ``incidentFetchInterval`` (see
         # :data:`_KNOWN_BUILDER_FIELD_RENAMES`). For those, both the field to
         # remove AND the computed_fields output id are the RENAMED id.
         # Otherwise the field id == the XSOAR param name and the output id is
@@ -2282,7 +2291,7 @@ def _coerce_hidden_default_value(yml_param: dict) -> Any:
     # ``default_value`` fallback (used by some migration inputs) may be parsed
     # by YAML as an int/float, so normalize it to a string to match the XSOAR
     # convention (the serializer ``computed_fields`` value is then consistent
-    # with builder-emitted defaults like ``alertFetchInterval: '30'``).
+    # with builder-emitted defaults like ``incidentFetchInterval: '30'``).
     raw = yml_param.get("defaultvalue")
     if raw is None:
         raw = yml_param.get("default_value")
@@ -3412,8 +3421,12 @@ FEED_BYPASS_EXCLUSION_ADDITIONAL_INFO = (
     "exclusion list, the indicator might still be added to the system."
 )
 
-# feedReputation default (module.go: ReputationNotSet = "").
-FEED_REPUTATION_DEFAULT = ""
+# feedReputation default. module.go's ReputationNotSet is "", but the connectus
+# ``select`` field's ``default_value`` MUST match one of ``values[].key``
+# (Unknown/Benign/Suspicious/Malicious) or OPA rejects it with
+# "default_value '' does not match any values[].key". "Unknown" is the canonical
+# equivalent of "reputation not set" (it's the remap target of the legacy "None").
+FEED_REPUTATION_DEFAULT = "Unknown"
 
 # feedReputation additionalinfo (module.go line 692).
 FEED_REPUTATION_ADDITIONAL_INFO = (
@@ -3977,7 +3990,7 @@ INCIDENTFETCHINTERVAL_FALLBACK_DEFAULT = "1"  # string per XSOAR convention
 ISFETCH_PARAM_NAME = "isFetch"
 INCIDENTTYPE_PARAM_NAME = "incidentType"
 INCIDENTFETCHINTERVAL_PARAM_NAME = "incidentFetchInterval"
-ALERTFETCHINTERVAL_PARAM_NAME = "alertFetchInterval"
+incidentFetchInterval_PARAM_NAME = "incidentFetchInterval"
 LONGRUNNING_PARAM_NAME = "longRunning"
 
 # The mapper bucket key for the Fetch Issues capability. Must match
@@ -3991,13 +4004,13 @@ FETCH_ISSUES_BUCKET_KEY = "Fetch Issues"
 # Connector-side (Platform) field ids for the fetch-issues type/interval
 # fields. Per migration guide §line 889-890 the Platform renames the legacy
 # XSOAR ``incidentType``/``incidentFetchInterval`` params to ``incidentType``/
-# ``alertFetchInterval`` on the connector side. The original XSOAR names are
+# ``incidentFetchInterval`` on the connector side. The original XSOAR names are
 # still consumed by the integration at runtime, so a serializer field_mapping
 # bridges the Platform id back to the XSOAR name (see §6 of
 # ``add_fetch_issues_capability``). ``dynamicField`` keeps the XSOAR provider
 # hint ``"incident-type"`` regardless of the connector-side id.
 incidentType_FIELD_ID = "incidentType"
-ALERTFETCHINTERVAL_FIELD_ID = "alertFetchInterval"
+incidentFetchInterval_FIELD_ID = "incidentFetchInterval"
 
 # Connector-side field ids for the dynamic fields (mapper + classifier).
 # These mirror the XSOAR instance-level field names (per migration guide
@@ -4014,7 +4027,7 @@ _FETCH_ISSUES_STRIPPED_PARAMS: frozenset[str] = frozenset(
         ISFETCH_PARAM_NAME,
         INCIDENTTYPE_PARAM_NAME,
         INCIDENTFETCHINTERVAL_PARAM_NAME,
-        ALERTFETCHINTERVAL_PARAM_NAME,
+        incidentFetchInterval_PARAM_NAME,
     }
 )
 
@@ -4198,12 +4211,12 @@ def add_fetch_issues_capability(
 
     Side effects:
       1. Strips ``isFetch``, ``incidentType``, ``incidentFetchInterval``,
-         ``alertFetchInterval`` from every bucket of ``mapped_params``.
+         ``incidentFetchInterval`` from every bucket of ``mapped_params``.
          When the mapper routed ``longRunning`` here, also strips
          ``longRunning``.
       2. Rename bridges via serializer for each renamed field. The
          Platform "alert" renames (``incidentType`` -> ``incidentType`` and
-         ``incidentFetchInterval`` -> ``alertFetchInterval``, guide
+         ``incidentFetchInterval`` -> ``incidentFetchInterval``, guide
          §line 889-890) always apply, so bridges are registered in BOTH the
          top-level and sub-capability paths whenever ``handler_dir`` is set;
          sub-cap prefixing adds bridges for the remaining fields.
@@ -4235,7 +4248,7 @@ def add_fetch_issues_capability(
     # Platform "alert" names, not the legacy XSOAR "incident" names. The
     # XSOAR names are bridged back via the serializer in §6 below.
     inctype_field_id = _field_id(incidentType_FIELD_ID)
-    incfi_field_id = _field_id(ALERTFETCHINTERVAL_FIELD_ID)
+    incfi_field_id = _field_id(incidentFetchInterval_FIELD_ID)
     mapper_field_id = _field_id(MAPPER_INCOMING_FIELD_ID)
     classifier_field_id = _field_id(CLASSIFIER_FIELD_ID)
     lr_field_id = _field_id(LONGRUNNING_PARAM_NAME) if emit_longrunning else ""
@@ -4310,9 +4323,9 @@ def add_fetch_issues_capability(
         placeholder=_incidentType_PLACEHOLDER,
     ))
 
-    # 3. alertFetchInterval (XSOAR incidentFetchInterval) — duration picker.
+    # 3. incidentFetchInterval (XSOAR incidentFetchInterval) — duration picker.
     # Same migration rule: emit ONLY when the source param exists in the yml,
-    # carrying its yml default. Migrated as ``alertFetchInterval`` with NO
+    # carrying its yml default. Migrated as ``incidentFetchInterval`` with NO
     # serializer bridge back to ``incidentFetchInterval``.
     incfi_yml = _yml(INCIDENTFETCHINTERVAL_PARAM_NAME)
     fields.append(_build_incidentfetchinterval_field(
@@ -4407,9 +4420,9 @@ def add_fetch_issues_capability(
     #
     # Migration rule (Issue #8): the Platform "alert" renames
     # (``incidentType`` -> ``incidentType`` and
-    # ``incidentFetchInterval`` -> ``alertFetchInterval``) are NO LONGER
+    # ``incidentFetchInterval`` -> ``incidentFetchInterval``) are NO LONGER
     # bridged — the alert fields are migrated as ``incidentType`` /
-    # ``alertFetchInterval`` and the platform consumes those names directly.
+    # ``incidentFetchInterval`` and the platform consumes those names directly.
     # They are therefore excluded from the bridge map. (Sub-cap prefixing is
     # also not bridged for the alert fields, matching the no-serialization
     # contract.)
@@ -5920,7 +5933,12 @@ def _map_type_9(yml_param: dict) -> list[dict]:
     """
     name = yml_param.get("name", "")
     display = yml_param.get("display") or name
-    display_password = yml_param.get("displaypassword") or display
+    # Password-leaf title: prefer the explicit ``displaypassword`` label; when the
+    # YML omits it, fall back to the literal "Password" (mirroring XSOAR's own
+    # default for a type-9 widget). Do NOT fall back to ``display`` — that is the
+    # username leaf's label and would title both leaves identically (e.g. both
+    # showing "Username").
+    display_password = yml_param.get("displaypassword") or "Password"
 
     fields: list[dict] = []
 
@@ -6555,8 +6573,30 @@ def _connection_profile_title(
 def _connection_field_title(
     field_id: str, yml_params_by_name: dict[str, dict] | None
 ) -> str:
-    """Best-effort human title for a connection auth field (enrichment-only)."""
+    """Best-effort human title for a connection auth field (enrichment-only).
+
+    The username/password leaf logic ONLY applies to XSOAR **type-9
+    (Credentials) widgets**, which expand into two fields (``<name>_username``
+    + ``<name>_password``, or the bare ``<name>`` password leaf when
+    ``hiddenusername`` is set). For any other param type (flat type-0/4/14/…
+    keyed directly in ``xsoar_param_map`` — e.g. an STS ``roleArn``, a session
+    name, a flat ``api_key``), the field is a SINGLE input whose title is simply
+    its own ``display``. Without the type-9 gate, a flat param would wrongly hit
+    the password branch (because ``field_id == base``) and be titled "Password".
+    """
     if yml_params_by_name:
+        # Prefer a direct match (flat param, or the hiddenusername bare-id
+        # password leaf) before stripping leaf suffixes.
+        direct = yml_params_by_name.get(field_id)
+        if direct is not None and int(direct.get("type", 0) or 0) != 9:
+            # Non-type-9 flat param: single field, title = its own display.
+            label = direct.get("display")
+            if label and str(label).strip():
+                return str(label)
+            return field_id.replace("_", " ").strip().title() or field_id
+
+        # Type-9 credentials widget: resolve the base param and pick the leaf
+        # label (username display vs. displaypassword / "Password").
         base = field_id
         for suffix in ("_username", "_password"):
             if field_id.endswith(suffix):
@@ -6565,7 +6605,9 @@ def _connection_field_title(
         yml = yml_params_by_name.get(base)
         if yml:
             if field_id.endswith("_password") or field_id == base:
-                label = yml.get("displaypassword") or yml.get("display")
+                # Password leaf: explicit displaypassword, else literal "Password"
+                # (never the username's ``display``, which would duplicate titles).
+                label = yml.get("displaypassword") or "Password"
             else:
                 label = yml.get("display")
             if label and str(label).strip():
@@ -6607,10 +6649,24 @@ def build_connection_profile(
         field_id = _connection_field_id_from_map_key(map_key, map_keys)
         auth_parameter = _auth_parameter_for_role(profile_type, role)
         is_username = auth_parameter == "username"
-        mask = not is_username
-        if "." not in map_key:
-            if yml_params_by_name.get(map_key, {}).get('type', 4) in [4, 9, 14] and not is_username:
-                mask = True
+
+        # Mask ONLY genuinely-secret fields. The authoritative rule:
+        #   - XSOAR type 4 (Encrypted text)        -> mask
+        #   - XSOAR type 9 (Credentials) PASSWORD  -> mask  (the .password leaf)
+        #   - XSOAR type 14 (Certificate/Key)      -> mask
+        #   - everything else (type 0/short text, the type-9 .identifier
+        #     username leaf, region/host/ARN/session-name routing params) -> no mask
+        # The map_key tells us the leaf: a dotted ``<param>.password`` is the
+        # type-9 password leaf; ``<param>.identifier`` is the username leaf; a
+        # flat key is a single field whose masking depends on its own YML type.
+        origin_param = map_key.partition(".")[0]
+        origin_type = int(yml_params_by_name.get(origin_param, {}).get("type", 0) or 0)
+        if "." in map_key:
+            # type-9 credentials leaf: mask only the password leaf.
+            mask = map_key.endswith(".password")
+        else:
+            # flat key: mask only encrypted / cert-key types.
+            mask = origin_type in (4, 14)
 
         # Derive requiredness from the originating XSOAR YML param's
         # ``required:`` flag rather than hard-forcing True. The originating

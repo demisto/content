@@ -11427,14 +11427,29 @@ class TestUcpCapabilityResolution:
     """
 
     def test_resolve_fetch_incidents_maps_to_collection(self):
-        """fetch-incidents should map to 'collection-and-ingestion'."""
+        """fetch-incidents should map to 'fetch-issues'."""
         result = CommonServerPython.resolve_ucp_capability(command='fetch-incidents')
-        assert result == 'collection-and-ingestion'
+        assert result == 'fetch-issues'
+
+    def test_resolve_fetch_events_maps_to_log_collection(self):
+        """fetch-events should map to 'log-collection'."""
+        result = CommonServerPython.resolve_ucp_capability(command='fetch-events')
+        assert result == 'log-collection'
+
+    def test_resolve_fetch_credentials_maps_to_secrets(self):
+        """fetch-credentials should map to 'fetch-secrets'."""
+        result = CommonServerPython.resolve_ucp_capability(command='fetch-credentials')
+        assert result == 'fetch-secrets'
+
+    def test_resolve_fetch_indicators_maps_to_threat_intel(self):
+        """fetch-indicators should map to 'threat-intelligence-and-enrichment'."""
+        result = CommonServerPython.resolve_ucp_capability(command='fetch-indicators')
+        assert result == 'threat-intelligence-and-enrichment'
 
     def test_resolve_fetch_assets_maps_to_collection(self):
-        """fetch-assets should map to 'collection-and-ingestion'."""
+        """fetch-assets should map to 'fetch-assets-and-vulnerabilities'."""
         result = CommonServerPython.resolve_ucp_capability(command='fetch-assets')
-        assert result == 'collection-and-ingestion'
+        assert result == 'fetch-assets-and-vulnerabilities'
 
     def test_resolve_unknown_command_maps_to_default(self):
         """Unknown commands should fall back to the default capability."""
@@ -11445,7 +11460,7 @@ class TestUcpCapabilityResolution:
         """When command=None, should use demisto.command() to get the current command."""
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         result = CommonServerPython.resolve_ucp_capability(command=None)
-        assert result == 'collection-and-ingestion'
+        assert result == 'fetch-issues'
 
     def test_resolve_none_command_unknown_demisto_command(self, mocker):
         """When command=None and demisto.command() returns an unknown command, should use default."""
@@ -11468,7 +11483,7 @@ class TestUcpCapabilityResolution:
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         client = CommonServerPython.BaseClient(base_url='https://example.com')
         capability, sub_capability = client._resolve_ucp_capability()
-        assert capability == 'collection-and-ingestion'
+        assert capability == 'fetch-issues'
         assert sub_capability is None
 
     def test_baseclient_resolve_ucp_capability_override(self, mocker):
@@ -11488,8 +11503,11 @@ class TestUcpCapabilityResolution:
         This is a safety net — if someone changes these constants, tests should catch it."""
         assert CommonServerPython._UCP_DEFAULT_CAPABILITY == 'automation-and-remediation'
         assert CommonServerPython._UCP_COMMAND_CAPABILITIES == {
-            'fetch-incidents': 'collection-and-ingestion',
-            'fetch-assets': 'collection-and-ingestion',
+            'fetch-incidents': 'fetch-issues',
+            'fetch-events': 'log-collection',
+            'fetch-credentials': 'fetch-secrets',
+            'fetch-indicators': 'threat-intelligence-and-enrichment',
+            'fetch-assets': 'fetch-assets-and-vulnerabilities',
         }
 
 
@@ -11555,7 +11573,7 @@ class TestUcpProfileResolution:
     def test_find_by_capability_match(self, ucp_metadata_multi):
         """Should find profile when capability matches."""
         profiles = ucp_metadata_multi['connectionProfiles']
-        result = CommonServerPython._find_ucp_profile_by_capability(profiles, 'collection-and-ingestion')
+        result = CommonServerPython._find_ucp_profile_by_capability(profiles, 'fetch-issues')
         assert result == 'method-collect-ingest'
 
     def test_find_by_capability_no_match(self, ucp_metadata_single):
@@ -11579,7 +11597,7 @@ class TestUcpProfileResolution:
         """sub_capability match should take priority over capability match."""
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
         result = CommonServerPython.get_ucp_method_unique_id(
-            capability='collection-and-ingestion',
+            capability='fetch-issues',
             sub_capability='salesforce-iam'
         )
         # salesforce-iam is in the first profile (method-auto-remed), not the collection one
@@ -11590,7 +11608,7 @@ class TestUcpProfileResolution:
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         result = CommonServerPython.get_ucp_method_unique_id(
-            capability='collection-and-ingestion',
+            capability='fetch-issues',
             sub_capability=None
         )
         assert result == 'method-collect-ingest'
@@ -11614,7 +11632,7 @@ class TestUcpProfileResolution:
         """When capability=None, should auto-resolve via resolve_ucp_capability()."""
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
-        # capability=None should resolve to 'collection-and-ingestion' for fetch-incidents
+        # capability=None should resolve to 'fetch-issues' for fetch-incidents
         result = CommonServerPython.get_ucp_method_unique_id(capability=None, sub_capability=None)
         assert result == 'method-collect-ingest'
 
@@ -12196,7 +12214,7 @@ class TestUcpInjectionFlow:
         assert result == 'abc123'
 
     def test_inject_uses_correct_profile_for_fetch_incidents(self, mocker, ucp_metadata_multi, ucp_creds_oauth2, ucp_clean_cache):
-        """For fetch-incidents, should use the collection-and-ingestion profile."""
+        """For fetch-incidents, should use the fetch-issues profile."""
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi)
         mocker.patch.object(demisto, 'getUCPCredentials', return_value=ucp_creds_oauth2)
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
@@ -12208,7 +12226,7 @@ class TestUcpInjectionFlow:
             headers={}, params={}, auth=None, data=None, json_data=None
         )
         method_id = client._inject_ucp_credentials(ctx)
-        # fetch-incidents maps to collection-and-ingestion → method-collect-ingest
+        # fetch-incidents maps to fetch-issues → method-collect-ingest
         assert method_id == 'method-collect-ingest'
 
 
@@ -12985,9 +13003,9 @@ class TestUcpNonBaseClientUsage:
         assert result == 'automation-and-remediation'
 
     def test_resolve_ucp_capability_fetch_incidents(self, mocker):
-        """resolve_ucp_capability() maps fetch-incidents to collection-and-ingestion."""
+        """resolve_ucp_capability() maps fetch-incidents to fetch-issues."""
         result = CommonServerPython.resolve_ucp_capability(command='fetch-incidents')
-        assert result == 'collection-and-ingestion'
+        assert result == 'fetch-issues'
 
     def test_get_ucp_credentials_standalone(self, mocker, ucp_clean_cache, ucp_creds_oauth2):
         """get_ucp_credentials() should call demisto.getUCPCredentials() correctly."""
@@ -13520,14 +13538,6 @@ class TestUcpInterpolation:
         result = CommonServerPython._select_ucp_profiles(profiles, 'cap-a')
         assert [p['method_unique_id'] for p in result] == ['A']
 
-    def test_select_profiles_by_sub_capability(self):
-        profiles = [
-            {'capability': 'cap-a', 'method_unique_id': 'A', 'sub_capabilities': ['sub-x']},
-            {'capability': 'cap-b', 'method_unique_id': 'B', 'sub_capabilities': []},
-        ]
-        result = CommonServerPython._select_ucp_profiles(profiles, 'nope', sub_capability='sub-x')
-        assert [p['method_unique_id'] for p in result] == ['A']
-
     def test_select_profiles_multiple_matches(self):
         profiles = [
             {'capability': 'cap-x', 'method_unique_id': 'A'},
@@ -13536,14 +13546,15 @@ class TestUcpInterpolation:
         result = CommonServerPython._select_ucp_profiles(profiles, 'cap-x')
         assert [p['method_unique_id'] for p in result] == ['A', 'B']
 
-    def test_select_profiles_fallback_to_param_map_carriers(self, mocker):
+    def test_select_profiles_fallback_to_first_with_interpolation_mapping(self, mocker):
         mocker.patch.object(demisto, 'debug')
         profiles = [
-            {'capability': 'other', 'method_unique_id': 'A', 'param_map': 'u:x'},
-            {'capability': 'other', 'method_unique_id': 'B'},
+            {'capability': 'other', 'method_unique_id': 'A'},
+            {'capability': 'other', 'method_unique_id': 'B',
+             'metadata': {'xsoar': {'interpolation_mapping': 'u:x'}}},
         ]
         result = CommonServerPython._select_ucp_profiles(profiles, 'no-match')
-        assert [p['method_unique_id'] for p in result] == ['A']
+        assert [p['method_unique_id'] for p in result] == ['B']
 
     def test_select_profiles_empty(self):
         assert CommonServerPython._select_ucp_profiles([], 'cap') == []
@@ -13627,11 +13638,11 @@ class TestUcpInterpolation:
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         meta = {
             'connectionProfiles': [
-                {'capability': 'collection-and-ingestion', 'method_unique_id': 'A',
+                {'capability': 'fetch-issues', 'method_unique_id': 'A',
                  'param_map': 'k:credentials.password', 'fields': {'k': 'tok'}},
             ]
         }
-        # capability=None -> resolve_ucp_capability() -> collection-and-ingestion
+        # capability=None -> resolve_ucp_capability() -> fetch-issues
         result = CommonServerPython.build_ucp_params(meta, capability=None)
         assert result == {'credentials': {'password': 'tok'}}
 

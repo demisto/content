@@ -362,6 +362,126 @@ def test_packs_to_upload_dedupes_base():
 
 
 # ---------------------------------------------------------------------------
+# --skip-base-pack: omit Base from the upload list, ALWAYS keep the integration
+# ---------------------------------------------------------------------------
+def test_packs_to_upload_skip_base_keeps_integration():
+    """skip_base_pack drops Base but keeps the integration's own pack."""
+    packs = dat._packs_to_upload(
+        "Packs/AMP/Integrations/AMPv2/AMPv2.yml", skip_base_pack=True
+    )
+    assert packs == ["Packs/AMP"]  # no Base, integration kept
+
+
+def test_packs_to_upload_skip_base_only_yields_empty_when_no_pack():
+    """skip_base_pack + a non-pack yml path → empty list (nothing to upload)."""
+    assert dat._packs_to_upload("some/other/path.yml", skip_base_pack=True) == []
+
+
+def test_skip_base_pack_threads_to_packs(monkeypatch, mock_lock):
+    """run(..., skip_base_pack=True): the upload_packs passed to _run_deploy omit
+    Packs/Base but include the integration's own pack."""
+
+    class _FakePI:
+        connector_folder_path = "connectors/amp"
+        integration_yml_path = "Packs/AMP/Integrations/AMPv2/AMPv2.yml"
+
+    monkeypatch.setattr("resolver.resolve", lambda integration_id: _FakePI())
+
+    captured = {}
+
+    def _fake_deploy(tenant, commit_path=None, upload_packs=None,
+                     upload_insecure=False, skip_connector_deploy=False):
+        captured["upload_packs"] = upload_packs
+        return 0
+
+    monkeypatch.setattr(dat, "_run_deploy", _fake_deploy)
+    _set_parity(monkeypatch, 0)
+
+    rc = dat.run(["IntA"], "T1", max_wait=0, force=False, skip_base_pack=True)
+    assert rc == dat.EXIT_ALL_PASS
+    assert "Packs/Base" not in captured["upload_packs"]
+    assert "Packs/AMP" in captured["upload_packs"]
+
+
+def test_skip_connector_deploy_appends_skip_flags(monkeypatch):
+    """_run_deploy(..., skip_connector_deploy=True) appends BOTH --skip-git and
+    --skip-pipeline while keeping the integration --upload-pack arg."""
+    captured = {}
+
+    def fake_run(cmd, **kwargs):
+        captured["cmd"] = cmd
+        return _FakeProc(0)
+
+    monkeypatch.setattr(dat.subprocess, "run", fake_run)
+    rc = dat._run_deploy(
+        "T1", "connectors/amp", ["Packs/Base", "Packs/AMP"],
+        skip_connector_deploy=True,
+    )
+    assert rc == 0
+    cmd = captured["cmd"]
+    assert "--skip-git" in cmd
+    assert "--skip-pipeline" in cmd
+    pack_idxs = [i for i, t in enumerate(cmd) if t == "--upload-pack"]
+    assert "Packs/AMP" in [cmd[i + 1] for i in pack_idxs]
+
+
+def test_both_skips_still_upload_integration_pack(monkeypatch, mock_lock):
+    """KEY GUARANTEE: both skips on → the deploy cmd still contains the
+    integration --upload-pack, NO Packs/Base, plus --skip-git/--skip-pipeline."""
+
+    class _FakePI:
+        connector_folder_path = "connectors/amp"
+        integration_yml_path = "Packs/AMP/Integrations/AMPv2/AMPv2.yml"
+
+    monkeypatch.setattr("resolver.resolve", lambda integration_id: _FakePI())
+
+    captured = {}
+
+    def fake_run(cmd, **kwargs):
+        captured["cmd"] = cmd
+        return _FakeProc(0)
+
+    monkeypatch.setattr(dat.subprocess, "run", fake_run)
+    _set_parity(monkeypatch, 0)
+
+    rc = dat.run(
+        ["IntA"], "T1", max_wait=0, force=False,
+        skip_connector_deploy=True, skip_base_pack=True,
+    )
+    assert rc == dat.EXIT_ALL_PASS
+    cmd = captured["cmd"]
+    pack_idxs = [i for i, t in enumerate(cmd) if t == "--upload-pack"]
+    uploaded = [cmd[i + 1] for i in pack_idxs]
+    assert "Packs/AMP" in uploaded  # integration pack STILL uploaded
+    assert "Packs/Base" not in uploaded  # Base omitted
+    assert "--skip-git" in cmd
+    assert "--skip-pipeline" in cmd
+
+
+def test_skip_connector_deploy_still_runs_parity(monkeypatch, mock_lock):
+    """Both skips on, deploy mock returns 0 → exit 0 and parity STILL runs."""
+    parity_called = {"n": 0}
+
+    def _fake_deploy(tenant, commit_path=None, upload_packs=None,
+                     upload_insecure=False, skip_connector_deploy=False):
+        return 0
+
+    def _parity(integration_id):
+        parity_called["n"] += 1
+        return 0
+
+    monkeypatch.setattr(dat, "_run_deploy", _fake_deploy)
+    monkeypatch.setattr(dat, "_run_parity", _parity)
+    rc = dat.run(
+        ["IntA"], "T1", max_wait=0, force=False,
+        skip_connector_deploy=True, skip_base_pack=True,
+    )
+    assert rc == dat.EXIT_ALL_PASS
+    assert parity_called["n"] == 1  # parity still ran
+    assert mock_lock["release"]
+
+
+# ---------------------------------------------------------------------------
 # Tenant resolution (CLI > .env first-of-CSV; usage error if none)
 # ---------------------------------------------------------------------------
 def test_resolve_tenant_cli_wins(monkeypatch):
@@ -378,3 +498,48 @@ def test_resolve_tenant_none_is_usage_error(monkeypatch):
     monkeypatch.delenv("TENANT_ID", raising=False)
     with pytest.raises(SystemExit):
         dat._resolve_tenant(None)
+
+
+# ---------------------------------------------------------------------------
+# PARAMS_PARITY_DUMP payload parsing — regression for trailing non-JSON content
+# (server appends a "\nStack trace:" block when the probe's SystemExit surfaces
+# as a "runtime error"). See xsoar_capture.parse_params_dump_payload.
+# ---------------------------------------------------------------------------
+from main import parse_params_dump_payload  # noqa: E402  (re-exported from xsoar_capture)
+
+_PARITY_PARAMS = {
+    "credentials": {
+        "credential": "",
+        "identifier": "<override_user_credentials>",
+        "password": "<override_pass_credentials>",
+        "passwordChanged": False,
+    },
+    "insecure": True,
+    "server": "<override_server>",
+}
+_PARITY_JSON = (
+    '{"__params_parity_dump__":true,'
+    '"params":{"credentials":{"credential":"",'
+    '"identifier":"<override_user_credentials>",'
+    '"password":"<override_pass_credentials>","passwordChanged":false},'
+    '"insecure":true,"server":"<override_server>"}}'
+)
+
+
+def test_parse_params_dump_clean_payload():
+    """Baseline: sentinel + JSON with no trailing text parses to the params dict."""
+    message = "PARAMS_PARITY_DUMP::" + _PARITY_JSON
+    assert parse_params_dump_payload(message) == _PARITY_PARAMS
+
+
+def test_parse_params_dump_with_trailing_stack_trace():
+    """Regression: the exact failing AMP shape — sentinel JSON followed by a
+    server-appended ``\\nStack trace:\\n (2603)`` block — must parse WITHOUT
+    raising and return the correct params dict (the bug raised
+    ``json.JSONDecodeError: Extra data``)."""
+    message = (
+        "Script failed to run: runtime error: PARAMS_PARITY_DUMP::"
+        + _PARITY_JSON
+        + "\nStack trace:\n (2603)"
+    )
+    assert parse_params_dump_payload(message) == _PARITY_PARAMS

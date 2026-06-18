@@ -42,6 +42,12 @@ import re
 from pathlib import Path
 from typing import Any
 
+from be_config_params import (
+    BE_SYNTHESIZED_PARAM_NAMES,
+    XSOAR_FETCH_TOGGLES,
+    values_match,
+)
+
 try:
     from ruamel.yaml import YAML
     _YAML = YAML(typ="safe")
@@ -49,6 +55,11 @@ except ImportError:  # pragma: no cover — ruamel.yaml is in requirements.txt
     _YAML = None
 
 log = logging.getLogger("diff")
+
+#: Sentinel distinguishing "value field not supplied" from a real ``None`` value
+#: when emitting an out-of-variant-scope OK_IGNORED entry (so we only attach the
+#: integration/connector value field(s) that actually apply to the failing state).
+_UNSET = object()
 
 
 # ============================================================================
@@ -82,8 +93,10 @@ _IGNORE_REASON_DESCRIPTIONS: dict[str, str] = {
     "hidden": "hidden in the integration YML (hidden: true or hidden:<platform>), so it is not migrated to the connector and not compared",
     "credentials_type9_interpolated": "type-9 credentials param reconstructed by the integration at runtime from the connector's interpolated credentials.identifier/.password; the full vault object is not value-compared",
     "isfetch_not_emitted_by_connector": "KNOWN GAP (temporary): the connector does not currently emit the `isFetch` fetch flag at runtime, so it is dropped from both sides and ignored until connector support is added — tracked in the migration guide Open Items",
+    "server_injected_alerttype_xsoar_bug": "server-injected `alertType` (XSOAR BE bug) — not delivered by the connector, ignored",
     "hard_ignore_list": "on the hard ignore-list (never appears comparably in runtime demisto.params(), e.g. brand/engine/instance_name/log-level)",
     "name_ignored": "a framework/mirroring/probe field that is not user-configurable (e.g. outgoingMapperId, apiproxy, the parity-probe key)",
+    "out_of_variant_scope": "field belongs to a sub-capability not enabled in this variant; not expected in the connector instance — not compared",
     # legacy / safety fallbacks:
     "hard_ignore": "on the hard ignore-list (never appears comparably in runtime demisto.params())",
     "profile_not_interpolated": "an auth field of a non-interpolated profile (not delivered to runtime demisto.params())",
@@ -122,6 +135,24 @@ def _is_type9_credentials_param(name: str, value: Any) -> bool:
     if _TYPE9_VAULT_MARKERS & value.keys():
         return True
     return value.keys() <= {"identifier", "password"}
+
+
+def _is_falsy_toggle_value(value: Any) -> bool:
+    """True if ``value`` is the boolean-``False`` equivalent for a fetch toggle.
+
+    A fetch toggle (``isFetch``/``isFetchEvents``/…) that is not present in
+    ``demisto.params()`` is interpreted by the platform as ``False``. So an
+    ABSENT toggle on one side is at parity with an explicit falsy toggle on the
+    other side. This recognizes the falsy forms a toggle can take: real
+    ``False``, the string ``"false"`` (any case), ``None``, or empty string.
+    """
+    if value is None:
+        return True
+    if isinstance(value, bool):
+        return value is False
+    if isinstance(value, str):
+        return value.strip().lower() in ("", "false")
+    return False
 
 
 def _describe_ignore_reason(code: str) -> str:
@@ -324,6 +355,9 @@ def diff_params(
     connector_raw: dict[str, Any] | None = None,
     integration_dropped: list[dict[str, str]] | None = None,
     connector_dropped: list[dict[str, str]] | None = None,
+    in_scope_fields: set[str] | frozenset[str] | None = None,
+    field_owning_subcapabilities: dict[str, frozenset[str]] | None = None,
+    enabled_ownership_units: set[str] | frozenset[str] | None = None,
     allow_missing: bool = False,
     allow_extra: bool = False,
     allow_mismatch: bool = False,
@@ -346,6 +380,18 @@ def diff_params(
             with a ``reason_hint`` field naming the connector YAML file that
             declares the leaking field (see
             :func:`_scan_connector_for_field`).
+        in_scope_fields: Optional set of XSOAR-namespace field ids the CURRENT
+            capability variant's enabled sub-capabilities legitimately expose.
+            When provided (per-variant SCOPING is active), an integration-only
+            field that is NOT in this set AND is owned by a sub-capability that
+            exists but is disabled in this variant is reclassified from
+            ``MISSING_IN_CONNECTOR`` to ``OK_IGNORED`` (``out_of_variant_scope``).
+        field_owning_subcapabilities: Optional global map field id → set of
+            owning ownership-unit ids (sub-capability id, or parent capability id
+            when a capability declares no sub-capabilities), used together with
+            ``enabled_ownership_units`` to detect out-of-variant-scope fields.
+        enabled_ownership_units: Optional set of ownership-unit ids ENABLED in the
+            current variant (the complement defines the disabled units).
         allow_missing: When ``True``, ``MISSING_IN_CONNECTOR`` findings stop
             contributing to the failure verdict (still reported as
             ``"warn"``).
@@ -388,6 +434,20 @@ def diff_params(
     yml_param_names = yml_param_names or set()
     connector_dir_path = Path(connector_dir) if connector_dir else None
 
+    # Per-variant field SCOPING (Bucket C). ``in_scope_fields`` is the set of
+    # XSOAR-namespace param ids the CURRENT variant's enabled sub-capabilities
+    # legitimately expose; ``field_owning_subcapabilities`` maps every owned field
+    # id → the set of ownership units that own it (across ALL the connector's
+    # sub-capabilities). An integration-only field that is NOT in scope AND is
+    # owned by a unit that exists but is NOT enabled in this variant belongs to a
+    # disabled sub-capability — so it is out-of-variant-scope (OK_IGNORED), NOT a
+    # MISSING_IN_CONNECTOR failure. When these are absent (None), scoping is OFF
+    # and behaviour is unchanged.
+    scope_active = in_scope_fields is not None
+    in_scope_fields = set(in_scope_fields or ())
+    field_owning_subcapabilities = field_owning_subcapabilities or {}
+    enabled_ownership_units = set(enabled_ownership_units or ())
+
     # Pre-load serializer mappings so we can annotate per-param entries with
     # `serialized_from` / `serialized_to`. Empty dicts if the connector has no
     # serializer.yaml files.
@@ -409,6 +469,26 @@ def diff_params(
 
     n_ok = n_missing = n_extra = n_mismatch = n_dropped = 0
     n_fail = n_warn = 0
+    n_out_of_scope = 0  # OK_IGNORED — out_of_variant_scope (folded into n_ok_ignored)
+
+    def _out_of_variant_scope(key: str) -> frozenset[str] | None:
+        """Return the DISABLED owning units of ``key`` when it is out-of-scope.
+
+        ``key`` is out-of-variant-scope iff (1) per-variant scoping is active,
+        (2) it is NOT in the variant's ``in_scope_fields``, and (3) it IS owned by
+        at least one ownership unit that exists for this connector but is NOT
+        enabled in the current variant. Returns the set of those DISABLED owning
+        units (truthy) for annotation, or ``None`` when the key is in-scope, not
+        owned by any sub-capability, or scoping is off. A field owned ONLY by
+        ENABLED units (or by none) is never reclassified.
+        """
+        if not scope_active or key in in_scope_fields:
+            return None
+        owners = field_owning_subcapabilities.get(key)
+        if not owners:
+            return None
+        disabled_owners = owners - enabled_ownership_units
+        return disabled_owners or None
 
     def _annotate_serializer(entry: dict[str, Any], key: str) -> None:
         """Attach serializer-mapping annotations to a per_param entry, if any.
@@ -434,13 +514,68 @@ def diff_params(
         if key in by_connector_serialized:
             entry["serialized_to"] = by_connector_serialized[key]
 
+    def _try_scope_downgrade(
+        key: str,
+        *,
+        integration_value: Any = _UNSET,
+        connector_value: Any = _UNSET,
+    ) -> bool:
+        """Reclassify a TENTATIVELY-FAILING ``key`` to OK_IGNORED if out-of-scope.
+
+        This is the SINGLE per-variant scoping gate shared by all three failing
+        states (MISSING_IN_CONNECTOR / VALUE_MISMATCH / EXTRA_IN_CONNECTOR). It is
+        invoked once the tentative failing verdict is known but BEFORE any fail/
+        state counter is incremented. When ``key`` is owned SOLELY by
+        sub-capabilities that are NOT enabled in this variant (see
+        :func:`_out_of_variant_scope`), it emits an OK_IGNORED
+        ``out_of_variant_scope`` entry (recording the value field(s) provided),
+        bumps ``n_out_of_scope``, appends to ``per_param`` and returns ``True`` so
+        the caller skips the failing path. A field that is in-scope, or owned by at
+        least one ENABLED unit, returns ``False`` and keeps its real verdict — no
+        coverage loss.
+        """
+        nonlocal n_out_of_scope
+        disabled_owners = _out_of_variant_scope(key)
+        if disabled_owners is None:
+            return False
+        entry: dict[str, Any] = {
+            "name": key,
+            "state": STATE_OK_IGNORED,
+            "verdict": "ok",
+            "reason": "Ignored — {}".format(
+                _describe_ignore_reason("out_of_variant_scope")
+            ),
+            "out_of_scope_owners": sorted(disabled_owners),
+        }
+        if integration_value is not _UNSET:
+            entry["integration_value"] = integration_value
+        if connector_value is not _UNSET:
+            entry["connector_value"] = connector_value
+        _annotate_serializer(entry, key)
+        per_param.append(entry)
+        n_out_of_scope += 1
+        return True
+
     for key in sorted(union_keys):
         in_integration = key in integration
         in_connector = key in connector
-        in_yml = key in yml_param_names
+        # A key counts as a "real param the integration reads" when it is either
+        # declared in the integration YML ``configuration`` OR is a known
+        # XSOAR-BE-synthesized config param (isFetch/incidentFetchInterval/feed*/
+        # eventFetchInterval/…). The BE auto-adds the latter at runtime — they are
+        # NOT in the YML, but they ARE real params. The connector platform never
+        # synthesizes anything, so a BE-synthesized param present on XSOAR but
+        # absent on the connector is a genuine MISSING_IN_CONNECTOR failure (the
+        # connector must declare an equivalent field), NOT framework noise.
+        in_yml = key in yml_param_names or key in BE_SYNTHESIZED_PARAM_NAMES
 
         if in_integration and in_connector:
-            if integration[key] == connector[key]:
+            # Equality is plain ``==`` EXCEPT for fields with the connector-int /
+            # integration-string type contract (e.g. incidentFetchInterval), where
+            # connector ``111`` and integration ``"111"`` are at parity. The
+            # registry lives in be_config_params so the SAME contract that shapes
+            # the creation payloads also governs the comparison.
+            if values_match(key, integration[key], connector[key]):
                 state = STATE_OK
                 n_ok += 1
                 entry: dict[str, Any] = {
@@ -460,6 +595,18 @@ def diff_params(
                         entry, integration_raw, connector_raw, name=key
                     )
             else:
+                # Per-variant SCOPING (Bucket C): a VALUE_MISMATCH on a field owned
+                # SOLELY by sub-capabilities disabled in this variant is not a real
+                # drift — the platform injected a manifest default for a field the
+                # disabled sub-capability owns, while the integration sent its
+                # override. Downgrade to OK_IGNORED out_of_variant_scope BEFORE
+                # counting the mismatch as a failure (single shared scope gate).
+                if _try_scope_downgrade(
+                    key,
+                    integration_value=integration[key],
+                    connector_value=connector[key],
+                ):
+                    continue
                 state = STATE_VALUE_MISMATCH
                 n_mismatch += 1
                 verdict = "warn" if allow[state] else "fail"
@@ -479,10 +626,40 @@ def diff_params(
 
         elif in_integration and not in_connector:
             # INTEGRATION side has it; CONNECTOR side doesn't.
-            # Decision: is it a real param the integration reads (in YML) →
+            # A FETCH TOGGLE (isFetch/isFetchEvents/…) that is falsy on the
+            # integration side and ABSENT on the connector side is at PARITY: an
+            # absent toggle is interpreted as False by the platform, so
+            # integration=False ↔ connector=<absent> means both are False. Emit
+            # OK with a note rather than MISSING_IN_CONNECTOR.
+            if key in XSOAR_FETCH_TOGGLES and _is_falsy_toggle_value(integration[key]):
+                state = STATE_OK
+                n_ok += 1
+                entry = {
+                    "name": key,
+                    "state": state,
+                    "integration_value": integration[key],
+                    "verdict": "ok",
+                    "reason": (
+                        "fetch toggle absent on the connector side; an absent "
+                        "toggle is treated as False, matching the integration's "
+                        "falsy value — at parity"
+                    ),
+                }
+                _annotate_serializer(entry, key)
+                per_param.append(entry)
+            # Otherwise: is it a real param the integration reads (in YML) →
             # MISSING_IN_CONNECTOR (failure); or just framework noise (NOT in
             # YML) → EXTRA_IN_INTEGRATION (dropped, no failure)?
-            if in_yml:
+            elif in_yml:
+                # Per-variant SCOPING (Bucket C): before flagging a real YML param
+                # as MISSING_IN_CONNECTOR, check whether it belongs to a
+                # sub-capability that is NOT enabled in THIS variant. The connector
+                # instance only exposes the fields of its enabled sub-capabilities,
+                # so such a field is legitimately absent here — OK_IGNORED, not a
+                # failure. A field that IS in scope but genuinely absent still falls
+                # through to MISSING_IN_CONNECTOR (no loss of coverage).
+                if _try_scope_downgrade(key, integration_value=integration[key]):
+                    continue
                 state = STATE_MISSING_IN_CONNECTOR
                 n_missing += 1
                 verdict = "warn" if allow[state] else "fail"
@@ -507,6 +684,34 @@ def diff_params(
                 })
 
         else:  # in_connector and not in_integration
+            # Symmetric fetch-toggle parity: a falsy toggle on the CONNECTOR
+            # side that is ABSENT on the integration side is also at parity (an
+            # absent toggle is treated as False on both ends). Emit OK + note
+            # instead of EXTRA_IN_CONNECTOR.
+            if key in XSOAR_FETCH_TOGGLES and _is_falsy_toggle_value(connector[key]):
+                state = STATE_OK
+                n_ok += 1
+                entry = {
+                    "name": key,
+                    "state": state,
+                    "connector_value": connector[key],
+                    "verdict": "ok",
+                    "reason": (
+                        "fetch toggle absent on the integration side; an absent "
+                        "toggle is treated as False, matching the connector's "
+                        "falsy value — at parity"
+                    ),
+                }
+                _annotate_serializer(entry, key)
+                per_param.append(entry)
+                continue
+            # Per-variant SCOPING (Bucket C): an EXTRA_IN_CONNECTOR field owned
+            # SOLELY by sub-capabilities disabled in this variant means the
+            # platform injected a connector-only field belonging to a disabled
+            # sub-capability. Downgrade to OK_IGNORED out_of_variant_scope BEFORE
+            # counting it as a failure (single shared scope gate).
+            if _try_scope_downgrade(key, connector_value=connector[key]):
+                continue
             state = STATE_EXTRA_IN_CONNECTOR
             n_extra += 1
             verdict = "warn" if allow[state] else "fail"
@@ -613,12 +818,18 @@ def diff_params(
 
     status = "pass" if n_fail == 0 else "fail"
 
+    # ``n_ok_ignored`` here counts the normalizer-DROPPED keys surfaced above; those
+    # are NOT members of ``union_keys`` so they are added to ``n_total``. The
+    # out-of-variant-scope OK_IGNORED entries (``n_out_of_scope``) ARE integration
+    # keys already inside ``union_keys`` (reclassified away from MISSING), so they
+    # are folded into the REPORTED ``n_ok_ignored`` but NOT re-added to ``n_total``.
     return {
         "status": status,
         "summary": {
             "n_total": len(union_keys) + n_ok_ignored,
             "n_ok": n_ok,
-            "n_ok_ignored": n_ok_ignored,
+            "n_ok_ignored": n_ok_ignored + n_out_of_scope,
+            "n_out_of_variant_scope": n_out_of_scope,
             "n_missing_in_connector": n_missing,
             "n_extra_in_connector": n_extra,
             "n_value_mismatch": n_mismatch,

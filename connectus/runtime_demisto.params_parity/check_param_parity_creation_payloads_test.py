@@ -25,6 +25,9 @@ def _fake_variant() -> types.SimpleNamespace:
         id="automation-and-remediation",
         capabilities=[],
         enabled_capability_ids=["automation-and-remediation"],
+        # Per-variant field SCOPING (Bucket C): empty scoping → behaviour unchanged.
+        in_scope_fields=frozenset(),
+        enabled_ownership_units=set(),
         fetch_flags={
             "isFetch": False, "isFetchEvents": False, "isFetchAssets": False,
             "isFetchSamples": False, "isFetchCredentials": False, "feed": False,
@@ -44,6 +47,7 @@ def _fake_parity_inputs(integration_yml_path: str) -> types.SimpleNamespace:
         variants=[_fake_variant()],
         profiles=[],
         param_to_connector_field={},
+        field_owning_subcapabilities={},
     )
 
 
