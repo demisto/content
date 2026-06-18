@@ -1,0 +1,80 @@
+[MODEL: dataset="openai_admin_audit_raw"]
+// OpenAI Organization Admin Audit Logs -> XDM
+// Supports two stories:
+//   * Authentication (AUTH)  -> login.* events
+//   * SaaS Audit             -> all non-login admin/audit events (api_key.*, organization.*, etc.)
+alter
+    xdm.event.type = if(type ~= "^login\.", "authentication", "saas audit"),
+    xdm.event.original_event_type = type,
+    xdm.event.outcome = if(
+        type ~= "\.succeeded$", XDM_CONST.OUTCOME_SUCCESS,
+        type ~= "\.failed$",    XDM_CONST.OUTCOME_FAILED,
+        XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.outcome_reason = if(type ~= "\.failed$", "failed_login", "NOT_SPECIFIED"),
+    xdm.source.user.upn        = json_extract_scalar(actor, "$.session.user.email"),
+    xdm.source.user.identifier = json_extract_scalar(actor, "$.session.user.id"),
+    xdm.source.user.username   = json_extract_scalar(actor, "$.session.user.email"),
+    xdm.source.ipv4         = json_extract_scalar(actor, "$.session.ip_address"),
+    xdm.source.user_agent   = json_extract_scalar(actor, "$.session.user_agent"),
+    xdm.source.port         = to_integer(0),
+    xdm.target.ipv4         = "",
+    xdm.target.port         = to_integer(0),
+    xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
+    xdm.event.operation = if(type ~= "^login\.", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, null),
+    xdm.auth.service    = if(type ~= "^login\.", "IDP", null),
+    xdm.event.tags      = if(type ~= "^login\.", arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null),
+    xdm.source.location.country   = json_extract_scalar(actor, "$.session.ip_address_details.country"),
+    xdm.source.location.city      = json_extract_scalar(actor, "$.session.ip_address_details.city"),
+    xdm.source.location.region    = json_extract_scalar(actor, "$.session.ip_address_details.region"),
+    xdm.source.location.latitude  = to_float(json_extract_scalar(actor, "$.session.ip_address_details.latitude")),
+    xdm.source.location.longitude = to_float(json_extract_scalar(actor, "$.session.ip_address_details.longitude")),
+    xdm.observer.type    = "openai",
+    xdm.target.resource.name = object;
+
+[MODEL: dataset="openai_chatgpt_compliance_raw"]
+// OpenAI ChatGPT Enterprise Compliance API Logs -> XDM
+// Primary story: SaaS Audit - admin/workspace audit activity.
+// Authentication (AUTH): only INVITE_ACCEPT carries a real user identity/auth-relevant.
+alter
+    xdm.event.type = if(action = "INVITE_ACCEPT", "authentication", "saas audit"),
+    xdm.event.original_event_type = action,
+    xdm.event.outcome = if(
+        action_result = "SUCCESS", XDM_CONST.OUTCOME_SUCCESS,
+        action_result in("ERROR", "BLOCKED"), XDM_CONST.OUTCOME_FAILED,
+        action_result = null, null,
+        XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = if(
+        action_result = "BLOCKED", "auth_policy_access_violation",
+        action_result = "ERROR",   "OTHER",
+        "NOT_SPECIFIED"),
+    xdm.source.user.identifier = coalesce(
+        json_extract_scalar(actor, "$.user_id"),
+        json_extract_scalar(actor, "$.redacted_id")),
+    xdm.source.user.upn        = json_extract_scalar(actor, "$.user_email"),
+    xdm.source.user.username   = json_extract_scalar(actor, "$.user_email"),
+    xdm.source.user.user_type  = if(
+        json_extract_scalar(actor, "$.type") = "ACCOUNT_USER", XDM_CONST.USER_TYPE_REGULAR,
+        json_extract_scalar(actor, "$.type") = "API_KEY",      XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        null),
+    xdm.auth.privilege_level = if(
+        action_privilege = "ADMIN",         XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
+        action_privilege = "STANDARD_USER", XDM_CONST.PRIVILEGE_LEVEL_USER,
+        null),
+    xdm.source.ipv4         = json_extract_scalar(request_metadata, "$.client_ip"),
+    xdm.source.user_agent   = json_extract_scalar(request_metadata, "$.client_user_agent"),
+    xdm.source.port         = to_integer(0),
+    xdm.target.ipv4         = "",
+    xdm.target.port         = to_integer(0),
+    xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
+    xdm.event.operation = if(action = "INVITE_ACCEPT", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, null),
+    xdm.auth.service    = if(action = "INVITE_ACCEPT", "IDP", null),
+    xdm.event.tags      = if(action = "INVITE_ACCEPT", arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null),
+    xdm.source.location.country   = json_extract_scalar(request_metadata, "$.client_ip_details.country"),
+    xdm.source.location.city      = json_extract_scalar(request_metadata, "$.client_ip_details.city"),
+    xdm.source.location.region    = json_extract_scalar(request_metadata, "$.client_ip_details.region"),
+    xdm.source.location.latitude  = to_float(json_extract_scalar(request_metadata, "$.client_ip_details.latitude")),
+    xdm.source.location.longitude = to_float(json_extract_scalar(request_metadata, "$.client_ip_details.longitude")),
+    xdm.observer.type    = "openai",
+    xdm.target.resource.id   = workspace_id,
+    xdm.target.resource.name = json_extract_scalar(request_metadata, "$.destination_hostname"),
+    xdm.network.session_id   = conversation_id;

@@ -789,6 +789,7 @@ def format_user_results(user: dict):
             "email": user.get("profile", {}).get("email", ""),
             "real_name": user.get("profile", {}).get("real_name", ""),
             "display_name": user.get("profile", {}).get("display_name", ""),
+            "status_text": user.get("profile", {}).get("status_text", ""),
         },
     }
 
@@ -3198,12 +3199,13 @@ def get_user():
         "Name": profile.get("real_name_normalized") or profile.get("real_name"),
         "DisplayName": profile.get("display_name"),
         "Email": profile.get("email"),
+        "StatusText": profile.get("status_text"),
     }
 
     hr = tableToMarkdown(
         "Details for Slack user: " + user_input,
         result_user,
-        headers=["ID", "Username", "Name", "DisplayName", "Email"],
+        headers=["ID", "Username", "Name", "DisplayName", "Email", "StatusText"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
