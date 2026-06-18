@@ -1037,8 +1037,11 @@ $script:UcpCredsCache = @{}
 # Command-to-capability mapping; default 'automation-and-remediation'.
 $script:UcpDefaultCapability = 'automation-and-remediation'
 $script:UcpCommandCapabilities = @{
-    'fetch-incidents' = 'collection-and-ingestion'
-    'fetch-assets'    = 'collection-and-ingestion'
+    'fetch-incidents'   = 'fetch-issues'
+    'fetch-events'      = 'log-collection'
+    'fetch-credentials' = 'fetch-secrets'
+    'fetch-indicators'  = 'threat-intelligence-and-enrichment'
+    'fetch-assets'      = 'fetch-assets-and-vulnerabilities'
 }
 
 # Canonical credential-envelope schema per profile type. Ordinal (case-sensitive)
@@ -1200,6 +1203,18 @@ function Select-UcpProfiles {
         if ($cap -ceq $Capability) { [void]$matched.Add($p) }
     }
     Write-UcpDebug("[UCP][Select-UcpProfiles] found $($matched.Count) profile(s) with capability '$Capability'.")
+    if ($matched.Count -gt 0) {
+        return @($matched.ToArray())
+    }
+    foreach ($p in $Profiles) {
+        $metaNode = Get-UcpMember -Object $p -Key 'metadata'
+        $xsoarNode = Get-UcpMember -Object $metaNode -Key 'xsoar'
+        $mapping = Get-UcpMember -Object $xsoarNode -Key 'interpolation_mapping'
+        if ($mapping) {
+            Write-UcpDebug('[UCP][Select-UcpProfiles] no capability match; falling back to first profile with an interpolation_mapping.')
+            return @($p)
+        }
+    }
     return @($matched.ToArray())
 }
 

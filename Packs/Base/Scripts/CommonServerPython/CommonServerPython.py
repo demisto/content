@@ -13689,8 +13689,11 @@ _ucp_creds_cache = {}  # type: Dict[str, Dict[str, Any]]
 # Command-to-capability mapping.  Default: 'automation-and-remediation'.
 _UCP_DEFAULT_CAPABILITY = 'automation-and-remediation'
 _UCP_COMMAND_CAPABILITIES = {
-    'fetch-incidents': 'collection-and-ingestion',
-    'fetch-assets': 'collection-and-ingestion',
+    'fetch-incidents': 'fetch-issues',
+    'fetch-events': 'log-collection',
+    'fetch-credentials': 'fetch-secrets',
+    'fetch-indicators': 'threat-intelligence-and-enrichment',
+    'fetch-assets': 'fetch-assets-and-vulnerabilities',
 }
 
 # Canonical credential-envelope schema per profile type.
@@ -13808,7 +13811,9 @@ def _select_ucp_profiles(profiles, capability):
     Interpolation is **metadata-first and capability-scoped**: starting from the
     connector metadata's ``connectionProfiles``, it keeps **every** profile whose
     ``capability`` matches ``capability``. More than one profile may be active at
-    a time, so this returns a list (not a single profile).
+    a time, so this returns a list (not a single profile). When no profile matches
+    ``capability``, falls back to the first profile that has an
+    ``interpolation_mapping``.
 
     :type profiles: ``list``
     :param profiles: The ``connectionProfiles`` from the connector metadata.
@@ -13826,6 +13831,14 @@ def _select_ucp_profiles(profiles, capability):
     matched = [p for p in profiles if p.get('capability') == capability]
     demisto.debug('[UCP][CommonServerPython.py] _select_ucp_profiles: found {} profile(s) with capability {}.'.format(
         len(matched), capability))
+    if matched:
+        return matched
+
+    for p in profiles:
+        if ((p.get('metadata') or {}).get('xsoar') or {}).get('interpolation_mapping'):
+            demisto.debug('[UCP][CommonServerPython.py] _select_ucp_profiles: no capability match; '
+                          'falling back to first profile with an interpolation_mapping.')
+            return [p]
     return matched
 
 
