@@ -1724,7 +1724,7 @@ def _search_response_with_classification(classification):
 
 
 def test_ip_reputation_emits_dbot_score_and_common_ip(monkeypatch):
-    monkeypatch.setattr(src.demisto, "params", lambda: {"feedReliability": "B - Usually reliable"})
+    monkeypatch.setattr(src.demisto, "params", lambda: {"integrationReliability": "B - Usually reliable"})
     patch_http(monkeypatch, _search_response_with_classification("malicious"))
 
     out = src.dmontip_search_ip_command(make_client(), {"ip": "203.0.113.5"})
@@ -1806,7 +1806,7 @@ def test_file_reputation_detects_hash_type(monkeypatch, hash_value, expected_fie
 
 
 def test_dbot_reliability_falls_back_to_F(monkeypatch):
-    monkeypatch.setattr(src.demisto, "params", dict)  # no feedReliability
+    monkeypatch.setattr(src.demisto, "params", dict)  # no integrationReliability
     patch_http(monkeypatch, {"content": [], "page": {}})
 
     out = src.dmontip_search_ip_command(make_client(), {"ip": "1.1.1.1"})
