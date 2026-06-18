@@ -84,10 +84,38 @@ _yaml = YAML(typ="safe")
 #: go up THREE dirs to reach the content-repo workspace root.
 _WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 
+#: Environment variable that, when set & non-empty, overrides the bundled
+#: pipeline CSV path. The value is a full path: absolute, or relative to the
+#: workspace root (:data:`_WORKSPACE_ROOT`); ``~`` is expanded. Loaded from the
+#: unified root ``.env`` via :func:`env_loader.load_env` (already called above).
+PIPELINE_CSV_ENV_VAR = "CONNECTUS_PIPELINE_CSV"
+
+#: The bundled default pipeline CSV path (used when the env var is unset/empty).
+_DEFAULT_PIPELINE_CSV = _WORKSPACE_ROOT / "connectus" / "connectus-migration-pipeline.csv"
+
+
+def _resolve_pipeline_csv() -> Path:
+    """Resolve the pipeline CSV path, honoring ``CONNECTUS_PIPELINE_CSV``.
+
+    Returns the env override (with ``~`` expanded and relative paths resolved
+    against :data:`_WORKSPACE_ROOT`) when ``CONNECTUS_PIPELINE_CSV`` is set &
+    non-empty, else the bundled :data:`_DEFAULT_PIPELINE_CSV`.
+    """
+    raw = (os.getenv(PIPELINE_CSV_ENV_VAR) or "").strip()
+    if not raw:
+        return _DEFAULT_PIPELINE_CSV
+    expanded = Path(raw).expanduser()
+    if expanded.is_absolute():
+        return expanded
+    return _WORKSPACE_ROOT / expanded
+
+
 #: The migration pipeline CSV (source of truth for Integration File Path +
-#: Connector Folder Path). Kept relative to the workspace root so the resolver
-#: works regardless of the caller's CWD.
-PIPELINE_CSV = _WORKSPACE_ROOT / "connectus" / "connectus-migration-pipeline.csv"
+#: Connector Folder Path). Honors the ``CONNECTUS_PIPELINE_CSV`` override, else
+#: kept relative to the workspace root so the resolver works regardless of the
+#: caller's CWD. An explicit ``csv_path=`` argument to :func:`resolve` still
+#: takes precedence over both.
+PIPELINE_CSV = _resolve_pipeline_csv()
 
 
 def _repo_dir() -> Path:
