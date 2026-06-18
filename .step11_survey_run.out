@@ -1,0 +1,47 @@
+Session OK. SKIP_CONNECTOR=1 SKIP_BASE_PACK=1. Starting survey.
+
+Found 168 integration(s) at step 11.
+
+[1/168] AnsibleMicrosoftWindows ... PASS
+[2/168] AnsibleOpenSSL ... FAIL (rc=1) — skipped
+[3/168] AnsibleTower ... FAIL (rc=1) — skipped
+[4/168] AnsibleVMware ... FAIL (rc=1) — skipped
+[5/168] ArcSight Logger ... FAIL (rc=1) — skipped
+[6/168] Atlassian Confluence Cloud ... FAIL (rc=1) — skipped
+[7/168] Atlassian Confluence Server ... FAIL (rc=1) — skipped
+[8/168] Atlassian IAM ... FAIL (rc=1) — skipped
+[9/168] AtlassianJiraServiceManagement ... FAIL (rc=1) — skipped
+[10/168] Awake Security ... FAIL (rc=1) — skipped
+[11/168] Azure AD Connect Health Feed ... FAIL (rc=1) — skipped
+[12/168] Azure Compute v2 ... FAIL (rc=1) — skipped
+[13/168] Azure Firewall ... FAIL (rc=1) — skipped
+[14/168] Azure Kubernetes Services ... FAIL (rc=1) — skipped
+[15/168] Azure Log Analytics ... FAIL (rc=1) — skipped
+[16/168] Azure Network Security Groups ... FAIL (rc=1) — skipped
+[17/168] Azure Resource Graph ... FAIL (rc=1) — skipped
+[18/168] Azure SQL Management ... FAIL (rc=1) — skipped
+[19/168] Azure Security Center v2 ... FAIL (rc=1) — skipped
+[20/168] Azure Sentinel ... FAIL (rc=1) — skipped
+[21/168] Azure Storage ... FAIL (rc=1) — skipped
+[22/168] Azure Storage Container ... FAIL (rc=1) — skipped
+[23/168] Azure Storage FileShare ... FAIL (rc=1) — skipped
+[24/168] Azure Storage Queue ... FAIL (rc=1) — skipped
+[25/168] Azure Storage Table ... FAIL (rc=1) — skipped
+[26/168] AzureDataExplorer ... FAIL (rc=1) — skipped
+[27/168] AzureDevOps ... FAIL (rc=1) — skipped
+[28/168] AzureFeed ... FAIL (rc=1) — skipped
+[29/168] AzureKeyVault ... FAIL (rc=1) — skipped
+[30/168] AzureRiskyUsers ... FAIL (rc=1) — skipped
+[31/168] AzureWAF ... FAIL (rc=1) — skipped
+[32/168] BigFix ... FAIL (rc=1) — skipped
+[33/168] Bitwarden Password Manager ... FAIL (rc=1) — skipped
+[34/168] BloodHoundEnterprise ... FAIL (rc=1) — skipped
+[35/168] CircleCI ... FAIL (rc=1) — skipped
+[36/168] Cisco Firepower ... FAIL (rc=1) — skipped
+[37/168] Cloaken ... FAIL (rc=1) — skipped
+[38/168] Code42 Event Collector ... FAIL (rc=1) — skipped
+[39/168] Cortex XDR - IOC ... FAIL (rc=1) — skipped
+[40/168] Cortex XDR - IR ... FAIL (rc=1) — skipped
+[41/168] Cortex XDR - XQL Query Engine ... FAIL (rc=1) — skipped
+[42/168] CrowdStrike Falcon Intel v2 ... FAIL (rc=1) — skipped
+[43/168] CrowdstrikeFalcon ... 
