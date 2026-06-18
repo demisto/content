@@ -5713,9 +5713,7 @@ def main():  # pragma: no cover
             "azure-postgres-config-set-statement-logging-quick-action": set_postgres_config_command,
             "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
         }
-        # Platform (COOC) path: a connector ID is present. Only here may we call the
-        # platform-only COOC APIs (is_gov_account / run_health_check_for_accounts), which
-        # rely on demisto._platformAPICall and are NOT available on XSOAR / XSIAM marketplace.
+
         if connector_id:
             if command == "test-module":
                 if is_gov_account(connector_id):  # type: ignore
@@ -5728,7 +5726,6 @@ def main():  # pragma: no cover
                 switch_to_gov_account()
 
         # Auth helper commands are only relevant for the marketplace (XSOAR / XSIAM) flows.
-        # They are not used on the Cortex Platform (COOC) path, where authentication is automatic.
         if command == "azure-auth-reset":
             return return_results(reset_auth())
 
