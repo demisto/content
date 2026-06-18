@@ -4036,7 +4036,7 @@ script:
       name: agent_id
       prettyname: Run action on
       prettypredefined:
-        Affected host: ${issue.agentid}
+        Issue initiator host: ${issue.xdmsourceagentidentifier}
       isArray: false
       required: true
     - description: The causality ID.
@@ -4462,7 +4462,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.9847183
+  dockerimage: demisto/google-cloud-storage:1.0.0.10120494
 tests:
 - No tests
 supportsquickactions: true
