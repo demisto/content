@@ -31,6 +31,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+
   required: false
 script:
   script: ''
