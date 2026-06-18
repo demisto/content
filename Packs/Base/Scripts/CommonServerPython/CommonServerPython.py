@@ -12863,7 +12863,8 @@ def split_data_to_chunks(data, target_chunk_size):
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
-                         add_proxy_to_request=False, multiple_threads=False, client_class=None):
+                         add_proxy_to_request=False, multiple_threads=False, client_class=None,
+                         use_streaming_send=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -12903,6 +12904,12 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type client_class: ``BaseClient``
     :param client_class: The client class to use for the request.
 
+    :type use_streaming_send: ``bool``
+    :param use_streaming_send: Feature flag (default False). When True, serializes+gzips the events one at a time
+        (streaming, free-as-you-go) instead of building intermediate full copies of the batch, drastically lowering
+        peak memory for large batches. The bytes sent to XSIAM are identical. Opt-in per integration during rollout
+        (CIAC-16981). Falls back to the legacy path when multiple_threads=True.
+
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
@@ -12921,7 +12928,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         should_update_health_module=should_update_health_module,
         add_proxy_to_request=add_proxy_to_request,
         multiple_threads=multiple_threads,
-        client_class=client_class if client_class else BaseClient
+        client_class=client_class if client_class else BaseClient,
+        use_streaming_send=use_streaming_send,
     )
 
 
@@ -13035,7 +13043,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
                        add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
-                       client_class=None):
+                       client_class=None, use_streaming_send=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -13086,6 +13094,13 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type client_class: ``BaseClient``
     :param client_class: The client class to use for the request.
 
+    :type use_streaming_send: ``bool``
+    :param use_streaming_send: Feature flag (default False). When True, the data is serialized and gzipped one item at a
+        time (streaming, free-as-you-go) instead of materializing intermediate full copies of the whole batch (a list of
+        JSON strings, then one big joined string). This keeps peak memory ~flat regardless of batch size; the gzipped
+        bytes sent to XSIAM are equivalent to the legacy path. Opt-in per integration during the CIAC-16981 rollout.
+        Ignored (legacy path used) when multiple_threads=True or when data is already a raw string.
+
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
@@ -13110,9 +13125,19 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
         return
 
+    # Feature flag (CIAC-16981): stream-serialize the batch one item at a time instead of building
+    # intermediate full copies (a list of JSON strings + one giant joined string). Only applies to the
+    # list-of-items, single-thread path; the bytes sent to XSIAM are equivalent to the legacy path.
+    streaming_send = bool(use_streaming_send) and isinstance(data, list) and not multiple_threads
+    if streaming_send and data and isinstance(data[0], dict):
+        data_format = 'json'
+
     # only in case we have data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an one event or asset or snapshot.
-    if isinstance(data, list):
+    if streaming_send:
+        # Keep `data` as the list; it will be serialized+gzipped item-by-item below (no full-batch copies).
+        demisto.debug("Sending {size} {data_type} to XSIAM (streaming send)".format(size=len(data), data_type=data_type))
+    elif isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         demisto.debug("Sending {size} {data_type} to XSIAM".format(size=len(data), data_type=data_type))
         if isinstance(data[0], dict):
@@ -13181,6 +13206,54 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if client_class is None:
         client_class = BaseClient
     client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
+
+    if streaming_send:
+        # Streaming path (CIAC-16981, "Method F" - streaming + free-as-you-go): serialize each item and write it
+        # STRAIGHT INTO the gzip stream one at a time, freeing the source item immediately. We never build a second
+        # full list of JSON strings nor one giant joined string - at any moment only a single event is uncompressed
+        # (plus the small, growing compressed buffer). When a chunk reaches ~chunk_size (uncompressed bytes), we
+        # close that gzip stream, POST it, and open a fresh one. `data` (the source list) is drained as we go.
+        target_chunk_size = min(chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+        demisto.info("Sending events to xsiam with a single thread (streaming, free-as-you-go).")
+
+        def _post_zipped(zipped_data):
+            xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
+                                        error_msg=header_msg, headers=headers,
+                                        num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+                                        zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+
+        buf = _io.BytesIO()
+        gz = gzip.GzipFile(fileobj=buf, mode='wb')
+        chunk_uncompressed = 0   # uncompressed bytes written into the current gzip stream
+        chunk_items = 0          # items written into the current gzip stream
+        total_items = len(data)
+        for index in range(total_items):
+            item = data[index]
+            line = (json.dumps(item) if isinstance(item, dict) else item).encode('utf-8')
+            data[index] = None  # free the source item the moment it is serialized (keeps peak ~one event)
+            # newline-separate items, matching the legacy payload ('\n'.join(...))
+            gz.write((b'\n' if chunk_items else b'') + line)
+            chunk_uncompressed += len(line) + (1 if chunk_items else 0)
+            chunk_items += 1
+            if chunk_uncompressed >= target_chunk_size:
+                # finalize this chunk, send it, and start a fresh gzip stream
+                gz.close()
+                _post_zipped(buf.getvalue())
+                data_size += chunk_items
+                buf = _io.BytesIO()
+                gz = gzip.GzipFile(fileobj=buf, mode='wb')
+                chunk_uncompressed = 0
+                chunk_items = 0
+        # flush the final (partial) chunk
+        gz.close()
+        if chunk_items:
+            _post_zipped(buf.getvalue())
+            data_size += chunk_items
+
+        if should_update_health_module:
+            demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+        return
+
     data_chunks = split_data_to_chunks(data, chunk_size)
 
     def send_events(data_chunk):
