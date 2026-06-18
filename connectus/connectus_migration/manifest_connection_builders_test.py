@@ -134,12 +134,127 @@ def test_build_connection_profile_passthrough_title_and_freeform_roles():
 
 def test_build_connection_profile_title_enrichment_from_yml():
     entry = {"type": "APIKey", "name": "k", "xsoar_param_map": {"credentials.password": "key"}}
-    yml = {"credentials": {"displaypassword": "API Token", "display": "Creds"}}
+    # ``credentials`` must be an explicit type-9 (Credentials) widget for the
+    # dotted ``.password`` leaf to be honored as a hiddenusername password leaf
+    # (title from ``displaypassword``). Only type 9 may nest; a non-type-9 (or
+    # untyped) dotted leaf is now FLATTENED + warned, in which case the title
+    # would come from the param's own ``display`` instead. (Updated for the
+    # type-9-only-nesting fix.)
+    yml = {
+        "credentials": {
+            "type": 9,
+            "displaypassword": "API Token",
+            "display": "Creds",
+        }
+    }
     prof = cb.build_connection_profile(entry, "Foo", yml_params_by_name=yml)
     field = prof["configurations"][0]["fields"][0]
     # hiddenusername case -> bare id "credentials"; title from displaypassword
     assert field["id"] == "credentials"
     assert field["title"] == "API Token"
+
+
+# ---------------------------------------------------------------------------
+# Part A — type-9-only nesting + flat-secret masking (FLATTEN + WARN bug fix)
+# Only XSOAR type 9 (Credentials) may ever nest into _username/_password.
+# Every other param type must stay FLAT; a flat credential masks robustly even
+# when the originating YML param type can't be resolved.
+# ---------------------------------------------------------------------------
+def test_build_connection_profile_apikey_flat_secret_masks_without_yml():
+    # Regression guard for the masking bug: a flat secret keyed in an auth
+    # profile's xsoar_param_map masks True even when yml_params_by_name is not
+    # supplied (origin type unresolvable). Mirrors apikey_shape but isolates the
+    # masking contract.
+    entry = {"type": "APIKey", "name": "api_key", "xsoar_param_map": {"api_key": "key"}}
+    prof = cb.build_connection_profile(entry, "Okta", connector_title="Okta")
+    field = prof["configurations"][0]["fields"][0]
+    assert field["id"] == "api_key"  # bare flat id, never split
+    assert field["options"]["mask"] is True
+
+
+def test_build_connection_profile_flat_type14_single_masked_field():
+    # A flat type-14 (cert/encrypted) param keyed directly in xsoar_param_map
+    # stays FLAT: one field with a bare id (no _username/_password split), masked
+    # True, and a flat interpolation entry (no dot).
+    entry = {
+        "type": "APIKey",
+        "name": "cert",
+        "xsoar_param_map": {"client_cert": "key"},
+    }
+    yml = {"client_cert": {"name": "client_cert", "type": 14, "display": "Client Cert"}}
+    prof = cb.build_connection_profile(
+        entry, "Foo", connector_title="Foo", yml_params_by_name=yml
+    )
+    fields = prof["configurations"][0]["fields"]
+    assert len(fields) == 1
+    field = fields[0]
+    assert field["id"] == "client_cert"  # bare, NOT client_cert_username/_password
+    assert field["options"]["mask"] is True
+    # Flat interpolation entry — no dot in the xsoar_path.
+    assert (
+        prof["metadata"]["xsoar"]["interpolation_mapping"] == "api_key:client_cert"
+    )
+
+
+def test_build_connection_profile_dotted_non_type9_flattens_and_warns(caplog):
+    # A dotted .identifier/.password pair whose originating YML param is NOT
+    # type 9 (here type 14) must be FLATTENED back to a single flat field +
+    # flat interpolation entry, and emit a warning naming the param + its type.
+    import logging
+
+    entry = {
+        "type": "APIKey",
+        "name": "cert",
+        # Buggy upstream shape: a non-type-9 param dotted as if it were creds.
+        "xsoar_param_map": {
+            "client_cert.identifier": "username",
+            "client_cert.password": "key",
+        },
+    }
+    yml = {"client_cert": {"name": "client_cert", "type": 14, "display": "Client Cert"}}
+    with caplog.at_level(logging.WARNING):
+        prof = cb.build_connection_profile(
+            entry, "Foo", connector_title="Foo", yml_params_by_name=yml
+        )
+    fields = prof["configurations"][0]["fields"]
+    # Flattened to a SINGLE flat field with the bare param id (no _username /
+    # _password split).
+    assert [f["id"] for f in fields] == ["client_cert"]
+    assert fields[0]["options"]["mask"] is True
+    # Interpolation collapses to a single FLAT entry (bare param name on both
+    # sides — no dotted leaf path).
+    assert prof["metadata"]["xsoar"]["interpolation_mapping"] == "api_key:client_cert"
+    # A warning was emitted naming the param, its type, and the flatten action.
+    warning_text = " ".join(r.getMessage() for r in caplog.records)
+    assert "client_cert" in warning_text
+    assert "14" in warning_text
+    assert "flatten" in warning_text.lower()
+
+
+def test_build_connection_profile_dotted_type9_still_nests():
+    # Regression guard: a genuine type-9 Credentials param keyed with dotted
+    # leaves STILL nests into _username/_password fields + dotted interpolation
+    # entries. (The flatten-on-non-type-9 fix must not touch type 9.)
+    entry = {
+        "type": "Plain",
+        "name": "creds",
+        "xsoar_param_map": {
+            "creds.identifier": "username",
+            "creds.password": "password",
+        },
+    }
+    yml = {"creds": {"name": "creds", "type": 9, "display": "Creds"}}
+    prof = cb.build_connection_profile(
+        entry, "Foo", connector_title="Foo", yml_params_by_name=yml
+    )
+    fields = {f["id"]: f for f in prof["configurations"][0]["fields"]}
+    assert set(fields) == {"creds_username", "creds_password"}
+    assert fields["creds_username"]["options"]["mask"] is False
+    assert fields["creds_password"]["options"]["mask"] is True
+    # Dotted interpolation entries are preserved for the credentials leaves.
+    assert prof["metadata"]["xsoar"]["interpolation_mapping"] == (
+        "username:creds.identifier,password:creds.password"
+    )
 
 
 # ---------------------------------------------------------------------------

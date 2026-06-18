@@ -6615,6 +6615,68 @@ def _connection_field_title(
     return field_id.replace("_", " ").strip().title() or field_id
 
 
+def _flatten_non_type9_param_map(
+    xsoar_param_map: dict[str, str],
+    yml_params_by_name: dict[str, dict],
+    integration_id: str,
+    profile_id: str,
+) -> dict[str, str]:
+    """Collapse dotted ``.identifier``/``.password`` leaves of non-type-9 params.
+
+    Only XSOAR **type 9 (Credentials)** widgets legitimately split into a
+    nested ``<param>.identifier`` / ``<param>.password`` pair (handled by
+    :func:`_map_type_9`). When a dotted leaf is keyed in ``xsoar_param_map`` but
+    its originating YML param's ``type`` is NOT 9 (e.g. a type-14 cert, a type-4
+    encrypted text), the upstream classifier produced a spurious nested shape.
+    Per the migration decision the generator must FLATTEN + WARN: rewrite each
+    such leaf to a single flat ``{<param>: role}`` entry (bare param name as both
+    the field id and the interpolation xsoar_path), and log a warning naming the
+    param, its type, and the action.
+
+    Type-9 leaves (and any dotted leaf whose origin type can't be resolved and
+    is therefore assumed to still be a credentials widget) are passed through
+    unchanged so the type-9 nesting path is never disturbed.
+
+    Returns a NEW map (never mutates the input). When a non-type-9 param has both
+    an ``.identifier`` and a ``.password`` leaf, both collapse onto the SAME bare
+    key; the secret leaf (``.password``) wins so the flattened field keeps the
+    credential role rather than the username role.
+    """
+    flattened: dict[str, str] = {}
+    # Track which bare keys came from a flattened .password leaf so a later
+    # .identifier leaf for the same param does not overwrite the secret role.
+    secret_flattened: set[str] = set()
+    for map_key in sorted(xsoar_param_map.keys()):
+        role = xsoar_param_map[map_key]
+        if "." not in map_key:
+            flattened[map_key] = role
+            continue
+        param, _, leaf = map_key.partition(".")
+        origin = yml_params_by_name.get(param)
+        # Only flatten when we can positively confirm the origin param is NOT
+        # type 9. An unresolvable param (no YML entry) is left as-is so the
+        # legitimate type-9 nesting path (and its existing tests) is untouched.
+        if origin is not None and int(origin.get("type", 0) or 0) != 9:
+            origin_type = int(origin.get("type", 0) or 0)
+            logger.warning(
+                f"[manifest_generator] connector '{integration_id}', profile "
+                f"'{profile_id}': xsoar_param_map key '{map_key}' is a dotted "
+                f"'.{leaf}' leaf but its originating YML param '{param}' is "
+                f"type {origin_type} (not type 9 Credentials). Only type-9 "
+                f"params may nest; flattening non-type-9 dotted leaf back to the "
+                f"flat key '{param}'."
+            )
+            if leaf == "password":
+                flattened[param] = role
+                secret_flattened.add(param)
+            elif param not in secret_flattened:
+                flattened[param] = role
+            continue
+        # Type-9 leaf (or unresolvable): preserve the dotted key verbatim.
+        flattened[map_key] = role
+    return flattened
+
+
 def build_connection_profile(
     auth_type_entry: dict,
     integration_id: str,
@@ -6640,7 +6702,15 @@ def build_connection_profile(
                 f"Expected one of {sorted(AUTH_TYPE_TO_PROFILE_TYPE)}."
             )
     profile_id = derive_profile_id(auth_type_entry, integration_id, seen_profile_ids)
-    xsoar_param_map = auth_type_entry.get("xsoar_param_map") or {}
+    raw_param_map = auth_type_entry.get("xsoar_param_map") or {}
+    # FLATTEN + WARN: only XSOAR type-9 Credentials params may nest into dotted
+    # ``.identifier``/``.password`` leaves. Any non-type-9 dotted leaf is
+    # collapsed back to a single flat key (with a warning) BEFORE the field loop
+    # and interpolation mapping are built, so both the emitted fields and the
+    # interpolation_mapping stay flat for non-type-9 params.
+    xsoar_param_map = _flatten_non_type9_param_map(
+        raw_param_map, yml_params_by_name, integration_id, profile_id
+    )
     map_keys = set(xsoar_param_map.keys())
 
     fields: list[dict] = []
@@ -6659,14 +6729,32 @@ def build_connection_profile(
         # The map_key tells us the leaf: a dotted ``<param>.password`` is the
         # type-9 password leaf; ``<param>.identifier`` is the username leaf; a
         # flat key is a single field whose masking depends on its own YML type.
+        #
+        # NOTE: post-flatten, a dotted key is ALWAYS a genuine type-9 leaf
+        # (non-type-9 dotted leaves were collapsed to flat keys above).
         origin_param = map_key.partition(".")[0]
+        origin_resolvable = origin_param in yml_params_by_name
         origin_type = int(yml_params_by_name.get(origin_param, {}).get("type", 0) or 0)
         if "." in map_key:
             # type-9 credentials leaf: mask only the password leaf.
             mask = map_key.endswith(".password")
-        else:
-            # flat key: mask only encrypted / cert-key types.
+        elif is_username:
+            # The username role is never a secret (type-9 .identifier flattened,
+            # or a flat ``server_user`` plain-auth field). Routing-style fields
+            # never reach this loop (they come via other_connection), so the only
+            # non-secret credential role here is ``username``.
+            mask = False
+        elif origin_resolvable:
+            # Resolvable flat credential: mask encrypted / cert-key types.
             mask = origin_type in (4, 14)
+        else:
+            # Unresolvable flat credential keyed in an auth profile's
+            # xsoar_param_map: it IS a credential (proxy/insecure/host routing
+            # params come via other_connection, not here), so mask robustly by
+            # default rather than silently defaulting to unmasked. This fixes the
+            # flat-secret masking regression where a missing YML resolution left
+            # an api_key / encrypted secret unmasked.
+            mask = True
 
         # Derive requiredness from the originating XSOAR YML param's
         # ``required:`` flag rather than hard-forcing True. The originating
