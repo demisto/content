@@ -58,40 +58,15 @@ GET_INCIDENTS_QUERY = (
     "  error { code message } } }"
 )
 
-GET_INCIDENT_DETAILS_QUERY = (
-    "query getIncidentsDetails($id: UUID!) { "
-    " incident(id: $id) { "
-    "  ...IncidentDetailFields "
-    "  timelineEvents { ...IncidentTimelineEventFields } "
-    " } "
-    "} "
-    "fragment UserIdentityFields on User { id email name } "
-    "fragment DataSourceListFields on DataSource { id vendor displayName } "
-    "fragment IncidentBaseFields on Incident { "
-    " id incidentId name description status createdAt "
-    " createdBy { ...UserIdentityFields } lastUpdate firstSeen "
-    " assignees { ...UserIdentityFields } severity alertCount alertIds "
-    " dataSources { ...DataSourceListFields } state verdict "
-    "} "
-    "fragment FeedbackFields on Feedback { id liked comment } "
-    "fragment EntityFields on Entity { id type category value reputationData } "
-    "fragment RecommendedActionSummaryFields on RecommendedAction { "
-    " id actionName actionDescription actionPriority "
-    "} "
-    "fragment RecommendedActionFields on RecommendedAction { "
-    " ...RecommendedActionSummaryFields feedback { ...FeedbackFields } "
-    "} "
-    "fragment IncidentDetailFields on Incident { "
-    " ...IncidentBaseFields userVerdict keyFindings verdictReasoning "
-    " investigationNotebookID userNotebookIDs "
-    " keyFindingsFeedback { ...FeedbackFields } entities { ...EntityFields } "
-    " recommendedActions { ...RecommendedActionFields } connectorTypes "
-    "} "
-    "fragment IncidentTimelineEventFields on IncidentTimelineEvent { "
-    " id timestamp summary entities { ...EntityFields } dataSourceIds "
-    " dataSources { ...DataSourceListFields } "
-    " alert { id displayName severity } "
-    "}"
+GET_INCIDENT_TIMELINE_QUERY = (
+    "query GetIncidentTimeline($incidentId: ID!, $limit: Int, $offset: Int) { "
+    " getIncidentTimeline(incidentId: $incidentId, limit: $limit, offset: $offset) { "
+    "  events { "
+    "   id timestamp summary dataSources assets observables "
+    "   alert { alertId name createdAt } "
+    "  } "
+    "  total limit offset "
+    "  error { code message } } }"
 )
 
 UPDATE_ALERTS_MUTATION = (
@@ -112,8 +87,10 @@ UPDATE_ALERTS_MUTATION = (
 UPDATE_INCIDENTS_MUTATION = (
     "mutation UpdateIncidents($input: UpdateIncidentsInput!) { "
     " updateIncidents(input: $input) { "
-    "  incidents { incidentId status verdict verdictReasoning updatedAt "
-    "   assignee { userId displayName email } } "
+    "  incidents { incidentId incidentName status "
+    "   assignee { userId displayName email } "
+    "   assignees { userId displayName email } "
+    "   verdict verdictReasoning updatedAt } "
     "  errors { code message } } }"
 )
 
@@ -217,6 +194,8 @@ GET_ALERTS_EVENTS_QUERY = (
 RATE_LIMIT_MAX_RETRIES = 10
 RATE_LIMIT_INITIAL_WAIT_SECONDS = 2
 RATE_LIMIT_WAIT_INCREMENT_SECONDS = 2
+FETCH_ENTITIES_PAGE_SIZE = 100
+_RETRYABLE_HTTP_STATUS_CODES = frozenset({429, 502, 503, 504})
 DEFAULT_ALERT_EVENTS_PAGE_SIZE = 200
 ALERT_EVENT_JSON_MERGE_KEYS = frozenset({"fields"})
 ALERT_EVENT_JSON_TRUNCATE_KEYS = frozenset({"raw", "_raw"})
@@ -474,6 +453,15 @@ def _http_status_code(exc: Exception) -> int | None:
     return None
 
 
+def _is_retryable_http_error(exc: Exception) -> bool:
+    """Return True when an HTTP or network failure is likely transient and safe to retry."""
+    status_code = _http_status_code(exc)
+    if status_code in _RETRYABLE_HTTP_STATUS_CODES:
+        return True
+    message = str(exc).lower()
+    return any(marker in message for marker in _CONNECTION_ERROR_MARKERS)
+
+
 def _is_graphql_rate_limited(errors: Any) -> bool:
     """Return True when GraphQL errors indicate rate limiting."""
     if not isinstance(errors, list):
@@ -555,16 +543,16 @@ class Client(BaseClient):
         self._rate_limit_wait_seconds = RATE_LIMIT_INITIAL_WAIT_SECONDS
 
     def _sleep_before_rate_limit_retry(self, context: str, attempt: int) -> None:
-        """Sleep using incremental backoff (2s, 4s, 6s, ...) before retrying a rate-limited request."""
+        """Sleep using incremental backoff before retrying a transient Vega API request."""
         demisto.debug(
-            f"Vega API rate limited ({context}). Waiting {self._rate_limit_wait_seconds}s before retry "
+            f"Vega API transient error ({context}). Waiting {self._rate_limit_wait_seconds}s before retry "
             f"{attempt + 1}/{RATE_LIMIT_MAX_RETRIES}."
         )
         time.sleep(self._rate_limit_wait_seconds)  # pylint: disable=E9003
         self._rate_limit_wait_seconds += RATE_LIMIT_WAIT_INCREMENT_SECONDS
 
     def _http_request(self, *args, **kwargs):  # type: ignore[no-untyped-def]
-        """Execute an HTTP request with Vega rate-limit retry handling for HTTP 429 responses."""
+        """Execute an HTTP request with retry handling for rate limits and transient gateway errors."""
         reset_backoff_on_success = kwargs.pop("reset_backoff_on_success", True)
         last_exc: Exception | None = None
 
@@ -575,15 +563,17 @@ class Client(BaseClient):
                     self._reset_rate_limit_wait()
                 return response
             except Exception as exc:
-                if _http_status_code(exc) != 429:
+                if not _is_retryable_http_error(exc):
                     raise
                 last_exc = exc
                 if attempt < RATE_LIMIT_MAX_RETRIES - 1:
-                    self._sleep_before_rate_limit_retry("HTTP 429", attempt)
+                    status_code = _http_status_code(exc)
+                    context = f"HTTP {status_code}" if status_code is not None else "network"
+                    self._sleep_before_rate_limit_retry(context, attempt)
 
         if last_exc is not None:
             raise last_exc
-        raise DemistoException("Vega API rate limit exceeded after maximum retries.")
+        raise DemistoException("Vega API request failed after maximum retries.")
 
     def _authenticate(self) -> str:
         """Authenticate with the Vega API and return a session JWT token."""
@@ -838,8 +828,7 @@ class Client(BaseClient):
         if incidents:
             return _normalize_incident_api_entity(incidents[0])
 
-        details = self.get_incident_details(incident_id)
-        return _normalize_incident_api_entity(details)
+        return {}
 
     def update_alerts(self, update_input: dict[str, Any]) -> dict:
         """Update one or more Vega alerts."""
@@ -862,19 +851,24 @@ class Client(BaseClient):
             raise DemistoException(f"Vega API error updating incidents: {', '.join(filter(None, messages))}")
         return result
 
-    def get_incident_details(self, incident_id: str) -> dict:
-        """Fetch full incident details including timeline events.
+    def get_incident_timeline(self, incident_id: str, limit: int = 100, offset: int = 0) -> dict:
+        """Fetch timeline events for a Vega incident.
 
         Args:
-            incident_id: Vega incident UUID.
+            incident_id: Vega incident ID.
+            limit: Maximum number of timeline events to return.
+            offset: Pagination offset.
 
         Returns:
-            The incident object from the GraphQL response, or an empty dict if not found.
+            The getIncidentTimeline response data.
         """
-        response = self._graphql_request(GET_INCIDENT_DETAILS_QUERY, {"id": incident_id})
+        response = self._graphql_request(
+            GET_INCIDENT_TIMELINE_QUERY,
+            {"incidentId": incident_id, "limit": limit, "offset": offset},
+        )
         data = response.get("data", {})
-        incident = data.get("incident")
-        return incident if isinstance(incident, dict) else {}
+        result = data.get("getIncidentTimeline", {})
+        return result if isinstance(result, dict) else {}
 
     def get_alert_events(self, alert_id: str, limit: int | None = None, offset: int = 0) -> dict:
         """Fetch aggregated alert events for a Vega alert.
@@ -1242,9 +1236,9 @@ def load_current_incident() -> dict[str, Any]:
 
 def resolve_alert_id_from_incident(args: dict[str, Any], incident: dict[str, Any]) -> str | None:
     """Resolve the Vega alert API id (UUID) used for API calls such as getAlertsEvents."""
-    alert_id = args.get("alert_id")
-    if alert_id is not None and str(alert_id).strip():
-        return str(alert_id).strip()
+    alert_ids = _collect_alert_ids_from_args(args)
+    if alert_ids:
+        return alert_ids[0]
 
     custom_fields = _collect_incident_custom_fields(incident)
 
@@ -1795,23 +1789,47 @@ def _timeline_data_source_label(source: dict) -> str:
     return ""
 
 
+def _timeline_string_pill_html(value: str) -> str:
+    """Render a timeline footer pill for a plain string value."""
+    label = str(value).strip()
+    if not label:
+        return ""
+    return f"<span style='{_TIMELINE_PILL_STYLE}'>{_escape_html(label)}</span>"
+
+
 def _timeline_footer_html(event: dict) -> str:
-    """Build footer badges (data sources, severity, entities) for a timeline event."""
+    """Build footer badges (data sources, severity, assets, observables) for a timeline event."""
     parts: list[str] = []
 
     data_sources = event.get("dataSources")
     if isinstance(data_sources, list):
         for source in data_sources:
-            if not isinstance(source, dict):
-                continue
-            label = _timeline_data_source_label(source)
-            if label:
-                parts.append(f"<span style='{_TIMELINE_PILL_STYLE}'>{_escape_html(label)}</span>")
+            if isinstance(source, dict):
+                label = _timeline_data_source_label(source)
+                if label:
+                    parts.append(_timeline_string_pill_html(label))
+            elif isinstance(source, str):
+                pill = _timeline_string_pill_html(source)
+                if pill:
+                    parts.append(pill)
 
     alert = event.get("alert")
-    if isinstance(alert, dict) and alert.get("displayName"):
-        severity_label = _timeline_alert_severity_label(alert.get("severity"))
-        parts.append(f"<span style='{_TIMELINE_PILL_STYLE}'>Severity: {_escape_html(severity_label)}</span>")
+    if isinstance(alert, dict):
+        if alert.get("displayName"):
+            severity_label = _timeline_alert_severity_label(alert.get("severity"))
+            parts.append(f"<span style='{_TIMELINE_PILL_STYLE}'>Severity: {_escape_html(severity_label)}</span>")
+        elif alert.get("severity") is not None:
+            severity_label = _timeline_alert_severity_label(alert.get("severity"))
+            parts.append(f"<span style='{_TIMELINE_PILL_STYLE}'>Severity: {_escape_html(severity_label)}</span>")
+
+    for key in ("assets", "observables"):
+        values = event.get(key)
+        if isinstance(values, list):
+            for value in values:
+                if isinstance(value, str):
+                    pill = _timeline_string_pill_html(value)
+                    if pill:
+                        parts.append(pill)
 
     entities = event.get("entities")
     if isinstance(entities, list):
@@ -1827,7 +1845,7 @@ def _timeline_footer_html(event: dict) -> str:
             pill_text = value
             if meta_parts:
                 pill_text = f"{pill_text} ({', '.join(meta_parts)})"
-            parts.append(f"<span style='{_TIMELINE_PILL_STYLE}'>{_escape_html(pill_text)}</span>")
+            parts.append(_timeline_string_pill_html(pill_text))
 
     if not parts:
         return ""
@@ -1851,17 +1869,19 @@ def _timeline_event_row_html(event: dict, is_last: bool) -> str:
     summary = _escape_html(str(event.get("summary", "")).strip() or "No summary provided.")
     alert_data = event.get("alert")
     content_parts: list[str] = []
-    if isinstance(alert_data, dict) and str(alert_data.get("displayName", "")).strip():
-        alert_name = _escape_html(str(alert_data.get("displayName", "")).strip())
-        severity_bars = _timeline_severity_bars_html(alert_data.get("severity"))
-        content_parts.append(
-            f"<div style='display:inline-flex;align-items:center;gap:10px;"
-            f"background:#141414;border:1px solid #333333;border-radius:10px;"
-            f"padding:10px 14px;margin-bottom:12px;max-width:100%;'>"
-            f"{severity_bars}"
-            f"<span style='color:#ffffff;font-size:14px;font-weight:600;line-height:1.4;'>"
-            f"{alert_name}</span></div>"
-        )
+    if isinstance(alert_data, dict):
+        alert_name_value = str(alert_data.get("name") or alert_data.get("displayName") or "").strip()
+        if alert_name_value:
+            alert_name = _escape_html(alert_name_value)
+            severity_bars = _timeline_severity_bars_html(alert_data.get("severity"))
+            content_parts.append(
+                f"<div style='display:inline-flex;align-items:center;gap:10px;"
+                f"background:#141414;border:1px solid #333333;border-radius:10px;"
+                f"padding:10px 14px;margin-bottom:12px;max-width:100%;'>"
+                f"{severity_bars}"
+                f"<span style='color:#ffffff;font-size:14px;font-weight:600;line-height:1.4;'>"
+                f"{alert_name}</span></div>"
+            )
 
     content_parts.append(f"<p style='margin:0;color:#e5e5e5;font-size:13px;line-height:1.65;'>{summary}</p>")
     footer = _timeline_footer_html(event)
@@ -2172,15 +2192,23 @@ def _build_comment_war_room_entry(comment_text: str, tags: list[str] | None = No
 
 def _collect_alert_ids_from_args(args: dict[str, Any]) -> list[str]:
     """Collect unique Vega alert IDs from command arguments."""
-    return list(dict.fromkeys(str(item).strip() for item in argToList(args.get("alert_id")) if str(item).strip()))
+    entity_ids: list[str] = []
+    for key in ("alert_ids", "alert_id"):
+        entity_ids.extend(str(item).strip() for item in argToList(args.get(key)) if str(item).strip())
+    return list(dict.fromkeys(entity_ids))
 
 
 def _collect_incident_ids_from_args(args: dict[str, Any]) -> list[str]:
     """Collect unique Vega incident IDs from command arguments."""
     entity_ids: list[str] = []
-    for key in ("incident_id", "incident_ids"):
+    for key in ("incident_ids", "incident_id"):
         entity_ids.extend(str(item).strip() for item in argToList(args.get(key)) if str(item).strip())
     return list(dict.fromkeys(entity_ids))
+
+
+def _collect_string_list_from_args(args: dict[str, Any], key: str) -> list[str]:
+    """Collect unique non-empty string values from a command argument list."""
+    return list(dict.fromkeys(str(item).strip() for item in argToList(args.get(key)) if str(item).strip()))
 
 
 def _validate_alert_status_value(status: str) -> str:
@@ -2235,6 +2263,9 @@ def _build_direct_alert_update_payload(args: dict[str, Any]) -> dict[str, Any]:
     comment = args.get("comment")
     if comment is not None and str(comment).strip():
         update_input["comment"] = str(comment).strip()
+    assignees = _collect_string_list_from_args(args, "assignees")
+    if assignees:
+        update_input["assignees"] = assignees
     return update_input
 
 
@@ -2262,7 +2293,24 @@ def _build_direct_incident_update_payload(args: dict[str, Any]) -> dict[str, Any
     comment = args.get("comment")
     if comment is not None and str(comment).strip():
         update_input["comment"] = str(comment).strip()
+    assignee_emails = _collect_string_list_from_args(args, "assignee_emails")
+    if assignee_emails:
+        update_input["assigneeEmails"] = assignee_emails
     return update_input
+
+
+def _format_assignee_output(assignee: Any) -> str | None:
+    """Format a Vega assignee object for command context output."""
+    if not isinstance(assignee, dict):
+        return None
+    email = str(assignee.get("email") or "").strip()
+    if email:
+        return email
+    display_name = str(assignee.get("displayName") or "").strip()
+    if display_name:
+        return display_name
+    user_id = str(assignee.get("userId") or "").strip()
+    return user_id or None
 
 
 def _format_push_alert_output(alert: dict[str, Any]) -> dict[str, str]:
@@ -2274,6 +2322,9 @@ def _format_push_alert_output(alert: dict[str, Any]) -> dict[str, str]:
     }
     if alert.get("severity") is not None:
         output["severity"] = _normalize_vega_severity_for_display(alert.get("severity"))
+    assignee = _format_assignee_output(alert.get("assignee"))
+    if assignee:
+        output["assignee"] = assignee
     return output
 
 
@@ -2292,6 +2343,9 @@ def _format_push_incident_output(
     }
     if severity_value is not None:
         output["severity"] = _normalize_vega_severity_for_display(severity_value)
+    assignee = _format_assignee_output(incident.get("assignee"))
+    if assignee:
+        output["assignee"] = assignee
     return output
 
 
@@ -2396,13 +2450,30 @@ def _args_explicitly_set(args: dict[str, Any], *keys: str) -> bool:
 def _alert_update_fields_explicitly_set(args: dict[str, Any]) -> bool:
     """Return True when the caller provided alert update command arguments."""
     return _args_explicitly_set(
-        args, "status", "alert_status", "verdict", "verdict_reasoning", "severity", "alert_severity", "comment"
+        args,
+        "status",
+        "alert_status",
+        "verdict",
+        "verdict_reasoning",
+        "severity",
+        "alert_severity",
+        "comment",
+        "assignees",
     )
 
 
 def _incident_update_fields_explicitly_set(args: dict[str, Any]) -> bool:
     """Return True when the caller provided incident status, verdict, severity, reasoning, and/or comment command arguments."""
-    return _args_explicitly_set(args, "status", "incident_status", "verdict", "verdict_reasoning", "severity", "comment")
+    return _args_explicitly_set(
+        args,
+        "status",
+        "incident_status",
+        "verdict",
+        "verdict_reasoning",
+        "severity",
+        "comment",
+        "assignee_emails",
+    )
 
 
 def _xsoar_incident_is_closed(incident: dict[str, Any]) -> bool:
@@ -2528,6 +2599,8 @@ def _build_effective_alert_update_args(args: dict[str, Any], incident: dict[str,
         severity = _resolve_alert_severity_for_update(args, incident)
         if severity is not None:
             effective_args["severity"] = severity
+    if _args_explicitly_set(args, "assignees"):
+        effective_args["assignees"] = _collect_string_list_from_args(args, "assignees")
     return effective_args
 
 
@@ -2566,6 +2639,8 @@ def _build_effective_incident_update_args(args: dict[str, Any], incident: dict[s
     comment = _resolve_comment_for_update(args)
     if comment is not None:
         effective_args["comment"] = comment
+    if _args_explicitly_set(args, "assignee_emails"):
+        effective_args["assignee_emails"] = _collect_string_list_from_args(args, "assignee_emails")
     return effective_args
 
 
@@ -2573,7 +2648,7 @@ def _should_sync_xsoar_alert(args: dict[str, Any], incident: dict[str, Any], ale
     """Return True when the open XSOAR investigation should be synced after an alert update."""
     if not incident.get("id"):
         return False
-    if len(alert_ids) > 1 and _args_explicitly_set(args, "alert_id"):
+    if len(alert_ids) > 1 and _args_explicitly_set(args, "alert_ids", "alert_id"):
         current_alert_id = resolve_alert_id_from_incident(args, incident)
         return bool(current_alert_id and current_alert_id in alert_ids)
     return True
@@ -2583,7 +2658,7 @@ def _should_sync_xsoar_incident(args: dict[str, Any], incident: dict[str, Any], 
     """Return True when the open XSOAR investigation should be synced after an incident update."""
     if not incident.get("id"):
         return False
-    if len(incident_ids) > 1 and _args_explicitly_set(args, "incident_id", "incident_ids"):
+    if len(incident_ids) > 1 and _args_explicitly_set(args, "incident_ids", "incident_id"):
         current_incident_id = resolve_incident_id_from_incident(args, incident)
         return bool(current_incident_id and current_incident_id in incident_ids)
     return True
@@ -2692,13 +2767,16 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
         raise DemistoException(
             "At least one alert id is required when the command is not run from a Vega Alert incident. "
             f"Could not resolve alert ID from incident id={xsoar_incident_id}, type={incident_type}. "
-            "Pass alert_id explicitly, for example: !vega-update-alert alert_id=alert-1 status=RESOLVED verdict=MALICIOUS"
+            "Pass alert_ids explicitly, for example: "
+            "!vega-update-alert alert_ids=alert-1,alert-2 status=RESOLVED verdict=MALICIOUS"
         )
 
     effective_args = _build_effective_alert_update_args(args, incident)
     update_fields = _build_direct_alert_update_payload(effective_args)
     if not update_fields:
-        raise DemistoException("At least one of status, severity, verdict, verdict reasoning, or comment must be provided.")
+        raise DemistoException(
+            "At least one of status, severity, verdict, verdict reasoning, comment, or assignees must be provided."
+        )
 
     result = client.update_alerts({**update_fields, "alertIds": alert_ids})
     updated_alerts = result.get("alerts") or []
@@ -2707,7 +2785,7 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     readable = tableToMarkdown(
         "Updated Vega Alerts",
         outputs,
-        headers=["id", "status", "severity", "verdict"],
+        headers=["id", "status", "severity", "verdict", "assignee"],
         removeNull=True,
     )
     command_result = CommandResults(
@@ -2735,14 +2813,16 @@ def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResu
         raise DemistoException(
             "At least one incident id is required when the command is not run from a Vega Incident investigation. "
             f"Could not resolve incident ID from incident id={xsoar_incident_id}, type={incident_type}. "
-            "Pass incident_id explicitly, for example: "
-            "!vega-update-incident incident_id=inc-1 status=RESOLVED verdict=MALICIOUS comment=Updated"
+            "Pass incident_ids explicitly, for example: "
+            "!vega-update-incident incident_ids=inc-1,inc-2 status=RESOLVED verdict=MALICIOUS comment=Updated"
         )
 
     effective_args = _build_effective_incident_update_args(args, incident)
     update_fields = _build_direct_incident_update_payload(effective_args)
     if not update_fields:
-        raise DemistoException("At least one of status, verdict, verdict reasoning, severity, or comment must be provided.")
+        raise DemistoException(
+            "At least one of status, verdict, verdict reasoning, severity, comment, or assignee_emails must be provided."
+        )
 
     result = client.update_incidents({**update_fields, "incidentIds": incident_ids})
     updated_incidents = result.get("incidents") or []
@@ -2768,7 +2848,7 @@ def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResu
         readable = tableToMarkdown(
             "Updated Vega Incidents",
             outputs,
-            headers=["id", "status", "verdict", "severity"],
+            headers=["id", "status", "verdict", "severity", "assignee"],
             removeNull=True,
         )
         command_result = CommandResults(
@@ -2832,7 +2912,7 @@ def incident_to_xsoar_incident(
 
     Args:
         incident: A single incident dict from the Vega API.
-        timeline_events: Optional timeline events from getIncidentsDetails.
+        timeline_events: Optional timeline events from getIncidentTimeline.
 
     Returns:
         An XSOAR incident dict.
@@ -3051,11 +3131,13 @@ def _fetch_paginated_entities(
 
     while True:
         request_kwargs = dict(fetch_kwargs)
+        page_limit = FETCH_ENTITIES_PAGE_SIZE
         if max_entities is not None:
             remaining = max_entities - len(entities)
             if remaining <= 0:
                 break
-            request_kwargs["limit"] = remaining
+            page_limit = min(page_limit, remaining)
+        request_kwargs["limit"] = page_limit
 
         response = fetch_func(offset=offset, **request_kwargs)
 
@@ -3443,7 +3525,7 @@ def _enrich_incident_entity_for_mirror(client: Client, entity: dict[str, Any]) -
     if not entity_id:
         return _normalize_incident_api_entity(entity)
 
-    details = client.get_incident_details(entity_id)
+    details = client.get_incident_by_id(entity_id)
     if not isinstance(details, dict) or not details:
         return _normalize_incident_api_entity(entity)
 
@@ -4112,6 +4194,18 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
+def _handle_fetch_entity_error(entity_label: str, exc: Exception) -> None:
+    """Log transient fetch failures without advancing cursor; re-raise permanent errors."""
+    if _is_retryable_http_error(exc):
+        demisto.error(
+            f"Vega {entity_label} fetch skipped due to a transient API error after retries: {exc}. "
+            f"The {entity_label} cursor was not advanced and will retry on the next fetch cycle."
+        )
+        return
+    demisto.debug(f"Error fetching Vega {entity_label}: {exc}")
+    raise exc
+
+
 def fetch_incidents_command(
     client: Client,
     last_run: dict,
@@ -4199,8 +4293,7 @@ def fetch_incidents_command(
             demisto.debug(f"Vega alerts ingest: {new_alerts} new, {len(alerts) - new_alerts} skipped as duplicates.")
 
         except Exception as e:
-            demisto.debug(f"Error fetching Vega alerts: {e}")
-            raise
+            _handle_fetch_entity_error("alerts", e)
 
     if fetch_incidents:
         demisto.debug("Fetching Vega incidents...")
@@ -4223,18 +4316,12 @@ def fetch_incidents_command(
                 timeline_events: list[dict] = []
                 if incident_id:
                     try:
-                        details = client.get_incident_details(str(incident_id))
-                        fetched_events = details.get("timelineEvents")
+                        timeline_result = client.get_incident_timeline(str(incident_id))
+                        fetched_events = timeline_result.get("events")
                         if isinstance(fetched_events, list):
                             timeline_events = [event for event in fetched_events if isinstance(event, dict)]
-                        key_findings = details.get("keyFindings")
-                        if isinstance(key_findings, list) and key_findings:
-                            incident["keyFindings"] = key_findings
-                        details_verdict_reasoning = details.get("verdictReasoning")
-                        if not _is_missing_verdict_reasoning(details_verdict_reasoning):
-                            incident["verdictReasoning"] = details_verdict_reasoning
-                    except Exception as details_error:
-                        demisto.debug(f"Could not fetch incident details for Vega incident {incident_id}: {details_error}")
+                    except Exception as timeline_error:
+                        demisto.debug(f"Could not fetch incident timeline for Vega incident {incident_id}: {timeline_error}")
                 xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events))
                 new_incidents += 1
 
@@ -4250,8 +4337,7 @@ def fetch_incidents_command(
             demisto.debug(f"Vega incidents ingest: {new_incidents} new, {len(incidents) - new_incidents} skipped as duplicates.")
 
         except Exception as e:
-            demisto.debug(f"Error fetching Vega incidents: {e}")
-            raise
+            _handle_fetch_entity_error("incidents", e)
 
     demisto.debug(f"Total XSOAR incidents to ingest: {len(xsoar_incidents)}")
     return next_run, xsoar_incidents

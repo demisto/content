@@ -294,11 +294,17 @@ script:
           type: String
     - name: vega-update-alert
       arguments:
+        - name: alert_ids
+          description: >-
+            One or more Vega alert IDs to update. Accepts a comma-separated list or repeated values
+            (for example, alert_ids=alert-1,alert-2). Use this to update alerts directly from the war room
+            without opening an investigation. When omitted, the alert ID is resolved from the current Vega Alert investigation.
+          isArray: true
         - name: alert_id
           description: >-
-            One or more Vega alert IDs to update. Use this to update alerts directly from the war room without opening
-            an investigation. When omitted, the alert ID is resolved from the current Vega Alert investigation.
+            Deprecated alias for alert_ids. One or more Vega alert IDs to update.
           isArray: true
+          hidden: true
         - name: status
           description: Target Vega alert status.
           auto: PREDEFINED
@@ -328,8 +334,12 @@ script:
           description: Target Vega alert verdict reasoning.
         - name: comment
           description: Comment to add on the Vega alert.
+        - name: assignees
+          description: One or more Vega user IDs to assign to the alert.
+          isArray: true
       description: >-
-        Immediately update Vega alert status, severity, verdict, verdict reasoning, and/or comment on the Vega platform and sync the open XSOAR investigation when run from a Vega Alert investigation.
+        Immediately update Vega alert status, severity, verdict, verdict reasoning, assignees,
+        and/or comment on the Vega platform and sync the open XSOAR investigation when run from a Vega Alert investigation.
       outputs:
         - contextPath: Vega.Alert.id
           description: Updated Vega alert ID.
@@ -343,13 +353,22 @@ script:
         - contextPath: Vega.Alert.verdict
           description: Updated Vega alert verdict.
           type: String
+        - contextPath: Vega.Alert.assignee
+          description: Updated Vega alert assignee email, display name, or user ID.
+          type: String
     - name: vega-update-incident
       arguments:
+        - name: incident_ids
+          description: >-
+            One or more Vega incident IDs to update. Accepts a comma-separated list or repeated values
+            (for example, incident_ids=inc-1,inc-2). Use this to update incidents directly from the war room
+            without opening an investigation. When omitted, the incident ID is resolved from the current Vega Incident investigation.
+          isArray: true
         - name: incident_id
           description: >-
-            One or more Vega incident IDs to update. Use this to update incidents directly from the war room without opening
-            an investigation. When omitted, the incident ID is resolved from the current Vega Incident investigation.
+            Deprecated alias for incident_ids. One or more Vega incident IDs to update.
           isArray: true
+          hidden: true
         - name: status
           description: Target Vega incident status.
           auto: PREDEFINED
@@ -384,8 +403,12 @@ script:
           description: Target Vega incident verdict reasoning.
         - name: comment
           description: Comment to add on the Vega incident.
+        - name: assignee_emails
+          description: One or more email addresses to assign to the Vega incident.
+          isArray: true
       description: >-
-        Immediately update Vega incident status, verdict, verdict reasoning, severity, and/or comment on the Vega platform and sync the open XSOAR investigation when run from a Vega Incident investigation.
+        Immediately update Vega incident status, verdict, verdict reasoning, severity, assignee emails,
+        and/or comment on the Vega platform and sync the open XSOAR investigation when run from a Vega Incident investigation.
       outputs:
         - contextPath: Vega.Incident.id
           description: Updated Vega incident ID.
@@ -398,6 +421,9 @@ script:
           type: String
         - contextPath: Vega.Incident.severity
           description: Updated Vega incident severity.
+          type: String
+        - contextPath: Vega.Incident.assignee
+          description: Updated Vega incident assignee email, display name, or user ID.
           type: String
     - name: get-remote-data
       arguments:

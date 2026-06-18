@@ -19,6 +19,7 @@ from Vega import (
     _build_fetch_filter_fingerprint,
     _build_vega_alert_custom_fields,
     _fetch_paginated_entities,
+    _is_retryable_http_error,
     _format_bullet_list,
     _format_key_findings_html,
     _format_raw_entity_for_xsoar,
@@ -27,6 +28,7 @@ from Vega import (
     _is_empty_vega_comment_text,
     _build_effective_alert_update_args,
     _build_effective_incident_update_args,
+    _build_direct_alert_update_payload,
     _build_direct_incident_update_payload,
     _get_status_from_fields,
     _resolve_incident_status_for_update,
@@ -581,7 +583,7 @@ def test_fetch_incidents_command_uses_cursor_when_incident_filters_expand(mocker
         "limit": 200,
         "offset": 0,
     }
-    mock_client.get_incident_details.return_value = {"timelineEvents": []}
+    mock_client.get_incident_timeline.return_value = {"events": []}
 
     previous_config = _build_fetch_filter_fingerprint(None, None, ["MALICIOUS"])
     last_run = {
@@ -658,18 +660,24 @@ def test_fetch_paginated_entities_multiple_pages(mocker):
 def test_fetch_paginated_entities_fetches_beyond_single_page(mocker):
     """Verify pagination continues until total is reached when the API returns multiple pages."""
     page_one = {
-        "alerts": [{"id": str(i), "createdAt": TIMESTAMP_T1} for i in range(200)],
+        "alerts": [{"id": str(i), "createdAt": TIMESTAMP_T1} for i in range(100)],
         "total": 250,
-        "limit": 200,
+        "limit": 100,
         "offset": 0,
     }
     page_two = {
+        "alerts": [{"id": str(i), "createdAt": TIMESTAMP_T2} for i in range(100, 200)],
+        "total": 250,
+        "limit": 100,
+        "offset": 100,
+    }
+    page_three = {
         "alerts": [{"id": str(i), "createdAt": TIMESTAMP_T2} for i in range(200, 250)],
         "total": 250,
-        "limit": 200,
+        "limit": 100,
         "offset": 200,
     }
-    mock_get_alerts = mocker.Mock(side_effect=[page_one, page_two])
+    mock_get_alerts = mocker.Mock(side_effect=[page_one, page_two, page_three])
 
     results = _fetch_paginated_entities(
         mock_get_alerts,
@@ -678,10 +686,10 @@ def test_fetch_paginated_entities_fetches_beyond_single_page(mocker):
     )
 
     assert len(results) == 250
-    assert mock_get_alerts.call_count == 2
-    assert mock_get_alerts.call_args_list[0].kwargs.get("limit") is None
+    assert mock_get_alerts.call_count == 3
+    assert mock_get_alerts.call_args_list[0].kwargs["limit"] == 100
     assert mock_get_alerts.call_args_list[0].kwargs["offset"] == 0
-    assert mock_get_alerts.call_args_list[1].kwargs["offset"] == 200
+    assert mock_get_alerts.call_args_list[2].kwargs["offset"] == 200
 
 
 def test_fetch_incidents_command_no_duplicate_reingest(mocker):
@@ -777,7 +785,7 @@ def test_fetch_incidents_command_pagination(mocker):
             "offset": 1,
         },
     ]
-    mock_client.get_incident_details.return_value = {"timelineEvents": []}
+    mock_client.get_incident_timeline.return_value = {"events": []}
     mock_client.get_alerts.return_value = {"alerts": [], "total": 0, "limit": 200, "offset": 0}
 
     next_run, incidents = fetch_incidents_command(
@@ -1295,18 +1303,18 @@ def test_fetch_incidents_command_fetches_timeline_details(mocker):
         "limit": 200,
         "offset": 0,
     }
-    mock_client.get_incident_details.return_value = {
-        "timelineEvents": [
+    mock_client.get_incident_timeline.return_value = {
+        "events": [
             {
                 "id": "evt-1",
                 "timestamp": TIMESTAMP_T2,
                 "summary": "Timeline summary.",
-                "entities": [],
+                "assets": [],
+                "observables": [],
                 "dataSources": [],
                 "alert": None,
             }
         ],
-        "keyFindings": ["Detail finding from Vega."],
     }
     mock_client.get_alerts.return_value = {"alerts": [], "total": 0, "limit": 200, "offset": 0}
 
@@ -1325,11 +1333,9 @@ def test_fetch_incidents_command_fetches_timeline_details(mocker):
     )
 
     assert len(incidents) == 1
-    mock_client.get_incident_details.assert_called_once_with("inc-1")
+    mock_client.get_incident_timeline.assert_called_once_with("inc-1")
     raw = json.loads(incidents[0]["rawJSON"])
     assert raw["timelineEvents"][0]["summary"] == "Timeline summary."
-    assert raw["keyFindings"] == ["Detail finding from Vega."]
-    assert "Detail finding from Vega." in raw["vegaIncidentFindings"]
 
 
 def test_format_raw_entity_for_xsoar_prefers_key_findings():
@@ -1928,6 +1934,76 @@ def test_client_http_request_retries_on_429(mocker):
     assert sleep_mock.call_args_list[1].args[0] == 4
 
 
+def test_client_http_request_retries_on_504(mocker):
+    mocker.patch.object(demisto, "debug")
+    sleep_mock = mocker.patch("Vega.time.sleep")
+    client = Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        access_key="test-key",
+        access_key_id="test-key-id",
+    )
+
+    gateway_timeout = DemistoException("Gateway Timeout")
+    gateway_timeout.res = mocker.Mock(status_code=504)
+    success_response = {"data": {"getAlerts": {"alerts": [], "total": 0}}}
+
+    super_mock = mocker.patch(
+        "Vega.BaseClient._http_request",
+        side_effect=[gateway_timeout, gateway_timeout, success_response],
+    )
+
+    response = client._http_request(method="POST", url_suffix="query", resp_type="json")
+
+    assert response == success_response
+    assert super_mock.call_count == 3
+    assert sleep_mock.call_args_list[0].args[0] == 2
+    assert sleep_mock.call_args_list[1].args[0] == 4
+
+
+def test_is_retryable_http_error_detects_gateway_timeout():
+    exc = DemistoException("Gateway Timeout")
+    exc.res = type("Response", (), {"status_code": 504})()
+
+    assert _is_retryable_http_error(exc) is True
+
+
+def test_fetch_incidents_command_skips_alerts_on_transient_error(mocker):
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+    mock_client = mocker.Mock(spec=Client)
+    gateway_timeout = DemistoException("Gateway Timeout")
+    gateway_timeout.res = mocker.Mock(status_code=504)
+    mock_client.get_alerts.side_effect = gateway_timeout
+    mock_client.get_incidents.return_value = {
+        "incidents": [{"id": "inc-1", "name": "Incident 1", "severity": "HIGH", "createdAt": TIMESTAMP_T1}],
+        "total": 1,
+        "limit": 100,
+        "offset": 0,
+    }
+
+    next_run, incidents = fetch_incidents_command(
+        client=mock_client,
+        last_run={},
+        fetch_alerts=True,
+        fetch_incidents=True,
+        alert_severities=None,
+        alert_statuses=None,
+        alert_verdicts=None,
+        incident_severities=None,
+        incident_statuses=None,
+        incident_verdicts=None,
+        first_fetch_time=FIRST_FETCH_TIME,
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0]["type"] == "Vega Incident"
+    assert "alerts_last_fetch" not in next_run
+    assert "incidents_last_fetch" in next_run
+    demisto.error.assert_called_once()
+
+
 def test_build_effective_incident_update_args_no_args_uses_custom_fields():
     incident = {
         "CustomFields": {
@@ -1986,7 +2062,7 @@ def test_update_alert_command_status_only_does_not_send_verdict(mocker):
     mock_client = mocker.Mock(spec=Client)
     mock_client.update_alerts.return_value = {"alerts": [{"id": "alert-1", "status": "IN_PROGRESS", "verdict": "BENIGN"}]}
 
-    update_alert_command(mock_client, {"alert_id": "alert-1", "status": "IN PROGRESS"})
+    update_alert_command(mock_client, {"alert_ids": "alert-1", "status": "IN PROGRESS"})
 
     mock_client.update_alerts.assert_called_once_with({"alertIds": ["alert-1"], "status": "IN_PROGRESS"})
 
@@ -2048,7 +2124,7 @@ def test_update_alert_command_updates_multiple_alerts(mocker):
 
     result = update_alert_command(
         mock_client,
-        {"alert_id": ["alert-1", "alert-2"], "status": "RESOLVED", "verdict": "MALICIOUS"},
+        {"alert_ids": ["alert-1", "alert-2"], "status": "RESOLVED", "verdict": "MALICIOUS"},
     )
 
     mock_client.update_alerts.assert_called_once_with(
@@ -2063,12 +2139,112 @@ def test_update_alert_command_updates_multiple_alerts(mocker):
     assert "Updated Vega Alerts" in result.readable_output
 
 
+def test_update_alert_command_accepts_comma_separated_alert_ids(mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch("Vega.load_current_incident", return_value={})
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.update_alerts.return_value = {
+        "alerts": [
+            {"id": "alert-1", "status": "RESOLVED", "verdict": "MALICIOUS"},
+            {"id": "alert-2", "status": "RESOLVED", "verdict": "MALICIOUS"},
+        ]
+    }
+
+    update_alert_command(
+        mock_client,
+        {"alert_ids": "alert-1,alert-2", "status": "RESOLVED", "verdict": "MALICIOUS"},
+    )
+
+    mock_client.update_alerts.assert_called_once_with(
+        {
+            "alertIds": ["alert-1", "alert-2"],
+            "status": "RESOLVED",
+            "verdict": "MALICIOUS",
+        }
+    )
+
+
+def test_update_alert_command_accepts_alert_id_alias(mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch("Vega.load_current_incident", return_value={})
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.update_alerts.return_value = {
+        "alerts": [
+            {"id": "alert-1", "status": "OPEN", "verdict": "NA"},
+            {"id": "alert-2", "status": "OPEN", "verdict": "NA"},
+        ]
+    }
+
+    update_alert_command(mock_client, {"alert_id": ["alert-1", "alert-2"], "status": "OPEN"})
+
+    mock_client.update_alerts.assert_called_once_with({"alertIds": ["alert-1", "alert-2"], "status": "OPEN"})
+
+
+def test_update_incident_command_updates_multiple_incidents(mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch("Vega.load_current_incident", return_value={})
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.update_incidents.return_value = {
+        "incidents": [
+            {"incidentId": "inc-1", "status": "RESOLVED", "verdict": "MALICIOUS"},
+            {"incidentId": "inc-2", "status": "RESOLVED", "verdict": "MALICIOUS"},
+        ]
+    }
+
+    result = update_incident_command(
+        mock_client,
+        {"incident_ids": ["inc-1", "inc-2"], "status": "RESOLVED", "verdict": "MALICIOUS"},
+    )
+
+    mock_client.update_incidents.assert_called_once_with(
+        {
+            "incidentIds": ["inc-1", "inc-2"],
+            "status": "RESOLVED",
+            "verdict": {"value": "MALICIOUS", "reasoning": ""},
+        }
+    )
+    assert result.outputs[0]["id"] == "inc-1"
+    assert result.outputs[1]["id"] == "inc-2"
+    assert "Updated Vega Incidents" in result.readable_output
+
+
+def test_update_incident_command_accepts_incident_id_alias(mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch("Vega.load_current_incident", return_value={})
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.update_incidents.return_value = {
+        "incidents": [
+            {"incidentId": "inc-1", "status": "INVESTIGATING", "verdict": "SUSPICIOUS"},
+            {"incidentId": "inc-2", "status": "INVESTIGATING", "verdict": "SUSPICIOUS"},
+        ]
+    }
+
+    update_incident_command(
+        mock_client,
+        {"incident_id": ["inc-1", "inc-2"], "status": "INVESTIGATING", "verdict": "SUSPICIOUS"},
+    )
+
+    mock_client.update_incidents.assert_called_once_with(
+        {
+            "incidentIds": ["inc-1", "inc-2"],
+            "status": "INVESTIGATING",
+            "verdict": {"value": "SUSPICIOUS", "reasoning": ""},
+        }
+    )
+
+
 def test_update_alert_command_requires_update_fields(mocker):
     mocker.patch("Vega.load_current_incident", return_value={})
     mock_client = mocker.Mock(spec=Client)
 
-    with pytest.raises(DemistoException, match="At least one of status, severity, verdict, verdict reasoning, or comment"):
-        update_alert_command(mock_client, {"alert_id": "alert-1"})
+    with pytest.raises(
+        DemistoException, match="At least one of status, severity, verdict, verdict reasoning, comment, or assignees"
+    ):
+        update_alert_command(mock_client, {"alert_ids": "alert-1"})
 
 
 def test_update_incident_command_updates_with_comment(mocker):
@@ -2084,7 +2260,7 @@ def test_update_incident_command_updates_with_comment(mocker):
     result = update_incident_command(
         mock_client,
         {
-            "incident_id": "inc-1",
+            "incident_ids": "inc-1",
             "status": "INVESTIGATING",
             "verdict": "SUSPICIOUS",
             "comment": "Reviewed in XSOAR",
@@ -2108,7 +2284,7 @@ def test_update_incident_command_comment_only_returns_note(mocker):
     mock_client = mocker.Mock(spec=Client)
     mock_client.update_incidents.return_value = {"incidents": [{"incidentId": "inc-1"}]}
 
-    result = update_incident_command(mock_client, {"incident_id": "inc-1", "comment": "test comment 1"})
+    result = update_incident_command(mock_client, {"incident_ids": "inc-1", "comment": "test comment 1"})
 
     mock_client.update_incidents.assert_called_once_with({"incidentIds": ["inc-1"], "comment": "test comment 1"})
     assert result.readable_output == "test comment 1"
@@ -2128,7 +2304,8 @@ def test_build_comment_war_room_entry_uses_plain_text_note():
 
 def test_resolve_incident_id_from_incident_uses_explicit_incident_id():
     incident = {"type": "Vega Incident", "CustomFields": {"vegaincidentid": "inc-from-field"}}
-    assert resolve_incident_id_from_incident({"incident_id": "inc-explicit"}, incident) == "inc-explicit"
+    assert resolve_incident_id_from_incident({"incident_ids": "inc-explicit"}, incident) == "inc-explicit"
+    assert resolve_incident_id_from_incident({"incident_id": "inc-legacy"}, incident) == "inc-legacy"
 
 
 def test_get_status_from_fields_uses_incident_status_field():
@@ -2264,7 +2441,7 @@ def test_build_mirror_sync_object_includes_verdict_reasoning_for_incident():
 
 def test_enrich_incident_entity_for_mirror_loads_details_when_reasoning_missing(mocker):
     mock_client = mocker.Mock(spec=Client)
-    mock_client.get_incident_details.return_value = {
+    mock_client.get_incident_by_id.return_value = {
         "id": "inc-1",
         "status": "INVESTIGATING",
         "verdictReasoning": "Loaded from details",
@@ -2272,13 +2449,13 @@ def test_enrich_incident_entity_for_mirror_loads_details_when_reasoning_missing(
 
     enriched = _enrich_incident_entity_for_mirror(mock_client, {"id": "inc-1", "status": "INVESTIGATING"})
 
-    mock_client.get_incident_details.assert_called_once_with("inc-1")
+    mock_client.get_incident_by_id.assert_called_once_with("inc-1")
     assert _extract_verdict_reasoning_from_entity(enriched) == "Loaded from details"
 
 
 def test_enrich_incident_entity_for_mirror_prefers_details_verdict_reasoning(mocker):
     mock_client = mocker.Mock(spec=Client)
-    mock_client.get_incident_details.return_value = {
+    mock_client.get_incident_by_id.return_value = {
         "id": "inc-1",
         "status": "INVESTIGATING",
         "verdictReasoning": "Updated analyst note",
@@ -2290,7 +2467,7 @@ def test_enrich_incident_entity_for_mirror_prefers_details_verdict_reasoning(moc
         {"id": "inc-1", "status": "INVESTIGATING", "verdictReasoning": "Stale list value"},
     )
 
-    mock_client.get_incident_details.assert_called_once_with("inc-1")
+    mock_client.get_incident_by_id.assert_called_once_with("inc-1")
     assert _extract_verdict_reasoning_from_entity(enriched) == "Updated analyst note"
 
 
@@ -2412,6 +2589,81 @@ def test_build_direct_incident_update_payload_supports_reasoning_only():
 
     assert payload["verdict"]["value"] == "NA"
     assert payload["verdict"]["reasoning"] == "Confirmed malicious activity"
+
+
+def test_build_direct_alert_update_payload_supports_assignees():
+    payload = _build_direct_alert_update_payload({"assignees": ["user-1", "user-2"]})
+
+    assert payload == {"assignees": ["user-1", "user-2"]}
+
+
+def test_build_direct_incident_update_payload_supports_assignee_emails():
+    payload = _build_direct_incident_update_payload({"assignee_emails": ["analyst@example.com", "lead@example.com"]})
+
+    assert payload == {"assigneeEmails": ["analyst@example.com", "lead@example.com"]}
+
+
+def test_update_alert_command_supports_assignees(mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch("Vega.load_current_incident", return_value={})
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.update_alerts.return_value = {
+        "alerts": [
+            {
+                "id": "alert-1",
+                "status": "OPEN",
+                "verdict": "NA",
+                "assignee": {"email": "analyst@example.com", "displayName": "Analyst"},
+            }
+        ]
+    }
+
+    result = update_alert_command(
+        mock_client,
+        {"alert_ids": "alert-1", "assignees": ["user-1", "user-2"]},
+    )
+
+    mock_client.update_alerts.assert_called_once_with(
+        {
+            "alertIds": ["alert-1"],
+            "assignees": ["user-1", "user-2"],
+        }
+    )
+    assert result.outputs["assignee"] == "analyst@example.com"
+
+
+def test_update_incident_command_supports_assignee_emails(mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch("Vega.load_current_incident", return_value={})
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.update_incidents.return_value = {
+        "incidents": [
+            {
+                "incidentId": "inc-1",
+                "status": "NEW",
+                "verdict": "NA",
+                "assignee": {"email": "lead@example.com"},
+            }
+        ]
+    }
+
+    result = update_incident_command(
+        mock_client,
+        {
+            "incident_ids": "inc-1",
+            "assignee_emails": ["lead@example.com", "analyst@example.com"],
+        },
+    )
+
+    mock_client.update_incidents.assert_called_once_with(
+        {
+            "incidentIds": ["inc-1"],
+            "assigneeEmails": ["lead@example.com", "analyst@example.com"],
+        }
+    )
+    assert result.outputs["assignee"] == "lead@example.com"
 
 
 def test_get_mirroring_fields_autoclosure_enabled(mocker):
@@ -2726,7 +2978,6 @@ def test_get_remote_data_command_preserves_incident_type_context(mocker):
         "comments": [],
         "verdictReasoning": "Confirmed benign",
     }
-    mock_client.get_incident_details.return_value = {}
 
     result = get_remote_data_command(
         mock_client,
@@ -2779,7 +3030,7 @@ def test_normalize_incident_api_entity_uses_incident_id():
     assert normalized["alertsCount"] == 3
 
 
-def test_get_incident_by_id_falls_back_to_details(mocker):
+def test_get_incident_by_id_returns_empty_when_not_found(mocker):
     client = Client(
         base_url=BASE_URL,
         verify=False,
@@ -2788,20 +3039,10 @@ def test_get_incident_by_id_falls_back_to_details(mocker):
         access_key_id="test-key-id",
     )
     mocker.patch.object(client, "get_incidents", return_value={"incidents": [], "total": 0})
-    mocker.patch.object(
-        client,
-        "get_incident_details",
-        return_value={
-            "incidentId": "inc-1",
-            "lastUpdate": "2026-06-16T12:00:00Z",
-            "status": "INVESTIGATING",
-        },
-    )
 
     incident = client.get_incident_by_id("inc-1")
 
-    client.get_incident_details.assert_called_once_with("inc-1")
-    assert incident["id"] == "inc-1"
+    assert incident == {}
 
 
 def test_build_mirror_not_found_object_preserves_incident_type():
