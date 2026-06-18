@@ -615,26 +615,40 @@ class AzureClient:
         self.connection_type = connection_type
         if not headers:
             # Marketplace path: authenticate via MicrosoftClient using the configured flow.
-            # token_retrieval_url and resource are only required for the Device Code flow, mirroring
-            # the behavior of the standalone Azure integrations.
+            # The Device Code flow requires its own token_retrieval_url, scope and resource (it cannot
+            # request a per-resource ".default" scope), mirroring the standalone Azure integrations.
+            # All other flows (Client Credentials / Authorization Code / Managed Identities) use the
+            # per-command `scope` and `resource` passed by get_azure_client, so storage commands
+            # correctly get a storage-scoped token and management commands a management-scoped token.
             is_device_code = "Device Code" in connection_type
+            token_retrieval_url: str | None
+            ms_scope: str | None
+            ms_resource: str | None
+            if is_device_code:
+                token_retrieval_url = urljoin(azure_ad_endpoint, "organizations/oauth2/v2.0/token")
+                ms_scope = SCOPE_BY_CONNECTION["Device Code"]
+                ms_resource = "https://management.core.windows.net"  # disable-secrets-detection
+            else:
+                token_retrieval_url = None
+                ms_scope = scope
+                ms_resource = resource
             ms_client_args = assign_params(
                 self_deployed=True,
                 auth_id=app_id,
-                token_retrieval_url=(urljoin(azure_ad_endpoint, "organizations/oauth2/v2.0/token") if is_device_code else None),
+                token_retrieval_url=token_retrieval_url,
                 grant_type=GRANT_BY_CONNECTION.get(connection_type),
                 base_url=f"{PREFIX_URL_AZURE}",
                 verify=verify,
                 proxy=proxy,
-                resource=("https://management.core.windows.net" if is_device_code else resource),  # disable-secrets-detection
-                scope=(SCOPE_BY_CONNECTION.get(connection_type) or scope),
+                resource=ms_resource,
+                scope=ms_scope,
                 azure_ad_endpoint=azure_ad_endpoint,
                 tenant_id=tenant_id,
                 enc_key=enc_key,
                 auth_code=auth_code,
                 redirect_uri=redirect_uri,
                 managed_identities_client_id=managed_identities_client_id,
-                managed_identities_resource_uri=Resources.management_azure,
+                managed_identities_resource_uri=ms_resource or Resources.management_azure,
                 command_prefix="azure",
                 ok_codes=(200, 201, 202, 204),
             )
