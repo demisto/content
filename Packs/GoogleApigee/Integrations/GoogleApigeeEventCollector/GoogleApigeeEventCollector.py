@@ -341,7 +341,7 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f"Command being called is {command}")
     try:
-        max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_LIMIT
+        max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_LIMIT)) or DEFAULT_LIMIT
 
         client = Client(
             base_url=base_url,

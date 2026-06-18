@@ -252,7 +252,7 @@ def main() -> None:  # pragma: no cover
     try:
         public_api_token = params.get("public_creds", {}).get("password", "")
         private_api_token = params.get("private_creds", {}).get("password", "")
-        max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+        max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH  # noqa: ucp-param-default  (arg_to_number(None)->None, then `or DEFAULT_MAX_FETCH`)
         first_fetch_time_timestamp = convert_to_timestamp(arg_to_datetime(params.get("first_fetch", DEFAULT_FIRST_FETCH)))
         proxy = argToBoolean(params.get("proxy", False))
 

@@ -366,8 +366,8 @@ def main():  # pragma: no cover
         if demisto.command() == "test-module":
             return return_results(test_module())
         try:
-            port = int(demisto.params().get("longRunningPort"))
-        except ValueError as e:
+            port = int(demisto.params().get("longRunningPort"))  # noqa: ucp-param-default  (required connection param; absent -> TypeError caught below as invalid port)
+        except (TypeError, ValueError) as e:
             raise ValueError(f"Invalid listen port - {e}")
         if demisto.command() == "long-running-execution":
             demisto.debug("Started long-running-execution.")

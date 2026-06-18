@@ -367,7 +367,7 @@ def main():
         client_id = params.get("credentials", {}).get("identifier")
         client_secret = params.get("credentials", {}).get("password")
         use_proxy: bool = params.get("proxy", False)
-        max_events = arg_to_number(params.get("max_events_per_fetch")) or MAX_FETCH_LIMIT
+        max_events = arg_to_number(params.get("max_events_per_fetch")) or MAX_FETCH_LIMIT  # noqa: ucp-param-default  (arg_to_number(None)->None, then `or MAX_FETCH_LIMIT`)
 
         client = Client(
             base_url=base_url,

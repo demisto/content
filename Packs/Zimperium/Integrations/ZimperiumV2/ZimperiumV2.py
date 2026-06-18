@@ -1234,7 +1234,7 @@ def main():  # pragma: no cover
     max_fetch = arg_to_number(params.get("max_fetch", 50)) or 50
     fetch_query = argToList(params.get("fetch_query")) or []
     first_fetch = params.get("first_fetch", "7 days").strip()
-    look_back = arg_to_number(params.get("look_back")) or 1
+    look_back = arg_to_number(params.get("look_back", 1)) or 1
 
     first_fetch_time = arg_to_datetime(first_fetch)
     first_fetch_time_str = first_fetch_time.strftime(DATE_FORMAT) if first_fetch_time else None
