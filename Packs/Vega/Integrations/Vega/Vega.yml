@@ -6,9 +6,10 @@ sectionorder:
   - Connect
   - Collect
   - Vega Entities
+  - Autoclosure
   - Alerts
   - Incidents
-  - Autoclosure
+  - Related Incidents
 configuration:
   - display: Base URL
     additionalinfo: The Base URL of the Vega API.
@@ -92,7 +93,7 @@ configuration:
       - MEDIUM
       - HIGH
       - CRITICAL
-    defaultvalue: LOW
+    defaultvalue: LOW,MEDIUM,HIGH,CRITICAL
   - display: Alert Statuses to fetch
     additionalinfo: >-
       Filter alerts by status. If empty, all statuses are fetched.
@@ -170,6 +171,19 @@ configuration:
       - INCONCLUSIVE
       - NA
     defaultvalue: MALICIOUS,SUSPICIOUS,BENIGN,INCONCLUSIVE,NA
+  - display: Has related incidents
+    additionalinfo: >-
+      Filter alerts by whether they have related incidents. Select Yes to fetch alerts with related incidents,
+      No to fetch alerts without related incidents, or both to fetch all alerts.
+      At least one option must be selected.
+    name: alert_has_related_incidents
+    type: 16
+    section: Related Incidents
+    required: true
+    options:
+      - "Yes"
+      - "No"
+    defaultvalue: "Yes,No"
   - display: Incident type
     name: incidentType
     type: 13

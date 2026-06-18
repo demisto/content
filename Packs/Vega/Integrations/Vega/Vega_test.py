@@ -95,6 +95,7 @@ from Vega import (
     filter_incident_severities,
     filter_incident_statuses,
     filter_incident_verdicts,
+    resolve_has_related_incidents,
     TEST_CONNECTION_ACCESS_KEY_ERROR,
     TEST_CONNECTION_ACCESS_KEY_ID_ERROR,
     TEST_CONNECTION_BASE_URL_ERROR,
@@ -364,6 +365,7 @@ def test_fetch_incidents_command_empty_initial_backfill_advances_cursor(mocker):
         alert_severities=None,
         alert_statuses=None,
         alert_verdicts=None,
+        has_related_incidents=None,
         incident_severities=None,
         incident_statuses=None,
         incident_verdicts=None,
@@ -467,6 +469,7 @@ def test_fetch_incidents_command_dedup_numeric_id_at_boundary(mocker):
         alert_severities=None,
         alert_statuses=None,
         alert_verdicts=None,
+        has_related_incidents=None,
         incident_severities=None,
         incident_statuses=None,
         incident_verdicts=None,
@@ -555,6 +558,7 @@ def test_fetch_incidents_command_uses_cursor_when_filters_expand(mocker):
         alert_severities=["HIGH", "MEDIUM"],
         alert_statuses=None,
         alert_verdicts=None,
+        has_related_incidents=None,
         incident_severities=None,
         incident_statuses=None,
         incident_verdicts=None,
@@ -600,6 +604,7 @@ def test_fetch_incidents_command_uses_cursor_when_incident_filters_expand(mocker
         alert_severities=None,
         alert_statuses=None,
         alert_verdicts=None,
+        has_related_incidents=None,
         incident_severities=None,
         incident_statuses=None,
         incident_verdicts=["MALICIOUS", "SUSPICIOUS"],
@@ -718,6 +723,7 @@ def test_fetch_incidents_command_no_duplicate_reingest(mocker):
         alert_severities=None,
         alert_statuses=None,
         alert_verdicts=None,
+        has_related_incidents=None,
         incident_severities=None,
         incident_statuses=None,
         incident_verdicts=None,
@@ -757,6 +763,7 @@ def test_fetch_incidents_command_no_duplicate_reingest_with_millisecond_timestam
         alert_severities=None,
         alert_statuses=None,
         alert_verdicts=None,
+        has_related_incidents=None,
         incident_severities=None,
         incident_statuses=None,
         incident_verdicts=None,
@@ -796,6 +803,7 @@ def test_fetch_incidents_command_pagination(mocker):
         alert_severities=None,
         alert_statuses=None,
         alert_verdicts=None,
+        has_related_incidents=None,
         incident_severities=None,
         incident_statuses=None,
         incident_verdicts=None,
@@ -828,6 +836,7 @@ def test_fetch_incidents_command_uses_stored_cursor_when_present(mocker):
         alert_severities=None,
         alert_statuses=None,
         alert_verdicts=None,
+        has_related_incidents=None,
         incident_severities=None,
         incident_statuses=None,
         incident_verdicts=None,
@@ -902,6 +911,62 @@ def test_filter_verdicts_accepts_valid_and_ignores_invalid():
         "INCONCLUSIVE",
     ]
     assert filter_alert_verdicts([]) is None
+
+
+def test_resolve_has_related_incidents():
+    assert resolve_has_related_incidents(["Yes"]) is True
+    assert resolve_has_related_incidents(["No"]) is False
+    assert resolve_has_related_incidents(["Yes", "No"]) is None
+    assert resolve_has_related_incidents([]) is None
+    assert resolve_has_related_incidents(None) is None
+
+
+def test_get_alerts_includes_has_related_incidents_when_set(requests_mock, mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(demisto, "info")
+
+    requests_mock.post(f"{BASE_URL}/api/v1/login_machine", json=MOCK_JWT_RESPONSE)
+    requests_mock.post(
+        f"{BASE_URL}/api/v1/query",
+        json={"data": {"getAlerts": {"alerts": [], "total": 0}}},
+    )
+
+    client = Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        access_key="test-key",
+        access_key_id="test-key-id",
+    )
+    client.get_alerts(has_related_incidents=True)
+
+    request_json = requests_mock.request_history[-1].json()
+    assert request_json["variables"]["hasRelatedIncidents"] is True
+
+
+def test_get_alerts_omits_has_related_incidents_when_unset(requests_mock, mocker):
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch.object(demisto, "info")
+
+    requests_mock.post(f"{BASE_URL}/api/v1/login_machine", json=MOCK_JWT_RESPONSE)
+    requests_mock.post(
+        f"{BASE_URL}/api/v1/query",
+        json={"data": {"getAlerts": {"alerts": [], "total": 0}}},
+    )
+
+    client = Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        access_key="test-key",
+        access_key_id="test-key-id",
+    )
+    client.get_alerts()
+
+    request_json = requests_mock.request_history[-1].json()
+    assert "hasRelatedIncidents" not in request_json["variables"]
 
 
 def test_normalize_vega_status_for_display_maps_api_values():
@@ -1326,6 +1391,7 @@ def test_fetch_incidents_command_fetches_timeline_details(mocker):
         alert_severities=None,
         alert_statuses=None,
         alert_verdicts=None,
+        has_related_incidents=None,
         incident_severities=None,
         incident_statuses=None,
         incident_verdicts=None,
@@ -1991,6 +2057,7 @@ def test_fetch_incidents_command_skips_alerts_on_transient_error(mocker):
         alert_severities=None,
         alert_statuses=None,
         alert_verdicts=None,
+        has_related_incidents=None,
         incident_severities=None,
         incident_statuses=None,
         incident_verdicts=None,

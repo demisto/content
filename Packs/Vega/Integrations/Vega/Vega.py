@@ -20,12 +20,12 @@ VEGA_SEVERITY_TO_XSOAR = {
 GET_ALERTS_QUERY = (
     "query GetAlerts($alertNames: [String!], $alertIds: [ID!], $alertSeverities: [AlertSeverity!], "
     "$statuses: [AlertStatus!], $detectionIds: [ID!], $dataSourceNames: [String!], "
-    "$alertVerdicts: [AlertVerdict!], $from: Time, $to: Time, $updatedFrom: Time, $updatedTo: Time, "
-    "$originType: AlertOriginType, $limit: Int, $offset: Int) { "
+    "$alertVerdicts: [AlertVerdict!], $hasRelatedIncidents: Boolean, $from: Time, $to: Time, "
+    "$updatedFrom: Time, $updatedTo: Time, $originType: AlertOriginType, $limit: Int, $offset: Int) { "
     " getAlerts(alertNames: $alertNames, alertIds: $alertIds, alertSeverities: $alertSeverities, "
     "statuses: $statuses, detectionIds: $detectionIds, dataSourceNames: $dataSourceNames, "
-    "alertVerdicts: $alertVerdicts, from: $from, to: $to, updatedFrom: $updatedFrom, updatedTo: $updatedTo, "
-    "originType: $originType, limit: $limit, offset: $offset) { "
+    "alertVerdicts: $alertVerdicts, hasRelatedIncidents: $hasRelatedIncidents, from: $from, to: $to, "
+    "updatedFrom: $updatedFrom, updatedTo: $updatedTo, originType: $originType, limit: $limit, offset: $offset) { "
     "  alerts { id vegaAlertId detectionId name description severity status "
     "   assignee { userId displayName email } "
     "   assignees { userId displayName email } "
@@ -446,6 +446,27 @@ def filter_incident_verdicts(values: list[str] | None) -> list[str] | None:
     return _filter_fetch_values(values, VALID_VERDICTS, VERDICT_DISPLAY_TO_API)
 
 
+def resolve_has_related_incidents(values: list[str] | None) -> bool | None:
+    """Resolve the Vega hasRelatedIncidents filter from Yes/No multi-select values.
+
+    Returns True when only Yes is selected, False when only No is selected,
+    and None when both or neither are selected so the API filter is omitted.
+    """
+    if not values:
+        return None
+
+    normalized = {str(value).strip().upper() for value in values if str(value).strip()}
+    has_yes = "YES" in normalized
+    has_no = "NO" in normalized
+    if has_yes and has_no:
+        return None
+    if has_yes:
+        return True
+    if has_no:
+        return False
+    return None
+
+
 def _http_status_code(exc: Exception) -> int | None:
     """Return the HTTP status code from a DemistoException, if present."""
     if isinstance(exc, DemistoException) and exc.res is not None:
@@ -708,6 +729,7 @@ class Client(BaseClient):
         severities: list[str] | None = None,
         statuses: list[str] | None = None,
         verdicts: list[str] | None = None,
+        has_related_incidents: bool | None = None,
         from_time: str | None = None,
         to_time: str | None = None,
         updated_from: str | None = None,
@@ -723,6 +745,7 @@ class Client(BaseClient):
             severities: Filter by alert severities.
             statuses: Filter by alert statuses.
             verdicts: Filter by alert verdicts.
+            has_related_incidents: Filter alerts by whether they have related incidents.
             from_time: Fetch alerts created after this time (ISO 8601).
             to_time: Fetch alerts created before this time (ISO 8601).
             updated_from: Fetch alerts updated after this time (ISO 8601).
@@ -742,6 +765,8 @@ class Client(BaseClient):
             variables["statuses"] = statuses
         if verdicts:
             variables["alertVerdicts"] = verdicts
+        if has_related_incidents is not None:
+            variables["hasRelatedIncidents"] = has_related_incidents
         if from_time:
             variables["from"] = from_time
         if to_time:
@@ -3225,13 +3250,16 @@ def _build_fetch_filter_fingerprint(
     severities: list[str] | None,
     statuses: list[str] | None,
     verdicts: list[str] | None,
+    has_related_incidents: bool | None = None,
 ) -> str:
     """Build a stable fingerprint for fetch filter parameters."""
-    payload = {
+    payload: dict[str, Any] = {
         "severities": sorted(severities or []),
         "statuses": sorted(statuses or []),
         "verdicts": sorted(verdicts or []),
     }
+    if has_related_incidents is not None:
+        payload["hasRelatedIncidents"] = has_related_incidents
     return json.dumps(payload, sort_keys=True)
 
 
@@ -4214,6 +4242,7 @@ def fetch_incidents_command(
     alert_severities: list[str] | None,
     alert_statuses: list[str] | None,
     alert_verdicts: list[str] | None,
+    has_related_incidents: bool | None,
     incident_severities: list[str] | None,
     incident_statuses: list[str] | None,
     incident_verdicts: list[str] | None,
@@ -4231,6 +4260,7 @@ def fetch_incidents_command(
         alert_severities: Filter alerts by severity.
         alert_statuses: Filter alerts by status.
         alert_verdicts: Filter alerts by verdict.
+        has_related_incidents: Filter alerts by whether they have related incidents.
         incident_severities: Filter incidents by severity.
         incident_statuses: Filter incidents by status.
         incident_verdicts: Filter incidents by verdict.
@@ -4245,7 +4275,12 @@ def fetch_incidents_command(
     next_run.pop("incidents_seen_ids", None)
     next_run.pop("vega_backfill_days", None)
 
-    alerts_fetch_config = _build_fetch_filter_fingerprint(alert_severities, alert_statuses, alert_verdicts)
+    alerts_fetch_config = _build_fetch_filter_fingerprint(
+        alert_severities,
+        alert_statuses,
+        alert_verdicts,
+        has_related_incidents,
+    )
     incidents_fetch_config = _build_fetch_filter_fingerprint(incident_severities, incident_statuses, incident_verdicts)
 
     if fetch_alerts:
@@ -4270,6 +4305,7 @@ def fetch_incidents_command(
                 severities=alert_severities,
                 statuses=alert_statuses,
                 verdicts=alert_verdicts,
+                has_related_incidents=has_related_incidents,
                 from_time=alerts_from_time,
             )
             demisto.debug(f"Fetched {len(alerts)} alerts from Vega. Boundary IDs at cursor: {len(alerts_last_ids)}.")
@@ -4377,6 +4413,7 @@ def main() -> None:
         alert_severities = filter_alert_severities(argToList(params.get("alert_severities")) or None)
         alert_statuses = filter_alert_statuses(argToList(params.get("alert_statuses")) or None)
         alert_verdicts = filter_alert_verdicts(argToList(params.get("alert_verdicts")) or None)
+        has_related_incidents = resolve_has_related_incidents(argToList(params.get("alert_has_related_incidents")))
         incident_severities = filter_incident_severities(argToList(params.get("incident_severities")) or None)
         incident_statuses = filter_incident_statuses(argToList(params.get("incident_statuses")) or None)
         incident_verdicts = filter_incident_verdicts(argToList(params.get("incident_verdicts")) or None)
@@ -4436,6 +4473,7 @@ def main() -> None:
                 alert_severities=alert_severities,
                 alert_statuses=alert_statuses,
                 alert_verdicts=alert_verdicts,
+                has_related_incidents=has_related_incidents,
                 incident_severities=incident_severities,
                 incident_statuses=incident_statuses,
                 incident_verdicts=incident_verdicts,
