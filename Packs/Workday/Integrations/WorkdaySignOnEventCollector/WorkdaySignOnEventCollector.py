@@ -348,7 +348,7 @@ def process_and_filter_events(events: list, from_time: str, previous_run_pseudo_
     last_second_start_time = most_recent_event_time - timedelta(seconds=TIMEDELTA)
 
     if duplicates:
-        demisto.debug(f"Found {len(duplicates)} duplicate events: {duplicates}")
+        demisto.debug(f"[Dedup] Found {len(duplicates)} duplicate events: {duplicates}")
 
     for event in non_duplicates:
         event_datetime = datetime.strptime(event["_time"], EVENT_DATE_FORMAT).replace(tzinfo=timezone.utc)
@@ -374,27 +374,30 @@ def fetch_sign_on_logs(client: Client, limit_to_fetch: int, from_date: str, to_d
     """
     sign_on_logs: list = []
     page = 1  # We assume that we will need to make one call at least
-    total_fetched = 0  # Keep track of the total number of events fetched
     res, total_pages = client.retrieve_events(from_time=from_date, to_time=to_date, page=1, count=999)
     sign_on_events_from_api = res.get("Workday_Account_Signon", [])
     sign_on_logs.extend(sign_on_events_from_api)
-    demisto.debug(f"Request indicates a total of {total_pages} pages to paginate.")
+    total_fetched = len(sign_on_events_from_api)
+    demisto.debug(
+        f"[Pagination] Request indicates a total of {total_pages} pages to paginate. "
+        f"Fetched {total_fetched} events from page 1."
+    )
     pages_remaining = total_pages - 1
 
     while (page <= total_pages and pages_remaining != 0) and res:
         page += 1
-        # Calculate the remaining number of events to fetch
         remaining_to_fetch = limit_to_fetch - total_fetched
         if remaining_to_fetch <= 0:
+            demisto.debug(f"[Pagination] Reached fetch limit of {limit_to_fetch}. Stopping pagination.")
             break
-        res, _ = client.retrieve_events(from_time=from_date, to_time=to_date, page=page, count=limit_to_fetch)
-        pages_remaining -= 1
+        res, _ = client.retrieve_events(from_time=from_date, to_time=to_date, page=page, count=remaining_to_fetch)
+        sign_on_events_from_api = res.get("Workday_Account_Signon", [])
         fetched_count = len(sign_on_events_from_api)
         total_fetched += fetched_count
-
-        demisto.debug(f"Fetched {len(sign_on_events_from_api)} sign on logs.")
+        demisto.debug(f"[Pagination] Fetched {fetched_count} sign on logs from page {page}.")
         sign_on_logs.extend(sign_on_events_from_api)
-        demisto.debug(f"{pages_remaining} pages left to fetch.")
+        pages_remaining -= 1
+        demisto.debug(f"[Pagination] {pages_remaining} pages left to fetch. Total fetched so far: {total_fetched}.")
     return sign_on_logs
 
 
@@ -418,7 +421,7 @@ def get_sign_on_events_command(client: Client, from_date: str, to_date: str, lim
 
     [_event.update({"_time": _event.get("Signon_DateTime")}) for _event in sign_on_events]
 
-    demisto.info(f"Got a total of {len(sign_on_events)} events between the time {from_date} to {to_date}")
+    demisto.info(f"[Get Events] Got a total of {len(sign_on_events)} events between the time {from_date} to {to_date}")
     readable_output = tableToMarkdown(
         "Sign On Events List:",
         sign_on_events,
@@ -450,27 +453,27 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, last_run: dict)
         from_date = last_run.get("last_fetch_time")
     # Checksums in this context is used as an ID since none is provided directly from Workday.
     # This is to prevent duplicates.
-    previous_run_pseudo_ids = last_run.get("previous_run_pseudo_ids", {})
+    previous_run_pseudo_ids = set(last_run.get("previous_run_pseudo_ids") or [])
     to_date = datetime.now(tz=timezone.utc).strftime(REQUEST_DATE_FORMAT)
-    demisto.debug(f"Getting Sign On Events {from_date=}, {to_date=}.")
+    demisto.debug(f"[Fetch] Getting Sign On Events {from_date=}, {to_date=}.")
     sign_on_events = fetch_sign_on_logs(client=client, limit_to_fetch=max_fetch, from_date=from_date, to_date=to_date)
 
     if sign_on_events:
-        demisto.debug(f"Got {len(sign_on_events)} sign_on_events. Begin processing.")
+        demisto.debug(f"[Fetch] Got {len(sign_on_events)} sign_on_events. Begin processing.")
         non_duplicates, pseudo_ids_for_next_iteration = process_and_filter_events(
             events=sign_on_events, previous_run_pseudo_ids=previous_run_pseudo_ids, from_time=from_date
         )
 
-        demisto.debug(f"Done processing {len(non_duplicates)} sign_on_events.")
+        demisto.debug(f"[Fetch] Done processing {len(non_duplicates)} sign_on_events.")
         last_event = non_duplicates[-1]
         last_run = {
             "last_fetch_time": last_event.get("Signon_DateTime"),
-            "previous_run_pseudo_ids": pseudo_ids_for_next_iteration,
+            "previous_run_pseudo_ids": list(pseudo_ids_for_next_iteration),
         }
-        demisto.debug(f"Saving last run as {last_run}")
+        demisto.debug(f"[Fetch] Saving last run as {last_run}")
     else:
         # Handle the case where no events were retrieved
-        last_run["last_fetch_time"] = current_time
+        last_run["last_fetch_time"] = current_time.strftime(REQUEST_DATE_FORMAT)
         non_duplicates = []
 
     return non_duplicates, last_run
@@ -503,7 +506,7 @@ def main() -> None:  # pragma: no cover
 
     max_fetch = arg_to_number(params.get("max_fetch")) or 10000
 
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"[Main] Command being called is {command}")
     try:
         client = Client(params=params)
 
@@ -530,13 +533,13 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(sign_on_events, vendor=VENDOR, product=PRODUCT)
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            demisto.debug(f"Starting new fetch with last_run as {last_run}")
+            demisto.debug(f"[Main] Starting new fetch with last_run as {last_run}")
             sign_on_events, new_last_run = fetch_sign_on_events_command(client=client, max_fetch=max_fetch, last_run=last_run)
-            demisto.debug(f"Done fetching events, sending to XSIAM. - {sign_on_events}")
+            demisto.debug(f"[Main] Done fetching events, sending to XSIAM. - {sign_on_events}")
             send_events_to_xsiam(sign_on_events, vendor=VENDOR, product=PRODUCT)
             if new_last_run:
                 # saves next_run for the time fetch-events is invoked
-                demisto.info(f"Setting new last_run to {new_last_run}")
+                demisto.info(f"[Main] Setting new last_run to {new_last_run}")
                 demisto.setLastRun(new_last_run)
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
