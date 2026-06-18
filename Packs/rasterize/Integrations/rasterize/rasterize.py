@@ -481,7 +481,7 @@ def _freeze_tab_for_screenshot(tab: Optional[pychrome.Tab], tab_id: str, path: s
 def wait_for_page_load_with_memory_guard(
     tab_ready_event: Event,
     navigation_timeout: int,
-    tolerance_bytes: int = MEMORY_PRESSURE_TOLERANCE_BYTES,
+    tolerance_bytes: Optional[int] = None,
     poll_interval: float = 0.1,
     tab_id: str = "",
     path: str = "",
@@ -500,8 +500,8 @@ def wait_for_page_load_with_memory_guard(
     Args:
         tab_ready_event: The threading.Event that signals page load completion.
         navigation_timeout: Maximum seconds to wait (same as the normal page-load timeout).
-        tolerance_bytes: Available-memory floor in bytes. Defaults to the module-level
-            MEMORY_PRESSURE_TOLERANCE_BYTES, which is recomputed per command via
+        tolerance_bytes: Available-memory floor in bytes. When None (the default), the
+            current module-level MEMORY_PRESSURE_TOLERANCE_BYTES is used, which is recomputed per command via
             set_memory_pressure_tolerance_for_capture (a higher percentage is used for
             full-screen captures).
         poll_interval: How often (seconds) to sample memory while waiting. Default: 0.5 s.
@@ -513,6 +513,9 @@ def wait_for_page_load_with_memory_guard(
         bool: True if the event was set normally (page finished loading or timed out),
               False if the wait was aborted early due to memory pressure.
     """
+    if tolerance_bytes is None:
+        tolerance_bytes = MEMORY_PRESSURE_TOLERANCE_BYTES
+
     deadline = time.monotonic() + navigation_timeout  # pylint: disable=E9003
 
     # If there is no cgroup memory limit, the memory-pressure check is not applicable.
