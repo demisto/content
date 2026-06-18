@@ -1,0 +1,2 @@
+{"id":"FAKE_LISTING_002","timestamp":"2099-01-02T00:00:00Z","actor":"FAKE_ACTOR_A","action":"dummy_action_one"}{"id":"FAKE_LISTING_002","timestamp":"2099-01-02T00:00:01Z","actor":"FAKE_ACTOR_B","action":"dummy_action_two"}
+{"id":"FAKE_LISTING_002","timestamp":"2099-01-02T00:00:02Z","actor":"FAKE_ACTOR_C","action":"dummy_action_three"}
