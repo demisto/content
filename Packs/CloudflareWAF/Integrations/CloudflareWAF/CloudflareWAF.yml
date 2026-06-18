@@ -700,7 +700,7 @@ script:
     - description: The ruleset identifier.
       name: ruleset_id
       required: true
-    - description: Zone identifier. If provided, gets a zone-level ruleset. If not provided, gets an account-level ruleset. The value set in the instance configuration is used by default.
+    - description: The zone identifier. If provided, gets a zone-level ruleset. If not provided, gets an account-level ruleset. The value set in the instance configuration is used by default.
       name: zone_id
     description: The command retrieves a specific ruleset by ID, including its list of rules.
     name: cloudflare-waf-ruleset-get

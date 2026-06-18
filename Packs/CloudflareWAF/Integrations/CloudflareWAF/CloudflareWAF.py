@@ -512,7 +512,7 @@ class Client(BaseClient):
         else:
             url_suffix = f"accounts/{self.account_id}/rulesets/{ruleset_id}"
 
-        return self._http_request(method="DELETE", url_suffix=url_suffix, resp_type="response")
+        return self._http_request(method="DELETE", url_suffix=url_suffix)
 
 
 def validate_pagination_arguments(page: int = None, page_size: int = None, limit: int = None):
@@ -1299,23 +1299,9 @@ def cloudflare_waf_ruleset_list_command(client: Client, args: dict[str, Any]) ->
 
     output = response.get("result", [])
 
-    rulesets = []
-    for ruleset in output:
-        rulesets.append(
-            {
-                "id": ruleset.get("id"),
-                "name": ruleset.get("name"),
-                "kind": ruleset.get("kind"),
-                "phase": ruleset.get("phase"),
-                "description": ruleset.get("description"),
-                "version": ruleset.get("version"),
-                "last_updated": ruleset.get("last_updated"),
-            }
-        )
-
     readable_output = tableToMarkdown(
         name="Ruleset list",
-        t=rulesets,
+        t=output,
         headers=["id", "name", "kind", "phase", "description", "version", "last_updated"],
         headerTransform=string_to_table_header,
     )
