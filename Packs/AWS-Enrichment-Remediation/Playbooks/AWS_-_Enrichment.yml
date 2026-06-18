@@ -1057,7 +1057,7 @@ outputs:
 - contextPath: AWS.SSM
   description: AWS SSM information.
   type: unknown
-fromversion: 6.5.0
+fromversion: 8.9.0
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
