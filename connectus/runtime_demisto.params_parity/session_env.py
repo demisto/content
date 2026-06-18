@@ -64,7 +64,7 @@ SESSION_DIR = _SCRIPT_DIR / ".session"
 DESCRIPTOR_PATH = SESSION_DIR / "parity_session.json"
 
 DEFAULT_UCP_PORT = 8080
-DEFAULT_GKE_ZONE = "us-central1-b"
+DEFAULT_GKE_ZONE = "us-central1-f"
 DEFAULT_K8S_NAMESPACE = "xdr-st"
 
 # Status values returned by ensure_session().

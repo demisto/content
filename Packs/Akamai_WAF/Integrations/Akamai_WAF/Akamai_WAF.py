@@ -7434,7 +7434,7 @@ def generic_api_call_command(
 def main():
     params = demisto.params()
     verify_ssl = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
+    proxy = params.get("proxy")
     client_token = params.get("credentials_client_token", {}).get("password") or params.get("clientToken")
     access_token = params.get("credentials_access_token", {}).get("password") or params.get("accessToken")
     client_secret = params.get("credentials_client_secret", {}).get("password") or params.get("clientSecret")

@@ -3378,7 +3378,7 @@ def main() -> None:
     password = params.get("credentials", {}).get("password")
 
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_FETCH))
-    first_fetch = params.get("first_fetch") or "7 days"
+    first_fetch = params.get("first_fetch")
     filter_by = params.get("filter_by")
     filter_operator = params.get("filter_operator")
     filter_value = params.get("filter_value")

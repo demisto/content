@@ -864,7 +864,7 @@ def test_module(client: Client, params: dict) -> None:
             message = "ok"
 
         if params["isFetch"]:
-            max_fetch = arg_to_number(params.get("max_fetch"))  # noqa: ucp-param-default  (arg_to_number(None)->None; guarded by `is not None` below)
+            max_fetch = arg_to_number(params.get("max_fetch"))
             if max_fetch is not None and (max_fetch > MAX_INCIDENTS_TO_FETCH or max_fetch <= 0):
                 raise DemistoException(
                     f"Maximum number of incidents to fetch exceeds the limit "
@@ -970,7 +970,7 @@ def main():
             panel_id = params.get("panel_id")
             alert_name = params.get("alert_name")
             state = params.get("state")
-            limit = arg_to_number(params.get("max_fetch"))  # noqa: ucp-param-default  (arg_to_number(None)->None; fetch_incidents handles None limit)
+            limit = arg_to_number(params.get("max_fetch"))
 
             incidents = fetch_incidents(client, first_fetch, dashboard_id, panel_id, alert_name, state, limit)
             demisto.incidents(incidents)
