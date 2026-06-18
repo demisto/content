@@ -103,11 +103,17 @@ def _derive_handler_id(integration_id: str) -> str:
 
     Mirrors ``connectus_migration.manifest_generator.derive_handler_id``
     (guide §3.8): ``"xsoar-" + integration_id`` lowercased with internal
-    whitespace runs collapsed to single dashes. Inlined here (3 lines) to
-    keep this dependency-light module free of a heavy manifest_generator
-    import.
+    whitespace AND any punctuation other than ``_``/``-`` collapsed to
+    single dashes (then deduped and stripped). This MUST stay in lockstep
+    with the generator, which strips parentheses and other punctuation so
+    the on-disk handler folder / view_group id is OPA-valid (e.g.
+    "Mail Sender (New)" -> "xsoar-mail-sender-new", not
+    "xsoar-mail-sender-(new)"). Inlined here to keep this dependency-light
+    module free of a heavy manifest_generator import.
     """
-    slug = re.sub(r"\s+", "-", integration_id.strip().lower())
+    slug = integration_id.strip().lower()
+    slug = re.sub(r"[^a-z0-9_-]+", "-", slug)
+    slug = re.sub(r"-+", "-", slug).strip("-")
     return f"xsoar-{slug}"
 
 

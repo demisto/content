@@ -34,7 +34,7 @@ BlueCat BluecatAddressManager,Packs/BluecatAddressManager/Integrations/BluecatAd
 BMC,Packs/BmcITSM/Integrations/BmcITSM/BmcITSM_image.png
 BMC Helix Remedyforce,Packs/BmcHelixRemedyForce/Integrations/BmcHelixRemedyForce/BmcHelixRemedyForce_image.png
 BMC Remedy AR,Packs/Remedy_AR/Integrations/RemedyAR/RemedyAR_image.png
-Box,Packs/Box/Integrations/BoxV2/BoxV2_image.png
+Box Automation and Collection,Packs/Box/Integrations/BoxV2/BoxV2_image.png
 BruteForceBlocker Feed,Packs/FeedBruteForceBlocker/Integrations/FeedBruteForceBlocker/FeedBruteForceBlocker_image.png
 C2sec irisk,Packs/C2sec/Integrations/C2sec/C2sec_image.png
 CapeSandbox,Packs/CapeSandbox/Integrations/CapeSandbox/CapeSandbox_image.png
@@ -90,6 +90,7 @@ Envoy,Packs/Envoy/Integrations/EnvoyIAM/EnvoyIAM_image.png
 Exabeam,Packs/Exabeam/Integrations/Exabeam/Exabeam_image.png
 ExtraHop,Packs/ExtraHop/Author_image.png
 F5,Packs/F5/Integrations/F5_ASM/F5_ASM_image.png
+F5 Automation and Remediation,Packs/F5/Integrations/F5_ASM/F5_ASM_image.png
 Fastly Feed,Packs/FeedFastly/Integrations/FeedFastly/FeedFastly_image.png
 Fastly Signal Sciences WAF,Packs/SignalSciences/Integrations/SignalSciences/SignalSciences_image.png
 Fidelis,Packs/FidelisEndpoint/Integrations/FidelisEndpoint/FidelisEndpoint_image.png

@@ -192,7 +192,7 @@ def main():
             client_id=params.get("client_id"),
             client_secret=params.get("credentials", {}).get("password"),
             verify=not params.get("insecure"),
-            proxy=params.get("proxy"),
+            proxy=params.get("proxy"),  # noqa: ucp-param-default  # truthy-only use in BaseClient(proxy=...); None == False
         )
 
         if command == "test-module":

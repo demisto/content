@@ -683,8 +683,16 @@ def derive_handler_id(integration_id: str) -> str:
     # sub-capability id from the license map. ``slugify_view_group_id`` is
     # kept in lockstep (it also preserves ``_``) so the view_group registry
     # and references agree.
-    slug = re.sub(r"\s+", "-", integration_id.strip().lower())
-    slug = slug.replace("---", "-")
+    #
+    # Punctuation other than ``_``/``-`` (e.g. parentheses in
+    # "VMware Workspace ONE UEM (AirWatch MDM)") is collapsed to a single
+    # dash so this stays in lockstep with ``slugify_view_group_id`` — which
+    # registers the view_group with punctuation stripped. Leaving e.g. ``(``
+    # in the handler-derived references but not in the registry id produces
+    # an unregistered-view_group OPA cross-file violation.
+    slug = integration_id.strip().lower()
+    slug = re.sub(r"[^a-z0-9_-]+", "-", slug)
+    slug = re.sub(r"-+", "-", slug).strip("-")
     return f"xsoar-{slug}"
 
 
@@ -1221,6 +1229,15 @@ def build_handler_yaml(
         },
         "capabilities": capabilities,
         "test_connection": {
+            "type": "service",
+            "service": "xsoar",
+            "endpoint": "/settings/integration/connector/verification",
+        },
+        # Metro (multi-tenant) override. Required on every handler by the
+        # connector schema. For the XSOAR ``type: service`` verification flow
+        # there is no host/{tenant_id} interpolation (it is a service call),
+        # so the metro block mirrors test_connection verbatim.
+        "test_connection_metro": {
             "type": "service",
             "service": "xsoar",
             "endpoint": "/settings/integration/connector/verification",
@@ -3343,8 +3360,13 @@ FEED_BYPASS_EXCLUSION_ADDITIONAL_INFO = (
     "exclusion list, the indicator might still be added to the system."
 )
 
-# feedReputation default (module.go: ReputationNotSet = "").
-FEED_REPUTATION_DEFAULT = ""
+# feedReputation default. module.go uses ReputationNotSet = "" for the
+# "no reputation selected" state, but the connectus OPA policy requires a
+# select's ``default_value`` to match one of its ``values[].key`` entries
+# (Unknown/Benign/Suspicious/Malicious). An empty-string default therefore
+# trips a ``default_value '' does not match any values[].key`` violation, so
+# the "not set" state maps to the canonical ``Unknown`` key instead.
+FEED_REPUTATION_DEFAULT = "Unknown"
 
 # feedReputation additionalinfo (module.go line 692).
 FEED_REPUTATION_ADDITIONAL_INFO = (

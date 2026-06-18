@@ -196,6 +196,10 @@
     "xsiam",
     "agentix"
   ],
+  "automation-and-remediation_aws-eks": [
+    "xsiam",
+    "agentix"
+  ],
   "automation-and-remediation_aws-guardduty": [
     "xsiam",
     "agentix"
@@ -212,7 +216,15 @@
     "xsiam",
     "agentix"
   ],
+  "automation-and-remediation_aws-ilm": [
+    "xsiam",
+    "agentix"
+  ],
   "automation-and-remediation_aws-lambda": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws-network-firewall": [
     "xsiam",
     "agentix"
   ],
@@ -228,11 +240,23 @@
     "xsiam",
     "agentix"
   ],
+  "automation-and-remediation_aws-sagemaker": [
+    "xsiam",
+    "agentix"
+  ],
   "automation-and-remediation_aws-security-hub": [
     "xsiam",
     "agentix"
   ],
+  "automation-and-remediation_aws-security-lake": [
+    "xsiam",
+    "agentix"
+  ],
   "automation-and-remediation_aws-sns": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_aws-sns-listener": [
     "xsiam",
     "agentix"
   ],
@@ -241,30 +265,6 @@
     "agentix"
   ],
   "automation-and-remediation_aws-system-manager": [
-    "xsiam",
-    "agentix"
-  ],
-  "automation-and-remediation_aws-eks": [
-    "xsiam",
-    "agentix"
-  ],
-  "automation-and-remediation_aws-ilm": [
-    "xsiam",
-    "agentix"
-  ],
-  "automation-and-remediation_aws-network-firewall": [
-    "xsiam",
-    "agentix"
-  ],
-  "automation-and-remediation_aws-sagemaker": [
-    "xsiam",
-    "agentix"
-  ],
-  "automation-and-remediation_aws-security-lake": [
-    "xsiam",
-    "agentix"
-  ],
-  "automation-and-remediation_aws-sns-listener": [
     "xsiam",
     "agentix"
   ],
@@ -1173,6 +1173,10 @@
     "xsiam",
     "agentix"
   ],
+  "automation-and-remediation_mail-sender-new": [
+    "xsiam",
+    "agentix"
+  ],
   "automation-and-remediation_maltiverse": [
     "xsiam",
     "agentix"
@@ -1507,14 +1511,6 @@
     "xsiam",
     "agentix"
   ],
-  "automation-and-remediation_palo-alto-networks-prisma-sase": [
-    "cloud_posture",
-    "cloud",
-    "cloud_runtime_security",
-    "edr",
-    "xsiam",
-    "agentix"
-  ],
   "automation-and-remediation_palo-alto-networks-aiops": [
     "cloud",
     "cloud_runtime_security",
@@ -1529,6 +1525,14 @@
     "agentix"
   ],
   "automation-and-remediation_palo-alto-networks-iot": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_palo-alto-networks-prisma-sase": [
+    "cloud_posture",
+    "cloud",
+    "cloud_runtime_security",
+    "edr",
     "xsiam",
     "agentix"
   ],
@@ -2027,6 +2031,10 @@
     "agentix"
   ],
   "automation-and-remediation_vmware-workspace-one-uem-(airwatch-mdm)": [
+    "xsiam",
+    "agentix"
+  ],
+  "automation-and-remediation_vmware-workspace-one-uem-airwatch-mdm": [
     "xsiam",
     "agentix"
   ],
