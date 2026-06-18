@@ -23,7 +23,7 @@ DEFAULT_HEADERS = {"Content-Type": "application/json", "Accept": "application/js
 
 """ HELPER FUNCTIONS """
 
-if not demisto.params().get("proxy"):
+if not demisto.params()["proxy"]:
     # Remove proxy environment variables if they exist
     for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
         os.environ.pop(proxy_var, None)

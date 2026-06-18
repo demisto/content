@@ -10,8 +10,7 @@ configuration:
   type: 0
 - display: API3 Client ID
   name: client_id
-  required: false
-  hidden: true
+  required: true
   type: 0
 - display: API3 Client Secret
   name: client_secret

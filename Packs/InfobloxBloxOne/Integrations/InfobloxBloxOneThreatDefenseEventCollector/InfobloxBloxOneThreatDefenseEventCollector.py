@@ -28,7 +28,7 @@ def fetch_events_command(client: BloxOneTDEventCollectorClient, params: dict, la
     from_ts = last_run.get("from_ts") or parse_from_ts_from_params(params.get("first_fetch"))
     current_ts = int(datetime.utcnow().timestamp())
     offset = arg_to_number(last_run.get("offset")) or 0
-    limit = arg_to_number(params.get("max_fetch")) or 1000  # noqa: ucp-param-default  (arg_to_number(None)->None, then `or 1000`)
+    limit = arg_to_number(params.get("max_fetch")) or 1000
     limit = min(limit, 10000)
     events = client.fetch_events(from_ts, current_ts, limit, offset)
 

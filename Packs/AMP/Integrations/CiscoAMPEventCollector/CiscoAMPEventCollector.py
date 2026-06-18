@@ -164,7 +164,7 @@ def fetch_events(client: Client, params: dict, last_run: dict):
     """
     Fetches events from CiscoAMP API.
     """
-    max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch") or 1000) or 1000
+    max_events_per_fetch = arg_to_number(params.get("max_events_per_fetch")) or 1000
     filtered_events = []
     while max_events_per_fetch:
         demisto.debug(f"{last_run=}")

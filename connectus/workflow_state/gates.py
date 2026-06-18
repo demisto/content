@@ -387,8 +387,7 @@ GATES: dict[str, GateSpec] = {
         # with the CLI --timeout= flag.
         default_timeout=2400,
         description=(
-            "deploy_and_test (param-parity; exit 0 only; verdict not bypassable, "
-            "deploy skippable via CONNECTUS_PARITY_SKIP_DEPLOY)"
+            "deploy_and_test (live deploy + param-parity; exit 0 only, no bypass)"
         ),
     ),
 }

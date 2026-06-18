@@ -6,7 +6,6 @@ commonfields:
 configuration:
 - display: Username
   name: gsuite_credentials
-  hiddenpassword: true
   required: true
   type: 9
   section: Connect

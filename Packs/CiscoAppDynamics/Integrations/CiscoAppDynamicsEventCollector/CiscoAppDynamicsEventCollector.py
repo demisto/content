@@ -408,8 +408,8 @@ def set_event_type_fetch_limit(params: dict[str, Any]) -> list[EventType]:
     event_types_to_fetch = [et.strip() for et in argToList(params.get("events_type_to_fetch", [AUDIT.name, HEALTH_EVENT.name]))]
     demisto.debug(f"List:{event_types_to_fetch}, list length:{len(event_types_to_fetch)}")
     fetch_limits = {
-        AUDIT.name: arg_to_number(params.get("max_audit_fetch") or "3000") or AUDIT.max_fetch,
-        HEALTH_EVENT.name: arg_to_number(params.get("max_healthrule_fetch") or "3000") or HEALTH_EVENT.max_fetch,
+        AUDIT.name: arg_to_number(params.get("max_audit_fetch")) or AUDIT.max_fetch,
+        HEALTH_EVENT.name: arg_to_number(params.get("max_healthrule_fetch")) or HEALTH_EVENT.max_fetch,
     }
     event_types = []
     for event_type in EVENT_TYPES.values():

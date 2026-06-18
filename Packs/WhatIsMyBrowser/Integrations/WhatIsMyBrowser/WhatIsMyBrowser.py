@@ -15,7 +15,7 @@ urllib3.disable_warnings()
 """GLOBAL VARS"""
 API_URL = demisto.params().get("url")
 USE_SSL = not demisto.params().get("insecure")
-PROXY = demisto.params().get("proxy", False)
+PROXY = demisto.params().get("proxy")
 
 
 """HELPER FUNCTIONS"""

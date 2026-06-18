@@ -128,7 +128,7 @@ def main() -> None:  # pragma: no cover
     base_url = urljoin(urljoin(params["url"], "api/v1/tenants/"), demisto.params()["tenant_code"])
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    limit = arg_to_number(params.get("limit")) or 1000  # noqa: ucp-param-default  (arg_to_number(None)->None, then `or 1000`)
+    limit = arg_to_number(params.get("limit"))
     first_fetch = arg_to_datetime(params.get("first_fetch"))
 
     demisto.debug(f"Command being called is {command}")
