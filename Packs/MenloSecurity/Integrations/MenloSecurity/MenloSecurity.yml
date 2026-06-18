@@ -1,8 +1,8 @@
 commonfields:
-  id: Menlo Security
+  id: Menlo Security FAKE
   version: -1
-name: Menlo Security
-display: Menlo Security
+name: Menlo Security FAKE
+display: Menlo Security FAKE
 category: Network Security
 provider: Menlo Security
 sectionorder:
@@ -73,6 +73,21 @@ configuration:
   required: false
   section: Collect
   additionalinfo: "Maximum number of events to fetch per log type per fetch cycle. Recommended limit: 5,000."
+- display: '[TEST] Mock mode (offline synthetic data)'
+  name: mock_mode
+  type: 8
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: 'TESTING ONLY (FAKE-menlo branch). When enabled, the integration returns synthetic data instead of calling the Menlo API — for offline memory/throughput testing without a real tenant.'
+- display: '[TEST] Mock total events per log type'
+  name: mock_total_events
+  type: 0
+  defaultvalue: "10000"
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: 'TESTING ONLY. Number of synthetic events generated per log type when mock mode is on.'
 script:
   script: ""
   type: python

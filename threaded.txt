@@ -1,0 +1,32 @@
+=== ARCH (threaded 1 type) ===
+2026-06-10T21:59:34.382324012Z	[ARCH:baseline] ===== END =====
+2026-06-10T21:59:34.321525647Z	[ARCH:baseline] DONE rss=156.8MB rss_peak=323.7MB cgroup_cur=319.1MB cgroup_peak=863.5MB t=+5.14s events_sent=50000
+2026-06-10T21:59:30.077658449Z	[ARCH:baseline] after_fetch_all rss=156.9MB rss_peak=156.9MB cgroup_cur=324.8MB cgroup_peak=863.5MB t=+0.90s events=50000
+2026-06-10T21:59:29.175794547Z	[ARCH:baseline] ===== START log_types=['auth_flows'] max_events=50000 =====
+2026-06-10T21:58:34.043173375Z	[ARCH:baseline] ===== END =====
+2026-06-10T21:58:33.978070297Z	[ARCH:baseline] DONE rss=156.9MB rss_peak=323.8MB cgroup_cur=320.7MB cgroup_peak=863.5MB t=+4.82s events_sent=50000
+=== D/E fan-out + A-steps + breakdown ===
+2026-06-10T21:59:31.957952074Z	[CSPMEM] E_after_submit_all_futures(num_futures=66) rss=320.4MB cgroup_cur=482.9MB cgroup_peak=863.5MB
+2026-06-10T21:59:31.611163575Z	[CSPMEM] D_after_materialize_all_chunks(num_chunks=66) rss=299.3MB cgroup_cur=460.9MB cgroup_peak=863.5MB
+2026-06-10T21:59:31.311370142Z	[CSPMEM] A3_after_join_one_big_string rss=220.8MB cgroup_cur=389.4MB cgroup_peak=863.5MB
+2026-06-10T21:59:31.189702426Z	[CSPMEM-BREAKDOWN] A2_breakdown anon(us)=311.2MB file_cache=84.5MB slab=5.0MB sock=0.0MB kernel=7.5MB
+2026-06-10T21:59:31.188428955Z	[CSPMEM] A2_after_json_dumps_list rss=235.3MB cgroup_cur=403.5MB cgroup_peak=863.5MB
+2026-06-10T21:59:30.081043711Z	[CSPMEM-BREAKDOWN] A1_breakdown anon(us)=232.7MB file_cache=84.5MB slab=5.0MB sock=0.0MB kernel=7.4MB
+2026-06-10T21:59:30.079925552Z	[CSPMEM] A1_before_json_dumps_list rss=156.9MB cgroup_cur=325.1MB cgroup_peak=863.5MB
+2026-06-10T21:58:32.040618481Z	[CSPMEM] E_after_submit_all_futures(num_futures=66) rss=321.8MB cgroup_cur=486.0MB cgroup_peak=863.5MB
+2026-06-10T21:58:31.501423547Z	[CSPMEM] D_after_materialize_all_chunks(num_chunks=66) rss=299.2MB cgroup_cur=462.7MB cgroup_peak=863.5MB
+2026-06-10T21:58:31.204513122Z	[CSPMEM] A3_after_join_one_big_string rss=220.8MB cgroup_cur=382.4MB cgroup_peak=863.5MB
+2026-06-10T21:58:31.087399654Z	[CSPMEM-BREAKDOWN] A2_breakdown anon(us)=304.8MB file_cache=84.1MB slab=5.0MB sock=0.0MB kernel=7.5MB
+2026-06-10T21:58:31.086238600Z	[CSPMEM] A2_after_json_dumps_list rss=235.3MB cgroup_cur=396.6MB cgroup_peak=863.5MB
+2026-06-10T21:58:29.974920814Z	[CSPMEM-BREAKDOWN] A1_breakdown anon(us)=226.4MB file_cache=84.1MB slab=5.0MB sock=0.0MB kernel=7.4MB
+2026-06-10T21:58:29.973814156Z	[CSPMEM] A1_before_json_dumps_list rss=156.9MB cgroup_cur=318.3MB cgroup_peak=863.5MB
+2026-06-10T21:57:32.259211171Z	[CSPMEM] E_after_submit_all_futures(num_futures=66) rss=322.2MB cgroup_cur=552.9MB cgroup_peak=863.5MB
+2026-06-10T21:57:32.050765357Z	[CSPMEM] D_after_materialize_all_chunks(num_chunks=66) rss=300.3MB cgroup_cur=530.3MB cgroup_peak=863.5MB
+2026-06-10T21:57:31.769260219Z	[CSPMEM] A3_after_join_one_big_string rss=221.8MB cgroup_cur=459.8MB cgroup_peak=863.5MB
+2026-06-10T21:57:31.641079035Z	[CSPMEM-BREAKDOWN] A2_breakdown anon(us)=379.3MB file_cache=84.1MB slab=6.4MB sock=0.0MB kernel=10.0MB
+2026-06-10T21:57:31.639844145Z	[CSPMEM] A2_after_json_dumps_list rss=236.3MB cgroup_cur=473.9MB cgroup_peak=863.5MB
+2026-06-10T21:57:30.278769428Z	[CSPMEM-BREAKDOWN] A1_breakdown anon(us)=284.3MB file_cache=83.8MB slab=5.8MB sock=0.0MB kernel=9.3MB
+2026-06-10T21:57:30.277650775Z	[CSPMEM] A1_before_json_dumps_list rss=157.9MB cgroup_cur=377.8MB cgroup_peak=863.5MB
+2026-06-10T21:56:31.901637677Z	[CSPMEM] E_after_submit_all_futures(num_futures=66) rss=321.2MB cgroup_cur=481.1MB cgroup_peak=863.5MB
+2026-06-10T21:56:31.660414251Z	[CSPMEM] D_after_materialize_all_chunks(num_chunks=66) rss=300.3MB cgroup_cur=459.2MB cgroup_peak=863.5MB
+2026-06-10T21:56:31.368151742Z	[CSPMEM] A3_after_join_one_big_string rss=221.8MB cgroup_cur=388.3MB cgroup_peak=863.5MB

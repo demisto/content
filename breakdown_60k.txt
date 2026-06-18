@@ -1,0 +1,77 @@
+=== ARCH 60K ===
+2026-06-10T21:22:40.634935486Z	[ARCH:baseline] ===== END =====
+2026-06-10T21:22:40.567928100Z	[ARCH:baseline] DONE rss=123.2MB rss_peak=267.9MB cgroup_cur=269.1MB cgroup_peak=506.0MB t=+11.40s events_sent=50000
+2026-06-10T21:22:30.060634474Z	[ARCH:baseline] after_fetch_all rss=123.2MB rss_peak=123.2MB cgroup_cur=269.5MB cgroup_peak=506.0MB t=+0.90s events=50000
+2026-06-10T21:22:29.162567254Z	[ARCH:baseline] ===== START log_types=['web'] max_events=60000 =====
+2026-06-10T21:21:40.953020557Z	[ARCH:baseline] ===== END =====
+2026-06-10T21:21:40.891558860Z	[ARCH:baseline] DONE rss=123.2MB rss_peak=267.9MB cgroup_cur=268.1MB cgroup_peak=506.0MB t=+11.21s events_sent=50000
+=== BREAKDOWN + PROC ===
+2026-06-10T21:22:31.199197033Z	[CSPMEM-PROC] A2_breakdown total_pids_in_cgroup=7 (my_pid=1)
+2026-06-10T21:22:31.198443625Z	[CSPMEM-PROC] A2_breakdown pid=1 (SELF) rss=3.2MB cmd="/bin/bash /usr/local/demisto/runner.sh -stdout"
+2026-06-10T21:22:31.193914615Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:31.193189278Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:31.192454251Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:31.191770892Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:31.191018637Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:31.190230781Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:31.189216256Z	[CSPMEM-BREAKDOWN] A2_breakdown anon(us)=273.5MB file_cache=67.6MB slab=4.5MB sock=0.0MB kernel=6.8MB
+2026-06-10T21:22:30.069925292Z	[CSPMEM-PROC] A1_breakdown total_pids_in_cgroup=7 (my_pid=1)
+2026-06-10T21:22:30.069350410Z	[CSPMEM-PROC] A1_breakdown pid=1 (SELF) rss=3.2MB cmd="/bin/bash /usr/local/demisto/runner.sh -stdout"
+2026-06-10T21:22:30.068600403Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:30.067890873Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:30.067285251Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:30.066477675Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:30.065673528Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:30.064944987Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:22:30.064028033Z	[CSPMEM-BREAKDOWN] A1_breakdown anon(us)=195.0MB file_cache=67.6MB slab=4.5MB sock=0.0MB kernel=6.7MB
+2026-06-10T21:21:31.747764496Z	[CSPMEM-PROC] A2_breakdown total_pids_in_cgroup=7 (my_pid=1)
+2026-06-10T21:21:31.747046197Z	[CSPMEM-PROC] A2_breakdown pid=1 (SELF) rss=3.2MB cmd="/bin/bash /usr/local/demisto/runner.sh -stdout"
+2026-06-10T21:21:31.742469368Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:31.741854550Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:31.741015441Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:31.740214608Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:31.739534289Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:31.738848497Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:31.737811410Z	[CSPMEM-BREAKDOWN] A2_breakdown anon(us)=269.8MB file_cache=67.2MB slab=4.5MB sock=0.0MB kernel=6.8MB
+2026-06-10T21:21:30.556219768Z	[CSPMEM-PROC] A1_breakdown total_pids_in_cgroup=7 (my_pid=1)
+2026-06-10T21:21:30.555609436Z	[CSPMEM-PROC] A1_breakdown pid=1 (SELF) rss=3.2MB cmd="/bin/bash /usr/local/demisto/runner.sh -stdout"
+2026-06-10T21:21:30.554831222Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:30.553972069Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:30.553348314Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:30.552563688Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:30.551914207Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:30.551139125Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:21:30.550416462Z	[CSPMEM-BREAKDOWN] A1_breakdown anon(us)=191.3MB file_cache=67.1MB slab=4.5MB sock=0.0MB kernel=6.7MB
+2026-06-10T21:20:31.232321168Z	[CSPMEM-PROC] A2_breakdown total_pids_in_cgroup=7 (my_pid=1)
+2026-06-10T21:20:31.231503465Z	[CSPMEM-PROC] A2_breakdown pid=1 (SELF) rss=3.2MB cmd="/bin/bash /usr/local/demisto/runner.sh -stdout"
+2026-06-10T21:20:31.227227348Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:31.226541960Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:31.225791074Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:31.225071491Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:31.224410983Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:31.223631765Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:31.222772039Z	[CSPMEM-BREAKDOWN] A2_breakdown anon(us)=273.0MB file_cache=66.6MB slab=4.4MB sock=0.0MB kernel=6.8MB
+2026-06-10T21:20:30.123384875Z	[CSPMEM-PROC] A1_breakdown total_pids_in_cgroup=7 (my_pid=1)
+2026-06-10T21:20:30.122560631Z	[CSPMEM-PROC] A1_breakdown pid=1 (SELF) rss=3.2MB cmd="/bin/bash /usr/local/demisto/runner.sh -stdout"
+2026-06-10T21:20:30.121582098Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:30.120820732Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:30.120059548Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:30.119357559Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:30.118614292Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:30.117776566Z	[CSPMEM-PROC] A1_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:20:30.116883199Z	[CSPMEM-BREAKDOWN] A1_breakdown anon(us)=194.6MB file_cache=66.6MB slab=4.4MB sock=0.0MB kernel=6.6MB
+2026-06-10T21:19:31.172257886Z	[CSPMEM-PROC] A2_breakdown total_pids_in_cgroup=7 (my_pid=1)
+2026-06-10T21:19:31.171405965Z	[CSPMEM-PROC] A2_breakdown pid=1 (SELF) rss=3.2MB cmd="/bin/bash /usr/local/demisto/runner.sh -stdout"
+2026-06-10T21:19:31.166427369Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:19:31.165790322Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:19:31.165147937Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+2026-06-10T21:19:31.164535762Z	[CSPMEM-PROC] A2_breakdown pid=0 (OTHER) rss=-1.0MB cmd="?"
+=== A-steps 60K ===
+2026-06-10T21:22:40.505401904Z	[CSPMEM] G_send_data_to_xsiam_done rss=187.7MB cgroup_cur=334.1MB cgroup_peak=506.0MB
+2026-06-10T21:22:31.307488656Z	[CSPMEM] A3_after_join_one_big_string rss=186.8MB cgroup_cur=333.8MB cgroup_peak=506.0MB
+2026-06-10T21:22:31.187976506Z	[CSPMEM] A2_after_json_dumps_list rss=201.6MB cgroup_cur=348.2MB cgroup_peak=506.0MB
+2026-06-10T21:22:30.062967185Z	[CSPMEM] A1_before_json_dumps_list rss=123.2MB cgroup_cur=270.1MB cgroup_peak=506.0MB
+2026-06-10T21:21:40.844093364Z	[CSPMEM] G_send_data_to_xsiam_done rss=187.7MB cgroup_cur=332.8MB cgroup_peak=506.0MB
+2026-06-10T21:21:31.857335221Z	[CSPMEM] A3_after_join_one_big_string rss=186.8MB cgroup_cur=329.7MB cgroup_peak=506.0MB
+2026-06-10T21:21:31.736511541Z	[CSPMEM] A2_after_json_dumps_list rss=201.6MB cgroup_cur=343.8MB cgroup_peak=506.0MB
+2026-06-10T21:21:30.549499617Z	[CSPMEM] A1_before_json_dumps_list rss=123.2MB cgroup_cur=265.5MB cgroup_peak=506.0MB

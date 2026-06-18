@@ -1,0 +1,22 @@
+=== ARCH ===
+2026-06-10T20:55:40.620438509Z	[ARCH:baseline] ===== END =====
+2026-06-10T20:55:40.559632817Z	[ARCH:baseline] DONE rss=120.1MB rss_peak=264.9MB cgroup_cur=252.7MB cgroup_peak=498.1MB t=+11.40s events_sent=50000
+2026-06-10T20:55:29.973503666Z	[ARCH:baseline] after_fetch_all rss=120.1MB rss_peak=120.1MB cgroup_cur=251.4MB cgroup_peak=498.1MB t=+0.81s events=50000
+2026-06-10T20:55:29.157393859Z	[ARCH:baseline] ===== START log_types=['web'] max_events=50000 =====
+2026-06-10T20:54:41.000194227Z	[ARCH:baseline] ===== END =====
+2026-06-10T20:54:40.932395931Z	[ARCH:baseline] DONE rss=120.4MB rss_peak=265.1MB cgroup_cur=251.8MB cgroup_peak=498.1MB t=+11.65s events_sent=50000
+2026-06-10T20:54:30.193069283Z	[ARCH:baseline] after_fetch_all rss=120.4MB rss_peak=120.4MB cgroup_cur=250.9MB cgroup_peak=498.1MB t=+0.91s events=50000
+2026-06-10T20:54:29.277580900Z	[ARCH:baseline] ===== START log_types=['web'] max_events=50000 =====
+=== CSPMEM A/B/G ===
+2026-06-10T20:55:40.498580221Z	[CSPMEM] G_send_data_to_xsiam_done rss=184.8MB cgroup_cur=317.7MB cgroup_peak=498.1MB
+2026-06-10T20:55:31.288390102Z	[CSPMEM] B2_after_client_and_chunk_generator rss=183.7MB cgroup_cur=315.6MB cgroup_peak=498.1MB
+2026-06-10T20:55:31.248730990Z	[CSPMEM] A3_after_join_one_big_string rss=183.7MB cgroup_cur=315.9MB cgroup_peak=498.1MB
+2026-06-10T20:55:31.140490616Z	[CSPMEM] A2_after_json_dumps_list rss=198.6MB cgroup_cur=330.4MB cgroup_peak=498.1MB
+2026-06-10T20:55:29.975647899Z	[CSPMEM] A1_before_json_dumps_list rss=120.1MB cgroup_cur=251.7MB cgroup_peak=498.1MB
+2026-06-10T20:54:40.870879050Z	[CSPMEM] G_send_data_to_xsiam_done rss=185.0MB cgroup_cur=316.8MB cgroup_peak=498.1MB
+2026-06-10T20:54:31.485040404Z	[CSPMEM] B2_after_client_and_chunk_generator rss=184.0MB cgroup_cur=314.7MB cgroup_peak=498.1MB
+2026-06-10T20:54:31.445279072Z	[CSPMEM] A3_after_join_one_big_string rss=184.0MB cgroup_cur=315.0MB cgroup_peak=498.1MB
+2026-06-10T20:54:31.329254362Z	[CSPMEM] A2_after_json_dumps_list rss=198.9MB cgroup_cur=329.6MB cgroup_peak=498.1MB
+2026-06-10T20:54:30.196427489Z	[CSPMEM] A1_before_json_dumps_list rss=120.4MB cgroup_cur=251.2MB cgroup_peak=498.1MB
+2026-06-10T20:53:40.322961207Z	[CSPMEM] G_send_data_to_xsiam_done rss=185.0MB cgroup_cur=314.6MB cgroup_peak=498.1MB
+2026-06-10T20:53:31.287712652Z	[CSPMEM] B2_after_client_and_chunk_generator rss=184.0MB cgroup_cur=316.7MB cgroup_peak=498.1MB

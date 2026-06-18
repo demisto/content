@@ -13032,6 +13032,109 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
         raise ValueError("Failed to parse timestamp: {timestamp_str}".format(timestamp_str=timestamp_str))
 
 
+def _xsiam_mem(label):  # noqa: ANN001,ANN201  # CSPMEM DIAG (REMOVE AFTER TESTING — CIAC-16981)
+    """Log process RSS + whole-cgroup memory at a point inside the XSIAM send, to attribute the spike.
+
+    This is a temporary diagnostic helper for CIAC-16981 (OOM under the 1GB worker-runner cgroup).
+    REMOVE THIS FUNCTION AND ALL [CSPMEM] CALLS AFTER THE MEMORY INVESTIGATION IS COMPLETE.
+    """
+    try:
+        rss_mb = -1.0
+        try:
+            with open('/proc/self/statm') as _f:
+                rss_pages = int(_f.read().split()[1])
+            rss_mb = round(rss_pages * 4096 / (1024 * 1024), 1)
+        except Exception:
+            pass
+
+        def _read_cgroup(*paths):
+            for _p in paths:
+                try:
+                    with open(_p) as _cf:
+                        return round(int(_cf.read().strip()) / (1024 * 1024), 1)
+                except Exception:
+                    continue
+            return -1.0
+
+        cgroup_cur = _read_cgroup('/sys/fs/cgroup/memory.current',
+                                  '/sys/fs/cgroup/memory/memory.usage_in_bytes')
+        cgroup_peak = _read_cgroup('/sys/fs/cgroup/memory.peak',
+                                   '/sys/fs/cgroup/memory/memory.max_usage_in_bytes')
+        demisto.info('[CSPMEM] {label} rss={rss}MB cgroup_cur={cur}MB cgroup_peak={peak}MB'.format(
+            label=label, rss=rss_mb, cur=cgroup_cur, peak=cgroup_peak))
+    except Exception as _e:
+        try:
+            demisto.info('[CSPMEM] {label} mem-probe-failed: {err}'.format(label=label, err=_e))
+        except Exception:
+            pass
+
+
+def _xsiam_mem_breakdown(label):  # noqa: ANN001,ANN201  # CSPMEM DIAG (REMOVE AFTER TESTING — CIAC-16981)
+    """One-shot deep breakdown: is the cgroup RAM 'us' (anon) or 'not-us' (page-cache / other PIDs)?
+
+    Answers CIAC-16981 'is something else using the RAM?' by reading the kernel's own
+    accounting:
+      - memory.stat: anon (our Python heap), file (page cache), kernel, sock, slab ...
+      - cgroup.procs: every PID charged to THIS cgroup (reveals sidecars/neighbors)
+      - per-PID RSS from /proc/<pid>/statm + cmdline (who they are)
+    REMOVE AFTER TESTING.
+    """
+    try:
+        def _mb(v):
+            return round(int(v) / (1024 * 1024), 1)
+
+        # 1) cgroup memory.stat category breakdown (v2 first, then v1)
+        stat = {}
+        for _p in ('/sys/fs/cgroup/memory.stat', '/sys/fs/cgroup/memory/memory.stat'):
+            try:
+                with open(_p) as _f:
+                    for _line in _f:
+                        _k, _, _v = _line.partition(' ')
+                        stat[_k.strip()] = _v.strip()
+                break
+            except Exception:
+                continue
+        anon = stat.get('anon') or stat.get('rss') or '0'           # our live Python objects
+        file_ = stat.get('file') or stat.get('cache') or '0'        # page cache (not us)
+        kernel = stat.get('kernel') or stat.get('kernel_stack') or '0'
+        slab = stat.get('slab') or '0'
+        sock = stat.get('sock') or '0'
+        demisto.info('[CSPMEM-BREAKDOWN] {label} anon(us)={a}MB file_cache={f}MB slab={s}MB sock={so}MB kernel={k}MB'.format(
+            label=label, a=_mb(anon), f=_mb(file_), s=_mb(slab), so=_mb(sock), k=_mb(kernel)))
+
+        # 2) every PID in this cgroup + its RSS + who it is  (reveals 'not the integration' processes)
+        pids = []
+        for _p in ('/sys/fs/cgroup/cgroup.procs', '/sys/fs/cgroup/memory/cgroup.procs', '/sys/fs/cgroup/tasks'):
+            try:
+                with open(_p) as _f:
+                    pids = [x.strip() for x in _f.read().split() if x.strip()]
+                break
+            except Exception:
+                continue
+        my_pid = str(os.getpid())
+        for _pid in pids[:25]:  # cap to avoid log spam
+            try:
+                with open('/proc/{0}/statm'.format(_pid)) as _sf:
+                    _rss = round(int(_sf.read().split()[1]) * 4096 / (1024 * 1024), 1)
+            except Exception:
+                _rss = -1.0
+            try:
+                with open('/proc/{0}/cmdline'.format(_pid)) as _cf:
+                    _cmd = _cf.read().replace('\x00', ' ').strip()[:80]
+            except Exception:
+                _cmd = '?'
+            _tag = 'SELF' if _pid == my_pid else 'OTHER'
+            demisto.info('[CSPMEM-PROC] {label} pid={pid} ({tag}) rss={rss}MB cmd="{cmd}"'.format(
+                label=label, pid=_pid, tag=_tag, rss=_rss, cmd=_cmd))
+        demisto.info('[CSPMEM-PROC] {label} total_pids_in_cgroup={n} (my_pid={mine})'.format(
+            label=label, n=len(pids), mine=my_pid))
+    except Exception as _e:
+        try:
+            demisto.info('[CSPMEM-BREAKDOWN] {label} probe-failed: {err}'.format(label=label, err=_e))
+        except Exception:
+            pass
+
+
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
                        add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
@@ -13115,11 +13218,16 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         demisto.debug("Sending {size} {data_type} to XSIAM".format(size=len(data), data_type=data_type))
+        _xsiam_mem('A1_before_json_dumps_list')  # CSPMEM DIAG (REMOVE — CIAC-16981)
+        _xsiam_mem_breakdown('A1_breakdown')  # CSPMEM DIAG (REMOVE — CIAC-16981): is the RAM us or not-us?
         if isinstance(data[0], dict):
             data = [json.dumps(item) for item in data]
             data_format = 'json'
+        _xsiam_mem('A2_after_json_dumps_list')  # CSPMEM DIAG (REMOVE — CIAC-16981)
+        _xsiam_mem_breakdown('A2_breakdown')  # CSPMEM DIAG (REMOVE — CIAC-16981): peak split anon vs cache vs other-PIDs
         # Separating each event with a new line
         data = '\n'.join(data)
+        _xsiam_mem('A3_after_join_one_big_string')  # CSPMEM DIAG (REMOVE — CIAC-16981)
     elif not isinstance(data, str):
         raise DemistoException('Unsupported type: {data} for the {data_type} parameter.'
                                ' Should be a string or list.'.format(data=type(data), data_type=data_type))
@@ -13180,13 +13288,16 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         raise DemistoException(header_msg + error, DemistoException)
     if client_class is None:
         client_class = BaseClient
+    _xsiam_mem('B1_before_client_and_chunks')  # CSPMEM DIAG (REMOVE — CIAC-16981)
     client = client_class(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
+    _xsiam_mem('B2_after_client_and_chunk_generator')  # CSPMEM DIAG (REMOVE — CIAC-16981)
 
     def send_events(data_chunk):
         chunk_size = len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
+        _xsiam_mem('C_in_send_events_after_gzip(chunk_events={n})'.format(n=chunk_size))  # CSPMEM DIAG (REMOVE — CIAC-16981)
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
@@ -13196,6 +13307,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if multiple_threads:
         demisto.info("Sending events to xsiam with multiple threads.")
         all_chunks = [chunk for chunk in data_chunks]
+        _xsiam_mem('D_after_materialize_all_chunks(num_chunks={n})'.format(n=len(all_chunks)))  # CSPMEM DIAG (REMOVE — CIAC-16981)
         demisto.info("Finished appending all data_chunks to a list.")
         support_multithreading()
         futures = []
@@ -13205,14 +13317,19 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
             futures.append(future)
 
         demisto.info('Finished submiting {} Futures.'.format(len(futures)))
+        _xsiam_mem('E_after_submit_all_futures(num_futures={n})'.format(n=len(futures)))  # CSPMEM DIAG (REMOVE — CIAC-16981)
         return futures
     else:
         demisto.info("Sending events to xsiam with a single thread.")
+        _chunk_idx = 0
         for chunk in data_chunks:
             data_size += send_events(chunk)
+            _chunk_idx += 1
+            _xsiam_mem('F_after_send_chunk_{i}(running_total_events={t})'.format(i=_chunk_idx, t=data_size))  # CSPMEM DIAG (REMOVE — CIAC-16981)
 
         if should_update_health_module:
             demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+    _xsiam_mem('G_send_data_to_xsiam_done')  # CSPMEM DIAG (REMOVE — CIAC-16981)
     return
 
 

@@ -1,0 +1,13 @@
+=== producer_consumer runs ===
+2026-06-11T11:14:44.656740381Z	[ARCH:producer_consumer] ===== END =====
+2026-06-11T11:14:44.655750356Z	[ARCH:producer_consumer] DONE rss=105.5MB rss_peak=137.1MB cgroup_cur=341.5MB cgroup_peak=863.5MB t=+15.46s events=150000
+2026-06-11T11:14:29.191680435Z	[ARCH:producer_consumer] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+2026-06-11T11:13:44.251035134Z	[ARCH:producer_consumer] ===== END =====
+2026-06-11T11:13:44.250012499Z	[ARCH:producer_consumer] DONE rss=105.5MB rss_peak=137.0MB cgroup_cur=330.4MB cgroup_peak=863.5MB t=+15.08s events=150000
+2026-06-11T11:13:29.167654058Z	[ARCH:producer_consumer] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+2026-06-11T11:12:44.158991561Z	[ARCH:producer_consumer] ===== END =====
+2026-06-11T11:12:44.157969512Z	[ARCH:producer_consumer] DONE rss=105.5MB rss_peak=136.9MB cgroup_cur=343.6MB cgroup_peak=863.5MB t=+14.97s events=150000
+2026-06-11T11:12:29.189739694Z	[ARCH:producer_consumer] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+2026-06-11T11:11:43.892501724Z	[ARCH:producer_consumer] ===== END =====
+2026-06-11T11:11:43.891557300Z	[ARCH:producer_consumer] DONE rss=105.5MB rss_peak=137.1MB cgroup_cur=348.9MB cgroup_peak=863.5MB t=+14.71s events=150000
+2026-06-11T11:11:29.180004504Z	[ARCH:producer_consumer] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====

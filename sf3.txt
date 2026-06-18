@@ -1,0 +1,11 @@
+=== send_and_flush 3-type runs ===
+2026-06-11T06:44:43.750909524Z	[ARCH:send_and_flush] ===== END =====
+2026-06-11T06:44:43.749733604Z	[ARCH:send_and_flush] DONE rss=105.1MB rss_peak=113.1MB cgroup_cur=318.1MB cgroup_peak=863.5MB t=+14.58s events=150000
+2026-06-11T06:44:29.164739060Z	[ARCH:send_and_flush] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+2026-06-11T06:43:44.570520206Z	[ARCH:send_and_flush] ===== END =====
+2026-06-11T06:43:44.569533943Z	[ARCH:send_and_flush] DONE rss=105.1MB rss_peak=113.2MB cgroup_cur=314.2MB cgroup_peak=863.5MB t=+15.40s events=150000
+2026-06-11T06:43:29.170822748Z	[ARCH:send_and_flush] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+2026-06-11T06:42:43.811770425Z	[ARCH:send_and_flush] ===== END =====
+2026-06-11T06:42:43.810861762Z	[ARCH:send_and_flush] DONE rss=105.1MB rss_peak=113.0MB cgroup_cur=309.7MB cgroup_peak=863.5MB t=+14.62s events=150000
+2026-06-11T06:42:29.188636649Z	[ARCH:send_and_flush] ===== START log_types=['auth_flows', 'safemail', 'web'] max_events=50000 =====
+2026-06-11T06:41:44.405751697Z	[ARCH:send_and_flush] ===== END =====

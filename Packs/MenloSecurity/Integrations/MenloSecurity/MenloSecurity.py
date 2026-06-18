@@ -17,7 +17,7 @@ VENDOR = "Menlo"
 PRODUCT = "Security IP"
 
 DEFAULT_MAX_EVENTS_PER_FETCH_PER_TYPE = 5000
-MAX_EVENTS_PER_PAGE = 1000  # API default limit per request
+MAX_EVENTS_PER_PAGE = 10000  # page size per request (10K to match the benchmark; ~15MB JSON/page)
 DEFAULT_FIRST_FETCH = "3 hours"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -63,6 +63,90 @@ ALL_LOG_TYPES = list(LOG_TYPE_MAP.keys())
 DEFAULT_LOG_TYPES = ALL_LOG_TYPES
 
 
+# ============================================================================
+# === MOCK MODE (for local/offline memory testing — branch FAKE-menlo) =======
+# When enabled, Client.fetch_log_page returns synthetic data matching the real
+# Menlo response shape/size instead of hitting the API. Lets us run the
+# send-method benchmarks in many scenarios without touching a real tenant.
+# Controlled by params: mock_mode (bool), mock_total_events (int per log type).
+# ============================================================================
+
+# A realistic web-log event template (~45 fields, ~1.3-1.5 KB serialized) copied
+# from test_data/web_logs_response.json so mock pages match real page sizes.
+_MOCK_EVENT_TEMPLATE: dict[str, str] = {
+    "top_url": "http://example.com/some/realistic/path?q=value&x=1",
+    "egress_country": "US",
+    "domain": "example.com",
+    "protocol": "https",
+    "risk_tally": "-1",
+    "origin_ip": "8.8.8.8",
+    "has_password": "NA",
+    "file_size": "NA",
+    "origin_country": "FR",
+    "x-client-country": "US",
+    "browser_and_version": "Chrome_120",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
+    "egress_ip": "1.2.3.4",
+    "threats": "cats_Phishing & Fraud",
+    "severity": "5",
+    "event_time": "2024-01-15T10:00:40.548000",
+    "dst": "8.8.8.8",
+    "filename": "NA",
+    "risk_score": "low",
+    "version": "2.0",
+    "sha256": "fd1aee671d92aba0f9f0a8a6d5c6b843e09c8295ced9bb85e16d97360b4d7b3a",
+    "soph_dlp_ref": "NA",
+    "tab_id": "1",
+    "xff_ip": "NA",
+    "product": "MSIP",
+    "vendor": "Menlo Security",
+    "request_type": "GET",
+    "pe_reason": "6c6ea27d-5350-4f2a-9c1d-abcdef012345",
+    "categories": "Education",
+    "x-client-ip": "1.1.1.1",
+    "name": "page_request",
+    "url": "http://example.com/some/realistic/path?q=value&x=1",
+    "response_code": "200",
+    "userid": "admin@menlosecurity.com",
+    "full_session_id": "KbJQIDPS-1",
+    "pe_action": "isolate",
+    "threat_types": "Phishing",
+    "ua_type": "supported_browser",
+    "content-type": "text/html; charset=iso-8859-1",
+    "is_iframe": "true",
+    "region": "us-west-1b",
+}
+
+
+def _mock_make_event(seq: int, base_epoch: int) -> dict:
+    """Build one synthetic event (~real size). Vary a few fields so events aren't identical."""
+    e = dict(_MOCK_EVENT_TEMPLATE)  # shallow copy of the template
+    # Ascending event_time so dedup/boundary logic behaves like real data.
+    ts = datetime.fromtimestamp(base_epoch + seq, tz=UTC).strftime("%Y-%m-%dT%H:%M:%S.%f")
+    e["event_time"] = ts
+    e["full_session_id"] = f"SESS-{seq}"
+    e["sha256"] = hashlib.sha256(str(seq).encode()).hexdigest()
+    e["origin_ip"] = f"10.{(seq >> 16) & 255}.{(seq >> 8) & 255}.{seq & 255}"
+    return e
+
+
+def _mock_fetch_page(log_type: str, start: int, limit: int, paging_identifiers: dict | None, total: int) -> dict | None:
+    """Return one synthetic page in the real response shape, with pagination until `total` reached.
+
+    pagingIdentifiers carries an 'offset' cursor so multi-page fetches terminate at `total`.
+    """
+    offset = int(paging_identifiers.get("offset", 0)) if paging_identifiers else 0
+    if offset >= total:
+        return None  # no more data
+    count = min(limit, total - offset)
+    events = [{"event": _mock_make_event(offset + i, start)} for i in range(count)]
+    next_offset = offset + count
+    result: dict[str, Any] = {"events": events}
+    if next_offset < total:
+        result["pagingIdentifiers"] = {"offset": next_offset}
+    return {"timestamp": "mock", "result": result}
+
+
 """ CLIENT CLASS """
 
 
@@ -73,8 +157,21 @@ class Client(ContentClient):
     Authenticates via an API token passed in the POST body of each request.
     """
 
-    def __init__(self, base_url: str, token: str, verify: bool, proxy: bool, token_type: str = DEFAULT_TOKEN_TYPE) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        token: str,
+        verify: bool,
+        proxy: bool,
+        token_type: str = DEFAULT_TOKEN_TYPE,
+        mock_mode: bool = False,
+        mock_total_events: int = 0,
+    ) -> None:
         self._token = token
+        # MOCK MODE (FAKE-menlo branch): when True, fetch_log_page returns synthetic data
+        # instead of calling the API. mock_total_events = events generated per log type.
+        self._mock_mode = mock_mode
+        self._mock_total_events = mock_total_events
         # Admin-UI tokens use v2; legacy CSV-based tokens use v1.
         api_version = TOKEN_TYPE_TO_API_VERSION.get(token_type, TOKEN_TYPE_TO_API_VERSION[DEFAULT_TOKEN_TYPE])
         self._api_path = API_PATH_TEMPLATE.format(api_version=api_version)
@@ -111,6 +208,10 @@ class Client(ContentClient):
         Raises:
             ValueError: If the response body is non-empty but not valid JSON (e.g. HTML auth-error pages).
         """
+        # MOCK MODE (FAKE-menlo branch): return synthetic data instead of calling the API.
+        if self._mock_mode:
+            return _mock_fetch_page(log_type, start, limit, paging_identifiers, self._mock_total_events)
+
         params = {"start": start, "end": end, "limit": limit, "format": "json"}
         body: dict[str, Any] = {"token": self._token, "log_type": log_type}
         if paging_identifiers:
@@ -258,15 +359,23 @@ def get_events_for_log_type(
             if enrich:
                 event_time_str = inner.get("event_time")
                 if event_time_str:
-                    try:
-                        dt = arg_to_datetime(event_time_str)
-                        inner["_time"] = dt.strftime(DATE_FORMAT) if dt else event_time_str
-                    except Exception:
+                    # NOTE (CIAC-16981): arg_to_datetime() uses dateparser, which is SLOW and
+                    # NOT thread-safe — under N concurrent log-type threads at high volume it can
+                    # deadlock/stall the whole fetch. The Menlo event_time is already ISO-8601, so
+                    # pass it through directly. Only fall back to parsing for non-ISO values.
+                    if isinstance(event_time_str, str) and "T" in event_time_str:
                         inner["_time"] = event_time_str
+                    else:
+                        try:
+                            dt = arg_to_datetime(event_time_str)
+                            inner["_time"] = dt.strftime(DATE_FORMAT) if dt else event_time_str
+                        except Exception:
+                            inner["_time"] = event_time_str
                 inner["source_log_type"] = source_log_type
             events.append(inner)
 
         paging_identifiers = next_paging or {}
+        demisto.info(f"[{thread_name}] page done: have {len(events)}/{max_events}, next_paging={bool(paging_identifiers)}")
         if not paging_identifiers:
             demisto.debug(f"[{thread_name}] All events fetched.")
             break
@@ -289,6 +398,11 @@ def test_module(client: Client, log_types: list[str]) -> str:  # noqa: PT
     Fetches one record per configured log type using the default first-fetch window.
     Returns 'ok' on success, a descriptive string for known errors, or re-raises unexpected ones.
     """
+    # MOCK MODE (FAKE-menlo branch): no real API, so Test always passes without credentials.
+    if getattr(client, "_mock_mode", False):
+        demisto.info("[MOCK] test-module: mock mode on — returning ok without calling the API.")
+        return "ok"
+
     end_epoch = int(datetime.now(UTC).timestamp())
     first_fetch_dt = arg_to_datetime(DEFAULT_FIRST_FETCH)
     if first_fetch_dt is None:
@@ -394,9 +508,7 @@ def _fetch_log_type_task(
             last_event_time = events[-1].get("event_time") or events[-1].get("_time", "")
             next_fetch_time = last_event_time or end_timestamp
             next_boundary_hashes = get_boundary_hashes(events, last_event_time)
-            demisto.debug(
-                f"[{thread_name}] next fetch from {next_fetch_time} " f"({len(next_boundary_hashes)} boundary hash(es))"
-            )
+            demisto.debug(f"[{thread_name}] next fetch from {next_fetch_time} ({len(next_boundary_hashes)} boundary hash(es))")
             result.next_run_state = {"last_fetch_time": next_fetch_time, "boundary_hashes": next_boundary_hashes}
         else:
             # No events — preserve previous state so the next cycle retries from the same point.
@@ -482,6 +594,390 @@ def fetch_events(
     return next_run, all_events
 
 
+# ============================================================================
+# === ARCHITECTURE BENCHMARK (FAKE-menlo branch — full-cycle scenario test) ==
+# Tests 4 send architectures over a full multi-page, multi-log-type cycle, each
+# using the same per-page send technique (F: stream-zip + pop + free) so we
+# measure the ARCHITECTURE, not the send mechanism. Flip SEND_ARCHITECTURE per
+# uploaded version. Metrics logged with [ARCH] prefix: peak RSS + time + events/sec.
+#   "default"           -> normal flow (no benchmark)
+#   "baseline"          -> accumulate ALL events, then one send
+#   "multithread"       -> parallel fetch across log types, accumulate, then send
+#   "producer_consumer" -> 1 fetch thread + 1 send thread, bounded queue (overlap)
+#   "send_and_flush"    -> fetch page -> send page -> free, never accumulate
+#   "thread_scaling"    -> Option A: same total X, Arm1=1 thread vs Arm2=N threads; compare RAM+time
+# ============================================================================
+
+SEND_ARCHITECTURE = "thread_scaling"  # default/baseline/multithread/producer_consumer/send_and_flush/thread_scaling
+
+_ARCH_PAGE_QUEUE_MAXSIZE = 2  # producer/consumer: at most ~2 pages in flight
+
+
+def _arch_rss() -> float:
+    try:
+        import os
+
+        with open("/proc/self/statm") as f:
+            return int(f.read().split()[1]) * os.sysconf("SC_PAGE_SIZE") / 1024 / 1024
+    except Exception:
+        return -1.0
+
+
+def _arch_cgroup() -> tuple[float, float]:
+    """Whole-cgroup memory (current_mb, peak_mb) — the 'not-us' total the OOM-killer counts.
+    v2 then v1; -1 if unreadable.
+    """
+
+    def _read(path: str) -> float:
+        try:
+            with open(path) as f:
+                v = f.read().strip()
+            return int(v) / 1024 / 1024 if v.isdigit() else -1.0
+        except Exception:
+            return -1.0
+
+    cur = _read("/sys/fs/cgroup/memory.current")
+    if cur >= 0:
+        return cur, _read("/sys/fs/cgroup/memory.peak")
+    return _read("/sys/fs/cgroup/memory/memory.usage_in_bytes"), _read("/sys/fs/cgroup/memory/memory.max_usage_in_bytes")
+
+
+def _arch_log(label: str, t0: float, peak: float, extra: str = "") -> None:
+    cg_cur, cg_peak = _arch_cgroup()
+    demisto.info(
+        f"[ARCH:{SEND_ARCHITECTURE}] {label} rss={_arch_rss():.1f}MB rss_peak={peak:.1f}MB "
+        f"cgroup_cur={cg_cur:.1f}MB cgroup_peak={cg_peak:.1f}MB t=+{time.time() - t0:.2f}s {extra}"
+    )
+
+
+class _ArchPeakSampler:
+    """Background RSS peak sampler shared by ALL architectures, so peaks are measured
+    identically (catches transient spikes inside CSP's send that discrete sampling misses).
+
+    Usage:
+        sampler = _ArchPeakSampler(start_peak=_arch_rss())
+        with sampler:
+            ... do the memory-heavy work ...
+        peak = sampler.peak
+    """
+
+    def __init__(self, start_peak: float = 0.0, interval: float = 0.05) -> None:
+        self.peak = start_peak
+        self._interval = interval
+        self._stop = False
+        self._thread: threading.Thread | None = None
+
+    def _run(self) -> None:
+        while not self._stop:
+            self.peak = max(self.peak, _arch_rss())
+            time.sleep(self._interval)
+
+    def __enter__(self) -> "_ArchPeakSampler":
+        self._thread = threading.Thread(target=self._run, name="arch-peak-sampler", daemon=True)
+        self._thread.start()
+        return self
+
+    def __exit__(self, *_exc) -> None:
+        self._stop = True
+        if self._thread:
+            self._thread.join(timeout=2)
+        self.peak = max(self.peak, _arch_rss())
+
+
+def _arch_send_page(page: list[dict]) -> int:
+    """Per-page send technique F: stream-zip event-by-event with pop() (frees as it compresses),
+    then POST only the small zip. Returns events sent. Destroys `page`.
+    """
+    import gzip
+    import io
+
+    n = len(page)
+    buf = io.BytesIO()
+    with gzip.GzipFile(fileobj=buf, mode="wb") as gz:
+        while page:
+            gz.write((json.dumps(page.pop()) + "\n").encode("utf-8"))
+    zipped = buf.getvalue()
+    del buf
+    _arch_post_zip(zipped)
+    del zipped
+    return n
+
+
+def _arch_post_zip(zipped: bytes) -> None:
+    """POST gzipped bytes to XSIAM (reproduces CSP headers; no CSP edit)."""
+    calling_context = demisto.callingContext.get("context", {})
+    headers = {
+        "authorization": demisto.getLicenseCustomField("Http_Connector.token"),
+        "format": "json",
+        "product": PRODUCT,
+        "vendor": VENDOR,
+        "content-encoding": "gzip",
+        "collector-name": calling_context.get("IntegrationBrand", ""),
+        "instance-name": calling_context.get("IntegrationInstance", ""),
+        "final-reporting-device": demisto.params().get("url", ""),
+        "collector-type": "events",
+    }
+    xsiam_url = f"https://api-{demisto.getLicenseCustomField('Http_Connector.url')}"
+    client = BaseClient(base_url=xsiam_url, proxy=False)
+    xsiam_api_call_with_retries(
+        client=client,
+        xsiam_url=xsiam_url,
+        zipped_data=zipped,
+        headers=headers,
+        num_of_attempts=3,
+        is_json_response=True,
+        data_type="events",
+    )
+
+
+def _arch_iter_start(log_type_ui: str, last_run: dict, first_fetch_time: str) -> int:
+    """Compute start_epoch for a log type from last_run (or first fetch)."""
+    last_fetch_time = last_run.get(log_type_ui, {}).get("last_fetch_time")
+    if last_fetch_time:
+        return timestamp_to_epoch(last_fetch_time)
+    first_dt = arg_to_datetime(first_fetch_time)
+    return int(first_dt.timestamp()) if first_dt else int(datetime.now(UTC).timestamp()) - 300
+
+
+def _arch_fetch_one_page(
+    client: Client, log_type_ui: str, start_epoch: int, end_epoch: int, page_limit: int, paging: dict | None
+) -> tuple[list[dict], dict | None]:
+    """Fetch + unwrap + enrich ONE page for a log type. Returns (events, next_paging)."""
+    api_log_type = LOG_TYPE_MAP[log_type_ui]
+    resp = client.fetch_log_page(
+        log_type=api_log_type, start=start_epoch, end=end_epoch, limit=page_limit, paging_identifiers=paging
+    )
+    if not resp:
+        return [], None
+    wrappers = resp if isinstance(resp, list) else [resp]
+    page_events: list[dict] = []
+    next_paging: dict | None = None
+    for w in wrappers:
+        r = w.get("result", w)
+        page_events.extend(r.get("events", []))
+        if r.get("pagingIdentifiers"):
+            next_paging = r["pagingIdentifiers"]
+    source = SOURCE_LOG_TYPE_MAP[log_type_ui]
+    processed = []
+    for e in page_events:
+        inner = e.get("event", e)
+        inner["source_log_type"] = source
+        processed.append(inner)
+    return processed, next_paging
+
+
+def _arch_baseline(client, log_types, last_run, first_fetch_time, max_events) -> None:
+    """BASELINE: accumulate ALL events across all pages+log types, then send once (single-thread CSP)."""
+    t0 = time.time()
+    sampler = _ArchPeakSampler(start_peak=_arch_rss())
+    end_epoch = int(datetime.now(UTC).timestamp())
+    all_events: list[dict] = []
+    with sampler:
+        for lt in log_types:
+            start = _arch_iter_start(lt, last_run, first_fetch_time)
+            paging: dict | None = None
+            fetched = 0
+            while fetched < max_events:
+                evs, paging = _arch_fetch_one_page(client, lt, start, end_epoch, MAX_EVENTS_PER_PAGE, paging)
+                if not evs:
+                    break
+                all_events.extend(evs)
+                fetched += len(evs)
+                if not paging:
+                    break
+        _arch_log("after_fetch_all", t0, sampler.peak, f"events={len(all_events)}")
+        # REAL OLD BEHAVIOR: send the WHOLE accumulated list via CSP send_events_to_xsiam,
+        # which makes internal copies — this is what caused the production OOM.
+        n = len(all_events)
+        send_events_to_xsiam(all_events, vendor=VENDOR, product=PRODUCT)  # single-thread reference
+    _arch_log("DONE", t0, sampler.peak, f"events_sent={n}")
+
+
+def _arch_send_and_flush(client, log_types, last_run, first_fetch_time, max_events) -> None:
+    """SEND_AND_FLUSH: fetch one page -> send it -> free -> next. Never accumulate."""
+    t0 = time.time()
+    sampler = _ArchPeakSampler(start_peak=_arch_rss())
+    end_epoch = int(datetime.now(UTC).timestamp())
+    total = 0
+    with sampler:
+        for lt in log_types:
+            start = _arch_iter_start(lt, last_run, first_fetch_time)
+            paging: dict | None = None
+            fetched = 0
+            while fetched < max_events:
+                evs, paging = _arch_fetch_one_page(client, lt, start, end_epoch, MAX_EVENTS_PER_PAGE, paging)
+                if not evs:
+                    break
+                fetched += len(evs)
+                total += _arch_send_page(evs)  # send + free this page immediately
+                if not paging:
+                    break
+    _arch_log("DONE", t0, sampler.peak, f"events={total}")
+
+
+def _arch_producer_consumer(client, log_types, last_run, first_fetch_time, max_events) -> None:
+    """PRODUCER_CONSUMER: producer fetches pages into a bounded queue; consumer sends+frees.
+    Overlaps fetch and send; holds at most ~_ARCH_PAGE_QUEUE_MAXSIZE pages.
+    """
+    import queue as _queue
+
+    t0 = time.time()
+    sampler = _ArchPeakSampler(start_peak=_arch_rss())
+    end_epoch = int(datetime.now(UTC).timestamp())
+    page_q: _queue.Queue = _queue.Queue(maxsize=_ARCH_PAGE_QUEUE_MAXSIZE)
+    SENTINEL = object()
+    stats = {"sent": 0}
+
+    def consumer():
+        while True:
+            item = page_q.get()
+            try:
+                if item is SENTINEL:
+                    return
+                stats["sent"] += _arch_send_page(item)
+            finally:
+                page_q.task_done()
+                if item is not SENTINEL:
+                    del item
+
+    with sampler:
+        th = threading.Thread(target=consumer, name="arch-consumer", daemon=True)
+        th.start()
+        for lt in log_types:
+            start = _arch_iter_start(lt, last_run, first_fetch_time)
+            paging: dict | None = None
+            fetched = 0
+            while fetched < max_events:
+                evs, paging = _arch_fetch_one_page(client, lt, start, end_epoch, MAX_EVENTS_PER_PAGE, paging)
+                if not evs:
+                    break
+                fetched += len(evs)
+                page_q.put(evs)  # blocks when queue full (backpressure)
+                if not paging:
+                    break
+        page_q.put(SENTINEL)
+        th.join()
+    _arch_log("DONE", t0, sampler.peak, f"events={stats['sent']}")
+
+
+def _arch_multithread(client, log_types, last_run, first_fetch_time, max_events) -> None:
+    """MULTITHREAD: fetch each log type in its own thread (parallel), accumulate, then send.
+    Reuses the existing parallel fetch_events; measures peak across the parallel fetch + send.
+    """
+    t0 = time.time()
+    sampler = _ArchPeakSampler(start_peak=_arch_rss())
+    with sampler:
+        next_run, all_events = fetch_events(
+            client=client,
+            last_run=last_run,
+            log_types=log_types,
+            first_fetch_time=first_fetch_time,
+            max_events_per_fetch_per_type=max_events,
+        )
+        _arch_log("after_parallel_fetch", t0, sampler.peak, f"events={len(all_events)}")
+        _arch_send_page(all_events)
+    _arch_log("DONE", t0, sampler.peak, "")
+
+
+_ARCH_THREAD_SCALING_WORKERS = 3  # N for Arm 2 of the thread-scaling test
+
+
+def _arch_build_events(n: int, base_epoch: int, offset: int = 0) -> list[dict]:
+    """Build n synthetic events directly (mock), enriched like a real fetch. Thread-safe (no dateparser)."""
+    out: list[dict] = []
+    src = SOURCE_LOG_TYPE_MAP.get("web", "web_logs")
+    for i in range(n):
+        e = _mock_make_event(offset + i, base_epoch)
+        e["_time"] = e["event_time"]
+        e["source_log_type"] = src
+        out.append(e)
+    return out
+
+
+def _arch_thread_scaling(client, log_types, last_run, first_fetch_time, max_events) -> None:
+    """THREAD_SCALING (Option A): same TOTAL X, single-thread vs N-thread build. Compare RAM + time.
+
+    Arm 1: 1 thread builds all X events.   Arm 2: N threads build X/N each (concurrently).
+    Both then send via the F-sender (_arch_send_page). Only the build-thread-count differs, so the
+    delta isolates the pure thread-count effect on RAM (and the parallel speedup). Total X is fixed
+    = mock_total_events (independent of how many log_types are configured — avoids confounds).
+    """
+    total_x = getattr(client, "_mock_total_events", 0) or max_events
+    base_epoch = int(datetime.now(UTC).timestamp())
+    n_workers = _ARCH_THREAD_SCALING_WORKERS
+
+    # ---- Arm 1: single thread builds all X ----
+    t1 = time.time()
+    s1 = _ArchPeakSampler(start_peak=_arch_rss())
+    with s1:
+        events = _arch_build_events(total_x, base_epoch)
+        built = len(events)
+        _arch_send_page(events)  # sends + frees
+        del events
+    _arch_log("ARM1_single_thread", t1, s1.peak, f"events={built} workers=1")
+
+    import gc as _gc
+    _gc.collect()
+    time.sleep(0.3)
+
+    # ---- Arm 2: N threads build X/N each, concurrently ----
+    t2 = time.time()
+    s2 = _ArchPeakSampler(start_peak=_arch_rss())
+    per = total_x // n_workers
+    results: list[list[dict]] = [[] for _ in range(n_workers)]
+
+    def _worker(idx: int, count: int, off: int) -> None:
+        results[idx] = _arch_build_events(count, base_epoch, offset=off)
+
+    with s2:
+        threads = []
+        for w in range(n_workers):
+            count = per if w < n_workers - 1 else total_x - per * (n_workers - 1)
+            th = threading.Thread(target=_worker, args=(w, count, w * per), name=f"ts-{w}")
+            th.start()
+            threads.append(th)
+        for th in threads:
+            th.join()
+        # all N partial lists now coexist (peak), then merge + send
+        merged: list[dict] = []
+        for r in results:
+            merged.extend(r)
+        results.clear()
+        sent2 = len(merged)
+        _arch_send_page(merged)
+        del merged
+    _arch_log("ARM2_multi_thread", t2, s2.peak, f"events={sent2} workers={n_workers}")
+
+    _arch_log("THREAD_SCALING_SUMMARY", t1, max(s1.peak, s2.peak),
+              f"arm1_peak={s1.peak:.1f}MB arm2_peak={s2.peak:.1f}MB delta={(s2.peak - s1.peak):.1f}MB total_x={total_x}")
+
+
+_ARCH_DISPATCH = {
+    "baseline": _arch_baseline,
+    "multithread": _arch_multithread,
+    "producer_consumer": _arch_producer_consumer,
+    "send_and_flush": _arch_send_and_flush,
+    "thread_scaling": _arch_thread_scaling,
+}
+
+
+def run_architecture_benchmark(client, log_types, first_fetch_time, max_events) -> None:
+    """Dispatch to the selected architecture for one full fetch-events cycle."""
+    fn = _ARCH_DISPATCH.get(SEND_ARCHITECTURE)
+    if not fn:
+        return
+    demisto.info(f"[ARCH:{SEND_ARCHITECTURE}] ===== START log_types={log_types} max_events={max_events} =====")
+    last_run = demisto.getLastRun() or {}
+    try:
+        fn(client, log_types, last_run, first_fetch_time, max_events)
+    except Exception as e:
+        demisto.error(f"[ARCH:{SEND_ARCHITECTURE}] failed: {e}\n{traceback.format_exc()}")
+    demisto.info(f"[ARCH:{SEND_ARCHITECTURE}] ===== END =====")
+
+
+# === END ARCHITECTURE BENCHMARK =============================================
+
+
 def get_events_command(
     client: Client,
     args: dict,
@@ -556,6 +1052,9 @@ def main() -> None:
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     token_type = params.get("token_type", DEFAULT_TOKEN_TYPE)
+    # MOCK MODE (FAKE-menlo branch): offline synthetic data for memory testing.
+    mock_mode = argToBoolean(params.get("mock_mode", False))
+    mock_total_events = arg_to_number(params.get("mock_total_events", 10000)) or 10000
 
     log_types: list[str] = argToList(params.get("log_types", ",".join(DEFAULT_LOG_TYPES))) or DEFAULT_LOG_TYPES
     max_events_per_fetch_per_type: int = (
@@ -566,12 +1065,32 @@ def main() -> None:
     demisto.debug(f"[main] Command: {command}, token_type: {token_type}, params: {json.dumps(params)}, args: {json.dumps(args)}")
 
     try:
-        client = Client(base_url=base_url, token=token, verify=verify_certificate, proxy=proxy, token_type=token_type)
+        client = Client(
+            base_url=base_url,
+            token=token,
+            verify=verify_certificate,
+            proxy=proxy,
+            token_type=token_type,
+            mock_mode=mock_mode,
+            mock_total_events=mock_total_events,
+        )
+        if mock_mode:
+            demisto.info(f"[MOCK] mock_mode ON — synthetic data, mock_total_events={mock_total_events} per log type.")
 
         if command == "test-module":
             return_results(test_module(client, log_types))
 
         elif command == "fetch-events":
+            # ARCHITECTURE BENCHMARK (FAKE-menlo branch): if SEND_ARCHITECTURE is set,
+            # run the selected architecture instead of the normal flow.
+            if SEND_ARCHITECTURE != "default":
+                run_architecture_benchmark(
+                    client=client,
+                    log_types=log_types,
+                    first_fetch_time=DEFAULT_FIRST_FETCH,
+                    max_events=max_events_per_fetch_per_type,
+                )
+                return
             last_run = demisto.getLastRun()
             demisto.debug(f"[main] Last run: {last_run}")
             next_run, events = fetch_events(
