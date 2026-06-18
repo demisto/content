@@ -31,6 +31,8 @@ class StderrRedirect:
 def read_qr_code(filename: str) -> list:
     with StderrRedirect():  # redirect stderr to catch cv2 warnings which are sent directly to stderr
         img = cv2.imread(filename)
+        if img is None:
+            raise TypeError(f"Could not read image from file: {filename}")
         demisto.debug(f"loaded file: {filename}")
         text = [d.data.decode() for d in pyzbar.decode(img, symbols=[pyzbar.ZBarSymbol.QRCODE])]
         demisto.debug(f"pybar decode: {text}")
