@@ -5,7 +5,6 @@
     "ownerOnly": false,
     "description": "The severity assigned to the Vega incident.",
     "cliName": "vegaseverity",
-    "script": "vega-sync-field-on-change",
     "type": "singleSelect",
     "selectValues": [
         "LOW",

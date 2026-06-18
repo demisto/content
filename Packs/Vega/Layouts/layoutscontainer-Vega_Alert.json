@@ -519,6 +519,15 @@
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"endCol": 6,
+								"fieldId": "veganewcomment",
+								"height": 106,
+								"id": "vega-alert-new-comment-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,

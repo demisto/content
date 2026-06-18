@@ -8,19 +8,16 @@ VEGA_INTEGRATION_BRAND = "Vega"
 VEGA_GET_ALERT_EVENTS_COMMAND = "vega-get-alert-events"
 DEFAULT_ALERT_EVENTS_PAGE_SIZE = 200
 VEGA_ALERT_INCIDENT_TYPE = "Vega Alert"
+ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN = "### Alert Events\n\nNo alert events found."
+ALERT_EVENTS_LOAD_ERROR_PREFIX = "### Alert Events\n\nFailed to load alert events:"
 
 
-def _return_alert_events_table(markdown_table: str, outputs: dict[str, Any]) -> None:
-    """Return alert events as a rendered markdown table for the layout widget only."""
-    return_results(
-        CommandResults(
-            readable_output=markdown_table,
-            outputs_prefix="Vega.AlertEvents",
-            outputs_key_field="AlertId",
-            outputs=outputs,
-            entry_type=EntryType.WIDGET,
-        )
-    )
+def _return_alert_events_layout_output(readable_output: str) -> None:
+    """Return alert events markdown for the Vega Alert layout dynamic section."""
+    text = str(readable_output or "").strip()
+    if not text:
+        text = ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN
+    return_outputs(readable_output=text)
 
 
 def _collect_custom_fields(incident: dict) -> dict[str, Any]:
@@ -79,12 +76,19 @@ def _get_incident_custom_fields(incident: dict) -> dict:
 
 def _extract_readable_output(command_entry: dict) -> str:
     """Return rendered markdown table output from an integration command entry."""
-    human_readable = command_entry.get("HumanReadable")
-    if human_readable and str(human_readable).strip():
-        return str(human_readable)
-    contents = command_entry.get("Contents", "")
+    for key in ("HumanReadable", "ReadableContents"):
+        value = command_entry.get(key)
+        if value is not None and str(value).strip():
+            return str(value).strip()
+
+    contents = command_entry.get("Contents")
     if isinstance(contents, str) and contents.strip():
-        return contents
+        return contents.strip()
+    if isinstance(contents, dict):
+        for key in ("HumanReadable", "text", "message"):
+            value = contents.get(key)
+            if value is not None and str(value).strip():
+                return str(value).strip()
     return ""
 
 
@@ -106,6 +110,32 @@ def _extract_alert_events_context(command_entry: dict) -> dict:
     if isinstance(alert_events, dict):
         return alert_events
     return {}
+
+
+def _resolve_layout_markdown(
+    readable_output: str,
+    alert_events_context: dict[str, Any],
+    custom_fields: dict[str, Any],
+) -> str:
+    """Choose the markdown shown in the layout, including bad-shape responses."""
+    if alert_events_context.get("HasAlertEvents") is False:
+        return ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN
+
+    custom_fields_payload = alert_events_context.get("CustomFields")
+    if isinstance(custom_fields_payload, dict):
+        cached_markdown = str(custom_fields_payload.get("vegaalertevents") or "").strip()
+        if cached_markdown:
+            return cached_markdown
+
+    markdown = str(readable_output or "").strip()
+    if markdown:
+        return markdown
+
+    cached_markdown = str(custom_fields.get("vegaalertevents") or "").strip()
+    if cached_markdown:
+        return cached_markdown
+
+    return ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN
 
 
 def _build_persisted_custom_fields(alert_id: str, readable_output: str, total: Any, offset: int) -> dict[str, Any]:
@@ -134,7 +164,7 @@ def _persist_custom_fields_on_incident(incident_id: str, custom_fields: dict[str
         },
     )
     if is_error(set_result):
-        return_error(f"Failed to save alert events on the incident: {get_error(set_result)}")
+        demisto.debug(f"vega-fetch-alert-events: failed to save alert events on incident {incident_id}: {get_error(set_result)}")
 
 
 def _resolve_alert_id(args: dict, incident: dict, custom_fields: dict) -> str | None:
@@ -188,11 +218,12 @@ def main() -> None:
 
         if not alert_id:
             incident_type = str(incident.get("type") or incident.get("Type") or "unknown")
-            return_error(
-                "alert_id is required when the script is not run from a Vega Alert incident. "
-                f"Could not resolve alert ID from incident id={incident_id or 'none'}, type={incident_type}. "
-                "Open a Vega Alert investigation or pass alert_id explicitly."
+            message = (
+                f"{ALERT_EVENTS_LOAD_ERROR_PREFIX} could not resolve alert ID from incident "
+                f"id={incident_id or 'none'}, type={incident_type}. Open a Vega Alert investigation or pass alert_id."
             )
+            _return_alert_events_layout_output(message)
+            return
 
         alert_id = str(alert_id).strip()
         page_size = arg_to_number(args.get("limit")) or DEFAULT_ALERT_EVENTS_PAGE_SIZE
@@ -208,38 +239,39 @@ def main() -> None:
 
         command_result = demisto.executeCommand(VEGA_GET_ALERT_EVENTS_COMMAND, command_args)
         if is_error(command_result):
-            return_error(get_error(command_result))
+            _return_alert_events_layout_output(f"{ALERT_EVENTS_LOAD_ERROR_PREFIX} {get_error(command_result)}")
+            return
 
         command_entry = command_result[0]
         if command_entry.get("Brand") == "Scripts":
-            return_error(
-                f"{VEGA_GET_ALERT_EVENTS_COMMAND} resolved to the automation script instead of the Vega integration. "
-                "Ensure a Vega integration instance is configured."
+            _return_alert_events_layout_output(
+                f"{ALERT_EVENTS_LOAD_ERROR_PREFIX} {VEGA_GET_ALERT_EVENTS_COMMAND} resolved to the automation script "
+                "instead of the Vega integration. Ensure a Vega integration instance is configured."
             )
+            return
 
         readable_output = _extract_readable_output(command_entry)
         alert_events_context = _extract_alert_events_context(command_entry)
+        layout_markdown = _resolve_layout_markdown(readable_output, alert_events_context, custom_fields)
 
         fields_to_set = alert_events_context.get("CustomFields")
         if not isinstance(fields_to_set, dict) or not str(fields_to_set.get("vegaalertevents", "")).strip():
             fields_to_set = _build_persisted_custom_fields(
                 alert_id,
-                readable_output,
+                layout_markdown,
                 alert_events_context.get("Total"),
                 arg_to_number(alert_events_context.get("Offset")) or offset,
             )
+        else:
+            fields_to_set = dict(fields_to_set)
+            fields_to_set["vegaalertevents"] = layout_markdown
 
-        if incident_id and str(fields_to_set.get("vegaalertevents", "")).strip():
+        if incident_id:
             _persist_custom_fields_on_incident(str(incident_id), fields_to_set)
-        elif not str(fields_to_set.get("vegaalertevents", "")).strip():
-            return_error("Vega returned no alert events to display.")
 
-        _return_alert_events_table(
-            readable_output,
-            alert_events_context or {"AlertId": alert_id, "Cached": False},
-        )
+        _return_alert_events_layout_output(layout_markdown)
     except Exception as exc:
-        return_error(f"Failed to execute vega-fetch-alert-events. Error: {str(exc)}")
+        _return_alert_events_layout_output(f"{ALERT_EVENTS_LOAD_ERROR_PREFIX} {exc}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

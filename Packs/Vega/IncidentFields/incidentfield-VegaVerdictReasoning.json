@@ -5,7 +5,7 @@
     "ownerOnly": false,
     "description": "The analyst's written reasoning behind the verdict.",
     "cliName": "vegaverdictreasoning",
-    "type": "shortText",
+    "type": "longText",
     "closeForm": false,
     "editForm": true,
     "required": false,

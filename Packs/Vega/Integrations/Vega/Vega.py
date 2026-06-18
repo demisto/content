@@ -97,15 +97,22 @@ GET_INCIDENT_DETAILS_QUERY = (
 UPDATE_ALERTS_MUTATION = (
     "mutation UpdateAlerts($input: UpdateAlertsInput!) { "
     " updateAlerts(input: $input) { "
-    "  alerts { id status severity verdict verdictReasoning "
-    "   assignee { userId displayName email } } "
+    "  alerts { id vegaAlertId detectionId name description severity status "
+    "   assignee { userId displayName email } "
+    "   assignees { userId displayName email } "
+    "   dataSources createdAt updatedAt "
+    "   mitre { mitreTactics mitreTechniques } "
+    "   relatedIncidents { incidentId name } "
+    "   detectionSource detectionDescription detectionQuery eventCount isTestMode "
+    "   verdict verdictReasoning dedupCount "
+    "   comments { text addedBy addedAt } } "
     "  error { code message } } }"
 )
 
 UPDATE_INCIDENTS_MUTATION = (
     "mutation UpdateIncidents($input: UpdateIncidentsInput!) { "
     " updateIncidents(input: $input) { "
-    "  incidents { incidentId status severity verdict verdictReasoning updatedAt "
+    "  incidents { incidentId status verdict verdictReasoning updatedAt "
     "   assignee { userId displayName email } } "
     "  errors { code message } } }"
 )
@@ -131,9 +138,51 @@ UPDATE_DETECTIONS_MUTATION = (
 
 MIRROR_ENTITY_SUFFIX_ALERT = "alert"
 MIRROR_ENTITY_SUFFIX_INCIDENT = "incident"
+MIRROR_ID_PREFIX_ALERT = "alert:"
+MIRROR_ID_PREFIX_INCIDENT = "incident:"
+MIRROR_DIRECTION = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
+}
 VEGA_ALERT_STATUS_FIELD = "vegastatus"
+VEGA_ALERT_SEVERITY_FIELD = "vegaalertseverity"
 VEGA_INCIDENT_STATUS_FIELD = "vegaincidentstatus"
 VEGA_SEVERITY_FIELD = "vegaseverity"
+VEGA_VERDICT_FIELD = "vegaverdict"
+VEGA_VERDICT_REASONING_FIELD = "vegaverdictreasoning"
+VEGA_NEW_COMMENT_FIELD = "veganewcomment"
+VEGA_MIRROR_TAG_FROM_VEGA = "From Vega"
+VEGA_MIRROR_TAG_TO_VEGA = "To Vega"
+GET_MODIFIED_REMOTE_DATA_LIMIT = 100
+MIRROR_POLL_LOOKBACK = timedelta(minutes=1)
+MIRROR_ALERT_POLL_LOOKBACK = timedelta(minutes=5)
+MIRROR_LAST_UPDATE_SAFETY_MARGIN = timedelta(minutes=2)
+MIRROR_UPDATED_TO_BUFFER = timedelta(minutes=1)
+MIRROR_ALERT_ORIGIN_TYPES: tuple[str | None, ...] = (None, "PRODUCTION", "TEST")
+VEGA_NUMERIC_SEVERITY_TO_API: dict[int, str] = {
+    1: "LOW",
+    2: "MEDIUM",
+    3: "HIGH",
+    4: "CRITICAL",
+}
+VEGA_OUTGOING_MIRROR_FIELDS: dict[str, dict[str, tuple[str, ...]]] = {
+    "Vega Alert": {
+        VEGA_ALERT_STATUS_FIELD: ("Vega alert status",),
+        VEGA_ALERT_SEVERITY_FIELD: ("Vega alert severity",),
+        VEGA_VERDICT_FIELD: ("Vega alert verdict",),
+        VEGA_VERDICT_REASONING_FIELD: ("Vega alert verdict reasoning",),
+        VEGA_NEW_COMMENT_FIELD: ("Comment to add on the Vega alert",),
+    },
+    "Vega Incident": {
+        VEGA_SEVERITY_FIELD: ("Vega incident severity",),
+        VEGA_INCIDENT_STATUS_FIELD: ("Vega incident status",),
+        VEGA_VERDICT_FIELD: ("Vega incident verdict",),
+        VEGA_VERDICT_REASONING_FIELD: ("Vega incident verdict reasoning",),
+        VEGA_NEW_COMMENT_FIELD: ("Comment to add on the Vega incident",),
+    },
+}
 VEGA_CLOSE_STATUSES = frozenset({"RESOLVED"})
 VEGA_ALERT_OPEN_STATUSES = frozenset({"REOPENED", "OPEN", "NEW", "INVESTIGATING", "IN_PROGRESS", "PEER_REVIEW"})
 VEGA_INCIDENT_OPEN_STATUSES = frozenset(
@@ -674,6 +723,7 @@ class Client(BaseClient):
         updated_from: str | None = None,
         updated_to: str | None = None,
         alert_ids: list[str] | None = None,
+        origin_type: str | None = None,
         limit: int | None = None,
         offset: int = 0,
     ) -> dict:
@@ -712,16 +762,21 @@ class Client(BaseClient):
             variables["updatedTo"] = updated_to
         if alert_ids:
             variables["alertIds"] = alert_ids
+        if origin_type:
+            variables["originType"] = origin_type
 
         response = self._graphql_request(GET_ALERTS_QUERY, variables)
         data = response.get("data", {})
         return data.get("getAlerts", {})
 
     def get_alert_by_id(self, alert_id: str) -> dict:
-        """Fetch a single Vega alert by ID."""
-        response = self.get_alerts(alert_ids=[alert_id], limit=1)
-        alerts = response.get("alerts") or []
-        return alerts[0] if alerts else {}
+        """Fetch a single Vega alert by ID, trying all supported origin types."""
+        for origin_type in MIRROR_ALERT_ORIGIN_TYPES:
+            response = self.get_alerts(alert_ids=[alert_id], limit=1, origin_type=origin_type)
+            alerts = response.get("alerts") or []
+            if alerts:
+                return _normalize_alert_api_entity(alerts[0])
+        return {}
 
     def get_incidents(
         self,
@@ -780,7 +835,11 @@ class Client(BaseClient):
         """Fetch a single Vega incident by ID."""
         response = self.get_incidents(incident_ids=[incident_id], limit=1)
         incidents = response.get("incidents") or []
-        return incidents[0] if incidents else {}
+        if incidents:
+            return _normalize_incident_api_entity(incidents[0])
+
+        details = self.get_incident_details(incident_id)
+        return _normalize_incident_api_entity(details)
 
     def update_alerts(self, update_input: dict[str, Any]) -> dict:
         """Update one or more Vega alerts."""
@@ -1157,6 +1216,7 @@ def _collect_incident_custom_fields(incident: dict[str, Any]) -> dict[str, Any]:
         "vegaalerteventsoffset",
         "vegaalerteventstotal",
         VEGA_ALERT_STATUS_FIELD,
+        VEGA_ALERT_SEVERITY_FIELD,
         VEGA_INCIDENT_STATUS_FIELD,
         "vegaverdict",
         "vegaverdictreasoning",
@@ -1481,14 +1541,25 @@ def _empty_to_na(value: Any) -> str:
     return text if text else VEGA_EMPTY_FIELD_DISPLAY
 
 
+def _is_missing_verdict_reasoning(value: Any) -> bool:
+    """Return True when a Vega verdict reasoning value is absent or a display placeholder."""
+    if value is None:
+        return True
+    text = str(value).strip()
+    return not text or text.upper() == VEGA_EMPTY_FIELD_DISPLAY.upper()
+
+
+def _extract_verdict_reasoning_from_entity(raw: dict[str, Any]) -> Any:
+    """Extract analyst verdict reasoning from the Vega ``verdictReasoning`` API field only."""
+    reasoning = raw.get("verdictReasoning")
+    if _is_missing_verdict_reasoning(reasoning):
+        return None
+    return reasoning
+
+
 def _normalize_verdict_reasoning_for_display(raw: dict) -> str:
     """Normalize Vega verdict reasoning for XSOAR display."""
-    reasoning = raw.get("verdictReasoning")
-    if reasoning is None:
-        verdict = raw.get("verdict")
-        if isinstance(verdict, dict):
-            reasoning = verdict.get("reasoning")
-    return _empty_to_na(reasoning)
+    return _empty_to_na(_extract_verdict_reasoning_from_entity(raw))
 
 
 def _format_vega_detection_query_for_display(value: Any) -> str:
@@ -1836,6 +1907,11 @@ def _format_timeline_events_html(timeline_events: list[dict]) -> str:
 def _build_vega_incident_custom_fields(raw: dict) -> dict[str, str]:
     """Build CustomFields for Vega incidents (set directly on ingest, not via mapper)."""
     custom_fields: dict[str, str] = {}
+    # Populate vegaincidentid so outgoing mirroring and vega-update-incident can reliably
+    # resolve the Vega entity without falling back to fragile rawJSON parsing.
+    incident_id = _normalize_entity_id(raw)
+    if incident_id:
+        custom_fields["vegaincidentid"] = incident_id
     created_at = raw.get("createdAt")
     if created_at:
         custom_fields["vegacreatedat"] = str(created_at)
@@ -1958,8 +2034,8 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
     elif entity_type == "Vega Incident" and raw.get("status") is not None:
         raw["status"] = _normalize_vega_status_for_display(str(raw["status"]), MIRROR_ENTITY_SUFFIX_INCIDENT)
 
-    if raw.get("verdict") is not None:
-        raw["verdict"] = _normalize_vega_verdict_for_display(raw.get("verdict"))
+    if raw.get("verdict") is not None or raw.get("userVerdict") is not None:
+        raw["verdict"] = _normalize_vega_verdict_for_display(_extract_vega_verdict_from_entity(raw))
 
     raw["verdictReasoning"] = _normalize_verdict_reasoning_for_display(raw)
 
@@ -1998,6 +2074,19 @@ def _normalize_incident_verdict_value(verdict: Any) -> str:
     return str(verdict or "")
 
 
+def _extract_vega_verdict_from_entity(entity: dict[str, Any]) -> Any:
+    """Extract the analyst-facing verdict, preferring userVerdict over automated state verdict."""
+    user_verdict = entity.get("userVerdict")
+    if user_verdict is not None:
+        if isinstance(user_verdict, dict):
+            value = user_verdict.get("value") or user_verdict.get("verdict")
+            if value is not None and str(value).strip():
+                return value
+        elif str(user_verdict).strip():
+            return user_verdict
+    return entity.get("verdict")
+
+
 def _normalize_vega_verdict_for_display(verdict: Any) -> str:
     """Normalize a Vega verdict to a value accepted by the XSOAR single-select field."""
     normalized = _normalize_incident_verdict_value(verdict).strip().upper()
@@ -2006,6 +2095,12 @@ def _normalize_vega_verdict_for_display(verdict: Any) -> str:
 
 def _normalize_vega_severity_for_display(severity: Any) -> str:
     """Normalize a Vega severity to a value accepted by the XSOAR single-select field."""
+    if severity is None or severity == "":
+        return ""
+    if isinstance(severity, int | float) or (isinstance(severity, str) and str(severity).strip().isdigit()):
+        mapped = VEGA_NUMERIC_SEVERITY_TO_API.get(int(float(str(severity).strip())))
+        if mapped:
+            return mapped
     normalized = str(severity or "").strip().upper()
     return normalized if normalized in VALID_SEVERITIES else normalized
 
@@ -2131,6 +2226,15 @@ def _build_direct_alert_update_payload(args: dict[str, Any]) -> dict[str, Any]:
     verdict = args.get("verdict")
     if verdict is not None and str(verdict).strip():
         update_input["verdict"] = _validate_verdict_value(str(verdict))
+    verdict_reasoning = args.get("verdict_reasoning")
+    if verdict_reasoning is not None and str(verdict_reasoning).strip():
+        update_input["verdictReasoning"] = str(verdict_reasoning).strip()
+    severity = args.get("severity") or args.get("alert_severity")
+    if severity is not None and str(severity).strip():
+        update_input["severity"] = _validate_severity_value(str(severity))
+    comment = args.get("comment")
+    if comment is not None and str(comment).strip():
+        update_input["comment"] = str(comment).strip()
     return update_input
 
 
@@ -2141,10 +2245,16 @@ def _build_direct_incident_update_payload(args: dict[str, Any]) -> dict[str, Any
     if status is not None and str(status).strip():
         update_input["status"] = _validate_incident_status_value(str(status))
     verdict = args.get("verdict")
+    verdict_reasoning = args.get("verdict_reasoning")
     if verdict is not None and str(verdict).strip():
         update_input["verdict"] = {
             "value": _validate_verdict_value(str(verdict)),
-            "reasoning": str(args.get("verdict_reasoning") or ""),
+            "reasoning": str(verdict_reasoning or ""),
+        }
+    elif verdict_reasoning is not None and str(verdict_reasoning).strip():
+        update_input["verdict"] = {
+            "value": _validate_verdict_value("NA"),
+            "reasoning": str(verdict_reasoning).strip(),
         }
     severity = args.get("severity")
     if severity is not None and str(severity).strip():
@@ -2157,21 +2267,32 @@ def _build_direct_incident_update_payload(args: dict[str, Any]) -> dict[str, Any
 
 def _format_push_alert_output(alert: dict[str, Any]) -> dict[str, str]:
     """Format a Vega alert update response for context output."""
-    return {
+    output: dict[str, str] = {
         "id": str(alert.get("id") or ""),
         "status": _normalize_vega_status_for_display(str(alert.get("status") or ""), MIRROR_ENTITY_SUFFIX_ALERT),
         "verdict": _normalize_vega_verdict_for_display(alert.get("verdict")),
     }
+    if alert.get("severity") is not None:
+        output["severity"] = _normalize_vega_severity_for_display(alert.get("severity"))
+    return output
 
 
-def _format_push_incident_output(incident: dict[str, Any]) -> dict[str, str]:
+def _format_push_incident_output(
+    incident: dict[str, Any],
+    requested_severity: str | None = None,
+) -> dict[str, str]:
     """Format a Vega incident update response for context output."""
-    return {
+    severity_value = incident.get("severity")
+    if severity_value is None and requested_severity is not None:
+        severity_value = requested_severity
+    output: dict[str, str] = {
         "id": str(incident.get("incidentId") or incident.get("id") or ""),
         "status": _normalize_vega_status_for_display(str(incident.get("status") or ""), MIRROR_ENTITY_SUFFIX_INCIDENT),
         "verdict": _normalize_vega_verdict_for_display(incident.get("verdict")),
-        "severity": _normalize_vega_severity_for_display(incident.get("severity")),
     }
+    if severity_value is not None:
+        output["severity"] = _normalize_vega_severity_for_display(severity_value)
+    return output
 
 
 def resolve_incident_id_from_incident(args: dict[str, Any], incident: dict[str, Any]) -> str | None:
@@ -2240,7 +2361,7 @@ def _matches_incident_status_value(value: str) -> bool:
 
 
 def _resolve_field_change_update_args(args: dict[str, Any], entity_type_suffix: str) -> dict[str, str]:
-    """Map a layout field-change ``new`` value to the status or verdict arg to update."""
+    """Map a layout field-change ``new`` value to the status, verdict, severity, or reasoning arg to update."""
     new_value = str(args.get("new") or "").strip()
     if not new_value:
         return {}
@@ -2250,7 +2371,9 @@ def _resolve_field_change_update_args(args: dict[str, Any], entity_type_suffix: 
             return {"status": new_value}
         if _matches_verdict_value(new_value):
             return {"verdict": new_value}
-        return {}
+        if _matches_severity_value(new_value):
+            return {"severity": new_value}
+        return {"verdict_reasoning": new_value}
 
     if _matches_incident_status_value(new_value):
         return {"status": new_value}
@@ -2258,7 +2381,7 @@ def _resolve_field_change_update_args(args: dict[str, Any], entity_type_suffix: 
         return {"verdict": new_value}
     if _matches_severity_value(new_value):
         return {"severity": new_value}
-    return {}
+    return {"verdict_reasoning": new_value}
 
 
 def _args_explicitly_set(args: dict[str, Any], *keys: str) -> bool:
@@ -2271,13 +2394,15 @@ def _args_explicitly_set(args: dict[str, Any], *keys: str) -> bool:
 
 
 def _alert_update_fields_explicitly_set(args: dict[str, Any]) -> bool:
-    """Return True when the caller provided alert status and/or verdict command arguments."""
-    return _args_explicitly_set(args, "status", "alert_status", "verdict")
+    """Return True when the caller provided alert update command arguments."""
+    return _args_explicitly_set(
+        args, "status", "alert_status", "verdict", "verdict_reasoning", "severity", "alert_severity", "comment"
+    )
 
 
 def _incident_update_fields_explicitly_set(args: dict[str, Any]) -> bool:
-    """Return True when the caller provided incident status, verdict, severity, and/or comment command arguments."""
-    return _args_explicitly_set(args, "status", "incident_status", "verdict", "severity", "comment")
+    """Return True when the caller provided incident status, verdict, severity, reasoning, and/or comment command arguments."""
+    return _args_explicitly_set(args, "status", "incident_status", "verdict", "verdict_reasoning", "severity", "comment")
 
 
 def _xsoar_incident_is_closed(incident: dict[str, Any]) -> bool:
@@ -2341,6 +2466,19 @@ def _resolve_verdict_for_update(args: dict[str, Any], incident: dict[str, Any]) 
     return str(verdict)
 
 
+def _resolve_alert_severity_for_update(args: dict[str, Any], incident: dict[str, Any]) -> str | None:
+    """Resolve alert severity from args or the current investigation custom fields."""
+    severity = args.get("alert_severity")
+    if severity is None or str(severity).strip() == "":
+        severity = args.get("severity")
+    if severity is None or str(severity).strip() == "":
+        custom_fields = _collect_incident_custom_fields(incident)
+        severity = custom_fields.get(VEGA_ALERT_SEVERITY_FIELD)
+    if severity is None or str(severity).strip() == "":
+        return None
+    return str(severity)
+
+
 def _resolve_severity_for_update(args: dict[str, Any], incident: dict[str, Any]) -> str | None:
     """Resolve severity from args or the current investigation custom fields."""
     severity = args.get("severity")
@@ -2373,6 +2511,9 @@ def _build_effective_alert_update_args(args: dict[str, Any], incident: dict[str,
         verdict = _resolve_verdict_for_update(args, incident)
         if verdict is not None:
             effective_args["verdict"] = verdict
+        severity = _resolve_alert_severity_for_update(args, incident)
+        if severity is not None:
+            effective_args["severity"] = severity
         return effective_args
 
     if _args_explicitly_set(args, "status", "alert_status"):
@@ -2383,13 +2524,23 @@ def _build_effective_alert_update_args(args: dict[str, Any], incident: dict[str,
         verdict = _resolve_verdict_for_update(args, incident)
         if verdict is not None:
             effective_args["verdict"] = verdict
+    if _args_explicitly_set(args, "severity", "alert_severity"):
+        severity = _resolve_alert_severity_for_update(args, incident)
+        if severity is not None:
+            effective_args["severity"] = severity
     return effective_args
 
 
 def _build_effective_incident_update_args(args: dict[str, Any], incident: dict[str, Any]) -> dict[str, Any]:
     """Build incident update args from explicit args, field changes, or current investigation fields."""
     if _is_field_change_trigger(args):
-        return {**args, **_resolve_field_change_update_args(args, MIRROR_ENTITY_SUFFIX_INCIDENT)}
+        resolved_args = _resolve_field_change_update_args(args, MIRROR_ENTITY_SUFFIX_INCIDENT)
+        effective_args = {**args, **resolved_args}
+        if resolved_args.get("verdict_reasoning") and not resolved_args.get("verdict"):
+            verdict = _resolve_verdict_for_update(args, incident)
+            if verdict is not None:
+                effective_args["verdict"] = verdict
+        return effective_args
 
     effective_args = dict(args)
     if not _incident_update_fields_explicitly_set(args):
@@ -2446,7 +2597,7 @@ def _build_xsoar_alert_sync_entries(args: dict[str, Any], incident: dict[str, An
 
     entries: list[dict] = []
     field_change = _is_field_change_trigger(args)
-    if not field_change and _args_explicitly_set(args, "status", "alert_status", "verdict"):
+    if not field_change and _args_explicitly_set(args, "status", "alert_status", "verdict", "severity", "alert_severity"):
         custom_fields: dict[str, str] = {}
         status = _resolve_alert_status_for_update(args, incident)
         if status is not None:
@@ -2454,6 +2605,9 @@ def _build_xsoar_alert_sync_entries(args: dict[str, Any], incident: dict[str, An
         verdict = _resolve_verdict_for_update(args, incident)
         if verdict is not None:
             custom_fields["vegaverdict"] = _normalize_vega_verdict_for_display(verdict)
+        severity = _resolve_alert_severity_for_update(args, incident)
+        if severity is not None:
+            custom_fields[VEGA_ALERT_SEVERITY_FIELD] = _normalize_vega_severity_for_display(severity)
         if custom_fields:
             entries.append(
                 {
@@ -2544,7 +2698,7 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     effective_args = _build_effective_alert_update_args(args, incident)
     update_fields = _build_direct_alert_update_payload(effective_args)
     if not update_fields:
-        raise DemistoException("At least one of status or verdict must be provided.")
+        raise DemistoException("At least one of status, severity, verdict, verdict reasoning, or comment must be provided.")
 
     result = client.update_alerts({**update_fields, "alertIds": alert_ids})
     updated_alerts = result.get("alerts") or []
@@ -2553,7 +2707,7 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     readable = tableToMarkdown(
         "Updated Vega Alerts",
         outputs,
-        headers=["id", "status", "verdict"],
+        headers=["id", "status", "severity", "verdict"],
         removeNull=True,
     )
     command_result = CommandResults(
@@ -2588,12 +2742,16 @@ def update_incident_command(client: Client, args: dict[str, Any]) -> CommandResu
     effective_args = _build_effective_incident_update_args(args, incident)
     update_fields = _build_direct_incident_update_payload(effective_args)
     if not update_fields:
-        raise DemistoException("At least one of status, verdict, severity, or comment must be provided.")
+        raise DemistoException("At least one of status, verdict, verdict reasoning, severity, or comment must be provided.")
 
     result = client.update_incidents({**update_fields, "incidentIds": incident_ids})
     updated_incidents = result.get("incidents") or []
+    requested_severity = effective_args.get("severity")
 
-    outputs = [_format_push_incident_output(incident_item) for incident_item in updated_incidents]
+    outputs = [
+        _format_push_incident_output(incident_item, requested_severity=str(requested_severity) if requested_severity else None)
+        for incident_item in updated_incidents
+    ]
     comment_text = _resolve_comment_for_update(effective_args)
     comment_only_update = set(update_fields.keys()) == {"comment"} and bool(comment_text)
 
@@ -2644,6 +2802,8 @@ def alert_to_incident(alert: dict, integration_url: str | None = None) -> dict:
     # Inject vegaEntityType so the classifier transformer can route correctly
     raw = dict(alert)
     raw["vegaEntityType"] = "Vega Alert"
+    raw.update(_get_mirroring_fields())
+    _apply_mirror_metadata(raw, MIRROR_ENTITY_SUFFIX_ALERT)
     _apply_vega_entity_link(raw, integration_url=integration_url)
     _format_raw_entity_for_xsoar(raw)
 
@@ -2654,6 +2814,10 @@ def alert_to_incident(alert: dict, integration_url: str | None = None) -> dict:
         "type": "Vega Alert",
         "rawJSON": json.dumps(raw),
     }
+    mirror_id = raw.get("mirror_id")
+    if mirror_id:
+        xsoar_incident["dbotMirrorId"] = mirror_id
+    _apply_xsoar_mirror_metadata(xsoar_incident)
     custom_fields = _build_vega_alert_custom_fields(raw)
     if custom_fields:
         xsoar_incident["CustomFields"] = custom_fields
@@ -2680,6 +2844,8 @@ def incident_to_xsoar_incident(
     # Inject vegaEntityType so the classifier transformer can route correctly
     raw = dict(incident)
     raw["vegaEntityType"] = "Vega Incident"
+    raw.update(_get_mirroring_fields())
+    _apply_mirror_metadata(raw, MIRROR_ENTITY_SUFFIX_INCIDENT)
     if timeline_events is not None:
         raw["timelineEvents"] = timeline_events
         raw["vegaTimelineEvents"] = _format_timeline_events_html(timeline_events)
@@ -2693,18 +2859,106 @@ def incident_to_xsoar_incident(
         "type": "Vega Incident",
         "rawJSON": json.dumps(raw),
     }
+    mirror_id = raw.get("mirror_id")
+    if mirror_id:
+        xsoar_incident["dbotMirrorId"] = mirror_id
+    _apply_xsoar_mirror_metadata(xsoar_incident)
     custom_fields = _build_vega_incident_custom_fields(raw)
     if custom_fields:
         xsoar_incident["CustomFields"] = custom_fields
     return xsoar_incident
 
 
+def _build_mirror_id(entity_type_suffix: str, entity_id: str) -> str:
+    """Build a prefixed mirror ID that disambiguates alerts from incidents."""
+    entity_id = str(entity_id).strip()
+    if not entity_id:
+        return ""
+    prefix = MIRROR_ID_PREFIX_ALERT if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else MIRROR_ID_PREFIX_INCIDENT
+    return f"{prefix}{entity_id}"
+
+
+def _parse_mirror_id(remote_id: str) -> tuple[str, str | None]:
+    """Split a mirror ID into the Vega entity ID and optional entity type suffix."""
+    remote_id = str(remote_id).strip()
+    if remote_id.startswith(MIRROR_ID_PREFIX_ALERT):
+        return remote_id[len(MIRROR_ID_PREFIX_ALERT) :], MIRROR_ENTITY_SUFFIX_ALERT
+    if remote_id.startswith(MIRROR_ID_PREFIX_INCIDENT):
+        return remote_id[len(MIRROR_ID_PREFIX_INCIDENT) :], MIRROR_ENTITY_SUFFIX_INCIDENT
+    return remote_id, None
+
+
+def _apply_mirror_metadata(raw: dict[str, Any], entity_type_suffix: str) -> None:
+    """Attach mirror metadata used by incoming mappers and mirroring commands."""
+    entity_id = _normalize_entity_id(raw)
+    if entity_id:
+        raw["mirror_id"] = _build_mirror_id(entity_type_suffix, entity_id)
+
+
 def _normalize_entity_id(entity: dict, id_key: str = "id") -> str:
     """Return a stable string ID for deduplication."""
     entity_id = entity.get(id_key)
     if entity_id is None or entity_id == "":
+        for fallback_key in ("incidentId", "alertId", "vegaAlertId"):
+            fallback = entity.get(fallback_key)
+            if fallback is not None and str(fallback).strip():
+                entity_id = fallback
+                break
+    if entity_id is None or entity_id == "":
         return ""
     return str(entity_id)
+
+
+def _normalize_incident_api_entity(entity: dict[str, Any]) -> dict[str, Any]:
+    """Normalize incident payloads from list or detail APIs to a common shape."""
+    if not entity:
+        return {}
+    normalized = dict(entity)
+    entity_id = _normalize_entity_id(normalized)
+    if entity_id:
+        normalized["id"] = entity_id
+    if not normalized.get("lastUpdated") and normalized.get("lastUpdate"):
+        normalized["lastUpdated"] = normalized["lastUpdate"]
+    if normalized.get("alertCount") is not None and normalized.get("alertsCount") is None:
+        normalized["alertsCount"] = normalized["alertCount"]
+    return normalized
+
+
+def _normalize_alert_api_entity(entity: dict[str, Any]) -> dict[str, Any]:
+    """Normalize alert payloads from the Vega API to a common shape."""
+    if not entity:
+        return {}
+    normalized = dict(entity)
+    entity_id = _normalize_entity_id(normalized)
+    if entity_id:
+        normalized["id"] = entity_id
+    return normalized
+
+
+def _collect_mirror_remote_ids(
+    entity: dict[str, Any],
+    entity_type_suffix: str,
+    *,
+    include_legacy_unprefixed: bool = False,
+) -> list[str]:
+    """Return mirror IDs for a modified entity.
+
+    Only prefixed IDs ("alert:UUID" / "incident:UUID") are returned by default.
+    Bare UUIDs are excluded because get-remote-data receives the ID directly and
+    _parse_mirror_id would not be able to identify the entity type, causing a
+    mismatch between the returned id and the investigation's dbotMirrorId.
+    """
+    entity_id = _normalize_entity_id(entity)
+    if not entity_id:
+        return []
+
+    remote_ids: list[str] = []
+    mirror_id = _build_mirror_id(entity_type_suffix, entity_id)
+    if mirror_id:
+        remote_ids.append(mirror_id)
+    if include_legacy_unprefixed and entity_id not in remote_ids:
+        remote_ids.append(entity_id)
+    return remote_ids
 
 
 def _parse_entity_created_at(created_at: Any) -> datetime | None:
@@ -2942,6 +3196,922 @@ def _resolve_fetch_from_time(
     return first_fetch_time
 
 
+def _get_entity_updated_at(entity: dict[str, Any], entity_type_suffix: str) -> datetime | None:
+    """Return the Vega updated timestamp for an alert or incident entity."""
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
+        return _parse_entity_created_at(entity.get("lastUpdated") or entity.get("updatedAt"))
+    return _parse_entity_created_at(entity.get("updatedAt"))
+
+
+def _entity_updated_after(entity: dict[str, Any], entity_type_suffix: str, last_update: datetime) -> bool:
+    """Return True when the remote entity was updated after the mirroring cursor."""
+    updated_at = _get_entity_updated_at(entity, entity_type_suffix)
+    if updated_at is None:
+        return False
+    return _normalize_fetch_datetime(updated_at) > _normalize_fetch_datetime(last_update)
+
+
+def _should_fetch_mirror_entity_type(entity_label: str) -> bool:
+    """Return True when the configured Vega entities include the given label."""
+    vega_entities = argToList(demisto.params().get("vega_entities") or ["Alerts", "Incidents"])
+    return entity_label in vega_entities
+
+
+def _resolve_mirror_updated_from_for_alerts(last_update: str | None) -> str:
+    """Resolve updatedFrom for alert mirror polling with a wider minimum lookback."""
+    cursor_start = _parse_mirror_last_update(last_update) - MIRROR_LAST_UPDATE_SAFETY_MARGIN
+    minimum_lookback = datetime.now(UTC) - MIRROR_ALERT_POLL_LOOKBACK
+    effective_start = min(cursor_start, minimum_lookback)
+    return _format_mirror_timestamp(effective_start)
+
+
+def _resolve_mirror_updated_from(last_update: str | None) -> str:
+    """Resolve updatedFrom using the mirror cursor with safety margin and minimum lookback."""
+    cursor_start = _parse_mirror_last_update(last_update) - MIRROR_LAST_UPDATE_SAFETY_MARGIN
+    minimum_lookback = datetime.now(UTC) - MIRROR_POLL_LOOKBACK
+    effective_start = min(cursor_start, minimum_lookback)
+    return _format_mirror_timestamp(effective_start)
+
+
+def _resolve_mirror_updated_to() -> str:
+    """Resolve updatedTo as the current time plus a small buffer for Vega mirror polling."""
+    return _format_mirror_timestamp(datetime.now(UTC) + MIRROR_UPDATED_TO_BUFFER)
+
+
+def _is_xsoar_to_vega_mirroring_enabled(params: dict[str, Any] | None = None) -> bool:
+    """Return True when outgoing XSOAR to Vega mirroring is enabled via autoclosure."""
+    params = params or demisto.params()
+    return argToBoolean(params.get("autoclosure", True))
+
+
+def _get_mirror_integration_instance(mirror_context: dict[str, Any] | None = None) -> str:
+    """Return the Cortex XSOAR integration instance name used for mirroring."""
+    instance = demisto.integrationInstance()
+    if instance:
+        return str(instance)
+
+    if isinstance(mirror_context, dict):
+        for key in ("dbotMirrorInstance", "mirror_instance"):
+            value = mirror_context.get(key)
+            if value:
+                return str(value)
+        custom_fields = mirror_context.get("CustomFields")
+        if isinstance(custom_fields, dict):
+            for key in ("dbotmirrorinstance", "mirror_instance"):
+                value = custom_fields.get(key)
+                if value:
+                    return str(value)
+
+    calling_context = getattr(demisto, "callingContext", None)
+    if isinstance(calling_context, dict):
+        context = calling_context.get("context", {})
+        if isinstance(context, dict):
+            fallback = context.get("IntegrationInstance")
+            if fallback:
+                return str(fallback)
+
+    return ""
+
+
+def _get_mirroring_fields(
+    params: dict[str, Any] | None = None,
+    mirror_context: dict[str, Any] | None = None,
+) -> dict[str, str]:
+    """Build mirror metadata embedded in fetched incidents for incoming mirroring."""
+    params = params or demisto.params()
+    direction_label = "Incoming And Outgoing" if _is_xsoar_to_vega_mirroring_enabled(params) else "Incoming"
+    mirror_direction = MIRROR_DIRECTION.get(direction_label)
+    mirror_instance = _get_mirror_integration_instance(mirror_context)
+    fields: dict[str, str] = {}
+    if mirror_instance:
+        fields["mirror_instance"] = mirror_instance
+    if mirror_direction:
+        fields["mirror_direction"] = mirror_direction
+    return fields
+
+
+def _apply_xsoar_mirror_metadata(
+    xsoar_incident: dict[str, Any],
+    mirror_context: dict[str, Any] | None = None,
+) -> None:
+    """Attach top-level mirror metadata required for XSOAR remote sync."""
+    if not xsoar_incident.get("dbotMirrorId"):
+        return
+    mirror_fields = _get_mirroring_fields(mirror_context=xsoar_incident)
+    mirror_direction = mirror_fields.get("mirror_direction")
+    if mirror_direction:
+        xsoar_incident["dbotMirrorDirection"] = mirror_direction
+    mirror_instance = mirror_fields.get("mirror_instance")
+    if mirror_instance:
+        xsoar_incident["dbotMirrorInstance"] = mirror_instance
+
+
+def _normalize_mirror_mapping_dict(value: Any) -> dict[str, Any]:
+    """Parse mirror command delta/data payloads into dictionaries."""
+    if isinstance(value, str) and value.strip():
+        try:
+            parsed = json.loads(value)
+        except (json.JSONDecodeError, TypeError, ValueError):
+            return {}
+        return parsed if isinstance(parsed, dict) else {}
+    return dict(value) if isinstance(value, dict) else {}
+
+
+def _normalize_incident_status_arg(inc_status: Any) -> int | None:
+    """Normalize XSOAR investigation status values from mirror command args."""
+    if inc_status is None or inc_status == "":
+        return None
+    try:
+        return int(inc_status)
+    except (TypeError, ValueError):
+        return None
+
+
+def _outgoing_field_in_delta(delta: dict[str, Any], field_name: str) -> bool:
+    """Return True when an outgoing mirror field is present in the delta payload."""
+    if field_name in delta:
+        return True
+    custom_fields_delta = delta.get("CustomFields")
+    return isinstance(custom_fields_delta, dict) and field_name in custom_fields_delta
+
+
+def _extract_outgoing_delta_value(delta: dict[str, Any], data: dict[str, Any], field_name: str) -> Any:
+    """Read a changed outgoing mirror field from delta or investigation custom fields."""
+    custom_fields_delta = delta.get("CustomFields")
+    if isinstance(custom_fields_delta, dict) and field_name in custom_fields_delta:
+        return custom_fields_delta.get(field_name)
+    if field_name in delta:
+        return delta.get(field_name)
+    if not _outgoing_field_in_delta(delta, field_name):
+        return None
+    return _collect_incident_custom_fields(data).get(field_name)
+
+
+def _parse_mirror_last_update(last_update: str | None) -> datetime:
+    """Parse a mirroring lastUpdate timestamp to UTC."""
+    if not last_update:
+        return datetime.fromtimestamp(0, tz=UTC)
+    parsed = arg_to_datetime(last_update, is_utc=True)
+    if parsed is None:
+        return datetime.fromtimestamp(0, tz=UTC)
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)
+
+
+def _format_mirror_timestamp(value: datetime) -> str:
+    """Format a UTC datetime for Vega updatedFrom/updatedTo filters."""
+    normalized = value.astimezone(UTC).replace(microsecond=0)
+    return normalized.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _entity_matches_remote_id(entity: dict[str, Any], remote_id: str) -> bool:
+    """Return True when the Vega entity ID matches the mirrored remote ID."""
+    return _normalize_entity_id(entity) == str(remote_id).strip()
+
+
+def _looks_like_vega_alert(entity: dict[str, Any]) -> bool:
+    """Return True when the remote payload looks like a Vega alert."""
+    return bool(
+        entity.get("vegaAlertId")
+        or entity.get("detectionId")
+        or entity.get("detectionSource")
+        or entity.get("detectionDescription")
+        or entity.get("eventCount") is not None
+    )
+
+
+def _looks_like_vega_incident(entity: dict[str, Any]) -> bool:
+    """Return True when the remote payload looks like a Vega incident."""
+    return bool(
+        entity.get("incidentSummary") is not None
+        or entity.get("incidentFindings") is not None
+        or entity.get("alertsCount") is not None
+        or entity.get("lastUpdated") is not None
+        or entity.get("investigationPlan") is not None
+    )
+
+
+def _resolve_preferred_entity_type_from_args(args: dict[str, Any]) -> str | None:
+    """Resolve the expected Vega entity type from mirror command context."""
+    remote_id = str(args.get("id") or args.get("remoteId") or "").strip()
+    if remote_id:
+        entity_type = _resolve_vega_entity_type_from_mirror_context(remote_id)
+        if entity_type:
+            return entity_type
+
+    for raw_payload in (args.get("data"), args.get("remoteIncidentData"), args.get("incident")):
+        data = _normalize_mirror_mapping_dict(raw_payload)
+        incident_type = str(
+            data.get("type") or data.get("Type") or data.get("incident_type") or data.get("incidentType") or ""
+        ).strip()
+        if incident_type in ("Vega Alert", "Vega Incident"):
+            return incident_type
+
+    incident_type = str(
+        args.get("incidentType") or args.get("type") or args.get("Type") or args.get("incident_type") or ""
+    ).strip()
+    if incident_type in ("Vega Alert", "Vega Incident"):
+        return incident_type
+    return None
+
+
+def _merge_incident_mirror_fields(base: dict[str, Any], details: dict[str, Any]) -> dict[str, Any]:
+    """Merge incident detail fields needed for incoming mirroring into a list payload."""
+    if not details:
+        return _normalize_incident_api_entity(base)
+
+    merged = dict(base)
+    for key in (
+        "verdictReasoning",
+        "verdict",
+        "comments",
+        "status",
+        "severity",
+        "lastUpdated",
+        "lastUpdate",
+        "userVerdict",
+    ):
+        if key in details and details[key] is not None:
+            merged[key] = details[key]
+    return _normalize_incident_api_entity(merged)
+
+
+def _enrich_incident_entity_for_mirror(client: Client, entity: dict[str, Any]) -> dict[str, Any]:
+    """Load incident details so mirror payloads include ``verdictReasoning`` from Vega."""
+    entity_id = _normalize_entity_id(entity)
+    if not entity_id:
+        return _normalize_incident_api_entity(entity)
+
+    details = client.get_incident_details(entity_id)
+    if not isinstance(details, dict) or not details:
+        return _normalize_incident_api_entity(entity)
+
+    return _merge_incident_mirror_fields(entity, details)
+
+
+def _resolve_remote_entity(
+    client: Client,
+    remote_id: str,
+    preferred_entity_type: str | None = None,
+) -> tuple[dict[str, Any], str]:
+    """Resolve a mirrored remote ID to a Vega alert or incident entity."""
+    vega_id, hinted_suffix = _parse_mirror_id(str(remote_id).strip())
+
+    if hinted_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
+        incident = _normalize_incident_api_entity(client.get_incident_by_id(vega_id))
+        if incident and _entity_matches_remote_id(incident, vega_id):
+            return incident, MIRROR_ENTITY_SUFFIX_INCIDENT
+        demisto.debug(f"Vega resolve remote entity: incident lookup failed for remote_id={remote_id!r}, vega_id={vega_id!r}")
+        return {}, ""
+
+    if hinted_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
+        alert = _normalize_alert_api_entity(client.get_alert_by_id(vega_id))
+        if alert and _entity_matches_remote_id(alert, vega_id):
+            return alert, MIRROR_ENTITY_SUFFIX_ALERT
+        demisto.debug(f"Vega resolve remote entity: alert lookup failed for remote_id={remote_id!r}, vega_id={vega_id!r}")
+        return {}, ""
+
+    if preferred_entity_type == "Vega Alert":
+        alert = _normalize_alert_api_entity(client.get_alert_by_id(vega_id))
+        if alert and _entity_matches_remote_id(alert, vega_id):
+            return alert, MIRROR_ENTITY_SUFFIX_ALERT
+        demisto.debug(
+            f"Vega resolve remote entity: Vega Alert context lookup failed for remote_id={remote_id!r}, vega_id={vega_id!r}"
+        )
+        return {}, ""
+
+    if preferred_entity_type == "Vega Incident":
+        incident = _normalize_incident_api_entity(client.get_incident_by_id(vega_id))
+        if incident and _entity_matches_remote_id(incident, vega_id):
+            return incident, MIRROR_ENTITY_SUFFIX_INCIDENT
+        demisto.debug(
+            f"Vega resolve remote entity: Vega Incident context lookup failed for remote_id={remote_id!r}, vega_id={vega_id!r}"
+        )
+        return {}, ""
+
+    alert = _normalize_alert_api_entity(client.get_alert_by_id(vega_id))
+    incident = _normalize_incident_api_entity(client.get_incident_by_id(vega_id))
+
+    if alert and not _entity_matches_remote_id(alert, vega_id):
+        demisto.debug(
+            f"Vega resolve remote entity: ignoring alert payload whose id "
+            f"{_normalize_entity_id(alert)!r} does not match remote_id={vega_id!r}"
+        )
+        alert = {}
+    if incident and not _entity_matches_remote_id(incident, vega_id):
+        demisto.debug(
+            f"Vega resolve remote entity: ignoring incident payload whose id "
+            f"{_normalize_entity_id(incident)!r} does not match remote_id={vega_id!r}"
+        )
+        incident = {}
+
+    if preferred_entity_type == "Vega Incident" and incident:
+        return incident, MIRROR_ENTITY_SUFFIX_INCIDENT
+    if preferred_entity_type == "Vega Alert" and alert:
+        return alert, MIRROR_ENTITY_SUFFIX_ALERT
+
+    if alert and incident:
+        if _looks_like_vega_incident(incident) and not _looks_like_vega_alert(alert):
+            return incident, MIRROR_ENTITY_SUFFIX_INCIDENT
+        if _looks_like_vega_alert(alert) and not _looks_like_vega_incident(incident):
+            return alert, MIRROR_ENTITY_SUFFIX_ALERT
+        if preferred_entity_type == "Vega Alert":
+            return alert, MIRROR_ENTITY_SUFFIX_ALERT
+        demisto.debug(
+            f"Vega resolve remote entity: both alert and incident payloads matched remote_id={vega_id!r}; "
+            "preferring alert for mirror sync."
+        )
+        return alert, MIRROR_ENTITY_SUFFIX_ALERT
+
+    if incident:
+        return incident, MIRROR_ENTITY_SUFFIX_INCIDENT
+    if alert:
+        return alert, MIRROR_ENTITY_SUFFIX_ALERT
+    return {}, ""
+
+
+def _summarize_mirror_sync_object(sync_object: dict[str, Any]) -> str:
+    """Return a compact debug summary of mirrored sync fields."""
+    tracked_keys = ("status", "verdict", "verdictReasoning", "severity", "mirror_id", "type", "vegaEntityType")
+    summary = {key: sync_object.get(key) for key in tracked_keys if sync_object.get(key) is not None}
+    return json.dumps(summary, sort_keys=True)
+
+
+def _resolve_vega_entity_type_from_mirror_context(
+    remote_id: str,
+    preferred_entity_type: str | None = None,
+) -> str | None:
+    """Resolve the Vega entity type from mirror ID prefix or investigation context."""
+    if preferred_entity_type in ("Vega Alert", "Vega Incident"):
+        return preferred_entity_type
+    _, hinted_suffix = _parse_mirror_id(remote_id)
+    if hinted_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
+        return "Vega Alert"
+    if hinted_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
+        return "Vega Incident"
+    return None
+
+
+def _build_mirror_not_found_object(
+    remote_id: str,
+    preferred_entity_type: str | None = None,
+) -> dict[str, Any]:
+    """Build a safe mirrored object when the remote entity cannot be loaded."""
+    vega_id, hinted_suffix = _parse_mirror_id(remote_id)
+    entity_type = _resolve_vega_entity_type_from_mirror_context(remote_id, preferred_entity_type)
+    suffix = hinted_suffix or (
+        MIRROR_ENTITY_SUFFIX_ALERT
+        if entity_type == "Vega Alert"
+        else MIRROR_ENTITY_SUFFIX_INCIDENT
+        if entity_type == "Vega Incident"
+        else ""
+    )
+    obj: dict[str, Any] = {"id": remote_id if hinted_suffix else (remote_id or vega_id)}
+    # dbotMirrorId lets the XSOAR engine correlate this response with the right investigation
+    # even when the remote entity lookup fails (e.g. network error, deleted entity).
+    obj["dbotMirrorId"] = remote_id
+    if entity_type:
+        obj["type"] = entity_type
+        obj["vegaEntityType"] = entity_type
+    if suffix:
+        obj["mirror_id"] = remote_id if hinted_suffix else _build_mirror_id(suffix, vega_id)
+    obj.update(_get_mirroring_fields())
+    return obj
+
+
+def _mirror_context_from_args(args: dict[str, Any]) -> dict[str, Any]:
+    """Return investigation mirror metadata passed to mirror commands."""
+    for raw_payload in (args.get("data"), args.get("remoteIncidentData"), args.get("incident")):
+        data = _normalize_mirror_mapping_dict(raw_payload)
+        if data:
+            return data
+
+    mirror_context: dict[str, Any] = {}
+    remote_id = str(args.get("id") or args.get("remoteId") or "").strip()
+    if remote_id:
+        mirror_context["dbotMirrorId"] = remote_id
+        mirror_context["mirror_id"] = remote_id
+    return mirror_context
+
+
+def _build_mirror_custom_fields(entity: dict[str, Any], entity_type_suffix: str) -> dict[str, str]:
+    """Build XSOAR custom fields for incoming mirror updates."""
+    custom_fields: dict[str, str] = {}
+
+    # Populate entity-ID custom fields on every mirror sync so that outgoing mirroring
+    # (update-remote-system) and direct commands (vega-update-alert/incident) can reliably
+    # resolve which Vega entity to update without falling back to stale rawJSON parsing.
+    entity_id = _normalize_entity_id(entity)
+    if entity_id:
+        if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
+            custom_fields["vegaincidentid"] = entity_id
+        else:
+            custom_fields["alertid"] = entity_id
+            vega_alert_id = entity.get("vegaAlertId")
+            if vega_alert_id and str(vega_alert_id).strip():
+                custom_fields["vegaalertid"] = str(vega_alert_id).strip()
+
+    status = entity.get("status")
+    if status is not None and str(status).strip():
+        status_field = VEGA_ALERT_STATUS_FIELD if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else VEGA_INCIDENT_STATUS_FIELD
+        custom_fields[status_field] = _normalize_vega_status_for_display(str(status), entity_type_suffix)
+
+    if entity.get("severity") is not None:
+        severity_field = VEGA_ALERT_SEVERITY_FIELD if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else VEGA_SEVERITY_FIELD
+        custom_fields[severity_field] = _normalize_vega_severity_for_display(entity.get("severity"))
+
+    verdict = _extract_vega_verdict_from_entity(entity)
+    if verdict is not None and str(_normalize_incident_verdict_value(verdict)).strip():
+        custom_fields[VEGA_VERDICT_FIELD] = _normalize_vega_verdict_for_display(verdict)
+
+    reasoning = _normalize_verdict_reasoning_for_display(entity)
+    if reasoning and reasoning != VEGA_EMPTY_FIELD_DISPLAY:
+        custom_fields[VEGA_VERDICT_REASONING_FIELD] = reasoning
+
+    return custom_fields
+
+
+def _build_mirror_sync_object(
+    entity: dict[str, Any],
+    entity_type_suffix: str,
+    remote_id: str | None = None,
+    mirror_context: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build the mirrored object used by XSOAR incoming remote sync."""
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
+        entity = _normalize_incident_api_entity(entity)
+    else:
+        entity = _normalize_alert_api_entity(entity)
+
+    entity_id = _normalize_entity_id(entity)
+    vega_entity_type = "Vega Alert" if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT else "Vega Incident"
+    mirror_id = _build_mirror_id(entity_type_suffix, entity_id)
+    effective_remote_id = str(remote_id).strip() if remote_id else mirror_id
+
+    raw = dict(entity)
+    raw["vegaEntityType"] = vega_entity_type
+    raw.update(_get_mirroring_fields(mirror_context=mirror_context))
+    _apply_mirror_metadata(raw, entity_type_suffix)
+    _format_raw_entity_for_xsoar(raw)
+
+    sync_object: dict[str, Any] = {
+        "id": effective_remote_id or mirror_id,
+        "type": vega_entity_type,
+        "vegaEntityType": vega_entity_type,
+        "mirror_id": mirror_id,
+        "CustomFields": _build_mirror_custom_fields(raw, entity_type_suffix),
+    }
+
+    for key in ("status", "severity", "verdict", "verdictReasoning", "mirror_direction", "mirror_instance"):
+        value = raw.get(key)
+        if value is not None and str(value).strip() != "":
+            sync_object[key] = value
+
+    return sync_object
+
+
+def _comment_added_after(comment: dict[str, Any], last_update: datetime) -> bool:
+    """Return True when a Vega comment was added after the mirroring cursor."""
+    added_at = _parse_entity_created_at(comment.get("addedAt"))
+    if added_at is None:
+        return False
+    return _normalize_fetch_datetime(added_at) > _normalize_fetch_datetime(last_update)
+
+
+def _build_incoming_comment_entries(comments: Any, last_update: datetime) -> list[dict[str, Any]]:
+    """Build War Room note entries for Vega comments added after last_update."""
+    if not isinstance(comments, list):
+        return []
+
+    entries: list[dict[str, Any]] = []
+    for comment in comments:
+        if not isinstance(comment, dict) or _is_empty_vega_comment_text(comment.get("text")):
+            continue
+        if not _comment_added_after(comment, last_update):
+            continue
+        author = _format_comment_author(comment.get("addedBy"))
+        timestamp = _format_comment_display_timestamp(comment.get("addedAt"))
+        comment_text = str(comment.get("text") or "").strip()
+        entries.append(
+            _build_comment_war_room_entry(
+                f"{author} ({timestamp}): {comment_text}",
+                tags=[VEGA_MIRROR_TAG_FROM_VEGA],
+            )
+        )
+    return entries
+
+
+def _build_incoming_status_sync_entries(
+    entity: dict[str, Any],
+    entity_type_suffix: str,
+    last_update: datetime,
+) -> list[dict[str, Any]]:
+    """Build close or reopen entries when Vega status changed during incoming mirroring."""
+    if not _entity_updated_after(entity, entity_type_suffix, last_update):
+        return []
+
+    api_status = _normalize_vega_status_for_api(str(entity.get("status") or ""), entity_type_suffix)
+    entries: list[dict[str, Any]] = []
+    if api_status in VEGA_CLOSE_STATUSES:
+        entries.append(
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": "Resolved",
+                    "closeNotes": f"Vega {entity_type_suffix} status changed to {api_status}.",
+                },
+                "ContentsFormat": EntryFormat.JSON,
+                "Note": True,
+            }
+        )
+    elif api_status == "REOPENED":
+        entries.append(
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {"dbotIncidentReopen": True},
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        )
+    return entries
+
+
+def _build_outgoing_alert_update_payload(
+    delta: dict[str, Any],
+    data: dict[str, Any],
+    inc_status: int | None,
+) -> dict[str, Any]:
+    """Build an UpdateAlertsInput payload from outgoing mirror delta/data."""
+    update_input: dict[str, Any] = {}
+
+    if inc_status == IncidentStatus.DONE:
+        update_input["status"] = "RESOLVED"
+    elif inc_status == IncidentStatus.ACTIVE:
+        status = _extract_outgoing_delta_value(delta, data, VEGA_ALERT_STATUS_FIELD)
+        if status is not None and str(status).strip():
+            update_input["status"] = _validate_alert_status_value(str(status))
+    else:
+        status = _extract_outgoing_delta_value(delta, data, VEGA_ALERT_STATUS_FIELD)
+        if status is not None and str(status).strip():
+            update_input["status"] = _validate_alert_status_value(str(status))
+
+    verdict = _extract_outgoing_delta_value(delta, data, VEGA_VERDICT_FIELD)
+    if verdict is not None and str(verdict).strip():
+        update_input["verdict"] = _validate_verdict_value(str(verdict))
+
+    severity = _extract_outgoing_delta_value(delta, data, VEGA_ALERT_SEVERITY_FIELD)
+    if severity is not None and str(severity).strip():
+        update_input["severity"] = _validate_severity_value(str(severity))
+
+    verdict_reasoning = _extract_outgoing_delta_value(delta, data, VEGA_VERDICT_REASONING_FIELD)
+    if verdict_reasoning is not None and str(verdict_reasoning).strip():
+        update_input["verdictReasoning"] = str(verdict_reasoning).strip()
+
+    comment = _extract_outgoing_delta_value(delta, data, VEGA_NEW_COMMENT_FIELD)
+    if comment is not None and str(comment).strip():
+        update_input["comment"] = str(comment).strip()
+
+    return update_input
+
+
+def _build_outgoing_incident_update_payload(
+    delta: dict[str, Any],
+    data: dict[str, Any],
+    inc_status: int | None,
+) -> dict[str, Any]:
+    """Build an UpdateIncidentsInput payload from outgoing mirror delta/data."""
+    update_input: dict[str, Any] = {}
+
+    if inc_status == IncidentStatus.DONE:
+        update_input["status"] = "RESOLVED"
+    elif inc_status == IncidentStatus.ACTIVE:
+        status = _extract_outgoing_delta_value(delta, data, VEGA_INCIDENT_STATUS_FIELD)
+        if status is None or not str(status).strip():
+            status = _extract_outgoing_delta_value(delta, data, VEGA_ALERT_STATUS_FIELD)
+        if status is not None and str(status).strip():
+            update_input["status"] = _validate_incident_status_value(str(status))
+    else:
+        status = _extract_outgoing_delta_value(delta, data, VEGA_INCIDENT_STATUS_FIELD)
+        if status is None or not str(status).strip():
+            status = _extract_outgoing_delta_value(delta, data, VEGA_ALERT_STATUS_FIELD)
+        if status is not None and str(status).strip():
+            update_input["status"] = _validate_incident_status_value(str(status))
+
+    severity = _extract_outgoing_delta_value(delta, data, VEGA_SEVERITY_FIELD)
+    if severity is not None and str(severity).strip():
+        update_input["severity"] = _validate_severity_value(str(severity))
+
+    verdict = _extract_outgoing_delta_value(delta, data, VEGA_VERDICT_FIELD)
+    verdict_reasoning = _extract_outgoing_delta_value(delta, data, VEGA_VERDICT_REASONING_FIELD)
+    if verdict is not None and str(verdict).strip():
+        update_input["verdict"] = {
+            "value": _validate_verdict_value(str(verdict)),
+            "reasoning": str(verdict_reasoning or ""),
+        }
+    elif verdict_reasoning is not None and str(verdict_reasoning).strip():
+        current_verdict = _collect_incident_custom_fields(data).get(VEGA_VERDICT_FIELD)
+        update_input["verdict"] = {
+            "value": _validate_verdict_value(str(current_verdict or "NA")),
+            "reasoning": str(verdict_reasoning).strip(),
+        }
+
+    comment = _extract_outgoing_delta_value(delta, data, VEGA_NEW_COMMENT_FIELD)
+    if comment is not None and str(comment).strip():
+        update_input["comment"] = str(comment).strip()
+
+    return update_input
+
+
+def _extract_mirror_entry_text(entry: dict[str, Any]) -> str | None:
+    """Extract plain text from a mirrored War Room entry."""
+    entry_type = entry.get("type") if entry.get("type") is not None else entry.get("Type")
+    if entry_type != EntryType.NOTE:
+        return None
+    tags = entry.get("tags") or entry.get("Tags") or []
+    if VEGA_MIRROR_TAG_FROM_VEGA in tags or VEGA_MIRROR_TAG_TO_VEGA in tags:
+        return None
+    contents = entry.get("contents")
+    if contents is None:
+        contents = entry.get("Contents")
+    if contents is None:
+        return None
+    text = str(contents).strip()
+    return text or None
+
+
+def _collect_outgoing_entry_comments(entries: list[dict[str, Any]]) -> list[str]:
+    """Collect War Room note texts that should be mirrored to Vega."""
+    comments: list[str] = []
+    for entry in entries:
+        text = _extract_mirror_entry_text(entry)
+        if text:
+            comments.append(text)
+    return comments
+
+
+def _normalize_mirror_poll_entity(entity: dict[str, Any], entity_type_suffix: str) -> dict[str, Any]:
+    """Normalize alert or incident payloads returned by mirror polling queries."""
+    if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
+        return _normalize_incident_api_entity(entity)
+    return _normalize_alert_api_entity(entity)
+
+
+def _fetch_modified_entity_ids(
+    client: Client,
+    fetch_method: Callable[..., dict],
+    entities_key: str,
+    entity_type_suffix: str,
+    updated_from: str,
+    updated_to: str,
+) -> list[str]:
+    """Fetch mirror remote IDs for entities updated within the updatedFrom/updatedTo window."""
+    collected_ids: list[str] = []
+    offset = 0
+
+    while True:
+        response = fetch_method(
+            updated_from=updated_from,
+            updated_to=updated_to,
+            limit=GET_MODIFIED_REMOTE_DATA_LIMIT,
+            offset=offset,
+        )
+        entities = response.get(entities_key) or []
+        for entity in entities:
+            normalized_entity = _normalize_mirror_poll_entity(entity, entity_type_suffix)
+            for mirror_id in _collect_mirror_remote_ids(normalized_entity, entity_type_suffix):
+                if mirror_id not in collected_ids:
+                    collected_ids.append(mirror_id)
+
+        total = response.get("total")
+        if not entities:
+            break
+        if total is not None and offset + len(entities) >= int(total):
+            break
+        if len(entities) < GET_MODIFIED_REMOTE_DATA_LIMIT:
+            break
+        offset += len(entities)
+
+    return collected_ids
+
+
+def _fetch_modified_alert_ids(client: Client, updated_from: str) -> list[str]:
+    """Fetch mirror remote IDs for alerts updated since updated_from.
+
+    Alerts are polled without updatedTo and across origin types because the Vega getAlerts
+    API applies stricter filters than getIncidents for mirror windows.
+    """
+    collected_ids: list[str] = []
+    seen_ids: set[str] = set()
+
+    for origin_type in MIRROR_ALERT_ORIGIN_TYPES:
+        offset = 0
+        while True:
+            response = client.get_alerts(
+                updated_from=updated_from,
+                origin_type=origin_type,
+                limit=GET_MODIFIED_REMOTE_DATA_LIMIT,
+                offset=offset,
+            )
+            api_error = response.get("error")
+            if isinstance(api_error, dict) and api_error.get("message"):
+                demisto.debug(f"Vega mirror alerts poll originType={origin_type!r} error: {api_error.get('message')}")
+
+            entities = response.get("alerts") or []
+            demisto.debug(
+                f"Vega mirror alerts poll originType={origin_type!r} offset={offset} "
+                f"returned={len(entities)} total={response.get('total')}"
+            )
+            for entity in entities:
+                normalized_entity = _normalize_mirror_poll_entity(entity, MIRROR_ENTITY_SUFFIX_ALERT)
+                for mirror_id in _collect_mirror_remote_ids(normalized_entity, MIRROR_ENTITY_SUFFIX_ALERT):
+                    if mirror_id not in seen_ids:
+                        seen_ids.add(mirror_id)
+                        collected_ids.append(mirror_id)
+
+            total = response.get("total")
+            if not entities:
+                break
+            if total is not None and offset + len(entities) >= int(total):
+                break
+            if len(entities) < GET_MODIFIED_REMOTE_DATA_LIMIT:
+                break
+            offset += len(entities)
+
+    return collected_ids
+
+
+def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
+    """Return Vega alert and incident IDs updated since the last mirroring run."""
+    remote_args = GetModifiedRemoteDataArgs(args)
+    updated_from = _resolve_mirror_updated_from(remote_args.last_update)
+    updated_from_alerts = _resolve_mirror_updated_from_for_alerts(remote_args.last_update)
+    updated_to = _resolve_mirror_updated_to()
+
+    demisto.debug(
+        f"Vega get-modified-remote-data: updatedFrom={updated_from}, updatedFromAlerts={updated_from_alerts}, "
+        f"updatedTo={updated_to}, lastUpdate={remote_args.last_update}"
+    )
+
+    modified_ids: list[str] = []
+    if _should_fetch_mirror_entity_type("Alerts"):
+        try:
+            demisto.debug(f"Vega get-modified-remote-data: polling alerts with updatedFrom={updated_from_alerts}")
+            alert_ids = _fetch_modified_alert_ids(client, updated_from_alerts)
+            modified_ids.extend(alert_ids)
+            demisto.debug(f"Vega get-modified-remote-data alerts returned {len(alert_ids)} ids")
+        except Exception as exc:
+            demisto.error(f"Vega get-modified-remote-data alerts fetch failed: {exc}")
+
+    if _should_fetch_mirror_entity_type("Incidents"):
+        try:
+            demisto.debug(
+                f"Vega get-modified-remote-data: polling incidents with updatedFrom={updated_from}, updatedTo={updated_to}"
+            )
+            incident_ids = _fetch_modified_entity_ids(
+                client,
+                client.get_incidents,
+                "incidents",
+                MIRROR_ENTITY_SUFFIX_INCIDENT,
+                updated_from,
+                updated_to,
+            )
+            modified_ids.extend(incident_ids)
+            demisto.debug(f"Vega get-modified-remote-data incidents returned {len(incident_ids)} ids")
+        except Exception as exc:
+            demisto.error(f"Vega get-modified-remote-data incidents fetch failed: {exc}")
+
+    deduped_ids = list(dict.fromkeys(modified_ids))
+    demisto.debug(f"Vega get-modified-remote-data returning {len(deduped_ids)} ids")
+    return GetModifiedRemoteDataResponse(deduped_ids)
+
+
+def get_remote_data_command(
+    client: Client,
+    args: dict[str, Any],
+    integration_url: str | None = None,
+) -> GetRemoteDataResponse:
+    """Fetch updated Vega alert or incident data and incoming mirror entries."""
+    remote_args = GetRemoteDataArgs(args)
+    remote_id = remote_args.remote_incident_id
+    last_update_dt = _parse_mirror_last_update(remote_args.last_update)
+
+    demisto.debug(f"Vega get-remote-data: remote_id={remote_id}, lastUpdate={remote_args.last_update}")
+
+    entries: list[dict[str, Any]] = []
+    mirrored_object: dict[str, Any] = {}
+
+    try:
+        preferred_entity_type = _resolve_preferred_entity_type_from_args(args)
+        if not preferred_entity_type:
+            preferred_entity_type = _resolve_vega_entity_type_from_mirror_context(remote_id)
+        entity, entity_type_suffix = _resolve_remote_entity(client, remote_id, preferred_entity_type)
+        if not entity:
+            demisto.debug(f"Vega get-remote-data: entity {remote_id} was not found")
+            return GetRemoteDataResponse(
+                mirrored_object=_build_mirror_not_found_object(remote_id, preferred_entity_type),
+                entries=[],
+            )
+
+        if entity_type_suffix == MIRROR_ENTITY_SUFFIX_INCIDENT:
+            entity = _enrich_incident_entity_for_mirror(client, entity)
+
+        mirror_context = _mirror_context_from_args(args)
+        mirrored_object = _build_mirror_sync_object(
+            entity,
+            entity_type_suffix,
+            remote_id=remote_id,
+            mirror_context=mirror_context,
+        )
+        entries.extend(_build_incoming_comment_entries(entity.get("comments"), last_update_dt))
+        entries.extend(_build_incoming_status_sync_entries(entity, entity_type_suffix, last_update_dt))
+        demisto.debug(
+            f"Vega get-remote-data: entity_type={entity_type_suffix}, remote_id={remote_id}, "
+            f"sync_object={_summarize_mirror_sync_object(mirrored_object)}"
+        )
+        return GetRemoteDataResponse(mirrored_object=mirrored_object, entries=entries)
+    except Exception as exc:
+        demisto.error(f"Vega get-remote-data failed for {remote_id}: {exc}")
+        preferred_entity_type = _resolve_preferred_entity_type_from_args(args)
+        mirrored_object = _build_mirror_not_found_object(remote_id, preferred_entity_type)
+        mirrored_object["in_mirror_error"] = str(exc)
+        return GetRemoteDataResponse(mirrored_object=mirrored_object, entries=entries)
+
+
+def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
+    """Push XSOAR investigation changes to Vega when Autoclosure mirroring is enabled."""
+    parsed_args = UpdateRemoteSystemArgs(args)
+    remote_id = parsed_args.remote_incident_id or ""
+    if not remote_id:
+        return remote_id
+
+    if not _is_xsoar_to_vega_mirroring_enabled():
+        demisto.debug("Vega update-remote-system: outgoing mirroring disabled by Autoclosure setting")
+        return remote_id
+
+    if not parsed_args.incident_changed and not parsed_args.entries:
+        return remote_id
+
+    delta = _normalize_mirror_mapping_dict(parsed_args.delta)
+    data = _normalize_mirror_mapping_dict(parsed_args.data)
+    inc_status = _normalize_incident_status_arg(parsed_args.inc_status)
+    vega_id, _ = _parse_mirror_id(remote_id)
+
+    try:
+        preferred_entity_type = _resolve_preferred_entity_type_from_args(args)
+        entity, entity_type_suffix = _resolve_remote_entity(client, remote_id, preferred_entity_type)
+        if not entity:
+            demisto.error(f"Vega update-remote-system: remote entity {remote_id} was not found")
+            return remote_id
+
+        if parsed_args.incident_changed:
+            if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
+                update_payload = _build_outgoing_alert_update_payload(delta, data, inc_status)
+                if update_payload:
+                    demisto.debug(f"Vega update-remote-system alert payload for {remote_id}: {update_payload}")
+                    client.update_alerts({**update_payload, "alertIds": [vega_id]})
+                else:
+                    demisto.debug(
+                        f"Vega update-remote-system: no alert fields to push for {remote_id}, delta={list(delta.keys())}"
+                    )
+            else:
+                update_payload = _build_outgoing_incident_update_payload(delta, data, inc_status)
+                if update_payload:
+                    demisto.debug(f"Vega update-remote-system incident payload for {remote_id}: {update_payload}")
+                    client.update_incidents({**update_payload, "incidentIds": [vega_id]})
+                else:
+                    demisto.debug(
+                        f"Vega update-remote-system: no incident fields to push for {remote_id}, delta={list(delta.keys())}"
+                    )
+
+        for comment in _collect_outgoing_entry_comments(parsed_args.entries or []):
+            if entity_type_suffix == MIRROR_ENTITY_SUFFIX_ALERT:
+                client.update_alerts({"alertIds": [vega_id], "comment": comment})
+            else:
+                client.update_incidents({"incidentIds": [vega_id], "comment": comment})
+    except Exception as exc:
+        demisto.error(f"Vega update-remote-system failed for {remote_id}: {exc}")
+
+    return remote_id
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """Return outgoing mirroring fields for Vega Alert and Vega Incident investigations."""
+    mapping_response = GetMappingFieldsResponse()
+
+    alert_scheme = SchemeTypeMapping(type_name="Vega Alert")
+    for field_name, descriptions in VEGA_OUTGOING_MIRROR_FIELDS["Vega Alert"].items():
+        alert_scheme.add_field(name=field_name, description=descriptions[0])
+    mapping_response.add_scheme_type(alert_scheme)
+
+    incident_scheme = SchemeTypeMapping(type_name="Vega Incident")
+    for field_name, descriptions in VEGA_OUTGOING_MIRROR_FIELDS["Vega Incident"].items():
+        incident_scheme.add_field(name=field_name, description=descriptions[0])
+    mapping_response.add_scheme_type(incident_scheme)
+
+    return mapping_response
+
+
 def fetch_incidents_command(
     client: Client,
     last_run: dict,
@@ -3060,6 +4230,9 @@ def fetch_incidents_command(
                         key_findings = details.get("keyFindings")
                         if isinstance(key_findings, list) and key_findings:
                             incident["keyFindings"] = key_findings
+                        details_verdict_reasoning = details.get("verdictReasoning")
+                        if not _is_missing_verdict_reasoning(details_verdict_reasoning):
+                            incident["verdictReasoning"] = details_verdict_reasoning
                     except Exception as details_error:
                         demisto.debug(f"Could not fetch incident details for Vega incident {incident_id}: {details_error}")
                 xsoar_incidents.append(incident_to_xsoar_incident(incident, timeline_events=timeline_events))
@@ -3154,6 +4327,18 @@ def main() -> None:
 
         elif command == "vega-update-incident":
             return_results(update_incident_command(client, demisto.args()))
+
+        elif command == "get-remote-data":
+            return_results(get_remote_data_command(client, demisto.args(), integration_url=base_url))
+
+        elif command == "get-modified-remote-data":
+            return_results(get_modified_remote_data_command(client, demisto.args()))
+
+        elif command == "update-remote-system":
+            return_results(update_remote_system_command(client, demisto.args()))
+
+        elif command == "get-mapping-fields":
+            return_results(get_mapping_fields_command())
 
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()

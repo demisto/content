@@ -1,0 +1,54 @@
+{
+    "description": "Maps outgoing Cortex XSOAR investigation changes to Vega alert and incident updates.",
+    "feed": false,
+    "id": "Vega Outgoing Mapper",
+    "mapping": {
+        "Vega Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "vegastatus": {
+                    "simple": "vegastatus"
+                },
+                "vegaalertseverity": {
+                    "simple": "vegaalertseverity"
+                },
+                "vegaverdict": {
+                    "simple": "vegaverdict"
+                },
+                "vegaverdictreasoning": {
+                    "simple": "vegaverdictreasoning"
+                },
+                "veganewcomment": {
+                    "simple": "veganewcomment"
+                }
+            }
+        },
+        "Vega Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "vegaseverity": {
+                    "simple": "vegaseverity"
+                },
+                "vegaincidentstatus": {
+                    "simple": "vegaincidentstatus"
+                },
+                "vegaverdict": {
+                    "simple": "vegaverdict"
+                },
+                "vegaverdictreasoning": {
+                    "simple": "vegaverdictreasoning"
+                },
+                "veganewcomment": {
+                    "simple": "veganewcomment"
+                }
+            }
+        }
+    },
+    "name": "Vega Outgoing Mapper",
+    "propagationLabels": [
+        "all"
+    ],
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
