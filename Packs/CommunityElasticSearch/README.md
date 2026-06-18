@@ -1,0 +1,1 @@
+This Cortex integration enables the use of Elastic Security for SIEM to manage security operations and search Elastic logs. This pack is to be used in combination with the Elasticsearch v2 integration.
