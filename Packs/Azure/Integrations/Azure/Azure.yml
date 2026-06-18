@@ -15,6 +15,7 @@ configuration:
   name: subscription_id
   type: 0
   section: Connect
+  required: true
   additionalinfo: You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting.
 - display: Default Resource Group Name
   name: resource_group_name
@@ -121,7 +122,8 @@ script:
     - description: The subscription ID.
       name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the resource group.
       name: resource_group_name
       type: String
@@ -225,7 +227,8 @@ script:
     - description: The subscription ID.
       name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the resource group.
       name: resource_group_name
       type: String
@@ -320,7 +323,8 @@ script:
       required: true
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the storage account.
       name: account_name
       required: true
@@ -553,7 +557,8 @@ script:
       required: true
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the storage account.
       name: account_name
       required: true
@@ -606,7 +611,8 @@ script:
       required: true
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the storage account.
       name: account_name
       required: true
@@ -688,7 +694,8 @@ script:
     arguments:
       - description: The subscription ID.
         name: subscription_id
-        required: true
+        required: false
+        required:platform: true
       - description: The resource group name.
         name: resource_group_name
         required: true
@@ -700,7 +707,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The resource group name.
       name: resource_group_name
       required: true
@@ -776,7 +784,8 @@ script:
     arguments:
       - description: "The subscription ID."
         name: subscription_id
-        required: true
+        required: false
+        required:platform: true
       - description: "The resource group name."
         name: resource_group_name
         required: true
@@ -807,7 +816,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The resource group name.
       name: resource_group_name
       required: true
@@ -861,7 +871,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -901,7 +912,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -917,7 +929,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -939,7 +952,8 @@ script:
       name: blob_name
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -955,7 +969,8 @@ script:
     arguments:
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -980,7 +995,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -1027,7 +1043,8 @@ script:
     arguments:
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -1081,7 +1098,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -1115,7 +1133,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -1148,7 +1167,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -1180,7 +1200,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -1204,7 +1225,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -1256,7 +1278,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -1334,7 +1357,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -1386,7 +1410,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -1431,7 +1456,8 @@ script:
       required: true
     - description: "The subscription ID."
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: "The resource group name."
       name: resource_group_name
       required: true
@@ -1446,7 +1472,8 @@ script:
       required: true
       description: Name of the policy assignment.
     - name: subscription_id
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: scope
       type: string
@@ -1530,7 +1557,8 @@ script:
       required: true
       description: The configuration setting name.
     - name: subscription_id
-      required: true
+      required: false
+      required:platform: true
       type: string
       description: Subscription ID.
     - name: source
@@ -1550,7 +1578,8 @@ script:
       description: The resource group name.
     - name: subscription_id
       type: string
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: name
       type: string
@@ -1682,7 +1711,8 @@ script:
       description: The resource group name.
     - name: subscription_id
       type: string
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: name
       type: string
@@ -1805,7 +1835,8 @@ script:
       description: The resource group name.
     - name: subscription_id
       type: string
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: name
       type: string
@@ -1928,7 +1959,8 @@ script:
       description: The resource group name.
     - name: subscription_id
       type: string
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: name
       type: string
@@ -2046,7 +2078,8 @@ script:
       description: The resource group name.
     - name: subscription_id
       type: string
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: server_name
       type: string
@@ -2074,7 +2107,8 @@ script:
       type: String
     - name: subscription_id
       type: string
-      required: true
+      required: false
+      required:platform: true
       description: subscription ID.
     - name: location
       description: Resource location.
@@ -2131,7 +2165,8 @@ script:
       description: The resource group name.
     - name: subscription_id
       type: string
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: disk_name
       type: string
@@ -2276,7 +2311,8 @@ script:
       description: The resource group name.
     - name: subscription_id
       type: string
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: disk_name
       type: string
@@ -2417,7 +2453,8 @@ script:
       description: The resource group name.
     - name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: name
       type: String
@@ -2655,7 +2692,8 @@ script:
       required: true
       description: The resource group name.
     - name: subscription_id
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: name
       required: true
@@ -2759,7 +2797,8 @@ script:
       description: The resource group name.
     - name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: registry_name
       type: String
@@ -2873,7 +2912,8 @@ script:
       description: The resource group name.
     - name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: registry_name
       type: String
@@ -2982,7 +3022,8 @@ script:
       description: The resource group name.
     - name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
       description: Subscription ID.
     - name: server_name
       type: String
@@ -3003,7 +3044,8 @@ script:
       name: vault_name
       required: true
     - name: subscription_id
-      required: true
+      required: false
+      required:platform: true
       description: The subscription ID.
       type: String
     - name: resource_group_name
@@ -3104,7 +3146,8 @@ script:
       name: vault_name
       required: true
     - name: subscription_id
-      required: true
+      required: false
+      required:platform: true
       description: The subscription ID.
       type: String
     - name: resource_group_name
@@ -3193,7 +3236,8 @@ script:
       - 'false'
     - description: Subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the resource group.
       name: resource_group_name
       required: true
@@ -3265,7 +3309,8 @@ script:
         - 'false'
     - description: Subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the resource group.
       name: resource_group_name
       required: true
@@ -3334,7 +3379,8 @@ script:
       required: true
     - description: Subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the resource group.
       name: resource_group_name
       required: true
@@ -3354,7 +3400,8 @@ script:
       type: bool
     - description: Subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the resource group.
       required: true
       name: resource_group_name
@@ -3507,7 +3554,8 @@ script:
         - 'false'
     - description: Subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The name of the resource group.
       required: true
       name: resource_group_name
@@ -3685,7 +3733,8 @@ script:
       - name: subscription_id
         description: The subscription ID.
         type: String
-        required: true
+        required: false
+        required:platform: true
       - name: resource_group_name
         description: "The resource group name."
         type: String
@@ -3695,7 +3744,8 @@ script:
     arguments:
       - name: subscription_id
         description: The subscription ID.
-        required: true
+        required: false
+        required:platform: true
       - name: resource_group_name
         description: The resource group name.
         required: true
@@ -3825,7 +3875,8 @@ script:
     - name: subscription_id
       description: The subscription ID.
       type: String
-      required: true
+      required: false
+      required:platform: true
     - name: resource_group_name
       description: "The resource group name."
       type: String
@@ -3921,7 +3972,8 @@ script:
       - description: The subscription ID.
         name: subscription_id
         type: String
-        required: true
+        required: false
+        required:platform: true
       - description: Resource group name.
         name: resource_group_name
         type: String
@@ -3939,7 +3991,8 @@ script:
     - description: The subscription ID.
       name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
     - description: Resource group name.
       name: resource_group_name
       type: String
@@ -4008,7 +4061,8 @@ script:
       - description: The subscription ID.
         name: subscription_id
         type: String
-        required: true
+        required: false
+        required:platform: true
       - description: Resource group name.
         name: resource_group_name
         type: String
@@ -4057,7 +4111,8 @@ script:
     - description: The subscription ID.
       name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
     - description: Resource group name.
       name: resource_group_name
       type: String
@@ -4153,7 +4208,8 @@ script:
       - description: The subscription ID.
         name: subscription_id
         type: String
-        required: true
+        required: false
+        required:platform: true
       - description: Resource group name.
         name: resource_group_name
         type: String
@@ -4219,7 +4275,8 @@ script:
     - description: The subscription ID.
       name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
     - description: Resource group name.
       name: resource_group_name
       type: String
@@ -4333,7 +4390,8 @@ script:
       - description: The subscription ID.
         name: subscription_id
         type: String
-        required: true
+        required: false
+        required:platform: true
       - description: Resource group name.
         name: resource_group_name
         type: String
@@ -4350,7 +4408,8 @@ script:
     - description: The subscription ID.
       name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
     - description: Resource group name.
       name: resource_group_name
       type: String
@@ -4368,7 +4427,8 @@ script:
       - description: The subscription ID.
         name: subscription_id
         type: String
-        required: true
+        required: false
+        required:platform: true
       - name: limit
         description: Limit on the number of resource groups to return.
         defaultValue: 50
@@ -4419,7 +4479,8 @@ script:
     - description: The subscription ID.
       name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
     - name: limit
       description: Limit on the number of resource groups to return.
       defaultValue: 50
@@ -4520,7 +4581,8 @@ script:
       - description: The subscription ID.
         name: subscription_id
         type: String
-        required: true
+        required: false
+        required:platform: true
       - name: limit
         description: The maximum number of records to return.
         defaultValue: 50
@@ -4542,7 +4604,8 @@ script:
     - description: The subscription ID.
       name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
     - name: limit
       description: The maximum number of records to return.
       defaultValue: 50
@@ -4649,7 +4712,8 @@ script:
       - description: The subscription ID.
         name: subscription_id
         type: String
-        required: true
+        required: false
+        required:platform: true
       - name: limit
         description: The maximum number of records to return.
         defaultValue: 50
@@ -4671,7 +4735,8 @@ script:
     - description: The subscription ID.
       name: subscription_id
       type: String
-      required: true
+      required: false
+      required:platform: true
     - name: limit
       description: The maximum number of records to return.
       defaultValue: 50
@@ -4734,7 +4799,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: |
         Resource Group to which the virtual machine belongs.
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
@@ -4759,7 +4825,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: Resource Group to which the virtual machine belongs.
       name: resource_group_name
       required: true
@@ -4783,7 +4850,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: |
         The resource group to which the virtual machine belongs.
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
@@ -4815,7 +4883,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-rm-resource-groups-list` command.
       name: resource_group_name
       required: true
@@ -4845,7 +4914,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: |
         The resource group to which the virtual machine belongs.
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
@@ -4916,7 +4986,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The resource group to which the virtual machine belongs.
       name: resource_group_name
       required: true
@@ -4977,7 +5048,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: |
         The resource group to which the network interface belongs.
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
@@ -5034,7 +5106,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The resource group to which the network interface belongs.
       name: resource_group_name
       required: true
@@ -5086,7 +5159,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
       type: String
     - description: The resource group to which the network interface belongs.
       name: resource_group_name
@@ -5322,7 +5396,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: |
         The resource group to which the IP address belongs.
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command.
@@ -5373,7 +5448,8 @@ script:
     arguments:
     - description: The subscription ID.
       name: subscription_id
-      required: true
+      required: false
+      required:platform: true
     - description: The resource group to which the IP address belongs.
       name: resource_group_name
       required: true
@@ -7068,7 +7144,8 @@ script:
     arguments:
       - name: subscription_id
         description: The Azure subscription ID on which to run the command. It will be sent as a scope parameter - /subscriptions/{subscriptionId}/.
-        required: true
+        required: false
+        required:platform: true
       - name: expand_result
         description: Whether to expand the result. Default - false.
         default: false
@@ -7272,7 +7349,8 @@ script:
     arguments:
       - name: subscription_id
         description: Azure subscription ID (required).
-        required: true
+        required: false
+        required:platform: true
         type: String
       - name: type
         description: Forecast type (required).
@@ -7355,7 +7433,8 @@ script:
     arguments:
       - name: subscription_id
         description: The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/.
-        required: true
+        required: false
+        required:platform: true
       - name: budget_name
         description: Name of the budget. Optional; if provided, returns a specific budget.
         required: false
@@ -10763,7 +10842,8 @@ script:
     arguments:
     - name: subscription_id
       description: "The subscription ID."
-      required: true
+      required: false
+      required:platform: true
     - name: resource_group_name
       description: "The name of the resource group."
       required: true
