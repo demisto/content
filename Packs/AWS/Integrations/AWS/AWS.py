@@ -10447,6 +10447,37 @@ class NetworkFirewall:
             raw_response=raw_response,
         )
 
+    @staticmethod
+    def delete_rule_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Deletes the specified rule group.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing rule_group_name or rule_group_arn, and type
+
+        Returns:
+            CommandResults: Formatted results with the rule group deletion status
+        """
+        validate_network_firewall_identifier(args, "rule_group")
+        kwargs = {
+            "RuleGroupName": args.get("rule_group_name"),
+            "RuleGroupArn": args.get("rule_group_arn"),
+            "Type": args.get("type"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Deleting rule group with parameters: {kwargs.keys()}")
+        response = client.delete_rule_group(**kwargs)
+        response = serialize_response_with_datetime_encoding(response)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output="The AWS Network Firewall rule group was deleted successfully.",
+            raw_response=response,
+        )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -10669,6 +10700,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-policy-update": NetworkFirewall.update_firewall_policy_command,
     "aws-network-firewall-firewall-policy-change-protection-update": NetworkFirewall.update_firewall_policy_change_protection_command,  # noqa: E501
     "aws-network-firewall-rule-group-create": NetworkFirewall.create_rule_group_command,
+    "aws-network-firewall-rule-group-delete": NetworkFirewall.delete_rule_group_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -10861,6 +10893,7 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:AssociateFirewallPolicy",
     "network-firewall:UpdateFirewallPolicyChangeProtection",
     "network-firewall:CreateRuleGroup",
+    "network-firewall:DeleteRuleGroup",
 ]
 
 COMMAND_SERVICE_MAP = {

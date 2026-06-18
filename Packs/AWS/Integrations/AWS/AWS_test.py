@@ -19602,3 +19602,104 @@ def test_create_rule_group_command_api_error(mocker):
 
     # Then
     mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_delete_rule_group_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid rule group name and type.
+    When: delete_rule_group_command is called successfully.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg",
+            "Type": "STATEFUL",
+            "RuleGroupStatus": "DELETING",
+        },
+    }
+    mock_client.delete_rule_group.return_value = mock_response
+
+    args = {"rule_group_name": "test-rg", "type": "STATEFUL"}
+
+    result = NetworkFirewall.delete_rule_group_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The AWS Network Firewall rule group was deleted successfully." in result.readable_output
+    mock_client.delete_rule_group.assert_called_once_with(RuleGroupName="test-rg", Type="STATEFUL")
+
+
+def test_delete_rule_group_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid rule group ARN.
+    When: delete_rule_group_command is called successfully.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "RuleGroupResponse": {
+            "RuleGroupName": "test-rg",
+            "RuleGroupArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg",
+            "Type": "STATEFUL",
+            "RuleGroupStatus": "DELETING",
+        },
+    }
+    mock_client.delete_rule_group.return_value = mock_response
+
+    args = {"rule_group_arn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"}
+
+    result = NetworkFirewall.delete_rule_group_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The AWS Network Firewall rule group was deleted successfully." in result.readable_output
+    mock_client.delete_rule_group.assert_called_once_with(
+        RuleGroupArn="arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rg"
+    )
+
+
+def test_delete_rule_group_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no arguments.
+    When: delete_rule_group_command is called without rule_group_name or rule_group_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
+        NetworkFirewall.delete_rule_group_command(mock_client, args)
+
+
+def test_delete_rule_group_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: delete_rule_group_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.delete_rule_group.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"rule_group_name": "test-rg", "type": "STATEFUL", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.delete_rule_group_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")

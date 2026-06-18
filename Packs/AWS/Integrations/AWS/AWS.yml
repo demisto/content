@@ -19489,6 +19489,61 @@ script:
       description: The last time that the rule group was changed.
       type: String
 
+  - name: aws-network-firewall-rule-group-delete
+    description: "Deletes the specified rule group. Required permissions: network-firewall:DeleteRuleGroup."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: rule_group_name
+      description: The descriptive name of the rule group. You must specify the ARN or the name, and you can specify both.
+    - name: rule_group_arn
+      description: The Amazon Resource Name (ARN) of the rule group. You must specify the ARN or the name, and you can specify both.
+    - name: type
+      description: Indicates whether the rule group is stateless or stateful. This setting is required for requests that do not include the rule_group_arn.
+      auto: PREDEFINED
+      predefined:
+        - STATELESS
+        - STATEFUL
+    outputs: [ ]
+
   isfetch: false
   runonce: false
   script: '-'
