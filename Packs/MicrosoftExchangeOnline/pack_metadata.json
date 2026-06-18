@@ -12,6 +12,7 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
+    "defaultDataSource": "EWSO365",
     "marketplaces": [
         "xsoar",
         "marketplacev2",
