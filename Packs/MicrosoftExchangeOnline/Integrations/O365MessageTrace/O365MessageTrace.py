@@ -37,7 +37,7 @@ class Config:
 
     # Upper bound on how many times ``fetch_events_sequential`` is called within a
     # single fetch cycle, so a far-behind integration cannot loop indefinitely.
-    MAX_FETCH_ITERATIONS = 100
+    MAX_FETCH_ITERATIONS = 50
 
 
 # ============================================================================
@@ -514,7 +514,7 @@ def fetch_events(client: Client, max_events: int) -> None:
     # Use ALL fetched events (not just published ones): timestamps are second-granular, so
     # seen_ids must keep every ID at the boundary - including deduped-out ones - or the next
     # run (re-fetching at ``>= boundary``) would re-send already-sent events as duplicates.
-    timed_events = [event for event in events if event.get("_time")]
+    timed_events = [event for event in new_events if event.get("_time")]
 
     if timed_events:
         latest_time: str = max(event["_time"] for event in timed_events)
