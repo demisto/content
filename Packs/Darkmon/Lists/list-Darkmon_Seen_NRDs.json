@@ -1,0 +1,22 @@
+{
+    "id": "Darkmon - Seen NRDs",
+    "version": -1,
+    "name": "Darkmon - Seen NRDs",
+    "description": "State store: NRD IDs already evaluated.",
+    "type": "plain_text",
+    "fromVersion": "6.8.0",
+    "itemVersion": "",
+    "locked": false,
+    "nameLocked": false,
+    "packID": "Darkmon",
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
+}
