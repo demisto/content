@@ -165,23 +165,6 @@ def replace_fixes_with_relates_in_pr_body(body: str) -> str:
     return body + "\n\nrelates: link to the issue"
 
 
-def get_mapping_pr_body(merged_pr_url: str, merged_pr_author: str, original_body: str) -> str:
-    body = f"## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n"
-
-    if "## Contributor" not in original_body:
-        body += f"## Contributor\r\n@{merged_pr_author}\r\n\r\n"
-
-    body_without_rn = re.sub(
-        r"(?i)##\s*Release Notes.*?(?=##\s|$)",
-        "",
-        original_body,
-        flags=re.DOTALL,
-    )
-
-    body += body_without_rn
-    return replace_fixes_with_relates_in_pr_body(body)
-
-
 # -----------------------------
 # PR creation
 # -----------------------------
@@ -313,7 +296,7 @@ def main():
 
     if xsiam_files and mapping_branch:
         mapping_title = f"[Mapping] {title}"
-        mapping_body = get_mapping_pr_body(merged_pr_url, merged_pr.user.login, merged_pr.body)
+        mapping_body = replace_fixes_with_relates_in_pr_body(body)
 
         mapping_labels = [label for label in labels if label != "ready-for-pipeline-running"]
         mapping_labels.append(MAPPING_LABEL)
