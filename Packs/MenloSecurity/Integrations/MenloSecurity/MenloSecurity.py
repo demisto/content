@@ -463,7 +463,8 @@ def _fetch_log_type_task(
         def _counting_callback(page: list[dict]) -> None:
             nonlocal emitted_count
             emitted_count += len(page)
-            on_page(page)  # type: ignore[misc]  # only called when on_page is not None
+            if on_page is not None:  # invariant: only registered when on_page is set
+                on_page(page)
 
         events = get_events_for_log_type(
             client=client,

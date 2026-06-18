@@ -303,6 +303,38 @@ class TestGetEventsForLogType:
         assert events == []
         assert mock_fetch.call_count == 1
 
+    def test_entire_first_page_is_duplicates_emits_nothing(self, mock_client: Client, mocker):
+        """
+        Given:
+            - The first (and only) page consists entirely of events that duplicate the previous
+              cycle's boundary, and there is no next-page cursor.
+        When:
+            - Calling get_events_for_log_type with the matching boundary_hashes + last_fetch_time.
+        Then:
+            - Every event is dropped by _drop_boundary_duplicates, the "whole page was duplicates"
+              break path is taken, and no events are returned (none emitted).
+        """
+        boundary_time = "2024-01-15T10:00:00"
+        dup_events = [{"event": {"event_time": boundary_time, "id": "a"}}, {"event": {"event_time": boundary_time, "id": "b"}}]
+        # Boundary hashes are computed from enriched events, so enrich the same way to match.
+        boundary_hashes = {hash_event(e) for e in _enrich_events(dup_events, "audit", enrich=True)}
+
+        page = {"result": {"events": dup_events, "pagingIdentifiers": {}}}  # no cursor ⇒ single page
+        mock_fetch = mocker.patch.object(mock_client, "fetch_log_page", return_value=page)
+
+        events = get_events_for_log_type(
+            client=mock_client,
+            log_type_ui="audit",
+            start_epoch=1700000000,
+            end_epoch=1700003600,
+            max_events=5000,
+            boundary_hashes=boundary_hashes,
+            last_fetch_time=boundary_time,
+        )
+
+        assert events == []  # all dropped as duplicates
+        assert mock_fetch.call_count == 1
+
     def test_list_of_wrappers_response_flattens_events(self, mock_client: Client, mocker):
         """
         Given:
@@ -480,6 +512,36 @@ class TestFetchEvents:
         # New start = old start + one window (2024-01-15T09:00:00Z + 300s = 09:05:00Z).
         assert next_run["web"]["last_fetch_time"] == "2024-01-15T09:05:00Z"
         # Still behind ⇒ loop immediately.
+        assert next_run.get("nextTrigger") == "0"
+
+    def test_cap_saturation_sets_next_trigger(self, mock_client: Client, mocker):
+        """
+        Given:
+            - A log type returns a full page (events_emitted >= max_events_per_fetch_per_type) with a
+              next-page cursor, so it hits the per-type cap (saturated, distinct from window-capped).
+        When:
+            - Calling fetch_events.
+        Then:
+            - nextTrigger=0 is set via the is_saturated branch so the engine immediately re-dispatches
+              to drain the rest of the backlog.
+        """
+        max_events = 3
+        saturated_page = {
+            "result": {
+                "events": [{"event": {"event_time": f"2024-01-15T10:00:0{i}.000"}} for i in range(max_events)],
+                "pagingIdentifiers": {"next_time": "more"},  # cursor present ⇒ more pages remain
+            }
+        }
+        mocker.patch.object(mock_client, "fetch_log_page", return_value=saturated_page)
+
+        next_run, _ = fetch_events(
+            client=mock_client,
+            last_run={},
+            log_types=["web"],
+            first_fetch_time="1 hour",
+            max_events_per_fetch_per_type=max_events,
+        )
+
         assert next_run.get("nextTrigger") == "0"
 
     def test_next_run_preserves_state_when_caught_up_and_no_events(self, mock_client: Client, mocker):
@@ -1161,6 +1223,67 @@ class TestFetchEventsCommand:
 
         set_last_run.assert_not_called()  # state must NOT advance past a failed send
 
+    def test_non_streaming_fetch_does_not_raise_and_returns_events(self, mock_client: Client, mocker):
+        """
+        Given:
+            - fetch_events is called WITHOUT an on_page callback (the get-events path).
+        When:
+            - _fetch_log_type_task runs and registers no streaming callback.
+        Then:
+            - The _counting_callback guard (``if on_page is not None``) keeps the non-streaming branch
+              safe: no exception is raised and the accumulated events are returned in the list.
+        """
+        mocker.patch.object(mock_client, "fetch_log_page", return_value=make_web_response())
+
+        next_run, events = fetch_events(
+            client=mock_client,
+            last_run={},
+            log_types=["web"],
+            first_fetch_time="1 hour",
+            max_events_per_fetch_per_type=1,  # cap at 1 so the single-event page isn't re-paged
+        )
+
+        # No exception was raised (the _counting_callback guard kept the non-streaming branch safe)
+        # and the accumulated events are returned in the list.
+        assert len(events) == 1
+        assert "web" in next_run
+
+    def test_hung_consumer_raises_and_does_not_persist_state(self, mock_client: Client, mocker):
+        """
+        Given:
+            - The consumer thread is still alive after join() (a hung mid-send).
+        When:
+            - Calling fetch_events_command.
+        Then:
+            - A RuntimeError is raised and setLastRun is NOT called, so advanced timestamps are not
+              persisted for events that may not have been ingested (prevents data loss).
+        """
+        mocker.patch("MenloSecurity.demisto.getLastRun", return_value={})
+        set_last_run = mocker.patch("MenloSecurity.demisto.setLastRun")
+        mocker.patch("MenloSecurity.send_events_to_xsiam")
+        mocker.patch(
+            "MenloSecurity.fetch_events",
+            side_effect=self._make_producer(
+                {"web": {"last_fetch_time": "2024-01-15T10:00:00Z", "boundary_hashes": []}},
+                pages=[[{"event_time": "2024-01-15T10:00:00Z"}]],
+            ),
+        )
+        # Replace the consumer thread with a fake whose is_alive() always reports True, so the
+        # command takes the "consumer did not exit" guard branch.
+        fake_consumer = mocker.MagicMock()
+        fake_consumer.is_alive.return_value = True
+        mocker.patch("MenloSecurity.threading.Thread", return_value=fake_consumer)
+
+        with pytest.raises(RuntimeError, match="did not exit within 120s"):
+            fetch_events_command(
+                client=mock_client,
+                log_types=["web"],
+                first_fetch_time="5 minutes",
+                max_events_per_fetch_per_type=5000,
+            )
+
+        set_last_run.assert_not_called()  # state must NOT advance when the consumer is hung
+
 
 class TestPageHelpers:
     """Tests for the page-processing helpers: _normalize_page, _enrich_events, _drop_boundary_duplicates."""
@@ -1210,3 +1333,20 @@ class TestPageHelpers:
         e1 = {"event_time": "2024-01-15T10:00:01", "id": "a"}
         out = _drop_boundary_duplicates([e1], boundary_time, {"someotherhash"})
         assert out == [e1]  # nothing dropped
+
+    def test_enrich_events_unparseable_time_preserves_raw_string(self, mocker):
+        """An unparseable event_time falls back to arg_to_datetime; when that also fails (returns
+        None), the raw string is preserved in _time rather than raising."""
+        # Force the arg_to_datetime fallback to fail so we hit the raw-string branch.
+        mocker.patch("MenloSecurity.arg_to_datetime", return_value=None)
+        page = [{"event": {"event_time": "not-a-timestamp", "url": "x"}}]
+        out = _enrich_events(page, "web", enrich=True)
+        assert out[0]["_time"] == "not-a-timestamp"  # raw value preserved, no exception
+        assert out[0]["source_log_type"] == "web_logs"
+
+    def test_enrich_events_missing_time_sets_source_but_no_time(self):
+        """An event without event_time still gets source_log_type, but no _time is added."""
+        page = [{"event": {"url": "x"}}]
+        out = _enrich_events(page, "web", enrich=True)
+        assert "_time" not in out[0]
+        assert out[0]["source_log_type"] == "web_logs"
