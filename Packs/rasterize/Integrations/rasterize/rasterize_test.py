@@ -920,6 +920,133 @@ def test_handle_request_paused(mocker: MockerFixture):
     assert mock_fail_request.call_args[1]["errorReason"] == "Aborted"
 
 
+def test_handle_request_paused_continues_non_blocked_url(mocker: MockerFixture):
+    """
+    Given:
+        - cloudflare.com as BLOCKED_URLS parameter.
+        - A paused request for a URL that does NOT match any blocked pattern.
+    When:
+        - Running the 'handle_request_paused' function.
+    Then:
+        - Verify that tab.Fetch.continueRequest is called with the correct requestId,
+          and tab.Fetch.failRequest is NOT called.
+        This is the defensive `else` branch that prevents non-blocked paused requests
+        from hanging forever (the bug that caused the 180s page load deadlock).
+    """
+    mocker.patch("rasterize.BLOCKED_URLS", ["cloudflare.com"])
+    kwargs = {"requestId": "2", "request": {"url": "https://example.com/main.css"}}
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_fetch = mocker.MagicMock()
+    mock_fail_request = mocker.patch.object(mock_fetch, "failRequest", new_callable=MagicMock)
+    mock_continue_request = mocker.patch.object(mock_fetch, "continueRequest", new_callable=MagicMock)
+    mock_tab.Fetch = mock_fetch
+    mock_tab.id = "mock_tab_id"
+    tab_event_handler = PychromeEventHandler(None, mock_tab, None, "", 0)
+
+    tab_event_handler.handle_request_paused(**kwargs)
+
+    mock_fail_request.assert_not_called()
+    assert mock_continue_request.call_args[1]["requestId"] == "2"
+
+
+def test_handle_request_paused_blocks_multiple_matching_urls(mocker: MockerFixture):
+    """
+    Given:
+        - cloudflare.com as BLOCKED_URLS parameter.
+        - Multiple sequential paused requests for different URLs that all match the blocked pattern.
+    When:
+        - Running 'handle_request_paused' for each of them.
+    Then:
+        - Verify that tab.Fetch.failRequest is called for EVERY matching URL (not just the first).
+        This proves the pre-fix bug where `Fetch.disable()` was called after the first abort,
+        which caused subsequent matching URLs to silently slip through, is closed.
+    """
+    mocker.patch("rasterize.BLOCKED_URLS", ["cloudflare.com"])
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_fetch = mocker.MagicMock()
+    mock_fail_request = mocker.patch.object(mock_fetch, "failRequest", new_callable=MagicMock)
+    mock_tab.Fetch = mock_fetch
+    mock_tab.id = "mock_tab_id"
+    tab_event_handler = PychromeEventHandler(None, mock_tab, None, "", 0)
+
+    blocked_requests = [
+        {"requestId": "10", "request": {"url": "https://cdnjs.cloudflare.com/lib/a.css"}},
+        {"requestId": "11", "request": {"url": "https://cdnjs.cloudflare.com/lib/b.js"}},
+        {"requestId": "12", "request": {"url": "https://cdnjs.cloudflare.com/lib/c.js"}},
+    ]
+    for kwargs in blocked_requests:
+        tab_event_handler.handle_request_paused(**kwargs)
+
+    assert mock_fail_request.call_count == 3
+    aborted_request_ids = [call.kwargs["requestId"] for call in mock_fail_request.call_args_list]
+    assert aborted_request_ids == ["10", "11", "12"]
+
+
+def test_tab_lifecycle_manager_enables_fetch_with_scoped_patterns(mocker: MockerFixture):
+    """
+    Given:
+        - BLOCKED_URLS contains two patterns: 'cloudflare.com' and 'tracker.io'.
+    When:
+        - TabLifecycleManager.__enter__ is invoked (the proactive Fetch.enable code path).
+    Then:
+        - Verify tab.Fetch.enable is called with a `patterns` argument containing exactly
+          one entry per blocked URL, each using glob-equivalent substring matching and
+          targeting the 'Request' stage.
+        This proves the proactive scoped-pattern fix is in place, preventing the race
+        condition where the first blocked URL slipped through unblocked and the
+        deadlock where bare Fetch.enable() intercepted (and hung) every request.
+    """
+    blocked_urls = ["cloudflare.com", "tracker.io"]
+    mocker.patch("rasterize.BLOCKED_URLS", blocked_urls)
+
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_tab.Page = mocker.MagicMock()
+    mock_tab.Network = mocker.MagicMock()
+    mock_tab.Fetch = mocker.MagicMock()
+
+    mock_browser = mocker.MagicMock()
+    mock_browser.new_tab = mocker.MagicMock(return_value=mock_tab)
+
+    manager = rasterize.TabLifecycleManager(mock_browser, chrome_port=9301, offline_mode=False)
+    returned_tab = manager.__enter__()
+
+    assert returned_tab is mock_tab
+    mock_tab.Fetch.enable.assert_called_once()
+    call_kwargs = mock_tab.Fetch.enable.call_args.kwargs
+    assert "patterns" in call_kwargs
+    patterns = call_kwargs["patterns"]
+    assert len(patterns) == len(blocked_urls)
+    for pat, blocked in zip(patterns, blocked_urls):
+        assert pat["urlPattern"] == f"*{blocked}*"
+        assert pat["requestStage"] == "Request"
+
+
+def test_tab_lifecycle_manager_skips_fetch_enable_when_no_blocked_urls(mocker: MockerFixture):
+    """
+    Given:
+        - BLOCKED_URLS is empty (the common case for users not using URL blocking).
+    When:
+        - TabLifecycleManager.__enter__ is invoked.
+    Then:
+        - Verify tab.Fetch.enable is NOT called, so the integration doesn't pay any
+          interception cost when no URLs are configured to be blocked.
+    """
+    mocker.patch("rasterize.BLOCKED_URLS", [])
+
+    mock_tab = MagicMock(spec=pychrome.Tab)
+    mock_tab.Page = mocker.MagicMock()
+    mock_tab.Network = mocker.MagicMock()
+    mock_tab.Fetch = mocker.MagicMock()
+
+    mock_browser = mocker.MagicMock()
+    mock_browser.new_tab = mocker.MagicMock(return_value=mock_tab)
+
+    manager = rasterize.TabLifecycleManager(mock_browser, chrome_port=9301, offline_mode=False)
+    manager.__enter__()
+
+    mock_tab.Fetch.enable.assert_not_called()
+
+
 def test_retry_loading(mocker: MockerFixture):
     """
     Test the retry_loading method of PychromeEventHandler
