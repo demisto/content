@@ -21,7 +21,7 @@
                 "type": "oauth2"
             },
             {
-                "capability": "fetch-issues",
+                "capability": "collection-and-ingestion",
                 "method_unique_id": "method-collect-ingest",
                 "sub_capabilities": [],
                 "type": "oauth2"
