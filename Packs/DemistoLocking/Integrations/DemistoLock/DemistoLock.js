@@ -18,6 +18,7 @@ function setLock(guid, info, version) {
 } function getLock() {
     if (sync) {
         var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
+        logDebug('versionedIntegrationContext: ' + JSON.stringify(versionedIntegrationContext));
         var integrationContext = versionedIntegrationContext.context;
         if (!integrationContext[lockName]) {
             integrationContext[lockName] = {};
@@ -60,6 +61,7 @@ switch (command) {
 
             // check if a lock already exists in the integration context
             [lock, version] = getLock();
+            logDebug('Lock: ' + JSON.stringify(lock) + ', version: ' + version);
 
             versionString = version;
             if (typeof version === "object") {
@@ -72,6 +74,7 @@ switch (command) {
                 attemptToAcquireLock(guid, lockInfo, version)
                 lock_candidate = getLock();
             }
+            logDebug('Lock candidate: ' + JSON.stringify(lock_candidate));
 
             // stopping condition - the lock is acquired successfully
             if (lock_candidate && lock_candidate[0].guid === guid) {
