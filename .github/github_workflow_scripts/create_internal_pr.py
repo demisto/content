@@ -26,7 +26,7 @@ urllib3.disable_warnings(InsecureRequestWarning)
 
 print = timestamped_print
 INTERNAL_LABEL = "Internal PR"
-
+MAPPING_LABEL = "Mapping Contribution"
 XSIAM_CONTENT = [
     "ModelingRules",
     "ParsingRules",
@@ -57,7 +57,7 @@ def prepare_git(head_branch: str):
     run_git_command(["git", "config", "--global", "user.name", "content-bot"], raise_on_error=False)
     run_git_command(["git", "config", "--global", "user.email", "content-bot@users.noreply.github.com"], raise_on_error=False)
 
-    remote_url = f"https://x-access-token:{token}@github.com/demisto/content.git"
+    remote_url = f"https://x-access-token:{token}@github.com/demisto/content.git"  # disable-secrets-detection
     run_git_command(["git", "remote", "set-url", "origin", remote_url])
 
     run_git_command(["git", "fetch", "origin", "master"])
@@ -156,6 +156,15 @@ def replace_related_with_fixes_in_pr_body(body: str) -> str:
     return body + "\n\nfixes: link to the issue"
 
 
+def replace_fixes_with_relates_in_pr_body(body: str) -> str:
+    pattern = r"(fixes?:\s?)(.*)"
+
+    if re.search(pattern, body, re.IGNORECASE):
+        return re.sub(pattern, r"relates: \2", body, flags=re.IGNORECASE)
+
+    return body + "\n\nrelates: link to the issue"
+
+
 def get_mapping_pr_body(merged_pr_url: str, merged_pr_author: str, original_body: str) -> str:
     body = f"## Original External PR\r\n[external pull request]({merged_pr_url})\r\n\r\n"
 
@@ -170,7 +179,7 @@ def get_mapping_pr_body(merged_pr_url: str, merged_pr_author: str, original_body
     )
 
     body += body_without_rn
-    return replace_related_with_fixes_in_pr_body(body)
+    return replace_fixes_with_relates_in_pr_body(body)
 
 
 # -----------------------------
@@ -238,8 +247,9 @@ def main():
     base_branch = "master"
     head_branch = merged_pr.base.ref
 
-    labels = [l.name.replace(EXTERNAL_LABEL, INTERNAL_LABEL) for l in merged_pr.labels]
+    labels = [label.name.replace(EXTERNAL_LABEL, INTERNAL_LABEL) for label in merged_pr.labels]
     labels.append("ready-for-pipeline-running")
+    labels.remove(MAPPING_LABEL)
 
     merged_by = getattr(merged_pr.merged_by, "login", None)
     reviewers, _ = merged_pr.get_review_requests()
@@ -305,8 +315,8 @@ def main():
         mapping_title = f"[Mapping] {title}"
         mapping_body = get_mapping_pr_body(merged_pr_url, merged_pr.user.login, merged_pr.body)
 
-        mapping_labels = [l for l in labels if l != "ready-for-pipeline-running"]
-        mapping_labels.append("Mapping Contribution")
+        mapping_labels = [label for label in labels if label != "ready-for-pipeline-running"]
+        mapping_labels.append(MAPPING_LABEL)
 
         mapping_reviewers = get_mapping_reviewer(content_roles) if content_roles else []
         mapping_assignees = list(mapping_reviewers)
