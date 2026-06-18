@@ -304,3 +304,81 @@ def test_type9_without_hiddenusername_still_yields_identifier():
     assert isinstance(value, dict)
     assert value.get("password")
     assert value.get("identifier")  # populated dummy username retained
+
+
+# ---------------------------------------------------------------------------
+# fetch_flags-driven BE-synthesized injection (Issue 1 + Issue 3).
+# ---------------------------------------------------------------------------
+def _stub_capture_recording_extra_fields(monkeypatch, *, yml_script):
+    """Stub the capture flow and record the ``extra_fields`` dict passed to
+    create_integration_instance (where BE-synthesized params land)."""
+    sent = {}
+
+    monkeypatch.setattr(
+        xsoar_capture,
+        "parse_integration_yml",
+        lambda path: {
+            "name": "MyIntegration",
+            "configuration": [{"name": "url"}],
+            # NOTE: NO static isfetch in the script — fetch is variant-driven.
+            "script": yml_script,
+        },
+    )
+    monkeypatch.setattr(xsoar_capture, "create_client", lambda: object())
+    monkeypatch.setattr(
+        xsoar_capture, "get_integration_config", lambda client, name: {"some": "config"}
+    )
+
+    def _fake_create(client, name, server_config, filled, extra_fields=None):
+        sent["filled"] = filled
+        sent["extra_fields"] = dict(extra_fields or {})
+        return {"id": "instance-123"}, None
+
+    monkeypatch.setattr(xsoar_capture, "create_integration_instance", _fake_create)
+    monkeypatch.setattr(
+        xsoar_capture,
+        "run_test_module_and_capture_params",
+        lambda client, module_instance: {"captured": True},
+    )
+    monkeypatch.setattr(
+        xsoar_capture, "delete_integration_instance", lambda client, instance_id: True
+    )
+    return sent
+
+
+def test_fetch_flags_inject_incident_fetch_interval_into_integration_payload(monkeypatch):
+    """fetch_flags={"isFetch": True} → incidentFetchInterval is added to the
+    INTEGRATION-side payload with the shared STRING value "111", EVEN THOUGH the
+    YML script does NOT statically declare isfetch (fetch is variant-driven).
+
+    This is the Issue 1 + Issue 3 fix: the harness KNOWS to populate the field
+    because the fetch-issues/isFetch variant flag is on, instead of letting it
+    fall back to the YML default (which mismatched the connector side).
+    """
+    sent = _stub_capture_recording_extra_fields(monkeypatch, yml_script={})
+
+    capture_xsoar_params(
+        integration_yml_path="/tmp/fake.yml",
+        # The shared dummies carry the string "111" for the interval field.
+        overrides={"url": "https://example.com", "incidentFetchInterval": "111"},
+        fetch_flags={"isFetch": True},
+    )
+
+    extra = sent["extra_fields"]
+    assert "incidentFetchInterval" in extra
+    assert extra["incidentFetchInterval"] == "111"   # integration side: STRING
+    assert "isFetch" in extra
+
+
+def test_no_fetch_flags_no_static_isfetch_omits_interval(monkeypatch):
+    """GUARD: with NO fetch_flags and NO static isfetch, the field is NOT injected
+    (the strip set applies) — the fix is scoped to actual fetch variants."""
+    sent = _stub_capture_recording_extra_fields(monkeypatch, yml_script={})
+
+    capture_xsoar_params(
+        integration_yml_path="/tmp/fake.yml",
+        overrides={"url": "https://example.com", "incidentFetchInterval": "111"},
+        fetch_flags={"isFetch": False},
+    )
+
+    assert "incidentFetchInterval" not in sent["extra_fields"]

@@ -722,3 +722,53 @@ def test_in_scope_extra_in_connector_still_fails():
     assert result["summary"]["n_extra_in_connector"] == 1
     assert result["summary"]["n_out_of_variant_scope"] == 0
     assert result["status"] == "fail"
+
+
+# ---------------------------------------------------------------------------
+# Connector-int / Integration-string parity contract (incidentFetchInterval).
+# ---------------------------------------------------------------------------
+def test_incident_fetch_interval_int_vs_str_is_parity_ok():
+    """connector int 111 == integration str "111" → OK, not VALUE_MISMATCH.
+
+    ``incidentFetchInterval`` is a BE-synthesized param (so it is treated as a
+    real param the integration reads) AND a registered connector-int /
+    integration-string field, so the asymmetric int/str representation is at
+    parity rather than a spurious mismatch.
+    """
+    result = diff.diff_params(
+        {"incidentFetchInterval": "111"},   # integration side — string
+        {"incidentFetchInterval": 111},     # connector side — integer
+    )
+    entry = _per_param(result, "incidentFetchInterval")
+    assert entry["state"] == diff.STATE_OK
+    assert entry["verdict"] == "ok"
+    assert result["summary"]["n_value_mismatch"] == 0
+    assert result["status"] == "pass"
+
+
+def test_incident_fetch_interval_genuine_mismatch_still_fails():
+    """connector int 111 vs integration str "222" → genuine VALUE_MISMATCH."""
+    result = diff.diff_params(
+        {"incidentFetchInterval": "222"},   # integration side — string
+        {"incidentFetchInterval": 111},     # connector side — integer
+    )
+    entry = _per_param(result, "incidentFetchInterval")
+    assert entry["state"] == diff.STATE_VALUE_MISMATCH
+    assert entry["verdict"] == "fail"
+    assert result["summary"]["n_value_mismatch"] == 1
+    assert result["status"] == "fail"
+
+
+def test_non_registry_number_int_vs_str_still_mismatches():
+    """A NON-registry field keeps strict equality: int 111 != str "111" fails.
+
+    Guards against the int/str equivalence leaking into a blanket rule. We use a
+    YML param name so it is compared (not dropped as framework noise)."""
+    result = diff.diff_params(
+        {"somePort": "111"},
+        {"somePort": 111},
+        yml_param_names={"somePort"},
+    )
+    entry = _per_param(result, "somePort")
+    assert entry["state"] == diff.STATE_VALUE_MISMATCH
+    assert entry["verdict"] == "fail"

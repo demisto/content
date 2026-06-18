@@ -50,7 +50,11 @@ from pathlib import Path
 
 import resolver as resolver_mod
 import results_ledger
-from be_config_params import apply_be_config_transform, variant_toggle_overrides
+from be_config_params import (
+    apply_be_config_transform,
+    connector_value_for,
+    variant_toggle_overrides,
+)
 from diff import _load_serializer_mappings, diff_params
 from normalizers import normalize_for_diff
 from resolver import ResolverError
@@ -207,6 +211,52 @@ def _force_drop_from(ignored_params: dict) -> set[str]:
     }
 
 
+def _build_connector_instance_values(shared_dummies: dict, parity_inputs) -> dict:
+    """Build the CONNECTOR-keyed copy of ``shared_dummies`` for the UCP payload.
+
+    The connector creation payload keys its ``configuration`` block by CONNECTOR
+    FIELD id, while ``shared_dummies`` is keyed by the integration (xsoar) param
+    name. This translates the shared dummy values onto the connector field ids so
+    BOTH parity sides receive the SAME value:
+
+      1. ``param_to_connector_field`` — serializer-renamed + interpolated auth
+         fields discovered from the integration YML params.
+      2. ``serializer_by_connector`` — the handler ``serializer.yaml``
+         ``field_mappings`` directly. This is what carries the BE-SYNTHESIZED
+         fetch fields (e.g. ``incidentFetchInterval``, ``eventFetchInterval``):
+         they are NOT declared in the integration YML (so step 1 misses them) but
+         ARE listed in the serializer (true runtime id == the synthesized name),
+         so the connector's serialized config field must receive the same dummy
+         the integration got. Without this the connector builder fell back to the
+         field's type default (a ``duration`` → ``0``), breaking parity with the
+         integration's ``"111"``. It fires ONLY for fields actually present in
+         ``shared_dummies`` — a synthesized field for a DISABLED fetch flag is
+         absent there and is never forced onto the connector side.
+
+    Finally the connector-int / integration-string type contract is applied via
+    :func:`connector_value_for`, resolving each connector field id back to its
+    TRUE runtime id through ``serializer_by_connector`` first (the registry is
+    keyed by the bare xsoar name, not the serializer-renamed connector id), so a
+    renamed interval field (e.g. ``xsoar-<h>_incidentFetchInterval``) is coerced
+    to the integer the connector expects (``111``) while the integration keeps the
+    string (``"111"``). The int↔string equivalence is restored at diff time by
+    :func:`be_config_params.values_match`.
+    """
+    by_connector = getattr(parity_inputs, "serializer_by_connector", None) or {}
+    param_map = getattr(parity_inputs, "param_to_connector_field", None) or {}
+    out: dict = dict(shared_dummies)
+    for xsoar_param, connector_field in param_map.items():
+        if xsoar_param in shared_dummies and connector_field != xsoar_param:
+            out[connector_field] = shared_dummies[xsoar_param]
+    for connector_field, xsoar_id in by_connector.items():
+        if xsoar_id in shared_dummies and connector_field not in out:
+            out[connector_field] = shared_dummies[xsoar_id]
+    for key in list(out.keys()):
+        true_id = by_connector.get(key, key)
+        out[key] = connector_value_for(true_id, out[key])
+    return out
+
+
 def _run_one_variant(
     *,
     variant,                       # resolver.CapabilityVariant
@@ -266,11 +316,12 @@ def _run_one_variant(
     )
 
     # CONNECTOR side keys by connector FIELD id; build a connector-keyed copy so
-    # serializer-renamed + interpolated auth fields receive the SAME value.
-    connector_instance_values: dict = dict(shared_dummies)
-    for xsoar_param, connector_field in parity_inputs.param_to_connector_field.items():
-        if xsoar_param in shared_dummies and connector_field != xsoar_param:
-            connector_instance_values[connector_field] = shared_dummies[xsoar_param]
+    # serializer-renamed + interpolated auth fields AND BE-synthesized fetch fields
+    # receive the SAME value (with the int/string type contract applied). See
+    # :func:`_build_connector_instance_values`.
+    connector_instance_values = _build_connector_instance_values(
+        shared_dummies, parity_inputs
+    )
 
     # ── INTEGRATION-side capture (legacy XSOAR flow) ──
     try:
@@ -278,6 +329,11 @@ def _run_one_variant(
             integration_yml_path=integration_yml,
             overrides=shared_dummies,
             client=xsoar_client,
+            # Drive the BE-synthesized add/strip off THIS variant's fetch flags so
+            # a variant-driven fetch (e.g. fetch-issues → isFetch) populates
+            # incidentFetchInterval on the integration side too, instead of letting
+            # it fall back to the YML default and mismatch the connector.
+            fetch_flags=variant.fetch_flags,
         )
     except Exception as e:  # noqa: BLE001 — a capture crash is setup-blocked, not a diff
         log.error("INTEGRATION-side capture FAILED for variant %s: %s", variant.id, e)
@@ -505,10 +561,9 @@ def main(argv: list[str] | None = None) -> int:
                 overrides=shared_dummies, client=xsoar_client,
             )
         if connector_raw is None:
-            connector_instance_values = dict(shared_dummies)
-            for xp, cf in parity_inputs.param_to_connector_field.items():
-                if xp in shared_dummies and cf != xp:
-                    connector_instance_values[cf] = shared_dummies[xp]
+            connector_instance_values = _build_connector_instance_values(
+                shared_dummies, parity_inputs
+            )
             connector_raw, connector_payload = capture_ucp_params(
                 xsoar_client=xsoar_client, xsoar_brand_name=integration_brand,
                 parity_inputs=parity_inputs, capabilities=variant.capabilities,

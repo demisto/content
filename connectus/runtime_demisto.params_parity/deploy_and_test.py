@@ -94,13 +94,21 @@ def _integration_pack_dir(integration_yml_path: str) -> str | None:
     return None
 
 
-def _packs_to_upload(integration_yml_path: str) -> list[str]:
+def _packs_to_upload(
+    integration_yml_path: str, skip_base_pack: bool = False
+) -> list[str]:
     """Base pack + the integration's own pack, de-duped, order preserved.
 
     The patched Base pack is always first (the probe must be present before the
-    integration pack so the param-parity capture works).
+    integration pack so the param-parity capture works). When ``skip_base_pack``
+    is True the Base pack is omitted, but the integration's own pack is ALWAYS
+    appended (the integration-under-test pack is uploaded unconditionally).
+
+    EDGE CASE: an integration that itself lives under ``Packs/Base`` combined
+    with ``skip_base_pack=True`` yields an EMPTY list (nothing to upload), since
+    the only pack would have been Base. This is acceptable/rare.
     """
-    packs = [_BASE_PACK]
+    packs = [] if skip_base_pack else [_BASE_PACK]
     pack_dir = _integration_pack_dir(integration_yml_path)
     if pack_dir and pack_dir not in packs:
         packs.append(pack_dir)
@@ -157,6 +165,22 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
              "connector is ALREADY deployed to the tenant). For local iteration; "
              "default is to deploy.",
     )
+    p.add_argument(
+        "--skip-connector-deploy",
+        action="store_true",
+        help="Do NOT deploy the ConnectUs connector manifest (skip the git commit "
+             "AND the GitLab skinny pipeline), but STILL upload the integration's "
+             "own pack. Unlike --skip-deploy (which skips EVERYTHING including the "
+             "pack upload), this re-uploads the integration pack against an "
+             "ALREADY-deployed connector. For iterating over many integrations.",
+    )
+    p.add_argument(
+        "--skip-base-pack",
+        action="store_true",
+        help="Do NOT upload the Base pack, but STILL upload the integration's own "
+             "pack. Unlike --skip-deploy (which skips EVERYTHING), this assumes the "
+             "patched Base pack is already current on the tenant.",
+    )
     return p.parse_args(argv)
 
 
@@ -184,6 +208,7 @@ def _run_deploy(
     commit_path: str | None = None,
     upload_packs: list[str] | None = None,
     upload_insecure: bool = False,
+    skip_connector_deploy: bool = False,
 ) -> int:
     """Run deploy.py --tenant <t> from the package dir; return its exit code.
 
@@ -196,6 +221,11 @@ def _run_deploy(
     own pack) BEFORE the connector deploy — this removes the old manual
     "upload Base + integration pack" prerequisite. ``upload_insecure`` adds
     ``--upload-insecure`` (skip TLS validation) for self-signed tenant certs.
+
+    When ``skip_connector_deploy`` is True, append BOTH ``--skip-git`` and
+    ``--skip-pipeline`` so deploy.py skips the connector commit + the GitLab
+    pipeline but STILL uploads the packs (the ``--upload-pack`` args remain). This
+    re-uploads the integration pack against an ALREADY-deployed connector.
     """
     cmd = [sys.executable, str(_DEPLOY_PY), "--tenant", tenant]
     if commit_path:
@@ -204,6 +234,8 @@ def _run_deploy(
         cmd += ["--upload-pack", pack]
     if upload_insecure:
         cmd.append("--upload-insecure")
+    if skip_connector_deploy:
+        cmd += ["--skip-git", "--skip-pipeline"]
     log.info("Running deploy: %s", " ".join(cmd))
     proc = subprocess.run(cmd, cwd=str(_SCRIPT_DIR))
     return proc.returncode
@@ -261,8 +293,22 @@ def run(
     force: bool,
     skip_preflight: bool = False,
     skip_deploy: bool = False,
+    skip_connector_deploy: bool = False,
+    skip_base_pack: bool = False,
 ) -> int:
-    """Session-gate → preflight → acquire → deploy → parity(per id) → release(finally)."""
+    """Session-gate → preflight → acquire → deploy → parity(per id) → release(finally).
+
+    ``skip_connector_deploy`` re-uploads the integration pack against an
+    ALREADY-deployed connector (skips the connector commit + GitLab pipeline but
+    keeps the pack upload). ``skip_base_pack`` omits the Base pack from the
+    upload but still uploads the integration's own pack. Both still upload the
+    integration-under-test pack; both are moot when ``skip_deploy`` is set
+    (which skips the ENTIRE deploy).
+
+    EDGE CASE: an integration that itself lives under ``Packs/Base`` combined
+    with ``skip_base_pack`` produces an empty upload list (nothing uploaded).
+    Acceptable/rare.
+    """
     # ── Session gate (the environment is established ONCE by the human-run
     # session_setup.py; here we only ASSUME it, auto-reviving a dead port-forward
     # and hard-stopping with an actionable message on gcloud-auth expiry / no
@@ -310,6 +356,18 @@ def run(
         return EXIT_LOCK_BUSY
 
     try:
+        # ── Footgun visibility: warn loudly for each active skip so an
+        # upload-only / iterate-many run is obvious in the logs (mirrors the
+        # --skip-deploy warning below). ──
+        if skip_connector_deploy:
+            log.warning("--skip-connector-deploy set: NOT deploying connector "
+                        "manifest; uploading integration pack only.")
+        if skip_base_pack:
+            log.warning("--skip-base-pack set: NOT uploading Base pack.")
+        if skip_deploy and (skip_connector_deploy or skip_base_pack):
+            log.warning("--skip-deploy already skips the ENTIRE deploy; "
+                        "--skip-connector-deploy/--skip-base-pack are redundant here.")
+
         # ── Resolve the connector dir for the (first) integration so deploy.py
         # can stage+commit it before pushing. Best-effort: if resolution fails,
         # fall back to no commit (deploy assumes content already committed). ──
@@ -320,11 +378,15 @@ def run(
             # Patched Base pack + the integration's own pack, derived from the
             # resolver's integration YML path. Uploaded to the tenant by deploy.py
             # before the connector deploy (removes the manual upload prerequisite).
-            upload_packs = _packs_to_upload(_pi.integration_yml_path)
+            # --skip-base-pack drops Base but keeps the integration pack.
+            upload_packs = _packs_to_upload(
+                _pi.integration_yml_path, skip_base_pack=skip_base_pack
+            )
         except Exception:
             commit_path = None
-            # Fall back to at least the Base pack (probe) when resolution fails.
-            upload_packs = [_BASE_PACK]
+            # Fall back to at least the Base pack (probe) when resolution fails;
+            # --skip-base-pack drops it (yields an empty upload list here).
+            upload_packs = [] if skip_base_pack else [_BASE_PACK]
 
         # Self-signed tenant cert in the chain → demisto-sdk upload needs --insecure.
         # Off by default; opt in via DEMISTO_VERIFY_SSL=false (or UPLOAD_INSECURE=true).
@@ -338,7 +400,10 @@ def run(
                         "ALREADY-deployed connector on tenant %s.", tenant)
         else:
             # ── Deploy ONCE (upload packs + commit connector + ff-push + pipeline) ──
-            deploy_rc = _run_deploy(tenant, commit_path, upload_packs, upload_insecure)
+            deploy_rc = _run_deploy(
+                tenant, commit_path, upload_packs, upload_insecure,
+                skip_connector_deploy=skip_connector_deploy,
+            )
             if deploy_rc == _DEPLOY_FAIL:
                 for integration_id in integration_ids:
                     _summary(integration_id, "DEPLOY_FAIL", EXIT_DEPLOY_FAIL)
@@ -375,6 +440,8 @@ def main(argv: list[str] | None = None) -> int:
         force=args.force_unlock,
         skip_preflight=args.skip_preflight,
         skip_deploy=args.skip_deploy,
+        skip_connector_deploy=args.skip_connector_deploy,
+        skip_base_pack=args.skip_base_pack,
     )
 
 
