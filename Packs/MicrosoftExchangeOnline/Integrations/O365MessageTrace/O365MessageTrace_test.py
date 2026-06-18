@@ -18,6 +18,7 @@ from O365MessageTrace import (
     format_datetime_for_filter,
     get_events_command,
     parse_datetime,
+    parse_integration_params,
 )
 
 # Reference the production ``test_module`` entrypoint via an alias that does
@@ -246,6 +247,204 @@ class TestGetMessageTracesPage:
 
 
 # ============================================================================
+# parse_integration_params tests
+# ============================================================================
+class TestParseIntegrationParams:
+    """``parse_integration_params`` normalizes the raw ``demisto.params()`` dict
+    into the keyword arguments needed to build a :class:`Client`, resolving the
+    grant type and validating that the credentials required for that flow are
+    present. ``get_azure_cloud`` and ``get_azure_managed_identities_client_id``
+    reach into the Azure machinery, so they are patched on the module to keep the
+    tests hermetic.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _patch_azure_helpers(self, mocker):
+        """Patch the Azure helpers the function depends on.
+
+        By default there is no managed-identity client id (so the credential
+        validation branch runs) and a fake Azure cloud whose graph resource id
+        is used to build the default ``base_url``.
+        """
+        fake_cloud = MagicMock()
+        fake_cloud.endpoints.microsoft_graph_resource_id = "https://graph.microsoft.com"
+        mocker.patch.object(O365MessageTrace, "get_azure_cloud", return_value=fake_cloud)
+        self.managed_identity_mock = mocker.patch.object(
+            O365MessageTrace, "get_azure_managed_identities_client_id", return_value=None
+        )
+
+    @staticmethod
+    def _client_credentials_params(**overrides) -> dict:
+        """A minimally-valid client-credentials param dict, with optional overrides."""
+        params = {
+            "tenant_id": "tenant-123",
+            "credentials_client_id": {"password": "client-abc"},
+            "credentials": {"password": "secret-xyz"},
+        }
+        params.update(overrides)
+        return params
+
+    def test_returns_valid_config_for_client_credentials(self):
+        result = parse_integration_params(self._client_credentials_params())
+
+        assert result["tenant_id"] == "tenant-123"
+        assert result["auth_id"] == "client-abc"
+        assert result["enc_key"] == "secret-xyz"
+        assert result["app_name"] == Config.APP_NAME
+        assert result["auth_code"] is None
+        assert result["redirect_uri"] is None
+        assert result["managed_identities_client_id"] is None
+
+    def test_falls_back_to_legacy_plain_client_secret(self):
+        """When no ``credentials`` creds-object is supplied, the legacy plain
+        ``client_secret`` param must be honored."""
+        params = self._client_credentials_params()
+        del params["credentials"]
+        params["client_secret"] = "legacy-secret"
+
+        result = parse_integration_params(params)
+
+        assert result["enc_key"] == "legacy-secret"
+
+    def test_authorization_code_happy_path(self):
+        params = self._client_credentials_params(
+            auth_code={"password": "the-auth-code"},
+            redirect_uri="https://example.com/callback",
+        )
+
+        result = parse_integration_params(params)
+
+        assert result["auth_code"] == "the-auth-code"
+        assert result["redirect_uri"] == "https://example.com/callback"
+
+    def test_managed_identities_skips_credential_validation(self):
+        """When a managed-identity client id is present, the credential-validation
+        branch is skipped entirely (no exception even without secret/tenant)."""
+        self.managed_identity_mock.return_value = "mi-client-id"
+
+        result = parse_integration_params({})
+
+        assert result["managed_identities_client_id"] == "mi-client-id"
+        assert result["enc_key"] is None
+        assert result["auth_id"] == ""
+
+    def test_certificate_thumbprint_and_private_key_parsed(self, mocker):
+        """Certificate auth: thumbprint + private key are extracted, and the private
+        key has its spaces normalized via ``replace_spaces_in_credential``."""
+        normalize = mocker.patch.object(O365MessageTrace, "replace_spaces_in_credential", return_value="normalized-key")
+        params = self._client_credentials_params(
+            creds_certificate={"identifier": "thumb-123", "password": "raw key with spaces"},
+        )
+
+        result = parse_integration_params(params)
+
+        assert result["certificate_thumbprint"] == "thumb-123"
+        assert result["private_key"] == "normalized-key"
+        normalize.assert_called_once_with("raw key with spaces")
+
+    def test_private_key_is_none_when_not_provided(self):
+        result = parse_integration_params(self._client_credentials_params())
+
+        assert result["certificate_thumbprint"] is None
+        assert result["private_key"] is None
+
+    def test_raises_when_client_credentials_missing_tenant(self):
+        from O365MessageTrace import DemistoException
+
+        params = self._client_credentials_params(tenant_id="")
+
+        with pytest.raises(DemistoException, match="client credentials flow"):
+            parse_integration_params(params)
+
+    def test_raises_when_client_credentials_missing_secret(self):
+        from O365MessageTrace import DemistoException
+
+        params = self._client_credentials_params()
+        del params["credentials"]
+
+        with pytest.raises(DemistoException, match="client credentials flow"):
+            parse_integration_params(params)
+
+    def test_raises_when_authorization_code_flow_missing_fields(self):
+        """Supplying redirect_uri without auth_code resolves to client-credentials,
+        so to exercise the authorization-code validation we supply both auth_code
+        and redirect_uri but omit the client id."""
+        from O365MessageTrace import DemistoException
+
+        params = {
+            "tenant_id": "tenant-123",
+            "credentials": {"password": "secret-xyz"},
+            "auth_code": {"password": "the-auth-code"},
+            "redirect_uri": "https://example.com/callback",
+        }
+
+        with pytest.raises(DemistoException, match="authorization code flow"):
+            parse_integration_params(params)
+
+    def test_raises_when_auth_code_flow_missing_redirect_uri(self):
+        """An authorization-code attempt (auth_code supplied) without a redirect_uri
+        must raise. Without redirect_uri the grant type falls back to client
+        credentials, so the only credential offered is the auth code, which is not a
+        valid client-credentials secret - validation must reject it."""
+        from O365MessageTrace import DemistoException
+
+        params = {
+            "tenant_id": "tenant-123",
+            "credentials_client_id": {"password": "client-abc"},
+            "auth_code": {"password": "the-auth-code"},
+            # redirect_uri intentionally omitted
+        }
+
+        with pytest.raises(DemistoException, match="client credentials flow"):
+            parse_integration_params(params)
+
+    def test_raises_when_no_credential_provided(self):
+        """When no client secret, no certificate (thumbprint + private key) and no
+        authorization code are supplied, validation must reject the configuration."""
+        from O365MessageTrace import DemistoException
+
+        params = {
+            "tenant_id": "tenant-123",
+            "credentials_client_id": {"password": "client-abc"},
+            # no credentials/client_secret, no creds_certificate, no auth_code
+        }
+
+        with pytest.raises(DemistoException, match="client credentials flow"):
+            parse_integration_params(params)
+
+    def test_default_max_events_when_not_supplied(self):
+        result = parse_integration_params(self._client_credentials_params())
+
+        assert result["max_events"] == Config.DEFAULT_MAX_EVENTS
+
+    def test_custom_max_events_parsed_from_max_fetch(self):
+        result = parse_integration_params(self._client_credentials_params(max_fetch="250"))
+
+        assert result["max_events"] == 250
+
+    def test_default_base_url_built_from_azure_cloud(self):
+        result = parse_integration_params(self._client_credentials_params())
+
+        # Built from the patched graph resource id, normalized to a single trailing slash.
+        assert result["base_url"] == "https://graph.microsoft.com/"
+
+    def test_explicit_url_param_overrides_default_and_is_normalized(self):
+        result = parse_integration_params(self._client_credentials_params(url="https://custom.example.com/graph/"))
+
+        # Trailing slashes are stripped then a single one re-appended.
+        assert result["base_url"] == "https://custom.example.com/graph/"
+
+    def test_verify_and_proxy_flags_parsed(self):
+        secure = parse_integration_params(self._client_credentials_params(insecure=False, proxy=False))
+        insecure = parse_integration_params(self._client_credentials_params(insecure=True, proxy=True))
+
+        assert secure["verify"] is True
+        assert secure["proxy"] is False
+        assert insecure["verify"] is False
+        assert insecure["proxy"] is True
+
+
+# ============================================================================
 # fetch_events_sequential tests
 # ============================================================================
 class TestFetchEventsSequential:
@@ -365,6 +564,55 @@ class TestFetchEventsSequential:
 
         result = fetch_events_sequential(mock_client, start, end, max_events=100)
 
+        assert result == []
+
+    def test_stops_on_non_advancing_next_link(self, mock_client, mocker):
+        """A misbehaving server that keeps returning a non-empty page with the SAME
+        ``@odata.nextLink`` every call must NOT loop forever. The loop detects the
+        non-advancing cursor, logs an error, and breaks.
+        """
+        # Every call returns the same non-empty page with an identical nextLink.
+        same_link = "https://graph.microsoft.com/stuck"
+        page = {
+            "value": [{"id": "evt-1", "receivedDateTime": "2025-01-01T10:00:00Z"}],
+            "@odata.nextLink": same_link,
+        }
+        # Cap the number of responses so the test fails (StopIteration) instead of
+        # hanging if the non-advancing guard were ever removed.
+        mock_client.ms_client.http_request.side_effect = [page] * 50
+        error_mock = mocker.patch.object(O365MessageTrace.demisto, "error")
+
+        start = datetime(2025, 1, 1, tzinfo=UTC)
+        end = start + timedelta(minutes=5)
+        result = fetch_events_sequential(mock_client, start, end, max_events=100)
+
+        # The cursor is detected as non-advancing on the second call, so the loop
+        # breaks after exactly two requests instead of hanging.
+        assert mock_client.ms_client.http_request.call_count == 2
+        # Events collected before the break are still returned.
+        assert [e["id"] for e in result] == ["evt-1", "evt-1"]
+        # An error is logged explaining why the loop stopped.
+        error_mock.assert_called_once()
+        assert "did not advance" in error_mock.call_args.args[0]
+
+    def test_stops_on_empty_page_with_next_link(self, mock_client):
+        """An empty ``value`` must stop the loop on the empty-page break even when
+        ``@odata.nextLink`` is still present (the empty-page check comes first)."""
+        # Empty page but the server still advertises another page via nextLink.
+        empty_page_with_link = {
+            "value": [],
+            "@odata.nextLink": "https://graph.microsoft.com/next",
+        }
+        # Cap responses so a regression that ignores the empty-page break surfaces
+        # as StopIteration rather than an infinite hang.
+        mock_client.ms_client.http_request.side_effect = [empty_page_with_link] * 50
+
+        start = datetime(2025, 1, 1, tzinfo=UTC)
+        end = start + timedelta(minutes=5)
+        result = fetch_events_sequential(mock_client, start, end, max_events=100)
+
+        # The loop stops on the empty page after a single request.
+        assert mock_client.ms_client.http_request.call_count == 1
         assert result == []
 
 
@@ -697,15 +945,14 @@ class TestFetchEvents:
         assert "2025-01-01T09:02:00Z" in first_call_params["$filter"]
         assert "2025-01-01T09:05:00Z" not in first_call_params["$filter"]
 
-    def test_seen_ids_keeps_all_ids_at_boundary_timestamp(self, mock_client, mocker):
-        """All events sharing the high-water-mark timestamp must be retained in seen_ids.
+    def test_seen_ids_holds_sent_ids_at_boundary_timestamp(self, mock_client, mocker):
+        """seen_ids holds the IDs of events sent to XSIAM at the high-water-mark timestamp.
 
         The Graph API timestamps have second-level granularity, so several events
-        can share the exact same ``receivedDateTime``. If such events are split
-        across two runs, the next run's ``$filter`` (``ge boundary``) re-fetches the
-        ones already sent. They must still be recognized as duplicates, which
-        requires ``seen_ids`` to hold the full set of IDs at the boundary timestamp
-        - including events that were deduped out of this run's published events.
+        can share the exact same ``receivedDateTime``. ``seen_ids`` tracks the IDs of
+        the events published to XSIAM at the boundary timestamp so the next run's
+        ``$filter`` (``ge boundary``) does not re-send them. Events that were already
+        deduped out this run are not re-published and therefore are not re-added.
         """
         # Previous run already published evt-1 at the boundary timestamp (10:01:00).
         last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": ["evt-1|bob@contoso.com"]}
@@ -724,9 +971,9 @@ class TestFetchEvents:
 
         new_state = set_last_run.call_args.args[0]
         assert new_state["last_fetch"] == "2025-01-01T10:01:00Z"
-        # Both the newly-sent event AND the already-seen duplicate at the boundary
-        # timestamp must be present so the next run can dedup the re-fetched event.
-        assert set(new_state["seen_ids"]) == {"evt-1|bob@contoso.com", "evt-2|dave@contoso.com"}
+        # Only the newly-published event at the boundary timestamp is tracked; the
+        # already-seen duplicate (evt-1) was deduped out and not re-sent.
+        assert set(new_state["seen_ids"]) == {"evt-2|dave@contoso.com"}
 
 
 # ============================================================================
@@ -876,3 +1123,66 @@ class TestFetchEventsInRunLoop:
         fetch_events(mock_client, max_events=100)
 
         set_last_run.assert_called_once()
+
+    def test_catch_up_stops_at_max_fetch_iterations(self, mock_client, mocker):
+        """A backlog larger than ``MAX_FETCH_ITERATIONS`` windows must stop after the
+        cap (a single-run safety bound) rather than walking all the way to ``now``.
+
+        ``MAX_FETCH_ITERATIONS`` is patched to a small value so the cap is reached
+        before the backlog (which spans more windows) is drained. The loop must make
+        exactly ``MAX_FETCH_ITERATIONS`` requests and leave ``last_fetch`` at the
+        capped window end - well short of ``now``.
+        """
+        # last_fetch=09:00, now=09:30 -> 6 windows of 5 min, but the cap is 3.
+        now = datetime(2025, 1, 1, 9, 30, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.Config, "MAX_FETCH_ITERATIONS", 3)
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": []}
+
+        fetch_events(mock_client, max_events=100)
+
+        # Exactly MAX_FETCH_ITERATIONS windows requested (one empty page each).
+        assert mock_client.ms_client.http_request.call_count == 3
+        # last_fetch advanced to the window end reached after the cap (09:20), well
+        # short of ``now`` (09:30): the safety bound stops the catch-up early.
+        new_state = set_last_run.call_args.args[0]
+        assert new_state["last_fetch"] == "2025-01-01T09:20:00Z"
+        assert new_state["last_fetch"] != "2025-01-01T09:30:00Z"
+
+    def test_catch_up_truncates_total_to_max_events(self, mock_client, mocker):
+        """Events accumulated across multiple windows must be truncated to
+        ``max_events`` before publishing.
+
+        Two windows each return two events (four total) but ``max_events`` is 3, so
+        only three events may be published.
+        """
+        # last_fetch=09:00, now=09:10 -> 2 windows: [09:00,09:05], [09:05,09:10].
+        now = datetime(2025, 1, 1, 9, 10, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        window1 = {
+            "value": [
+                {"id": "w1-a", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:01:00Z"},
+                {"id": "w1-b", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:02:00Z"},
+            ]
+        }
+        window2 = {
+            "value": [
+                {"id": "w2-a", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:06:00Z"},
+                {"id": "w2-b", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:07:00Z"},
+            ]
+        }
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.side_effect = [window1, window2]
+
+        fetch_events(mock_client, max_events=3)
+
+        # Four events were collected across both windows but only three may be published.
+        sent_events = [e for call in send_mock.call_args_list for e in call.kwargs["events"]]
+        assert len(sent_events) == 3
