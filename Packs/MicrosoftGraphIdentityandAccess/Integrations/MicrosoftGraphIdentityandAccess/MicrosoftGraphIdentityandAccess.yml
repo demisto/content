@@ -286,8 +286,10 @@ script:
     arguments:
     - name: ips
       description: 'A comma-separated list of IP ranges to add to the named location. Each range must be in CIDR notation (IPv4 or IPv6), for example: "12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63". Bare IP addresses without a CIDR suffix (for example "0.0.0.0") are rejected by Microsoft Graph. See https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations.'
+      isArray: true
     - name: is_trusted
-      description: Whether the IP can be trusted. Defaults to false.
+      description: Whether the IP can be trusted.
+      defaultValue: 'false'
     - name: display_name
       description: The display name for the named IP location.
     outputs:
@@ -317,6 +319,7 @@ script:
       required: true
     - name: ips
       description: 'A comma-separated list of IP ranges to set on the named location. Each range must be in CIDR notation (IPv4 or IPv6), for example: "12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63". Bare IP addresses without a CIDR suffix (for example "0.0.0.0") are rejected by Microsoft Graph. See https://learn.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations.'
+      isArray: true
     - name: is_trusted
       description: Whether the IP can be trusted.
     - name: display_name
@@ -926,7 +929,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.6932158
+  dockerimage: demisto/crypto:1.0.0.10120494
 fromversion: 5.0.0
 defaultmapperin: Microsoft Graph Identity and Access Incoming Mapper
 defaultclassifier: Microsoft Graph Identity and Access Classifier

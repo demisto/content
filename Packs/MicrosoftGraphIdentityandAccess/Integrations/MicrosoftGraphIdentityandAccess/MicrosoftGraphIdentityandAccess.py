@@ -1134,7 +1134,7 @@ def ms_ip_string_to_list(ips: str) -> list:
         FeedIndicatorType.IPv6CIDR: "#microsoft.graph.iPv6CidrRange",
     }
     ips_arr = []
-    for ip in (raw.strip() for raw in ips.split(",")):
+    for ip in argToList(ips):
         if not ip:
             continue
         indicator_type = FeedIndicatorType.ip_to_indicator_type(ip) or ""
