@@ -3105,19 +3105,6 @@ script:
       - nonresponsiveLocations
     description: Export results from an estimated ediscoverySearch. For details, see Manage a collection estimate (https://learn.microsoft.com/en-us/purview/ediscovery-create-draft-collection#manage-a-collection-estimate).
     name: msg-export-result-ediscovery-data
-  - name: msg-debug-params
-    description: 'Debug helper: prints the unified-connector metadata, the resolved demisto.params() and the raw command args so UCP interpolation can be inspected. The credential password is masked in the human-readable output.'
-    arguments: []
-    outputs:
-    - contextPath: MsGraph.DebugParams.params
-      description: The resolved demisto.params() (credential password masked).
-      type: Unknown
-    - contextPath: MsGraph.DebugParams.unifiedConnectorMetadata
-      description: The unified-connector metadata returned by demisto.unifiedConnectorMetadata().
-      type: Unknown
-    - contextPath: MsGraph.DebugParams.raw
-      description: The raw command args returned by demisto.args().
-      type: Unknown
   dockerimage: demisto/crypto:1.0.0.8187750
   isfetch: true
   runonce: false
