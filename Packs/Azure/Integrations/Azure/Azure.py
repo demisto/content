@@ -5490,13 +5490,11 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
 def get_azure_client(params: dict, args: dict, command: str):
     headers = {}
     client_scope, token_scopes = get_command_and_token_scopes(command)
-    demisto.debug(f"Got {client_scope=} and {token_scopes=}")
     resource = get_command_resource(command)
-    demisto.debug(f"Got {resource=}")
     connection_type = params.get("auth_type") or "Client Credentials"
     # The Cortex Platform (COOC) path is selected when a connector ID is present. There, the CTS
     # token flow (get_cloud_credentials -> demisto._platformAPICall) handles authentication.
-    # On Cortex XSOAR / Cortex XSIAM (marketplace) there is no connector, so authentication is done
+    # On Cortex XSOAR / Cortex XSIAM (version < 3.0) there is no connector, so authentication is done
     # by MicrosoftClient using the configured auth_type.
     if get_connector_id():
         credentials = get_cloud_credentials(
@@ -5510,12 +5508,10 @@ def get_azure_client(params: dict, args: dict, command: str):
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
         demisto.debug("Using CTS.")
     elif connection_type == "Client Credentials" and not params.get("credentials", {}).get("password"):
-        # Marketplace + Client Credentials flow requires a Client Secret. Fail fast with a clear message
-        # instead of letting MicrosoftClient raise a less actionable error.
+        # Marketplace + Client Credentials flow requires a Client Secret.
         raise DemistoException(
             "Missing Client Secret. When running on Cortex XSOAR or Cortex XSIAM with the Client Credentials "
-            "authentication type, configure the Client Secret (along with Application ID, Tenant ID, and "
-            "Subscription ID) in the integration instance."
+            "authentication type, configure the Client Secret in the integration instance."
         )
     client = AzureClient(
         app_id=params.get("app_id", ""),
@@ -5725,7 +5721,6 @@ def main():  # pragma: no cover
             if is_gov_account(connector_id, account_id):  # type: ignore
                 switch_to_gov_account()
 
-        # Auth helper commands are only relevant for the marketplace (XSOAR / XSIAM) flows.
         if command == "azure-auth-reset":
             return return_results(reset_auth())
 
