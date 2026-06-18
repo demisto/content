@@ -612,7 +612,7 @@ def fetch_events(last_run: dict, params: dict[str, str]) -> tuple[Dict, List[Dic
         events = [events]
     demisto.debug(f"Fetched {len(events)} events before filtering")
 
-    limit = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_EVENTS  # noqa: ucp-param-default  (arg_to_number(None)->None, then `or DEFAULT_MAX_EVENTS`)
+    limit = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_EVENTS
     events_filtered = filter_events(events, limit, last_run)
     demisto.debug(f"After filtering, {len(events_filtered)} events remain")
 

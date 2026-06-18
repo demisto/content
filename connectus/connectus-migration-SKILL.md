@@ -24,7 +24,7 @@ One up-front read replaces several calls: `python3 content/connectus/workflow_st
 | 8 | Generated manifest | `manifest_generator.py <yml> <title=Connector ID> <Params-to-Capabilities raw> <Auth-Details raw>` → `set-connector-path "<id>" connectors/<slug Connector ID>` → `markpass "generated manifest"` (title comes from the `Connector ID` column so a connector's integrations share one folder) | §8 |
 | 9 | Handler param coverage | `check_handler_param_coverage.py --integration-id <id> --json` → **fail-and-ask if `pass:false`** (resolve via IGNORED_PARAMS, fix-upstream, or `--force` override) → `markpass "handler param coverage"` | §9 |
 | 10 | Validate manifest | `demisto-sdk validate` → `markpass "run manifest make validate"` | §10 |
-| 11 | Param parity | `markpass "param parity test passes"` (self-executing gate — runs `deploy_and_test.py` under the hood) | §13 |
+| 11 | Param parity | `markpass "param parity test passes"` (self-executing gate — runs `deploy_and_test.py` under the hood; for many integrations at once see the [batch recipe](#step-134--batch-recipe-execute-runtime-parity-on-these-n-integrations) using the `CONNECTUS_PARITY_SKIP_CONNECTOR` / `CONNECTUS_PARITY_SKIP_BASE_PACK` deploy-scope env vars) | §13 |
 | 12 | Code reviewed | `markpass "code reviewed"` | §14 |
 | 13 | Code merged | `markpass "code merged"` | §15 |
 | 14 | Pre-commit/tests | `demisto-sdk pre-commit` → `markpass "precommit/validate/unit tests passed"` (only if RN produced or .py/.yml changed; else `markpass` directly) | §12 |
@@ -1956,28 +1956,14 @@ Step 13 in the batch sees `--check` → exit `0` and continues unattended.
 
 #### Step 13.1 — Run the self-executing markpass gate
 
-This is a **self-executing gate** — mirrors the Step 10 `make validate`
-gate and the auth-parity gate inside `set-auth`. Calling `markpass` for
-this checkpoint RUNS the param-parity verification itself
+This is a **self-executing gate** (no bypass) — mirrors the Step 10
+`make validate` gate and the auth-parity gate inside `set-auth`. Calling
+`markpass` for this checkpoint RUNS the param-parity verification itself
 (`deploy_and_test.py` under the hood) and only writes the ✅ marker if it
-exits `0`. There is NO `--no-gate` and NO confidence-based or manual
-markpass: **the AI MUST NOT (and CANNOT) mark this step pass without the
-verification running and succeeding.** `markpass` IS the verification.
-
-> **The pass/fail VERDICT is never bypassable.** The only operator lever
-> is `CONNECTUS_PARITY_SKIP_DEPLOY=1`, which makes the gate append
-> `--skip-deploy` to `deploy_and_test.py` so the connector manifest is
-> **not re-deployed** before the test — the gate goes straight to the real
-> param-parity check against an **already-deployed** connector. Use this
-> when the connectors are already deployed to the tenant out-of-band (e.g.
-> a batch where deploy was done once up front). The param-parity test
-> still runs and the ✅ is recorded **only on exit `0`**; this skips the
-> redundant deploy phase, NOT the verdict. Example:
->
-> ```bash
-> CONNECTUS_PARITY_SKIP_DEPLOY=1 \
->   python3 content/connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
-> ```
+exits `0`. There is NO `--no-gate`, NO force/skip env var, and NO
+confidence-based or manual markpass: **the AI MUST NOT (and CANNOT) mark this
+step pass without the verification running and succeeding.** `markpass` IS the
+verification.
 
 > **Prerequisite — `Connector Folder Path` must be set.** The param-parity
 > resolver looks up the connector tree from the pipeline CSV's
@@ -1999,17 +1985,65 @@ python3 content/connectus/workflow_state.py markpass "<Integration ID>" "param p
 
 Under the hood this runs
 `python3 content/connectus/runtime_demisto.params_parity/deploy_and_test.py --integration-id "<Integration ID>"`
-(plus `--skip-deploy` when `CONNECTUS_PARITY_SKIP_DEPLOY=1`)
 — it assumes the live session (auto-reviving a dead port-forward), acquires the
-per-tenant lock, deploys the whole manifest to the `.env` tenant (UNLESS
-skip-deploy is set), runs the param-parity test, and releases the lock (always,
-via `try/finally`). The ✅ marker is written ONLY on exit `0`; any non-zero exit
-REJECTS the markpass, surfaces the wrapper's output tail, and leaves the CSV
-cell empty.
+per-tenant lock, deploys the whole manifest to the `.env` tenant, runs the
+param-parity test, and releases the lock (always, via `try/finally`). The ✅
+marker is written ONLY on exit `0`; any non-zero exit REJECTS the markpass,
+surfaces the wrapper's output tail, and leaves the CSV cell empty.
 
-Operator levers: the generic `markpass --timeout=N` (bounds how long the gate
-waits) and `CONNECTUS_PARITY_SKIP_DEPLOY=1` (skips the connector re-deploy, see
-the note above). Neither bypasses the pass/fail verdict.
+The ONLY operator lever is the generic `markpass --timeout=N` (it bounds how
+long the gate waits — it never bypasses the pass/fail verdict).
+
+#### Step 13.1a — Deploy-scope skip env vars (faster re-runs; NOT a verdict bypass)
+
+By default the self-executing gate deploys the **whole** stack to the `.env`
+tenant before running the parity check: the ConnectUs connector manifest (a git
+commit + GitLab skinny pipeline), the **Base** pack, and the
+integration-under-test's own pack. After a FULL deploy has already put the
+current connector + Base pack on the tenant, the next integrations in the same
+batch only need their **own** pack re-uploaded — so two env vars let you trim the
+deploy scope of the markpass gate:
+
+| Env var | Effect when truthy (`1`/`true`/`yes`) | Still uploaded |
+|---|---|---|
+| `CONNECTUS_PARITY_SKIP_CONNECTOR` | Appends `--skip-connector-deploy` — does **not** deploy the ConnectUs connector manifest (skips the git commit + GitLab skinny pipeline). | the integration's own pack |
+| `CONNECTUS_PARITY_SKIP_BASE_PACK` | Appends `--skip-base-pack` — does **not** upload the Base pack. | the integration's own pack |
+
+Truthiness matches the existing convention (`1` / `true` / `yes`). Either, both,
+or neither may be set. **In every case the integration-under-test's own pack is
+ALWAYS uploaded.**
+
+> **These change DEPLOY SCOPE ONLY — they are NOT a verdict bypass.** Setting
+> either (or both) env var does not skip, force, or alter the pass/fail result:
+> the real param-parity verification still runs and the checkpoint is still
+> written ONLY on exit `0`. `markpass` remains the only way to record the
+> checkpoint, and there is still no force/skip of the pass/fail verdict (mirrors
+> the no-bypass guarantee of the rest of this gate).
+
+Example — prefix the markpass with both flags to reuse a previously-deployed
+connector + Base pack and only re-upload this integration's own pack:
+
+```bash
+CONNECTUS_PARITY_SKIP_CONNECTOR=1 CONNECTUS_PARITY_SKIP_BASE_PACK=1 \
+  python3 content/connectus/workflow_state.py markpass "<Integration ID>" "param parity test passes"
+```
+
+For direct / fast-iteration runs (Step 13.3), the underlying
+[`deploy_and_test.py`](runtime_demisto.params_parity/deploy_and_test.py:1) flags
+are `--skip-connector-deploy` and `--skip-base-pack`. Both **always still upload
+the integration pack**, and they differ from the pre-existing `--skip-deploy`,
+which skips the ENTIRE deploy (no pack upload at all):
+
+```bash
+python3 content/connectus/runtime_demisto.params_parity/deploy_and_test.py \
+  --integration-id "<Integration ID>" --skip-connector-deploy --skip-base-pack
+```
+
+> **First-run footgun.** Skipping the connector and/or Base pack only makes sense
+> AFTER a full deploy has already placed the current connector manifest + Base
+> pack on the tenant. The **FIRST** integration in a batch MUST run a FULL deploy
+> (both env vars unset) so those land; only then can subsequent integrations
+> reuse them with the skip env vars set.
 
 #### Step 13.2 — Failure handling (read the exit code + triage)
 
@@ -2064,6 +2098,44 @@ the verification and only passes on exit `0`).
 The wrapper persists every run under `results/` (per-run envelope JSON +
 `ledger.csv`); the `param parity test passes = ✅` cell in the pipeline CSV is the
 only durable pass recorded.
+
+#### Step 13.4 — Batch recipe: "Execute runtime parity on these N integrations"
+
+Use this when the user asks to run runtime param-parity over many integrations at
+once. One markpass per integration (the self-executing gate is still the only
+checkpoint writer); the trick is to do a FULL deploy on the FIRST integration and
+then trim the deploy scope (Step 13.1a env vars) for the rest so each only
+re-uploads its own pack and reuses the connector + Base pack from #1.
+
+1. **Confirm the session gate is ready** (Step 13.0): run
+   `python3 content/connectus/runtime_demisto.params_parity/session_setup.py --check`
+   and only proceed once it exits `0`. If not, have the user run
+   `session_setup.py` on the israel-gw VPN first.
+2. **Integration #1 — FULL deploy markpass (NO skip env vars)** so the connector
+   manifest + Base pack land on the tenant:
+
+   ```bash
+   python3 content/connectus/workflow_state.py markpass "<Integration #1>" "param parity test passes"
+   ```
+
+3. **Integrations #2..#N — markpass WITH both skip env vars set**, so each only
+   re-uploads its own integration pack and reuses the connector + Base pack
+   deployed by #1:
+
+   ```bash
+   CONNECTUS_PARITY_SKIP_CONNECTOR=1 CONNECTUS_PARITY_SKIP_BASE_PACK=1 \
+     python3 content/connectus/workflow_state.py markpass "<Integration #k>" "param parity test passes"
+   ```
+
+4. **Each iteration still runs the real parity** and records ✅ only on exit `0`.
+   A failure is handled with the existing exit-code triage (Step 13.2) — do **NOT**
+   markpass on failure.
+5. **Caveat — different connector / stale Base pack.** If a later integration's
+   connector is a DIFFERENT connector than #1 (a different connector folder), that
+   integration needs its own full connector deploy — do **NOT** set
+   `CONNECTUS_PARITY_SKIP_CONNECTOR` for it (leave it unset so the connector is
+   deployed). Same idea if the Base pack must be refreshed — leave
+   `CONNECTUS_PARITY_SKIP_BASE_PACK` unset for that run.
 
 ### Step 12: `code reviewed`
 

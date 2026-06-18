@@ -122,7 +122,9 @@ def get_creation_view(
     """
     url = f"{_ucp_base_url(port)}/gateway/connectors/{connector_id}/creation"
     resp = requests.get(url, headers={"x-tenant-id": tenant_id})
+    
     if resp.status_code != 200:
+        log.info(f"UCP creation view failed for tenant: {tenant_id} and url {url}" )
         raise RuntimeError(
             "GET {} failed with status {}: {}".format(url, resp.status_code, resp.text)
         )
@@ -807,7 +809,7 @@ def _build_instance_payload(
             # Entity-reference field — backend resolves it; a dummy/override id
             # fails as "Item not found (8)". Force None EVEN IF instance_values
             # carries an <override_…> string for it (mirrors the UI's null).
-            configuration[fid] = None
+            configuration[fid] = "Debug" if "integrationLogLevel" in fid else None
             orphan.append(fid)
         elif fid in (instance_values or {}):
             configuration[fid] = instance_values[fid]

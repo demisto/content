@@ -34,10 +34,12 @@ YML) under tmp_path so they are hermetic and don't touch the real repos.
 from __future__ import annotations
 
 import csv
+import importlib
 from pathlib import Path
 
 import pytest
 
+import env_loader
 import resolver
 from resolver import (
     HARD_IGNORE_PARAMS,
@@ -721,6 +723,154 @@ def test_missing_repo_dir_raises(env, monkeypatch):
     monkeypatch.delenv("CONNECTUS_REPO_DIR", raising=False)
     with pytest.raises(ResolverError, match="CONNECTUS_REPO_DIR"):
         resolve(_INTEGRATION_ID, csv_path=csv_path)
+
+
+# ===========================================================================
+# CONNECTUS_PIPELINE_CSV override + precedence (explicit arg > env > default).
+#
+# These exercise the path-resolution helper directly (no CSV on disk needed)
+# plus the precedence inside resolve(). _resolve_pipeline_csv reads the
+# module-level _WORKSPACE_ROOT at call time, so the env fixture's monkeypatch
+# of that root is respected here too.
+# ===========================================================================
+
+from resolver import (  # noqa: E402
+    PIPELINE_CSV_ENV_VAR,
+    _DEFAULT_PIPELINE_CSV,
+    _resolve_pipeline_csv,
+)
+
+
+def test_pipeline_csv_env_unset_falls_back_to_default(monkeypatch):
+    monkeypatch.delenv(PIPELINE_CSV_ENV_VAR, raising=False)
+    assert _resolve_pipeline_csv() == _DEFAULT_PIPELINE_CSV
+
+
+def test_pipeline_csv_env_empty_falls_back_to_default(monkeypatch):
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, "   ")
+    assert _resolve_pipeline_csv() == _DEFAULT_PIPELINE_CSV
+
+
+def test_pipeline_csv_env_absolute_passes_through(tmp_path, monkeypatch):
+    abs_path = tmp_path / "my-pipeline.csv"
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, str(abs_path))
+    assert _resolve_pipeline_csv() == abs_path
+
+
+def test_pipeline_csv_env_relative_resolved_against_workspace_root(monkeypatch):
+    workspace = Path("/tmp/some-workspace-root")
+    monkeypatch.setattr(resolver, "_WORKSPACE_ROOT", workspace)
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, "custom/pipe.csv")
+    assert _resolve_pipeline_csv() == workspace / "custom/pipe.csv"
+
+
+def test_pipeline_csv_env_tilde_is_expanded(monkeypatch):
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, "~/pipe.csv")
+    resolved = _resolve_pipeline_csv()
+    assert "~" not in str(resolved)
+    assert resolved == Path("~/pipe.csv").expanduser()
+
+
+def test_resolve_explicit_csv_arg_beats_env(env, monkeypatch):
+    """Precedence: an explicit ``csv_path=`` argument wins over the env var."""
+    csv_path = env(interpolation_mapping=None)
+    # Point the env var at a NON-existent file; resolve() must ignore it because
+    # an explicit csv_path is supplied (and must read the real fixture CSV).
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, "/nonexistent/missing-pipeline.csv")
+    out = resolve(_INTEGRATION_ID, csv_path=csv_path)
+    assert isinstance(out, ParityInputs)
+    assert out.connector_folder_path == _CONNECTOR_FOLDER
+
+
+# ===========================================================================
+# IMPORT-TIME wire-up (reload-based).
+#
+# The override tests above exercise ``_resolve_pipeline_csv()`` directly. They
+# do NOT prove that the FROZEN module-level ``PIPELINE_CSV`` attribute — the
+# value ``resolve()`` actually consumes as its default
+# (``csv_path = csv_path or PIPELINE_CSV``) — reflects the env var when it is set
+# BEFORE import. ``PIPELINE_CSV`` is computed exactly once, at import time
+# (``PIPELINE_CSV = _resolve_pipeline_csv()``), so a plain ``setenv`` never
+# changes it. The only way to re-run that import-time resolution is to reload
+# the module.
+#
+# These tests set the env var, ``importlib.reload(resolver)`` so the module-level
+# resolution re-runs, and assert the frozen ``PIPELINE_CSV`` reflects the
+# override (and, with the var unset, the bundled default).
+#
+# STATE-LEAKAGE NOTE: reloading mutates the ``resolver`` module object
+# PROCESS-WIDE, and — critically — ``importlib.reload`` REBINDS module-level
+# CLASS objects (e.g. ``ResolverError``) to brand-new identities. Other tests in
+# this file hold ``from resolver import ResolverError`` / ``_expand_variants``
+# references captured at import time; if teardown left a freshly-reloaded module
+# in place, ``pytest.raises(ResolverError)`` in e.g.
+# ``test_expand_variants_empty_raises`` would catch the OLD class while the
+# (also-old) imported ``_expand_variants`` raised the NEW class — a real,
+# observed cross-test failure.
+#
+# The ``reload_resolver_to_default`` fixture therefore SNAPSHOTS the original
+# ``resolver.__dict__`` up front and, in its finalizer, restores that exact dict
+# onto the SAME module object (rather than doing a fresh reload). This brings
+# back the ORIGINAL class objects, so every ``from resolver import X`` reference
+# elsewhere stays valid and identity-stable — no order-dependence / leakage.
+# ``env_loader._loaded`` is also restored in case the test touched it. We do NOT
+# use the ``env`` fixture here (it monkeypatches ``resolver._WORKSPACE_ROOT``,
+# which a reload would discard), so the reload tests stand alone with an ABSOLUTE
+# override path that is independent of ``_WORKSPACE_ROOT``.
+# ===========================================================================
+
+
+@pytest.fixture
+def reload_resolver_to_default(monkeypatch):
+    """Provide a reloader and GUARANTEE identity-stable teardown.
+
+    Yields a callable that reloads ``resolver`` against the current environment
+    (re-running ``PIPELINE_CSV = _resolve_pipeline_csv()``). The finalizer (run
+    even if the test body raises) removes the override env var and restores the
+    SNAPSHOT of the original module ``__dict__`` onto the same module object —
+    bringing back the original class objects so other tests' imported references
+    (e.g. ``ResolverError``) remain identity-stable. This avoids the
+    ``importlib.reload`` class-rebinding leak.
+    """
+    saved_loaded = env_loader._loaded
+    saved_dict = dict(resolver.__dict__)
+    try:
+        yield lambda: importlib.reload(resolver)
+    finally:
+        monkeypatch.delenv(PIPELINE_CSV_ENV_VAR, raising=False)
+        env_loader._loaded = saved_loaded
+        resolver.__dict__.clear()
+        resolver.__dict__.update(saved_dict)
+
+
+def test_import_time_pipeline_csv_reflects_env_override(
+    tmp_path, monkeypatch, reload_resolver_to_default
+):
+    """When ``CONNECTUS_PIPELINE_CSV`` is set BEFORE the module resolves its
+    path, the FROZEN module-level ``PIPELINE_CSV`` (the default ``resolve()``
+    consumes) reflects the override — proving the import-time wire-up, not just
+    the helper. An ABSOLUTE override is used so the assertion does not depend on
+    the reloaded module's recomputed ``_WORKSPACE_ROOT``."""
+    override = tmp_path / "override-pipeline.csv"
+    monkeypatch.setenv(PIPELINE_CSV_ENV_VAR, str(override))
+
+    reload_resolver_to_default()
+
+    assert resolver.PIPELINE_CSV == override
+
+
+def test_import_time_pipeline_csv_unset_yields_bundled_default(
+    monkeypatch, reload_resolver_to_default
+):
+    """Companion: with the env var UNSET, a fresh reload re-resolves the frozen
+    ``PIPELINE_CSV`` back to the bundled default (proving the import-time
+    fallback, not just the helper's). Compared against the reloaded module's own
+    ``_DEFAULT_PIPELINE_CSV`` so it is robust to where the repo is checked out."""
+    monkeypatch.delenv(PIPELINE_CSV_ENV_VAR, raising=False)
+
+    reload_resolver_to_default()
+
+    assert resolver.PIPELINE_CSV == resolver._DEFAULT_PIPELINE_CSV
 
 
 # ===========================================================================

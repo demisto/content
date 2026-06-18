@@ -74,16 +74,16 @@ _CONNECTUS_REPO_ENV = "CONNECTUS_REPO_DIR"
 # explicit operator instruction — see the connectus-migration skill, Step 9.
 _HANDLER_COVERAGE_FORCE_ENV = "CONNECTUS_HANDLER_COVERAGE_FORCE"
 
-# Operator override for the param_parity gate. When truthy, the gate appends
-# ``--skip-deploy`` to deploy_and_test.py so the connector manifest is NOT
-# re-deployed before the parity test runs (it goes straight to the param-parity
-# check against the already-deployed connector). This is NOT a bypass of the
-# pass/fail verdict — the real param-parity test still runs and the checkpoint
-# is recorded ONLY on exit 0. It only skips the (re)deploy phase, for when the
-# operator has already deployed the connectors to the tenant out-of-band. Used
-# ONLY on explicit operator instruction — see the connectus-migration skill,
-# Step 11.
-_PARITY_SKIP_DEPLOY_ENV = "CONNECTUS_PARITY_SKIP_DEPLOY"
+# Deploy-SCOPE overrides for the param_parity gate. When truthy, the gate
+# appends ``--skip-connector-deploy`` / ``--skip-base-pack`` to the parity
+# wrapper so batch orchestration can avoid redundantly re-deploying the
+# connector manifest / re-uploading the Base pack on iterations #2..#N (the
+# integration's OWN pack is ALWAYS still uploaded). These env vars ONLY change
+# what gets deployed — they NEVER affect the gate's pass/fail verdict (the
+# REAL parity check still runs and exit-code handling stays strict). They are
+# NOT a verdict bypass: a parity failure still rejects the markpass.
+_PARITY_SKIP_CONNECTOR_ENV = "CONNECTUS_PARITY_SKIP_CONNECTOR"
+_PARITY_SKIP_BASE_PACK_ENV = "CONNECTUS_PARITY_SKIP_BASE_PACK"
 
 
 def _coverage_force_enabled() -> bool:
@@ -96,17 +96,29 @@ def _coverage_force_enabled() -> bool:
     }
 
 
-def _parity_skip_deploy_enabled() -> bool:
-    """Whether the param_parity gate should run with ``--skip-deploy``.
+def _parity_skip_connector_enabled() -> bool:
+    """Whether the param_parity gate should run with ``--skip-connector-deploy``.
 
-    When truthy, deploy_and_test.py skips the connector (re)deploy phase and
-    runs the param-parity test directly against the already-deployed connector.
-    The pass/fail verdict is unaffected — the checkpoint is still recorded only
-    on a clean exit 0; this merely avoids a redundant deploy when the operator
-    has already deployed out-of-band.
+    Deploy-scope only: skips the connector manifest deploy. Does NOT affect
+    the gate verdict — the real parity check still runs and must exit 0.
     """
     load_env()
-    return os.environ.get(_PARITY_SKIP_DEPLOY_ENV, "").strip().lower() in {
+    return os.environ.get(_PARITY_SKIP_CONNECTOR_ENV, "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+
+
+def _parity_skip_base_pack_enabled() -> bool:
+    """Whether the param_parity gate should run with ``--skip-base-pack``.
+
+    Deploy-scope only: skips the Base pack upload (the integration's own pack
+    is still uploaded). Does NOT affect the gate verdict — the real parity
+    check still runs and must exit 0.
+    """
+    load_env()
+    return os.environ.get(_PARITY_SKIP_BASE_PACK_ENV, "").strip().lower() in {
         "1",
         "true",
         "yes",
@@ -348,19 +360,24 @@ GATES: dict[str, GateSpec] = {
         # check_param_parity.py, then always release the lock. It exits with a
         # single code the gate runner branches on: 0 → pass; any non-zero
         # (10 parity fail, 11 blocked, 20 deploy fail, 21 timeout, 30 lock busy,
-        # 40 preflight fail, or any other) → reject.
+        # 40 preflight fail, or any other) → reject. There is NO VERDICT bypass:
+        # no --no-gate flag and no skip/force env var that turns a failure into
+        # a pass.
         #
-        # The pass/fail VERDICT cannot be bypassed (no --no-gate, no force/skip
-        # of the parity result). The only operator lever is
-        # CONNECTUS_PARITY_SKIP_DEPLOY=1, which appends ``--skip-deploy`` so the
-        # connector is NOT re-deployed before the parity test (for when it is
-        # already deployed out-of-band). The real param-parity test still runs
-        # and the checkpoint is recorded ONLY on exit 0.
+        # Deploy-SCOPE overrides (NOT verdict bypasses): when
+        # ``CONNECTUS_PARITY_SKIP_CONNECTOR`` / ``CONNECTUS_PARITY_SKIP_BASE_PACK``
+        # are truthy, append ``--skip-connector-deploy`` / ``--skip-base-pack`` so
+        # batch orchestration can avoid redundant re-deploys on iterations
+        # #2..#N. These flags ONLY change WHAT is deployed; the integration's own
+        # pack is still uploaded, the REAL parity check still runs, and the
+        # exit-code handling in run_gate() stays strict (only exit 0 → allow).
+        # They can NEVER make the gate pass without parity succeeding.
         build_argv=lambda abs_dir, iid: [
             sys.executable,
             _DEPLOY_AND_TEST_SCRIPT,
             "--integration-id", iid,
-            *(["--skip-deploy"] if _parity_skip_deploy_enabled() else []),
+            *(["--skip-connector-deploy"] if _parity_skip_connector_enabled() else []),
+            *(["--skip-base-pack"] if _parity_skip_base_pack_enabled() else []),
         ],
         # The script path above is absolute and the wrapper re-roots its own
         # children, so run from the content repo root (matches precommit/
@@ -370,8 +387,7 @@ GATES: dict[str, GateSpec] = {
         # with the CLI --timeout= flag.
         default_timeout=2400,
         description=(
-            "deploy_and_test (param-parity; exit 0 only; verdict not bypassable, "
-            "deploy skippable via CONNECTUS_PARITY_SKIP_DEPLOY)"
+            "deploy_and_test (live deploy + param-parity; exit 0 only, no bypass)"
         ),
     ),
 }

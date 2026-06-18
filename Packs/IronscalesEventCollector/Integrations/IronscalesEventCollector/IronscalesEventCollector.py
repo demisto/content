@@ -439,7 +439,7 @@ def main():
     try:
         first_fetch = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
         assert isinstance(first_fetch, datetime)
-        max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH  # noqa: ucp-param-default  (arg_to_number(None)->None, then `or DEFAULT_MAX_FETCH`)
+        max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
 
         client = Client(
             company_id=params.get("company_id"),

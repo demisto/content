@@ -1701,7 +1701,7 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    base_url: str = params.get("host", "").rstrip("/") + "/v1.0/"
+    base_url: str = params.get("host", "https://graph.microsoft.com").rstrip("/") + "/v1.0/"
     tenant = params.get("credentials_tenant_id", {}).get("password") or params.get("tenant_id")
     auth_id = params.get("credentials_auth_id", {}).get("password") or params.get("auth_id")
     enc_key = params.get("credentials_enc_key", {}).get("password") or params.get("enc_key")

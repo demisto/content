@@ -135,10 +135,8 @@ class TestRunGate:
 
     def test_param_parity_argv_and_cwd(self, monkeypatch) -> None:
         # The param_parity gate runs deploy_and_test.py with the integration
-        # id, from the content repo root. With CONNECTUS_PARITY_SKIP_DEPLOY
-        # unset, argv must be EXACTLY:
+        # id, from the content repo root. argv must be EXACTLY:
         #   [sys.executable, _DEPLOY_AND_TEST_SCRIPT, "--integration-id", iid]
-        monkeypatch.delenv("CONNECTUS_PARITY_SKIP_DEPLOY", raising=False)
         monkeypatch.setattr(gates, "_repo_root", lambda: "/content/repo")
         completed = subprocess.CompletedProcess(
             args=["python3"], returncode=0, stdout="PASS", stderr=""
@@ -156,39 +154,6 @@ class TestRunGate:
         ]
         # cwd is the content repo root, not abs_dir.
         assert m.call_args.kwargs["cwd"] == "/content/repo"
-
-    def test_param_parity_skip_deploy_appended_when_env_set(self, monkeypatch) -> None:
-        # CONNECTUS_PARITY_SKIP_DEPLOY=1 appends --skip-deploy so the gate goes
-        # straight to the param-parity test (no connector re-deploy). The
-        # pass/fail verdict is unaffected; only the deploy phase is skipped.
-        monkeypatch.setenv("CONNECTUS_PARITY_SKIP_DEPLOY", "1")
-        monkeypatch.setattr(gates, "_repo_root", lambda: "/content/repo")
-        completed = subprocess.CompletedProcess(
-            args=["python3"], returncode=0, stdout="PASS", stderr=""
-        )
-        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
-            verdict = gates.run_gate("param_parity", "/abs/integration/dir", "MyInt")
-        assert verdict["allow"] is True
-        argv = m.call_args.args[0]
-        assert argv == [
-            gates.sys.executable,
-            gates._DEPLOY_AND_TEST_SCRIPT,
-            "--integration-id",
-            "MyInt",
-            "--skip-deploy",
-        ]
-
-    def test_param_parity_skip_deploy_absent_when_env_falsey(self, monkeypatch) -> None:
-        # A falsey value must NOT append --skip-deploy.
-        monkeypatch.setenv("CONNECTUS_PARITY_SKIP_DEPLOY", "0")
-        monkeypatch.setattr(gates, "_repo_root", lambda: "/content/repo")
-        completed = subprocess.CompletedProcess(
-            args=["python3"], returncode=0, stdout="PASS", stderr=""
-        )
-        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
-            gates.run_gate("param_parity", "/abs/integration/dir", "MyInt")
-        argv = m.call_args.args[0]
-        assert "--skip-deploy" not in argv
 
     def test_param_parity_pass_on_exit_zero(self) -> None:
         completed = subprocess.CompletedProcess(
@@ -218,6 +183,111 @@ class TestRunGate:
         assert f"exited {exit_code}" in verdict["reason"]
         assert verdict["stdout_tail"] == "some stdout tail"
         assert verdict["stderr_tail"] == f"FAILED with code {exit_code}"
+
+    def test_param_parity_no_skip_envs_plain_argv(self, monkeypatch) -> None:
+        # With BOTH deploy-scope env vars UNSET, the param_parity gate builds
+        # the plain argv with NO skip flags appended.
+        monkeypatch.delenv(gates._PARITY_SKIP_CONNECTOR_ENV, raising=False)
+        monkeypatch.delenv(gates._PARITY_SKIP_BASE_PACK_ENV, raising=False)
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        argv = m.call_args.args[0]
+        assert argv == [
+            gates.sys.executable,
+            gates._DEPLOY_AND_TEST_SCRIPT,
+            "--integration-id",
+            "MyInt",
+        ]
+        assert "--skip-connector-deploy" not in argv
+        assert "--skip-base-pack" not in argv
+
+    def test_param_parity_skip_connector_env_appends_flag(self, monkeypatch) -> None:
+        # CONNECTUS_PARITY_SKIP_CONNECTOR=1 appends --skip-connector-deploy
+        # ONLY (NOT --skip-base-pack).
+        monkeypatch.setenv(gates._PARITY_SKIP_CONNECTOR_ENV, "1")
+        monkeypatch.delenv(gates._PARITY_SKIP_BASE_PACK_ENV, raising=False)
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        argv = m.call_args.args[0]
+        assert "--skip-connector-deploy" in argv
+        assert "--skip-base-pack" not in argv
+        # The integration id is still present.
+        assert argv[argv.index("--integration-id") + 1] == "MyInt"
+
+    def test_param_parity_skip_base_pack_env_appends_flag(self, monkeypatch) -> None:
+        # CONNECTUS_PARITY_SKIP_BASE_PACK=1 appends --skip-base-pack ONLY
+        # (NOT --skip-connector-deploy).
+        monkeypatch.setenv(gates._PARITY_SKIP_BASE_PACK_ENV, "1")
+        monkeypatch.delenv(gates._PARITY_SKIP_CONNECTOR_ENV, raising=False)
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        argv = m.call_args.args[0]
+        assert "--skip-base-pack" in argv
+        assert "--skip-connector-deploy" not in argv
+        assert argv[argv.index("--integration-id") + 1] == "MyInt"
+
+    def test_param_parity_both_skip_envs_append_both_flags(self, monkeypatch) -> None:
+        # Both env vars set → BOTH skip flags appended, still with the id.
+        monkeypatch.setenv(gates._PARITY_SKIP_CONNECTOR_ENV, "1")
+        monkeypatch.setenv(gates._PARITY_SKIP_BASE_PACK_ENV, "1")
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        argv = m.call_args.args[0]
+        assert "--skip-connector-deploy" in argv
+        assert "--skip-base-pack" in argv
+        assert argv[argv.index("--integration-id") + 1] == "MyInt"
+
+    def test_param_parity_skip_envs_do_not_change_verdict(self, monkeypatch) -> None:
+        # The deploy-scope env vars NEVER affect the pass/fail verdict. With a
+        # skip env set AND a NON-zero subprocess exit (10 = parity fail), the
+        # verdict is still allow=False; with exit 0 it is allow=True. The skip
+        # env does not turn a failure into a pass.
+        monkeypatch.setenv(gates._PARITY_SKIP_CONNECTOR_ENV, "1")
+        fail = subprocess.CompletedProcess(
+            args=["python3"], returncode=10, stdout="", stderr="parity mismatch"
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=fail):
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is False
+        assert verdict["exit_code"] == 10
+
+        ok = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="parity ok", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=ok):
+            verdict = gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        assert verdict["allow"] is True
+        assert verdict["exit_code"] == 0
+
+    def test_param_parity_falsey_skip_env_does_not_append_flag(self, monkeypatch) -> None:
+        # A falsey value (e.g. "0") does NOT append the flag — matching the
+        # coverage-force helper's truthiness semantics ({"1","true","yes"}).
+        monkeypatch.setenv(gates._PARITY_SKIP_CONNECTOR_ENV, "0")
+        monkeypatch.delenv(gates._PARITY_SKIP_BASE_PACK_ENV, raising=False)
+        completed = subprocess.CompletedProcess(
+            args=["python3"], returncode=0, stdout="PASS", stderr=""
+        )
+        with mock.patch.object(gates.subprocess, "run", return_value=completed) as m:
+            gates.run_gate("param_parity", "/abs/dir", "MyInt")
+        argv = m.call_args.args[0]
+        assert "--skip-connector-deploy" not in argv
+        assert "--skip-base-pack" not in argv
 
     def test_handler_param_coverage_fail_on_nonzero_exit(self, monkeypatch) -> None:
         # A non-zero exit from the coverage script (missing param / usage

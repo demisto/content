@@ -843,7 +843,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH  # noqa: ucp-param-default  (arg_to_number(None)->None, then `or DEFAULT_MAX_FETCH`)
+    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
 
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Events"]))
     log_types_to_fetch = get_log_types_from_titles(event_types_to_fetch)
