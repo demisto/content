@@ -603,20 +603,39 @@ class AzureClient:
         resource: str | None = None,
         scope: str | None = None,
         headers: dict | None = {},
+        connection_type: str = "Client Credentials",
+        azure_ad_endpoint: str = "https://login.microsoftonline.com",
+        auth_code: str | None = None,
+        redirect_uri: str | None = None,
+        managed_identities_client_id: str | None = None,
     ):
+        # connection_type is only relevant for the marketplace (XSOAR / XSIAM) MicrosoftClient path.
+        # On the Cortex Platform (COOC) path, `headers` (a CTS bearer token) is provided and the
+        # MicrosoftClient is not used.
+        self.connection_type = connection_type
         if not headers:
+            # Marketplace path: authenticate via MicrosoftClient using the configured flow.
+            # token_retrieval_url and resource are only required for the Device Code flow, mirroring
+            # the behavior of the standalone Azure integrations.
+            is_device_code = "Device Code" in connection_type
             ms_client_args = assign_params(
                 self_deployed=True,
                 auth_id=app_id,
-                token_retrieval_url=None,
-                grant_type=GRANT_BY_CONNECTION.get("Client Credentials"),
+                token_retrieval_url=(urljoin(azure_ad_endpoint, "organizations/oauth2/v2.0/token") if is_device_code else None),
+                grant_type=GRANT_BY_CONNECTION.get(connection_type),
                 base_url=f"{PREFIX_URL_AZURE}",
                 verify=verify,
                 proxy=proxy,
-                resource=resource,
-                scope=scope,
+                resource=("https://management.core.windows.net" if is_device_code else resource),  # disable-secrets-detection
+                scope=(SCOPE_BY_CONNECTION.get(connection_type) or scope),
+                azure_ad_endpoint=azure_ad_endpoint,
                 tenant_id=tenant_id,
                 enc_key=enc_key,
+                auth_code=auth_code,
+                redirect_uri=redirect_uri,
+                managed_identities_client_id=managed_identities_client_id,
+                managed_identities_resource_uri=Resources.management_azure,
+                command_prefix="azure",
                 ok_codes=(200, 201, 202, 204),
             )
             self.ms_client = MicrosoftClient(**ms_client_args)
@@ -5357,11 +5376,26 @@ def test_module(client: AzureClient) -> str:
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
+
+    For the interactive flows (Device Code / Authorization Code) the Test button cannot validate the
+    connection on its own, so the user is directed to the dedicated auth commands.
+
     :type AzureClient: ``Client``
     :param Client: client to use
     :return: 'ok' if test passed.
     :rtype: ``str``
     """
+    if "Device Code" in client.connection_type:
+        raise DemistoException(
+            "When using the Device Code flow, save the instance and run the `!azure-auth-start` and "
+            "`!azure-auth-complete` commands to log in. You can validate the connection by running "
+            "`!azure-auth-test`. For more details, see the Detailed Instructions (?) section."
+        )
+    if "Authorization Code" in client.connection_type:
+        raise DemistoException(
+            "When using the Authorization Code flow, save the instance and run the `!azure-auth-test` "
+            "command to validate the connection. For more details, see the Detailed Instructions (?) section."
+        )
     try:
         client.http_request(
             method="GET",
@@ -5371,6 +5405,27 @@ def test_module(client: AzureClient) -> str:
     except (ConnectionError, Timeout) as conn_err:
         raise Exception("Connectivity Error: Cannot reach Azure endpoint") from conn_err
     return "ok"
+
+
+def test_connection(client: AzureClient) -> str:
+    """Validate the Azure connection by requesting an access token (marketplace flows).
+
+    Raises an exception (from MicrosoftApiModule) if authentication fails.
+    """
+    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule raises an error
+    return "✅ Success!"
+
+
+def start_auth(client: AzureClient) -> CommandResults:
+    """Start the interactive (Device Code) authorization process (marketplace flows)."""
+    result = client.ms_client.start_auth("!azure-auth-complete")
+    return CommandResults(readable_output=result)
+
+
+def complete_auth(client: AzureClient) -> str:
+    """Complete the interactive (Device Code) authorization process (marketplace flows)."""
+    client.ms_client.get_access_token()
+    return "✅ Authorization completed successfully."
 
 
 def health_check(shared_creds: dict, subscription_id: str, connector_id: str) -> HealthCheckError | None:  # pragma: no cover
@@ -5424,16 +5479,12 @@ def get_azure_client(params: dict, args: dict, command: str):
     demisto.debug(f"Got {client_scope=} and {token_scopes=}")
     resource = get_command_resource(command)
     demisto.debug(f"Got {resource=}")
-    if not params.get("credentials", {}).get("password"):
-        # No Client Secret was provided. The CTS (Cortex Platform / COOC) flow below relies on
-        # demisto._platformAPICall, which only exists on the Cortex Platform. On XSOAR / XSIAM
-        # (marketplace) there is no connector, so fail fast with a clear, actionable message.
-        if not get_connector_id():
-            raise DemistoException(
-                "Missing Client Secret. When running on Cortex XSOAR or Cortex XSIAM, configure the "
-                "Client Secret (along with Application ID, Tenant ID, and Subscription ID) in the "
-                "integration instance."
-            )
+    connection_type = params.get("auth_type") or "Client Credentials"
+    # The Cortex Platform (COOC) path is selected when a connector ID is present. There, the CTS
+    # token flow (get_cloud_credentials -> demisto._platformAPICall) handles authentication.
+    # On Cortex XSOAR / Cortex XSIAM (marketplace) there is no connector, so authentication is done
+    # by MicrosoftClient using the configured auth_type.
+    if get_connector_id():
         credentials = get_cloud_credentials(
             CloudTypes.AZURE.value,
             get_from_args_or_params(params=params, args=args, key="subscription_id"),
@@ -5444,6 +5495,14 @@ def get_azure_client(params: dict, args: dict, command: str):
             raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
         demisto.debug("Using CTS.")
+    elif connection_type == "Client Credentials" and not params.get("credentials", {}).get("password"):
+        # Marketplace + Client Credentials flow requires a Client Secret. Fail fast with a clear message
+        # instead of letting MicrosoftClient raise a less actionable error.
+        raise DemistoException(
+            "Missing Client Secret. When running on Cortex XSOAR or Cortex XSIAM with the Client Credentials "
+            "authentication type, configure the Client Secret (along with Application ID, Tenant ID, and "
+            "Subscription ID) in the integration instance."
+        )
     client = AzureClient(
         app_id=params.get("app_id", ""),
         subscription_id=params.get("subscription_id", ""),
@@ -5455,6 +5514,13 @@ def get_azure_client(params: dict, args: dict, command: str):
         resource=resource,
         scope=client_scope,
         headers=headers,
+        connection_type=connection_type,
+        azure_ad_endpoint=(
+            params.get("azure_ad_endpoint", "https://login.microsoftonline.com") or "https://login.microsoftonline.com"
+        ),
+        auth_code=(params.get("auth_code", {}) or {}).get("password"),
+        redirect_uri=params.get("redirect_uri"),
+        managed_identities_client_id=get_azure_managed_identities_client_id(params),
     )
     return client
 
@@ -5647,9 +5713,23 @@ def main():  # pragma: no cover
             if is_gov_account(connector_id, account_id):  # type: ignore
                 switch_to_gov_account()
 
+        # Auth helper commands are only relevant for the marketplace (XSOAR / XSIAM) flows.
+        # They are not used on the Cortex Platform (COOC) path, where authentication is automatic.
+        if command == "azure-auth-reset":
+            return return_results(reset_auth())
+
         client = get_azure_client(params, args, command)
+
         if command == "test-module":
             return_results(test_module(client))
+        elif command == "azure-auth-start":
+            return_results(start_auth(client))
+        elif command == "azure-auth-complete":
+            return_results(complete_auth(client))
+        elif command == "azure-auth-test":
+            return_results(test_connection(client))
+        elif command == "azure-generate-login-url":
+            return_results(generate_login_url(client.ms_client))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
         else:

@@ -1089,14 +1089,15 @@ def test_remove_member_from_group_command(mocker, client):
 
 def test_get_azure_client_no_token(mocker, mock_params):
     """
-    Given: Parameters without credentials and no token from cloud credentials.
+    Given: Platform (connector) path where cloud credentials return no token.
     When: The get_azure_client function is called.
-    Then: The function should raise an exception.
+    Then: The function should raise an exception about the missing token.
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
 
+    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
     mocker.patch("Azure.get_from_args_or_params", return_value="mocked_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={})  # No token
 
@@ -1111,17 +1112,40 @@ def test_get_azure_client_no_token(mocker, mock_params):
     assert "Failed to retrieve AZURE access token" in str(excinfo.value)
 
 
+def test_get_azure_client_marketplace_missing_secret(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector) with the Client Credentials flow and no Client Secret.
+    When: The get_azure_client function is called.
+    Then: The function should raise a clear DemistoException about the missing Client Secret.
+    """
+    args = {"subscription_id": "arg_subscription_id"}
+    command = "command"
+
+    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
+
+    params = mock_params.copy()
+    params["credentials"] = {}
+    params["auth_type"] = "Client Credentials"
+
+    with pytest.raises(DemistoException) as excinfo:
+        get_azure_client(params, args, command)
+
+    assert "Missing Client Secret" in str(excinfo.value)
+
+
 def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     """
-    Given: Parameters with stored credentials, arguments, and an Azure command.
+    Given: Marketplace path with a Client Secret configured (Client Credentials flow).
     When: The get_azure_client function is called.
-    Then: The function should return an initialized Azure client using stored credentials without cloud authentication.
+    Then: The function should return an initialized Azure client using the secret without cloud (CTS) authentication.
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
     mock_client = mocker.Mock()
 
+    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
+    mock_get_managed = mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
     # Test with credentials (stored credentials path)
@@ -1146,12 +1170,17 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
         resource=Resources.management_azure,
         scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
         headers={},
+        connection_type="Client Credentials",
+        azure_ad_endpoint="https://login.microsoftonline.com",
+        auth_code=None,
+        redirect_uri=None,
+        managed_identities_client_id=mock_get_managed.return_value,
     )
 
 
 def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_params):
     """
-    Given: Parameters without stored credentials, arguments, and an Azure command.
+    Given: Platform (connector) path without stored credentials.
     When: The get_azure_client function is called.
     Then: The function should retrieve cloud credentials and return a client with proper headers and scope.
     """
@@ -1161,6 +1190,8 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     mock_client = mocker.Mock()
     mock_token = "mock_access_token"
 
+    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
+    mock_get_managed = mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={"access_token": mock_token})
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
@@ -1191,18 +1222,24 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
         resource=Resources.management_azure,
         scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
         headers=expected_headers,
+        connection_type="Client Credentials",
+        azure_ad_endpoint="https://login.microsoftonline.com",
+        auth_code=None,
+        redirect_uri=None,
+        managed_identities_client_id=mock_get_managed.return_value,
     )
 
 
 def test_get_azure_client_no_token_raises_exception(mocker, mock_params):
     """
-    Given: Parameters without stored credentials and cloud credentials that return no token.
+    Given: Platform (connector) path with cloud credentials that return no token.
     When: The get_azure_client function is called.
     Then: The function should raise a DemistoException about missing token.
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
+    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
     mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={})  # No access_token
 
@@ -3909,11 +3946,20 @@ def test_get_command_resource_storage(command):
 class TestGetAzureClient:
     """Tests for the get_azure_client function."""
 
+    @patch("Azure.get_connector_id", return_value="connector-123")
+    @patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     @patch("Azure.get_from_args_or_params")
     @patch("Azure.get_cloud_credentials")
     @patch("Azure.AzureClient")
-    def test_with_cloud_credentials(self, mock_azure_client, mock_get_cloud_credentials, mock_get_from_args_or_params):
-        """Test get_azure_client with cloud credentials."""
+    def test_with_cloud_credentials(
+        self,
+        mock_azure_client,
+        mock_get_cloud_credentials,
+        mock_get_from_args_or_params,
+        mock_get_managed,
+        mock_get_connector_id,
+    ):
+        """Test get_azure_client with cloud credentials (Platform path)."""
         # Setup mocks
         mock_get_from_args_or_params.return_value = "test-subscription-id"
         mock_get_cloud_credentials.return_value = {"access_token": "test-token"}
@@ -3952,13 +3998,27 @@ class TestGetAzureClient:
             resource=DEFAULT_RESOURCE,
             scope=DEFAULT_SCOPE,
             headers={"Authorization": "Bearer test-token", "Content-Type": "application/json", "Accept": "application/json"},
+            connection_type="Client Credentials",
+            azure_ad_endpoint="https://login.microsoftonline.com",
+            auth_code=None,
+            redirect_uri=None,
+            managed_identities_client_id=None,
         )
 
+    @patch("Azure.get_connector_id", return_value="connector-123")
+    @patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     @patch("Azure.get_from_args_or_params")
     @patch("Azure.get_cloud_credentials")
     @patch("Azure.AzureClient")
-    def test_with_storage_command(self, mock_azure_client, mock_get_cloud_credentials, mock_get_from_args_or_params):
-        """Test get_azure_client with a storage command."""
+    def test_with_storage_command(
+        self,
+        mock_azure_client,
+        mock_get_cloud_credentials,
+        mock_get_from_args_or_params,
+        mock_get_managed,
+        mock_get_connector_id,
+    ):
+        """Test get_azure_client with a storage command (Platform path)."""
         # Setup mocks
         mock_get_from_args_or_params.return_value = "test-subscription-id"
         mock_get_cloud_credentials.return_value = {"access_token": "test-token"}
@@ -3997,6 +4057,11 @@ class TestGetAzureClient:
             resource=STORAGE_RESOURCE,
             scope=STORAGE_SCOPE,
             headers={"Authorization": "Bearer test-token", "Content-Type": "application/json", "Accept": "application/json"},
+            connection_type="Client Credentials",
+            azure_ad_endpoint="https://login.microsoftonline.com",
+            auth_code=None,
+            redirect_uri=None,
+            managed_identities_client_id=None,
         )
 
 
@@ -5598,3 +5663,126 @@ def test_network_interface_update_command_conflict_nsg(mocker):
         DemistoException, match="The remove_network_security_group option cannot be used with network_security_group_name."
     ):
         network_interface_update_command(client, params, args)
+
+
+def test_test_module_device_code_flow(mocker):
+    """
+    Given: A client configured with the Device Code authentication flow.
+    When: test_module is called.
+    Then: A DemistoException directing the user to the auth commands is raised.
+    """
+    mocker.patch("MicrosoftApiModule.MicrosoftClient.get_access_token")
+    client = AzureClient(app_id="test_app_id", connection_type="Device Code")
+
+    with pytest.raises(DemistoException) as excinfo:
+        Azure.test_module(client)
+
+    assert "azure-auth-start" in str(excinfo.value)
+
+
+def test_test_module_authorization_code_flow(mocker):
+    """
+    Given: A client configured with the Authorization Code authentication flow.
+    When: test_module is called.
+    Then: A DemistoException directing the user to azure-auth-test is raised.
+    """
+    mocker.patch("MicrosoftApiModule.MicrosoftClient.get_access_token")
+    client = AzureClient(app_id="test_app_id", connection_type="Authorization Code")
+
+    with pytest.raises(DemistoException) as excinfo:
+        Azure.test_module(client)
+
+    assert "azure-auth-test" in str(excinfo.value)
+
+
+def test_test_module_client_credentials_ok(mocker, client):
+    """
+    Given: A client configured with the Client Credentials flow (default) and a successful API call.
+    When: test_module is called.
+    Then: It returns "ok".
+    """
+    mocker.patch.object(client, "connection_type", "Client Credentials")
+    mocker.patch.object(client, "http_request", return_value={})
+
+    assert Azure.test_module(client) == "ok"
+
+
+def test_test_connection_success(mocker, client):
+    """
+    Given: A client whose MicrosoftClient can fetch an access token.
+    When: test_connection is called.
+    Then: A success message is returned.
+    """
+    mocker.patch.object(client.ms_client, "get_access_token")
+
+    assert "Success" in Azure.test_connection(client)
+
+
+def test_start_auth(mocker, client):
+    """
+    Given: A client.
+    When: start_auth is called.
+    Then: It returns CommandResults wrapping the MicrosoftClient start_auth output.
+    """
+    mocker.patch.object(client.ms_client, "start_auth", return_value="follow these steps")
+
+    result = Azure.start_auth(client)
+
+    assert result.readable_output == "follow these steps"
+
+
+def test_complete_auth(mocker, client):
+    """
+    Given: A client.
+    When: complete_auth is called.
+    Then: It fetches the access token and returns a success message.
+    """
+    mock_get_token = mocker.patch.object(client.ms_client, "get_access_token")
+
+    result = Azure.complete_auth(client)
+
+    mock_get_token.assert_called_once()
+    assert "completed successfully" in result
+
+
+def test_get_azure_client_device_code_no_secret(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector) with the Device Code flow and no Client Secret.
+    When: get_azure_client is called.
+    Then: It does NOT raise the missing-secret error and builds a client with the Device Code connection type.
+    """
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {}
+    params["auth_type"] = "Device Code"
+
+    get_azure_client(params, {}, "command")
+
+    # The connection_type must be propagated to the client (no missing-secret exception raised).
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["connection_type"] == "Device Code"
+
+
+def test_main_auth_reset(mocker):
+    """
+    Given: The azure-auth-reset command on the marketplace path.
+    When: main is called.
+    Then: reset_auth is invoked and the client is not built.
+    """
+    from Azure import main
+
+    mocker.patch.object(demisto, "command", return_value="azure-auth-reset")
+    mocker.patch.object(demisto, "params", return_value={})
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mock_reset = mocker.patch("Azure.reset_auth", return_value="reset done")
+    mock_get_client = mocker.patch("Azure.get_azure_client")
+    mocker.patch("Azure.return_results")
+
+    main()
+
+    mock_reset.assert_called_once()
+    mock_get_client.assert_not_called()
