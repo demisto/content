@@ -2,8 +2,6 @@ from itertools import chain
 from aiohttp import ClientResponseError
 import asyncio
 import aiohttp
-import gzip
-import io
 import traceback
 
 import demistomock as demisto
@@ -268,75 +266,6 @@ class Client:
 
 
 """ HELPER FUNCTIONS """
-
-
-def stream_send_events_to_xsiam(events: list[dict], vendor: str, product: str) -> int:
-    """Memory-safe replacement for ``send_events_to_xsiam`` (CIAC-16981, "Method F").
-
-    The shared ``send_events_to_xsiam`` builds 3-4 full in-memory copies of the batch
-    (``[json.dumps(x) for x]`` -> ``'\\n'.join`` -> gzip) which all exist at once at the peak.
-    This streams the page into a gzip buffer **one event at a time**, popping each event off the
-    source list as it is compressed, so the only uncompressed object alive is a single page plus
-    the (small) growing compressed buffer - never a second full copy of the page.
-
-    Note: this is a local integration copy. Once "Method F" lands in CommonServerPython, this can be
-    removed and the call switched back to ``send_events_to_xsiam``.
-
-    Args:
-        events (list[dict]): the page of events to send. **Consumed** (emptied) by this function.
-        vendor (str): the XSIAM vendor tag.
-        product (str): the XSIAM product tag.
-
-    Returns:
-        int: the number of events sent.
-    """
-    if not events:
-        return 0
-    n = len(events)
-    buf = io.BytesIO()
-    with gzip.GzipFile(fileobj=buf, mode="wb") as gz:
-        while events:  # drain the list so the source shrinks while the compressed output grows
-            event = events.pop()
-            gz.write((json.dumps(event) + "\n").encode("utf-8"))
-            # `event` is dropped here, before the next iteration
-    # NOTE: we intentionally do NOT `del buf` / `del zipped` here. Live runner measurements
-    # (CIAC-16981) showed explicit `del` of these had ~0 measurable effect on RSS — CPython frees
-    # them by refcount when the function returns anyway, and the allocator keeps the freed pages.
-    # See plans/oom-fix-agent-guide.md ("explicit del of local send buffers is useless").
-    zipped = buf.getvalue()
-    _post_gzipped_events(zipped, vendor=vendor, product=product)
-    return n
-
-
-def _post_gzipped_events(zipped: bytes, vendor: str, product: str) -> None:
-    """POST pre-gzipped events to the XSIAM HTTP collector (CIAC-16981, "Method F").
-
-    Reproduces the headers/auth of ``send_events_to_xsiam`` and delegates the actual request +
-    retry handling to the public ``xsiam_api_call_with_retries`` - no CommonServerPython edit needed.
-    """
-    calling_context = demisto.callingContext.get("context", {})
-    xsiam_url = "https://api-{}".format(demisto.getLicenseCustomField("Http_Connector.url"))
-    headers = {
-        "authorization": demisto.getLicenseCustomField("Http_Connector.token"),
-        "format": "json",
-        "product": product,
-        "vendor": vendor,
-        "content-encoding": "gzip",
-        "collector-name": calling_context.get("IntegrationBrand", ""),
-        "instance-name": calling_context.get("IntegrationInstance", ""),
-        "final-reporting-device": demisto.params().get("url", ""),
-        "collector-type": "events",
-    }
-    client = BaseClient(base_url=xsiam_url, proxy=False)
-    xsiam_api_call_with_retries(
-        client=client,
-        xsiam_url=xsiam_url,
-        zipped_data=zipped,
-        headers=headers,
-        num_of_attempts=MAX_RETRY,
-        is_json_response=True,
-        data_type="events",
-    )
 
 
 def next_trigger_time(num_of_events, max_fetch, new_last_run):
@@ -642,15 +571,22 @@ async def fetch_and_send_events_async(
             return {}
 
         async def _send_page_to_xsiam(events):
-            # Send-and-flush: stream this page to XSIAM (Method F) and free it. `events` is consumed.
-            # No separate send semaphore needed: the whole page lifecycle is already gated by
-            # client.page_semaphore (see _handle_page), so at most NETSKOPE_SEMAPHORE_COUNT sends
-            # can ever be in flight at once. (CIAC-16981)
+            # Send-and-flush: stream this page to XSIAM and free it. `events` is consumed by the
+            # streaming sender. Memory stays bounded because (a) the whole page lifecycle is gated by
+            # client.page_semaphore (see _handle_page), and (b) use_streaming_send=True makes
+            # send_events_to_xsiam serialize+gzip one event at a time instead of copying the batch (CIAC-16981).
             demisto.debug(f"send {len(events)} events to xsiam")
             _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM just before the streaming send
                 f"send_page.BEFORE type={type}", _MEM_T0, _mem_peak(), extra=f"page_events={len(events)}"
             )
-            await asyncio.to_thread(stream_send_events_to_xsiam, events, VENDOR, PRODUCT)
+            await asyncio.to_thread(
+                send_events_to_xsiam,
+                events=events,
+                vendor=VENDOR,
+                product=PRODUCT,
+                chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT,
+                use_streaming_send=True,
+            )
             _mem_log(  # MEM DIAG (REMOVE — CIAC-16981): RAM right after the send returns
                 f"send_page.AFTER type={type}", _MEM_T0, _mem_peak(), extra="page_freed"
             )
